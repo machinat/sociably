@@ -3,24 +3,16 @@ import type { MachinatNode, MachinatChannel } from '@machinat/core';
 import { maybeInjectContainer, ServiceScope } from '@machinat/core/service';
 import type {
   ScriptLibrary,
-  AnyScriptLibrary,
   CallStatus,
   ContentCommand,
   JumpCommand,
   JumpCondCommand,
   PromptCommand,
   CallCommand,
+  EffectYielder,
   EffectCommand,
   ReturnCommand,
   ScriptCommand,
-  ContentFn,
-  ConditionMatchFn,
-  PromptSetFn,
-  CallReturnSetFn,
-  VarsOfScript,
-  InputOfScript,
-  ReturnOfScript,
-  YieldOfScript,
 } from './types';
 
 const getCursorIndexAssertedly = (
@@ -33,25 +25,25 @@ const getCursorIndexAssertedly = (
   return index;
 };
 
-type FinishedExecuteResult<Return> = {
+type FinishedExecuteResult<Return, Yield> = {
   finished: true;
   returnedValue: Return;
-  yieldedValue: undefined;
-  stack: null;
+  yieldedValue: undefined | Yield;
+  callStack: null;
   contents: MachinatNode[];
 };
 
-type UnfinishedExecuteResult<Yield, Script extends AnyScriptLibrary> = {
+type UnfinishedExecuteResult<Yield> = {
   finished: false;
   returnedValue: undefined;
-  yieldedValue: Yield;
-  stack: CallStatus<Script>[];
+  yieldedValue: undefined | Yield;
+  callStack: CallStatus<unknown>[];
   contents: MachinatNode[];
 };
 
-type ExecuteResult<Script extends AnyScriptLibrary> =
-  | FinishedExecuteResult<ReturnOfScript<Script>>
-  | UnfinishedExecuteResult<YieldOfScript<Script>, Script>;
+type ExecuteResult<Return, Yield> =
+  | FinishedExecuteResult<Return, Yield>
+  | UnfinishedExecuteResult<Yield>;
 
 type ExecuteContext<Vars, Return, Yield> = {
   channel: MachinatChannel;
@@ -59,19 +51,19 @@ type ExecuteContext<Vars, Return, Yield> = {
   finished: boolean;
   returnedValue: undefined | Return;
   stopAt: undefined | string;
-  yieldedValue: undefined | Yield;
+  yieldings: [unknown, EffectYielder<unknown, Yield>][];
   cursor: number;
   contents: MachinatNode[];
   vars: Vars;
-  descendantCallStack: null | CallStatus<AnyScriptLibrary>[];
+  callStack: CallStatus<unknown>[];
 };
 
-const executeContentCommand = async <Vars>(
+const executeContentCommand = async <Vars, Return, Yield>(
   { getContent }: ContentCommand<Vars>,
-  context: ExecuteContext<Vars, unknown, unknown>
-): Promise<ExecuteContext<Vars, unknown, unknown>> => {
+  context: ExecuteContext<Vars, Return, Yield>
+): Promise<ExecuteContext<Vars, Return, Yield>> => {
   const { cursor, contents, vars, channel, scope } = context;
-  const newContent = await maybeInjectContainer<ContentFn<Vars>>(
+  const newContent = await maybeInjectContainer(
     scope,
     getContent
   )({ platform: channel.platform, channel, vars });
@@ -83,19 +75,19 @@ const executeContentCommand = async <Vars>(
   };
 };
 
-const executeJumpCommand = <Vars>(
+const executeJumpCommand = <Vars, Return, Yield>(
   { offset }: JumpCommand,
-  context: ExecuteContext<Vars, unknown, unknown>
-): ExecuteContext<Vars, unknown, unknown> => {
+  context: ExecuteContext<Vars, Return, Yield>
+): ExecuteContext<Vars, Return, Yield> => {
   return { ...context, cursor: context.cursor + offset };
 };
 
-const executeJumpCondCommand = async <Vars>(
+const executeJumpCondCommand = async <Vars, Return, Yield>(
   { condition, isNot, offset }: JumpCondCommand<Vars>,
-  context: ExecuteContext<Vars, unknown, unknown>
-): Promise<ExecuteContext<Vars, unknown, unknown>> => {
+  context: ExecuteContext<Vars, Return, Yield>
+): Promise<ExecuteContext<Vars, Return, Yield>> => {
   const { cursor, scope, vars, channel } = context;
-  const isMatched = await maybeInjectContainer<ConditionMatchFn<Vars>>(
+  const isMatched = await maybeInjectContainer(
     scope,
     condition
   )({ platform: channel.platform, channel, vars });
@@ -106,41 +98,26 @@ const executeJumpCondCommand = async <Vars>(
   };
 };
 
-const executePromptCommand = async <Vars, Yield>(
-  { key, yieldValue }: PromptCommand<Vars, unknown, Yield>,
-  context: ExecuteContext<Vars, unknown, Yield>
-): Promise<ExecuteContext<Vars, unknown, Yield>> => {
-  const { vars, scope, channel } = context;
-  let yieldedValue: undefined | Yield;
-
-  if (yieldValue) {
-    yieldedValue = await maybeInjectContainer(
-      scope,
-      yieldValue
-    )({
-      platform: channel.platform,
-      vars,
-      channel,
-    });
-  }
-
+const executePromptCommand = async <Vars, Return, Yield>(
+  { key }: PromptCommand<Vars, unknown>,
+  context: ExecuteContext<Vars, Return, Yield>
+): Promise<ExecuteContext<Vars, Return, Yield>> => {
   return {
     ...context,
     stopAt: key,
-    yieldedValue,
   };
 };
 
-const executeCallCommand = async <Vars>(
+const executeCallCommand = async <Vars, Return, Yield>(
   {
     script,
     key,
     withParams,
     setVars,
     goto,
-  }: CallCommand<Vars, unknown, unknown>,
-  context: ExecuteContext<Vars, unknown, unknown>
-): Promise<ExecuteContext<Vars, unknown, unknown>> => {
+  }: CallCommand<Vars, unknown, unknown, Yield>,
+  context: ExecuteContext<Vars, Return, Yield>
+): Promise<ExecuteContext<Vars, Return, Yield>> => {
   const { vars, contents, scope, channel, cursor } = context;
   const index = goto ? getCursorIndexAssertedly(script, goto) : 0;
 
@@ -152,31 +129,32 @@ const executeCallCommand = async <Vars>(
     : {};
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  const result = await executeScript(
+  const subCtx = await executeScript<unknown, unknown, Yield>(
     scope,
     channel,
     script,
     index,
     script.initVars(params)
   );
-  const concatedContent = [...contents, ...result.contents];
+  const concatedContent = [...contents, ...subCtx.contents];
+  const concatedYieldings = [...context.yieldings, ...subCtx.yieldings];
 
-  if (!result.finished) {
+  if (!subCtx.finished) {
     return {
       ...context,
       stopAt: key,
-      yieldedValue: result.yieldedValue,
+      yieldings: concatedYieldings,
       contents: concatedContent,
-      descendantCallStack: result.stack,
+      callStack: subCtx.callStack,
     };
   }
 
   let updatedVars = vars;
   if (setVars) {
-    updatedVars = await maybeInjectContainer<CallReturnSetFn<Vars, unknown>>(
-      scope,
-      setVars
-    )({ platform: channel.platform, channel, vars }, result.returnedValue);
+    updatedVars = await maybeInjectContainer(scope, setVars)(
+      { platform: channel.platform, channel, vars },
+      subCtx.returnedValue
+    );
   }
 
   return {
@@ -184,42 +162,41 @@ const executeCallCommand = async <Vars>(
     vars: updatedVars,
     cursor: cursor + 1,
     contents: concatedContent,
+    yieldings: concatedYieldings,
   };
 };
 
-const executeEffectCommand = async <Vars>(
-  { doEffect, setVars }: EffectCommand<Vars, unknown>,
-  context: ExecuteContext<Vars, unknown, unknown>
-): Promise<ExecuteContext<Vars, unknown, unknown>> => {
-  const { cursor, scope, channel, vars } = context;
-
-  let result: unknown;
-  if (doEffect) {
-    result = await maybeInjectContainer(
-      scope,
-      doEffect
-    )({ platform: channel.platform, channel, vars });
-  }
+const executeEffectCommand = async <Vars, Return, Yield>(
+  { setVars, yieldValue }: EffectCommand<Vars, Yield>,
+  context: ExecuteContext<Vars, Return, Yield>
+): Promise<ExecuteContext<Vars, Return, Yield>> => {
+  const { cursor, scope, channel, vars, yieldings } = context;
 
   let newVars = vars;
   if (setVars) {
-    newVars = await maybeInjectContainer(scope, setVars)(
-      { platform: channel.platform, channel, vars },
-      result
-    );
+    newVars = await maybeInjectContainer(
+      scope,
+      setVars
+    )({ platform: channel.platform, channel, vars });
+  }
+
+  let newYielding = yieldings;
+  if (yieldValue) {
+    newYielding = [...yieldings, [{ ...newVars }, yieldValue]];
   }
 
   return {
     ...context,
     cursor: cursor + 1,
     vars: newVars,
+    yieldings: newYielding,
   };
 };
 
-const executeReturnCommand = async <Vars, Return>(
+const executeReturnCommand = async <Vars, Return, Yield>(
   { getValue }: ReturnCommand<Vars, Return>,
-  context: ExecuteContext<Vars, Return, unknown>
-): Promise<ExecuteContext<Vars, Return, unknown>> => {
+  context: ExecuteContext<Vars, Return, Yield>
+): Promise<ExecuteContext<Vars, Return, Yield>> => {
   const { scope, channel, vars } = context;
   let returnedValue: undefined | Return;
 
@@ -242,10 +219,10 @@ const executeReturnCommand = async <Vars, Return>(
   };
 };
 
-const executeCommand = async (
-  command: ScriptCommand<unknown, unknown, unknown, unknown>,
-  context: ExecuteContext<unknown, unknown, unknown>
-): Promise<ExecuteContext<unknown, unknown, unknown>> => {
+const executeCommand = async <Vars, Return, Yield>(
+  command: ScriptCommand<Vars, unknown, Return, Yield>,
+  context: ExecuteContext<Vars, Return, Yield>
+): Promise<ExecuteContext<Vars, Return, Yield>> => {
   switch (command.type) {
     case 'content':
       return executeContentCommand(command, context);
@@ -268,24 +245,24 @@ const executeCommand = async (
   }
 };
 
-const executeScript = async <Script extends AnyScriptLibrary>(
+const executeScript = async <Vars, Return, Yield>(
   scope: ServiceScope,
   channel: MachinatChannel,
-  script: Script,
+  script: ScriptLibrary<Vars, unknown, unknown, Return, Yield>,
   begin: number,
-  beginVars: VarsOfScript<Script>
-): Promise<ExecuteResult<Script>> => {
+  beginVars: Vars
+): Promise<ExecuteContext<Vars, Return, Yield>> => {
   const { commands } = script;
 
-  let context: ExecuteContext<unknown, unknown, unknown> = {
+  let context: ExecuteContext<Vars, Return, Yield> = {
     finished: false,
     returnedValue: undefined,
     stopAt: undefined,
-    yieldedValue: undefined,
+    yieldings: [],
     cursor: begin,
     contents: [],
     vars: beginVars,
-    descendantCallStack: null,
+    callStack: [],
     scope,
     channel,
   };
@@ -297,58 +274,65 @@ const executeScript = async <Script extends AnyScriptLibrary>(
     context = await executeCommand(command, context);
 
     if (context.finished) {
-      return {
-        finished: true,
-        returnedValue: context.returnedValue as ReturnOfScript<Script>,
-        yieldedValue: undefined,
-        contents: context.contents,
-        stack: null,
-      };
+      return context;
     }
 
     if (context.stopAt) {
-      const { stopAt, contents, vars, yieldedValue, descendantCallStack } =
-        context;
+      const { stopAt, vars, callStack } = context;
       const stackStatus = { script, vars, stopAt };
 
       return {
-        finished: false,
-        returnedValue: undefined,
-        yieldedValue: yieldedValue as YieldOfScript<Script>,
-        contents,
-        stack: (descendantCallStack
-          ? [stackStatus, ...descendantCallStack]
-          : [stackStatus]) as CallStatus<Script>[],
+        ...context,
+        callStack: callStack ? [stackStatus, ...callStack] : [stackStatus],
       };
     }
   }
 
   // script ends with no RETURN
   return {
+    ...context,
     finished: true,
-    returnedValue: undefined as never,
-    yieldedValue: undefined,
-    contents: context.contents,
-    stack: null,
   };
 };
 
-const execute = async <Script extends AnyScriptLibrary>(
+const resolveYieldValue = async <Yield>(
+  channel: MachinatChannel,
+  scope: ServiceScope,
+  yieldings: [unknown, EffectYielder<unknown, Yield>][]
+): Promise<undefined | Yield> => {
+  let yieldValue: undefined | Yield;
+
+  for (let i = yieldings.length - 1; i >= 0; i -= 1) {
+    const [vars, yielder] = yieldings[i];
+
+    // eslint-disable-next-line no-await-in-loop
+    yieldValue = await maybeInjectContainer(scope, yielder)(
+      { platform: channel.platform, channel, vars },
+      yieldValue
+    );
+  }
+
+  return yieldValue;
+};
+
+const execute = async <Input, Return, Yield>(
   scope: ServiceScope,
   channel: MachinatChannel,
-  beginningStack: CallStatus<Script>[],
+  beginningStack: CallStatus<unknown>[],
   isBeginning: boolean,
-  input?: InputOfScript<Script>
-): Promise<ExecuteResult<Script>> => {
+  input?: Input
+): Promise<ExecuteResult<Return, Yield>> => {
   const callingDepth = beginningStack.length;
   const contents: MachinatNode[] = [];
-  let currentReturnValue: undefined | ReturnOfScript<Script>;
+  const yieldings: [unknown, EffectYielder<unknown, Yield>][] = [];
+
+  let returnValueSlot: undefined | unknown;
 
   for (let d = callingDepth - 1; d >= 0; d -= 1) {
     const { script, vars: beginningVars, stopAt } = beginningStack[d];
 
     let index = stopAt ? getCursorIndexAssertedly(script, stopAt) : 0;
-    let vars = beginningVars;
+    let vars: unknown = beginningVars;
 
     if (d === callingDepth - 1) {
       if (!isBeginning) {
@@ -372,10 +356,7 @@ const execute = async <Script extends AnyScriptLibrary>(
         };
 
         vars = setVars // eslint-disable-next-line no-await-in-loop
-          ? await maybeInjectContainer<PromptSetFn<unknown, unknown>>(
-              scope,
-              setVars
-            )(circs, input)
+          ? await maybeInjectContainer(scope, setVars)(circs, input)
           : vars;
 
         index += 1;
@@ -396,11 +377,9 @@ const execute = async <Script extends AnyScriptLibrary>(
       const { setVars } = awaitingCall;
       if (setVars) {
         // eslint-disable-next-line no-await-in-loop
-        vars = await maybeInjectContainer<
-          CallReturnSetFn<unknown, ReturnOfScript<Script>>
-        >(scope, setVars)(
+        vars = await maybeInjectContainer(scope, setVars)(
           { platform: channel.platform, vars, channel },
-          currentReturnValue as ReturnOfScript<Script>
+          returnValueSlot as Return
         );
       }
 
@@ -408,34 +387,34 @@ const execute = async <Script extends AnyScriptLibrary>(
     }
 
     // eslint-disable-next-line no-await-in-loop
-    const result = await executeScript<Script>(
-      scope,
-      channel,
-      script as Script,
-      index,
-      vars as VarsOfScript<Script>
+    const context = await executeScript(scope, channel, script, index, vars);
+    contents.push(...context.contents);
+    yieldings.push(
+      ...(context.yieldings as [unknown, EffectYielder<unknown, Yield>][])
     );
-    contents.push(...result.contents);
 
     // a PROMPT is met, break the runtime
-    if (!result.finished) {
+    if (!context.finished) {
+      // eslint-disable-next-line no-await-in-loop
+      const yieldedValue = await resolveYieldValue(channel, scope, yieldings);
       return {
         finished: false,
-        yieldedValue: result.yieldedValue,
+        yieldedValue,
         returnedValue: undefined,
-        stack: [...beginningStack.slice(0, d), ...result.stack],
+        callStack: [...beginningStack.slice(0, d), ...context.callStack],
         contents,
       };
     }
 
-    currentReturnValue = result.returnedValue;
+    returnValueSlot = context.returnedValue;
   }
 
+  const yieldedValue = await resolveYieldValue(channel, scope, yieldings);
   return {
     finished: true,
-    returnedValue: currentReturnValue as ReturnOfScript<Script>,
-    yieldedValue: undefined,
-    stack: null,
+    returnedValue: returnValueSlot as Return,
+    yieldedValue,
+    callStack: null,
     contents,
   };
 };

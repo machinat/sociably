@@ -1,4 +1,3 @@
-import moxy from '@moxyjs/moxy';
 import compile from '../compile';
 
 describe('compile conditions segment', () => {
@@ -168,7 +167,6 @@ it('compile while segment', () => {
 
 it('compile other segments type', () => {
   const OrderScript = { fake: 'script' } as never;
-  const sideEffect = moxy();
 
   const { commands, stopPointIndex }: any = compile<
     unknown,
@@ -183,7 +181,6 @@ it('compile other segments type', () => {
       {
         type: 'prompt',
         key: 'ask_something',
-        yieldValue: () => 'he is here',
         setVars: () => ({ name: 'Jojo' }),
       },
       { type: 'content', getContent: () => `hi Jojo, order ur meal` },
@@ -195,10 +192,10 @@ it('compile other segments type', () => {
         setVars: () => ({ drink: 'coffee' }),
         goto: 'ordering',
       },
-      { type: 'effect', setVars: () => ({ ordered: true }) },
+      { type: 'effect', yieldValue: () => ({ ordered: true }) },
       { type: 'label', key: 'end' },
       { type: 'content', getContent: () => 'enjoy ur meal' },
-      { type: 'effect', doEffect: () => sideEffect('done') },
+      { type: 'effect', setVars: () => ({ foo: 'baz' }) },
       { type: 'return', getValue: () => 'foo' },
     ],
     { scriptName: 'MyScript' }
@@ -206,12 +203,7 @@ it('compile other segments type', () => {
   expect(commands).toEqual([
     { type: 'content', getContent: expect.any(Function) },
     { type: 'content', getContent: expect.any(Function) },
-    {
-      type: 'prompt',
-      setVars: expect.any(Function),
-      yieldValue: expect.any(Function),
-      key: 'ask_something',
-    },
+    { type: 'prompt', setVars: expect.any(Function), key: 'ask_something' },
     { type: 'content', getContent: expect.any(Function) },
     {
       type: 'call',
@@ -221,9 +213,9 @@ it('compile other segments type', () => {
       key: 'order_something',
       goto: 'ordering',
     },
-    { type: 'effect', setVars: expect.any(Function) },
+    { type: 'effect', yieldValue: expect.any(Function) },
     { type: 'content', getContent: expect.any(Function) },
-    { type: 'effect', doEffect: expect.any(Function) },
+    { type: 'effect', setVars: expect.any(Function) },
     { type: 'return', getValue: expect.any(Function) },
   ]);
   expect(stopPointIndex).toEqual(
@@ -239,10 +231,9 @@ it('compile other segments type', () => {
   expect(commands[2].setVars({})).toEqual({ name: 'Jojo' });
   expect(commands[3].getContent({})).toBe('hi Jojo, order ur meal');
   expect(commands[4].withParams({})).toEqual({ foo: 'bar' });
-  expect(commands[5].setVars({})).toEqual({ ordered: true });
+  expect(commands[5].yieldValue({})).toEqual({ ordered: true });
   expect(commands[6].getContent({})).toBe('enjoy ur meal');
-  expect(commands[7].doEffect({})).toBe(undefined);
-  expect(sideEffect.mock).toHaveReturnedTimes(1);
+  expect(commands[7].setVars({})).toEqual({ foo: 'baz' });
   expect(commands[8].getValue({})).toBe('foo');
 });
 

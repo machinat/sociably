@@ -158,17 +158,11 @@ const resolveLabel = ({ key }: LabelProps): LabelSegment => {
 const resolvePrompt = ({
   key,
   set: setVars,
-  yield: yieldValue,
-}: PromptProps<unknown, unknown, unknown>): PromptCommand<
-  unknown,
-  unknown,
-  unknown
-> => {
+}: PromptProps<unknown, unknown>): PromptCommand<unknown, unknown> => {
   invariant(key, 'prop "key" of <PROMPT/> should not be empty');
   return {
     type: 'prompt',
     setVars,
-    yieldValue,
     key,
   };
 };
@@ -180,6 +174,7 @@ const resolveCall = ({
   key,
   goto,
 }: CallProps<unknown, AnyScriptLibrary>): CallCommand<
+  unknown,
   unknown,
   unknown,
   unknown
@@ -205,13 +200,13 @@ const resolveCall = ({
 };
 
 const resolveEffect = ({
-  do: doEffect,
   set: setVars,
+  yield: yieldValue,
 }: EffectProps<unknown, unknown>): EffectCommand<unknown, unknown> => {
   return {
     type: 'effect',
-    doEffect,
     setVars,
+    yieldValue,
   };
 };
 
@@ -237,9 +232,7 @@ const resolveElement = (
         path
       );
     case PROMPT:
-      return resolvePrompt(
-        node.props as PromptProps<unknown, unknown, unknown>
-      );
+      return resolvePrompt(node.props as PromptProps<unknown, unknown>);
     case LABEL:
       return resolveLabel(node.props as LabelProps);
     case CALL:

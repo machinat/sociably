@@ -12,18 +12,20 @@ const scope: ServiceScope = moxy<ServiceScope>({
 
 const channel = { platform: 'test', uid: '_MY_CHANNEL_' };
 
-const mockScript = (commands, stopPointIndex?, name?, initVars?) =>
+const mockScript = (commands, stopPoints?, name?, initVars?) =>
   moxy<any>(
     {
       name: name || 'MockScript',
       commands,
-      stopPointIndex: stopPointIndex || new Map(),
+      stopPointIndex: stopPoints
+        ? new Map(Object.entries(stopPoints))
+        : new Map(),
       initVars: initVars || ((input) => input || {}),
     } as never,
     { includeProperties: ['*'], excludeProperties: ['stopPointIndex'] }
   );
 
-describe('executing content command', () => {
+describe('execute content command', () => {
   test('with sync getContent function', async () => {
     const contentCommand = {
       type: 'content',
@@ -46,7 +48,7 @@ describe('executing content command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['hello world'],
-      stack: null,
+      callStack: null,
     });
     expect(contentCommand.getContent.mock).toHaveBeenCalledTimes(1);
     expect(contentCommand.getContent.mock).toHaveBeenCalledWith({
@@ -80,7 +82,7 @@ describe('executing content command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['hello', 'world'],
-      stack: null,
+      callStack: null,
     });
     expect(contentCommand1.getContent.mock).toHaveBeenCalledTimes(1);
     expect(contentCommand1.getContent.mock).toHaveBeenCalledWith({
@@ -130,7 +132,7 @@ describe('executing content command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['hello', 'it is an', 'async', 'world'],
-      stack: null,
+      callStack: null,
     });
     for (const { getContent } of commands) {
       expect(getContent.mock).toHaveBeenCalledTimes(1);
@@ -169,7 +171,7 @@ describe('executing content command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['hello', 'a contained', 'world'],
-      stack: null,
+      callStack: null,
     });
     expect(getContent.mock).toHaveBeenCalledTimes(1);
     expect(getContent.mock).toHaveBeenCalledWith({
@@ -182,7 +184,7 @@ describe('executing content command', () => {
   });
 });
 
-describe('executing prompt command', () => {
+describe('execute prompt command', () => {
   const promptCommand = moxy({
     type: 'prompt',
     setVars: ({ vars }, { answer }) => ({ ...vars, answer }),
@@ -195,7 +197,7 @@ describe('executing prompt command', () => {
       promptCommand,
       { type: 'content', getContent: ({ vars: { answer } }) => answer },
     ],
-    new Map([['prompt#0', 1]])
+    { 'prompt#0': 1 }
   );
 
   beforeEach(() => {
@@ -215,30 +217,7 @@ describe('executing prompt command', () => {
       finished: false,
       returnedValue: undefined,
       contents: ['foo'],
-      stack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
-    });
-
-    expect(promptCommand.setVars.mock).not.toHaveBeenCalled();
-  });
-
-  test('yield value when prompting', async () => {
-    promptCommand.mock
-      .getter('yieldValue')
-      .fakeReturnValue(() => 'hello from prompt');
-
-    await expect(
-      execute(
-        scope,
-        channel,
-        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        true
-      )
-    ).resolves.toEqual({
-      finished: false,
-      returnedValue: undefined,
-      yieldedValue: 'hello from prompt',
-      contents: ['foo'],
-      stack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
+      callStack: [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
     });
 
     expect(promptCommand.setVars.mock).not.toHaveBeenCalled();
@@ -257,7 +236,7 @@ describe('executing prompt command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['yes'],
-      stack: null,
+      callStack: null,
     });
 
     expect(promptCommand.setVars.mock).toHaveBeenCalledTimes(1);
@@ -290,7 +269,7 @@ describe('executing prompt command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['no'],
-      stack: null,
+      callStack: null,
     });
 
     expect(promptCommand.setVars.mock).toHaveBeenCalledTimes(1);
@@ -322,7 +301,7 @@ describe('executing prompt command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['maybe'],
-      stack: null,
+      callStack: null,
     });
 
     expect(setVarsContainer.mock).toHaveBeenCalledTimes(1);
@@ -341,11 +320,11 @@ describe('executing prompt command', () => {
   });
 });
 
-describe('executing call command', () => {
+describe('execute call command', () => {
   test('call script with no data transfer', async () => {
     const subScript = mockScript(
       [{ type: 'content', getContent: moxy(() => 'at skyfall') }],
-      new Map(),
+      {},
       'ChildScript'
     );
     const script = mockScript([
@@ -364,7 +343,7 @@ describe('executing call command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['at skyfall', 'aww~awwww~awwwwwwwwww~'],
-      stack: null,
+      callStack: null,
     });
     expect(subScript.commands[0].getContent.mock).toHaveBeenCalledTimes(1);
     expect(subScript.commands[0].getContent.mock).toHaveBeenCalledWith({
@@ -418,7 +397,7 @@ describe('executing call command', () => {
         finished: true,
         returnedValue: undefined,
         contents: ['hello the other side', 'yaaaaaay'],
-        stack: null,
+        callStack: null,
       });
       expect(subScript.commands[1].getValue.mock).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].getValue.mock).toHaveBeenCalledWith({
@@ -465,7 +444,7 @@ describe('executing call command', () => {
         finished: true,
         returnedValue: undefined,
         contents: ['hello the other side', 'yaaaaaay'],
-        stack: null,
+        callStack: null,
       });
       expect(subScript.commands[1].getValue.mock).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].getValue.mock).toHaveBeenCalledWith({
@@ -513,7 +492,7 @@ describe('executing call command', () => {
         finished: true,
         returnedValue: undefined,
         contents: ['hello the other side', 'yaaaaaay'],
-        stack: null,
+        callStack: null,
       });
       expect(subScript.commands[1].getValue.mock).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].getValue.mock).toHaveBeenCalledWith({
@@ -545,7 +524,7 @@ describe('executing call command', () => {
         { type: 'content', getContent: () => "i can't go back" },
         { type: 'prompt', key: 'childPrompt' },
       ],
-      new Map(),
+      {},
       'ChildScript'
     );
     const script = mockScript([
@@ -569,7 +548,7 @@ describe('executing call command', () => {
       finished: false,
       returnedValue: undefined,
       contents: ["i can't go back"],
-      stack: [
+      callStack: [
         { script, vars: { foo: 'bar' }, stopAt: 'motherCall' },
         { script: subScript, vars: { foo: 'baz' }, stopAt: 'childPrompt' },
       ],
@@ -589,7 +568,7 @@ describe('executing call command', () => {
         { type: 'content', getContent: moxy(() => 'there is a fire') },
         { type: 'content', getContent: moxy(() => 'starting in my heart') },
       ],
-      new Map([['where', 1]]),
+      { where: 1 },
       'ChildScript'
     );
 
@@ -612,7 +591,7 @@ describe('executing call command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['starting in my heart'],
-      stack: null,
+      callStack: null,
     });
     expect(subScript.commands[0].getContent.mock).not.toHaveBeenCalled();
     expect(subScript.commands[1].getContent.mock).toHaveBeenCalledTimes(1);
@@ -624,7 +603,7 @@ describe('executing call command', () => {
   });
 });
 
-describe('executing jump command', () => {
+describe('execute jump command', () => {
   test('jump', async () => {
     const script = mockScript([
       { type: 'content', getContent: () => 'foo' },
@@ -638,7 +617,7 @@ describe('executing jump command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'baz'],
-      stack: null,
+      callStack: null,
     });
     expect(script.commands[2].getContent.mock).not.toHaveBeenCalled();
   });
@@ -655,13 +634,13 @@ describe('executing jump command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo'],
-      stack: null,
+      callStack: null,
     });
     expect(script.commands[2].getContent.mock).not.toHaveBeenCalled();
   });
 });
 
-describe('executing jump_condition command', () => {
+describe('execute jump_condition command', () => {
   const jumpCondCommand = moxy({
     type: 'jump_cond',
     condition: () => true,
@@ -687,7 +666,7 @@ describe('executing jump_condition command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'baz'],
-      stack: null,
+      callStack: null,
     });
     expect(script.commands[2].getContent.mock).not.toHaveBeenCalled();
 
@@ -698,7 +677,7 @@ describe('executing jump_condition command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'bar', 'baz'],
-      stack: null,
+      callStack: null,
     });
     expect(script.commands[2].getContent.mock).toHaveBeenCalledTimes(1);
   });
@@ -711,7 +690,7 @@ describe('executing jump_condition command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'baz'],
-      stack: null,
+      callStack: null,
     });
 
     jumpCondCommand.condition.mock.fake(async () => false);
@@ -721,7 +700,7 @@ describe('executing jump_condition command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'bar', 'baz'],
-      stack: null,
+      callStack: null,
     });
   });
 
@@ -738,7 +717,7 @@ describe('executing jump_condition command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'baz'],
-      stack: null,
+      callStack: null,
     });
 
     conditionFn.mock.fake(async () => false);
@@ -748,7 +727,7 @@ describe('executing jump_condition command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'bar', 'baz'],
-      stack: null,
+      callStack: null,
     });
   });
 
@@ -761,7 +740,7 @@ describe('executing jump_condition command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'bar', 'baz'],
-      stack: null,
+      callStack: null,
     });
     expect(script.commands[2].getContent.mock).toHaveBeenCalledTimes(1);
 
@@ -772,13 +751,13 @@ describe('executing jump_condition command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['foo', 'baz'],
-      stack: null,
+      callStack: null,
     });
     expect(script.commands[2].getContent.mock).toHaveBeenCalledTimes(1);
   });
 });
 
-describe('executing return command', () => {
+describe('execute return command', () => {
   test('return immediatly if return command met', async () => {
     const script = mockScript([
       { type: 'content', getContent: () => 'hello' },
@@ -796,7 +775,7 @@ describe('executing return command', () => {
       finished: true,
       returnedValue: undefined,
       contents: ['hello'],
-      stack: null,
+      callStack: null,
     });
     expect(script.commands[2].getContent.mock).not.toHaveBeenCalled();
   });
@@ -828,7 +807,7 @@ describe('executing return command', () => {
       finished: true,
       returnedValue: 'bar',
       contents: ['hello'],
-      stack: null,
+      callStack: null,
     });
 
     expect(returnCommand.getValue.mock).toHaveBeenCalledTimes(1);
@@ -852,7 +831,7 @@ describe('executing return command', () => {
       finished: true,
       returnedValue: 'bar',
       contents: ['hello'],
-      stack: null,
+      callStack: null,
     });
     expect(returnCommand.getValue.mock).toHaveBeenCalledTimes(1);
     expect(returnCommand.getValue.mock).toHaveBeenCalledWith({
@@ -878,8 +857,9 @@ describe('executing return command', () => {
       finished: true,
       returnedValue: 'bar',
       contents: ['hello'],
-      stack: null,
+      callStack: null,
     });
+
     expect(valueContainer.mock).toHaveBeenCalledTimes(1);
     expect(valueContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
 
@@ -892,86 +872,17 @@ describe('executing return command', () => {
   });
 });
 
-describe('executing effect command', () => {
-  const effectCommand = moxy({
-    type: 'effect',
-    doEffect: async () => 'baz',
-    setVars: (_, result) => ({ foo: result }),
-  });
-
-  const script = mockScript([
-    effectCommand,
-    { type: 'content', getContent: () => 'hello' },
-    { type: 'return', getValue: ({ vars }) => vars },
-  ]);
-
-  beforeEach(() => {
-    effectCommand.mock.reset();
-    script.mock.reset();
-  });
-
-  test('execute doEffect the setVars', async () => {
-    const result = await execute(
-      scope,
-      channel,
-      [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-      true
-    );
-
-    expect(result).toEqual({
-      finished: true,
-      returnedValue: { foo: 'baz' },
-      contents: ['hello'],
-      stack: null,
+describe('execute effect command', () => {
+  test('execute a side effect and set vars', async () => {
+    const effectCommand = moxy({
+      type: 'effect',
+      setVars: () => ({ foo: 'EFFECT!' }),
     });
-
-    expect(effectCommand.doEffect.mock).toHaveBeenCalledTimes(1);
-    expect(effectCommand.doEffect.mock).toHaveBeenCalledWith({
-      platform: 'test',
-      channel,
-      vars: { foo: 'bar' },
-    });
-
-    expect(effectCommand.setVars.mock).toHaveBeenCalledTimes(1);
-    expect(effectCommand.setVars.mock).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' } },
-      'baz'
-    );
-  });
-
-  test('without doEffect', async () => {
-    effectCommand.mock.getter('doEffect').fakeReturnValue(undefined);
-    effectCommand.setVars.mock.fakeReturnValue({ foo: 'bar' });
-
-    const result = await execute(
-      scope,
-      channel,
-      [{ script, vars: {}, stopAt: undefined }],
-      true
-    );
-
-    expect(result).toEqual({
-      finished: true,
-      returnedValue: { foo: 'bar' },
-      contents: ['hello'],
-      stack: null,
-    });
-
-    expect(effectCommand.setVars.mock).toHaveBeenCalledTimes(1);
-    expect(effectCommand.setVars.mock).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: {} },
-      undefined
-    );
-  });
-
-  test('with async doEffect/setVars container', async () => {
-    const effectFn = moxy(async () => 'baz');
-    const effectContainer = moxy(makeContainer({ deps: [] })(() => effectFn));
-    effectCommand.mock.getter('doEffect').fake(() => effectContainer);
-
-    const setVarsFn = moxy(async (_, result) => ({ foo: result }));
-    const setVarsContainer = moxy(makeContainer({ deps: [] })(() => setVarsFn));
-    effectCommand.mock.getter('setVars').fake(() => setVarsContainer);
+    const script = mockScript([
+      effectCommand,
+      { type: 'content', getContent: () => 'hello' },
+      { type: 'return', getValue: ({ vars }) => vars },
+    ]);
 
     await expect(
       execute(
@@ -982,28 +893,345 @@ describe('executing effect command', () => {
       )
     ).resolves.toEqual({
       finished: true,
-      returnedValue: { foo: 'baz' },
+      returnedValue: { foo: 'EFFECT!' },
       contents: ['hello'],
-      stack: null,
+      callStack: null,
     });
 
-    expect(effectContainer.mock).toHaveBeenCalledTimes(1);
-    expect(effectContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
-
-    expect(effectFn.mock).toHaveBeenCalledTimes(1);
-    expect(effectFn.mock).toHaveBeenCalledWith({
+    expect(effectCommand.setVars.mock).toHaveBeenCalledTimes(1);
+    expect(effectCommand.setVars.mock).toHaveBeenCalledWith({
       platform: 'test',
       channel,
       vars: { foo: 'bar' },
+    });
+  });
+
+  test('async setVars container', async () => {
+    const setVarsFn = moxy(async (_) => ({ foo: 'EFFECT!' }));
+    const setVarsContainer = moxy(makeContainer({ deps: [] })(() => setVarsFn));
+    const effectCommand = moxy({ type: 'effect', setVars: setVarsContainer });
+    const script = mockScript([
+      effectCommand,
+      { type: 'content', getContent: () => 'hello' },
+      { type: 'return', getValue: ({ vars }) => vars },
+    ]);
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
+        true
+      )
+    ).resolves.toEqual({
+      finished: true,
+      returnedValue: { foo: 'EFFECT!' },
+      contents: ['hello'],
+      callStack: null,
     });
 
     expect(setVarsContainer.mock).toHaveBeenCalledTimes(1);
     expect(setVarsContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
 
     expect(setVarsFn.mock).toHaveBeenCalledTimes(1);
-    expect(setVarsFn.mock).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' } },
-      'baz'
+    expect(setVarsFn.mock).toHaveBeenCalledWith({
+      platform: 'test',
+      channel,
+      vars: { foo: 'bar' },
+    });
+  });
+
+  test('yield a value at the end of script', async () => {
+    const yieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const script = mockScript([
+      { type: 'effect', yieldValue: yieldFn },
+      { type: 'content', getContent: () => 'hello' },
+      { type: 'effect', yieldValue: yieldFn, setVars: () => ({ foo: 1 }) },
+      { type: 'content', getContent: () => 'world' },
+      { type: 'effect', yieldValue: yieldFn, setVars: () => ({ foo: 2 }) },
+    ]);
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 0 }, stopAt: undefined }],
+        true
+      )
+    ).resolves.toEqual({
+      finished: true,
+      returnedValue: undefined,
+      yieldedValue: { n: 3 },
+      contents: ['hello', 'world'],
+      callStack: null,
+    });
+
+    expect(yieldFn.mock).toHaveBeenCalledTimes(3);
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      1,
+      { platform: 'test', channel, vars: { foo: 2 } },
+      undefined
+    );
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      2,
+      { platform: 'test', channel, vars: { foo: 1 } },
+      { n: 1 }
+    );
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      3,
+      { platform: 'test', channel, vars: { foo: 0 } },
+      { n: 2 }
+    );
+  });
+
+  test('yield with async container yieldValue', async () => {
+    const yieldFn = moxy(async (_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const yieldContainer = moxy(makeContainer({ deps: [] })(() => yieldFn));
+    const script = mockScript([
+      { type: 'effect', yieldValue: yieldContainer },
+      { type: 'content', getContent: () => 'hello' },
+      {
+        type: 'effect',
+        yieldValue: yieldContainer,
+        setVars: () => ({ foo: 1 }),
+      },
+    ]);
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 0 }, stopAt: undefined }],
+        true
+      )
+    ).resolves.toEqual({
+      finished: true,
+      returnedValue: undefined,
+      yieldedValue: { n: 2 },
+      contents: ['hello'],
+      callStack: null,
+    });
+
+    expect(yieldContainer.mock).toHaveBeenCalledTimes(2);
+    expect(yieldContainer.mock).toHaveBeenCalledWith('FOO_SERVICE');
+
+    expect(yieldFn.mock).toHaveBeenCalledTimes(2);
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      1,
+      { platform: 'test', channel, vars: { foo: 1 } },
+      undefined
+    );
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      2,
+      { platform: 'test', channel, vars: { foo: 0 } },
+      { n: 1 }
+    );
+  });
+
+  test('yield a value when prompting', async () => {
+    const yieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const script = mockScript(
+      [
+        { type: 'effect', yieldValue: yieldFn },
+        { type: 'content', getContent: () => 'hello' },
+        { type: 'effect', yieldValue: yieldFn, setVars: () => ({ foo: 1 }) },
+        { type: 'prompt', key: 'ask' },
+        { type: 'content', getContent: () => 'world' },
+        { type: 'effect', yieldValue: yieldFn },
+      ],
+      { ask: 3 }
+    );
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 0 }, stopAt: undefined }],
+        true
+      )
+    ).resolves.toEqual({
+      finished: false,
+      returnedValue: undefined,
+      yieldedValue: { n: 2 },
+      contents: ['hello'],
+      callStack: [{ script, stopAt: 'ask', vars: { foo: 1 } }],
+    });
+
+    expect(yieldFn.mock).toHaveBeenCalledTimes(2);
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      1,
+      { platform: 'test', channel, vars: { foo: 1 } },
+      undefined
+    );
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      2,
+      { platform: 'test', channel, vars: { foo: 0 } },
+      { n: 1 }
+    );
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 1 }, stopAt: 'ask' }],
+        false,
+        null
+      )
+    ).resolves.toEqual({
+      finished: true,
+      returnedValue: undefined,
+      yieldedValue: { n: 1 },
+      contents: ['world'],
+      callStack: null,
+    });
+
+    expect(yieldFn.mock).toHaveBeenCalledTimes(3);
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      3,
+      { platform: 'test', channel, vars: { foo: 1 } },
+      undefined
+    );
+  });
+
+  test('yield values with subscript', async () => {
+    const yieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const subscript = mockScript(
+      [
+        { type: 'effect', yieldValue: yieldFn },
+        { type: 'content', getContent: () => 'a' },
+        { type: 'prompt', key: 'ask' },
+        { type: 'content', getContent: () => 'b' },
+        { type: 'effect', yieldValue: yieldFn, setVars: () => ({ bar: 1 }) },
+      ],
+      { ask: 2 },
+      'Child',
+      () => ({ bar: 0 })
+    );
+    const script = mockScript(
+      [
+        { type: 'effect', yieldValue: yieldFn },
+        { type: 'content', getContent: () => 'c' },
+        { type: 'call', key: 'child', script: subscript },
+        { type: 'content', getContent: () => 'd' },
+        { type: 'effect', yieldValue: yieldFn, setVars: () => ({ foo: 1 }) },
+      ],
+      { child: 2 }
+    );
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 0 }, stopAt: undefined }],
+        true
+      )
+    ).resolves.toEqual({
+      finished: false,
+      returnedValue: undefined,
+      yieldedValue: { n: 2 },
+      contents: ['c', 'a'],
+      callStack: [
+        { script, stopAt: 'child', vars: { foo: 0 } },
+        { script: subscript, stopAt: 'ask', vars: { bar: 0 } },
+      ],
+    });
+
+    expect(yieldFn.mock).toHaveBeenCalledTimes(2);
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      1,
+      { platform: 'test', channel, vars: { bar: 0 } },
+      undefined
+    );
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      2,
+      { platform: 'test', channel, vars: { foo: 0 } },
+      { n: 1 }
+    );
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [
+          { script, stopAt: 'child', vars: { foo: 0 } },
+          { script: subscript, stopAt: 'ask', vars: { bar: 0 } },
+        ],
+        false,
+        null
+      )
+    ).resolves.toEqual({
+      finished: true,
+      returnedValue: undefined,
+      yieldedValue: { n: 2 },
+      contents: ['b', 'd'],
+      callStack: null,
+    });
+
+    expect(yieldFn.mock).toHaveBeenCalledTimes(4);
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      3,
+      { platform: 'test', channel, vars: { foo: 1 } },
+      undefined
+    );
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      4,
+      { platform: 'test', channel, vars: { bar: 1 } },
+      { n: 1 }
+    );
+  });
+
+  test('yield values with no-prompt subscript', async () => {
+    const yieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const subscript = mockScript(
+      [
+        { type: 'effect', yieldValue: yieldFn },
+        { type: 'content', getContent: () => 'a' },
+      ],
+      { ask: 2 },
+      'Child',
+      () => ({ bar: 0 })
+    );
+    const script = mockScript(
+      [
+        { type: 'effect', yieldValue: yieldFn },
+        { type: 'content', getContent: () => 'b' },
+        { type: 'call', key: 'child', script: subscript },
+        { type: 'content', getContent: () => 'c' },
+        { type: 'effect', yieldValue: yieldFn, setVars: () => ({ foo: 1 }) },
+      ],
+      { child: 2 }
+    );
+
+    await expect(
+      execute(
+        scope,
+        channel,
+        [{ script, vars: { foo: 0 }, stopAt: undefined }],
+        true
+      )
+    ).resolves.toEqual({
+      finished: true,
+      returnedValue: undefined,
+      yieldedValue: { n: 3 },
+      contents: ['b', 'a', 'c'],
+      callStack: null,
+    });
+
+    expect(yieldFn.mock).toHaveBeenCalledTimes(3);
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      1,
+      { platform: 'test', channel, vars: { foo: 1 } },
+      undefined
+    );
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      2,
+      { platform: 'test', channel, vars: { bar: 0 } },
+      { n: 1 }
+    );
+    expect(yieldFn.mock).toHaveBeenNthCalledWith(
+      3,
+      { platform: 'test', channel, vars: { foo: 0 } },
+      { n: 2 }
     );
   });
 });
@@ -1020,10 +1248,7 @@ describe('run whole script', () => {
       },
       { type: 'return', getValue: ({ vars }) => vars },
     ],
-    new Map([
-      ['BEGIN', 0],
-      ['CHILD_PROMPT', 2],
-    ]),
+    { BEGIN: 0, CHILD_PROMPT: 2 },
     'ChildScript'
   );
 
@@ -1056,11 +1281,7 @@ describe('run whole script', () => {
       { type: 'content', getContent: () => 'world' },
       { type: 'return', getValue: ({ vars }) => vars },
     ],
-    new Map([
-      ['BEGIN', 0],
-      ['PROMPT', 7],
-      ['CALL', 8],
-    ]),
+    { BEGIN: 0, PROMPT: 7, CALL: 8 },
     'MockScript',
     (input) => ({ ...input, t: 0 })
   );
@@ -1081,7 +1302,7 @@ describe('run whole script', () => {
     ).resolves.toEqual({
       finished: false,
       returnedValue: undefined,
-      stack: [
+      callStack: [
         {
           script: MockScript,
           vars: { foo: 'bar', t: 1 },
@@ -1107,10 +1328,11 @@ describe('run whole script', () => {
       vars: { foo: 'bar' },
     });
     expect(commands[6].setVars.mock).toHaveBeenCalledTimes(1);
-    expect(commands[6].setVars.mock).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' } },
-      undefined
-    );
+    expect(commands[6].setVars.mock).toHaveBeenCalledWith({
+      platform: 'test',
+      channel,
+      vars: { foo: 'bar' },
+    });
     expect(commands[8].withParams.mock).not.toHaveBeenCalled();
     expect(commands[10].getContent.mock).not.toHaveBeenCalled();
 
@@ -1129,7 +1351,7 @@ describe('run whole script', () => {
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'bar' },
-      stack: null,
+      callStack: null,
       contents: ['bye'],
     });
 
@@ -1149,21 +1371,21 @@ describe('run whole script', () => {
   });
 
   test('continue from prompt within the loops', async () => {
-    let stack: any = [
+    let callStack: any = [
       { script: MockScript, vars: { foo: 'bar' }, stopAt: 'PROMPT' },
     ];
 
     const descriptions = ['fun', 'beautyful', 'wonderful'];
     for (const [idx, word] of descriptions.entries()) {
       // eslint-disable-next-line no-await-in-loop
-      const result = await execute(scope, channel, stack, false, {
+      const result = await execute(scope, channel, callStack, false, {
         desc: word,
       });
 
       expect(result).toEqual({
         finished: false,
         returnedValue: undefined,
-        stack: [
+        callStack: [
           {
             script: MockScript,
             vars: { foo: 'bar', desc: word, t: idx + 1 },
@@ -1172,16 +1394,16 @@ describe('run whole script', () => {
         ],
         contents: [word],
       });
-      ({ stack } = result);
+      ({ callStack } = result);
     }
 
     MockScript.commands[5].condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, channel, stack, false, { desc: 'fascinating' })
+      execute(scope, channel, callStack, false, { desc: 'fascinating' })
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'bar', t: 3, desc: 'fascinating' },
-      stack: null,
+      callStack: null,
       contents: ['fascinating', 'world'],
     });
 
@@ -1216,7 +1438,7 @@ describe('run whole script', () => {
     ).resolves.toEqual({
       finished: false,
       returnedValue: undefined,
-      stack: [
+      callStack: [
         {
           script: MockScript,
           vars: { foo: 'bar', desc: 'fabulous' },
@@ -1281,7 +1503,7 @@ describe('run whole script', () => {
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'baz', hello: 'subscript' },
-      stack: null,
+      callStack: null,
       contents: ['world'],
     });
 
@@ -1326,14 +1548,7 @@ describe('run whole script', () => {
 });
 
 it('throw if stopped point key not found', async () => {
-  const script = mockScript(
-    [{}, {}],
-    new Map([
-      ['foo', 0],
-      ['bar', 1],
-    ]),
-    'MyScript'
-  );
+  const script = mockScript([{}, {}], { foo: 0, bar: 1 }, 'MyScript');
   await expect(() =>
     execute(
       scope,
@@ -1353,10 +1568,7 @@ it('throw if stopped point is not <Prompt/>', async () => {
       { type: 'content', getContent: () => 'R U Cathy?' },
       { type: 'prompt', key: 'prompt#0' },
     ],
-    new Map([
-      ['ask', 0],
-      ['prompt#0', 1],
-    ]),
+    { ask: 0, 'prompt#0': 1 },
     'MyScript'
   );
   await expect(() =>
@@ -1374,10 +1586,7 @@ it('throw if returned point is not <Call/>', async () => {
       { type: 'content', getContent: () => 'how R U?' },
       { type: 'prompt', key: 'prompt#0' },
     ],
-    new Map([
-      ['ask', 0],
-      ['prompt#0', 1],
-    ]),
+    { ask: 0, 'prompt#0': 1 },
     'ChildScript'
   );
   const script = mockScript(
@@ -1385,10 +1594,7 @@ it('throw if returned point is not <Call/>', async () => {
       { type: 'content', getContent: () => 'hi' },
       { type: 'call', script: subScript, key: 'call#0' },
     ],
-    new Map([
-      ['greet', 0],
-      ['call#0', 1],
-    ]),
+    { greet: 0, 'call#0': 1 },
     'MyScript'
   );
   await expect(() =>

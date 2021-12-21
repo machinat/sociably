@@ -133,7 +133,6 @@ Array [
                 "key": "ask_1",
                 "setVars": [Function],
                 "type": "prompt",
-                "yieldValue": undefined,
               },
             ],
             "condition": [Function],
@@ -160,7 +159,6 @@ Array [
                     "key": "ask_2",
                     "setVars": [Function],
                     "type": "prompt",
-                    "yieldValue": undefined,
                   },
                 ],
                 "condition": [Function],
@@ -214,9 +212,9 @@ Array [
     "type": "conditions",
   },
   Object {
-    "doEffect": undefined,
     "setVars": [Function],
     "type": "effect",
+    "yieldValue": undefined,
   },
   Object {
     "key": "2nd",
@@ -227,9 +225,9 @@ Array [
     "type": "content",
   },
   Object {
-    "doEffect": undefined,
-    "setVars": [Function],
+    "setVars": undefined,
     "type": "effect",
+    "yieldValue": [Function],
   },
   Object {
     "key": "3rd",
@@ -261,7 +259,6 @@ Array [
                 "key": "ask_3",
                 "setVars": [Function],
                 "type": "prompt",
-                "yieldValue": undefined,
               },
             ],
             "condition": [Function],
@@ -318,12 +315,11 @@ Array [
     "key": "ask_4",
     "setVars": [Function],
     "type": "prompt",
-    "yieldValue": undefined,
   },
   Object {
-    "doEffect": [Function],
-    "setVars": undefined,
+    "setVars": [Function],
     "type": "effect",
+    "yieldValue": [Function],
   },
   Object {
     "getContent": [Function],

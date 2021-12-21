@@ -63,8 +63,8 @@ export const WHILE = <Vars = any, Input = any, Return = any, Yield = any>(
 /**
  * @category Keyword
  */
-export const PROMPT = <Vars = any, Input = any, Yield = any>(
-  props: PromptProps<Vars, Input, Yield>
+export const PROMPT = <Vars = any, Input = any>(
+  props: PromptProps<Vars, Input>
 ): null => null;
 
 /**

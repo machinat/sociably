@@ -26,7 +26,7 @@ type RuntimeResult<Return, Yield> = {
 
 export class ScriptRuntime<Script extends AnyScriptLibrary> {
   channel: MachinatChannel;
-  callStack: null | CallStatus<Script>[];
+  callStack: null | CallStatus<unknown>[];
   saveTimestamp: undefined | number;
 
   private _stateContoller: StateControllerI;
@@ -42,7 +42,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     stateContoller: StateControllerI,
     scope: ServiceScope,
     channel: MachinatChannel,
-    stack: CallStatus<Script>[],
+    stack: CallStatus<unknown>[],
     promptTimestamp?: number
   ) {
     this.channel = channel;
@@ -87,8 +87,12 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
       };
     }
 
-    const { finished, returnedValue, yieldedValue, stack, contents } =
-      await execute(
+    const { finished, returnedValue, yieldedValue, callStack, contents } =
+      await execute<
+        InputOfScript<Script>,
+        ReturnOfScript<Script>,
+        YieldOfScript<Script>
+      >(
         this._serviceScope,
         this.channel,
         this.callStack,
@@ -96,7 +100,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
         input
       );
 
-    this.callStack = stack;
+    this.callStack = callStack;
     this._returnValue = returnedValue;
     this._yieldValue = yieldedValue;
     this._queuedMessages.push(contents);
@@ -126,7 +130,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   }
 
   async _save(
-    callStack: null | CallStatus<Script>[],
+    callStack: null | CallStatus<unknown>[],
     saveTimestamp: undefined | number
   ): Promise<boolean> {
     if (!callStack && !saveTimestamp) {
@@ -251,7 +255,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
       return null;
     }
 
-    const statusStack: CallStatus<Script>[] = [];
+    const stack: CallStatus<unknown>[] = [];
 
     for (const { name, vars, stopAt } of state.callStack) {
       const script = this._libs.get(name);
@@ -261,14 +265,14 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
         );
       }
 
-      statusStack.push({ script, vars, stopAt } as CallStatus<Script>);
+      stack.push({ script, vars, stopAt } as CallStatus<unknown>);
     }
 
     return new ScriptRuntime(
       this._stateContoller,
       this._serviceScope,
       channel,
-      statusStack,
+      stack,
       state.timestamp
     );
   }

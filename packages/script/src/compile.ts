@@ -35,9 +35,9 @@ type TagIntermediate = {
 
 type CompileIntermediate =
   | ContentCommand<unknown>
-  | PromptCommand<unknown, unknown, unknown>
+  | PromptCommand<unknown, unknown>
   | EffectCommand<unknown, unknown>
-  | CallCommand<unknown, unknown, unknown>
+  | CallCommand<unknown, unknown, unknown, unknown>
   | ReturnCommand<unknown, unknown>
   | GotoIntermediate
   | GotoCondIntermediate<unknown>
@@ -139,12 +139,11 @@ const compileWhileSegment = (
 
 const compilePromptCommand = ({
   setVars,
-  yieldValue,
   key,
-}: PromptCommand<unknown, unknown, unknown>): CompileIntermediate[] => {
+}: PromptCommand<unknown, unknown>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
-    { type: 'prompt', setVars, yieldValue, key },
+    { type: 'prompt', setVars, key },
   ];
 };
 
@@ -154,7 +153,7 @@ const compileCallCommand = ({
   setVars,
   key,
   goto,
-}: CallCommand<unknown, unknown, unknown>): CompileIntermediate[] => {
+}: CallCommand<unknown, unknown, unknown, unknown>): CompileIntermediate[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
     { type: 'call', script, withParams, setVars, goto, key },

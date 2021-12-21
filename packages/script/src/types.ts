@@ -142,28 +142,19 @@ export type PromptSetter<Vars, Input> = MaybeContainer<
   PromptSetFn<Vars, Input>
 >;
 
-export type PromptYieldFn<Vars, Yield> = (
-  circs: ScriptCircs<Vars>
-) => Yield | Promise<Yield>;
-
-export type PromptYielder<Vars, Yield> = MaybeContainer<
-  PromptYieldFn<Vars, Yield>
->;
-
 /**
  * @category Keyword Props
  */
-export type PromptProps<Vars, Input, Yield> = {
+export type PromptProps<Vars, Input> = {
   key: string;
   set?: PromptSetter<Vars, Input>;
-  yield?: PromptYieldFn<Vars, Yield>;
 };
 
 /**
  * @category Keyword Element
  */
-export type PromptElement<Vars, Input, Yield> = MachinatElement<
-  PromptProps<Vars, Input, Yield>,
+export type PromptElement<Vars, Input> = MachinatElement<
+  PromptProps<Vars, Input>,
   typeof PROMPT
 >;
 
@@ -224,34 +215,34 @@ export type CallElement<
   Script extends AnyScriptLibrary
 > = MachinatElement<CallProps<Vars, Script>, typeof CALL>;
 
-export type DoEffectFn<Vars, Result> = (
+export type EffectSetFn<Vars> = (
   circs: ScriptCircs<Vars>
-) => Result | Promise<Result>;
-
-export type EffectDoer<Vars, Result> = MaybeContainer<DoEffectFn<Vars, Result>>;
-
-export type EffectSetFn<Vars, Result> = (
-  circs: ScriptCircs<Vars>,
-  doResult: Result
 ) => Vars | Promise<Vars>;
 
-export type EffectSetter<Vars, Result> = MaybeContainer<
-  EffectSetFn<Vars, Result>
+export type EffectSetter<Vars> = MaybeContainer<EffectSetFn<Vars>>;
+
+export type EffectYieldFn<Vars, Yield> = (
+  circs: ScriptCircs<Vars>,
+  prevValue: undefined | Yield
+) => Yield | Promise<Yield>;
+
+export type EffectYielder<Vars, Yield> = MaybeContainer<
+  EffectYieldFn<Vars, Yield>
 >;
 
 /**
  * @category Keyword Props
  */
-export type EffectProps<Vars, Result> = {
-  do?: EffectDoer<Vars, Result>;
-  set?: EffectSetter<Vars, Result>;
+export type EffectProps<Vars, Yield> = {
+  set?: EffectSetter<Vars>;
+  yield?: EffectYielder<Vars, Yield>;
 };
 
 /**
  * @category Keyword Element
  */
-export type EffectElement<Vars, Result> = MachinatElement<
-  EffectProps<Vars, Result>,
+export type EffectElement<Vars, Yield> = MachinatElement<
+  EffectProps<Vars, Yield>,
   typeof EFFECT
 >;
 
@@ -281,7 +272,7 @@ export type ReturnElement<Vars, Return> = MachinatElement<
 export type ScriptElement<Vars, Input, Return, Yield> =
   | IfElement<Vars, Input, Return, Yield>
   | WhileElement<Vars, Input, Return, Yield>
-  | PromptElement<Vars, Input, Yield>
+  | PromptElement<Vars, Input>
   | LabelElement
   | CallElement<Vars, AnyScriptLibrary>
   | ReturnElement<Vars, Return>;
@@ -321,17 +312,16 @@ export type ContentCommand<Vars> = {
   getContent: ContentNode<Vars>;
 };
 
-export type PromptCommand<Vars, Input, Yield> = {
+export type PromptCommand<Vars, Input> = {
   type: 'prompt';
   key: string;
   setVars?: PromptSetter<Vars, Input>;
-  yieldValue?: PromptYielder<Vars, Yield>;
 };
 
-export type CallCommand<Vars, Params, Return> = {
+export type CallCommand<Vars, Params, Return, Yield> = {
   type: 'call';
   key: string;
-  script: ScriptLibrary<unknown, unknown, Params, Return, unknown>;
+  script: ScriptLibrary<unknown, unknown, Params, Return, Yield>;
   withParams?: CallParamsGetter<Vars, Params>;
   setVars?: CallReturnSetter<Vars, Return>;
   goto?: string;
@@ -349,10 +339,10 @@ export type JumpCondCommand<Vars> = {
   isNot: boolean;
 };
 
-export type EffectCommand<Vars, Result> = {
+export type EffectCommand<Vars, Yield> = {
   type: 'effect';
-  doEffect?: EffectDoer<Vars, Result>;
-  setVars?: EffectSetter<Vars, Result>;
+  setVars?: EffectSetter<Vars>;
+  yieldValue?: EffectYielder<Vars, Yield>;
 };
 
 export type ReturnCommand<Vars, Return> = {
@@ -364,9 +354,9 @@ export type ScriptSegment<Vars, Input, Return, Yield> =
   | ContentCommand<Vars>
   | ConditionsSegment<Vars>
   | WhileSegment<Vars>
-  | PromptCommand<Vars, Input, Yield>
-  | CallCommand<Vars, unknown, unknown>
-  | EffectCommand<Vars, unknown>
+  | PromptCommand<Vars, Input>
+  | CallCommand<Vars, unknown, unknown, Yield>
+  | EffectCommand<Vars, Yield>
   | LabelSegment
   | ReturnCommand<Vars, Return>;
 
@@ -374,19 +364,16 @@ export type ScriptCommand<Vars, Input, Return, Yield> =
   | ContentCommand<Vars>
   | JumpCommand
   | JumpCondCommand<Vars>
-  | PromptCommand<Vars, Input, Yield>
-  | CallCommand<Vars, unknown, unknown>
-  | EffectCommand<Vars, unknown>
+  | PromptCommand<Vars, Input>
+  | CallCommand<Vars, unknown, unknown, Yield>
+  | EffectCommand<Vars, Yield>
   | ReturnCommand<Vars, Return>;
 
-export type CallStatus<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<unknown, infer Vars, unknown, unknown, unknown>
-    ? {
-        script: Script;
-        vars: Vars;
-        stopAt: undefined | string;
-      }
-    : never;
+export type CallStatus<Vars> = {
+  script: ScriptLibrary<Vars, unknown, unknown, unknown, unknown>;
+  vars: Vars;
+  stopAt: undefined | string;
+};
 
 export type SerializedCallStatus<Vars> = {
   name: string;

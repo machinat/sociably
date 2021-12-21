@@ -310,20 +310,20 @@ describe('parse <WHILE/>', () => {
 
 describe('parse <EFFECT/>', () => {
   it('parse ok', () => {
-    const doSomething = () => 'foo';
     const helloSetter = () => ({ hello: 'world' });
+    const yieldSomething = () => 'foo';
     expect(
       parse(
         <>
-          <EFFECT do={doSomething} set={helloSetter} />
+          <EFFECT yield={yieldSomething} set={helloSetter} />
           <EFFECT set={helloSetter} />
-          <EFFECT do={doSomething} />
+          <EFFECT yield={yieldSomething} />
         </>
       )
     ).toEqual([
-      { type: 'effect', setVars: helloSetter, doEffect: doSomething },
+      { type: 'effect', setVars: helloSetter, yieldValue: yieldSomething },
       { type: 'effect', setVars: helloSetter },
-      { type: 'effect', doEffect: doSomething },
+      { type: 'effect', yieldValue: yieldSomething },
     ]);
   });
 });
@@ -338,7 +338,7 @@ describe('parse <PROMPT/>', () => {
           {() => 'where r u last night?'}
           <PROMPT set={answerSetter} key="where" />
           {() => 'what r u doing?'}
-          <PROMPT set={answerSetter} key="what" yield={() => 'the heck'} />
+          <PROMPT set={answerSetter} key="what" />
           {() => 'how can you do this to me?'}
           <PROMPT set={answerSetter} key="how" />
         </>
@@ -347,12 +347,7 @@ describe('parse <PROMPT/>', () => {
       { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'where', setVars: answerSetter },
       { type: 'content', getContent: expect.any(Function) },
-      {
-        type: 'prompt',
-        key: 'what',
-        setVars: answerSetter,
-        yieldValue: expect.any(Function),
-      },
+      { type: 'prompt', key: 'what', setVars: answerSetter },
       { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'how', setVars: answerSetter },
     ]);
@@ -570,7 +565,7 @@ test('parse whole script', () => {
         <LABEL key="2nd" />
         {() => 'consectetur'}
 
-        <EFFECT set={({ vars }) => ({ ...vars, foo: 'baz' })} />
+        <EFFECT yield={({ vars }) => `hello ${vars.foo}`} />
         <LABEL key="3rd" />
         {() => <del>incididunt</del>}
 
@@ -603,7 +598,10 @@ test('parse whole script', () => {
         <LABEL key="end" />
         <PROMPT key="ask_4" set={() => ({ end: true })} />
 
-        <EFFECT do={() => () => console.log('done')} />
+        <EFFECT
+          yield={({ vars }) => `hello ${vars.foo}`}
+          set={() => ({ foo: 'bae' })}
+        />
         {() => 'ad minim veniam'}
       </>
     )

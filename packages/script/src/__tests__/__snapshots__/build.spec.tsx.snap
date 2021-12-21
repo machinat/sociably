@@ -36,7 +36,6 @@ Array [
           "key": "childPrompt",
           "setVars": [Function],
           "type": "prompt",
-          "yieldValue": undefined,
         },
       ],
       "initVars": [Function],
@@ -67,7 +66,6 @@ Array [
     "key": "ask_1",
     "setVars": [Function],
     "type": "prompt",
-    "yieldValue": undefined,
   },
   Object {
     "offset": -3,
@@ -85,7 +83,6 @@ Array [
     "key": "ask_2",
     "setVars": [Function],
     "type": "prompt",
-    "yieldValue": undefined,
   },
   Object {
     "getValue": [Function],
@@ -96,9 +93,9 @@ Array [
     "type": "jump",
   },
   Object {
-    "doEffect": undefined,
     "setVars": [Function],
     "type": "effect",
+    "yieldValue": undefined,
   },
   Object {
     "getContent": [Function],
@@ -117,7 +114,6 @@ Array [
     "key": "childPrompt",
     "setVars": [Function],
     "type": "prompt",
-    "yieldValue": undefined,
   },
 ]
 `;
