@@ -218,9 +218,9 @@ describe('isPauseType', () => {
   it('return true if Pause element passed', () => {
     const pauses = [
       <Machinat.Pause />,
-      <Machinat.Pause delay={1000} />,
-      <Machinat.Pause wait={() => Promise.resolve()} />,
-      <Machinat.Pause delay={1000} wait={() => Promise.resolve()} />,
+      <Machinat.Pause time={1000} />,
+      <Machinat.Pause delay={() => Promise.resolve()} />,
+      <Machinat.Pause time={1000} delay={() => Promise.resolve()} />,
     ];
     pauses.forEach((ele) => {
       expect(isPauseType(ele)).toBe(true);

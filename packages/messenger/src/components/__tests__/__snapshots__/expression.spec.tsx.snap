@@ -80,7 +80,7 @@ Array [
   },
   Object {
     "node": <Machinat.Pause
-      delay={2000}
+      time={2000}
     />,
     "path": "$#Expression.children:3",
     "type": "pause",

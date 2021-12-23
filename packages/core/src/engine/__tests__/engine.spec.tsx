@@ -173,12 +173,12 @@ describe('#render(channel, node, createJobs)', () => {
   });
 
   it('make "pause" task from "pause" segments which separate "dispatch" tasks', async () => {
-    const waitFn = moxy(async () => {});
+    const delayFn = moxy(async () => {});
     const segmentsWithPauses = [
       {
         type: 'pause',
-        node: <Machinat.Pause wait={waitFn} />,
-        value: waitFn,
+        node: <Machinat.Pause delay={delayFn} />,
+        value: delayFn,
       },
       unitSegments[0],
       { type: 'pause', node: <Machinat.Pause />, value: null },
@@ -186,8 +186,8 @@ describe('#render(channel, node, createJobs)', () => {
       unitSegments[2],
       {
         type: 'pause',
-        node: <Machinat.Pause wait={waitFn} />,
-        value: waitFn,
+        node: <Machinat.Pause delay={delayFn} />,
+        value: delayFn,
       },
       unitSegments[3],
     ];
@@ -197,11 +197,11 @@ describe('#render(channel, node, createJobs)', () => {
     const expectedJobs = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
     const expectedResults = ['result#1', 'result#2', 'result#3', 'result#4'];
     const expectedTasks = [
-      { type: 'pause', payload: waitFn },
+      { type: 'pause', payload: delayFn },
       { type: 'dispatch', payload: [{ id: 1 }] },
       { type: 'pause', payload: null },
       { type: 'dispatch', payload: [{ id: 2 }, { id: 3 }] },
-      { type: 'pause', payload: waitFn },
+      { type: 'pause', payload: delayFn },
       { type: 'dispatch', payload: [{ id: 4 }] },
     ];
 
@@ -251,7 +251,7 @@ describe('#render(channel, node, createJobs)', () => {
       expectedJobs[3],
     ]);
 
-    expect(waitFn.mock).toHaveBeenCalledTimes(2);
+    expect(delayFn.mock).toHaveBeenCalledTimes(2);
   });
 
   it('make "thunk" tasks from "thunk" segment and execute them after dispatch', async () => {
@@ -278,7 +278,7 @@ describe('#render(channel, node, createJobs)', () => {
       unitSegments[2],
       {
         type: 'pause',
-        node: <Machinat.Pause wait={delayFn} />,
+        node: <Machinat.Pause delay={delayFn} />,
         value: delayFn,
       },
       {

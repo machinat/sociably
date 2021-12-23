@@ -2,7 +2,7 @@ import type { TextSegment, UnitSegment, RawSegment } from '../renderer/types';
 import type {
   MachinatNode,
   MachinatChannel,
-  PauseWaitFn,
+  PauseDelayFn,
   ThunkEffectFn,
 } from '../types';
 import type MachinatQueue from '../queue';
@@ -13,7 +13,7 @@ export type DispatchableSegment<SegmentValue> =
   | UnitSegment<SegmentValue>;
 
 type DispatchTask<Job> = { type: 'dispatch'; payload: Job[] };
-type PauseTask = { type: 'pause'; payload: null | PauseWaitFn };
+type PauseTask = { type: 'pause'; payload: null | PauseDelayFn };
 type ThunkTask = { type: 'thunk'; payload: ThunkEffectFn };
 
 export type MachinatTask<Job> = DispatchTask<Job> | PauseTask | ThunkTask;

@@ -84,7 +84,7 @@ reply(
     Hakuna Matata!
     <Messenger.TypingOn />
 
-    <Machinat.Pause delay={2000} />
+    <Machinat.Pause time={2000} />
 
     {/* will be sent 2 sec after */}
     It means no worry!

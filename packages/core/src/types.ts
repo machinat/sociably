@@ -121,8 +121,8 @@ export type InjectionElement = MachinatElement<
   typeof MACHINAT_INJECTION_TYPE
 >;
 
-export type PauseWaitFn = () => Promise<unknown>;
-export type PauseProps = { delay?: number; wait?: PauseWaitFn };
+export type PauseDelayFn = () => Promise<unknown>;
+export type PauseProps = { time?: number; delay?: PauseDelayFn };
 export type PauseElement = MachinatElement<
   PauseProps,
   typeof MACHINAT_PAUSE_TYPE

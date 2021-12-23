@@ -91,7 +91,7 @@ it.each([
       foo
       <br />
       bar
-      <Machinat.Pause delay={2000} />
+      <Machinat.Pause time={2000} />
       baz
       <Machinat.Thunk effect={async () => {}} />
     </Expression>,

@@ -30,8 +30,8 @@ beforeEach(() => {
 
 describe('#render()', () => {
   it('works', async () => {
-    const waitCallback = () => Promise.resolve();
-    const WrappedPause = () => <Machinat.Pause wait={waitCallback} />;
+    const delayCallback = () => Promise.resolve();
+    const WrappedPause = () => <Machinat.Pause delay={delayCallback} />;
 
     const sideEffect1 = moxy();
     const sideEffect2 = moxy();
@@ -82,7 +82,7 @@ describe('#render()', () => {
       <>
         {123}
         abc
-        <Machinat.Pause wait={waitCallback} />
+        <Machinat.Pause delay={delayCallback} />
         <a>AAA</a>
         <b>BBB</b>
         <WrappedPause />
@@ -106,8 +106,8 @@ describe('#render()', () => {
       },
       {
         type: 'pause',
-        node: <Machinat.Pause wait={waitCallback} />,
-        value: waitCallback,
+        node: <Machinat.Pause delay={delayCallback} />,
+        value: delayCallback,
         path: '$::2',
       },
       {
@@ -130,8 +130,8 @@ describe('#render()', () => {
       },
       {
         type: 'pause',
-        node: <Machinat.Pause wait={waitCallback} />,
-        value: waitCallback,
+        node: <Machinat.Pause delay={delayCallback} />,
+        value: delayCallback,
         path: '$::5#WrappedPause',
       },
       {
@@ -722,17 +722,17 @@ describe('#render()', () => {
     );
   });
 
-  test('resnder <Pause/> with wait and delay props', async () => {
+  test('render <Pause/> with time/delay props', async () => {
     jest.useFakeTimers();
     const renderer = new Renderer('test', generalElementDelegate);
-    const waitFn = moxy(() => Promise.resolve());
+    const delayFn = moxy(() => Promise.resolve());
 
     const segments = await renderer.render(
       <>
         <Machinat.Pause />
-        <Machinat.Pause wait={waitFn} />
-        <Machinat.Pause delay={1000} />
-        <Machinat.Pause wait={waitFn} delay={1000} />
+        <Machinat.Pause delay={delayFn} />
+        <Machinat.Pause time={1000} />
+        <Machinat.Pause time={1000} delay={delayFn} />
       </>,
       scope
     );
@@ -746,19 +746,19 @@ describe('#render()', () => {
       },
       {
         type: 'pause',
-        node: <Machinat.Pause wait={waitFn} />,
-        value: waitFn,
+        node: <Machinat.Pause delay={delayFn} />,
+        value: delayFn,
         path: '$::1',
       },
       {
         type: 'pause',
-        node: <Machinat.Pause delay={1000} />,
+        node: <Machinat.Pause time={1000} />,
         value: expect.any(Function),
         path: '$::2',
       },
       {
         type: 'pause',
-        node: <Machinat.Pause delay={1000} wait={waitFn} />,
+        node: <Machinat.Pause time={1000} delay={delayFn} />,
         value: expect.any(Function),
         path: '$::3',
       },
@@ -766,7 +766,7 @@ describe('#render()', () => {
 
     const spy = moxy();
 
-    // delay prop only
+    // time prop only
     segments[2].value().then(spy);
     await new Promise(process.nextTick);
     expect(spy.mock).not.toHaveBeenCalled();
@@ -775,9 +775,9 @@ describe('#render()', () => {
     await new Promise(process.nextTick);
     expect(spy.mock).toHaveBeenCalledTimes(1);
 
-    // delay + wait prop only
+    // time + delay prop only
     segments[3].value().then(spy);
-    expect(waitFn.mock).toHaveBeenCalledTimes(1);
+    expect(delayFn.mock).toHaveBeenCalledTimes(1);
     await new Promise(process.nextTick);
     expect(spy.mock).toHaveBeenCalledTimes(1);
 
