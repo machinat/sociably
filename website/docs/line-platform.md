@@ -109,12 +109,12 @@ platform and set up with these steps:
    with url `https://your.server.domain/webview?platform=line`. The url should
    link to your webview page with `platform=line` query.
 2. Add the LIFF **login channel** id in `liffChannelIds` options.
-3. Add `LineAuthorizer` into the `Webview.AuthorizerList`.
+3. Add `LineAuthenticator` into the `Webview.AuthenticatorList`.
 4. Expose the LIFF app id to front-end.
 
 ```ts {1-2,7,17,25-27,33}
 import Webview from '@machinat/webview';
-import LineAuthorizer from '@machinat/line/webview';
+import LineAuthenticator from '@machinat/line/webview';
 // ...
 
 const {
@@ -145,7 +145,7 @@ const app = Machinat.createApp({
     }),
   ],
   services: [
-    { provide: Webview.AuthorizerList, withProvider: LineAuthorizer },
+    { provide: Webview.AuthenticatorList, withProvider: LineAuthenticator },
   ],
 });
 ```
@@ -168,18 +168,18 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Then add `LineClientAuthorizer` in the webview client:
+Then add `LineClientAuthenticator` in the webview client:
 
 ```ts
 import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
-import { LineClientAuthorizer } from '@machinat/line/webview';
+import { LineClientAuthenticator } from '@machinat/line/webview';
 
 const { publicRuntimeConfig } = getConfig();
 
 const client =  new WebviewClient({
-  authorizers: [
-    new LineClientAuthorizer({
+  authenticators: [
+    new LineClientAuthenticator({
       liffId: publicRuntimeConfig.lineLiffId,
     }),
   ],

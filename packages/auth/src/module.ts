@@ -4,8 +4,8 @@ import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http';
 
 import { ControllerP } from './controller';
-import { ConfigsI, AuthorizerListI } from './interface';
-import type { AuthConfigs, AnyServerAuthorizer } from './types';
+import { ConfigsI, AuthenticatorListI } from './interface';
+import type { AuthConfigs, AnyServerAuthenticator } from './types';
 
 const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
@@ -25,14 +25,14 @@ const authRouteFactory = makeFactoryProvider({
  */
 namespace Auth {
   export const Controller = ControllerP;
-  export type Controller<Authorizer extends AnyServerAuthorizer> =
-    ControllerP<Authorizer>;
+  export type Controller<Authenticator extends AnyServerAuthenticator> =
+    ControllerP<Authenticator>;
 
   export const Configs = ConfigsI;
   export type Configs = AuthConfigs;
 
-  export const AuthorizerList = AuthorizerListI;
-  export type AuthorizerList = AuthorizerListI;
+  export const AuthenticatorList = AuthenticatorListI;
+  export type AuthenticatorList = AuthenticatorListI;
 
   export const initModule = (configs: AuthConfigs): ServiceModule => {
     return {

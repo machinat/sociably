@@ -2,15 +2,15 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
-  ServerAuthorizer,
+  ServerAuthenticator,
   VerifyResult,
   ContextResult,
 } from '@machinat/auth';
 import { NoneUser, NoneChannel } from './instance';
 import { NoneAuthData, NoneAuthContext } from './types';
 
-export class NoneServerAuthorizer
-  implements ServerAuthorizer<NoneAuthData, NoneAuthData, NoneAuthContext>
+export class NoneServerAuthenticator
+  implements ServerAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>
 {
   platform = 'none';
 
@@ -54,9 +54,9 @@ export class NoneServerAuthorizer
   }
 }
 
-const ServerAuthorizerP = makeClassProvider({ lifetime: 'transient' })(
-  NoneServerAuthorizer
+const ServerAuthenticatorP = makeClassProvider({ lifetime: 'transient' })(
+  NoneServerAuthenticator
 );
-type ServerAuthorizerP = NoneServerAuthorizer;
+type ServerAuthenticatorP = NoneServerAuthenticator;
 
-export default ServerAuthorizerP;
+export default ServerAuthenticatorP;

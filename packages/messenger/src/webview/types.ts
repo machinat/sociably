@@ -41,11 +41,11 @@ export type MessengerAuthContext = {
   clientType: 'messenger' | 'facebook';
 } & AuthContextBase;
 
-export type AuthorizerCredentialResult =
+export type AuthenticatorCredentialResult =
   | { success: true; credential: MessengerAuthCredential }
   | { success: false; code: number; reason: string };
 
-export type AuthorizerRefinement = {
+export type AuthenticatorRefinement = {
   user: MessengerUser;
   channel: MessengerChat;
 };

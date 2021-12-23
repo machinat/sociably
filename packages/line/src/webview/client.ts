@@ -2,7 +2,7 @@
 /// <reference lib="DOM" />
 import invariant from 'invariant';
 import type { ContextResult } from '@machinat/auth';
-import type { WebviewClientAuthorizer } from '@machinat/webview';
+import type { WebviewClientAuthenticator } from '@machinat/webview';
 import { LINE } from '../constant';
 import LineChat from '../channel';
 import LineUser from '../user';
@@ -13,10 +13,10 @@ import type {
   LineAuthData,
   LineAuthContext,
   LiffContext,
-  AuthorizerCredentialResult,
+  AuthenticatorCredentialResult,
 } from './types';
 
-type ClientAuthorizerOptions = {
+type ClientAuthenticatorOptions = {
   liffId: string;
   shouldLoadSDK?: boolean;
 };
@@ -28,9 +28,13 @@ const waitingForRedirecting = (): Promise<never> =>
     }, 10000);
   });
 
-class LineClientAuthorizer
+class LineClientAuthenticator
   implements
-    WebviewClientAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext>
+    WebviewClientAuthenticator<
+      LineAuthCredential,
+      LineAuthData,
+      LineAuthContext
+    >
 {
   liff: any;
   liffId: string;
@@ -39,7 +43,7 @@ class LineClientAuthorizer
   platform = LINE;
   marshalTypes = [LineChat, LineUser, LineUserProfile, LineGroupProfile];
 
-  constructor(options: ClientAuthorizerOptions) {
+  constructor(options: ClientAuthenticatorOptions) {
     invariant(options?.liffId, 'options.liffId must not be empty');
     const { liffId, shouldLoadSDK = true } = options;
 
@@ -75,7 +79,7 @@ class LineClientAuthorizer
     }
   }
 
-  async fetchCredential(): Promise<AuthorizerCredentialResult> {
+  async fetchCredential(): Promise<AuthenticatorCredentialResult> {
     const { liff } = this;
     if (!liff.isLoggedIn()) {
       liff.login({ redirectUri: window.location.href });
@@ -110,4 +114,4 @@ class LineClientAuthorizer
   }
 }
 
-export default LineClientAuthorizer;
+export default LineClientAuthenticator;

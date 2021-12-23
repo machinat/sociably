@@ -57,12 +57,12 @@ export type LineVerifyAuthResult =
   | { success: true; data: LineAuthData }
   | { success: false; code: number; reason: string };
 
-export type AuthorizerRefinement = {
+export type AuthenticatorRefinement = {
   user: LineUser;
   channel: LineChat;
 };
 
-export type AuthorizerCredentialResult = {
+export type AuthenticatorCredentialResult = {
   success: true;
   credential: LineAuthCredential;
 };

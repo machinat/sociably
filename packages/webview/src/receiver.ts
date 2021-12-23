@@ -2,9 +2,9 @@ import type { PopEventWrapper, PopEventFn, PopErrorFn } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import {
-  AnyServerAuthorizer,
-  UserOfAuthorizer,
-  ContextOfAuthorizer,
+  AnyServerAuthenticator,
+  UserOfAuthenticator,
+  ContextOfAuthenticator,
 } from '@machinat/auth';
 import type { HttpRequestInfo } from '@machinat/http';
 import {
@@ -25,19 +25,23 @@ import type { WebviewEventContext } from './types';
  * @category Provider
  */
 export class WebviewReceiver<
-  Authorizer extends AnyServerAuthorizer,
+  Authenticator extends AnyServerAuthenticator,
   Value extends EventValue = EventValue
 > {
-  private _bot: BotP<Authorizer>;
-  private _server: SocketServerP<Authorizer>;
+  private _bot: BotP<Authenticator>;
+  private _server: SocketServerP<Authenticator>;
 
-  private _popEvent: PopEventFn<WebviewEventContext<Authorizer, Value>, null>;
+  private _popEvent: PopEventFn<
+    WebviewEventContext<Authenticator, Value>,
+    null
+  >;
+
   private _popError: PopErrorFn;
 
   constructor(
-    bot: BotP<Authorizer>,
-    server: SocketServerP<Authorizer>,
-    popEventWrapper: PopEventWrapper<WebviewEventContext<Authorizer>, null>,
+    bot: BotP<Authenticator>,
+    server: SocketServerP<Authenticator>,
+    popEventWrapper: PopEventWrapper<WebviewEventContext<Authenticator>, null>,
     popError: PopErrorFn
   ) {
     this._bot = bot;
@@ -83,9 +87,9 @@ export class WebviewReceiver<
   private _issueEvent(
     value: EventInput,
     connId: string,
-    user: UserOfAuthorizer<Authorizer>,
+    user: UserOfAuthenticator<Authenticator>,
     request: HttpRequestInfo,
-    authContext: ContextOfAuthorizer<Authorizer>
+    authContext: ContextOfAuthenticator<Authenticator>
   ) {
     const channel = new WebviewConnection(this._server.id, connId);
     this._popEvent({
@@ -111,6 +115,6 @@ export const ReceiverP = makeClassProvider({
 })(WebviewReceiver);
 
 export type ReceiverP<
-  Authorizer extends AnyServerAuthorizer,
+  Authenticator extends AnyServerAuthenticator,
   Value extends EventValue = EventValue
-> = WebviewReceiver<Authorizer, Value>;
+> = WebviewReceiver<Authenticator, Value>;

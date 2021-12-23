@@ -18,10 +18,10 @@ it('export interfaces', () => {
       "$$typeof": Symbol(interface.service.machinat),
     }
   `);
-  expect(Auth.AuthorizerList).toMatchInlineSnapshot(`
+  expect(Auth.AuthenticatorList).toMatchInlineSnapshot(`
     Object {
       "$$multi": true,
-      "$$name": "AuthAuthorizerList",
+      "$$name": "AuthAuthenticatorList",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -32,7 +32,7 @@ describe('initModule()', () => {
   test('provisions', async () => {
     const app = Machinat.createApp({
       modules: [Auth.initModule({ secret, apiPath, redirectUrl })],
-      services: [{ provide: Auth.AuthorizerList, withValue: moxy() }],
+      services: [{ provide: Auth.AuthenticatorList, withValue: moxy() }],
     });
     await app.start();
 
@@ -55,15 +55,15 @@ describe('initModule()', () => {
     `);
   });
 
-  test('provide authorizers to controller', async () => {
-    const fooAuthorizer = moxy();
-    const barAuthorizer = moxy();
+  test('provide authenticators to controller', async () => {
+    const fooAuthenticator = moxy();
+    const barAuthenticator = moxy();
     const ControllerSpy = moxy(ControllerP);
     const app = Machinat.createApp({
       modules: [Auth.initModule({ secret, apiPath, redirectUrl })],
       services: [
-        { provide: Auth.AuthorizerList, withValue: fooAuthorizer },
-        { provide: Auth.AuthorizerList, withValue: barAuthorizer },
+        { provide: Auth.AuthenticatorList, withValue: fooAuthenticator },
+        { provide: Auth.AuthenticatorList, withValue: barAuthenticator },
         {
           provide: Auth.Controller,
           withProvider: ControllerSpy,
@@ -74,7 +74,7 @@ describe('initModule()', () => {
 
     expect(ControllerSpy.$$factory.mock).toHaveBeenCalledTimes(1);
     expect(ControllerSpy.$$factory.mock).toHaveBeenCalledWith(
-      expect.arrayContaining([fooAuthorizer, barAuthorizer]),
+      expect.arrayContaining([fooAuthenticator, barAuthenticator]),
       { secret, apiPath, redirectUrl }
     );
   });

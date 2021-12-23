@@ -2,8 +2,8 @@
 // / <reference lib="DOM" />
 import { nanoid } from 'nanoid';
 import type {
-  ClientAuthorizer,
-  AuthorizerCredentialResult,
+  ClientAuthenticator,
+  AuthenticatorCredentialResult,
   ContextResult,
 } from '@machinat/auth';
 import { NoneUser, NoneChannel } from './instance';
@@ -12,14 +12,16 @@ import { NoneAuthData, NoneAuthContext } from './types';
 const USER_KEY = 'none_user';
 const CHANNEL_KEY = 'none_channel';
 
-class NoneClientAuthorizer
-  implements ClientAuthorizer<NoneAuthData, NoneAuthData, NoneAuthContext>
+class NoneClientAuthenticator
+  implements ClientAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>
 {
   platform = 'none';
 
   async init(): Promise<void> {}
 
-  async fetchCredential(): Promise<AuthorizerCredentialResult<NoneAuthData>> {
+  async fetchCredential(): Promise<
+    AuthenticatorCredentialResult<NoneAuthData>
+  > {
     const existedUserId = window.localStorage.getItem(USER_KEY);
     const existedChannelId = window.sessionStorage.getItem(CHANNEL_KEY);
 
@@ -62,4 +64,4 @@ class NoneClientAuthorizer
   }
 }
 
-export default NoneClientAuthorizer;
+export default NoneClientAuthenticator;

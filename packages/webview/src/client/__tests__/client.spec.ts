@@ -4,7 +4,7 @@ import { BaseMarshaler as _BaseMarshaler } from '@machinat/core/base/Marshaler';
 import _Connector from '@machinat/websocket/client/Connector';
 import _AuthClient from '@machinat/auth/client';
 import { WebviewConnection } from '../../channel';
-import { AnyClientAuthorizer } from '../../types';
+import { AnyClientAuthenticator } from '../../types';
 import Client from '../client';
 
 const Connector = _Connector as Moxy<typeof _Connector>;
@@ -33,13 +33,13 @@ jest.mock('@machinat/auth/client', () => {
   const _moxy = jest.requireActual('@moxyjs/moxy').default;
   return {
     __esModule: true,
-    default: _moxy(function FakeAuthClient({ authorizers }) {
+    default: _moxy(function FakeAuthClient({ authenticators }) {
       return _moxy({
         bootstrap: async () => {},
         signIn: async () => ({ context: {}, token: '_TOKEN_' }),
         getAuthContext: () => ({ platform: 'test' /* ... */ }),
-        getAuthorizer: () =>
-          authorizers.find(({ platform }) => platform === 'test'),
+        getAuthenticator: () =>
+          authenticators.find(({ platform }) => platform === 'test'),
       });
     }),
   };
@@ -54,12 +54,12 @@ jest.mock('@machinat/core/base/Marshaler', () =>
 const location = moxy(parseUrl('https://machinat.com/hello'));
 (global as any).window = { location };
 
-const testAuthorizer = moxy<AnyClientAuthorizer>({
+const testAuthenticator = moxy<AnyClientAuthenticator>({
   platform: 'test',
   closeWebview: () => true,
   /* ... */
 } as never);
-const anotherAuthorizer = moxy<AnyClientAuthorizer>({
+const anotherAuthenticator = moxy<AnyClientAuthenticator>({
   platform: 'another',
   closeWebview: () => true,
   /* ... */
@@ -81,15 +81,15 @@ beforeEach(() => {
   BaseMarshaler.mock.reset();
   location.mock.reset();
   eventSpy.mock.clear();
-  testAuthorizer.mock.reset();
-  anotherAuthorizer.mock.reset();
+  testAuthenticator.mock.reset();
+  anotherAuthenticator.mock.reset();
 });
 
 it('start connector and auth client', async () => {
   const client = new Client({
     platform: 'test',
     authApiUrl: '/my_auth',
-    authorizers: [testAuthorizer, anotherAuthorizer],
+    authenticators: [testAuthenticator, anotherAuthenticator],
     webSocketUrl: '/my_websocket',
   });
   client.onEvent(eventSpy);
@@ -112,7 +112,7 @@ it('start connector and auth client', async () => {
   expect(AuthClient.mock).toHaveBeenCalledTimes(1);
   expect(AuthClient.mock).toHaveBeenCalledWith({
     serverUrl: '/my_auth',
-    authorizers: [testAuthorizer, anotherAuthorizer],
+    authenticators: [testAuthenticator, anotherAuthenticator],
   });
 
   const authClient = AuthClient.mock.calls[0].instance;
@@ -136,7 +136,7 @@ it('start connector and auth client', async () => {
       channel: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
-    authorizer: testAuthorizer,
+    authenticator: testAuthenticator,
   });
 
   expect(client.isConnected).toBe(true);
@@ -148,7 +148,7 @@ test('mockupMode', async () => {
   const client = new Client({
     platform: 'test',
     authApiUrl: '/my_auth',
-    authorizers: [testAuthorizer, anotherAuthorizer],
+    authenticators: [testAuthenticator, anotherAuthenticator],
     webSocketUrl: '/my_websocket',
     mockupMode: true,
   });
@@ -171,7 +171,7 @@ test('mockupMode', async () => {
 test('websocket url', async () => {
   (() =>
     new Client({
-      authorizers: [testAuthorizer],
+      authenticators: [testAuthenticator],
       webSocketUrl: 'ws://machinat.io/foo_socket',
     }))();
 
@@ -182,7 +182,7 @@ test('websocket url', async () => {
     expect.any(BaseMarshaler)
   );
 
-  (() => new Client({ authorizers: [testAuthorizer] }))();
+  (() => new Client({ authenticators: [testAuthenticator] }))();
 
   expect(Connector.mock).toHaveBeenCalledTimes(2);
   expect(Connector.mock).toHaveBeenCalledWith(
@@ -192,7 +192,7 @@ test('websocket url', async () => {
   );
 });
 
-it('use marshalTypes of authorizers', () => {
+it('use marshalTypes of authenticators', () => {
   const FooType = {
     typeName: 'Foo',
     fromJSONValue: () => ({
@@ -209,12 +209,12 @@ it('use marshalTypes of authorizers', () => {
       toJSONValue: () => 'BAR',
     }),
   };
-  testAuthorizer.mock.getter('marshalTypes').fake(() => [FooType]);
-  anotherAuthorizer.mock.getter('marshalTypes').fake(() => [BarType]);
+  testAuthenticator.mock.getter('marshalTypes').fake(() => [FooType]);
+  anotherAuthenticator.mock.getter('marshalTypes').fake(() => [BarType]);
 
   (() =>
     new Client({
-      authorizers: [testAuthorizer, anotherAuthorizer],
+      authenticators: [testAuthenticator, anotherAuthenticator],
     }))();
 
   expect(BaseMarshaler.mock).toHaveBeenCalledTimes(1);
@@ -226,7 +226,7 @@ it('use marshalTypes of authorizers', () => {
 });
 
 it('login with auth client', async () => {
-  (() => new Client({ authorizers: [testAuthorizer] }))();
+  (() => new Client({ authenticators: [testAuthenticator] }))();
 
   const authClient = AuthClient.mock.calls[0].instance;
   authClient.signIn.mock.fake(async () => ({
@@ -245,7 +245,7 @@ it('login with auth client', async () => {
 });
 
 it('emit "event" when dispatched events received', async () => {
-  const client = new Client({ authorizers: [testAuthorizer] });
+  const client = new Client({ authenticators: [testAuthenticator] });
   client.onEvent(eventSpy);
 
   const authClient = AuthClient.mock.calls[0].instance;
@@ -278,7 +278,7 @@ it('emit "event" when dispatched events received', async () => {
       channel: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
-    authorizer: testAuthorizer,
+    authenticator: testAuthenticator,
   });
   expect(eventSpy.mock).toHaveBeenNthCalledWith(3, {
     event: {
@@ -289,7 +289,7 @@ it('emit "event" when dispatched events received', async () => {
       channel: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
-    authorizer: testAuthorizer,
+    authenticator: testAuthenticator,
   });
 
   connector.emit(
@@ -308,12 +308,12 @@ it('emit "event" when dispatched events received', async () => {
       channel: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
-    authorizer: testAuthorizer,
+    authenticator: testAuthenticator,
   });
 });
 
 it('send events', async () => {
-  const client = new Client({ authorizers: [testAuthorizer] });
+  const client = new Client({ authenticators: [testAuthenticator] });
   const connector = Connector.mock.calls[0].instance;
   connector.emit('connect', { connId: '#conn', user });
 
@@ -340,7 +340,7 @@ it('send events', async () => {
 });
 
 test('disconnected by server', async () => {
-  const client = new Client({ authorizers: [testAuthorizer] });
+  const client = new Client({ authenticators: [testAuthenticator] });
   client.onEvent(eventSpy);
 
   const authClient = AuthClient.mock.calls[0].instance;
@@ -367,7 +367,7 @@ test('disconnected by server', async () => {
       channel: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
-    authorizer: testAuthorizer,
+    authenticator: testAuthenticator,
   });
 
   expect(client.user).toEqual(user);
@@ -375,7 +375,7 @@ test('disconnected by server', async () => {
 });
 
 test('#disconnect()', async () => {
-  const client = new Client({ authorizers: [testAuthorizer] });
+  const client = new Client({ authenticators: [testAuthenticator] });
   client.onEvent(eventSpy);
 
   const authClient = AuthClient.mock.calls[0].instance;
@@ -402,7 +402,7 @@ test('#disconnect()', async () => {
       channel: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
-    authorizer: testAuthorizer,
+    authenticator: testAuthenticator,
   });
 
   expect(client.user).toEqual(user);
@@ -410,11 +410,11 @@ test('#disconnect()', async () => {
 });
 
 test('#closeWebview()', async () => {
-  const client = new Client({ authorizers: [testAuthorizer] });
+  const client = new Client({ authenticators: [testAuthenticator] });
   expect(client.closeWebview()).toBe(true);
-  expect(testAuthorizer.closeWebview.mock).toHaveBeenCalledTimes(1);
+  expect(testAuthenticator.closeWebview.mock).toHaveBeenCalledTimes(1);
 
-  testAuthorizer.closeWebview.mock.fakeReturnValue(false);
+  testAuthenticator.closeWebview.mock.fakeReturnValue(false);
   expect(client.closeWebview()).toBe(false);
-  expect(testAuthorizer.closeWebview.mock).toHaveBeenCalledTimes(2);
+  expect(testAuthenticator.closeWebview.mock).toHaveBeenCalledTimes(2);
 });

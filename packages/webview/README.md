@@ -34,7 +34,7 @@ import Machinat from '@machinat/core';
 import Http from '@machinat/http';
 import Webview from '@machinat/webview';
 import Messenger from '@machinat/messenger';
-import MessengerAuthorizer from '@machinat/messenger/webview';
+import MessengerAuthenticator from '@machinat/messenger/webview';
 import nextConfigs from '../webview/next.config.js';
 
 const { DOMAIN, WEBVIEW_AUTH_SECRET, NODE_ENV, MESSENGER_APP_ID } = process.env;
@@ -63,8 +63,8 @@ const app = Machinat.createApp({
     }),
   ],
   services: [
-    // register authorizer of chat platforms
-    { provide: Webview.AuthorizerList, withProvider: MessengerAuthorizer },
+    // register authenticator of chat platforms
+    { provide: Webview.AuthenticatorList, withProvider: MessengerAuthenticator },
   ]
 });
 ```
@@ -73,7 +73,7 @@ const app = Machinat.createApp({
 
 ```js
 import Client from '@machinat/webview/client';
-import { MessengerClientAuthorizer } from '@machinat/messenger/webview';
+import { MessengerClientAuthenticator } from '@machinat/messenger/webview';
 
 // get settings if needed
 const { publicRuntimeConfig } = getConfig();
@@ -81,11 +81,11 @@ const { publicRuntimeConfig } = getConfig();
 const client = new WebviewClient(
   typeof window === 'undefined'
     // prevent making connection while server rendering
-    ? { mockupMode: true, authorizers: [] }
+    ? { mockupMode: true, authenticators: [] }
     : {
-        authorizers: [
-          // corresponded client side authorizers
-          new MessengerClientAuthorizer({
+        authenticators: [
+          // corresponded client side authenticators
+          new MessengerClientAuthenticator({
             appId: publicRuntimeConfig.messengerAppId,
           }),
         ],

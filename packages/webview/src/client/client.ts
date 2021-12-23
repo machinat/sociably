@@ -2,7 +2,10 @@
 /// <reference lib="DOM" />
 import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import AuthClient from '@machinat/auth/client';
-import type { UserOfAuthorizer, ContextOfAuthorizer } from '@machinat/auth';
+import type {
+  UserOfAuthenticator,
+  ContextOfAuthenticator,
+} from '@machinat/auth';
 import { Connector, ClientEmitter } from '@machinat/websocket/client';
 import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
 import { WebviewConnection } from '../channel';
@@ -12,24 +15,24 @@ import type {
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
-  AnyClientAuthorizer,
+  AnyClientAuthenticator,
 } from '../types';
 import type { ClientEventContext, ClientOptions } from './types';
 
 class WebviewClient<
-  Authorizer extends AnyClientAuthorizer,
+  Authenticator extends AnyClientAuthenticator,
   Value extends EventValue = EventValue
 > extends ClientEmitter<
   ClientEventContext<
-    Authorizer,
+    Authenticator,
     Value | ConnectEventValue | DisconnectEventValue
   >
 > {
-  private _authClient: AuthClient<Authorizer>;
-  private _connector: Connector<UserOfAuthorizer<Authorizer>>;
+  private _authClient: AuthClient<Authenticator>;
+  private _connector: Connector<UserOfAuthenticator<Authenticator>>;
   private _platformInput: string | undefined;
 
-  private _user: null | UserOfAuthorizer<Authorizer>;
+  private _user: null | UserOfAuthenticator<Authenticator>;
   private _channel: null | WebviewConnection;
 
   isMockupMode: boolean;
@@ -38,7 +41,7 @@ class WebviewClient<
     return this._connector.isConnected();
   }
 
-  get user(): null | UserOfAuthorizer<Authorizer> {
+  get user(): null | UserOfAuthenticator<Authenticator> {
     return this._user;
   }
 
@@ -46,7 +49,7 @@ class WebviewClient<
     return this._channel;
   }
 
-  get authContext(): null | ContextOfAuthorizer<Authorizer> {
+  get authContext(): null | ContextOfAuthenticator<Authenticator> {
     return this._authClient.getAuthContext();
   }
 
@@ -57,10 +60,10 @@ class WebviewClient<
   constructor({
     webSocketUrl,
     platform,
-    authorizers,
+    authenticators,
     authApiUrl,
     mockupMode = false,
-  }: ClientOptions<Authorizer>) {
+  }: ClientOptions<Authenticator>) {
     super();
 
     this._user = null;
@@ -69,18 +72,18 @@ class WebviewClient<
     this._platformInput = platform;
 
     this._authClient = new AuthClient({
-      authorizers,
+      authenticators,
       serverUrl: authApiUrl || DEFAULT_AUTH_PATH,
     });
 
-    const marshalTypes = authorizers.reduce((types, authorizer) => {
-      if (authorizer.marshalTypes) {
-        types.push(...authorizer.marshalTypes);
+    const marshalTypes = authenticators.reduce((types, authenticator) => {
+      if (authenticator.marshalTypes) {
+        types.push(...authenticator.marshalTypes);
       }
       return types;
     }, [] as AnyMarshalType[]);
 
-    this._connector = new Connector<UserOfAuthorizer<Authorizer>>(
+    this._connector = new Connector<UserOfAuthenticator<Authenticator>>(
       webSocketUrl || DEFAULT_WEBSOCKET_PATH,
       this._getLoginAuth.bind(this),
       new BaseMarshaler(marshalTypes)
@@ -108,23 +111,23 @@ class WebviewClient<
    * Try close the webview. Return whether it's supported by current platform
    */
   closeWebview(): boolean {
-    const authorizer = this._authClient.getAuthorizer();
-    if (!authorizer) {
+    const authenticator = this._authClient.getAuthenticator();
+    if (!authenticator) {
       return false;
     }
 
-    return authorizer.closeWebview();
+    return authenticator.closeWebview();
   }
 
   private async _getLoginAuth(): Promise<{
-    user: UserOfAuthorizer<Authorizer>;
+    user: UserOfAuthenticator<Authenticator>;
     credential: string;
   }> {
     const { token, context } = await this._authClient.signIn({
       platform: this._platformInput,
     });
     return {
-      user: context.user as UserOfAuthorizer<Authorizer>,
+      user: context.user as UserOfAuthenticator<Authenticator>,
       credential: token,
     };
   }
@@ -134,7 +137,7 @@ class WebviewClient<
     user,
   }: {
     connId: string;
-    user: UserOfAuthorizer<Authorizer>;
+    user: UserOfAuthenticator<Authenticator>;
   }) {
     this._user = user;
     this._channel = new WebviewConnection('*', connId);
@@ -149,8 +152,8 @@ class WebviewClient<
         this._channel,
         user
       ),
-      auth: this.authContext as ContextOfAuthorizer<Authorizer>,
-      authorizer: this._authClient.getAuthorizer() as Authorizer,
+      auth: this.authContext as ContextOfAuthenticator<Authenticator>,
+      authenticator: this._authClient.getAuthenticator() as Authenticator,
     });
   }
 
@@ -160,10 +163,10 @@ class WebviewClient<
         event: createEvent(
           value,
           this._channel as WebviewConnection,
-          this._user as UserOfAuthorizer<Authorizer>
+          this._user as UserOfAuthenticator<Authenticator>
         ),
-        auth: this.authContext as ContextOfAuthorizer<Authorizer>,
-        authorizer: this._authClient.getAuthorizer() as Authorizer,
+        auth: this.authContext as ContextOfAuthenticator<Authenticator>,
+        authenticator: this._authClient.getAuthenticator() as Authenticator,
       });
     }
   }
@@ -180,10 +183,10 @@ class WebviewClient<
           payload: { reason },
         },
         channel as WebviewConnection,
-        this._user as UserOfAuthorizer<Authorizer>
+        this._user as UserOfAuthenticator<Authenticator>
       ),
-      auth: this.authContext as ContextOfAuthorizer<Authorizer>,
-      authorizer: this._authClient.getAuthorizer() as Authorizer,
+      auth: this.authContext as ContextOfAuthenticator<Authenticator>,
+      authenticator: this._authClient.getAuthenticator() as Authenticator,
     });
   }
 }

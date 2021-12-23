@@ -53,9 +53,9 @@ import Machinat from '@machinat/core';
 import Http from '@machinat/http';
 import Webview from '@machinat/webview';
 import Messenger from '@machinat/messenger';
-import MessengerAuthorizer from '@machinat/messenger/webview';
+import MessengerAuthenticator from '@machinat/messenger/webview';
 import Telegram from '@machinat/telegram';
-import TelegramAuthorizer from '@machinat/telegram/webview';
+import TelegramAuthenticator from '@machinat/telegram/webview';
 import nextConfig from '../webview/next.config.js';
 
 const app = Machinat.createApp({
@@ -78,8 +78,8 @@ const app = Machinat.createApp({
     Telegram.initModule({...}),
   ],
   services: [
-    { provide: Webview.AuthorizerList, withProvider: MessengerAuthorizer },
-    { provide: Webview.AuthorizerList, withProvider: TelegramAuthorizer },
+    { provide: Webview.AuthenticatorList, withProvider: MessengerAuthenticator },
+    { provide: Webview.AuthenticatorList, withProvider: TelegramAuthenticator },
   ],
 });
 ```
@@ -92,7 +92,7 @@ Here are the steps to run the webviews:
 4. `nextServerOptions.dev` indicate next.js to start server in dev mode or not. We can use `NODE_ENV` environment to decide that.
 5. `nextServerOptions.dir` should point to the Next.js project location from project root. You can use `npx create-next-app` to create one.
 6. If you have `next.config.js` settings in your next.js project. You have to require it and fill it at `nextServerOptions.conf`.
-7. Provide `Webview.AuthorizerList` with server authorizer providers of each chat platform.
+7. Provide `Webview.AuthenticatorList` with server authenticator providers of each chat platform.
 
 The webview page should be available at `/` of your server now. You can check more webview options [here](pathname:///api/modules/webview.html#webviewconfigs).
 
@@ -103,8 +103,8 @@ While the webview utilities are ready in the back-end, we can connect to server 
 ```js
 import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
-import { MessengerClientAuthorizer } from '@machinat/messenger/webview';
-import { TelegramClientAuthorizer } from '@machinat/telegram/webview';
+import { MessengerClientAuthenticator } from '@machinat/messenger/webview';
+import { TelegramClientAuthenticator } from '@machinat/telegram/webview';
 
 // to activate publicRuntimeConfig
 export const getServerSideProps = () => ({ props: {} });
@@ -113,14 +113,14 @@ const { publicRuntimeConfig } = getConfig();
  
 const client = new WebviewClient(
   typeof window === 'undefined'
-    ? { mockupMode: true, authorizers: [] }
+    ? { mockupMode: true, authenticators: [] }
     : {
-        authorizers: [
-          new MessengerClientAuthorizer({
+        authenticators: [
+          new MessengerClientAuthenticator({
             appId: publicRuntimeConfig.messengerAppId,
           }),
-          new TelegramClientAuthorizer(),
-          new LineClientAuthorizer({
+          new TelegramClientAuthenticator(),
+          new LineClientAuthenticator({
             liffId: publicRuntimeConfig.lineLiffId,
           }),
         ],
@@ -132,8 +132,8 @@ client.onError(console.error);
 
 Here are the steps to construct `WebviewClient` on front-end:
 
-1. Fill `authorizers` with the client authorizers from all supported chat platforms.
-2. If you need configs to construct client authorizers, use [`publicRuntimeConfig`](https://nextjs.org/docs/api-reference/next.config.js/runtime-configuration) features of next.js (need to export an empty `getServerSideProps`). The `next.config.js` might look like this:
+1. Fill `authenticators` with the client authenticators from all supported chat platforms.
+2. If you need configs to construct client authenticators, use [`publicRuntimeConfig`](https://nextjs.org/docs/api-reference/next.config.js/runtime-configuration) features of next.js (need to export an empty `getServerSideProps`). The `next.config.js` might look like this:
 ```js
 module.exports = {
   publicRuntimeConfig: {
@@ -215,7 +215,7 @@ The listener callback function receive a event context object with following inf
   - loginAt - `Date`, the time user logged in.
   - expireAt - `Date`, the time current authorization would expired.
   - data - `any`, raw auth data from chat platform.
-- authorizer - `object`, the authorizer instance of the authorizing chat platform.
+- authenticator - `object`, the authenticator instance of the authorizing chat platform.
 
 ### `connect` and `disconnect`
 

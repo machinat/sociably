@@ -4,7 +4,7 @@ import { createHmac, createHash } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
-  ServerAuthorizer,
+  ServerAuthenticator,
   ResponseHelper,
   VerifyResult,
   ContextResult,
@@ -33,8 +33,8 @@ const LOGIN_PARAMETERS = [
 /**
  * @category Provider
  */
-export class TelegramServerAuthorizer
-  implements ServerAuthorizer<never, TelegramAuthData, TelegramAuthContext>
+export class TelegramServerAuthenticator
+  implements ServerAuthenticator<never, TelegramAuthData, TelegramAuthContext>
 {
   bot: BotP;
   private _secretKey: Buffer;
@@ -214,14 +214,14 @@ export class TelegramServerAuthorizer
   }
 }
 
-const ServerAuthorizerP = makeClassProvider({
+const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'singleton',
   deps: [BotP, ConfigsI] as const,
   factory: (bot) => {
-    return new TelegramServerAuthorizer(bot);
+    return new TelegramServerAuthenticator(bot);
   },
-})(TelegramServerAuthorizer);
+})(TelegramServerAuthenticator);
 
-type ServerAuthorizerP = TelegramServerAuthorizer;
+type ServerAuthenticatorP = TelegramServerAuthenticator;
 
-export default ServerAuthorizerP;
+export default ServerAuthenticatorP;

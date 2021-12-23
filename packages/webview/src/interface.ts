@@ -7,9 +7,9 @@ import {
 import Marshaler from '@machinat/core/base/Marshaler';
 import { AuthController } from '@machinat/auth';
 import type {
-  AnyServerAuthorizer,
-  UserOfAuthorizer,
-  ContextOfAuthorizer,
+  AnyServerAuthenticator,
+  UserOfAuthenticator,
+  ContextOfAuthenticator,
 } from '@machinat/auth';
 import { NextReceiver } from '@machinat/next';
 import type { NextServer } from '@machinat/next';
@@ -18,33 +18,33 @@ import { useAuthLogin, verifyOrigin } from './utils';
 import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant';
 import type { WebviewConfigs, WebviewPlatformUtilities } from './types';
 
-export const ConfigsI = makeInterface<WebviewConfigs<AnyServerAuthorizer>>({
+export const ConfigsI = makeInterface<WebviewConfigs<AnyServerAuthenticator>>({
   name: 'WebviewConfigs',
 });
 
-export type ConfigsI = WebviewConfigs<AnyServerAuthorizer>;
+export type ConfigsI = WebviewConfigs<AnyServerAuthenticator>;
 
 // auth interfaces
 
-export const AuthorizerListI = makeInterface<AnyServerAuthorizer>({
-  name: 'WebviewAuthorizersList',
+export const AuthenticatorListI = makeInterface<AnyServerAuthenticator>({
+  name: 'WebviewAuthenticatorsList',
   multi: true,
 });
 
-export type AuthorizerListI = AnyServerAuthorizer[];
+export type AuthenticatorListI = AnyServerAuthenticator[];
 
 export class WebviewAuthController<
-  Authorizer extends AnyServerAuthorizer
-> extends AuthController<Authorizer> {}
+  Authenticator extends AnyServerAuthenticator
+> extends AuthController<Authenticator> {}
 
 export const AuthControllerP: ServiceProvider<
-  AuthController<AnyServerAuthorizer>,
-  [AuthorizerListI, ConfigsI]
+  AuthController<AnyServerAuthenticator>,
+  [AuthenticatorListI, ConfigsI]
 > = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AuthorizerListI, ConfigsI] as const,
+  deps: [AuthenticatorListI, ConfigsI] as const,
   factory: (
-    authorizers,
+    authenticators,
     {
       authSecret,
       authApiPath = DEFAULT_AUTH_PATH,
@@ -54,11 +54,11 @@ export const AuthControllerP: ServiceProvider<
       ...otherOptions
     }
   ) => {
-    if (authorizers.length === 0) {
-      throw new Error('Webview.AuthorizersList is empty');
+    if (authenticators.length === 0) {
+      throw new Error('Webview.AuthenticatorsList is empty');
     }
 
-    return new WebviewAuthController(authorizers, {
+    return new WebviewAuthController(authenticators, {
       ...otherOptions,
       secret: authSecret,
       apiPath: authApiPath,
@@ -68,8 +68,8 @@ export const AuthControllerP: ServiceProvider<
   },
 })(WebviewAuthController);
 
-export type AuthControllerP<Authorizer extends AnyServerAuthorizer> =
-  WebviewAuthController<Authorizer>;
+export type AuthControllerP<Authenticator extends AnyServerAuthenticator> =
+  WebviewAuthController<Authenticator>;
 
 // next interfaces
 
@@ -115,22 +115,22 @@ export const SocketBrokerI = makeInterface<WebSocket.Broker>({
 export type SocketBrokerI = WebSocket.Broker;
 
 export class WebviewSocketServer<
-  Authorizer extends AnyServerAuthorizer
+  Authenticator extends AnyServerAuthenticator
 > extends WebSocketServer<
-  UserOfAuthorizer<Authorizer>,
-  ContextOfAuthorizer<Authorizer>
+  UserOfAuthenticator<Authenticator>,
+  ContextOfAuthenticator<Authenticator>
 > {}
 
 export const SocketServerP: ServiceProvider<
   WebSocketServer<
-    UserOfAuthorizer<AnyServerAuthorizer>,
-    ContextOfAuthorizer<AnyServerAuthorizer>
+    UserOfAuthenticator<AnyServerAuthenticator>,
+    ContextOfAuthenticator<AnyServerAuthenticator>
   >,
   [
     null | string,
     WsServerI,
     SocketBrokerI,
-    AuthController<AnyServerAuthorizer>,
+    AuthController<AnyServerAuthenticator>,
     Marshaler,
     ConfigsI
   ]
@@ -164,11 +164,11 @@ export const SocketServerP: ServiceProvider<
     }),
 })(WebviewSocketServer);
 
-export type SocketServerP<Authorizer extends AnyServerAuthorizer> =
-  WebviewSocketServer<Authorizer>;
+export type SocketServerP<Authenticator extends AnyServerAuthenticator> =
+  WebviewSocketServer<Authenticator>;
 
 export const PlatformUtilitiesI = makeInterface<
-  WebviewPlatformUtilities<AnyServerAuthorizer>
+  WebviewPlatformUtilities<AnyServerAuthenticator>
 >({
   name: 'WebviewPlatformUtilities',
 });

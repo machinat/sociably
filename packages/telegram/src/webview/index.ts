@@ -1,2 +1,2 @@
-export { default, TelegramServerAuthorizer } from './server';
-export { default as TelegramClientAuthorizer } from './client';
+export { default, TelegramServerAuthenticator } from './server';
+export { default as TelegramClientAuthenticator } from './client';

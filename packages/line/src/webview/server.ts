@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import type { ServerAuthorizer, ContextResult } from '@machinat/auth';
+import type { ServerAuthenticator, ContextResult } from '@machinat/auth';
 
 import { ConfigsI } from '../interface';
 import { BotP } from '../bot';
@@ -16,7 +16,7 @@ import {
   LineVerifyAuthResult,
 } from './types';
 
-type LineServerAuthorizerOpts = {
+type LineServerAuthenticatorOpts = {
   liffChannelIds: string[];
 };
 
@@ -31,15 +31,15 @@ type VerifyTokenResult = {
 /**
  * @category Provider
  */
-export class LineServerAuthorizer
+export class LineServerAuthenticator
   implements
-    ServerAuthorizer<LineAuthCredential, LineAuthData, LineAuthContext>
+    ServerAuthenticator<LineAuthCredential, LineAuthData, LineAuthContext>
 {
   bot: BotP;
   liffChannelIds: string[];
   platform = LINE;
 
-  constructor(bot: BotP, { liffChannelIds }: LineServerAuthorizerOpts) {
+  constructor(bot: BotP, { liffChannelIds }: LineServerAuthenticatorOpts) {
     invariant(
       liffChannelIds && liffChannelIds.length,
       'options.liffChannelIds should not be empty'
@@ -176,7 +176,7 @@ export class LineServerAuthorizer
   }
 }
 
-const ServerAuthorizerP = makeClassProvider({
+const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'transient',
   deps: [BotP, ConfigsI] as const,
   factory: (bot, { liffChannelIds }) => {
@@ -185,12 +185,12 @@ const ServerAuthorizerP = makeClassProvider({
       'provide configs.liffChannelIds to authorize with liff'
     );
 
-    return new LineServerAuthorizer(bot, {
+    return new LineServerAuthenticator(bot, {
       liffChannelIds,
     });
   },
-})(LineServerAuthorizer);
+})(LineServerAuthenticator);
 
-type ServerAuthorizerP = LineServerAuthorizer;
+type ServerAuthenticatorP = LineServerAuthenticator;
 
-export default ServerAuthorizerP;
+export default ServerAuthenticatorP;

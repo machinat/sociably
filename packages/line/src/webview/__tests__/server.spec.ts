@@ -5,7 +5,7 @@ import LineChat from '../../channel';
 import LineUser from '../../user';
 import { LineUserProfile } from '../../profiler';
 import LineApiError from '../../error';
-import { LineServerAuthorizer as ServerAuthorizer } from '../server';
+import { LineServerAuthenticator as ServerAuthenticator } from '../server';
 import { LiffContextOs } from '../../constant';
 
 const request = {
@@ -28,12 +28,12 @@ beforeEach(() => {
 
 describe('#constructor(options)', () => {
   it('ok', () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
-    expect(authorizer.platform).toBe('line');
-    expect(authorizer.liffChannelIds).toEqual([
+    expect(authenticator.platform).toBe('line');
+    expect(authenticator.liffChannelIds).toEqual([
       '_LOGIN_CHAN_1_',
       '_LOGIN_CHAN_2_',
     ]);
@@ -41,12 +41,12 @@ describe('#constructor(options)', () => {
 
   it('throw if liffChannelIds is empty', () => {
     expect(
-      () => new ServerAuthorizer(bot, {} as never)
+      () => new ServerAuthenticator(bot, {} as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.liffChannelIds should not be empty"`
     );
     expect(
-      () => new ServerAuthorizer(bot, { liffChannelIds: [] })
+      () => new ServerAuthenticator(bot, { liffChannelIds: [] })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.liffChannelIds should not be empty"`
     );
@@ -55,12 +55,12 @@ describe('#constructor(options)', () => {
 
 describe('#delegateAuthRequest(req, res)', () => {
   it('respond 403', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
     const res = moxy(new ServerResponse({} as never));
 
-    await expect(authorizer.delegateAuthRequest(request, res)).resolves.toBe(
+    await expect(authenticator.delegateAuthRequest(request, res)).resolves.toBe(
       undefined
     );
 
@@ -80,7 +80,7 @@ describe('#verifyCredential(credential)', () => {
   };
 
   it('calls line social api to verify access token', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -90,7 +90,7 @@ describe('#verifyCredential(credential)', () => {
       expires_in: 2591659,
     }));
 
-    await expect(authorizer.verifyCredential(credential)).resolves.toEqual({
+    await expect(authenticator.verifyCredential(credential)).resolves.toEqual({
       success: true,
       data: {
         provider: '_PROVIDER_ID_',
@@ -109,7 +109,7 @@ describe('#verifyCredential(credential)', () => {
   });
 
   test('verify user is group member if groupId given', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -126,7 +126,7 @@ describe('#verifyCredential(credential)', () => {
     }));
 
     await expect(
-      authorizer.verifyCredential({ ...credential, groupId: '_GROUP_ID_' })
+      authenticator.verifyCredential({ ...credential, groupId: '_GROUP_ID_' })
     ).resolves.toEqual({
       success: true,
       data: {
@@ -156,7 +156,7 @@ describe('#verifyCredential(credential)', () => {
   });
 
   test('verify user is room member if roomId given', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -173,7 +173,7 @@ describe('#verifyCredential(credential)', () => {
     }));
 
     await expect(
-      authorizer.verifyCredential({ ...credential, roomId: '_ROOM_ID_' })
+      authenticator.verifyCredential({ ...credential, roomId: '_ROOM_ID_' })
     ).resolves.toEqual({
       success: true,
       data: {
@@ -202,10 +202,10 @@ describe('#verifyCredential(credential)', () => {
   });
 
   it('return fail if accessToken is absent', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
-    await expect(authorizer.verifyCredential({} as never)).resolves
+    await expect(authenticator.verifyCredential({} as never)).resolves
       .toMatchInlineSnapshot(`
             Object {
               "code": 400,
@@ -216,7 +216,7 @@ describe('#verifyCredential(credential)', () => {
   });
 
   it('return fail if token verify api respond error', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -231,7 +231,7 @@ describe('#verifyCredential(credential)', () => {
       });
     });
 
-    await expect(authorizer.verifyCredential(credential as never)).resolves
+    await expect(authenticator.verifyCredential(credential as never)).resolves
       .toMatchInlineSnapshot(`
             Object {
               "code": 400,
@@ -242,7 +242,7 @@ describe('#verifyCredential(credential)', () => {
   });
 
   it('return fail if client_id from token not in options.liffChannelIds', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -252,7 +252,7 @@ describe('#verifyCredential(credential)', () => {
       expires_in: 2591659,
     }));
 
-    await expect(authorizer.verifyCredential(credential)).resolves
+    await expect(authenticator.verifyCredential(credential)).resolves
       .toMatchInlineSnapshot(`
             Object {
               "code": 400,
@@ -263,7 +263,7 @@ describe('#verifyCredential(credential)', () => {
   });
 
   it('throw if unknown error happen', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
     });
 
@@ -271,7 +271,7 @@ describe('#verifyCredential(credential)', () => {
       throw new Error('connection error');
     });
 
-    await expect(authorizer.verifyCredential(credential)).rejects.toThrow(
+    await expect(authenticator.verifyCredential(credential)).rejects.toThrow(
       new Error('connection error')
     );
   });
@@ -292,23 +292,23 @@ describe('#verifyRefreshment()', () => {
   };
 
   it('return success and original data', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
-    await expect(authorizer.verifyRefreshment(authData)).resolves.toEqual({
+    await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
       success: true,
       data: authData,
     });
   });
 
   it('return fail if providerId not match', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
     await expect(
-      authorizer.verifyRefreshment({
+      authenticator.verifyRefreshment({
         ...authData,
         provider: '_WORNG_PROVIDER_',
       })
@@ -322,12 +322,12 @@ describe('#verifyRefreshment()', () => {
   });
 
   it('return fail if channelId not match', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
     await expect(
-      authorizer.verifyRefreshment({
+      authenticator.verifyRefreshment({
         ...authData,
         channel: '_WORNG_CHANNEL_',
       })
@@ -341,12 +341,12 @@ describe('#verifyRefreshment()', () => {
   });
 
   it('return fail if clientId not valid', async () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
     await expect(
-      authorizer.verifyRefreshment({
+      authenticator.verifyRefreshment({
         ...authData,
         client: '_WORNG_CLIENT_',
       })
@@ -375,11 +375,11 @@ describe('#checkAuthContext(data)', () => {
   };
 
   it('resolve private chat', () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
-    expect(authorizer.checkAuthContext(authData)).toEqual({
+    expect(authenticator.checkAuthContext(authData)).toEqual({
       success: true,
       contextSupplment: {
         providerId: '_PROVIDER_ID_',
@@ -395,12 +395,12 @@ describe('#checkAuthContext(data)', () => {
   });
 
   it('resolve group chat', () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         ...authData,
         os: LiffContextOs.Ios,
         lang: 'zh-TW',
@@ -422,12 +422,12 @@ describe('#checkAuthContext(data)', () => {
   });
 
   it('resolve room chat', () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         ...authData,
         os: LiffContextOs.Android,
         lang: 'jp',
@@ -449,12 +449,12 @@ describe('#checkAuthContext(data)', () => {
   });
 
   it('resolve profile if profile data proivded', () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         ...authData,
         os: LiffContextOs.Ios,
         user: '_USER_ID_',
@@ -482,12 +482,12 @@ describe('#checkAuthContext(data)', () => {
   });
 
   it('fail if id providerId, channelId or clientId not matched', () => {
-    const authorizer = new ServerAuthorizer(bot, {
+    const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         ...authData,
         provider: '_WRONG_PROVIDER_',
       })
@@ -500,7 +500,7 @@ describe('#checkAuthContext(data)', () => {
     `);
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         ...authData,
         channel: '_WRONG_CHANNEL_',
       })
@@ -513,7 +513,7 @@ describe('#checkAuthContext(data)', () => {
     `);
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         ...authData,
         client: '_WRONG_CLIENT_',
       })

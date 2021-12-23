@@ -1,11 +1,11 @@
-import TelegramClientAuthorizer from '../client';
+import TelegramClientAuthenticator from '../client';
 import { TelegramChat } from '../../channel';
 import TelegramUser from '../../user';
 
-const authorizer = new TelegramClientAuthorizer();
+const authenticator = new TelegramClientAuthenticator();
 
 test('#constructor() properties', () => {
-  expect(authorizer.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
+  expect(authenticator.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
     Array [
       "TelegramChat",
       "TelegramChatTarget",
@@ -17,11 +17,11 @@ test('#constructor() properties', () => {
 });
 
 test('#init() do nothing', async () => {
-  await expect(authorizer.init()).resolves.toBe(undefined);
+  await expect(authenticator.init()).resolves.toBe(undefined);
 });
 
 test('#fetchCredential() return not ok', async () => {
-  await expect(authorizer.fetchCredential()).resolves.toMatchInlineSnapshot(`
+  await expect(authenticator.fetchCredential()).resolves.toMatchInlineSnapshot(`
           Object {
             "code": 400,
             "reason": "should only initiate from backend",
@@ -51,7 +51,7 @@ test('#checkAuthContext()', () => {
     username: 'jojodoe',
   });
 
-  expect(authorizer.checkAuthContext(authData)).toEqual({
+  expect(authenticator.checkAuthContext(authData)).toEqual({
     success: true,
     contextSupplment: {
       botId: 12345,
@@ -67,7 +67,7 @@ test('#checkAuthContext()', () => {
     },
   });
   expect(
-    authorizer.checkAuthContext({
+    authenticator.checkAuthContext({
       ...authData,
       chat: { type: 'group', id: 67890 },
     })
@@ -83,5 +83,5 @@ test('#checkAuthContext()', () => {
 });
 
 test('#closeWebview() return false', () => {
-  expect(authorizer.closeWebview()).toBe(false);
+  expect(authenticator.closeWebview()).toBe(false);
 });

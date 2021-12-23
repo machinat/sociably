@@ -2,7 +2,7 @@
 /// <reference lib="DOM" />
 import invariant from 'invariant';
 import type { ContextResult } from '@machinat/auth';
-import { WebviewClientAuthorizer } from '@machinat/webview';
+import { WebviewClientAuthenticator } from '@machinat/webview';
 import { MESSENGER } from '../constant';
 import MessengerChat from '../channel';
 import { MessengerUserProfile } from '../profiler';
@@ -12,7 +12,7 @@ import type {
   MessengerAuthData,
   MessengerAuthContext,
   ExtensionContext,
-  AuthorizerCredentialResult,
+  AuthenticatorCredentialResult,
 } from './types';
 import { supplementContext } from './utils';
 
@@ -28,9 +28,9 @@ declare const window: Window & {
 
 const INIT_TIMEOUT = 20000; // 20s;
 
-class MessengerClientAuthorizer
+class MessengerClientAuthenticator
   implements
-    WebviewClientAuthorizer<
+    WebviewClientAuthenticator<
       MessengerAuthCredential,
       MessengerAuthData,
       MessengerAuthContext
@@ -89,7 +89,7 @@ class MessengerClientAuthorizer
     this.extensionsSdk = window.MessengerExtensions;
   }
 
-  async fetchCredential(): Promise<AuthorizerCredentialResult> {
+  async fetchCredential(): Promise<AuthenticatorCredentialResult> {
     try {
       const context: ExtensionContext = await new Promise((resolve, reject) => {
         this.extensionsSdk.getContext(this.appId, resolve, reject);
@@ -130,4 +130,4 @@ class MessengerClientAuthorizer
   }
 }
 
-export default MessengerClientAuthorizer;
+export default MessengerClientAuthenticator;

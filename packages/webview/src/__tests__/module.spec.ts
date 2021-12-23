@@ -14,7 +14,7 @@ import {
   WebviewUserChannel,
   WebviewTopicChannel,
 } from '../channel';
-import NoneAuthorizer from '../noneAuthorizer';
+import NoneAuthenticator from '../noneAuthenticator';
 import Webview from '../module';
 
 const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
@@ -58,10 +58,10 @@ it('export interfaces', () => {
   `);
 
   expect(Object.getPrototypeOf(Webview.AuthController)).toBe(Auth.Controller);
-  expect(Webview.AuthorizerList).toMatchInlineSnapshot(`
+  expect(Webview.AuthenticatorList).toMatchInlineSnapshot(`
     Object {
       "$$multi": true,
-      "$$name": "WebviewAuthorizersList",
+      "$$name": "WebviewAuthenticatorsList",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.machinat),
     }
@@ -110,7 +110,7 @@ test('service provisions', async () => {
   const app = Machinat.createApp({
     platforms: [Webview.initModule(configsInput)],
     services: [
-      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
+      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
     ],
   });
   await app.start();
@@ -121,7 +121,7 @@ test('service provisions', async () => {
     receiver,
     server,
     authController,
-    authorizers,
+    authenticators,
     nextReceiver,
     nextServer,
     requestRoutes,
@@ -132,7 +132,7 @@ test('service provisions', async () => {
     Webview.Receiver,
     Webview.SocketServer,
     Webview.AuthController,
-    Webview.AuthorizerList,
+    Webview.AuthenticatorList,
     Webview.NextReceiver,
     Webview.NextServer,
     Http.RequestRouteList,
@@ -145,7 +145,7 @@ test('service provisions', async () => {
   expect(server).toBeInstanceOf(WebSocket.Server);
 
   expect(authController).toBeInstanceOf(Auth.Controller);
-  expect(authorizers).toEqual([expect.any(NoneAuthorizer)]);
+  expect(authenticators).toEqual([expect.any(NoneAuthenticator)]);
 
   expect(nextReceiver).toBeInstanceOf(Next.Receiver);
   expect(createNextServer.mock).toHaveBeenCalledTimes(1);
@@ -188,7 +188,7 @@ test('default routing paths', async () => {
       }),
     ],
     services: [
-      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
+      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
     ],
   });
   await app.start();
@@ -227,7 +227,7 @@ test('provide base interfaces', async () => {
       }),
     ],
     services: [
-      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
+      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
     ],
   });
   await app.start();
@@ -260,7 +260,7 @@ test('startHook', async () => {
     ],
     services: [
       { provide: Webview.Bot, withValue: fakeBot },
-      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
+      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
     ],
   });
   await app.start();
@@ -283,7 +283,7 @@ test('stopHook', async () => {
     ],
     services: [
       { provide: Webview.Bot, withValue: fakeBot },
-      { provide: Webview.AuthorizerList, withProvider: NoneAuthorizer },
+      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
     ],
   });
   await app.start();

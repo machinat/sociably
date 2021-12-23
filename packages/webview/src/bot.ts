@@ -11,7 +11,7 @@ import Queue from '@machinat/core/queue';
 import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type { DispatchResponse } from '@machinat/core/engine';
-import type { AnyServerAuthorizer } from '@machinat/auth';
+import type { AnyServerAuthenticator } from '@machinat/auth';
 import { WebSocketWorker } from '@machinat/websocket';
 import { createJobs } from '@machinat/websocket/utils';
 import type {
@@ -48,10 +48,10 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
 /**
  * @category Provider
  */
-export class WebviewBot<Authorizer extends AnyServerAuthorizer>
+export class WebviewBot<Authenticator extends AnyServerAuthenticator>
   implements MachinatBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult>
 {
-  private _server: SocketServerP<Authorizer>;
+  private _server: SocketServerP<Authenticator>;
 
   engine: Engine<
     WebviewDispatchChannel,
@@ -59,11 +59,11 @@ export class WebviewBot<Authorizer extends AnyServerAuthorizer>
     WebviewComponent,
     WebSocketJob,
     WebSocketResult,
-    WebviewBot<Authorizer>
+    WebviewBot<Authenticator>
   >;
 
   constructor(
-    server: SocketServerP<Authorizer>,
+    server: SocketServerP<Authenticator>,
     initScope: InitScopeFn = () => createEmptyScope(),
     dispatchWrapper: DispatchWrapper<
       WebSocketJob,
@@ -188,5 +188,5 @@ export const BotP = makeClassProvider({
     ),
 })(WebviewBot);
 
-export type BotP<Authorizer extends AnyServerAuthorizer> =
-  WebviewBot<Authorizer>;
+export type BotP<Authenticator extends AnyServerAuthenticator> =
+  WebviewBot<Authenticator>;

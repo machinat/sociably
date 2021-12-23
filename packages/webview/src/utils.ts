@@ -1,6 +1,9 @@
 import { MachinatUser } from '@machinat/core';
 import Auth from '@machinat/auth';
-import type { AnyServerAuthorizer, ContextOfAuthorizer } from '@machinat/auth';
+import type {
+  AnyServerAuthenticator,
+  ContextOfAuthenticator,
+} from '@machinat/auth';
 import type {
   EventInput,
   VerifyLoginFn,
@@ -34,9 +37,13 @@ export const createEvent = <
 };
 
 export const useAuthLogin =
-  <Authorizer extends AnyServerAuthorizer>(
-    controller: Auth.Controller<Authorizer>
-  ): VerifyLoginFn<MachinatUser, ContextOfAuthorizer<Authorizer>, string> =>
+  <Authenticator extends AnyServerAuthenticator>(
+    controller: Auth.Controller<Authenticator>
+  ): VerifyLoginFn<
+    MachinatUser,
+    ContextOfAuthenticator<Authenticator>,
+    string
+  > =>
   async (request: HttpRequestInfo, credential: string) => {
     const result = await controller.verifyAuth(request, credential);
 

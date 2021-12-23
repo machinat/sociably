@@ -4,7 +4,7 @@ import nock from 'nock';
 import fetch from 'node-fetch';
 import jsonwebtoken from 'jsonwebtoken';
 import AuthError from '../../error';
-import type { AnyClientAuthorizer } from '../../types';
+import type { AnyClientAuthenticator } from '../../types';
 import AuthClient from '../client';
 
 const resolveAfterLoops = (resolve, n) => {
@@ -46,7 +46,7 @@ const fooUser = { platform: 'foo', uid: 'john_doe' };
 const fooChannel = { platform: 'foo', uid: 'foo.channel' };
 const fooData = 'foo.data';
 
-const fooAuthorizer = moxy<AnyClientAuthorizer>({
+const fooAuthenticator = moxy<AnyClientAuthenticator>({
   platform: 'foo',
   async init() {
     return undefined;
@@ -69,7 +69,7 @@ const fooAuthorizer = moxy<AnyClientAuthorizer>({
   },
 });
 
-const barAuthorizer = moxy<AnyClientAuthorizer>({
+const barAuthenticator = moxy<AnyClientAuthenticator>({
   platform: 'bar',
   async init() {
     return undefined;
@@ -93,7 +93,7 @@ const barAuthorizer = moxy<AnyClientAuthorizer>({
   },
 });
 
-const authorizers = [fooAuthorizer, barAuthorizer];
+const authenticators = [fooAuthenticator, barAuthenticator];
 const serverUrl = '/auth';
 
 jest.useFakeTimers();
@@ -124,8 +124,8 @@ afterAll(() => {
 
 beforeEach(() => {
   (Date as Moxy<DateConstructor>).now.mock.reset();
-  fooAuthorizer.mock.reset();
-  barAuthorizer.mock.reset();
+  fooAuthenticator.mock.reset();
+  barAuthenticator.mock.reset();
   location.mock.reset();
   document.mock.reset();
 });
@@ -136,13 +136,13 @@ afterEach(() => {
 
 describe('bootstraping phase', () => {
   test('default properties', () => {
-    let client = new AuthClient({ authorizers, serverUrl });
-    expect(client.authorizers).toEqual(authorizers);
+    let client = new AuthClient({ authenticators, serverUrl });
+    expect(client.authenticators).toEqual(authenticators);
     expect(client.refreshLeadTime).toBe(300);
     expect(client.isAuthorizing).toBe(false);
 
     client = new AuthClient({
-      authorizers,
+      authenticators,
       serverUrl,
       refreshLeadTime: 999,
     });
@@ -150,16 +150,21 @@ describe('bootstraping phase', () => {
     expect(client.isAuthorizing).toBe(false);
   });
 
-  it('throw if authorizers is empty', async () => {
+  it('throw if authenticators is empty', async () => {
     expect(
       () =>
-        new AuthClient({ authorizers: undefined as never, serverUrl: '/auth' })
-    ).toThrowErrorMatchingInlineSnapshot(`"options.authorizers is required"`);
+        new AuthClient({
+          authenticators: undefined as never,
+          serverUrl: '/auth',
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.authenticators is required"`
+    );
   });
 
   it('throw if serverUrl is empty', () => {
     expect(
-      () => new AuthClient({ authorizers, serverUrl: undefined as never })
+      () => new AuthClient({ authenticators, serverUrl: undefined as never })
     ).toThrowErrorMatchingInlineSnapshot(`"options.serverUrl is required"`);
   });
 
@@ -198,11 +203,11 @@ describe('bootstraping phase', () => {
         });
       }
 
-      const client = new AuthClient({ authorizers, serverUrl: '/auth' });
+      const client = new AuthClient({ authenticators, serverUrl: '/auth' });
 
       // prevent further signing request
-      fooAuthorizer.fetchCredential.mock.fake(() => Promise.reject());
-      barAuthorizer.fetchCredential.mock.fake(() => Promise.reject());
+      fooAuthenticator.fetchCredential.mock.fake(() => Promise.reject());
+      barAuthenticator.fetchCredential.mock.fake(() => Promise.reject());
       try {
         await client.signIn({ platform: param });
       } catch {
@@ -210,13 +215,13 @@ describe('bootstraping phase', () => {
       }
 
       expect(client.platform).toBe(expectedPlatform);
-      expect(client.getAuthorizer()).toBe(
-        expectedPlatform === 'foo' ? fooAuthorizer : barAuthorizer
+      expect(client.getAuthenticator()).toBe(
+        expectedPlatform === 'foo' ? fooAuthenticator : barAuthenticator
       );
 
       if (expectedPlatform === 'foo') {
-        expect(fooAuthorizer.init.mock).toHaveBeenCalledTimes(1);
-        expect(fooAuthorizer.init.mock).toHaveBeenCalledWith(
+        expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+        expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
           'https://machinat.io/auth/foo',
           cookieError === 'foo'
             ? new AuthError('foo', 418, "I'm a teapot")
@@ -224,8 +229,8 @@ describe('bootstraping phase', () => {
           cookieAuth === 'foo' ? { foo: '__DATA__' } : null
         );
       } else if (expectedPlatform === 'bar') {
-        expect(barAuthorizer.init.mock).toHaveBeenCalledTimes(1);
-        expect(barAuthorizer.init.mock).toHaveBeenCalledWith(
+        expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+        expect(barAuthenticator.init.mock).toHaveBeenCalledWith(
           'https://machinat.io/auth/bar',
           cookieError === 'bar'
             ? new AuthError('bar', 418, "I'm a teapot")
@@ -236,7 +241,7 @@ describe('bootstraping phase', () => {
     }
   );
 
-  it('call authorizer.init() of the platform only once', async () => {
+  it('call authenticator.init() of the platform only once', async () => {
     setCookieAuth({
       platform: 'foo',
       data: { foo: 'data' },
@@ -245,7 +250,7 @@ describe('bootstraping phase', () => {
       exp: SEC_NOW + 9999,
     });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
     const promise = client.signIn();
     expect(client.isAuthorizing).toBe(true);
 
@@ -254,8 +259,8 @@ describe('bootstraping phase', () => {
     expect(client.isAuthorizing).toBe(false);
     expect(client.isAuthorized).toBe(true);
 
-    expect(fooAuthorizer.init.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.init.mock).toHaveBeenCalledWith(
+    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
       'https://machinat.io/auth/foo',
       null,
       {
@@ -263,7 +268,7 @@ describe('bootstraping phase', () => {
       }
     );
 
-    expect(barAuthorizer.init.mock).not.toHaveBeenCalled();
+    expect(barAuthenticator.init.mock).not.toHaveBeenCalled();
   });
 
   it('clear error cookie', async () => {
@@ -273,7 +278,7 @@ describe('bootstraping phase', () => {
       scope: { domain: 'machinat.io', path: '/entry' },
     });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
     await expect(client.signIn()).rejects.toThrow("I'm a teapot");
 
     expect(client.platform).toBe('foo');
@@ -287,12 +292,12 @@ describe('bootstraping phase', () => {
     );
   });
 
-  it('emit error if authorizer.init() reject', async () => {
-    const client = new AuthClient({ authorizers, serverUrl });
+  it('emit error if authenticator.init() reject', async () => {
+    const client = new AuthClient({ authenticators, serverUrl });
     const errorSpy = moxy();
     client.on('error', errorSpy);
 
-    fooAuthorizer.init.mock.fake(() => {
+    fooAuthenticator.init.mock.fake(() => {
       throw new Error('Boom!');
     });
 
@@ -307,7 +312,7 @@ describe('bootstraping phase', () => {
   it('throw if no platform specified or paltform is unknown', async () => {
     location.mock.getter('search').fakeReturnValue('');
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
     const errorSpy = moxy();
     client.on('error', errorSpy);
 
@@ -344,33 +349,39 @@ describe('bootstraping phase', () => {
       scope: { path: '/' },
     });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     await expect(client.signIn()).rejects.toThrow("I'm a teapot");
-    expect(fooAuthorizer.init.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
 
     document.mock.getter('cookie').fakeReturnValue('');
     // prevent further signing request
-    fooAuthorizer.fetchCredential.mock.fake(() => Promise.reject(new Error()));
+    fooAuthenticator.fetchCredential.mock.fake(() =>
+      Promise.reject(new Error())
+    );
 
     await expect(client.signIn({ platform: 'foo' })).rejects.toThrow();
 
     expect(client.platform).toBe('foo');
-    expect(fooAuthorizer.init.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
   });
 
   test('init different platforms', async () => {
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     // prevent further signing request
-    fooAuthorizer.fetchCredential.mock.fake(() => Promise.reject(new Error()));
-    barAuthorizer.fetchCredential.mock.fake(() => Promise.reject(new Error()));
+    fooAuthenticator.fetchCredential.mock.fake(() =>
+      Promise.reject(new Error())
+    );
+    barAuthenticator.fetchCredential.mock.fake(() =>
+      Promise.reject(new Error())
+    );
 
     await expect(client.signIn()).rejects.toThrow();
     expect(client.platform).toBe('foo');
 
-    expect(fooAuthorizer.init.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.init.mock).toHaveBeenCalledWith(
+    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
       'https://machinat.io/auth/foo',
       null,
       null
@@ -379,8 +390,8 @@ describe('bootstraping phase', () => {
     await expect(client.signIn({ platform: 'bar' })).rejects.toThrow();
     expect(client.platform).toBe('bar');
 
-    expect(barAuthorizer.init.mock).toHaveBeenCalledTimes(1);
-    expect(barAuthorizer.init.mock).toHaveBeenCalledWith(
+    expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+    expect(barAuthenticator.init.mock).toHaveBeenCalledWith(
       'https://machinat.io/auth/bar',
       null,
       null
@@ -392,8 +403,8 @@ describe('bootstraping phase', () => {
     await expect(client.signIn({ platform: 'foo' })).rejects.toThrow();
     expect(client.platform).toBe('foo');
 
-    expect(fooAuthorizer.init.mock).toHaveBeenCalledTimes(1);
-    expect(barAuthorizer.init.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+    expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
   });
 
   test('change platform after signed in', async () => {
@@ -405,7 +416,7 @@ describe('bootstraping phase', () => {
       exp: SEC_NOW + 9999,
     });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     await client.signIn();
     expect(client.platform).toBe('foo');
@@ -413,7 +424,9 @@ describe('bootstraping phase', () => {
     expect(client.isAuthorizing).toBe(false);
 
     // prevent further signing request
-    barAuthorizer.fetchCredential.mock.fake(() => Promise.reject(new Error()));
+    barAuthenticator.fetchCredential.mock.fake(() =>
+      Promise.reject(new Error())
+    );
 
     await expect(client.signIn({ platform: 'bar' })).rejects.toThrow();
     expect(client.platform).toBe('bar');
@@ -446,7 +459,7 @@ describe('signing auth flow', () => {
   test('when already signed in', async () => {
     setCookieAuth(authPayload);
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
     expect(client.isAuthorizing).toBe(false);
     expect(client.isAuthorized).toBe(false);
 
@@ -458,8 +471,8 @@ describe('signing auth flow', () => {
     expect(client.isAuthorized).toBe(true);
     expect(client.isAuthorizing).toBe(false);
 
-    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -471,7 +484,7 @@ describe('signing auth flow', () => {
       scope: { path: '/' },
     });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
     expect(client.isAuthorizing).toBe(false);
     expect(client.isAuthorized).toBe(false);
 
@@ -483,7 +496,7 @@ describe('signing auth flow', () => {
     expect(client.isAuthorized).toBe(false);
   });
 
-  it('get credential from authorizer and sign in', async () => {
+  it('get credential from authenticator and sign in', async () => {
     const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
@@ -491,7 +504,7 @@ describe('signing auth flow', () => {
       })
       .reply(200, { platform: 'foo', token });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     await expect(client.signIn()).resolves.toEqual({
       token,
@@ -500,12 +513,12 @@ describe('signing auth flow', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(true);
-    expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledWith(
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledWith(
       'https://machinat.io/auth/foo'
     );
-    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -518,7 +531,7 @@ describe('signing auth flow', () => {
       })
       .reply(200, { platform: 'foo', token });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     const expectedResult = { token, context: expectedContext };
 
@@ -532,8 +545,8 @@ describe('signing auth flow', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(true);
-    expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledTimes(1);
   });
 
   it('sign again if token in cookie expired', async () => {
@@ -552,7 +565,7 @@ describe('signing auth flow', () => {
       })
       .reply(200, { platform: 'foo', token });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     await expect(client.signIn()).resolves.toEqual({
       token,
@@ -570,7 +583,7 @@ describe('signing auth flow', () => {
       })
       .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     await expect(client.signIn()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"I'm a teapot"`
@@ -578,11 +591,11 @@ describe('signing auth flow', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(false);
-    expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.checkAuthContext.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).not.toHaveBeenCalled();
   });
 
-  it('throw if authorizer.checkAuthContext() fail', async () => {
+  it('throw if authenticator.checkAuthContext() fail', async () => {
     const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
@@ -593,13 +606,13 @@ describe('signing auth flow', () => {
         token,
       });
 
-    fooAuthorizer.checkAuthContext.mock.fake(() => ({
+    fooAuthenticator.checkAuthContext.mock.fake(() => ({
       success: false,
       code: 400,
       reason: 'bad data',
     }));
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     await expect(client.signIn()).rejects.toThrowErrorMatchingInlineSnapshot(
       `"invalid auth info"`
@@ -607,9 +620,9 @@ describe('signing auth flow', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(false);
-    expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthorizer.checkAuthContext.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -625,7 +638,7 @@ describe('signing auth flow', () => {
         token,
       });
 
-    const client = new AuthClient({ authorizers, serverUrl });
+    const client = new AuthClient({ authenticators, serverUrl });
 
     const promise = client.signIn();
     (Date as Moxy<DateConstructor>).now.mock.fake(() => FAKE_NOW + 50);
@@ -661,7 +674,7 @@ describe('auth refreshment and expiry', () => {
     });
 
     const client = new AuthClient({
-      authorizers,
+      authenticators,
       serverUrl,
       refreshLeadTime: 10,
     });
@@ -706,7 +719,7 @@ describe('auth refreshment and expiry', () => {
       });
     }
 
-    expect(fooAuthorizer.fetchCredential.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).not.toHaveBeenCalled();
     expect(errorSpy.mock).not.toHaveBeenCalled();
   });
@@ -722,7 +735,7 @@ describe('auth refreshment and expiry', () => {
     });
 
     const client = new AuthClient({
-      authorizers,
+      authenticators,
       serverUrl,
       refreshLeadTime: 10,
     });
@@ -760,10 +773,10 @@ describe('auth refreshment and expiry', () => {
     expect(refreshSpy.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
     expect(expireSpy.mock).toHaveBeenCalledWith(context);
-    expect(fooAuthorizer.fetchCredential.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
   });
 
-  it('resign instead of refresh if authorizer.shouldResign', async () => {
+  it('resign instead of refresh if authenticator.shouldResign', async () => {
     setCookieAuth({
       platform: 'foo',
       data: { foo: 'data' },
@@ -773,7 +786,7 @@ describe('auth refreshment and expiry', () => {
     });
 
     const client = new AuthClient({
-      authorizers,
+      authenticators,
       serverUrl,
       refreshLeadTime: 10,
     });
@@ -807,7 +820,7 @@ describe('auth refreshment and expiry', () => {
       expect(refreshingCall.isDone()).toBe(true);
       expect(client.isAuthorized).toBe(true);
       expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
-      expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(i);
+      expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(i);
 
       // eslint-disable-next-line
       await expect(client.signIn()).resolves.toEqual({
@@ -827,7 +840,7 @@ describe('auth refreshment and expiry', () => {
     expect(errorSpy.mock).not.toHaveBeenCalled();
   });
 
-  it('emit error if authorizer.fetchCredential() resolve not success', async () => {
+  it('emit error if authenticator.fetchCredential() resolve not success', async () => {
     setCookieAuth({
       platform: 'foo',
       data: { foo: 'data' },
@@ -837,7 +850,7 @@ describe('auth refreshment and expiry', () => {
     });
 
     const client = new AuthClient({
-      authorizers,
+      authenticators,
       serverUrl,
       refreshLeadTime: 10,
     });
@@ -845,7 +858,7 @@ describe('auth refreshment and expiry', () => {
     client.on('refresh', refreshSpy);
     client.on('error', errorSpy);
 
-    fooAuthorizer.fetchCredential.mock.fake(() => ({
+    fooAuthenticator.fetchCredential.mock.fake(() => ({
       success: false,
       code: 404,
       reason: "You don't see me",
@@ -858,7 +871,7 @@ describe('auth refreshment and expiry', () => {
     await delayLoops(5);
 
     expect(client.isAuthorized).toBe(true);
-    expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
 
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock).toHaveBeenCalledWith(
@@ -890,7 +903,7 @@ describe('auth refreshment and expiry', () => {
     });
 
     const client = new AuthClient({
-      authorizers,
+      authenticators,
       serverUrl,
       refreshLeadTime: 10,
     });
@@ -913,7 +926,7 @@ describe('auth refreshment and expiry', () => {
 
     expect(refreshingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(true);
-    expect(fooAuthorizer.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
 
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock).toHaveBeenCalledWith(
@@ -946,7 +959,7 @@ describe('auth refreshment and expiry', () => {
     });
 
     const client = new AuthClient({
-      authorizers,
+      authenticators,
       serverUrl,
       refreshLeadTime: 10,
     });
@@ -987,7 +1000,7 @@ describe('auth refreshment and expiry', () => {
     expect(errorSpy.mock).not.toHaveBeenCalled();
     expect(refreshSpy.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).not.toHaveBeenCalled();
-    expect(fooAuthorizer.fetchCredential.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
   });
 });
 
@@ -1001,7 +1014,7 @@ test('#signOut()', async () => {
     refreshTill: SEC_NOW + 99999,
   });
 
-  const client = new AuthClient({ authorizers, serverUrl });
+  const client = new AuthClient({ authenticators, serverUrl });
   const expireSpy = moxy();
   const errorSpy = moxy();
   client.on('expire', expireSpy);

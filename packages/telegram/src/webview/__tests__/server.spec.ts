@@ -2,7 +2,7 @@ import type { IncomingMessage } from 'http';
 import moxy from '@moxyjs/moxy';
 import type { ResponseHelper } from '@machinat/auth';
 import type { TelegramBot } from '../../bot';
-import { TelegramServerAuthorizer } from '../server';
+import { TelegramServerAuthenticator } from '../server';
 import { TelegramChat } from '../../channel';
 import TelegramUser from '../../user';
 import TelegramApiError from '../../error';
@@ -32,7 +32,7 @@ const bot = moxy<TelegramBot>({
   },
 } as never);
 
-const authorizer = new TelegramServerAuthorizer(bot);
+const authenticator = new TelegramServerAuthenticator(bot);
 
 beforeEach(() => {
   bot.mock.reset();
@@ -66,7 +66,7 @@ describe('#delegateAuthRequest()', () => {
     const search = new URLSearchParams(telegramLoginSearch);
 
     const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authorizer.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never, resHelper);
 
     expect(resHelper.redirect.mock).toHaveBeenCalledTimes(1);
     expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
@@ -115,7 +115,7 @@ describe('#delegateAuthRequest()', () => {
       title: 'Does',
     }));
 
-    await authorizer.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never, resHelper);
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
     expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(1, 'getChatMember', {
@@ -161,7 +161,7 @@ describe('#delegateAuthRequest()', () => {
       });
     });
 
-    await authorizer.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never, resHelper);
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
 
@@ -181,7 +181,7 @@ describe('#delegateAuthRequest()', () => {
     });
 
     const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authorizer.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never, resHelper);
 
     expect(resHelper.redirect.mock).toHaveBeenCalledWith(
       '/webview/hello_world.html',
@@ -202,7 +202,7 @@ describe('#delegateAuthRequest()', () => {
     });
 
     const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authorizer.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never, resHelper);
 
     expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
       assertInternal: true,
@@ -225,7 +225,7 @@ describe('#delegateAuthRequest()', () => {
     const req = createReq({
       url: `/auth/telegram?${search}`,
     });
-    await authorizer.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never, resHelper);
 
     expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
       assertInternal: true,
@@ -241,7 +241,8 @@ describe('#delegateAuthRequest()', () => {
 });
 
 test('#verifyCredential() simply return not ok', async () => {
-  await expect(authorizer.verifyCredential()).resolves.toMatchInlineSnapshot(`
+  await expect(authenticator.verifyCredential()).resolves
+    .toMatchInlineSnapshot(`
           Object {
             "code": 403,
             "reason": "should initiate st server side only",
@@ -266,7 +267,7 @@ describe('#verifyRefreshment()', () => {
       },
       photo: undefined,
     };
-    await expect(authorizer.verifyRefreshment(authData)).resolves.toEqual({
+    await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
       success: true,
       data: authData,
     });
@@ -274,7 +275,7 @@ describe('#verifyRefreshment()', () => {
 
   it('return fail if botId not match', async () => {
     await expect(
-      authorizer.verifyRefreshment({
+      authenticator.verifyRefreshment({
         bot: 55555,
         chat: undefined,
         user: {
@@ -316,7 +317,7 @@ test('#supplementContext()', () => {
     username: 'jojodoe',
   });
 
-  expect(authorizer.checkAuthContext(authData)).toEqual({
+  expect(authenticator.checkAuthContext(authData)).toEqual({
     success: true,
     contextSupplment: {
       botId: 12345,
@@ -333,7 +334,7 @@ test('#supplementContext()', () => {
   });
 
   expect(
-    authorizer.checkAuthContext({
+    authenticator.checkAuthContext({
       ...authData,
       chat: { type: 'group', id: 98765 },
     })

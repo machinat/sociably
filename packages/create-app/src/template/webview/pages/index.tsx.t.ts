@@ -9,26 +9,28 @@ import getConfig from 'next/config';
 import WebviewClient, { useEventReducer } from '@machinat/webview/client';${when(
     platforms.includes('messenger')
   )`
-import { MessengerClientAuthorizer } from '@machinat/messenger/webview';`}${when(
+import { MessengerClientAuthenticator } from '@machinat/messenger/webview';`}${when(
     platforms.includes('telegram')
   )`
-import { TelegramClientAuthorizer } from '@machinat/telegram/webview';`}${when(
+import { TelegramClientAuthenticator } from '@machinat/telegram/webview';`}${when(
     platforms.includes('line')
   )`
-import { LineClientAuthorizer } from '@machinat/line/webview';`}
+import { LineClientAuthenticator } from '@machinat/line/webview';`}
 
 const { publicRuntimeConfig } = getConfig();
 
 const client =  new WebviewClient(
   typeof window === 'undefined'
-    ? { mockupMode: true, authorizers: [] }
+    ? { mockupMode: true, authenticators: [] }
     : {
-        authorizers: [${when(platforms.includes('messenger'))`
-          new MessengerClientAuthorizer({
+        authenticators: [${when(platforms.includes('messenger'))`
+          new MessengerClientAuthenticator({
             appId: publicRuntimeConfig.messengerAppId,
           }),`}${when(platforms.includes('telegram'))`
-          new TelegramClientAuthorizer(),`}${when(platforms.includes('line'))`
-          new LineClientAuthorizer({
+          new TelegramClientAuthenticator(),`}${when(
+    platforms.includes('line')
+  )`
+          new LineClientAuthenticator({
             liffId: publicRuntimeConfig.lineLiffId,
           }),`}
         ],

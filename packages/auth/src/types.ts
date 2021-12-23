@@ -104,7 +104,7 @@ export interface ResponseHelper {
   redirect(url?: string, options?: RedirectOptions): boolean;
 }
 
-export interface ServerAuthorizer<
+export interface ServerAuthenticator<
   Credential,
   Data,
   Context extends AnyAuthContext
@@ -144,17 +144,17 @@ export interface ServerAuthorizer<
   checkAuthContext(data: Data): ContextResult<Context>;
 }
 
-export type AnyServerAuthorizer = ServerAuthorizer<
+export type AnyServerAuthenticator = ServerAuthenticator<
   unknown,
   unknown,
   AnyAuthContext
 >;
 
-export type AuthorizerCredentialResult<Credential> =
+export type AuthenticatorCredentialResult<Credential> =
   | { success: true; credential: Credential }
   | ErrorResult;
 
-export interface ClientAuthorizer<
+export interface ClientAuthenticator<
   Credential,
   Data,
   Context extends AnyAuthContext
@@ -179,7 +179,7 @@ export interface ClientAuthorizer<
    */
   fetchCredential(
     entry: string
-  ): Promise<AuthorizerCredentialResult<Credential>>;
+  ): Promise<AuthenticatorCredentialResult<Credential>>;
 
   /**
    * Called before the authorization finish, you can make some simple non-async
@@ -188,7 +188,7 @@ export interface ClientAuthorizer<
   checkAuthContext(data: Data): ContextResult<Context>;
 }
 
-export type AnyClientAuthorizer = ClientAuthorizer<
+export type AnyClientAuthenticator = ClientAuthenticator<
   unknown,
   unknown,
   AnyAuthContext
@@ -235,17 +235,17 @@ export type WithHeaders = {
   headers: IncomingHttpHeaders;
 };
 
-export type ContextOfAuthorizer<
-  Authorizer extends AnyServerAuthorizer | AnyClientAuthorizer
-> = Authorizer extends ServerAuthorizer<unknown, unknown, infer Context>
+export type ContextOfAuthenticator<
+  Authenticator extends AnyServerAuthenticator | AnyClientAuthenticator
+> = Authenticator extends ServerAuthenticator<unknown, unknown, infer Context>
   ? Context
-  : Authorizer extends ClientAuthorizer<unknown, unknown, infer Context>
+  : Authenticator extends ClientAuthenticator<unknown, unknown, infer Context>
   ? Context
   : never;
 
 type UserOfContext<Context extends AnyAuthContext> =
   Context extends AuthContext<infer User, any> ? User : never;
 
-export type UserOfAuthorizer<
-  Authorizer extends AnyServerAuthorizer | AnyClientAuthorizer
-> = UserOfContext<ContextOfAuthorizer<Authorizer>>;
+export type UserOfAuthenticator<
+  Authenticator extends AnyServerAuthenticator | AnyClientAuthenticator
+> = UserOfContext<ContextOfAuthenticator<Authenticator>>;

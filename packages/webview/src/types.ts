@@ -11,11 +11,11 @@ import type { UnitSegment } from '@machinat/core/renderer';
 import type { DispatchFrame } from '@machinat/core/engine';
 import type { MaybeContainer } from '@machinat/core/service';
 import type {
-  AnyServerAuthorizer,
-  ClientAuthorizer,
+  AnyServerAuthenticator,
+  ClientAuthenticator,
   AnyAuthContext,
-  ContextOfAuthorizer,
-  UserOfAuthorizer,
+  ContextOfAuthenticator,
+  UserOfAuthenticator,
 } from '@machinat/auth';
 import type { NextServerOptions } from '@machinat/next';
 import type {
@@ -60,36 +60,36 @@ export type WebviewMetadata<Context extends AnyAuthContext> = Omit<
   'connection'
 > & { connection: WebviewConnection };
 
-export interface WebviewClientAuthorizer<
+export interface WebviewClientAuthenticator<
   Credential,
   Data,
   Context extends AnyAuthContext
-> extends ClientAuthorizer<Credential, Data, Context> {
+> extends ClientAuthenticator<Credential, Data, Context> {
   closeWebview: () => boolean;
   marshalTypes: null | AnyMarshalType[];
 }
 
-export type AnyClientAuthorizer = WebviewClientAuthorizer<
+export type AnyClientAuthenticator = WebviewClientAuthenticator<
   unknown,
   unknown,
   AnyAuthContext
 >;
 
 export type WebviewEventContext<
-  Authorizer extends AnyServerAuthorizer,
+  Authenticator extends AnyServerAuthenticator,
   Value extends EventValue = EventValue
 > = {
   platform: 'webview';
-  event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
-  metadata: WebviewMetadata<ContextOfAuthorizer<Authorizer>>;
-  bot: BotP<Authorizer>;
+  event: WebviewEvent<Value, UserOfAuthenticator<Authenticator>>;
+  metadata: WebviewMetadata<ContextOfAuthenticator<Authenticator>>;
+  bot: BotP<Authenticator>;
   reply(message: MachinatNode): Promise<null | WebSocketDispatchResponse>;
 };
 
 export type WebviewEventMiddleware<
-  Authorizer extends AnyServerAuthorizer,
+  Authenticator extends AnyServerAuthenticator,
   Value extends EventValue = EventValue
-> = EventMiddleware<WebviewEventContext<Authorizer, Value>, null>;
+> = EventMiddleware<WebviewEventContext<Authenticator, Value>, null>;
 
 export type WebviewDispatchChannel =
   | WebviewTopicChannel
@@ -108,7 +108,7 @@ export type WebviewDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type WebviewConfigs<
-  Authorizer extends AnyServerAuthorizer,
+  Authenticator extends AnyServerAuthenticator,
   Value extends EventValue = EventValue
 > = {
   /** Host of the webview. */
@@ -142,16 +142,17 @@ export type WebviewConfigs<
   secure?: boolean;
 
   eventMiddlewares?: MaybeContainer<
-    WebviewEventMiddleware<Authorizer, Value>
+    WebviewEventMiddleware<Authenticator, Value>
   >[];
   dispatchMiddlewares?: MaybeContainer<WebviewDispatchMiddleware>[];
 };
 
-export type WebviewPlatformUtilities<Authorizer extends AnyServerAuthorizer> =
-  PlatformUtilities<
-    WebviewEventContext<Authorizer, EventValue>,
-    null,
-    WebSocketJob,
-    WebviewDispatchFrame,
-    WebSocketResult
-  >;
+export type WebviewPlatformUtilities<
+  Authenticator extends AnyServerAuthenticator
+> = PlatformUtilities<
+  WebviewEventContext<Authenticator, EventValue>,
+  null,
+  WebSocketJob,
+  WebviewDispatchFrame,
+  WebSocketResult
+>;

@@ -7,7 +7,7 @@ import {
 } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
-import { AnyServerAuthorizer } from '@machinat/auth';
+import { AnyServerAuthenticator } from '@machinat/auth';
 import Http from '@machinat/http';
 import type {
   RequestRoute,
@@ -37,7 +37,7 @@ import {
   ConfigsI,
   SocketBrokerI,
   WsServerI,
-  AuthorizerListI,
+  AuthenticatorListI,
   NextServerI,
 } from './interface';
 import { BotP } from './bot';
@@ -47,7 +47,7 @@ import {
   WebviewUserChannel,
   WebviewTopicChannel,
 } from './channel';
-import { NoneUser, NoneChannel } from './noneAuthorizer';
+import { NoneUser, NoneChannel } from './noneAuthenticator';
 import type {
   WebviewEventContext,
   WebviewDispatchFrame,
@@ -118,15 +118,16 @@ namespace Webview {
   export type Configs = ConfigsI;
 
   export const Bot = BotP;
-  export type Bot<Authorizer extends AnyServerAuthorizer> = BotP<Authorizer>;
+  export type Bot<Authenticator extends AnyServerAuthenticator> =
+    BotP<Authenticator>;
 
   export const SocketServer = SocketServerP;
-  export type SocketServer<Authorizer extends AnyServerAuthorizer> =
-    SocketServerP<Authorizer>;
+  export type SocketServer<Authenticator extends AnyServerAuthenticator> =
+    SocketServerP<Authenticator>;
 
   export const Receiver = ReceiverP;
-  export type Receiver<Authorizer extends AnyServerAuthorizer> =
-    ReceiverP<Authorizer>;
+  export type Receiver<Authenticator extends AnyServerAuthenticator> =
+    ReceiverP<Authenticator>;
   export const SocketBroker = SocketBrokerI;
   export type SocketBroker = SocketBrokerI;
 
@@ -137,11 +138,11 @@ namespace Webview {
   export type WsServer = WsServerI;
 
   export const AuthController = AuthControllerP;
-  export type AuthController<Authorizer extends AnyServerAuthorizer> =
-    AuthControllerP<Authorizer>;
+  export type AuthController<Authenticator extends AnyServerAuthenticator> =
+    AuthControllerP<Authenticator>;
 
-  export const AuthorizerList = AuthorizerListI;
-  export type AuthorizerList = AuthorizerListI;
+  export const AuthenticatorList = AuthenticatorListI;
+  export type AuthenticatorList = AuthenticatorListI;
 
   export const NextServer = NextServerI;
   export type NextServer = NextServerI;
@@ -150,12 +151,12 @@ namespace Webview {
   export type NextReceiver = NextReceiverP;
 
   export const initModule = <
-    Authorizer extends AnyServerAuthorizer,
+    Authenticator extends AnyServerAuthenticator,
     Value extends EventValue = EventValue
   >(
-    configs: WebviewConfigs<Authorizer, Value>
+    configs: WebviewConfigs<Authenticator, Value>
   ): MachinatPlatform<
-    WebviewEventContext<Authorizer, Value>,
+    WebviewEventContext<Authenticator, Value>,
     null,
     WebSocketJob,
     WebviewDispatchFrame,

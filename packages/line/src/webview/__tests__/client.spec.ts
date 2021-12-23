@@ -1,7 +1,7 @@
 import url from 'url';
 import { JSDOM } from 'jsdom';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import ClientAuthorizer from '../client';
+import ClientAuthenticator from '../client';
 import LineChat from '../../channel';
 import LineUser from '../../user';
 import { LiffContextOs } from '../../constant';
@@ -75,14 +75,15 @@ beforeEach(() => {
 
 describe('#constructor()', () => {
   test('properties', () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
     });
 
-    expect(authorizer.platform).toBe('line');
-    expect(authorizer.liffId).toBe('_LIFF_ID_');
-    expect(authorizer.shouldLoadSDK).toBe(true);
-    expect(authorizer.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
+    expect(authenticator.platform).toBe('line');
+    expect(authenticator.liffId).toBe('_LIFF_ID_');
+    expect(authenticator.shouldLoadSDK).toBe(true);
+    expect(authenticator.marshalTypes.map((t) => t.name))
+      .toMatchInlineSnapshot(`
       Array [
         "LineChat",
         "LineUser",
@@ -94,18 +95,18 @@ describe('#constructor()', () => {
 
   it('throw if liffId is empty', () => {
     expect(
-      () => new ClientAuthorizer({} as never)
+      () => new ClientAuthenticator({} as never)
     ).toThrowErrorMatchingInlineSnapshot(`"options.liffId must not be empty"`);
   });
 });
 
 describe('#init()', () => {
   it('add liff sdk and call init() after loaded', async () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
     });
 
-    const promise = authorizer.init();
+    const promise = authenticator.init();
 
     const liffScriptEle: any = window.document.getElementById('LIFF');
     expect(liffScriptEle.tagName).toBe('SCRIPT');
@@ -122,12 +123,12 @@ describe('#init()', () => {
   });
 
   it('skip adding sdk if options.shouldLoadSDK set to false', async () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
-    await expect(authorizer.init()).resolves.toBe(undefined);
+    await expect(authenticator.init()).resolves.toBe(undefined);
 
     expect(document.getElementById('LIFF')).toBe(null);
     expect(liff.init.mock).toHaveBeenCalledTimes(1);
@@ -140,12 +141,12 @@ describe('#init()', () => {
       .getter('search')
       .fakeReturnValue('?liff.state=__DATA_FROM_LIFF__');
 
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
-    const promise = authorizer.init();
+    const promise = authenticator.init();
     setImmediate(jest.runAllTimers);
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -161,13 +162,13 @@ describe('#init()', () => {
 
 describe('#fetchCredential()', () => {
   it('resolve credential containing liff infos and access token', async () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
-    await authorizer.init();
-    await expect(authorizer.fetchCredential()).resolves.toEqual({
+    await authenticator.init();
+    await expect(authenticator.fetchCredential()).resolves.toEqual({
       success: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
@@ -181,7 +182,7 @@ describe('#fetchCredential()', () => {
   });
 
   test('credential in group chat', async () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
@@ -193,8 +194,8 @@ describe('#fetchCredential()', () => {
       utouId: undefined,
     });
 
-    await authorizer.init();
-    await expect(authorizer.fetchCredential()).resolves.toEqual({
+    await authenticator.init();
+    await expect(authenticator.fetchCredential()).resolves.toEqual({
       success: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
@@ -209,7 +210,7 @@ describe('#fetchCredential()', () => {
   });
 
   test('credential in room chat', async () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
@@ -221,8 +222,8 @@ describe('#fetchCredential()', () => {
       utouId: undefined,
     });
 
-    await authorizer.init();
-    await expect(authorizer.fetchCredential()).resolves.toEqual({
+    await authenticator.init();
+    await expect(authenticator.fetchCredential()).resolves.toEqual({
       success: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
@@ -241,15 +242,15 @@ describe('#fetchCredential()', () => {
 
     liff.isLoggedIn.mock.fakeReturnValue(false);
 
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
     expect(liff.login.mock).not.toHaveBeenCalled();
 
-    await authorizer.init();
-    const promise = authorizer.fetchCredential();
+    await authenticator.init();
+    const promise = authenticator.fetchCredential();
     setImmediate(jest.runAllTimers);
 
     expect(liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
@@ -268,13 +269,13 @@ describe('#fetchCredential()', () => {
 
 describe('#checkAuthContext(data)', () => {
   it('resolve utou chat', () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
@@ -302,13 +303,13 @@ describe('#checkAuthContext(data)', () => {
   });
 
   it('resolve group chat', () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
@@ -336,13 +337,13 @@ describe('#checkAuthContext(data)', () => {
   });
 
   it('resolve room chat', () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
@@ -370,13 +371,13 @@ describe('#checkAuthContext(data)', () => {
   });
 
   it('resolve profile if profile data proivded', () => {
-    const authorizer = new ClientAuthorizer({
+    const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
       shouldLoadSDK: false,
     });
 
     expect(
-      authorizer.checkAuthContext({
+      authenticator.checkAuthContext({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
@@ -409,12 +410,12 @@ describe('#checkAuthContext(data)', () => {
 });
 
 test('#closeWebview', async () => {
-  const authorizer = new ClientAuthorizer({
+  const authenticator = new ClientAuthenticator({
     liffId: '_LIFF_ID_',
     shouldLoadSDK: false,
   });
-  await authorizer.init();
+  await authenticator.init();
 
-  expect(authorizer.closeWebview()).toBe(true);
+  expect(authenticator.closeWebview()).toBe(true);
   expect(liff.closeWindow.mock).toHaveBeenCalledTimes(1);
 });

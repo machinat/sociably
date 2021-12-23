@@ -13,7 +13,7 @@
   "exports": {
     ".": "./lib/index.js",
     "./client": "./lib/client/index.js",
-    "./noneAuthorizer": "./lib/noneAuthorizer/index.js"
+    "./noneAuthenticator": "./lib/noneAuthenticator/index.js"
   },
   "files": [
     "lib/*",

@@ -4,7 +4,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import base64url from 'base64url';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
-  ServerAuthorizer,
+  ServerAuthenticator,
   VerifyResult,
   ContextResult,
 } from '@machinat/auth';
@@ -22,7 +22,7 @@ import type {
 const { decode: decodeBase64Url, toBuffer: decodeBase64UrlToBuffer } =
   base64url;
 
-type ServerAuthorizerOptions = {
+type ServerAuthenticatorOptions = {
   /** Page id which the app is running on. */
   pageId: number;
   /** App secret for verifying auth data. */
@@ -35,13 +35,13 @@ type ServerAuthorizerOptions = {
 };
 
 /**
- * MessengerServerAuthorizer provide auth flow implementation for
+ * MessengerServerAuthenticator provide auth flow implementation for
  * `@machinat/auth`.
  * @category Provider
  */
-export class MessengerServerAuthorizer
+export class MessengerServerAuthenticator
   implements
-    ServerAuthorizer<
+    ServerAuthenticator<
       MessengerAuthCredential,
       MessengerAuthData,
       MessengerAuthContext
@@ -52,7 +52,7 @@ export class MessengerServerAuthorizer
   appSecret: string;
   issueTimeLimit: number;
 
-  constructor(options: ServerAuthorizerOptions) {
+  constructor(options: ServerAuthenticatorOptions) {
     invariant(options?.appSecret, 'options.appSecret must not be empty');
     invariant(options.pageId, 'options.pageId must not be empty');
 
@@ -164,7 +164,7 @@ export class MessengerServerAuthorizer
   }
 }
 
-const ServerAuthorizerP = makeClassProvider({
+const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'transient',
   deps: [ConfigsI] as const,
   factory: ({ pageId, appSecret }) => {
@@ -172,10 +172,10 @@ const ServerAuthorizerP = makeClassProvider({
       throw new Error('configs.appSecret must be set to authorize webview');
     }
 
-    return new MessengerServerAuthorizer({ pageId, appSecret });
+    return new MessengerServerAuthenticator({ pageId, appSecret });
   },
-})(MessengerServerAuthorizer);
+})(MessengerServerAuthenticator);
 
-type ServerAuthorizerP = MessengerServerAuthorizer;
+type ServerAuthenticatorP = MessengerServerAuthenticator;
 
-export default ServerAuthorizerP;
+export default ServerAuthenticatorP;

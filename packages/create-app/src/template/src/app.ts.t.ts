@@ -8,15 +8,15 @@ import Http from '@machinat/http';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';${when(
     platforms.includes('webview')
   )`
-import MessengerAuthorizer from '@machinat/messenger/webview';`}`}${when(
+import MessengerAuthenticator from '@machinat/messenger/webview';`}`}${when(
     platforms.includes('line')
   )`
 import Line from '@machinat/line';${when(platforms.includes('webview'))`
-import LineAuthorizer from '@machinat/line/webview';`}`}${when(
+import LineAuthenticator from '@machinat/line/webview';`}`}${when(
     platforms.includes('telegram')
   )`
 import Telegram from '@machinat/telegram';${when(platforms.includes('webview'))`
-import TelegramAuthorizer from '@machinat/telegram/webview';`}`}${when(
+import TelegramAuthenticator from '@machinat/telegram/webview';`}`}${when(
     platforms.includes('webview')
   )`
 import Webview from '@machinat/webview';`}
@@ -103,9 +103,9 @@ const app = Machinat.createApp({
     }),`}${when(platforms.includes('webview'))`
 
     Webview.initModule<${when(platforms.includes('messenger'))`
-      | MessengerAuthorizer`}${when(platforms.includes('telegram'))`
-      | TelegramAuthorizer`}${when(platforms.includes('line'))`
-      | LineAuthorizer`}
+      | MessengerAuthenticator`}${when(platforms.includes('telegram'))`
+      | TelegramAuthenticator`}${when(platforms.includes('line'))`
+      | LineAuthenticator`}
     >({
       webviewHost: DOMAIN,
       webviewPath: '/webview',
@@ -129,13 +129,13 @@ const app = Machinat.createApp({
   ],
 ${when(platforms.includes('webview'))`
   services: [${when(platforms.includes('messenger'))`
-    { provide: Webview.AuthorizerList, withProvider: MessengerAuthorizer },`}${when(
+    { provide: Webview.AuthenticatorList, withProvider: MessengerAuthenticator },`}${when(
   platforms.includes('telegram')
 )`
-    { provide: Webview.AuthorizerList, withProvider: TelegramAuthorizer },`}${when(
+    { provide: Webview.AuthenticatorList, withProvider: TelegramAuthenticator },`}${when(
   platforms.includes('line')
 )`
-    { provide: Webview.AuthorizerList, withProvider: LineAuthorizer },`}
+    { provide: Webview.AuthenticatorList, withProvider: LineAuthenticator },`}
     
     { provide: ServerDomain, withValue: DOMAIN },${when(
       platforms.includes('line')

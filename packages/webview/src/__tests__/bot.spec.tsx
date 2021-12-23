@@ -3,7 +3,7 @@ import Machinat from '@machinat/core';
 import Queue from '@machinat/core/queue';
 import _Engine from '@machinat/core/engine';
 import _Renderer from '@machinat/core/renderer';
-import type { AnyServerAuthorizer } from '@machinat/auth';
+import type { AnyServerAuthenticator } from '@machinat/auth';
 import { WebSocketWorker } from '@machinat/websocket';
 import {
   WebviewConnection,
@@ -36,7 +36,7 @@ jest.mock('@machinat/websocket', () =>
     .default(jest.requireActual('@machinat/websocket'))
 );
 
-const server = moxy<SocketServerP<AnyServerAuthorizer>>({
+const server = moxy<SocketServerP<AnyServerAuthenticator>>({
   id: '_SERVER_ID_',
   start: async () => {},
   stop: async () => {},

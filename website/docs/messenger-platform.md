@@ -108,12 +108,12 @@ platform and set up with these steps:
 
 1. Add server domain to [`whitelisted_domains`](https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/domain-whitelisting)
    of the page profile.
-2. Add `MessengerAuthorizer` into the `Webview.AuthorizerList`.
+2. Add `MessengerAuthenticator` into the `Webview.AuthenticatorList`.
 3. Expose Facebook app id to front-end.
 
 ```ts {1-2,7,22-24,30}
 import Webview from '@machinat/webview';
-import MessengerAuthorizer from '@machinat/messenger/webview';
+import MessengerAuthenticator from '@machinat/messenger/webview';
 // ...
 
 const {
@@ -141,7 +141,7 @@ const app = Machinat.createApp({
     }),
   ],
   services: [
-    { provide: Webview.AuthorizerList, withProvider: MessengerAuthorizer },
+    { provide: Webview.AuthenticatorList, withProvider: MessengerAuthenticator },
   ],
 });
 ```
@@ -167,18 +167,18 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Then add `MessengerClientAuthorizer` in the webview client:
+Then add `MessengerClientAuthenticator` in the webview client:
 
 ```ts
 import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
-import { MessengerClientAuthorizer } from '@machinat/messenger/webview';
+import { MessengerClientAuthenticator } from '@machinat/messenger/webview';
 
 const { publicRuntimeConfig } = getConfig();
 
 const client =  new WebviewClient({
-  authorizers: [
-    new MessengerClientAuthorizer({
+  authenticators: [
+    new MessengerClientAuthenticator({
       appId: publicRuntimeConfig.messengerAppId,
     }),
   ],

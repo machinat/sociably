@@ -113,11 +113,11 @@ platform and set up with these steps:
 
 1. Send `/setdomain` command to [@Botfather](https://t.me/botfather) to register
    the server domain.
-2. Add `TelegramAuthorizer` into the `Webview.AuthorizerList`.
+2. Add `TelegramAuthenticator` into the `Webview.AuthenticatorList`.
 
 ```ts
 import Webview from '@machinat/webview';
-import TelegramAuthorizer from '@machinat/telegram/webview';
+import TelegramAuthenticator from '@machinat/telegram/webview';
 // ...
 
 const app = Machinat.createApp({
@@ -129,7 +129,7 @@ const app = Machinat.createApp({
     Webview.intiModule({ /* ... */ }),
   ],
   services: [
-    { provide: Webview.AuthorizerList, withProvider: TelegramAuthorizer },
+    { provide: Webview.AuthenticatorList, withProvider: TelegramAuthenticator },
   ],
 });
 ```
@@ -157,15 +157,15 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Then add `TelegramClientAuthorizer` in the webview client:
+Then add `TelegramClientAuthenticator` in the webview client:
 
 ```ts
 import WebviewClient from '@machinat/webview/client';
-import { TelegramClientAuthorizer } from '@machinat/telegram/webview';
+import { TelegramClientAuthenticator } from '@machinat/telegram/webview';
 
 const client =  new WebviewClient({
-  authorizers: [
-    new TelegramClientAuthorizer(),
+  authenticators: [
+    new TelegramClientAuthenticator(),
   ],
 });
 ```

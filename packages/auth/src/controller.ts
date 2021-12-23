@@ -12,10 +12,10 @@ import {
 import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import { SIGNATURE_COOKIE_KEY } from './constant';
-import { AuthorizerListI, ConfigsI } from './interface';
+import { AuthenticatorListI, ConfigsI } from './interface';
 import AuthError from './error';
 import type {
-  AnyServerAuthorizer,
+  AnyServerAuthenticator,
   AuthTokenPayload,
   SignRequestBody,
   RefreshRequestBody,
@@ -23,7 +23,7 @@ import type {
   AuthApiResponseBody,
   AuthApiErrorBody,
   AuthConfigs,
-  ContextOfAuthorizer,
+  ContextOfAuthenticator,
   WithHeaders,
 } from './types';
 
@@ -65,23 +65,27 @@ const respondApiError = (
   res.end(JSON.stringify(body));
 };
 
-type AuthVerifyResult<Authorizer extends AnyServerAuthorizer> =
-  | { success: true; token: string; context: ContextOfAuthorizer<Authorizer> }
+type AuthVerifyResult<Authenticator extends AnyServerAuthenticator> =
+  | {
+      success: true;
+      token: string;
+      context: ContextOfAuthenticator<Authenticator>;
+    }
   | { success: false; token: void | string; code: number; reason: string };
 
 /**
  * @category Provider
  */
-export class AuthController<Authorizer extends AnyServerAuthorizer> {
-  authorizers: Authorizer[];
+export class AuthController<Authenticator extends AnyServerAuthenticator> {
+  authenticators: Authenticator[];
   secret: string;
   apiPath: string;
   cookieOperator: CookieOperator;
 
-  constructor(authorizers: Authorizer[], options: AuthConfigs) {
+  constructor(authenticators: Authenticator[], options: AuthConfigs) {
     invariant(
-      authorizers && authorizers.length > 0,
-      'authorizers must not be empty'
+      authenticators && authenticators.length > 0,
+      'authenticators must not be empty'
     );
     invariant(options && options.secret, 'options.secret must not be empty');
     invariant(options.redirectUrl, 'options.redirectUrl must not be empty');
@@ -127,7 +131,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     );
 
     this.secret = secret;
-    this.authorizers = authorizers;
+    this.authenticators = authenticators;
     this.apiPath = apiPath;
 
     this.cookieOperator = new CookieOperator({
@@ -186,14 +190,14 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
     const [platform] = subpath.split('/');
 
-    const authorizer = this._getAuthorizerOf(platform);
-    if (!authorizer) {
+    const authenticator = this._getAuthenticatorOf(platform);
+    if (!authenticator) {
       respondApiError(res, undefined, 404, `platform "${platform}" not found`);
       return;
     }
 
     try {
-      await authorizer.delegateAuthRequest(
+      await authenticator.delegateAuthRequest(
         req,
         res,
         this.cookieOperator.createResponseHelper(req, res, platform),
@@ -219,7 +223,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         res,
         platform,
         501,
-        'connection not closed by authorizer'
+        'connection not closed by authenticator'
       );
     }
   }
@@ -227,7 +231,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
   async verifyAuth(
     req: HttpRequestInfo,
     tokenProvided?: string
-  ): Promise<AuthVerifyResult<Authorizer>> {
+  ): Promise<AuthVerifyResult<Authenticator>> {
     let token = tokenProvided;
     if (!token) {
       const { authorization } = req.headers;
@@ -275,8 +279,8 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
     const { platform, data, exp, iat } = payload;
 
-    const authorizer = this._getAuthorizerOf(platform);
-    if (!authorizer) {
+    const authenticator = this._getAuthenticatorOf(platform);
+    if (!authenticator) {
       return {
         success: false,
         token,
@@ -285,7 +289,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       };
     }
 
-    const ctxResult = authorizer.checkAuthContext(data);
+    const ctxResult = authenticator.checkAuthContext(data);
     if (!ctxResult.success) {
       return {
         success: false,
@@ -305,7 +309,7 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     return {
       success: true,
       token,
-      context: authData as ContextOfAuthorizer<Authorizer>,
+      context: authData as ContextOfAuthenticator<Authenticator>,
     };
   }
 
@@ -323,13 +327,13 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
         return;
       }
 
-      const authorizer = this._getAuthorizerOf(platform);
-      if (!authorizer) {
+      const authenticator = this._getAuthenticatorOf(platform);
+      if (!authenticator) {
         respondApiError(res, platform, 404, `unknown platform "${platform}"`);
         return;
       }
 
-      const verifyResult = await authorizer.verifyCredential(credential);
+      const verifyResult = await authenticator.verifyCredential(credential);
       if (!verifyResult.success) {
         const { code, reason } = verifyResult;
         respondApiError(res, platform, code, reason);
@@ -391,13 +395,13 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
       if (refreshTill * 1000 >= Date.now()) {
         // refresh signature and issue new token
-        const authorizer = this._getAuthorizerOf(platform);
-        if (!authorizer) {
+        const authenticator = this._getAuthenticatorOf(platform);
+        if (!authenticator) {
           respondApiError(res, platform, 404, `unknown platform "${platform}"`);
           return;
         }
 
-        const refreshResult = await authorizer.verifyRefreshment(data);
+        const refreshResult = await authenticator.verifyRefreshment(data);
         if (!refreshResult.success) {
           const { code, reason } = refreshResult;
           respondApiError(res, platform, code, reason);
@@ -452,8 +456,8 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
       }
 
       const { platform } = payload;
-      const authorizer = this._getAuthorizerOf(platform);
-      if (!authorizer) {
+      const authenticator = this._getAuthenticatorOf(platform);
+      if (!authenticator) {
         respondApiError(res, platform, 404, `unknown platform "${platform}"`);
         return;
       }
@@ -496,10 +500,10 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
     }
   }
 
-  private _getAuthorizerOf(platform: string): null | Authorizer {
-    for (const authorizer of this.authorizers) {
-      if (platform === authorizer.platform) {
-        return authorizer;
+  private _getAuthenticatorOf(platform: string): null | Authenticator {
+    for (const authenticator of this.authenticators) {
+      if (platform === authenticator.platform) {
+        return authenticator;
       }
     }
     return null;
@@ -508,8 +512,8 @@ export class AuthController<Authorizer extends AnyServerAuthorizer> {
 
 export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AuthorizerListI, ConfigsI] as const,
+  deps: [AuthenticatorListI, ConfigsI] as const,
 })(AuthController);
 
-export type ControllerP<Authorizer extends AnyServerAuthorizer> =
-  AuthController<Authorizer>;
+export type ControllerP<Authenticator extends AnyServerAuthenticator> =
+  AuthController<Authenticator>;

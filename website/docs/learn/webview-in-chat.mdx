@@ -255,10 +255,10 @@ like this:
 // ...
 const client = new WebviewClient(
   typeof window === 'undefined'
-    ? { mockupMode: true, authorizers: [] }
+    ? { mockupMode: true, authenticators: [] }
     : {
-        authorizers: [
-          new MessengerClientAuthorizer({
+        authenticators: [
+          new MessengerClientAuthenticator({
             appId: publicRuntimeConfig.messengerAppId,
           }),
         ],
@@ -274,9 +274,9 @@ const client = new WebviewClient(
 // ...
 const client = new WebviewClient(
   typeof window === 'undefined'
-    ? { mockupMode: true, authorizers: [] }
+    ? { mockupMode: true, authenticators: [] }
     : {
-        authorizers: [new TelegramClientAuthorizer()],
+        authenticators: [new TelegramClientAuthenticator()],
       }
 );
 // ...
@@ -289,10 +289,10 @@ const client = new WebviewClient(
 // ...
 const client = new WebviewClient(
   typeof window === 'undefined'
-    ? { mockupMode: true, authorizers: [] }
+    ? { mockupMode: true, authenticators: [] }
     : {
-        authorizers: [
-          new LineClientAuthorizer({
+        authenticators: [
+          new LineClientAuthenticator({
             liffId: publicRuntimeConfig.lineLiffId,
           }),
         ],
