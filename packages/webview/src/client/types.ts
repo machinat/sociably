@@ -5,13 +5,11 @@ import type WebviewClient from './client';
 export type ClientEventContext<
   Authorizer extends AnyClientAuthorizer,
   Value extends EventValue
-> = Authorizer extends AnyClientAuthorizer
-  ? {
-      event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
-      authorizer: Authorizer;
-      auth: ContextOfAuthorizer<Authorizer>;
-    }
-  : never;
+> = {
+  event: WebviewEvent<Value, UserOfAuthorizer<Authorizer>>;
+  authorizer: Authorizer;
+  auth: ContextOfAuthorizer<Authorizer>;
+};
 
 export type EventContextOfClient<
   Client extends WebviewClient<AnyClientAuthorizer, EventValue>

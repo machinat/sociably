@@ -19,7 +19,12 @@ import type { ClientEventContext, ClientOptions } from './types';
 class WebviewClient<
   Authorizer extends AnyClientAuthorizer,
   Value extends EventValue = EventValue
-> extends ClientEmitter<ClientEventContext<Authorizer, Value>> {
+> extends ClientEmitter<
+  ClientEventContext<
+    Authorizer,
+    Value | ConnectEventValue | DisconnectEventValue
+  >
+> {
   private _authClient: AuthClient<Authorizer>;
   private _connector: Connector<UserOfAuthorizer<Authorizer>>;
   private _platformInput: string | undefined;
@@ -134,17 +139,19 @@ class WebviewClient<
     this._user = user;
     this._channel = new WebviewConnection('*', connId);
 
-    const connectEvent: ConnectEventValue = {
-      category: 'connection',
-      type: 'connect',
-      payload: null,
-    };
-
     this._emitEvent({
-      event: createEvent(connectEvent, this._channel, user),
+      event: createEvent(
+        {
+          category: 'connection',
+          type: 'connect',
+          payload: null,
+        },
+        this._channel,
+        user
+      ),
       auth: this.authContext as ContextOfAuthorizer<Authorizer>,
       authorizer: this._authClient.getAuthorizer() as Authorizer,
-    } as ClientEventContext<Authorizer, Value>);
+    });
   }
 
   private _handleEvent(values: Value[]) {
@@ -157,7 +164,7 @@ class WebviewClient<
         ),
         auth: this.authContext as ContextOfAuthorizer<Authorizer>,
         authorizer: this._authClient.getAuthorizer() as Authorizer,
-      } as ClientEventContext<Authorizer, Value>);
+      });
     }
   }
 
@@ -165,21 +172,19 @@ class WebviewClient<
     const channel = this._channel;
     this._channel = null;
 
-    const disconnectValue: DisconnectEventValue = {
-      category: 'connection',
-      type: 'disconnect',
-      payload: { reason },
-    };
-
     this._emitEvent({
       event: createEvent(
-        disconnectValue,
+        {
+          category: 'connection',
+          type: 'disconnect',
+          payload: { reason },
+        },
         channel as WebviewConnection,
         this._user as UserOfAuthorizer<Authorizer>
       ),
       auth: this.authContext as ContextOfAuthorizer<Authorizer>,
       authorizer: this._authClient.getAuthorizer() as Authorizer,
-    } as ClientEventContext<Authorizer, Value>);
+    });
   }
 }
 
