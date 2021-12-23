@@ -120,6 +120,14 @@ class MessengerClientAuthorizer
       contextSupplment: supplementContext(data),
     };
   }
+
+  closeWebview(): boolean {
+    this.extensionsSdk.requestCloseBrowser(
+      () => {},
+      () => {}
+    );
+    return true;
+  }
 }
 
 export default MessengerClientAuthorizer;

@@ -103,6 +103,11 @@ class LineClientAuthorizer
       contextSupplment: supplementContext(data),
     };
   }
+
+  closeWebview(): boolean {
+    this.liff.closeWindow();
+    return true;
+  }
 }
 
 export default LineClientAuthorizer;

@@ -9,6 +9,7 @@ const nextTick = () => new Promise(process.nextTick);
 
 const MessengerExtensions = moxy({
   getContext: () => {},
+  requestCloseBrowser: () => {},
 });
 
 const { document } = new JSDOM('').window;
@@ -238,4 +239,19 @@ describe('#checkAuthContext(data)', () => {
       },
     });
   });
+});
+
+test('#closeWebview()', async () => {
+  const authorizer = new MessengerClientAuthorizer({
+    appId: 'APP_ID',
+    isSdkReady: true,
+  });
+  await authorizer.init();
+
+  expect(authorizer.closeWebview()).toBe(true);
+  expect(MessengerExtensions.requestCloseBrowser.mock).toHaveBeenCalledTimes(1);
+  expect(MessengerExtensions.requestCloseBrowser.mock).toHaveBeenCalledWith(
+    expect.any(Function),
+    expect.any(Function)
+  );
 });

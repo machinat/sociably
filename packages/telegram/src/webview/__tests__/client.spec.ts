@@ -81,3 +81,7 @@ test('#checkAuthContext()', () => {
     },
   });
 });
+
+test('#closeWebview() return false', () => {
+  expect(authorizer.closeWebview()).toBe(false);
+});

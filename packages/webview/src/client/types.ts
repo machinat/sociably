@@ -22,15 +22,15 @@ export type EventContextOfClient<
 export type ClientOptions<Authorizer extends AnyClientAuthorizer> = {
   /** URL string to connect WebSocket backend. Default to `"/websocket"` */
   webSocketUrl?: string;
-  /** Secify the platform to ligin. Default to the `platform` querystring param */
+  /** Secify the platform to login. Default to the value of `platform` querystring */
   platform?: string;
-  /** URL string to connect auth backend. Default to `"/auth"` */
+  /** URL of the auth backend API. Default to `"/auth"` */
   authApiUrl?: string;
-  /** Authorizer of available platforms. */
+  /** Authorizers of the platforms. */
   authorizers: Authorizer[];
   /**
-   * When set to true, the underlying socket will not really connecct. It is
-   * useful for server rendering at server side.
+   * When set to true, the underlying network operations would not be executed.
+   * It's useful for server rendering at server side.
    */
   mockupMode?: boolean;
 };

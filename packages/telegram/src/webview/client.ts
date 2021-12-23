@@ -40,4 +40,8 @@ export default class TelegramClientAuthorizer
       contextSupplment: supplementContext(data),
     };
   }
+
+  closeWebview(): boolean {
+    return false;
+  }
 }

@@ -38,6 +38,7 @@ const liff = moxy({
       pictureUrl: 'https://example.com/abcdefghijklmn',
       statusMessage: 'Hello, LINE!',
     }),
+  closeWindow: () => {},
 });
 
 const { document } = new JSDOM('').window;
@@ -405,4 +406,15 @@ describe('#checkAuthContext(data)', () => {
       },
     });
   });
+});
+
+test('#closeWebview', async () => {
+  const authorizer = new ClientAuthorizer({
+    liffId: '_LIFF_ID_',
+    shouldLoadSDK: false,
+  });
+  await authorizer.init();
+
+  expect(authorizer.closeWebview()).toBe(true);
+  expect(liff.closeWindow.mock).toHaveBeenCalledTimes(1);
 });

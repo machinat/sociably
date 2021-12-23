@@ -55,10 +55,14 @@ const location = moxy(parseUrl('https://machinat.com/hello'));
 (global as any).window = { location };
 
 const testAuthorizer = moxy<AnyClientAuthorizer>({
-  platform: 'test' /* ... */,
+  platform: 'test',
+  closeWebview: () => true,
+  /* ... */
 } as never);
 const anotherAuthorizer = moxy<AnyClientAuthorizer>({
-  platform: 'another' /* ... */,
+  platform: 'another',
+  closeWebview: () => true,
+  /* ... */
 } as never);
 
 const user = { platform: 'test', uid: 'jane_doe' };
@@ -77,6 +81,8 @@ beforeEach(() => {
   BaseMarshaler.mock.reset();
   location.mock.reset();
   eventSpy.mock.clear();
+  testAuthorizer.mock.reset();
+  anotherAuthorizer.mock.reset();
 });
 
 it('start connector and auth client', async () => {
@@ -401,4 +407,14 @@ test('#disconnect()', async () => {
 
   expect(client.user).toEqual(user);
   expect(client.channel).toBe(null);
+});
+
+test('#closeWebview()', async () => {
+  const client = new Client({ authorizers: [testAuthorizer] });
+  expect(client.closeWebview()).toBe(true);
+  expect(testAuthorizer.closeWebview.mock).toHaveBeenCalledTimes(1);
+
+  testAuthorizer.closeWebview.mock.fakeReturnValue(false);
+  expect(client.closeWebview()).toBe(false);
+  expect(testAuthorizer.closeWebview.mock).toHaveBeenCalledTimes(2);
 });

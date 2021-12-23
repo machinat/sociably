@@ -65,6 +65,7 @@ export interface WebviewClientAuthorizer<
   Data,
   Context extends AnyAuthContext
 > extends ClientAuthorizer<Credential, Data, Context> {
+  closeWebview: () => boolean;
   marshalTypes: null | AnyMarshalType[];
 }
 

@@ -99,6 +99,18 @@ class WebviewClient<
     this._connector.disconnect(reason);
   }
 
+  /**
+   * Try close the webview. Return whether it's supported by current platform
+   */
+  closeWebview(): boolean {
+    const authorizer = this._authClient.getAuthorizer();
+    if (!authorizer) {
+      return false;
+    }
+
+    return authorizer.closeWebview();
+  }
+
   private async _getLoginAuth(): Promise<{
     user: UserOfAuthorizer<Authorizer>;
     credential: string;
