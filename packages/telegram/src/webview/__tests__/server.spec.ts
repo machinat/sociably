@@ -296,7 +296,7 @@ describe('#verifyRefreshment()', () => {
   });
 });
 
-test('#supplementContext()', () => {
+test('#checkAuthContext()', () => {
   const authData = {
     bot: 12345,
     user: {
@@ -309,13 +309,17 @@ test('#supplementContext()', () => {
     chat: undefined,
   };
 
-  const expectedUser = new TelegramUser(67890, {
-    id: 67890,
-    is_bot: false,
-    first_name: 'Jojo',
-    last_name: 'Doe',
-    username: 'jojodoe',
-  });
+  const expectedUser = new TelegramUser(
+    67890,
+    {
+      id: 67890,
+      is_bot: false,
+      first_name: 'Jojo',
+      last_name: 'Doe',
+      username: 'jojodoe',
+    },
+    'http://crazy.dm/stand.png'
+  );
 
   expect(authenticator.checkAuthContext(authData)).toEqual({
     success: true,

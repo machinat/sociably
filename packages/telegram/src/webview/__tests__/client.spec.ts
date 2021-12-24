@@ -43,13 +43,17 @@ test('#checkAuthContext()', () => {
     photo: 'http://crazy.dm/stand.png',
   };
 
-  const expectedUser = new TelegramUser(12345, {
-    id: 12345,
-    is_bot: false,
-    first_name: 'Jojo',
-    last_name: 'Doe',
-    username: 'jojodoe',
-  });
+  const expectedUser = new TelegramUser(
+    12345,
+    {
+      id: 12345,
+      is_bot: false,
+      first_name: 'Jojo',
+      last_name: 'Doe',
+      username: 'jojodoe',
+    },
+    'http://crazy.dm/stand.png'
+  );
 
   expect(authenticator.checkAuthContext(authData)).toEqual({
     success: true,

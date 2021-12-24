@@ -19,12 +19,14 @@ class TelegramUser
   /** Unique identifier for this user or bot */
   id: number;
   data: null | RawUser;
+  photoUrl: undefined | string;
 
   platform = TELEGRAM;
 
-  constructor(id: number, raw?: RawUser) {
+  constructor(id: number, raw?: RawUser, photoUrl?: string) {
     this.id = id;
     this.data = raw || null;
+    this.photoUrl = photoUrl;
   }
 
   get uid(): string {

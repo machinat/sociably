@@ -10,7 +10,11 @@ export const supplementContext = ({
   user: userData,
   photo: photoUrl,
 }: TelegramAuthData): ContextSupplement<TelegramAuthContext> => {
-  const user = new TelegramUser(userData.id, { ...userData, is_bot: false });
+  const user = new TelegramUser(
+    userData.id,
+    { ...userData, is_bot: false },
+    photoUrl
+  );
 
   return {
     user,

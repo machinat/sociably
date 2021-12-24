@@ -165,16 +165,16 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
     user: TelegramUser,
     options: {
       /**
-       * Group or channel chat for calling `getChatMember`, by default the
-       * direct private chat to the user is used.
+       * Group or channel chat for calling `getChatMember`. By default, the
+       * private chat to the user is used.
        */
       inChat?: TelegramChat;
       /**
-       * If provided, `avatarUrl` will be attached with the profile for storing.
-       * This is useful to work with _fetchUserPhoto_ or login in the webview.
+       * If provided, `avatarUrl` will be attached on the profile for storing.
+       * This is useful if you want to _fetchUserPhoto_ manually.
        */
       avatarUrl?: string;
-      /** Get user data from API by force. */
+      /** Force to fetch user data from API  */
       fromApi?: boolean;
     } = {}
   ): Promise<TelegramUserProfile> {
@@ -191,7 +191,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       userData = chatMember.user;
     }
 
-    return new TelegramUserProfile(userData, avatarUrl);
+    return new TelegramUserProfile(userData, avatarUrl || user.photoUrl);
   }
 
   /**

@@ -27,7 +27,7 @@ beforeEach(() => {
 });
 
 describe('#getUserProfile(user)', () => {
-  it('get profile with data attached on user', async () => {
+  test('use raw data attached on the user if available', async () => {
     const profiler = new TelegramProfiler(bot);
 
     const profile = await profiler.getUserProfile(
@@ -47,28 +47,30 @@ describe('#getUserProfile(user)', () => {
     expect(profile.avatarUrl).toBe(undefined);
   });
 
-  it('get profile with avatar', async () => {
+  test('use avatar url attached on the user if available', async () => {
+    const avatarUrl = 'https://...';
+    const rawUser = { id: 12345, is_bot: false, first_name: 'John' };
+
     const profiler = new TelegramProfiler(bot);
+    const profile = await profiler.getUserProfile(
+      new TelegramUser(12345, rawUser, avatarUrl)
+    );
 
-    const user = new TelegramUser(12345, {
-      id: 12345,
-      is_bot: false,
-      first_name: 'John',
-    });
-
-    const profile = await profiler.getUserProfile(user, {
-      avatarUrl: 'http://john.doe/avatar',
-    });
-
-    expect(profile.platform).toBe('telegram');
-    expect(profile.id).toBe(12345);
-    expect(profile.name).toBe('John');
-    expect(profile.firstName).toBe('John');
-    expect(profile.lastName).toBe(undefined);
-    expect(profile.avatarUrl).toBe('http://john.doe/avatar');
+    expect(profile.avatarUrl).toBe(avatarUrl);
   });
 
-  it('get profile from getChatMember API if no data attached with user', async () => {
+  test('with avatarUrl option', async () => {
+    const profiler = new TelegramProfiler(bot);
+
+    const rawUser = { id: 12345, is_bot: false, first_name: 'John' };
+    const user = new TelegramUser(12345, rawUser);
+
+    const avatarUrl = 'http://john.doe/avatar';
+    const profile = await profiler.getUserProfile(user, { avatarUrl });
+    expect(profile.avatarUrl).toBe(avatarUrl);
+  });
+
+  it('get profile from getChatMember API if no data attached on user', async () => {
     bot.makeApiCall.mock.fake(() => ({
       status: 'creator',
       user: { id: 12345, is_bot: false, first_name: 'Jojo' },
