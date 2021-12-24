@@ -7,8 +7,10 @@ module.exports = {
   distDir: '../dist',
   basePath: '/webview',
   publicRuntimeConfig: {${when(platforms.includes('messenger'))`
-    messengerAppId: MESSENGER_APP_ID,`}${when(platforms.includes('line'))`
-    lineLiffId: LINE_LIFF_ID,`}
+    messengerAppId: process.env.MESSENGER_APP_ID,`}${when(
+    platforms.includes('line')
+  )`
+    lineLiffId: process.env.LINE_LIFF_ID,`}
   }
 };
 `);
