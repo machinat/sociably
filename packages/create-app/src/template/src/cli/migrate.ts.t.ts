@@ -6,7 +6,6 @@ export const mode = 0o775;
 export default ({ platforms }: CreateAppContext) =>
   polishFileContent(`
 #!/usr/bin/env node
-import { config as configEnv } from 'dotenv';
 import { resolve as resolvePath } from 'path';
 import Machinat from '@machinat/core';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';`}${when(
@@ -17,7 +16,6 @@ import Line from '@machinat/line';`}
 import { Umzug, JSONStorage } from 'umzug';
 import commander from 'commander';
 
-configEnv();
 const {${when(platforms.includes('messenger'))`
   MESSENGER_PAGE_ID,
   MESSENGER_ACCESS_TOKEN,`}${when(platforms.includes('telegram'))`

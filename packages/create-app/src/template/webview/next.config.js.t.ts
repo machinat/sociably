@@ -6,6 +6,9 @@ export default ({ platforms }: CreateAppContext) =>
 module.exports = {
   distDir: '../dist',
   basePath: '/webview',
-  publicRuntimeConfig: {},
+  publicRuntimeConfig: {${when(platforms.includes('messenger'))`
+    messengerAppId: MESSENGER_APP_ID,`}${when(platforms.includes('line'))`
+    lineLiffId: LINE_LIFF_ID,`}
+  }
 };
 `);

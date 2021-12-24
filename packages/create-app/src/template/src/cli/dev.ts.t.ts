@@ -6,11 +6,9 @@ export default () =>
   polishFileContent(`
 #!/usr/bin/env node
 import { parse as parseUrl } from 'url';
-import { config as configEnv } from 'dotenv';
 import localtunnel from 'localtunnel';
 import nodemon from 'nodemon';
 
-configEnv();
 const { PORT, DEV_TUNNEL_SUBDOMAIN } = process.env;
 
 async function connectTunnel() {

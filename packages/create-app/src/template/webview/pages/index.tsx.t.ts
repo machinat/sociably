@@ -19,23 +19,18 @@ import { LineClientAuthenticator } from '@machinat/line/webview';`}
 
 const { publicRuntimeConfig } = getConfig();
 
-const client =  new WebviewClient(
-  typeof window === 'undefined'
-    ? { mockupMode: true, authenticators: [] }
-    : {
-        authenticators: [${when(platforms.includes('messenger'))`
-          new MessengerClientAuthenticator({
-            appId: publicRuntimeConfig.messengerAppId,
-          }),`}${when(platforms.includes('telegram'))`
-          new TelegramClientAuthenticator(),`}${when(
-    platforms.includes('line')
-  )`
-          new LineClientAuthenticator({
-            liffId: publicRuntimeConfig.lineLiffId,
-          }),`}
-        ],
-      }
-);
+const client = new WebviewClient({
+  mockupMode: typeof window === 'undefined',
+  authenticators: [${when(platforms.includes('messenger'))`
+    new MessengerClientAuthenticator({
+      appId: publicRuntimeConfig.messengerAppId,
+    }),`}${when(platforms.includes('telegram'))`
+    new TelegramClientAuthenticator(),`}${when(platforms.includes('line'))`
+    new LineClientAuthenticator({
+      liffId: publicRuntimeConfig.lineLiffId,
+    }),`}
+  ],
+});
 
 const WebAppHome = () => {
   const data = useEventReducer(

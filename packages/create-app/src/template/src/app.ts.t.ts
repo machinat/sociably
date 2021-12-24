@@ -115,15 +115,7 @@ const app = Machinat.createApp({
       nextServerOptions: {
         dev: DEV,
         dir: './webview',
-        conf: {
-          ...nextConfigs,
-          publicRuntimeConfig: {${when(platforms.includes('messenger'))`
-            messengerAppId: MESSENGER_APP_ID,`}${when(
-    platforms.includes('line')
-  )`
-            lineLiffId: LINE_LIFF_ID,`}
-          },
-        },
+        conf: nextConfigs,
       },
     }),`}
   ],
