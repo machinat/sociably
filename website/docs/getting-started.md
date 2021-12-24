@@ -17,7 +17,7 @@ We recommend to create a Machinat app project with `@machinat/create-app`
 initiator. Run this command to create a hello-world project:
 
 ```bash
-npm init @machinat/app -- -p <platform> [-p <platform> ...] <project-path>
+npm init @machinat/app@latest -- -p <platform> [-p <platform> ...] <project-path>
 ```
 
 Or using `yarn`:

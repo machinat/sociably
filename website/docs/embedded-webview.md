@@ -27,7 +27,7 @@ The `@machinat/webview` package provides webviews integrated with chat platforms
 Starting with our project creator is the recommended if you are creating a whole new project. You only have to add a `-p webview` flag, and everything will be set. Like:
 
 ```bash
-npm init @machinat/app -- -p messenger -p webview my-project
+npm init @machinat/app@latest -- -p messenger -p webview my-project
 ```
 
 ### Install Manually
