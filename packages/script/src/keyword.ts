@@ -82,8 +82,8 @@ export const CALL = <Vars = any, Script extends AnyScriptLibrary = any>(
 /**
  * @category Keyword
  */
-export const EFFECT = <Vars = any, Result = any>(
-  props: EffectProps<Vars, Result>
+export const EFFECT = <Vars = any, Yield = any>(
+  props: EffectProps<Vars, Yield>
 ): null => null;
 
 /**
