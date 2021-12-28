@@ -10,7 +10,7 @@ export default ({ projectName, platforms }: CreateAppContext) => {
       clean: 'rm -rf ./lib ./dist && rm -f tsconfig.tsbuildinfo',
 
       migrate: 'per-env',
-      'migrate:development': 'dotenv ts-node ./src/cli/migrate.ts',
+      'migrate:development': 'dotenv -- ts-node ./src/cli/migrate.ts',
       'migrate:production': 'node ./lib/cli/migrate.js',
 
       build: `npm run clean && npm run build:src${when(
@@ -18,14 +18,14 @@ export default ({ projectName, platforms }: CreateAppContext) => {
       )` && npm run build:webview`}`,
       'build:src': 'tsc',
       'build:webview': platforms.includes('webview')
-        ? 'dotenv next build ./webview'
+        ? 'dotenv -- next build ./webview'
         : undefined,
 
       start: 'per-env',
-      'start:development': 'dotenv ts-node ./src/index.ts',
+      'start:development': 'dotenv -- ts-node ./src/index.ts',
       'start:production': 'node ./lib/index.js',
 
-      dev: 'dotenv ts-node ./src/cli/dev.ts',
+      dev: 'dotenv -- ts-node ./src/cli/dev.ts',
     },
     dependencies: {
       '@machinat/per-env': '^1.1.0',
