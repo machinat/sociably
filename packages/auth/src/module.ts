@@ -3,7 +3,7 @@ import { makeFactoryProvider } from '@machinat/core/service';
 import Http from '@machinat/http';
 import type { RequestRoute } from '@machinat/http';
 
-import { ControllerP } from './controller';
+import ControllerP from './AuthController';
 import { ConfigsI, AuthenticatorListI } from './interface';
 import type { AuthConfigs, AnyServerAuthenticator } from './types';
 

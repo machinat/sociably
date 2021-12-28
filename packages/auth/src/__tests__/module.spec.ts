@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';
 import Auth from '../module';
-import { ControllerP } from '../controller';
+import ControllerP from '../AuthController';
 
 const secret = '_SECRET_';
 const redirectUrl = '/webview';

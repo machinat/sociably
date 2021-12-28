@@ -1,1 +1,1 @@
-export { default as AuthClient, default } from './client';
+export { default as AuthClient, default } from './AuthClient';

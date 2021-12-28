@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import jsonwebtoken from 'jsonwebtoken';
 import { Readable } from 'stream';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import { AuthController } from '../controller';
+import { AuthController } from '../AuthController';
 import { AnyServerAuthenticator } from '../types';
 
 const getCookies = (res) => {
@@ -126,10 +126,14 @@ describe('#constructor()', () => {
   it('throw if options.authenticators is empty', () => {
     expect(
       () => new AuthController([], { secret, redirectUrl })
-    ).toThrowErrorMatchingInlineSnapshot(`"authenticators must not be empty"`);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.authenticators must not be empty"`
+    );
     expect(
       () => new AuthController(null as any, { secret, redirectUrl })
-    ).toThrowErrorMatchingInlineSnapshot(`"authenticators must not be empty"`);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.authenticators must not be empty"`
+    );
   });
 
   it('throw if options.secret is empty', () => {
@@ -504,11 +508,11 @@ describe('#delegateAuthRequest(req, res)', () => {
         Map {
           "machinat_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
-            "value": "8kIrJgTaziNMXKlHLGKRPXNzTLpC3moIQV9vBKmLOQM",
+            "value": "w6dUMfOOWlJNbQOknaf7EIlO0O718VIzSW1ZWvFLaDo",
           },
           "machinat_auth_token" => Object {
-            "directives": "Max-Age=600; Path=/; SameSite=Lax; Secure",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA4NjQwMCwic2NvcGUiOnsicGF0aCI6Ii8ifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDM2MDB9",
+            "directives": "Max-Age=180; Path=/; SameSite=Lax; Secure",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDg2NDAwMCwic2NvcGUiOnsicGF0aCI6Ii8ifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDM2MDB9",
           },
           "machinat_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
@@ -528,7 +532,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "exp": 1570003600,
           "iat": 1570000000,
           "platform": "foo",
-          "refreshTill": 1570086400,
+          "refreshTill": 1570864000,
           "scope": Object {
             "path": "/",
           },
@@ -1053,7 +1057,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         Map {
           "machinat_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
-            "value": "8kIrJgTaziNMXKlHLGKRPXNzTLpC3moIQV9vBKmLOQM",
+            "value": "w6dUMfOOWlJNbQOknaf7EIlO0O718VIzSW1ZWvFLaDo",
           },
           "machinat_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
@@ -1079,7 +1083,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "exp": 1570003600,
           "iat": 1570000000,
           "platform": "foo",
-          "refreshTill": 1570086400,
+          "refreshTill": 1570864000,
           "scope": Object {
             "path": "/",
           },

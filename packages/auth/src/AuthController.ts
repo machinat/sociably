@@ -28,7 +28,7 @@ import type {
 } from './types';
 
 import { getCookies, isSubpath, isSubdomain } from './utils';
-import CookieOperator from './cookie';
+import HttpAuthOperator from './HttpAuthOperator';
 
 const getSignature = (req: WithHeaders) => {
   const cookies = getCookies(req);
@@ -80,30 +80,30 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
   authenticators: Authenticator[];
   secret: string;
   apiPath: string;
-  cookieOperator: CookieOperator;
+  httpOperator: HttpAuthOperator;
 
-  constructor(authenticators: Authenticator[], options: AuthConfigs) {
-    invariant(
-      authenticators && authenticators.length > 0,
-      'authenticators must not be empty'
-    );
-    invariant(options && options.secret, 'options.secret must not be empty');
-    invariant(options.redirectUrl, 'options.redirectUrl must not be empty');
-
-    const {
+  constructor(
+    authenticators: Authenticator[],
+    {
       secret,
       apiPath = '/',
       redirectUrl,
-      authCookieAge = 600, // 10 min
+      authCookieAge = 180, // 3 min
       dataCookieAge = 180, // 3 min
       tokenAge = 3600, // 1 hr
-      refreshPeriod = 86400, // 1 day
+      refreshPeriod = 864000, // 10 day
       cookieDomain,
       cookiePath = '/',
       sameSite = 'lax',
       secure = true,
-    } = options;
-
+    }: AuthConfigs = {} as AuthConfigs
+  ) {
+    invariant(
+      authenticators && authenticators.length > 0,
+      'options.authenticators must not be empty'
+    );
+    invariant(secret, 'options.secret must not be empty');
+    invariant(redirectUrl, 'options.redirectUrl must not be empty');
     invariant(
       isSubpath(cookiePath, apiPath),
       'options.apiPath should be a subpath of options.cookiePath'
@@ -134,7 +134,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     this.authenticators = authenticators;
     this.apiPath = apiPath;
 
-    this.cookieOperator = new CookieOperator({
+    this.httpOperator = new HttpAuthOperator({
       apiPath,
       redirectUrl,
       secret,
@@ -200,7 +200,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       await authenticator.delegateAuthRequest(
         req,
         res,
-        this.cookieOperator.createResponseHelper(req, res, platform),
+        this.httpOperator.createResponseHelper(req, res, platform),
         {
           originalPath: pathname || '/',
           matchedPath: joinPath(
@@ -340,7 +340,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
         return;
       }
 
-      const token = await this.cookieOperator.issueAuth(
+      const token = await this.httpOperator.issueAuth(
         res,
         platform,
         verifyResult.data,
@@ -365,7 +365,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     }
 
     try {
-      // verify token in body ignoring expiration
+      // verify token in body but ignore expiration
       const body = await parseBody(req);
       if (!body) {
         respondApiError(res, undefined, 400, 'invalid body format');
@@ -408,7 +408,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
           return;
         }
 
-        const newToken = await this.cookieOperator.issueAuth(
+        const newToken = await this.httpOperator.issueAuth(
           res,
           platform,
           refreshResult.data,
@@ -510,10 +510,12 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
   }
 }
 
-export const ControllerP = makeClassProvider({
+const ControllerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [AuthenticatorListI, ConfigsI] as const,
 })(AuthController);
 
-export type ControllerP<Authenticator extends AnyServerAuthenticator> =
+type ControllerP<Authenticator extends AnyServerAuthenticator> =
   AuthController<Authenticator>;
+
+export default ControllerP;

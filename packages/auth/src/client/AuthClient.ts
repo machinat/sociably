@@ -4,7 +4,11 @@ import { EventEmitter } from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJwt } from 'jsonwebtoken';
-import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
+import {
+  TOKEN_COOKIE_KEY,
+  ERROR_COOKIE_KEY,
+  TOKEN_STORAGE_KEY,
+} from '../constant';
 import type {
   AnyClientAuthenticator,
   AnyAuthContext,
@@ -44,41 +48,74 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
   });
 };
 
-const getAuthPayload = (token: string) =>
-  decodeJwt(`${token}.`) as AuthTokenPayload<any>;
+const getAuthPayload = (
+  token: string
+): [null | AuthError, AuthTokenPayload<unknown>] => {
+  try {
+    const payload = decodeJwt(`${token}.`, { json: true });
+    if (!payload) {
+      return [
+        new AuthError(undefined, 400, 'invalid token format'),
+        null as never,
+      ];
+    }
+    return [null, payload as AuthTokenPayload<unknown>];
+  } catch (error) {
+    return [new AuthError(undefined, 500, error.message), null as never];
+  }
+};
 
-const getCookieAuthResult = (): [
+const getExistedAuthResult = (): [
   null | AuthError,
   null | { payload: AuthTokenPayload<unknown>; token: string }
 ] => {
-  const cookies = parseCookie(document.cookie);
+  try {
+    const cookies = parseCookie(document.cookie);
 
-  if (cookies[ERROR_COOKIE_KEY]) {
-    // Error happen in backend flow
-    const decodedToken = decodeJwt(cookies[ERROR_COOKIE_KEY], { json: true });
+    if (cookies[ERROR_COOKIE_KEY]) {
+      // Error happen in backend flow
+      const payload = decodeJwt(cookies[ERROR_COOKIE_KEY], { json: true });
 
-    if (decodedToken !== null) {
-      const {
-        platform,
-        error: { code, reason },
-        scope: { domain, path },
-      } = decodedToken as ErrorTokenPayload;
+      if (payload !== null) {
+        const {
+          platform,
+          error: { code, reason },
+          scope: { domain, path },
+        } = payload as ErrorTokenPayload;
 
-      deleteCookie(ERROR_COOKIE_KEY, domain, path);
+        deleteCookie(ERROR_COOKIE_KEY, domain, path);
+        return [new AuthError(platform, code, reason), null as never];
+      }
 
-      return [new AuthError(platform, code, reason), null as never];
-    }
-    deleteCookie(ERROR_COOKIE_KEY);
-  } else if (cookies[TOKEN_COOKIE_KEY]) {
-    // Auth completed in backend flow
-    const token = cookies[TOKEN_COOKIE_KEY];
-    const payload = getAuthPayload(token);
+      deleteCookie(ERROR_COOKIE_KEY);
+    } else if (cookies[TOKEN_COOKIE_KEY]) {
+      // Auth completed in backend flow
+      const token = cookies[TOKEN_COOKIE_KEY];
+      const [err, payload] = getAuthPayload(token);
+      if (err) {
+        deleteCookie(TOKEN_COOKIE_KEY);
+        return [err, null];
+      }
 
-    if (payload.exp * 1000 > Date.now()) {
+      const { domain, path } = payload.scope;
+      deleteCookie(TOKEN_COOKIE_KEY, domain, path);
       return [null, { token, payload }];
     }
+
+    const token = window.sessionStorage.getItem(TOKEN_STORAGE_KEY);
+    if (token) {
+      const [err, payload] = getAuthPayload(token);
+      if (err) {
+        window.sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+        return [err, null];
+      }
+      return [null, { token, payload }];
+    }
+
+    return [null, null];
+  } catch (error) {
+    return [new AuthError(undefined, 500, error.message), null as never];
   }
-  return [null, null];
 };
 
 class AuthClient<
@@ -180,7 +217,7 @@ class AuthClient<
     }
 
     // begin a new auth flow
-    this._authPromise = this._auth(platform)
+    this._authPromise = this._authFlow(platform)
       .catch((err) => {
         this._emitError(err, this._authData?.context || null);
         throw err;
@@ -206,33 +243,35 @@ class AuthClient<
     this._minAuthBeginTime = Date.now();
   }
 
-  private async _auth(
+  private async _authFlow(
     platformInput: undefined | string
   ): Promise<AuthResult<Authenticator>> {
     const beginTime = Date.now();
 
-    let [cookieErr, cookieAuth] = getCookieAuthResult();
-    // auth according to the following order
+    let [existedErr, existedAuth] = getExistedAuthResult();
+    // use platform in the following order
     const platform =
       platformInput ||
       this._platform ||
       new URLSearchParams(window.location.search).get('platform') ||
-      cookieAuth?.payload.platform ||
-      cookieErr?.platform;
+      existedAuth?.payload.platform ||
+      existedErr?.platform;
 
     const [err, authenticator] = this._getAuthenticator(platform);
     if (err) {
       throw err;
     }
 
+    // sign out if platform is changed
     if (this._platform && this._platform !== platform) {
       this.signOut();
     }
-
     this._platform = platform;
-    if (platform !== (cookieErr?.platform || cookieAuth?.payload.platform)) {
-      cookieErr = null;
-      cookieAuth = null;
+
+    // don't use existed auth if platform is changed
+    if (platform !== (existedErr?.platform || existedAuth?.payload.platform)) {
+      existedErr = null;
+      existedAuth = null;
     }
 
     // init authenticator if needed
@@ -246,8 +285,8 @@ class AuthClient<
       try {
         await authenticator.init(
           platformAuthEntry,
-          cookieErr,
-          cookieAuth?.payload.data || null
+          existedErr,
+          existedAuth?.payload.data || null
         );
       } finally {
         this._initiatingPlatforms.delete(authenticator.platform);
@@ -258,21 +297,45 @@ class AuthClient<
     let token: string;
     let payload: AuthTokenPayload<unknown>;
 
-    if (cookieErr) {
-      // error from back-end
-      throw cookieErr;
-    } else if (!cookieAuth || cookieAuth.payload.exp * 1000 < Date.now()) {
-      // start front-end flow
-      const [signErr, signedToken] = await this._signToken(authenticator);
-      if (signErr) {
-        throw signErr;
+    if (existedErr) {
+      // got error from back-end
+      throw existedErr;
+    } else if (existedAuth && existedAuth.payload.exp * 1000 > Date.now()) {
+      // use existed auth from cookie or sessionStorage
+      ({ token, payload } = existedAuth);
+    } else {
+      let newToken: undefined | string;
+
+      // refresh existed token if possible
+      let refreshTill: undefined | number;
+      if (
+        (refreshTill = existedAuth?.payload.refreshTill) &&
+        refreshTill * 1000 > Date.now()
+      ) {
+        const [refreshErr, body] = await this._callAuthPrivateApi('_refresh', {
+          token: existedAuth.token,
+        });
+        if (refreshErr) {
+          throw refreshErr;
+        }
+        newToken = body.token;
       }
 
-      payload = getAuthPayload(signedToken);
-      token = signedToken;
-    } else {
-      // use the success result from back-end
-      ({ token, payload } = cookieAuth);
+      if (!newToken) {
+        // start front-end flow
+        const [signErr, signedToken] = await this._signToken(authenticator);
+        if (signErr) {
+          throw signErr;
+        }
+        newToken = signedToken;
+      }
+
+      const [payloadErr, newPayload] = getAuthPayload(newToken);
+      if (payloadErr) {
+        throw payloadErr;
+      }
+      token = newToken;
+      payload = newPayload;
     }
 
     // Update auth only when no signOut() call or another succeeded auth() call
@@ -297,10 +360,12 @@ class AuthClient<
   }
 
   private async _signToken(
-    provider: AnyClientAuthenticator
+    authenticator: AnyClientAuthenticator
   ): Promise<[Error | null, string]> {
-    const { platform } = provider;
-    const result = await provider.fetchCredential(this._getAuthEntry(platform));
+    const { platform } = authenticator;
+    const result = await authenticator.fetchCredential(
+      this._getAuthEntry(platform)
+    );
 
     if (!result.success) {
       const { code, reason } = result;
@@ -327,11 +392,13 @@ class AuthClient<
     this._authData = { token, payload, context };
     this._clearTimeouts();
 
+    window.sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
+
     const now = Date.now();
     const { exp } = payload;
 
     this._refreshTimeoutId = setTimeout(
-      this._refreshAuthCallback,
+      this._refreshFlowCallback,
       (exp - this.refreshLeadTime) * 1000 - now,
       token,
       payload
@@ -344,7 +411,7 @@ class AuthClient<
     );
   }
 
-  private async _refreshAuth(
+  private async _refreshFlow(
     token: string,
     { refreshTill }: AuthTokenPayload<unknown>
   ): Promise<void> {
@@ -384,7 +451,10 @@ class AuthClient<
       return;
     }
 
-    const payload = getAuthPayload(newToken);
+    const [payloadErr, payload] = getAuthPayload(newToken);
+    if (payloadErr) {
+      throw payloadErr;
+    }
     const [ctxErr, context] = this._getAuthContext(payload);
     if (ctxErr) {
       throw ctxErr;
@@ -394,13 +464,13 @@ class AuthClient<
     this.emit('refresh', context);
   }
 
-  private _refreshAuthCallback = (
+  private _refreshFlowCallback = (
     token: string,
     payload: AuthTokenPayload<unknown>
   ) => {
     this._refreshTimeoutId = null;
 
-    this._refreshAuth(token, payload).catch((err) => {
+    this._refreshFlow(token, payload).catch((err) => {
       this._emitError(err, this._authData?.context || null);
     });
   };

@@ -38,7 +38,7 @@ type OperatorOptions = {
   secure: boolean;
 };
 
-class CookieOperator {
+class HttpAuthOperator {
   options: OperatorOptions;
 
   private _cookieScope: { domain?: string; path: string };
@@ -317,4 +317,4 @@ class CookieOperator {
   }
 }
 
-export default CookieOperator;
+export default HttpAuthOperator;

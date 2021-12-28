@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import jsonwebtoken from 'jsonwebtoken';
 import AuthError from '../../error';
 import type { AnyClientAuthenticator } from '../../types';
-import AuthClient from '../client';
+import AuthClient from '../AuthClient';
 
 const resolveAfterLoops = (resolve, n) => {
   if (n === 0) {
@@ -20,27 +20,8 @@ const delayLoops = (n = 1) =>
 nock.disableNetConnect();
 const serverEntry = nock('https://machinat.io');
 
-const location = moxy<Location>(
-  url.parse('https://machinat.io/app?platform=foo') as never
-);
-const document = moxy<Document>({ cookie: '' } as never);
-
 const makeToken = (payload) =>
   jsonwebtoken.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
-
-const setCookieAuth = (payload) => {
-  const token = makeToken(payload);
-  document.mock
-    .getter('cookie')
-    .fakeReturnValue(`machinat_auth_token=${token}`);
-};
-
-const setCookieError = (payload) => {
-  const errorEncoded = jsonwebtoken.sign(payload, '__SECRET__');
-  document.mock
-    .getter('cookie')
-    .fakeReturnValue(`machinat_auth_error=${errorEncoded}`);
-};
 
 const fooUser = { platform: 'foo', uid: 'john_doe' };
 const fooChannel = { platform: 'foo', uid: 'foo.channel' };
@@ -102,6 +83,36 @@ const _Date = Date;
 const FAKE_NOW = 1570000000000;
 const SEC_NOW = FAKE_NOW / 1000;
 
+const location = moxy<Location>(
+  url.parse('https://machinat.io/app?platform=foo') as never
+);
+const document = moxy<Document>({ cookie: '' } as never);
+
+const setCookieAuth = (payload) => {
+  const token = makeToken(payload);
+  document.mock
+    .getter('cookie')
+    .fakeReturnValue(`machinat_auth_token=${token}`);
+  return token;
+};
+
+const setCookieError = (payload) => {
+  const token = jsonwebtoken.sign(payload, '__SECRET__');
+  document.mock
+    .getter('cookie')
+    .fakeReturnValue(`machinat_auth_error=${token}`);
+  return token;
+};
+
+const sessionStorage = moxy<Storage>({
+  length: 0,
+  key: () => null,
+  clear: () => {},
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+});
+
 beforeAll(() => {
   global.document = document;
   global.fetch = fetch as never;
@@ -109,6 +120,7 @@ beforeAll(() => {
     location,
     document,
     fetch,
+    sessionStorage,
   } as never;
 
   global.Date = moxy(_Date, { mockNewInstance: false });
@@ -128,6 +140,7 @@ beforeEach(() => {
   barAuthenticator.mock.reset();
   location.mock.reset();
   document.mock.reset();
+  sessionStorage.mock.reset();
 });
 
 afterEach(() => {
@@ -269,27 +282,6 @@ describe('bootstraping phase', () => {
     );
 
     expect(barAuthenticator.init.mock).not.toHaveBeenCalled();
-  });
-
-  it('clear error cookie', async () => {
-    setCookieError({
-      platform: 'foo',
-      error: { code: 418, reason: "I'm a teapot" },
-      scope: { domain: 'machinat.io', path: '/entry' },
-    });
-
-    const client = new AuthClient({ authenticators, serverUrl });
-    await expect(client.signIn()).rejects.toThrow("I'm a teapot");
-
-    expect(client.platform).toBe('foo');
-    expect(client.isAuthorized).toBe(false);
-
-    expect(document.mock.setter('cookie')).toHaveBeenCalledTimes(1);
-    expect(
-      document.mock.setter('cookie').calls[0].args[0]
-    ).toMatchInlineSnapshot(
-      `"machinat_auth_error=; Domain=machinat.io; Path=/entry; Expires=Thu, 01 Jan 1970 00:00:00 GMT"`
-    );
   });
 
   it('emit error if authenticator.init() reject', async () => {
@@ -435,11 +427,11 @@ describe('bootstraping phase', () => {
   });
 });
 
-describe('signing auth flow', () => {
+describe('.signIn()', () => {
   const authPayload = {
     platform: 'foo',
     data: { foo: 'data' },
-    scope: { path: '/' },
+    scope: { domain: 'machinat.io', path: '/api' },
     iat: SEC_NOW - 10,
     exp: SEC_NOW + 1000,
     refreshTill: SEC_NOW + 10000,
@@ -456,7 +448,7 @@ describe('signing auth flow', () => {
 
   const token = makeToken(authPayload);
 
-  test('when already signed in', async () => {
+  test('when already signed in at back-end', async () => {
     setCookieAuth(authPayload);
 
     const client = new AuthClient({ authenticators, serverUrl });
@@ -475,13 +467,27 @@ describe('signing auth flow', () => {
     expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
+
+    expect(document.mock.setter('cookie')).toHaveBeenCalledTimes(1);
+    expect(
+      document.mock.setter('cookie').calls[0].args[0]
+    ).toMatchInlineSnapshot(
+      `"machinat_auth_token=; Domain=machinat.io; Path=/api; Expires=Thu, 01 Jan 1970 00:00:00 GMT"`
+    );
+
+    expect(sessionStorage.getItem.mock).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledWith(
+      'machinat_auth_token',
+      token
+    );
   });
 
   it('throw if auth rejected on server side', async () => {
     setCookieError({
       platform: 'foo',
       error: { code: 418, reason: "I'm a teapot" },
-      scope: { path: '/' },
+      scope: { domain: 'machinat.io', path: '/api' },
     });
 
     const client = new AuthClient({ authenticators, serverUrl });
@@ -494,6 +500,48 @@ describe('signing auth flow', () => {
 
     expect(client.isAuthorizing).toBe(false);
     expect(client.isAuthorized).toBe(false);
+
+    expect(client.platform).toBe('foo');
+    expect(client.isAuthorized).toBe(false);
+
+    expect(document.mock.setter('cookie')).toHaveBeenCalledTimes(1);
+    expect(
+      document.mock.setter('cookie').calls[0].args[0]
+    ).toMatchInlineSnapshot(
+      `"machinat_auth_error=; Domain=machinat.io; Path=/api; Expires=Thu, 01 Jan 1970 00:00:00 GMT"`
+    );
+
+    expect(sessionStorage.getItem.mock).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem.mock).not.toHaveBeenCalled();
+  });
+
+  test('use cached auth token in sessionStorage', async () => {
+    sessionStorage.getItem.mock.fakeReturnValue(token);
+
+    const client = new AuthClient({ authenticators, serverUrl });
+    expect(client.isAuthorizing).toBe(false);
+    expect(client.isAuthorized).toBe(false);
+
+    await expect(client.signIn()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
+
+    expect(client.isAuthorized).toBe(true);
+    expect(client.isAuthorizing).toBe(false);
+
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
+      foo: 'data',
+    });
+
+    expect(document.mock.setter('cookie')).not.toHaveBeenCalled();
+    expect(sessionStorage.getItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledWith(
+      'machinat_auth_token',
+      token
+    );
   });
 
   it('get credential from authenticator and sign in', async () => {
@@ -521,9 +569,16 @@ describe('signing auth flow', () => {
     expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
+
+    expect(document.mock.setter('cookie')).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledWith(
+      'machinat_auth_token',
+      token
+    );
   });
 
-  it('return the the current auth status if it is already authed or authenticating', async () => {
+  it('return current auth if available', async () => {
     const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
@@ -549,14 +604,55 @@ describe('signing auth flow', () => {
     expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledTimes(1);
   });
 
-  it('sign again if token in cookie expired', async () => {
-    setCookieAuth({
+  test('refresh expird auth token in sessionStorage', async () => {
+    const expiredToken = makeToken({
       platform: 'foo',
       data: { foo: 'data' },
       scope: { path: '/' },
-      iat: SEC_NOW - 9999,
       exp: SEC_NOW - 99,
+      iat: SEC_NOW - 999,
+      refreshTill: SEC_NOW + 9999,
     });
+    sessionStorage.getItem.mock.fakeReturnValue(expiredToken);
+
+    const refreshCall = serverEntry
+      .post('/auth/_refresh', { token: expiredToken })
+      .reply(200, { platform: 'foo', token });
+
+    const client = new AuthClient({ authenticators, serverUrl });
+
+    await expect(client.signIn()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
+
+    expect(client.isAuthorized).toBe(true);
+    expect(client.isAuthorizing).toBe(false);
+
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
+      foo: 'data',
+    });
+    expect(refreshCall.isDone()).toBe(true);
+    expect(document.mock.setter('cookie')).not.toHaveBeenCalled();
+    expect(sessionStorage.getItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledWith(
+      'machinat_auth_token',
+      token
+    );
+  });
+
+  it('sign again if expired token is not refreshable', async () => {
+    sessionStorage.getItem.mock.fakeReturnValue(
+      makeToken({
+        platform: 'foo',
+        data: { foo: 'data' },
+        scope: { path: '/' },
+        iat: SEC_NOW - 9999,
+        exp: SEC_NOW - 99,
+      })
+    );
 
     const signingCall = serverEntry
       .post('/auth/_sign', {
@@ -573,6 +669,12 @@ describe('signing auth flow', () => {
     });
 
     expect(signingCall.isDone()).toBe(true);
+
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledWith(
+      'machinat_auth_token',
+      token
+    );
   });
 
   it('throw if api respond error', async () => {
@@ -593,6 +695,7 @@ describe('signing auth flow', () => {
     expect(client.isAuthorized).toBe(false);
     expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthContext.mock).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem.mock).not.toHaveBeenCalled();
   });
 
   it('throw if authenticator.checkAuthContext() fail', async () => {
@@ -625,6 +728,8 @@ describe('signing auth flow', () => {
     expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
+
+    expect(sessionStorage.setItem.mock).not.toHaveBeenCalled();
   });
 
   it('throw if signOut() during authenticating', async () => {
@@ -649,10 +754,11 @@ describe('signing auth flow', () => {
       `"signed out during authenticating"`
     );
     expect(client.isAuthorized).toBe(false);
+    expect(sessionStorage.setItem.mock).not.toHaveBeenCalled();
   });
 });
 
-describe('auth refreshment and expiry', () => {
+describe('refresh flow', () => {
   const expireSpy = moxy();
   const refreshSpy = moxy();
   const errorSpy = moxy();
@@ -682,6 +788,9 @@ describe('auth refreshment and expiry', () => {
     client.on('refresh', refreshSpy);
     client.on('error', errorSpy);
 
+    await client.signIn();
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
+
     for (let i = 1; i <= 10; i += 1) {
       const { token } = await client.signIn(); // eslint-disable-line no-await-in-loop
       const newPayload = {
@@ -704,6 +813,11 @@ describe('auth refreshment and expiry', () => {
       expect(refreshingCall.isDone()).toBe(true);
       expect(client.isAuthorized).toBe(true);
       expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
+      expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(i + 1);
+      expect(sessionStorage.setItem.mock).toHaveBeenCalledWith(
+        'machinat_auth_token',
+        newToken
+      );
 
       // eslint-disable-next-line no-await-in-loop
       await expect(client.signIn()).resolves.toEqual({
@@ -721,7 +835,6 @@ describe('auth refreshment and expiry', () => {
 
     expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).not.toHaveBeenCalled();
-    expect(errorSpy.mock).not.toHaveBeenCalled();
   });
 
   it('emit error if _refresh api respond error', async () => {
@@ -745,6 +858,7 @@ describe('auth refreshment and expiry', () => {
 
     const { token, context } = await client.signIn();
     expect(client.isAuthorized).toBe(true);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
 
     const refreshingCall = serverEntry
       .post('/auth/_refresh', { token })
@@ -774,9 +888,10 @@ describe('auth refreshment and expiry', () => {
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
     expect(expireSpy.mock).toHaveBeenCalledWith(context);
     expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
   });
 
-  it('resign instead of refresh if authenticator.shouldResign', async () => {
+  it('resign if no "refreshTill" in the payload ', async () => {
     setCookieAuth({
       platform: 'foo',
       data: { foo: 'data' },
@@ -796,6 +911,7 @@ describe('auth refreshment and expiry', () => {
 
     await client.signIn();
     expect(client.isAuthorized).toBe(true);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
 
     for (let i = 1; i <= 10; i += 1) {
       const newPayload = {
@@ -821,6 +937,11 @@ describe('auth refreshment and expiry', () => {
       expect(client.isAuthorized).toBe(true);
       expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
       expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(i);
+      expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(i + 1);
+      expect(sessionStorage.setItem.mock).toHaveBeenCalledWith(
+        'machinat_auth_token',
+        newToken
+      );
 
       // eslint-disable-next-line
       await expect(client.signIn()).resolves.toEqual({
@@ -840,7 +961,7 @@ describe('auth refreshment and expiry', () => {
     expect(errorSpy.mock).not.toHaveBeenCalled();
   });
 
-  it('emit error if authenticator.fetchCredential() resolve not success', async () => {
+  it('emit error if authenticator.fetchCredential() fail', async () => {
     setCookieAuth({
       platform: 'foo',
       data: { foo: 'data' },
@@ -866,6 +987,7 @@ describe('auth refreshment and expiry', () => {
 
     const { token, context } = await client.signIn();
     expect(client.isAuthorized).toBe(true);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
 
     jest.advanceTimersToNextTimer(1);
     await delayLoops(5);
@@ -891,6 +1013,7 @@ describe('auth refreshment and expiry', () => {
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
     expect(expireSpy.mock).toHaveBeenCalledWith(context);
     expect(refreshSpy.mock).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
   });
 
   it('emit error if _sign api respond error', async () => {
@@ -927,6 +1050,7 @@ describe('auth refreshment and expiry', () => {
     expect(refreshingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(true);
     expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
 
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock).toHaveBeenCalledWith(
@@ -946,6 +1070,7 @@ describe('auth refreshment and expiry', () => {
     expect(expireSpy.mock).toHaveBeenCalledTimes(1);
     expect(expireSpy.mock).toHaveBeenCalledWith(context);
     expect(refreshSpy.mock).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
   });
 
   it('not update auth if signOut() during refreshment', async () => {
@@ -969,6 +1094,7 @@ describe('auth refreshment and expiry', () => {
 
     const { token } = await client.signIn();
     expect(client.isAuthorized).toBe(true);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
 
     const refreshingCall = serverEntry
       .post('/auth/_refresh', { token })
@@ -1001,6 +1127,7 @@ describe('auth refreshment and expiry', () => {
     expect(refreshSpy.mock).not.toHaveBeenCalled();
     expect(expireSpy.mock).not.toHaveBeenCalled();
     expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
   });
 });
 
