@@ -8,7 +8,7 @@
     "prettier": "prettier -w './packages/*/src/**/*.{ts,tsx}'",
     "test": "jest",
     "prepare": "husky install",
-    "publish": "make clean && make && lerna publish",
+    "prepack": "make clean && make",
     "version": "npm install --package-lock-only && git add package-lock.json"
   },
   "devDependencies": {
