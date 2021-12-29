@@ -21,6 +21,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "prepack": "make -f ../../package.mk prepack"
+  },
   "dependencies": {
     "invariant": "^2.2.4"
   },

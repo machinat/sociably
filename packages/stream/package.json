@@ -25,7 +25,8 @@
     "polyfill-exports.js"
   ],
   "scripts": {
-    "postinstall": "node ./polyfill-exports.js"
+    "postinstall": "node ./polyfill-exports.js",
+    "prepack": "make -f ../../package.mk prepack"
   },
   "dependencies": {
     "rxjs": "^6.5.5"

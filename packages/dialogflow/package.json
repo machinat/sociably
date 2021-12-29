@@ -21,6 +21,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "prepack": "make -f ../../package.mk prepack"
+  },
   "dependencies": {
     "@google-cloud/dialogflow": "^3.2.0",
     "invariant": "^2.2.4"

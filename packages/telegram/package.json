@@ -23,7 +23,8 @@
     "polyfill-exports.js"
   ],
   "scripts": {
-    "postinstall": "node ./polyfill-exports.js"
+    "postinstall": "node ./polyfill-exports.js",
+    "prepack": "make -f ../../package.mk prepack"
   },
   "license": "MIT",
   "publishConfig": {
