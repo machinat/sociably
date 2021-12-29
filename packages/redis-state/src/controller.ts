@@ -9,32 +9,28 @@ import type {
 } from '@machinat/core/base/StateController';
 import { ClientI } from './interface';
 
+type CallClientFn = (method: string, ...params: string[]) => Promise<any>;
+
 export class RedisStateAccessor implements StateAccessor {
   private _stateKey: string;
-  private _client: RedisClient;
+  private _callClient: CallClientFn;
   private _marshaler: BaseMarshaler;
 
-  constructor(client: RedisClient, marshaler: BaseMarshaler, key: string) {
-    this._client = client;
+  constructor(callClient: CallClientFn, marshaler: BaseMarshaler, key: string) {
+    this._callClient = callClient;
     this._marshaler = marshaler;
     this._stateKey = key;
   }
 
   async get<T>(key: string): Promise<T> {
-    const result = await thenifiedly.callMethod(
-      'hget',
-      this._client,
-      this._stateKey,
-      key
-    );
+    const result = await this._callClient('hget', this._stateKey, key);
 
     return result ? this._parseValue(result) : undefined;
   }
 
   async set<T>(key: string, state: T): Promise<boolean> {
-    const newFieldCount = await thenifiedly.callMethod(
+    const newFieldCount = await this._callClient(
       'hset',
-      this._client,
       this._stateKey,
       key,
       this._stringifyValue(state)
@@ -48,22 +44,16 @@ export class RedisStateAccessor implements StateAccessor {
     key: string,
     updator: (value: undefined | T) => undefined | T
   ): Promise<undefined | T> {
-    const currentData = await thenifiedly.callMethod(
-      'hget',
-      this._client,
-      this._stateKey,
-      key
-    );
+    const currentData = await this._callClient('hget', this._stateKey, key);
 
     const currentValue = this._parseValue(currentData);
     const newValue = updator(currentData ? currentValue : undefined);
 
     if (newValue === undefined) {
-      await thenifiedly.callMethod('hdel', this._client, this._stateKey, key);
+      await this._callClient('hdel', this._stateKey, key);
     } else if (newValue !== currentValue) {
-      await thenifiedly.callMethod(
+      await this._callClient(
         'hset',
-        this._client,
         this._stateKey,
         key,
         this._stringifyValue(newValue)
@@ -74,21 +64,12 @@ export class RedisStateAccessor implements StateAccessor {
   }
 
   async delete(key: string): Promise<boolean> {
-    const fieldCount = await thenifiedly.callMethod(
-      'hdel',
-      this._client,
-      this._stateKey,
-      key
-    );
+    const fieldCount = await this._callClient('hdel', this._stateKey, key);
     return !!fieldCount;
   }
 
   async getAll<T>(): Promise<Map<string, T>> {
-    const result = await thenifiedly.callMethod(
-      'hgetall',
-      this._client,
-      this._stateKey
-    );
+    const result = await this._callClient('hgetall', this._stateKey);
     if (!result) {
       return new Map();
     }
@@ -102,7 +83,7 @@ export class RedisStateAccessor implements StateAccessor {
   }
 
   async clear(): Promise<undefined> {
-    await thenifiedly.callMethod('del', this._client, this._stateKey);
+    await this._callClient('del', this._stateKey);
     return undefined;
   }
 
@@ -136,7 +117,7 @@ export class RedisStateController implements BaseStateController {
     const channelUid = typeof channel === 'string' ? channel : channel.uid;
 
     return new RedisStateAccessor(
-      this._client,
+      this._callClientFn,
       this._marshaler,
       `$channel:${channelUid}`
     );
@@ -146,7 +127,7 @@ export class RedisStateController implements BaseStateController {
     const userUid = typeof user === 'string' ? user : user.uid;
 
     return new RedisStateAccessor(
-      this._client,
+      this._callClientFn,
       this._marshaler,
       `$user:${userUid}`
     );
@@ -154,10 +135,24 @@ export class RedisStateController implements BaseStateController {
 
   globalState(name: string): RedisStateAccessor {
     return new RedisStateAccessor(
-      this._client,
+      this._callClientFn,
       this._marshaler,
       `$global:${name}`
     );
+  }
+
+  private _callClientFn = this.callClient.bind(this);
+
+  async callClient(
+    method: string,
+    ...params: (string | number)[]
+  ): Promise<any> {
+    const result = await thenifiedly.callMethod(
+      method,
+      this._client,
+      ...params
+    );
+    return result;
   }
 }
 

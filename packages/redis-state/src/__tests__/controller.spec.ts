@@ -15,6 +15,8 @@ const client = moxy<RedisClient>({
   hdel: resolveCallback(1),
   del: resolveCallback(1),
   hgetall: resolveCallback(null),
+  set: resolveCallback('OK'),
+  expire: resolveCallback(1),
 } as never);
 
 const marshaler = moxy({
@@ -61,7 +63,7 @@ describe.each([
     controller.globalState('bar'),
   ],
 ])('%s', (_, prefix, fooState, barState) => {
-  test('#get()', async () => {
+  test('.get()', async () => {
     await expect(fooState.get('key1')).resolves.toBe(undefined);
     expect(client.hget.mock).toHaveBeenCalledTimes(1);
     expect(client.hget.mock).toHaveBeenCalledWith(
@@ -91,7 +93,7 @@ describe.each([
     );
   });
 
-  test('#set()', async () => {
+  test('.set()', async () => {
     await expect(fooState.set('key1', 'foo')).resolves.toBe(false);
     expect(client.hset.mock).toHaveBeenCalledTimes(1);
     expect(client.hset.mock).toHaveBeenCalledWith(
@@ -122,7 +124,7 @@ describe.each([
     );
   });
 
-  describe('#update()', () => {
+  describe('.update()', () => {
     it('update value', async () => {
       const updator = moxy(() => 'foo');
       await expect(fooState.update('key1', updator)).resolves.toBe('foo');
@@ -188,7 +190,7 @@ describe.each([
     });
   });
 
-  test('#delete()', async () => {
+  test('.delete()', async () => {
     await expect(fooState.delete('key1')).resolves.toBe(true);
     expect(client.hdel.mock).toHaveBeenCalledTimes(1);
     expect(client.hdel.mock).toHaveBeenCalledWith(
@@ -216,7 +218,7 @@ describe.each([
     );
   });
 
-  test('#clear()', async () => {
+  test('.clear()', async () => {
     await expect(fooState.clear()).resolves.toBe(undefined);
     expect(client.del.mock).toHaveBeenCalledTimes(1);
     expect(client.del.mock).toHaveBeenCalledWith(
@@ -234,7 +236,7 @@ describe.each([
     );
   });
 
-  test('#getAll()', async () => {
+  test('.getAll()', async () => {
     await expect(fooState.getAll()).resolves.toEqual(new Map());
     expect(client.hgetall.mock).toHaveBeenCalledTimes(1);
     expect(client.hgetall.mock).toHaveBeenCalledWith(
@@ -307,4 +309,22 @@ describe.each([
     expect(marshaler.unmarshal.mock).toHaveBeenCalledWith({ value: 1 });
     expect(marshaler.unmarshal.mock).toHaveBeenCalledWith({ value: 2 });
   });
+});
+
+test('.callClient(method, ...params)', async () => {
+  await expect(controller.callClient('set', 'foo', 'bar')).resolves.toBe('OK');
+  expect(client.set.mock).toHaveBeenCalledTimes(1);
+  expect(client.set.mock).toHaveBeenCalledWith(
+    'foo',
+    'bar',
+    expect.any(Function)
+  );
+
+  await expect(controller.callClient('expire', 'foo', 100)).resolves.toBe(1);
+  expect(client.expire.mock).toHaveBeenCalledTimes(1);
+  expect(client.expire.mock).toHaveBeenCalledWith(
+    'foo',
+    100,
+    expect.any(Function)
+  );
 });
