@@ -5,6 +5,10 @@ export interface MachinatProfile {
   readonly platform: string;
   readonly name: string;
   readonly avatarUrl: undefined | string;
+  readonly firstName: undefined | string;
+  readonly lastName: undefined | string;
+  readonly languageCode: undefined | string;
+  readonly timezone: undefined | number;
   data: any;
 }
 

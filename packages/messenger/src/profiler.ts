@@ -47,7 +47,7 @@ export class MessengerUserProfile
     return this.data.profile_pic;
   }
 
-  get locale(): undefined | string {
+  get languageCode(): undefined | string {
     return this.data.locale;
   }
 

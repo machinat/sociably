@@ -27,15 +27,14 @@ export class TelegramUserProfile
   implements MachinatProfile, MarshallableInstance<TelegramUserProfileValue>
 {
   static typeName = 'TelegramUserProfile';
-
   static fromJSONValue(value: TelegramUserProfileValue): TelegramUserProfile {
     return new TelegramUserProfile(value.data, value.avatar);
   }
 
   avatarUrl: undefined | string;
   data: RawUser;
-
   platform = TELEGRAM;
+  timezone = undefined;
 
   constructor(rawUser: RawUser, avatarUrl?: string) {
     this.avatarUrl = avatarUrl;
@@ -91,7 +90,6 @@ export class TelegramChatProfile
   implements MachinatProfile, MarshallableInstance<TelegramChatProfileValue>
 {
   static typeName = 'TelegramChatProfile';
-
   static fromJSONValue(value: TelegramChatProfileValue): TelegramChatProfile {
     return new TelegramChatProfile(value.data, value.avatar);
   }
@@ -99,6 +97,8 @@ export class TelegramChatProfile
   data: RawChat;
   avatarUrl: undefined | string;
   platform = TELEGRAM;
+  languageCode = undefined;
+  timezone = undefined;
 
   constructor(data: RawChat, avatarUrl?: string) {
     this.data = data;

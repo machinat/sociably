@@ -36,8 +36,9 @@ describe('#getUserProfile(user)', () => {
     expect(profile.platform).toBe('line');
     expect(profile.name).toBe('LINE taro');
     expect(profile.id).toBe('_USER_ID_');
-    expect(profile.pictureUrl).toBe('https://obs.line-apps.com/...');
+    expect(profile.avatarUrl).toBe('https://obs.line-apps.com/...');
     expect(profile.statusMessage).toBe('Hello, LINE!');
+    expect(profile.languageCode).toBe('en');
     expect(profile.data).toEqual(userProfileData);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
@@ -86,8 +87,9 @@ describe('#getUserProfile(user)', () => {
     expect(profile.platform).toBe('line');
     expect(profile.name).toBe('LINE taro');
     expect(profile.id).toBe('_USER_ID_');
-    expect(profile.pictureUrl).toBe('https://obs.line-apps.com/...');
+    expect(profile.avatarUrl).toBe('https://obs.line-apps.com/...');
     expect(profile.statusMessage).toBe(undefined);
+    expect(profile.languageCode).toBe(undefined);
     expect(profile.data).toEqual(groupMemberData);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
@@ -117,8 +119,9 @@ describe('#getUserProfile(user)', () => {
     expect(profile.platform).toBe('line');
     expect(profile.name).toBe('LINE taro');
     expect(profile.id).toBe('_USER_ID_');
-    expect(profile.pictureUrl).toBe('https://obs.line-apps.com/...');
+    expect(profile.avatarUrl).toBe('https://obs.line-apps.com/...');
     expect(profile.statusMessage).toBe(undefined);
+    expect(profile.languageCode).toBe(undefined);
     expect(profile.data).toEqual(roomMemberData);
 
     expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);

@@ -21,6 +21,9 @@ export class LineUserProfile
 
   data: LineRawUserProfile;
   platform = LINE;
+  firstName = undefined;
+  lastName = undefined;
+  timezone = undefined;
 
   constructor(data: LineRawUserProfile) {
     this.data = data;
@@ -38,11 +41,7 @@ export class LineUserProfile
     return this.data.pictureUrl;
   }
 
-  get pictureUrl(): undefined | string {
-    return this.data.pictureUrl;
-  }
-
-  get language(): undefined | string {
+  get languageCode(): undefined | string {
     return this.data.language;
   }
 
@@ -77,6 +76,10 @@ export class LineGroupProfile
 
   data: LineGroupSummary;
   platform = LINE;
+  firstName = undefined;
+  lastName = undefined;
+  languageCode = undefined;
+  timezone = undefined;
 
   constructor(data: LineGroupSummary) {
     this.data = data;
