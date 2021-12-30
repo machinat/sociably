@@ -32,6 +32,7 @@ test.each([
   await expect(fooState.update('key2', updator)).resolves.toBe('baz');
   expect(updator.mock).toHaveBeenNthCalledWith(2, undefined);
   await expect(fooState.get('key2')).resolves.toBe('baz');
+  await expect(fooState.keys()).resolves.toEqual(['key1', 'key2']);
   await expect(fooState.getAll()).resolves.toMatchInlineSnapshot(`
           Map {
             "key1" => "bar",
@@ -45,6 +46,7 @@ test.each([
   await expect(barState.get('key1')).resolves.toEqual({
     foo: { bar: { baz: 'bae' } },
   });
+  await expect(barState.keys()).resolves.toEqual(['key1']);
   await expect(barState.getAll()).resolves.toMatchInlineSnapshot(`
           Map {
             "key1" => Object {
@@ -61,6 +63,7 @@ test.each([
   await expect(fooState.get('key2')).resolves.toBe(undefined);
 
   await expect(fooState.delete('key2')).resolves.toBe(false);
+  await expect(fooState.keys()).resolves.toEqual(['key1']);
   await expect(fooState.getAll()).resolves.toMatchInlineSnapshot(`
           Map {
             "key1" => "bar",
@@ -70,9 +73,11 @@ test.each([
   updator.mock.fakeReturnValue(undefined);
   await expect(fooState.update('key1', updator)).resolves.toBe(undefined);
   expect(updator.mock).toHaveBeenCalledWith('bar');
+  await expect(fooState.keys()).resolves.toEqual([]);
   await expect(fooState.getAll()).resolves.toEqual(new Map());
 
   await expect(barState.clear()).resolves.toBe(1);
   await expect(barState.get('key1')).resolves.toBe(undefined);
+  await expect(barState.keys()).resolves.toEqual([]);
   await expect(barState.getAll()).resolves.toEqual(new Map());
 });

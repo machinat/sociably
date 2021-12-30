@@ -44,6 +44,10 @@ export class InMemoryStateAccessor implements StateAccessor {
     return this._stateData.delete(key);
   }
 
+  async keys(): Promise<string[]> {
+    return Array.from(this._stateData.keys());
+  }
+
   async getAll<T>(): Promise<Map<string, T>> {
     return this._stateData;
   }

@@ -66,6 +66,11 @@ export class FileStateAccessor implements StateAccessor {
     return newValue;
   }
 
+  async keys(): Promise<string[]> {
+    const data = await this._getData();
+    return Object.keys(data);
+  }
+
   async getAll<T>(): Promise<Map<string, T>> {
     const data = await this._getData();
     return new Map(

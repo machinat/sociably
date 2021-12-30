@@ -30,7 +30,7 @@ const initialContent = `
 const fooChannel = { platform: 'test', uid: 'foo' };
 const barUser = { platform: 'test', uid: 'bar' };
 
-describe('FileStateAccessor#get()', () => {
+describe('.get()', () => {
   test('get value from storage file', async () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
@@ -70,7 +70,7 @@ describe('FileStateAccessor#get()', () => {
   });
 });
 
-describe('#getAll()', () => {
+describe('.getAll()', () => {
   test('get all values from storage file', async () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
@@ -130,7 +130,48 @@ describe('#getAll()', () => {
   });
 });
 
-describe('#set()', () => {
+describe('.keys()', () => {
+  test('return keys from storage file', async () => {
+    const tmpPath = tmpNameSync();
+    fs.writeFileSync(tmpPath, initialContent);
+    const controller = new FileStateController({ path: tmpPath });
+
+    await expect(controller.channelState(fooChannel).keys()).resolves.toEqual([
+      'key1',
+      'key2',
+    ]);
+    await expect(controller.userState(barUser).keys()).resolves.toEqual([
+      'key1',
+      'key2',
+    ]);
+    await expect(controller.globalState('baz').keys()).resolves.toEqual([
+      'key1',
+      'key2',
+    ]);
+    await expect(
+      controller.channelState({ platform: 'test', uid: 'unknown' }).keys()
+    ).resolves.toEqual([]);
+  });
+
+  test('when storage file is empty', async () => {
+    const tmpPath = tmpNameSync();
+    const controller = new FileStateController({ path: tmpPath });
+
+    await expect(controller.channelState(fooChannel).keys()).resolves.toEqual(
+      []
+    );
+    await delay(20);
+    expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
+      Object {
+        "channelStates": Object {},
+        "globalStates": Object {},
+        "userStates": Object {},
+      }
+    `);
+  });
+});
+
+describe('.set()', () => {
   test('write value to storage file', async () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
@@ -220,7 +261,7 @@ describe('#set()', () => {
   });
 });
 
-describe('#delete()', () => {
+describe('.delete()', () => {
   test('delete value from storage file', async () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
@@ -285,7 +326,7 @@ describe('#delete()', () => {
   });
 });
 
-describe('#clear()', () => {
+describe('.clear()', () => {
   test('clear values from storage file', async () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);

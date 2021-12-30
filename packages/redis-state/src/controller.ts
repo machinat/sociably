@@ -68,6 +68,11 @@ export class RedisStateAccessor implements StateAccessor {
     return !!fieldCount;
   }
 
+  async keys(): Promise<string[]> {
+    const result = await this._callClient('hkeys', this._stateKey);
+    return result;
+  }
+
   async getAll<T>(): Promise<Map<string, T>> {
     const result = await this._callClient('hgetall', this._stateKey);
     if (!result) {

@@ -14,6 +14,7 @@ const client = moxy<RedisClient>({
   hset: resolveCallback(1),
   hdel: resolveCallback(1),
   del: resolveCallback(1),
+  hkeys: resolveCallback([]),
   hgetall: resolveCallback(null),
   set: resolveCallback('OK'),
   expire: resolveCallback(1),
@@ -236,6 +237,27 @@ describe.each([
     );
   });
 
+  test('.keys()', async () => {
+    await expect(fooState.keys()).resolves.toEqual([]);
+    expect(client.hkeys.mock).toHaveBeenCalledTimes(1);
+    expect(client.hkeys.mock).toHaveBeenCalledWith(
+      `${prefix}:foo`,
+      expect.any(Function)
+    );
+
+    client.hkeys.mock.fake(resolveCallback(['foo', 'bar']));
+    await expect(fooState.keys()).resolves.toEqual(['foo', 'bar']);
+    expect(client.hkeys.mock).toHaveBeenCalledTimes(2);
+
+    client.hkeys.mock.fake(resolveCallback(['bar', 'baz']));
+    await expect(barState.keys()).resolves.toEqual(['bar', 'baz']);
+    expect(client.hkeys.mock).toHaveBeenCalledTimes(3);
+    expect(client.hkeys.mock).toHaveBeenCalledWith(
+      `${prefix}:bar`,
+      expect.any(Function)
+    );
+  });
+
   test('.getAll()', async () => {
     await expect(fooState.getAll()).resolves.toEqual(new Map());
     expect(client.hgetall.mock).toHaveBeenCalledTimes(1);
@@ -254,10 +276,6 @@ describe.each([
       ])
     );
     expect(client.hgetall.mock).toHaveBeenCalledTimes(2);
-    expect(client.hgetall.mock).toHaveBeenCalledWith(
-      `${prefix}:foo`,
-      expect.any(Function)
-    );
 
     client.hgetall.mock.fake(resolveCallback({ key1: '123' }));
     await expect(barState.getAll()).resolves.toEqual(new Map([['key1', 123]]));

@@ -26,6 +26,7 @@ export interface StateAccessor {
     updator: (state: undefined | T) => undefined | T
   ): Promise<undefined | T>;
   delete(key: string): Promise<boolean>;
+  keys(): Promise<string[]>;
   getAll<T>(): Promise<Map<string, T>>;
   clear(): Promise<undefined | number>;
 }
