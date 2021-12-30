@@ -135,6 +135,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  nock.cleanAll();
   (Date as Moxy<DateConstructor>).now.mock.reset();
   fooAuthenticator.mock.reset();
   barAuthenticator.mock.reset();
@@ -634,6 +635,59 @@ describe('.signIn()', () => {
       foo: 'data',
     });
     expect(refreshCall.isDone()).toBe(true);
+    expect(document.mock.setter('cookie')).not.toHaveBeenCalled();
+    expect(sessionStorage.getItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.setItem.mock).toHaveBeenCalledWith(
+      'machinat_auth_token',
+      token
+    );
+  });
+
+  test('resign if refresh try fails', async () => {
+    const expiredToken = makeToken({
+      platform: 'foo',
+      data: { foo: 'data' },
+      scope: { path: '/' },
+      exp: SEC_NOW - 99,
+      iat: SEC_NOW - 999,
+      refreshTill: SEC_NOW + 9999,
+    });
+    sessionStorage.getItem.mock.fakeReturnValue(expiredToken);
+
+    const refreshCall = serverEntry
+      .post('/auth/_refresh', { token: expiredToken })
+      .reply(400, {
+        platform: 'foo',
+        error: { code: 400, reason: 'no signature found' },
+      });
+
+    const signingCall = serverEntry
+      .post('/auth/_sign', {
+        platform: 'foo',
+        credential: { foo: 'credential' },
+      })
+      .reply(200, { platform: 'foo', token });
+
+    const client = new AuthClient({ authenticators, serverUrl });
+    await expect(client.signIn()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
+
+    expect(client.isAuthorized).toBe(true);
+    expect(client.isAuthorizing).toBe(false);
+
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledWith(
+      'https://machinat.io/auth/foo'
+    );
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthContext.mock).toHaveBeenCalledWith({
+      foo: 'data',
+    });
+    expect(refreshCall.isDone()).toBe(true);
+    expect(signingCall.isDone()).toBe(true);
     expect(document.mock.setter('cookie')).not.toHaveBeenCalled();
     expect(sessionStorage.getItem.mock).toHaveBeenCalledTimes(1);
     expect(sessionStorage.setItem.mock).toHaveBeenCalledTimes(1);

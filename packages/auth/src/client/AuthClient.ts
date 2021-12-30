@@ -315,10 +315,9 @@ class AuthClient<
         const [refreshErr, body] = await this._callAuthPrivateApi('_refresh', {
           token: existedAuth.token,
         });
-        if (refreshErr) {
-          throw refreshErr;
+        if (!refreshErr) {
+          newToken = body.token;
         }
-        newToken = body.token;
       }
 
       if (!newToken) {
