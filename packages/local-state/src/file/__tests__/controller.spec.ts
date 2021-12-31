@@ -346,7 +346,9 @@ describe('.clear()', () => {
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       Object {
-        "channelStates": Object {},
+        "channelStates": Object {
+          "foo": Object {},
+        },
         "globalStates": Object {
           "baz": Object {
             "key1": Object {
@@ -359,7 +361,9 @@ describe('.clear()', () => {
             ],
           },
         },
-        "userStates": Object {},
+        "userStates": Object {
+          "bar": Object {},
+        },
       }
     `);
   });

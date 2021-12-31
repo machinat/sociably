@@ -25,12 +25,12 @@ const objectHasOwnProperty = (obj, prop) =>
 export class FileStateAccessor implements StateAccessor {
   private _marshaler: BaseMarshaler;
   private _getData: () => Promise<Record<string, any>>;
-  private _updateData: (data: null | Record<string, any>) => void;
+  private _updateData: (data: Record<string, any>) => void;
 
   constructor(
     marshaler: BaseMarshaler,
     getData: () => Promise<Record<string, any>>,
-    updateData: (data: null | Record<string, any>) => void
+    updateData: (data: Record<string, any>) => void
   ) {
     this._marshaler = marshaler;
     this._getData = getData;
@@ -83,19 +83,16 @@ export class FileStateAccessor implements StateAccessor {
 
   async delete(key: string): Promise<boolean> {
     const data = await this._getData();
-    if (objectHasOwnProperty(data, key)) {
-      delete data[key];
+    const isExisted = objectHasOwnProperty(data, key);
+    delete data[key];
 
-      this._updateData(Object.keys(data).length === 0 ? null : data);
-      return true;
-    }
-
-    return false;
+    this._updateData(data);
+    return isExisted;
   }
 
   async clear(): Promise<number> {
     const data = await this._getData();
-    this._updateData(null);
+    this._updateData({});
     return Object.keys(data).length;
   }
 }
@@ -171,14 +168,20 @@ export class FileStateController implements BaseStateController {
   private _getDataCallback(type: string, id: string) {
     return async () => {
       await this._readingJob;
-      return this._storage[type][id] || {};
+
+      let data = this._storage[type][id];
+      if (!data) {
+        data = {};
+        this._storage[type][id] = data;
+      }
+      return data;
     };
   }
 
   private _updateDataCallback(type: string, id: string) {
-    return (value) => {
-      if (value) {
-        this._storage[type][id] = value;
+    return (data: Record<string, any>) => {
+      if (Object.keys(data).length > 0) {
+        this._storage[type][id] = data;
       } else {
         delete this._storage[type][id];
       }
