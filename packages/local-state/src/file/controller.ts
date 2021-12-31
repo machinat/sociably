@@ -118,7 +118,7 @@ export class FileStateController implements BaseStateController {
   marshaler: BaseMarshaler;
   serializer: SerializerI;
 
-  private _storage: StorageData;
+  private _storages: StorageData;
   private _fileHandle: FileHandle;
   private _watcher: FSWatcher;
 
@@ -169,10 +169,10 @@ export class FileStateController implements BaseStateController {
     return async () => {
       await this._readingJob;
 
-      let data = this._storage[type][id];
+      let data = this._storages[type][id];
       if (!data) {
         data = {};
-        this._storage[type][id] = data;
+        this._storages[type][id] = data;
       }
       return data;
     };
@@ -181,9 +181,9 @@ export class FileStateController implements BaseStateController {
   private _updateDataCallback(type: string, id: string) {
     return (data: Record<string, any>) => {
       if (Object.keys(data).length > 0) {
-        this._storage[type][id] = data;
+        this._storages[type][id] = data;
       } else {
-        delete this._storage[type][id];
+        delete this._storages[type][id];
       }
 
       this._registerWriteData();
@@ -205,24 +205,35 @@ export class FileStateController implements BaseStateController {
 
     const content = await this._fileHandle.readFile('utf8');
     if (content === '') {
-      this._storage = {
+      this._storages = {
         channelStates: {},
         userStates: {},
         globalStates: {},
       };
       this._registerWriteData();
     } else {
-      this._storage = this.serializer.parse(content);
+      this._storages = this.serializer.parse(content);
     }
+  }
+
+  private _cleanStorage() {
+    Object.values(this._storages).forEach((storage) => {
+      Object.entries(storage).forEach(([id, data]) => {
+        if (Object.keys(data).length === 0) {
+          delete storage[id]; // eslint-disable-line no-param-reassign
+        }
+      });
+    });
   }
 
   private async _writeData(): Promise<void> {
     this._isWriting = true;
-    const content = this.serializer.stringify(this._storage);
+    this._cleanStorage();
+
+    const content = this.serializer.stringify(this._storages);
 
     await this._fileHandle.truncate();
     await this._fileHandle.write(content, 0);
-
     this._isWriting = false;
   }
 
