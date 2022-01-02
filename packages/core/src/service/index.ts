@@ -1,4 +1,4 @@
-export * from './annotate';
+export * from './annotator';
 export { default as ServiceSpace } from './space';
 export { default as ServiceScope } from './scope';
 export {

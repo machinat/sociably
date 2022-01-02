@@ -31,7 +31,9 @@ type ServiceFactoryFn<T, Deps extends readonly ServiceDependency<any>[]> = (
 ) => T;
 
 type ContainerOptions<Deps extends readonly ServiceDependency<any>[]> = {
+  /** The container name for debugging purpose */
   name?: string;
+  /** The interfaces of the required dependencies */
   deps?: Deps;
 };
 
@@ -59,9 +61,13 @@ export const makeContainer =
   };
 
 type ClassProviderOptions<T, Deps extends readonly ServiceDependency<any>[]> = {
+  /** The provider name for debugging purpose */
   name?: string;
+  /** The interfaces of the required dependencies */
   deps?: Deps;
+  /** The factory function to create the instance, default to `(...deps) => new Klazz(...deps)` */
   factory?: ServiceFactoryFn<T, Deps>;
+  /** The lifetime of the instance, default to 'singleton' */
   lifetime?: ServiceLifetime;
 };
 
@@ -79,7 +85,7 @@ export const makeClassProvider =
     name,
     factory,
     deps = [] as never,
-    lifetime = 'transient',
+    lifetime = 'singleton',
   }: ClassProviderOptions<_T, Deps> = {}) =>
   <T extends _T, Klazz extends Constructor<T>>(
     klazz: Klazz & Constructor<T>
@@ -102,8 +108,11 @@ export const makeClassProvider =
   };
 
 type FactoryProviderOptions<Deps extends readonly ServiceDependency<any>[]> = {
+  /** The provider name for debugging purpose */
   name?: string;
+  /** The interfaces of the required dependencies */
   deps?: Deps;
+  /** The lifetime of the instance, default to 'transient' */
   lifetime?: ServiceLifetime;
 };
 

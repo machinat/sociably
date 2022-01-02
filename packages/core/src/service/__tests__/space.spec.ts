@@ -7,7 +7,7 @@ import {
   makeFactoryProvider,
   makeClassProvider,
   makeInterface,
-} from '../annotate';
+} from '../annotator';
 
 const HELLO = makeInterface<{ hello(): string }>({ name: 'Hello' });
 const staticGreeter = moxy({ hello: () => 'HI' });

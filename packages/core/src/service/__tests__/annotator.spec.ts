@@ -9,7 +9,7 @@ import {
   makeClassProvider,
   makeFactoryProvider,
   makeInterface,
-} from '../annotate';
+} from '../annotator';
 
 const FooServiceI = {
   $$typeof: MACHINAT_SERVICE_PROVIDER,
@@ -103,7 +103,7 @@ describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
     const MyProvider = makeClassProvider()(ServiceKlazz);
 
     expect(MyProvider.$$name).toBe('ServiceKlazz');
-    expect(MyProvider.$$lifetime).toBe('transient');
+    expect(MyProvider.$$lifetime).toBe('singleton');
     expect(MyProvider.$$deps).toEqual([]);
     expect(MyProvider.$$multi).toBe(false);
 
