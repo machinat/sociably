@@ -12,11 +12,11 @@ import type {
   AnyScriptLibrary,
 } from './types';
 
-// HACK: enable typing of a Fragment block
+// HACK: add component type to an alia of Fragment
 /**
  * @category Keyword
  */
-export const $ = Machinat.Fragment as unknown as <
+export const BLOCK = Machinat.Fragment as unknown as <
   Vars = any,
   Input = any,
   Return = any,

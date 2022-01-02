@@ -21,15 +21,7 @@ import Machinat from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import IntentRecognizerI from '@machinat/core/base/IntentRecognizerI';
 import { build } from '@machinat/script';
-import {
-  WHILE,
-  PROMPT,
-  IF,
-  THEN,
-  ELSE,
-  CALL,
-  RETURN,
-} from '@machinat/script/keywords';
+import * as $ from '@machinat/script/keywords';
 import OrderSideDish from './OrderSideDish';
 
 const MAIN_DISHES = ['steak', 'chicken', 'pork'];
@@ -39,17 +31,17 @@ export default build(
   <>
     {() => <p>What main dish would you like?</p>}
 
-    <WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
+    <$.WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
       {() => <p>We have {MAIN_DISHES.join(', ')}.</p>}
 
-      <PROMPT
+      <$.PROMPT
         key="ask-main-dish"
         set={({ vars }, { event }) => ({
           ...vars,
           mainDish: event.text,
         })}
       />
-    </WHILE>
+    </$.WHILE>
 
     {({ vars }) => (
       <p>
@@ -59,7 +51,7 @@ export default build(
       </p>
     )}
 
-    <PROMPT
+    <$.PROMPT
       key="ask-side-dish"
       set={
         makeContainer({
@@ -79,22 +71,22 @@ export default build(
       }
     />
 
-    <IF condition={({ vars }) => vars.wantSideDish}>
-      <THEN>
-         <CALL
+    <$.IF condition={({ vars }) => vars.wantSideDish}>
+      <$.THEN>
+         <$.CALL
            script={OrderSideDish}
            key="order-side-dish"
            set={({ vars }, { sideDish }) =>
              ({ ...vars, sideDish })
            }
          />
-      </THEN>
-      <ELSE>
+      </$.THEN>
+      <$.ELSE>
         {() => 'OK, tell me if you need anything.'}
-      </ELSE>
-    </IF>
+      </$.ELSE>
+    </$.IF>
 
-    <RETURN
+    <$.RETURN
       value={({ vars: { mainDish, sideDish } }) => ({ mainDish, sideDish })}
     />
   </>
@@ -206,17 +198,17 @@ Flow control keywords help you to handle the flow control of a conversation. Lik
 ```js
 <>
 ...
-  <WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
+  <$.WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
     {() => <p>We have {MAIN_DISHES.join(', ')}.</p>}
 
-    <PROMPT
+    <$.PROMPT
       key="ask-main-dish"
       set={({ vars }, { event }) => ({
         ...vars,
         mainDish: event.text,
       })}
     />
-  </WHILE>
+  </$.WHILE>
 ...
 </>
 ```
@@ -236,7 +228,7 @@ flow. So the conversation logic can be reused by different scripts, or even use
 it directly.
 
 ```js
-<CALL
+<$.CALL
   script={OrderSideDish}
   key="order-side-dish"
   set={({ vars }, { sideDish }) => ({ ...vars, sideDish })}
@@ -244,7 +236,7 @@ it directly.
 ```
 
 The `set` prop of `CALL` receive the environments object and the returned value
-of the script (by `<RETURN value={...} />`). We can set `vars` value with the
+of the script (by `<$.RETURN value={...} />`). We can set `vars` value with the
 result of the script for later use.
 
 ### Macro Pattern
@@ -257,17 +249,17 @@ const ASKING_DISH = (dishType, choices) => (
   <>
     {() => <p>What would you like for {dishType}?</p>}
 
-    <WHILE condition={({ vars }) => !choices.includes(vars[dishType])}>
+    <$.WHILE condition={({ vars }) => !choices.includes(vars[dishType])}>
       {() => <p>We have {choices.join(', ')}.</p>}
 
-      <PROMPT
+      <$.PROMPT
         key={`ask-${dishType}`}
         set={({ vars }, { event }) => ({
           ...vars,
           [dishType]: event.text,
         })}
       />
-    </WHILE>
+    </$.WHILE>
   </>
 );
 ```
@@ -280,7 +272,7 @@ The macro function can then be used in script like:
   {ASKING_DISH('main dish', ['steak', 'chicken', 'pork'])}
   {ASKING_DISH('side dish', ['fries', 'salad'])}
   {ASKING_DISH('dessert', ['cake', 'pudding'])}
-  <RETURN value={({ vars }) => vars} />
+  <$.RETURN value={({ vars }) => vars} />
 </>
 ```
 
@@ -291,7 +283,7 @@ This is particularly useful for reusing flows within a script. One thing to note
 Every functional prop of keyword elements can be changed to an asynchronous [container](dependency-injection.md#service-container) version. It helps you to use services like recognizing intent. For example:
 
 ```js
-<PROMPT
+<$.PROMPT
   key="ask-side-dish"
   set={
     makeContainer({ deps: [Base.IntentRecognizer] })(

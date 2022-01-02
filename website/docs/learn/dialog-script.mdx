@@ -291,7 +291,7 @@ Add the these codes in the script:
 ```tsx {3,5-7,9,12,17-23} title="src/scenes/AddingTodo.tsx"
 import Machinat from '@machinat/core';
 import { build } from '@machinat/script';
-import { PROMPT } from '@machinat/script/keywords';
+import * as $ from '@machinat/script/keywords';
 
 type AddingTodoVars = {
   todoName: string;
@@ -305,7 +305,7 @@ export default build<AddingTodoVars>(
   <>
     {() => <p>Please enter new todo name:</p>}
 
-    <PROMPT<AddingTodoVars>
+    <$.PROMPT<AddingTodoVars>
       key="ask-todo"
       set={({ vars }, { event }) => ({
         ...vars,
@@ -339,7 +339,7 @@ We can add a `EFFECT` element for doing that:
 import Machinat from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import { build } from '@machinat/script';
-import { PROMPT, EFFECT } from '@machinat/script/keywords';
+import * as $ from '@machinat/script/keywords';
 import TodoController from '../services/TodoController';
 
 type AddingTodoVars = {
@@ -355,7 +355,7 @@ export default build<AddingTodoVars>(
   <>
     {() => <p>Please enter new todo name:</p>}
 
-    <PROMPT<AddingTodoVars>
+    <$.PROMPT<AddingTodoVars>
       key="ask-todo"
       set={({ vars }, { event }) => ({
         ...vars,
@@ -363,7 +363,7 @@ export default build<AddingTodoVars>(
       })}
     />
 
-    <EFFECT<AddingTodoVars>
+    <$.EFFECT<AddingTodoVars>
       set={makeContainer({ deps: [TodoController] })(
         (todoController) =>
           async ({ vars, channel }) => {
@@ -419,20 +419,20 @@ We haven't verify the user input yet, so it could be a problem when user
 reply a non-text message. We can use a `WHILE` keyword to fix that:
 
 ```tsx {1,4,14} title="src/scenes/AddingTodo.tsx"
-import { WHILE, PROMPT, EFFECT } from '@machinat/script/keywords';
+import * as $ from '@machinat/script/keywords';
 // ...
   <>
-    <WHILE<AddingTodoVars> condition={({ vars }) => vars.todoName === ''}>
+    <$.WHILE<AddingTodoVars> condition={({ vars }) => vars.todoName === ''}>
       {() => <p>Please enter new todo name:</p>}
 
-      <PROMPT<AddingTodoVars>
+      <$.PROMPT<AddingTodoVars>
         key="ask-todo"
         set={({ vars }, { event }) => ({
           ...vars,
           todoName: event.type === 'text' ? event.text : '',
         })}
       />
-    </WHILE>
+    </$.WHILE>
     //...
 ```
 
@@ -465,7 +465,7 @@ script like this:
 ```tsx title="src/scenes/AskingFirstTodo.tsx"
 import Machinat from '@machinat/core';
 import { build } from '@machinat/script';
-import { IF, THEN, PROMPT, RETURN, CALL } from '@machinat/script/keywords';
+import * as $ from '@machinat/script/keywords';
 import AddingTodo from './AddingTodo';
 import { ChatEventContext } from '../types';
 
@@ -481,7 +481,7 @@ export default build<AskingFirstTodoVars>(
   <>
     {() => <p>You have no todo now. Do you want to create one?</p>}
 
-    <PROMPT<AskingFirstTodoVars, ChatEventContext>
+    <$.PROMPT<AskingFirstTodoVars, ChatEventContext>
       key="ask-adding"
       set={(_, { event }) => ({
         ok: event.type === 'text'
@@ -490,14 +490,14 @@ export default build<AskingFirstTodoVars>(
       })}
     />
 
-    <IF<AskingFirstTodoVars> condition={({ vars: { ok } }) => !ok}>
-      <THEN>
+    <$.IF<AskingFirstTodoVars> condition={({ vars: { ok } }) => !ok}>
+      <$.THEN>
         {() => <p>Ok, tell me when you need.</p>}
-        <RETURN />
-      </THEN>
-    </IF>
+        <$.RETURN />
+      </$.THEN>
+    </$.IF>
 
-    <CALL key="adding-todo" script={AddingTodo} />
+    <$.CALL key="adding-todo" script={AddingTodo} />
   </>
 );
 ```
