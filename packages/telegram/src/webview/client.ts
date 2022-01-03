@@ -4,6 +4,7 @@ import type {
   ContextResult,
 } from '@machinat/auth';
 import type { WebviewClientAuthenticator } from '@machinat/webview';
+import { parse as parseBrowser } from 'bowser';
 import { TELEGRAM } from '../constant';
 import { TelegramChat, TelegramChatTarget } from '../channel';
 import TelegramUser from '../user';
@@ -56,7 +57,10 @@ export default class TelegramClientAuthenticator
   }
 
   closeWebview(): boolean {
-    if (!this.botName) {
+    if (
+      !this.botName ||
+      parseBrowser(window.navigator.userAgent).platform.type === 'desktop'
+    ) {
       return false;
     }
 

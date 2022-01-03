@@ -6,14 +6,19 @@ import TelegramUser from '../../user';
 const authenticator = new TelegramClientAuthenticator();
 
 const location = moxy();
+const navigator = moxy({
+  userAgent:
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0',
+});
 beforeAll(() => {
-  global.window = { location } as any;
+  global.window = { location, navigator } as any;
 });
 afterAll(() => {
   global.window = undefined as any;
 });
 beforeEach(() => {
   location.mock.reset();
+  navigator.mock.reset();
 });
 
 test('#constructor() properties', () => {
@@ -99,18 +104,33 @@ test('#checkAuthContext()', () => {
 });
 
 describe('#closeWebview()', () => {
-  it('return false if no botName is provided', () => {
-    expect(authenticator.closeWebview()).toBe(false);
-  });
-
-  it('redirect to telegram.me if botName is provided', () => {
+  it('redirect to telegram.me while in mobile devices', () => {
     const authenticatorWithBotName = new TelegramClientAuthenticator({
       botName: 'MyBot',
     });
+    expect(authenticatorWithBotName.closeWebview()).toBe(false);
+
+    navigator.mock
+      .getter('userAgent')
+      .fakeReturnValue(
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
+      );
     expect(authenticatorWithBotName.closeWebview()).toBe(true);
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
     expect(location.mock.setter('href')).toHaveBeenCalledWith(
       'https://telegram.me/MyBot'
     );
+  });
+
+  it('return false if botName is not provided', () => {
+    expect(authenticator.closeWebview()).toBe(false);
+
+    navigator.mock
+      .getter('userAgent')
+      .fakeReturnValue(
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
+      );
+    expect(authenticator.closeWebview()).toBe(false);
+    expect(location.mock.setter('href')).not.toHaveBeenCalled();
   });
 });
