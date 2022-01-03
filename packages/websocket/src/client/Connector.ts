@@ -1,4 +1,3 @@
-// eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import { EventEmitter } from 'events';
 import type TypedEmitter from 'typed-emitter';

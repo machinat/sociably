@@ -1,4 +1,3 @@
-// eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import invariant from 'invariant';
 import type { ContextResult } from '@machinat/auth';

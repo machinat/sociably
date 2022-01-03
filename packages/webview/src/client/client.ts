@@ -1,4 +1,3 @@
-// eslint-disable-next-line spaced-comment
 /// <reference lib="DOM" />
 import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
 import AuthClient from '@machinat/auth/client';
