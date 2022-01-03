@@ -25,7 +25,9 @@ const client = new WebviewClient({
     new MessengerClientAuthenticator({
       appId: publicRuntimeConfig.messengerAppId,
     }),`}${when(platforms.includes('telegram'))`
-    new TelegramClientAuthenticator(),`}${when(platforms.includes('line'))`
+    new TelegramClientAuthenticator({
+      botName: publicRuntimeConfig.telegramBotName,
+    }),`}${when(platforms.includes('line'))`
     new LineClientAuthenticator({
       liffId: publicRuntimeConfig.lineLiffId,
     }),`}

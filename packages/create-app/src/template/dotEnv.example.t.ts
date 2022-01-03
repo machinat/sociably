@@ -57,8 +57,11 @@ MESSENGER_VERIFY_TOKEN= <random secret string>
 #
 #   Go to @BotFather (https://t.me/botfather) and send '/newbot' to create a bot.
 
-# Telegram bot token
+# Bot token
 TELEGRAM_BOT_TOKEN= 123456:AaBbCc12345...
+
+# Bot name
+TELEGRAM_BOT_NAME= my_bot
 
 # Secret path string to protect webhook
 TELEGRAM_SECRET_PATH= <random secret string>

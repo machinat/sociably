@@ -1,8 +1,20 @@
+import moxy from '@moxyjs/moxy';
 import TelegramClientAuthenticator from '../client';
 import { TelegramChat } from '../../channel';
 import TelegramUser from '../../user';
 
 const authenticator = new TelegramClientAuthenticator();
+
+const location = moxy();
+beforeAll(() => {
+  global.window = { location } as any;
+});
+afterAll(() => {
+  global.window = undefined as any;
+});
+beforeEach(() => {
+  location.mock.reset();
+});
 
 test('#constructor() properties', () => {
   expect(authenticator.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
@@ -86,6 +98,19 @@ test('#checkAuthContext()', () => {
   });
 });
 
-test('#closeWebview() return false', () => {
-  expect(authenticator.closeWebview()).toBe(false);
+describe('#closeWebview()', () => {
+  it('return false if no botName is provided', () => {
+    expect(authenticator.closeWebview()).toBe(false);
+  });
+
+  it('redirect to telegram.me if botName is provided', () => {
+    const authenticatorWithBotName = new TelegramClientAuthenticator({
+      botName: 'MyBot',
+    });
+    expect(authenticatorWithBotName.closeWebview()).toBe(true);
+    expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
+    expect(location.mock.setter('href')).toHaveBeenCalledWith(
+      'https://telegram.me/MyBot'
+    );
+  });
 });

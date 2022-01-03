@@ -1,3 +1,4 @@
+/// <reference lib="DOM" />
 import type {
   AuthenticatorCredentialResult,
   ContextResult,
@@ -10,12 +11,18 @@ import { TelegramUserProfile, TelegramChatProfile } from '../profiler';
 import { supplementContext } from './utils';
 import { TelegramAuthContext, TelegramAuthData } from './types';
 
+type TelegramClientOptions = {
+  /** The `username` of the bot. Needed to make `.closeWebview()` work */
+  botName?: string;
+};
+
 /* eslint-disable class-methods-use-this */
 export default class TelegramClientAuthenticator
   implements
     WebviewClientAuthenticator<void, TelegramAuthData, TelegramAuthContext>
 {
   platform = TELEGRAM;
+  botName?: string;
   marshalTypes = [
     TelegramChat,
     TelegramChatTarget,
@@ -23,6 +30,10 @@ export default class TelegramClientAuthenticator
     TelegramUserProfile,
     TelegramChatProfile,
   ];
+
+  constructor({ botName }: TelegramClientOptions = {}) {
+    this.botName = botName;
+  }
 
   async init(): Promise<void> {
     // do nothing
@@ -45,6 +56,11 @@ export default class TelegramClientAuthenticator
   }
 
   closeWebview(): boolean {
-    return false;
+    if (!this.botName) {
+      return false;
+    }
+
+    window.location.href = `https://telegram.me/${this.botName}`;
+    return true;
   }
 }
