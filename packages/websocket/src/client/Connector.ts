@@ -69,13 +69,16 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
   }
 
   async start(): Promise<void> {
-    const { user, credential } = await this._login();
-    this._user = user;
-
     const { host, pathname } = window.location;
-    const socket = await createClientSocket(
-      new URL(this._serverUrl, `wss://${host}${pathname}`).href
-    );
+
+    const [socket, auth] = await Promise.all([
+      createClientSocket(
+        new URL(this._serverUrl, `wss://${host}${pathname}`).href
+      ),
+      this._login(),
+    ]);
+
+    this._user = auth.user;
     this._socket = socket;
 
     socket.on('connect', this._handleConnect.bind(this));
@@ -84,7 +87,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
     socket.on('reject', this._handleReject.bind(this));
     socket.on('error', this._emitError.bind(this));
 
-    this._loginSeq = await socket.login({ credential });
+    this._loginSeq = await socket.login({ credential: auth.credential });
   }
 
   async send(events: EventInput[]): Promise<void> {
