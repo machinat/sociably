@@ -2,7 +2,7 @@ import Machinat from '../..';
 import formatNode from '../formatNode';
 import { makeInterface } from '../../service/annotator';
 
-const { Pause, Fragment, Injection, Raw, Thunk } = Machinat;
+const { Pause, Fragment, Provider, Raw, Thunk } = Machinat;
 
 const MyComp = () => {};
 const Sym = Symbol('_symbol_component_');
@@ -28,8 +28,8 @@ test.each`
   ${(<Fragment />)}                              | ${false}  | ${'<Fragment />'}
   ${(<Pause time={3} />)}                        | ${false}  | ${'<Pause />'}
   ${(<Pause delay={() => Promise.resolve()} />)} | ${true}   | ${'<Pause delay={() => Promise.resolve()} />'}
-  ${(<Injection provide={Foo} value="foo" />)}   | ${false}  | ${'<Injection />'}
-  ${(<Injection provide={Foo} value="foo" />)}   | ${true}   | ${'<Injection provide={[object Object]} value="foo" />'}
+  ${(<Provider provide={Foo} value="foo" />)}    | ${false}  | ${'<Provider />'}
+  ${(<Provider provide={Foo} value="foo" />)}    | ${true}   | ${'<Provider provide={[object Object]} value="foo" />'}
   ${(<Thunk effect={async () => {}} />)}         | ${false}  | ${'<Thunk />'}
   ${(<Thunk effect={async () => {}} />)}         | ${true}   | ${'<Thunk effect={async () => {}} />'}
   ${(<Raw value={{ raw: 'content' }} />)}        | ${false}  | ${'<Raw />'}

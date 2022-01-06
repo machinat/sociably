@@ -10,7 +10,7 @@ import {
   isNativeType,
   isFragmentType,
   isPauseType,
-  isInjectionType,
+  isProviderType,
   isThunkType,
   isRawType,
   isElementTypeValid,
@@ -92,9 +92,9 @@ describe('isGeneralType', () => {
     const nonFragments = [
       <MyComponent />,
       <Machinat.Pause />,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
@@ -117,9 +117,9 @@ describe('isNativeType', () => {
       <a />,
       <MyComponent />,
       <Machinat.Pause />,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
@@ -147,9 +147,9 @@ describe('isFunctionalType', () => {
       <Native />,
       <MyContainer />,
       <Machinat.Pause />,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
@@ -177,9 +177,9 @@ describe('isContainerType', () => {
       <Native />,
       <MyComponent />,
       <Machinat.Pause />,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
@@ -202,9 +202,9 @@ describe('isFragmentType', () => {
       <a />,
       <MyComponent />,
       <Machinat.Pause />,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
@@ -232,9 +232,9 @@ describe('isPauseType', () => {
       <a />,
       <MyComponent />,
       <Machinat.Fragment> </Machinat.Fragment>,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
@@ -244,13 +244,13 @@ describe('isPauseType', () => {
   });
 });
 
-describe('isInjectionType', () => {
+describe('isProviderType', () => {
   it('return true if Provider element passed', () => {
     expect(
-      isInjectionType(
-        <Machinat.Injection provide={fooInterface} value="foo">
+      isProviderType(
+        <Machinat.Provider provide={fooInterface} value="foo">
           <a />
-        </Machinat.Injection>
+        </Machinat.Provider>
       )
     ).toBe(true);
   });
@@ -265,7 +265,7 @@ describe('isInjectionType', () => {
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
     nonPauselies.forEach((ele) => {
-      expect(isInjectionType(ele)).toBe(false);
+      expect(isProviderType(ele)).toBe(false);
     });
   });
 });
@@ -281,9 +281,9 @@ describe('isThunkType', () => {
       <MyComponent />,
       <Machinat.Fragment> </Machinat.Fragment>,
       <Machinat.Pause />,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];
     nonPauselies.forEach((ele) => {
@@ -304,9 +304,9 @@ describe('isRawType', () => {
       <MyComponent />,
       <Machinat.Fragment> </Machinat.Fragment>,
       <Machinat.Pause />,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Thunk effect={async () => {}} />,
     ];
     nonPauselies.forEach((ele) => {
@@ -324,9 +324,9 @@ describe('isElementTypeValid', () => {
       <MyContainer />,
       <Machinat.Fragment> </Machinat.Fragment>,
       <Machinat.Pause />,
-      <Machinat.Injection provide={fooInterface} value="foo">
+      <Machinat.Provider provide={fooInterface} value="foo">
         <b />
-      </Machinat.Injection>,
+      </Machinat.Provider>,
       <Machinat.Thunk effect={async () => {}} />,
       <Machinat.Raw value={{ foo: 'bar' }} />,
     ];

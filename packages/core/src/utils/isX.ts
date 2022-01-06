@@ -5,7 +5,7 @@ import type {
   PauseElement,
   ThunkElement,
   RawElement,
-  InjectionElement,
+  ProviderElement,
   FunctionalElement,
   FunctionalComponent,
   ContainerElement,
@@ -20,7 +20,7 @@ import {
   MACHINAT_PAUSE_TYPE,
   MACHINAT_THUNK_TYPE,
   MACHINAT_RAW_TYPE,
-  MACHINAT_INJECTION_TYPE,
+  MACHINAT_PROVIDER_TYPE,
   MACHINAT_NATIVE_TYPE,
   MACHINAT_SERVICE_CONTAINER,
 } from '../symbol';
@@ -49,9 +49,9 @@ export const isRawType = (
   node: MachinatElement<any, any>
 ): node is RawElement => node.type === MACHINAT_RAW_TYPE;
 
-export const isInjectionType = (
+export const isProviderType = (
   node: MachinatElement<any, any>
-): node is InjectionElement => node.type === MACHINAT_INJECTION_TYPE;
+): node is ProviderElement => node.type === MACHINAT_PROVIDER_TYPE;
 
 export const isFunctionalType = (
   node: MachinatElement<any, any>
@@ -85,7 +85,7 @@ export const isElementTypeValid = (
     typeof type === 'function' ||
     type === MACHINAT_FRAGMENT_TYPE ||
     type === MACHINAT_PAUSE_TYPE ||
-    type === MACHINAT_INJECTION_TYPE ||
+    type === MACHINAT_PROVIDER_TYPE ||
     type === MACHINAT_THUNK_TYPE ||
     type === MACHINAT_RAW_TYPE
   );

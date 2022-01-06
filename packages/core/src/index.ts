@@ -1,7 +1,7 @@
 import {
   MACHINAT_FRAGMENT_TYPE,
   MACHINAT_PAUSE_TYPE,
-  MACHINAT_INJECTION_TYPE,
+  MACHINAT_PROVIDER_TYPE,
   MACHINAT_THUNK_TYPE,
   MACHINAT_RAW_TYPE,
 } from './symbol';
@@ -18,7 +18,7 @@ import type {
   AnyMachinatPlatform,
   FragmentProps,
   PauseProps,
-  InjectionProps,
+  ProviderProps,
   ThunkProps,
   RawProps,
 } from './types';
@@ -45,8 +45,8 @@ namespace Machinat {
     props: PauseProps
   ) => null;
 
-  export const Injection = MACHINAT_INJECTION_TYPE as unknown as (
-    props: InjectionProps
+  export const Provider = MACHINAT_PROVIDER_TYPE as unknown as (
+    props: ProviderProps
   ) => null;
 
   export const Thunk = MACHINAT_THUNK_TYPE as unknown as (
