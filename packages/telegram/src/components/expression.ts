@@ -44,11 +44,11 @@ export const Expression: TelegramComponent<
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
 
   const outputSegments: IntermediateSegment<TelegramSegmentValue>[] = [];
-  let lastReplyMarkupableIdx = -1;
+  let lastEmptyMarkupSlot = -1;
 
   contentSegments.forEach((segment) => {
     if (segment.type === 'text') {
-      lastReplyMarkupableIdx = outputSegments.length;
+      lastEmptyMarkupSlot = outputSegments.length;
 
       outputSegments.push(
         makeUnitSegment(node, path, {
@@ -64,9 +64,11 @@ export const Expression: TelegramComponent<
       const { method } = segment.value;
 
       if (method.slice(0, 4) === 'send' && method !== 'sendChatAction') {
-        lastReplyMarkupableIdx = outputSegments.length;
-
         const { parameters } = segment.value;
+        if (!parameters.reply_markup) {
+          lastEmptyMarkupSlot = outputSegments.length;
+        }
+
         outputSegments.push({
           ...segment,
           value: {
@@ -89,18 +91,11 @@ export const Expression: TelegramComponent<
   });
 
   if (replyMarkupSegments !== null) {
-    if (lastReplyMarkupableIdx === -1) {
-      throw new Error('no valid message for attaching reply markup onto');
+    if (lastEmptyMarkupSlot === -1) {
+      throw new Error('no message available to attach reply markup');
     }
-
-    const lastReplyMarkupable = outputSegments[lastReplyMarkupableIdx].value;
-    if (lastReplyMarkupable.parameters.reply_markup) {
-      throw new Error(
-        'there is already a reply markup attached at the last message'
-      );
-    }
-
-    lastReplyMarkupable.parameters.reply_markup = replyMarkupSegments[0].value;
+    outputSegments[lastEmptyMarkupSlot].value.parameters.reply_markup =
+      replyMarkupSegments[0].value;
   }
 
   return outputSegments;

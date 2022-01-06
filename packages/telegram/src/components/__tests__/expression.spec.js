@@ -1,21 +1,13 @@
 import Machinat from '@machinat/core';
 import { isNativeType } from '@machinat/core/utils';
 import Renderer from '@machinat/core/renderer';
+import renderGeneralType from '../general';
 import { ChatAction } from '../action';
 import { Photo } from '../media';
 import { ForceReply } from '../replyMarkup';
 import { Expression } from '../expression';
 
-const renderer = new Renderer('telegram', (node, path) => [
-  node.type === 'br'
-    ? { type: 'break', node, path }
-    : {
-        type: 'text',
-        node,
-        path,
-        value: `<${node.type}>${node.props.children}</${node.type}>`,
-      },
-]);
+const renderer = new Renderer('telegram', renderGeneralType);
 
 it('is valid unit Component', () => {
   expect(typeof Expression).toBe('function');
@@ -24,267 +16,79 @@ it('is valid unit Component', () => {
 });
 
 it('hoist text value into message object', async () => {
-  await expect(
-    renderer.render(
-      <Expression>
-        foo
-        <br />
+  const result = await renderer.render(
+    <Expression>
+      <p>foo</p>
+      <p>
         <b>bar</b>
-        baz
-      </Expression>
-    )
-  ).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "node": <Expression>
-          foo
-          <br />
-          <b>
-            bar
-          </b>
-          baz
-        </Expression>,
-        "path": "$",
-        "type": "unit",
-        "value": Object {
-          "method": "sendMessage",
-          "parameters": Object {
-            "disable_notification": undefined,
-            "parse_mode": "HTML",
-            "text": "foo",
-          },
-        },
-      },
-      Object {
-        "node": <Expression>
-          foo
-          <br />
-          <b>
-            bar
-          </b>
-          baz
-        </Expression>,
-        "path": "$",
-        "type": "unit",
-        "value": Object {
-          "method": "sendMessage",
-          "parameters": Object {
-            "disable_notification": undefined,
-            "parse_mode": "HTML",
-            "text": "<b>bar</b>baz",
-          },
-        },
-      },
-    ]
-  `);
+      </p>
+      baz
+    </Expression>
+  );
+  expect(result[0].value.method).toBe('sendMessage');
+  expect(result[0].value.parameters.text).toBe('foo');
+  expect(result[1].value.method).toBe('sendMessage');
+  expect(result[1].value.parameters.text).toBe('<b>bar</b>');
+  expect(result[2].value.method).toBe('sendMessage');
+  expect(result[2].value.parameters.text).toBe('baz');
+  expect().toMatchSnapshot();
 });
 
 it('set disableNotification in message parameters', async () => {
-  await expect(
-    renderer.render(
-      <Expression disableNotification>
-        foo
-        <Photo url="http://machinat.com/bar.jpg" />
-      </Expression>
-    )
-  ).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "node": <Expression
-          disableNotification={true}
-        >
-          foo
-          <Photo
-            url="http://machinat.com/bar.jpg"
-          />
-        </Expression>,
-        "path": "$",
-        "type": "unit",
-        "value": Object {
-          "method": "sendMessage",
-          "parameters": Object {
-            "disable_notification": true,
-            "parse_mode": "HTML",
-            "text": "foo",
-          },
-        },
-      },
-      Object {
-        "node": <Photo
-          url="http://machinat.com/bar.jpg"
-        />,
-        "path": "$#Expression.children:1",
-        "type": "unit",
-        "value": Object {
-          "method": "sendPhoto",
-          "parameters": Object {
-            "caption": undefined,
-            "disable_notification": true,
-            "parse_mode": "HTML",
-            "photo": "http://machinat.com/bar.jpg",
-            "reply_markup": undefined,
-            "reply_to_message_id": undefined,
-          },
-          "uploadingFiles": undefined,
-        },
-      },
-    ]
-  `);
+  const result = await renderer.render(
+    <Expression disableNotification>
+      foo
+      <Photo url="http://machinat.com/bar.jpg" />
+    </Expression>
+  );
+  expect(result[0].value.parameters.disable_notification).toBe(true);
+  expect(result[1].value.parameters.disable_notification).toBe(true);
+  expect().toMatchSnapshot();
 });
 
 it('respect the original disableNotification setting set on the messgage', async () => {
-  await expect(
-    renderer.render(
-      <Expression disableNotification>
-        <Photo url="http://machinat.com/bar.jpg" />
-        <Photo disableNotification={false} url="http://machinat.com/baz.jpg" />
-      </Expression>
-    )
-  ).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "node": <Photo
-          url="http://machinat.com/bar.jpg"
-        />,
-        "path": "$#Expression.children:0",
-        "type": "unit",
-        "value": Object {
-          "method": "sendPhoto",
-          "parameters": Object {
-            "caption": undefined,
-            "disable_notification": true,
-            "parse_mode": "HTML",
-            "photo": "http://machinat.com/bar.jpg",
-            "reply_markup": undefined,
-            "reply_to_message_id": undefined,
-          },
-          "uploadingFiles": undefined,
-        },
-      },
-      Object {
-        "node": <Photo
-          disableNotification={false}
-          url="http://machinat.com/baz.jpg"
-        />,
-        "path": "$#Expression.children:1",
-        "type": "unit",
-        "value": Object {
-          "method": "sendPhoto",
-          "parameters": Object {
-            "caption": undefined,
-            "disable_notification": false,
-            "parse_mode": "HTML",
-            "photo": "http://machinat.com/baz.jpg",
-            "reply_markup": undefined,
-            "reply_to_message_id": undefined,
-          },
-          "uploadingFiles": undefined,
-        },
-      },
-    ]
-  `);
+  const result = await renderer.render(
+    <Expression disableNotification>
+      <Photo url="http://machinat.com/bar.jpg" />
+      <Photo disableNotification={false} url="http://machinat.com/baz.jpg" />
+    </Expression>
+  );
+  expect(result[0].value.parameters.disable_notification).toBe(true);
+  expect(result[1].value.parameters.disable_notification).toBe(false);
+  expect(result).toMatchSnapshot();
 });
 
 it('add replyMarkup to the last supported message', async () => {
-  await expect(
-    renderer.render(
-      <Expression disableNotification replyMarkup={<ForceReply />}>
-        <Photo url="http://machinat.com/foo.jpg" />
-        <ChatAction action="upload_photo" />
-      </Expression>
-    )
-  ).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "node": <Photo
-          url="http://machinat.com/foo.jpg"
-        />,
-        "path": "$#Expression.children:0",
-        "type": "unit",
-        "value": Object {
-          "method": "sendPhoto",
-          "parameters": Object {
-            "caption": undefined,
-            "disable_notification": true,
-            "parse_mode": "HTML",
-            "photo": "http://machinat.com/foo.jpg",
-            "reply_markup": Object {
-              "force_reply": true,
-              "selective": undefined,
-            },
-            "reply_to_message_id": undefined,
-          },
-          "uploadingFiles": undefined,
-        },
-      },
-      Object {
-        "node": <ChatAction
-          action="upload_photo"
-        />,
-        "path": "$#Expression.children:1",
-        "type": "unit",
-        "value": Object {
-          "method": "sendChatAction",
-          "parameters": Object {
-            "action": "upload_photo",
-          },
-        },
-      },
-    ]
+  let result = await renderer.render(
+    <Expression disableNotification replyMarkup={<ForceReply />}>
+      <Photo url="http://machinat.com/foo.jpg" />
+      <ChatAction action="upload_photo" />
+    </Expression>
+  );
+  expect(result).toMatchSnapshot();
+  expect(result[0].value.parameters.reply_markup).toMatchInlineSnapshot(`
+    Object {
+      "force_reply": true,
+      "selective": undefined,
+    }
   `);
 
-  await expect(
-    renderer.render(
-      <Expression disableNotification replyMarkup={<ForceReply />}>
-        foo
-        <ChatAction action="upload_photo" />
-      </Expression>
-    )
-  ).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "node": <Expression
-          disableNotification={true}
-          replyMarkup={<ForceReply />}
-        >
-          foo
-          <ChatAction
-            action="upload_photo"
-          />
-        </Expression>,
-        "path": "$",
-        "type": "unit",
-        "value": Object {
-          "method": "sendMessage",
-          "parameters": Object {
-            "disable_notification": true,
-            "parse_mode": "HTML",
-            "reply_markup": Object {
-              "force_reply": true,
-              "selective": undefined,
-            },
-            "text": "foo",
-          },
-        },
-      },
-      Object {
-        "node": <ChatAction
-          action="upload_photo"
-        />,
-        "path": "$#Expression.children:1",
-        "type": "unit",
-        "value": Object {
-          "method": "sendChatAction",
-          "parameters": Object {
-            "action": "upload_photo",
-          },
-        },
-      },
-    ]
+  result = await renderer.render(
+    <Expression disableNotification replyMarkup={<ForceReply />}>
+      foo
+      <Photo url="http://machinat.com/foo.jpg" replyMarkup={<ForceReply />} />
+    </Expression>
+  );
+  expect(result).toMatchSnapshot();
+  expect(result[0].value.parameters.reply_markup).toMatchInlineSnapshot(`
+    Object {
+      "force_reply": true,
+      "selective": undefined,
+    }
   `);
 });
 
-it('throw if replyMarkup already set at last supported message', async () => {
+it('throw if no message available to attach replyMarkup', async () => {
   await expect(
     renderer.render(
       <Expression disableNotification replyMarkup={<ForceReply />}>
@@ -293,11 +97,9 @@ it('throw if replyMarkup already set at last supported message', async () => {
       </Expression>
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there is already a reply markup attached at the last message"`
+    `"no message available to attach reply markup"`
   );
-});
 
-it('throw if no message support replyMarkup in children', async () => {
   await expect(
     renderer.render(
       <Expression disableNotification replyMarkup={<ForceReply />}>
@@ -305,6 +107,6 @@ it('throw if no message support replyMarkup in children', async () => {
       </Expression>
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"no valid message for attaching reply markup onto"`
+    `"no message available to attach reply markup"`
   );
 });
