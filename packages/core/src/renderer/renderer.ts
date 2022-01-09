@@ -2,7 +2,6 @@ import invariant from 'invariant';
 import type { TraverseNodeCallback } from '../iterator/types';
 import traverse from '../iterator/traverse';
 import formatNode from '../utils/formatNode';
-import createElement from '../createElement';
 import {
   isEmpty,
   isElement,
@@ -15,7 +14,6 @@ import {
   isContainerType,
 } from '../utils/isX';
 import { createEmptyScope, Interfaceable, ServiceScope } from '../service';
-import RootComponent from '../base/RootComponent';
 import type {
   MachinatNode,
   MachinatRenderable,
@@ -38,7 +36,7 @@ import type {
 } from './types';
 
 const COMPONENT_SEPARATOR = '#';
-const ROOT_COMPONENT_SIGN = '$';
+const ROOT_SIGN = '$';
 
 type RenderResult<Value> =
   | null
@@ -77,21 +75,16 @@ export default class MachinatRenderer<
 
   async render(
     node: MachinatNode,
-    scopeInput: null | ServiceScope
+    scopeInput: null | ServiceScope,
+    runtimeProvisions: null | [Interfaceable<unknown>, unknown][]
   ): Promise<null | OutputSegment<Value>[]> {
     const scope = scopeInput || createEmptyScope();
-    const rootComponent =
-      scope.useServices([
-        { require: RootComponent, optional: true },
-      ] as const)[0] || (({ children }) => children);
-
     const intermediates = await this._renderImpl(
       scope,
-      new Map(),
-      '',
-      createElement(rootComponent, {}, node)
+      new Map(runtimeProvisions),
+      ROOT_SIGN,
+      node
     );
-
     if (!intermediates) {
       return null;
     }
@@ -364,7 +357,7 @@ export default class MachinatRenderer<
       servicesProvided,
       path,
       rendered,
-      (path === '' ? ROOT_COMPONENT_SIGN : COMPONENT_SEPARATOR) + component.name
+      COMPONENT_SEPARATOR + component.name
     );
 
     return segments;
@@ -386,7 +379,7 @@ export default class MachinatRenderer<
       servicesProvided,
       path,
       rendered,
-      (path === '' ? ROOT_COMPONENT_SIGN : COMPONENT_SEPARATOR) + container.name
+      COMPONENT_SEPARATOR + container.name
     );
 
     return segments;

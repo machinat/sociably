@@ -1,3 +1,8 @@
+import MachinatQueue, { JobBatchResponse } from '../queue';
+import { createEmptyScope, ServiceScope } from '../service';
+import createElement from '../createElement';
+import { RootComponentI, RenderingChannelI } from '../interface';
+import type MachinatRenderer from '../renderer';
 import type {
   MachinatNode,
   NativeComponent,
@@ -6,11 +11,6 @@ import type {
   ThunkEffectFn,
   MachinatChannel,
 } from '../types';
-import MachinatQueue, { JobBatchResponse } from '../queue';
-import { createEmptyScope } from '../service';
-import type MachinatRenderer from '../renderer';
-import type { ServiceScope } from '../service';
-
 import DispatchError from './error';
 import {
   MachinatWorker,
@@ -89,8 +89,15 @@ export default class MachinatEngine<
     ) => Job[]
   ): Promise<null | DispatchResponse<Job, Result>> {
     const scope = this._initScope();
+    const [rootComponent] = scope.useServices([
+      { require: RootComponentI, optional: true },
+    ]);
 
-    const segments = await this.renderer.render(node, scope);
+    const segments = await this.renderer.render(
+      rootComponent ? createElement(rootComponent, {}, node) : node,
+      scope,
+      [[RenderingChannelI, target]]
+    );
     if (segments === null) {
       return null;
     }

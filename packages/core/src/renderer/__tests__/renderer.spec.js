@@ -1,14 +1,12 @@
 import moxy, { Mock } from '@moxyjs/moxy';
 import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
-import RootComponent from '../../base/RootComponent';
 import {
   ServiceSpace,
   createEmptyScope,
   makeContainer,
   makeInterface,
 } from '../../service';
-
 import Renderer from '../renderer';
 
 const generalElementDelegate = moxy((node, path) =>
@@ -474,18 +472,18 @@ describe('.render()', () => {
   });
 
   it('provide services with Machinat.Provider', async () => {
-    const FooService = makeInterface('Foo');
-    const BarService = makeInterface('Bar');
-    const BazService = makeInterface('Baz');
+    const FooI = makeInterface('Foo');
+    const BarI = makeInterface('Bar');
+    const BazI = makeInterface('Baz');
     const scope = moxy(createEmptyScope());
 
     const componentMock = new Mock();
     const Container = moxy(
       makeContainer({
         deps: [
-          { require: FooService, optional: true },
-          { require: BarService, optional: true },
-          { require: BazService, optional: true },
+          { require: FooI, optional: true },
+          { require: BarI, optional: true },
+          { require: BazI, optional: true },
         ],
       })(function Container(foo, bar, baz) {
         return componentMock.proxify(({ n }) => (
@@ -506,7 +504,7 @@ describe('.render()', () => {
     Native.$$platform = 'test';
 
     const Wrapper = ({ children }) => (
-      <Machinat.Provider provide={BarService} value={1}>
+      <Machinat.Provider provide={BarI} value={1}>
         <Container n={3} />
         {children}
       </Machinat.Provider>
@@ -517,22 +515,22 @@ describe('.render()', () => {
         <>
           <Container n={1} />
 
-          <Machinat.Provider provide={FooService} value={1}>
+          <Machinat.Provider provide={FooI} value={1}>
             <Container n={2} />
 
             <Wrapper>
-              <Machinat.Provider provide={BazService} value={1}>
+              <Machinat.Provider provide={BazI} value={1}>
                 <Container n={4} />
 
                 <Native>
                   <Container n={5} />
                 </Native>
 
-                <Machinat.Provider provide={FooService} value={2}>
+                <Machinat.Provider provide={FooI} value={2}>
                   <Container n={6} />
 
-                  <Machinat.Provider provide={BarService} value={2}>
-                    <Machinat.Provider provide={BazService} value={2}>
+                  <Machinat.Provider provide={BarI} value={2}>
+                    <Machinat.Provider provide={BazI} value={2}>
                       <Container n={7} />
                     </Machinat.Provider>
 
@@ -648,39 +646,42 @@ describe('.render()', () => {
     );
   });
 
-  test('wrap input with RootComponent if rpovided', async () => {
-    const MyRoot = moxy(function MyRoot({ children }) {
-      return <>{children} bar</>;
-    });
-    const space = new ServiceSpace(null, [
-      { provide: RootComponent, withValue: MyRoot },
-    ]);
-    await space.bootstrap();
-    const scope = space.createScope();
+  test('with runtime provisions', async () => {
+    const FooI = makeInterface('Foo');
+    const BarI = makeInterface('Bar');
+    const BazI = makeInterface('Baz');
     const renderer = new Renderer('test', generalElementDelegate);
 
-    const Foo = () => 'foo';
+    const Container = moxy(
+      makeContainer({
+        deps: [
+          { require: FooI, optional: true },
+          { require: BarI, optional: true },
+          { require: BazI, optional: true },
+        ],
+      })(function Container(foo, bar, baz) {
+        return () => `foo:${foo || 'x'} bar:${bar || 'x'} baz:${baz || 'x'}`;
+      })
+    );
 
-    await expect(renderer.render(<Foo />, scope)).resolves
-      .toMatchInlineSnapshot(`
+    await expect(
+      renderer.render(<Container />, null, [
+        [FooI, 1],
+        [BarI, 2],
+      ])
+    ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <Machinat.Fragment>
-                  <Foo />
-                   bar
-                </Machinat.Fragment>,
-                "path": "$MyRoot",
+                "node": "foo:1 bar:2 baz:x",
+                "path": "$#Container",
                 "type": "text",
-                "value": "foo bar",
+                "value": "foo:1 bar:2 baz:x",
               },
             ]
           `);
 
-    expect(MyRoot.mock).toHaveBeenCalledTimes(1);
-    expect(MyRoot.mock).toHaveBeenCalledWith(
-      { children: <Foo /> },
-      { platform: 'test' }
-    );
+    expect(Container.$$factory.mock).toHaveBeenCalledTimes(1);
+    expect(Container.$$factory.mock).toHaveBeenCalledWith(1, 2, null);
   });
 
   it('reject when functional component fail', async () => {

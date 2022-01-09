@@ -1,9 +1,10 @@
-import { makeInterface } from '../service';
+import { makeInterface } from './service';
 import type {
   MachinatNode,
   FunctionalComponent,
   ContainerComponent,
-} from '../types';
+  MachinatChannel,
+} from './types';
 
 type RootComponentProps = {
   children: MachinatNode;
@@ -13,8 +14,10 @@ type RootComponent =
   | FunctionalComponent<RootComponentProps>
   | ContainerComponent<MachinatNode>;
 
-const RootComponent = makeInterface<RootComponent>({
+export const RootComponentI = makeInterface<RootComponent>({
   name: 'RootComponent',
 });
 
-export default RootComponent;
+export const RenderingChannelI = makeInterface<null | MachinatChannel>({
+  name: 'RenderingChannel',
+});

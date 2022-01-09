@@ -84,7 +84,7 @@ describe('#constructor(options)', () => {
 });
 
 test('#start() start engine and server', async () => {
-  const bot = new WebviewBot(server, initScope, dispatchWrapper);
+  const bot = new WebviewBot(server);
   await bot.start();
 
   expect(server.start.mock).toHaveBeenCalledTimes(1);
@@ -94,7 +94,7 @@ test('#start() start engine and server', async () => {
 });
 
 test('#stop() stop engine and server', async () => {
-  const bot = new WebviewBot(server, initScope, dispatchWrapper);
+  const bot = new WebviewBot(server);
   await bot.stop();
 
   expect(server.stop.mock).toHaveBeenCalledTimes(1);
@@ -121,7 +121,7 @@ describe('#render(channel, message)', () => {
   ];
 
   it('send to connection channel', async () => {
-    const bot = new WebviewBot(server, initScope, dispatchWrapper);
+    const bot = new WebviewBot(server);
     await bot.start();
 
     const channel = new WebviewConnection('#server', `#conn`);
@@ -143,7 +143,7 @@ describe('#render(channel, message)', () => {
   });
 
   it('send to user channel', async () => {
-    const bot = new WebviewBot(server, initScope, dispatchWrapper);
+    const bot = new WebviewBot(server);
     await bot.start();
 
     const connections = new Array(3)
@@ -170,7 +170,7 @@ describe('#render(channel, message)', () => {
   });
 
   it('send to topic channel', async () => {
-    const bot = new WebviewBot(server, initScope, dispatchWrapper);
+    const bot = new WebviewBot(server);
     await bot.start();
 
     const connections = new Array(3)
@@ -213,7 +213,7 @@ describe('#render(channel, message)', () => {
 });
 
 test('#send()', async () => {
-  const bot = new WebviewBot(server, initScope, dispatchWrapper);
+  const bot = new WebviewBot(server);
   await bot.start();
 
   const connection = new WebviewConnection('#server', `#conn`);
@@ -244,7 +244,7 @@ test('#send()', async () => {
 });
 
 test('#sendUser()', async () => {
-  const bot = new WebviewBot(server, initScope, dispatchWrapper);
+  const bot = new WebviewBot(server);
   await bot.start();
 
   const connections = [
@@ -280,7 +280,7 @@ test('#sendUser()', async () => {
 });
 
 test('#sendTopic()', async () => {
-  const bot = new WebviewBot(server, initScope, dispatchWrapper);
+  const bot = new WebviewBot(server);
   await bot.start();
 
   const connections = [
@@ -316,7 +316,7 @@ test('#sendTopic()', async () => {
 });
 
 test('#disconnect(channel, socketId, reason)', async () => {
-  const bot = new WebviewBot(server, initScope, dispatchWrapper);
+  const bot = new WebviewBot(server);
   const connection = new WebviewConnection('#server', '#conn');
 
   server.disconnect.mock.fake(async () => false);
@@ -331,7 +331,7 @@ test('#disconnect(channel, socketId, reason)', async () => {
 });
 
 test('#subscribeTopic(channel, socketId, reason)', async () => {
-  const bot = new WebviewBot(server, initScope, dispatchWrapper);
+  const bot = new WebviewBot(server);
   const connection = new WebviewConnection('#server', '#conn');
 
   server.subscribeTopic.mock.fake(async () => false);
@@ -346,7 +346,7 @@ test('#subscribeTopic(channel, socketId, reason)', async () => {
 });
 
 test('#unsubscribeTopic(channel, socketId, reason)', async () => {
-  const bot = new WebviewBot(server, initScope, dispatchWrapper);
+  const bot = new WebviewBot(server);
   const connection = new WebviewConnection('#server', '#conn');
 
   server.unsubscribeTopic.mock.fake(async () => false);
