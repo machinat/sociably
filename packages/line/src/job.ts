@@ -17,7 +17,7 @@ import { isMessageValue } from './utils';
 const createMessageJob = (
   channel: LineChat,
   messages: LineMessageSegmentValue[],
-  replyToken: void | string
+  replyToken: undefined | string
 ): LineJob => ({
   method: 'POST',
   path: replyToken ? PATH_REPLY : PATH_PUSH,
@@ -27,7 +27,7 @@ const createMessageJob = (
     : { to: channel.id, messages },
 });
 
-export const createChatJobs = (replyToken: void | string) => {
+export const createChatJobs = (replyToken: undefined | string) => {
   let totalJobsCount = 0;
 
   return (

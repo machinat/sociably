@@ -120,7 +120,7 @@ export default class TelegramWorker
   private async _consumeJobAt(
     queue: Queue<TelegramJob, TelegramResult>,
     idx: number,
-    executionKey: void | string
+    executionKey: undefined | string
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);

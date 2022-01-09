@@ -44,7 +44,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
   private _loginSeq: number;
   private _queuedEvents: PendingEvent[];
 
-  private _connId: void | string;
+  private _connId: undefined | string;
   private _user: User;
   private _isDisconnecting: boolean;
 

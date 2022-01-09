@@ -62,7 +62,7 @@ export class LineAssetsManager {
     }
   }
 
-  getLiffApp(name: string): Promise<void | string> {
+  getLiffApp(name: string): Promise<undefined | string> {
     return this.getAssetId(LIFF, name);
   }
 

@@ -71,7 +71,7 @@ type AuthVerifyResult<Authenticator extends AnyServerAuthenticator> =
       token: string;
       context: ContextOfAuthenticator<Authenticator>;
     }
-  | { success: false; token: void | string; code: number; reason: string };
+  | { success: false; token: undefined | string; code: number; reason: string };
 
 /**
  * @category Provider

@@ -14,7 +14,7 @@ type BatchRequest<Job, Result> = {
   acquiredCount: number;
   success: boolean;
   errors: Error[] | null;
-  responses: null | (void | JobResponse<Job, Result>)[];
+  responses: null | (undefined | JobResponse<Job, Result>)[];
 };
 
 type JobBox<Job> = {
@@ -127,7 +127,7 @@ export default class MachinatQueue<Job, Result> {
     }
   }
 
-  peekAt(idx: number): void | Job {
+  peekAt(idx: number): undefined | Job {
     const pkg = this._queuedJobs.peekAt(idx);
     return pkg ? pkg.job : undefined;
   }
@@ -136,7 +136,7 @@ export default class MachinatQueue<Job, Result> {
     idx: number,
     count: number,
     consume: ConsumeJobsFn<Job, Result>
-  ): Promise<void | JobResponse<Job, Result>[]> {
+  ): Promise<undefined | JobResponse<Job, Result>[]> {
     const boxes = this._queuedJobs.remove(idx, count);
     if (boxes === undefined) {
       return undefined;
@@ -159,7 +159,7 @@ export default class MachinatQueue<Job, Result> {
   acquire(
     count: number,
     consume: (jobs: Job[]) => Promise<JobResponse<Job, Result>[]>
-  ): Promise<void | JobResponse<Job, Result>[]> {
+  ): Promise<undefined | JobResponse<Job, Result>[]> {
     return this.acquireAt(0, count, consume);
   }
 

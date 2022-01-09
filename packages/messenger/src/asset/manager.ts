@@ -65,7 +65,7 @@ export class MessengerAssetsManager {
     }
   }
 
-  getAttachment(name: string): Promise<void | string> {
+  getAttachment(name: string): Promise<undefined | string> {
     return this.getAssetId(ATTACHMENT, name);
   }
 
@@ -97,7 +97,7 @@ export class MessengerAssetsManager {
     return id;
   }
 
-  getPersona(name: string): Promise<void | string> {
+  getPersona(name: string): Promise<undefined | string> {
     return this.getAssetId(PERSONA, name);
   }
 

@@ -120,7 +120,7 @@ class LineWorker implements MachinatWorker<LineJob, LineResult> {
   private async _consumeJobAt(
     queue: Queue<LineJob, LineResult>,
     idx: number,
-    executionKey: void | string
+    executionKey: undefined | string
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);

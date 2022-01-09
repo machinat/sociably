@@ -61,7 +61,7 @@ export class TelegramAssetsManager {
     }
   }
 
-  getFile(name: string): Promise<void | string> {
+  getFile(name: string): Promise<undefined | string> {
     return this.getAssetId(FILE, name);
   }
 
