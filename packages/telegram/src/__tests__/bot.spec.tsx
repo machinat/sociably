@@ -41,8 +41,7 @@ jest.mock('../worker', () =>
   })
 );
 
-const scope = moxy();
-const initScope = moxy(() => scope);
+const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
 
 const token = '12345:_BOT_TOKEN_';
@@ -139,7 +138,7 @@ test('#start() and #stop() start/stop engine', () => {
 });
 
 describe('#render(channel, message, options)', () => {
-  const bot = new TelegramBot({ initScope, dispatchWrapper, token });
+  const bot = new TelegramBot({ token });
 
   beforeAll(() => {
     bot.start();
@@ -198,7 +197,7 @@ describe('#render(channel, message, options)', () => {
 });
 
 describe('#renderInstance(message)', () => {
-  const bot = new TelegramBot({ initScope, dispatchWrapper, token });
+  const bot = new TelegramBot({ token });
 
   beforeAll(() => {
     bot.start();

@@ -2,6 +2,7 @@ import invariant from 'invariant';
 import type { TraverseNodeCallback } from '../iterator/types';
 import traverse from '../iterator/traverse';
 import formatNode from '../utils/formatNode';
+import createElement from '../createElement';
 import {
   isEmpty,
   isElement,
@@ -13,7 +14,8 @@ import {
   isProviderType,
   isContainerType,
 } from '../utils/isX';
-import type { Interfaceable, ServiceScope } from '../service';
+import { createEmptyScope, Interfaceable, ServiceScope } from '../service';
+import RootComponent from '../base/RootComponent';
 import type {
   MachinatNode,
   MachinatRenderable,
@@ -35,8 +37,8 @@ import type {
   IntermediateSegment,
 } from './types';
 
-const RENDER_SEPARATOR = '#';
-const RENDER_ROOT = '$';
+const COMPONENT_SEPARATOR = '#';
+const ROOT_COMPONENT_SIGN = '$';
 
 type RenderResult<Value> =
   | null
@@ -75,13 +77,19 @@ export default class MachinatRenderer<
 
   async render(
     node: MachinatNode,
-    scope: ServiceScope
+    scopeInput: null | ServiceScope
   ): Promise<null | OutputSegment<Value>[]> {
+    const scope = scopeInput || createEmptyScope();
+    const rootComponent =
+      scope.useServices([
+        { require: RootComponent, optional: true },
+      ] as const)[0] || (({ children }) => children);
+
     const intermediates = await this._renderImpl(
       scope,
       new Map(),
-      RENDER_ROOT,
-      node
+      '',
+      createElement(rootComponent, {}, node)
     );
 
     if (!intermediates) {
@@ -356,7 +364,7 @@ export default class MachinatRenderer<
       servicesProvided,
       path,
       rendered,
-      RENDER_SEPARATOR + component.name
+      (path === '' ? ROOT_COMPONENT_SIGN : COMPONENT_SEPARATOR) + component.name
     );
 
     return segments;
@@ -378,7 +386,7 @@ export default class MachinatRenderer<
       servicesProvided,
       path,
       rendered,
-      RENDER_SEPARATOR + container.name
+      (path === '' ? ROOT_COMPONENT_SIGN : COMPONENT_SEPARATOR) + container.name
     );
 
     return segments;

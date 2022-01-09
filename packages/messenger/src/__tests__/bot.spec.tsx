@@ -32,8 +32,7 @@ jest.mock('../worker', () =>
   jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../worker'))
 );
 
-const scope = moxy();
-const initScope = moxy(() => scope);
+const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
 
 const pageId = 1234567890;
@@ -156,13 +155,7 @@ test('#start() and #stop() start/stop engine', () => {
 });
 
 describe('#render(channel, message, options)', () => {
-  const bot = new MessengerBot({
-    initScope,
-    dispatchWrapper,
-    pageId,
-    accessToken,
-    appSecret,
-  });
+  const bot = new MessengerBot({ pageId, accessToken, appSecret });
 
   let apiStatus;
   beforeEach(() => {
@@ -239,13 +232,7 @@ describe('#render(channel, message, options)', () => {
 });
 
 describe('#renderAttachment(message)', () => {
-  const bot = new MessengerBot({
-    initScope,
-    dispatchWrapper,
-    pageId,
-    accessToken,
-    appSecret,
-  });
+  const bot = new MessengerBot({ pageId, accessToken, appSecret });
 
   beforeEach(() => {
     bot.start();

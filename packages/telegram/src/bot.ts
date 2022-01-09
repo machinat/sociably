@@ -10,7 +10,7 @@ import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import Engine, { DispatchError } from '@machinat/core/engine';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 
 import { createChatJob, createDirectInstanceJobs } from './job';
 import generalElementDelegate from './components/general';
@@ -55,15 +55,14 @@ export class TelegramBot
     TelegramSegmentValue,
     TelegramComponent<unknown>,
     TelegramJob,
-    TelegramResult,
-    TelegramBot
+    TelegramResult
   >;
 
   constructor({
     token,
     maxConnections = 100,
-    initScope = () => createEmptyScope(),
-    dispatchWrapper = (dispatch) => dispatch,
+    initScope,
+    dispatchWrapper,
   }: TelegramBotOptions) {
     invariant(token, 'options.token should not be empty');
 

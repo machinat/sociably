@@ -9,7 +9,7 @@ import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 
 import { WEBSOCKET } from './constant';
 import { PlatformUtilitiesI } from './interface';
@@ -52,18 +52,17 @@ export class WebSocketBot
     EventInput,
     WebSocketComponent,
     WebSocketJob,
-    WebSocketResult,
-    WebSocketBot
+    WebSocketResult
   >;
 
   constructor(
     server: ServerP<any, unknown>,
-    initScope: InitScopeFn = () => createEmptyScope(),
-    dispatchWrapper: DispatchWrapper<
+    initScope?: InitScopeFn,
+    dispatchWrapper?: DispatchWrapper<
       WebSocketJob,
       WebSocketDispatchFrame,
       WebSocketResult
-    > = (dispatch) => dispatch
+    >
   ) {
     this._server = server;
 

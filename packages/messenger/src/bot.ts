@@ -3,7 +3,7 @@ import Engine, { DispatchError } from '@machinat/core/engine';
 import Queue from '@machinat/core/queue';
 import Renderer from '@machinat/core/renderer';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import type {
   MachinatNode,
   MachinatBot,
@@ -57,8 +57,7 @@ export class MessengerBot
     MessengerSegmentValue,
     MessengerComponent<unknown>,
     MessengerJob,
-    MessengerResult,
-    MessengerBot
+    MessengerResult
   >;
 
   constructor({
@@ -67,8 +66,8 @@ export class MessengerBot
     appSecret,
     graphApiVersion = 'v11.0',
     consumeInterval = 500,
-    initScope = () => createEmptyScope(),
-    dispatchWrapper = (dispatch) => dispatch,
+    initScope,
+    dispatchWrapper,
   }: MessengerBotOptions) {
     invariant(pageId, 'options.pageId should not be empty');
     this.pageId = pageId;

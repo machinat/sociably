@@ -1,15 +1,15 @@
 import moxy, { Mock } from '@moxyjs/moxy';
 import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
-import { makeContainer, makeInterface } from '../../service';
+import RootComponent from '../../base/RootComponent';
+import {
+  ServiceSpace,
+  createEmptyScope,
+  makeContainer,
+  makeInterface,
+} from '../../service';
 
 import Renderer from '../renderer';
-
-const scope = moxy({
-  injectContainer(containerFn) {
-    return containerFn();
-  },
-});
 
 const generalElementDelegate = moxy((node, path) =>
   Promise.resolve(
@@ -24,11 +24,10 @@ const generalElementDelegate = moxy((node, path) =>
 );
 
 beforeEach(() => {
-  scope.mock.reset();
   generalElementDelegate.mock.clear();
 });
 
-describe('#render()', () => {
+describe('.render()', () => {
   it('works', async () => {
     const delayCallback = () => Promise.resolve();
     const WrappedPause = () => <Machinat.Pause delay={delayCallback} />;
@@ -95,7 +94,7 @@ describe('#render()', () => {
     );
 
     const renderer = new Renderer('test', generalElementDelegate);
-    const renderPromise = renderer.render(message, scope);
+    const renderPromise = renderer.render(message, null);
 
     await expect(renderPromise).resolves.toEqual([
       {
@@ -408,7 +407,7 @@ describe('#render()', () => {
 
     for (const node of emptyNodes) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(renderer.render(node, scope)).resolves.toBe(null);
+      await expect(renderer.render(node, null)).resolves.toBe(null);
     }
   });
 
@@ -426,7 +425,7 @@ describe('#render()', () => {
     Section.$$typeof = MACHINAT_NATIVE_TYPE;
     Section.$$platform = 'test';
 
-    await expect(renderer.render(<Section />, scope)).resolves.toEqual([
+    await expect(renderer.render(<Section />, null)).resolves.toEqual([
       { type: 'text', node: 'head', value: 'head', path: '$' },
       { type: 'text', node: 'foot', value: 'foot', path: '$' },
     ]);
@@ -458,7 +457,7 @@ describe('#render()', () => {
 
     const renderer = new Renderer('test', generalElementDelegate);
 
-    await expect(renderer.render(<Unit />, scope)).resolves.toEqual([
+    await expect(renderer.render(<Unit />, null)).resolves.toEqual([
       { type: 'unit', node: <Unit />, value: { root: true }, path: '$' },
     ]);
 
@@ -468,38 +467,35 @@ describe('#render()', () => {
     ]);
 
     await expect(
-      renderer.render(<Part />, scope)
+      renderer.render(<Part />, null)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"<Part /> is a part element and should not be placed at surface level"`
     );
   });
 
-  it('render container component and provide values from Machinat.Provider at render time', async () => {
+  it('provide services with Machinat.Provider', async () => {
     const FooService = makeInterface('Foo');
     const BarService = makeInterface('Bar');
     const BazService = makeInterface('Baz');
+    const scope = moxy(createEmptyScope());
 
     const componentMock = new Mock();
     const Container = moxy(
-      makeContainer({ deps: [FooService, BarService, BazService] })(
-        function Container(foo, bar, baz) {
-          return componentMock.proxify(({ n }) => (
-            <Machinat.Raw
-              value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${
-                baz || 'x'
-              }`}
-            />
-          ));
-        }
-      )
-    );
-
-    scope.injectContainer.mock.fake((containerFn, provisions) =>
-      containerFn(
-        provisions.get(FooService),
-        provisions.get(BarService),
-        provisions.get(BazService)
-      )
+      makeContainer({
+        deps: [
+          { require: FooService, optional: true },
+          { require: BarService, optional: true },
+          { require: BazService, optional: true },
+        ],
+      })(function Container(foo, bar, baz) {
+        return componentMock.proxify(({ n }) => (
+          <Machinat.Raw
+            value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${
+              baz || 'x'
+            }`}
+          />
+        ));
+      })
     );
 
     const renderer = new Renderer('test', generalElementDelegate);
@@ -644,10 +640,45 @@ describe('#render()', () => {
       expect.any(Map)
     );
 
-    expect(Container.mock).toHaveBeenCalledTimes(10);
+    expect(Container.$$factory.mock).toHaveBeenCalledTimes(10);
     expect(componentMock).toHaveBeenCalledTimes(10);
     expect(componentMock).toHaveBeenCalledWith(
       { n: expect.any(Number) },
+      { platform: 'test' }
+    );
+  });
+
+  test('wrap input with RootComponent if rpovided', async () => {
+    const MyRoot = moxy(function MyRoot({ children }) {
+      return <>{children} bar</>;
+    });
+    const space = new ServiceSpace(null, [
+      { provide: RootComponent, withValue: MyRoot },
+    ]);
+    await space.bootstrap();
+    const scope = space.createScope();
+    const renderer = new Renderer('test', generalElementDelegate);
+
+    const Foo = () => 'foo';
+
+    await expect(renderer.render(<Foo />, scope)).resolves
+      .toMatchInlineSnapshot(`
+            Array [
+              Object {
+                "node": <Machinat.Fragment>
+                  <Foo />
+                   bar
+                </Machinat.Fragment>,
+                "path": "$MyRoot",
+                "type": "text",
+                "value": "foo bar",
+              },
+            ]
+          `);
+
+    expect(MyRoot.mock).toHaveBeenCalledTimes(1);
+    expect(MyRoot.mock).toHaveBeenCalledWith(
+      { children: <Foo /> },
       { platform: 'test' }
     );
   });
@@ -658,7 +689,7 @@ describe('#render()', () => {
     };
 
     const renderer = new Renderer('test', generalElementDelegate);
-    expect(renderer.render(<FunctionalComponent />, scope)).rejects.toThrow(
+    expect(renderer.render(<FunctionalComponent />, null)).rejects.toThrow(
       'オラオラオラ'
     );
   });
@@ -671,7 +702,7 @@ describe('#render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<ContainerFailWhenInject />, scope)
+      renderer.render(<ContainerFailWhenInject />, null)
     ).rejects.toThrow(new Error('無駄無駄無駄'));
 
     const ContainerFailAtComponent = makeContainer({ deps: [] })(
@@ -681,7 +712,7 @@ describe('#render()', () => {
     );
 
     await expect(
-      renderer.render(<ContainerFailAtComponent />, scope)
+      renderer.render(<ContainerFailAtComponent />, null)
     ).rejects.toThrow(new Error('オラオラオラ'));
   });
 
@@ -692,7 +723,7 @@ describe('#render()', () => {
     });
 
     await expect(
-      renderer.render(<invalid />, scope)
+      renderer.render(<invalid />, null)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<invalid /> is not good"`);
   });
 
@@ -702,7 +733,7 @@ describe('#render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<IllegalComponent />, scope)
+      renderer.render(<IllegalComponent />, null)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"[object Object] at poistion '$' is not valid element type"`
     );
@@ -716,7 +747,7 @@ describe('#render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<AnotherPlatformUnit />, scope)
+      renderer.render(<AnotherPlatformUnit />, null)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"native component <AnotherPlatformUnit /> at '$' is not supported by test"`
     );
@@ -734,7 +765,7 @@ describe('#render()', () => {
         <Machinat.Pause time={1000} />
         <Machinat.Pause time={1000} delay={delayFn} />
       </>,
-      scope
+      null
     );
 
     expect(segments).toEqual([

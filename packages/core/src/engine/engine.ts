@@ -5,10 +5,10 @@ import type {
   DispatchWrapper,
   ThunkEffectFn,
   MachinatChannel,
-  MachinatBot,
 } from '../types';
-import type MachinatRenderer from '../renderer';
 import MachinatQueue, { JobBatchResponse } from '../queue';
+import { createEmptyScope } from '../service';
+import type MachinatRenderer from '../renderer';
 import type { ServiceScope } from '../service';
 
 import DispatchError from './error';
@@ -30,8 +30,7 @@ export default class MachinatEngine<
   SegmentValue,
   Component extends NativeComponent<unknown, any>,
   Job,
-  Result,
-  Bot extends MachinatBot<Channel, Job, Result>
+  Result
 > {
   platform: string;
   renderer: MachinatRenderer<SegmentValue, Component>;
@@ -49,8 +48,12 @@ export default class MachinatEngine<
     renderer: MachinatRenderer<SegmentValue, Component>,
     queue: MachinatQueue<Job, Result>,
     worker: MachinatWorker<Job, Result>,
-    initScope: InitScopeFn,
-    dispatchWrapper: DispatchWrapper<Job, DispatchFrame<Channel, Job>, Result>
+    initScope: InitScopeFn = () => createEmptyScope(),
+    dispatchWrapper: DispatchWrapper<
+      Job,
+      DispatchFrame<Channel, Job>,
+      Result
+    > = (dispatch) => dispatch
   ) {
     this.platform = platform;
     this.renderer = renderer;

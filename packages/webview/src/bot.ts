@@ -8,7 +8,7 @@ import type {
 import Engine from '@machinat/core/engine';
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
-import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type { DispatchResponse } from '@machinat/core/engine';
 import type { AnyServerAuthenticator } from '@machinat/auth';
@@ -58,18 +58,17 @@ export class WebviewBot<Authenticator extends AnyServerAuthenticator>
     EventInput,
     WebviewComponent,
     WebSocketJob,
-    WebSocketResult,
-    WebviewBot<Authenticator>
+    WebSocketResult
   >;
 
   constructor(
     server: SocketServerP<Authenticator>,
-    initScope: InitScopeFn = () => createEmptyScope(),
-    dispatchWrapper: DispatchWrapper<
+    initScope?: InitScopeFn,
+    dispatchWrapper?: DispatchWrapper<
       WebSocketJob,
       WebviewDispatchFrame,
       WebSocketResult
-    > = (dispatch) => dispatch
+    >
   ) {
     this._server = server;
 

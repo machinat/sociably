@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 import moxy, { Mock } from '@moxyjs/moxy';
 import Machinat from '../..';
-
 import Engine from '../engine';
 import type Render from '../../renderer';
 import type Queue from '../../queue';
+import { ServiceScope } from '../../service';
 import DispatchError from '../error';
 
 const queue = moxy<Queue<unknown, unknown>>({
@@ -45,7 +45,7 @@ beforeEach(() => {
   dispatchWrapper.mock.reset();
 });
 
-test('#constructor(...) ok', () => {
+test('.constructor(...) ok', () => {
   const engine = new Engine(
     'test',
     renderer,
@@ -61,7 +61,7 @@ test('#constructor(...) ok', () => {
   expect(engine.worker).toBe(worker);
 });
 
-test('#start() and #stop()', () => {
+test('.start() and #stop()', () => {
   const engine = new Engine(
     'test',
     renderer,
@@ -82,7 +82,7 @@ test('#start() and #stop()', () => {
   expect(worker.stop.mock).toHaveBeenCalledWith(queue);
 });
 
-describe('#render(channel, node, createJobs)', () => {
+describe('.render(channel, node, createJobs)', () => {
   const channel = {
     platform: 'test',
     type: 'test',
@@ -122,7 +122,7 @@ describe('#render(channel, node, createJobs)', () => {
     createJobs.mock.reset();
   });
 
-  it('resolve null renderer.ernder() resolve null', async () => {
+  test('render empty', async () => {
     renderer.render.mock.fake(() => Promise.resolve(null));
 
     await expect(engine.render(channel, message, createJobs)).resolves.toBe(
@@ -138,7 +138,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(queue.executeJobs.mock).not.toHaveBeenCalled();
   });
 
-  it('render message, create jobs then dispatch', async () => {
+  it('render messages and then dispatch jobs', async () => {
     const expectedJobs = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
     const expectedResults = ['result#1', 'result#2', 'result#3', 'result#4'];
     const expectedTasks = [{ type: 'dispatch', payload: expectedJobs }];
@@ -172,7 +172,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(queue.executeJobs.mock).toHaveBeenCalledWith(expectedJobs);
   });
 
-  it('make "pause" task from "pause" segments which separate "dispatch" tasks', async () => {
+  test('separate "dispatch" jobs with "pause"', async () => {
     const delayFn = moxy(async () => {});
     const segmentsWithPauses = [
       {
@@ -254,7 +254,7 @@ describe('#render(channel, node, createJobs)', () => {
     expect(delayFn.mock).toHaveBeenCalledTimes(2);
   });
 
-  it('make "thunk" tasks from "thunk" segment and execute them after dispatch', async () => {
+  it('execute "thunk" tasks after dispatch', async () => {
     const thunkEffect1 = moxy();
     const thunkEffect2 = moxy();
     const thunkEffect3 = moxy();
@@ -650,6 +650,23 @@ describe('#render(channel, node, createJobs)', () => {
     );
   });
 
+  test('with no initScope and dispatchWrapper params', async () => {
+    const myEngine = new Engine('test', renderer, queue, worker);
+
+    await myEngine.render(channel, message, createJobs);
+
+    expect(renderer.render.mock).toHaveBeenCalledTimes(1);
+    expect(renderer.render.mock).toHaveBeenCalledWith(
+      message,
+      expect.any(ServiceScope)
+    );
+
+    expect(initScope.mock).not.toHaveBeenCalled();
+    expect(wrappedDispatchMock).not.toHaveBeenCalled();
+    expect(createJobs.mock).toHaveBeenCalledTimes(1);
+    expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
+  });
+
   it('throw what wrappedDispatcher thrown', async () => {
     wrappedDispatchMock.fake(async () => {
       throw new Error('something wrong within middlewares');
@@ -668,7 +685,7 @@ describe('#render(channel, node, createJobs)', () => {
   });
 });
 
-describe('#dispatchJobs(channel, tasks, node)', () => {
+describe('.dispatchJobs(channel, tasks, node)', () => {
   const engine = new Engine(
     'test',
     renderer,

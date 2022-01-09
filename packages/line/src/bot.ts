@@ -9,7 +9,7 @@ import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import Engine, { DispatchError } from '@machinat/core/engine';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider, createEmptyScope } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core/service';
 
 import { createChatJobs, createMulticastJobs } from './job';
 import generalElementDelegate from './components/general';
@@ -49,8 +49,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
     LineSegmentValue,
     LineComponent<unknown>,
     LineJob,
-    LineResult,
-    LineBot
+    LineResult
   >;
 
   constructor({
@@ -58,8 +57,8 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
     channelId,
     accessToken,
     maxConnections = 100,
-    initScope = () => createEmptyScope(),
-    dispatchWrapper = (dispatch) => dispatch,
+    initScope,
+    dispatchWrapper,
   }: LineBotOptions) {
     invariant(accessToken, 'configs.accessToken should not be empty');
     invariant(providerId, 'configs.providerId should not be empty');

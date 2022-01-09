@@ -46,8 +46,7 @@ const message = (
   </Expression>
 );
 
-const scope = moxy();
-const initScope = moxy(() => scope);
+const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
 
 let lineApi;
