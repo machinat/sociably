@@ -60,22 +60,27 @@ export type MachinatEmpty = null | undefined | boolean;
 
 export type GeneralElement = MachinatElement<{ [key: string]: any }, string>;
 
-type RenderCircs = {
+type RenderEnv = {
   platform: string;
 };
 
 export type FunctionalComponent<Props> = (
   props: Props,
-  circs: RenderCircs
-) => MachinatNode | Promise<MachinatNode>;
+  circs: RenderEnv
+) => MachinatNode;
 
 export type FunctionalElement<
   Props,
   Component extends FunctionalComponent<Props>
 > = MachinatElement<Props, Component>;
 
+type ContainerComponentFn<Props> = (
+  props: Props,
+  circs: RenderEnv
+) => MachinatNode | Promise<MachinatNode>;
+
 export type ContainerComponent<Props> = ServiceContainer<
-  FunctionalComponent<Props>,
+  ContainerComponentFn<Props>,
   unknown[]
 >;
 
