@@ -69,9 +69,13 @@ test('get asset id', async () => {
 test('set asset id', async () => {
   const manager = new LineAssetsManager(stateController, bot);
 
-  await manager.saveAssetId('foo', 'bar', 'baz');
-  await manager.saveLiffApp('my_liff_app', '_LIFF_APP_ID_');
-  await manager.saveRichMenu('my_rich_menu', '_RICH_MENU_ID_');
+  await expect(manager.saveAssetId('foo', 'bar', 'baz')).resolves.toBe(true);
+  await expect(
+    manager.saveLiffApp('my_liff_app', '_LIFF_APP_ID_')
+  ).resolves.toBe(true);
+  await expect(
+    manager.saveRichMenu('my_rich_menu', '_RICH_MENU_ID_')
+  ).resolves.toBe(true);
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
@@ -83,32 +87,28 @@ test('set asset id', async () => {
     ]
   `);
 
-  expect(state.update.mock).toHaveBeenCalledTimes(3);
-  state.update.mock.calls.forEach(({ args: [key, updator] }, i) => {
-    if (i === 0) {
-      expect(key).toBe('bar');
-      expect(updator(null)).toBe('baz');
-      expect(() =>
-        updator('_EXISTED_BAR_RESOURCE_ID_')
-      ).toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] already exist"`);
-    } else if (i === 1) {
-      expect(key).toBe('my_liff_app');
-      expect(updator(null)).toBe('_LIFF_APP_ID_');
-      expect(() =>
-        updator('_EXISTED_LIFF_APP_ID_')
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"liff [ my_liff_app ] already exist"`
-      );
-    } else if (i === 2) {
-      expect(key).toBe('my_rich_menu');
-      expect(updator(null)).toBe('_RICH_MENU_ID_');
-      expect(() =>
-        updator('_EXISTED_RICH_MENU_ID_')
-      ).toThrowErrorMatchingInlineSnapshot(
-        `"rich_menu [ my_rich_menu ] already exist"`
-      );
-    }
-  });
+  expect(state.set.mock).toHaveBeenCalledTimes(3);
+  expect(state.set.mock).toHaveBeenNthCalledWith(1, 'bar', 'baz');
+  expect(state.set.mock).toHaveBeenNthCalledWith(
+    2,
+    'my_liff_app',
+    '_LIFF_APP_ID_'
+  );
+  expect(state.set.mock).toHaveBeenNthCalledWith(
+    3,
+    'my_rich_menu',
+    '_RICH_MENU_ID_'
+  );
+
+  state.set.mock.fake(async () => false);
+  await expect(manager.saveAssetId('foo', 'bar', 'baz')).resolves.toBe(false);
+  await expect(
+    manager.saveLiffApp('my_liff_app', '_LIFF_APP_ID_')
+  ).resolves.toBe(false);
+  await expect(
+    manager.saveRichMenu('my_rich_menu', '_RICH_MENU_ID_')
+  ).resolves.toBe(false);
+  expect(state.set.mock).toHaveBeenCalledTimes(6);
 });
 
 test('get all assets', async () => {
@@ -147,9 +147,9 @@ test('get all assets', async () => {
 test('unsave asset id', async () => {
   const manager = new LineAssetsManager(stateController, bot);
 
-  await manager.unsaveAssetId('foo', 'bar');
-  await manager.unsaveLiffApp('my_liff_app');
-  await manager.unsaveRichMenu('my_rich_menu');
+  await expect(manager.unsaveAssetId('foo', 'bar')).resolves.toBe(true);
+  await expect(manager.unsaveLiffApp('my_liff_app')).resolves.toBe(true);
+  await expect(manager.unsaveRichMenu('my_rich_menu')).resolves.toBe(true);
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
@@ -166,20 +166,11 @@ test('unsave asset id', async () => {
   expect(state.delete.mock).toHaveBeenNthCalledWith(2, 'my_liff_app');
   expect(state.delete.mock).toHaveBeenNthCalledWith(3, 'my_rich_menu');
 
-  state.delete.mock.fakeReturnValue(false);
-  await expect(
-    manager.unsaveAssetId('foo', 'bar')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
-  await expect(
-    manager.unsaveLiffApp('my_liff_app')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"liff [ my_liff_app ] not exist"`
-  );
-  await expect(
-    manager.unsaveRichMenu('my_rich_menu')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"rich_menu [ my_rich_menu ] not exist"`
-  );
+  state.delete.mock.fake(async () => false);
+  await expect(manager.unsaveAssetId('foo', 'bar')).resolves.toBe(false);
+  await expect(manager.unsaveLiffApp('my_liff_app')).resolves.toBe(false);
+  await expect(manager.unsaveRichMenu('my_rich_menu')).resolves.toBe(false);
+  expect(state.delete.mock).toHaveBeenCalledTimes(6);
 });
 
 test('#createRichMenu()', async () => {
@@ -218,22 +209,19 @@ test('#createRichMenu()', async () => {
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"rich menu [ my_rich_menu ] already exist"`
   );
+
+  expect(state.set.mock).toHaveBeenCalledTimes(1);
+  expect(state.set.mock).toHaveBeenCalledWith('my_rich_menu', '_RICH_MENU_ID_');
 });
 
 test('#deleteRichMenu()', async () => {
   const manager = new LineAssetsManager(stateController, bot);
   bot.makeApiCall.mock.fake(async () => ({}));
 
-  await expect(
-    manager.deleteRichMenu('my_rich_menu')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"rich menu [ my_rich_menu ] not exist"`
-  );
+  await expect(manager.deleteRichMenu('my_rich_menu')).resolves.toBe(false);
 
-  state.get.mock.fakeReturnValue('_RICH_MENU_ID_');
-  await expect(manager.deleteRichMenu('my_rich_menu')).resolves.toBe(
-    '_RICH_MENU_ID_'
-  );
+  state.get.mock.fake(async () => '_RICH_MENU_ID_');
+  await expect(manager.deleteRichMenu('my_rich_menu')).resolves.toBe(true);
 
   expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
   expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
@@ -241,4 +229,7 @@ test('#deleteRichMenu()', async () => {
     'v2/bot/richmenu/_RICH_MENU_ID_',
     null
   );
+
+  expect(state.delete.mock).toHaveBeenCalledTimes(1);
+  expect(state.delete.mock).toHaveBeenCalledWith('my_rich_menu');
 });

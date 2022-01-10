@@ -5,7 +5,7 @@ import { TelegramAssetsManager } from '../manager';
 
 const state = moxy({
   get: async () => null,
-  set: async () => true,
+  set: async () => false,
   update: async () => true,
   getAll: async () => null,
   delete: async () => true,
@@ -65,8 +65,8 @@ test('get asset id', async () => {
 test('set asset id', async () => {
   const manager = new TelegramAssetsManager(stateController, bot);
 
-  await manager.saveAssetId('foo', 'bar', 'baz');
-  await manager.saveFile('my_file', '_FILE_ID_');
+  await expect(manager.saveAssetId('foo', 'bar', 'baz')).resolves.toBe(false);
+  await expect(manager.saveFile('my_file', '_FILE_ID_')).resolves.toBe(false);
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
@@ -77,20 +77,14 @@ test('set asset id', async () => {
     ]
   `);
 
-  expect(state.update.mock).toHaveBeenCalledTimes(2);
-  let [key, updator] = state.update.mock.calls[0].args;
-  expect(key).toBe('bar');
-  expect(updator(null)).toBe('baz');
-  expect(() =>
-    updator('_EXISTED_BAR_RESOURCE_ID_')
-  ).toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] already exist"`);
+  expect(state.set.mock).toHaveBeenCalledTimes(2);
+  expect(state.set.mock).toHaveBeenNthCalledWith(1, 'bar', 'baz');
+  expect(state.set.mock).toHaveBeenNthCalledWith(2, 'my_file', '_FILE_ID_');
 
-  [key, updator] = state.update.mock.calls[1].args;
-  expect(key).toBe('my_file');
-  expect(updator(null)).toBe('_FILE_ID_');
-  expect(() =>
-    updator('_EXISTED_LIFF_APP_ID_')
-  ).toThrowErrorMatchingInlineSnapshot(`"file [ my_file ] already exist"`);
+  state.set.mock.fake(async () => false);
+  await expect(manager.saveAssetId('foo', 'bar', 'baz')).resolves.toBe(false);
+  await expect(manager.saveFile('my_file', '_FILE_ID_')).resolves.toBe(false);
+  expect(state.set.mock).toHaveBeenCalledTimes(4);
 });
 
 test('get all assets', async () => {
@@ -128,21 +122,16 @@ test('get all assets', async () => {
 test('remove asset id', async () => {
   const manager = new TelegramAssetsManager(stateController, bot);
 
-  await manager.unsaveAssetId('foo', 'bar');
-  await manager.unsaveFile('my_file');
+  await expect(manager.unsaveAssetId('foo', 'bar')).resolves.toBe(true);
+  await expect(manager.unsaveFile('my_file')).resolves.toBe(true);
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
   expect(state.delete.mock).toHaveBeenCalledTimes(2);
 
-  state.delete.mock.fakeReturnValue(false);
-  await expect(
-    manager.unsaveAssetId('foo', 'bar')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(`"foo [ bar ] not exist"`);
-  await expect(
-    manager.unsaveFile('my_file')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(`"file [ my_file ] not exist"`);
+  state.delete.mock.fake(async () => false);
+  await expect(manager.unsaveAssetId('foo', 'bar')).resolves.toBe(false);
+  await expect(manager.unsaveFile('my_file')).resolves.toBe(false);
 
-  expect(state.delete.mock).toHaveBeenCalledTimes(4);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [

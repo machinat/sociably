@@ -35,15 +35,16 @@ export class LineAssetsManager {
     return existed || undefined;
   }
 
-  async saveAssetId(resource: string, name: string, id: string): Promise<void> {
-    await this._stateController
+  async saveAssetId(
+    resource: string,
+    name: string,
+    id: string
+  ): Promise<boolean> {
+    const isUpdated = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .update<string>(name, (existed) => {
-        if (existed) {
-          throw new Error(`${resource} [ ${name} ] already exist`);
-        }
-        return id;
-      });
+      .set<string>(name, id);
+
+    return isUpdated;
   }
 
   getAllAssets(resource: string): Promise<null | Map<string, string>> {
@@ -52,21 +53,19 @@ export class LineAssetsManager {
       .getAll();
   }
 
-  async unsaveAssetId(resource: string, name: string): Promise<void> {
+  async unsaveAssetId(resource: string, name: string): Promise<boolean> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
       .delete(name);
 
-    if (!isDeleted) {
-      throw new Error(`${resource} [ ${name} ] not exist`);
-    }
+    return isDeleted;
   }
 
   getLiffApp(name: string): Promise<undefined | string> {
     return this.getAssetId(LIFF, name);
   }
 
-  saveLiffApp(name: string, id: string): Promise<void> {
+  saveLiffApp(name: string, id: string): Promise<boolean> {
     return this.saveAssetId(LIFF, name, id);
   }
 
@@ -74,7 +73,7 @@ export class LineAssetsManager {
     return this.getAllAssets(LIFF);
   }
 
-  unsaveLiffApp(name: string): Promise<void> {
+  unsaveLiffApp(name: string): Promise<boolean> {
     return this.unsaveAssetId(LIFF, name);
   }
 
@@ -82,7 +81,7 @@ export class LineAssetsManager {
     return this.getAssetId(RICH_MENU, name);
   }
 
-  saveRichMenu(name: string, id: string): Promise<void> {
+  saveRichMenu(name: string, id: string): Promise<boolean> {
     return this.saveAssetId(RICH_MENU, name, id);
   }
 
@@ -90,7 +89,7 @@ export class LineAssetsManager {
     return this.getAllAssets(RICH_MENU);
   }
 
-  unsaveRichMenu(name: string): Promise<void> {
+  unsaveRichMenu(name: string): Promise<boolean> {
     return this.unsaveAssetId(RICH_MENU, name);
   }
 
@@ -110,16 +109,16 @@ export class LineAssetsManager {
     return richMenuId;
   }
 
-  async deleteRichMenu(name: string): Promise<string> {
+  async deleteRichMenu(name: string): Promise<boolean> {
     const id = await this.getRichMenu(name);
     if (id === undefined) {
-      throw new Error(`rich menu [ ${name} ] not exist`);
+      return false;
     }
 
     await this._bot.makeApiCall('DELETE', `${PATH_RICHMENU}/${id}`, null);
 
     await this.unsaveAssetId(RICH_MENU, name);
-    return id;
+    return true;
   }
 }
 

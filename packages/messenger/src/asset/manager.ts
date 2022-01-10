@@ -38,15 +38,15 @@ export class MessengerAssetsManager {
     return existed || undefined;
   }
 
-  async saveAssetId(resource: string, name: string, id: string): Promise<void> {
-    await this._stateController
+  async saveAssetId(
+    resource: string,
+    name: string,
+    id: string
+  ): Promise<boolean> {
+    const isUpdated = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .update<string>(name, (existed) => {
-        if (existed) {
-          throw new Error(`${resource} [ ${name} ] already exist`);
-        }
-        return id;
-      });
+      .set<string>(name, id);
+    return isUpdated;
   }
 
   getAllAssets(resource: string): Promise<null | Map<string, string>> {
@@ -55,21 +55,19 @@ export class MessengerAssetsManager {
       .getAll();
   }
 
-  async unsaveAssetId(resource: string, name: string): Promise<void> {
+  async unsaveAssetId(resource: string, name: string): Promise<boolean> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
       .delete(name);
 
-    if (!isDeleted) {
-      throw new Error(`${resource} [ ${name} ] not exist`);
-    }
+    return isDeleted;
   }
 
   getAttachment(name: string): Promise<undefined | string> {
     return this.getAssetId(ATTACHMENT, name);
   }
 
-  saveAttachment(name: string, id: string): Promise<void> {
+  saveAttachment(name: string, id: string): Promise<boolean> {
     return this.saveAssetId(ATTACHMENT, name, id);
   }
 
@@ -77,7 +75,7 @@ export class MessengerAssetsManager {
     return this.getAllAssets(ATTACHMENT);
   }
 
-  unsaveAttachment(name: string): Promise<void> {
+  unsaveAttachment(name: string): Promise<boolean> {
     return this.unsaveAssetId(ATTACHMENT, name);
   }
 
@@ -101,15 +99,15 @@ export class MessengerAssetsManager {
     return this.getAssetId(PERSONA, name);
   }
 
-  savePersona(name: string, id: string): Promise<void> {
-    return this.saveAssetId(PERSONA, name, id);
-  }
-
   getAllPersonas(): Promise<null | Map<string, string>> {
     return this.getAllAssets(PERSONA);
   }
 
-  unsavePersona(name: string): Promise<void> {
+  savePersona(name: string, id: string): Promise<boolean> {
+    return this.saveAssetId(PERSONA, name, id);
+  }
+
+  unsavePersona(name: string): Promise<boolean> {
     return this.unsaveAssetId(PERSONA, name);
   }
 
@@ -129,14 +127,15 @@ export class MessengerAssetsManager {
     return personaId;
   }
 
-  async deletePersona(name: string): Promise<string> {
+  async deletePersona(name: string): Promise<boolean> {
     const id = await this.getPersona(name);
-    if (id === undefined) {
-      throw new Error(`persona [ ${name} ] not exist`);
+    if (!id) {
+      return false;
     }
 
     await this.bot.makeApiCall('DELETE', id);
-    return id;
+    await this.unsavePersona(name);
+    return true;
   }
 }
 

@@ -22,7 +22,7 @@ const saveUplodedFile =
     const response = await next(frame);
     const { jobs, results } = response;
 
-    const updatingAssets: Promise<void>[] = [];
+    const updatingAssets: Promise<boolean>[] = [];
 
     for (let i = 0; i < jobs.length; i += 1) {
       const { method, parameters, uploadingFiles } = jobs[i];
