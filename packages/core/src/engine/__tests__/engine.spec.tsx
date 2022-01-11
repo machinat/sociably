@@ -4,8 +4,7 @@ import Machinat from '../..';
 import Engine from '../engine';
 import type Render from '../../renderer';
 import type Queue from '../../queue';
-import { ServiceSpace, ServiceScope, createEmptyScope } from '../../service';
-import { RenderingChannelI, RootComponentI } from '../../interface';
+import { ServiceScope, createEmptyScope } from '../../service';
 import DispatchError from '../error';
 
 const queue = moxy<Queue<unknown, unknown>>({
@@ -132,9 +131,7 @@ describe('.render(channel, node, createJobs)', () => {
 
     expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, [
-      [RenderingChannelI, channel],
-    ]);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, null);
 
     expect(createJobs.mock).not.toHaveBeenCalled();
     expect(wrappedDispatchMock).not.toHaveBeenCalled();
@@ -155,9 +152,7 @@ describe('.render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, [
-      [RenderingChannelI, channel],
-    ]);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, null);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledWith(channel, unitSegments);
@@ -175,32 +170,6 @@ describe('.render(channel, node, createJobs)', () => {
 
     expect(queue.executeJobs.mock).toHaveBeenCalledTimes(1);
     expect(queue.executeJobs.mock).toHaveBeenCalledWith(expectedJobs);
-  });
-
-  test('Wrap content with RootComponent if provided', async () => {
-    const MyRoot = moxy(function MyRoot({ children }) {
-      return <>foo {children} bar</>;
-    });
-    const space = new ServiceSpace(null, [
-      { provide: RootComponentI, withValue: MyRoot },
-    ]);
-    space.bootstrap();
-    const scopeWithRootRegistered = space.createScope();
-
-    const rootedEngine = new Engine(
-      'test',
-      renderer,
-      queue,
-      worker,
-      () => scopeWithRootRegistered
-    );
-    await rootedEngine.render(channel, message, createJobs);
-
-    expect(renderer.render.mock).toHaveBeenCalledWith(
-      <MyRoot>{message}</MyRoot>,
-      scopeWithRootRegistered,
-      [[RenderingChannelI, channel]]
-    );
   });
 
   test('separate "dispatch" jobs with "pause"', async () => {
@@ -245,9 +214,7 @@ describe('.render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, [
-      [RenderingChannelI, channel],
-    ]);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, null);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(3);
     expect(createJobs.mock).toHaveBeenNthCalledWith(1, channel, [
@@ -347,9 +314,7 @@ describe('.render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, [
-      [RenderingChannelI, channel],
-    ]);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, null);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(3);
     expect(createJobs.mock).toHaveBeenNthCalledWith(1, channel, [
@@ -474,9 +439,7 @@ describe('.render(channel, node, createJobs)', () => {
 
     expect(initScope.mock).toHaveBeenCalledTimes(1);
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, [
-      [RenderingChannelI, channel],
-    ]);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, null);
 
     expect(createJobs.mock).not.toHaveBeenCalled();
     expect(wrappedDispatchMock).not.toHaveBeenCalled();
@@ -663,9 +626,7 @@ describe('.render(channel, node, createJobs)', () => {
     expect(initScope.mock).toHaveBeenCalledTimes(1);
 
     expect(renderer.render.mock).toHaveBeenCalledTimes(1);
-    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, [
-      [RenderingChannelI, channel],
-    ]);
+    expect(renderer.render.mock).toHaveBeenCalledWith(message, scope, null);
 
     expect(createJobs.mock).toHaveBeenCalledTimes(1);
     expect(createJobs.mock).toHaveBeenCalledWith(channel, unitSegments);
@@ -698,7 +659,7 @@ describe('.render(channel, node, createJobs)', () => {
     expect(renderer.render.mock).toHaveBeenCalledWith(
       message,
       expect.any(ServiceScope),
-      [[RenderingChannelI, channel]]
+      null
     );
 
     expect(initScope.mock).not.toHaveBeenCalled();

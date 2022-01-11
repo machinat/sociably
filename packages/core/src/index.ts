@@ -10,7 +10,6 @@ import App from './app';
 import BaseBotP from './base/Bot';
 import BaseProfilerP from './base/Profiler';
 import MarshalerP from './base/Marshaler';
-import { RootComponentI, RenderingChannelI } from './interface';
 import type {
   AppConfig,
   MachinatElement,
@@ -59,8 +58,6 @@ namespace Machinat {
   export const Bot = BaseBotP;
   export const Profiler = BaseProfilerP;
   export const Marshaler = MarshalerP;
-  export const RootComponent = RootComponentI;
-  export const RenderingChannel = RenderingChannelI;
 
   export namespace JSX {
     export type Element = MachinatElement<any, any>;

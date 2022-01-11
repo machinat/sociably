@@ -1,7 +1,5 @@
 import MachinatQueue, { JobBatchResponse } from '../queue';
 import { createEmptyScope, ServiceScope } from '../service';
-import createElement from '../createElement';
-import { RootComponentI, RenderingChannelI } from '../interface';
 import type MachinatRenderer from '../renderer';
 import type {
   MachinatNode,
@@ -89,15 +87,7 @@ export default class MachinatEngine<
     ) => Job[]
   ): Promise<null | DispatchResponse<Job, Result>> {
     const scope = this._initScope();
-    const [rootComponent] = scope.useServices([
-      { require: RootComponentI, optional: true },
-    ]);
-
-    const segments = await this.renderer.render(
-      rootComponent ? createElement(rootComponent, {}, node) : node,
-      scope,
-      [[RenderingChannelI, target]]
-    );
+    const segments = await this.renderer.render(node, scope, null);
     if (segments === null) {
       return null;
     }
