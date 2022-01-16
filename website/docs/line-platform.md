@@ -196,7 +196,7 @@ service helps you to manage the resources like [richmenu](https://developers.lin
 Make sure you have a state storage installed, and register the service like:
 
 ```ts {2,12}
-import { FileState } from '@machinat/local-state';
+import { FileState } from '@machinat/dev-state';
 import LineAssetsManager from '@machinat/line/asssets';
 
 const app = Machinat.createApp({

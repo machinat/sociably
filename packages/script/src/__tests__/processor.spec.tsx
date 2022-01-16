@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import { ServiceScope } from '@machinat/core/service';
 import { traverse as traverseMessage } from '@machinat/core/iterator';
-import { InMemoryStateController } from '@machinat/local-state/inMemory';
+import { InMemoryStateController } from '@machinat/dev-state/inMemory';
 import { ScriptProcessor } from '../processor';
 import build from '../build';
 import {

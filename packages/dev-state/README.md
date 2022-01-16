@@ -1,4 +1,4 @@
-# Local State Module
+# Dev State Module
 
 This module implement the [`BaseStateController`](https://machinat.com/api/modules/core_base_statecontroller.html)
 with in-memory and file storage. We suggest to use them for testing purpose only.
@@ -6,15 +6,15 @@ with in-memory and file storage. We suggest to use them for testing purpose only
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/local-state
+npm install @machinat/core @machinat/dev-state
 # or with yarn
-yarn add @machinat/core @machinat/local-state
+yarn add @machinat/core @machinat/dev-state
 ```
 
 ## Docs
 
 Check the [Using State](https://machinat.com/docs/using-states) document for the
-usage guide, and the [package reference](https://machinat.com/api/modules/local_state.html)
+usage guide, and the [package reference](https://machinat.com/api/modules/dev_state.html)
 for API details.
 
 ## Setup
@@ -23,7 +23,7 @@ for API details.
 
 ```js
 import Machinat from '@machinat/core';
-import { InMemoryState } from '@machinat/local-state';
+import { InMemoryState } from '@machinat/dev-state';
 
 const app = Machinat.createApp({
   modules: [
@@ -32,11 +32,11 @@ const app = Machinat.createApp({
 });
 ```
 
-#### In-Memory State
+#### File State
 
 ```js
 import Machinat from '@machinat/core';
-import { FileState } from '@machinat/local-state';
+import { FileState } from '@machinat/dev-state';
 import YAML from 'yaml';
 
 const app = Machinat.createApp({

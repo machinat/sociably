@@ -180,7 +180,7 @@ service helps you to manage resources at Telegram platform, like uploaded file.
 Make sure you have a state storage installed, and register the service like this:
 
 ```ts {2,11-13,17}
-import { FileState } from '@machinat/local-state';
+import { FileState } from '@machinat/dev-state';
 import TelegramAssetsManager, { saveUplodedFile } from '@machinat/telegram/asssets';
 
 const app = Machinat.createApp({

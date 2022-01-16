@@ -10,10 +10,10 @@ While having a conversation, knowing about the context is the key for proceeding
 
 ## Install State Module
 
-To enable state in Machinat, you can start with `FileState` or `InMemoryState` from the `@machinat/local-state` package:
+To enable state in Machinat, you can start with `FileState` or `InMemoryState` from the `@machinat/dev-state` package:
 
 ```js
-import { FileState } from '@machinat/local-state';
+import { FileState } from '@machinat/dev-state';
 
 Machinat.createApp({
   modules: [
@@ -25,7 +25,7 @@ Machinat.createApp({
 
 For now the modules listed below with different kinds of storage are officially supported, please check the package readme for more details.
 
-- [`@machinat/local-state`](https://github.com/machinat/machinat/tree/master/packages/local-state): provide `FileState` and `InMemoryState` for testing and debugging purposes, using in production environment is not recommended.
+- [`@machinat/dev-state`](https://github.com/machinat/machinat/tree/master/packages/dev-state): provide `FileState` and `InMemoryState` for testing and debugging purposes, using in production environment is not recommended.
 - [`@machinat/redis-state`](https://github.com/machinat/machinat/tree/master/packages/redis-state): save and load state with [Redis](https://redis.io/) in-memory database.
 
 ## Use the State

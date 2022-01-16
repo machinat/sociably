@@ -10,7 +10,7 @@ Building the dialog flows logic is a challenge in a chatbot as a back-end based 
 
 You have to install `@machinat/script` package to use Machinat script. And make
 sure you have one state storage installed, such like `@machinat/redis-state` or
-`@machinat/local-state`.
+`@machinat/dev-state`.
 
 ## Building Script
 

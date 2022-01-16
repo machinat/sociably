@@ -21,7 +21,7 @@ for API details.
 
 ```js
 import Machinat from '@machinat/core';
-import RedisState from '@machinat/local-state';
+import RedisState from '@machinat/redis-state';
 
 const app = Machinat.createApp({
   modules: [
