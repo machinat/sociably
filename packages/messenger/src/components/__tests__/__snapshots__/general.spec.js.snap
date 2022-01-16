@@ -138,9 +138,9 @@ Array [
     </p>,
     "path": "$",
     "type": "text",
-    "value": "Mic test \`Hello, *Luke Skywalker!*\`
+    "value": "Mic test \`Hello, Luke Skywalker!\`
 You know what?
-_I'm your ~FATHER~ \`droid\`._
+I'm your FATHER \`droid\`.
 
 \`\`\`
 May the force be with you!
@@ -168,7 +168,7 @@ Array [
       </b>,
       "path": "$",
       "type": "text",
-      "value": "*important*",
+      "value": "important",
     },
   ],
   Array [
@@ -178,7 +178,7 @@ Array [
       </i>,
       "path": "$",
       "type": "text",
-      "value": "_italic_",
+      "value": "italic",
     },
   ],
   Array [
@@ -188,7 +188,7 @@ Array [
       </s>,
       "path": "$",
       "type": "text",
-      "value": "~nooooo~",
+      "value": "nooooo",
     },
   ],
   Array [

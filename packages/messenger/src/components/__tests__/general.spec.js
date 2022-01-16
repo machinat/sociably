@@ -22,9 +22,9 @@ test('render shallow element match snapshot', async () => {
   expect(results.flat().map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
       "abc",
-      "*important*",
-      "_italic_",
-      "~nooooo~",
+      "important",
+      "italic",
+      "nooooo",
       "underlined",
       "\`foo.bar()\`",
       "\`\`\`
@@ -57,9 +57,9 @@ test('render nested elements match snapshot', async () => {
   expect(segments).toMatchSnapshot();
   expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
     Array [
-      "Mic test \`Hello, *Luke Skywalker!*\`
+      "Mic test \`Hello, Luke Skywalker!\`
     You know what?
-    _I'm your ~FATHER~ \`droid\`._
+    I'm your FATHER \`droid\`.
 
     \`\`\`
     May the force be with you!

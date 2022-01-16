@@ -11,7 +11,7 @@ Object {
       "request": Object {
         "body": Object {
           "message": Object {
-            "text": "Hello *World!*",
+            "text": "Hello World!",
           },
           "messaging_type": "MESSAGE_TAG",
           "notification_type": "SILENT_PUSH",
@@ -96,7 +96,7 @@ Object {
           "request": Object {
             "body": Object {
               "message": Object {
-                "text": "Hello *World!*",
+                "text": "Hello World!",
               },
               "messaging_type": "MESSAGE_TAG",
               "notification_type": "SILENT_PUSH",
@@ -171,7 +171,7 @@ Object {
 exports[`#render(channel, message, options) render options 3`] = `
 Array [
   Object {
-    "body": "message=%7B%22text%22%3A%22Hello%20*World!*%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
+    "body": "message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
     "method": "POST",
     "name": "messenger.1234567890.psid.john-1",
     "omit_response_on_success": false,
@@ -199,7 +199,7 @@ Object {
       "request": Object {
         "body": Object {
           "message": Object {
-            "text": "Hello *World!*",
+            "text": "Hello World!",
           },
           "messaging_type": undefined,
           "notification_type": undefined,
@@ -284,7 +284,7 @@ Object {
           "request": Object {
             "body": Object {
               "message": Object {
-                "text": "Hello *World!*",
+                "text": "Hello World!",
               },
               "messaging_type": undefined,
               "notification_type": undefined,
@@ -359,7 +359,7 @@ Object {
 exports[`#render(channel, message, options) send messages to me/messages api 3`] = `
 Array [
   Object {
-    "body": "message=%7B%22text%22%3A%22Hello%20*World!*%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
+    "body": "message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
     "method": "POST",
     "name": "messenger.1234567890.psid.john-1",
     "omit_response_on_success": false,

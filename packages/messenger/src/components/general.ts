@@ -46,11 +46,11 @@ const transormText = (tag, transformer) => async (node, path, render) => {
   return [makeTextSegment(node, path, transformer(childrenSegments[0].value))];
 };
 
-const b = transormText('b', (v) => `*${v}*`);
+const b = transormText('b', (v) => `${v}`);
 
-const i = transormText('i', (v) => `_${v}_`);
+const i = transormText('i', (v) => `${v}`);
 
-const s = transormText('s', (v) => `~${v}~`);
+const s = transormText('s', (v) => `${v}`);
 
 const u = transormText('u', (v) => v);
 
