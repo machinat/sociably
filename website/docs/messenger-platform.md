@@ -196,7 +196,7 @@ persona. Make sure you have a state storage installed, and register the service
 like this:
 
 ```ts {2,11-13,17}
-import { FileState } from '@machinat/dev-state';
+import { FileState } from '@machinat/dev-tools';
 import MessengerAssetsManager from '@machinat/messenger/asssets';
 
 const app = Machinat.createApp({

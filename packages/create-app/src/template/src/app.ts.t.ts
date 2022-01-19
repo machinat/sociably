@@ -21,7 +21,7 @@ import TelegramAuthenticator from '@machinat/telegram/webview';`}`}${when(
   )`
 import Webview from '@machinat/webview';`}
 import RedisState from '@machinat/redis-state';
-import { FileState } from '@machinat/dev-state';${when(
+import { FileState } from '@machinat/dev-tools';${when(
     platforms.includes('webview')
   )`
 import {

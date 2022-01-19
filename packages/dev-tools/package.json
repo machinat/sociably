@@ -1,5 +1,5 @@
 {
-  "name": "@machinat/dev-state",
+  "name": "@machinat/dev-tools",
   "version": "0.5.0-beta.30",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -12,8 +12,9 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./file": "./lib/file/index.js",
-    "./inMemory": "./lib/inMemory/index.js"
+    "./RegexIntentRecognition": "./lib/RegexIntentRecognition/index.js",
+    "./FileState": "./lib/FileState/index.js",
+    "./InMemoryState": "./lib/InMemoryState/index.js"
   },
   "files": [
     "lib/*",

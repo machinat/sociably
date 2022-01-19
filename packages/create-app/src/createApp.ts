@@ -25,7 +25,7 @@ const getMachinatDependencies = (platforms: string[]): string[] => {
   const dependencies = [
     '@machinat/core',
     '@machinat/http',
-    '@machinat/dev-state',
+    '@machinat/dev-tools',
     '@machinat/redis-state',
     '@machinat/stream',
   ];

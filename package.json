@@ -47,7 +47,7 @@
     "packages/http",
     "packages/jest-snapshot-serializer",
     "packages/line",
-    "packages/dev-state",
+    "packages/dev-tools",
     "packages/messenger",
     "packages/next",
     "packages/redis-state",
