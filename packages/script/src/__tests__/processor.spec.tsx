@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import { ServiceScope } from '@machinat/core/service';
 import { traverse as traverseMessage } from '@machinat/core/iterator';
-import { InMemoryStateController } from '@machinat/dev-state/inMemory';
+import { InMemoryStateController } from '@machinat/dev-tools/InMemoryState';
 import { ScriptProcessor } from '../processor';
 import build from '../build';
 import {
@@ -164,7 +164,7 @@ describe('#start(channel, Script)', () => {
                 },
               ],
               "timestamp": Any<Number>,
-              "version": "V0",
+              "version": "0",
             }
           `
     );
@@ -228,7 +228,7 @@ describe('#start(channel, Script)', () => {
                 },
               ],
               "timestamp": Any<Number>,
-              "version": "V0",
+              "version": "0",
             }
           `
     );
@@ -295,7 +295,7 @@ describe('#start(channel, Script)', () => {
                 },
               ],
               "timestamp": Any<Number>,
-              "version": "V0",
+              "version": "0",
             }
           `
     );
@@ -315,7 +315,7 @@ describe('#start(channel, Script)', () => {
   it('throw if there is already script processing in the channel', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
@@ -334,7 +334,7 @@ describe('#continue(channel, input)', () => {
   it('continue from prompt point', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
@@ -396,7 +396,7 @@ describe('#continue(channel, input)', () => {
                 },
               ],
               "timestamp": Any<Number>,
-              "version": "V0",
+              "version": "0",
             }
           `
     );
@@ -411,7 +411,7 @@ describe('#continue(channel, input)', () => {
   it('continue under subscript', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'call_1' },
         { name: 'AnotherScript', vars: { foo: 'baz' }, stopAt: 'ask_4' },
@@ -472,7 +472,7 @@ describe('#continue(channel, input)', () => {
                 },
               ],
               "timestamp": Any<Number>,
-              "version": "V0",
+              "version": "0",
             }
           `
     );
@@ -498,7 +498,7 @@ describe('#continue(channel, input)', () => {
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
     });
@@ -516,7 +516,7 @@ describe('#getRuntime(channel)', () => {
   test('manually call runtime.run()', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
@@ -596,7 +596,7 @@ describe('#getRuntime(channel)', () => {
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
     });
@@ -614,7 +614,7 @@ describe('Runtime#exit(channel)', () => {
   it('delete saved runtime state', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
@@ -660,7 +660,7 @@ describe('Runtime#save(runtime)', () => {
     ).resolves.toEqual({
       callStack: [{ name: 'MyScript', stopAt: 'ask_2', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
-      version: 'V0',
+      version: '0',
     });
   });
 
@@ -674,7 +674,7 @@ describe('Runtime#save(runtime)', () => {
     stateController.channelState(channel).set('$$machinat:script', {
       callStack: [{ name: 'MyScript', stopAt: 'ask_3', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
-      version: 'V0',
+      version: '0',
     });
 
     const runtime = (await processor.getRuntime(channel))!;
@@ -689,7 +689,7 @@ describe('Runtime#save(runtime)', () => {
         { name: 'AnotherScript', stopAt: 'ask_4', vars: {} },
       ],
       timestamp: expect.any(Number),
-      version: 'V0',
+      version: '0',
     });
   });
 
@@ -726,7 +726,7 @@ describe('Runtime#save(runtime)', () => {
     });
 
     stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
       ],
@@ -741,7 +741,7 @@ describe('Runtime#save(runtime)', () => {
   test('throw if continued runtime save while no runtime state existing', async () => {
     const stateController = new InMemoryStateController();
     stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
       ],
@@ -765,7 +765,7 @@ describe('Runtime#save(runtime)', () => {
   test('throw if saveTimestamp not match', async () => {
     const stateController = new InMemoryStateController();
     stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
       ],
@@ -779,7 +779,7 @@ describe('Runtime#save(runtime)', () => {
     const runtime = (await processor.getRuntime(channel))!;
 
     stateController.channelState(channel).set('$$machinat:script', {
-      version: 'V0',
+      version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
       ],

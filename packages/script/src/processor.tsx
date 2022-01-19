@@ -154,7 +154,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
 
         return callStack
           ? {
-              version: 'V0',
+              version: '0',
               callStack: callStack.map(serializeScriptStatus),
               timestamp,
             }

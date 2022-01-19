@@ -382,7 +382,7 @@ export type SerializedCallStatus<Vars> = {
 };
 
 export type ScriptProcessState = {
-  version: 'V0';
+  version: '0';
   timestamp: number;
   callStack: SerializedCallStatus<unknown>[];
 };
