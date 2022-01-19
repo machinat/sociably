@@ -35,31 +35,31 @@ const controller = new RedisStateController(client, marshaler);
 describe.each([
   [
     'channel state',
-    '$channel',
+    'C',
     controller.channelState({ platform: 'test', uid: 'foo' }),
     controller.channelState({ platform: 'test', uid: 'bar' }),
   ],
   [
     'channel state using uid',
-    '$channel',
+    'C',
     controller.channelState('foo'),
     controller.channelState('bar'),
   ],
   [
     'user state',
-    '$user',
+    'U',
     controller.userState({ platform: 'test', uid: 'foo' }),
     controller.userState({ platform: 'test', uid: 'bar' }),
   ],
   [
     'user state using uid',
-    '$user',
+    'U',
     controller.userState('foo'),
     controller.userState('bar'),
   ],
   [
     'global state',
-    '$global',
+    'G',
     controller.globalState('foo'),
     controller.globalState('bar'),
   ],
