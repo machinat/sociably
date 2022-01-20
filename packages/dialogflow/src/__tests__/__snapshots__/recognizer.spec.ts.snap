@@ -1,0 +1,199 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.train() create a new version 2`] = `
+Array [
+  Object {
+    "intentBatchInline": Object {
+      "intents": Array [
+        Object {
+          "displayName": "hello",
+          "name": undefined,
+          "trainingPhrases": Array [
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "hello",
+                },
+              ],
+            },
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "hi",
+                },
+              ],
+            },
+          ],
+        },
+        Object {
+          "displayName": "goodBye",
+          "name": undefined,
+          "trainingPhrases": Array [
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "bye",
+                },
+              ],
+            },
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "see ya",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "languageCode": "en",
+    "parent": "projects/test/agent",
+  },
+]
+`;
+
+exports[`.train() create a new version 3`] = `
+Array [
+  Object {
+    "intentBatchInline": Object {
+      "intents": Array [
+        Object {
+          "displayName": "hello",
+          "name": "projects/test/agent/intents/_ID_OF_HELLO_",
+          "trainingPhrases": Array [
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "こんにちは",
+                },
+              ],
+            },
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "おはよう",
+                },
+              ],
+            },
+          ],
+        },
+        Object {
+          "displayName": "goodBye",
+          "name": "projects/test/agent/intents/_ID_OF_GOODBYE_",
+          "trainingPhrases": Array [
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "さようなら",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "languageCode": "ja",
+    "parent": "projects/test/agent",
+  },
+]
+`;
+
+exports[`.train() start from empty project 3`] = `
+Array [
+  Object {
+    "intentBatchInline": Object {
+      "intents": Array [
+        Object {
+          "displayName": "hello",
+          "name": undefined,
+          "trainingPhrases": Array [
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "hello",
+                },
+              ],
+            },
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "hi",
+                },
+              ],
+            },
+          ],
+        },
+        Object {
+          "displayName": "goodBye",
+          "name": undefined,
+          "trainingPhrases": Array [
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "bye",
+                },
+              ],
+            },
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "see ya",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "languageCode": "en",
+    "parent": "projects/test/agent",
+  },
+]
+`;
+
+exports[`.train() start from empty project 4`] = `
+Array [
+  Object {
+    "intentBatchInline": Object {
+      "intents": Array [
+        Object {
+          "displayName": "hello",
+          "name": "projects/test/agent/intents/_ID_OF_HELLO_",
+          "trainingPhrases": Array [
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "こんにちは",
+                },
+              ],
+            },
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "おはよう",
+                },
+              ],
+            },
+          ],
+        },
+        Object {
+          "displayName": "goodBye",
+          "name": "projects/test/agent/intents/_ID_OF_GOODBYE_",
+          "trainingPhrases": Array [
+            Object {
+              "parts": Array [
+                Object {
+                  "text": "さようなら",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "languageCode": "ja",
+    "parent": "projects/test/agent",
+  },
+]
+`;

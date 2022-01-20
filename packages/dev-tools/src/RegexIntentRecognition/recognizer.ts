@@ -22,33 +22,31 @@ export class RegexIntentRecognizer<Languages extends string>
     this.defaultLanguage = defaultLanguage;
     this._matchersByLanguages = new Map();
 
-    if (intents) {
-      Object.entries(intents).forEach(([name, { trainingPhrases }]) => {
-        Object.entries<string[]>(trainingPhrases).forEach(([lang, phrases]) => {
-          let matchers = this._matchersByLanguages.get(lang);
-          if (!matchers) {
-            matchers = new Map();
-            this._matchersByLanguages.set(lang, matchers);
-          }
+    Object.entries(intents).forEach(([name, { trainingPhrases }]) => {
+      Object.entries<string[]>(trainingPhrases).forEach(([lang, phrases]) => {
+        let matchers = this._matchersByLanguages.get(lang);
+        if (!matchers) {
+          matchers = new Map();
+          this._matchersByLanguages.set(lang, matchers);
+        }
 
-          matchers.set(
-            name,
-            new RegExp(
-              `(${phrases
-                .map((p) =>
-                  p
-                    .toLowerCase()
-                    .replace(specialCharacterMatcher, ' ')
-                    .trim()
-                    .replace(/\s+/g, `[${SPECIAL_CHARACTER}\\s]+`)
-                )
-                .join('|')})`,
-              'i'
-            )
-          );
-        });
+        matchers.set(
+          name,
+          new RegExp(
+            `(${phrases
+              .map((p) =>
+                p
+                  .toLowerCase()
+                  .replace(specialCharacterMatcher, ' ')
+                  .trim()
+                  .replace(/\s+/g, `[${SPECIAL_CHARACTER}\\s]+`)
+              )
+              .join('|')})`,
+            'i'
+          )
+        );
       });
-    }
+    });
   }
 
   async detectText(

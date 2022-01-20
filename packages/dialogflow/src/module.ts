@@ -1,37 +1,23 @@
-import { SessionsClient } from '@google-cloud/dialogflow';
 import type { ServiceModule } from '@machinat/core';
-import { makeFactoryProvider } from '@machinat/core/service';
 import IntentRecognizerI from '@machinat/core/base/IntentRecognizer';
 
-import { IntentRecognizerP } from './recognizer';
-import { ConfigsI, SessionClientI } from './interface';
-
-const dialogflowClientFactory = makeFactoryProvider({
-  lifetime: 'transient',
-  deps: [ConfigsI] as const,
-})((configs) => new SessionsClient(configs.gcpAuthConfig));
+import RecognizerP from './recognizer';
+import { ConfigsI } from './interface';
 
 /**
  * @category Root
  */
 namespace Dialogflow {
-  export const IntentRecognizer = IntentRecognizerP;
-  export type IntentRecognizer = IntentRecognizerP;
-
-  export const SessionClient = SessionClientI;
-  export type SessionClient = SessionClientI;
+  export const Recognizer = RecognizerP;
+  export type Recognizer = RecognizerP;
 
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
   export const initModule = (configs: ConfigsI): ServiceModule => ({
     provisions: [
-      IntentRecognizerP,
-      { provide: IntentRecognizerI, withProvider: IntentRecognizerP },
-      {
-        provide: SessionClientI,
-        withProvider: dialogflowClientFactory,
-      },
+      RecognizerP,
+      { provide: IntentRecognizerI, withProvider: RecognizerP },
       { provide: ConfigsI, withValue: configs },
     ],
   });

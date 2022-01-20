@@ -4,7 +4,7 @@ import { makeInterface } from '../service';
 export type RecognitionData<Languages extends string = string> = {
   defaultLanguage: Languages;
   languages: Languages[];
-  intents: null | {
+  intents: {
     [name: string]: {
       trainingPhrases: { [L in Languages]: string[] };
     };
