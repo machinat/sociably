@@ -34,7 +34,7 @@ export class TelegramUserProfile
   avatarUrl: undefined | string;
   data: RawUser;
   platform = TELEGRAM;
-  timezone = undefined;
+  timeZone = undefined;
 
   constructor(rawUser: RawUser, avatarUrl?: string) {
     this.avatarUrl = avatarUrl;
@@ -98,7 +98,7 @@ export class TelegramChatProfile
   avatarUrl: undefined | string;
   platform = TELEGRAM;
   languageCode = undefined;
-  timezone = undefined;
+  timeZone = undefined;
 
   constructor(data: RawChat, avatarUrl?: string) {
     this.data = data;

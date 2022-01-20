@@ -51,7 +51,7 @@ export class MessengerUserProfile
     return this.data.locale;
   }
 
-  get timezone(): undefined | number {
+  get timeZone(): undefined | number {
     return this.data.timezone;
   }
 

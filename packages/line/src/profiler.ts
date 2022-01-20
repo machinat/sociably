@@ -23,7 +23,7 @@ export class LineUserProfile
   platform = LINE;
   firstName = undefined;
   lastName = undefined;
-  timezone = undefined;
+  timeZone = undefined;
 
   constructor(data: LineRawUserProfile) {
     this.data = data;
@@ -79,7 +79,7 @@ export class LineGroupProfile
   firstName = undefined;
   lastName = undefined;
   languageCode = undefined;
-  timezone = undefined;
+  timeZone = undefined;
 
   constructor(data: LineGroupSummary) {
     this.data = data;

@@ -8,7 +8,7 @@ export interface MachinatProfile {
   readonly firstName: undefined | string;
   readonly lastName: undefined | string;
   readonly languageCode: undefined | string;
-  readonly timezone: undefined | number;
+  readonly timeZone: undefined | number;
   data: any;
 }
 
