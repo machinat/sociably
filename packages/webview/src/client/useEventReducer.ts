@@ -1,4 +1,4 @@
-import type React from 'react';
+import { useReducer, useEffect } from 'react';
 import type WebviewClient from './client';
 import type { EventValue, AnyClientAuthenticator } from '../types';
 import type { ClientEventContext, EventContextOfClient } from './types';
@@ -23,9 +23,9 @@ function useEventReducer<T>(
   ) => T,
   initialValue: T
 ): T {
-  const [data, dispatchEvent] = React.useReducer(reducer, initialValue);
+  const [data, dispatchEvent] = useReducer(reducer, initialValue);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const eventListener = (
       context: ClientEventContext<AnyClientAuthenticator, EventValue>
     ) => {
