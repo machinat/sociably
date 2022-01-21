@@ -10,8 +10,8 @@ import { IntermediateSegment, UnitSegment } from '@machinat/core/renderer';
 import { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
 import type { WebhookMetadata } from '@machinat/http/webhook';
 import type { TelegramEvent } from './event/types';
-import type { TelegramChat } from './channel';
-import type { TelegramBot } from './bot';
+import type TelegramChat from './Chat';
+import type { TelegramBot } from './Bot';
 
 export * from './event/types';
 

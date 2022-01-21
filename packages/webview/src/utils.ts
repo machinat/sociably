@@ -1,6 +1,6 @@
-import { MachinatUser } from '@machinat/core';
-import Auth from '@machinat/auth';
+import type { MachinatUser } from '@machinat/core';
 import type {
+  AuthController,
   AnyServerAuthenticator,
   ContextOfAuthenticator,
 } from '@machinat/auth';
@@ -38,7 +38,7 @@ export const createEvent = <
 
 export const useAuthLogin =
   <Authenticator extends AnyServerAuthenticator>(
-    controller: Auth.Controller<Authenticator>
+    controller: AuthController<Authenticator>
   ): VerifyLoginFn<
     MachinatUser,
     ContextOfAuthenticator<Authenticator>,

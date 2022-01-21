@@ -1,8 +1,9 @@
 export { default } from './module';
-export { LineBot } from './bot';
-export { LineReceiver } from './receiver';
-export { LineUserProfile } from './profiler';
-export { default as LineChat } from './channel';
-export { default as LineUser } from './user';
+export { LineBot } from './Bot';
+export { LineReceiver } from './Receiver';
+export { default as LineChat } from './Chat';
+export { default as LineGroupProfile } from './GroupProfile';
+export { default as LineUser } from './User';
+export { default as LineUserProfile } from './UserProfile';
 export { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from './constant';
 export * from './types';

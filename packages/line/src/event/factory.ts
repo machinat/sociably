@@ -1,6 +1,6 @@
 import { mixin } from '@machinat/core/utils';
-import LineUser from '../user';
-import LineChat from '../channel';
+import LineUser from '../User';
+import LineChat from '../Chat';
 import {
   EventBase,
   Message,

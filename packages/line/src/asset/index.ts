@@ -1,1 +1,1 @@
-export { default, LineAssetsManager } from './manager';
+export { default, LineAssetsManager } from './AssetsManager';

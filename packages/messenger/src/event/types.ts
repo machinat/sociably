@@ -25,8 +25,8 @@ import type {
   Postback,
   Referral,
 } from './mixin';
-import type MessengerChat from '../channel';
-import type MessengerUser from '../user';
+import type MessengerChat from '../Chat';
+import type MessengerUser from '../User';
 import type { MessengerRawEvent } from '../types';
 
 interface EventObject<

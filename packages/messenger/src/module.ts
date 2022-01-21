@@ -12,11 +12,12 @@ import type { RequestRoute } from '@machinat/http';
 
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { MESSENGER } from './constant';
-import { BotP } from './bot';
-import { ReceiverP } from './receiver';
-import { ProfilerP, MessengerUserProfile } from './profiler';
-import MessengerChat from './channel';
-import MessengerUser from './user';
+import BotP from './Bot';
+import ReceiverP from './Receiver';
+import MessengerUserProfile from './UserProfile';
+import ProfilerP from './Profiler';
+import MessengerChat from './Chat';
+import MessengerUser from './User';
 import type {
   MessengerConfigs,
   MessengerEventContext,

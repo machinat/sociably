@@ -1,9 +1,9 @@
 export { default } from './module';
-export { default as MessengerChat } from './channel';
-export { default as MessengerUser } from './user';
-export { MessengerBot } from './bot';
-export { MessengerReceiver } from './receiver';
-export { MessengerProfiler } from './profiler';
+export { default as MessengerChat } from './Chat';
+export { default as MessengerUser } from './User';
+export { MessengerBot } from './Bot';
+export { MessengerReceiver } from './Receiver';
+export { MessengerProfiler } from './Profiler';
 export {
   ATTACHMENT_DATA,
   ATTACHMENT_INFO,

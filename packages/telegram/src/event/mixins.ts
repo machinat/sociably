@@ -1,6 +1,6 @@
 import { TELEGRAM } from '../constant';
-import { TelegramChat } from '../channel';
-import TelegramUser from '../user';
+import TelegramChat from '../Chat';
+import TelegramUser from '../User';
 import type {
   RawChat,
   RawUser,

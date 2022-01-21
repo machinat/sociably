@@ -9,15 +9,14 @@ import type { RequestRoute } from '@machinat/http';
 
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TELEGRAM } from './constant';
-import { BotP } from './bot';
-import { ReceiverP } from './receiver';
-import {
-  ProfilerP,
-  TelegramUserProfile,
-  TelegramChatProfile,
-} from './profiler';
-import { TelegramChat, TelegramChatTarget } from './channel';
-import TelegramUser from './user';
+import BotP from './Bot';
+import ReceiverP from './Receiver';
+import TelegramUserProfile from './UserProfile';
+import TelegramChatProfile from './ChatProfile';
+import ProfilerP from './Profiler';
+import TelegramChat from './Chat';
+import TelegramChatTarget from './ChatTarget';
+import TelegramUser from './User';
 import type {
   TelegramEventContext,
   TelegramJob,

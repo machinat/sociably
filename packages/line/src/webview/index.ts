@@ -1,2 +1,2 @@
-export { default, LineServerAuthenticator } from './server';
-export { default as LineClientAuthenticator } from './client';
+export { default, LineServerAuthenticator } from './ServerAuthenticator';
+export { default as LineClientAuthenticator } from './ClientAuthenticator';

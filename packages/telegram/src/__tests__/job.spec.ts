@@ -1,4 +1,4 @@
-import { TelegramChat } from '../channel';
+import TelegramChat from '../Chat';
 import { createChatJob, createDirectInstanceJobs } from '../job';
 
 describe('createChatJob(channel, segments)', () => {

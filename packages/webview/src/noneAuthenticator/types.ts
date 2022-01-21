@@ -1,4 +1,4 @@
-import { NoneUser, NoneChannel } from './instance';
+import type { NoneUser, NoneChannel } from './instance';
 
 export type NoneAuthData = {
   user: string;

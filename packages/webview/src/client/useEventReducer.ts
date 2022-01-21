@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import type WebviewClient from './client';
 import type { EventValue, AnyClientAuthenticator } from '../types';
 import type { ClientEventContext, EventContextOfClient } from './types';

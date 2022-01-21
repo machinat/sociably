@@ -1,10 +1,10 @@
 /* eslint-disable import/prefer-default-export  */
 import type { ContextSupplement } from '@machinat/auth';
-import LineUser from '../user';
-import LineChat from '../channel';
-import { LineUserProfile } from '../profiler';
+import LineUser from '../User';
+import LineChat from '../Chat';
+import LineUserProfile from '../UserProfile';
 import { LiffContextOs } from '../constant';
-import { LineAuthContext, LineAuthData } from './types';
+import type { LineAuthContext, LineAuthData } from './types';
 
 export const supplementContext = ({
   user: userId,

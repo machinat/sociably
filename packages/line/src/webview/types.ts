@@ -1,7 +1,7 @@
 import type { AuthContextBase } from '@machinat/auth';
-import type { LineUserProfile } from '../profiler';
-import type LineUser from '../user';
-import type LineChat from '../channel';
+import type LineUserProfile from '../UserProfile';
+import type LineUser from '../User';
+import type LineChat from '../Chat';
 import { LiffContextOs } from '../constant';
 
 export type LiffContext = {

@@ -1,7 +1,7 @@
 import type { ContextSupplement } from '@machinat/auth';
-import TelegramUser from '../user';
-import { TelegramChat } from '../channel';
-import { TelegramAuthContext, TelegramAuthData } from './types';
+import TelegramUser from '../User';
+import TelegramChat from '../Chat';
+import type { TelegramAuthContext, TelegramAuthData } from './types';
 
 // eslint-disable-next-line import/prefer-default-export
 export const supplementContext = ({

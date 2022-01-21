@@ -1,5 +1,5 @@
 import type { DispatchableSegment } from '@machinat/core/engine';
-import LineChat from './channel';
+import type LineChat from './Chat';
 import type {
   LineSegmentValue,
   LineMessageSegmentValue,

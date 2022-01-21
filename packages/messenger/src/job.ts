@@ -1,14 +1,12 @@
 import invariant from 'invariant';
 import { filterSymbolKeys, formatNode } from '@machinat/core/utils';
-
 import type { DispatchableSegment } from '@machinat/core/engine';
 import type {
   MessengerSegmentValue,
   MessengerJob,
   MessengerSendOptions,
 } from './types';
-import type MessengerChat from './channel';
-
+import type MessengerChat from './Chat';
 import { isMessageEntry } from './utils';
 import {
   API_PATH,

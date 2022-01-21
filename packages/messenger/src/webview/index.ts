@@ -1,2 +1,2 @@
-export { default, MessengerServerAuthenticator } from './server';
-export { default as MessengerClientAuthenticator } from './client';
+export { default, MessengerServerAuthenticator } from './ServerAuthenticator';
+export { default as MessengerClientAuthenticator } from './ClientAuthenticator';

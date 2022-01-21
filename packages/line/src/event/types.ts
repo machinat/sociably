@@ -1,6 +1,6 @@
-import { LineSource } from '../types';
-import LineUser from '../user';
-import LineChat from '../channel';
+import type { LineSource } from '../types';
+import type LineUser from '../User';
+import type LineChat from '../Chat';
 import {
   EventBase,
   Message,

@@ -1,9 +1,9 @@
-import {
+import type {
   MACHINAT_SERVICE_CONTAINER,
   MACHINAT_SERVICE_PROVIDER,
   MACHINAT_SERVICE_INTERFACE,
 } from '../symbol';
-import ServiceScope from './scope';
+import type ServiceScope from './scope';
 
 export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 

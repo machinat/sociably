@@ -11,11 +11,13 @@ import Http, { RequestRoute } from '@machinat/http';
 
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { LINE } from './constant';
-import { ReceiverP } from './receiver';
-import { BotP } from './bot';
-import { ProfilerP, LineUserProfile, LineGroupProfile } from './profiler';
-import LineChat from './channel';
-import LineUser from './user';
+import ReceiverP from './Receiver';
+import BotP from './Bot';
+import LineUserProfile from './UserProfile';
+import LineGroupProfile from './GroupProfile';
+import ProfilerP from './Profiler';
+import LineChat from './Chat';
+import LineUser from './User';
 import type {
   LineEventContext,
   LineJob,

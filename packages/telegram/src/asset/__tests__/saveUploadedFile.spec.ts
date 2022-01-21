@@ -1,5 +1,5 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
-import type AssetsManagerP from '../manager';
+import type AssetsManagerP from '../AssetsManager';
 import saveUploadedFile from '../saveUploadedFile';
 
 const sendMessageJob = {

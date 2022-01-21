@@ -9,8 +9,8 @@ import type { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
 import type { MaybeContainer } from '@machinat/core/service';
 import type { IntermediateSegment } from '@machinat/core/renderer';
 import type { WebhookMetadata } from '@machinat/http/webhook';
-import { LineBot } from './bot';
-import type LineChat from './channel';
+import { LineBot } from './Bot';
+import type LineChat from './Chat';
 import type { LineEvent, LineRawEvent } from './event/types';
 import type { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from './constant';
 

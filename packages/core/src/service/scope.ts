@@ -1,7 +1,8 @@
 import invariant from 'invariant';
 import { polishServiceRequirement, isServiceContainer } from './utils';
 import { MACHINAT_SERVICE_INTERFACE } from '../symbol';
-import ServiceMaker, { ENUM_PHASE_INJECTION } from './maker';
+import type ServiceMaker from './maker';
+import { ENUM_PHASE_INJECTION } from './maker';
 import type {
   ServiceCache,
   ServiceContainer,

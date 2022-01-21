@@ -7,7 +7,7 @@ import type {
   ContextResult,
 } from '@machinat/auth';
 import { NoneUser, NoneChannel } from './instance';
-import { NoneAuthData, NoneAuthContext } from './types';
+import type { NoneAuthData, NoneAuthContext } from './types';
 
 export class NoneServerAuthenticator
   implements ServerAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>

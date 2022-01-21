@@ -14,7 +14,8 @@
     ".": "./lib/index.js",
     "./components": "./lib/components/index.js",
     "./asset": "./lib/asset/index.js",
-    "./webview": "./lib/webview/index.js"
+    "./webview": "./lib/webview/index.js",
+    "./webview/client": "./lib/webview/client.js"
   },
   "files": [
     "lib/*",

@@ -1,7 +1,7 @@
 import { mixin } from '@machinat/core/utils';
 import type { MessengerRawEvent } from '../types';
-import MessengerChat from '../channel';
-import MessengerUser from '../user';
+import MessengerChat from '../Chat';
+import MessengerUser from '../User';
 import {
   EventBase as Base,
   Message,

@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
-import LineChat from '../channel';
+import LineChat from '../Chat';
 import { createChatJobs, createMulticastJobs } from '../job';
 
 const Foo = () => null;

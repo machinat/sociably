@@ -5,11 +5,13 @@ import BaseProfiler from '@machinat/core/base/Profiler';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import Line from '../module';
-import { LineReceiver } from '../receiver';
-import { LineProfiler, LineUserProfile, LineGroupProfile } from '../profiler';
-import { LineBot } from '../bot';
-import LineUser from '../user';
-import LineChat from '../channel';
+import { LineReceiver } from '../Receiver';
+import LineUserProfile from '../UserProfile';
+import LineGroupProfile from '../GroupProfile';
+import { LineProfiler } from '../Profiler';
+import { LineBot } from '../Bot';
+import LineUser from '../User';
+import LineChat from '../Chat';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);

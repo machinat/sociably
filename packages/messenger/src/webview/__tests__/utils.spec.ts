@@ -1,5 +1,5 @@
-import MessengerChannel from '../../channel';
-import MessengerUser from '../../user';
+import MessengerChannel from '../../Chat';
+import MessengerUser from '../../User';
 import { MessengerChatType } from '../../constant';
 import { supplementContext } from '../utils';
 

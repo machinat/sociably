@@ -5,15 +5,14 @@ import BaseProfiler from '@machinat/core/base/Profiler';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import Telegram from '../module';
-import { TelegramChat, TelegramChatTarget } from '../channel';
-import TelegramUser from '../user';
-import { TelegramReceiver } from '../receiver';
-import {
-  TelegramProfiler,
-  TelegramUserProfile,
-  TelegramChatProfile,
-} from '../profiler';
-import { TelegramBot } from '../bot';
+import TelegramChat from '../Chat';
+import TelegramChatTarget from '../ChatTarget';
+import TelegramUser from '../User';
+import { TelegramReceiver } from '../Receiver';
+import TelegramChatProfile from '../ChatProfile';
+import TelegramUserProfile from '../UserProfile';
+import { TelegramProfiler } from '../Profiler';
+import { TelegramBot } from '../Bot';
 
 it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);

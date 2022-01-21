@@ -1,7 +1,7 @@
 import type { AuthContextBase } from '@machinat/auth';
-import type { TelegramChat } from '../channel';
-import type TelegramUser from '../user';
-import { RawChat, RawUser } from '../types';
+import type TelegramChat from '../Chat';
+import type TelegramUser from '../User';
+import type { RawChat, RawUser } from '../types';
 
 export type TelegramAuthData = {
   bot: number;
