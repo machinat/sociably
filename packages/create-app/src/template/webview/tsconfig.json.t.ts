@@ -22,7 +22,8 @@ export default ({ platforms }: CreateAppContext) =>
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "noEmit": true
+    "noEmit": true,
+    "incremental": true
   },
   "include": [
     "**/*.ts",

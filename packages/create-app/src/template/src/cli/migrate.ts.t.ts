@@ -14,7 +14,7 @@ import Messenger from '@machinat/messenger';`}${when(
 import Telegram from '@machinat/telegram';`}${when(platforms.includes('line'))`
 import Line from '@machinat/line';`}
 import { Umzug, JSONStorage } from 'umzug';
-import commander from 'commander';
+import { program } from 'commander';
 
 const {${when(platforms.includes('messenger'))`
   MESSENGER_PAGE_ID,
@@ -81,12 +81,12 @@ const umzug = new Umzug({
   },
 });
 
-commander
+program
   .usage('[options]')
   .option('--down', 'roll back down')
   .parse(process.argv);
   
-const options = commander.opts();
+const options = program.opts();
 
 async function migrate() {
   await app.start();

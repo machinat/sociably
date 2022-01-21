@@ -29,16 +29,16 @@ export default ({ projectName, platforms }: CreateAppContext) => {
     },
     dependencies: {
       '@machinat/per-env': '^1.1.0',
-      commander: '^7.2.0',
-      umzug: '^3.0.0-beta.15',
+      commander: '^8.3.0',
+      umzug: '^3.0.0',
     },
     devDependencies: {
-      '@types/node': '^14.14.41',
-      typescript: '^4.2.4',
-      'ts-node': '^9.1.1',
+      '@types/node': '^17.0.10',
+      typescript: '^4.5.5',
+      'ts-node': '^10.4.0',
       'dotenv-cli': '^4.1.1',
-      nodemon: '^2.0.7',
-      localtunnel: '^2.0.1',
+      nodemon: '^2.0.15',
+      localtunnel: '^2.0.2',
     },
   };
 
@@ -46,13 +46,12 @@ export default ({ projectName, platforms }: CreateAppContext) => {
     packageConfigs.dependencies = {
       ...packageConfigs.dependencies,
       ...{
-        next: '^11.0.1',
+        next: '^12.0.8',
         react: '^17.0.2',
         'react-dom': '^17.0.2',
       },
     };
-
-    packageConfigs.devDependencies['@types/react'] = '^17.0.2';
+    packageConfigs.devDependencies['@types/react'] = '^17.0.38';
   }
 
   return polishFileContent(
