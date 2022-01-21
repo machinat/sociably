@@ -5,8 +5,8 @@
     "**/__mocks__/*"
   ],
   "compilerOptions": {
+    "sourceMap": true,
     "composite": true,
-    "declaration": true,
-    "emitDeclarationOnly": true
+    "declaration": true
   }
 }
