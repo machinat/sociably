@@ -60,7 +60,7 @@ export class LineProfiler implements UserProfiler<LineUser> {
 
 const ProfilerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [BotP] as const,
+  deps: [BotP],
 })(LineProfiler);
 
 type ProfilerP = LineProfiler;

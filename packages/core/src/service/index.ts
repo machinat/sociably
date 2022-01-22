@@ -1,6 +1,9 @@
-export * from './annotator';
 export { default as ServiceSpace } from './space';
 export { default as ServiceScope } from './scope';
+export { default as makeClassProvider } from './decorators/makeClassProvider';
+export { default as makeFactoryProvider } from './decorators/makeFactoryProvider';
+export { default as makeContainer } from './decorators/makeContainer';
+export { default as makeInterface } from './decorators/makeInterface';
 export {
   isServiceContainer,
   isServiceProvider,

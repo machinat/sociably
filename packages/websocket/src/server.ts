@@ -600,7 +600,7 @@ export const ServerP = makeClassProvider({
     { require: LoginVerifierI, optional: true },
     Marshaler,
     ConfigsI,
-  ] as const,
+  ],
   factory: (
     serverId,
     wsServer,

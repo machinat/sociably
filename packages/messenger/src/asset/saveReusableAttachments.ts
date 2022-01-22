@@ -31,7 +31,7 @@ const collectReusableAttachments =
   };
 
 const collectReusableAttachmentsC = makeContainer({
-  deps: [AssetsManagerP] as const,
+  deps: [AssetsManagerP],
 })(collectReusableAttachments);
 
 export default collectReusableAttachmentsC;

@@ -1,6 +1,6 @@
 import Machinat from '../..';
 import formatNode from '../formatNode';
-import { makeInterface } from '../../service/annotator';
+import makeInterface from '../../service/decorators/makeInterface';
 
 const { Pause, Fragment, Provider, Raw, Thunk } = Machinat;
 

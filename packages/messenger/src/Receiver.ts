@@ -149,7 +149,7 @@ export class MessengerReceiver extends WebhookReceiver {
 
 const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformUtilitiesI] as const,
+  deps: [ConfigsI, BotP, PlatformUtilitiesI],
   factory: (
     { shouldHandleVerify, verifyToken, shouldValidateRequest, appSecret },
     bot,

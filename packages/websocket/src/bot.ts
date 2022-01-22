@@ -187,7 +187,7 @@ export const BotP = makeClassProvider({
     ServerP,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
-  ] as const,
+  ],
   factory: (server, moduleUtils, platformUtils) =>
     new WebSocketBot(
       server,

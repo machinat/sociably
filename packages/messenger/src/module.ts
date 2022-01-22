@@ -29,7 +29,7 @@ import type {
 /** @interanl */
 const webhookRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ConfigsI, ReceiverP] as const,
+  deps: [ConfigsI, ReceiverP],
 })(
   (configs, receiver): RequestRoute => ({
     name: MESSENGER,
@@ -98,12 +98,8 @@ namespace Messenger {
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
 
-      startHook: makeContainer({ deps: [BotP] as const })(async (bot: BotP) =>
-        bot.start()
-      ),
-      stopHook: makeContainer({ deps: [BotP] as const })(async (bot: BotP) =>
-        bot.stop()
-      ),
+      startHook: makeContainer({ deps: [BotP] })(async (bot) => bot.start()),
+      stopHook: makeContainer({ deps: [BotP] })(async (bot) => bot.stop()),
     };
   };
 }

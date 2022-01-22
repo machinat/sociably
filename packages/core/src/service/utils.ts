@@ -60,3 +60,12 @@ export const polishServiceRequirement = <T>(
 
   return dep;
 };
+
+export const validateLifetime = (lifetime: string): void => {
+  invariant(
+    lifetime === 'singleton' ||
+      lifetime === 'scoped' ||
+      lifetime === 'transient',
+    `${lifetime} is not valid service lifetime`
+  );
+};

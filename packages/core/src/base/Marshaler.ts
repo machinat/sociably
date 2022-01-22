@@ -42,10 +42,7 @@ export class BaseMarshaler {
   }
 }
 
-const MarshalerP = makeClassProvider<
-  Marshaler,
-  [typeof BaseMarshaler.TypeList]
->({
+const MarshalerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [BaseMarshaler.TypeList],
 })(BaseMarshaler);

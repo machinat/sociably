@@ -42,7 +42,7 @@ export const AuthControllerP: ServiceProvider<
   [AuthenticatorListI, ConfigsI]
 > = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AuthenticatorListI, ConfigsI] as const,
+  deps: [AuthenticatorListI, ConfigsI],
   factory: (
     authenticators,
     {
@@ -86,7 +86,7 @@ export const NextReceiverP: ServiceProvider<
   [NextServerI, ConfigsI]
 > = makeClassProvider({
   lifetime: 'singleton',
-  deps: [NextServerI, ConfigsI] as const,
+  deps: [NextServerI, ConfigsI],
   factory: (server, { noPrepareNext, webviewPath = DEFAULT_NEXT_PATH }) =>
     new WebviewNextReceiver(server, {
       entryPath: webviewPath,
@@ -143,7 +143,7 @@ export const SocketServerP: ServiceProvider<
     AuthControllerP,
     Marshaler,
     ConfigsI,
-  ] as const,
+  ],
   factory: (
     serverId,
     wsServer,

@@ -141,7 +141,7 @@ export class MessengerAssetsManager {
 
 const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP] as const,
+  deps: [StateControllerI, BotP],
 })(MessengerAssetsManager);
 
 type AssetsManagerP = MessengerAssetsManager;

@@ -22,7 +22,7 @@ export const annotateNativeComponent =
   <Component extends NativeComponent<unknown, any>>(
     componentFn: FunctionOf<Component>
   ): Component =>
-    Object.defineProperties(componentFn, {
+    Object.defineProperties(componentFn as unknown as Component, {
       $$typeof: {
         value: MACHINAT_NATIVE_TYPE,
         configurable: true,

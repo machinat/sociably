@@ -216,7 +216,7 @@ export class TelegramServerAuthenticator
 
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, ConfigsI] as const,
+  deps: [BotP, ConfigsI],
   factory: (bot) => {
     return new TelegramServerAuthenticator(bot);
   },

@@ -37,7 +37,7 @@ export default class ServiceScope {
     this.scopeCache = scopedCache || new Map();
   }
 
-  useServices<Deps extends readonly ServiceDependency<any>[]>(
+  useServices<Deps extends ServiceDependency<any>[]>(
     dependencies: Deps,
     runtimeProvisions?: Map<Interfaceable<unknown>, unknown>
   ): ResolveDependencies<Deps> {

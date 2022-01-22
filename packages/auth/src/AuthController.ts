@@ -512,7 +512,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
 
 const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AuthenticatorListI, ConfigsI] as const,
+  deps: [AuthenticatorListI, ConfigsI],
 })(AuthController);
 
 type ControllerP<Authenticator extends AnyServerAuthenticator> =

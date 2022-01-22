@@ -330,7 +330,7 @@ export class DialogflowIntentRecognizer
 
 const IntentRecognizerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [ConfigsI] as const,
+  deps: [ConfigsI],
 })(DialogflowIntentRecognizer);
 
 type IntentRecognizerP = DialogflowIntentRecognizer;

@@ -7,33 +7,33 @@ import type ServiceScope from './scope';
 
 export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 
-export interface SingularServiceInterface<T> {
+export type SingularServiceInterface<T> = {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_INTERFACE;
   $$multi: false;
   $$polymorphic: false;
-}
+};
 
-export interface MultiServiceInterface<T> {
+export type MultiServiceInterface<T> = {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_INTERFACE;
   $$multi: true;
   $$polymorphic: false;
-}
+};
 
-export interface PolymorphicServiceInterface<T> {
+export type PolymorphicServiceInterface<T> = {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_INTERFACE;
   $$multi: false;
   $$polymorphic: true;
-}
+};
 
 export type ServiceInterface<T> =
   | SingularServiceInterface<T>
   | MultiServiceInterface<T>
   | PolymorphicServiceInterface<T>;
 
-export interface ServiceProvider<T, Args extends ReadonlyArray<unknown>> {
+export interface ServiceProvider<T, Args extends unknown[]> {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_PROVIDER;
   $$multi: false;
@@ -89,12 +89,12 @@ export type ResolveDependency<Dep extends ServiceDependency<any>> =
     : never;
 
 export type ResolveDependencies<
-  Deps extends readonly ServiceDependency<Interfaceable<unknown>>[]
+  Deps extends ServiceDependency<Interfaceable<unknown>>[]
 > = {
   [Idx in keyof Deps]: ResolveDependency<Deps[Idx]>;
 };
 
-export type ServiceContainer<T, Args extends ReadonlyArray<unknown>> = {
+export type ServiceContainer<T, Args extends unknown[]> = {
   $$name: string;
   $$typeof: typeof MACHINAT_SERVICE_CONTAINER;
   $$deps: ServiceRequirement<Interfaceable<Args[number]>>[];

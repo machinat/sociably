@@ -43,10 +43,7 @@ export class BaseProfiler implements UserProfiler<MachinatUser> {
   }
 }
 
-const ProfilerP = makeClassProvider<
-  UserProfiler<MachinatUser>,
-  [typeof BaseProfiler.PlatformMap]
->({
+const ProfilerP = makeClassProvider({
   lifetime: 'transient',
   deps: [BaseProfiler.PlatformMap],
 })(BaseProfiler);

@@ -158,7 +158,7 @@ const BotP = makeClassProvider({
     ConfigsI,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
-  ] as const,
+  ],
   factory: (
     { pageId, accessToken, appSecret, consumeInterval },
     moduleUitils,

@@ -109,7 +109,7 @@ export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, ServerP, ModuleUtilitiesI, PlatformUtilitiesI] as const,
+  deps: [BotP, ServerP, ModuleUtilitiesI, PlatformUtilitiesI],
   factory: (bot, server, { popError }, { popEventWrapper }) =>
     new WebSocketReceiver(bot, server, popEventWrapper, popError),
 })(WebSocketReceiver);

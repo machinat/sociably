@@ -27,7 +27,7 @@ import type {
 /** @interanl */
 const webhookRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ConfigsI, ReceiverP] as const,
+  deps: [ConfigsI, ReceiverP],
 })(
   (configs, receiver): RequestRoute => ({
     name: TELEGRAM,

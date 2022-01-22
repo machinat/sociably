@@ -179,7 +179,7 @@ export class HttpConnector {
 
 export const ConnectorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [RequestRouteListI, UpgradeRouteListI] as const,
+  deps: [RequestRouteListI, UpgradeRouteListI],
   factory: (requestRoutes, upgradeRoutes) =>
     new HttpConnector({ requestRoutes, upgradeRoutes }),
 })(HttpConnector);

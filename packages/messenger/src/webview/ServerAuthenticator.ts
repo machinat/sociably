@@ -165,7 +165,7 @@ export class MessengerServerAuthenticator
 
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'transient',
-  deps: [ConfigsI] as const,
+  deps: [ConfigsI],
   factory: ({ pageId, appSecret }) => {
     if (!appSecret) {
       throw new Error('configs.appSecret must be set to authorize webview');

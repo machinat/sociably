@@ -8,7 +8,7 @@ import { ConfigsI, ClientI } from './interface';
 
 const createRedisClient = makeFactoryProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI] as const,
+  deps: [ConfigsI],
 })(({ clientOptions }) => redis.createClient(clientOptions));
 
 /**

@@ -74,7 +74,7 @@ const saveUplodedFile =
   };
 
 const saveUplodedFileC = makeContainer({
-  deps: [AssetsManagerP] as const,
+  deps: [AssetsManagerP],
 })(saveUplodedFile);
 
 export default saveUplodedFileC;

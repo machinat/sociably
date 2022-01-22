@@ -67,7 +67,7 @@ const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
 
 const webSocketRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [SocketServerP, ConfigsI] as const,
+  deps: [SocketServerP, ConfigsI],
 })(
   (server, { webSocketPath = DEFAULT_WEBSOCKET_PATH }): UpgradeRoute => ({
     name: 'websocket',
@@ -78,7 +78,7 @@ const webSocketRouteFactory = makeFactoryProvider({
 
 const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [AuthControllerP, ConfigsI] as const,
+  deps: [AuthControllerP, ConfigsI],
 })(
   (controller, { authApiPath = DEFAULT_AUTH_PATH }): RequestRoute => ({
     name: 'auth',
@@ -91,7 +91,7 @@ const authRouteFactory = makeFactoryProvider({
 
 const nextRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [NextReceiverP, ConfigsI] as const,
+  deps: [NextReceiverP, ConfigsI],
 })(
   (
     receiver,
@@ -210,14 +210,12 @@ namespace Webview {
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
 
-      startHook: makeContainer({ deps: [BotP, NextReceiverP] as const })(
+      startHook: makeContainer({ deps: [BotP, NextReceiverP] })(
         async (bot, nextReceiver) => {
           await Promise.all([bot.start(), nextReceiver.prepare()]);
         }
       ),
-      stopHook: makeContainer({ deps: [BotP] as const })(async (bot) =>
-        bot.stop()
-      ),
+      stopHook: makeContainer({ deps: [BotP] })(async (bot) => bot.stop()),
     };
   };
 }

@@ -27,7 +27,7 @@ import type {
 
 const webhookRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ConfigsI, ReceiverP] as const,
+  deps: [ConfigsI, ReceiverP],
 })(
   (configs, receiver): RequestRoute => ({
     name: LINE,
@@ -97,12 +97,8 @@ namespace Line {
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
-      startHook: makeContainer({ deps: [BotP] as const })((bot: BotP) =>
-        bot.start()
-      ),
-      stopHook: makeContainer({ deps: [BotP] as const })((bot: BotP) =>
-        bot.stop()
-      ),
+      startHook: makeContainer({ deps: [BotP] })((bot) => bot.start()),
+      stopHook: makeContainer({ deps: [BotP] })((bot) => bot.stop()),
     };
   };
 }

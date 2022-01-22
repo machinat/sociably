@@ -109,7 +109,7 @@ export class WebviewReceiver<
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, SocketServerP, ModuleUtilitiesI, PlatformUtilitiesI] as const,
+  deps: [BotP, SocketServerP, ModuleUtilitiesI, PlatformUtilitiesI],
   factory: (bot, server, { popError }, { popEventWrapper }) =>
     new WebviewReceiver(bot, server, popEventWrapper, popError),
 })(WebviewReceiver);

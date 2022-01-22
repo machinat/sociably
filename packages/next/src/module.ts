@@ -8,12 +8,12 @@ import { ConfigsI, ServerI } from './interface';
 
 const nextServerFactory = makeFactoryProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI] as const,
+  deps: [ConfigsI],
 })(({ serverOptions }) => createNextServer((serverOptions || {}) as {}));
 
 const routingFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ReceiverP, ConfigsI] as const,
+  deps: [ReceiverP, ConfigsI],
 })(
   (receiver, configs): RequestRoute => ({
     name: 'next',

@@ -63,7 +63,7 @@ export class MessengerProfiler implements UserProfiler<MessengerUser> {
 
 const ProfilerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [BotP, ConfigsI] as const,
+  deps: [BotP, ConfigsI],
 })(MessengerProfiler);
 
 type ProfilerP = MessengerProfiler;

@@ -169,11 +169,7 @@ export class NextReceiver {
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [
-    ServerI,
-    ConfigsI,
-    { require: ModuleUtilitiesI, optional: true },
-  ] as const,
+  deps: [ServerI, ConfigsI, { require: ModuleUtilitiesI, optional: true }],
   factory: (nextApp, { entryPath, noPrepare, handleRequest }, moduleUtils) =>
     new NextReceiver(nextApp, {
       entryPath,

@@ -124,7 +124,7 @@ export class LineAssetsManager {
 
 const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP] as const,
+  deps: [StateControllerI, BotP],
 })(LineAssetsManager);
 
 type AssetsManagerP = LineAssetsManager;

@@ -43,7 +43,7 @@ export class BaseBot implements MachinatBot<MachinatChannel, unknown, unknown> {
   async stop(): Promise<void> {} // eslint-disable-line class-methods-use-this
 }
 
-const BotP = makeClassProvider<BaseBot, [typeof BotPlatformMapI]>({
+const BotP = makeClassProvider({
   lifetime: 'transient',
   deps: [BotPlatformMapI],
 })(BaseBot);

@@ -28,7 +28,7 @@ export const up = makeContainer({
     Messenger.Bot,`}${when(platforms.includes('telegram'))`
     Telegram.Bot,`}${when(platforms.includes('line'))`
     Line.Bot,`}
-  ] as const,
+  ],
 })(async (${when(platforms.includes('messenger'))`
   messengerBot,`}${when(platforms.includes('telegram'))`
   telegramBot,`}${when(platforms.includes('line'))`
@@ -76,7 +76,7 @@ export const down = makeContainer({
   deps: [${when(platforms.includes('messenger'))`
     Messenger.Bot,`}${when(platforms.includes('telegram'))`
     Telegram.Bot,`}
-  ] as const,
+  ],
 })(async (${when(platforms.includes('messenger'))`
   messengerBot,`}${when(platforms.includes('telegram'))`
   telegramBot,`}

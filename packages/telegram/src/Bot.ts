@@ -184,7 +184,7 @@ const BotP = makeClassProvider({
     ConfigsI,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
-  ] as const,
+  ],
   factory: ({ botToken, maxConnections }, moduleUtils, platformUtils) => {
     invariant(botToken, 'configs.botToken should not be empty');
 

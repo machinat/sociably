@@ -121,7 +121,7 @@ export class LineReceiver extends WebhookReceiver {
 
 const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformUtilitiesI] as const,
+  deps: [ConfigsI, BotP, PlatformUtilitiesI],
   factory: (
     { providerId, channelId, shouldValidateRequest, channelSecret },
     bot,

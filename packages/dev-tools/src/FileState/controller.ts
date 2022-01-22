@@ -248,7 +248,7 @@ export const ControllerP = makeClassProvider({
     ConfigsI,
     { require: BaseMarshaler, optional: true },
     { require: SerializerI, optional: true },
-  ] as const,
+  ],
 })(FileStateController);
 
 export type ControllerP = FileStateController;

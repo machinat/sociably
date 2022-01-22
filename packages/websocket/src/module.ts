@@ -39,7 +39,7 @@ const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
 
 const upgradeRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ConfigsI, ServerP] as const,
+  deps: [ConfigsI, ServerP],
 })(
   (configs, server): UpgradeRoute => ({
     name: WEBSOCKET,
@@ -124,10 +124,10 @@ namespace WebSocket {
         { provide: BaseMarshaler.TypeList, withValue: WebSocketTopicChannel },
       ],
 
-      startHook: makeContainer({ deps: [BotP] as const })(async (bot) => {
+      startHook: makeContainer({ deps: [BotP] })(async (bot) => {
         await bot.start();
       }),
-      stopHook: makeContainer({ deps: [BotP] as const })(async (bot) => {
+      stopHook: makeContainer({ deps: [BotP] })(async (bot) => {
         await bot.stop();
       }),
     };

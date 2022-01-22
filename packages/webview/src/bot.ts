@@ -178,7 +178,7 @@ export const BotP = makeClassProvider({
     SocketServerP,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
-  ] as const,
+  ],
   factory: (server, moduleUitils, platformUtils) =>
     new WebviewBot(
       server,

@@ -78,7 +78,7 @@ export class TelegramAssetsManager {
 
 const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP] as const,
+  deps: [StateControllerI, BotP],
 })(TelegramAssetsManager);
 
 type AssetsManagerP = TelegramAssetsManager;

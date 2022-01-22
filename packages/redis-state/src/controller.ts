@@ -163,7 +163,7 @@ export class RedisStateController implements BaseStateController {
 
 export const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ClientI, { require: BaseMarshaler, optional: true }] as const,
+  deps: [ClientI, { require: BaseMarshaler, optional: true }],
 })(RedisStateController);
 
 export type ControllerP = RedisStateController;

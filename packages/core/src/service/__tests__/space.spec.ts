@@ -2,12 +2,10 @@
 import moxy from '@moxyjs/moxy';
 import ServiceSpace from '../space';
 import ServiceScope from '../scope';
-import {
-  makeContainer,
-  makeFactoryProvider,
-  makeClassProvider,
-  makeInterface,
-} from '../annotator';
+import makeContainer from '../decorators/makeContainer';
+import makeFactoryProvider from '../decorators/makeFactoryProvider';
+import makeClassProvider from '../decorators/makeClassProvider';
+import makeInterface from '../decorators/makeInterface';
 
 const HELLO = makeInterface<{ hello(): string }>({ name: 'Hello' });
 const staticGreeter = moxy({ hello: () => 'HI' });
@@ -47,7 +45,7 @@ const bazProvider = moxy(
 );
 
 const myContainer = moxy(
-  makeContainer({ deps: [HELLO, Foo, Bar, BAZ] as const })(
+  makeContainer({ deps: [HELLO, Foo, Bar, BAZ] })(
     (greeter, foo, bar, baz) =>
       `${greeter.hello()} ${foo.foo()} ${bar.bar()} ${baz.baz()}`
   )
@@ -377,7 +375,7 @@ test('optional dependency', () => {
       Foo,
       { require: Bar, optional: true },
       { require: BAZ, optional: true },
-    ] as const,
+    ],
   })(
     (foo, bar, baz) =>
       `${foo.foo()} ${bar ? bar.bar() : 'x'} ${baz ? baz.baz() : 'x'}`

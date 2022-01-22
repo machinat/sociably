@@ -178,7 +178,7 @@ export class LineServerAuthenticator
 
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'transient',
-  deps: [BotP, ConfigsI] as const,
+  deps: [BotP, ConfigsI],
   factory: (bot, { liffChannelIds }) => {
     invariant(
       liffChannelIds,

@@ -40,11 +40,11 @@ namespace Http {
       { provide: ServerI, withProvider: httpServerFactory },
     ],
     startHook: makeContainer({
-      deps: [ConnectorP, ServerI, ConfigsI] as const,
+      deps: [ConnectorP, ServerI, ConfigsI],
     })((connector, server, { listenOptions }) =>
       connector.connect(server, listenOptions)
     ),
-    stopHook: makeContainer({ deps: [ServerI] as const })((server) =>
+    stopHook: makeContainer({ deps: [ServerI] })((server) =>
       thenifiedly.callMethod('close', server)
     ),
   });

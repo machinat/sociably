@@ -156,7 +156,7 @@ export default class MachinatApp<
     await Promise.all(stopHooks.map((hook) => stopScope.injectContainer(hook)));
   }
 
-  useServices<Deps extends readonly ServiceDependency<any>[]>(
+  useServices<Deps extends ServiceDependency<any>[]>(
     dependencies: Deps
   ): ResolveDependencies<Deps> {
     invariant(this.isStarted, 'app is not started');

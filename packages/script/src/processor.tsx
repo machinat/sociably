@@ -293,7 +293,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
 
 const ProcessorP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [StateControllerI, ServiceScope, LibraryListI] as const,
+  deps: [StateControllerI, ServiceScope, LibraryListI],
 })(ScriptProcessor);
 
 type ProcessorP<Script extends AnyScriptLibrary> = ScriptProcessor<Script>;

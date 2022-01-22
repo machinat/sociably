@@ -9,7 +9,7 @@ import type { AuthConfigs, AnyServerAuthenticator } from './types';
 
 const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [ControllerP, ConfigsI] as const,
+  deps: [ControllerP, ConfigsI],
 })(
   (controller, configs): RequestRoute => ({
     name: 'auth',
