@@ -113,6 +113,7 @@ describe('.detectText()', () => {
 
     await expect(recognizer.detectText(channel, 'hello bot')).resolves.toEqual({
       type: 'Default Welcome Intent',
+      language: 'en',
       confidence: 0.46481857,
       payload: detectTextResponse.queryResult,
     });
@@ -146,6 +147,7 @@ describe('.detectText()', () => {
       })
     ).resolves.toEqual({
       type: 'Default Welcome Intent',
+      language: 'zh-TW',
       confidence: 0.46481857,
       payload: detectTextResponse.queryResult,
     });
@@ -194,6 +196,7 @@ describe('.detectText()', () => {
       })
     ).resolves.toEqual({
       type: 'Default Welcome Intent',
+      language: 'en',
       confidence: 0.46481857,
       payload: detectTextResponse.queryResult,
     });
@@ -235,6 +238,7 @@ describe('.detectText()', () => {
 
     await expect(recognizer.detectText(channel, 'hello bot')).resolves.toEqual({
       type: 'Default Welcome Intent',
+      language: 'en',
       confidence: 0.46481857,
       payload: detectTextResponse.queryResult,
     });
@@ -272,6 +276,7 @@ describe('.detectText()', () => {
       })
     ).resolves.toEqual({
       type: 'Default Welcome Intent',
+      language: 'zh-TW',
       confidence: 0.46481857,
       payload: detectTextResponse.queryResult,
     });

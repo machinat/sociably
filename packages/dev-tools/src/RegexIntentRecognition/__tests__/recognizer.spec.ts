@@ -43,6 +43,7 @@ describe('.detectText()', () => {
       rocognizer.detectText(channel, text, { language })
     ).resolves.toEqual({
       type: expectedType,
+      language: language || 'en',
       confidence: 1,
       payload: null,
     });
@@ -51,6 +52,7 @@ describe('.detectText()', () => {
   test('unmatched intent', async () => {
     await expect(rocognizer.detectText(channel, 'boooo')).resolves.toEqual({
       type: undefined,
+      language: 'en',
       confidence: 0,
       payload: null,
     });

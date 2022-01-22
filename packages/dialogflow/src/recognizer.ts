@@ -40,8 +40,12 @@ type DetectIntentOptions = {
 /**
  * @category Provider
  */
-export class DialogflowIntentRecognizer
-  implements IntentRecognizer<DetactIntentPayload>
+export class DialogflowIntentRecognizer<
+  Recognition extends RecognitionData<string, string> = RecognitionData<
+    string,
+    string
+  >
+> implements IntentRecognizer<Recognition, DetactIntentPayload>
 {
   projectId: string;
   manualMode: boolean;
@@ -52,16 +56,22 @@ export class DialogflowIntentRecognizer
   private _recognitionData: RecognitionData;
   private _clientOptions: undefined | ClientOptions;
 
-  constructor({
-    projectId,
-    recognitionData,
-    clientOptions,
-    agentName,
-    agentTimeZone,
-    manualMode = false,
-    useDefaultAgent = false,
-    environment = 'machinat-entry',
-  }: DialogflowConfigs) {
+  constructor(
+    options: Recognition extends RecognitionData<infer Language, infer Intent>
+      ? DialogflowConfigs<Language, Intent>
+      : never
+  ) {
+    const {
+      projectId,
+      recognitionData,
+      clientOptions,
+      agentName,
+      agentTimeZone,
+      manualMode = false,
+      useDefaultAgent = false,
+      environment = 'machinat-entry',
+    } = options;
+
     invariant(projectId, 'options.projectId should not be empty');
     invariant(recognitionData, 'options.recognitionData should not be empty');
 
@@ -79,8 +89,10 @@ export class DialogflowIntentRecognizer
     channel: MachinatChannel,
     text: string,
     options?: DetectIntentOptions
-  ): Promise<DetectIntentResult<DetactIntentPayload>> {
+  ): Promise<DetectIntentResult<Recognition, DetactIntentPayload>> {
     const client = new SessionsClient(this._clientOptions);
+
+    const language = options?.language || this._recognitionData.defaultLanguage;
     const sessionPath = this.useDefaultAgent
       ? client.projectAgentSessionPath(this.projectId, channel.uid)
       : client.projectAgentEnvironmentUserSessionPath(
@@ -94,11 +106,7 @@ export class DialogflowIntentRecognizer
       await client.detectIntent({
         session: sessionPath,
         queryInput: {
-          text: {
-            text,
-            languageCode:
-              options?.language || this._recognitionData.defaultLanguage,
-          },
+          text: { text, languageCode: language },
         },
         queryParams: options
           ? {
@@ -130,9 +138,10 @@ export class DialogflowIntentRecognizer
 
     return {
       type: queryResult.intent?.displayName || undefined,
+      language,
       confidence: queryResult.intentDetectionConfidence || 0,
       payload: queryResult,
-    };
+    } as DetectIntentResult<Recognition, DetactIntentPayload>;
   }
 
   async train(): Promise<boolean> {

@@ -4,8 +4,8 @@ import type { DialogflowConfigs } from './types';
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<DialogflowConfigs>({
+export const ConfigsI = makeInterface<DialogflowConfigs<string, string>>({
   name: 'DialogflowConfigs',
 });
 
-export type ConfigsI = DialogflowConfigs;
+export type ConfigsI = DialogflowConfigs<string, string>;

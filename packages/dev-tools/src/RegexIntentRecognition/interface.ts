@@ -1,11 +1,11 @@
 import { makeInterface } from '@machinat/core/service';
-import type { RegexIntentRecognitionConfigs } from './types';
+import type { RegexRecognitionConfigs } from './types';
 
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<RegexIntentRecognitionConfigs<string>>({
-  name: 'RegexIntentRecognitionConfigs',
+export const ConfigsI = makeInterface<RegexRecognitionConfigs<string, string>>({
+  name: 'RegexRecognitionConfigs',
 });
 
-export type ConfigsI = RegexIntentRecognitionConfigs<string>;
+export type ConfigsI = RegexRecognitionConfigs<string, string>;

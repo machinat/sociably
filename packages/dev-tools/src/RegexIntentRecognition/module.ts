@@ -1,22 +1,26 @@
 import type { ServiceModule } from '@machinat/core';
-import IntentRecognizerI from '@machinat/core/base/IntentRecognizer';
-import RecognizerP from './recognizer';
+import IntentRecognizerI, {
+  RecognitionData,
+} from '@machinat/core/base/IntentRecognizer';
+import RecognizerP, { RegexIntentRecognizer } from './recognizer';
 import { ConfigsI } from './interface';
-import { RegexIntentRecognitionConfigs } from './types';
 
 /**
  * @category Root
  */
 namespace RegexIntentRecognition {
   export const Recognizer = RecognizerP;
-  export type Recognizer<Languages extends string> = RecognizerP<Languages>;
+  type Recognizer<
+    Recognition extends RecognitionData<string, string> = RecognitionData<
+      string,
+      string
+    >
+  > = RegexIntentRecognizer<Recognition>;
 
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
-  export const initModule = <Languages extends string>(
-    configs: RegexIntentRecognitionConfigs<Languages>
-  ): ServiceModule => ({
+  export const initModule = (configs: ConfigsI): ServiceModule => ({
     provisions: [
       RecognizerP,
       { provide: IntentRecognizerI, withProvider: RecognizerP },

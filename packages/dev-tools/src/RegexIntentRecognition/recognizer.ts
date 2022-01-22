@@ -1,24 +1,31 @@
 import { makeClassProvider } from '@machinat/core/service';
 import type {
+  RecognitionData,
   IntentRecognizer,
   DetectIntentResult,
   DetectTextOptions,
 } from '@machinat/core/base/IntentRecognizer';
 import { ConfigsI } from './interface';
-import { RegexIntentRecognitionConfigs } from './types';
+import { RegexRecognitionConfigs } from './types';
 
 const SPECIAL_CHARACTER = '|&!?+-_.,;`\'"/()\\\\';
 const specialCharacterMatcher = new RegExp(`[${SPECIAL_CHARACTER}]`, 'g');
 
-export class RegexIntentRecognizer<Languages extends string>
-  implements IntentRecognizer<null>
+export class RegexIntentRecognizer<
+  Recognition extends RecognitionData<string, string> = RecognitionData<
+    string,
+    string
+  >
+> implements IntentRecognizer<Recognition, null>
 {
   defaultLanguage: string;
   private _matchersByLanguages: Map<string, Map<string, RegExp>>;
 
   constructor({
     recognitionData: { intents, defaultLanguage },
-  }: RegexIntentRecognitionConfigs<Languages>) {
+  }: Recognition extends RecognitionData<infer Language, infer Intent>
+    ? RegexRecognitionConfigs<Language, Intent>
+    : never) {
     this.defaultLanguage = defaultLanguage;
     this._matchersByLanguages = new Map();
 
@@ -53,7 +60,7 @@ export class RegexIntentRecognizer<Languages extends string>
     _,
     text: string,
     options?: DetectTextOptions
-  ): Promise<DetectIntentResult<null>> {
+  ): Promise<DetectIntentResult<Recognition, null>> {
     const language = options?.language || this.defaultLanguage;
     const matchers = this._matchersByLanguages.get(language);
     if (!matchers) {
@@ -64,23 +71,20 @@ export class RegexIntentRecognizer<Languages extends string>
       if (text.match(matcher)) {
         return {
           type: name,
+          language,
           confidence: 1,
           payload: null,
-        };
+        } as DetectIntentResult<Recognition, null>;
       }
     }
 
     return {
       type: undefined,
+      language,
       confidence: 0,
       payload: null,
-    };
+    } as DetectIntentResult<Recognition, null>;
   }
 }
 
-const RecognizerP = makeClassProvider({ deps: [ConfigsI] })(
-  RegexIntentRecognizer
-);
-type RecognizerP<Languages extends string> = RegexIntentRecognizer<Languages>;
-
-export default RecognizerP;
+export default makeClassProvider({ deps: [ConfigsI] })(RegexIntentRecognizer);

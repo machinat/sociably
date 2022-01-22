@@ -4,11 +4,14 @@ import type { RecognitionData } from '@machinat/core/base/IntentRecognizer';
 
 export type { ClientOptions } from 'google-gax'; // eslint-disable-line import/no-extraneous-dependencies
 
-export type DialogflowConfigs = {
+export type DialogflowConfigs<
+  Language extends string,
+  Intent extends string
+> = {
   /** The id of dialogflow project */
   projectId: string;
   /** The intents data for training. */
-  recognitionData: RecognitionData;
+  recognitionData: RecognitionData<Language, Intent>;
   /** The display name of the DialogFlow agent. Default to 'machinat-agent' */
   agentName?: string;
   /** The default time zone of the DialogFlow agent. Default to 'GMT' */
