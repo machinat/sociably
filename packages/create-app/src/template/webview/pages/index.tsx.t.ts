@@ -9,13 +9,13 @@ import getConfig from 'next/config';
 import WebviewClient, { useEventReducer } from '@machinat/webview/client';${when(
     platforms.includes('messenger')
   )`
-import { MessengerClientAuthenticator } from '@machinat/messenger/webview';`}${when(
+import MessengerClientAuthenticator from '@machinat/messenger/webview/client';`}${when(
     platforms.includes('telegram')
   )`
-import { TelegramClientAuthenticator } from '@machinat/telegram/webview';`}${when(
+import TelegramClientAuthenticator from '@machinat/telegram/webview/client';`}${when(
     platforms.includes('line')
   )`
-import { LineClientAuthenticator } from '@machinat/line/webview';`}
+import LineClientAuthenticator from '@machinat/line/webview/client';`}
 
 const { publicRuntimeConfig } = getConfig();
 
