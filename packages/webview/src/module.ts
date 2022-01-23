@@ -203,6 +203,13 @@ namespace Webview {
       );
     }
 
+    provisions.push(
+      ...configs.authPlatforms.map((provider) => ({
+        provide: AuthenticatorList,
+        withProvider: provider,
+      }))
+    );
+
     return {
       name: WEBVIEW,
       utilitiesInterface: PlatformUtilitiesI,

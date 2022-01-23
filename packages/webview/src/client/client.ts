@@ -59,7 +59,7 @@ class WebviewClient<
   constructor({
     webSocketUrl,
     platform,
-    authenticators,
+    authPlatforms,
     authApiUrl,
     mockupMode = false,
   }: ClientOptions<Authenticator>) {
@@ -71,11 +71,11 @@ class WebviewClient<
     this._platformInput = platform;
 
     this._authClient = new AuthClient({
-      authenticators,
+      authenticators: authPlatforms,
       serverUrl: authApiUrl || DEFAULT_AUTH_PATH,
     });
 
-    const marshalTypes = authenticators.reduce((types, authenticator) => {
+    const marshalTypes = authPlatforms.reduce((types, authenticator) => {
       if (authenticator.marshalTypes) {
         types.push(...authenticator.marshalTypes);
       }

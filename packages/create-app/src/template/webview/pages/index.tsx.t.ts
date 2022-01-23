@@ -9,26 +9,26 @@ import getConfig from 'next/config';
 import WebviewClient, { useEventReducer } from '@machinat/webview/client';${when(
     platforms.includes('messenger')
   )`
-import MessengerClientAuthenticator from '@machinat/messenger/webview/client';`}${when(
+import MessengerWebviewAuth from '@machinat/messenger/webview/client';`}${when(
     platforms.includes('telegram')
   )`
-import TelegramClientAuthenticator from '@machinat/telegram/webview/client';`}${when(
+import TelegramWebviewAuth from '@machinat/telegram/webview/client';`}${when(
     platforms.includes('line')
   )`
-import LineClientAuthenticator from '@machinat/line/webview/client';`}
+import LineWebviewAuth from '@machinat/line/webview/client';`}
 
 const { publicRuntimeConfig } = getConfig();
 
 const client = new WebviewClient({
   mockupMode: typeof window === 'undefined',
-  authenticators: [${when(platforms.includes('messenger'))`
-    new MessengerClientAuthenticator({
+  authPlatforms: [${when(platforms.includes('messenger'))`
+    new MessengerWebviewAuth({
       appId: publicRuntimeConfig.messengerAppId,
     }),`}${when(platforms.includes('telegram'))`
-    new TelegramClientAuthenticator({
+    new TelegramWebviewAuth({
       botName: publicRuntimeConfig.telegramBotName,
     }),`}${when(platforms.includes('line'))`
-    new LineClientAuthenticator({
+    new LineWebviewAuth({
       liffId: publicRuntimeConfig.lineLiffId,
     }),`}
   ],

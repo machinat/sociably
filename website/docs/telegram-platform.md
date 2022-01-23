@@ -108,17 +108,14 @@ and [component APIs](https://machinat.com/api/modules/telegram_components.html).
 ## Webview
 
 To open a webview with [Seamless Telegram Login](https://core.telegram.org/bots/api#loginurl)
-in chat, add [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview)
-platform and set up with these steps:
+in chat, set up with these steps:
 
-1. Send `/setdomain` command to [@Botfather](https://t.me/botfather) to register
-   the server domain.
-2. Add `TelegramAuthenticator` into the `Webview.AuthenticatorList`.
+1. Send `/setdomain` command to [@Botfather](https://t.me/botfather) to register the server domain of your bot.
+2. Set up [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview) platform like this:
 
-```ts
+```ts {13}
 import Webview from '@machinat/webview';
-import TelegramAuthenticator from '@machinat/telegram/webview';
-// ...
+import TelegramWebviewAuth from '@machinat/telegram/webview';
 
 const app = Machinat.createApp({
   modules: [
@@ -126,16 +123,47 @@ const app = Machinat.createApp({
   ],
   platforms: [
     Telegram.initModule({ /* ... */ }),
-    Webview.intiModule({ /* ... */ }),
-  ],
-  services: [
-    { provide: Webview.AuthenticatorList, withProvider: TelegramAuthenticator },
+    Webview.intiModule({
+      // ...
+      authPlatforms: [
+        TelegramWebviewAuth
+      ]
+    }),
   ],
 });
 ```
 
-The webview can be opened by a `UrlButton` with `login` prop set to `true`. The
-`url` prop should link to `/auth/telegram` endpoint of your server. Like this:
+3. Expose your bot name to webview in the `next.config.js`:
+
+```js {5}
+module.exports = {
+  distDir: '../dist',
+  basePath: '/webview',
+  publicRuntimeConfig: {
+    telegramBotName: process.env.TELEGRAM_BOT_NAME,
+  },
+};
+```
+
+4. Set up the `WebviewClient` in the webview:
+
+```ts
+import getConfig from 'next/config';
+import WebviewClient from '@machinat/webview/client';
+import TelegramWebviewAuth from '@machinat/telegram/webview/client';
+
+const { publicRuntimeConfig } = getConfig();
+
+const client =  new WebviewClient({
+  authPlatforms: [
+    new TelegramWebviewAuth({
+      botName: publicRuntimeConfig.telegramBotName,
+    }),
+  ],
+});
+```
+
+5. Open the webview through an `UrlButton` with  the`login` prop set to `true`. The `url` prop should direct to `/auth/telegram` endpoint of your server. Like:
 
 ```tsx
 app.onEvent(async ({ reply }) => {
@@ -157,27 +185,13 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Then add `TelegramClientAuthenticator` in the webview client:
-
-```ts
-import WebviewClient from '@machinat/webview/client';
-import { TelegramClientAuthenticator } from '@machinat/telegram/webview';
-
-const client =  new WebviewClient({
-  authenticators: [
-    new TelegramClientAuthenticator(),
-  ],
-});
-```
-
-The client can communicate to server with the Telegram user and chat info. To
-learn more about the webview platform usage, check the [document](https://machinat.com/docs/embedded-webview).
+Now users will be automatically logged in with Telegram account in the webview. Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more about webview.
 
 ## Assets Manager
 
 [`TelegramAssetsManager`](https://machinat.com/api/classes/telegram_asset.telegramassetsmanager.html)
 service helps you to manage resources at Telegram platform, like uploaded file.
-Make sure you have a state storage installed, and register the service like this:
+Make sure you have a state storage installed, and register `TelegramAssetsManager` like this:
 
 ```ts {2,11-13,17}
 import { FileState } from '@machinat/dev-tools';
@@ -230,9 +244,9 @@ app.onEvent(makeContainer({ deps: [TelegramAssetsManager] })(
 ));
 ```
 
-If you upload a media or file with `fileAssetTag` prop, the `saveUplodedFile`
-middleware will save the returned id. The saved id can then be reused for
-sending next time.
+Once you send an uploaded file with `fileAssetTag` prop, `saveUplodedFile`
+middleware will save the returned file id. The stored id can be reused for
+the next time.
 
 ## Resources
 

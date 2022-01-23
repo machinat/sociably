@@ -253,17 +253,14 @@ like this:
 
 ```tsx title="webview/pages/index.tsx"
 // ...
-const client = new WebviewClient(
-  typeof window === 'undefined'
-    ? { mockupMode: true, authenticators: [] }
-    : {
-        authenticators: [
-          new MessengerClientAuthenticator({
-            appId: publicRuntimeConfig.messengerAppId,
-          }),
-        ],
-      }
-);
+const client = new WebviewClient({
+  mockupMode: typeof window === 'undefined',
+  authPlatforms: [
+    new MessengerWebviewAuth({
+      appId: publicRuntimeConfig.messengerAppId,
+    }),
+  ],
+});
 // ...
 ```
 
@@ -272,13 +269,12 @@ const client = new WebviewClient(
 
 ```tsx title="webview/pages/index.tsx"
 // ...
-const client = new WebviewClient(
-  typeof window === 'undefined'
-    ? { mockupMode: true, authenticators: [] }
-    : {
-        authenticators: [new TelegramClientAuthenticator()],
-      }
-);
+const client = new WebviewClient({
+  mockupMode: typeof window === 'undefined',
+  authPlatforms: [
+    new TelegramWebviewAuth(),
+  ],
+});
 // ...
 ```
 
@@ -287,17 +283,14 @@ const client = new WebviewClient(
 
 ```tsx title="webview/pages/index.tsx"
 // ...
-const client = new WebviewClient(
-  typeof window === 'undefined'
-    ? { mockupMode: true, authenticators: [] }
-    : {
-        authenticators: [
-          new LineClientAuthenticator({
-            liffId: publicRuntimeConfig.lineLiffId,
-          }),
-        ],
-      }
-);
+const client = new WebviewClient({
+  mockupMode: typeof window === 'undefined',
+  authPlatforms: [
+    new LineWebviewAuth({
+      liffId: publicRuntimeConfig.lineLiffId,
+    }),
+  ],
+});
 // ...
 ```
 

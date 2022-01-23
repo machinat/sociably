@@ -102,19 +102,15 @@ and [component APIs](https://machinat.com/api/modules/messenger_components.html)
 
 ## Webview
 
-To enable [Messenger webview](https://developers.facebook.com/docs/messenger-platform/webview),
-add [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview)
-platform and set up with these steps:
+To enable [Messenger webview](https://developers.facebook.com/docs/messenger-platform/webview), set up with these steps:
 
 1. Add server domain to [`whitelisted_domains`](https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/domain-whitelisting)
    of the page profile.
-2. Add `MessengerAuthenticator` into the `Webview.AuthenticatorList`.
-3. Expose Facebook app id to front-end.
+2. Set up [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview) platform like this:
 
-```ts {1-2,7,22-24,30}
+```ts {1-2,6,18}
 import Webview from '@machinat/webview';
-import MessengerAuthenticator from '@machinat/messenger/webview';
-// ...
+import MessengerWebviewAuth from '@machinat/messenger/webview';
 
 const {
   //...
@@ -127,27 +123,48 @@ const app = Machinat.createApp({
   ],
   platforms: [
     Messenger.initModule({ /* ... */ }),
-    Webview.intiModule({
+    Webview.initModule({
       // ...
-      nextServerOptions: {
-        // ...
-        conf: {
-          ...nextConfigs,
-          publicRuntimeConfig: {
-            messengerAppId: MESSENGER_APP_ID,
-          }
-        }
-      }
+      authPlatforms:[
+        MessengerWebviewAuth
+      ],
     }),
-  ],
-  services: [
-    { provide: Webview.AuthenticatorList, withProvider: MessengerAuthenticator },
   ],
 });
 ```
 
-The webview can be opened by an `UrlButton` with the `messengerExtensions` prop
-set to `true`. Like this:
+3. Expose your Facebook app id to webview in the `next.config.js`:
+
+```js {5}
+module.exports = {
+  distDir: '../dist',
+  basePath: '/webview',
+  publicRuntimeConfig: {
+    messengerAppId: process.env.MESSENGER_APP_ID,
+  },
+};
+```
+
+4. Set up the `WebviewClient` in the webview:
+
+```ts
+import getConfig from 'next/config';
+import WebviewClient from '@machinat/webview/client';
+import MessengerWebviewAuth from '@machinat/messenger/webview/client';
+
+const { publicRuntimeConfig } = getConfig();
+
+const client =  new WebviewClient({
+  authPlatforms: [
+    new MessengerWebviewAuth({
+      appId: publicRuntimeConfig.messengerAppId,
+    }),
+  ],
+});
+```
+
+5. Open the webview through an `UrlButton` with the `messengerExtensions` prop
+set to `true`. Like:
 
 ```tsx
 app.onEvent(async ({ reply }) => {
@@ -167,32 +184,13 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Then add `MessengerClientAuthenticator` in the webview client:
-
-```ts
-import getConfig from 'next/config';
-import WebviewClient from '@machinat/webview/client';
-import { MessengerClientAuthenticator } from '@machinat/messenger/webview';
-
-const { publicRuntimeConfig } = getConfig();
-
-const client =  new WebviewClient({
-  authenticators: [
-    new MessengerClientAuthenticator({
-      appId: publicRuntimeConfig.messengerAppId,
-    }),
-  ],
-});
-```
-
-The client can communicate to server with the Messenger user and chat info. To
-learn more about the webview platform usage, check the [document](https://machinat.com/docs/embedded-webview).
+Now users will be automatically logged in with Messenger account in the webview. Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more about webview.
 
 ## Assets Manager
 
 [`MessengerAssetsManager`](https://machinat.com/api/classes/messenger_asset.messengerassetsmanager.html)
 service helps you to manage resources at Messenger platform, like attachment and
-persona. Make sure you have a state storage installed, and register the service
+persona. Make sure you have a state storage installed, and register `MessengerAssetsManager`
 like this:
 
 ```ts {2,11-13,17}
@@ -247,7 +245,7 @@ app.onEvent(makeContainer({ deps: [MessengerAssetsManager] })(
 ));
 ```
 
-If you upload an attachment with `isReusable` and `attachmentAssetTag` props,
+Once you send an uploaded attachment with `isReusable` and `attachmentAssetTag` props,
 the `saveReusableAttachments` middleware will save the returned id. The saved
 id can then be reused for sending next time.
 

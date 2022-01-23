@@ -10,16 +10,16 @@ You can learn more about them here:
 - [Next.js](https://nextjs.org/docs/getting-started) - The React Framework for Production.
 :::
 
-Chat UI brings us a new way to communicate with users, but it cannot replace GUI at all. GUI still performs better on features that require precise control, instant interactions or showing large data.
+Chat UI brings us a new way to communicate with users, but it cannot totally replace GUI, which provides more features with precise control, instant interactions and richer displays.
 
-The best practice we suggest is a hybrid experience combining the advantage of both CUI and GUI. While chatbot, as the entry point of the app, is easier to use and broadcast. An webview can be used to provide more advanced and complicated features.
+The best practice we suggest is a hybrid experience that combines the advantage of both CUI and GUI. While chatbot, as the entry point of the app, is easier to access, the webview can provide more advanced and complex features.
 
 ## Webview Platform
 
-The `@machinat/webview` package provides webviews integrated with chat platforms. It actually does these three things in the background:
+`@machinat/webview` package serves webviews which are integrated with the chat platforms. It does these three things in the background:
 
-1. Serve the webview front-end app with [Next.js](https://nextjs.org).
-2. Authorize users with the chat platforms accounts.
+1. Host the webview front-end app with [Next.js](https://nextjs.org).
+2. Authorize users with their chat platforms account.
 3. Connect a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) to instantly communicate with server.
 
 ### Install With Creator
@@ -46,94 +46,90 @@ yarn add react react-dom next @machinat/webview
 
 ### Back-End Setup
 
-Register the webview platform to your app like this:
+Register the `@machinat/webview` platform to your app like this:
 
 ```js
+// src/app.js
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';
 import Webview from '@machinat/webview';
 import Messenger from '@machinat/messenger';
-import MessengerAuthenticator from '@machinat/messenger/webview';
+import MessengerWebviewAuth from '@machinat/messenger/webview';
 import Telegram from '@machinat/telegram';
-import TelegramAuthenticator from '@machinat/telegram/webview';
+import TelegramWebviewAuth from '@machinat/telegram/webview';
 import nextConfig from '../webview/next.config.js';
 
 const app = Machinat.createApp({
   modules: [
+    // `Http` module have to be installed
     Http.initModule({
       listenOptions: { port: 8080 },
     }),
   ],
   platforms: [
     Webview.initModule({
+      // hostname of your server
       webviewHost: 'www.machinat.com',
+      // secret string for siging auth token
       authSecret: '_some_secret_string_',
+      // auth providers from the chat platforms
+      authPlatforms: [
+        MessengerWebviewAuth,
+        TelegramWebviewAuth,
+      ],
+      // Next.js server options
       nextServerOptions: {
+        // to start server in dev mode or not
         dev: process.env.NODE_ENV !== 'production',
+        // Next.js app path from project root
         dir: `./webview`,
+        // require configs from next.config.js
         conf: nextConfig,
       },
     }),
-    Messenger.initModule({...}),
-    Telegram.initModule({...}),
-  ],
-  services: [
-    { provide: Webview.AuthenticatorList, withProvider: MessengerAuthenticator },
-    { provide: Webview.AuthenticatorList, withProvider: TelegramAuthenticator },
+    Messenger.initModule({/* ... */}),
+    Telegram.initModule({/* ... */}),
   ],
 });
 ```
-
-Here are the steps to run the webviews:
-
-1. The `Http` module have to be installed.
-2. Fill `webviewHost` with hostname of your server.
-3. Fill `authSecret` for signing auth token.
-4. `nextServerOptions.dev` indicate next.js to start server in dev mode or not. We can use `NODE_ENV` environment to decide that.
-5. `nextServerOptions.dir` should point to the Next.js project location from project root. You can use `npx create-next-app` to create one.
-6. If you have `next.config.js` settings in your next.js project. You have to require it and fill it at `nextServerOptions.conf`.
-7. Provide `Webview.AuthenticatorList` with server authenticator providers of each chat platform.
 
 The webview page should be available at `/` of your server now. You can check more webview options [here](pathname:///api/modules/webview.html#webviewconfigs).
 
 ### Front-End Setup
 
-While the webview utilities are ready in the back-end, we can connect to server with `WebviewClient` in the front-end. Add these codes in the next.js page:
+While the webview platform are ready in the back-end, we can connect to server with `WebviewClient` in the front-end. Add these codes in the webview page:
 
 ```js
+// webview/pages/index.js
 import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
-import { MessengerClientAuthenticator } from '@machinat/messenger/webview';
-import { TelegramClientAuthenticator } from '@machinat/telegram/webview';
+import MessengerWebviewAuth from '@machinat/messenger/webview/client';
+import TelegramWebviewAuth from '@machinat/telegram/webview/client';
 
 // to activate publicRuntimeConfig
 export const getServerSideProps = () => ({ props: {} });
-
+// get runtime settings if needed
 const { publicRuntimeConfig } = getConfig();
  
-const client = new WebviewClient(
-  typeof window === 'undefined'
-    ? { mockupMode: true, authenticators: [] }
-    : {
-        authenticators: [
-          new MessengerClientAuthenticator({
-            appId: publicRuntimeConfig.messengerAppId,
-          }),
-          new TelegramClientAuthenticator(),
-          new LineClientAuthenticator({
-            liffId: publicRuntimeConfig.lineLiffId,
-          }),
-        ],
-      }
-);
+const client = new WebviewClient({
+  // prevent any connection while server rendering on server-side
+  mockupMode: typeof window === 'undefined',
+  // auth providers from the chat platforms
+  authPlatforms: [
+    new MessengerWebviewAuth({
+      appId: publicRuntimeConfig.messengerAppId,
+    }),
+    new TelegramWebviewAuth(),
+  ],
+  // optionally specify the platform to login
+  // platform: 'messenger',
+});
 
 client.onError(console.error);
 ```
 
-Here are the steps to construct `WebviewClient` on front-end:
+If an auth platfrom require settings from back-end, use [`publicRuntimeConfig`](https://nextjs.org/docs/api-reference/next.config.js/runtime-configuration) features of next.js. The `next.config.js` might look like this:
 
-1. Fill `authenticators` with the client authenticators from all supported chat platforms.
-2. If you need configs to construct client authenticators, use [`publicRuntimeConfig`](https://nextjs.org/docs/api-reference/next.config.js/runtime-configuration) features of next.js (need to export an empty `getServerSideProps`). The `next.config.js` might look like this:
 ```js
 module.exports = {
   publicRuntimeConfig: {
@@ -141,22 +137,19 @@ module.exports = {
   },
 };
 ```
-3. Turn on `mockupMode` during server rendering at server side. It stop the client form making any real connection.
-4. Set the `platform` option if you want to specify the platform for authorization.
 
-After being constructed, the `client` will: 1) log in user to the chosen chat platform and 2) create a `WebSocket` connection to communicate with server. You can check more client options [here](pathname:///api/modules/webview_client.html#clientoptions).
+`WebviewClient` will automatically log in user to the chat platform after constructed, and then it opens a `WebSocket` connection to communicate with server. You can check more client options [here](pathname:///api/modules/webview_client.html#clientoptions).
 
 ## Open Webview
 
-Different platform might need different procedure to open a webview. For example
-in Messenger, it need a `UrlButton` with `messengerExtensions` prop set to true:
+Different platforms could need different procedures to open a webview. For example in Messenger, it require a `UrlButton` with `messengerExtensions` prop:
 
 ```js
 <Messenger.ButtonTemplate
   buttons={
     <Messenger.UrlButton
       title="Open Webview ↗️"
-      url={`https://${domain}?platform=messenger`}
+      url={`https://${serverDomain}?platform=messenger`}
       messengerExtensions
     />
   }
@@ -165,34 +158,30 @@ in Messenger, it need a `UrlButton` with `messengerExtensions` prop set to true:
 </Messenger.ButtonTemplate>
 ```
 
-With the codes above, the webview will be opened in Messenger app after user tap the button in the message.
-Please check the document of platform packages for more details. 
+With the codes above, the webview will be opened in Messenger app after the `UrlButton` is tapped. Please check the document of each platform for more details.
 
-### The `platform` Query
+### The `platform` Query Param
 
-If you didn't specify `platform` option of webview client, it will determine by the `platform` query param by default. For example, client will try login user to Messenger account for this URL:
+If you didn't specify `platform` option while constructing `WebviewClient`, the platform to login will be determined by the `platform` querystring param. For example, client will try login user to Messenger on this URL:
 
 ```
 https://machinat.app/webview?platform=messenger
 ```
 
-If neither the `platfrom` option nor query param is set, an error will be thrown because of failing to recognize the current platform.
-
+Login process would fail if neither the `platfrom` option nor querystring is set.
 
 ## Communication on Client
 
-After successfully authorize the user and connect to server, webview can server can communicate with each other through a WebSocket.
-This enable you to build graphical UI with **real-time** data easily.
+After successfully log in the user, the webview and the server can communicate through a `WebSocket` connection. So you can easily display **real-time** data in the webview.
 
 ### Receiving Event
 
-On client-side, we can use `client.onEvent(listener)` to subscribe events from server like this:
+On client-side, use `client.onEvent(listener)` to subscribe events from server. Like this:
 
 ```js
 client.onEvent(({ event }) => {
   if (event.type === 'connect') {
     client.send({
-      category: 'message',
       type: 'greeting',
       payload : '👋',
     });
@@ -200,7 +189,7 @@ client.onEvent(({ event }) => {
 });
 ```
 
-The listener callback function receive a event context object with following info:
+The listener callback function receive an event context object with following info:
 
 - event - `object`, event object.
   - platform - `'webview'`.
@@ -209,13 +198,13 @@ The listener callback function receive a event context object with following inf
   - user - `object`, the same as `auth.user`.
   - channel - `object`, represent the WebSocket connection.
 - auth - `object`, auth info of the user.
-  - platform - `string`, authorizing chat platform name.
-  - user - `object`, the user from chat platform.
-  - channel - `null | object`, the chat user comes from. The value could be `null` if not able to determine.
+  - platform - `string`, authorizing chat platform.
+  - user - `object`, the user logged in.
+  - channel - `null | object`, the chat where the user comes from. It could be `null` if not able to determine.
   - loginAt - `Date`, the time user logged in.
-  - expireAt - `Date`, the time current authorization would expired.
+  - expireAt - `Date`, the time when current authorization expires.
   - data - `any`, raw auth data from chat platform.
-- authenticator - `object`, the authenticator instance of the authorizing chat platform.
+- authenticator - `object`, the authenticator instance of the authorizing platform.
 
 ### `connect` and `disconnect`
 
@@ -234,17 +223,17 @@ Two system events will be received when connection status changes:
 
 ### Send Event on Client-Side
 
-We can use `client.send(eventObj)` method to send event to server. The following event properties can be set:
+Use `client.send(eventObj)` method to send event to the server. The following properties can be set:
 
 - category - optional, `string`, set to `'default'` if not specified.
 - type - required, `string`, the event type.
 - payload - optional, `any`, the value will be serialized and sent to server.
 
-You don't have to wait for `'connect'` event to send. Events sent before connection is opened would be queued, and will be sent after it's connected.
+You don't have to wait for `'connect'` event to send events. Any event sent before connection is opened would be queued, and will be delivered after connected.
 
 ### `useEventReducer` Hook
 
-To use client in the react component (e.g. a next.js page), one convenient way is using the `useEventReducer` hook. For example, an app that shows data to user may work like this:
+To use client in a React component (e.g. a Next.js page), one convenient way is using the `useEventReducer` hook. For example, an app can display data from the server like this:
 
 ```js
 import WebviewClient, { useEventReducer } from '@machinat/webview/client';
@@ -252,64 +241,56 @@ import WebviewClient, { useEventReducer } from '@machinat/webview/client';
 // ...
 
 export default function Home() {
-  const data = useEventReducer(
+  const { color, content } = useEventReducer(
     client,
-    (currentData, { event }) => {
-      if (event.type === 'app_data') {
-        return event.payload;
-      }
-      if (event.type === 'color_updated') {
-        return { ...currentData, color: event.payload };
-      }
-      return data;
+    (data, { event }) =>
+      event.type === 'app_data'
+        ? event.payload
+        : event.type === 'color_updated'
+        ? { ...data, color: event.payload }
+        : data
     },
     { color: '#000', content: 'loading...' }
   );
   
   function handleColorChange(e) {
-    client.send({ type: 'update_color', payload: e.target.value });
+    client.send({
+      type: 'update_color',
+      payload: e.target.value,
+    });
   }
 
   return (
     <main>
-      <input type="color" value={data.color} onChange={handleColorChange} />
-      <div style={{ textColor: data.color }}>Content: {data.content}</div>
+      <input type="color" value={color} onChange={handleColorChange} />
+      <div style={{ textColor: color }}>Content: {content}</div>
     </main>
   );
 }
 ```
 
-`useEventReducer(client, reducer, initialState)` take a reducer function of type `(state, eventContext) => newState`. Every time a event emitted from client, the reducer function is called to get the new state. It useful to maintain real-time data synchronized with server.
-
-One simple data transmitting pattern is like:
-
-1. Server sends data to client when `connect` event is received.
-2. Client receives and displays the data.
-3. After user make a change, client send an updating event to server.
-4. Server store the change and sends a confirmation event to client.
-5. Client update view for the data change.
-
+`useEventReducer(client, reducer, initialState)` take a reducer function of type `(state, eventContext) => newState`. Every time a event from server is received, the reducer function is called to get the new state. It's useful to maintain real-time data synchronized with server.
 
 ## Communication on Server
 
 ### Receiving Events
 
-On the server-side, events from client can be received just like other chat platform's. Here's a the server-side codes that respond the previous client example:
+On the server-side, events from client are received just like events from chat platforms. Here's the server-side codes that respond the previous client example:
 
 ```js
-app.onEvent(async ({ platform, event, bot }) => {
+app.onEvent(async ({ platform, event, metadata, bot }) => {
   if (platform === 'webview') {
     if (event.type === 'connect') {
-      // get data from state...
+      const { color, content } = await getUserState(metadata.auth.user);
 
       return bot.send(event.channel, {
         type: 'app_data',
-        payload : { color: '#f00', content: '......' },
+        payload : { color, content },
       });
     }
     
     if (event.type === 'update_color') {
-      // save changes in state...
+      await updateUserState(metadata.auth.user, event.payload);
 
       return bot.send(event.channel, {
         type: 'color_updated',
@@ -320,28 +301,32 @@ app.onEvent(async ({ platform, event, bot }) => {
 });
 ```
 
-The event handler will receive event contexts with the following properties:
+The event handler receives an event context with the following properties:
 
 - platform - `'webview'`.
 - bot - the webview bot.
-- event - `object`, the same as `event` of client-side context.
-- metadata - `object`, info about WebSocket connection.
+- event - `object`, the same as `event` in the client-side context.
+- metadata - `object`, meta info about the connection.
   - source - `'websocket'`.
   - request - `object`, http upgrade request info.
-  - auth - `object`, the same as `auth` of client-side context.
+  - auth - `object`, the same as `auth` in the client-side context.
   - connection - `object`, the same as `event.channel`.
 
-The `connect` and `disconnect` event will also be received on server-side when a connection's status change.
+The `connect` and `disconnect` events are emitted on server-side too when the status of a connection has changed.
 
-### Send Event to a Connection
+### Send Event to a Client
+
+The `event.channel` of the context refers to the connection with the client. You can use `bot.send(conn, eventObj)` method sends event back to the client. The `category`, `type` and `payload` can be set like `client.send(eventObj)`.
 
 ```js
-const result = await bot.send(connection, eventObj);
+await bot.send(event.channel, {
+  category: 'event_category',
+  type: 'event_type',
+  payload: { some: 'serializable content' }
+});
 ```
 
-The `event.channel` on webview context refers to the connection to sender client. `bot.send(conn, eventObj)` method take a connection and send event back to the client. The `category`, `type` and `payload` properties can be set on event object like `client.send(eventObj)`.
-
-Note that a result will be resolved even when the sending is fail to complete (e.g. client offline). You can tell whether it succeed like this:
+Note that the sending promise could resolve even if the delivery fail (e.g. client offline). You can tell whether it succeed like this:
 
 ```js
 const result = await bot.send(event.channel, {
@@ -353,44 +338,24 @@ if (result.connections.length === 0) {
 }
 ```
 
-### Broadcast by User
+### Broadcast by a Topic
+
+In some case you might need to broadcast an event to many connections, for example, to make a multi-players game. To achieve this, register a subscription to a topic like:
 
 ```js
-const result = await bot.sendUser(user, eventObj);
+await bot.subscribeTopic(event.channel, 'topicName');
 ```
 
-Since an user can opens many webviews at a time, you might want keep the content of all webviews consistent. Use `sendUser` method to send a event to all the clients that logged in as the same user.
+Then send a event to all the connection that subscribe to the topic like:
 
 ```js
-app.onEvent(async context => {
-  const { event, bot } = context;
-
-  if (event.type === 'new_todo') {
-    const result = await bot.sendUser(event.user, {
-      type: 'todo_added',
-      payload: event.payload,
-    });
-    
-    result.connections; // the connections successfully sent to
-  }
+const result = await bot.sendTopic('topicName', {
+  type: 'game_start',
+  payload: { game: 'data' },
 });
 ```
 
-### Broadcast by Topic
-
-In some case you would need to send to many connection at one time, for example to make multi-player game. To achieve this, first register the subscription to a string topic:
-
-```js
-await bot.subscribeTopic(connection, topicName);
-```
-
-Then we can send a event to all the connection that subscribe the topic like:
-
-```js
-const result = await bot.sendTopic(topicName, eventObj);
-```
-
-To put them together, the folowing example enable all the users on webview to say hello to each other with a global topic:
+To put them together, the following example allow users to say hello to everyone on a global topic:
 
 ```js
 app.onEvent(async ({ event, bot }) => {  
@@ -403,34 +368,53 @@ app.onEvent(async ({ event, bot }) => {
       type: 'hello',
       payload: event.payload,
     });
-    
-    result.connections; // the connections successfully sent to
-    return;
+
+    console.log(`sent to ${result.connections.length} connection`);
   }
 });
 ```
 
-The subscribed topic can also be unsubscribed with:
+The subscription to a topic can be unsubscribed with:
 
 ```js
-await bot.unsubscribeTopic(connection, topicName);
+await bot.unsubscribeTopic(event.channel, 'topicName');
 ```
 
+### Broadcast to an User
+
+```js
+const result = await bot.sendUser(user, eventObj);
+```
+
+Since an user can opens many webviews at the same time, you might want to keep all the webviews consistent. Use `sendUser` method to send an event to all the clients that logged in as the same user.
+
+```js
+app.onEvent(async context => {
+  const { event, bot } = context;
+
+  if (event.type === 'new_todo') {
+    const result = await bot.sendUser(event.user, {
+      type: 'todo_added',
+      payload: event.payload,
+    });
+
+    console.log(`sent to ${result.connections.length} connection`);
+  }
+});
+```
 
 ### Interact With Chat
 
-The feature in the webview can also be integrated with chatroom. The `metadata.auth.channel` would refer to the original chat where the user comes from. We can then use base bot to send messages to the chatroom:
+The webview can integrate with chatroom to provide a hybrid experience in both GUI and chat UI. The `metadata.auth.channel` refer to the original chat where the user comes from. It can be used to send messages in the original chatroom like:
 
 ```js
 app.onEvent(
-  container({ deps: [Machinat.Bot] })(
+  makeContainer({ deps: [Machinat.Bot] })(
     (baseBot) =>
       async ({ platform, metadata, event }) => {
         if (platform === 'webview' && event.type === 'connect') {
-          const { channel: chatChannel } = metadata.auth;
-
           await baseBot.render(
-            chatChannel,
+            metadata.auth.channel,
             <p>I see you on the webview!</p>
           );
         }
@@ -438,3 +422,5 @@ app.onEvent(
   )
 );
 ```
+
+One common usage is enabling users to fill complex input in the webview, like selecting a location on the map. Actually this empower your chatbot to provide any features that a web app can do.

@@ -78,6 +78,7 @@ test('module object', () => {
   const module = Webview.initModule({
     webviewHost: 'machinat.io',
     authSecret: '_SECRET_',
+    authPlatforms: [NoneAuthenticator],
     eventMiddlewares,
     dispatchMiddlewares,
   });
@@ -99,6 +100,7 @@ test('module object', () => {
 
 test('service provisions', async () => {
   const configsInput = {
+    authPlatforms: [NoneAuthenticator],
     webviewPath: '/myView',
     authApiPath: '/myAuth',
     webSocketPath: '/mySocket',
@@ -109,9 +111,6 @@ test('service provisions', async () => {
 
   const app = Machinat.createApp({
     platforms: [Webview.initModule(configsInput)],
-    services: [
-      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
-    ],
   });
   await app.start();
 
@@ -183,6 +182,7 @@ test('default routing paths', async () => {
   const app = Machinat.createApp({
     platforms: [
       Webview.initModule({
+        authPlatforms: [NoneAuthenticator],
         webviewHost: 'machinat.io',
         authSecret: '_SECRET_',
       }),
@@ -222,6 +222,7 @@ test('provide base interfaces', async () => {
   const app = Machinat.createApp({
     platforms: [
       Webview.initModule({
+        authPlatforms: [NoneAuthenticator],
         webviewHost: 'machinat.io',
         authSecret: '_SECRET_',
       }),
@@ -253,6 +254,7 @@ test('startHook', async () => {
   const app = Machinat.createApp({
     platforms: [
       Webview.initModule({
+        authPlatforms: [NoneAuthenticator],
         webviewHost: 'machinat.io',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: true, conf: { dist: '../../' } },
@@ -277,6 +279,7 @@ test('stopHook', async () => {
   const app = Machinat.createApp({
     platforms: [
       Webview.initModule({
+        authPlatforms: [NoneAuthenticator],
         webviewHost: 'machinat.io',
         authSecret: '_SECRET_',
       }),

@@ -32,7 +32,7 @@ export type ClientOptions<Authenticator extends AnyClientAuthenticator> = {
   /** URL of the auth backend API. Default to `"/auth"` */
   authApiUrl?: string;
   /** Authenticators of the platforms. */
-  authenticators: Authenticator[];
+  authPlatforms: Authenticator[];
   /**
    * When set to true, the underlying network operations would not be executed.
    * It's useful for server rendering at server side.

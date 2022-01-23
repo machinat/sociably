@@ -89,7 +89,7 @@ it('start connector and auth client', async () => {
   const client = new Client({
     platform: 'test',
     authApiUrl: '/my_auth',
-    authenticators: [testAuthenticator, anotherAuthenticator],
+    authPlatforms: [testAuthenticator, anotherAuthenticator],
     webSocketUrl: '/my_websocket',
   });
   client.onEvent(eventSpy);
@@ -148,7 +148,7 @@ test('mockupMode', async () => {
   const client = new Client({
     platform: 'test',
     authApiUrl: '/my_auth',
-    authenticators: [testAuthenticator, anotherAuthenticator],
+    authPlatforms: [testAuthenticator, anotherAuthenticator],
     webSocketUrl: '/my_websocket',
     mockupMode: true,
   });
@@ -171,7 +171,7 @@ test('mockupMode', async () => {
 test('websocket url', async () => {
   (() =>
     new Client({
-      authenticators: [testAuthenticator],
+      authPlatforms: [testAuthenticator],
       webSocketUrl: 'ws://machinat.io/foo_socket',
     }))();
 
@@ -182,7 +182,7 @@ test('websocket url', async () => {
     expect.any(BaseMarshaler)
   );
 
-  (() => new Client({ authenticators: [testAuthenticator] }))();
+  (() => new Client({ authPlatforms: [testAuthenticator] }))();
 
   expect(Connector.mock).toHaveBeenCalledTimes(2);
   expect(Connector.mock).toHaveBeenCalledWith(
@@ -192,7 +192,7 @@ test('websocket url', async () => {
   );
 });
 
-it('use marshalTypes of authenticators', () => {
+it('use marshalTypes of authPlatforms', () => {
   const FooType = {
     typeName: 'Foo',
     fromJSONValue: () => ({
@@ -214,7 +214,7 @@ it('use marshalTypes of authenticators', () => {
 
   (() =>
     new Client({
-      authenticators: [testAuthenticator, anotherAuthenticator],
+      authPlatforms: [testAuthenticator, anotherAuthenticator],
     }))();
 
   expect(BaseMarshaler.mock).toHaveBeenCalledTimes(1);
@@ -226,7 +226,7 @@ it('use marshalTypes of authenticators', () => {
 });
 
 it('login with auth client', async () => {
-  (() => new Client({ authenticators: [testAuthenticator] }))();
+  (() => new Client({ authPlatforms: [testAuthenticator] }))();
 
   const authClient = AuthClient.mock.calls[0].instance;
   authClient.signIn.mock.fake(async () => ({
@@ -245,7 +245,7 @@ it('login with auth client', async () => {
 });
 
 it('emit "event" when dispatched events received', async () => {
-  const client = new Client({ authenticators: [testAuthenticator] });
+  const client = new Client({ authPlatforms: [testAuthenticator] });
   client.onEvent(eventSpy);
 
   const authClient = AuthClient.mock.calls[0].instance;
@@ -313,7 +313,7 @@ it('emit "event" when dispatched events received', async () => {
 });
 
 it('send events', async () => {
-  const client = new Client({ authenticators: [testAuthenticator] });
+  const client = new Client({ authPlatforms: [testAuthenticator] });
   const connector = Connector.mock.calls[0].instance;
   connector.emit('connect', { connId: '#conn', user });
 
@@ -340,7 +340,7 @@ it('send events', async () => {
 });
 
 test('disconnected by server', async () => {
-  const client = new Client({ authenticators: [testAuthenticator] });
+  const client = new Client({ authPlatforms: [testAuthenticator] });
   client.onEvent(eventSpy);
 
   const authClient = AuthClient.mock.calls[0].instance;
@@ -375,7 +375,7 @@ test('disconnected by server', async () => {
 });
 
 test('#disconnect()', async () => {
-  const client = new Client({ authenticators: [testAuthenticator] });
+  const client = new Client({ authPlatforms: [testAuthenticator] });
   client.onEvent(eventSpy);
 
   const authClient = AuthClient.mock.calls[0].instance;
@@ -410,7 +410,7 @@ test('#disconnect()', async () => {
 });
 
 test('#closeWebview()', async () => {
-  const client = new Client({ authenticators: [testAuthenticator] });
+  const client = new Client({ authPlatforms: [testAuthenticator] });
   expect(client.closeWebview()).toBe(true);
   expect(testAuthenticator.closeWebview.mock).toHaveBeenCalledTimes(1);
 

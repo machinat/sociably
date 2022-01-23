@@ -9,7 +9,7 @@ import type {
 import { AnyMarshalType } from '@machinat/core/base/Marshaler';
 import type { UnitSegment } from '@machinat/core/renderer';
 import type { DispatchFrame } from '@machinat/core/engine';
-import type { MaybeContainer } from '@machinat/core/service';
+import type { MaybeContainer, ServiceProvider } from '@machinat/core/service';
 import type {
   AnyServerAuthenticator,
   ClientAuthenticator,
@@ -126,6 +126,8 @@ export type WebviewConfigs<
   webSocketPath?: string;
   heartbeatInterval?: number;
 
+  /** Auth providers from the platforms */
+  authPlatforms: ServiceProvider<AnyServerAuthenticator, unknown[]>[];
   /** Secret to sign token for auth. */
   authSecret: string;
   /** Route path to the auth api. Default to `"/auth"` */

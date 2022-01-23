@@ -8,15 +8,15 @@ import Http from '@machinat/http';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';${when(
     platforms.includes('webview')
   )`
-import MessengerAuthenticator from '@machinat/messenger/webview';`}`}${when(
+import MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
     platforms.includes('line')
   )`
 import Line from '@machinat/line';${when(platforms.includes('webview'))`
-import LineAuthenticator from '@machinat/line/webview';`}`}${when(
+import LineWebviewAuth from '@machinat/line/webview';`}`}${when(
     platforms.includes('telegram')
   )`
 import Telegram from '@machinat/telegram';${when(platforms.includes('webview'))`
-import TelegramAuthenticator from '@machinat/telegram/webview';`}`}${when(
+import TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
     platforms.includes('webview')
   )`
 import Webview from '@machinat/webview';`}
@@ -103,13 +103,18 @@ const app = Machinat.createApp({
     }),`}${when(platforms.includes('webview'))`
 
     Webview.initModule<${when(platforms.includes('messenger'))`
-      | MessengerAuthenticator`}${when(platforms.includes('telegram'))`
-      | TelegramAuthenticator`}${when(platforms.includes('line'))`
-      | LineAuthenticator`}
+      | MessengerWebviewAuth`}${when(platforms.includes('telegram'))`
+      | TelegramWebviewAuth`}${when(platforms.includes('line'))`
+      | LineWebviewAuth`}
     >({
       webviewHost: DOMAIN,
       webviewPath: '/webview',
       authSecret: WEBVIEW_AUTH_SECRET,
+      authPlatforms: [${when(platforms.includes('messenger'))`
+        MessengerWebviewAuth,`}${when(platforms.includes('telegram'))`
+        TelegramWebviewAuth,`}${when(platforms.includes('line'))`
+        LineWebviewAuth,`}
+      ],
       ${when(platforms.includes('messenger'))`
       sameSite: 'none',`}
       nextServerOptions: {
@@ -120,15 +125,7 @@ const app = Machinat.createApp({
     }),`}
   ],
 ${when(platforms.includes('webview'))`
-  services: [${when(platforms.includes('messenger'))`
-    { provide: Webview.AuthenticatorList, withProvider: MessengerAuthenticator },`}${when(
-  platforms.includes('telegram')
-)`
-    { provide: Webview.AuthenticatorList, withProvider: TelegramAuthenticator },`}${when(
-  platforms.includes('line')
-)`
-    { provide: Webview.AuthenticatorList, withProvider: LineAuthenticator },`}
-    
+  services: [
     { provide: ServerDomain, withValue: DOMAIN },${when(
       platforms.includes('line')
     )`

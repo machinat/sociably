@@ -6,19 +6,19 @@ export default ({ platforms }: CreateAppContext) =>
 import type { MessengerEventContext } from '@machinat/messenger';${when(
     platforms.includes('webview')
   )`
-import type { MessengerServerAuthenticator } from '@machinat/messenger/webview';`}`}${when(
+import type MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
     platforms.includes('telegram')
   )`
 import type { TelegramEventContext } from '@machinat/telegram';${when(
     platforms.includes('webview')
   )`
-import type { TelegramServerAuthenticator } from '@machinat/telegram/webview';`}`}${when(
+import type TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
     platforms.includes('line')
   )`
 import type { LineEventContext } from '@machinat/line';${when(
     platforms.includes('webview')
   )`
-import type { LineServerAuthenticator } from '@machinat/line/webview';`}`}${when(
+import type LineWebviewAuth from '@machinat/line/webview';`}`}${when(
     platforms.includes('webview')
   )`
 import type { WebviewEventContext } from '@machinat/webview';`}
@@ -32,9 +32,9 @@ ${when(platforms.includes('webview'))`
 export type WebAppEventContext = WebviewEventContext<${when(
   platforms.includes('messenger')
 )`
-    | MessengerServerAuthenticator`}${when(platforms.includes('telegram'))`
-    | TelegramServerAuthenticator`}${when(platforms.includes('line'))`
-    | LineServerAuthenticator`}
+    | MessengerWebviewAuth`}${when(platforms.includes('telegram'))`
+    | TelegramWebviewAuth`}${when(platforms.includes('line'))`
+    | LineWebviewAuth`}
   >;`}
 
 export type AppEventContext =

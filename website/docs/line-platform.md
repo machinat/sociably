@@ -102,20 +102,18 @@ and [component APIs](https://machinat.com/api/modules/line_components.html).
 ## Webview
 
 To integrate chatbot with a [LIFF](https://developers.line.biz/en/docs/liff/overview/)
-webview, add [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview)
-platform and set up with these steps:
+webview, set up with these steps:
 
 1. [Create a LIFF app](https://developers.line.biz/en/docs/liff/registering-liff-apps/)
    with url `https://your.server.domain/webview?platform=line`. The url should
    link to your webview page with `platform=line` query.
-2. Add the LIFF **login channel** id in `liffChannelIds` options.
-3. Add `LineAuthenticator` into the `Webview.AuthenticatorList`.
-4. Expose the LIFF app id to front-end.
+2. Add the **login channel** id in `liffChannelIds` options.
+3. Set up [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview)
+platform like this:
 
-```ts {1-2,7,17,25-27,33}
+```ts {1-2,6,16,21}
 import Webview from '@machinat/webview';
-import LineAuthenticator from '@machinat/line/webview';
-// ...
+import LineWebviewAuth from '@machinat/line/webview';
 
 const {
   // ...
@@ -131,26 +129,47 @@ const app = Machinat.createApp({
       // ...
       liffChannelIds: [LINE_LIFF_ID.split('-')[0]],
     }),
-    Webview.intiModule({
+    Webview.initModule({
       // ...
-      nextServerOptions: {
-        // ...
-        conf: {
-          ...nextConfigs,
-          publicRuntimeConfig: {
-            lineLiffId: LINE_LIFF_ID,
-          }
-        }
-      }
+      authPlatforms: [
+        LineWebviewAuth,
+      ]
     }),
-  ],
-  services: [
-    { provide: Webview.AuthenticatorList, withProvider: LineAuthenticator },
   ],
 });
 ```
 
-The webview can be opened by the LIFF app url:
+4. Expose LIFF id to webview in the `next.config.js`:
+
+```js {5}
+module.exports = {
+  distDir: '../dist',
+  basePath: '/webview',
+  publicRuntimeConfig: {
+    lineLiffId: process.env.LINE_LIFF_ID,
+  },
+};
+```
+
+5. Set up the `WebviewClient` in the webview page:
+
+```ts
+import getConfig from 'next/config';
+import WebviewClient from '@machinat/webview/client';
+import LineWebviewAuth from '@machinat/line/webview/client';
+
+const { publicRuntimeConfig } = getConfig();
+
+const client =  new WebviewClient({
+  authPlatforms: [
+    new LineWebviewAuth({
+      liffId: publicRuntimeConfig.lineLiffId,
+    }),
+  ],
+});
+```
+
+6. Opened the webview through the URL of LIFF app:
 
 ```tsx
 const { LINE_LIFF_ID } = process.env;
@@ -168,32 +187,13 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Then add `LineClientAuthenticator` in the webview client:
-
-```ts
-import getConfig from 'next/config';
-import WebviewClient from '@machinat/webview/client';
-import { LineClientAuthenticator } from '@machinat/line/webview';
-
-const { publicRuntimeConfig } = getConfig();
-
-const client =  new WebviewClient({
-  authenticators: [
-    new LineClientAuthenticator({
-      liffId: publicRuntimeConfig.lineLiffId,
-    }),
-  ],
-});
-```
-
-The client can now communicate to server with the LINE user and chat info. To
-learn more about the webview platform usage, check the [document](https://machinat.com/docs/embedded-webview).
+Now users will be automatically logged in with LINE account in the webview. Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more about webview.
 
 ## Assets Manager
 
 [`LineAssetsManager`](https://machinat.com/api/classes/line_asset.lineassetsmanager.html)
 service helps you to manage the resources like [richmenu](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/#using-rich-menus-introduction).
-Make sure you have a state storage installed, and register the service like:
+Make sure you have a state storage installed, and register `LineAssetsManager` like this:
 
 ```ts {2,12}
 import { FileState } from '@machinat/dev-tools';
