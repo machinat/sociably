@@ -88,37 +88,6 @@ describe('initModule(configs)', () => {
     ]);
   });
 
-  test('provisions when noServer', async () => {
-    const configs = {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      noServer: true,
-    };
-
-    const app = Machinat.createApp({
-      platforms: [Line.initModule(configs)],
-    });
-    await app.start();
-
-    const [bot, configsProvided, profiler, routings] = app.useServices([
-      Line.Bot,
-      Line.Configs,
-      Line.Profiler,
-      Http.RequestRouteList,
-    ]);
-
-    expect(bot).toBeInstanceOf(LineBot);
-    expect(profiler).toBeInstanceOf(LineProfiler);
-    expect(configsProvided).toEqual(configs);
-
-    expect(routings).toEqual([]);
-
-    expect(() =>
-      app.useServices([Line.Receiver])
-    ).toThrowErrorMatchingInlineSnapshot(`"LineReceiver is not bound"`);
-  });
-
   test('provide base interfaces', async () => {
     const app = Machinat.createApp({
       platforms: [

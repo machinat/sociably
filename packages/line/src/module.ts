@@ -1,9 +1,5 @@
 import type { MachinatPlatform } from '@machinat/core';
-import {
-  makeContainer,
-  makeFactoryProvider,
-  ServiceProvision,
-} from '@machinat/core/service';
+import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseProfiler from '@machinat/core/base/Profiler';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
@@ -61,44 +57,39 @@ namespace Line {
     LineDispatchFrame,
     LineResult
   > => {
-    const provisions: ServiceProvision<unknown>[] = [
-      BotP,
-      {
-        provide: BaseBot.PlatformMap,
-        withProvider: BotP,
-        platform: LINE,
-      },
-
-      ProfilerP,
-      {
-        provide: BaseProfiler.PlatformMap,
-        withProvider: ProfilerP,
-        platform: LINE,
-      },
-
-      { provide: ConfigsI, withValue: configs },
-      { provide: BaseMarshaler.TypeList, withValue: LineChat },
-      { provide: BaseMarshaler.TypeList, withValue: LineUser },
-      { provide: BaseMarshaler.TypeList, withValue: LineUserProfile },
-      { provide: BaseMarshaler.TypeList, withValue: LineGroupProfile },
-    ];
-
-    if (configs.noServer !== true) {
-      provisions.push(ReceiverP, {
-        provide: Http.RequestRouteList,
-        withProvider: webhookRouteFactory,
-      });
-    }
-
     return {
       name: LINE,
       utilitiesInterface: PlatformUtilitiesI,
-      provisions,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
       startHook: makeContainer({ deps: [BotP] })((bot) => bot.start()),
       stopHook: makeContainer({ deps: [BotP] })((bot) => bot.stop()),
+
+      provisions: [
+        BotP,
+        {
+          provide: BaseBot.PlatformMap,
+          withProvider: BotP,
+          platform: LINE,
+        },
+
+        ReceiverP,
+        { provide: Http.RequestRouteList, withProvider: webhookRouteFactory },
+
+        ProfilerP,
+        {
+          provide: BaseProfiler.PlatformMap,
+          withProvider: ProfilerP,
+          platform: LINE,
+        },
+
+        { provide: ConfigsI, withValue: configs },
+        { provide: BaseMarshaler.TypeList, withValue: LineChat },
+        { provide: BaseMarshaler.TypeList, withValue: LineUser },
+        { provide: BaseMarshaler.TypeList, withValue: LineUserProfile },
+        { provide: BaseMarshaler.TypeList, withValue: LineGroupProfile },
+      ],
     };
   };
 }

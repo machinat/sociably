@@ -192,7 +192,6 @@ export type TelegramConfigs = {
   webhookPath?: string;
   secretPath?: string;
   maxConnections?: number;
-  noServer?: boolean;
   eventMiddlewares?: TelegramEventMiddleware[];
   dispatchMiddlewares?: TelegramDispatchMiddleware[];
 };

@@ -94,35 +94,6 @@ describe('initModule(configs)', () => {
     ]);
   });
 
-  test('provisions when noServer', async () => {
-    const configs = {
-      botToken: '12345:_BOT_TOKEN_',
-      noServer: true,
-    };
-
-    const app = Machinat.createApp({
-      platforms: [Telegram.initModule(configs)],
-    });
-    await app.start();
-
-    const [bot, configsProvided, profiler, routings] = app.useServices([
-      Telegram.Bot,
-      Telegram.Configs,
-      Telegram.Profiler,
-      Http.RequestRouteList,
-    ]);
-
-    expect(bot).toBeInstanceOf(TelegramBot);
-    expect(profiler).toBeInstanceOf(TelegramProfiler);
-    expect(configsProvided).toEqual(configs);
-
-    expect(routings).toEqual([]);
-
-    expect(() =>
-      app.useServices([Telegram.Receiver])
-    ).toThrowErrorMatchingInlineSnapshot(`"TelegramReceiver is not bound"`);
-  });
-
   test('provide base interface', async () => {
     const app = Machinat.createApp({
       platforms: [Telegram.initModule({ botToken: '12345:_BOT_TOKEN_' })],

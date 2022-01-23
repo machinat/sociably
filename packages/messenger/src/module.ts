@@ -1,9 +1,5 @@
 import type { MachinatPlatform } from '@machinat/core';
-import {
-  makeContainer,
-  makeFactoryProvider,
-  ServiceProvision,
-} from '@machinat/core/service';
+import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseProfiler from '@machinat/core/base/Profiler';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
@@ -63,43 +59,38 @@ namespace Messenger {
     MessengerDispatchFrame,
     MessengerResult
   > => {
-    const provisions: ServiceProvision<unknown>[] = [
-      BotP,
-      {
-        provide: BaseBot.PlatformMap,
-        withProvider: BotP,
-        platform: MESSENGER,
-      },
-
-      ProfilerP,
-      {
-        provide: BaseProfiler.PlatformMap,
-        withProvider: ProfilerP,
-        platform: MESSENGER,
-      },
-
-      { provide: ConfigsI, withValue: configs },
-      { provide: BaseMarshaler.TypeList, withValue: MessengerChat },
-      { provide: BaseMarshaler.TypeList, withValue: MessengerUser },
-      { provide: BaseMarshaler.TypeList, withValue: MessengerUserProfile },
-    ];
-
-    if (configs.noServer !== true) {
-      provisions.push(ReceiverP, {
-        provide: Http.RequestRouteList,
-        withProvider: webhookRouteFactory,
-      });
-    }
-
     return {
       name: MESSENGER,
       utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
-      provisions,
 
       startHook: makeContainer({ deps: [BotP] })(async (bot) => bot.start()),
       stopHook: makeContainer({ deps: [BotP] })(async (bot) => bot.stop()),
+
+      provisions: [
+        BotP,
+        {
+          provide: BaseBot.PlatformMap,
+          withProvider: BotP,
+          platform: MESSENGER,
+        },
+
+        ReceiverP,
+        { provide: Http.RequestRouteList, withProvider: webhookRouteFactory },
+
+        ProfilerP,
+        {
+          provide: BaseProfiler.PlatformMap,
+          withProvider: ProfilerP,
+          platform: MESSENGER,
+        },
+
+        { provide: ConfigsI, withValue: configs },
+        { provide: BaseMarshaler.TypeList, withValue: MessengerChat },
+        { provide: BaseMarshaler.TypeList, withValue: MessengerUser },
+        { provide: BaseMarshaler.TypeList, withValue: MessengerUserProfile },
+      ],
     };
   };
 }

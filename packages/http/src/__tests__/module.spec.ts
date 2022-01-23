@@ -88,24 +88,42 @@ test('default provisions', async () => {
   expect(server).toBe(fakeServer);
 });
 
-test('startHook', async () => {
-  const connector = moxy({ connect: async () => {} });
+describe('startHook', () => {
+  it('start listening HTTP', async () => {
+    const connector = moxy({ connect: async () => {} });
+    const app = Machinat.createApp({
+      modules: [
+        Http.initModule({ listenOptions: { host: 'localhost', port: 8888 } }),
+      ],
+      services: [{ provide: Http.Connector, withValue: connector }],
+    });
 
-  const app = Machinat.createApp({
-    modules: [
-      Http.initModule({ listenOptions: { host: 'localhost', port: 8888 } }),
-    ],
-    services: [{ provide: Http.Connector, withValue: connector }],
+    await app.start();
+
+    expect(createServer.mock).toHaveBeenCalledTimes(1);
+    expect(connector.connect.mock).toHaveBeenCalledTimes(1);
+    expect(connector.connect.mock).toHaveBeenCalledWith(fakeServer, {
+      host: 'localhost',
+      port: 8888,
+    });
   });
 
-  await app.start();
+  it('prevent listening if noServer is set to true', async () => {
+    const connector = moxy({ connect: async () => {} });
+    const app = Machinat.createApp({
+      modules: [
+        Http.initModule({
+          noServer: true,
+          listenOptions: { host: 'localhost', port: 8888 },
+        }),
+      ],
+      services: [{ provide: Http.Connector, withValue: connector }],
+    });
 
-  expect(createServer.mock).toHaveBeenCalledTimes(1);
+    await app.start();
 
-  expect(connector.connect.mock).toHaveBeenCalledTimes(1);
-  expect(connector.connect.mock).toHaveBeenCalledWith(fakeServer, {
-    host: 'localhost',
-    port: 8888,
+    expect(createServer.mock).toHaveBeenCalledTimes(1);
+    expect(connector.connect.mock).not.toHaveBeenCalled();
   });
 });
 

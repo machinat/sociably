@@ -1,5 +1,4 @@
 import type { MachinatPlatform } from '@machinat/core';
-import type { ServiceProvision } from '@machinat/core/service';
 import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseProfiler from '@machinat/core/base/Profiler';
@@ -61,50 +60,41 @@ namespace Telegram {
     TelegramDispatchFrame,
     TelegramResult
   > => {
-    const provisions: ServiceProvision<unknown>[] = [
-      { provide: ConfigsI, withValue: configs },
-      BotP,
-      {
-        provide: BaseBot.PlatformMap,
-        withProvider: BotP,
-        platform: TELEGRAM,
-      },
-
-      ProfilerP,
-      {
-        provide: BaseProfiler.PlatformMap,
-        withProvider: ProfilerP,
-        platform: TELEGRAM,
-      },
-
-      { provide: BaseMarshaler.TypeList, withValue: TelegramChat },
-      { provide: BaseMarshaler.TypeList, withValue: TelegramChatTarget },
-
-      { provide: BaseMarshaler.TypeList, withValue: TelegramUser },
-      { provide: BaseMarshaler.TypeList, withValue: TelegramUserProfile },
-      { provide: BaseMarshaler.TypeList, withValue: TelegramChatProfile },
-    ];
-
-    if (configs.noServer !== true) {
-      provisions.push(ReceiverP, {
-        provide: Http.RequestRouteList,
-        withProvider: webhookRouteFactory,
-      });
-    }
-
     return {
       name: TELEGRAM,
       utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
-      provisions,
 
-      startHook: makeContainer({ deps: [BotP] })(async (bot: BotP) =>
-        bot.start()
-      ),
-      stopHook: makeContainer({ deps: [BotP] })(async (bot: BotP) =>
-        bot.stop()
-      ),
+      startHook: makeContainer({ deps: [BotP] })((bot: BotP) => bot.start()),
+      stopHook: makeContainer({ deps: [BotP] })((bot: BotP) => bot.stop()),
+
+      provisions: [
+        { provide: ConfigsI, withValue: configs },
+        BotP,
+        {
+          provide: BaseBot.PlatformMap,
+          withProvider: BotP,
+          platform: TELEGRAM,
+        },
+
+        ReceiverP,
+        { provide: Http.RequestRouteList, withProvider: webhookRouteFactory },
+
+        ProfilerP,
+        {
+          provide: BaseProfiler.PlatformMap,
+          withProvider: ProfilerP,
+          platform: TELEGRAM,
+        },
+
+        { provide: BaseMarshaler.TypeList, withValue: TelegramChat },
+        { provide: BaseMarshaler.TypeList, withValue: TelegramChatTarget },
+
+        { provide: BaseMarshaler.TypeList, withValue: TelegramUser },
+        { provide: BaseMarshaler.TypeList, withValue: TelegramUserProfile },
+        { provide: BaseMarshaler.TypeList, withValue: TelegramChatProfile },
+      ],
     };
   };
 }

@@ -60,5 +60,8 @@ export type HttpRequestInfo = {
 };
 
 export type HttpConfigs = {
+  /** The options passed to `http.Server.listen()` method */
   listenOptions?: ServerListenOptions;
+  /** Set to `true` to stop HTTP server listening when app start  */
+  noServer?: boolean;
 };

@@ -234,7 +234,6 @@ export type LineConfigs = {
   accessToken: string;
   maxConnections?: number;
   liffChannelIds?: string[];
-  noServer?: boolean;
   eventMiddlewares?: MaybeContainer<LineEventMiddleware>[];
   dispatchMiddlewares?: MaybeContainer<LineDispatchMiddleware>[];
 };

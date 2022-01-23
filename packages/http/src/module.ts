@@ -41,9 +41,11 @@ namespace Http {
     ],
     startHook: makeContainer({
       deps: [ConnectorP, ServerI, ConfigsI],
-    })((connector, server, { listenOptions }) =>
-      connector.connect(server, listenOptions)
-    ),
+    })(async (connector, server, { listenOptions, noServer }) => {
+      if (!noServer) {
+        await connector.connect(server, listenOptions);
+      }
+    }),
     stopHook: makeContainer({ deps: [ServerI] })((server) =>
       thenifiedly.callMethod('close', server)
     ),
