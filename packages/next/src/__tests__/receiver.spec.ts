@@ -14,6 +14,7 @@ const nextDefaultHandler = moxy();
 const nextApp = moxy<ReturnType<typeof createNextApp>>({
   getRequestHandler: () => nextDefaultHandler,
   prepare: async () => {},
+  close: async () => {},
   render: async () => {},
   renderError: async () => {},
   setAssetPrefix() {},
@@ -60,23 +61,32 @@ it('respond 503 if request received before prepared', async () => {
   expect(handleRequest.mock).not.toHaveBeenCalled();
 });
 
-test('#prepare() call next.prepare()', async () => {
-  const receiver = new NextReceiver(nextApp, { noPrepare: false });
-  expect(nextApp.prepare.mock).not.toHaveBeenCalled();
+describe('.prepare()', () => {
+  test('call nextServer.prepare()', async () => {
+    const receiver = new NextReceiver(nextApp);
+    expect(nextApp.prepare.mock).not.toHaveBeenCalled();
 
-  await receiver.prepare();
+    await receiver.prepare();
 
-  expect(nextApp.prepare.mock).toHaveBeenCalledTimes(1);
+    expect(nextApp.prepare.mock).toHaveBeenCalledTimes(1);
+  });
+
+  test('make no call if noPrepare is true', async () => {
+    const receiver = new NextReceiver(nextApp, { noPrepare: true });
+    await receiver.prepare();
+
+    expect(nextApp.prepare.mock).not.toHaveBeenCalled();
+  });
 });
 
-test('#prepare() not call next.prepare() if shouldPrepare is false', async () => {
-  const receiver = new NextReceiver(nextApp, { noPrepare: true });
-  await receiver.prepare();
+test('.close() call nextServer.close()', async () => {
+  const receiver = new NextReceiver(nextApp);
+  await receiver.close();
 
-  expect(nextApp.prepare.mock).not.toHaveBeenCalled();
+  expect(nextApp.close.mock).toHaveBeenCalledTimes(1);
 });
 
-test('handleRequest', async () => {
+test('handle http request', async () => {
   const receiver = new NextReceiver(nextApp, {
     noPrepare: true,
     popError,
@@ -126,7 +136,7 @@ test('handleRequest', async () => {
   });
 });
 
-test('handleRequest with entryPath', async () => {
+test('with entryPath', async () => {
   const receiver = new NextReceiver(nextApp, {
     noPrepare: true,
     entryPath: '/hello',

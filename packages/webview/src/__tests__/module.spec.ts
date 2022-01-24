@@ -19,6 +19,10 @@ import Webview from '../module';
 
 const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
 
+beforeEach(() => {
+  createNextServer.mock.reset();
+});
+
 it('export interfaces', () => {
   expect(Webview.Configs).toMatchInlineSnapshot(`
     Object {
@@ -155,27 +159,54 @@ test('service provisions', async () => {
 
   expect(requestRoutes).toEqual(
     expect.arrayContaining([
-      {
-        name: 'auth',
-        path: '/myAuth',
-        handler: expect.any(Function),
-      },
-      {
-        name: 'next',
-        path: '/myView',
-        handler: expect.any(Function),
-      },
+      { name: 'auth', path: '/myAuth', handler: expect.any(Function) },
+      { name: 'next', path: '/myView', handler: expect.any(Function) },
     ])
   );
-  expect(upgradeRoutes).toEqual(
-    expect.arrayContaining([
-      {
-        name: 'websocket',
-        path: '/mySocket',
-        handler: expect.any(Function),
-      },
-    ])
+  expect(upgradeRoutes).toEqual([
+    { name: 'websocket', path: '/mySocket', handler: expect.any(Function) },
+  ]);
+  await app.stop();
+});
+
+test('with noNextServer option', async () => {
+  const configsInput = {
+    authPlatforms: [NoneAuthenticator],
+    webviewPath: '/myView',
+    authApiPath: '/myAuth',
+    webSocketPath: '/mySocket',
+    webviewHost: 'machinat.io',
+    authSecret: '_SECRET_',
+    noNextServer: true,
+  };
+  const app = Machinat.createApp({
+    platforms: [Webview.initModule(configsInput)],
+  });
+  await app.start();
+
+  const [, , , , , , nextReceiver, nextServer, requestRoutes] = app.useServices(
+    [
+      Webview.Configs,
+      Webview.Bot,
+      Webview.Receiver,
+      Webview.SocketServer,
+      Webview.AuthController,
+      Webview.AuthenticatorList,
+      { require: Webview.NextReceiver, optional: true },
+      { require: Webview.NextServer, optional: true },
+      Http.RequestRouteList,
+      Http.UpgradeRouteList,
+    ]
   );
+
+  expect(nextReceiver).toBe(null);
+  expect(nextServer).toBe(null);
+  expect(createNextServer.mock).not.toHaveBeenCalled();
+
+  expect(requestRoutes).toEqual([
+    { name: 'auth', path: '/myAuth', handler: expect.any(Function) },
+  ]);
+  await app.stop();
 });
 
 test('default routing paths', async () => {
@@ -216,6 +247,7 @@ test('default routing paths', async () => {
       handler: expect.any(Function),
     },
   ]);
+  await app.stop();
 });
 
 test('provide base interfaces', async () => {
@@ -246,10 +278,11 @@ test('provide base interfaces', async () => {
       WebviewTopicChannel,
     ])
   );
+  await app.stop();
 });
 
-test('startHook', async () => {
-  const fakeBot = moxy({ start: async () => {} });
+test('startHook & stopHook', async () => {
+  const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
 
   const app = Machinat.createApp({
     platforms: [
@@ -266,32 +299,14 @@ test('startHook', async () => {
     ],
   });
   await app.start();
-
   expect(fakeBot.start.mock).toHaveBeenCalledTimes(1);
+  expect(fakeBot.stop.mock).not.toHaveBeenCalled();
 
   const nextServer = createNextServer.mock.calls[0].result;
+  expect(nextServer.close.mock).not.toHaveBeenCalled();
   expect(nextServer.prepare.mock).toHaveBeenCalledTimes(1);
-});
-
-test('stopHook', async () => {
-  const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
-
-  const app = Machinat.createApp({
-    platforms: [
-      Webview.initModule({
-        authPlatforms: [NoneAuthenticator],
-        webviewHost: 'machinat.io',
-        authSecret: '_SECRET_',
-      }),
-    ],
-    services: [
-      { provide: Webview.Bot, withValue: fakeBot },
-      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
-    ],
-  });
-  await app.start();
-  expect(fakeBot.stop.mock).not.toHaveBeenCalled();
 
   await app.stop();
   expect(fakeBot.stop.mock).toHaveBeenCalledTimes(1);
+  expect(nextServer.close.mock).toHaveBeenCalledTimes(1);
 });

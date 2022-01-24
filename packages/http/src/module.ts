@@ -1,7 +1,12 @@
 import { createServer } from 'http';
 import thenifiedly from 'thenifiedly';
 import { ServiceModule } from '@machinat/core';
-import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
+import {
+  ServiceProvision,
+  makeContainer,
+  makeFactoryProvider,
+} from '@machinat/core/service';
+
 import {
   ServerI,
   ConfigsI,
@@ -33,27 +38,34 @@ namespace Http {
   export const UpgradeRouteList = UpgradeRouteListI;
   export type UpgradeRouteList = UpgradeRouteListI;
 
-  export const initModule = (configsInput: ConfigsI): ServiceModule => ({
-    provisions: [
+  export const initModule = (configs: ConfigsI): ServiceModule => {
+    const provisions: ServiceProvision<any>[] = [
       ConnectorP,
-      { provide: ConfigsI, withValue: configsInput },
-      { provide: ServerI, withProvider: httpServerFactory },
-    ],
-    startHook: makeContainer({
-      deps: [ConnectorP, ServerI, ConfigsI],
-    })(async (connector, server, { listenOptions, noServer }) => {
-      if (!noServer) {
-        await connector.connect(server, listenOptions);
-      }
-    }),
-    stopHook: makeContainer({ deps: [ServerI, ConfigsI] })(
-      async (server, { noServer }) => {
-        if (!noServer) {
+      { provide: ConfigsI, withValue: configs },
+    ];
+
+    if (!configs.noServer) {
+      provisions.push({ provide: ServerI, withProvider: httpServerFactory });
+    }
+
+    return {
+      provisions,
+      startHook: makeContainer({
+        deps: [ConnectorP, { require: ServerI, optional: true }, ConfigsI],
+      })(async (connector, server, { listenOptions, noServer }) => {
+        if (server && !noServer) {
+          await connector.connect(server, listenOptions);
+        }
+      }),
+      stopHook: makeContainer({
+        deps: [{ require: ServerI, optional: true }, ConfigsI],
+      })(async (server, { noServer }) => {
+        if (server && !noServer) {
           await thenifiedly.callMethod('close', server);
         }
-      }
-    ),
-  });
+      }),
+    };
+  };
 }
 
 export default Http;

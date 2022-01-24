@@ -134,7 +134,7 @@ test('noServer mode', async () => {
   });
 
   await app.start();
-  expect(createServer.mock).toHaveBeenCalledTimes(1);
+  expect(createServer.mock).not.toHaveBeenCalled();
   expect(connector.connect.mock).not.toHaveBeenCalled();
 
   await app.stop();

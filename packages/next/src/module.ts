@@ -46,6 +46,9 @@ namespace Next {
     startHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
       receiver.prepare()
     ),
+    stopHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
+      receiver.close()
+    ),
   });
 }
 

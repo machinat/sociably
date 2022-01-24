@@ -76,6 +76,7 @@ describe('initModule()', () => {
           },
         ],
         "startHook": [Function],
+        "stopHook": [Function],
       }
     `);
   });
@@ -134,6 +135,21 @@ describe('initModule()', () => {
 
     expect(receiver.prepare.mock).toHaveBeenCalledTimes(1);
     expect(receiver.prepare.mock).toHaveBeenCalledWith();
+  });
+
+  test('stopHook() call receiver.close()', async () => {
+    const { stopHook } = Next.initModule({
+      entryPath: '/webview',
+      noPrepare: false,
+      serverOptions: { dev: true },
+    });
+
+    const receiver = moxy({ close: async () => {} });
+
+    await expect(stopHook!.$$factory(receiver)).resolves.toBe(undefined);
+
+    expect(receiver.close.mock).toHaveBeenCalledTimes(1);
+    expect(receiver.close.mock).toHaveBeenCalledWith();
   });
 
   test('default entryPath to "/"', async () => {

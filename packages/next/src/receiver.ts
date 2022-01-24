@@ -47,13 +47,12 @@ export class NextReceiver {
       handleRequest,
       initScope,
       popError,
-    }: NextReceiverOptions
+    }: NextReceiverOptions = {}
   ) {
     this._next = nextApp;
     this._defaultNextHandler = nextApp.getRequestHandler();
     this._pathPrefix = entryPath ? entryPath.replace(/\/$/, '') : '';
     this._shouldPrepare = !noPrepare;
-    this._prepared = false;
 
     this._requestHandler = handleRequest || (() => ({ ok: true }));
     this._initScope = initScope || createEmptyScope;
@@ -69,6 +68,10 @@ export class NextReceiver {
       await this._next.prepare();
     }
     this._prepared = true;
+  }
+
+  async close(): Promise<void> {
+    await this._next.close();
   }
 
   handleRequest(req: IncomingMessage, res: ServerResponse): void {
