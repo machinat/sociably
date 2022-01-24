@@ -124,6 +124,7 @@ const createApp = (options?: CreateAppOptions) => {
           LineWebviewAuth,`}
         ],${when(platforms.includes('messenger'))`
         sameSite: 'none',`}
+        noNextServer: noServer,
         nextServerOptions: {
           dev: DEV,
           dir: './webview',
