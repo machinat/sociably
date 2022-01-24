@@ -127,7 +127,7 @@ export type WebviewConfigs<
   heartbeatInterval?: number;
 
   /** Auth providers from the platforms */
-  authPlatforms: ServiceProvider<AnyServerAuthenticator, unknown[]>[];
+  authPlatforms?: ServiceProvider<AnyServerAuthenticator, unknown[]>[];
   /** Secret to sign token for auth. */
   authSecret: string;
   /** Route path to the auth api. Default to `"/auth"` */
