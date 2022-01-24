@@ -4,8 +4,9 @@ export default () =>
   polishFileContent(`
 import { fromApp } from '@machinat/stream';
 import main from './main';
-import app from './app'
+import createApp from './app'
 
+const app = createApp();
 app
   .start()
   .then(() => {

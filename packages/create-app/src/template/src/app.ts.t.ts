@@ -58,80 +58,88 @@ const {
 
 const DEV = NODE_ENV === 'development';
 
-const app = Machinat.createApp({
-  modules: [
-    Http.initModule({
-      listenOptions: {
-        port: PORT ? Number(PORT) : 8080,
-      },
-    }),
+type CreateAppOptions = {
+  noServer?: boolean;
+};
 
-    DEV
-      ? FileState.initModule({
-          path: './.state_data.json',
-        })
-      : RedisState.initModule({
-          clientOptions: {
-            url: REDIS_URL,
-          },
-        }),
-  ],
+const createApp = (options?: CreateAppOptions) => {
+  return Machinat.createApp({
+    modules: [
+      Http.initModule({
+        noServer: options?.noServer,
+        listenOptions: {
+          port: PORT ? Number(PORT) : 8080,
+        },
+      }),
 
-  platforms: [${when(platforms.includes('messenger'))`
+      DEV
+        ? FileState.initModule({
+            path: './.state_data.json',
+          })
+        : RedisState.initModule({
+            clientOptions: {
+              url: REDIS_URL,
+            },
+          }),
+    ],
 
-    Messenger.initModule({
-      webhookPath: '/webhook/messenger',
-      pageId: Number(MESSENGER_PAGE_ID),
-      appSecret: MESSENGER_APP_SECRET,
-      accessToken: MESSENGER_ACCESS_TOKEN,
-      verifyToken: MESSENGER_VERIFY_TOKEN,
-    }),`}${when(platforms.includes('telegram'))`
+    platforms: [${when(platforms.includes('messenger'))`
 
-    Telegram.initModule({
-      webhookPath: '/webhook/telegram',
-      botToken: TELEGRAM_BOT_TOKEN,
-      secretPath: TELEGRAM_SECRET_PATH,
-    }),`}${when(platforms.includes('line'))`
+      Messenger.initModule({
+        webhookPath: '/webhook/messenger',
+        pageId: Number(MESSENGER_PAGE_ID),
+        appSecret: MESSENGER_APP_SECRET,
+        accessToken: MESSENGER_ACCESS_TOKEN,
+        verifyToken: MESSENGER_VERIFY_TOKEN,
+      }),`}${when(platforms.includes('telegram'))`
 
-    Line.initModule({
-      webhookPath: '/webhook/line',
-      providerId: LINE_PROVIDER_ID,
-      channelId: LINE_CHANNEL_ID,
-      accessToken: LINE_ACCESS_TOKEN,
-      channelSecret: LINE_CHANNEL_SECRET,${when(platforms.includes('webview'))`
-      liffChannelIds: [LINE_LIFF_ID.split('-')[0]],`}
-    }),`}${when(platforms.includes('webview'))`
+      Telegram.initModule({
+        webhookPath: '/webhook/telegram',
+        botToken: TELEGRAM_BOT_TOKEN,
+        secretPath: TELEGRAM_SECRET_PATH,
+      }),`}${when(platforms.includes('line'))`
 
-    Webview.initModule<${when(platforms.includes('messenger'))`
-      | MessengerWebviewAuth`}${when(platforms.includes('telegram'))`
-      | TelegramWebviewAuth`}${when(platforms.includes('line'))`
-      | LineWebviewAuth`}
-    >({
-      webviewHost: DOMAIN,
-      webviewPath: '/webview',
-      authSecret: WEBVIEW_AUTH_SECRET,
-      authPlatforms: [${when(platforms.includes('messenger'))`
-        MessengerWebviewAuth,`}${when(platforms.includes('telegram'))`
-        TelegramWebviewAuth,`}${when(platforms.includes('line'))`
-        LineWebviewAuth,`}
-      ],
-      ${when(platforms.includes('messenger'))`
-      sameSite: 'none',`}
-      nextServerOptions: {
-        dev: DEV,
-        dir: './webview',
-        conf: nextConfigs,
-      },
-    }),`}
-  ],
-${when(platforms.includes('webview'))`
-  services: [
-    { provide: ServerDomain, withValue: DOMAIN },${when(
-      platforms.includes('line')
-    )`
-    { provide: LineLiffId, withValue: LINE_LIFF_ID },`}
-  ],`}
-});
+      Line.initModule({
+        webhookPath: '/webhook/line',
+        providerId: LINE_PROVIDER_ID,
+        channelId: LINE_CHANNEL_ID,
+        accessToken: LINE_ACCESS_TOKEN,
+        channelSecret: LINE_CHANNEL_SECRET,${when(
+          platforms.includes('webview')
+        )`
+        liffChannelIds: [LINE_LIFF_ID.split('-')[0]],`}
+      }),`}${when(platforms.includes('webview'))`
 
-export default app;
+      Webview.initModule<${when(platforms.includes('messenger'))`
+        | MessengerWebviewAuth`}${when(platforms.includes('telegram'))`
+        | TelegramWebviewAuth`}${when(platforms.includes('line'))`
+        | LineWebviewAuth`}
+      >({
+        webviewHost: DOMAIN,
+        webviewPath: '/webview',
+        authSecret: WEBVIEW_AUTH_SECRET,
+        authPlatforms: [${when(platforms.includes('messenger'))`
+          MessengerWebviewAuth,`}${when(platforms.includes('telegram'))`
+          TelegramWebviewAuth,`}${when(platforms.includes('line'))`
+          LineWebviewAuth,`}
+        ],${when(platforms.includes('messenger'))`
+        sameSite: 'none',`}
+        nextServerOptions: {
+          dev: DEV,
+          dir: './webview',
+          conf: nextConfigs,
+        },
+      }),`}
+    ],${when(platforms.includes('webview'))`
+
+    services: [
+      { provide: ServerDomain, withValue: DOMAIN },${when(
+        platforms.includes('line')
+      )`
+      { provide: LineLiffId, withValue: LINE_LIFF_ID },`}
+    ],`}
+  });
+};
+
+export default createApp;
 `);

@@ -15,38 +15,9 @@ import Telegram from '@machinat/telegram';`}${when(platforms.includes('line'))`
 import Line from '@machinat/line';`}
 import { Umzug, JSONStorage } from 'umzug';
 import { program } from 'commander';
+import createApp from '../app';
 
-const {${when(platforms.includes('messenger'))`
-  MESSENGER_PAGE_ID,
-  MESSENGER_ACCESS_TOKEN,`}${when(platforms.includes('telegram'))`
-  TELEGRAM_BOT_TOKEN,`}${when(platforms.includes('line'))`
-  LINE_PROVIDER_ID,
-  LINE_CHANNEL_ID,
-  LINE_ACCESS_TOKEN,`}
-} = process.env as Record<string, string>;
-
-const app = Machinat.createApp({
-  platforms: [
-${when(platforms.includes('messenger'))`
-    Messenger.initModule({
-      pageId: Number(MESSENGER_PAGE_ID),
-      accessToken: MESSENGER_ACCESS_TOKEN,
-      noServer: true,
-    }),`}
-${when(platforms.includes('telegram'))`
-    Telegram.initModule({
-      botToken: TELEGRAM_BOT_TOKEN,
-      noServer: true,
-    }),`}
-${when(platforms.includes('line'))`
-    Line.initModule({
-      providerId: LINE_PROVIDER_ID,
-      channelId: LINE_CHANNEL_ID,
-      accessToken: LINE_ACCESS_TOKEN,
-      noServer: true,
-    }),`}
-  ],
-});
+const app = createApp({ noServer: true });
 
 const umzug = new Umzug({
   storage: new JSONStorage({
