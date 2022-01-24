@@ -12,7 +12,7 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./RegexIntentRecognition": "./lib/RegexIntentRecognition/index.js",
+    "./RegexRecognition": "./lib/RegexRecognition/index.js",
     "./FileState": "./lib/FileState/index.js",
     "./InMemoryState": "./lib/InMemoryState/index.js"
   },
