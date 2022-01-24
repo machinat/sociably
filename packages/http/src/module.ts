@@ -46,8 +46,12 @@ namespace Http {
         await connector.connect(server, listenOptions);
       }
     }),
-    stopHook: makeContainer({ deps: [ServerI] })((server) =>
-      thenifiedly.callMethod('close', server)
+    stopHook: makeContainer({ deps: [ServerI, ConfigsI] })(
+      async (server, { noServer }) => {
+        if (!noServer) {
+          await thenifiedly.callMethod('close', server);
+        }
+      }
     ),
   });
 }
