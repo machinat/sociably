@@ -12,25 +12,24 @@ real features. In this lesson, you will learn how to use built-in DI
 
 ### Use Profiler
 
-Fetching user name is a common feature to make your bot chat better. We can use
-`Machinat.Profiler` service to achieve that.
+Calling users by name is a common feature to improve chat experience. We can use
+`BasicProfiler` service to get an user's profile.
 
 Edit the `handleMessage` handler like this:
 
-```tsx {2,6-9,18,21,25} title="src/handlers/handleMessage.tsx"
-import Machinat from '@machinat/core';
+```tsx {1-2,6-9,17,20} title="src/handlers/handleMessage.tsx"
+import Machinat, { BasicProfiler } from '@machinat/core';
 import { makeContainer } from '@machinat/core/service';
 import WithMenu from '../components/WithMenu';
 import { ChatEventContext } from '../types';
 
 const handleMessage = makeContainer({
-  deps: [Machinat.Profiler],
+  deps: [BasicProfiler],
 })(
   (profiler) =>
-    async ({
-      event,
-      reply,
-    }: ChatEventContext & { event: { category: 'message' } }) => {
+    async (ctx: ChatEventContext & { event: { category: 'message' } }) => {
+      const { event, reply } = ctx;
+
       if (event.type === 'text') {
         // ...
       }
@@ -46,32 +45,26 @@ const handleMessage = makeContainer({
 
 export default handleMessage;
 ```
-
-The `Machinat.Profiler` service help us to fetch user profile across platforms.
-But to use that, we have to require it from the DI system.
-
-`makeContainer` function declares a **Service Container** with the required
-`deps` services. It takes a factory function returning the original handler:
+The `makeContainer({ deps: [BasicProfiler] })(...)` declare the dependencies of
+the handler and wrap it as a **container**. The deps will be injected into a
+factory function in the runtime, like:
 
 ```ts
 (profiler) => async (context) => {/* ... */}
 ```
 
-The `profiler` instance will be injected into factory function when the handler
-is called. Then it can be used in the handler codes.
-
-Now our bot can say hello with the user name like:
+Now we can call `profiler.getUserProfile(user)` in the handler to say hello by
+the user's name.
 
 <img width={400} src={require("./assets/hello-with-name.png").default} />
 
 ### Use StateController
 
-Another commonly used service is storing state of the chat. The app itself
-is stateless, so you have save the user settings or any other data to continue
-the conversation.
+Another commonly used service is `StateController`. The app itself is a stateless
+server, so we need to persist data for using them later in the conversation.
 
-Let's try storing the todos data into state when receive an adding todo command.
-First add the type for the todos state:
+Let's try storing the todos data into chat state. First add the type for the
+todos state:
 
 ```ts title="src/types.ts"
 export type TodoState = {
@@ -84,43 +77,42 @@ export type TodoState = {
 Then add the following codes in `handleMessage` handler:
 
 ```tsx {1-2,5,7,17-29,32} title="src/handlers/handleMessage.tsx"
-import StateController from '@machinat/core/base/StateController';
+import Machinat, { BasicProfiler, StateController } from '@machinat/core';
 import { TodoState } from '../types';
 // ...
 const handleMessage = makeContainer({
-  deps: [Machinat.Profiler, StateController],
+  deps: [BasicProfiler, StateController],
 })(
   (profiler, stateController) =>
-    async ({
-      event,
-      reply,
-    }: ChatEventContext & { event: { category: 'message' } }) => {
-  if (event.type === 'text') {
-    const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
-    if (matchingAddTodo) {
-      const todoName = matchingAddTodo[2].trim();
+    async (ctx: ChatEventContext & { event: { category: 'message' } }) => {
+      const { event, reply } = ctx;
 
-      const todoData = await stateController
-        .channelState(event.channel)
-        .update<TodoState>(
-          'todo_data',
-          (currentState = { currentId: 0, todos: [], finishedTodos: [] }) => {
-            const { currentId, todos, finishedTodos } = currentState;
-            return {
-              currentId: currentId + 1,
-              todos: [...todos, { id: currentId + 1, name: todoName }],
-              finishedTodos,
-            };
-          }
-        );
+      if (event.type === 'text') {
+        const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
+        if (matchingAddTodo) {
+          const todoName = matchingAddTodo[2].trim();
 
-      return reply(
-        <WithMenu todoCount={todoData.todos.length}>
-          <p>Todo "<b>{todoName}</b>" is added!</p>
-        </WithMenu>
-      );
-    }
-  }
+          const todoData = await stateController
+            .channelState(event.channel)
+            .update<TodoState>(
+              'todo_data',
+              (currentState = { currentId: 0, todos: [], finishedTodos: [] }) => {
+                const { currentId, todos, finishedTodos } = currentState;
+                return {
+                  currentId: currentId + 1,
+                  todos: [...todos, { id: currentId + 1, name: todoName }],
+                  finishedTodos,
+                };
+              }
+            );
+
+          return reply(
+            <WithMenu todoCount={todoData.todos.length}>
+              <p>Todo "<b>{todoName}</b>" is added!</p>
+            </WithMenu>
+          );
+        }
+      }
   // ...
 ```
 
@@ -255,9 +247,9 @@ Edit `handleMessage` function like this:
 import TodoController from '../services/TodoController';
 // ...
 const handleMessage = makeContainer({
-  deps: [Machinat.Profiler, StateController, TodoController],
+  deps: [BasicProfiler, TodoController],
 })(
-  (profiler, stateController, todoController) =>
+  (profiler, todoController) =>
   async ({
     event,
     reply,

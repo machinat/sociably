@@ -1,23 +1,25 @@
 import moxy from '@moxyjs/moxy';
-import { BaseProfiler } from '../Profiler';
+import { BasicProfiler, MachinatProfile } from '../Profiler';
 
 const fooProfiler = moxy({
-  getUserProfile: async () => ({
-    platform: 'test',
-    name: 'FOO',
-    avatar: 'http://foo...',
-  }),
+  getUserProfile: async () =>
+    ({
+      platform: 'test',
+      name: 'FOO',
+      avatarUrl: 'http://foo...',
+    } as MachinatProfile),
 });
 const barProfiler = moxy({
-  getUserProfile: async () => ({
-    platform: 'test',
-    name: 'BAR',
-    avatar: 'http://bar...',
-  }),
+  getUserProfile: async () =>
+    ({
+      platform: 'test',
+      name: 'BAR',
+      avatarUrl: 'http://bar...',
+    } as MachinatProfile),
 });
 
 it('proxy #getUserProfile() call to the profiler corresponded to the user platform', async () => {
-  const profiler = new BaseProfiler(
+  const profiler = new BasicProfiler(
     new Map([
       ['foo', fooProfiler],
       ['bar', barProfiler],
@@ -29,14 +31,14 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
   ).resolves.toEqual({
     platform: 'test',
     name: 'FOO',
-    avatar: 'http://foo...',
+    avatarUrl: 'http://foo...',
   });
   await expect(
     profiler.getUserProfile({ platform: 'bar', uid: 'bar1' })
   ).resolves.toEqual({
     platform: 'test',
     name: 'BAR',
-    avatar: 'http://bar...',
+    avatarUrl: 'http://bar...',
   });
 
   expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledTimes(1);
@@ -56,7 +58,7 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
   ).resolves.toEqual({
     platform: 'test',
     name: 'FOO',
-    avatar: 'http://foo...',
+    avatarUrl: 'http://foo...',
   });
 
   expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledTimes(2);
@@ -67,7 +69,7 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
 });
 
 it('throw if user from unsupported platform received', async () => {
-  const profiler = new BaseProfiler(
+  const profiler = new BasicProfiler(
     new Map([
       ['foo', fooProfiler],
       ['bar', barProfiler],

@@ -33,10 +33,10 @@ For now the modules listed below with different kinds of storage are officially 
 All state modules provide the `Base.StateController` interface, you can use it without worrying which storage is it. Let's try getting the conversation state in a container:
 
 ```js
-import { StateController } from '@machinat/core/base';
+import { makeContainer, StateController } from '@machinat/core';
 
 app.onEvent(
-  container({ deps: [StateController] })(
+  makeContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply }) => {
       const bookmarks = await stateController
         .channelState(event.channel)
@@ -58,7 +58,7 @@ To set state use the `accessor.update(key, updater)` method:
 
 ```js
 app.onEvent(
-  container({ deps: [StateController] })(
+  makeContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply } ) => {
       let matched;
       if (
@@ -94,7 +94,7 @@ To use state on an user instead of a channel, use `controller.userState(user)` m
 
 ```js
 app.onEvent(
-  container({ deps: [StateController] })(
+  makeContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply }) => {
       let matched;
       if (

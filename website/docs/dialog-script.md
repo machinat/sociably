@@ -15,9 +15,7 @@ You have to install `@machinat/script` package to use Machinat script. And make 
 Here is a simple Machinat script for making order:
 
 ```js
-import Machinat from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
-import IntentRecognizerI from '@machinat/core/base/IntentRecognizerI';
+import Machinat, { makeContainer, IntentRecognizer } from '@machinat/core';
 import { build } from '@machinat/script';
 import * as $ from '@machinat/script/keywords';
 import OrderSideDish from './OrderSideDish';
@@ -53,7 +51,7 @@ export default build(
       key="ask-side-dish"
       set={
         makeContainer({
-          deps: [IntentRecognizerI],
+          deps: [IntentRecognizer],
         })(recognizer =>
           async ({ vars, channel }, { event }) => {
             const { intentType } = await recognizer.detectText(
@@ -340,7 +338,7 @@ that is running.
 You can add these codes in the event handler:
 
 ```js
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core';
 import Script from '@machinat/script';
 
 app.onEvent(
@@ -365,7 +363,7 @@ We can simply reply the dialog messages with `runtime.output()`.
 Or if you're using `@machinat/stream`, filter the stream like this:
 
 ```js
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core';
 import Script from '@machinat/script';
 import { filter } from '@machinat/stream/operators'
 

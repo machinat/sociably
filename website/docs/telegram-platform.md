@@ -219,7 +219,7 @@ Here is an example to upload an image for sending and reuse it:
 
 ```tsx
 import fs from 'fs';
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core';
 import * as Telegram from '@machinat/telegram/components';
 import TelegramAssetsManager from '@machinat/telegram/asssets';
 

@@ -18,8 +18,7 @@ Using `Base.IntentRecognizer` is the recommended way to recognize intent. The
 base interface allows you to change supplier without changing the usage code.
 
 ```js
-import { makeContainer } from '@machinat/core/service';
-import IntentRecognizer from '@machinat/core/base/IntentRecognizer';
+import { makeContainer, IntentRecognizer } from '@machinat/core';
 
 app.onEvent(
   makeContainer({ deps: [IntentRecognizer] })(
@@ -59,8 +58,7 @@ handling quick replies, recognizing emoji or parsing special format. You can
 wrap the intent recognizer with your own service, like this:
 
 ```js
-import { makeFactoryProvider } from '@machinat/core/service';
-import IntentRecognizer from '@machinat/core/base/IntentRecognizer';
+import { makeFactoryProvider, IntentRecognizer } from '@machinat/core';
 
 const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
   (recognizer) =>
@@ -74,9 +72,6 @@ const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
 
         if (/^(yes|ok|good|👌|👍)$/i.test(text)) {
           return { type: 'yes', confidence: 1, payload: null };
-        }
-        if (/^(no|nope|👎|💩|🖕)$/i.test(text)) {
-          return { type: 'no', confidence: 1, payload: null };
         }
 
         const matchFooCommand = text.match(/^\/foo (bar|baz)$/);
@@ -95,7 +90,7 @@ const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
 Then use your customized recognizer to detect intent like this:
 
 ```js
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core';
 import useIntent from './useIntent';
 
 app.onEvent(
@@ -115,9 +110,10 @@ If you need supplier specific features, you can use the implementation provider
 directly. For example, use `DialogFlow.IntentRecognizer` like this:
 
 ```js
+import { makeContainer } from '@machinat/core';
 import DialogFlow from '@machinat/dialogflow';
 
-container({ deps: [DialogFlow.IntentRecognizer] })(
+makeContainer({ deps: [DialogFlow.IntentRecognizer] })(
   (recognizer) =>
     async (context) => {
       const intent = await recognizer.detectText(

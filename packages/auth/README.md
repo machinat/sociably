@@ -23,8 +23,7 @@ Here is a simple example to protect your API with auth module:
 #### Back-end
 
 ```js
-import Machinat from '@machinat/core';
-import { makeFactoryProvider } from '@machinat/core/service';
+import Machinat, { makeFactoryProvider } from '@machinat/core';
 import Http from '@machinat/http';
 import Auth from '@machinat/auth';
 // add the platforms and the authenticator you need

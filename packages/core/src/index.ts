@@ -7,9 +7,6 @@ import {
 } from './symbol';
 import createMachinatElement from './createElement';
 import App from './app';
-import BaseBotP from './base/Bot';
-import BaseProfilerP from './base/Profiler';
-import MarshalerP from './base/Marshaler';
 import type {
   AppConfig,
   MachinatElement,
@@ -23,6 +20,17 @@ import type {
   RawProps,
 } from './types';
 
+export {
+  makeContainer,
+  makeInterface,
+  makeClassProvider,
+  makeFactoryProvider,
+} from './service';
+export { default as BasicBot } from './base/Bot';
+export { default as BasicProfiler } from './base/Profiler';
+export { default as StateController } from './base/StateController';
+export { default as IntentRecognizer } from './base/IntentRecognizer';
+export { default as Marshaler } from './base/Marshaler';
 export * from './types';
 
 /**
@@ -54,10 +62,6 @@ namespace Machinat {
   ) => null;
 
   export const Raw = MACHINAT_RAW_TYPE as unknown as (props: RawProps) => null;
-
-  export const Bot = BaseBotP;
-  export const Profiler = BaseProfilerP;
-  export const Marshaler = MarshalerP;
 
   export namespace JSX {
     export type Element = MachinatElement<any, any>;

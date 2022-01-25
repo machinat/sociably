@@ -61,8 +61,10 @@ event$.subscribe(async ({ event, reply }) => {
 It can also take a service container like:
 
 ```js
+import Machinat, { BasicProfiler } from '@machinat/core';
+
 event$.subscribe(
-  makeContainer({ deps: [Machinat.Profiler] })(
+  makeContainer({ deps: [BasicProfiler] })(
     (profiler) =>
       async ({ event, reply }) => {
         const profile = await profiler.getUserProfile(event.user);
@@ -101,8 +103,7 @@ THe `map` operator take a transformer function of type `(eventContext) => newCon
 It useful to doing pretreatment jobs and attach the result onto the context. For example:
 
 ```js
-import { makeContainer } from '@machinat/core/service';
-import IntentRecognizer from '@machinat/core/base/IntentRecognizer';
+import { makeContainer, IntentRecognizer } from '@machinat/core';
 import { map } from '@machinat/stream/operators';
 
 const eventWithIntent$ = event$.pipe(
@@ -131,8 +132,7 @@ In the codes above, we use a service container of the transformer function for `
 The `tap` operator take a side effect operator function and pass down the original context after finished. The difference between `stream.subscribe(operator)` is that the execution of `tap` is promised to be one by one within the chat scope.
 
 ```js
-import { makeContainer } from '@machinat/core/service';
-import StateController from '@machinat/core/base/StateController';
+import Machinat, { makeContainer, StateController } from '@machinat/core';
 import { tap } from '@machinat/stream/operators';
 
 event$.pipe(

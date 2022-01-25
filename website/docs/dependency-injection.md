@@ -56,7 +56,7 @@ Dependencies injection is a technique to allow injected code to receive its depe
 In Machinat, this can be achieve by a **Service Container**. A Machinat container is simply a function annotated with the dependencies it required as the parameters.
 
 ```js
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core';
 
 const fooBarContainer = makeContainer({
   deps: [FooI, BarI]
@@ -74,11 +74,11 @@ Machinat by default support dependencies injection for event/error handlers and 
 The `app.onEvent` and `app.onError` methods can accept a container handler like this:
 
 ```js
-import { container } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core';
 import Messenger from '@machinat/messenger';
 
 app.onEvent(
-  container({ deps: [Messenger.Profiler] })(
+  makeContainer({ deps: [Messenger.Profiler] })(
     (profiler) => async ({ event, reply } ) => {
       const profile = await profiler.getUserProfile(event.user);
 
@@ -97,7 +97,7 @@ When a event/error is popped, app would inject the container then call the retur
 By default an error would be throw if a unregistered dependency is being required. You can mark a requisition as optional to prevent this:
 
 ```js
-container({
+makeContainer({
   deps: [{ require: FooService, optional: true }]
 })((foo) => (ctx) => {
   // foo would be null if not registered
@@ -106,6 +106,45 @@ container({
   }
 })
 ```
+
+### Use Build-in Services
+
+Machinat provides some commonly used services for making conversational apps. For example, to recognize intents, to fetch users' profile or to save/load state data. You can put them together in a chat like this:
+
+```js
+import { IntentRecognizer, BasicProfiler, StateController } from '@machinat/core';
+
+app.onEvent(
+  makeContainer({
+    deps: [IntentRecognizer, BasicProfiler, StateController],
+  })(
+    (recognizer, profiler, stateController) => async context => {
+      const { bot, event: { channel, user } } = context;
+
+      if (event.type === 'text') {
+        const intent = await recognizer.detectText(event.channel, event.text);
+
+        if (intent.type === 'hello') {
+          const profile = await profiler.getUserProfile(user);
+          await bot.render(channel, `Hello ${profile?.name || 'there'}!`);
+
+          await stateController
+            .channelState(channel)
+            .update('hello_count', (count = 0) => count + 1);
+        }
+      }
+    }
+  )
+);
+```
+
+Here are the list of them, please check the references for more details:
+
+- [`BasicBot`](pathname:///api/modules/core_base_bot): Send messages to a platform agnostic channel, so you don't have to require `Bot` implementation of each platform.
+- [`BasicProfiler`](pathname:///api/modules/core_base_profiler): Fetch profile of a platform agnostic user, so you don't have to require `Profiler` implementation of each platform.
+- [`StateController`](pathname:///api/modules/core_base_statecontroller): Save and load channel/user state from the storage. We'll introduce it more in the [Using State](using-states.md) doc.
+- [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): Recognize intent of a text message. We'll introduce it more in the [Recognizing Intent](recognizing-intent.md) doc.
+- [`Marshaler`](pathname:///api/modules/core_base_marshaler): Marshal/unmarshal instances of the built-in classes, like users and channels, so they can be saved/loaded direclty while using `StateController`. You can also add your own data types.
 
 ### Register Services
 
@@ -133,7 +172,7 @@ const [foo, assets] = app.useServices([
   MessengerAssetsManager,
 ]);
 // or
-container({ deps: [FooService, MessengerAssetsManager] })(
+makeContainer({ deps: [FooService, MessengerAssetsManager] })(
   (foo, assetsManager) => ctx => {
     // ...
   }
@@ -147,7 +186,7 @@ In spite of the official services, it is really easy to make a service provider 
 Before register your own class in the app, you have to annotate the metadata about it:
 
 ```js
-import { makeClassProvider } from '@machinat/core/service';
+import { makeClassProvider } from '@machinat/core';
 import BeerService from './beer';
 
 class BarService {
@@ -216,7 +255,7 @@ console.log(myService instanceof AnotherService); // true
 Moreover you might want to have a interface to bind different providers on it, depends on different situations:
 
 ```js
-import { makeInterface } from '@machinat/core/service';
+import { makeInterface } from '@machinat/core';
 import MyServiceImpl from './MyServiceImpl';
 
 const MyService = makeInterface({ name: 'MyService' })
@@ -235,7 +274,7 @@ also optionally accept multiple implementations with `multi` options like:
 
 
 ```js
-import { makeInterface } from '@machinat/core/service';
+import { makeInterface } from '@machinat/core';
 
 const MyFavoriteFood = makeInterface({ name: 'MyService', multi: true })
 
@@ -278,39 +317,3 @@ There are three types of lifetime which defines how long the the provider instan
 A service scope is an abstract period of time to 1) handle a received event or 2) dispatch the rendering.
 
 For the provider has `'scoped'` lifetime, it will only be created one time lazily in a service scope. The instance will then being cached and used by later requisition.
-
-### Use Base Services
-
-It is very common to have implementations by different platforms or situations. Machinat provide some `Base` interfaces of common services, so you can access them without worrying which implementation it is being used like this:
-
-```js
-import Profiler from '@machinat/core/base/Profiler';
-import StateController from '@machinat/core/base/StateController';
-
-app.onEvent(
-  container({
-    deps: [Profiler, StateController],
-  })(
-    (profiler, stateController) => async context => {
-      const { bot, event: { channel, user } } = context;
-
-      const profile = await profiler.getUserProfile(user);
-      await bot.render(channel, `Hello ${profile ? profile.name : 'there'}!`);
-
-      await stateController
-        .channelState(channel)
-        .update('hello_count', (count = 0) => count + 1);
-    }
-  )
-);
-```
-
-In the example above, `Base.Profiler` can be used to fetch profile of users from different platforms, the implementations is registered along with the platform modules. And the `Base.StateController` is the interface to access the channel/user state, no matter which storage you registered (more about state will be discuss [later](using-states.md)).
-
-For now the following `Base` interfaces are supported:
-
-- [`Bot`](pathname:///api/modules/core_base_bot): send messages to a channel across platforms, also available on `Machinat.Bot`.
-- [`Profiler`](pathname:///api/modules/core_base_profiler): fetch profile of users across platforms, also available on `Machinat.Profiler`.
-- [`StateController`](pathname:///api/modules/core_base_statecontroller): save and load state from state storage.
-- [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): recognize intent with external providers.
-- [`Marshaler`](pathname:///api/modules/core_base_marshaler): marshal/unmarshal instances of built-in classes like user and channel.

@@ -219,7 +219,7 @@ Here is an example to upload a reusable attachment and reuse it:
 
 ```tsx
 import fs from 'fs';
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core';
 import * as Messenger from '@machinat/messenger/components';
 import MessengerAssetsManager, { saveReusableAttachments } from '@machinat/messenger/asssets';
 

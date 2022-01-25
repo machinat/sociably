@@ -22,8 +22,7 @@ for API details.
 ## Example
 
 ```js
-import { makeContainer } from '@machinat/core/service';
-import IntentRecognizer from '@machinat/core/base/IntentRecognizer';
+import { makeContainer, IntentRecognizer } from '@machinat/core';
 import { fromApp } from '@machinat/stream';
 import { map, filter } from '@machinat/stream/operators';
 import app from './app';

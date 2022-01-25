@@ -215,7 +215,7 @@ const app = Machinat.createApp({
 Here is an example to reuse dynamic richmenu:
 
 ```tsx
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@machinat/core';
 import * as Line from '@machinat/line/components';
 import LineAssetsManager from '@machinat/line/asssets';
 

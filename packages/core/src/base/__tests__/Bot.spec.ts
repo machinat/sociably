@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import { MachinatBot, MachinatChannel } from '../../types';
-import { BaseBot } from '../Bot';
+import { BasicBot } from '../Bot';
 
 type UnknownBot = MachinatBot<MachinatChannel, unknown, unknown>;
 
@@ -8,7 +8,7 @@ const fooBot = moxy<UnknownBot>({ render: async () => 'FOO' } as never);
 const barBot = moxy<UnknownBot>({ render: async () => 'BAR' } as never);
 
 it('proxy #render() call to the bot corresponded to the channel platform', async () => {
-  const bot = new BaseBot(
+  const bot = new BasicBot(
     new Map([
       ['foo', fooBot],
       ['bar', barBot],
@@ -46,7 +46,7 @@ it('proxy #render() call to the bot corresponded to the channel platform', async
 });
 
 it('throw if channel from unsupported platform received', async () => {
-  const bot = new BaseBot(
+  const bot = new BasicBot(
     new Map([
       ['foo', fooBot],
       ['bar', barBot],

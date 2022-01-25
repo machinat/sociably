@@ -12,7 +12,9 @@ const BotPlatformMapI = makeInterface<
 /**
  * @category Base
  */
-export class BaseBot implements MachinatBot<MachinatChannel, unknown, unknown> {
+export class BasicBot
+  implements MachinatBot<MachinatChannel, unknown, unknown>
+{
   static PlatformMap = BotPlatformMapI;
   private _platformMapping: Map<
     string,
@@ -46,8 +48,8 @@ export class BaseBot implements MachinatBot<MachinatChannel, unknown, unknown> {
 const BotP = makeClassProvider({
   lifetime: 'transient',
   deps: [BotPlatformMapI],
-})(BaseBot);
+})(BasicBot);
 
-type BotP = BaseBot;
+type BotP = BasicBot;
 
 export default BotP;

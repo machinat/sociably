@@ -408,8 +408,10 @@ app.onEvent(async context => {
 The webview can integrate with chatroom to provide a hybrid experience in both GUI and chat UI. The `metadata.auth.channel` refer to the original chat where the user comes from. It can be used to send messages in the original chatroom like:
 
 ```js
+import Machinat, { BasicBot } from '@machinat/core';
+
 app.onEvent(
-  makeContainer({ deps: [Machinat.Bot] })(
+  makeContainer({ deps: [BasicBot] })(
     (baseBot) =>
       async ({ platform, metadata, event }) => {
         if (platform === 'webview' && event.type === 'connect') {

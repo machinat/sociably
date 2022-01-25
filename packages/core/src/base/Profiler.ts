@@ -19,7 +19,7 @@ export interface UserProfiler<User extends MachinatUser> {
 /**
  * @category Base
  */
-export class BaseProfiler implements UserProfiler<MachinatUser> {
+export class BasicProfiler implements UserProfiler<MachinatUser> {
   static PlatformMap = makeInterface<UserProfiler<MachinatUser>>({
     name: 'ProfilerPlatformMap',
     polymorphic: true,
@@ -45,8 +45,8 @@ export class BaseProfiler implements UserProfiler<MachinatUser> {
 
 const ProfilerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [BaseProfiler.PlatformMap],
-})(BaseProfiler);
+  deps: [BasicProfiler.PlatformMap],
+})(BasicProfiler);
 
 type ProfilerP = UserProfiler<MachinatUser>;
 
