@@ -1,6 +1,6 @@
 {
   "name": "@machinat/telegram",
-  "version": "0.5.0-beta.40",
+  "version": "0.5.0-beta.41",
   "description": "Messenger platform for Machinat.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -43,6 +43,6 @@
     "@machinat/http": "^0.5.0-beta"
   },
   "optionalDependencies": {
-    "@machinat/webview": "^0.5.0-beta.40"
+    "@machinat/webview": "^0.5.0-beta.41"
   }
 }
