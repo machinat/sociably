@@ -1,6 +1,6 @@
 {
   "name": "@machinat/script",
-  "version": "0.5.0-beta.41",
+  "version": "0.5.0-beta.42",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -34,6 +34,6 @@
     "@machinat/core": "^0.5.0-beta"
   },
   "devDependencies": {
-    "@machinat/dev-tools": "^0.5.0-beta.41"
+    "@machinat/dev-tools": "^0.5.0-beta.42"
   }
 }
