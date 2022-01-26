@@ -32,12 +32,12 @@ describe('.detectText()', () => {
     ['Hello? World!!?', 'hello', 'en'],
     ['Hi, Mark!', 'hello', undefined],
     ['MaY tHe FoRcE be With YOU', 'hello', 'en'],
-    ['(願原力與你同在!?', 'hello', 'zh-TW'],
+    ['願原力與你同在!?', 'hello', 'zh-TW'],
     ['foo bar baz', 'fooBarBaz', undefined],
     ['foo-bar_baz', 'fooBarBaz', 'en'],
     ['`foo` \'bar\' "baz"', 'fooBarBaz', undefined],
-    ['foo||bar&&baz', 'fooBarBaz', 'en'],
-    ['_富-爸+霸子\\', 'fooBarBaz', 'zh-TW'],
+    ['foo;bar&baz', 'fooBarBaz', 'en'],
+    ['富-爸+霸子', 'fooBarBaz', 'zh-TW'],
   ])('match intent', async (text, expectedType, language) => {
     await expect(
       rocognizer.detectText(channel, text, { language })

@@ -8,7 +8,7 @@ import type {
 import { ConfigsI } from './interface';
 import { RegexRecognitionConfigs } from './types';
 
-const SPECIAL_CHARACTER = '|&!?+-_.,;`\'"/()\\\\';
+const SPECIAL_CHARACTER = '&!?+-_.,;`\'"/';
 const specialCharacterMatcher = new RegExp(`[${SPECIAL_CHARACTER}]`, 'g');
 
 export class RegexIntentRecognizer<
@@ -40,7 +40,7 @@ export class RegexIntentRecognizer<
         matchers.set(
           name,
           new RegExp(
-            `(${phrases
+            `(^|[${SPECIAL_CHARACTER}\\s])(${phrases
               .map((p) =>
                 p
                   .toLowerCase()
@@ -48,7 +48,7 @@ export class RegexIntentRecognizer<
                   .trim()
                   .replace(/\s+/g, `[${SPECIAL_CHARACTER}\\s]+`)
               )
-              .join('|')})`,
+              .join('|')})($|[${SPECIAL_CHARACTER}\\s])`,
             'i'
           )
         );
