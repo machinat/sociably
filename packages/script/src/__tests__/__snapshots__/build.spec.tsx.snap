@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`built script object 1`] = `
+exports[`Script object 1`] = `
 Array [
   Object {
     "getContent": [Function],
@@ -27,6 +27,7 @@ Array [
     "key": "call_1",
     "script": Object {
       "$$typeof": Symbol(lib.script.machinat),
+      "Start": [Function],
       "commands": Array [
         Object {
           "getContent": [Function],
@@ -104,7 +105,7 @@ Array [
 ]
 `;
 
-exports[`built script object 3`] = `
+exports[`Script object 3`] = `
 Array [
   Object {
     "getContent": [Function],

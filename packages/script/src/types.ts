@@ -3,6 +3,7 @@ import Machinat, {
   MachinatEmpty,
   MachinatElement,
   MachinatChannel,
+  ContainerComponent,
 } from '@machinat/core';
 
 import type { MaybeContainer } from '@machinat/core/service';
@@ -21,8 +22,15 @@ import type {
   RETURN,
 } from './keyword';
 
+type StartScriptProps<Params> = {
+  channel: MachinatChannel;
+  params?: Params;
+  goto?: string;
+};
+
 export type ScriptLibrary<Vars, Input, Params, Return, Yield> = {
   $$typeof: typeof MACHINAT_SCRIPT_TYPE;
+  Start: ContainerComponent<StartScriptProps<Params>>;
   commands: ScriptCommand<Vars, Input, Return, Yield>[];
   initVars: (params: Params) => Vars;
   name: string;

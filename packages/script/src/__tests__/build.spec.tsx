@@ -1,5 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Machinat from '@machinat/core';
+import { isContainerType } from '@machinat/core/utils/isX';
+import ProcessorP from '../processor';
 import build from '../build';
 import { MACHINAT_SCRIPT_TYPE } from '../constant';
 import {
@@ -17,59 +19,61 @@ import {
 
 const initVars = moxy(() => ({}));
 
-test('built script object', () => {
-  const ChildScript = build(
-    {
-      name: 'ChildScript',
-      initVars,
-    },
-    <>
-      {() => <dolore />}
-      <PROMPT set={(_, ctx) => ({ x: ctx.x })} key="childPrompt" />
-    </>
-  );
+const channel = { platform: 'test', uid: 'foo.channel' };
 
-  const MyScript = build(
-    {
-      name: 'MyScript',
-      initVars,
-    },
-    <>
-      <LABEL key="start" />
-      {() => <b>Lorem</b>}
+const ChildScript = build(
+  {
+    name: 'ChildScript',
+    initVars,
+  },
+  <>
+    {() => <dolore />}
+    <PROMPT set={(_, ctx) => ({ x: ctx.x })} key="childPrompt" />
+  </>
+);
 
-      <IF condition={() => false}>
-        <THEN>
-          <WHILE condition={() => true}>
-            <LABEL key="first" />
-            {() => <i>ipsum</i>}
-            <PROMPT key="ask_1" set={(_, ctx) => ({ a: ctx.a })} />
-          </WHILE>
-        </THEN>
-        <ELSE_IF condition={() => true}>
-          <LABEL key="second" />
-          {() => <dolor />}
-          <PROMPT key="ask_2" set={(_, ctx) => ({ b: ctx.b })} />
-          <RETURN value={() => 'fooo'} />
-        </ELSE_IF>
-        <ELSE>
-          <LABEL key="third" />
-          {() => 'sit amet,'}
-          <CALL
-            script={ChildScript}
-            params={() => ({ foo: 'bar' })}
-            goto="childPrompt"
-            key="call_1"
-          />
-        </ELSE>
-      </IF>
+const MyScript = build(
+  {
+    name: 'MyScript',
+    initVars,
+  },
+  <>
+    <LABEL key="start" />
+    {() => <b>Lorem</b>}
 
-      <LABEL key="end" />
-      <EFFECT set={() => ({ foo: 'bar' })} />
-      {() => 'ad minim veniam'}
-    </>
-  );
+    <IF condition={() => false}>
+      <THEN>
+        <WHILE condition={() => true}>
+          <LABEL key="first" />
+          {() => <i>ipsum</i>}
+          <PROMPT key="ask_1" set={(_, ctx) => ({ a: ctx.a })} />
+        </WHILE>
+      </THEN>
+      <ELSE_IF condition={() => true}>
+        <LABEL key="second" />
+        {() => <dolor />}
+        <PROMPT key="ask_2" set={(_, ctx) => ({ b: ctx.b })} />
+        <RETURN value={() => 'fooo'} />
+      </ELSE_IF>
+      <ELSE>
+        <LABEL key="third" />
+        {() => 'sit amet,'}
+        <CALL
+          script={ChildScript}
+          params={() => ({ foo: 'bar' })}
+          goto="childPrompt"
+          key="call_1"
+        />
+      </ELSE>
+    </IF>
 
+    <LABEL key="end" />
+    <EFFECT set={() => ({ foo: 'bar' })} />
+    {() => 'ad minim veniam'}
+  </>
+);
+
+test('Script object', () => {
   expect(MyScript.name).toBe('MyScript');
   expect(MyScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
 
@@ -98,4 +102,43 @@ test('built script object', () => {
       "childPrompt" => 1,
     }
   `);
+});
+
+test('Script.Start', () => {
+  const mockProcessor = moxy({
+    start: async () => ({ output: () => 'Hello Script' }),
+  });
+
+  expect(typeof MyScript.Start).toBe('function');
+  expect(isContainerType(<MyScript.Start channel={channel} />)).toBe(true);
+  expect(MyScript.Start.$$name).toBe('MyScript');
+  expect(MyScript.Start.$$deps).toEqual([
+    { require: ProcessorP, optional: false },
+  ]);
+
+  expect((MyScript.Start as any)(mockProcessor)({ channel })).resolves.toBe(
+    'Hello Script'
+  );
+  expect(mockProcessor.start.mock).toHaveBeenCalledTimes(1);
+  expect(mockProcessor.start.mock).toHaveBeenCalledWith(channel, MyScript, {});
+
+  expect(typeof ChildScript.Start).toBe('function');
+  expect(isContainerType(<ChildScript.Start channel={channel} />)).toBe(true);
+  expect(ChildScript.Start.$$name).toBe('ChildScript');
+  expect(ChildScript.Start.$$deps).toEqual([
+    { require: ProcessorP, optional: false },
+  ]);
+
+  expect(
+    (ChildScript.Start as any)(mockProcessor)({
+      channel,
+      params: { foo: 'baz' },
+      goto: 'bar',
+    })
+  ).resolves.toBe('Hello Script');
+  expect(mockProcessor.start.mock).toHaveBeenCalledTimes(2);
+  expect(mockProcessor.start.mock).toHaveBeenCalledWith(channel, ChildScript, {
+    params: { foo: 'baz' },
+    goto: 'bar',
+  });
 });

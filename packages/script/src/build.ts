@@ -1,7 +1,12 @@
-import { MachinatElement, AnyEventContext } from '@machinat/core';
+import {
+  makeContainer,
+  MachinatElement,
+  AnyEventContext,
+} from '@machinat/core';
 import { MACHINAT_SCRIPT_TYPE } from './constant';
 import parseScript from './parse';
 import compile from './compile';
+import ProcessorP from './processor';
 import type { ScriptLibrary } from './types';
 
 type ScriptBuildOtions<Params, Vars> = {
@@ -28,13 +33,24 @@ const build = <
     { scriptName }
   );
 
-  return {
+  const lib: ScriptLibrary<Vars, Input, Params, Return, Yield> = {
     $$typeof: MACHINAT_SCRIPT_TYPE,
+    Start: null as never,
     name: scriptName,
     initVars: initVars || (() => ({} as Vars)),
     stopPointIndex,
     commands,
   };
+
+  lib.Start = makeContainer({ deps: [ProcessorP], name: scriptName })(
+    (processor) =>
+      async ({ channel, params, goto }) => {
+        const runtime = await processor.start(channel, lib, { params, goto });
+        return runtime.output();
+      }
+  );
+
+  return lib;
 };
 
 export default build;
