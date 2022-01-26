@@ -9,8 +9,8 @@ Usage
   $ create-machinat-app -p <platform> [-p <platform> ...] <project-path>
 
 Options
-  --platform, -p  platform modules to install, currently support 'messenger', 'telegram', 'line', and 'webview'
-  --name, -n   the app name, default to the name of project directory
+  --platform, -p  platforms to install, currently support 'messenger', 'telegram', 'line', and 'webview'
+  --name,     -n  the app name, default to the name of project directory
 
 Example
   $ create-machinat-app -p messenger -p webview

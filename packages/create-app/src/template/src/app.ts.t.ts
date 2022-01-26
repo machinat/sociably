@@ -21,7 +21,8 @@ import TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
   )`
 import Webview from '@machinat/webview';`}
 import RedisState from '@machinat/redis-state';
-import { FileState } from '@machinat/dev-tools';${when(
+import Script from '@machinat/script';
+import { FileState, RegexRecognition } from '@machinat/dev-tools';${when(
     platforms.includes('webview')
   )`
 import {
@@ -29,17 +30,19 @@ import {
   LineLiffId,`}
 } from './interface';
 import nextConfigs from '../webview/next.config.js';`}
+import useIntent from './services/useIntent';
+import useUserProfile from './services/useUserProfile';
+import recognitionData from './recognitionData';
+import * as scenes from './scenes';
 
 const {
-  // location
   NODE_ENV,
   PORT,${when(platforms.includes('webview'))`
   DOMAIN,
   // webview
   WEBVIEW_AUTH_SECRET,`}${when(platforms.includes('messenger'))`
   // messenger
-  MESSENGER_PAGE_ID,${when(platforms.includes('webview'))`
-  MESSENGER_APP_ID,`}
+  MESSENGER_PAGE_ID,
   MESSENGER_ACCESS_TOKEN,
   MESSENGER_APP_SECRET,
   MESSENGER_VERIFY_TOKEN,`}${when(platforms.includes('telegram'))`
@@ -50,8 +53,8 @@ const {
   LINE_PROVIDER_ID,
   LINE_CHANNEL_ID,
   LINE_ACCESS_TOKEN,
-  LINE_CHANNEL_SECRET,
-  LINE_LIFF_ID,`}
+  LINE_CHANNEL_SECRET,${when(platforms.includes('webview'))`
+  LINE_LIFF_ID,`}`}
   // redis
   REDIS_URL,
 } = process.env as Record<string, string>;
@@ -81,10 +84,17 @@ const createApp = (options?: CreateAppOptions) => {
               url: REDIS_URL,
             },
           }),
+
+      RegexRecognition.initModule({
+        recognitionData
+      }),
+      
+      Script.initModule({
+        libs: Object.values(scenes),
+      }),
     ],
 
     platforms: [${when(platforms.includes('messenger'))`
-
       Messenger.initModule({
         webhookPath: '/webhook/messenger',
         pageId: Number(MESSENGER_PAGE_ID),
@@ -124,21 +134,23 @@ const createApp = (options?: CreateAppOptions) => {
           LineWebviewAuth,`}
         ],${when(platforms.includes('messenger'))`
         sameSite: 'none',`}
-        noNextServer: options?.noServer,,
+        noNextServer: options?.noServer,
         nextServerOptions: {
           dev: DEV,
           dir: './webview',
           conf: nextConfigs,
         },
       }),`}
-    ],${when(platforms.includes('webview'))`
+    ],
 
     services: [
+      useIntent,
+      useUserProfile,${when(platforms.includes('webview'))`
       { provide: ServerDomain, withValue: DOMAIN },${when(
         platforms.includes('line')
       )`
-      { provide: LineLiffId, withValue: LINE_LIFF_ID },`}
-    ],`}
+      { provide: LineLiffId, withValue: LINE_LIFF_ID },`}`}
+    ],
   });
 };
 

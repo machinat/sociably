@@ -28,6 +28,7 @@ const getMachinatDependencies = (platforms: string[]): string[] => {
     '@machinat/dev-tools',
     '@machinat/redis-state',
     '@machinat/stream',
+    '@machinat/script',
   ];
 
   if (platforms.includes('webview')) {

@@ -3,18 +3,15 @@ import { when, polishFileContent } from '../../../utils';
 
 export default ({ platforms }: CreateAppContext) =>
   polishFileContent(when(platforms.includes('webview'))`
-import Machinat from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
-import WithWebviewLink from '../components/WithWebviewLink';
+import Machinat, { makeContainer, BasicBot } from '@machinat/core';
+import WithMenu from '../components/WithMenu';
 import { WebAppEventContext } from '../types';
 
-const handleWebview = makeContainer({ deps: [Machinat.Bot] })(
+const handleWebview = makeContainer({ deps: [BasicBot] })(
   (baseBot) =>
-    async ({
-      event,
-      bot: webviewBot,
-      metadata: { auth },
-    }: WebAppEventContext) => {
+    async (ctx: WebAppEventContext) => {
+      const { event, bot: webviewBot, metadata: { auth } } = ctx;
+      
       if (event.type === 'connect') {
         // send hello when webview connection connect
         await webviewBot.send(event.channel, {
@@ -26,7 +23,7 @@ const handleWebview = makeContainer({ deps: [Machinat.Bot] })(
         // reflect hello to chatroom
         await baseBot.render(
           auth.channel,
-          <WithWebviewLink>Hello {event.payload}!</WithWebviewLink>
+          <WithMenu>Hello {event.payload}!</WithMenu>
         );
       }
     }

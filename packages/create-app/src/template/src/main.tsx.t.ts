@@ -3,35 +3,59 @@ import { CreateAppContext } from '../../types';
 
 export default ({ platforms }: CreateAppContext) =>
   polishFileContent(`
+import ${when(platforms.includes('telegram'))`Machinat, `}{
+    makeContainer,
+} from '@machinat/core';${when(platforms.includes('telegram'))`
+import { AnswerCallbackQuery } from '@machinat/telegram/components';`}
 import { Stream } from '@machinat/stream';
 import { filter } from '@machinat/stream/operators';
-import handleMessage from './handlers/handleMessage';${when(
+import Script from '@machinat/script';
+import handleChat from './handlers/handleChat';${when(
     platforms.includes('webview')
   )`
 import handleWebview from './handlers/handleWebview';`}
-import {
-  AppEventContext,
-  ChatEventContext,${when(platforms.includes('webview'))`
-  WebAppEventContext,`}
-} from './types';
+import { AppEventContext, ChatEventContext } from './types';
 
 const main = (event$: Stream<AppEventContext>): void => {
-  event$
-    .pipe(
+  // continue running scripts
+  const chat$ = event$
+    .pipe(${when(platforms.includes('webview'))`
+      filter((ctx) => ctx.event.platform !== 'webview'),`}
       filter(
-        (ctx): ctx is ChatEventContext & { event: { category: 'message' } } =>
-          ctx.event.category === 'message'
+        makeContainer({ deps: [Script.Processor] })(
+          (processor) => async (ctx: ChatEventContext) => {
+            if (!ctx.event.channel) {
+              return true;
+            }
+            const runtime = await processor.continue(ctx.event.channel, ctx);
+            if (runtime) {
+              await ctx.reply(runtime.output());
+            }
+            return !runtime;
+          }
+        )
       )
+    );
+
+  // handle events from chat platforms
+  chat$
+    .subscribe(handleChat)
+    .catch(console.error);${when(platforms.includes('telegram'))`
+
+  // answer Telegram callback_query
+  chat$
+    .pipe(filter((ctx) => ctx.event.type === 'callback_query'))
+    .subscribe(
+      (ctx: ChatEventContext & { event: { type: 'callback_query' } }) =>
+        ctx.reply(<AnswerCallbackQuery queryId={ctx.event.queryId} />)
     )
-    .subscribe(handleMessage);
-${when(platforms.includes('webview'))`
+    .catch(console.error);`}${when(platforms.includes('webview'))`
+
+  // handle events from webview
   event$
-    .pipe(
-      filter(
-        (ctx): ctx is WebAppEventContext => ctx.event.platform === 'webview'
-      )
-    )
-    .subscribe(handleWebview);`}
+    .pipe(filter((ctx) => ctx.event.platform === 'webview'))
+    .subscribe(handleWebview)
+    .catch(console.error);`}
 };
 
 export default main;

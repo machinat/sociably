@@ -35,24 +35,24 @@ const client = new WebviewClient({
 });
 
 const WebAppHome = () => {
-  const data = useEventReducer(
+  const [isButtonTapped, setButtonTapped] = React.useState(false);
+  const { hello } = useEventReducer(
     client,
-    (currentData: { hello?: string }, { event }): { hello?: string } => {
+    (data: { hello?: string }, { event }): { hello?: string } => {
       if (event.type === 'hello') {
         return { hello: event.payload };
       }
-      return currentData;
+      return data;
     },
     { hello: undefined }
   );
-
-  const [isButtonTapped, setButtonTapped] = React.useState(false);
 
   const Button = ({ payload }) => (
     <button
       disabled={!client.isConnected}
       onClick={() => {
         client.send({ category: 'greeting', type: 'hello', payload });
+        client.closeWebview();
         setButtonTapped(true);
       }}
     >
@@ -76,7 +76,7 @@ const WebAppHome = () => {
           Get started by editing <code>webview/pages/index.js</code>
         </p>
 
-        <h3>{data.hello || 'connecting... '}</h3>
+        <h3>{hello || 'connecting... '}</h3>
         <p>{
           isButtonTapped
             ? 'Great! Check the chatroom 👍'
