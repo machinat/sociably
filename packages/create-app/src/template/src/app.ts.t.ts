@@ -1,30 +1,29 @@
-import { when, polishFileContent } from '../../utils';
+import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`
+export default ({ platforms }: CreateAppContext) => `
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
-    platforms.includes('line')
-  )`
+  platforms.includes('line')
+)`
 import Line from '@machinat/line';${when(platforms.includes('webview'))`
 import LineWebviewAuth from '@machinat/line/webview';`}`}${when(
-    platforms.includes('telegram')
-  )`
+  platforms.includes('telegram')
+)`
 import Telegram from '@machinat/telegram';${when(platforms.includes('webview'))`
 import TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import Webview from '@machinat/webview';`}
 import RedisState from '@machinat/redis-state';
 import Script from '@machinat/script';
 import { FileState, RegexRecognition } from '@machinat/dev-tools';${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import {
   ServerDomain,${when(platforms.includes('line'))`
   LineLiffId,`}
@@ -155,4 +154,4 @@ const createApp = (options?: CreateAppOptions) => {
 };
 
 export default createApp;
-`);
+`;

@@ -1,8 +1,9 @@
-import { when, polishFileContent } from '../../utils';
+import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(when(platforms.includes('webview'))`
+export default ({ platforms }: CreateAppContext) => when(
+  platforms.includes('webview')
+)`
 {
   "compilerOptions": {
     "target": "es5",
@@ -33,4 +34,4 @@ export default ({ platforms }: CreateAppContext) =>
     "node_modules"
   ]
 }
-`);
+`;

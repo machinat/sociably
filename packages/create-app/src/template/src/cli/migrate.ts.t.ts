@@ -1,16 +1,15 @@
 import { CreateAppContext } from '../../../types';
-import { when, polishFileContent } from '../../../utils';
+import { when } from '../../../utils';
 
 export const mode = 0o775;
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`
+export default ({ platforms }: CreateAppContext) => `
 #!/usr/bin/env node
 import { resolve as resolvePath } from 'path';
 import Machinat from '@machinat/core';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';`}${when(
-    platforms.includes('telegram')
-  )`
+  platforms.includes('telegram')
+)`
 import Telegram from '@machinat/telegram';`}${when(platforms.includes('line'))`
 import Line from '@machinat/line';`}
 import { Umzug, JSONStorage } from 'umzug';
@@ -74,4 +73,4 @@ migrate().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-`);
+`;

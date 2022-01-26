@@ -1,9 +1,6 @@
-import { polishFileContent } from '../utils';
-
 export const name = '.gitignore';
 
-export default () =>
-  polishFileContent(`
+export default () => `
 # Build output
 lib
 dist
@@ -57,4 +54,4 @@ web_modules/
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
-`);
+`;

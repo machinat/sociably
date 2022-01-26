@@ -11,6 +11,7 @@ import glob from 'glob';
 import chalk from 'chalk';
 import thenifiedly from 'thenifiedly';
 import { format as prettierFormat, Options as PrettierOptions } from 'prettier';
+import { polishFileContent } from './utils';
 import type { CreateAppContext } from './types';
 
 type CreateAppOptions = {
@@ -104,7 +105,7 @@ const createMachinatApp = async ({
       );
 
       const { default: buildContent, mode, name } = await import(file);
-      const content = buildContent(context);
+      const content = polishFileContent(buildContent(context));
 
       if (content) {
         const targetDir = dirname(targetPath);

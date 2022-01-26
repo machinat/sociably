@@ -1,13 +1,13 @@
 import randomName from 'project-name-generator';
 import { nanoid } from 'nanoid';
-import { when, polishFileContent } from '../utils';
+import { when } from '../utils';
 import type { CreateAppContext } from '../types';
 
 export const name = '.env';
 
 export default ({ platforms }: CreateAppContext) => {
   const localTunnelSubDomain = randomName({ number: true }).dashed;
-  return polishFileContent(`
+  return `
 NODE_ENV=development
 
 DEV_TUNNEL_SUBDOMAIN=${localTunnelSubDomain}
@@ -40,5 +40,5 @@ ${when(platforms.includes('webview'))`
 # Webview
 
 WEBVIEW_AUTH_SECRET=${nanoid(32)}`}
-`);
+`;
 };

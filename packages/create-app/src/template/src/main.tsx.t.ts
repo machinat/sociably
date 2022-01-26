@@ -1,8 +1,7 @@
-import { when, polishFileContent } from '../../utils';
+import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`
+export default ({ platforms }: CreateAppContext) => `
 import ${when(platforms.includes('telegram'))`Machinat, `}{
     makeContainer,
 } from '@machinat/core';${when(platforms.includes('telegram'))`
@@ -11,8 +10,8 @@ import { Stream } from '@machinat/stream';
 import { filter } from '@machinat/stream/operators';
 import Script from '@machinat/script';
 import handleChat from './handlers/handleChat';${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import handleWebview from './handlers/handleWebview';`}
 import { AppEventContext, ChatEventContext } from './types';
 
@@ -59,4 +58,4 @@ const main = (event$: Stream<AppEventContext>): void => {
 };
 
 export default main;
-`);
+`;

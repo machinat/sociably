@@ -1,7 +1,4 @@
-import { polishFileContent } from '../utils';
-
-export default () =>
-  polishFileContent(`
+export default () => `
 {
   "include": ["./src/**/*"],
   "compilerOptions": {
@@ -20,4 +17,4 @@ export default () =>
     "sourceMap": true
   }
 }
-`);
+`;

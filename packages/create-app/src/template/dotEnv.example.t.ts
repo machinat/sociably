@@ -1,10 +1,9 @@
-import { when, polishFileContent } from '../utils';
+import { when } from '../utils';
 import type { CreateAppContext } from '../types';
 
 export const name = '.env.example';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`
+export default ({ platforms }: CreateAppContext) => `
 # NOTICE! This file is an example for references.
 # DO NOT save any secret data here!
 # Your real settings should go to \`.env\` file.
@@ -92,4 +91,4 @@ LINE_LIFF_ID= 1234567890-abcd1234
 
 # Secret for signing auth cookies
 WEBVIEW_AUTH_SECRET= <random secret string>`}
-`);
+`;

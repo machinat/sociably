@@ -1,7 +1,4 @@
-import { polishFileContent } from '../../../utils';
-
-export default () => {
-  return polishFileContent(`
+export default () => `
 import Machinat, { makeContainer } from '@machinat/core';
 import About from '../scenes/About';
 import WithMenu from '../components/WithMenu';
@@ -39,5 +36,4 @@ const handleChat = makeContainer({
 )
 
 export default handleChat;
-`);
-};
+`;

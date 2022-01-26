@@ -1,9 +1,6 @@
-import { polishFileContent } from '../../../utils';
-
 export const mode = 0o775;
 
-export default () =>
-  polishFileContent(`
+export default () => `
 #!/usr/bin/env node
 import { parse as parseUrl } from 'url';
 import localtunnel from 'localtunnel';
@@ -76,4 +73,4 @@ async function dev() {
 }
 
 dev();
-`);
+`;

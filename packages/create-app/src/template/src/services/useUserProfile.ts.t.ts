@@ -1,7 +1,4 @@
-import { polishFileContent } from '../../../utils';
-
-export default () =>
-  polishFileContent(`
+export default () => `
 import {
   makeFactoryProvider,
   BasicProfiler,
@@ -36,4 +33,4 @@ const useUserProfile =
 export default makeFactoryProvider({
   deps: [BasicProfiler, StateController],
 })(useUserProfile);
-`);
+`;

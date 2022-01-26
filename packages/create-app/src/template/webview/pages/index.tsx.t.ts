@@ -1,20 +1,21 @@
-import { when, polishFileContent } from '../../../utils';
+import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(when(platforms.includes('webview'))`
+export default ({ platforms }: CreateAppContext) => when(
+  platforms.includes('webview')
+)`
 import React from 'react';
 import Head from 'next/head';
 import getConfig from 'next/config';
 import WebviewClient, { useEventReducer } from '@machinat/webview/client';${when(
-    platforms.includes('messenger')
-  )`
+  platforms.includes('messenger')
+)`
 import MessengerWebviewAuth from '@machinat/messenger/webview/client';`}${when(
-    platforms.includes('telegram')
-  )`
+  platforms.includes('telegram')
+)`
 import TelegramWebviewAuth from '@machinat/telegram/webview/client';`}${when(
-    platforms.includes('line')
-  )`
+  platforms.includes('line')
+)`
 import LineWebviewAuth from '@machinat/line/webview/client';`}
 
 const { publicRuntimeConfig } = getConfig();
@@ -96,4 +97,4 @@ const WebAppHome = () => {
 // to activate publicRuntimeConfig
 export const getServerSideProps = () => ({ props: {} });
 export default WebAppHome;
-`);
+`;

@@ -1,26 +1,27 @@
 import { CreateAppContext } from '../../types';
-import { when, polishFileContent } from '../../utils';
+import { when } from '../../utils';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`${when(platforms.includes('messenger'))`
+export default ({ platforms }: CreateAppContext) => `${when(
+  platforms.includes('messenger')
+)`
 import type { MessengerEventContext } from '@machinat/messenger';${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import type MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
-    platforms.includes('telegram')
-  )`
+  platforms.includes('telegram')
+)`
 import type { TelegramEventContext } from '@machinat/telegram';${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import type TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
-    platforms.includes('line')
-  )`
+  platforms.includes('line')
+)`
 import type { LineEventContext } from '@machinat/line';${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import type LineWebviewAuth from '@machinat/line/webview';`}`}${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import type { WebviewEventContext } from '@machinat/webview';`}
 
 export type ChatEventContext =${when(platforms.includes('messenger'))`
@@ -40,4 +41,4 @@ export type WebAppEventContext = WebviewEventContext<${when(
 export type AppEventContext =
   | ChatEventContext${when(platforms.includes('webview'))`
   | WebAppEventContext`};
-`);
+`;

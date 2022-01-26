@@ -1,21 +1,20 @@
-import { when, polishFileContent } from '../../../utils';
+import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`
+export default ({ platforms }: CreateAppContext) => `
 import Machinat, {
   MachinatNode,${when(platforms.includes('webview'))`
   makeContainer,`}
 } from '@machinat/core';${when(platforms.includes('messenger'))`
 import * as Messenger from '@machinat/messenger/components';`}${when(
-    platforms.includes('telegram')
-  )`
+  platforms.includes('telegram')
+)`
 import * as Telegram from '@machinat/telegram/components';`}${when(
-    platforms.includes('line')
-  )`
+  platforms.includes('line')
+)`
 import * as Line from '@machinat/line/components';`}${when(
-    platforms.includes('webview')
-  )`
+  platforms.includes('webview')
+)`
 import {
   ServerDomain,${when(platforms.includes('line'))`
   LineLiffId,`}
@@ -110,13 +109,13 @@ ${when(platforms.includes('line'))`
 
 
 export default ${
-    platforms.includes('webview')
-      ? `makeContainer({
+  platforms.includes('webview')
+    ? `makeContainer({
   deps: [
     ServerDomain,${when(platforms.includes('line'))`
     LineLiffId,`}
   ],
 })(WithMenu);`
-      : `WithMenu;`
-  }
-`);
+    : `WithMenu;`
+}
+`;

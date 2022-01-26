@@ -1,14 +1,13 @@
-import { when, polishFileContent } from '../../../utils';
+import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`
+export default ({ platforms }: CreateAppContext) => `
 import { makeContainer } from '@machinat/core/service';${when(
-    platforms.includes('messenger')
-  )`
+  platforms.includes('messenger')
+)`
 import Messenger from '@machinat/messenger';`}${when(
-    platforms.includes('telegram')
-  )`
+  platforms.includes('telegram')
+)`
 import Telegram from '@machinat/telegram';`}${when(platforms.includes('line'))`
 import Line from '@machinat/line';`}
 
@@ -113,4 +112,4 @@ ${when(platforms.includes('telegram'))`
   // delete webhook of the Telegram bot
   await telegramBot.makeApiCall('deleteWebhook');`}
 });
-`);
+`;

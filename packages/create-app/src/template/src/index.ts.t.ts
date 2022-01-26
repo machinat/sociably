@@ -1,7 +1,4 @@
-import { polishFileContent } from '../../utils';
-
-export default () =>
-  polishFileContent(`
+export default () => `
 import { fromApp } from '@machinat/stream';
 import main from './main';
 import createApp from './app'
@@ -13,4 +10,4 @@ app
     main(fromApp(app));
   })
   .catch(console.error)
-`);
+`;

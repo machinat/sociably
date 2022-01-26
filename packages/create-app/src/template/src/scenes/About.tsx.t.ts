@@ -1,8 +1,4 @@
-import { polishFileContent } from '../../../utils';
-import { CreateAppContext } from '../../../types';
-
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`
+export default () => `
 import Machinat, { makeContainer } from '@machinat/core';
 import { build } from '@machinat/script';
 import * as $ from '@machinat/script/keywords';
@@ -101,4 +97,4 @@ export default build<AboutVars>(
     }
   </$.BLOCK>
 );
-`);
+`;

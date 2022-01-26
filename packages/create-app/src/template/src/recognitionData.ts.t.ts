@@ -1,7 +1,4 @@
-import { polishFileContent } from '../../utils';
-
-export default () =>
-  polishFileContent(`
+export default () => `
 export default {
   defaultLanguage: 'en',
   languages: ['en'],
@@ -74,4 +71,4 @@ export default {
     },
   },
 };
-`);
+`;

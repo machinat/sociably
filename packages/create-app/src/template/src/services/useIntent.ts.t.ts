@@ -1,8 +1,7 @@
-import { when, polishFileContent } from '../../../utils';
+import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(`
+export default ({ platforms }: CreateAppContext) => `
 import { makeFactoryProvider, IntentRecognizer } from '@machinat/core';
 import { ChatEventContext } from '../types';
 
@@ -47,4 +46,4 @@ const useIntent =
 export default makeFactoryProvider({
   deps: [IntentRecognizer],
 })(useIntent);
-`);
+`;

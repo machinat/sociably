@@ -1,5 +1,5 @@
 import sortPackageJson from 'sort-package-json';
-import { when, polishFileContent } from '../utils';
+import { when } from '../utils';
 import { CreateAppContext } from '../types';
 
 export default ({ projectName, platforms }: CreateAppContext) => {
@@ -54,7 +54,5 @@ export default ({ projectName, platforms }: CreateAppContext) => {
     packageConfigs.devDependencies['@types/react'] = '^17.0.38';
   }
 
-  return polishFileContent(
-    JSON.stringify(sortPackageJson(packageConfigs), null, 2)
-  );
+  return JSON.stringify(sortPackageJson(packageConfigs), null, 2);
 };

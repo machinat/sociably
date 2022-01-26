@@ -1,8 +1,9 @@
 import { CreateAppContext } from '../../../types';
-import { when, polishFileContent } from '../../../utils';
+import { when } from '../../../utils';
 
-export default ({ platforms }: CreateAppContext) =>
-  polishFileContent(when(platforms.includes('webview'))`
+export default ({ platforms }: CreateAppContext) => when(
+  platforms.includes('webview')
+)`
 import Machinat, { makeContainer, BasicBot } from '@machinat/core';
 import WithMenu from '../components/WithMenu';
 import { WebAppEventContext } from '../types';
@@ -30,4 +31,4 @@ const handleWebview = makeContainer({ deps: [BasicBot] })(
 );
 
 export default handleWebview;
-`);
+`;
