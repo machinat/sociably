@@ -36,8 +36,14 @@ const main = (event$: Stream<AppEventContext>): void => {
       )
     );
 
-  // handle events from chat platforms
+  // handle messages and postbacks from chat platforms
   chat$
+    .pipe(
+      filter(
+        (ctx) =>
+          ctx.event.category === 'message' || ctx.event.category === 'postback'
+      )
+    )
     .subscribe(handleChat)
     .catch(console.error);${when(platforms.includes('telegram'))`
 

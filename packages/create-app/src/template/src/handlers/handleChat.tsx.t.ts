@@ -1,4 +1,7 @@
-export default () => `
+import { CreateAppContext } from '../../../types';
+import { when } from '../../../utils';
+
+export default ({ platforms }: CreateAppContext) => `
 import Machinat, { makeContainer } from '@machinat/core';
 import About from '../scenes/About';
 import WithMenu from '../components/WithMenu';
@@ -11,9 +14,12 @@ const handleChat = makeContainer({
 })(
   (getIntent, getUserProfile) =>
     async (
-      ctx: ChatEventContext & { event: { category: 'message' } }
+      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
     ) => {
-      const { event, reply } = ctx;
+      const { event, reply } = ctx;${when(platforms.includes('telegram'))`
+      if (!event.channel || !event.user) {
+        return
+      }`}
       const intent = await getIntent(event);
 
       if (intent.type === 'greeting') {
@@ -27,7 +33,7 @@ const handleChat = makeContainer({
         return reply(<About.Start channel={event.channel} />);
       }
 
-      await reply(
+      return reply(
         <WithMenu>
           Hello {event.type === 'text' ? event.text : 'World'}!
         </WithMenu>
