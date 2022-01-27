@@ -912,7 +912,7 @@ export const ChosenInlineResult: ChosenInlineResult = {
   },
 };
 
-export interface CallbackQuery {
+export interface CallbackBase {
   channel: null | TelegramChat;
   user: TelegramUser;
   /** Callback query object. */
@@ -927,13 +927,9 @@ export interface CallbackQuery {
   inlineMessageId?: string;
   /** Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games. */
   chatInstanceId: string;
-  /** Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field. */
-  data?: string;
-  /** Short name of a Game to be returned, serves as the unique identifier for the game */
-  gameShortName?: string;
 }
 
-export const CallbackQuery: CallbackQuery = {
+export const CallbackBase: CallbackBase = {
   get channel() {
     const { message } = this.payload.callback_query;
     return message ? new TelegramChat(this.botId, message.chat) : null;
@@ -959,9 +955,25 @@ export const CallbackQuery: CallbackQuery = {
   get chatInstanceId() {
     return this.payload.callback_query.chat_instance;
   },
+};
+
+export interface CallbackQuery {
+  /** Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field. */
+  data: string;
+}
+
+export const CallbackQuery: CallbackQuery = {
   get data() {
     return this.payload.callback_query.data;
   },
+};
+
+export interface CallbackGame {
+  /** Short name of a Game to be returned, serves as the unique identifier for the game */
+  gameShortName: string;
+}
+
+export const CallbackGame: CallbackGame = {
   get gameShortName() {
     return this.payload.callback_query.game_short_name;
   },

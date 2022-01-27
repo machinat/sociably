@@ -34,7 +34,9 @@ import {
   SuccessfulPayment,
   InlineQuery,
   ChosenInlineResult,
+  CallbackBase,
   CallbackQuery,
+  CallbackGame,
   ShippingQuery,
   PreCheckoutQuery,
   PollChange,
@@ -481,9 +483,19 @@ const ChooseInlineResultPostbackProto = mixin(EventBase, ChosenInlineResult, {
   type: 'choose_inline_result' as const,
 });
 
-const CallbackQueryPostbackProto = mixin(EventBase, CallbackQuery, {
+const CallbackQueryPostbackProto = mixin(
+  EventBase,
+  CallbackBase,
+  CallbackQuery,
+  {
+    category: 'postback' as const,
+    type: 'callback_query' as const,
+  }
+);
+
+const CallbackGamePostbackProto = mixin(EventBase, CallbackBase, CallbackGame, {
   category: 'postback' as const,
-  type: 'callback_query' as const,
+  type: 'callback_game' as const,
 });
 
 const ShippingQueryPostbackProto = mixin(EventBase, ShippingQuery, {
@@ -679,7 +691,9 @@ const eventFactory =
       : payload.chosen_inline_result
       ? makeEvent(botId, payload, ChooseInlineResultPostbackProto)
       : payload.callback_query
-      ? makeEvent(botId, payload, CallbackQueryPostbackProto)
+      ? payload.callback_query.game_short_name
+        ? makeEvent(botId, payload, CallbackGamePostbackProto)
+        : makeEvent(botId, payload, CallbackQueryPostbackProto)
       : payload.poll
       ? makeEvent(botId, payload, PollChangePostbackProto)
       : payload.poll_answer

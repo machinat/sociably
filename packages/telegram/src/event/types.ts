@@ -32,7 +32,9 @@ import type {
   SuccessfulPayment,
   InlineQuery,
   ChosenInlineResult,
+  CallbackBase,
   CallbackQuery,
+  CallbackGame,
   ShippingQuery,
   PreCheckoutQuery,
   PollAnswer,
@@ -648,7 +650,7 @@ export interface ChooseInlineResultEvent
     ChosenInlineResult {}
 
 /**
- * New incoming callback query.
+ * New incoming callback query from a callback button
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#callbackquery).
  * @eventCategory `'postback'`
@@ -657,7 +659,21 @@ export interface ChooseInlineResultEvent
 export interface CallbackQueryEvent
   extends EventObject<'postback', 'callback_query'>,
     EventBase,
+    CallbackBase,
     CallbackQuery {}
+
+/**
+ * New incoming callback query from a game button
+ * @category Event
+ * @guides Check official [reference](https://core.telegram.org/bots/api#callbackquery).
+ * @eventCategory `'postback'`
+ * @eventType `'callback_query'`
+ */
+export interface CallbackGameEvent
+  extends EventObject<'postback', 'callback_game'>,
+    EventBase,
+    CallbackBase,
+    CallbackGame {}
 
 /**
  * New incoming shipping query. Only for invoices with flexible price.
@@ -792,6 +808,7 @@ export type TelegramEvent =
   | InlineQueryEvent
   | ChooseInlineResultEvent
   | CallbackQueryEvent
+  | CallbackGameEvent
   | ShippingQueryEvent
   | PreCheckoutQueryEvent
   | PollChangeEvent
