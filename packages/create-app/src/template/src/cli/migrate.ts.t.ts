@@ -3,15 +3,12 @@ import { when } from '../../../utils';
 
 export const mode = 0o775;
 
-export default ({ platforms }: CreateAppContext) => `
+export default ({ platforms, recognizer }: CreateAppContext) => `
 #!/usr/bin/env node
-import { resolve as resolvePath } from 'path';
-import Machinat from '@machinat/core';${when(platforms.includes('messenger'))`
-import Messenger from '@machinat/messenger';`}${when(
-  platforms.includes('telegram')
+import { resolve as resolvePath } from 'path';${when(
+  recognizer === 'dialogflow'
 )`
-import Telegram from '@machinat/telegram';`}${when(platforms.includes('line'))`
-import Line from '@machinat/line';`}
+import DialogFlow from '@machinat/dialogflow';`}
 import { Umzug, JSONStorage } from 'umzug';
 import { program } from 'commander';
 import createApp from '../app';
@@ -64,7 +61,17 @@ async function migrate() {
     await umzug.down();
   } else {
     await umzug.up();
-  }
+  }${when(recognizer === 'dialogflow')`
+
+  const [dialogflowRecognizer] = app.useServices([DialogFlow.Recognizer]);
+  console.log('[dialogflow:train] start updating dialogflow');
+
+  const isUpdated = await dialogflowRecognizer.train();
+  console.log(
+    \`[dialogflow:train] \${
+      isUpdated ? 'new agent version is created' : 'agent version is up to date'
+    }\`
+  );`}
 
   await app.stop();
 }

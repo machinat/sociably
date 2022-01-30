@@ -17,12 +17,16 @@ import type { CreateAppContext } from './types';
 type CreateAppOptions = {
   platforms: string[];
   projectPath: string;
+  recognizer: string;
 };
 
 const formatCode = (code: string, parser: PrettierOptions['parser']) =>
   prettierFormat(code, { parser, singleQuote: true });
 
-const getMachinatDependencies = (platforms: string[]): string[] => {
+const getMachinatDependencies = (
+  platforms: string[],
+  recognizer: 'regex' | 'dialogflow'
+): string[] => {
   const dependencies = [
     '@machinat/core',
     '@machinat/http',
@@ -44,6 +48,9 @@ const getMachinatDependencies = (platforms: string[]): string[] => {
   if (platforms.includes('line')) {
     dependencies.push('@machinat/line');
   }
+  if (recognizer === 'dialogflow') {
+    dependencies.push('@machinat/dialogflow');
+  }
 
   return dependencies.map((depName) => `${depName}@latest`);
 };
@@ -53,6 +60,7 @@ const supportedPlatforms = ['messenger', 'telegram', 'line', 'webview'];
 const createMachinatApp = async ({
   platforms,
   projectPath,
+  recognizer,
 }: CreateAppOptions): Promise<number> => {
   console.log(
     `Create a ${chalk.yellow('Machinat')} app in ${chalk.green(
@@ -67,15 +75,25 @@ const createMachinatApp = async ({
       console.log(
         `${chalk.redBright(
           'Error:'
-        )} "${platform}" is not a supported platform, only  'messenger', 'telegram', 'line', and 'webview' are supported for now`
+        )} "${platform}" is not a supported platform, only 'messenger', 'telegram', 'line', and 'webview' are supported now`
       );
       return 1;
     }
   }
 
+  if (recognizer !== 'regex' && recognizer !== 'dialogflow') {
+    console.log(
+      `${chalk.redBright(
+        'Error:'
+      )} "${recognizer}" is not a supported recognizer, only 'regex' and 'dialogflow' are supported now`
+    );
+    return 1;
+  }
+
   const context: CreateAppContext = {
     projectName,
     platforms,
+    recognizer,
   };
 
   if (fileExistsSync(projectPath)) {
@@ -136,7 +154,7 @@ const createMachinatApp = async ({
     `Install ${chalk.yellow('Machinat')} framework and other dependencies...\n`
   );
 
-  const machinatDeps = getMachinatDependencies(platforms);
+  const machinatDeps = getMachinatDependencies(platforms, recognizer);
 
   const npmInstallProcess = spawnChildProcess(
     'npm',

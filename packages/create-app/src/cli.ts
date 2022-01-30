@@ -9,8 +9,9 @@ Usage
   $ create-machinat-app -p <platform> [-p <platform> ...] <project-path>
 
 Options
-  --platform, -p  platforms to install, currently support 'messenger', 'telegram', 'line', and 'webview'
-  --name,     -n  the app name, default to the name of project directory
+  -p, --platform   platforms to install; supported platforms: messenger, telegram, line, webview
+  -n, --name,      the app name (default: project dir name)
+  -r, --recognizer the intent recognition provider; regex or dialogflow (default: regex)
 
 Example
   $ create-machinat-app -p messenger -p webview
@@ -27,6 +28,11 @@ Example
         type: 'string',
         alias: 'n',
       },
+      recognizer: {
+        type: 'string',
+        alias: 'r',
+        default: 'regex',
+      },
     },
   }
 );
@@ -38,6 +44,8 @@ if (!projectInput) {
 }
 
 const projectPath = resolvePath(projectInput);
-const platforms = cli.flags.platform;
+const { recognizer, platform: platforms } = cli.flags;
 
-createApp({ platforms, projectPath }).then((code) => process.exit(code));
+createApp({ platforms, projectPath, recognizer }).then((code) =>
+  process.exit(code)
+);

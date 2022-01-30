@@ -3,7 +3,7 @@ import type { CreateAppContext } from '../types';
 
 export const name = '.env.example';
 
-export default ({ platforms }: CreateAppContext) => `
+export default ({ platforms, recognizer }: CreateAppContext) => `
 # NOTICE! This file is an example for references.
 # DO NOT save any secret data here!
 # Your real settings should go to \`.env\` file.
@@ -90,5 +90,15 @@ LINE_LIFF_ID= 1234567890-abcd1234
 # Webview Settings
 
 # Secret for signing auth cookies
-WEBVIEW_AUTH_SECRET= <random secret string>`}
+WEBVIEW_AUTH_SECRET= <random secret string>
+`}${when(recognizer === 'dialogflow')`
+
+# Dialogflow Settings
+#
+#   Follow this guide to prepare GCP auth https://cloud.google.com/dialogflow/es/docs/quick/setup
+
+# GCP project to connect Dialogflow with
+DIALOGFLOW_PROJECT_ID= <gcp project id>
+# Path to the GCP credential file
+GOOGLE_APPLICATION_CREDENTIALS= <credential location>`}
 `;

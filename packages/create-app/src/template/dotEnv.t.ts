@@ -5,7 +5,7 @@ import type { CreateAppContext } from '../types';
 
 export const name = '.env';
 
-export default ({ platforms }: CreateAppContext) => {
+export default ({ platforms, recognizer }: CreateAppContext) => {
   const localTunnelSubDomain = randomName({ number: true }).dashed;
   return `
 NODE_ENV=development
@@ -35,10 +35,15 @@ LINE_PROVIDER_ID=
 LINE_CHANNEL_ID=
 LINE_ACCESS_TOKEN=
 LINE_CHANNEL_SECRET=${when(platforms.includes('webview'))`
-LINE_LIFF_ID=`}`}
-${when(platforms.includes('webview'))`
+LINE_LIFF_ID=`}
+`}${when(platforms.includes('webview'))`
 # Webview
 
-WEBVIEW_AUTH_SECRET=${nanoid(32)}`}
+WEBVIEW_AUTH_SECRET=${nanoid(32)}
+`}${when(recognizer === 'dialogflow')`
+# Dialogflow
+
+DIALOGFLOW_PROJECT_ID=
+GOOGLE_APPLICATION_CREDENTIALS=`}
 `;
 };

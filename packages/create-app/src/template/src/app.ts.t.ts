@@ -1,7 +1,7 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext) => `
+export default ({ platforms, recognizer, projectName }: CreateAppContext) => `
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';${when(
@@ -19,9 +19,13 @@ import TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
   platforms.includes('webview')
 )`
 import Webview from '@machinat/webview';`}
-import RedisState from '@machinat/redis-state';
 import Script from '@machinat/script';
-import { FileState, RegexRecognition } from '@machinat/dev-tools';${when(
+import RedisState from '@machinat/redis-state';
+import {
+  FileState,${when(recognizer === 'regex')`
+  RegexRecognition,`}
+} from '@machinat/dev-tools';${when(recognizer === 'dialogflow')`
+import Dialogflow from '@machinat/dialogflow'`}${when(
   platforms.includes('webview')
 )`
 import {
@@ -55,7 +59,9 @@ const {
   LINE_CHANNEL_SECRET,${when(platforms.includes('webview'))`
   LINE_LIFF_ID,`}`}
   // redis
-  REDIS_URL,
+  REDIS_URL,${when(recognizer === 'dialogflow')`
+  // dialogflow
+  DIALOGFLOW_PROJECT_ID,`}
 } = process.env as Record<string, string>;
 
 const DEV = NODE_ENV === 'development';
@@ -83,10 +89,14 @@ const createApp = (options?: CreateAppOptions) => {
               url: REDIS_URL,
             },
           }),
-
+${when(recognizer === 'dialogflow')`
+      Dialogflow.initModule({
+        recognitionData,
+        projectId: DIALOGFLOW_PROJECT_ID,
+      }),`}${when(recognizer === 'regex')`
       RegexRecognition.initModule({
         recognitionData,
-      }),
+      }),`}
       
       Script.initModule({
         libs: Object.values(scenes),
