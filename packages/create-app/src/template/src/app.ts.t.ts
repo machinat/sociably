@@ -85,7 +85,7 @@ const createApp = (options?: CreateAppOptions) => {
           }),
 
       RegexRecognition.initModule({
-        recognitionData
+        recognitionData,
       }),
       
       Script.initModule({
