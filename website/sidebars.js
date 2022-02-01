@@ -23,6 +23,7 @@ module.exports = {
       'learn/native-ui-and-postback',
       'learn/component',
       'learn/service-and-state',
+      'learn/recognize-intent',
       'learn/dialog-script',
       'learn/webview-in-chat',
     ],

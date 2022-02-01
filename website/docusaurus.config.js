@@ -58,7 +58,7 @@ module.exports = {
             },
             {
               label: 'Twitter',
-              href: 'https://twitter.com/machinat',
+              href: 'https://twitter.com/machinatjs',
             },
           ],
         },

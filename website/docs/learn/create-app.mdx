@@ -30,19 +30,22 @@ follow the guide of the platform you choose:
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import useUserPreferencesContext from '@theme/hooks/useUserPreferencesContext';
+import {useTabGroupChoice} from '@docusaurus/theme-common';
 
 export const HackTabsChoices = () => {
-  const {tabGroupChoices, setTabGroupChoices} = useUserPreferencesContext();
+  const {tabGroupChoices, setTabGroupChoices} = useTabGroupChoice();
   if (typeof window === 'undefined') return null;
-  const groupId= 'chat-platforms';
-  const platform = new URL(window.location.href).searchParams.get('p');
-  if (platform !== tabGroupChoices[groupId] &&
-      ['messenger', 'telegram', 'line'].includes(platform)) {
-    setTabGroupChoices(groupId, platform);
-  }
+  React.useEffect(() => {
+    const groupId= 'chat-platforms';
+    const platform = new URL(window.location.href).searchParams.get('p');
+    if (platform !== tabGroupChoices[groupId] &&
+        ['messenger', 'telegram', 'line'].includes(platform)) {
+      setTabGroupChoices(groupId, platform);
+    }
+  }, [])
   return null;
 }
+
 <HackTabsChoices />
 
 <Tabs
