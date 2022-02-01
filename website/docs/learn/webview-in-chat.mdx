@@ -336,7 +336,6 @@ const handleWebview = makeContainer({
         const { data } = await todoController.getTodos(auth.channel);
 
         return bot.send(event.channel, {
-          category: 'webview_push',
           type: 'app_data',
           payload: { data },
         });
@@ -372,7 +371,6 @@ const TodoRow = ({ todo }) => (
         <button
           onClick={() => {
             client.send({
-              category: 'webview_action',
               type: 'delete_todo',
               payload: { id: todo.id },
             })
@@ -438,7 +436,6 @@ We can then handle it at server side like this:
     );
 
     return bot.send(event.channel, {
-      category: 'webview_push',
       type: 'app_data',
       payload: { data },
     });
