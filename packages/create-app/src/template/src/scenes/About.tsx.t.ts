@@ -76,7 +76,7 @@ export default build<AboutVars>(
             GitHub 😸{'\\n'}
             https://github.com/machinat/machinat{'\\n\\n'}
             Twitter 🐦{'\\n'}
-            https://twitter.com/machinat
+            https://twitter.com/machinatjs
           </p>
         ) : (
           <p>
