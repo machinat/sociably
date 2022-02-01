@@ -2,71 +2,178 @@
 title: Service and State
 ---
 
-Despite replying messages, a chatbot need many other services to provide
-real features. In this lesson, you will learn how to use built-in DI
-(dependencies injection) system to access chat state and other services.
+> Despite replying messages, a chatbot need many other services to provide features.
+> In this lesson, you will learn how to use DI (dependencies injection) system
+> to access chat state and other services.
+>
+> _Time to accomplish: 15 minutes_
 
->　Time to accomplish: 15 minutes
+## Use Services
 
-## Consuming Services
+Calling users by their name is a common feature to improve chat experience.
+Let's implement it by editing `handleChat` like this:
 
-### Use Profiler
-
-Calling users by name is a common feature to improve chat experience. We can use
-`BasicProfiler` service to get an user's profile.
-
-Edit the `handleMessage` handler like this:
-
-```tsx {1-2,6-9,17,20} title="src/handlers/handleMessage.tsx"
-import Machinat, { BasicProfiler } from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
-import WithMenu from '../components/WithMenu';
-import { ChatEventContext } from '../types';
-
-const handleMessage = makeContainer({
-  deps: [BasicProfiler],
+```tsx {8,11} title="src/handlers/handleChat.tsx"
+//...
+const handleChat = makeContainer({
+  deps: [useIntent, useUserProfile],
 })(
-  (profiler) =>
-    async (ctx: ChatEventContext & { event: { category: 'message' } }) => {
-      const { event, reply } = ctx;
-
-      if (event.type === 'text') {
-        // ...
-      }
-
-      const profile = await profiler.getUserProfile(event.user);
-      await reply(
+  (getIntent, getUserProfile) =>
+    async (ctx: ChatEventContext & { event: { category: 'message'| 'postback' } }) => {
+      //...
+      const profile = await getUserProfile(event.user);
+      return reply(
         <WithMenu todoCount={3}>
           <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
         </WithMenu>
       );
     }
 );
-
-export default handleMessage;
-```
-The `makeContainer({ deps: [BasicProfiler] })(...)` declare the dependencies of
-the handler and wrap it as a **container**. The deps will be injected into a
-factory function in the runtime, like:
-
-```ts
-(profiler) => async (context) => {/* ... */}
+//...
 ```
 
-Now we can call `profiler.getUserProfile(user)` in the handler to say hello by
-the user's name.
+Now the bot can say hello with the user's name:
 
 <img width={400} src={require("./assets/hello-with-name.png").default} />
 
-### Use StateController
+### Service Container
 
-Another commonly used service is `StateController`. The app itself is a stateless
-server, so we need to persist data for using them later in the conversation.
+The `handleChat` handler is a **service container**.
+A container can delare the services it requires,
+and the system will inject the required dependencies at runtime.
 
-Let's try storing the todos data into chat state. First add the type for the
-todos state:
+`handleChat` is declared by `makeContainer({ deps: [useIntent, useUserProfile] })(...)`.
+It requires `useIntent` and `useUserProfile` services, which can then be used like:
+
+```ts
+(getIntent, getUserProfile) => async (context) => {/* ... */}
+```
+
+The container function takes the required services and return the handler function.
+The services then can be used in the handler like:
+
+```ts
+  const profile = await getUserProfile(event.user);
+```
+
+### Service Provider
+
+Let's go deeper to see what happen in the `useUserProfile` service.
+Check the `src/services/useUserProfile.ts` file, you should codes like:
+
+```ts {2-4,10,16-18} title="src/services/useUserProfile.ts"
+import {
+  makeFactoryProvider,
+  BasicProfiler,
+  StateController,
+  MachinatUser,
+  MachinatProfile,
+} from '@machinat/core';
+//...
+const useUserProfile =
+  (profiler: BasicProfiler, stateController: StateController) =>
+  async (user: MachinatUser) => {
+    //...
+    return profile;
+  };
+
+export default makeFactoryProvider({
+  deps: [BasicProfiler, StateController],
+})(useUserProfile);
+```
+
+The `useUserProfile` is a service provider. It requires its `deps` just like a container.
+The difference is that a provider can be required as `deps`, so we can use it to get profile.
+
+`useUserProfile` use two built-in services: `BasicProfiler` and `StateController`.
+
+### Get User Profile
+
+`BasicProfiler` can fetch users' profile no matter which platform they come from.
+
+```ts {6} title="src/services/useUserProfile.ts"
+//...
+const useUserProfile =
+  (profiler: BasicProfiler, stateController: StateController) =>
+  async (user: MachinatUser) => {
+    //...
+    const profile = await profiler.getUserProfile(user);
+    if (profile) {
+      await userState.set<ProfileCache>('profile_cache', { profile });
+    }
+    return profile;
+  };
+//...
+```
+
+### Access User State
+
+`StateController` can save/load state data of an user or a channel.
+
+```ts {9-10,17} title="src/services/useUserProfile.ts"
+//...
+type ProfileCache = {
+  profile: MachinatProfile;
+};
+
+const useUserProfile =
+  (profiler: stateController.userState(uBasicProfiler, stateController: StateController) =>
+  async (user: MachinatUser) => {
+    const userState = stateController.userState(user);
+    const cached = await userState.get<ProfileCache>('profile_cache');
+    if (cached) {
+      return cached.profile;
+    }
+
+    const profile = await profiler.getUserProfile(user);
+    if (profile) {
+      await userState.set<ProfileCache>('profile_cache', { profile });
+    }
+    return profile;
+  };
+//...
+```
+
+Here we check if the user's profile is saved under `'profile_cache'` key.
+If it is, the cached profile is returned.
+Otherwise, the profile is fetched from the platform and being cached.
+
+### State Storage
+
+The state data is stored at `.state_data.json` file while in development.
+Ckeck it and you should see the saved profile like:
+
+```json {5-14} title=".state_data.json"
+{
+  "channelStates": {},
+  "userStates": {
+    "messenger.12345.67890": {
+      "profile_cache": {
+        "$type": "MessengerUserProfile",
+        "$value": {
+          "id": "67890",
+          "name": "John Doe",
+          "first_name": "John",
+          "last_name": "Doe",
+          "profile_pic": "https://..."
+        }
+      }
+    }
+  },
+  "globalStates": {}
+}
+```
+
+## Providing Services
+
+Let's create a new service to handle the CRUD of todos.
+
+### Create a Service
+
+First add the type of todos state:
 
 ```ts title="src/types.ts"
+//...
 export type TodoState = {
   currentId: number;
   todos: Todo[];
@@ -74,186 +181,115 @@ export type TodoState = {
 };
 ```
 
-Then add the following codes in `handleMessage` handler:
-
-```tsx {1-2,5,7,17-29,32} title="src/handlers/handleMessage.tsx"
-import Machinat, { BasicProfiler, StateController } from '@machinat/core';
-import { TodoState } from '../types';
-// ...
-const handleMessage = makeContainer({
-  deps: [BasicProfiler, StateController],
-})(
-  (profiler, stateController) =>
-    async (ctx: ChatEventContext & { event: { category: 'message' } }) => {
-      const { event, reply } = ctx;
-
-      if (event.type === 'text') {
-        const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
-        if (matchingAddTodo) {
-          const todoName = matchingAddTodo[2].trim();
-
-          const todoData = await stateController
-            .channelState(event.channel)
-            .update<TodoState>(
-              'todo_data',
-              (currentState = { currentId: 0, todos: [], finishedTodos: [] }) => {
-                const { currentId, todos, finishedTodos } = currentState;
-                return {
-                  currentId: currentId + 1,
-                  todos: [...todos, { id: currentId + 1, name: todoName }],
-                  finishedTodos,
-                };
-              }
-            );
-
-          return reply(
-            <WithMenu todoCount={todoData.todos.length}>
-              <p>Todo "<b>{todoName}</b>" is added!</p>
-            </WithMenu>
-          );
-        }
-      }
-  // ...
-```
-
-We add the `StateController` service in `deps` so we can get the instance at the
-factory function. `stateController.channelState(channel)` method returns a state
-accessor to get/set data of the chat (i.e. `event.channel`).
-
-`accessor.update(key, updateFn)` takes an updator function that transform the
-current state value to the updated value. This is how we save the newly added
-todo:
-
-```ts
-const todoData = await stateController
-  // Get the chat state accessor
-  .channelState(event.channel)
-  // Update data with TodoState type
-  .update<TodoState>(
-    // The key of state
-    'todo_data',
-    // Current state value. If no saved data, the value is undefined.
-    // Use `currentState={/* ... */}` to define default value
-    (currentState = { currentId: 0, todos: [], finishedTodos: [] }) => {
-      const { currentId, todos, finishedTodos } = currentState;
-      // return the new state value
-      return {
-        // increment id counter
-        currentId: currentId + 1,
-        // add the new todo
-        todos: [...todos, { id: currentId + 1, name: todoName }],
-        // reamin the same
-        finishedTodos,
-      };
-    }
-  );
-```
-
-### State Storage
-
-The `StateController` service require a state storage to work. Check `src/app.ts`,
-and you should see the following code:
-
-```ts
-  DEV
-    ? FileState.initModule({
-      path: './.state_data.json',
-    })
-    : RedisState.initModule({
-      clientOptions: {
-        url: REDIS_URL,
-      },
-    }),
-```
-
-During development, a local file is used to store the state data for easy
-debugging. On production, a redis database is used for performance and robustness.
-
-Try adding a todo with `add todo <name>` command, and check the `.state_data.json`
-file in the project folder. You should see the stored data like this:
-
-```json
-  "channelStates": {
-    "messenger.1234567890.psid.9876543210": {
-      "todo_data": {
-        "currentId": 1,
-        "todos": [
-          {
-            "id": 1,
-            "name": "foo"
-          }
-        ]
-      }
-    }
-  },
-```
-
-The data under `"channelStates" > "{channel uid}" > "todo_data"` is the saved
-todos data. You can edit the JSON data manually for testing.
-
-## Providing Services
-
-### Make Your Own Service
-
-In the project we need to access todos data serveral times. To keep our codes
-clean and [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself), it's
-better to have a service managing all the todo operations.
-
-For not repeating similar steps, please download the `TodoController.ts` file
+To save time from repeating similar steps, please download the `TodoController.ts` file
 with this command:
 
 ```bash
-curl -o ./src/services/TodoController.ts --create-dirs https://raw.githubusercontent.com/machinat/todo-example/main/src/services/TodoController.ts```
+curl -o ./src/services/TodoController.ts https://raw.githubusercontent.com/machinat/todo-example/main/src/services/TodoController.ts
 ```
 
-In the file we declare a `TodoController` class to manage todos from the state.
-Check the end of `src/services/TodoController.ts` file, you'll see
-`StateController` class is wrapped by `makeClassProvider` function:
+In the file we create a `TodoController` service to manage todos.
+Check `src/services/TodoController.ts`, it's declared like this:
 
-```ts
+```ts title="src/services/TodoController.ts"
+//...
+export class TodoController {
+  stateController: StateController;
+
+  constructor(stateController: StateController) {
+    this.stateController = stateController;
+  }
+  //...
+}
+
 export default makeClassProvider({
   deps: [StateController],
 })(TodoController);
 ```
 
-The `makeClassProvider` function describe how a class should be provided as a
-service in the DI system. Like a service container, the required `deps` will be
-injected when a new instance is constructed.
+The `makeClassProvider` works just like `makeFactoryProvider`,
+except that the provider is a class.
+It also requires `StateController` to save/load todos data.
+
+### Channel State
+
+In the `TodoController` we store the todos data in the `channelState`.
+It works the same as `userState`, but it saves the data of a chatroom instead.
+
+```ts {6} title="src/services/TodoController.ts"
+//...
+async getTodos(
+  channel: MachinatChannel
+): Promise<{ todo: null; data: TodoState }> {
+  const data = await this.stateController
+    .channelState(channel)
+    .get<TodoState>('todo_data');
+
+  return {
+    todo: null,
+    data: data || { currentId: 0, todos: [], finishedTodos: [] },
+  };
+}
+//...
+```
 
 ### Register Services
 
-A new service must be registered in the app before using. Add the
-`TodoController` service in the `services` section when `createApp`, like this:
+A new service must be registered in the app before using it.
+Register the `TodoController` in `src/app.ts` like:
 
-```ts {1,6} title="src/app.ts"
+```ts {1,7-8} title="src/app.ts"
 import TodoController from './services/TodoController';
 //...
-const app = Machinat.createApp({
-  services: [
-    // ...
-    TodoController,
-  ],
-});
-// ...
+const createApp = (options?: CreateAppOptions) => {
+  return Machinat.createApp({
+    modules: [/* ... */],
+    platforms: [/* ... */],
+    services: [
+      TodoController,
+      // ...
+    ],
+  });
+};
 ```
 
 ### Use `TodoController`
 
-Now the `TodoController` service can be used just like the built-in services.
-Edit `handleMessage` function like this:
+Now `TodoController` can be used like other services.
+We can use it to easily complete the CRUD features.
+Edit `handleChat` like this:
 
-
-```tsx {1,4,6,16,18,26,28} title="src/handlers/handleMessage.tsx"
+```tsx {1,4,6,12-13,15-29,36,38,46,48} title="src/handlers/handleChat.tsx"
 import TodoController from '../services/TodoController';
 // ...
-const handleMessage = makeContainer({
-  deps: [BasicProfiler, TodoController],
+const handleChat = makeContainer({
+  deps: [useIntent, useUserProfile, TodoController],
 })(
-  (profiler, todoController) =>
-  async ({
-    event,
-    reply,
-    }: ChatEventContext & { event: { category: 'message' } }) => {
+  (getIntent, getUserProfile, todoController) =>
+  async (ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }) => {
+      const { event, reply } = ctx;
+      const intent = await getIntent(event);
+
+      if (intent.type === 'list') {
+        const { data } = await todoController.getTodos(event.channel);
+        return reply(<TodoList todos={data.todos} />);
+      }
+      if (intent.type === 'finish') {
+        const { todo, data } = await todoController.finishTodo(
+          event.channel,
+          intent.payload.id
+        );
+        return reply(
+          <WithMenu todoCount={data.todos.length}>
+            {todo ? (
+              <p>Todo "<b>{todo.name}</b>" is done!</p>
+            ) : (
+              <p>This todo is closed.</p>
+            )}
+          </WithMenu>
+        );
+      }
+
       if (event.type === 'text') {
         const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
         if (matchingAddTodo) {
@@ -277,194 +313,45 @@ const handleMessage = makeContainer({
       );
     }
 );
-
-export default handleMessage;
+//...
 ```
 
-Then we can easily complete the listing todos and finishing todo features.
-Edit the `handlePostback` handler like this:
 
+Now try adding a todo with `add todo <name>` command, and check the `.state_data.json`
+file. You should see the stored todo data like:
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
-<Tabs
-  groupId="chat-platforms"
-  defaultValue="messenger"
-  values={[
-    {label: 'Messenger', value: 'messenger'},
-    {label: 'Telegram', value: 'telegram'},
-    {label: 'LINE', value: 'line'},
-  ]}>
-  <TabItem value="messenger">
-
-
-```tsx {2,3,5,8-9,17,19,23-38} title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
-import TodoController from '../services/TodoController';
-import TodoList from '../components/TodoList'
-import WithMenu from '../components/WithMenu';
-import { ChatEventContext } from '../types';
-
-const handlePostback = makeContainer({ deps: [TodoController] })(
-  (todoController) =>
-    async ({
-      event,
-      reply,
-    }: ChatEventContext & { event: { type: 'postback' } }) => {
-      const action = JSON.parse(event.data!);
-
-      if (action.type === 'list') {
-        const { data } = await todoController.getTodos(event.channel);
-        return reply(
-          <TodoList todos={data.todos} />
-        );
-      }
-
-      if (action.type === 'finish') {
-        const { todo, data } = await todoController.finishTodo(
-          event.channel,
-          action.id
-        );
-        return reply(
-          <WithMenu todoCount={data.todos.length}>
-            {todo ? (
-              <p>Todo "<b>{todo.name}</b>" is done!</p>
-            ) : (
-              <p>This todo is closed.</p>
-            )}
-          </WithMenu>
-        );
+```json {5-13} title=".state_data.json"
+{
+  "userStates": {...},
+  "channelStates": {
+    "messenger.12345.psid.67890": {
+      "todo_data": {
+        "currentId": 1,
+        "todos": [
+          {
+            "id": 1,
+            "name": "Master State Service"
+          }
+        ],
+        "finishedTodos": []
       }
     }
-);
-
-export default handlePostback;
+  },
+  "globalStates": {}
+}
 ```
 
-
-  </TabItem>
-  <TabItem value="telegram">
-
-
-```tsx {2,4,6,9-10,19,23,28-43} title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
-import { AnswerCallbackQuery } from '@machinat/telegram/components';
-import TodoController from '../services/TodoController';
-import TodoList from '../components/TodoList'
-import WithMenu from '../components/WithMenu';
-import { ChatEventContext } from '../types';
-
-const handlePostback = makeContainer({ deps: [TodoController] })(
-  (todoController) =>
-    async ({
-      event,
-      reply,
-    }: ChatEventContext & { event: { type: 'callback_query' } }) => {
-      const action = JSON.parse(event.data);
-      const answerQuery = <AnswerCallbackQuery queryId={event.queryId} />;
-
-      if (action.type === 'list') {
-        const { data } = await todoController.getTodos(event.channel!);
-        return reply(
-          <>
-            {answerQuery}
-            <TodoList todos={data.todos} />
-          </>
-        );
-      }
-
-      if (action.type === 'finish') {
-        const { todo, data } = await todoController.finishTodo(
-          event.channel!,
-          action.id
-        );
-        return reply(
-          <WithMenu todoCount={data.todos.length}>
-            {answerQuery}
-            {todo ? (
-              <p>Todo "<b>{todo.name}</b>" is done!</p>
-            ) : (
-              <p>This todo is closed.</p>
-            )}
-          </WithMenu>
-        );
-      }
-
-      return reply(answerQuery);
-    }
-);
-
-export default handlePostback;
-```
-
-
-  </TabItem>
-  <TabItem value="line">
-
-
-```tsx  {2,3,5,8-9,17,19,23-38} title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
-import TodoController from '../services/TodoController';
-import TodoList from '../components/TodoList'
-import WithMenu from '../components/WithMenu';
-import { ChatEventContext } from '../types';
-
-const handlePostback = makeContainer({ deps: [TodoController] })(
-  (todoController) =>
-    async ({
-      event,
-      reply,
-    }: ChatEventContext & { event: { type: 'postback' } }) => {
-      const action = JSON.parse(event.data!);
-
-      if (action.type === 'list') {
-        const { data } = await todoController.getTodos(event.channel);
-        return reply(
-          <TodoList todos={data.todos} />
-        );
-      }
-
-      if (action.type === 'finish') {
-        const { todo, data } = await todoController.finishTodo(
-          event.channel,
-          action.id
-        );
-        return reply(
-          <WithMenu todoCount={data.todos.length}>
-            {todo ? (
-              <p>Todo "<b>{todo.name}</b>" is done!</p>
-            ) : (
-              <p>This todo is closed.</p>
-            )}
-          </WithMenu>
-        );
-      }
-    }
-);
-
-export default handlePostback;
-```
-
-
-  </TabItem>
-</Tabs>
-
-Now the try tap `Done ✓` button in the todos list, your bot will reply like
-this:
+Then press `Done ✓` button in the todos list, the bot should reply like:
 
 <img width={400} src={require("./assets/finish-todo.png").default} />
 
-And check the `.state_data.json` file, the todo data will be moved to the
-`"finishedTodos"` section like this:
+Check `.state_data.json`, the todo should be moved to the
+`"finishedTodos"` section:
 
-```ts
+```json title=".state_data.json"
     "finishedTodos": [
       {
-        "id": 12,
+        "id": 1,
         "name": "Master State Service"
       }
     ]
@@ -472,5 +359,5 @@ And check the `.state_data.json` file, the todo data will be moved to the
 
 ---
 
-Now our bot can provide real feature with real data in the state. Next, we'll use
-the state to make the bot chat wiser.
+Now our bot can provide real feature with real data in the state.
+Next, we'll make the bot to understand what we say.

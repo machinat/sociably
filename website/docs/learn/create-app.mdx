@@ -2,33 +2,31 @@
 title: Create a Machinat App
 ---
 
-Let's create our first Machinat app and run it up! In this lesson, we'll create a
-hello-world chatbot and make it available in the chat platform.
-
->　Time to accomplish: 15 minutes
+> Let's create our first app and run it up! In this lesson, we'll create a
+> hello-world chatbot and make it available on the chat platform.
+>
+> _Time to accomplish: 15 minutes_
 
 ## Chat Platform
 
 Machinat now support three chat platforms: `messenger`, `telegram` and `line`.
-Pick one platform you preferred and run this command with the platform you choose
-in the terminal:
+Pick one platform to use in the lessons and run this command in the terminal:
 
 ```bash
 npm init @machinat/app@latest -- -p <platform> -p webview my-todo-bot
 ```
 
-The scirpt will automatically create codes of a hello-world bot. Now
-`cd my-todo-bot` and take a look.
+The command initiate codes of a hello-world bot. Try `cd my-todo-bot` and take
+a look.
 
 :::tip
-You can choose multiple chat platforms by adding more `-p <platform>` flag, and
-your app will be corss-platform when finished.
+To support multiple chat platforms, add more `-p <platform>` flag.
 :::
 
 ### Platform Setup
 
-Before starting your app, you have to configure the chat platform settings first.
-Please follow the guide of the platform you choose:
+Before starting the app, you need to set up the chat platform first. Please
+follow the guide of the platform you choose:
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -45,8 +43,8 @@ export const HackTabsChoices = () => {
   }
   return null;
 }
-
 <HackTabsChoices />
+
 <Tabs
   groupId="chat-platforms"
   defaultValue="messenger"
@@ -60,9 +58,9 @@ export const HackTabsChoices = () => {
 
 #### Create a Facebook app
   1. Visit https://developers.facebook.com/apps, tap `Create App` to create a new app.
-  2. Go to: `App Dashboard Page` > `Settings` > `Basic`.
-  3. Copy the value of `App ID` and `App Secret`. Paste them in `.env` file in
-     you project like:
+  2. Go to: `App Dashboard` > `Settings` > `Basic`.
+  3. Copy the value of `App ID` and `App Secret`. Paste them in the `.env`
+     file in the project. Like:
 
 ```
 MESSENGER_APP_ID= 1234567890
@@ -70,17 +68,17 @@ MESSENGER_APP_SECRET= abcdef123456...
 ```
 
 #### Use Messneger in you app
-  Go to: `App Dashboard Page` > `Add a Product` > `Messenger` > `Set Up`
+  Go to: `App Dashboard` > `Add a Product` > `Messenger` > `Set Up`
 
 #### Create a Facebook page if you don't have one:
-  Go to: `Messenger Setting Page` > `Access Tokens` > `Create New Page`.
-  Then follow the instructions to create a page for your bot.
+  Go to: `Messenger Setting` > `Access Tokens` > `Create New Page`.
+  Then follow the instructions to create a page.
 
 #### Connect your page to the app
-  1. Go to: `Messenger Setting Page` > `Access Tokens` > `Add or Remove Pages`.
+  1. Go to: `Messenger Setting` > `Access Tokens` > `Add or Remove Pages`.
   2. Choose the page you just created. After confirmation, you page should be
      listed in `Access Tokens` area.
-  3. Copy the id number of the page and paste it in `.env` file like:
+  3. Copy the id of the page and paste it in the `.env` file, like:
 
 ```
 MESSENGER_PAGE_ID= 1234567890
@@ -88,13 +86,13 @@ MESSENGER_PAGE_ID= 1234567890
 
 ### Get page token
   Press `Generate Token` at the connected page. Copy the generated token and
-  paste it in `.env` file like:
+  paste it in the `.env` file, like:
 
 ```
 MESSENGER_ACCESS_TOKEN= AaBbCcDdEeFf123456...
 ```
 
-## Run Machinat App
+## Start App
 
 ### Start Dev Server
 
@@ -104,46 +102,43 @@ Now run this command in the project directory:
 npm run dev
 ````
 
-Your app should be successfully running if all the required settings are
-finished.
+Your app should be successfully running if all the required settings are filled.
 
 ### Run Migrations
 
-One more step to be done for the first time starting.
-Keep the dev server runnning, and execute this command in **another command line
-tab**:
+There is one more step for the first time starting. Keep the dev server
+runnning, and execute this command in **another command line tab**:
 
 ```bash
 npm run migrate
 ```
 
-The command register some necessery settings to Messenger platform. Your bot
-should be available now by messaging to your Facebook page!
+The command register some necessery settings to Messenger platform. Now try
+messaging your Facebook page, the app should work like this:
 
 
   </TabItem>
   <TabItem value="telegram">
 
 
-#### Create a telegram bot
+#### Create a bot
 
 1. Talk to [@BotFather](https://t.me/botfather) in the [Telegram](https://telegram.org/) app.
 2. Send '/newbot' command to create a bot. Follow the BotFather's instructions.
-3. Copy the token of your bot and paste it in `.env` file in your project like:
+3. Copy the token of your bot and paste it in the `.env` file in the project, like:
 
 ```
 TELEGRAM_BOT_TOKEN= 654321:AaBbCcDdEdFf123456...
 ```
 
-#### Set domain of your bot
+#### Set domain of the bot
 
-1. Go to `.env` file in your project and copy the value of `DOMAIN` field. It
+1. Go to `.env` file in the project and copy the value of `DOMAIN` field. It
    should look like `xxx-xxx-123.t.machinat.dev`.
 2. Go back to [@BotFather](https://t.me/botfather) and send `/mybot` command. Choose the bot you just created.
 3. Go to `Bot Settings` > `Domain` > `Edit Domain`. Send the copied domain to BotFather.
 
-
-## Run Machinat App
+## Start App
 
 ### Run Migrations
 
@@ -153,7 +148,7 @@ Before the first time starting, you have to run this command in the project dire
 npm run migrate
 ```
 
-The command register some necessery settings to the Telegram platform.
+The command register some necessery settings to Telegram platform.
 
 ### Start Dev Server
 
@@ -163,8 +158,8 @@ Now we can start app in development mode with this command:
 npm run dev
 ````
 
-Keep the dev server running while you are developing. Your app should be available
-now in the private chat to your bot!
+Keep the dev server running while developing. Now try messaging your bot, the
+app should work like this:
 
   </TabItem>
   <TabItem value="line">
@@ -174,7 +169,7 @@ now in the private chat to your bot!
 
 1. Create a Provider at https://developers.line.biz/console/
 2. Under provider page, go to `Settings` > `Provider ID`. Copy the value and
-   paste it in `.env` file in your project like:
+   paste it in the `.env` file in the project, like:
 
 ```
 LINE_PROVIDER_ID= 1234567890
@@ -182,10 +177,10 @@ LINE_PROVIDER_ID= 1234567890
 
 #### Create Messaging API Channel
 
-1. Go to `Channels` tab at provider page. Tap '+' and create a new
+1. Go to `Channels` tab at the provider page. Tap '+' and create a new
    `Messaging API` channel.
-2. Copy the values of `Channel ID` and `Channel secret` under `Basic settings`,
-   paste them in `.env` file like:
+2. Copy the values of `Channel ID` and `Channel secret` under `Basic settings`.
+   Paste them in the `.env` file, like:
 
 ```
 LINE_CHANNEL_ID= 1234567890
@@ -193,7 +188,7 @@ LINE_CHANNEL_SECRET = abcdef123456...
 ```
 
 3. Go to `Messaging API` tab, issue an access token at `Channel access token`.
-   Copy the token and paste it in `.env` file like:
+   Copy the token and paste it in the `.env` file, like:
 
 ```
 LINE_ACCESS_TOKEN= AaBbCcDdEeFf123456...
@@ -208,13 +203,13 @@ LINE_ACCESS_TOKEN= AaBbCcDdEeFf123456...
 3. Go to `LIFF` tab, create a new LIFF app.
 4. Fill the `Endpoint URL` with `https://{DOMAIN}/webview?platform=line`
 5. Select the `profile` option of `Scopes`.
-6. Copy the `LIFF ID` of the created LIFF app, paste it in `.env` file like:
+6. Copy the `LIFF ID` of the created LIFF app. Paste it in the `.env` file, like:
 
 ```
 LINE_LIFF_ID= 1234567890-abcdef123456
 ```
 
-## Run Machinat App
+## Start App
 
 ### Run Migrations
 
@@ -234,44 +229,15 @@ Now we can start app in development mode with this command:
 npm run dev
 ````
 
-Keep the dev server running while you are developing. Your app should be available
-now in private chat to your LINE official account!
+Keep the dev server running while developing. Now try messaging your LINE
+official account, the app should work like:
 
   </TabItem>
 </Tabs>
 
-### Try Your Bot
-
-Your first hello world app is running now! Talk to your bot in the chat platform
-and it should work like this:
-
 <img width={400} src={require("./assets/hello-world-bot.png").default} />
-
-#### Reply Text
-
-Let's change the answer a little bit. Open file `src/handlers/handleMessage.tsx`
-and edit the content to this:
-
-
-```tsx title="src/handlers/handleMessage.tsx"
-import Machinat from '@machinat/core';
-import { ChatEventContext } from '../types';
-
-const handleMessage = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  await reply("Hello! I'm a Todo Bot 🤖");
-};
-
-export default handleMessage;
-```
-
-Bot should now answer the string we `reply("...")` with like this:
-
-<img width={400} src={require("./assets/hello-todo-bot.png").default} />
 
 ---
 
-Our first bot is running! Next, we'll teach it how to receive messsges and
-make the answer.
+Our first bot is running! Next, you'll learn how to receive messsges and
+make the reply.

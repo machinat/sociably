@@ -2,293 +2,92 @@
 title: Dialog Script
 ---
 
-Our bot interact with users in _Q & A_ flows now. But it can't actually
-**chat** with the user. In this lesson, you'll learn how to guide your bot
-having a conversation with dialog scripts.
+> To serve in chat, it's often that we need to ask a series of questions and wait for feedbacks.
+> In this lesson, you'll learn how to program such the conversation flows.
+>
+> _Time to accomplish: 20 minutes_
 
->　Time to accomplish: 15 minutes
+## Make a Conversation
 
-### What's Dialog Script?
+The bot should ask new todo name after recognizing the adding todo intent.
+To do this, we have to handle the _prompt and wait_ flow in our codes.
 
-Machinat **Dialog Script** works like a scripting language written in JSX. You
-describe how a conversation should be proceeded in a script. And the script
-processor would handle the conversation process according to the running script.
+In Machinat, it can be done by a **Dialog Script**.
 
-### Install Package
+### Build a Script
 
-Install the `@machinat/script` packages with:
-
-```bash
-$ npm install @machinat/script
-# or yarn
-$ yarn add @machinat/script
-```
-
-### Building Script
-
-Let's add our first script for adding todo in a more conversational way.
-Create a `src/scenes/AddingTodo.tsx` script file like this:
+Let's add our first script for adding a todo.
+Create `src/scenes/AddingTodo.tsx` file with the following content:
 
 ```tsx title="src/scenes/AddingTodo.tsx"
 import Machinat from '@machinat/core';
 import { build } from '@machinat/script';
+import * as $ from '@machinat/script/keywords';
 
 export default build(
   {
     name: 'AddingTodo',
   },
-  <>
+  <$.BLOCK>
     {() => <p>Please enter new todo name:</p>}
-  </>
+  </$.BLOCK>
 );
 ```
 
-We `build` a script with its metadata and the script body. The `name` metadata
-should be unique in the whole project.
+Here we `build` a script for the adding todo conversation.
+The script body is a special JSX block to describe the flow.
 
-In the script body, the function `{() => <p>...</p>}` is a content node in script.
-The content function will be called when it is met in the conversation, and the
-returned messages will be sent.
+### Script Content
+
+In the script body, the function `{() => <p>...</p>}` is a content node.
+The function will be called when it's met in the flow,
+and the returned messages will be sent in the chat.
 
 ### Register Script
 
-The newly created script need to be registered at the module like this:
+The newly created script need to be registered first.
+Edit `src/scenes/index.tsx` and export `AddingTodo` like this:
 
-```ts {1-2,8-10} title="src/app.ts"
-import Script from '@machinat/script';
-import AddingTodo from './scenes/AddingTodo';
-// ...
-
-const app = Machinat.createApp({
-  modules: [
-    // ...
-    Script.initModule({
-      libs: [AddingTodo],
-    }),
-  ],
-  // ...
-})
+```tsx title="src/scenes/index.tsx"
+export { default as AddingTodo } from './AddingTodo';
 ```
-
-### Delegate Chat to Processor
-
-One more setup to make the scripts work. When a script is running on a chat,
-the received events must be delegated to the script processor.
-
-Edit the `main` function like this:
-
-
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
-<Tabs
-  groupId="chat-platforms"
-  defaultValue="messenger"
-  values={[
-    {label: 'Messenger', value: 'messenger'},
-    {label: 'Telegram', value: 'telegram'},
-    {label: 'LINE', value: 'line'},
-  ]}>
-  <TabItem value="messenger">
-
-
-```ts {1-2,6-21,23,32} title="src/main.ts"
-import { makeContainer } from '@machinat/core/service';
-import Script from '@machinat/script';
-// ...
-
-const main = (event$: Stream<AppEventContext>) => {
-  const chat$ = event$.pipe(
-    filter((ctx): ctx is ChatEventContext => ctx.platform !== 'webview'),
-    filter(
-      makeContainer({ deps: [Script.Processor] })(
-        (processor) => async (ctx) => {
-          const runtime = await processor.continue(ctx.event.channel, ctx);
-          if (!runtime) {
-            return true;
-          }
-
-          await ctx.reply(runtime.output());
-          return false;
-        }
-      )
-    )
-  );
-
-  chat$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { category: 'message' } } =>
-          ctx.event.category === 'message'
-      )
-    )
-    .subscribe(handleMessage);
-
-  chat$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { type: 'postback' } } =>
-          ctx.event.type === 'postback'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-```
-
-  </TabItem>
-  <TabItem value="telegram">
-
-
-```ts {1-2,6-21,23,32} title="src/main.ts"
-import { makeContainer } from '@machinat/core/service';
-import Script from '@machinat/script';
-// ...
-
-const main = (event$: Stream<AppEventContext>) => {
-  const chat$ = event$.pipe(
-    filter((ctx): ctx is ChatEventContext => ctx.platform !== 'webview'),
-    filter(
-      makeContainer({ deps: [Script.Processor] })(
-        (processor) => async (ctx) => {
-          const runtime = await processor.continue(ctx.event.channel, ctx);
-          if (!runtime) {
-            return true;
-          }
-
-          await ctx.reply(runtime.output());
-          return false;
-        }
-      )
-    )
-  );
-
-  chat$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { category: 'message' } } =>
-          ctx.event.category === 'message'
-      )
-    )
-    .subscribe(handleMessage);
-
-  chat$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { type: 'callback_query' } } =>
-          ctx.event.type === 'callback_query'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-```
-
-  </TabItem>
-  <TabItem value="line">
-
-```ts {1-2,6-21,23,32} title="src/main.ts"
-import { makeContainer } from '@machinat/core/service';
-import Script from '@machinat/script';
-// ...
-
-const main = (event$: Stream<AppEventContext>) => {
-  const chat$ = event$.pipe(
-    filter((ctx): ctx is ChatEventContext => ctx.platform !== 'webview'),
-    filter(
-      makeContainer({ deps: [Script.Processor] })(
-        (processor) => async (ctx) => {
-          const runtime = await processor.continue(ctx.event.channel, ctx);
-          if (!runtime) {
-            return true;
-          }
-
-          await ctx.reply(runtime.output());
-          return false;
-        }
-      )
-    )
-  );
-
-  chat$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { category: 'message' } } =>
-          ctx.event.category === 'message'
-      )
-    )
-    .subscribe(handleMessage);
-
-  chat$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { type: 'postback' } } =>
-          ctx.event.type === 'postback'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-```
-
-
-  </TabItem>
-</Tabs>
-
-
-If a script runtime exists on a chat, the `runtime.output()` will be replied.
-The original handlers will not receive events from that chat until the script
-is finished.
-
 
 ### Use Script
 
-Now we can use the newly added script in the `handleMessage` function:
+Now we can use the new `AddingTodo` script in the `handleChat` handler:
 
-```tsx {1-2,10,13,23-26} title="src/handlers/handleMessage.tsx"
-import Script from '@machinat/script'
+```tsx {1,12} title="src/handlers/handleChat.tsx"
 import AddingTodo from '../scenes/AddingTodo';
 // ...
-
-const handleMessage = makeContainer({
-  deps: [
-    BasicProfiler,
-    StateController,
-    TodoController,
-    Script.Processor
-  ],
+const handleChat = makeContainer({
+  deps: [useIntent, useUserProfile, TodoController],
 })(
-  (profiler, stateController, todoController, processor) =>
-    async ({
-      event,
-      reply,
-    }: ChatEventContext & { event: { category: 'message' } }) => {
-      if (event.type === 'text') {
-        const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
-        if (matchingAddTodo) {
-          const todoName = matchingAddTodo[2].trim();
+  (getIntent, getUserProfile, todoController) =>
+  async (ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }) => {
+      const { event, reply } = ctx;
+      const intent = await getIntent(event);
 
-          if (!todoName) {
-            const runtime = await processor.start(event.channel, AddingTodo);
-            return reply(runtime.output());
-          }
-          // ...
+      if (intent.type === 'add') {
+        return reply(<AddingTodo.Start channel={event.channel} />);
+      }
+      // ...
 ```
 
-We use `processor.start(channel, script)` method to run `AddingTodo` script on
-the current chat. Then reply `runtime.output()` to send the initial messages.
-After that, the processor will take over the chat until the script is finished.
-
-Now if the todo name is absent, your bot ask for it like this:
+You should see the content in the script is replied like this:
 
 <img width={400} src={require("./assets/add-todo-script-1.png").default} />
 
+When we reply with `AddingTodo.Start`, it runs the `AddingTodo` script on the chat.
+After that, the script processor will take over the chat until the running script is finished.
 
-### `PROMPT` For Answer
+### `PROMPT` For an Answer
 
-The `AddingTodo` script is not actually handling user's answer now. We can use
-the `PROMPT` keyword to stop the script and wait for it.
+Currently, the `AddingTodo` script immediately ends.
+Let's add a `PROMPT` to stop the script and wait for the answer.
 
 Add the these codes in the script:
 
-```tsx {3,5-7,9,12,17-23} title="src/scenes/AddingTodo.tsx"
+```tsx {5-7,9,12,17-23} title="src/scenes/AddingTodo.tsx"
 import Machinat from '@machinat/core';
 import { build } from '@machinat/script';
 import * as $ from '@machinat/script/keywords';
@@ -302,7 +101,7 @@ export default build<AddingTodoVars>(
     name: 'AddingTodo',
     initVars: () => ({ todoName: '' }),
   },
-  <>
+  <$.BLOCK>
     {() => <p>Please enter new todo name:</p>}
 
     <$.PROMPT<AddingTodoVars>
@@ -312,32 +111,35 @@ export default build<AddingTodoVars>(
         todoName: event.type === 'text' ? event.text : '',
       })}
     />
-  </>
+  </$.BLOCK>
 );
 ```
 
-The `PROMPT` element stops the execution of scritp and wait for answer from user.
-When user replies, the script will start executing again from the `PROMPT` point.
+The `PROMPT` keyword stops the execution of the script.
+When the user answers, the script will start executing again from the `PROMPT` point.
 
 ### Script Vars
 
-`vars` is a special state exists while the script is running. It is initiated by
-the `initVars` function when the script starts. The `AddingTodoVars` is used
-to type the `vars` in `AddingTodo` script.
+`vars` is a special state that exists while the script is running.
+It's initiated by the `initVars` function when the script starts.
+Here we store the user's answer at `vars.todoName`.
 
-`set` prop of `PROMPT` can be use to save user's answer into `vars`. It takes
-two args: 1) a environments object containing current `vars`, 2) event context
-of the answer message. Then we can return the next `vars` value, set the
-`todoName` answer for later use.
+The `set` prop of `PROMPT` is called when the user answers.
+It receives two args:
+
+- an environment object that contains current `vars`
+- event context of the answered message.
+
+Then we return the new `vars` value, which set the `todoName` for later use.
 
 ### Execute `EFFECT`
 
-Now we have the `todoName` answered by user, and need to save it into the state.
-We can add a `EFFECT` element for doing that:
+Now we have the `todoName` answered by the user,
+the next thing is to save it in the state.
+We can use the `EFFECT` keyword to do that:
 
-```tsx {2,4-5,9,15,28-39} title="src/scenes/AddingTodo.tsx"
-import Machinat from '@machinat/core';
-import { makeContainer } from '@machinat/core/service';
+```tsx {1,4,8,14,27-38} title="src/scenes/AddingTodo.tsx"
+import Machinat, { makeContainer } from '@machinat/core';
 import { build } from '@machinat/script';
 import * as $ from '@machinat/script/keywords';
 import TodoController from '../services/TodoController';
@@ -352,7 +154,7 @@ export default build<AddingTodoVars>(
     name: 'AddingTodo',
     initVars: () => ({ todoName: '', todosCount: 0 }),
   },
-  <>
+  <$.BLOCK>
     {() => <p>Please enter new todo name:</p>}
 
     <$.PROMPT<AddingTodoVars>
@@ -375,23 +177,21 @@ export default build<AddingTodoVars>(
           }
       )}
     />
-  </>
+  </$.BLOCK>
 );
 ```
 
-The `EFFECT` keyword can be used to execute a side effect and update the `vars`
-value. Notice that we use a **service container** for the `set` prop. Almost every
-functional prop of keywords can take the container version of it.
+The `EFFECT` keyword can be used to execute a side effect and update the `vars`.
+Here we save the new todo and set `vars.todosCount` for later use.
 
-The container require `TodoController` service to save new todo, and
-then set `todosCount` in the returned `vars` value.
+Note that we use a **service container** to require `TodoController`.
+All the functional props on the keywords can accept a container.
 
-### Message With `vars`
 
-We can also get the `vars` value in the message node function and use them to
-build UI.
+### Content With `vars`
 
-Add this message node at the end of script to show the adding result:
+We can also use `vars` to generate content.
+Add the message to show the adding result like this:
 
 ```tsx {1,4-8} title="src/scenes/AddingTodo.tsx"
 import WithMenu from '../components/WithMenu';
@@ -402,11 +202,11 @@ import WithMenu from '../components/WithMenu';
         Todo "<b>{todoName}</b>" is added!
       </WithMenu>
     )}
-  </>
+  </$.BLOCK>
 );
 ```
 
-Now a todo can be added in a conversational way like this:
+Now a todo can be added like this:
 
 <video width={420} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/add-todo-script-2.webm").default} type="video/webm" />
@@ -415,14 +215,15 @@ Now a todo can be added in a conversational way like this:
 
 ### Flow Control
 
-We haven't verify the user input yet, so it could be a problem when user
-reply a non-text message. We can use a `WHILE` keyword to fix that:
+It could be a problem if a non-text message is replied by users.
+We can use `WHILE` keyword to verify the input:
 
-```tsx {1,4,14} title="src/scenes/AddingTodo.tsx"
-import * as $ from '@machinat/script/keywords';
+```tsx {3-5,15} title="src/scenes/AddingTodo.tsx"
 // ...
-  <>
-    <$.WHILE<AddingTodoVars> condition={({ vars }) => vars.todoName === ''}>
+  <$.BLOCK>
+    <$.WHILE<AddingTodoVars>
+      condition={({ vars }) => vars.todoName === ''}
+    >
       {() => <p>Please enter new todo name:</p>}
 
       <$.PROMPT<AddingTodoVars>
@@ -433,41 +234,38 @@ import * as $ from '@machinat/script/keywords';
         })}
       />
     </$.WHILE>
-    //...
+//...
 ```
 
-`WHILE` is a flow control keyword like the `while` in programming
-language. We wrap the `PROMPT` element with `WHILE`, so bot would keep asking
-until the answer pass the verification.
+`WHILE` works just like the `while` keyword in programming language.
+The inner block would keep looping when the `condition` is met.
 
-`condition` prop control whether the loop should continue. We check the
-`vars.todoName` value, and keep looping until it is a valid string.
-
-The result would look like:
+The `PROMPT` is wrapped by the `WHILE` block,
+so our bot would keep asking until the answer is ok.
+The result looks like:
 
 <video width={420} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/add-todo-script-3.webm").default} type="video/webm" />
 </video>
 
 
-Despite `WHILE`, there are other flow control keywords you may familiar with,
-like `IF` and `RETURN`. You can control the conversation easily just like
-programming.
+Despite `WHILE`, there are other flow control keywords like `IF` and `RETURN`.
+You can easily control the dialog like coding.
 
-### `CALL` Script
+### `CALL` a Script
 
-We can also use another script like a function call. The `CALL` keyword tells the
-runtime to execute a script, and will go back to the current point after it return.
+Like in programming language,
+we can `CALL` a script in another one to reuse the dialog flows.
 
-Let's use it to ask user for adding the first todo. Add a new `AskingFirstTodo`
-script like this:
+Let's try calling `AddingTodo` in a new script.
+Create `src/scenes/AskingFirstTodo.tsx` file with the folowing content:
 
-```tsx title="src/scenes/AskingFirstTodo.tsx"
-import Machinat from '@machinat/core';
+```tsx {39} title="src/scenes/AskingFirstTodo.tsx"
+import Machinat, { makeContainer } from '@machinat/core';
 import { build } from '@machinat/script';
 import * as $ from '@machinat/script/keywords';
 import AddingTodo from './AddingTodo';
-import { ChatEventContext } from '../types';
+import useIntent from '../services/useIntent';
 
 type AskingFirstTodoVars = {
   ok: boolean;
@@ -481,13 +279,17 @@ export default build<AskingFirstTodoVars>(
   <>
     {() => <p>You have no todo now. Do you want to create one?</p>}
 
-    <$.PROMPT<AskingFirstTodoVars, ChatEventContext>
+    <$.PROMPT<AskingFirstTodoVars>
       key="ask-adding"
-      set={(_, { event }) => ({
-        ok: event.type === 'text'
-          ? /(ok|yes|👌|👍)/i.test(event.text)
-          : false,
-      })}
+      set={makeContainer({ deps: [useIntent] })(
+        (getIntent) =>
+          async (_, { event }) => {
+            const intent = await getIntent(event);
+            return {
+              ok: intent.type === 'yes' || intent.type === 'add',
+            };
+          }
+      )}
     />
 
     <$.IF<AskingFirstTodoVars> condition={({ vars: { ok } }) => !ok}>
@@ -502,57 +304,46 @@ export default build<AskingFirstTodoVars>(
 );
 ```
 
-In the script we ask user wether to create the first todo or not. If no,
-the script simply return. If yes, call the `AddingTodo` script for the creating
-process.
+In the script we ask user wether to create the first todo.
+If yes, call the `AddingTodo` script to continue the creating process.
 
-Remember to add the new script in the registered libs:
+Remember to export the new script too:
 
-```ts {1,8} title="src/app.ts"
-import AskingFirstTodo from './scenes/AskingFirstTodo';
-// ...
-
-const app = Machinat.createApp({
-  modules: [
-    // ...
-    Script.initModule({
-      libs: [AddingTodo, AskingFirstTodo],
-    }),
-  ],
-  // ...
+```tsx {2} title="src/scenes/index.tsx"
+export { default as AddingTodo } from './AddingTodo';
+export { default as AskingFirstTodo } from './AskingFirstTodo';
 ```
 
-Then we can use it in `handleMessage` handler when a user doesn't have any todo:
+Then we can use it in `handleChat` when a user doesn't have any todo:
 
-```tsx {1,5-15,18} title="src/handlers/handleMessage.tsx"
+```tsx {1,5-16,19} title="src/handlers/handleChat.tsx"
 import AskingFirstTodo from '../scenes/AskingFirstTodo';
 // ...
     const profile = await profiler.getUserProfile(event.user);
     const { data } = await todoController.getTodos(event.channel);
-    const helloWords = (
+    const hello = (
       <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
     );
 
     if (data.todos.length === 0) {
-      const runtime = await processor.start(event.channel, AskingFirstTodo);
       return reply(
         <>
-          {helloWords}
-          {runtime.output()}
+          {hello}
+          <AskingFirstTodo.Start channel={event.channel} />
         </>
       );
     }
 
     return reply(
-        <WithMenu todoCount={data.todos.length}>{helloWords}</WithMenu>
+      <WithMenu todoCount={data.todos.length}>{hello}</WithMenu>
     );
   }
 );
 
-export default handleMessage;
+export default handleChat;
 ```
 
-Now our bot ask user to create first todo while saying hello like this:
+Now the bot asks users to create the first todo like:
 
 
 <video width={420} autoplay="autoplay" loop inline muted>
@@ -560,17 +351,10 @@ Now our bot ask user to create first todo while saying hello like this:
 </video>
 
 :::tip
-Delete the `todos` data in `.state_data.json` file to try this feature.
-:::
-
-:::info
-In the video above, the <img height={30} src={require("./assets/quick-replies-in-script.png").default} />
-reply options bring better experiences for answering question. You can check the
-[complete example](https://github.com/machinat/todo-example/blob/main/src/scenes/AskingFirstTodo.tsx#L18-L36)
-for the detail.
+Delete the todos data in `.state_data.json` file to try this feature.
 :::
 
 ---
 
-Now your bot can have a conversation with user according the script. Next, we'll
-learn how to use a webview to provide even more features than in the chatroom.
+Our bot can proceed a dialog according the script now.
+Next, we'll learn how to use a webview to provide more features.

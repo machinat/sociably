@@ -2,21 +2,19 @@
 title: Native UI and Postback
 ---
 
-Despite the cross-platform UI like `<p>...</p>`, Machinat also support even
-more platform specific UI. In this lesson, we will learn how to use them to
-provide more intuitive and smooth user experiences.
-
->　Time to accomplish: 10 minutes
-
+> General UI like `<p>...</p>` are supported on every chat platform,
+> but you can use more native UI supported by the current platform.
+> In this lesson, we will learn how to use them to provide amazing user experiences.
+>
+> _Time to accomplish: 10 minutes_
 
 ## Native Component
 
-Most chat platform provide some widget like buttons or other special features
-in chatroom. In Machinat, they are available as **Native Component** of each
-platform.
+On most chat platforms, you can interact with users by widgets or actions.
+In Machinat, they are available as **Native Component** of each platform.
 
-Let's try adding a button in the meassge to list user's todos. Follow the
-guide of the platform you choose to edit `handleMessage` handler:
+Let's add a button in the meassge to list user's todos. Follow the
+guide of the platform to edit `handleChat`:
 
 
 import Tabs from '@theme/Tabs';
@@ -28,188 +26,189 @@ import TabItem from '@theme/TabItem';
   values={[
     {label: 'Messenger', value: 'messenger'},
     {label: 'Telegram', value: 'telegram'},
-    {label: 'LINE', value: 'line'},
+    {label: 'LINE', value: 'line'}
   ]}>
   <TabItem value="messenger">
 
-
-```tsx {2,17-26} title="src/handlers/handleMessage.tsx"
-import Machinat from '@machinat/core';
+```tsx {2,18-27} title="src/handlers/handleChat.tsx"
+import Machinat, { makeContainer } from '@machinat/core';
 import * as Messenger from '@machinat/messenger/components';
-import { ChatEventContext } from '../types';
+// ...
+    async (
+      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+    ) => {
+      const { event, reply } = ctx;
 
-const handleMessage = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  if (event.type === 'text') {
-    const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
+      if (event.type === 'text') {
+        const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
+        if (matchingAddTodo) {
+          const todoName = matchingAddTodo[2].trim();
+          return reply(
+            <>
+              <p>Todo "<b>{todoName}</b>" is added!</p>
+              <Machinat.Pause time={1500} />
 
-    if (matchingAddTodo) {
-      const todoName = matchingAddTodo[2].trim();
-      return reply(
-        <>
-          <p>Todo "<b>{todoName}</b>" is added!</p>
-          <Messenger.ButtonTemplate
-            buttons={
-              <Messenger.PostbackButton
-                title="Show Todos 📑"
-                payload={JSON.stringify({ type: 'list' })}
-              />
-            }
-          >
-            You have <b>{3}</b> todos now.
-          </Messenger.ButtonTemplate>
-        </>
-      );
-    }
-  }
-  // ...
+              <Messenger.ButtonTemplate
+                buttons={
+                  <Messenger.PostbackButton
+                    title="Show Todos 📑"
+                    payload={JSON.stringify({ action: 'list' })}
+                  />
+                }
+              >
+                You have <b>{3}</b> todos now.
+              </Messenger.ButtonTemplate>
+            </>
+          );
+        }
+      }
+// ...
 ```
 
-> - `Messenger.ButtonTemplate` sends a text message with buttons.
-> - `Messenger.PostbackButton` add a button to post `payload` back.
+The tags like `Messenger.ButtonTemplate` are **Native Components**.
+They represent special features that belongs to the Messenger platform only.
 
+We use these Messenger native components above:
 
-The tag like `Messenger.ButtonTemplate` is a **Native Component** of Messenger platform.
-These components represent platform specific features, and can only be sent to the
-platform they belongs to.
+- `Messenger.ButtonTemplate` - sends a text message with buttons.
+- `Messenger.PostbackButton` - a button to post the `payload` back.
 
 
   </TabItem>
   <TabItem value="telegram">
 
 
-```tsx {2,17-28} title="src/handlers/handleMessage.tsx"
-import Machinat from '@machinat/core';
+```tsx {2,18-29} title="src/handlers/handleChat.tsx"
+import Machinat, { makeContainer } from '@machinat/core';
 import * as Telegram from '@machinat/telegram/components';
-import { ChatEventContext } from '../types';
+// ...
+    async (
+      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+    ) => {
+      const { event, reply } = ctx;
 
-const handleMessage = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  if (event.type === 'text') {
-    const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
+      if (event.type === 'text') {
+        const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
+        if (matchingAddTodo) {
+          const todoName = matchingAddTodo[2].trim();
+          return reply(
+            <>
+              <p>Todo "<b>{todoName}</b>" is added!</p>
+              <Machinat.Pause time={1500} />
 
-    if (matchingAddTodo) {
-      const todoName = matchingAddTodo[2].trim();
-      return reply(
-        <>
-          <p>Todo "<b>{todoName}</b>" is added!</p>
-          <Telegram.Text
-            replyMarkup={
-              <Telegram.InlineKeyboard>
-                <Telegram.CallbackButton
-                  text="Show Todos 📑"
-                  data={JSON.stringify({ type: 'list' })}
-                />
-              </Telegram.InlineKeyboard>
-            }
-          >
-            You have <b>{3}</b> todos now.
-          </Telegram.Text>
-        </>
-      );
-    }
-  }
-  // ...
+              <Telegram.Text
+                replyMarkup={
+                  <Telegram.InlineKeyboard>
+                    <Telegram.CallbackButton
+                      text="Show Todos 📑"
+                      data={JSON.stringify({ action: 'list' })}
+                    />
+                  </Telegram.InlineKeyboard>
+                }
+              >
+                You have <b>{3}</b> todos now.
+              </Telegram.Text>
+            </>
+          );
+        }
+      }
+// ...
 ```
 
-> - `Telegram.Text` sends a text message bubble with telegram message options.
-> - `Telegram.InlineKeyboard` attach buttons in children below a message.
-> - `Telegram.CallbackButton` add a button to post `data` back.
+The tags like `Telegram.Text` are **Native Components**.
+They represent special features that belongs to the Telegram platform only.
 
+We use these Telegram native components above:
 
-The tag like `Telegram.Text` is a **Native Component** of Telegram platform.
-These components represent platform specific features, and can only be sent to the
-platform they belongs to.
+- `Telegram.Text` - sends a text message with more options.
+- `Telegram.InlineKeyboard` - attach inline buttons below a message.
+- `Telegram.CallbackButton` - a button to post the `data` back.
 
 
   </TabItem>
   <TabItem value="line">
 
 
-```tsx {2,17-27} title="src/handlers/handleMessage.tsx"
-import Machinat from '@machinat/core';
+```tsx {2,18-28} title="src/handlers/handleChat.tsx"
+import Machinat, { makeContainer } from '@machinat/core';
 import * as Line from '@machinat/line/components';
-import { ChatEventContext } from '../types';
+//...
+  async (
+    ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+  ) => {
+    const { event, reply } = ctx;
 
-const handleMessage = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  if (event.type === 'text') {
-    const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
+    if (event.type === 'text') {
+      const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
+      if (matchingAddTodo) {
+        const todoName = matchingAddTodo[2].trim();
+        return reply(
+          <>
+            <p>Todo "<b>{todoName}</b>" is added!</p>
+            <Machinat.Pause time={1500} />
 
-    if (matchingAddTodo) {
-      const todoName = matchingAddTodo[2].trim();
-      return reply(
-        <>
-          <p>Todo "<b>{todoName}</b>" is added!</p>
-          <Line.ButtonTemplate
-            altText="You have 3 todos now."
-            actions={
-              <Line.PostbackAction
-                label="Show Todos 📑"
-                data={JSON.stringify({ type: 'list' })}
-              />
-            }
-          >
-            You have <b>{3}</b> todos now.
-          </Line.ButtonTemplate>
-        </>
-      );
+            <Line.ButtonTemplate
+              altText="You have 3 todos now."
+              actions={
+                <Line.PostbackAction
+                  label="Show Todos 📑"
+                  data={JSON.stringify({ action: 'list' })}
+                />
+              }
+            >
+              You have <b>{3}</b> todos now.
+            </Line.ButtonTemplate>
+          </>
+        );
+      }
     }
-  }
-  // ...
+// ...
 ```
 
-> - `Line.ButtonTemplate` sends a text message bubble with buttons.
-> - `Line.PostbackAction` add a button to post `data` back.
+The tags like `Line.ButtonTemplate` are **Native Components**.
+They represent special features that belongs to the LINE platform only.
 
+We use these LINE native components above:
 
-The tag like `Line.ButtonTemplate` is a **Native Component** of LINE platform.
-These components represent platform specific features, and can only be sent to the
-platform they belongs to.
+- `Line.ButtonTemplate` - sends a text message with buttons.
+- `Line.PostbackAction` - a button to post the `data` back.
+
 
   </TabItem>
 </Tabs>
 
-If you are building a cross-platform app, you can send the message according to
-platform like:
 
-```tsx {10-18} title="src/handlers/handleMessage.tsx"
-const handleMessage = async ({
-  platform,
-  event,
-  reply,
-}: ChatEventContext & { event: { category: 'message' } } ) => {
-  // ...
-    return reply(
-      <>
-        <p>Todo "<b>{todoName}</b>" is added!</p>
-        {
-          platform === 'messenger' ? (
-            // messenger component...
-          ) : platform === 'telegram' ? (
-            // telegram component...
-          ) : (
-            <p>You have <b>{3}</b> todos now.</p>
-          )
-        }
-      </>
-    );
+:::info
+If you are building a cross-platform app, reply according to the platform like:
+
+```tsx {6-14}
+//...
+    <>
+      <p>Todo "<b>{todoName}</b>" is added!</p>
+      <Machinat.Pause time={1500} />
+
+      {
+        event.platform === 'messenger' ? (
+          // messenger component
+        ) : event.platform === 'telegram' ? (
+          // telegram component
+        ) : (
+          <p>You have <b>{3}</b> todos now.</p>
+        )
+      }
+    </>
+//...
 ```
+:::
 
-Now a button should be attached to the reply of bot like:
+Now a button should be attached on the replied message, like:
 
 <img width={400} src={require("./assets/add-todo-with-list-button.png").default} />
 
 
-### Props
+### JSX Props
 
-The attributes we put on the **JSX** element are **Props** of a component. For
+The attributes we put on the JSX element are **Props**. For
 example:
 
 ```tsx {2,4-5}
@@ -217,7 +216,7 @@ example:
       buttons={
         <Messenger.PostbackButton
           title="Show Todos 📑"
-          payload={JSON.stringify({ type: 'list' })}
+          payload={JSON.stringify({ action: 'list' })}
         />
       }
     >
@@ -225,246 +224,129 @@ example:
     </Messenger.ButtonTemplate>
 ```
 
-Like in _React.js_, they are used to pass values to the component. The value can be
-text (like `title`), expression (like `payload`) or even another JSX element (like
-`buttons`).
+Props are used to pass values to the component. The value can be text (like `title`),
+expression (like `payload`) or even another JSX element (like `buttons`).
 
-We pass JSON encoded data on `payload` prop to indicate the action type. We can
-use the data later when handling the postback event.
+The JSON encoded data `{ action: 'list' }` is set on the button.
+We can use the data later to handle the postback event.
 
-## Event Flow
+## Postback Event
 
-### Handle Postback Event
+When user tap the button, it triggers an event that post the data back.
+We can handle it by adding these codes in `handleChat`:
 
-The button we added will post data back to our server when user tap the button
-in the chatroom. We can handle the postback events by adding these codes:
+```tsx {5-14} title="src/handlers/handleChat.tsx"
+//...
+  (getIntent, getUserProfile) =>
+    async (ctx: ChatEventContext & { event: { category: 'message' |'postback' } }) => {
+      const { event, reply } = ctx;
+      const intent = await getIntent(event);
 
-
-<Tabs
-  groupId="chat-platforms"
-  defaultValue="messenger"
-  values={[
-    {label: 'Messenger', value: 'messenger'},
-    {label: 'Telegram', value: 'telegram'},
-    {label: 'LINE', value: 'line'},
-  ]}>
-  <TabItem value="messenger">
-
-
-Create a new `src/handlers/handlePostback.tsx` file with following content:
-
-```tsx  title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { ChatEventContext } from '../types';
-
-const handlePostback = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { type: 'postback' } } ) => {
-  const action = JSON.parse(event.data);
-
-  if (action.type === 'list') {
-    return reply(
-      <>
-        <p>You have <b>3</b> todos:</p>
-        <p>......</p>
-      </>
-    );
-  }
-};
-
-export default handlePostback;
+      if (intent.type === 'list') {
+        return reply(
+          <>
+            <p>You have <b>3</b> todos:</p>
+            <p>......</p>
+          </>
+        );
+      }
+//...
 ```
 
-The `'postback'` events will contain the JSON data that we have attached with the
-sent button. We can get the data at `event.data`, and then reply user according
-to the content.
-
-  </TabItem>
-  <TabItem value="telegram">
-
-
-Create a new `src/handlers/handlePostback.tsx` file with following content:
-
-```tsx  title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { AnswerCallbackQuery } from '@machinat/telegram/components';
-import { ChatEventContext } from '../types';
-
-const handlePostback = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { type: 'callback_query' } } ) => {
-  const action = JSON.parse(event.data!);
-  const answerQuery = <AnswerCallbackQuery queryId={event.queryId} />;
-
-  if (action.type === 'list') {
-    return reply(
-      <>
-        {answerQuery}
-        <p>You have <b>3</b> todos:</p>
-        <p>......</p>
-      </>
-    );
-  }
-
-  return reply(answerQuery);
-};
-
-export default handlePostback;
-```
-
-The `'callback_query'` events will contain the JSON data that we have attached with the
-sent button. We can get the data at `event.data`, and then reply user according
-to the content.
-
-:::info
-The `callback_query` event of Telegram need to be replied with
-`AnswerCallbackQuery` to stop the client side pending.
-:::
-
-  </TabItem>
-  <TabItem value="line">
-
-
-Create a new `src/handlers/handlePostback.tsx` file with following content:
-
-```tsx  title="src/handlers/handlePostback.tsx"
-import Machinat from '@machinat/core';
-import { ChatEventContext } from '../types';
-
-const handlePostback = async ({
-  event,
-  reply,
-}: ChatEventContext & { event: { type: 'postback' } } ) => {
-  const action = JSON.parse(event.data!);
-
-  if (action.type === 'list') {
-    return reply(
-      <>
-        <p>You have <b>3</b> todos:</p>
-        <p>......</p>
-      </>
-    );
-  }
-};
-
-export default handlePostback;
-```
-
-The `'postback'` events will contain the JSON data that we have attached with the
-sent button. We can get the data at `event.data`, and then reply user according
-to the content.
-
-  </TabItem>
-</Tabs>
-
-
-### Stream Flow in `main`
-
-One more thing to do is connecting the `handlePostback` handler to main event
-stream. Add these codes in the `main` function:
-
-
-<Tabs
-  groupId="chat-platforms"
-  defaultValue="messenger"
-  values={[
-    {label: 'Messenger', value: 'messenger'},
-    {label: 'Telegram', value: 'telegram'},
-    {label: 'LINE', value: 'line'},
-  ]}>
-  <TabItem value="messenger">
-
-
-```tsx {1,5-12} title="src/main.tsx"
-import handlePostback from './handlers/handlePostback';
-// ...
-const main = (event$: Stream<AppEventContext>): void => {
-  // ...
-  event$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { type: 'postback' } } =>
-          ctx.event.type === 'postback'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-```
-
-  </TabItem>
-  <TabItem value="telegram">
-
-
-```tsx {1,5-13} title="src/main.tsx"
-import handlePostback from './handlers/handlePostback';
-// ...
-const main = (event$: Stream<AppEventContext>): void => {
-  // ...
-  event$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & {
-          event: { type: 'callback_query' };
-        } => ctx.event.type === 'callback_query'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-  ```
-
-  </TabItem>
-  <TabItem value="line">
-
-
-```tsx {1,5-12}  title="src/main.tsx"
-import handlePostback from './handlers/handlePostback';
-// ...
-const main = (event$: Stream<AppEventContext>): void => {
-  // ...
-  event$
-    .pipe(
-      filter(
-        (ctx): ctx is ChatEventContext & { event: { type: 'postback' } } =>
-          ctx.event.type === 'postback'
-      )
-    )
-    .subscribe(handlePostback);
-  // ...
-```
-
-  </TabItem>
-</Tabs>
-
-Now try tap the `Show Todos 📑` button in the chat room and you should see:
-
+Try tapping the `Show Todos 📑` button and you should see:
 
 <img width={400} src={require("./assets/list-todo-1.png").default} />
 
 
+#### Handle Data
 
-The `event$` argument of `main` function is a **stream** of all events. Every
-event from the chat platform will flow through it. You can `.subscribe(cb)` the
-stream to listen events, or use `.pipe(...operator)` to create a downstream.
+To know what happen in the `getIntent` function,
+check the `src/services/useIntent.ts` file and you'll see the following code:
 
-We use the `filter(predicator)` operator to allow only the postback events to pass. The
-filtered stream is then handled by the `handlePostback` handler.
 
-```ts
-event$
-  .pipe(
-    filter(({ event }) => {
-      // return `true` to allow only 'postback' event passing
-      return event.type === 'postback'
-    })
-  )
-  .subscribe(({ event }) => {
-    // receive only 'postback' event here
-  });
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'},
+  ]}>
+  <TabItem value="messenger">
+
+
+```ts title="src/services/useIntent.ts"
+//...
+if (
+  event.platform === 'messenger' &&
+    (event.type === 'quick_reply' || event.type === 'postback')
+) {
+  if (event.data) {
+    const { action, ...payload } = JSON.parse(event.data);
+    return {
+      type: action,
+      confidence: 1,
+      payload,
+    };
+  }
+}
+//...
 ```
+
+The `'postback'` event contains the data `{ action: 'list' }` we attached on the button.
+We can get the data at `event.data` and reply according to it.
+
+
+  </TabItem>
+  <TabItem value="telegram">
+
+
+```ts title="src/services/useIntent.ts"
+//...
+if (event.platform === 'telegram' && event.type === 'callback_query') {
+  if (event.data) {
+    const { action, ...payload } = JSON.parse(event.data);
+    return {
+      type: action,
+      confidence: 1,
+      payload,
+    };
+  }
+}
+//...
+```
+
+The `'callback_query'` event contains the data `{ action: 'list' }` we attached on the button.
+We can get the data at `event.data` and reply according to it.
+
+
+  </TabItem>
+  <TabItem value="line">
+
+
+```ts title="src/services/useIntent.ts"
+//...
+if (event.platform === 'line' && event.type === 'postback') {
+  if (event.data) {
+    const { action, ...payload } = JSON.parse(event.data);
+    return {
+      type: action,
+      confidence: 1,
+      payload,
+    };
+  }
+}
+//...
+```
+
+The `'postback'` event contains the data `{ action: 'list' }` we attached on the button.
+We can get the data at `event.data` and reply according to it.
+
+
+  </TabItem>
+</Tabs>
 
 ---
 
 Our bot can interact with user by buttons and postback. Next, we'll learn
-how to make more complex UI with component.
+how to make more complex UI with components.
