@@ -13,24 +13,65 @@ title: Service and State
 Calling users by their name is a common feature to improve chat experience.
 Let's implement it by editing `handleChat` like this:
 
-```tsx {8,11} title="src/handlers/handleChat.tsx"
-//...
+
+import CodeBlock from '@theme/CodeBlock';
+
+export const GetUserProfile = ({platform}) => (
+  <div>
+    <CodeBlock language="tsx" title="src/handlers/handleChat.tsx">
+        {`//...
 const handleChat = makeContainer({
   deps: [useIntent, useUserProfile],
 })(
   (getIntent, getUserProfile) =>
-    async (ctx: ChatEventContext & { event: { category: 'message'| 'postback' } }) => {
-      //...
+    async (
+      ctx: ChatEventContext & { event: { category: 'message'| 'postback' } }
+    ) => {
+      const { event, reply } = ctx;
+      const intent = await getIntent(event);${platform === 'telegram' ? `
+      // highlight-start
+      if (!event.channel) {
+        return;
+      }
+      // highlight-end` : ''}
+      //...\n
+      // highlight-next-line
       const profile = await getUserProfile(event.user);
       return reply(
         <WithMenu todoCount={3}>
-          <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
+          {/* highlight-next-line */}
+          <p>Hello{profile ? \`, \${profile.name}\` : ''}! I'm a Todo Bot 🤖</p>
         </WithMenu>
       );
     }
 );
-//...
-```
+//...`}
+    </CodeBlock>
+  </div>
+  );
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'}
+  ]}>
+    <TabItem value="messenger">
+      <GetUserProfile platform="messenger" />
+    </TabItem>
+    <TabItem value="telegram">
+      <GetUserProfile platform="telegram" />
+    </TabItem>
+    <TabItem value="line">
+      <GetUserProfile platform="line" />
+    </TabItem>
+</Tabs>
+
 
 Now the bot can say hello with the user's name:
 
@@ -259,21 +300,36 @@ Now `TodoController` can be used like other services.
 We can use it to easily complete the CRUD features.
 Edit `handleChat` like this:
 
-```tsx {1,4,6,12-13,15-29,36,38,46,48} title="src/handlers/handleChat.tsx"
+
+
+export const UseTodoController = ({platform}) => (
+  <div>
+    <CodeBlock language="tsx" title="src/handlers/handleChat.tsx">
+      {`
+// highlight-next-line
 import TodoController from '../services/TodoController';
 // ...
 const handleChat = makeContainer({
+  // highlight-next-line
   deps: [useIntent, useUserProfile, TodoController],
 })(
+  // highlight-next-line
   (getIntent, getUserProfile, todoController) =>
-  async (ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }) => {
+  async (
+    ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+  ) => {
       const { event, reply } = ctx;
-      const intent = await getIntent(event);
-
+      const intent = await getIntent(event);${ platform === 'telegram' ? `
+      if (!event.channel) {
+        return;
+      }` : ''}\n
       if (intent.type === 'list') {
+        // highlight-start
         const { data } = await todoController.getTodos(event.channel);
         return reply(<TodoList todos={data.todos} />);
+        // highlight-end
       }
+      // highlight-start
       if (intent.type === 'finish') {
         const { todo, data } = await todoController.finishTodo(
           event.channel,
@@ -289,32 +345,57 @@ const handleChat = makeContainer({
           </WithMenu>
         );
       }
-
+      // highlight-end\n
       if (event.type === 'text') {
         const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
         if (matchingAddTodo) {
-          const todoName = matchingAddTodo[2].trim();
-
+          const todoName = matchingAddTodo[2].trim();\n
+          // highlight-next-line
           const { data } = await todoController.addTodo(event.channel, todoName);
           return reply(
+            // highlight-next-line
             <WithMenu todoCount={data.todos.length}>
               <p>Todo "<b>{todoName}</b>" is added!</p>
             </WithMenu>
           );
         }
-      }
-
+      }\n
       const profile = await profiler.getUserProfile(event.user);
+      // highlight-next-line
       const { data } = await todoController.getTodos(event.channel);
-      await reply(
+      return reply(
+        // highlight-next-line
         <WithMenu todoCount={data.todos.length}>
-          <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
+          <p>Hello{profile ? \`, \${profile.name}\` : ''}! I'm a Todo Bot 🤖</p>
         </WithMenu>
       );
     }
 );
-//...
-```
+//...`}
+    </CodeBlock>
+  </div>
+);
+
+
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'}
+  ]}
+>
+  <TabItem value="messenger">
+    <UseTodoController platform="messenger" />
+  </TabItem>
+  <TabItem value="telegram">
+    <UseTodoController platform="telegram" />
+  </TabItem>
+  <TabItem value="line">
+    <UseTodoController platform="line" />
+  </TabItem>
+</Tabs>
 
 
 Now try adding a todo with `add todo <name>` command, and check the `.state_data.json`

@@ -235,10 +235,12 @@ We can use the data later to handle the postback event.
 When user tap the button, it triggers an event that post the data back.
 We can handle it by adding these codes in `handleChat`:
 
-```tsx {5-14} title="src/handlers/handleChat.tsx"
+```tsx {7-16} title="src/handlers/handleChat.tsx"
 //...
   (getIntent, getUserProfile) =>
-    async (ctx: ChatEventContext & { event: { category: 'message' |'postback' } }) => {
+    async (
+      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+    ) => {
       const { event, reply } = ctx;
       const intent = await getIntent(event);
 

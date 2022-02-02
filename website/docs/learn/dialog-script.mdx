@@ -56,22 +56,58 @@ export { default as AddingTodo } from './AddingTodo';
 
 Now we can use the new `AddingTodo` script in the `handleChat` handler:
 
-```tsx {1,12} title="src/handlers/handleChat.tsx"
+import CodeBlock from '@theme/CodeBlock';
+
+
+export const UseAddingTodoScript = ({platform}) => (
+  <div>
+    <CodeBlock language="tsx" title="src/handlers/handleChat.tsx">
+{`// highlight-next-line
 import AddingTodo from '../scenes/AddingTodo';
 // ...
 const handleChat = makeContainer({
   deps: [useIntent, useUserProfile, TodoController],
 })(
   (getIntent, getUserProfile, todoController) =>
-  async (ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }) => {
+  async (
+    ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+  ) => {
       const { event, reply } = ctx;
-      const intent = await getIntent(event);
-
+      const intent = await getIntent(event);${platform === 'telegram' ? `
+      if (!event.channel) {
+        return;
+      }` : ''}\n
       if (intent.type === 'add') {
+        // highlight-next-line
         return reply(<AddingTodo.Start channel={event.channel} />);
       }
-      // ...
-```
+      //...`}
+    </CodeBlock>
+  </div>
+  );
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'}
+  ]}>
+    <TabItem value="messenger">
+      <UseAddingTodoScript platform="messenger" />
+    </TabItem>
+    <TabItem value="telegram">
+      <UseAddingTodoScript platform="telegram" />
+    </TabItem>
+    <TabItem value="line">
+      <UseAddingTodoScript platform="line" />
+    </TabItem>
+</Tabs>
+
 
 You should see the content in the script is replied like this:
 

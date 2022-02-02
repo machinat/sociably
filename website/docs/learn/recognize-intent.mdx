@@ -16,15 +16,22 @@ It's not very intuitive to use, and also really annoying when input.
 So let's use a smarter way to recognize users' intent.
 Edit `handleChat` handler like this:
 
-```diff title="src/handlers/handleChat.tsx"
-    // ...
-      const { event, reply } = ctx;
-      const intent = await getIntent(event);
 
+import CodeBlock from '@theme/CodeBlock';
+
+export const DiffAddTodoCodes = ({platform}) => (
+  <div>
+    <CodeBlock language="diff" title="src/handlers/handleChat.tsx">
+{`  // ...
+      const { event, reply } = ctx;
+      const intent = await getIntent(event);${platform === 'telegram' ? `
+      if (!event.channel) {
+        return;
+      }` : ''}\n
 +     if (intent.type === 'add') {
 +       return reply(<p>Please enter new todo name:</p>);
 +     }
-      // ...
+      // ...\n
 -     if (event.type === 'text') {
 -       const matchingAddTodo = event.text.match(/add(\s+todo)?(.*)/i);
 -       if (matchingAddTodo) {
@@ -38,8 +45,33 @@ Edit `handleChat` handler like this:
 -         );
 -       }
 -     }
-    //...
-```
+  //...`}
+    </CodeBlock>
+  </div>
+  );
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  groupId="chat-platforms"
+  defaultValue="messenger"
+  values={[
+    {label: 'Messenger', value: 'messenger'},
+    {label: 'Telegram', value: 'telegram'},
+    {label: 'LINE', value: 'line'}
+  ]}>
+    <TabItem value="messenger">
+      <DiffAddTodoCodes platform="messenger" />
+    </TabItem>
+    <TabItem value="telegram">
+      <DiffAddTodoCodes platform="telegram" />
+    </TabItem>
+    <TabItem value="line">
+      <DiffAddTodoCodes platform="line" />
+    </TabItem>
+</Tabs>
+
 
 Then add these intents data in `src/recognitionData.ts`:
 
