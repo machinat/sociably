@@ -94,7 +94,6 @@ class WebviewClient<
 
     if (!this.isMockupMode) {
       this._connector.start().catch(this._emitError.bind(this));
-      this._authClient.signIn({ platform: this._platformInput }).catch();
     }
   }
 
