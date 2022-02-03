@@ -101,11 +101,11 @@ class MessengerClientAuthenticator
           client: window.name === 'messenger_ref' ? 'messenger' : 'facebook',
         },
       };
-    } catch (err) {
+    } catch (code) {
       return {
         success: false,
         code: 401,
-        reason: err.message,
+        reason: `Messenger extension error ${code}`,
       };
     }
   }

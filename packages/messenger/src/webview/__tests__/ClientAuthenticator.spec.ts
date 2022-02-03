@@ -174,15 +174,16 @@ describe('#fetchCredential()', () => {
     });
     await authenticator.init();
 
-    MessengerExtensions.getContext.mock.fake((_, cb, fail) =>
-      fail(new Error('somthing wrong!'))
-    );
+    MessengerExtensions.getContext.mock.fake((_, cb, fail) => fail(-12345));
 
-    await expect(authenticator.fetchCredential()).resolves.toEqual({
-      success: false,
-      code: 401,
-      reason: 'somthing wrong!',
-    });
+    await expect(authenticator.fetchCredential()).resolves
+      .toMatchInlineSnapshot(`
+            Object {
+              "code": 401,
+              "reason": "Messenger extension error -12345",
+              "success": false,
+            }
+          `);
   });
 
   it('set client according to window.name', async () => {
