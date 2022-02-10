@@ -59,7 +59,9 @@ const app = Machinat.createApp({
 
 ### RegExp Intent Recognition
 
-An simple RegExp implementation of [`IntentRecognizer`](https://machinat.com/api/modules/core_base_intentrecognizer.html). Check the [Recognizing Intent](https://machinat.com/docs/recognizing-intent) document for usage guides.
+An simple [`IntentRecognizer`](https://machinat.com/api/modules/core_base_intentrecognizer.html)
+implementation using `RegExp`.
+Check the [Recognizing Intent](https://machinat.com/docs/recognizing-intent) document for usage guides.
 
 #### Setup
 
