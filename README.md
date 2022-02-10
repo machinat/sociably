@@ -10,68 +10,68 @@ These cross-platform, programmatic, intelligent apps provide services in the soc
 
 ## Highlights
 
-- Pure programming solution. Say goodbye to no-code tools.
-
-- Build dynamic chat UI in **JSX**
 <details>
-  <summary><cite>demo</cite></summary>
-  <img src="./media/expression-view.webp" />
+  <summary>Make <i>one app</i> for <i>all platforms</i>.</summary>
 </details>
 
-
-- Reuse chat UI logic with **Components**
 <details>
-  <summary><cite>demo</cite></summary>
-  <img src="./media/component.webp" />
+  <summary><i>100%</i> programming solution. Say goodbye to no-code tools.</summary>
 </details>
 
-
-- Program chat flows in **Dialog Script**
 <details>
-  <summary><cite>demo</cite></summary>
-  <img src="./media/script.webp" />
+  <summary>Build dynamic chat UI in <b>JSX</b>. <i>(demo ▾)</i></summary>
+  <img height="480" src="./media/expression-view.webp" />
 </details>
 
-
-- Reuse chat flows to make complex conversations
 <details>
-  <summary><cite>demo</cite></summary>
-  <img src="./media/subscript.webp" />
-</details>
- 
-
-- Make _one app_ for _all platforms_.
-
-- Optimize experiences on every platform.
-<details>
-  <summary><cite>demo</cite></summary>
-  <img src="./media/cross-platform.webp" />
+  <summary>Reuse chat UI logic with <b>Components</b>. <i>(demo ▾)</i></summary>
+  <img height="480" src="./media/component.webp" />
 </details>
 
-
-- Extend an embeded **webview** in the chat.
 <details>
-  <summary><cite>demo</cite></summary>
-  <img src="./media/webview.webp" />
+  <summary>Program chat flows in <b>Dialog Script</b>. <i>(demo ▾)</i></summary>
+  <img height="480" src="./media/script.webp" />
 </details>
 
-
-- Init app in **1** command. Start development in **1** minute.
 <details>
-  <summary><cite>demo</cite></summary>
-  <img src="./media/start-dev.webp" />
+  <summary>Reuse chat flows to make complex conversations. <i>(demo ▾)</i></summary>
+  <img height="480" src="./media/subscript.webp" />
 </details>
 
+<details>
+  <summary>Optimize UI/UX for every platform. <i>(demo ▾)</i></summary>
+  <img height="480" src="./media/cross-platform.webp" />
+</details>
 
-- Access chat/user/global state data with ease.
+<details>
+  <summary>Extend an embeded <b>webview</b> in the chat. <i>(demo ▾)</i></summary>
+  <img height="480" src="./media/webview.webp" />
+</details>
 
-- Elegant _dependency injection_ system.
+<details>
+  <summary>Init app in <b>1</b> command. Start development in <b>1</b> minute. <i>(demo ▾)</i></summary>
+  <img height="480" src="./media/start-dev.webp" />
+</details>
 
-- Maintain intents recognition data in your project.
+<details>
+  <summary>Access chat/user/global state data with ease.</summary>
+</details>
 
-- Control workflow with _reactive-programming_ style streams.
+<details>
+  <summary>Elegant <i>dependency injection</i> system.</summary>
+</details>
 
-- Progressive framework design with _100% extensibility_.
+<details>
+  <summary>Maintain intents recognition data in the project.</summary>
+</details>
+
+<details>
+  <summary>Control workflow with <i>reactive-programming</i> style streams.</summary>
+</details>
+
+<details>
+  <summary><i>Progressive</i> and <i>extensible</i> framework design.</summary>
+</details>
 
 ## Get Started
 
