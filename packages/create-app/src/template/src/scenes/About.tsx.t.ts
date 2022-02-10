@@ -52,13 +52,13 @@ export default build<AboutVars>(
     {() => (
       <>
         <p>
-          If you are new to Machinat, start from the tutorial to build your
-          first app:{'\\n\\n'}
+          If you are new to Machinat, start from the tutorial to make your first
+          app:{'\\n\\n'}
           https://machinat.com/docs/learn
         </p>
         <Machinat.Pause time={3000} />
         <p>
-          You can find out more features and guides in the docs:{'\\n\\n'}
+          You can find more features and guides in the documents:{'\\n\\n'}
           https://machinat.com/docs
         </p>
         <Machinat.Pause time={2000} />
