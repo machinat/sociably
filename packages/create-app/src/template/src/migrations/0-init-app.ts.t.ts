@@ -2,7 +2,7 @@ import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
 export default ({ platforms }: CreateAppContext) => `
-import { makeContainer } from '@machinat/core/service';${when(
+import { makeContainer } from '@machinat/core';${when(
   platforms.includes('messenger')
 )`
 import Messenger from '@machinat/messenger';`}${when(

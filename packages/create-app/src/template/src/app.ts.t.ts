@@ -25,7 +25,7 @@ import {
   FileState,${when(recognizer === 'regex')`
   RegexRecognition,`}
 } from '@machinat/dev-tools';${when(recognizer === 'dialogflow')`
-import Dialogflow from '@machinat/dialogflow'`}${when(
+import Dialogflow from '@machinat/dialogflow';`}${when(
   platforms.includes('webview')
 )`
 import {

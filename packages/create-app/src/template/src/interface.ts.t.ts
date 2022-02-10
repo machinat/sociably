@@ -4,7 +4,7 @@ import { CreateAppContext } from '../../types';
 export default ({ platforms }: CreateAppContext) => when(
   platforms.includes('webview')
 )`
-import { makeInterface } from '@machinat/core/service';
+import { makeInterface } from '@machinat/core';
 
 export const ServerDomain = makeInterface<string>({ name: 'ServerDomain' });${when(
   platforms.includes('line')
