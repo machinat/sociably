@@ -2,9 +2,17 @@
 title: Dialog Script
 ---
 
-In a conversation, it's often that you need to ask a question and wait for the answer. A dialog may contain a sequence of relating questions and answers. It is common for features like making order or customer service.
+In a conversation, it's often that you need to ask a question and wait for the answer.
+A dialog may contain a sequence of relating questions and answers.
 
-Building the dialog flows logic is a challenge in a chatbot as a back-end based app. Machinat take a special approach which enable you writing **script** for a dialog.
+Building the dialog flows logic is a challenge since the app itself is a stateless server.
+Machinat take a special approach which enable you writing **script** for a dialog.
+
+### What's Dialog Script?
+
+**Dialog Script** works like a scripting language written in JSX. You
+describe how a conversation should be proceeded in a script. And the script
+processor would handle the conversation process according to the running script.
 
 ## Install
 

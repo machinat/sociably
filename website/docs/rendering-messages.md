@@ -2,133 +2,168 @@
 title: Rendering Messages
 ---
 
-In Machinat, **Bot** is an abstraction which in charge of dispatching actions to a [channel](receiving-events.md#the-channel). Depends on the platform it belongs to, it can send message to a chatroom, emit event to a webview or reply on voice assistant.
+The expression in JSX will be rendered into the messages to be sent.
+Once you describe the JSX view, Machinat would handle all the works behind.
 
-### `Bot#render(channel, message)`
+Typically there are two ways to render the messages: `reply` and `bot.render`.
 
-Bots from all the platforms have to implement the `render` method. For the most of time, `render` is the only entry you need to send various kinds of messages.
-
-- `channel` - the target to send the rendered messages.
-- `message` - string or message element to be rendered.
+```js
+app.onEvent(async ({ event, bot, reply }) => {
+  await reply(<p>Hello World</p>);
+  // is the same as
+  await bot.render(event.channel, <p>Hello World</p>);
+});
+```
 
 ### Sending Text
 
-The most basic way to to send a message is render string directly:
+Rendering a string is the easiest way to send a message:
 
 ```js
-bot.render(channel, 'hello world');
+await bot.render(channel, 'hello world');
 ```
 
-Render a string is supported by all platforms of bot.
+This is supported by all the platforms.
 
-### Fragment
+### The General Element Tags
 
-A fragment is a collection of nodes contained by a `<>...</>` element. This help you to construct UI with a series of content to send:
+The JSX elements with an uncapitalized tag are _general_ elements, like `<p></p>`.
+They can be rendered onto all the platforms,
+so you can use them to make cross-platform UI easily.
 
-```js
-bot.render(
-  channel,
-  <>
-    Look at the kitty!
-    <img src="http://..." />
-    Aww I'm melting!
-  </>
-);
-```
-
-When you call `render` with a fragment, all the actions rendered from the message will be sent in order. Bot would dispatch message as an atomic operation. All you need to do is focusing on the UI!
-
-### Textual Node
-
-An element type is *textual* if it renders into strings and other textual elements only. **Textual nodes** include text and textual element or a collection of them.
-
-Neighbor textual nodes will be merged into one text message, for example this renders content in a single text bubble in chatroom:
-
-```js
-bot.render(
-  channel,
-  <>foo <b>bar</b> <i>baz</i></>
-);
-```
-
-### General Tags
-
-Element with string type (lower cased beginning JSX tag) in Machinat is _general_. It can be rendered by bots of all platforms. Supported element tags and its props are listed below.
+The supported element tags and their props are listed below:
 
 ##### Textual element types:
 
-- `b` - render children text bold if supported.
-  - `children` - textual node.
+- `b` - render children bold.
+  - `children` - textual content.
 
 
-- `i` - render children text italic if supported.
-  - `children` - textual nodes.
+- `i` - render children italic.
+  - `children` - textual content.
 
 
-- `s` - render the children text with strikethrough if supported.
-  - `children` - textual nodes.
+- `s` - render the children with strikethrough.
+  - `children` - textual content.
 
 
-- `s` - render the children text with underline if supported.
-  - `children` - textual nodes.
+- `s` - render the children with underline.
+  - `children` - textual content.
 
 
-- `code` - render children text as monospaced if supported.
-  - `children` - textual nodes.
+- `code` - render children as monospaced.
+  - `children` - textual content.
 
 
-- `pre` - render children text as preformatted if supported.
-  - `children` - textual nodes.
+- `pre` - render children as preformatted.
+  - `children` - textual content.
 
 - `br` - add a line break.
 
 ##### Non-textual element types:
 
-- `p` - wrap a textual content paragraph as text messages bubble.
-  - `children` - textual nodes.
+- `p` - send a text message bubble.
+  - `children` - textual content.
 
 - `img` - send an image message.
-  - `src` - URL string.
+  - `src` - image URL.
 
 
 - `audio` - send an audio message.
-  - `src` - URL string.
+  - `src` - audio URL.
 
 
 - `video` - send a video message.
-  - `src` - URL string.
+  - `src` - video URL.
 
 
 - `file` - send a file message.
-  - `src` - URL string.
+  - `src` - file URL.
+
+### Textual Element
+
+Some element types are *textual*,
+which means they're equivalent to pure text in JSX.
+Some element accept only texual content as prop,
+like `<p></p>`:
+
+```js
+await bot.render(
+  channel,
+  <p>foo <b>bar</b> <i>baz</i></p>
+);
+```
+
+### Fragment
+
+You may need to send a colections of messages at a time.
+To do this, wrap the messages in a `<>...</>` element, like:
+
+```js
+await bot.render(
+  channel,
+  <>
+    <p>Look at the kitten!</p>
+    <img src="http://..." />
+    <p>Aww I'm melting!</p>
+  </>
+);
+```
+
+The element with empty tag is a _fragment_.
+When you `render` a fragment, all the messages inside will be sent in order.
+All the sending jobs are handled by the framwork,
+so you only have to focus on UI.
 
 ### Native Component
 
-The general tags provide a set of unified APIs for making cross-platform UI. But you might want to use more features that only available on particular platform. Use the **native component** from each platform package as the element type like this:
+The general tags provide a set of cross-platfrom APIs.
+But you might want to use more special features on particular platform.
+
+These platform-specific features are available as **Native Components**.
+You can require them from platform packages and use them like:
 
 ```js
-import { MediaTemplate, UrlButton } from '@machinat/messenger/components'
+import * as Messenger from '@machinat/messenger/components'
 
-bot.render(
+await bot.render(
   channel,
-  <MediaTemplate
+  <Messenger.MediaTemplate
     type="video"
     url="http://..."
     buttons={
-      <UrlButton title="Go" url="http://..."/>
+      <Messenger.UrlButton title="Go" url="http://..."/>
     }
   />
 );
 ```
 
-You can only use native component corresponded to the platform of bot. If a bot receive a native component from a different platform when `render`, it would immediately throw at run time.
+You should only use the native components corresponded to the platform.
+If you're making a cross-platfrom UI,
+check `context.platform` and choose different native coomponent like:
+
+```js
+app.onEvent(async ({ platform, reply }) => {
+  await reply(
+    <>
+      Hi!
+      {platform === 'messenger'
+        ? <Messenger.Image url="..." />
+        : platform === 'telegram'
+        ? <Telegram.Photo url="..." />
+        : <img src="..." />}
+    </>
+  );
+});
+```
 
 ### Pause
 
-`Machinat.Pause` adds a pause between messages. Add a `<Machinat.Pause time={_ms_to_delay_}/>` element in the expression, and the messages afterwards will be sent with a delay. Like:
+`Machinat.Pause` adds a pause between messages.
+For example, `<Machinat.Pause time={1000}/>` element delays all the messages after by 1000 ms.
 
 ```js
-bot.render(channel,
+await bot.render(channel,
   <>
     1
     <Machinat.Pause time={1000} />
@@ -141,7 +176,9 @@ bot.render(channel,
 );
 ```
 
-An async `delay` function can also be used to measure the time of the pause. It waits until the returned promise is resolved. For example:
+`delay` prop can also be used to measure the pause time.
+It accepts an async function, and the messages afterwards are delayed till the returned promise is resolved.
+For example:
 
 ```js
 async function waitForSomething() {
@@ -151,7 +188,7 @@ async function waitForSomething() {
 bot.render(channel,
   <>
     hello
-    <Machinat.Pause delay={() => waitForSomething()} />
+    <Machinat.Pause delay={waitForSomething} />
     world
   </>
 );

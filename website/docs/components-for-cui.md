@@ -1,60 +1,104 @@
 ---
-title: Components for CUI
+title: Components for Chat UI
 ---
 
-Components let you split chat UI into independent, reusable pieces, and think about each piece in isolation.
-This make your code DRY and help you to build a complex, intelligent and characteristic conversation.
+While the app grows, you'll need to reuse UI to build more features and experiences.
+You can split parts of the chat UI into **Components** for reusing them.
+
+Components helps to keep your code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+This is important while building a complex and feature-rich app.
 
 ## Functional Components
 
-A component is simply a JavaScript function:
+A component is simply a function that returns a part of chat UI.
+It can be used as the element tag like:
+
+```jsx
+function Hello() {
+  return <p>Hello World!</p>;
+}
+
+bot.render(
+  channel,
+  <>
+    <Hello />
+    <p>I'm a bot.</p>
+  </>
+);
+```
+
+The code above works the same as:
 
 ```js
+bot.render(
+  channel,
+  <>
+    <p>Hello World!</p>
+    <p>I'm a bot.</p>
+  </>
+);
+```
+
+The name of a component must be **capitalized**.
+An element with uncapitalized tag is treated as a general element.
+
+### Component Props
+
+A component function receive the **props** object.
+The props is taken from the attributes of the element.
+For example:
+
+```jsx
+function Hello(props) {
+  return <p>Hello {props.name}!</p>;
+}
+
+bot.render(
+  channel,
+  <>
+    <Hello name="John Doe" />
+    <p>I'm a bot.</p>
+  </>
+);
+```
+
+In the above codes, we to pass `"John Doe"` to the `name` prop.
+The dynamic `props.name` value is then used to generate UI in the component.
+
+### `children` Prop
+
+An element can contain children nodes.
+They are available as `children` prop in the component.
+For example:
+
+```jsx
 function Hello(props) {
   return (
-    <p>
-      Hello {props.name}!
-      <br />
+    <>
+      <p>Hello {props.name}!</p>;
       {props.children}
-    </p>
+    </>
   );
 }
 
 bot.render(
   channel,
-  <Hello name="Jojo">
-    How's your day?
+  <Hello name="John Doe">
+    <p>I'm a bot.</p>
   </Hello>
 );
 ```
 
-The code above work the same as:
+In the above codes, we pass the `<p>I'm a bot.</p>` children to the component.
+The `props.children` is then returned with the hello message attached.
 
-```js
-bot.render(
-  channel,
-  <p>
-    Hello Jojo!
-    <br />
-    How's your day?
-  </p>
-);
-```
-
-The component function receive a **props** object and return an element or text. The props is taken from the attributes and _children_ of the element. In the example above, the following object is passed to `Hello` function while rendering:
-
-```js
-{
-  name: 'Jojo',
-  children: 'How is it going?',
-}
-```
-
-_The component names must start with a capital letter. A tag start with a lowercase letter is considered as string, and it is treated as a general element._
+The `children` is useful to decorate messages,
+like adding a greeting, a menu widget or a feedback query. 
 
 ## Composing Components
 
-Other components can be used within the component's output too. So we can modulize the chat UI in many different levels. Like:
+Other components can be used in the output of a component too.
+Like:
 
 ```js
 function RecommendDailySpecial() {
@@ -78,65 +122,53 @@ function Welcome({ name }) {
 bot.render(channel, <Welcome name="Jojo" />);
 ```
 
-One suggested pattern is to have many entry level components like the `Welcome`. And the detailed UI like `Hello` and `RecommendDailySpecial` can be reused many time.
+We can use components to modulize chat UI at many levels,
+from the word choices to the whole expression.
+This helps to optimize user experiences .
 
-## Cross Platform
+## Cross-Platform Component
 
-It is common to have different presentations according to platform the message is rendered to. For example using a platform specific template if possible like this:
+While making a cross-platform app,
+it's common to have different presentations according to the platform.
+For example:
 
 ```js
 import * as Messenger from '@machinat/messenger/components';
+import * as Telegram from '@machinat/telegram/components';
 
 function AskForOrder(props, { platform }) {
   if (platform === 'messenger') {
     return (
       <Messenger.ButtonTemplate
-        buttons={
-          <>
-            <Messenger.PostbackButton title="🌭" payload="hotdog" />
-            <Messenger.PostbackButton title="🌮" payload="taco" />
-          </>
-        }
+        buttons={<>
+          <Messenger.PostbackButton title="🌭" payload="hotdog" />
+          <Messenger.PostbackButton title="🌮" payload="taco" />
+        </>}
       >
         Which one would you like?
       </Messenger.ButtonTemplate>
     );
   }
-
+  if (platform === 'telegram') {
+    return (
+      <Telegram.Text
+        replyMarkup={
+          <Telegram.ReplyKeyboard>
+            <Telegram.TextReply text="🌭" />
+            <Telegram.TextReply text="🌮" />
+          </Telegram.ReplyKeyboard>
+        }
+      >
+        Which one would you like?
+      </Telegram.Text>
+    );
+  }
   return <p>Would you like <b>hotdog</b> or <b>taco</b>?</p>
 }
 ```
 
-The second argument is the environments while the component is being rendered. You can check which the `platform` property is and return the corresponding view.
+`platform` of the second argument shows which platform is rendering to.
+We can return different native components according to it.
 
-Conventially at the end of the function, we can add a default cross-platform UI. This ensure the components is safe to be used on all the platforms.
-
-## Expression Components
-
-The separation of presentation is an important principle in application development, one example on back-end is the [MVC pattern](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller). Thereby a view should contain only presentation logic, and all the presentation logic should be encapsulated in views.
-
-It is recommended to wrap your expression within a root expression component (the View), and leave the event handler with only control flow logic (the Controller). So your handler might look tidy like this:
-
-```js
-app.onEvent(async ({ event, bot }) => {
-  if (isFirstTime(event)) {
-    return bot.render(event.channel, <Welcome />)
-  }
-
-  if (event.category === 'message') {
-    if (event.type === 'text') {
-      const intent = await recognizeIntent(event.text);
-
-      if (intent === 'order') {
-        bot.render(event.channel, <MakeOrder />);
-      } else {
-        bot.render(event.channel,<NonSupport intent={intent} />);
-      }
-    } else {
-      bot.render(event.channel, <RandomMeme />);
-    }
-  } else {
-    // ...
-  }
-});
-```
+At the end of the function, we can add a default UI using only general elements.
+This ensure the component can be used on all the platforms.

@@ -2,20 +2,77 @@
 title: Recognizing Intent
 ---
 
-Intent recognition is one essential step to understand your user while building
-conversational experiences. Machinat doesn't provide the utility by itself, but
-you can easily integrate with any intent recognition service.
+Recognizing users' intent is essential to interact in a conversation.
+Machinat provides a standard interface for intent recognition,
+that you can choose any recognition provider you like.
 
 ## Install
 
-For now, we only support [`DialogFlow`](https://dialogflow.cloud.google.com/) as
-the service supplier. Check the [package readme](https://github.com/machinat/machinat/tree/master/packages/dialogflow) for the setup guide. We'll support more intent recognition suppliers in the
-future.
+You have to install one recognition provider package.
+For now these packages are officially supported:
+
+- [@machinat/dialogflow](pathname:///api/modules/dialogflow) - detect intent using [`Dialogflow ES`](https://cloud.google.com/dialogflow/es/docs).
+- [@machinat/dev-tools](pathname:///api/modules/dev_tools#regexp-intent-recognition) - provide `RegexRecognition`, a simple implementation using `RegExp`. It should only be used for testing or debugging.
+
+Please check the references for the setup guides.
+We'll support more recognition suppliers in the future.
+
+## Training Data in Codes
+
+Next, the intents recognition model requires data for training.
+The training data can be maintained in codes like this:
+
+```js
+// recognitionData.js
+export default {
+  defaultLanguage: 'en',
+  // supported languages 
+  languages: ['en'],
+  intents: {
+    // "yes" intent
+    yes: {
+      trainingPhrases: {
+        // phrases for language "en"
+        en: ['yes', 'ok', 'ya', 'nice', 'good', 'cool', 'fine'],
+      },
+    },
+    no: {
+      trainingPhrases: {
+        en: ['no', 'nope', 'sorry', 'later', 'maybe not'],
+      },
+    },
+  },
+};
+```
+
+Then pass the recognition data to the provider like:
+
+```js
+import recognitionData from './recognitionData';
+
+Machinat.createApp({
+  modules:[
+    Dialogflow.initModule({
+      recognitionData,
+      projectId: process.env.DIALOGFLOW_PROJECT_ID,
+    }),
+    //...
+  ],
+  //...
+});
+```
+
+The provider would manage all the model training jobs.
+If the data has changes, the model is automatically updated.
+
+You only need to maintain the recognition data in the project,
+and the provider will handle the rest of works.
 
 ## Usage
 
-Using `Base.IntentRecognizer` is the recommended way to recognize intent. The
-base interface allows you to change supplier without changing the usage code.
+Once you set the recognition provider up,
+you can use `IntentRecognizer` service to detext intent.
+For example:
 
 ```js
 import { makeContainer, IntentRecognizer } from '@machinat/core';
@@ -25,13 +82,14 @@ app.onEvent(
     (recognizer) =>
       async ({ reply, event }) => {
         if (event.category === 'message' && event.type === 'text') {
-          const intent = await recognizer.detectText(event.channel, event.text);
+          const { channel, text } = event;
+          const intent = await recognizer.detectText(channel, text);
 
           if (intent.type === 'marry_me') {
             if (intent.confidence > 0.5) {
               return reply('Yes, I do!');
             } else {
-              return reply('Are you kidding!?');
+              return reply('Are you kidding?');
             }
           } else {
             return reply('🙂');
@@ -42,20 +100,21 @@ app.onEvent(
 );
 ```
 
-The `detectText(channel, text)` method detect the intent of text message sent.
-It returns a promise of a result object with following information:
+`detectText(channel, text)` method detects the intent of a text message.
+It returns the result with following info:
 
-- `type` - `undefined | string`, the intent type name returned by the supplier.
-   If no intent matched, the value would be `undefined`.
-- `confidence` - `number`, the confidence of the recognized intent.
-- `payload` - `object`, original result from the supplier.
+- `type` - `undefined | string`, the intent name. If no intent is matched, the value is `undefined`.
+- `confidence` - `number`, the confident level of the recognized intent, range 0-1.
+- `payload` - `object`, raw result data from the supplier.
 
+The `IntentRecognizer` service can be used no matter which provider do you choose.
+You don't have to change the recognizing codes if you change the provider.
 
 ### Combine Your Own Logic
 
-Sometimes you might want to add your own recognizing logic. For example:
-handling quick replies, recognizing emoji or parsing special format. You can
-wrap the intent recognizer with your own service, like this:
+Sometimes you might want to add your own recognizing logic.
+Like handling postback data, recognizing emoji or parsing special format.
+You can make your own recognizing service for that, like:
 
 ```js
 import { makeFactoryProvider, IntentRecognizer } from '@machinat/core';
@@ -63,10 +122,11 @@ import { makeFactoryProvider, IntentRecognizer } from '@machinat/core';
 const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
   (recognizer) =>
     async (event) => {
-      if (event.type === 'quick_reply') {
+      if (event.type === 'postback') {
         const payload = JSON.parse(event.data);
         return { type: payload.type, confidence: 1, payload };
       }
+
       if (event.type === 'text') {
         const text = event.text.trim();
 
@@ -82,12 +142,13 @@ const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
         const intent = await recognizer.detectText(event.channel, text);
         return intent;
       }
+
       return { type: undefined, confidence: 0, payload: null };
     }
 );
 ```
 
-Then use your customized recognizer to detect intent like this:
+Then use your recognizing service to detect intent like:
 
 ```js
 import { makeContainer } from '@machinat/core';
@@ -95,34 +156,36 @@ import useIntent from './useIntent';
 
 app.onEvent(
   makeContainer({ deps: [useIntent] })(
-    (getIntent)
-      async ({ event }) => {
-        const intent = await getIntent(event);
-        console.log(intent.type);
-      }
+    (getIntent) =>
+    async ({ event }) => {
+      const intent = await getIntent(event);
+      console.log(intent.type);
+    }
   )
 );
 ```
 
-### Specify Supplier
+### Use Features from Supplier
 
-If you need supplier specific features, you can use the implementation provider
-directly. For example, use `DialogFlow.IntentRecognizer` like this:
+If you need features of a specific supplier,
+you can use the implementation provider directly.
+For example, use `DialogFlow.Recognizer` like this:
 
 ```js
 import { makeContainer } from '@machinat/core';
 import DialogFlow from '@machinat/dialogflow';
 
-makeContainer({ deps: [DialogFlow.IntentRecognizer] })(
+makeContainer({ deps: [DialogFlow.Recognizer] })(
   (recognizer) =>
-    async (context) => {
-      const intent = await recognizer.detectText(
-        event.channel,
-        event.text,
-        { contexts: ['greeting'] }
-      );
+  async (context) => {
+    const { channel, text } = context.event;
+    const intent = await recognizer.detectText(channel, text, {
+      contexts: ['greeting'],
+    });
 
-      console.log(intent.payload.sentimentAnalysisResult);
-    }
-)
+    console.log(intent.payload.sentimentAnalysisResult);
+  }
+);
 ```
+
+Note that you can only use the provider you register in the app.

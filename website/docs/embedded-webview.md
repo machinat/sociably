@@ -10,7 +10,11 @@ You can learn more about them here:
 - [Next.js](https://nextjs.org/docs/getting-started) - The React Framework for Production.
 :::
 
-Chat UI brings us a new way to communicate with users, but it cannot totally replace GUI, which provides more features with precise control, instant interactions and richer displays.
+Chat UI brings us a new way to communicate with users,
+but it cannot totally replace GUI.
+GUI still performs better
+
+which provides more features with precise control, instant interactions and richer displays.
 
 The best practice we suggest is a hybrid experience that combines the advantage of both CUI and GUI. While chatbot, as the entry point of the app, is easier to access, the webview can provide more advanced and complex features.
 

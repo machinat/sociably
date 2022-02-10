@@ -2,99 +2,131 @@
 title: Dependency Injection
 ---
 
-To support many platforms and provide all the features, there have to be tons of services and the complex dependencies relationship between them. Machinat has a built-in [Inversion of Control](https://en.wikipedia.org/wiki/Inversion_of_control) system to help providing all the services and their dependencies.
+While building an app, we may rely on many services to ship features.
+The dependent relationship of all the services could be complex,
+especially for a cross-platform app.
 
-When you create a Machinat app and start it, you actually create a set of service bindings then initiate some necessary starting processes.
+Machinat has a built-in [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
+system to help on that.
+Actually the whole framework is built upon the DI system too.
+
+When you create and start a Machinat app,
+a set of services are initiated to make the app works.
+For example:
 
 ```js
-Machinat.createApp({
+import Machinat from '@machinat/core';
+import Http from '@machinat/http';
+import Messenger from '@machinat/messenger';
+import Telegram from '@machinat/telegram';
+import { FileState } from '@machinat/dev-tools';
+import FooService from './services/Foo';
+import BarService from './services/Bar';
+
+const app = Machinat.createApp({
   platforms: [
-    Messenger.initModule({ ... }),
-    Line.initModule({ ... }),
+    Messenger.initModule({/*...*/}),
+    Telegram.initModule({/*...*/}),
   ],
   modules: [
-    Http.initModule({ ... }),
+    Http.initModule({/*...*/}),
+    FileState.initModule({/*...*/})
   ],
   services: [
-    MyService,
+    FooService,
+    BarService,
   ],
-}).start();
+});
+app.start();
 ```
 
-### Services from Modules
+### Register Modules
 
-The `modules` and `platforms` added in the app usually register a set of services. For example, `Messenger.Bot` class is registered with the `Messenger` platform in the example above. The bot instance is then created when `app.start()`.
+The `modules` and `platforms` add services for a particular feature or platform.
+For example, `Messenger.Bot` service is added by the `Messenger` platform.
+The bot instance is then created when `app.start()`.
 
-Machinat provide most of features as services registered in the app. Please check the references of the modules/platforms for the usage.
+Machinat is made with _progressive framework_ paradigm.
+You can start with minimum modules and gradually add more when you need.
 
-## Require Services from App
+Check [API references](pathname:///api) of the modules for the usage guides.
 
-Services can be required from app directly:
+## Use Services
+
+After the app is started, we can require services and use them like:
 
 ```js
 import Machinat from '@machinat/core';
 import Messenger from '@machinat/messenger';
-import Line from '@machinat/line';
+import Telegram from '@machinat/telegram';
 
-const app = Machinat.createApp({ ... });
+const app = Machinat.createApp({/* ... */});
 
 app.start().then(() => {
-  const [messengerBot, lineBot] = app.useServices([
+  const [messengerBot, telegramBot] = app.useServices([
     Messenger.Bot,
-    Line.Bot,
+    Telegram.Bot,
   ]);
   // use the bots ...
 });
 ```
 
-Then `app.useServices()` accepts an array of interfaces and returns an array of service instances bound on them. You must call it after the app is successfully started, otherwise it throws.
+`app.useServices()` accepts an array of service interfaces and returns the instances of them.
+Note that it should only be called after `app.start()` is finished.
 
 ## Service Container
 
-Dependencies injection is a technique to allow injected code to receive its dependencies instead of creating its own.
-
-In Machinat, this can be achieve by a **Service Container**. A Machinat container is simply a function annotated with the dependencies it required as the parameters.
+We can also require services as the arguments of a function,
+that is a **Service Container**.
+The `makeContainer` decorator annotate a JavaScript funcation as a container,
+like:
 
 ```js
 import { makeContainer } from '@machinat/core';
+import FooService from './services/Foo';
+import BarService from './services/Bar';
 
 const fooBarContainer = makeContainer({
-  deps: [FooI, BarI]
+  deps: [FooService, BarService]
 })((foo, bar) => {
   // do something with foo & bar ...
 });
 ```
 
-In the example above, the `makeContainer` helper annotate the `fooBarContainer` function needs two dependencies `FooI` and `BarI`. The `foo` and `bar` instances will be injected later into the container while running.
-
-Machinat by default support dependencies injection for event/error handlers and components (experimental). It could also work in [`@machinat/script`](dialog-script.md) and [`@machinat/stream`](reactive-programming.md).
+In the example above, `fooBarContainer` function requires two dependencies `FooService` and `BarService`.
+The `foo` and `bar` instances will be injected later into the container while running.
 
 ### Container Handler
 
-The `app.onEvent` and `app.onError` methods can accept a container handler like this:
+The `app.onEvent` and `app.onError` methods can accept a container of handler.
+For example:
 
 ```js
-import { makeContainer } from '@machinat/core';
-import Messenger from '@machinat/messenger';
+import { makeContainer, BasicProfiler } from '@machinat/core';
 
 app.onEvent(
-  makeContainer({ deps: [Messenger.Profiler] })(
-    (profiler) => async ({ event, reply } ) => {
+  makeContainer({ deps: [BasicProfiler] })(
+    (profiler) =>
+    async ({ event, reply } ) => {
       const profile = await profiler.getUserProfile(event.user);
-
-      await reply(`Hello ${profile ? profile.name : 'there'}!`)
+      await reply(<p>Hello {profile.lastName}!</p>)
     }
   )
 );
 ```
 
-The handler container above is a curried function receives a `Messenger.Profiler` and returns an ordinary handler function. It works just like the ordinary handler is being contained by a factory function.
+The container receives a `BasicProfiler` instance and returns an ordinary handler function.
+When an event is popped, the _contained_ handler receives event context as usual.
+Then it can use the required `profiler` for replying.
 
-When a event/error is popped, app would inject the container then call the returned handler immediately.
+Many Machinat APIs support using a container as the callback handler,
+like [`@machinat/script`](pathname:///api/modules/script) and [`@machinat/stream`](pathname:///api/modules/script).
+We'll introduce them later.
 
 ### Optional Requisition
 
-By default an error would be throw if a unregistered dependency is being required. You can mark a requisition as optional to prevent this:
+By default it throws an error if an unregistered dependency is required.
+You can mark a dependency as optional to prevent it.
 
 ```js
 makeContainer({
@@ -107,22 +139,32 @@ makeContainer({
 })
 ```
 
-### Use Build-in Services
+### Standard Services
 
-Machinat provides some commonly used services for making conversational apps. For example, to recognize intents, to fetch users' profile or to save/load state data. You can put them together in a chat like this:
+Machinat defines some standard services which are commonly used while making conversational apps.
+Like recognizing intents, fetching users' profile and accessing chat state.
+
+Here is an example to put them together:
 
 ```js
-import { IntentRecognizer, BasicProfiler, StateController } from '@machinat/core';
+import {
+  makeContainer,
+  IntentRecognizer,
+  BasicProfiler,
+  StateController,
+} from '@machinat/core';
 
 app.onEvent(
   makeContainer({
     deps: [IntentRecognizer, BasicProfiler, StateController],
   })(
-    (recognizer, profiler, stateController) => async context => {
-      const { bot, event: { channel, user } } = context;
+    (recognizer, profiler, stateController) =>
+    async (context) => {
+      const { bot, event } = context;
+      const { channel, user } = event;
 
       if (event.type === 'text') {
-        const intent = await recognizer.detectText(event.channel, event.text);
+        const intent = await recognizer.detectText(channel, event.text);
 
         if (intent.type === 'hello') {
           const profile = await profiler.getUserProfile(user);
@@ -138,25 +180,24 @@ app.onEvent(
 );
 ```
 
-Here are the list of them, please check the references for more details:
+Here are the list of the standard services:
 
-- [`BasicBot`](pathname:///api/modules/core_base_bot): Send messages to a platform agnostic channel, so you don't have to require `Bot` implementation of each platform.
-- [`BasicProfiler`](pathname:///api/modules/core_base_profiler): Fetch profile of a platform agnostic user, so you don't have to require `Profiler` implementation of each platform.
-- [`StateController`](pathname:///api/modules/core_base_statecontroller): Save and load channel/user state from the storage. We'll introduce it more in the [Using State](using-states.md) doc.
-- [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): Recognize intent of a text message. We'll introduce it more in the [Recognizing Intent](recognizing-intent.md) doc.
-- [`Marshaler`](pathname:///api/modules/core_base_marshaler): Marshal/unmarshal instances of the built-in classes, like users and channels, so they can be saved/loaded direclty while using `StateController`. You can also add your own data types.
+- [`BasicBot`](pathname:///api/modules/core_base_bot): Render messages on a platform-agnostic channel.
+- [`BasicProfiler`](pathname:///api/modules/core_base_profiler): Fetch profile of a platform-agnostic user.
+- [`StateController`](pathname:///api/modules/core_base_statecontroller): Save and load channel/user/global state from the storage. We'll introduce it in the [Using State](using-states.md) doc.
+- [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): Recognize the intent of a message. We'll introduce it in the [Recognizing Intent](recognizing-intent.md) doc.
 
 ### Register Services
 
-Other than services from modules and platforms, you can register service individually with the `services` option:
+We can also register individual service in the `services` option:
 
 ```js
 import MessengerAssetsManager from '@machinat/messenger/asset';
 import FooService from './foo';
 
 Machinat.createApp({
-  platforms: [...],
-  modules: [...],
+  platforms: [/*...*/],
+  modules: [/*...*/],
   services: [
     MessengerAssetsManager,
     FooService,
@@ -164,16 +205,17 @@ Machinat.createApp({
 })
 ```
 
-The services then can be required via `app.useServices()` or by a container.
+The services then can be required via `app.useServices()` or a container.
 
 ```js
 const [foo, assets] = app.useServices([
   FooService,
   MessengerAssetsManager,
 ]);
-// or
+
 makeContainer({ deps: [FooService, MessengerAssetsManager] })(
-  (foo, assetsManager) => ctx => {
+  (foo, assetsManager) =>
+  (ctx) => {
     // ...
   }
 )
@@ -181,20 +223,25 @@ makeContainer({ deps: [FooService, MessengerAssetsManager] })(
 
 ## Providing Services
 
-In spite of the official services, it is really easy to make a service provider from a JavaScript class.
+### Class Provider
 
-Before register your own class in the app, you have to annotate the metadata about it:
+Despite the standard services, it's easy to make your own ones.
+You only have to mark a normal class as a service provider.
+For example:
 
 ```js
 import { makeClassProvider } from '@machinat/core';
-import BeerService from './beer';
+import BeerService from './Beer';
 
 class BarService {
   constructor(beerService) {
     this.beerService = beerService;
   }
 
-  serve() {
+  serve(drink) {
+    if (drink !== '🍺') {
+      return null;
+    }
     return this.beerService.pour();
   }
 }
@@ -205,27 +252,70 @@ export default makeClassProvider({
 })(BarService);
 ```
 
-The `makeClassProvider(options)(constructor)` annotator is a curried function take the metadata options to annotate the following class constructor. `provider` take the following options:
+`makeClassProvider(options)(Klass)` decorator annotate a class constructor as a service.
+It takes the following options:
 
-- `lifetime` - required, the lifetime of the service within the app, one of `'singleton'`, `'scoped'` or `'transient'`. Check the [service lifetime](#service-lifetime) section for more details.
-- `deps` - optional, the required dependencies of the provider, default to `[]`.
-- `name` - optional, the name of provider, default to the name of the constructor.
+- `deps` - required, the dependencies of the provider.
+- `lifetime` - optional, the lifetime of the service, has to be one of `'singleton'`, `'scoped'` or `'transient'`. Default to `'singleton'`. Check the [service lifetime](#service-lifetime) section.
+- `name` - optional, the name of provider, default to the constructor name.
 - `factory` - optional, the factory function to create the provider instance, default to `(...deps) => new Klass(...deps)`.
 
-Now you are able to register your service and use it:
+Now we can register the service and use it like:
 
 ```js
 const app = Machinat.createApp({
   services: [BeerService, BarService],
 });
 
-const [bar] = app.useServices([BarService]);
-bar.serve();
+app.start().then(() => {
+  const [bar] = app.useServices([BarService]);
+  return bar.serve('🍺');
+});
+```
+
+### Factory Provider
+
+We can make a provider with another style: a factory function.
+For example:
+
+```js
+import { makeFactoryProvider } from '@machinat/core';
+import BeerService from './Beer';
+
+const useBar = (beerService) => (drink) =>
+  drink === '🍺' ? beerService.pour() : null;
+
+export default makeFactoryProvider({
+  lifetime: 'transient',
+  deps: [BeerService],
+})(BarService);
+```
+
+`makeFactoryProvider(options)(factoryFn)` decorator annotate a factory function as a service.
+The factory function receive the dependencies like a container and return the service instance (which can be a function).
+It takes the following options:
+
+- `deps` - required, the dependencies of the provider.
+- `lifetime` - optional, the lifetime of the service, has to be one of `'singleton'`, `'scoped'` or `'transient'`. Default to `'transient'`. Check the [service lifetime](#service-lifetime) section.
+- `name` - optional, the name of provider, default to the factory function name.
+
+Then we can register and use the service like:
+
+```js
+const app = Machinat.createApp({
+  services: [BeerService, useBar],
+});
+
+app.start().then(() => {
+  const [getDrink] = app.useServices([useBar]);
+  return getDrink('🍺');
+});
 ```
 
 ### Interface and Binding
 
-Registering the provider class directly is actually a sugar to have a binding to itself as an interface. For example:
+The provider is also a _service interface_ so we can require it as a dependency.
+When we register the provider, it provides the service instance for _itself_.
 
 ```js
 Machinat.createApp({
@@ -239,7 +329,9 @@ Machinat.crrateApp({
 });
 ```
 
-For test or refactor purpose, you can bind another provider on it to change the implementation of a service:
+The binding between a _service interface_ and a _service provider_ is created when we register a service.
+The interface can be bound to another provider,
+so we can swap the service implementation.
 
 ```js
 const app = Machinat.crrateApp({
@@ -252,13 +344,17 @@ const [myService] = app.useServices([MyService]);
 console.log(myService instanceof AnotherService); // true
 ```
 
-Moreover you might want to have a interface to bind different providers on it, depends on different situations:
+### Pure Interface
+
+Besides the provider itself,
+we can create an interface with `makeInterface` for binding different implementations.
+For example:
 
 ```js
 import { makeInterface } from '@machinat/core';
 import MyServiceImpl from './MyServiceImpl';
 
-const MyService = makeInterface({ name: 'MyService' })
+const MyService = makeInterface({ name: 'MyService' });
 
 Machinat.crrateApp({
   services: [
@@ -267,11 +363,32 @@ Machinat.crrateApp({
 });
 
 const [myService] = app.useServices([MyService]);
+console.log(myService instanceof MyServiceImpl); // true
 ```
 
-`makeInterface` create a interface object for binding implementation. It can
-also optionally accept multiple implementations with `multi` options like:
+### Provide a Value
 
+An interface can be bound with the value directly instead of a provider.
+This is especially useful to pass configurations in a decoupled way:
+
+```js
+const BotName = makeInterface({ name: 'BotName' })
+
+Machinat.crrateApp({
+  services: [
+    { provide: BotName, withValue: 'David' },
+  ],
+});
+
+const [botName] = app.useServices([BotName]);
+console.log(botName); // David
+```
+
+### Multiple Bindings
+
+An interface can also accept multiple implementations with `multi` option.
+When we require a `multi` interface, a list of services is resolved.
+Like this:
 
 ```js
 import { makeInterface } from '@machinat/core';
@@ -289,31 +406,15 @@ const [dinner] = app.useServices([MyFavoriteFood]);
 console.log(dinner); // ['🌮', '🥙']
 ```
 
-### Provide a Value
-
-A value can be directly bound to an interface instead of a provider. This is especially useful to pass configurations in a decoupled way:
-
-```js
-const BotName = makeInterface({ name: 'BotName' })
-
-Machinat.crrateApp({
-  services: [
-    { provide: BotName, withValue: 'David' },
-  ],
-});
-
-const [botName] = app.useServices([BotName]);
-console.log(botName); // David
-```
-
 ### Service Lifetime
 
-There are three types of lifetime which defines how long the the provider instance survive in the app:
+Service lifetime defines how the service instances are created in the app.
+There are three types of lifetime:
 
-- `'transient'` - the provider will created each time being required.
-- `'scoped'` - the provider will only be created one time per services scope.
-- `'singleton'` - the provider will be created when `app.start()` as a singleton in the app.
+- `'transient'` - every time the service is required.
+- `'scoped'` - only once per services scope.
+- `'singleton'` - only once in the app when `app.start()`.
 
-A service scope is an abstract period of time to 1) handle a received event or 2) dispatch the rendering.
-
-For the provider has `'scoped'` lifetime, it will only be created one time lazily in a service scope. The instance will then being cached and used by later requisition.
+A service scope is an abstract period for handling an event or dispatching the messages.
+A service with `'scoped'` lifetime is created lazily in a scope,
+and the instance will be cached for later requisition.

@@ -2,35 +2,53 @@
 title: Using State
 ---
 
-While having a conversation, knowing about the context is the key for proceeding the topic. A chatbot may needs the state of the conversation in order to remember:
-
-- the current topic of the conversation for continuing.
-- user answer/choices/behavior to know more about the user.
-- which information have been said/notified for not being duplicated.
+A conversational app itself is a stateless server.
+So we need to keep the info of a chat/user in a persistent storage. 
+Therefore the bot can use the state data to provide services and better experiences.
 
 ## Install State Module
 
-To enable state in Machinat, you can start with `FileState` or `InMemoryState` from the `@machinat/dev-tools` package:
+In development, it's recommended to use `FileState` for easy debuging.
+But in production, you need to switch to other production-ready implementation,
+like `RedisState`.
+
+You can register the state module like this:
 
 ```js
 import { FileState } from '@machinat/dev-tools';
+import RedisState from '@machinat/redis-state';
+
+const { NODE_ENV, REDIS_URL } = process.env;
+const DEV = NODE_ENV !== 'production';
 
 Machinat.createApp({
   modules: [
-    FileState.initModule({ path: './.state_storage' }),
+    DEV
+      ? FileState.initModule({
+          path: './.state_data.json',
+        })
+      : RedisState.initModule({
+          clientOptions: {
+            url: REDIS_URL,
+          },
+        }),
+    //...
   ],
-  ...
+  //...
 })
 ```
 
-For now the modules listed below with different kinds of storage are officially supported, please check the package readme for more details.
+For now the following state modules are officially supported,
+please check the references for more details:
 
-- [`@machinat/dev-tools`](https://github.com/machinat/machinat/tree/master/packages/dev-tools): provide `FileState` and `InMemoryState` for testing and debugging purposes, using in production environment is not recommended.
-- [`@machinat/redis-state`](https://github.com/machinat/machinat/tree/master/packages/redis-state): save and load state with [Redis](https://redis.io/) in-memory database.
+- [`@machinat/dev-tools`](pathname:///api/modules/dev_tools): provide `FileState` and `InMemoryState` for testing and debugging. Don't use them in production.
+- [`@machinat/redis-state`](pathname:///api/modules/redis_state): save and load state in [Redis](https://redis.io/) database.
 
-## Use the State
+## Get Chat State
 
-All state modules provide the `Base.StateController` interface, you can use it without worrying which storage is it. Let's try getting the conversation state in a container:
+Once you set the state provider up,
+you can use the `StateController` service to access the state.
+For example:
 
 ```js
 import { makeContainer, StateController } from '@machinat/core';
@@ -45,38 +63,43 @@ app.onEvent(
       if (bookmarks) {
         await reply(`You have unread bookmarks:\n${bookmarks.join('\n')}`);
       } else {
-        await reply('You have no bookmark saved yet.');
+        await reply('You have no saved bookmark');
       }
     };
   );
 );
 ```
 
-The `controller.channelState(channel)` method returns a state accessor of a channel, which typically refer to a chat thread. `accessor.get(key)` returns a promise of state value on a specific key, it resolve `undefined` if no value have been saved.
+`controller.channelState(channel)` method returns an accessor to the chat state.
+The state data is stored in key-value pairs, like a JavaScript `Map`.
 
-To set state use the `accessor.update(key, updater)` method:
+`accessor.get(key)` resolves the value saved on a key.
+If no value has been saved before, it resolves `undefined`.
+
+## Update State
+
+To set a state value, use the `accessor.update(key, updater)` method.
+For example:
 
 ```js
 app.onEvent(
   makeContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply } ) => {
-      let matched;
-      if (
-        event.text &&
-        (matched = event.text.match(/^add (.*)$/i))
-      ) {
-        const newBookmark = matched[1];
+      if (event.type === 'text') {
+        const matchAdding = event.text.match(/^add (.*)$/i);
 
-        await stateController
-          .channelState(event.channel)
-          .update(
-            'bookmarks',
-            bookmarks => bookmarks
-              ? [...bookmarks, newBookmark]
-              : [newBookmark]
-          )
-
-        await reply(`New bookmark "${newBookmark}" added.`);
+        if (matchAdding) {
+          const newBookmark = matchAdding[1];
+  
+          const bookmarks = await stateController
+            .channelState(event.channel)
+            .update(
+              'bookmarks',
+              (currentBookmarks = []) =>
+                [...currentBookmarks, newBookmark]
+            );
+          await reply(`You have ${bookmarks.length} bookmarks.`);
+        }
       }
       // ...
     };
@@ -84,38 +107,73 @@ app.onEvent(
 );
 ```
 
-`update` takes a key and an updater function which takes the current state value and returns the new value. If no value have been set before, the updater function would receive `undefined`. And if the updater function returns `undefined`, the velue of key will be deleted.
+`update` takes a key and an updater function,
+which receives the current value and returns the new value.
+The returned value is then saved into the storage.
+
+This mechanism make it easy to update an array or object state value. 
+
+#### `undefined` Means Empty
+
+If no value have been saved, the updater receives `undefined` value.
+And if the updater returns `undefined`, the value on the key will be deleted.
+
+We can use _default parameter_ to handle `undefined` value elegantly: 
+
+```js
+(currentBookmarks = []) =>
+  [...currentBookmarks, newBookmark]
+```
+
+#### Cancel Updating
+
+The new value is compared with the old value using `===`.
+If the same value is retruned, no saving action will be made.
+For example, this updating call is NOT going to work:
+
+```js
+await stateController
+  .channelState(event.channel)
+  .update('my_data', (data) => {
+    data.foo = 'bar';
+    return data; // the value is the same object
+  });
+```
+
+_So do not mutate the value in the updater. Always return a new one._
 
 ### User State
 
-Sometime you might want to save the state of the user instead of channel. User state have different usage scope to channel state, since a user can show up in many chatrooms.
+Sometime you might want to use the state of user instead of chat.
+User state has different scope than channel state since a user can show up in many chatrooms.
 
-To use state on an user instead of a channel, use `controller.userState(user)` method:
+To access user state, use the `controller.userState(user)` method.
+For example:
 
 ```js
 app.onEvent(
   makeContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply }) => {
-      let matched;
-      if (
-        event.text &&
-        (matched = event.text.match(/^call me (.*)$/i))
-      ) {
-        const nickname = matched[1];
+      if (event.type === 'text') {
+        const matchCallMe = event.text.match(/^call me (.*)$/i);
 
-        await stateController
-          .userState(event.user)
-          .update('nickname', () => nickname);
-
-        await reply(`OK ${nickname}!`);
-      } else {
-        const nickname = await stateController
-          .userState(event.user)
-          .get('nickname');
-
-        await reply(nickname ? `Hi ${nickname}!` : 'What should I call you?');
+        if (matchCallMe) {
+          const nickname = matchCallMe[1];
+          await stateController
+            // highlight-next-line
+            .userState(event.user)
+            .update('nickname', () => nickname);
+  
+          return reply(`OK ${nickname}!`);
+        }
       }
-    };
+
+      const nickname = await stateController
+        // highlight-next-line
+        .userState(event.user)
+        .get('nickname');
+      await reply(nickname ? `Hi ${nickname}!` : 'What should I call you?');
+    }
   );
 );
 ```
@@ -124,12 +182,12 @@ The state accessor usage is exactly the same with channel state.
 
 ### Global State
 
-In case you want to use state in the whole app scope, use `controller.globalState()`:
+If you want to use state at the global scope,
+use `controller.globalState(name)`.
+For example:
 
 ```js
-const favorOfAll = await stateController
-  .globalState('poll')
-  .get('pizza_or_hotdog');
+const newYorkWeather = await stateController
+  .globalState('weathers')
+  .get('new_york');
 ```
-
-For example, the `AssetsManager` service of each platform stores the assets id mapping in global state.

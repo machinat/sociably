@@ -2,58 +2,73 @@
 title: Introducing JSX
 ---
 
-In Machinat, you can use the _JSX_ syntax API to build the _Conversational User Interface_ (CUI) more expressively.
+In Machinat, we can use the _JSX_ API to build _Chat UI_ in a more expressive way.
 
 ```js
 app.onEvent(async ({ reply }) => {
   await reply(
-    <p>
-      Hello,
-      <br />
-      World!
-    </p>
+    <>
+      <p>Hello World!</p>
+      <img src="https://machinat.io/greeting.jpg" />
+    </>
   );
 });
 ```
 
-If you have used [React.js](https://reactjs.org) before, you might be familiar with it already. Machinat share almost the same syntax and element structure with React, and have an alike rendering system we will discuss in the next section.
+The HTML alike codes above are _JSX_.
+Each JSX element may represent a part of chat UI.
+For example, `<p>...</p>` represents a message bubble in the chatroom.
 
 ## JSX Syntax
 
-This part is WIP, you can check [the doc of React.js](https://reactjs.org/docs/introducing-jsx.html) since Machinat and React share the same JSX syntax.
+This section is WIP. You can check the introduction in [React document](https://reactjs.org/docs/introducing-jsx.html#embedding-expressions-in-jsx)
+since Machinat share the same JSX syntax with React.
 
 ## Why JSX?
 
-During the experiences buiding chatbots, we find out _Conversational User Interface_ and _Graphical User Interface_ have some common ground and both need a declarative way to make the complex UI.
+_Chat UI_ is not so much different from _Graphical UI_.
+It may contain many nesting details and logics not less than a graphical view.
+We believe a rendering process is necessary to make dynamic and complex chat UI,
+so we can ship best user experiences in a chat.
 
-JSX, which has proved to be an extraordinary tool to build GUI, could benefit us building CUI in several aspects.
+_JSX_ brings some significant advantages while building chat UI:
 
-### Declarative way to talk
+### Declarative View
 
-Consider the following dialogue in a chat room:
+In instant messaging, we usually express with a collection of messages.
+They look like a _view_ in the chatroom:
 
 ![Example Message as view](./assets/example-message-as-view.png)
 
-As you see a dialogue is usually proceed by a collection of messages each time, let's call them an *expression*. In Machinat, an expression is the atomic unit for sending. You don't have to call many API to make the expression, the upper example can be made by:
+Such the expression is the basic unit to proceed a conversation.
+In Machinat, we build an _expression view_ like:
 
 ```js
-reply(
+await reply(
   <>
-    This is my cat!
+    <p>This is my cat!</p>
     <img src="http://foo.bar/cat.jpg" />
-    Do you like it?
+    <p>Do you like it?</p>
   </>
 );
 ```
 
-This provide a way to build CUI more declaratively. The sending of all messages in an expression is managed and promised by Machinat, so you can focus on crafting the UI.
+In this way we make a declarative UI of the _view_,
+instead of making many imperative API calls.
+This brings some advantages:
 
-### Rich formatting view
+1. Describe the content better in codes.
+2. Isolate the presentation logics.
+3. Leave all the sending jobs to the framework.
 
-Most platform provide some ways to send rich formatting text message or more complex widgets in the chatroom. JSX is better to show the "view" of an expression in codes declaratively than huge and nested JSON.
+### Rich Messages
+
+On many platforms, we can reply with formatted text and in-chat widgets.
+JSX works much better to use these graphical features in codes.
+Like:
 
 ```js
-reply(
+await reply(
   <>
     <p>
       <b>foo</b>
@@ -72,38 +87,48 @@ reply(
 );
 ```
 
-### Pause and other in-chat behavior
+### Pause and Action
 
-Proper pause may make your speech more understandable and comfortable in a chat. Pause and other in-chat behaviors thus should be able to a part of the user experience.
-
-In Machinat this can be done in the JSX expression:
+Adding proper pauses and actions brings better experience in chat. 
+These in-chat behaviors can be well described in JSX too.
+Like this:
 
 ```js
-reply(
+await reply(
   <>
-    Hakuna Matata!
+    <Messenger.MarkSeen />
+    <Machinat.Pause time={1000} />
+
+    <p>Hakuna Matata!</p>
     <Messenger.TypingOn />
 
     <Machinat.Pause time={2000} />
-
-    {/* will be sent 2 sec after */}
-    It means no worry!
+    <p>It means no worry!</p>
   </>
 );
 ```
 
-### Cross-platform API
+### Cross-platform UI
 
-Cross-platform is a big issue for chatbot because of the fact that there is no dominant messaging platform for now. JSX provide a [domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language) flexible enough to serve cross-platform API along with complete features of any particular platform.
+To make cross-platform apps, you'll need cross-platform UI.
+Thanks to the flexibility of JSX,
+we can use several manners to achieve that:
 
 ```js
-reply(
+await reply(
   <>
-    They both work!
+    These videos all work:
+
     <video src="http://..." />
-    <Messenger.Video attachmentId="_UPLOADED_VIDEO_" />
+
+    {platform === 'messenger'
+      ? <Messenger.Video attachmentId="_UPLOADED_VIDEO_" />
+      : null}
+  
+    <MyCrossPlatformVideo />
   </>
 );
 ```
 
-In the case above, the `<video ... />` element is a general API that can be sent to all platforms. The `<Messenger.Video ... />` element is a native API only works in `messenger` platform.
+The expression above works on every platform.
+We'll introduce these APIs in later chapters.
