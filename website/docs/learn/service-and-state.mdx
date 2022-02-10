@@ -158,7 +158,7 @@ type ProfileCache = {
 };
 
 const useUserProfile =
-  (profiler: stateController.userState(uBasicProfiler, stateController: StateController) =>
+  (profiler: BasicProfiler, stateController: StateController) =>
   async (user: MachinatUser) => {
     const userState = stateController.userState(user);
     const cached = await userState.get<ProfileCache>('profile_cache');
