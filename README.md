@@ -3,10 +3,9 @@
   <br/>
 </h1>
 
-## The Next-Gen Apps
+## Next-Gen Conversational App
 
-Machinat is a JavaScript framework for building conversational apps.
-These cross-platform, programmatic, intelligent apps provide services in the social network. They are the NPCs in the real life, virtual world and even Metaverse.
+Machint framework builds _cross-platfrom, feature-rich and intelligent **apps**_ in the social network.
 
 ## Highlights
 
@@ -16,6 +15,11 @@ These cross-platform, programmatic, intelligent apps provide services in the soc
 
 <details>
   <summary><i>100%</i> programming solution. Say goodbye to no-code tools.</summary>
+</details>
+
+<details>
+  <summary>Extend an embeded <b>webview</b> in the chat. <i>(demo ▾)</i></summary>
+  <img height="480" src="./media/webview.webp" />
 </details>
 
 <details>
@@ -41,11 +45,6 @@ These cross-platform, programmatic, intelligent apps provide services in the soc
 <details>
   <summary>Optimize UI/UX for every platform. <i>(demo ▾)</i></summary>
   <img height="480" src="./media/cross-platform.webp" />
-</details>
-
-<details>
-  <summary>Extend an embeded <b>webview</b> in the chat. <i>(demo ▾)</i></summary>
-  <img height="480" src="./media/webview.webp" />
 </details>
 
 <details>
