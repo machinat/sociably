@@ -16,7 +16,7 @@ export type ButtonTemplateProps = {
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400.
    * If a function is given, the return value would be used. The rendered
-   * template object is passed as the first argument.
+   * template object is passed as the first param.
    */
   altText: string | ((template: Record<string, any>) => string);
   /** Image URL (Max character limit: 1,000) */
@@ -110,7 +110,7 @@ export type ConfirmTemplateProps = {
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400
    * If a function is given, the return value would be used. The rendered
-   * template object is passed as the first argument.
+   * template object is passed as the first param.
    */
   altText: string | ((template: Record<string, any>) => string);
   /**
@@ -227,7 +227,7 @@ export type CarouselTemplateProps = {
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400
    * If a function is given, the return value would be used. The rendered
-   * template object is passed as the first argument.
+   * template object is passed as the first param.
    */
   altText: string | ((template: Record<string, any>) => string);
   /**
@@ -318,7 +318,7 @@ export type ImageCarouselTemplateProps = {
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400
    * If a function is given, the return value would be used. The rendered
-   * template object is passed as the first argument.
+   * template object is passed as the first param.
    */
   altText: string | ((template: Record<string, any>) => string);
 };
