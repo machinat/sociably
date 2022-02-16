@@ -8,30 +8,25 @@ The `@machinat/telegram` platform enable your app to receive/send messages as a
 
 ## Install
 
-Install `core`, `http` and `telegram` package with npm:
+Install the `core`, `http` and `telegram` packages:
 
 ```bash
 npm install @machinat/core @machinat/http @machinat/telegram
 ```
 
-Or with yarn:
-
-```bash
-yarn add @machinat/core @machinat/http @machinat/telegram
-```
-
 ## Steup
 
 :::tip
-You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=telegram).
-It brings you to register a Telegram bot and configure your app step by step.
+:::tip
+You can check [setup section in the tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=telegram).
+It brings you to set up everything step by step.
 :::
 
-First, you have to configure a Telegram bot for your app to use. You can
-follow the steps in [this official guide](https://core.telegram.org/bots#6-botfather)
+First, you nedd a Telegram bot to use with.
+You can [the official guide](https://core.telegram.org/bots#6-botfather)
 to create one from [@Botfather](https://t.me/botfather).
 
-Then register the `http` and `telegram` module with the settings like this:
+Then set up the `http` and `telegram` module like this:
 
 ```ts
 import Machinat from '@machinat/core';
@@ -46,16 +41,16 @@ const app = Machinat.createApp({
   ],
   platforms: [
     Telegram.intiModule({
-      webhookPath: '/webhook/telegram',    // webhook path
-      botToken: TELEGRAM_BOT_TOKEN,        // bot token
-      secretPath: TELEGRAM_SECRET_PATH,    // secret trailing path of webhook
+      webhookPath: '/webhook/telegram', // webhook path
+      botToken: TELEGRAM_BOT_TOKEN,     // bot token
+      secretPath: TELEGRAM_SECRET_PATH, // secret path for webhook
     }),
   ],
 });
 ```
 
 Finally, you have to register the webhook to subscribe events from Telegram.
-You can use these codes to do it:
+You can use these codes to do that:
 
 ```ts
 import { TelegramBot } from '@machinat/telegram';
@@ -102,20 +97,22 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check the package reference for the details of [event types](https://machinat.com/api/modules/telegram.html#telegramevent)
-and [component APIs](https://machinat.com/api/modules/telegram_components.html).
+Check the API reference for the details of [events](https://machinat.com/api/modules/telegram.html#telegramevent)
+and [components](https://machinat.com/api/modules/telegram_components.html).
 
 ## Webview
 
-To open a webview with [Seamless Telegram Login](https://core.telegram.org/bots/api#loginurl)
-in chat, set up with these steps:
+### Auth Setup
 
-1. Send `/setdomain` command to [@Botfather](https://t.me/botfather) to register the server domain of your bot.
-2. Set up [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview) platform like this:
+To use [webviews](./embedded-webview) in Telegram,
+configure the app with these steps:
+
+1. Send `/setdomain` command to [@Botfather](https://t.me/botfather) to register the domain of your bot.
+2. Set up `webview` platform like this:
 
 ```ts {13}
 import Webview from '@machinat/webview';
-import TelegramWebviewAuth from '@machinat/telegram/webview';
+import TelegramAuth from '@machinat/telegram/webview';
 
 const app = Machinat.createApp({
   modules: [
@@ -124,16 +121,16 @@ const app = Machinat.createApp({
   platforms: [
     Telegram.initModule({ /* ... */ }),
     Webview.intiModule({
-      // ...
       authPlatforms: [
-        TelegramWebviewAuth
-      ]
+        TelegramAuth
+      ],
+      // ...
     }),
   ],
 });
 ```
 
-3. Expose your bot name to webview in the `next.config.js`:
+3. Expose your bot name in `next.config.js`:
 
 ```js {5}
 module.exports = {
@@ -150,20 +147,23 @@ module.exports = {
 ```ts
 import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
-import TelegramWebviewAuth from '@machinat/telegram/webview/client';
+import TelegramAuth from '@machinat/telegram/webview/client';
 
 const { publicRuntimeConfig } = getConfig();
 
 const client =  new WebviewClient({
   authPlatforms: [
-    new TelegramWebviewAuth({
+    new TelegramAuth({
       botName: publicRuntimeConfig.telegramBotName,
     }),
   ],
 });
 ```
 
-5. Open the webview through an `UrlButton` with  the`login` prop set to `true`. The `url` prop should direct to `/auth/telegram` endpoint of your server. Like:
+### Open the Webview
+
+The webview can be open with an `UrlButton`. 
+Like:
 
 ```tsx
 app.onEvent(async ({ reply }) => {
@@ -185,13 +185,22 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Now users will be automatically logged in with Telegram account in the webview. Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more about webview.
+Two things to note here:
+
+1. `login` prop have to be `true`.
+2. `url` prop should link to `/auth/telegram` endpoint of your server.
+
+The users will be logged in with Telegram account in the webview.
+Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more.
 
 ## Assets Manager
 
 [`TelegramAssetsManager`](https://machinat.com/api/classes/telegram_asset.telegramassetsmanager.html)
-service helps you to manage resources at Telegram platform, like uploaded file.
-Make sure you have a state storage installed, and register `TelegramAssetsManager` like this:
+service helps you to manage resources on Telegram platform,
+like files.
+
+To use it, you have to install a [state provider](./using-states) first.
+Then register `TelegramAssetsManager` like this:
 
 ```ts {2,11-13,17}
 import { FileState } from '@machinat/dev-tools';
@@ -199,14 +208,14 @@ import TelegramAssetsManager, { saveUplodedFile } from '@machinat/telegram/assse
 
 const app = Machinat.createApp({
   modules: [
-    FileState.initModule({ path: '.state_file' }),
+    FileState.initModule({ path: '.state_data.json' }),
   ],
   platforms: [
     Telegram.initModule({
-      // ...
       dispatchMiddlewares: [
         saveUplodedFile,
-      ]
+      ],
+      // ...
     }),
   ],
   services: [
@@ -215,7 +224,7 @@ const app = Machinat.createApp({
 });
 ```
 
-Here is an example to upload an image for sending and reuse it:
+Here's an example to upload an image message and reuse it:
 
 ```tsx
 import fs from 'fs';
@@ -244,9 +253,9 @@ app.onEvent(makeContainer({ deps: [TelegramAssetsManager] })(
 ));
 ```
 
-Once you send an uploaded file with `fileAssetTag` prop, `saveUplodedFile`
-middleware will save the returned file id. The stored id can be reused for
-the next time.
+If you upload a file with `fileAssetTag` prop,
+`saveUplodedFile` middleware will save the returned file id.
+You can reuse the stored id for the next time.
 
 ## Resources
 

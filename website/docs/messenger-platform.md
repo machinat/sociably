@@ -3,35 +3,29 @@ title: Messenger Platform
 sidebar_label: Messenger
 ---
 
-The `@machinat/messenger` platform enable your app to receive/send messages as a
-Facebook page on [Messenger platform](https://developers.facebook.com/docs/messenger-platform/).
+`@machinat/messenger` platform enable your app to receive/send messages on [Messenger platform](https://developers.facebook.com/docs/messenger-platform/)
+as a Facebook page.
 
 ## Install
 
-Install `core`, `http` and `messenger` package with npm:
+Install the `core`, `http` and `messenger` packages:
 
 ```bash
 npm install @machinat/core @machinat/http @machinat/messenger
 ```
 
-Or with yarn:
-
-```bash
-yarn add @machinat/core @machinat/http @machinat/messenger
-```
-
 ## Setup
 
 :::tip
-You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=messenger).
-It brings you to create a Facebook app and configure your app step by step.
+You can check [setup section in the tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=messenger).
+It brings you to set up everything step by step.
 :::
 
-First you have to configure a Facebook app to use. You can follow the steps in
-[this official guide](https://developers.facebook.com/docs/messenger-platform/getting-started/app-setup)
-to do it.
+First you need to apply a Facebook app to use with.
+You can follow the [official guide](https://developers.facebook.com/docs/messenger-platform/getting-started/app-setup)
+to create one.
 
-Then register the `http` and `messenger` module with the settings like this:
+Then set up the `http` and `messenger` modules like this:
 
 ```ts
 import Machinat from '@machinat/core';
@@ -52,11 +46,11 @@ const app = Machinat.createApp({
   ],
   platforms: [
     Messenger.intiModule({
-      entryPath: '/webhook/messenger',         // webhook path
-      pageId: Number(MESSENGER_PAGE_ID),       // Facebook page id
-      appSecret: MESSENGER_APP_SECRET,         // Facebook app secret
-      accessToken: MESSENGER_ACCESS_TOKEN,     // page access token
-      verifyToken: MESSENGER_VERIFY_TOKEN,     // token for webhook verification
+      entryPath: '/webhook/messenger',     // webhook path
+      pageId: Number(MESSENGER_PAGE_ID),   // Facebook page id
+      appSecret: MESSENGER_APP_SECRET,     // Facebook app secret
+      accessToken: MESSENGER_ACCESS_TOKEN, // page access token
+      verifyToken: MESSENGER_VERIFY_TOKEN, // token for webhook verification
     }),
   ],
 });
@@ -64,7 +58,7 @@ const app = Machinat.createApp({
 
 ## Usage
 
-Here is an example to receive events and send replies back:
+Here's an example to receive events and send replies back:
 
 ```tsx
 import Machinat from '@machinat/core';
@@ -97,20 +91,23 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check the package reference for the details of [event types](https://machinat.com/api/modules/messenger.html#messengerevent)
-and [component APIs](https://machinat.com/api/modules/messenger_components.html).
+Check the API reference for the details of [events](https://machinat.com/api/modules/messenger#messengerevent)
+and [components](https://machinat.com/api/modules/messenger_components).
 
 ## Webview
 
-To enable [Messenger webview](https://developers.facebook.com/docs/messenger-platform/webview), set up with these steps:
+### Setup Auth
+
+To use [webviews](./embedded-webview) in Messenger,
+configure the app with these steps:
 
 1. Add server domain to [`whitelisted_domains`](https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/domain-whitelisting)
-   of the page profile.
-2. Set up [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview) platform like this:
+  of the page.
+2. Set up webview platform like this:
 
 ```ts {1-2,6,18}
 import Webview from '@machinat/webview';
-import MessengerWebviewAuth from '@machinat/messenger/webview';
+import MessengerAuth from '@machinat/messenger/webview';
 
 const {
   //...
@@ -122,26 +119,25 @@ const app = Machinat.createApp({
     Http.initModule({ port: 8080 }),
   ],
   platforms: [
-    Messenger.initModule({ /* ... */ }),
+    Messenger.initModule({/* ... */}),
     Webview.initModule({
-      // ...
       authPlatforms:[
-        MessengerWebviewAuth
+        MessengerAuth
       ],
+      // ...
     }),
   ],
 });
 ```
 
-3. Expose your Facebook app id to webview in the `next.config.js`:
+3. Expose your Facebook app id in `next.config.js`:
 
 ```js {5}
 module.exports = {
-  distDir: '../dist',
-  basePath: '/webview',
   publicRuntimeConfig: {
     messengerAppId: process.env.MESSENGER_APP_ID,
   },
+  // ...
 };
 ```
 
@@ -150,21 +146,23 @@ module.exports = {
 ```ts
 import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
-import MessengerWebviewAuth from '@machinat/messenger/webview/client';
+import MessengerAuth from '@machinat/messenger/webview/client';
 
 const { publicRuntimeConfig } = getConfig();
 
 const client =  new WebviewClient({
   authPlatforms: [
-    new MessengerWebviewAuth({
+    new MessengerAuth({
       appId: publicRuntimeConfig.messengerAppId,
     }),
   ],
 });
 ```
 
-5. Open the webview through an `UrlButton` with the `messengerExtensions` prop
-set to `true`. Like:
+### Open the Webview
+
+The webview can be opend with an `UrlButton` in the chatroom.
+For example:
 
 ```tsx
 app.onEvent(async ({ reply }) => {
@@ -184,14 +182,22 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Now users will be automatically logged in with Messenger account in the webview. Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more about webview.
+Two thing to note here:
+
+1. `messengerExtensions` prop have to be `true`.
+2. `url` prop should link to the webview page with `platform=messenger` query.
+
+The users will be logged in with Messenger account in the webview.
+Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more.
 
 ## Assets Manager
 
 [`MessengerAssetsManager`](https://machinat.com/api/classes/messenger_asset.messengerassetsmanager.html)
-service helps you to manage resources at Messenger platform, like attachment and
-persona. Make sure you have a state storage installed, and register `MessengerAssetsManager`
-like this:
+service helps you to manage resources on the Messenger platform,
+like attachments and personas.
+
+To use it, you have to install a [state provider](./using-states) first.
+Then register `MessengerAssetsManager` like this:
 
 ```ts {2,11-13,17}
 import { FileState } from '@machinat/dev-tools';
@@ -199,7 +205,7 @@ import MessengerAssetsManager from '@machinat/messenger/asssets';
 
 const app = Machinat.createApp({
   modules: [
-    FileState.initModule({ path: '.state_file' }),
+    FileState.initModule({ path: '.state_data.json' }),
   ],
   platforms: [
     Messenger.initModule({
@@ -209,13 +215,13 @@ const app = Machinat.createApp({
       ]
     }),
   ],
-  services: [
+  services: [for
     MessengerAssetsManager,
   ],
 });
 ```
 
-Here is an example to upload a reusable attachment and reuse it:
+Here is an example to upload a reusable attachment:
 
 ```tsx
 import fs from 'fs';
@@ -245,9 +251,9 @@ app.onEvent(makeContainer({ deps: [MessengerAssetsManager] })(
 ));
 ```
 
-Once you send an uploaded attachment with `isReusable` and `attachmentAssetTag` props,
-the `saveReusableAttachments` middleware will save the returned id. The saved
-id can then be reused for sending next time.
+If you upload an attachment with `isReusable` and `attachmentAssetTag` props,
+the `saveReusableAttachments` middleware will save the returned id.
+You can reuse the saved id for the next time.
 
 ## Resources
 

@@ -167,7 +167,7 @@ function AskForOrder(props, { platform }) {
 }
 ```
 
-`platform` of the second argument shows which platform is rendering to.
+`platform` of the second param shows which platform is rendering to.
 We can return different native components according to it.
 
 At the end of the function, we can add a default UI using only general elements.

@@ -71,15 +71,15 @@ app.start().then(() => {
 });
 ```
 
-`app.useServices()` accepts an array of service interfaces and returns the instances of them.
+`app.useServices()` accepts an array of service interfaces and returns the service instances.
 Note that it should only be called after `app.start()` is finished.
 
 ## Service Container
 
-We can also require services as the arguments of a function,
+We can also require services as the params of a function,
 that is a **Service Container**.
-The `makeContainer` decorator annotate a JavaScript funcation as a container,
-like:
+The `makeContainer` decorator annotate a JavaScript funcation as a container.
+Like:
 
 ```js
 import { makeContainer } from '@machinat/core';
@@ -94,7 +94,7 @@ const fooBarContainer = makeContainer({
 ```
 
 In the example above, `fooBarContainer` function requires two dependencies `FooService` and `BarService`.
-The `foo` and `bar` instances will be injected later into the container while running.
+The service instances `foo` and `bar` will be injected into the container when it's triggered by the app.
 
 ### Container Handler
 

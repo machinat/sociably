@@ -234,17 +234,15 @@ handle that at next lesson.
 ### The Component Function
 
 A **component** is a function with **capitalized** name.
-It can be used as the JSX element tag just like a native component:
+We can use it as the JSX element tag like:
 
 ```tsx
 <TodoList todos={[{ id: 1, name: 'foo' }, /* ... */]} />
 ```
 
-The first argument of the function is **props** of the JSX element.
-`TodoList` function will receive a `{ todos: [/* ... */] }` object while rendering
-messages.
-
-Then we can use the `todos` prop to return the UI:
+The first param is the **props** of the JSX element.
+`TodoList` function receives a `{ todos: [/* ... */] }` object.
+Then we can use the `todos` to return the UI:
 
 ```tsx
   return (
@@ -271,8 +269,8 @@ shows the same result as:
 
 ### Cross-Platform Component
 
-We might want to customize messages for each platform while making a cross-platform app.
-To do this, we can return different UI accorfing to the `platform` at the second argument.
+To customize messages for the platform,
+we can return the UI according to `platform` at the second param.
 Like:
 
 ```tsx
@@ -299,7 +297,7 @@ At the end of the function, we can return a general UI as the default message:
 };
 ```
 
-With this strategy, we can cutomize cross-platfrom UI that works on all the platforms.
+With this strategy, we can make UI that works on all the platforms.
 
 ## The Children Prop
 

@@ -8,30 +8,24 @@ The `@machinat/line` platform enable your app to receive/send messages as a
 
 ## Install
 
-Install `core`, `http` and `line` package with npm:
+Install the `core`, `http` and `line` packages:
 
 ```bash
 npm install @machinat/core @machinat/http @machinat/line
 ```
 
-Or with yarn:
-
-```bash
-yarn add @machinat/core @machinat/http @machinat/line
-```
-
 ## Setup
 
 :::tip
-You can check the [setup section of our tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=line).
-It brings you to create a LINE channel and configure your app step by step.
+You can check [setup section in the tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=line).
+It brings you to set up everything step by step.
 :::
 
-First, you have to configure a LINE messaging API channel for your app to use.
-You can follow the steps in [this official guide](https://developers.line.biz/en/docs/messaging-api/building-bot/)
-to do it.
+First, you need a LINE messaging API channel to use with.
+You can follow [the official guide](https://developers.line.biz/en/docs/messaging-api/building-bot/)
+to create one.
 
-Then register the `http` and `line` module with the settings like this:
+Then set up the `http` and `line` module like this:
 
 ```ts
 import Machinat from '@machinat/core';
@@ -51,11 +45,11 @@ const app = Machinat.createApp({
   ],
   platforms: [
     Line.intiModule({
-      webhookPath: '/webhook/line',           // webhook path
-      channelId: LINE_CHANNEL_ID,             // messaging API channel id
-      providerId: LINE_PROVIDER_ID,           // provider id of the channel
-      accessToken: LINE_ACCESS_TOKEN,         // channel access token
-      channelSecret: LINE_CHANNEL_SECRET,     // channel secret
+      webhookPath: '/webhook/line',       // webhook path
+      channelId: LINE_CHANNEL_ID,         // messaging API channel id
+      providerId: LINE_PROVIDER_ID,       // provider id of the channel
+      accessToken: LINE_ACCESS_TOKEN,     // channel access token
+      channelSecret: LINE_CHANNEL_SECRET, // channel secret
     }),
   ],
 });
@@ -63,7 +57,7 @@ const app = Machinat.createApp({
 
 ## Usage
 
-Here is an example to receive events and send replies back:
+Here's an example to receive events and send replies back:
 
 ```tsx
 import Machinat from '@machinat/core';
@@ -96,24 +90,24 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check the package reference for the details of [event types](https://machinat.com/api/modules/line.html#lineevent)
-and [component APIs](https://machinat.com/api/modules/line_components.html).
+Check the API references for the details of [events](https://machinat.com/api/modules/line#lineevent)
+and [components](https://machinat.com/api/modules/line_components).
 
 ## Webview
 
-To integrate chatbot with a [LIFF](https://developers.line.biz/en/docs/liff/overview/)
-webview, set up with these steps:
+### Auth Setup
 
-1. [Create a LIFF app](https://developers.line.biz/en/docs/liff/registering-liff-apps/)
-   with url `https://your.server.domain/webview?platform=line`. The url should
-   link to your webview page with `platform=line` query.
-2. Add the **login channel** id in `liffChannelIds` options.
-3. Set up [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview)
-platform like this:
+To use [webviews](./embedded-webview) in LINE,
+configure the app with these steps:
+
+1. Create a [LIFF app](https://developers.line.biz/en/docs/liff/registering-liff-apps/)
+   with URL to the webview page with `platform=line` query.
+   Like `https://your.server.domain/webview?platform=line`.
+2. Set up `line` and `webview` platform like this:
 
 ```ts {1-2,6,16,21}
 import Webview from '@machinat/webview';
-import LineWebviewAuth from '@machinat/line/webview';
+import LineAuth from '@machinat/line/webview';
 
 const {
   // ...
@@ -126,20 +120,21 @@ const app = Machinat.createApp({
   ],
   platforms: [
     Line.initModule({
-      // ...
+      // add the login channel id
       liffChannelIds: [LINE_LIFF_ID.split('-')[0]],
+      // ...
     }),
     Webview.initModule({
-      // ...
       authPlatforms: [
-        LineWebviewAuth,
+        LineAuth,
       ]
+      // ...
     }),
   ],
 });
 ```
 
-4. Expose LIFF id to webview in the `next.config.js`:
+3. Expose LIFF id in `next.config.js`:
 
 ```js {5}
 module.exports = {
@@ -151,27 +146,29 @@ module.exports = {
 };
 ```
 
-5. Set up the `WebviewClient` in the webview page:
+4. Set up the `WebviewClient` in the webview page:
 
 ```ts
 import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
-import LineWebviewAuth from '@machinat/line/webview/client';
+import LineAuth from '@machinat/line/webview/client';
 
 const { publicRuntimeConfig } = getConfig();
 
 const client =  new WebviewClient({
   authPlatforms: [
-    new LineWebviewAuth({
+    new LineAuth({
       liffId: publicRuntimeConfig.lineLiffId,
     }),
   ],
 });
 ```
 
-6. Opened the webview through the URL of LIFF app:
+### Open the Webview
 
-```tsx
+The webview can be opened by the LIFF URL:
+
+```jsx
 const { LINE_LIFF_ID } = process.env;
 const liffUrl = `https://liff.line.me/${LINE_LIFF_ID}`;
 
@@ -179,7 +176,9 @@ app.onEvent(async ({ reply }) => {
   await reply(
     <Line.ButtonTemplate
       altText={liffUrl}
-      actions={<Line.UriAction label="Open 📤" uri={liffUrl} />}
+      actions={
+        <Line.UriAction label="Open 📤" uri={liffUrl} />
+      }
     >
       Hello Webview!
     </Line.ButtonTemplate>
@@ -187,13 +186,18 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Now users will be automatically logged in with LINE account in the webview. Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more about webview.
+The users will be logged in with LINE account in the webview.
+Check the [webview document](https://machinat.com/docs/embedded-webview)
+to learn more.
 
 ## Assets Manager
 
 [`LineAssetsManager`](https://machinat.com/api/classes/line_asset.lineassetsmanager.html)
-service helps you to manage the resources like [richmenu](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/#using-rich-menus-introduction).
-Make sure you have a state storage installed, and register `LineAssetsManager` like this:
+service helps you to manage resources on LINE platform,
+like [richmenu](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/#using-rich-menus-introduction).
+
+To use it, you have to install a [state provider](./using-states) first.
+Then register `LineAssetsManager` like this:
 
 ```ts {2,12}
 import { FileState } from '@machinat/dev-tools';
@@ -201,10 +205,10 @@ import LineAssetsManager from '@machinat/line/asssets';
 
 const app = Machinat.createApp({
   modules: [
-    FileState.initModule({ path: '.state_file' }),
+    FileState.initModule({ path: '.state_data.json' }),
   ],
   platforms: [
-    Line.initModule({ /* ... */ }),
+    Line.initModule({/* ... */}),
   ],
   services: [
     LineAssetsManager,
@@ -212,7 +216,7 @@ const app = Machinat.createApp({
 });
 ```
 
-Here is an example to reuse dynamic richmenu:
+Here is an example to reuse a richmenu:
 
 ```tsx
 import { makeContainer } from '@machinat/core';
