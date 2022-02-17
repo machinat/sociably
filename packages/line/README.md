@@ -13,8 +13,8 @@ yarn add @machinat/core @machinat/http @machinat/line
 
 ## Docs
 
-Check the [platform document](https://machinat.com/docs/line-platform) and
-[package reference](https://machinat.com/api/modules/line.html).
+Check the [platform document](https://machinat.com/docs/line-platform) 
+and the [package reference](https://machinat.com/api/modules/line.html).
 
 ## Setup
 

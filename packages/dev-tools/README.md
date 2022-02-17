@@ -12,7 +12,7 @@ yarn add @machinat/core @machinat/dev-tools
 
 ## Docs
 
-Check the [package reference](https://machinat.com/api/modules/dev_tools.html) for API details.
+Check the [package references](https://machinat.com/api/modules/dev_tools.html).
 
 ## Services
 

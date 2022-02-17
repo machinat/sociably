@@ -22,7 +22,7 @@ yarn add react react-dom next @machinat/core @machinat/http @machinat/webview
 ## Docs
 
 Check the [Embedded Webview](https://machinat.com/docs/embedded-webview)
-document or the [API references](https://machinat.com/api/modules/webview.html).
+document and the [API references](https://machinat.com/api/modules/webview.html).
 
 ## Setup
 

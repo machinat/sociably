@@ -16,8 +16,7 @@ yarn add @machinat/stream
 ## Docs
 
 Check the [Reactive Programming](https://machinat.com/docs/reactive-programming)
-document for the usage guide, and the [package reference](https://machinat.com/api/modules/stream.html)
-for API details.
+document and the [package reference](https://machinat.com/api/modules/stream.html).
 
 ## Example
 

@@ -12,8 +12,8 @@ yarn add @machinat/core @machinat/http @machinat/messenger
 
 ## Docs
 
-Check the [platform document](https://machinat.com/docs/messenger-platform) and
-[package reference](https://machinat.com/api/modules/messenger.html).
+Check the [platform document](https://machinat.com/docs/messenger-platform)
+and the [package reference](https://machinat.com/api/modules/messenger.html).
 
 ## Setup
 

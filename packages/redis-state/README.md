@@ -13,9 +13,8 @@ yarn add @machinat/core @machinat/redis-state
 
 ## Docs
 
-Check the [Using State](https://machinat.com/docs/using-states) document for the
-usage guide, and the [package reference](https://machinat.com/api/modules/redis_state.html)
-for API details.
+Check the [Using State](https://machinat.com/docs/using-states)
+document and the [package reference](https://machinat.com/api/modules/redis_state.html).
 
 ## Setup
 
