@@ -1,15 +1,15 @@
-/* eslint-disable class-methods-use-this, @typescript-eslint/no-non-null-assertion */
+/* eslint-disable import/prefer-default-export, @typescript-eslint/no-non-null-assertion */
 import fs from 'fs';
-import { ReflectionKind } from 'typedoc/dist/lib/models/reflections/abstract';
 import {
-  Component,
-  ConverterComponent,
-} from 'typedoc/dist/lib/converter/components';
-import { Converter } from 'typedoc/dist/lib/converter/converter';
-import { Context } from 'typedoc/dist/lib/converter/context';
-import { DeclarationReflection } from 'typedoc/dist/lib/models/reflections/declaration';
-import { ReflectionCategory } from 'typedoc/dist/lib/models/ReflectionCategory';
-import { Comment } from 'typedoc/dist/lib/models/comments';
+  Application,
+  ParameterType,
+  ReflectionKind,
+  Converter,
+  Context,
+  DeclarationReflection,
+  ReflectionCategory,
+  Comment,
+} from 'typedoc';
 
 const pkgs = fs
   .readdirSync('./packages')
@@ -38,134 +38,112 @@ const pkgsExports = new Map(
   })
 );
 
-class ModuleMappingPlugin extends ConverterComponent {
-  pkgExportsReflections: Map<string, Map<string, DeclarationReflection>>;
-  pkgRootReflections: Map<string, DeclarationReflection>;
+export function load(app: Application): void {
+  const pkgExportsReflections: Map<
+    string,
+    Map<string, DeclarationReflection>
+  > = new Map();
+  const pkgRootReflections: Map<string, DeclarationReflection> = new Map();
 
-  initialize() {
-    this.listenTo(this.owner, {
-      [Converter.EVENT_BEGIN]: this.onBegin.bind(this),
-      [Converter.EVENT_CREATE_DECLARATION]: this.onDeclarationBegin.bind(this),
-      [Converter.EVENT_RESOLVE_BEGIN]: this.onResolveBegin.bind(this),
-      [Converter.EVENT_RESOLVE_END]: this.onResolveEnd.bind(this),
-    });
-  }
+  app.options.addDeclaration({
+    name: 'external-modulemap',
+    type: ParameterType.String,
+    help: 'Regular expression to capture the module names.',
+  });
 
-  /**
-   * Triggered when the converter begins converting a project.
-   */
-  private onBegin() {
-    this.pkgExportsReflections = new Map();
-    this.pkgRootReflections = new Map();
-  }
+  app.converter.on({
+    [Converter.EVENT_CREATE_DECLARATION](
+      context: Context,
+      reflection: DeclarationReflection,
+      node?
+    ) {
+      if (!node) return;
+      const { fileName } = node;
+      const match = /packages\/([^/]*)\/src\/(.*)$/.exec(fileName);
 
-  private onDeclarationBegin(
-    context: Context,
-    reflection: DeclarationReflection,
-    node?
-  ) {
-    if (!node) return;
-    const { fileName } = node;
-    const match = /packages\/([^/]*)\/src\/(.*)$/.exec(fileName);
+      if (match) {
+        const [, pkgName, sourcePath] = match;
 
-    if (match) {
-      const [, pkgName, sourcePath] = match;
+        let reflections = pkgExportsReflections.get(pkgName);
+        if (!reflections) {
+          reflections = new Map();
+          pkgExportsReflections.set(pkgName, reflections);
+        }
 
-      let reflections = this.pkgExportsReflections.get(pkgName);
-      if (!reflections) {
-        reflections = new Map();
-        this.pkgExportsReflections.set(pkgName, reflections);
-      }
-
-      if (reflections.has(sourcePath)) {
-        // export path is repeated
-        context.project.removeReflection(reflection);
-      } else {
-        reflections.set(sourcePath, reflection);
-      }
-    }
-  }
-
-  /**
-   * Triggered when the converter begins resolving a project.
-   *
-   * @param context  The context object describing the current state the converter is in.
-   */
-  private onResolveBegin(context: Context) {
-    context.project.children = []; // eslint-disable-line no-param-reassign
-
-    for (const [pkgName, exportPaths] of pkgsExports) {
-      // extract root exports
-      const rootPath = exportPaths.get('.');
-
-      if (rootPath) {
-        const reflections = this.pkgExportsReflections.get(pkgName)!;
-        const rootReflection = reflections.get(rootPath);
-
-        if (rootReflection) {
-          rootReflection.name = pkgName;
-          reflections.delete(rootPath);
-
-          context.project.children.push(rootReflection);
-          this.pkgRootReflections.set(pkgName, rootReflection);
+        if (reflections.has(sourcePath)) {
+          // export path is repeated
+          context.project.removeReflection(reflection);
+        } else {
+          reflections.set(sourcePath, reflection);
         }
       }
-    }
+    },
+    [Converter.EVENT_RESOLVE_BEGIN](context: Context) {
+      context.project.children = []; // eslint-disable-line no-param-reassign
 
-    for (const [pkgName, reflections] of this.pkgExportsReflections) {
-      const rootReflection = this.pkgRootReflections.get(pkgName)!;
-      if (!rootReflection.children) {
-        rootReflection.children = [];
+      for (const [pkgName, exportPaths] of pkgsExports) {
+        // extract root exports
+        const rootPath = exportPaths.get('.');
+
+        if (rootPath) {
+          const reflections = pkgExportsReflections.get(pkgName)!;
+          const rootReflection = reflections.get(rootPath);
+
+          if (rootReflection) {
+            rootReflection.name = pkgName;
+            reflections.delete(rootPath);
+
+            context.project.children.push(rootReflection);
+            pkgRootReflections.set(pkgName, rootReflection);
+          }
+        }
       }
 
-      // add remaining reflections to the children of package
-      for (const [, reflection] of reflections) {
-        const [, sourceName] = reflection.name.split('/src/', 2);
-        reflection.name = `${pkgName}/${sourceName}`;
+      for (const [pkgName, reflections] of pkgExportsReflections) {
+        const rootReflection = pkgRootReflections.get(pkgName)!;
+        if (!rootReflection.children) {
+          rootReflection.children = [];
+        }
 
-        rootReflection.children.push(reflection as DeclarationReflection);
+        // add remaining reflections to the children of package
+        for (const [, reflection] of reflections) {
+          const [, sourceName] = reflection.name.split('/src/', 2);
+          reflection.name = `${pkgName}/${sourceName}`;
+
+          rootReflection.children.push(reflection as DeclarationReflection);
+        }
       }
-    }
-  }
+    },
+    [Converter.EVENT_RESOLVE_END](context: Context) {
+      const modulesGroup = context.project.groups!.find(
+        (group) => group.kind === ReflectionKind.Module
+      )!;
+      modulesGroup.title = 'Packages';
 
-  private onResolveEnd(context: Context) {
-    const modulesGroup = context.project.groups!.find(
-      (group) => group.kind === ReflectionKind.Module
-    )!;
-    modulesGroup.title = 'Packages';
+      for (const [pkgName, packageModule] of pkgRootReflections) {
+        // separate exports sub modules into a category
+        if (packageModule.categories) {
+          const subModuleCategory = new ReflectionCategory('Exports');
+          packageModule.categories.unshift(subModuleCategory);
 
-    for (const [pkgName, packageModule] of this.pkgRootReflections) {
-      // separate exports sub modules into a category
-      if (packageModule.categories) {
-        const subModuleCategory = new ReflectionCategory('Exports');
-        packageModule.categories.unshift(subModuleCategory);
+          const subModules = [...pkgExportsReflections.get(pkgName)!.values()];
+          subModuleCategory.children.push(...subModules);
 
-        const subModules = [
-          ...this.pkgExportsReflections.get(pkgName)!.values(),
-        ];
-        subModuleCategory.children.push(...subModules);
-
-        const otherCategory = packageModule.categories.find(
-          (category) => category.title === 'Other'
-        );
-        if (otherCategory) {
-          otherCategory.children = otherCategory.children.filter(
-            (reflection) =>
-              !subModules.includes(reflection as DeclarationReflection)
+          const otherCategory = packageModule.categories.find(
+            (category) => category.title === 'Other'
           );
+          if (otherCategory) {
+            otherCategory.children = otherCategory.children.filter(
+              (reflection) =>
+                !subModules.includes(reflection as DeclarationReflection)
+            );
+          }
         }
+
+        // attach package readme
+        const readme = fs.readFileSync(`./packages/${pkgName}/README.md`);
+        packageModule.comment = new Comment('', readme.toString());
       }
-
-      // attach package readme
-      const readme = fs.readFileSync(`./packages/${pkgName}/README.md`);
-      packageModule.comment = new Comment('', readme.toString());
-    }
-  }
+    },
+  });
 }
-
-Component({ name: 'module-mapping' })(ModuleMappingPlugin);
-
-module.exports = (pluginHost) => {
-  const app = pluginHost.owner;
-  app.converter.addComponent('module-mapping', ModuleMappingPlugin);
-};
