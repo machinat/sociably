@@ -14,85 +14,183 @@ const features = [
     title: 'One App for All Platforms',
     description: (
       <>
-        Today businesses are doing marketing and customer services through many
-        conversational platforms, from <i>Email</i>, <i>Instant Messaging</i> to
-        <i>Social Medias</i> to <i>Voice Assistance</i>.
+        Businesses communicate to users on many chat platforms.
         <br />
-        Develop a chat app with Machinat once, then you can ship services over
-        all these channels and reach more users.
+        Machinat makes <strong>Chat UI/UX</strong> for all of them.
+        <div className={styles.platformArea}>
+          <div className={styles.platformBox}>
+            <div className={styles.platformBoxLabel}>Currently support:</div>
+            <div className={styles.platformIconContainer}>
+              {['messenger', 'telegram', 'line'].map((platform) => (
+                <div className={styles.platformIcon}>
+                  <img src={`img/icon/${platform}.png`} />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={styles.platformBox}>
+            <div className={styles.platformBoxLabel}>More in the future:</div>
+            <div className={styles.platformIconContainer}>
+              {[
+                'twitter',
+                'whatsapp',
+                'instagram',
+                'facebook',
+                'discord',
+                'slack',
+                'reddit',
+                'youtube',
+                'twitch',
+                'wechat',
+                'google-assistant',
+                'alexa',
+                'email',
+                'sms',
+                'browser',
+                'ios',
+                'android',
+              ].map((platform) => (
+                <div className={styles.platformIcon}>
+                  <img src={`img/icon/${platform}.png`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </>
     ),
   },
   {
-    title: 'Hybrid of Chat and Web UI',
+    title: 'Webview in Chat',
     description: (
       <>
-        Conversational UI is easy to access, but not as functional as graphical
-        UI. With Machinat, you can have both advantages by opening an embeded
-        webview in the chatroom.
-        <br />
-        The Hybrid App can improve the experience of complex actions and provide
-        more enriched features.
+        Serve amazing features in a <i>cross-platform</i> webview.
       </>
     ),
+    image: 'img/webview.webp',
   },
   {
-    title: 'Declarative API for Omni-Channel Experiences',
+    title: 'Declarative Chat UI',
     description: (
       <>
-        Machinat use JSX API like React to contstruct chat UI in declarative
-        views. The view is composed by flexible components, which allows you
-        modify the expression while rendering.
-        <br />
-        This helps to build aligned and integrated experiences across diverse
-        channels, and meanwhile make optimization for every platform.
+        Make <i>messages, actions, pauses</i> in one JSX view.
       </>
     ),
+    image: 'img/expression-view.webp',
   },
   {
-    title: 'Natural Marketing with Social Network',
+    title: 'UI Component',
     description: (
       <>
-        Machinat app built on <i>Instant Messaging</i> and <i>Social Media</i>
-        has native potential to go viral.
-        <br />
-        Adding features to allow your app to be used in group chat or community.
-        Users would be glad to share proactively, and the app can be marketed
-        automatically by itself.
+        Modulize <i>chat UI</i> and reuse them with ease.
       </>
     ),
+    image: 'img/component.webp',
   },
   {
-    title: 'Open-Source, Pluginable and Extensible',
+    title: 'Dialog Script',
     description: (
       <>
-        Machinat framework is and will be open-source. No worry about being
-        bound to specific infrastructure provider.
-        <br />
-        It's also easy to develop plugins, UI components, or even your own
-        event-based platforms.
-        <br />
-        Enjoy the ecosystem without any restriction!
+        <i>Program</i> dynamic chat flows in codes.
+      </>
+    ),
+    image: 'img/script.webp',
+  },
+  {
+    title: 'Dialog as a Module',
+    description: (
+      <>
+        <i>Reuse</i> chat flows to build complex dialogs.
+      </>
+    ),
+    image: 'img/subscript.webp',
+  },
+  {
+    title: 'Cross-Platform',
+    description: (
+      <>
+        Make <i>the best UI/UX</i> on every platform.
+      </>
+    ),
+    image: 'img/cross-platform.webp',
+  },
+  {
+    title: 'Easy and Fast',
+    description: (
+      <>
+        Init app in <i>1 command</i>. Start developing in <i>1 minute</i>.
+      </>
+    ),
+    image: 'img/start-dev.webp',
+  },
+  {
+    title: 'And More ...',
+    description: (
+      <>
+        <li>100% open-sourced.</li>
+        <li>Pure programming solution.</li>
+        <li>Elegant DI system.</li>
+        <li>
+          Manage <i>chat state</i> with ease.
+        </li>
+        <li>
+          Use any <i>intent recognition</i> service.
+        </li>
+        <li>
+          <i>Reactive programming</i> styled workflow.
+        </li>
+        <li>
+          <i>Progressive</i> and <i>extensible</i> design.
+        </li>
       </>
     ),
   },
 ];
 
-function Feature({ title, description }) {
+function Feature({ title, description, image }) {
   return (
-    <section className={styles.featureContainer}>
-      <div className="container">
-        <div className="row">
-          <div className={clsx('col col--7', styles.zzz)}>
-            <h3 className={styles.featureTitle}>{title}</h3>
-            <p className={styles.featureContent}>{description}</p>
-          </div>
-          <div className={clsx('col col--5', styles.xxx)}></div>
+    <section>
+      <div className={styles.featureContainer}>
+        <div className={styles.featureBox}>
+          <h3 className={styles.featureTitle}>{title}</h3>
+          <p className={styles.featureContent}>{description}</p>
+          {image && <img src={image} className={styles.featureImage} />}
         </div>
       </div>
     </section>
   );
 }
+
+const LinkButton = ({ children, path }) => (
+  <Link
+    className={clsx(
+      'button button--outline button--secondary button--lg',
+      styles.button
+    )}
+    to={useBaseUrl(path)}
+  >
+    {children}
+  </Link>
+);
+
+const GithubButton = () => (
+  <Link
+    className={clsx(
+      'button button--outline button--secondary button--lg',
+      styles.button
+    )}
+    to="https://github.com/machinat/machinat"
+  >
+    GitHub
+    <ThemedImage
+      className={styles.buttonGitHubImage}
+      sources={{
+        light: 'img/github-mark.png',
+        dark: 'img/github-mark-light.png',
+      }}
+    />
+  </Link>
+);
 
 function Home() {
   const context = useDocusaurusContext();
@@ -128,32 +226,9 @@ function Home() {
           </div>
 
           <div className={styles.buttonsContainer}>
-            <Link
-              className={clsx(
-                'button button--outline button--secondary button--lg',
-                styles.button
-              )}
-              to={useBaseUrl('docs/')}
-            >
-              Get Started
-            </Link>
+            <LinkButton path="docs/">Get Started</LinkButton>
             <div className={styles.buttonSpacer} />
-            <Link
-              className={clsx(
-                'button button--outline button--secondary button--lg',
-                styles.button
-              )}
-              to="https://github.com/machinat/machinat"
-            >
-              GitHub
-              <ThemedImage
-                className={styles.buttonGitHubImage}
-                sources={{
-                  light: 'img/github-mark.png',
-                  dark: 'img/github-mark-light.png',
-                }}
-              />
-            </Link>
+            <GithubButton />
           </div>
         </div>
       </header>
@@ -161,6 +236,20 @@ function Home() {
       <main>
         {features &&
           features.map((props, idx) => <Feature key={idx} {...props} />)}
+
+        <section>
+          <div className={styles.tryArea}>
+            <h3 className={styles.tryTitle}>Get Started Today</h3>
+
+            <div className={styles.buttonsContainer}>
+              <LinkButton path="docs/">Document</LinkButton>
+              <div className={styles.buttonSpacer} />
+              <LinkButton path="docs/learn">Tutorial</LinkButton>
+              <div className={styles.buttonSpacer} />
+              <GithubButton />
+            </div>
+          </div>
+        </section>
       </main>
     </Layout>
   );

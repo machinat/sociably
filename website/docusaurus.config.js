@@ -28,11 +28,11 @@ module.exports = {
           activeBasePath: 'docs/learn',
           position: 'right',
         },
-        {
-          label: 'Blog',
-          to: 'blog',
-          position: 'right',
-        },
+        // {
+        //   label: 'Blog',
+        //   to: 'blog',
+        //   position: 'right',
+        // },
         {
           label: 'API',
           href: 'pathname:///api',

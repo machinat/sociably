@@ -5,6 +5,11 @@
  * and scoped locally.
  */
 
+ @font-face {
+  font-family: 'Ubuntu Thin';
+  src: url('/font/Ubuntu-Th.ttf') format('truetype');
+}
+
 .heroBanner {
   padding: 4rem 0;
   text-align: center;
@@ -37,9 +42,109 @@
 }
 
 .heroSubtitle {
+  font-family: 'Ubuntu Thin', 'Ubuntu', sans-serif;
   font-weight: lighter;
   font-size: 3rem;
   margin-top: 0.5rem;
+}
+
+.buttonsContainer {
+  margin-top: 3em;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  display: flex;
+}
+
+.buttonSpacer {
+  width: 4rem;
+  margin: -5px;
+  flex-shrink: 5;
+}
+
+.buttonGitHubImage {
+  margin-left: 8px;
+  width: 25px;
+  height: 25px;
+}
+
+.platformArea {
+  display: flex;
+  flex-direction: row;
+  margin: 1rem 0;
+}
+
+.platformBox {
+  background-color: rgba(125,125,125,0.3);
+  border-radius: 15px;
+  margin-right: 20px;
+}
+
+.platformBoxLabel {
+  font-size: 0.8em;
+  margin-left: 12px;
+}
+
+.platformIconContainer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  min-width: 200px;
+  min-height: 70%;
+  padding: 5px;
+}
+
+.platformIcon {
+  width: 60px;
+  margin: 5px;
+}
+
+.featureContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  width: 100%;
+  min-height: 70vh;
+}
+
+.featureBox {
+  max-width: 700px;
+}
+
+.featureTitle {
+  font-weight: 300;
+  font-size: 2.5rem;
+}
+
+.featureContent {
+  font-weight: 300;
+  font-size: 1.5rem;
+}
+
+.featureImage {
+}
+
+.tryArea {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  min-height: 60vh;
+  background: linear-gradient(to bottom, rgba(14, 0, 83, 0.5) 20%, rgba(0, 143, 175, 0.5));
+}
+
+.tryTitle {
+  font-family: 'Ubuntu Thin', 'Ubuntu', sans-serif;
+  font-size: 3rem;
 }
 
 @media screen and (max-width: 700px) {
@@ -58,6 +163,10 @@
 
   .heroSubtitle div {
     display: inline;
+  }
+
+  .platformIconContainer {
+    min-width: 100px;
   }
 }
 
@@ -79,49 +188,17 @@
   .heroLogo {
     display: none !important;
   }
-}
 
-.buttonsContainer {
-  margin-top: 3em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .platformIconContainer {
+    min-width: 60px;
+  }
 
-.button {
-  display: flex;
-}
+  .platformIcon {
+    width: 40px;
+    margin: 4px;
+  }
 
-.buttonSpacer {
-  width: 2rem;
-  flex-shrink: 6;
-}
-
-.buttonGitHubImage {
-  margin-left: 8px;
-  width: 25px;
-  height: 25px;
-}
-
-.featureContainer {
-  display: flex;
-  align-items: center;
-  padding: 2rem 0;
-  width: 100%;
-  min-height: 70vh;
-}
-
-.featureTitle {
-  font-weight: 300;
-  font-size: 2.5rem;
-}
-
-.featureContent {
-  font-weight: 300;
-  font-size: 1.5rem;
-}
-
-.featureImage {
-  height: 200px;
-  width: 200px;
+  .platformBoxLabel {
+    margin-left: 5px;
+  }
 }

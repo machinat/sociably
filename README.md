@@ -14,58 +14,58 @@ Machint framework builds _cross-platfrom, feature-rich and intelligent **apps**_
 </details>
 
 <details>
-  <summary><i>100%</i> programming solution. Say goodbye to no-code tools.</summary>
+  <summary><i>100%</i> open-sourced solution in programming.</summary>
 </details>
 
 <details>
-  <summary>Extend an embeded <b>webview</b> in the chat. <i>(demo ▾)</i></summary>
-  <img height="480" src="./media/webview.webp" />
+  <summary>Extend an embeded <b>webview</b> in chat. <i>(demo ▾)</i></summary>
+  <img height="480" src="./website/static/img/webview.webp" />
 </details>
 
 <details>
-  <summary>Build dynamic chat UI in <b>JSX</b>. <i>(demo ▾)</i></summary>
-  <img height="480" src="./media/expression-view.webp" />
+  <summary>Declarative chat UI in <b>JSX</b>. <i>(demo ▾)</i></summary>
+  <img height="480" src="./website/static/img/expression-view.webp" />
 </details>
 
 <details>
-  <summary>Reuse chat UI logic with <b>Components</b>. <i>(demo ▾)</i></summary>
-  <img height="480" src="./media/component.webp" />
+  <summary>Reuse chat UI with <b>Components</b>. <i>(demo ▾)</i></summary>
+  <img height="480" src="./website/static/img/component.webp" />
 </details>
 
 <details>
   <summary>Program chat flows in <b>Dialog Script</b>. <i>(demo ▾)</i></summary>
-  <img height="480" src="./media/script.webp" />
+  <img height="480" src="./website/static/img/script.webp" />
 </details>
 
 <details>
-  <summary>Reuse chat flows to make complex conversations. <i>(demo ▾)</i></summary>
-  <img height="480" src="./media/subscript.webp" />
+  <summary>Reuse chat flows to build complex dialogs. <i>(demo ▾)</i></summary>
+  <img height="480" src="./website/static/img/subscript.webp" />
 </details>
 
 <details>
   <summary>Optimize UI/UX for every platform. <i>(demo ▾)</i></summary>
-  <img height="480" src="./media/cross-platform.webp" />
+  <img height="480" src="./website/static/img/cross-platform.webp" />
 </details>
 
 <details>
-  <summary>Init app in <b>1</b> command. Start development in <b>1</b> minute. <i>(demo ▾)</i></summary>
-  <img height="480" src="./media/start-dev.webp" />
+  <summary>Init app in <b>1</b> command. Start developing in <b>1</b> minute. <i>(demo ▾)</i></summary>
+  <img height="480" src="./website/static/img/start-dev.webp" />
 </details>
 
 <details>
-  <summary>Access chat/user/global state data with ease.</summary>
+  <summary>Access chat/user/global state with ease.</summary>
 </details>
 
 <details>
-  <summary>Elegant <i>dependency injection</i> system.</summary>
+  <summary>Elegant <i>DI</i> system.</summary>
 </details>
 
 <details>
-  <summary>Maintain intents recognition data in the project.</summary>
+  <summary>Use any <i>intent recognition</i> service.</summary>
 </details>
 
 <details>
-  <summary>Control workflow with <i>reactive-programming</i> style streams.</summary>
+  <summary><i>Reactive programming</i> styled workflow.</summary>
 </details>
 
 <details>
