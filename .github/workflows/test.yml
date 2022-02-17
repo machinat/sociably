@@ -7,13 +7,12 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [16.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -22,6 +21,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - uses: testspace-com/setup-testspace@v1
+      with:
+        domain: ${{github.repository_owner}}
     - run: npm ci --ignore-scripts
     - run: npm run build
-    - run: npm test
+    - run: npm test -- --ci --reporters=default --reporters=jest-junit
+    - name: Publish Results to Testspace
+      run: testspace [${{ matrix.os}}]./junit.xml
