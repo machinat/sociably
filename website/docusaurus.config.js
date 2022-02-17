@@ -8,6 +8,7 @@ module.exports = {
   favicon: 'img/favicon.ico',
   organizationName: 'machinat',
   projectName: 'machinat.github.io',
+  deploymentBranch: 'master',
   themeConfig: {
     navbar: {
       logo: {
@@ -65,10 +66,10 @@ module.exports = {
         {
           title: 'More',
           items: [
-            {
-              label: 'Blog',
-              to: 'blog',
-            },
+            // {
+            //   label: 'Blog',
+            //   to: 'blog',
+            // },
             {
               label: 'GitHub',
               href: 'https://github.com/machinat/machinat',
@@ -87,11 +88,11 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/machinat/machinat/edit/master/website/',
         },
-        blog: {
-          showReadingTime: true,
-          editUrl:
-            'https://github.com/machinat/machinat/edit/master/website/blog/',
-        },
+        // blog: {
+        //   showReadingTime: true,
+        //   editUrl:
+        //     'https://github.com/machinat/machinat/edit/master/website/blog/',
+        // },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
