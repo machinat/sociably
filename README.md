@@ -3,6 +3,19 @@
   <br/>
 </h1>
 
+<div align="center">
+  <a href="#platforms">
+    <img src="https://img.shields.io/badge/chat_platforms-3-red?style=for-the-badge" />
+  </a>
+  <a href="https://machinat.testspace.com/projects/66804/spaces">
+    <img src="https://img.shields.io/testspace/tests/machinat/machinat:machinat/master?compact_message&style=for-the-badge" />
+  </a>
+  <a href="https://www.npmjs.com/package/@machinat">
+    <img src="https://img.shields.io/npm/v/@machinat/core?style=for-the-badge&color=blue" />
+  </a>
+  <img src="https://img.shields.io/npm/l/@machinat/core?style=for-the-badge" />
+</div>
+
 ## Next-Gen Conversational App
 
 Machint framework builds _cross-platfrom, feature-rich and intelligent **apps**_ in the social network.
@@ -74,12 +87,12 @@ Machint framework builds _cross-platfrom, feature-rich and intelligent **apps**_
 
 ## Get Started
 
-Follow our [tutorial](https://machinat.com/docs/learn/)
-to create your first conversational app.
+Follow [the tutorial](https://machinat.com/docs/learn/)
+to create a production-ready conversational app.
 
 ## Install
 
-Initiate an project with the command:
+Create a Machinat project with the command:
 
 ```bash
 npm init @machinat/app@latest -- -p <platform> [-p ...] my-project
@@ -101,37 +114,77 @@ yarn create @machinat/app -- -p <platform> [-p ...] my-project
 
 ## Platforms
 
-For now we suppot 3 chat platforms: [Messenger](https://www.messenger.com/), [Telegram](https://telegram.org/) and [LINE](https://line.me/).
-In the future, we'll cover all the messaging platforms, including SMS, e-mail, WhatsApp, Twitter, Instagram, Slack, Discord and even voice assistants.
+Machinat is designed to support ALL the conversational platforms.
+
+##### Currently supported:
+<div>
+  <a href="https://messenger.com">
+    <img width="50px" src="./website/static/img/icon/messenger.png" />
+  </a>
+  <a href="https://telegram.org">
+    <img width="50px" src="./website/static/img/icon/telegram.png" />
+  </a>
+  <a href="https://line.me">
+    <img width="50px" src="./website/static/img/icon/line.png" />
+  </a>
+</div>
+<br/>
+
+##### Scheduled in road map:
+<div>
+  <a href="https://twitter.com">
+    <img width="50px" src="./website/static/img/icon/twitter.png" />
+  </a>
+  <a href="https://instagram.com">
+    <img width="50px" src="./website/static/img/icon/instagram.png" />
+  </a>
+  <a href="https://whatsapp.com">
+    <img width="50px" src="./website/static/img/icon/whatsapp.png" />
+  </a>
+  <a href="https://facebook.com">
+    <img width="50px" src="./website/static/img/icon/facebook.png" />
+  </a>
+  <a href="https://discord.com">
+    <img width="50px" src="./website/static/img/icon/discord.png" />
+  </a>
+  <a href="https://slack.com">
+    <img width="50px" src="./website/static/img/icon/slack.png" />
+  </a>
+  <a href="https://reddit.com">
+    <img width="50px" src="./website/static/img/icon/reddit.png" />
+  </a>
+  <img width="50px" src="./website/static/img/icon/email.png" />
+  <img width="50px" src="./website/static/img/icon/browser.png" />
+  <img width="50px" src="./website/static/img/icon/sms.png" />
+</div>
 
 ## Examples
 
 Here are some simple but production-ready examples:
 
-- [Note Example](https://github.com/machinat/note-example) - taking note in chat.
+- [Note Example](https://github.com/machinat/note-example) - taking notes in chat.
 - [Todo Example](https://github.com/machinat/todo-example) - managing todos in chat.
 - [Pomodoro Eample](https://github.com/machinat/pomodoro-example) - a pomodoro timer in chat.
 - [4digits Example](https://github.com/machinat/4digits-example) - playing guessing 4 digits game in chat.
 
-## Comparation
+## Comparison
 
 |   | Machinat | Dialogflow | BotFramework | Botpress | Rasa |
 |---|---|---|---|---|---|
-| Open-Sourced | ✓ |   |   | ✓ | ✓ |
-| Cross-Platform | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Use All Features<br/>from Platforms | ✓ |   |   |   |   |
-| Use Rich Chat UI | ✓ |   | ✓ | ✓ |   |
+| Open-sourced | ✓ |   |   | ✓ | ✓ |
+| Cross-platform | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Use all features<br/>from platforms | ✓ |   |   |   |   |
+| Use rich chat UI | ✓ |   | ✓ | ✓ |   |
 | Dynamic UI<br/>in Codes | ✓ |   | ✓ |   |   |
 | Modulizable UI | ✓ |   |   |   |   |
-| Intent Recognition | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Choose Recognition<br/>Provider | ✓ |   |   | ✓ |   |
-| Conversation Flows | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Dynamic Flows<br/>in Codes | ✓ |   | ✓ |   |   |
-| Use State | ✓ |   | ✓ | ✓ |   |
+| Intent recognition | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Choose recognition<br/>provider | ✓ |   |   | ✓ |   |
+| Conversation flows | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Dynamic flows<br/>in codes | ✓ |   | ✓ |   |   |
+| Use state | ✓ |   | ✓ | ✓ |   |
 | Webview | ✓ |   |   |   |   |
 | Extensibility | ✓ |   |   | ✓ |   |
-| Fully Control<br/>the Deployment | ✓ |   |   | ✓ | ✓ |
+| Fully controled<br/>deployment | ✓ |   |   | ✓ | ✓ |
 
-## License
-
-MIT
+> [Let us know](https://github.com/machinat/machinat/issues/new)
+> if any mistake in the comparison chart.
