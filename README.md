@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/npm/l/@machinat/core?style=for-the-badge" />
 </div>
 
-## Next-Gen Conversational App
+## The _In-Chat App_
 
 Machint framework builds _cross-platfrom, feature-rich and intelligent **apps**_ in the social network.
 

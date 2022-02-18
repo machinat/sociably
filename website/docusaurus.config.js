@@ -1,6 +1,6 @@
 module.exports = {
-  title: 'Machinat | Next-Gen Chat Framework',
-  tagline: 'Build Chat App on ALL Conversational Platforms',
+  title: 'Machinat | In-Chat App Framework',
+  tagline: 'Build In-Chat App for All Chat Platforms',
   url: 'https://machinat.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
