@@ -4,29 +4,28 @@ import type { CreateAppContext } from '../types';
 export const name = '.env.example';
 
 export default ({ platforms, recognizer }: CreateAppContext) => `
-# NOTICE! This file is an example for references.
+# NOTICE! This file is an example for reference.
 # DO NOT save any secret data here!
-# Your real settings should go to \`.env\` file.
+# The real settings should go to \`.env\` file.
 
 # Basic Setting
 
-# App running environment, "production", "staging", "development", etc.
+# app environment, "production", "staging", "development", etc.
 NODE_ENV= development
 
-# Subdomain to request a https tunnel during development
-DEV_TUNNEL_SUBDOMAIN= <your special subdomain>
+# subdomain of the HTTP tunnel. It's only needed in development.
+DEV_TUNNEL_SUBDOMAIN= your-special-subdomain
 
-# Domain name of your webhook server. You can use Machinat's localtunnel service
-# in development.
-DOMAIN= <value of DEV_TUNNEL_SUBDOMAIN>.t.machinat.dev
+# domain name of the server.
+# use {DEV_TUNNEL_SUBDOMAIN}.t.machinat.dev in development.
+DOMAIN= your-special-subdomain.t.machinat.dev
 
-# Local http server port
+# local server port
 PORT=8080
 
 ${when(platforms.includes('messenger'))`
 # Messenger Settings
-#
-#   Configure an app and a page for your bot:
+#   Create a Facebook app and a Facebook page for your bot:
 #   1. Visit https://developers.facebook.com/apps and create an app.
 #   2. Use Messneger in you app, go to:
 #     App Dashboard Page > Add a Product > Messenger > Set Up
@@ -36,69 +35,67 @@ ${when(platforms.includes('messenger'))`
 #     Messenger Setting Page > Access Tokens > Add or Remove Pages
 #   5. Press "Generate Token" at the connected page to get the token
 
-# Page access token, available at: Messenger Setting Page > Access Tokens > Tokens
+# page access token, available at: Messenger Setting Page > Access Tokens > Tokens
 MESSENGER_ACCESS_TOKEN= AaBbCcDdEe12345...
 
-# Page id, available at: Messenger Setting Page > Access Tokens > Pages
+# page id, available at: Messenger Setting Page > Access Tokens > Pages
 MESSENGER_PAGE_ID= 1234567890
 
-# App id, available at: App Dashboard > Settings > Basic > App ID
+# app id, available at: App Dashboard > Settings > Basic > App ID
 MESSENGER_APP_ID= 1234567890
 
-# App secret, available at: App Dashboard > Settings > Basic > App Secret
+# app secret, available at: App Dashboard > Settings > Basic > App Secret
 MESSENGER_APP_SECRET= abcde12345...
 
-# Random token for webhook verification
+# random token for webhook verification
 MESSENGER_VERIFY_TOKEN= <random secret string>
 `}${when(platforms.includes('telegram'))`
 
 # Telegram Settings
-#
 #   Go to @BotFather (https://t.me/botfather) and send '/newbot' to create a bot.
 
-# Bot token
+# bot token from the BotFather
 TELEGRAM_BOT_TOKEN= 123456:AaBbCc12345...
 
-# Bot name
+# bot username
 TELEGRAM_BOT_NAME= my_bot
 
-# Secret path string to protect webhook
+# a secret string to protect webhook
 TELEGRAM_SECRET_PATH= <random secret string>
 `}${when(platforms.includes('line'))`
 
 # LINE Settings
-#
-#   Create a Provider and a Messaging API Channel at https://developers.line.biz/console/
+#   1. Create a \`Provider\` and a \`Messaging API Channel\` at https://developers.line.biz/console/
+#   2. Create a LIFF app in a \`LINE Login Channel\` under the same provider.
 
-# Provider id, available at: Provider Page > Settings > Provider ID
+# provider id, available at: Provider Page > Settings > Provider ID
 LINE_PROVIDER_ID= 1234567890
 
-# Channel id, available at: Channel Page > Basic settings > Channel ID
+# channel id, available at: Channel Page > Basic settings > Channel ID
 LINE_CHANNEL_ID= 1234567890
 
-# Channel access token, available at: Channel Page > Messaging API > Channel access token 
+# channel access token, available at: Channel Page > Messaging API > Channel access token 
 LINE_ACCESS_TOKEN= AaBbCcDdEe12345...
 
-# Channel secret, available at: Channel Page > Basic settings > Channel secret
-LINE_CHANNEL_SECRET = abcdef123456...${when(platforms.includes('webview'))`
+# channel secret, available at: Channel Page > Basic settings > Channel secret
+LINE_CHANNEL_SECRET = abcdef123456...
 
 # LIFF id for webview, available at: Login Channel Page > LIFF
-# You have to create a separated LINE Login channel under the same provider.
 LINE_LIFF_ID= 1234567890-abcd1234
-`}`}${when(platforms.includes('webview'))`
+`}${when(platforms.includes('webview'))`
 
 # Webview Settings
 
-# Secret for signing auth cookies
+# secret for signing auth token
 WEBVIEW_AUTH_SECRET= <random secret string>
 `}${when(recognizer === 'dialogflow')`
 
 # Dialogflow Settings
-#
 #   Follow this guide to prepare GCP auth https://cloud.google.com/dialogflow/es/docs/quick/setup
 
-# GCP project to connect Dialogflow with
-DIALOGFLOW_PROJECT_ID= <gcp project id>
-# Path to the GCP credential file
-GOOGLE_APPLICATION_CREDENTIALS= <credential location>`}
+# GCP project to connect Dialogflow
+DIALOGFLOW_PROJECT_ID= my-project
+
+# path to the account credential file
+GOOGLE_APPLICATION_CREDENTIALS= /path/to/credential.json`}
 `;
