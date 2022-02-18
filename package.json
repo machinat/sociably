@@ -7,8 +7,7 @@
     "lint": "eslint --ext .js,.ts,.tsx ./packages/*/src",
     "prettier": "prettier -w './packages/*/src/**/*.{ts,tsx}'",
     "test": "jest",
-    "prepare": "husky install",
-    "version": "npm install --package-lock-only && git add package-lock.json"
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
