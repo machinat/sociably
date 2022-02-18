@@ -8,7 +8,7 @@ import type {
 import { ConfigsI } from './interface';
 import { RegexRecognitionConfigs } from './types';
 
-const SPECIAL_CHARACTER = '&!?+-_.,;`\'"/';
+const SPECIAL_CHARACTER = '&!?+\\-_.,;`\'"/';
 const specialCharacterMatcher = new RegExp(`[${SPECIAL_CHARACTER}]`, 'g');
 
 export class RegexIntentRecognizer<
