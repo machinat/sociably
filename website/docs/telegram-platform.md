@@ -108,18 +108,14 @@ To use [webviews](./embedded-webview) in Telegram,
 configure the app with these steps:
 
 1. Send `/setdomain` command to [@Botfather](https://t.me/botfather) to register the domain of your bot.
-2. Set up `webview` platform like this:
+2. Add the auth provider to `webview` platform. Like:
 
-```ts {13}
+```ts
 import Webview from '@machinat/webview';
 import TelegramAuth from '@machinat/telegram/webview';
 
 const app = Machinat.createApp({
-  modules: [
-    Http.initModule({ port: 8080 }),
-  ],
   platforms: [
-    Telegram.initModule({ /* ... */ }),
     Webview.intiModule({
       authPlatforms: [
         TelegramAuth

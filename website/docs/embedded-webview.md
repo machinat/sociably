@@ -3,11 +3,17 @@ title: Embedded Webview
 ---
 
 :::info
-This document assumes you know basic usage about Next.js and React.js.
+This document assumes you know the basic usage of _Next.js_ and _React.js_.
 You can learn more about them here:
 
 - [React.js](https://reactjs.org/docs/getting-started.html) - A JavaScript library for building user interfaces.
 - [Next.js](https://nextjs.org/docs/getting-started) - The React Framework for Production.
+:::
+
+:::warning
+There is [a Facebook bug](https://developers.facebook.com/support/bugs/294949372549147)
+that breaks webviews on the **Messenger website** client.
+If your app is on Messenger, test it with the **mobile app**.
 :::
 
 Chat UI brings a new way to communicate with users,
@@ -528,4 +534,3 @@ module.exports = {
   },
 };
 ```
-

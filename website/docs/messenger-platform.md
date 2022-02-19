@@ -96,30 +96,27 @@ and [components](https://machinat.com/api/modules/messenger_components).
 
 ## Webview
 
-### Setup Auth
+:::warning
+There is [a Facebook bug](https://developers.facebook.com/support/bugs/294949372549147)
+that breaks the webview on the **Messenger website** client.
+You have to test your app with the **mobile app**.
+:::
+
+### Auth Setup
 
 To use [webviews](./embedded-webview) in Messenger,
 configure the app with these steps:
 
-1. Add server domain to [`whitelisted_domains`](https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/domain-whitelisting)
+1. Add the server domain to [`whitelisted_domains`](https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/domain-whitelisting)
   of the page.
-2. Set up webview platform like this:
+2. Add the auth provider to `webview` platform. Like:
 
-```ts {1-2,6,18}
+```ts
 import Webview from '@machinat/webview';
 import MessengerAuth from '@machinat/messenger/webview';
 
-const {
-  //...
-  MESSENGER_APP_ID,
-} = process.env;
-
 const app = Machinat.createApp({
-  modules: [
-    Http.initModule({ port: 8080 }),
-  ],
   platforms: [
-    Messenger.initModule({/* ... */}),
     Webview.initModule({
       authPlatforms:[
         MessengerAuth

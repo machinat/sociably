@@ -105,19 +105,14 @@ configure the app with these steps:
    Like `https://your.server.domain/webview?platform=line`.
 2. Set up `line` and `webview` platform like this:
 
-```ts {1-2,6,16,21}
+```ts
 import Webview from '@machinat/webview';
+import Line from '@machinat/line';
 import LineAuth from '@machinat/line/webview';
 
-const {
-  // ...
-  LINE_LIFF_ID,
-} = process.env;
+const { LINE_LIFF_ID } = process.env;
 
 const app = Machinat.createApp({
-  modules: [
-    Http.initModule({ port: 8080 }),
-  ],
   platforms: [
     Line.initModule({
       // add the login channel id
@@ -126,6 +121,7 @@ const app = Machinat.createApp({
     }),
     Webview.initModule({
       authPlatforms: [
+        // add the auth provider
         LineAuth,
       ]
       // ...
