@@ -2,15 +2,15 @@
 title: Components for Chat UI
 ---
 
-While the app grows, you'll need to reuse UI to build more features and experiences.
+While the app grows, you'll need to reuse the UI for making more features and experiences.
 You can split parts of the chat UI into **Components** for reusing them.
 
-Components helps to keep your code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+Component helps to keep your code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
 This is important while building a complex and feature-rich app.
 
 ## Functional Components
 
-A component is simply a function that returns a part of chat UI.
+A component is simply a function that returns a part of the chat UI.
 It can be used as the element tag like:
 
 ```jsx
@@ -40,12 +40,12 @@ bot.render(
 ```
 
 The name of a component must be **capitalized**.
-An element with uncapitalized tag is treated as a general element.
+An element with an uncapitalized tag is treated as a general element.
 
 ### Component Props
 
-A component function receive the **props** object.
-The props is taken from the attributes of the element.
+A component function receive the **props** object,
+which is taken from the attributes of the element.
 For example:
 
 ```jsx
@@ -62,13 +62,13 @@ bot.render(
 );
 ```
 
-In the above codes, we to pass `"John Doe"` to the `name` prop.
+In the above codes, we pass `"John Doe"` to the `name` prop.
 The dynamic `props.name` value is then used to generate UI in the component.
 
 ### `children` Prop
 
 An element can contain children nodes.
-They are available as `children` prop in the component.
+They are available as the `children` prop in the component.
 For example:
 
 ```jsx
@@ -122,7 +122,7 @@ function Welcome({ name }) {
 bot.render(channel, <Welcome name="Jojo" />);
 ```
 
-We can use components to modulize chat UI at many levels,
+We can use components to modularize chat UI at many levels,
 from the word choices to the whole expression.
 This helps to optimize user experiences .
 
@@ -171,4 +171,4 @@ function AskForOrder(props, { platform }) {
 We can return different native components according to it.
 
 At the end of the function, we can add a default UI using only general elements.
-This ensure the component can be used on all the platforms.
+This ensures the component can be used on all the platforms.

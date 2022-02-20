@@ -31,7 +31,7 @@ It does these three things in the background:
 
 1. Host a web app with [Next.js](https://nextjs.org).
 2. Log in users with their chat platforms account.
-3. Connect a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) communicate with the server.
+3. Connect a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) to communicate with the server.
 
 ## Install With Creator
 
@@ -68,7 +68,7 @@ For example, it takes an `UrlButton` with `messengerExtensions` in Messenger:
 </Messenger.ButtonTemplate>
 ```
 
-With the codes above, the webview will be opened in Messenger app if the `UrlButton` is tapped.
+With the codes above, the webview will be opened in the Messenger app if the `UrlButton` is tapped.
 Check the document of each platform for details.
 
 - [Messenger](./messenger-platform#open-the-webview)
@@ -77,8 +77,8 @@ Check the document of each platform for details.
 
 ### Determine the `platform`
 
-Somtimes you might want to decide which patform to log in,
-for example, when an user opens the web page in the browser.
+Sometimes you might want to decide which platform to log in,
+for example, when a user opens the web page in the browser.
 It's determined in this order:
 
 1. The `platform` option while constructing `WebviewClient`. For example:
@@ -107,7 +107,7 @@ The webview page and the server can communicate to each other through a `WebSock
 
 ### Receive Events from Server
 
-On client-side, you can use `client.onEvent(listener)` to subscribe events from server. Like this:
+On the client-side, you can use `client.onEvent(listener)` to subscribe events from the server. Like this:
 
 ```js
 client.onEvent(({ event }) => {
@@ -126,7 +126,7 @@ The listener receive an event context object with following info:
   - `category` - `string`, event category.
   - `type` - `string`, event type.
   - `user` - `object`, the logged-in user
-  - `channel` - `object`, the connection to server.
+  - `channel` - `object`, the connection to the server.
 - `auth` - `object`, auth info.
   - `platform` - `string`, authenticating platform.
   - `user` - `object`, the logged-in user.
@@ -169,7 +169,7 @@ The `eventObj` take these properties:
 - `type` - required, `string`, the event type.
 - `payload` - optional, `any`, the value will be serialized and sent to the server.
 
-You don't have to wait `'connect'` event for sending.
+You don't have to wait for `'connect'` to send events.
 The events sent before it are queued,
 and they'll be delivered after it's connected.
 
@@ -219,7 +219,7 @@ It's useful to maintain the _real-time_ app data.
 
 ### Receiving Events
 
-On server-side, events from client are received as ordinary event context.
+On the server-side, events from the client are received as ordinary event context.
 For example, this respond the previous client example:
 
 ```js
@@ -255,7 +255,7 @@ The webview event context contains the following info:
   - `category` - `string`, event category.
   - `type` - `string`, event type.
   - `user` - `object`, the logged-in user.
-  - `channel` - `object`, the connection to client.
+  - `channel` - `object`, the connection to the client.
 - `metadata` - `object`, meta info about the connection.
   - `source` - `'websocket'`.
   - `request` - `object`, http upgrade request info.
@@ -272,7 +272,7 @@ The `connect` and `disconnect` events are emitted on server-side too when the st
 
 ### Send Event to the Client
 
-The `bot.send(connection, eventObj)` method sends event back to the client.
+`bot.send(connection, eventObj)` method sends an event back to the client.
 It takes the same event object as `client.send(eventObj)`.
 
 ```js
@@ -308,7 +308,7 @@ Like:
 await bot.subscribeTopic(event.channel, 'topicName');
 ```
 
-Then yon can send events to all the connections that subscribe to a topic with `bot.sendTopic`.
+Then you can send events to all the connections that subscribe to a topic with `bot.sendTopic`.
 Like:
 
 ```js
@@ -345,11 +345,11 @@ await bot.unsubscribeTopic(event.channel, 'topicName');
 
 ### Interact With Chat
 
-The `metadata.auth.channel` refer to the chatroom where the user comes from.
-You can use it to provide features that extends the chat.
+`metadata.auth.channel` refers to the chatroom where the user comes from.
+You can use it to provide features that extend the chatting experience.
 
 With webviews, the bot can ship any features you can do in a web app.
-One common usage is filling complex input in the webview,
+One common usage is filling complicated input in the webview,
 like selecting a location on the map.
 
 #### Send Messages to Chat
@@ -489,13 +489,13 @@ client.onError(console.error);
 After the `client` is constructed, it'll do these two thing automatically:
 
 1. Log in user to the selected chat platform .
-2. Opens a `WebSocket` connection with server.
+2. Opens a `WebSocket` connection to the server.
 
 You can check more client options [here](pathname:///api/modules/webview_client.html#clientoptions).
 
 ### `authPlatforms` on Client
 
-The supported `authPlatforms` also need to added at the client.
+The supported `authPlatforms` also need to be added at the client.
 Check the guide of each platform for the details.
 
 - [Messenger](./messenger-platform#auth-setup)

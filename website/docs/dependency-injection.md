@@ -3,12 +3,14 @@ title: Dependency Injection
 ---
 
 While building an app, we may rely on many services to ship features.
-The dependent relationship of all the services could be complex,
+The dependent relationship between the services could be complex,
 especially for a cross-platform app.
 
 Machinat has a built-in [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
-system to help on that.
-Actually the whole framework is built upon the DI system too.
+system to help with that.
+Actually the whole framework is built upon the DI system.
+
+## Initiate Services
 
 When you create and start a Machinat app,
 a set of services are initiated to make the app works.
@@ -42,14 +44,14 @@ app.start();
 
 ### Register Modules
 
-The `modules` and `platforms` add services for a particular feature or platform.
+The `platforms` and `modules` options add services for a particular platform or functionality.
 For example, `Messenger.Bot` service is added by the `Messenger` platform.
 The bot instance is then created when `app.start()`.
 
 Machinat is made with _progressive framework_ paradigm.
 You can start with minimum modules and gradually add more when you need.
 
-Check [API references](pathname:///api) of the modules for the usage guides.
+Check [API references](pathname:///api) to see all the available modules.
 
 ## Use Services
 
@@ -78,7 +80,7 @@ Note that it should only be called after `app.start()` is finished.
 
 We can also require services as the params of a function,
 that is a **Service Container**.
-The `makeContainer` decorator annotate a JavaScript funcation as a container.
+The `makeContainer` decorator annotates a JavaScript function as a container.
 Like:
 
 ```js
@@ -98,7 +100,7 @@ The service instances `foo` and `bar` will be injected into the container when i
 
 ### Container Handler
 
-The `app.onEvent` and `app.onError` methods can accept a container of handler.
+The `app.onEvent` and `app.onError` methods can accept a container of the handler.
 For example:
 
 ```js
@@ -142,7 +144,7 @@ makeContainer({
 ### Standard Services
 
 Machinat defines some standard services which are commonly used while making conversational apps.
-Like recognizing intents, fetching users' profile and accessing chat state.
+Like recognizing intent, fetching an user’s profile and accessing chat state.
 
 Here is an example to put them together:
 
@@ -252,12 +254,12 @@ export default makeClassProvider({
 })(BarService);
 ```
 
-`makeClassProvider(options)(Klass)` decorator annotate a class constructor as a service.
+`makeClassProvider(options)(Klass)` decorator annotates a class constructor as a service.
 It takes the following options:
 
 - `deps` - required, the dependencies of the provider.
 - `lifetime` - optional, the lifetime of the service, has to be one of `'singleton'`, `'scoped'` or `'transient'`. Default to `'singleton'`. Check the [service lifetime](#service-lifetime) section.
-- `name` - optional, the name of provider, default to the constructor name.
+- `name` - optional, the name of the provider, default to the constructor name.
 - `factory` - optional, the factory function to create the provider instance, default to `(...deps) => new Klass(...deps)`.
 
 Now we can register the service and use it like:
@@ -291,13 +293,13 @@ export default makeFactoryProvider({
 })(BarService);
 ```
 
-`makeFactoryProvider(options)(factoryFn)` decorator annotate a factory function as a service.
-The factory function receive the dependencies like a container and return the service instance (which can be a function).
+`makeFactoryProvider(options)(factoryFn)` decorator annotates a factory function as a service.
+The factory function receives the dependencies like a container and returns the service instance (which can be a function).
 It takes the following options:
 
 - `deps` - required, the dependencies of the provider.
 - `lifetime` - optional, the lifetime of the service, has to be one of `'singleton'`, `'scoped'` or `'transient'`. Default to `'transient'`. Check the [service lifetime](#service-lifetime) section.
-- `name` - optional, the name of provider, default to the factory function name.
+- `name` - optional, the name of the provider, default to the factory function name.
 
 Then we can register and use the service like:
 
@@ -412,7 +414,7 @@ Service lifetime defines how the service instances are created in the app.
 There are three types of lifetime:
 
 - `'transient'` - every time the service is required.
-- `'scoped'` - only once per services scope.
+- `'scoped'` - only once per service scope.
 - `'singleton'` - only once in the app when `app.start()`.
 
 A service scope is an abstract period for handling an event or dispatching the messages.

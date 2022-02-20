@@ -2,8 +2,8 @@
 title: Service and State
 ---
 
-> Despite replying messages, a chatbot need many other services to provide features.
-> In this lesson, you will learn how to use DI (dependencies injection) system
+> Despite sending messages, a bot requires many other services to provide functional features.
+> In this lesson, you’ll learn how to use the DI (dependencies injection) system
 > to access chat state and other services.
 >
 > _Time to accomplish: 15 minutes_
@@ -80,18 +80,19 @@ Now the bot can say hello with the user's name:
 ### Service Container
 
 The `handleChat` handler is a **service container**.
-A container can delare the services it requires,
+A container declares the services it requires,
 and the system will inject the required dependencies at runtime.
 
-`handleChat` is declared by `makeContainer({ deps: [useIntent, useUserProfile] })(...)`.
-It requires `useIntent` and `useUserProfile` services, which can then be used like:
+`handleChat` is declared by `makeContainer({ deps: [useIntent, useUserProfile] })(factoryFn)`.
+It requires the `useIntent` and `useUserProfile` services, which can be used like:
 
 ```ts
-(getIntent, getUserProfile) => async (context) => {/* ... */}
+(getIntent, getUserProfile) =>    // factory fn, receivces service instances
+  async (context) => {/* ... */}  // handler fn, receivces event context
 ```
 
-The container function takes the required services and return the handler function.
-The services then can be used in the handler like:
+The container function takes the required services and returns the handler function.
+Then the services can be used in the handler like:
 
 ```ts
   const profile = await getUserProfile(event.user);
@@ -99,7 +100,7 @@ The services then can be used in the handler like:
 
 ### Service Provider
 
-Let's go deeper to see what happen in the `useUserProfile` service.
+Let's go deeper to see what happens in the `useUserProfile` service.
 Check the `src/services/useUserProfile.ts` file, you should codes like:
 
 ```ts {2-4,10,16-18} title="src/services/useUserProfile.ts"
@@ -110,11 +111,11 @@ import {
   MachinatUser,
   MachinatProfile,
 } from '@machinat/core';
-//...
+// ...
 const useUserProfile =
   (profiler: BasicProfiler, stateController: StateController) =>
   async (user: MachinatUser) => {
-    //...
+    // ...
     return profile;
   };
 
@@ -123,66 +124,48 @@ export default makeFactoryProvider({
 })(useUserProfile);
 ```
 
-The `useUserProfile` is a service provider. It requires its `deps` just like a container.
-The difference is that a provider can be required as `deps`, so we can use it to get profile.
+`useUserProfile` is a service provider that requires its `deps` just like a container.
+The difference is a provider can be required as `deps` so we can use it in the handler.
 
-`useUserProfile` use two built-in services: `BasicProfiler` and `StateController`.
+`useUserProfile` uses two built-in services: `BasicProfiler` and `StateController`.
 
 ### Get User Profile
 
-`BasicProfiler` can fetch users' profile no matter which platform they come from.
+`BasicProfiler` fetches a user’s profile from the chat platform.
+Like:
 
-```ts {6} title="src/services/useUserProfile.ts"
-//...
-const useUserProfile =
-  (profiler: BasicProfiler, stateController: StateController) =>
-  async (user: MachinatUser) => {
-    //...
-    const profile = await profiler.getUserProfile(user);
-    if (profile) {
-      await userState.set<ProfileCache>('profile_cache', { profile });
-    }
-    return profile;
-  };
-//...
+```ts title="src/services/useUserProfile.ts"
+  const profile = await profiler.getUserProfile(user);
 ```
 
-### Access User State
+### Access State
 
-`StateController` can save/load state data of an user or a channel.
+`StateController` can access the user/chat/global state data from the storage.
+Like:
 
-```ts {9-10,17} title="src/services/useUserProfile.ts"
-//...
-type ProfileCache = {
-  profile: MachinatProfile;
-};
+```ts title="src/services/useUserProfile.ts"
+  // highlight-start
+  const userState = stateController.userState(user);
+  const cached = await userState.get<ProfileCache>('profile_cache');
+  // highlight-end
+  if (cached) {
+    return cached.profile;
+  }
 
-const useUserProfile =
-  (profiler: BasicProfiler, stateController: StateController) =>
-  async (user: MachinatUser) => {
-    const userState = stateController.userState(user);
-    const cached = await userState.get<ProfileCache>('profile_cache');
-    if (cached) {
-      return cached.profile;
-    }
-
-    const profile = await profiler.getUserProfile(user);
-    if (profile) {
-      await userState.set<ProfileCache>('profile_cache', { profile });
-    }
-    return profile;
-  };
-//...
+  const profile = await profiler.getUserProfile(user);
+  if (profile) {
+    // highlight-next-line
+    await userState.set<ProfileCache>('profile_cache', { profile });
+  }
 ```
 
-Here we check if the user's profile is saved under `'profile_cache'` key.
-If it is, the cached profile is returned.
-Otherwise, the profile is fetched from the platform and being cached.
+Here we use `controller.userState(user).get(key)` to get the cached profile of the user.
+If there isn't, we fetch the profile and cache it with `controller.userState(user).set(key, value)`.
 
 ### State Storage
 
 The state data is stored at `.state_data.json` file while in development.
-Ckeck it and you should see the saved profile like:
+Check it and you should see the saved profile like:
 
 ```json {5-14} title=".state_data.json"
 {
@@ -207,6 +190,7 @@ Ckeck it and you should see the saved profile like:
 
 ## Providing Services
 
+Despite the built-in services, you might want to make your own ones to reuse logic.
 Let's create a new service to handle the CRUD of todos.
 
 ### Create a Service
@@ -222,8 +206,8 @@ export type TodoState = {
 };
 ```
 
-To save time from repeating similar steps, please download the `TodoController.ts` file
-with this command:
+To not repeat similar steps,
+please download the `TodoController.ts` file with this command:
 
 ```bash
 curl -o ./src/services/TodoController.ts https://raw.githubusercontent.com/machinat/todo-example/main/src/services/TodoController.ts
@@ -254,8 +238,8 @@ It also requires `StateController` to save/load todos data.
 
 ### Channel State
 
-In the `TodoController` we store the todos data in the `channelState`.
-It works the same as `userState`, but it saves the data of a chatroom instead.
+In the `TodoController` we store the todos data with `channelState`.
+It works the same as `userState`, but it saves the data of a chat instead.
 
 ```ts {6} title="src/services/TodoController.ts"
 //...
@@ -440,5 +424,5 @@ Check `.state_data.json`, the todo should be moved to the
 
 ---
 
-Now our bot can provide real feature with real data in the state.
-Next, we'll make the bot to understand what we say.
+Now our bot can provide features with real data in the state.
+Next, we'll make the bot understand what we say.

@@ -63,15 +63,15 @@ Machinat.createApp({
 ```
 
 The provider would manage all the model training jobs.
-If the data has changes, the model is automatically updated.
+If the data has changed, the model is automatically updated.
 
 You only need to maintain the recognition data in the project,
-and the provider will handle the rest of works.
+and the provider will handle the rest of the work.
 
 ## Usage
 
-Once you set the recognition provider up,
-you can use `IntentRecognizer` service to detext intent.
+Once you set up the recognition provider,
+you can use the `IntentRecognizer` service to detect intent.
 For example:
 
 ```js
@@ -107,13 +107,13 @@ It returns the result with following info:
 - `confidence` - `number`, the confident level of the recognized intent, range 0-1.
 - `payload` - `object`, raw result data from the supplier.
 
-The `IntentRecognizer` service can be used no matter which provider do you choose.
+The `IntentRecognizer` service can be used no matter which provider you choose.
 You don't have to change the recognizing codes if you change the provider.
 
 ### Combine Your Own Logic
 
 Sometimes you might want to add your own recognizing logic.
-Like handling postback data, recognizing emoji or parsing special format.
+Like handling postback data, recognizing emoji or parsing special formats.
 You can make your own recognizing service for that, like:
 
 ```js

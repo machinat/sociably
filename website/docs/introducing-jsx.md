@@ -2,7 +2,7 @@
 title: Introducing JSX
 ---
 
-In Machinat, we can use the _JSX_ API to build _Chat UI_ in a more expressive way.
+In Machinat, we use the _JSX_ API to build _Chat UI_ in a more expressive way.
 
 ```js
 app.onEvent(async ({ reply }) => {
@@ -15,32 +15,32 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-The HTML alike codes above are _JSX_.
-Each JSX element may represent a part of chat UI.
+The code above that looks like HTML is _JSX_.
+Each JSX element may represent a part of the chat UI.
 For example, `<p>...</p>` represents a message bubble in the chatroom.
 
 ## JSX Syntax
 
 This section is WIP. You can check the introduction in [React document](https://reactjs.org/docs/introducing-jsx.html#embedding-expressions-in-jsx)
-since Machinat share the same JSX syntax with React.
+since Machinat shares the same JSX syntax with React.
 
 ## Why JSX?
 
-_Chat UI_ is not so much different from _Graphical UI_.
-It may contain many nesting details and logics not less than a graphical view.
-We believe a rendering process is necessary to make dynamic and complex chat UI,
-so we can ship best user experiences in a chat.
+_Chat UI_ is not that much different from _Graphical UI_.
+It may also contain nesting details and logic no less than a graphical view.
+We believe a rendering process is necessary to make dynamic and complicated chat UI,
+which helps to ship the best user experiences in chat.
 
 _JSX_ brings some significant advantages while building chat UI:
 
 ### Declarative View
 
-In instant messaging, we usually express with a collection of messages.
+In instant messaging, we usually express a collection of messages once.
 They look like a _view_ in the chatroom:
 
 ![Example Message as view](./assets/example-message-as-view.png)
 
-Such the expression is the basic unit to proceed a conversation.
+Such an expression is the basic unit to advance a conversation.
 In Machinat, we build an _expression view_ like:
 
 ```js
@@ -58,13 +58,13 @@ instead of making many imperative API calls.
 This brings some advantages:
 
 1. Describe the content better in codes.
-2. Isolate the presentation logics.
+2. Isolate the presentation logic.
 3. Leave all the sending jobs to the framework.
 
 ### Rich Messages
 
 On many platforms, we can reply with formatted text and in-chat widgets.
-JSX works much better to use these graphical features in codes.
+JSX works much better to use these graphical features in code.
 Like:
 
 ```js

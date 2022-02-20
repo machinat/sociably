@@ -24,7 +24,7 @@ and edit the handler function to this:
 // ...
 ```
 
-Try interact with the bot, and it should now reply the string at `reply("...")`.
+Try interacting with the bot, and it should reply with the string in `reply("...")`.
 
 <img width={400} src={require("./assets/hello-todo-bot.png").default} />
 
@@ -43,13 +43,13 @@ Try editing the content of reply to this:
 ```
 
 The html alike syntax is a **JSX** expression.
-It represent a section of UI/UX in a conversation.
+It represents a section of chat UI in a conversation.
 For example, the `<p>...</p>` element displays a message bubble containing the inner text.
 
 You'll learn more useful JSX features in the lessons.
 
 :::info
-To use the JSX syntax in typescript, you must use `.tsx` file extension.
+To use the JSX syntax in typescript, the file extension has to be `.tsx`.
 Also you need to import `Machinat` at the beginning of the file like:
 
 ```ts
@@ -60,10 +60,10 @@ import Machinat from '@machinat/core';
 ### Formatting Text
 
 :::info
-**Messenger** and **LINE** platform don't support text format, it shows plain text on them.
+**Messenger** and **LINE** don't support text format, it shows plain text on them.
 :::
 
-In the code above, `<b>...</b>` element make the inner text bold if chat platform supports it.
+In the code above, `<b>...</b>` element makes the inner text bold if the platform supports it.
 There are more text formatting tags like `i`, `s` and `code`.
 You can check the full list of them [here](/docs/rendering-messages#textual-element-types).
 
@@ -108,8 +108,8 @@ Now your bot can accept `add todo <name>` command like:
 
 ### Event Object
 
-When an user sends a message to your bot, `handleChat` handler receives an event context object.
-We can get the event infomations at `context.event`.
+When a user sends a message to your bot, `handleChat` handler receives an event context object.
+We can get the event information at `context.event`.
 
 Here's the common properties of an `event`:
 
@@ -126,7 +126,7 @@ Here's the common properties of an `event`:
 
 We can use the `platform`, `category` and `type` to identify what's happening.
 An event with `'text'` type always implements the `event.text` interface.
-So we can extract the todo name with regular expression safely.
+So we can extract the todo name with a regular expression safely.
 
 ```ts
 if (event.type === 'text') {
@@ -140,7 +140,7 @@ if (event.type === 'text') {
 
 
 The `{todoName}` syntax above can be used to put any expression in the JSX.
-For example, change it to `{todoName.toUpperCase()}` and see what happen.
+For example, change it to `{todoName.toUpperCase()}` and see what happens.
 
 ### Grouped Messages
 
@@ -161,14 +161,14 @@ Let's add some details after adding a todo. Edit the result message like this:
 ```
 
 The element `<>...</>` with empty tag is a **Fragment**. You can use it to group
-serveral messages together and send them once. The result would look like:
+several messages together and send them once. The result would look like:
 
 <img width={400} src={require("./assets/add-todo-order-pizza.png").default} />
 
 ### Adding a Pause
 
-When replying a series of messages, you might want to shortly break between them.
-We can use `Machinat.Pause` tag to do that.
+When sending a series of messages, you might want to shortly break between them.
+We can use the `Machinat.Pause` tag to do that.
 
 ```tsx {4}} title="src/handlers/handleChat.tsx"
 // ...
@@ -184,5 +184,5 @@ The code above adds a 1.5 second pause between two messages.
 
 ---
 
-Our bot can receive events in the chatroom and reply simple messages.
+Our bot can receive events in the chatroom and answer simple messages.
 Next, we'll learn how to interact with users using in-chat widgets.

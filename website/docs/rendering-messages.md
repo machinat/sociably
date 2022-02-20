@@ -84,7 +84,7 @@ The supported element tags and their props are listed below:
 
 Some element types are *textual*,
 which means they're equivalent to pure text in JSX.
-Some element accept only texual content as prop,
+Some element accept only textual content as prop,
 like `<p></p>`:
 
 ```js
@@ -96,7 +96,7 @@ await bot.render(
 
 ### Fragment
 
-You may need to send a colections of messages at a time.
+You may need to send a collection of messages at a time.
 To do this, wrap the messages in a `<>...</>` element, like:
 
 ```js
@@ -110,15 +110,15 @@ await bot.render(
 );
 ```
 
-The element with empty tag is a _fragment_.
+The element with an empty tag is a _fragment_.
 When you `render` a fragment, all the messages inside will be sent in order.
-All the sending jobs are handled by the framwork,
+All the sending jobs are handled by the framework,
 so you only have to focus on UI.
 
 ### Native Component
 
-The general tags provide a set of cross-platfrom APIs.
-But you might want to use more special features on particular platform.
+The general tags provide a set of cross-platform APIs.
+But you might want to use more special features on a particular platform.
 
 These platform-specific features are available as **Native Components**.
 You can require them from platform packages and use them like:
@@ -138,9 +138,10 @@ await bot.render(
 );
 ```
 
-You should only use the native components corresponded to the platform.
-If you're making a cross-platfrom UI,
-check `context.platform` and choose different native coomponent like:
+You should only use the native components corresponding to the platform.
+If you're making a cross-platform UI,
+you can check `context.platform` and choose the native component to use.
+Like:
 
 ```js
 app.onEvent(async ({ platform, reply }) => {
@@ -160,7 +161,7 @@ app.onEvent(async ({ platform, reply }) => {
 ### Pause
 
 `Machinat.Pause` adds a pause between messages.
-For example, `<Machinat.Pause time={1000}/>` element delays all the messages after by 1000 ms.
+For example, `<Machinat.Pause time={1000}/>` element delays all the messages after it by 1000 ms.
 
 ```js
 await bot.render(channel,

@@ -109,7 +109,7 @@ configure the app with these steps:
 
 1. Add the server domain to [`whitelisted_domains`](https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/domain-whitelisting)
   of the page.
-2. Add the auth provider to `webview` platform. Like:
+2. Add the auth provider to the `webview` platform. Like:
 
 ```ts
 import Webview from '@machinat/webview';
@@ -158,7 +158,7 @@ const client =  new WebviewClient({
 
 ### Open the Webview
 
-The webview can be opend with an `UrlButton` in the chatroom.
+The webview can be opened with an `UrlButton` in the chatroom.
 For example:
 
 ```tsx
@@ -181,10 +181,10 @@ app.onEvent(async ({ reply }) => {
 
 Two thing to note here:
 
-1. `messengerExtensions` prop have to be `true`.
+1. `messengerExtensions` prop has to be `true`.
 2. `url` prop should link to the webview page with `platform=messenger` query.
 
-The users will be logged in with Messenger account in the webview.
+The users will be logged in with the Messenger account in the webview.
 Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more.
 
 ## Assets Manager

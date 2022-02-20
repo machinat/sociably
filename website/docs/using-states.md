@@ -3,12 +3,12 @@ title: Using State
 ---
 
 A conversational app itself is a stateless server.
-So we need to keep the info of a chat/user in a persistent storage. 
+So we need to keep the info of a chat/user in persistent storage.
 Therefore the bot can use the state data to provide services and better experiences.
 
 ## Install State Module
 
-In development, it's recommended to use `FileState` for easy debuging.
+In development, it's recommended to use `FileState` for easy debugging.
 But in production, you need to switch to other production-ready implementation,
 like `RedisState`.
 
@@ -111,11 +111,11 @@ app.onEvent(
 which receives the current value and returns the new value.
 The returned value is then saved into the storage.
 
-This mechanism make it easy to update an array or object state value. 
+This mechanism makes it easy to update an array or object state value.
 
 #### `undefined` Means Empty
 
-If no value have been saved, the updater receives `undefined` value.
+If no value has been saved, the updater receives an `undefined` value.
 And if the updater returns `undefined`, the value on the key will be deleted.
 
 We can use _default parameter_ to handle `undefined` value elegantly: 
@@ -128,7 +128,7 @@ We can use _default parameter_ to handle `undefined` value elegantly:
 #### Cancel Updating
 
 The new value is compared with the old value using `===`.
-If the same value is retruned, no saving action will be made.
+If the same value is returned, no saving action will be made.
 For example, this updating call is NOT going to work:
 
 ```js
@@ -144,10 +144,10 @@ _So do not mutate the value in the updater. Always return a new one._
 
 ### User State
 
-Sometime you might want to use the state of user instead of chat.
-User state has different scope than channel state since a user can show up in many chatrooms.
+Sometimes you might want to use the user state instead of chat state.
+Their scopes are different  since a user can show up in many chatrooms.
 
-To access user state, use the `controller.userState(user)` method.
+To access the user state, use the `controller.userState(user)` method.
 For example:
 
 ```js

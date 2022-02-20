@@ -13,12 +13,14 @@
   <a href="https://www.npmjs.com/package/@machinat">
     <img src="https://img.shields.io/npm/v/@machinat/core?style=for-the-badge&color=blue" />
   </a>
-  <img src="https://img.shields.io/npm/l/@machinat/core?style=for-the-badge" />
+  <a href="https://github.com/machinat/machinat/blob/master/LICENSE">
+    <img src="https://img.shields.io/npm/l/@machinat/core?style=for-the-badge" />
+  </a>
 </div>
 
 ## The _In-Chat App_
 
-Machint framework builds _cross-platfrom, feature-rich and intelligent **apps**_ in the social network.
+Machint framework builds _cross-platform, feature-rich and intelligent **apps**_ in the social network.
 
 ## Highlights
 
@@ -31,7 +33,7 @@ Machint framework builds _cross-platfrom, feature-rich and intelligent **apps**_
 </details>
 
 <details>
-  <summary>Extend an embeded <b>webview</b> in chat. <i>(demo ▾)</i></summary>
+  <summary>Extend an embedded <b>webview</b> in chat. <i>(demo ▾)</i></summary>
   <img height="480" src="./website/static/img/webview.webp" />
 </details>
 
@@ -51,7 +53,7 @@ Machint framework builds _cross-platfrom, feature-rich and intelligent **apps**_
 </details>
 
 <details>
-  <summary>Reuse chat flows to build complex dialogs. <i>(demo ▾)</i></summary>
+  <summary>Reuse chat flows to build complicated dialogs. <i>(demo ▾)</i></summary>
   <img height="480" src="./website/static/img/subscript.webp" />
 </details>
 
@@ -164,7 +166,7 @@ Here are some simple but production-ready examples:
 
 - [Note Example](https://github.com/machinat/note-example) - taking notes in chat.
 - [Todo Example](https://github.com/machinat/todo-example) - managing todos in chat.
-- [Pomodoro Eample](https://github.com/machinat/pomodoro-example) - a pomodoro timer in chat.
+- [Pomodoro Example](https://github.com/machinat/pomodoro-example) - a pomodoro timer in chat.
 - [4digits Example](https://github.com/machinat/4digits-example) - playing guessing 4 digits game in chat.
 
 ## Comparison
@@ -187,4 +189,4 @@ Here are some simple but production-ready examples:
 | Fully controled<br/>deployment | ✓ |   |   | ✓ | ✓ |
 
 > [Let us know](https://github.com/machinat/machinat/issues/new)
-> if any mistake in the comparison chart.
+> if there is any mistake in the comparison chart.

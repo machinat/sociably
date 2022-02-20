@@ -6,12 +6,12 @@ Reactive programming is a declarative programming paradigm that handles asynchro
 If the idea is fresh to you, [@andrestaltz](https://twitter.com/andrestaltz)
 has a [great article](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) introducing the concept using [_Rx_](https://reactivex.io/).
 
-The reactive paradigm naturally suit a conversational app which listens events from chat platforms reactively.
+The reactive paradigm naturally suits a conversational app which listens to events from chat platforms reactively.
 It's our recommended way to control the business logic flow.
 
 ## Machinat Stream Package
 
-`@machinat/stream` implement the reactive programming utilities that is optimize for conversational apps.
+`@machinat/stream` implements the reactive programming utilities that are optimized for conversational apps.
 The most important specialty is: All the events on a chat are processed in a strict order in the stream.
 
 ### Install
@@ -37,7 +37,7 @@ const app = Machinat.createApp({...});
 const event$ = fromApp(app);
 ```
 
-The `event$` stream will includes all events you would receive at `app.onEvent()`.
+The `event$` stream will include all events you would receive at `app.onEvent()`.
 
 :::tip
 The variable name with a trailing `$` is a naming convention for a stream in reactive programming.
@@ -82,10 +82,10 @@ We'll introduce some commonly used operators below.
 
 ### Filter a Stream
 
-`filter(predicator)` operator filter the stream like `Array.filter`.
+`filter(predicator)` operator filters the stream like `Array.filter`.
 
 It takes a predicator function with `(eventContext) => boolean` type.
-The event is passed to next stream only when the predicator return `true`.
+The event is passed to the next stream only when the predicator returnstrue`.
 
 We can use it to extract a fraction of events so they can be handled separately.
 For example:
@@ -163,13 +163,13 @@ event$.pipe(
 );
 ```
 
-### Use Asynconized Container
+### Use Asynchronized Container
 
 The operators can take an _asyncronized_ function as the callback.
 As stated, all the async jobs under a chat are executed in a strict order.
 
 They also accept a [service container](dependency-injection.md#service-container)
-of callback function.
+of the callback function.
 As the examples above, you can require services to handle business logic.
 
 ### Merge Streams
@@ -186,7 +186,7 @@ const greeting$ = merge(webviewGreeting$, chatGreeting$);
 
 Currently the execution order is only guaranteed on a single server.
 If you are running the app on a cluster,
-the events under a chat may go to different servers and breaks the order.
+the events under a chat may go to different servers and break the order.
 
 To fix this, it requires an external broker to distribute the jobs and guarantee the order.
 But there are some major challenges to overcome: 
@@ -206,7 +206,7 @@ const msgCount$ = message$.pipe(count());
 
 On every process and machine,
 the streams and operators should work identically.
-This means the stateful operations should be safe from race condition. 
+This means the stateful operations should be safe from race conditions. 
 
 ```js
 // every process should see the identical count
@@ -231,15 +231,15 @@ message$.pipe(
 
 #### Exactly Once
 
-An event should be proceeded exactly once in the stream,
+An event should be processed exactly once in the stream,
 not being omitted or duplicated.
 If a server is down unexpectedly,
 the unfinished events should be able to resume.
 
 ### Road Map
 
-[_Kafka Stream_](https://kafka.apache.org/documentation/streams/) is a previous art that implement the reactive stream for server-based programs.
+[_Kafka Stream_](https://kafka.apache.org/documentation/streams/) is a previous art that implements the reactive stream for server-based programs.
 It's built upon [_Apache Kafka_](https://kafka.apache.org/) to provide the guarantees mentioned above.
 
-In the future, we'll make a similar solution in JavaScript which base on Kafka or other brokers.
+In the future, we'll make a similar solution in JavaScript which is based on Kafka or other brokers.
 It'll be optimized for conversational apps, and could possibly support all the server-based programs.

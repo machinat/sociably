@@ -10,7 +10,7 @@ title: Recognize Intent
 
 ## Recognize Text
 
-In the previous lesson, we use `RegExp` to recognize `add todo <name>` command.
+In the previous lesson, we used `RegExp` to recognize the `add todo <name>` command.
 It's not very intuitive to use, and also really annoying when input.
 
 So let's use a smarter way to recognize users' intent.
@@ -110,7 +110,7 @@ while using `RegexRecogntion`.
 
 ## Intent Recognizer
 
-Let's look into `useIntent` services to see what happen.
+Let's look into `useIntent` services to see what happens.
 Check the `src/services/useIntent.ts` file:
 
 ```ts {8-9} title="src/services/useIntent.ts"
@@ -137,7 +137,7 @@ The intent is detected by the `IntentRecognizer` service. The
 
 ```ts
 {
-  type: "list",  // correspond to the intent name at regresionData
+  type: "list",  // correspond to the intent name at `regresionData`
   confidence: 1, // confident level of the result, range 0-1
   payload: null  // raw data from the implementation
 }
@@ -178,4 +178,4 @@ Consider using `DialogFlow` on production.
 ---
 
 Our bot can recognize simple text messages now.
-Next, we'll learn how to proceed a complete dialog.
+Next, we'll learn how to make a complete conversation.

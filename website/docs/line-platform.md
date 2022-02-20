@@ -182,14 +182,14 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-The users will be logged in with LINE account in the webview.
+The users will be logged in with the LINE account in the webview.
 Check the [webview document](https://machinat.com/docs/embedded-webview)
 to learn more.
 
 ## Assets Manager
 
 [`LineAssetsManager`](https://machinat.com/api/classes/line_asset.lineassetsmanager.html)
-service helps you to manage resources on LINE platform,
+service helps you to manage resources on the LINE platform,
 like [richmenu](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/#using-rich-menus-introduction).
 
 To use it, you have to install a [state provider](./using-states) first.

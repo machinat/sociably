@@ -2,14 +2,14 @@
 title: Dialog Script
 ---
 
-> To serve in chat, it's often that we need to ask a series of questions and wait for feedbacks.
-> In this lesson, you'll learn how to program such the conversation flows.
+> To serve in chat, it's often that we need to ask a series of questions and wait for the answers.
+> In this lesson, you'll learn how to program such conversation flows in a chat.
 >
 > _Time to accomplish: 20 minutes_
 
 ## Make a Conversation
 
-The bot should ask new todo name after recognizing the adding todo intent.
+After recognizing the adding todo intent, the bot should ask for the new todo name.
 To do this, we have to handle the _prompt and wait_ flow in our codes.
 
 In Machinat, it can be done by a **Dialog Script**.
@@ -45,7 +45,7 @@ and the returned messages will be sent in the chat.
 
 ### Register Script
 
-The newly created script need to be registered first.
+The newly created script needs to be registered first.
 Edit `src/scenes/index.tsx` and export `AddingTodo` like this:
 
 ```tsx title="src/scenes/index.tsx"
@@ -164,9 +164,9 @@ The `set` prop of `PROMPT` is called when the user answers.
 It receives two args:
 
 - an environment object that contains current `vars`
-- event context of the answered message.
+- event context of the answered message
 
-Then we return the new `vars` value, which set the `todoName` for later use.
+Then we return the new `vars` value which sets the `todoName` for later use.
 
 ### Execute `EFFECT`
 
@@ -251,7 +251,7 @@ Now a todo can be added like this:
 
 ### Flow Control
 
-It could be a problem if a non-text message is replied by users.
+Now it could be a problem if a non-text message is received.
 We can use `WHILE` keyword to verify the input:
 
 ```tsx {3-5,15} title="src/scenes/AddingTodo.tsx"
@@ -273,11 +273,11 @@ We can use `WHILE` keyword to verify the input:
 //...
 ```
 
-`WHILE` works just like the `while` keyword in programming language.
+`WHILE` works just like the `while` keyword in programming languages.
 The inner block would keep looping when the `condition` is met.
 
 The `PROMPT` is wrapped by the `WHILE` block,
-so our bot would keep asking until the answer is ok.
+so our bot would keep asking till the answer is ok.
 The result looks like:
 
 <video width={420} autoplay="autoplay" loop inline muted>
@@ -294,7 +294,7 @@ Like in programming language,
 we can `CALL` a script in another one to reuse the dialog flows.
 
 Let's try calling `AddingTodo` in a new script.
-Create `src/scenes/AskingFirstTodo.tsx` file with the folowing content:
+Create `src/scenes/AskingFirstTodo.tsx` file with the following content:
 
 ```tsx {39} title="src/scenes/AskingFirstTodo.tsx"
 import Machinat, { makeContainer } from '@machinat/core';
@@ -340,7 +340,7 @@ export default build<AskingFirstTodoVars>(
 );
 ```
 
-In the script we ask user wether to create the first todo.
+In the script we ask the user whether to create the first todo.
 If yes, call the `AddingTodo` script to continue the creating process.
 
 Remember to export the new script too:
@@ -392,5 +392,5 @@ Delete the todos data in `.state_data.json` file to try this feature.
 
 ---
 
-Our bot can proceed a dialog according the script now.
+Our bot can process a dialog according to the script now.
 Next, we'll learn how to use a webview to provide more features.

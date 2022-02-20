@@ -9,14 +9,14 @@ title: Create a Machinat App
 
 ## Chat Platform
 
-Machinat now support three chat platforms: `messenger`, `telegram` and `line`.
+Machinat now supports three chat platforms: `messenger`, `telegram` and `line`.
 Pick one platform to use in the lessons and run this command in the terminal:
 
 ```bash
 npm init @machinat/app@latest -- -p <platform> -p webview my-todo-bot
 ```
 
-The command initiate codes of a hello-world bot. Try `cd my-todo-bot` and take
+The command initiates codes of a hello-world bot. Try `cd my-todo-bot` and take
 a look.
 
 :::tip
@@ -70,7 +70,7 @@ MESSENGER_APP_ID= 1234567890
 MESSENGER_APP_SECRET= abcdef123456...
 ```
 
-#### Use Messneger in you app
+#### Use Messenger in you app
   Go to: `App Dashboard` > `Add a Product` > `Messenger` > `Set Up`
 
 #### Create a Facebook page if you don't have one:
@@ -80,7 +80,7 @@ MESSENGER_APP_SECRET= abcdef123456...
 #### Connect your page to the app
   1. Go to: `Messenger Setting` > `Access Tokens` > `Add or Remove Pages`.
   2. Choose the page you just created. After confirmation, you page should be
-     listed in `Access Tokens` area.
+     listed in the `Access Tokens` area.
   3. Copy the id of the page and paste it in the `.env` file, like:
 
 ```
@@ -110,13 +110,13 @@ Your app should be successfully running if all the required settings are filled.
 ### Run Migrations
 
 There is one more step for the first time starting. Keep the dev server
-runnning, and execute this command in **another command line tab**:
+running, and execute this command in **another command line tab**:
 
 ```bash
 npm run migrate
 ```
 
-The command register some necessery settings to Messenger platform. Now try
+The command registers some necessary settings to the Messenger platform. Now try
 messaging your Facebook page, the app should work like this:
 
 
@@ -136,7 +136,7 @@ TELEGRAM_BOT_TOKEN= 654321:AaBbCcDdEdFf123456...
 
 #### Set domain of the bot
 
-1. Go to `.env` file in the project and copy the value of `DOMAIN` field. It
+1. Go to the '.env' file in the project and copy the value of `DOMAIN` field. It
    should look like `xxx-xxx-123.t.machinat.dev`.
 2. Go back to [@BotFather](https://t.me/botfather) and send `/mybot` command. Choose the bot you just created.
 3. Go to `Bot Settings` > `Domain` > `Edit Domain`. Send the copied domain to BotFather.
@@ -151,7 +151,7 @@ Before the first time starting, you have to run this command in the project dire
 npm run migrate
 ```
 
-The command register some necessery settings to Telegram platform.
+The command registers some necessary settings to the Telegram platform.
 
 ### Start Dev Server
 
@@ -171,7 +171,7 @@ app should work like this:
 #### Create Provider
 
 1. Create a Provider at https://developers.line.biz/console/
-2. Under provider page, go to `Settings` > `Provider ID`. Copy the value and
+2. Under the provider page, go to `Settings` > `Provider ID`. Copy the value and
    paste it in the `.env` file in the project, like:
 
 ```
@@ -180,7 +180,7 @@ LINE_PROVIDER_ID= 1234567890
 
 #### Create Messaging API Channel
 
-1. Go to `Channels` tab at the provider page. Tap '+' and create a new
+1. Go to the `Channels` tab at the provider page. Tap '+' and create a new
    `Messaging API` channel.
 2. Copy the values of `Channel ID` and `Channel secret` under `Basic settings`.
    Paste them in the `.env` file, like:
@@ -190,7 +190,7 @@ LINE_CHANNEL_ID= 1234567890
 LINE_CHANNEL_SECRET = abcdef123456...
 ```
 
-3. Go to `Messaging API` tab, issue an access token at `Channel access token`.
+3. Go to the `Messaging API` tab, issue an access token at `Channel access token`.
    Copy the token and paste it in the `.env` file, like:
 
 ```
@@ -199,11 +199,11 @@ LINE_ACCESS_TOKEN= AaBbCcDdEeFf123456...
 
 #### Create a LIFF App
 
-1. Go to `Channels` tab at provider page. Tap '+' and create a new
+1. Go to the `Channels` tab at the provider page. Tap '+' and create a new
    `LINE Login` channel.
-2. Go to `.env` file in your project and copy the value of `DOMAIN` field. It
+2. Go to the '.env' file in your project and copy the value of `DOMAIN` field. It
    should look like `xxx-xxx-123.t.machinat.dev`.
-3. Go to `LIFF` tab, create a new LIFF app.
+3. Go to the `LIFF` tab, create a new LIFF app.
 4. Fill the `Endpoint URL` with `https://{DOMAIN}/webview?platform=line`
 5. Select the `profile` option of `Scopes`.
 6. Copy the `LIFF ID` of the created LIFF app. Paste it in the `.env` file, like:
@@ -222,7 +222,7 @@ Before the first time starting, you have to run this command in the project dire
 npm run migrate
 ```
 
-The command register some necessery settings to the LINE platform.
+The command registers some necessary settings to the LINE platform.
 
 ### Start Dev Server
 
@@ -242,5 +242,5 @@ official account, the app should work like:
 
 ---
 
-Our first bot is running! Next, you'll learn how to receive messsges and
+Our first bot is running! Next, you'll learn how to receive messages and
 make the reply.

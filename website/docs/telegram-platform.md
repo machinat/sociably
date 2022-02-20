@@ -22,7 +22,7 @@ You can check [setup section in the tutorial](https://machinat.com/docs/learn/cr
 It brings you to set up everything step by step.
 :::
 
-First, you nedd a Telegram bot to use with.
+First, you need a Telegram bot to use with.
 You can [the official guide](https://core.telegram.org/bots#6-botfather)
 to create one from [@Botfather](https://t.me/botfather).
 
@@ -49,7 +49,7 @@ const app = Machinat.createApp({
 });
 ```
 
-Finally, you have to register the webhook to subscribe events from Telegram.
+Finally, you have to register the webhook to subscribe to events from Telegram.
 You can use these codes to do that:
 
 ```ts
@@ -108,7 +108,7 @@ To use [webviews](./embedded-webview) in Telegram,
 configure the app with these steps:
 
 1. Send `/setdomain` command to [@Botfather](https://t.me/botfather) to register the domain of your bot.
-2. Add the auth provider to `webview` platform. Like:
+2. Add the auth provider to the `webview` platform. Like:
 
 ```ts
 import Webview from '@machinat/webview';
@@ -158,7 +158,7 @@ const client =  new WebviewClient({
 
 ### Open the Webview
 
-The webview can be open with an `UrlButton`. 
+The webview can be opened with an `UrlButton`. 
 Like:
 
 ```tsx
@@ -183,10 +183,10 @@ app.onEvent(async ({ reply }) => {
 
 Two things to note here:
 
-1. `login` prop have to be `true`.
-2. `url` prop should link to `/auth/telegram` endpoint of your server.
+1. `login` prop has to be `true`.
+2. `url` prop should link to the `/auth/telegram` endpoint of your server.
 
-The users will be logged in with Telegram account in the webview.
+The users will be logged in with the Telegram account in the webview.
 Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more.
 
 ## Assets Manager

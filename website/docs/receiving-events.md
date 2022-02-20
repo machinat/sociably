@@ -4,7 +4,8 @@ title: Receiving Events
 
 A conversational app is an _event-driven_ server.
 It receives events from external platforms and makes reactions to the users.
-In Machinat, all the events can be listened with `app.onEvent()` method.
+
+In Machinat, you can listen to all the events in a single `app.onEvent()` entry.
 
 ```js
 const app = Machinat.createApp({/*...*/});
@@ -25,12 +26,12 @@ It's a plain object with the following properties:
 
 - `platform`: `string`, the platform name.
 
-- `event`: `object`, represent the happened event. More info are availalbe depends on the event type. Check the [event mixins](#event-mixins).
+- `event`: `object`, represent the happened event. More info is available depending on the event type. Check the [event mixins](#event-mixins).
   - `platform`: `string`, platform of the event.
 
   - `category`: `string`, rough classifications of the events. Here are some common categories:
     - `'message'`: a message sent by the user.
-    - `'postback'`: an user interact with an UI defined by the app (like a button).
+    - `'postback'`: the user interacts with an UI defined by the app (like a button).
     - `'action'`: a non-message action triggered by an user.
     - `'system'`: an event from the platform, no user activity is involved.
 
@@ -38,17 +39,17 @@ It's a plain object with the following properties:
 
   - `payload`: `object`, the raw event data from the platform.
 
-  - `channel`: `object`, the location where the event is happened. Check the [details here](#the-channel).
+  - `channel`: `object`, the location where the event happened. Check the [details here](#the-channel).
     - `platform`: `string`, platform of the channel.
     - `uid`: `string`, unique id of the channel.
 
 
-  - `user`: `null | object`, the user who trigger the event.
+  - `user`: `null | object`, the user who triggered the event.
     - `platform`: `string`, platform of the user.
     - `uid`: `string`, unique id of the user.
 
 
-- `metadata`: `object`, the transmission metadata of the event. More info are available depends on the implementation.
+- `metadata`: `object`, the transmission metadata of the event. More info is available depending on the implementation.
   - `source`: `string`, the source type of the event, typically 'webhook'.
 
 - `bot`: `null | object`, the `Bot` instance for making reactions. Check [_Rendering Messages Doc_](rendering-messages.md) for more details.
@@ -62,12 +63,12 @@ It's a plain object with the following properties:
 
 ### The Channel
 
-_Channel_ is a special abstraction that refer to the location where events happen.
-It could be a chat thread, a WebSocket connection or any place depends on the platform.
+_Channel_ is a special abstraction that refers to the location where events happen.
+It could be a chat thread, a WebSocket connection or any place depending on the platform.
 
 `channel.uid` is the identifier string of the channel.
 It's unique across all the platforms,
-so you can use it as the key to store data like conversational state.
+so you can use it as the key to store data like the chat state.
 
 Many services require the channel to work.
 The most common one is sending reactions back,
@@ -119,7 +120,7 @@ These common mixins are implemented by all the platforms.
 You can use them to build platform-agnostic features as the example above.
 
 Each platform also has its own event mixins, check [API references](pathname:///api) for the details.
-Also we recommend using [TypeScript](https://www.typescriptlang.org/) to have types support of the events while developing.
+Also we recommend using [TypeScript](https://www.typescriptlang.org/) to have types support the events while developing.
 
 ### Serving for Multiple Platforms
 
@@ -176,7 +177,7 @@ For example, `context.metadata` of a webhook event might look like:
 ## Handle Exepetions
 
 An unhandled error from the app exits the process in newer Node.js versions,
-so make sure you subscribe them with `app.onError(handler)` all the time.
+so make sure you subscribe to them with `app.onError(handler)` all the time.
 
 ```js
 app.onError(err => {
@@ -184,7 +185,7 @@ app.onError(err => {
 });
 ```
 
-Note that the HTTP `4xx` problems on the webhook,
+Note that the HTTP `4xx` on the webhook,
 like `Bad Request` or `Unauthorized`,
 are not treated as errors.
-They are responded by the server and incur nothing in the `onEvent` or `onError`.
+These invalid requests are not popped to either the `onEvent` or `onError` method.

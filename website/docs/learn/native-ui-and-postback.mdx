@@ -3,8 +3,8 @@ title: Native UI and Postback
 ---
 
 > General UI like `<p>...</p>` are supported on every chat platform,
-> but you can use more native UI supported by the current platform.
-> In this lesson, we will learn how to use them to provide amazing user experiences.
+> but you might want to use some special features on the specific platform.
+> In this lesson, we'll learn how to use the native UI to provide richer experiences.
 >
 > _Time to accomplish: 10 minutes_
 
@@ -13,7 +13,7 @@ title: Native UI and Postback
 On most chat platforms, you can interact with users by widgets or actions.
 In Machinat, they are available as **Native Component** of each platform.
 
-Let's add a button in the meassge to list user's todos. Follow the
+Let's add a button in the message to list user's todos. Follow the
 guide of the platform to edit `handleChat`:
 
 
@@ -66,7 +66,7 @@ import * as Messenger from '@machinat/messenger/components';
 ```
 
 The tags like `Messenger.ButtonTemplate` are **Native Components**.
-They represent special features that belongs to the Messenger platform only.
+They represent special features that belong to the Messenger platform only.
 
 We use these Messenger native components above:
 
@@ -116,7 +116,7 @@ import * as Telegram from '@machinat/telegram/components';
 ```
 
 The tags like `Telegram.Text` are **Native Components**.
-They represent special features that belongs to the Telegram platform only.
+They represent special features that belong to the Telegram platform only.
 
 We use these Telegram native components above:
 
@@ -166,7 +166,7 @@ import * as Line from '@machinat/line/components';
 ```
 
 The tags like `Line.ButtonTemplate` are **Native Components**.
-They represent special features that belongs to the LINE platform only.
+They represent special features that belong to the LINE platform only.
 
 We use these LINE native components above:
 
@@ -232,7 +232,7 @@ We can use the data later to handle the postback event.
 
 ## Postback Event
 
-When user tap the button, it triggers an event that post the data back.
+When the user taps the button, it triggers an event that posts the data back.
 We can handle it by adding these codes in `handleChat`:
 
 ```tsx {7-16} title="src/handlers/handleChat.tsx"
@@ -350,5 +350,5 @@ We can get the data at `event.data` and reply according to it.
 
 ---
 
-Our bot can interact with user by buttons and postback. Next, we'll learn
-how to make more complex UI with components.
+Our bot can interact with users using buttons and postback.
+Next, we'll learn how to make a reusable UI with a **component**.

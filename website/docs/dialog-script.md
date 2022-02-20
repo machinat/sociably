@@ -17,7 +17,7 @@ When it _runs_ up, the script processor takes over control and _process_ the dia
 
 ## Install
 
-You have to install `@machinat/script` package to use dialog scripts.
+You have to install the `@machinat/script` package to use dialog scripts.
 And make sure you have a state provider installed like [`RedisState`](https://machinat.com/api/modules/redis_state.html) or [`FileState`](https://machinat.com/api/modules/dev_tools.html#file-state).
 
 
@@ -70,7 +70,7 @@ export default build(
 ```
 
 We `build` the script with the metadata object and the script body in JSX. 
-Note that the `name` of a acript have to be unique in your app.
+Note that the `name` of a script has to be unique in your app.
 
 Let's break down how it works.
 
@@ -112,7 +112,7 @@ It's placed in a script like:
 ```
 
 The function is called when the node is met in the script runtime.
-And the returned messages is sent to continue the conversation.
+And the returned messages are sent to continue the conversation.
 
 ### Script Environments
 
@@ -165,7 +165,7 @@ The keyword elements describe how the conversation should be executed.
 Here are the available keywords:
 
 - `IF` - define an `if` flow.
-  - `condition` - required, `(ScriptEnv) => boolean`, go to `THEN` block if it returns true.
+  - `condition` - required, `(ScriptEnv) => boolean`, go to the `THEN` block if it returns true.
   - `children` - required, `THEN`, `ELSE` and `ELSE_IF` blocks.
 
 - `THEN` - enter children block if `condition` of the parent `IF` is met.
@@ -182,23 +182,23 @@ Here are the available keywords:
   - `condition` - required, `(ScriptEnv) => boolean`, loop the children block while it returns true.
   - `children` - required, script block.
 
-- `PROMPT` - stop the execution of runtime and wait for user's input.
+- `PROMPT` - stop the execution of runtime and wait for the user's input.
   - `key` - required, `string`, an unique key for the stop point.
   - `set` - optional, `(ScriptEnv, Input) => Vars`, set `vars` value according to the input.
  
 - `EFFECT` - define a side effect.
-  - `set` - optional, `(ScriptEnv) => Vars`, execute a side effect and set `vars` value.
+  - `set` - optional, `(ScriptEnv) => Vars`, execute a side effect and set the `vars` value.
   - `yield` - optional, `(ScriptEnv, Value) => Value`, register a middleware to yield a value. Check the [yielding value](#yielding-value) section.
 
 - `LABEL` - label a start point which you can `goto` while starting.
   - `key` - required, `string`, an unique key for the start point.
 
-- `CALL` - execute a sub-script in the runtime.
+- `CALL` - execute a script in the current runtime.
   - `key` - required, `string`, an unique key for the stop point.
-  - `script` - required, the sub-script to be called.
-  - `params` - optional, `(ScriptEnv) => Params`, the params of the sub-script.
+  - `script` - required, the script to be called.
+  - `params` - optional, `(ScriptEnv) => Params`, get the params passed to the script.
   - `goto` - optional, `string`, start execution from a label.
-  - `set` - optional, `(ScriptEnv, Value) => Vars`, set `vars` value according to the returned value.
+  - `set` - optional, `(ScriptEnv, Value) => Vars`, set `vars` value according to the result.
 
 - `RETURN` - exit current script.
   - `value` - optional, `(ScriptEnv) => Vars`, the value to return.
@@ -206,7 +206,7 @@ Here are the available keywords:
 ### Prompting in Chat
 
 `PROMPT` keyword is the core of the conversation flow.
-It stops the runtime and wait for the user's input.
+It stops the runtime and waits for the user's input.
 After the answer is received, the runtime continues from the `PROMPT` again.
 
 ```js
@@ -224,7 +224,7 @@ It receives the answer event context and returns the new `vars` with the info.
 
 ### `key` Prop
 
-The `key` prop labels an entry point in the scrpit.
+The `key` prop labels an entry point in the script.
 It has to be unique in the whole script.
 That includes the `key` on `PROMPT`, `CALL` and `LABEL`.
 
@@ -236,7 +236,7 @@ We'll support a mechanism for migrating in the future.
 
 ### Flow Control Keywords
 
-Flow control keywords determine the flows of a conversation.
+Flow control keywords determine the flow of a conversation.
 Like `WHILE` keyword in the example above:
 
 ```js
@@ -272,7 +272,7 @@ Like:
   />
 ```
 
-It pass out result of the conversation to the root hanlder or the parent script.
+It passes the result of the conversation to the root handler or the parent script.
 
 ## Use Scripts
 
@@ -359,10 +359,10 @@ event$.subscribe(({ event }) => {
 });
 ```
 
-`processor.continue()` method returns the executing script runtime on a chat.
-If there is a runtime, reply the messages in the dialog with `runtime.output()`.
+`processor.continue()` method returns the script runtime on a chat.
+If there is an executing runtime, we continue the dialog by replying `runtime.output()`.
 
-Finally, we should leave the chat to processor and prevent further replying.
+Finally, we should leave the chat to the processor and prevent further replying.
 
 ### Start a Script
 
@@ -383,7 +383,7 @@ it executes the script and sends the beginning messages.
 After that, the chat is handled by the processor till the script is finished.
 
 The `params` prop is passed to the `initVars` of the script.
-This works just like the function prarms so you can fexibly use the dialog.
+This works just like the function prarms so you can flexibly use the dialog.
 
 ### Filter Event Type
 
@@ -412,7 +412,7 @@ You can handle it like this:
     await reply(runtime.output());
 
     if (runtime.returnValue) {
-      // do somthing with `returnValue`
+      // do something with `returnValue`
       await cook(runtime.returnValue.mainDishChoice);
     }
   }
@@ -422,7 +422,7 @@ You can handle it like this:
 
 ### Use Containers
 
-The keywords can accept an asyncronized [service container](dependency-injection.md#service-container)
+The keywords can accept an asynchronized [service container](dependency-injection.md#service-container)
 for the function props.
 For example:
 
@@ -452,7 +452,7 @@ import Machinat, { makeContainer, IntentRecognizer } from '@machinat/core';
 </>
 ```
 
-In the example, we check user's intent with `IntentRecognizer` in the `set` prop.
+In the example, we check intent with `IntentRecognizer` in the `set` prop.
 Almost any operation in the script can use a container to require services,
 including content nodes.
 
@@ -469,9 +469,9 @@ including content nodes.
 
 ### `CALL` a Script
 
-We might want to reuse the conversation flow while building a complex dialog.
+We might want to reuse the conversation flow while building a complicated dialog.
 The `CALL` keyword runs a script like a function call,
-so we can use a flow serveral times even in different scripts.
+so we can use a flow several times even in different scripts.
 Like this:
 
 ```js
@@ -489,17 +489,17 @@ import OrderSideDish from './OrderSideDish';
 </>
 ```
 
-`params` prop passed a value to `initVars` of the sub-script,
-which helps to build a more flexible flow module. 
+`params` prop is called to get the script params,
+which is available at `initVars` of the called script.
 
-After the sub-script returns,
-`set` prop receives the returned value and set the new `vars`.
+After the called script returns,
+`set` prop receives the returned value and sets the new `vars`.
 The runtime then continues from the `CALL` point.
 
 ### Macro Pattern
 
 Another way to reuse the flow logic is using _macro_.
-It's a function that return a section of flow.
+It's a function that returns a section of flow.
 For example:
 
 ```js
@@ -538,13 +538,13 @@ The macro is useful to reuse flow _within one script_.
 It's more lightweight but doesn't have its own `vars` scope.
 
 Notice that the `key` has to be unique in the script,
-so you have use a variable like ``key={`ask-${dishType}`}``.
+so you have to use a variable like ``key={`ask-${dishType}`}``.
 
 ### Execute a Side Effect
 
 While making a functional app, it's necessary to handle [side effects](https://en.wikipedia.org/wiki/Side_effect_(computer_science))
 in the flows.
-The dialog script supports executing effects in serveral ways.
+The dialog script supports executing effects in several ways.
 Each one has its pros and cons.
 
 #### `EFFECT.set`
@@ -574,7 +574,7 @@ So you should only use this in a simple and not nested script.
 
 #### `RETURN.value`
 
-The second is returning the value and executing the effect ouside of the script.
+The second is returning the value and executing the effect outside of the script.
 For example:
 
 ```js
@@ -595,7 +595,7 @@ But the problem is you can only do this when a script is finished.
 #### `EFFECT.yield`
 
 The final one is using `EFFECT.yield`.
-It register a middleware to yield a value when the script is fininshed or stopped by a `PROMPT`.
+It registers a middleware to yield a value when the script is finished or stopped by a `PROMPT`.
 For example:
 
 ```js
@@ -621,7 +621,7 @@ For example:
 ```
 
 When the script stops, all the yield middlewares that have been met are called in a reverse order.
-The middeware receives the value from previous middleware and pass a value up.
+The middleware receives the value from previous middleware and passes a value up.
 Then we can use the final value in the handler.
 
 This pattern is more complex, but it fixes the problems of the first two.
@@ -629,10 +629,16 @@ The scripts are pure and also every script in the calling chain can pop an effec
 
 ## The Saga Pattern
 
-The dialog script is actually a saga pattern implementation with the scripting sugar. A saga means a sequence of asynchronous tasks that would be executed by the order defined. It is invented to handle long lived operations on the back-end, like `PROMPT` user in chat.
+The dialog script is a [saga pattern](https://microservices.io/patterns/data/saga.html)
+implementation with the scripting sugar.
+A saga is a sequence of asynchronized tasks to be executed in the defined order.
+It's invented to handle long lived operations for server-side apps, like `PROMPT` in chatting.
 
 ![Script Saga Flow](./assets/script-saga-flow.png)
 
-When you write a **script** with keywords, you actually define a saga for proceeding conversation. After it is triggered, all the contents and `PROMPT`s are promised to be finished before the script returns.
+When you write a **script**, you define a saga to process the dialog.
+After it's triggered, the orchestrator (script processor) executes all the tasks (dialog) in the programmed procedures.
 
-The major benefit of saga pattern is composing many operations (contents and promptings) into one atomic transaction (a script). You only have to declare the flow within script, then start it when you need. The script processor would handle the rest of all.
+The major benefit of saga pattern is to compose many operations (contents and keywords) into one atomic transaction (a script).
+You only have to declare the flow in the script,
+and the script processor would handle the rest of all.

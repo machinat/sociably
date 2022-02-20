@@ -3,13 +3,13 @@ title: Webview in Chat
 ---
 
 > We have learned how to ship features in chat,
-> but sometimes chat UI might not suit for every feature.
-> In this lesson, you'll learn how to open an webview to provide more features in GUI.
+> but sometimes chat UI is not suitable for every feature.
+> In this lesson, you'll learn how to open a webview to provide more features in GUI.
 >
 > _Time to accomplish: 15 minutes_
 
 :::info
-Some _Next.js_ and _React.js_ features are used to in this lesson.
+Some _Next.js_ and _React.js_ features are used in this lesson.
 You can learn more about them here:
 
 - [React.js](https://reactjs.org/docs/getting-started.html) - A JavaScript library for building user interfaces.
@@ -25,7 +25,7 @@ If your app is on Messenger, test it with the **mobile app**.
 ## Extend a Webview
 
 Finally let's implement the deleting todo feature.
-But this time, we are going to use a webview to display all the finisihed and unfinished todos.
+But this time, we are going to use a webview to display all the finished and unfinished todos.
 
 ### Open Webview
 
@@ -81,7 +81,7 @@ Edit the `WithMenu` component like this:
     //...
 ```
 
-Here we add an `UrlButton` that links to `/webview` endpoint of our severer.
+Here we add an `UrlButton` that links to the `/webview` endpoint of our server.
 Two things to note here:
 - Set the `messengerExtensions` prop to `true`.
 - Add querystring param `platform=messenger`.
@@ -125,8 +125,8 @@ Edit the `WithMenu` component like this:
     //...
 ```
 
-Here we add an `UrlButton` that links to `/auth/telegram` endpoint of our severer.
-Note that the `login` prop have to be `true`.
+Here we add an `UrlButton` that links to the `/auth/telegram` endpoint of our server.
+Note that the `login` prop has to be `true`.
 
 
   </TabItem>
@@ -181,7 +181,7 @@ Now an `Edit 📤` button is added in the menu like this:
 
 <img width={200} src={require("./assets/webview-button.png").default} />
 
-Try tap the button and you should see the default webview is already working!
+Try tapping the button and you should see the default webview is already working!
 
 ### Webview Client
 
@@ -248,7 +248,7 @@ const client = new WebviewClient({
 </Tabs>
 
 
-After the `client` is constructed, it logs in user and open a connection to the server.
+After the `client` is constructed, it logs in the user and opens a connection to the server.
 We can then use it to communicate with the server.
 
 ### Webview Page
@@ -309,7 +309,7 @@ the _React_ JSX is rendered into HTML content.
 :::
 
 The `useEventReducer` [hook](https://reactjs.org/docs/hooks-reference.htm)
-is the simplest way to handle events from server. Every time a event is received,
+is the simplest way to handle events from the server. Every time a event is received,
 the reducer function is called to update the data.
 
 ```ts
@@ -428,7 +428,7 @@ Now the webview should look like this :
 
 <img width={500} src={require("./assets/webview-3.png").default} />
 
-The `client.send(eventObj)` method sends an event back to ther server.
+The `client.send(eventObj)` method sends an event back to the server.
 Here we emit a `'delete_todo'` event when the `❌` button is tapped.
 
 We can then handle it at server side like this:
@@ -460,7 +460,7 @@ Now the todos can be deleted in the webview like this:
 
 ---
 
-Congratulation! 🎉 You have finished the Machinat app tutorial. Now you are able to
+Congratulations! 🎉 You have finished the Machinat app tutorial. Now you are able to
 combine **JSX Chat UI**, **Services**, **Dialog Scripts** and **Webview** to build
 a feature-rich app with amazing experiences in chat.
 

@@ -82,7 +82,7 @@ const features = [
     title: 'UI Component',
     description: (
       <>
-        Modulize <i>chat UI</i> and reuse them with ease.
+        Modularize <i>chat UI</i> and reuse them with ease.
       </>
     ),
     image: 'img/component.webp',
@@ -100,7 +100,7 @@ const features = [
     title: 'Dialog as a Module',
     description: (
       <>
-        <i>Reuse</i> chat flows to build complex dialogs.
+        <i>Reuse</i> chat flows to build complicated dialogs.
       </>
     ),
     image: 'img/subscript.webp',

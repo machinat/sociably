@@ -3,9 +3,9 @@ title: Getting Started
 slug: /
 ---
 
-Welcome to Machinat framework document!
+Welcome to the Machinat framework document!
 
-If you are new to Machinat, we recommend to start from [the tutorial](/docs/learn).
+If you are new to Machinat, we recommend starting from [the tutorial](/docs/learn).
 It brings you to build a complete app step by step.
 
 ## System Requirement
@@ -79,7 +79,7 @@ After the command is finished, it create the new project with following structur
 
 ### Env Configs
 
-The `.env` file contains settings that need to filled before starting your app.
+The `.env` file contains settings that need to be filled before starting your app.
 You can check `.env.example` for the instructions to set up.
 
 ### Migrations
@@ -115,15 +115,15 @@ export const down = makeContainer({
 
 Every time you develop or deploy on a new environment,
 run command `npm run migrate` to update the migration jobs.
-It execute `up` function to keep the resources up to date.
+It executes the `up` function to keep the resources up to date.
 
-Every migration job is going be executed once per environment.
-You can also use `npm run migrate -- --down` command to revert the migrations.
-It execute the `down` function to cancel the operations.
+Every migration job is going to be executed once per environment.
+You can also use the `npm run migrate -- --down` command to revert the migrations.
+It executes the `down` function to cancel the operations.
 
 The `/src/migrations/0-init-app.ts` file contains the initiating jobs.
-You can add new operations in it before the app is going production.
-After that, condisder add a new migration file so you can rollback if needed.
+You can add new operations in it before the app goes into production.
+After that, consider adding a new migration file so you can rollback if needed.
 
 :::info
 If your app supports Messenger platform,
@@ -132,20 +132,20 @@ make sure the server is running while executing the initial migration.
 
 ### Start Dev Server
 
-During development, use `npm run dev` command to start server in development mode.
+During development, use the `npm run dev` command to start the server in dev mode.
 The command do 2 things:
 
-1. Start a dev server up. It'll automatically refresh when codes changed.
+1. Start a dev server up. It'll automatically refresh when codes change.
 2. Create a https tunnel connected to a _https://xxx.t.machinat.dev_ endpoint,
    so your local server can receive webhook requests from the chat platforms.
 
-Try talk to your bot on the chat platform when the server is running.
+Try talking to your bot on the chat platform when the server is running.
 A hello-world app should be working if you finish the setup.
 
 ## Manually Install
 
 :::tip
-The rest sections of this page is for creating your project by scratch.
+The rest of this page is for creating your project from scratch.
 You can skip if you choose to use the creator.
 :::
 
@@ -161,7 +161,7 @@ npm install @machinat/core @machinat/http
 yarn add @machinat/core @machinat/http
 ```
 
-A simplest Machinat app may look like this:
+A simple Machinat app may look like this:
 
 ```js
 import Machinat from '@machinat/core';
@@ -194,7 +194,7 @@ Machinat.createApp({
 
 Platforms modules connect to external sources,
 like messaging platforms, webviews or any communication channel.
-The platforms listen events from users and interact to them.
+The platforms listen to events from users and interact with them.
 That's how a conversational app works.
 
 Install the platform packages that you like to communicate your users with:
@@ -205,7 +205,7 @@ npm install @machinat/messenger @machinat/webview # ...
 yarn add @machinat/messenger @machinat/webview # ...
 ```
 
-For now, Machinat support the platforms below. Check the readme of the package for the usage guide.
+For now, Machinat supports the platforms below. Check the readme of the package for the usage guide.
 
 - [`@machinat/messenger`](https://github.com/machinat/machinat/tree/master/packages/messenger) - receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
 - [`@machinat/telegram`](https://github.com/machinat/machinat/tree/master/packages/telegram) - receive/send messages as a Telegram bot.
@@ -221,13 +221,13 @@ You can choose either [Babel.js](https://babeljs.io/) or [TypeScript](https://ww
 
 Add the following `compilerOptions` settings in your `tsconfig.json`:
 
-```json
+```js
 {
   "compilerOptions": {
-    ...
     "jsx": "react",
     "jsxFactory": "Machinat.createElement",
     "jsxFragmentFactory": "Machinat.Fragment"
+    // ...
   }
 }
 ```
