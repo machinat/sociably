@@ -27,7 +27,7 @@ ${when(platforms.includes('messenger'))`
 # Messenger Settings
 #   Create a Facebook app and a Facebook page for your bot:
 #   1. Visit https://developers.facebook.com/apps and create an app.
-#   2. Use Messneger in you app, go to:
+#   2. Use Messenger in you app, go to:
 #     App Dashboard Page > Add a Product > Messenger > Set Up
 #   3. If you don't have a page ready to use, create one at:
 #     Messenger Setting Page > Access Tokens > Create New Page
