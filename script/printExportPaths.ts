@@ -2,7 +2,11 @@ import * as fs from 'fs';
 
 const pkgs = fs
   .readdirSync('./packages')
-  .filter((pkg) => pkg !== 'jest-snapshot-serializer');
+  .filter(
+    (pkg) =>
+      fs.existsSync(`./packages/${pkg}/package.json`) &&
+      pkg !== 'jest-snapshot-serializer'
+  );
 
 const exportPaths = pkgs
   .map((pkg) => {
