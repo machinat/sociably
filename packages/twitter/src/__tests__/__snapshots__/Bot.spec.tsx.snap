@@ -1,0 +1,261 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.render(channel, content) post a tweet 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "data": Object {
+        "id": "1234567890",
+        "text": "Hello World",
+      },
+    },
+    "code": 200,
+    "uploadedMedia": null,
+  },
+  Object {
+    "body": Object {
+      "data": Object {
+        "id": "1234567890",
+        "text": "Hello World",
+      },
+    },
+    "code": 200,
+    "uploadedMedia": null,
+  },
+]
+`;
+
+exports[`.render(channel, content) post a tweet 2`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "key": "---",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "Hello World",
+      },
+    },
+    "target": null,
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "---",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "Foo Bar Baz",
+      },
+    },
+    "target": null,
+  },
+]
+`;
+
+exports[`.render(channel, content) reply to a tweet 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "data": Object {
+        "id": "2222222222222",
+        "text": "Hello World",
+      },
+    },
+    "code": 200,
+    "uploadedMedia": null,
+  },
+  Object {
+    "body": Object {
+      "data": Object {
+        "id": "2222222222222",
+        "text": "Hello World",
+      },
+    },
+    "code": 200,
+    "uploadedMedia": null,
+  },
+]
+`;
+
+exports[`.render(channel, content) reply to a tweet 2`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "key": "---",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "Hello World",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "id": "1111111111111",
+      "platform": "twitter",
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "---",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "Foo Bar Baz",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "id": "1111111111111",
+      "platform": "twitter",
+    },
+  },
+]
+`;
+
+exports[`.render(channel, content) send direct message 1`] = `
+Object {
+  "jobs": Array [
+    Object {
+      "accomplishRequest": null,
+      "key": "twitter.dm_user.1234567890",
+      "mediaSources": null,
+      "refreshTarget": null,
+      "request": Object {
+        "href": "1.1/direct_messages/events/new.json",
+        "method": "POST",
+        "parameters": Object {
+          "event": Object {
+            "message_create": Object {
+              "message_data": Object {
+                "text": "Hello World",
+              },
+              "target": Object {
+                "recipient_id": "1234567890",
+              },
+            },
+            "type": "message_create",
+          },
+        },
+      },
+      "target": TwitterChat {
+        "id": "1234567890",
+        "platform": "twitter",
+      },
+    },
+    Object {
+      "accomplishRequest": null,
+      "key": "twitter.dm_user.1234567890",
+      "mediaSources": null,
+      "refreshTarget": null,
+      "request": Object {
+        "href": "1.1/direct_messages/events/new.json",
+        "method": "POST",
+        "parameters": Object {
+          "event": Object {
+            "message_create": Object {
+              "message_data": Object {
+                "text": "Foo Bar Baz",
+              },
+              "target": Object {
+                "recipient_id": "1234567890",
+              },
+            },
+            "type": "message_create",
+          },
+        },
+      },
+      "target": TwitterChat {
+        "id": "1234567890",
+        "platform": "twitter",
+      },
+    },
+  ],
+  "results": Array [
+    Object {
+      "body": Object {
+        "event": Object {},
+      },
+      "code": 200,
+      "uploadedMedia": null,
+    },
+    Object {
+      "body": Object {
+        "event": Object {},
+      },
+      "code": 200,
+      "uploadedMedia": null,
+    },
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "accomplishRequest": null,
+          "key": "twitter.dm_user.1234567890",
+          "mediaSources": null,
+          "refreshTarget": null,
+          "request": Object {
+            "href": "1.1/direct_messages/events/new.json",
+            "method": "POST",
+            "parameters": Object {
+              "event": Object {
+                "message_create": Object {
+                  "message_data": Object {
+                    "text": "Hello World",
+                  },
+                  "target": Object {
+                    "recipient_id": "1234567890",
+                  },
+                },
+                "type": "message_create",
+              },
+            },
+          },
+          "target": TwitterChat {
+            "id": "1234567890",
+            "platform": "twitter",
+          },
+        },
+        Object {
+          "accomplishRequest": null,
+          "key": "twitter.dm_user.1234567890",
+          "mediaSources": null,
+          "refreshTarget": null,
+          "request": Object {
+            "href": "1.1/direct_messages/events/new.json",
+            "method": "POST",
+            "parameters": Object {
+              "event": Object {
+                "message_create": Object {
+                  "message_data": Object {
+                    "text": "Foo Bar Baz",
+                  },
+                  "target": Object {
+                    "recipient_id": "1234567890",
+                  },
+                },
+                "type": "message_create",
+              },
+            },
+          },
+          "target": TwitterChat {
+            "id": "1234567890",
+            "platform": "twitter",
+          },
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
