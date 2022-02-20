@@ -13,7 +13,11 @@ import {
 
 const pkgs = fs
   .readdirSync('./packages')
-  .filter((pkg) => pkg !== 'jest-snapshot-serializer');
+  .filter(
+    (pkg) =>
+      fs.existsSync(`./packages/${pkg}/package.json`) &&
+      pkg !== 'jest-snapshot-serializer'
+  );
 
 const pkgsExports = new Map(
   pkgs.map((pkg) => {
