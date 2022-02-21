@@ -10,6 +10,7 @@ module.exports = {
   projectName: 'machinat.github.io',
   deploymentBranch: 'master',
   themeConfig: {
+    image: 'img/machinat-logo.png',
     navbar: {
       logo: {
         alt: 'My Site Logo',
