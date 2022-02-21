@@ -16,7 +16,7 @@
   <a href="https://github.com/machinat/machinat/blob/master/LICENSE">
     <img src="https://img.shields.io/npm/l/@machinat/core?style=for-the-badge" />
   </a>
-  <a href="https://twiier.com/machinatjs">
+  <a href="https://twitter.com/machinatjs">
     <img src="https://img.shields.io/badge/-machinatjs-555?logo=twitter&style=for-the-badge" />
   </a>
 </div>
