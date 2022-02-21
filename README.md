@@ -99,8 +99,8 @@ Machint framework builds _cross-platform, feature-rich and intelligent **in-chat
 
 ## Get Started
 
-Follow the [tutorial](https://machinat.com/docs/learn/)
-to make a functional in-chat app.
+Follow our [tutorial](https://machinat.com/docs/learn/)
+to make your first in-chat app.
 
 ## Install
 
