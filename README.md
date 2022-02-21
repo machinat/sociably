@@ -5,7 +5,7 @@
 
 <div align="center">
   <a href="#platforms">
-    <img src="https://img.shields.io/badge/chat_platforms-3-red?style=for-the-badge" />
+    <img src="https://img.shields.io/badge/platforms-3-red?style=for-the-badge" />
   </a>
   <a href="https://machinat.testspace.com/projects/66804/spaces">
     <img src="https://img.shields.io/testspace/tests/machinat/machinat:machinat/master?compact_message&style=for-the-badge" />
@@ -16,11 +16,21 @@
   <a href="https://github.com/machinat/machinat/blob/master/LICENSE">
     <img src="https://img.shields.io/npm/l/@machinat/core?style=for-the-badge" />
   </a>
+  <a href="https://twiier.com/machinatjs">
+    <img src="https://img.shields.io/badge/-machinatjs-555?logo=twitter&style=for-the-badge" />
+  </a>
 </div>
+<br />
+
+Machint framework builds _cross-platform, feature-rich and intelligent **in-chat apps**_.
 
 ## The _In-Chat App_
 
-Machint framework builds _cross-platform, feature-rich and intelligent **apps**_ in the social network.
+- In-chat apps do more than static chatbots. They provide _functional and dynamic features in the social network_.
+
+- In-chat apps help developers to ship features _more closely to the users_. They help businesses to ship _programmatic marketing and customer services_ on social platforms.
+
+- In-chat apps run everywhere the users are. They are _the next-gen apps in the social media age_.
 
 ## Highlights
 
@@ -89,12 +99,12 @@ Machint framework builds _cross-platform, feature-rich and intelligent **apps**_
 
 ## Get Started
 
-Follow [the tutorial](https://machinat.com/docs/learn/)
-to create a production-ready conversational app.
+Follow the [tutorial](https://machinat.com/docs/learn/)
+to make a functional in-chat app.
 
 ## Install
 
-Create a Machinat project with the command:
+Create an app project with the command:
 
 ```bash
 npm init @machinat/app@latest -- -p <platform> [-p ...] my-project
@@ -110,13 +120,13 @@ yarn create @machinat/app -- -p <platform> [-p ...] my-project
 
 ## Documents
 
-- [**Document**](https://machinat.com/docs/) - the usage guides.
+- [**Document**](https://machinat.com/docs/) - the usage guides by topics.
 - [**Tutorial**](https://machinat.com/docs/learn/) - a course to build an app step by step.
-- [**API Reference**](https://machinat.com/api/) - API details of the packages.
+- [**API Reference**](https://machinat.com/api/) - detailed framework API.
 
 ## Platforms
 
-Machinat is designed to support ALL the conversational platforms.
+Machinat is designed to support ALL the conversational platforms. Here's the covering status:
 
 ##### Currently supported:
 <div>
@@ -162,7 +172,7 @@ Machinat is designed to support ALL the conversational platforms.
 
 ## Examples
 
-Here are some simple but production-ready examples:
+Here are some simple but production-ready sample apps:
 
 - [Note Example](https://github.com/machinat/note-example) - taking notes in chat.
 - [Todo Example](https://github.com/machinat/todo-example) - managing todos in chat.
@@ -186,7 +196,7 @@ Here are some simple but production-ready examples:
 | Use state | ✓ |   | ✓ | ✓ |   |
 | Webview | ✓ |   |   |   |   |
 | Extensibility | ✓ |   |   | ✓ |   |
-| Fully controled<br/>deployment | ✓ |   |   | ✓ | ✓ |
+| Fully controlled<br/>deployment | ✓ |   |   | ✓ | ✓ |
 
 > [Let us know](https://github.com/machinat/machinat/issues/new)
 > if there is any mistake in the comparison chart.
