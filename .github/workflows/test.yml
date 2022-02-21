@@ -28,4 +28,4 @@ jobs:
     - run: npm run build
     - run: npm test -- --ci --reporters=default --reporters=jest-junit
     - name: Publish Results to Testspace
-      run: testspace [${{ matrix.os}}]./junit.xml
+      run: testspace ./junit.xml
