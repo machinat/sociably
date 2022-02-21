@@ -2,7 +2,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, ci ]
   pull_request:
     branches: [ master ]
 
@@ -27,5 +27,6 @@ jobs:
     - run: npm ci --ignore-scripts
     - run: npm run build
     - run: npm test -- --ci --reporters=default --reporters=jest-junit
+    - run: cat ./junit.xml
     - name: Publish Results to Testspace
       run: testspace ./junit.xml
