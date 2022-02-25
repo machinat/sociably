@@ -2,7 +2,7 @@
 title: Receiving Events
 ---
 
-A conversational app is an _event-driven_ server.
+A sociable app is actually an _event-driven_ server behind the scene.
 It receives events from external platforms and makes reactions to the users.
 
 In Machinat, you can listen to all the events in a single `app.onEvent()` entry.

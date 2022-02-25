@@ -6,12 +6,12 @@ Reactive programming is a declarative programming paradigm that handles asynchro
 If the idea is fresh to you, [@andrestaltz](https://twitter.com/andrestaltz)
 has a [great article](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) introducing the concept using [_Rx_](https://reactivex.io/).
 
-The reactive paradigm naturally suits a conversational app which listens to events from chat platforms reactively.
+The reactive paradigm naturally suits a sociable app which listens to events from chat platforms reactively.
 It's our recommended way to control the business logic flow.
 
 ## Machinat Stream Package
 
-`@machinat/stream` implements the reactive programming utilities that are optimized for conversational apps.
+`@machinat/stream` implements the reactive programming utilities that are optimized for sociable apps.
 The most important specialty is: All the events on a chat are processed in a strict order in the stream.
 
 ### Install

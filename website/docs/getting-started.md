@@ -195,7 +195,7 @@ Machinat.createApp({
 Platforms modules connect to external sources,
 like messaging platforms, webviews or any communication channel.
 The platforms listen to events from users and interact with them.
-That's how a conversational app works.
+That's how a _sociable app_ works.
 
 Install the platform packages that you like to communicate your users with:
 

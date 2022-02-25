@@ -2,7 +2,7 @@
 title: Using State
 ---
 
-A conversational app itself is a stateless server.
+A sociable app itself is a stateless server.
 So we need to keep the info of a chat/user in persistent storage.
 Therefore the bot can use the state data to provide services and better experiences.
 

@@ -22,15 +22,17 @@
 </div>
 <br />
 
-Machint framework builds _cross-platform, feature-rich and intelligent **in-chat apps**_.
+Machint.js builds _cross-platform, feature-rich and intelligent **sociable apps**_.
 
-## The _In-Chat App_
+## The _Sociable App_
 
-- In-chat apps do more than static chatbots. They provide _functional and dynamic features in the social network_.
+Today we reach almost everything through many social platforms. Machinat integrate all the platforms together as _**a new app platform**_. That's the _**Sociable App**_.
 
-- In-chat apps help developers to ship features _more closely to the users_. They help businesses to ship _programmatic marketing and customer services_ on social platforms.
+- Sociable apps can do more and better than static Chatbots. They provide _functional and dynamic features on all the social platforms_.
 
-- In-chat apps run everywhere the users are. They are _the next-gen apps in the social media age_.
+- Sociable apps help developers to ship features _more closely to the users_. They help businesses to ship _programmatic marketing and services in the social network_.
+
+- Sociable apps run on wherever the users are. They are _the **next-gen apps** in the social media age_.
 
 ## Highlights
 
@@ -97,36 +99,9 @@ Machint framework builds _cross-platform, feature-rich and intelligent **in-chat
   <summary><i>Progressive</i> and <i>extensible</i> framework design.</summary>
 </details>
 
-## Get Started
-
-Follow our [tutorial](https://machinat.com/docs/learn/)
-to make your first in-chat app.
-
-## Install
-
-Create an app project with the command:
-
-```bash
-npm init @machinat/app@latest -- -p <platform> [-p ...] my-project
-```
-
-Or using yarn:
-
-```bash
-yarn create @machinat/app -- -p <platform> [-p ...] my-project
-```
-
-> Supported platforms: `messenger`, `telegram`, `line` and `webview`
-
-## Documents
-
-- [**Document**](https://machinat.com/docs/) - the usage guides by topics.
-- [**Tutorial**](https://machinat.com/docs/learn/) - a course to build an app step by step.
-- [**API Reference**](https://machinat.com/api/) - detailed framework API.
-
 ## Platforms
 
-Machinat is designed to support ALL the conversational platforms. Here's the covering status:
+Machinat is designed to support ALL the social platforms. Here's the covering status:
 
 ##### Currently supported:
 <div>
@@ -169,6 +144,33 @@ Machinat is designed to support ALL the conversational platforms. Here's the cov
   <img width="50px" src="./website/static/img/icon/browser.png" />
   <img width="50px" src="./website/static/img/icon/sms.png" />
 </div>
+
+## Get Started
+
+Follow our [tutorial](https://machinat.com/docs/learn/)
+to make your first in-chat app.
+
+## Install
+
+Create an app project with the command:
+
+```bash
+npm init @machinat/app@latest -- -p <platform> [-p ...] my-project
+```
+
+Or using yarn:
+
+```bash
+yarn create @machinat/app -- -p <platform> [-p ...] my-project
+```
+
+> Supported platforms: `messenger`, `telegram`, `line` and `webview`
+
+## Documents
+
+- [**Document**](https://machinat.com/docs/) - the usage guides by topics.
+- [**Tutorial**](https://machinat.com/docs/learn/) - a course to build an app step by step.
+- [**API Reference**](https://machinat.com/api/) - detailed framework API.
 
 ## Examples
 

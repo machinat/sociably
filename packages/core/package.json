@@ -1,7 +1,7 @@
 {
   "name": "@machinat/core",
   "version": "0.5.0",
-  "description": "A declarative, progressive and cross-platform JavaScript framework for building conversational interfaces.",
+  "description": "The sociable app framework",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",

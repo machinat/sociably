@@ -11,12 +11,13 @@ import styles from './styles.module.css';
 
 const features = [
   {
-    title: 'One App for All Platforms',
+    title: 'All Social Platforms as One',
     description: (
       <>
-        Businesses communicate to users on many chat platforms.
-        <br />
-        Machinat makes <strong>Chat UI/UX</strong> for all of them.
+        Machinat integrates all the social media as{' '}
+        <strong>a new app platform</strong>. Thus a{' '}
+        <strong>sociable app</strong> can serve features as a real person in the
+        social network.
         <div className={styles.platformArea}>
           <div className={styles.platformBox}>
             <div className={styles.platformBoxLabel}>Currently support:</div>
@@ -219,9 +220,14 @@ function Home() {
           />
 
           <div className={clsx('hero__subtitle', styles.heroSubtitle)}>
-            <div>One In-Chat App</div>{' '}
             <div>
-              For All <NeonWords>Chat Platforms</NeonWords>
+              One <i>Sociable App</i>
+            </div>{' '}
+            <div>
+              For All{' '}
+              <NeonWords>
+                <i>Social Platforms</i>
+              </NeonWords>
             </div>
           </div>
 
