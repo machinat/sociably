@@ -179,8 +179,8 @@ export type MessengerConfigs = {
   pageId: number;
   accessToken: string;
   appSecret?: string;
-  shouldValidateRequest?: boolean;
-  shouldHandleVerify?: boolean;
+  shouldVerifyRequest?: boolean;
+  shouldHandleChallenge?: boolean;
   verifyToken?: string;
   webhookPath?: string;
   graphApiVersion?: string;

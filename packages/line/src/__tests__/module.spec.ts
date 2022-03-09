@@ -124,7 +124,7 @@ describe('initModule(configs)', () => {
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
-      shouldValidateRequest: false,
+      shouldVerifyRequest: false,
     };
 
     const app = Machinat.createApp({
@@ -144,7 +144,7 @@ describe('initModule(configs)', () => {
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
-      shouldValidateRequest: false,
+      shouldVerifyRequest: false,
     });
 
     await expect((module.startHook as any)(bot)).resolves.toBe(undefined);
@@ -157,7 +157,7 @@ describe('initModule(configs)', () => {
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',
-      shouldValidateRequest: false,
+      shouldVerifyRequest: false,
     });
 
     await expect((module.stopHook as any)(bot)).resolves.toBe(undefined);

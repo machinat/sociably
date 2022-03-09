@@ -80,7 +80,7 @@ it('throw if configs.channelId is empty', () => {
   );
 });
 
-it('throws if shouldValidateRequest but channelSecret not given', () => {
+it('throws if shouldVerifyRequest but channelSecret not given', () => {
   expect(
     () =>
       new LineReceiver({
@@ -88,10 +88,10 @@ it('throws if shouldValidateRequest but channelSecret not given', () => {
         popEventWrapper,
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
-        shouldValidateRequest: true,
+        shouldVerifyRequest: true,
       })
   ).toThrowErrorMatchingInlineSnapshot(
-    `"should provide configs.channelSecret when shouldValidateRequest set to true"`
+    `"should provide configs.channelSecret when shouldVerifyRequest set to true"`
   );
 });
 
@@ -103,7 +103,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
       popEventWrapper,
       providerId: '_PROVIDER_ID_',
       channelId: '_BOT_CHANNEL_ID_',
-      shouldValidateRequest: false,
+      shouldVerifyRequest: false,
     });
 
     const req = createReq({ method });
@@ -122,7 +122,7 @@ it('responds 400 if body is empty', async () => {
     popEventWrapper,
     providerId: '_PROVIDER_ID_',
     channelId: '_BOT_CHANNEL_ID_',
-    shouldValidateRequest: false,
+    shouldVerifyRequest: false,
   });
 
   const req = createReq({ method: 'POST' });
@@ -140,7 +140,7 @@ it('responds 400 if body is not not valid json format', async () => {
     popEventWrapper,
     providerId: '_PROVIDER_ID_',
     channelId: '_BOT_CHANNEL_ID_',
-    shouldValidateRequest: false,
+    shouldVerifyRequest: false,
   });
 
   const req = createReq({ method: 'POST', body: "I'm Jason" });
@@ -158,7 +158,7 @@ it('responds 400 if body is in invalid format', async () => {
     popEventWrapper,
     providerId: '_PROVIDER_ID_',
     channelId: '_BOT_CHANNEL_ID_',
-    shouldValidateRequest: false,
+    shouldVerifyRequest: false,
   });
 
   const req = createReq({
@@ -179,7 +179,7 @@ it('respond 200 and pop events received', async () => {
     popEventWrapper,
     providerId: '_PROVIDER_ID_',
     channelId: '_BOT_CHANNEL_ID_',
-    shouldValidateRequest: false,
+    shouldVerifyRequest: false,
   });
 
   const body = {
@@ -268,7 +268,7 @@ test('reply(message) sugar', async () => {
     popEventWrapper,
     providerId: '_PROVIDER_ID_',
     channelId: '_BOT_CHANNEL_ID_',
-    shouldValidateRequest: false,
+    shouldVerifyRequest: false,
   });
 
   await receiver.handleRequest(
@@ -301,7 +301,7 @@ it('validate request', async () => {
     popEventWrapper,
     providerId: '_PROVIDER_ID_',
     channelId: '_BOT_CHANNEL_ID_',
-    shouldValidateRequest: true,
+    shouldVerifyRequest: true,
     channelSecret: '__LINE_CHANNEL_SECRET__',
   });
 
@@ -346,7 +346,7 @@ it('responds 401 if request validation failed', async () => {
     popEventWrapper,
     providerId: '_PROVIDER_ID_',
     channelId: '_BOT_CHANNEL_ID_',
-    shouldValidateRequest: true,
+    shouldVerifyRequest: true,
     channelSecret: '__LINE_CHANNEL_SECRET__',
   });
 

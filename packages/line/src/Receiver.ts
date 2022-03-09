@@ -13,7 +13,7 @@ import type { LineWebhookRequestBody, LineEventContext } from './types';
 type LineReceiverOptions = {
   providerId: string;
   channelId: string;
-  shouldValidateRequest?: boolean;
+  shouldVerifyRequest?: boolean;
   channelSecret?: string;
   bot: BotP;
   popEventWrapper: PopEventWrapper<LineEventContext, null>;
@@ -24,7 +24,7 @@ const handleWebhook = ({
   popEventWrapper,
   providerId,
   channelId,
-  shouldValidateRequest,
+  shouldVerifyRequest,
   channelSecret,
 }: LineReceiverOptions): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
@@ -41,7 +41,7 @@ const handleWebhook = ({
       return { code: 400 };
     }
 
-    if (shouldValidateRequest && channelSecret !== undefined) {
+    if (shouldVerifyRequest && channelSecret !== undefined) {
       const signature = crypto
         .createHmac('SHA256', channelSecret)
         .update(body)
@@ -97,14 +97,14 @@ export class LineReceiver extends WebhookReceiver {
     popEventWrapper,
     providerId,
     channelId,
-    shouldValidateRequest = true,
+    shouldVerifyRequest = true,
     channelSecret,
   }: LineReceiverOptions) {
     invariant(providerId, 'configs.providerId should not be empty');
     invariant(channelId, 'configs.channelId should not be empty');
     invariant(
-      !shouldValidateRequest || channelSecret,
-      'should provide configs.channelSecret when shouldValidateRequest set to true'
+      !shouldVerifyRequest || channelSecret,
+      'should provide configs.channelSecret when shouldVerifyRequest set to true'
     );
     super(
       handleWebhook({
@@ -112,7 +112,7 @@ export class LineReceiver extends WebhookReceiver {
         popEventWrapper,
         providerId,
         channelId,
-        shouldValidateRequest,
+        shouldVerifyRequest,
         channelSecret,
       })
     );
@@ -123,7 +123,7 @@ const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, PlatformUtilitiesI],
   factory: (
-    { providerId, channelId, shouldValidateRequest, channelSecret },
+    { providerId, channelId, shouldVerifyRequest, channelSecret },
     bot,
     { popEventWrapper }
   ) =>
@@ -132,7 +132,7 @@ const ReceiverP = makeClassProvider({
       popEventWrapper,
       providerId,
       channelId,
-      shouldValidateRequest,
+      shouldVerifyRequest,
       channelSecret,
     }),
 })(LineReceiver);

@@ -14,15 +14,15 @@ type MessengerReceiverOptions = {
   bot: BotP;
   popEventWrapper: PopEventWrapper<MessengerEventContext, null>;
   appSecret?: string;
-  shouldValidateRequest?: boolean;
-  shouldHandleVerify?: boolean;
+  shouldVerifyRequest?: boolean;
+  shouldHandleChallenge?: boolean;
   verifyToken?: string;
 };
 
 const handleWebhook = ({
-  shouldHandleVerify,
+  shouldHandleChallenge,
   verifyToken,
-  shouldValidateRequest,
+  shouldVerifyRequest,
   appSecret,
   bot,
   popEventWrapper,
@@ -34,7 +34,7 @@ const handleWebhook = ({
 
     // handle webhook verification
     if (method === 'GET') {
-      if (!shouldHandleVerify) {
+      if (!shouldHandleChallenge) {
         return { code: 403 };
       }
 
@@ -59,7 +59,7 @@ const handleWebhook = ({
     }
 
     // validate request signature
-    if (shouldValidateRequest && appSecret !== undefined) {
+    if (shouldVerifyRequest && appSecret !== undefined) {
       const hmac = crypto.createHmac('sha1', appSecret);
 
       hmac.update(rawBody, 'utf8');
@@ -119,28 +119,28 @@ export class MessengerReceiver extends WebhookReceiver {
   constructor({
     bot,
     popEventWrapper,
-    shouldHandleVerify = true,
+    shouldHandleChallenge = true,
     verifyToken,
-    shouldValidateRequest = true,
+    shouldVerifyRequest = true,
     appSecret,
   }: MessengerReceiverOptions) {
     invariant(
-      !shouldValidateRequest || appSecret,
-      'appSecret should not be empty if shouldValidateRequest set to true'
+      !shouldVerifyRequest || appSecret,
+      'appSecret should not be empty if shouldVerifyRequest set to true'
     );
 
     invariant(
-      !shouldHandleVerify || verifyToken,
-      'verifyToken should not be empty if shouldHandleVerify set to true'
+      !shouldHandleChallenge || verifyToken,
+      'verifyToken should not be empty if shouldHandleChallenge set to true'
     );
 
     super(
       handleWebhook({
         bot,
         popEventWrapper,
-        shouldHandleVerify,
+        shouldHandleChallenge,
         verifyToken,
-        shouldValidateRequest,
+        shouldVerifyRequest,
         appSecret,
       })
     );
@@ -151,16 +151,16 @@ const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, PlatformUtilitiesI],
   factory: (
-    { shouldHandleVerify, verifyToken, shouldValidateRequest, appSecret },
+    { shouldHandleChallenge, verifyToken, shouldVerifyRequest, appSecret },
     bot,
     { popEventWrapper }
   ) =>
     new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify,
+      shouldHandleChallenge,
       verifyToken,
-      shouldValidateRequest,
+      shouldVerifyRequest,
       appSecret,
     }),
 })(MessengerReceiver);

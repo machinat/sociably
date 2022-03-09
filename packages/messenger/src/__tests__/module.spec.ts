@@ -135,8 +135,8 @@ describe('initModule(configs)', () => {
         Messenger.initModule({
           pageId: 1234567890,
           accessToken: '_ACCESS_TOKEN_',
-          shouldHandleVerify: false,
-          shouldValidateRequest: false,
+          shouldHandleChallenge: false,
+          shouldVerifyRequest: false,
         }),
       ],
     });

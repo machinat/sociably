@@ -53,9 +53,13 @@ beforeEach(() => {
 it('throw if appSecret not given', () => {
   expect(
     () =>
-      new MessengerReceiver({ bot, popEventWrapper, shouldHandleVerify: false })
+      new MessengerReceiver({
+        bot,
+        popEventWrapper,
+        shouldHandleChallenge: false,
+      })
   ).toThrowErrorMatchingInlineSnapshot(
-    `"appSecret should not be empty if shouldValidateRequest set to true"`
+    `"appSecret should not be empty if shouldVerifyRequest set to true"`
   );
 });
 
@@ -65,19 +69,19 @@ it('throw if verifyToken not given', () => {
       new MessengerReceiver({
         bot,
         popEventWrapper,
-        shouldValidateRequest: false,
+        shouldVerifyRequest: false,
       })
   ).toThrowErrorMatchingInlineSnapshot(
-    `"verifyToken should not be empty if shouldHandleVerify set to true"`
+    `"verifyToken should not be empty if shouldHandleChallenge set to true"`
   );
 });
 
 describe('handling GET', () => {
-  it('respond 403 if shouldHandleVerify set to false', async () => {
+  it('respond 403 if shouldHandleChallenge set to false', async () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify: false,
+      shouldHandleChallenge: false,
       appSecret: '_APP_SECRET_',
     });
 
@@ -99,7 +103,7 @@ describe('handling GET', () => {
         bot,
         popEventWrapper,
         verifyToken: '_MY_TOKEN_',
-        shouldValidateRequest: false,
+        shouldVerifyRequest: false,
       });
 
       const req = createReq({
@@ -122,7 +126,7 @@ describe('handling GET', () => {
       bot,
       popEventWrapper,
       verifyToken: '_MY_TOKEN_',
-      shouldValidateRequest: false,
+      shouldVerifyRequest: false,
     });
 
     const req = createReq({
@@ -144,7 +148,7 @@ describe('handling GET', () => {
       bot,
       popEventWrapper,
       verifyToken: '_MY_TOKEN_',
-      shouldValidateRequest: false,
+      shouldVerifyRequest: false,
     });
 
     const req = createReq({
@@ -168,8 +172,8 @@ describe('handling POST', () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify: false,
-      shouldValidateRequest: false,
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: false,
     });
 
     const req = createReq({ method: 'POST' });
@@ -187,8 +191,8 @@ describe('handling POST', () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify: false,
-      shouldValidateRequest: false,
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: false,
     });
 
     const req = createReq({ method: 'POST', body: 'I am Jason' });
@@ -206,8 +210,8 @@ describe('handling POST', () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify: false,
-      shouldValidateRequest: false,
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: false,
     });
 
     const req = createReq({ method: 'POST', body: '{"object":"Pegg"}' });
@@ -225,8 +229,8 @@ describe('handling POST', () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify: false,
-      shouldValidateRequest: false,
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: false,
     });
 
     const body = {
@@ -307,8 +311,8 @@ describe('handling POST', () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify: false,
-      shouldValidateRequest: false,
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: false,
     });
 
     const body = {
@@ -377,8 +381,8 @@ describe('handling POST', () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify: false,
-      shouldValidateRequest: false,
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: false,
     });
 
     await receiver.handleRequest(
@@ -409,7 +413,7 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       appSecret,
-      shouldHandleVerify: false,
+      shouldHandleChallenge: false,
     });
 
     const body =
@@ -446,7 +450,7 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       appSecret,
-      shouldHandleVerify: false,
+      shouldHandleChallenge: false,
     });
 
     const body = '{"some":"body"}';
@@ -469,8 +473,8 @@ describe('handling POST', () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
-      shouldHandleVerify: false,
-      shouldValidateRequest: false,
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: false,
     });
     const req = createReq({ method: 'POST' });
     const res = createRes();

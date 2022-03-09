@@ -230,7 +230,7 @@ export type LineConfigs = {
   providerId: string;
   channelId: string;
   channelSecret?: string;
-  shouldValidateRequest?: boolean;
+  shouldVerifyRequest?: boolean;
   accessToken: string;
   maxConnections?: number;
   liffChannelIds?: string[];
