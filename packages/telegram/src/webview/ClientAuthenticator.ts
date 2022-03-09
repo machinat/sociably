@@ -7,7 +7,7 @@ import type { WebviewClientAuthenticator } from '@machinat/webview';
 import { parse as parseBrowser } from 'bowser';
 import { TELEGRAM } from '../constant';
 import TelegramChat from '../Chat';
-import TelegramChatTarget from '../ChatTarget';
+import TelegramChatSender from '../ChatSender';
 import TelegramChatProfile from '../ChatProfile';
 import TelegramUser from '../User';
 import TelegramUserProfile from '../UserProfile';
@@ -28,8 +28,8 @@ export default class TelegramClientAuthenticator
   botName?: string;
   marshalTypes = [
     TelegramChat,
-    TelegramChatTarget,
     TelegramUser,
+    TelegramChatSender,
     TelegramUserProfile,
     TelegramChatProfile,
   ];

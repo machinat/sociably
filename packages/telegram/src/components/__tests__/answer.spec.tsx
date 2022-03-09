@@ -81,7 +81,7 @@ test('AnswerCallbackQuery match snapshot', async () => {
                   "text": undefined,
                   "url": undefined,
                 },
-                "toDirectInstance": true,
+                "toNonChatTarget": true,
               },
             },
           ]
@@ -110,7 +110,7 @@ test('AnswerCallbackQuery match snapshot', async () => {
                   "text": "foo",
                   "url": undefined,
                 },
-                "toDirectInstance": true,
+                "toNonChatTarget": true,
               },
             },
           ]
@@ -143,7 +143,7 @@ test('AnswerCallbackQuery match snapshot', async () => {
                   "text": undefined,
                   "url": "http://foo.bar/baz",
                 },
-                "toDirectInstance": true,
+                "toNonChatTarget": true,
               },
             },
           ]
@@ -428,7 +428,7 @@ test('AnswerInlineQuery match snapshot', async () => {
                   "switch_pm_parameter": "bar",
                   "switch_pm_text": "foo",
                 },
-                "toDirectInstance": true,
+                "toNonChatTarget": true,
               },
             },
           ]

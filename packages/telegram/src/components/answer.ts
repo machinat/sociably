@@ -50,7 +50,7 @@ export const AnswerCallbackQuery: TelegramComponent<
   return [
     makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerCallbackQuery',
-      toDirectInstance: true,
+      toNonChatTarget: true,
       parameters: {
         callback_query_id: queryId,
         text,
@@ -1164,7 +1164,7 @@ export const AnswerInlineQuery: TelegramComponent<
   return [
     makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerInlineQuery',
-      toDirectInstance: true,
+      toNonChatTarget: true,
       parameters: {
         inline_query_id: queryId,
         results: resultSegments?.map(({ value }) => value) || [],
@@ -1225,7 +1225,7 @@ export const AnswerShippingQuery: TelegramComponent<
   return [
     makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerShippingQuery',
-      toDirectInstance: true,
+      toNonChatTarget: true,
       parameters: {
         shipping_query_id: queryId,
         ok,
@@ -1263,7 +1263,7 @@ export const AnswerPreCheckoutQuery: TelegramComponent<
   return [
     makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerPreCheckoutQuery',
-      toDirectInstance: true,
+      toNonChatTarget: true,
       parameters: {
         pre_checkout_query_id: queryId,
         ok,

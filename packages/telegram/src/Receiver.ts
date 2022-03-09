@@ -1,7 +1,6 @@
 import { parse as parseUrl } from 'url';
 import { join as joinPath } from 'path';
 import invariant from 'invariant';
-
 import type { PopEventWrapper } from '@machinat/core';
 import { WebhookReceiver } from '@machinat/http/webhook';
 import type { WebhookHandler } from '@machinat/http/webhook';
@@ -71,10 +70,7 @@ const handleWebhook = ({
       bot,
       event,
       metadata,
-      reply: (message) =>
-        event.channel
-          ? bot.render(event.channel, message)
-          : Promise.resolve(null),
+      reply: (message) => bot.render(event.channel, message),
     });
     return { code: 200 };
   };

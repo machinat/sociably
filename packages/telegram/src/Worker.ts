@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import FormData from 'form-data';
 import type { MachinatWorker } from '@machinat/core/engine';
 import Queue from '@machinat/core/queue';
@@ -30,32 +30,33 @@ export default class TelegramWorker
 
   async _request(
     method: string,
-    bodyObject: { [k: string]: any },
+    parameters: { [k: string]: any },
     uploadingFiles: null | UploadingFile[]
   ): Promise<TelegramResult> {
-    let body;
-    let headers;
-    if (uploadingFiles) {
-      headers = { 'Content-Type': 'multipart/form-data' };
-      body = new FormData();
+    let response: Response;
 
-      Object.entries(bodyObject).forEach(([key, value]) => {
-        body.append(key, JSON.stringify(value));
+    if (uploadingFiles) {
+      const form = new FormData();
+      Object.entries(parameters).forEach(([key, value]) => {
+        form.append(key, JSON.stringify(value));
       });
 
       uploadingFiles.forEach(({ fieldName, fileData, fileInfo }) => {
-        body.append(fieldName, fileData, fileInfo);
+        form.append(fieldName, fileData, fileInfo);
+      });
+
+      response = await fetch(`${this.apiEntry}/${method}`, {
+        method: 'POST',
+        body: form,
+        headers: form.getHeaders(),
       });
     } else {
-      headers = { 'Content-Type': 'application/json' };
-      body = JSON.stringify(bodyObject);
+      response = await fetch(`${this.apiEntry}/${method}`, {
+        method: 'POST',
+        body: JSON.stringify(parameters),
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
-
-    const response = await fetch(`${this.apiEntry}/${method}`, {
-      method: 'POST',
-      body,
-      headers,
-    });
 
     const result = await response.json();
 
@@ -102,16 +103,16 @@ export default class TelegramWorker
         break;
       }
 
-      const { executionKey } = queue.peekAt(i) as TelegramJob;
-      if (executionKey !== undefined && lockedIds.has(executionKey)) {
+      const { key } = queue.peekAt(i) as TelegramJob;
+      if (key !== undefined && lockedIds.has(key)) {
         i += 1;
       } else {
-        this._consumeJobAt(queue, i, executionKey);
+        this._consumeJobAt(queue, i, key);
 
         this.connectionCount += 1;
 
-        if (executionKey !== undefined) {
-          lockedIds.add(executionKey);
+        if (key !== undefined) {
+          lockedIds.add(key);
         }
       }
     }

@@ -60,7 +60,7 @@ test('EditText match snapshot', async () => {
                   "reply_markup": undefined,
                   "text": "<b>foo</b>",
                 },
-                "toDirectInstance": false,
+                "toNonChatTarget": false,
               },
             },
           ]
@@ -92,7 +92,7 @@ test('EditText match snapshot', async () => {
                   "reply_markup": undefined,
                   "text": "foo",
                 },
-                "toDirectInstance": false,
+                "toNonChatTarget": false,
               },
             },
           ]
@@ -151,7 +151,7 @@ test('EditText match snapshot', async () => {
                   },
                   "text": "*foo*",
                 },
-                "toDirectInstance": true,
+                "toNonChatTarget": true,
               },
             },
           ]
@@ -186,7 +186,7 @@ test('EditCaption match snapshot', async () => {
                   "parse_mode": "HTML",
                   "reply_markup": undefined,
                 },
-                "toDirectInstance": false,
+                "toNonChatTarget": false,
               },
             },
           ]
@@ -217,7 +217,7 @@ test('EditCaption match snapshot', async () => {
                   "parse_mode": undefined,
                   "reply_markup": undefined,
                 },
-                "toDirectInstance": false,
+                "toNonChatTarget": false,
               },
             },
           ]
@@ -273,7 +273,7 @@ test('EditCaption match snapshot', async () => {
                     ],
                   },
                 },
-                "toDirectInstance": true,
+                "toNonChatTarget": true,
               },
             },
           ]
@@ -319,7 +319,7 @@ test('EditMedia match snapshot', async () => {
                   "message_id": 123,
                   "reply_markup": undefined,
                 },
-                "toDirectInstance": false,
+                "toNonChatTarget": false,
                 "uploadingFiles": Array [],
               },
             },
@@ -372,7 +372,7 @@ test('EditMedia match snapshot', async () => {
                   "message_id": 123,
                   "reply_markup": undefined,
                 },
-                "toDirectInstance": false,
+                "toNonChatTarget": false,
                 "uploadingFiles": Array [],
               },
             },
@@ -426,7 +426,7 @@ test('EditMedia match snapshot', async () => {
                   "message_id": 123,
                   "reply_markup": undefined,
                 },
-                "toDirectInstance": false,
+                "toNonChatTarget": false,
                 "uploadingFiles": Array [
                   Object {
                     "fieldName": "document",
@@ -507,7 +507,7 @@ test('EditMedia match snapshot', async () => {
                   "message_id": 123,
                   "reply_markup": undefined,
                 },
-                "toDirectInstance": false,
+                "toNonChatTarget": false,
                 "uploadingFiles": Array [
                   Object {
                     "fieldName": "video",
@@ -595,7 +595,7 @@ test('EditMedia match snapshot', async () => {
                     ],
                   },
                 },
-                "toDirectInstance": true,
+                "toNonChatTarget": true,
                 "uploadingFiles": Array [
                   Object {
                     "fieldName": "photo",

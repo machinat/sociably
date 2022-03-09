@@ -53,22 +53,18 @@ const message = (
   </Expression>
 );
 
-let telegramApi;
+const telegramApi = nock('https://api.telegram.org');
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
-  telegramApi = nock('https://api.telegram.org');
+  nock.cleanAll();
   bodySpy.mock.clear();
   Engine.mock.clear();
   Renderer.mock.clear();
   Worker.mock.clear();
 });
 
-afterEach(() => {
-  nock.cleanAll();
-});
-
-describe('#constructor(options)', () => {
+describe('.constructor(options)', () => {
   it('throw if botToken not given', () => {
     expect(
       () => new TelegramBot({ initScope, dispatchWrapper } as never)
@@ -111,7 +107,6 @@ describe('#constructor(options)', () => {
         initScope,
         dispatchWrapper,
         token,
-        maxConnections: 999,
       })
     );
 
@@ -119,13 +114,13 @@ describe('#constructor(options)', () => {
     expect(Worker.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
         "12345:_BOT_TOKEN_",
-        999,
+        100,
       ]
     `);
   });
 });
 
-test('#start() and #stop() start/stop engine', () => {
+test('.start() and .stop() start/stop engine', () => {
   const bot = new TelegramBot({ initScope, dispatchWrapper, token });
 
   type MockEngine = Moxy<TelegramBot['engine']>;
@@ -137,7 +132,7 @@ test('#start() and #stop() start/stop engine', () => {
   expect((bot.engine as MockEngine).stop.mock).toHaveBeenCalledTimes(1);
 });
 
-describe('#render(channel, message, options)', () => {
+describe('.render(channel, message, options)', () => {
   const bot = new TelegramBot({ token });
 
   beforeAll(() => {
@@ -194,27 +189,8 @@ describe('#render(channel, message, options)', () => {
     expect(apiCall1.isDone()).toBe(true);
     expect(apiCall2.isDone()).toBe(true);
   });
-});
 
-describe('#renderInstance(message)', () => {
-  const bot = new TelegramBot({ token });
-
-  beforeAll(() => {
-    bot.start();
-  });
-
-  afterAll(() => {
-    bot.stop();
-  });
-
-  it('resolves null if message is empty', async () => {
-    const empties = [undefined, null, [], <></>];
-    for (const empty of empties) {
-      await expect(bot.renderInstance(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
-    }
-  });
-
-  it('call edit api', async () => {
+  test('render global actions without a chat target', async () => {
     const apiCall1 = telegramApi
       .post('/bot12345:_BOT_TOKEN_/editMessageText', bodySpy)
       .reply(200, { ok: true, result: { id: '1' } });
@@ -222,7 +198,8 @@ describe('#renderInstance(message)', () => {
       .post('/bot12345:_BOT_TOKEN_/editMessageMedia', bodySpy)
       .reply(200, { ok: true, result: { id: '2' } });
 
-    const response = await bot.renderInstance(
+    const response = await bot.render(
+      null,
       <>
         <EditText inlineMessageId="1">
           foo <b>bar</b>
@@ -260,9 +237,16 @@ describe('#renderInstance(message)', () => {
     expect(apiCall1.isDone()).toBe(true);
     expect(apiCall2.isDone()).toBe(true);
   });
+
+  test('render empty message when no chat target', async () => {
+    const empties = [undefined, null, [], <></>];
+    for (const empty of empties) {
+      await expect(bot.render(null, empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+    }
+  });
 });
 
-describe('#makeApiCall()', () => {
+describe('.makeApiCall()', () => {
   test('call telegram bot api', async () => {
     const bot = new TelegramBot({ initScope, dispatchWrapper, token });
     bot.start();
@@ -313,7 +297,7 @@ describe('#makeApiCall()', () => {
   });
 });
 
-test('#fetchFile()', async () => {
+test('.fetchFile()', async () => {
   const bot = new TelegramBot({ initScope, dispatchWrapper, token });
   bot.start();
 
@@ -334,7 +318,7 @@ test('#fetchFile()', async () => {
     .get('/file/bot12345:_BOT_TOKEN_/_FILE_PATH_', bodySpy)
     .reply(200, '__BINARY_DATA__', {
       'Content-Type': 'image/png',
-      'Content-Length': 777,
+      'Content-Length': '777',
     });
 
   const response = await bot.fetchFile(fileId);

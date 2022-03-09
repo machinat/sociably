@@ -1,6 +1,7 @@
 import { TELEGRAM } from '../constant';
 import TelegramChat from '../Chat';
 import TelegramUser from '../User';
+import TelegramChatSender from '../ChatSender';
 import type {
   RawChat,
   RawUser,
@@ -52,7 +53,7 @@ export const EventBase: EventBase = {
 
 export interface Message {
   message: RawMessage;
-  user: TelegramUser;
+  user: TelegramUser | TelegramChatSender;
 }
 
 export const Message: Message = {
@@ -60,8 +61,12 @@ export const Message: Message = {
     return this.payload.message;
   },
   get user() {
-    const fromUser = this.payload.message.from;
-    return new TelegramUser(fromUser.id, fromUser);
+    const rawMeaasge = this.payload.message;
+    if (rawMeaasge.sender_chat) {
+      return new TelegramChatSender(rawMeaasge.sender_chat);
+    }
+    const rawUser = rawMeaasge.from;
+    return new TelegramUser(rawUser.id, rawUser);
   },
 };
 
@@ -77,20 +82,26 @@ export const EditedMessage: Message = {
 
 export interface ChannelPost {
   message: RawMessage;
-  user: null;
+  user: TelegramChatSender;
 }
 
 export const ChannelPost: ChannelPost = {
-  user: null,
   get message() {
     return this.payload.channel_post;
+  },
+  get user() {
+    const rawSenderChat = this.payload.channel_post.sender_chat;
+    return new TelegramChatSender(rawSenderChat);
   },
 };
 
 export const EditedChannelPost: ChannelPost = {
-  user: null,
   get message() {
     return this.payload.edited_channel_post;
+  },
+  get user() {
+    const rawSenderChat = this.payload.edited_channel_post.sender_chat;
+    return new TelegramChatSender(rawSenderChat);
   },
 };
 

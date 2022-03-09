@@ -1,10 +1,96 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#render(channel, message, options) send rendered messages to telegram api 1`] = `
+exports[`.render(channel, message, options) render global actions without a chat target 1`] = `
 Object {
   "jobs": Array [
     Object {
-      "executionKey": "telegram.12345.123456",
+      "key": undefined,
+      "method": "editMessageText",
+      "parameters": Object {
+        "disable_web_page_preview": undefined,
+        "inline_message_id": "1",
+        "message_id": undefined,
+        "parse_mode": "HTML",
+        "reply_markup": undefined,
+        "text": "foo <b>bar</b>",
+      },
+      "uploadingFiles": null,
+    },
+    Object {
+      "key": undefined,
+      "method": "editMessageMedia",
+      "parameters": Object {
+        "inline_message_id": "2",
+        "media": Object {
+          "caption": undefined,
+          "media": "https://machinat.com/trollface.png",
+          "parse_mode": "HTML",
+          "type": "photo",
+        },
+        "message_id": undefined,
+        "reply_markup": undefined,
+      },
+      "uploadingFiles": null,
+    },
+  ],
+  "results": Array [
+    Object {
+      "ok": true,
+      "result": Object {
+        "id": "1",
+      },
+    },
+    Object {
+      "ok": true,
+      "result": Object {
+        "id": "2",
+      },
+    },
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "key": undefined,
+          "method": "editMessageText",
+          "parameters": Object {
+            "disable_web_page_preview": undefined,
+            "inline_message_id": "1",
+            "message_id": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+            "text": "foo <b>bar</b>",
+          },
+          "uploadingFiles": null,
+        },
+        Object {
+          "key": undefined,
+          "method": "editMessageMedia",
+          "parameters": Object {
+            "inline_message_id": "2",
+            "media": Object {
+              "caption": undefined,
+              "media": "https://machinat.com/trollface.png",
+              "parse_mode": "HTML",
+              "type": "photo",
+            },
+            "message_id": undefined,
+            "reply_markup": undefined,
+          },
+          "uploadingFiles": null,
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
+
+exports[`.render(channel, message, options) send rendered messages to telegram api 1`] = `
+Object {
+  "jobs": Array [
+    Object {
+      "key": "telegram.12345.123456",
       "method": "sendMessage",
       "parameters": Object {
         "chat_id": 123456,
@@ -15,7 +101,7 @@ Object {
       "uploadingFiles": null,
     },
     Object {
-      "executionKey": "telegram.12345.123456",
+      "key": "telegram.12345.123456",
       "method": "sendPhoto",
       "parameters": Object {
         "caption": undefined,
@@ -50,7 +136,7 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "executionKey": "telegram.12345.123456",
+          "key": "telegram.12345.123456",
           "method": "sendMessage",
           "parameters": Object {
             "chat_id": 123456,
@@ -61,7 +147,7 @@ Object {
           "uploadingFiles": null,
         },
         Object {
-          "executionKey": "telegram.12345.123456",
+          "key": "telegram.12345.123456",
           "method": "sendPhoto",
           "parameters": Object {
             "caption": undefined,
@@ -74,92 +160,6 @@ Object {
               "selective": undefined,
             },
             "reply_to_message_id": undefined,
-          },
-          "uploadingFiles": null,
-        },
-      ],
-      "type": "dispatch",
-    },
-  ],
-}
-`;
-
-exports[`#renderInstance(message) call edit api 1`] = `
-Object {
-  "jobs": Array [
-    Object {
-      "executionKey": undefined,
-      "method": "editMessageText",
-      "parameters": Object {
-        "disable_web_page_preview": undefined,
-        "inline_message_id": "1",
-        "message_id": undefined,
-        "parse_mode": "HTML",
-        "reply_markup": undefined,
-        "text": "foo <b>bar</b>",
-      },
-      "uploadingFiles": null,
-    },
-    Object {
-      "executionKey": undefined,
-      "method": "editMessageMedia",
-      "parameters": Object {
-        "inline_message_id": "2",
-        "media": Object {
-          "caption": undefined,
-          "media": "https://machinat.com/trollface.png",
-          "parse_mode": "HTML",
-          "type": "photo",
-        },
-        "message_id": undefined,
-        "reply_markup": undefined,
-      },
-      "uploadingFiles": null,
-    },
-  ],
-  "results": Array [
-    Object {
-      "ok": true,
-      "result": Object {
-        "id": "1",
-      },
-    },
-    Object {
-      "ok": true,
-      "result": Object {
-        "id": "2",
-      },
-    },
-  ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
-          "executionKey": undefined,
-          "method": "editMessageText",
-          "parameters": Object {
-            "disable_web_page_preview": undefined,
-            "inline_message_id": "1",
-            "message_id": undefined,
-            "parse_mode": "HTML",
-            "reply_markup": undefined,
-            "text": "foo <b>bar</b>",
-          },
-          "uploadingFiles": null,
-        },
-        Object {
-          "executionKey": undefined,
-          "method": "editMessageMedia",
-          "parameters": Object {
-            "inline_message_id": "2",
-            "media": Object {
-              "caption": undefined,
-              "media": "https://machinat.com/trollface.png",
-              "parse_mode": "HTML",
-              "type": "photo",
-            },
-            "message_id": undefined,
-            "reply_markup": undefined,
           },
           "uploadingFiles": null,
         },

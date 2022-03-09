@@ -12,7 +12,7 @@ import Engine, { DispatchError } from '@machinat/core/engine';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import { makeClassProvider } from '@machinat/core/service';
 
-import { createChatJob, createDirectInstanceJobs } from './job';
+import { createChatJob, createNonChatJobs } from './job';
 import generalElementDelegate from './components/general';
 import TelegramWorker from './Worker';
 import TelegramChat from './Chat';
@@ -46,8 +46,7 @@ type TelegramBotOptions = {
  * @category Provider
  */
 export class TelegramBot
-  implements
-    MachinatBot<TelegramChat | TelegramChatTarget, TelegramJob, TelegramResult>
+  implements MachinatBot<TelegramChat, TelegramJob, TelegramResult>
 {
   token: string;
   id: number;
@@ -95,29 +94,27 @@ export class TelegramBot
     this.engine.stop();
   }
 
-  render(
-    target: number | string | TelegramChat | TelegramChatTarget,
-    message: MachinatNode
-  ): Promise<null | TelegramDispatchResponse> {
-    const channel =
-      target instanceof TelegramChat || target instanceof TelegramChatTarget
-        ? target
-        : new TelegramChatTarget(this.id, target);
-
-    return this.engine.render(channel, message, createChatJob);
-  }
-
   /**
-   * Render specific instance directly without target chat, only allow
+   * Render UI on a Telegram chat. If chat target is `null`, only allow
    * {@link AnswerCallbackQuery}, {@link AnswerInlineQuery},
    * {@link AnswerShippingQuery}, {@link AnswerPreCheckoutQuery} and editing
    * inline mode messages (using {@link EditText}, {@link EditCaption} and
    * {@link EditMedia} with inlineMessageId prop).
    */
-  renderInstance(
+  render(
+    target: null | number | string | TelegramChat,
     message: MachinatNode
   ): Promise<null | TelegramDispatchResponse> {
-    return this.engine.render(null, message, createDirectInstanceJobs);
+    if (!target) {
+      return this.engine.render(null, message, createNonChatJobs);
+    }
+
+    const channel =
+      typeof target === 'number' || typeof target === 'string'
+        ? new TelegramChatTarget(this.id, target)
+        : target;
+
+    return this.engine.render(channel, message, createChatJob);
   }
 
   async fetchFile(fileId: string): Promise<null | {
@@ -163,7 +160,7 @@ export class TelegramBot
         {
           method,
           parameters,
-          executionKey: undefined,
+          key: undefined,
           uploadingFiles: uploadingFiles || null,
         },
       ]);

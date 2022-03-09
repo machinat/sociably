@@ -1,4 +1,12 @@
 import TelegramUser from '../User';
+import TelegramUserProfile from '../UserProfile';
+
+test('marshallable type meta', () => {
+  expect(TelegramUser.typeName).toBe('TelegramUser');
+  expect(TelegramUser.fromJSONValue({ id: 12345 })).toEqual(
+    new TelegramUser(12345)
+  );
+});
 
 test('user with id only', () => {
   const user = new TelegramUser(12345);
@@ -6,7 +14,9 @@ test('user with id only', () => {
   expect(user.platform).toBe('telegram');
   expect(user.id).toBe(12345);
   expect(user.data).toBe(null);
-  expect(user.photoUrl).toBe(undefined);
+  expect(user.avatarUrl).toBe(undefined);
+  expect(user.profile).toBe(null);
+  expect(user.type).toBe('user');
 
   expect(user.typeName()).toBe('TelegramUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
@@ -14,7 +24,6 @@ test('user with id only', () => {
       "id": 12345,
     }
   `);
-  expect(TelegramUser.fromJSONValue(user.toJSONValue())).toStrictEqual(user);
 });
 
 test('user with raw data', () => {
@@ -31,7 +40,9 @@ test('user with raw data', () => {
   expect(user.platform).toBe('telegram');
   expect(user.id).toBe(12345);
   expect(user.data).toEqual(data);
-  expect(user.photoUrl).toBe(undefined);
+  expect(user.avatarUrl).toBe(undefined);
+  expect(user.profile).toStrictEqual(new TelegramUserProfile(data));
+  expect(user.type).toBe('user');
 
   expect(user.typeName()).toBe('TelegramUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
@@ -45,13 +56,14 @@ test('user with raw data', () => {
 });
 
 test('user with photo url', () => {
-  const photoUrl = 'https://...';
-  const user = new TelegramUser(12345, undefined, photoUrl);
+  const avatarUrl = 'https://...';
+  const user = new TelegramUser(12345, undefined, avatarUrl);
 
   expect(user.platform).toBe('telegram');
   expect(user.id).toBe(12345);
   expect(user.data).toBe(null);
-  expect(user.photoUrl).toBe(photoUrl);
+  expect(user.avatarUrl).toBe(avatarUrl);
+  expect(user.type).toBe('user');
 
   expect(user.typeName()).toBe('TelegramUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
@@ -59,7 +71,4 @@ test('user with photo url', () => {
       "id": 12345,
     }
   `);
-  expect(TelegramUser.fromJSONValue(user.toJSONValue())).toStrictEqual(
-    new TelegramUser(12345)
-  );
 });

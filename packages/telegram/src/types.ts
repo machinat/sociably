@@ -11,6 +11,7 @@ import { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
 import type { WebhookMetadata } from '@machinat/http/webhook';
 import type { TelegramEvent } from './event/types';
 import type TelegramChat from './Chat';
+import type TelegramChatTarget from './ChatTarget';
 import type { TelegramBot } from './Bot';
 
 export * from './event/types';
@@ -36,6 +37,7 @@ export type RawChat = {
   first_name?: string;
   last_name?: string;
   description?: string;
+  bio?: string;
 };
 
 // TODO: detailed raw types
@@ -119,7 +121,7 @@ export type UploadingFile = {
 export type TelegramSegmentValue = {
   method: string;
   parameters: { [k: string]: any };
-  toDirectInstance?: boolean;
+  toNonChatTarget?: boolean;
   uploadingFiles?: UploadingFile[];
 };
 
@@ -131,7 +133,7 @@ export type TelegramComponent<
 export type TelegramJob = {
   method: string;
   parameters: { [k: string]: any };
-  executionKey: undefined | string;
+  key: undefined | string;
   uploadingFiles: null | UploadingFile[];
 };
 
@@ -148,7 +150,10 @@ export type TelegramEventMiddleware = EventMiddleware<
   null
 >;
 
-export type TelegramDispatchFrame = DispatchFrame<TelegramChat, TelegramJob>;
+export type TelegramDispatchFrame = DispatchFrame<
+  TelegramChat | TelegramChatTarget,
+  TelegramJob
+>;
 
 export type BotApiResult = Record<string, any>;
 

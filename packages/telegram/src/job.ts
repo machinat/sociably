@@ -19,20 +19,20 @@ export const createChatJob = (
           text: segment.value,
           parse_mode: 'HTML',
         },
-        executionKey: chat.uid,
+        key: chat.uid,
         uploadingFiles: null,
       });
     } else {
-      const { method, toDirectInstance, parameters, uploadingFiles } =
+      const { method, toNonChatTarget, parameters, uploadingFiles } =
         segment.value;
 
       jobs.push({
         method,
         parameters: {
           ...parameters,
-          chat_id: toDirectInstance ? undefined : chat.id,
+          chat_id: toNonChatTarget ? undefined : chat.id,
         },
-        executionKey: chat?.uid,
+        key: chat?.uid,
         uploadingFiles: uploadingFiles || null,
       });
     }
@@ -41,7 +41,7 @@ export const createChatJob = (
   return jobs;
 };
 
-export const createDirectInstanceJobs = (
+export const createNonChatJobs = (
   _: null,
   segments: DispatchableSegment<TelegramSegmentValue>[]
 ): TelegramJob[] => {
@@ -51,10 +51,10 @@ export const createDirectInstanceJobs = (
     if (segment.type === 'text') {
       throw new TypeError('text is invalid to be rendered without target chat');
     } else {
-      const { method, toDirectInstance, parameters, uploadingFiles } =
+      const { method, toNonChatTarget, parameters, uploadingFiles } =
         segment.value;
 
-      if (!toDirectInstance) {
+      if (!toNonChatTarget) {
         throw new TypeError(
           method.slice(0, 4) === 'edit'
             ? 'inlineMessageId is required to edit an inline message'
@@ -67,7 +67,7 @@ export const createDirectInstanceJobs = (
       jobs.push({
         method,
         parameters,
-        executionKey: undefined,
+        key: undefined,
         uploadingFiles: uploadingFiles || null,
       });
     }

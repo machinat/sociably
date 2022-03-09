@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`with uploadingFiles 1`] = `
+Array [
+  "------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name=\\"chat_id\\"
+
+12345
+------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name=\\"caption\\"
+
+\\"hi photo\\"
+------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name=\\"photo\\"; filename=\\"my_photo.png\\"
+Content-Type: image/png
+
+__PHOTO_CONTENT__
+------------------BOUNDARY-PLACEHOLDER--
+",
+  "------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name=\\"chat_id\\"
+
+12345
+------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name=\\"media\\"
+
+[{\\"type\\":\\"video\\",\\"media\\":\\"attach://my_video\\"},{\\"type\\":\\"audio\\",\\"media\\":\\"attach://my_audio\\"}]
+------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name=\\"my_video\\"
+
+__VIDEO_CONTENT__
+------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name=\\"my_audio\\"
+
+__AUDIO_CONTENT__
+------------------BOUNDARY-PLACEHOLDER--
+",
+]
+`;

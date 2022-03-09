@@ -1,5 +1,12 @@
 import TelegramChatTarget from '../ChatTarget';
 
+test('marshallable type meta', () => {
+  expect(TelegramChatTarget.typeName).toBe('TelegramChatTarget');
+  expect(
+    TelegramChatTarget.fromJSONValue({ botId: 12345, id: 67890 })
+  ).toStrictEqual(new TelegramChatTarget(12345, 67890));
+});
+
 test('TelegramChatTarget', () => {
   const idTarget = new TelegramChatTarget(12345, 67890);
 
@@ -26,7 +33,4 @@ test('TelegramChatTarget', () => {
       "id": "@foo_channel",
     }
   `);
-  expect(
-    TelegramChatTarget.fromJSONValue(channelTarget.toJSONValue())
-  ).toStrictEqual(channelTarget);
 });

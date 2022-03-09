@@ -27,34 +27,46 @@ class TelegramChatProfile
     this.avatarUrl = avatarUrl;
   }
 
+  /** Id of the chat */
   get id(): number {
     return this.data.id;
   }
 
+  /** Type of chat */
   get type(): TelegramChatType {
     return this.data.type;
   }
 
+  /** Display name of the chat */
   get name(): string {
     const { title, first_name: firstName, last_name: lastName } = this.data;
     return (title ||
       (lastName ? `${firstName} ${lastName}` : firstName)) as string;
   }
 
+  /** Title, for supergroups, channels and group chats */
   get title(): undefined | string {
     return this.data.title;
   }
 
+  /** First name of the other party in a private chat */
   get firstName(): undefined | string {
     return this.data.first_name;
   }
 
+  /** Last name of the other party in a private chat */
   get lastName(): undefined | string {
     return this.data.last_name;
   }
 
+  /** Username, for private chats, supergroups and channels if available */
   get username(): undefined | string {
     return this.data.username;
+  }
+
+  /** Bio of the other party in a private chat */
+  get bio(): undefined | string {
+    return this.data.bio;
   }
 
   toJSONValue(): TelegramChatProfileValue {

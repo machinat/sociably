@@ -1,5 +1,5 @@
 import TelegramChat from '../Chat';
-import { createChatJob, createDirectInstanceJobs } from '../job';
+import { createChatJob, createNonChatJobs } from '../job';
 
 describe('createChatJob(channel, segments)', () => {
   const chat = new TelegramChat(12345, { id: 67890, type: 'private' });
@@ -43,7 +43,7 @@ describe('createChatJob(channel, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "executionKey": "telegram.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendMesage",
           "parameters": Object {
             "chat_id": 67890,
@@ -52,7 +52,7 @@ describe('createChatJob(channel, segments)', () => {
           "uploadingFiles": null,
         },
         Object {
-          "executionKey": "telegram.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendPhoto",
           "parameters": Object {
             "caption": "bar",
@@ -78,7 +78,7 @@ describe('createChatJob(channel, segments)', () => {
           ],
         },
         Object {
-          "executionKey": "telegram.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendMessage",
           "parameters": Object {
             "chat_id": 67890,
@@ -92,17 +92,17 @@ describe('createChatJob(channel, segments)', () => {
   });
 });
 
-describe('createDirectInstanceJobs(segments)', () => {
+describe('createNonChatJobs(segments)', () => {
   it('create jobs from segments', () => {
     expect(
-      createDirectInstanceJobs(null, [
+      createNonChatJobs(null, [
         {
           type: 'unit',
           node: {} as any,
           path: '$',
           value: {
             method: 'answerCallbackQuery',
-            toDirectInstance: true,
+            toNonChatTarget: true,
             parameters: {
               callback_query_id: '123456',
             },
@@ -114,7 +114,7 @@ describe('createDirectInstanceJobs(segments)', () => {
           path: '$',
           value: {
             method: 'editMessageText',
-            toDirectInstance: true,
+            toNonChatTarget: true,
             parameters: {
               text: 'foo',
               inline_message_id: 123,
@@ -127,7 +127,7 @@ describe('createDirectInstanceJobs(segments)', () => {
           path: '$',
           value: {
             method: 'editMessageMedia',
-            toDirectInstance: true,
+            toNonChatTarget: true,
             parameters: {
               inline_message_id: 123,
               media: {
@@ -149,7 +149,7 @@ describe('createDirectInstanceJobs(segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "executionKey": undefined,
+          "key": undefined,
           "method": "answerCallbackQuery",
           "parameters": Object {
             "callback_query_id": "123456",
@@ -157,7 +157,7 @@ describe('createDirectInstanceJobs(segments)', () => {
           "uploadingFiles": null,
         },
         Object {
-          "executionKey": undefined,
+          "key": undefined,
           "method": "editMessageText",
           "parameters": Object {
             "inline_message_id": 123,
@@ -166,7 +166,7 @@ describe('createDirectInstanceJobs(segments)', () => {
           "uploadingFiles": null,
         },
         Object {
-          "executionKey": undefined,
+          "key": undefined,
           "method": "editMessageMedia",
           "parameters": Object {
             "inline_message_id": 123,
@@ -199,7 +199,7 @@ describe('createDirectInstanceJobs(segments)', () => {
 
   it('throw if text segment received', () => {
     expect(() =>
-      createDirectInstanceJobs(null, [
+      createNonChatJobs(null, [
         {
           type: 'text',
           node: 'foo',
@@ -214,7 +214,7 @@ describe('createDirectInstanceJobs(segments)', () => {
 
   it('throw if inline_message_id missing when editing inline message', () => {
     expect(() =>
-      createDirectInstanceJobs(null, [
+      createNonChatJobs(null, [
         {
           type: 'unit',
           node: '__ELEMENT__',
@@ -234,7 +234,7 @@ describe('createDirectInstanceJobs(segments)', () => {
 
   it('throw if the content is not to be rendered without target chat', () => {
     expect(() =>
-      createDirectInstanceJobs(null, [
+      createNonChatJobs(null, [
         {
           type: 'unit',
           node: '__ELEMENT__',

@@ -65,7 +65,7 @@ export const EditText: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'editMessageText',
-      toDirectInstance: !!inlineMessageId,
+      toNonChatTarget: !!inlineMessageId,
       parameters: {
         text: textSegments[0].value,
         message_id: messageId,
@@ -125,7 +125,7 @@ export const EditCaption: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'editMessageCaption',
-      toDirectInstance: !!inlineMessageId,
+      toNonChatTarget: !!inlineMessageId,
       parameters: {
         caption: textSegments[0].value,
         message_id: messageId,
@@ -235,7 +235,7 @@ export const EditMedia: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'editMessageMedia',
-      toDirectInstance: !!inlineMessageId,
+      toNonChatTarget: !!inlineMessageId,
       parameters: {
         media: mediaInput,
         message_id: messageId,

@@ -1,8 +1,9 @@
 import type { MachinatChannel } from '@machinat/core';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { TELEGRAM } from './constant';
-import type { TelegramChatType, RawChat } from './types';
+import ChatProfile from './ChatProfile';
 import type TelegramUser from './User';
+import type { TelegramChatType, RawChat } from './types';
 
 type TelegramChatValue = {
   botId: number;
@@ -31,16 +32,16 @@ class TelegramChat
     });
   }
 
+  platform = TELEGRAM;
   botId: number;
   data: RawChat;
-  platform = TELEGRAM;
 
   constructor(botId: number, data: RawChat) {
     this.botId = botId;
     this.data = data;
   }
 
-  /** Unique identifier for this chat. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */
+  /** Id of the chat */
   get id(): number {
     return this.data.id;
   }
@@ -50,8 +51,16 @@ class TelegramChat
     return this.data.type;
   }
 
+  /** Unique id of the chat channel */
   get uid(): string {
     return `telegram.${this.botId}.${this.id}`;
+  }
+
+  /** Profile of the chat */
+  get profile(): null | ChatProfile {
+    return this.data.title || this.data.username || this.data.first_name
+      ? new ChatProfile(this.data)
+      : null;
   }
 
   toJSONValue(): TelegramChatValue {

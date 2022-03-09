@@ -315,7 +315,7 @@ Array [
         "switch_pm_parameter": undefined,
         "switch_pm_text": undefined,
       },
-      "toDirectInstance": true,
+      "toNonChatTarget": true,
     },
   },
 ]
@@ -881,7 +881,7 @@ Array [
         "switch_pm_parameter": undefined,
         "switch_pm_text": undefined,
       },
-      "toDirectInstance": true,
+      "toNonChatTarget": true,
     },
   },
 ]
@@ -903,7 +903,7 @@ Array [
         "ok": true,
         "pre_checkout_query_id": "12345",
       },
-      "toDirectInstance": true,
+      "toNonChatTarget": true,
     },
   },
 ]
@@ -926,7 +926,7 @@ Array [
         "ok": false,
         "pre_checkout_query_id": "12345",
       },
-      "toDirectInstance": true,
+      "toNonChatTarget": true,
     },
   },
 ]
@@ -949,7 +949,7 @@ Array [
         "shipping_options": undefined,
         "shipping_query_id": "12345",
       },
-      "toDirectInstance": true,
+      "toNonChatTarget": true,
     },
   },
 ]
@@ -1017,7 +1017,7 @@ Array [
         ],
         "shipping_query_id": "12345",
       },
-      "toDirectInstance": true,
+      "toNonChatTarget": true,
     },
   },
 ]
@@ -1041,7 +1041,7 @@ Array [
         "shipping_options": undefined,
         "shipping_query_id": "12345",
       },
-      "toDirectInstance": true,
+      "toNonChatTarget": true,
     },
   },
 ]

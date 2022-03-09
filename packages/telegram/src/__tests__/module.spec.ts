@@ -7,6 +7,7 @@ import Http from '@machinat/http';
 import Telegram from '../module';
 import TelegramChat from '../Chat';
 import TelegramChatTarget from '../ChatTarget';
+import TelegramChatSender from '../ChatSender';
 import TelegramUser from '../User';
 import { TelegramReceiver } from '../Receiver';
 import TelegramChatProfile from '../ChatProfile';
@@ -112,6 +113,7 @@ describe('initModule(configs)', () => {
       expect.arrayContaining([
         TelegramUser,
         TelegramChat,
+        TelegramChatSender,
         TelegramChatTarget,
         TelegramUserProfile,
         TelegramChatProfile,
@@ -135,7 +137,7 @@ describe('initModule(configs)', () => {
     ]);
   });
 
-  test('#startHook() start bot', async () => {
+  test('.startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Telegram.initModule({
       botToken: '12345:_BOT_TOKEN_',
@@ -146,7 +148,7 @@ describe('initModule(configs)', () => {
     expect(bot.start.mock).toHaveBeenCalledTimes(1);
   });
 
-  test('#stopHook() stop bot', async () => {
+  test('.stopHook() stop bot', async () => {
     const bot = moxy({ stop: async () => {} });
     const module = Telegram.initModule({
       botToken: '12345:_BOT_TOKEN_',

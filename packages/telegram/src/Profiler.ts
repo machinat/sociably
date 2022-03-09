@@ -2,7 +2,7 @@ import { makeClassProvider } from '@machinat/core/service';
 import type { UserProfiler } from '@machinat/core/base/Profiler';
 import type TelegramUser from './User';
 import TelegramChat from './Chat';
-import TelegramChatTarget from './ChatTarget';
+import TelegramChatSender from './ChatSender';
 import TelegramChatProfile from './ChatProfile';
 import TelegramUserProfile from './UserProfile';
 import BotP from './Bot';
@@ -14,6 +14,21 @@ type PhotoResponse = {
   contentLength?: number;
   width: number;
   height: number;
+};
+
+type GetUserProfileOptions = {
+  /**
+   * The group chat to call `getChatMember` API with. By default, the
+   * private chat to the user is used.
+   */
+  inChat?: TelegramChat;
+  /**
+   * Provide the `avatarUrl` of the user profile. You can use `fetchUserPhoto`
+   * method to fetch the file and serve it through an open URL.
+   */
+  avatarUrl?: string;
+  /** Force to fetch user data from API  */
+  fromApi?: boolean;
 };
 
 /**
@@ -33,21 +48,22 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
    */
   async getUserProfile(
     user: TelegramUser,
-    options: {
-      /**
-       * Group or channel chat for calling `getChatMember`. By default, the
-       * private chat to the user is used.
-       */
-      inChat?: TelegramChat;
-      /**
-       * If provided, `avatarUrl` will be attached on the profile for storing.
-       * This is useful if you want to _fetchUserPhoto_ manually.
-       */
-      avatarUrl?: string;
-      /** Force to fetch user data from API  */
-      fromApi?: boolean;
-    } = {}
-  ): Promise<TelegramUserProfile> {
+    options?: GetUserProfileOptions
+  ): Promise<TelegramUserProfile>;
+
+  async getUserProfile(
+    user: TelegramChatSender,
+    options?: GetUserProfileOptions
+  ): Promise<TelegramChatProfile>;
+
+  async getUserProfile(
+    user: TelegramUser | TelegramChatSender,
+    options: GetUserProfileOptions = {}
+  ): Promise<TelegramUserProfile | TelegramChatProfile> {
+    if (user.type !== 'user') {
+      return this.getChatProfile(user);
+    }
+
     const { inChat, avatarUrl, fromApi } = options;
     let userData: RawUser;
 
@@ -61,20 +77,20 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       userData = chatMember.user;
     }
 
-    return new TelegramUserProfile(userData, avatarUrl || user.photoUrl);
+    return new TelegramUserProfile(userData, avatarUrl || user.avatarUrl);
   }
 
   /**
    * Get profile of the chat. If chat details are not attached with the chat
-   * object (e.g. chat retrieved from state), `getChat` API method is called to
-   * fetch chat data.
+   * object (e.g. chat is retrieved from state), `getChat` API method is called
+   * to fetch chat data.
    */
   async getChatProfile(
-    chat: string | number | TelegramChat | TelegramChatTarget,
+    chat: string | number | TelegramChat | TelegramChatSender,
     options: {
       /**
-       * If provided, `avatarUrl` will be attached with the profile for storing.
-       * This is useful to work with _fetchUserPhoto_ or login in the webview.
+       * Provide the `avatarUrl` of the chat profile. You can use `fetchChatPhoto`
+       * method to fetch the file and serve it through an open URL.
        */
       avatarUrl?: string;
       /** Get chat data from API by force. */
@@ -86,8 +102,6 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
 
     if (typeof chat === 'number' || typeof chat === 'string') {
       chatId = chat;
-    } else if (chat instanceof TelegramChatTarget) {
-      chatId = chat.id;
     } else {
       const { id, data } = chat;
 
@@ -142,7 +156,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
 
   /** Fetch the photo file of a chat */
   async fetchChatPhoto(
-    chat: number | string | TelegramChat | TelegramChatTarget,
+    chat: number | string | TelegramChat | TelegramChatSender,
     options?: { size?: 'big' | 'small' }
   ): Promise<null | PhotoResponse> {
     const { photo } = await this.bot.makeApiCall('getChat', {

@@ -9,12 +9,12 @@ const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const botToken = '__BOT_TOKEN__';
 
-let telegramApi: nock.Scope;
+const telegramApi = nock(`https://api.telegram.org`, {
+  reqheaders: { 'content-type': 'application/json' },
+});
 let queue: Queue<any, any>;
 beforeEach(() => {
-  telegramApi = nock(`https://api.telegram.org`, {
-    reqheaders: { 'content-type': 'application/json' },
-  });
+  nock.cleanAll();
   queue = new Queue();
 });
 
@@ -51,12 +51,12 @@ it('makes calls to api', async () => {
   client.start(queue);
 
   const jobs = [
-    { method: 'foo', parameters: { n: 1 }, executionKey: undefined },
-    { method: 'bar', parameters: { n: 2 }, executionKey: undefined },
-    { method: 'baz', parameters: { n: 3 }, executionKey: undefined },
-    { method: 'foo', parameters: { n: 4 }, executionKey: undefined },
-    { method: 'bar', parameters: { n: 5 }, executionKey: undefined },
-    { method: 'baz', parameters: { n: 6 }, executionKey: undefined },
+    { method: 'foo', parameters: { n: 1 }, key: undefined },
+    { method: 'bar', parameters: { n: 2 }, key: undefined },
+    { method: 'baz', parameters: { n: 3 }, key: undefined },
+    { method: 'foo', parameters: { n: 4 }, key: undefined },
+    { method: 'bar', parameters: { n: 5 }, key: undefined },
+    { method: 'baz', parameters: { n: 6 }, key: undefined },
   ];
 
   const promise = queue.executeJobs(jobs);
@@ -90,15 +90,15 @@ it('sequently excute jobs within the same identical chat', async () => {
   client.start(queue);
 
   const jobs = [
-    { method: 'sendMessage', executionKey: 'foo', parameters: { n: 1 } },
-    { method: 'sendPhoto', executionKey: 'foo', parameters: { n: 2 } },
-    { method: 'sendMessage', executionKey: 'bar', parameters: { n: 3 } },
-    { method: 'sendPhoto', executionKey: 'bar', parameters: { n: 4 } },
-    { method: 'sendMessage', executionKey: 'baz', parameters: { n: 5 } },
-    { method: 'sendPhoto', executionKey: 'baz', parameters: { n: 6 } },
-    { method: 'sendMessage', executionKey: 'foo', parameters: { n: 7 } },
-    { method: 'sendMessage', executionKey: 'bar', parameters: { n: 8 } },
-    { method: 'sendMessage', executionKey: 'baz', parameters: { n: 9 } },
+    { method: 'sendMessage', key: 'foo', parameters: { n: 1 } },
+    { method: 'sendPhoto', key: 'foo', parameters: { n: 2 } },
+    { method: 'sendMessage', key: 'bar', parameters: { n: 3 } },
+    { method: 'sendPhoto', key: 'bar', parameters: { n: 4 } },
+    { method: 'sendMessage', key: 'baz', parameters: { n: 5 } },
+    { method: 'sendPhoto', key: 'baz', parameters: { n: 6 } },
+    { method: 'sendMessage', key: 'foo', parameters: { n: 7 } },
+    { method: 'sendMessage', key: 'bar', parameters: { n: 8 } },
+    { method: 'sendMessage', key: 'baz', parameters: { n: 9 } },
   ];
 
   const executePromise = queue.executeJobs(jobs);
@@ -148,15 +148,15 @@ it('open requests up to maxConnections', async () => {
   client.start(queue);
 
   const jobs = [
-    { method: 'sendMessage', executionKey: 'foo', parameters: { n: 1 } },
-    { method: 'sendPhoto', executionKey: 'foo', parameters: { n: 2 } },
-    { method: 'sendMessage', executionKey: 'bar', parameters: { n: 3 } },
-    { method: 'sendPhoto', executionKey: 'bar', parameters: { n: 4 } },
-    { method: 'sendMessage', executionKey: 'baz', parameters: { n: 5 } },
-    { method: 'sendPhoto', executionKey: 'baz', parameters: { n: 6 } },
-    { method: 'sendMessage', executionKey: 'foo', parameters: { n: 7 } },
-    { method: 'sendMessage', executionKey: 'bar', parameters: { n: 8 } },
-    { method: 'sendMessage', executionKey: 'baz', parameters: { n: 9 } },
+    { method: 'sendMessage', key: 'foo', parameters: { n: 1 } },
+    { method: 'sendPhoto', key: 'foo', parameters: { n: 2 } },
+    { method: 'sendMessage', key: 'bar', parameters: { n: 3 } },
+    { method: 'sendPhoto', key: 'bar', parameters: { n: 4 } },
+    { method: 'sendMessage', key: 'baz', parameters: { n: 5 } },
+    { method: 'sendPhoto', key: 'baz', parameters: { n: 6 } },
+    { method: 'sendMessage', key: 'foo', parameters: { n: 7 } },
+    { method: 'sendMessage', key: 'bar', parameters: { n: 8 } },
+    { method: 'sendMessage', key: 'baz', parameters: { n: 9 } },
   ];
 
   const executePromise = queue.executeJobs(jobs);
@@ -212,9 +212,9 @@ it('throw if connection error happen', async () => {
   client.start(queue);
 
   const jobs = [
-    { method: 'sendMessage', parameters: { text: 'hi' }, executionKey: 'foo' },
-    { method: 'sendPhoto', parameters: { file_id: 123 }, executionKey: 'foo' },
-    { method: 'sendMessage', parameters: { text: 'bye' }, executionKey: 'foo' },
+    { method: 'sendMessage', parameters: { text: 'hi' }, key: 'foo' },
+    { method: 'sendPhoto', parameters: { file_id: 123 }, key: 'foo' },
+    { method: 'sendMessage', parameters: { text: 'bye' }, key: 'foo' },
   ];
 
   const result = await queue.executeJobs(jobs);
@@ -251,9 +251,9 @@ it('throw if api error happen', async () => {
   });
 
   const jobs = [
-    { method: 'sendMessage', parameters: { text: 'hi' }, executionKey: 'foo' },
-    { method: 'sendPhoto', parameters: { file_id: 123 }, executionKey: 'foo' },
-    { method: 'sendMessage', parameters: { text: 'bye' }, executionKey: 'foo' },
+    { method: 'sendMessage', parameters: { text: 'hi' }, key: 'foo' },
+    { method: 'sendPhoto', parameters: { file_id: 123 }, key: 'foo' },
+    { method: 'sendMessage', parameters: { text: 'bye' }, key: 'foo' },
   ];
 
   client.start(queue);
@@ -277,4 +277,86 @@ it('throw if api error happen', async () => {
 
   expect(scope1.isDone()).toBe(true);
   expect(scope2.isDone()).toBe(true);
+});
+
+test('with uploadingFiles', async () => {
+  const client = new TelegramWorker(botToken, 10);
+  const bodySpy = moxy(() => true);
+
+  const apiCallWithFile = nock(`https://api.telegram.org`, {
+    reqheaders: { 'content-type': /^multipart\/form-data; boundary=-+[0-9]+$/ },
+  })
+    .post(new RegExp(`^/bot${botToken}/send(Photo|MediaGroup)$`), bodySpy)
+    .times(2)
+    .reply(200, { ok: true, result: {} });
+
+  const jobs = [
+    {
+      method: 'sendPhoto',
+      parameters: { chat_id: 12345, caption: 'hi photo' },
+      key: 'foo',
+      uploadingFiles: [
+        {
+          fieldName: 'photo',
+          fileData: '__PHOTO_CONTENT__',
+          fileAssetTag: 'foo',
+          fileInfo: {
+            contentType: 'image/png',
+            filename: 'my_photo.png',
+            knownLength: 16,
+          },
+        },
+      ],
+    },
+    {
+      method: 'sendMediaGroup',
+      parameters: {
+        chat_id: 12345,
+        media: [
+          { type: 'video', media: 'attach://my_video' },
+          { type: 'audio', media: 'attach://my_audio' },
+        ],
+      },
+      key: 'foo',
+      uploadingFiles: [
+        {
+          fieldName: 'my_video',
+          fileData: '__VIDEO_CONTENT__',
+          fileAssetTag: 'bar',
+        },
+        {
+          fieldName: 'my_audio',
+          fileData: '__AUDIO_CONTENT__',
+          fileAssetTag: 'bar',
+        },
+      ],
+    },
+  ];
+
+  client.start(queue);
+  await expect(queue.executeJobs(jobs)).resolves.toEqual({
+    success: true,
+    batch: [
+      {
+        success: true,
+        result: { ok: true, result: {} },
+        job: jobs[0],
+      },
+      {
+        success: true,
+        result: { ok: true, result: {} },
+        job: jobs[1],
+      },
+    ],
+    errors: null,
+  });
+
+  expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+  expect(
+    bodySpy.mock.calls.map(({ args }) =>
+      args[0].replace(/-{10}[0-9]+/g, 'BOUNDARY-PLACEHOLDER')
+    )
+  ).toMatchSnapshot();
+
+  expect(apiCallWithFile.isDone()).toBe(true);
 });

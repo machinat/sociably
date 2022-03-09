@@ -51,7 +51,7 @@ afterAll(() => {
   global.Date = _Date;
 });
 
-describe('#delegateAuthRequest()', () => {
+describe('.delegateAuthRequest()', () => {
   const telegramLoginSearch = {
     id: '12345',
     auth_date: '1601136776',
@@ -240,7 +240,7 @@ describe('#delegateAuthRequest()', () => {
   });
 });
 
-test('#verifyCredential() simply return not ok', async () => {
+test('.verifyCredential() simply return not ok', async () => {
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
           Object {
@@ -251,7 +251,7 @@ test('#verifyCredential() simply return not ok', async () => {
         `);
 });
 
-describe('#verifyRefreshment()', () => {
+describe('.verifyRefreshment()', () => {
   test('return success and original data', async () => {
     const authData = {
       bot: 12345,
@@ -296,7 +296,7 @@ describe('#verifyRefreshment()', () => {
   });
 });
 
-test('#checkAuthContext()', () => {
+test('.checkAuthContext()', () => {
   const authData = {
     bot: 12345,
     user: {

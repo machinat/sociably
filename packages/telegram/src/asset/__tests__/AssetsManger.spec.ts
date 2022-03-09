@@ -81,9 +81,9 @@ test('set asset id', async () => {
   expect(state.set.mock).toHaveBeenNthCalledWith(1, 'bar', 'baz');
   expect(state.set.mock).toHaveBeenNthCalledWith(2, 'my_file', '_FILE_ID_');
 
-  state.set.mock.fake(async () => false);
-  await expect(manager.saveAssetId('foo', 'bar', 'baz')).resolves.toBe(false);
-  await expect(manager.saveFile('my_file', '_FILE_ID_')).resolves.toBe(false);
+  state.set.mock.fake(async () => true);
+  await expect(manager.saveAssetId('foo', 'bar', 'baz')).resolves.toBe(true);
+  await expect(manager.saveFile('my_file', '_FILE_ID_')).resolves.toBe(true);
   expect(state.set.mock).toHaveBeenCalledTimes(4);
 });
 

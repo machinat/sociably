@@ -21,23 +21,23 @@ beforeEach(() => {
   navigator.mock.reset();
 });
 
-test('#constructor() properties', () => {
+test('.constructor() properties', () => {
   expect(authenticator.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
     Array [
       "TelegramChat",
-      "TelegramChatTarget",
       "TelegramUser",
+      "TelegramChatSender",
       "TelegramUserProfile",
       "TelegramChatProfile",
     ]
   `);
 });
 
-test('#init() do nothing', async () => {
+test('.init() do nothing', async () => {
   await expect(authenticator.init()).resolves.toBe(undefined);
 });
 
-test('#fetchCredential() return not ok', async () => {
+test('.fetchCredential() return not ok', async () => {
   await expect(authenticator.fetchCredential()).resolves.toMatchInlineSnapshot(`
           Object {
             "code": 400,
@@ -47,7 +47,7 @@ test('#fetchCredential() return not ok', async () => {
         `);
 });
 
-test('#checkAuthContext()', () => {
+test('.checkAuthContext()', () => {
   const authData = {
     bot: 12345,
     chat: undefined,
@@ -103,7 +103,7 @@ test('#checkAuthContext()', () => {
   });
 });
 
-describe('#closeWebview()', () => {
+describe('.closeWebview()', () => {
   it('redirect to telegram.me while in mobile devices', () => {
     const authenticatorWithBotName = new TelegramClientAuthenticator({
       botName: 'MyBot',

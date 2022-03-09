@@ -171,7 +171,7 @@ test('reply(message) sugar', async () => {
   );
 
   expect(popEventMock).toHaveBeenCalledTimes(1);
-  const { reply, event } = popEventMock.calls[0].args[0];
+  let { reply, event } = popEventMock.calls[0].args[0];
   await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
           Object {
             "jobs": Array [],
@@ -182,6 +182,28 @@ test('reply(message) sugar', async () => {
 
   expect(bot.render.mock).toHaveBeenCalledTimes(1);
   expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world');
+
+  await receiver.handleRequest(
+    createReq({
+      method: 'POST',
+      body: JSON.stringify({
+        update_id: 9999,
+        callback_query: {
+          id: '12345',
+          from: { id: '67890' },
+          chat_instance: '43210',
+          data: 'foo',
+        },
+      }),
+    }),
+    createRes()
+  );
+  expect(popEventMock).toHaveBeenCalledTimes(2);
+  [{ reply, event }] = popEventMock.calls[1].args;
+  await reply('hello world');
+
+  expect(bot.render.mock).toHaveBeenCalledTimes(2);
+  expect(bot.render.mock).toHaveBeenCalledWith(null, 'hello world');
 });
 
 it('verify request path matching options.secretPath', async () => {
