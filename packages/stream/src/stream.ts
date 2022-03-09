@@ -104,8 +104,8 @@ export default class Stream<T> {
    *   3. Throw immediately.
    */
   subscribe(
-    subscriber: MaybeContainer<(value: T) => unknown | Promise<unknown>>,
-    errorCatcher?: MaybeContainer<(err: Error) => unknown | Promise<unknown>>
+    subscriber: MaybeContainer<(value: T) => void>,
+    errorCatcher?: MaybeContainer<(err: Error) => void>
   ): Stream<T> {
     const emitEvent = injectMaybe(subscriber);
     const catchError = errorCatcher ? injectMaybe(errorCatcher) : null;
