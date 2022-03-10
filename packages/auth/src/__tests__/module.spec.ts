@@ -5,7 +5,7 @@ import Auth from '../module';
 import ControllerP from '../AuthController';
 
 const secret = '_SECRET_';
-const redirectUrl = '/webview';
+const serverUrl = 'https://machinat.io';
 const apiPath = '/auth';
 
 it('export interfaces', () => {
@@ -31,7 +31,7 @@ it('export interfaces', () => {
 describe('initModule()', () => {
   test('provisions', async () => {
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret, apiPath, redirectUrl })],
+      modules: [Auth.initModule({ secret, apiPath, serverUrl })],
       services: [{ provide: Auth.AuthenticatorList, withValue: moxy() }],
     });
     await app.start();
@@ -43,7 +43,7 @@ describe('initModule()', () => {
     ]);
 
     expect(controller).toBeInstanceOf(ControllerP);
-    expect(configs).toEqual({ secret, apiPath, redirectUrl });
+    expect(configs).toEqual({ secret, apiPath, serverUrl });
     expect(routings).toMatchInlineSnapshot(`
       Array [
         Object {
@@ -60,7 +60,7 @@ describe('initModule()', () => {
     const barAuthenticator = moxy();
     const ControllerSpy = moxy(ControllerP);
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret, apiPath, redirectUrl })],
+      modules: [Auth.initModule({ secret, apiPath, serverUrl })],
       services: [
         { provide: Auth.AuthenticatorList, withValue: fooAuthenticator },
         { provide: Auth.AuthenticatorList, withValue: barAuthenticator },
@@ -75,14 +75,14 @@ describe('initModule()', () => {
     expect(ControllerSpy.$$factory.mock).toHaveBeenCalledTimes(1);
     expect(ControllerSpy.$$factory.mock).toHaveBeenCalledWith(
       expect.arrayContaining([fooAuthenticator, barAuthenticator]),
-      { secret, apiPath, redirectUrl }
+      { secret, apiPath, serverUrl }
     );
   });
 
   test('provide request handler calls to ServerController#delegateAuthRequest()', async () => {
     const fakeController = moxy({ delegateAuthRequest: async () => {} });
     const app = Machinat.createApp({
-      modules: [Auth.initModule({ secret, redirectUrl, apiPath })],
+      modules: [Auth.initModule({ secret, serverUrl, apiPath })],
       services: [
         {
           provide: Auth.Controller,

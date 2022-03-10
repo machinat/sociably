@@ -128,19 +128,23 @@ export type WebviewConfigs<
 
   /** Auth providers from the platforms */
   authPlatforms?: ServiceProvider<AnyServerAuthenticator, unknown[]>[];
-  /** Secret to sign token for auth. */
+  /** The secret for signing auth token */
   authSecret: string;
   /** Route path to the auth api. Default to `"/auth"` */
   authApiPath?: string;
-  /** Survival time of auth token in seconds */
-  tokenAge?: number;
-  authRedirectUrl?: string;
-  authCookieAge?: number;
-  dataCookieAge?: number;
-  refreshPeriod?: number;
-  cookieDomain?: string;
+  /** The lifetime of the token in seconds. Default to an hour */
+  tokenLifetime?: number;
+  /** The max time a token can be refreshed in seconds. Default to 10 days */
+  refreshDuration?: number;
+  /** The max age of the auth cookies in seconds. Default to 3 minute */
+  cookieMaxAge?: number;
+  /** The path scope of the auth cookies. Default to '/' */
   cookiePath?: string;
-  sameSite?: 'strict' | 'lax' | 'none';
+  /** The domain scope of the auth cookies */
+  cookieDomain?: string;
+  /** The `SameSite` attribute of the auth cookies. Default to `strict` */
+  cookieSameSite?: 'strict' | 'lax' | 'none';
+  /** Force using HTTPS if set to `true` */
   secure?: boolean;
 
   eventMiddlewares?: MaybeContainer<

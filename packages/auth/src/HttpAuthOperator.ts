@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import { resolve as resolveUrl, parse as parseUrl } from 'url';
+import { URL } from 'url';
 import type { CookieSerializeOptions } from 'cookie';
 import { sign as signJwt, verify as verifyJWT } from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
@@ -25,16 +25,15 @@ import {
 } from './constant';
 
 type OperatorOptions = {
-  apiPath: string;
-  redirectUrl: string;
+  apiUrl: URL;
+  redirectUrl: URL;
   secret: string;
-  authCookieAge: number;
-  dataCookieAge: number;
-  tokenAge: number;
-  refreshPeriod: number;
+  cookieMaxAge: number;
+  tokenLifetime: number;
+  refreshDuration: number;
   cookieDomain?: string;
   cookiePath: string;
-  sameSite: 'strict' | 'lax' | 'none';
+  cookieSameSite: 'strict' | 'lax' | 'none';
   secure: boolean;
 };
 
@@ -43,20 +42,18 @@ class HttpAuthOperator {
 
   private _cookieScope: { domain?: string; path: string };
 
-  private _tokenCookieOpts: CookieSerializeOptions;
-  private _errorCookieOpts: CookieSerializeOptions;
+  private _dataCookieOpts: CookieSerializeOptions;
   private _signatureCookieOpts: CookieSerializeOptions;
   private _stateCookieOpts: CookieSerializeOptions;
   private _deleteCookieOpts: CookieSerializeOptions;
 
   constructor(options: OperatorOptions) {
     const {
-      apiPath,
-      authCookieAge,
-      dataCookieAge,
+      apiUrl,
+      cookieMaxAge,
       cookieDomain,
       cookiePath,
-      sameSite,
+      cookieSameSite,
       secure,
     } = options;
 
@@ -66,18 +63,13 @@ class HttpAuthOperator {
     const baseCookieOpts = {
       domain: cookieDomain,
       path: cookiePath,
-      sameSite,
+      sameSite: cookieSameSite,
       secure,
     };
 
-    this._tokenCookieOpts = {
+    this._dataCookieOpts = {
       ...baseCookieOpts,
-      maxAge: authCookieAge,
-    };
-
-    this._errorCookieOpts = {
-      ...baseCookieOpts,
-      maxAge: dataCookieAge,
+      maxAge: cookieMaxAge,
     };
 
     this._signatureCookieOpts = {
@@ -86,11 +78,11 @@ class HttpAuthOperator {
     };
 
     this._stateCookieOpts = {
-      path: apiPath,
-      sameSite,
+      path: apiUrl.pathname,
+      sameSite: cookieSameSite,
       secure,
       httpOnly: true,
-      maxAge: dataCookieAge,
+      maxAge: cookieMaxAge,
     };
 
     this._deleteCookieOpts = {
@@ -129,8 +121,7 @@ class HttpAuthOperator {
     const encodedState = await thenifiedly.call(
       signJwt,
       { platform, state } as StatePayload<State>,
-      this.options.secret,
-      { expiresIn: this.options.dataCookieAge }
+      this.options.secret
     );
 
     setCookie(res, STATE_COOKIE_KEY, encodedState, this._stateCookieOpts);
@@ -171,7 +162,7 @@ class HttpAuthOperator {
     data: Data,
     { refreshTill, signatureOnly = false }: IssueAuthOptions = {}
   ): Promise<string> {
-    const { secret, tokenAge, refreshPeriod } = this.options;
+    const { secret, tokenLifetime, refreshDuration } = this.options;
 
     const now = Math.floor(Date.now() / 1000);
 
@@ -179,15 +170,15 @@ class HttpAuthOperator {
       platform,
       data,
       refreshTill: !refreshTill
-        ? now + refreshPeriod
-        : refreshTill > now + tokenAge
+        ? now + refreshDuration
+        : refreshTill > now + tokenLifetime
         ? refreshTill
         : undefined,
       scope: this._cookieScope,
     };
 
     const token = await thenifiedly.call(signJwt, payload, secret, {
-      expiresIn: tokenAge,
+      expiresIn: tokenLifetime,
     });
 
     const [header, body, signature] = token.split('.');
@@ -195,7 +186,7 @@ class HttpAuthOperator {
 
     setCookie(res, SIGNATURE_COOKIE_KEY, signature, this._signatureCookieOpts);
     if (!signatureOnly) {
-      setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this._tokenCookieOpts);
+      setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this._dataCookieOpts);
     }
 
     this.deleteCookie(res, STATE_COOKIE_KEY);
@@ -243,7 +234,7 @@ class HttpAuthOperator {
       this.options.secret
     );
 
-    setCookie(res, ERROR_COOKIE_KEY, errEncoded, this._errorCookieOpts);
+    setCookie(res, ERROR_COOKIE_KEY, errEncoded, this._dataCookieOpts);
 
     this.deleteCookie(res, STATE_COOKIE_KEY);
     this.deleteCookie(res, SIGNATURE_COOKIE_KEY);
@@ -268,16 +259,16 @@ class HttpAuthOperator {
     url?: string,
     { assertInternal }: RedirectOptions = {}
   ): boolean {
-    const redirectTarget = resolveUrl(this.options.redirectUrl, url || '');
+    const redirectBase = this.options.redirectUrl;
+    const redirectTarget = new URL(url || '', redirectBase);
 
     if (assertInternal) {
-      const parsedBaseUrl = parseUrl(this.options.redirectUrl);
-      const { protocol, host, pathname } = parseUrl(redirectTarget);
+      const { protocol, host, pathname } = redirectTarget;
 
       if (
         (this.options.secure && protocol && protocol !== 'https:') ||
-        host !== parsedBaseUrl.host ||
-        !isSubpath(parsedBaseUrl.pathname, pathname)
+        host !== redirectBase.host ||
+        !isSubpath(redirectBase.pathname, pathname)
       ) {
         res.writeHead(400);
         res.end('invalid redirect url');
@@ -286,7 +277,7 @@ class HttpAuthOperator {
     }
 
     res.writeHead(302, {
-      Location: redirectTarget,
+      Location: redirectTarget.href,
     });
     res.end();
 

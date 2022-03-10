@@ -48,7 +48,6 @@ export const AuthControllerP: ServiceProvider<
     {
       authSecret,
       authApiPath = DEFAULT_AUTH_PATH,
-      authRedirectUrl,
       webviewHost,
       webviewPath = DEFAULT_NEXT_PATH,
       ...otherOptions
@@ -60,10 +59,10 @@ export const AuthControllerP: ServiceProvider<
 
     return new WebviewAuthController(authenticators, {
       ...otherOptions,
+      serverUrl: `https://${webviewHost}`,
       secret: authSecret,
       apiPath: authApiPath,
-      redirectUrl:
-        authRedirectUrl || new URL(webviewPath, `https://${webviewHost}/`).href,
+      redirectEntry: webviewPath,
     });
   },
 })(WebviewAuthController);

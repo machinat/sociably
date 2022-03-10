@@ -1,4 +1,4 @@
-import { parse as parseUrl } from 'url';
+import { URL } from 'url';
 import { relative as getRelativePath, join as joinPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
@@ -79,22 +79,22 @@ type AuthVerifyResult<Authenticator extends AnyServerAuthenticator> =
 export class AuthController<Authenticator extends AnyServerAuthenticator> {
   authenticators: Authenticator[];
   secret: string;
-  apiPath: string;
+  apiUrl: URL;
   httpOperator: HttpAuthOperator;
 
   constructor(
     authenticators: Authenticator[],
     {
       secret,
-      apiPath = '/',
-      redirectUrl,
-      authCookieAge = 180, // 3 min
-      dataCookieAge = 180, // 3 min
-      tokenAge = 3600, // 1 hr
-      refreshPeriod = 864000, // 10 day
+      apiPath,
+      serverUrl,
+      redirectEntry,
+      tokenLifetime = 3600, // 1 hr
+      refreshDuration = 864000, // 10 day
+      cookieMaxAge = 180, // 3 min
       cookieDomain,
       cookiePath = '/',
-      sameSite = 'lax',
+      cookieSameSite = 'lax',
       secure = true,
     }: AuthConfigs = {} as AuthConfigs
   ) {
@@ -103,48 +103,50 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       'options.authenticators must not be empty'
     );
     invariant(secret, 'options.secret must not be empty');
-    invariant(redirectUrl, 'options.redirectUrl must not be empty');
+    invariant(serverUrl, 'options.serverUrl must not be empty');
+
+    const apiUrl = new URL(apiPath || '', serverUrl);
     invariant(
-      isSubpath(cookiePath, apiPath),
+      !secure || apiUrl.protocol === 'https:',
+      'protocol of options.serverUrl should be "https" when options.secure is set to true'
+    );
+    invariant(
+      !cookieDomain || isSubdomain(cookieDomain, apiUrl.hostname),
+      'options.serverUrl should be under a subdomain of options.cookieDomain'
+    );
+    invariant(
+      isSubpath(cookiePath, apiUrl.pathname),
       'options.apiPath should be a subpath of options.cookiePath'
     );
 
-    const {
-      protocol,
-      pathname: redirectPathname,
-      hostname: redirectDomain,
-    } = parseUrl(redirectUrl);
-
+    const redirectUrl = new URL(redirectEntry || '', serverUrl);
     invariant(
-      !secure || !protocol || protocol === 'https:',
-      'protocol of options.redirectUrl can only be https when options.secure set to true'
+      !secure || redirectUrl.protocol === 'https:',
+      'protocol of options.redirectEntry should be "https" when options.secure is set to true'
     );
     invariant(
-      redirectPathname &&
-        isSubpath(cookiePath, redirectPathname) &&
-        (!cookieDomain ||
-          !redirectDomain ||
-          isSubdomain(cookieDomain, redirectDomain)),
-      `options.redirectUrl should be under cookie scope "${
-        cookieDomain ? `//${cookieDomain}` : ''
-      }${cookiePath}"`
+      !cookieDomain || isSubdomain(cookieDomain, redirectUrl.hostname),
+      'options.redirectEntry should be under a subdomain of options.cookieDomain'
+    );
+    invariant(
+      isSubpath(cookiePath, redirectUrl.pathname),
+      'options.redirectEntry should be under a subpath of options.cookiePath'
     );
 
     this.secret = secret;
     this.authenticators = authenticators;
-    this.apiPath = apiPath;
+    this.apiUrl = apiUrl;
 
     this.httpOperator = new HttpAuthOperator({
-      apiPath,
+      apiUrl,
       redirectUrl,
       secret,
-      authCookieAge,
-      dataCookieAge,
-      tokenAge,
-      refreshPeriod,
+      cookieMaxAge,
+      tokenLifetime,
+      refreshDuration,
       cookieDomain,
       cookiePath,
-      sameSite,
+      cookieSameSite,
       secure,
     });
   }
@@ -154,10 +156,10 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     res: ServerResponse,
     routingInfo?: RoutingInfo
   ): Promise<void> {
-    const { pathname } = parseUrl(req.url as string);
+    const { pathname } = new URL(req.url as string, this.apiUrl);
     const subpath =
       routingInfo?.trailingPath ||
-      getRelativePath(this.apiPath, pathname || '/');
+      getRelativePath(this.apiUrl.pathname, pathname || '/');
 
     if (subpath === '' || subpath.slice(0, 2) === '..') {
       respondApiError(res, undefined, 403, 'path forbidden');
@@ -204,10 +206,9 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
         {
           originalPath: pathname || '/',
           matchedPath: joinPath(
-            routingInfo?.matchedPath || this.apiPath,
+            routingInfo?.matchedPath || this.apiUrl.pathname,
             platform
           ),
-
           trailingPath: getRelativePath(platform, subpath),
         }
       );
