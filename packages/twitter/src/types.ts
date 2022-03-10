@@ -256,11 +256,10 @@ export type Place = {
 };
 
 export type ReplyToTarget = {
-  statusId: string;
+  tweetId: string;
   userId: string;
   screenName: string;
   user: TwitterUser;
-  channel: TweetTarget;
 };
 
 export type Media = {

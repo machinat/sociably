@@ -40,7 +40,7 @@ const dispatchWrapper = moxy((x) => x);
 
 const appKey = '__APP_KEY__';
 const appSecret = '__APP_SECRET__';
-const accessToken = '__ACCESS_TOKEN__';
+const accessToken = '1234567890-__ACCESS_TOKEN__';
 const accessSecret = '__ACCESS_SECRET__';
 const authOptions = { appKey, appSecret, accessToken, accessSecret };
 
@@ -128,7 +128,7 @@ describe('new TwitterBot(options)', () => {
     expect(Worker.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "accessSecret": "__ACCESS_SECRET__",
-        "accessToken": "__ACCESS_TOKEN__",
+        "accessToken": "1234567890-__ACCESS_TOKEN__",
         "appKey": "__APP_KEY__",
         "appSecret": "__APP_SECRET__",
         "maxConnections": 100,
@@ -192,7 +192,7 @@ describe('.render(channel, content)', () => {
       .reply(200, { data: { id: '2222222222222', text: 'Hello World' } });
 
     const response = await bot.render(
-      new TweetTarget('1111111111111'),
+      new TweetTarget('1234567890', '1111111111111'),
       <>
         <p>Hello World</p>
         <p>Foo Bar Baz</p>
@@ -225,7 +225,7 @@ describe('.render(channel, content)', () => {
       .reply(200, { event: {} });
 
     const response = await bot.render(
-      new DirectMessageChat('1234567890'),
+      new DirectMessageChat('1234567890', '9876543210'),
       <>
         <p>Hello World</p>
         <p>Foo Bar Baz</p>
@@ -238,7 +238,7 @@ describe('.render(channel, content)', () => {
         type: 'message_create',
         message_create: {
           message_data: { text: 'Hello World' },
-          target: { recipient_id: '1234567890' },
+          target: { recipient_id: '9876543210' },
         },
       },
     });
@@ -247,7 +247,7 @@ describe('.render(channel, content)', () => {
         type: 'message_create',
         message_create: {
           message_data: { text: 'Foo Bar Baz' },
-          target: { recipient_id: '1234567890' },
+          target: { recipient_id: '9876543210' },
         },
       },
     });
@@ -264,7 +264,7 @@ describe('.render(channel, content)', () => {
       .times(3)
       .reply(200, { data: { id: '2222222222222', text: 'Hello World' } });
 
-    const replyToTweet = new TweetTarget('1111111111111');
+    const replyToTweet = new TweetTarget('1234567890', '1111111111111');
     const [response1, response2] = await Promise.all([
       bot.render(replyToTweet, [<p>Foo 1</p>, <p>Bar 2</p>]),
       bot.render(replyToTweet, <p>Baz 3</p>),
@@ -298,7 +298,7 @@ describe('.render(channel, content)', () => {
       .times(3)
       .reply(200, { event: {} });
 
-    const chat = new DirectMessageChat('12345');
+    const chat = new DirectMessageChat('1234567890', '9876543210');
     const [response1, response2] = await Promise.all([
       bot.render(chat, [<p>Foo 1</p>, <p>Bar 2</p>]),
       bot.render(chat, <p>Baz 3</p>),
@@ -310,7 +310,7 @@ describe('.render(channel, content)', () => {
           type: 'message_create',
           message_create: {
             message_data: { text },
-            target: { recipient_id: '12345' },
+            target: { recipient_id: '9876543210' },
           },
         },
       });

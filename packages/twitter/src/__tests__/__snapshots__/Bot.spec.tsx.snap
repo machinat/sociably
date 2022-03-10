@@ -98,6 +98,7 @@ Array [
       },
     },
     "target": TwitterTweetTarget {
+      "agentId": "1234567890",
       "id": "1111111111111",
       "platform": "twitter",
     },
@@ -115,6 +116,7 @@ Array [
       },
     },
     "target": TwitterTweetTarget {
+      "agentId": "1234567890",
       "id": "1111111111111",
       "platform": "twitter",
     },
@@ -127,7 +129,7 @@ Object {
   "jobs": Array [
     Object {
       "accomplishRequest": null,
-      "key": "twitter.dm_user.1234567890",
+      "key": "twitter.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
       "request": Object {
@@ -140,7 +142,7 @@ Object {
                 "text": "Hello World",
               },
               "target": Object {
-                "recipient_id": "1234567890",
+                "recipient_id": "9876543210",
               },
             },
             "type": "message_create",
@@ -148,13 +150,14 @@ Object {
         },
       },
       "target": TwitterChat {
-        "id": "1234567890",
+        "agentId": "1234567890",
+        "id": "9876543210",
         "platform": "twitter",
       },
     },
     Object {
       "accomplishRequest": null,
-      "key": "twitter.dm_user.1234567890",
+      "key": "twitter.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
       "request": Object {
@@ -167,7 +170,7 @@ Object {
                 "text": "Foo Bar Baz",
               },
               "target": Object {
-                "recipient_id": "1234567890",
+                "recipient_id": "9876543210",
               },
             },
             "type": "message_create",
@@ -175,7 +178,8 @@ Object {
         },
       },
       "target": TwitterChat {
-        "id": "1234567890",
+        "agentId": "1234567890",
+        "id": "9876543210",
         "platform": "twitter",
       },
     },
@@ -201,7 +205,7 @@ Object {
       "payload": Array [
         Object {
           "accomplishRequest": null,
-          "key": "twitter.dm_user.1234567890",
+          "key": "twitter.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
           "request": Object {
@@ -214,7 +218,7 @@ Object {
                     "text": "Hello World",
                   },
                   "target": Object {
-                    "recipient_id": "1234567890",
+                    "recipient_id": "9876543210",
                   },
                 },
                 "type": "message_create",
@@ -222,13 +226,14 @@ Object {
             },
           },
           "target": TwitterChat {
-            "id": "1234567890",
+            "agentId": "1234567890",
+            "id": "9876543210",
             "platform": "twitter",
           },
         },
         Object {
           "accomplishRequest": null,
-          "key": "twitter.dm_user.1234567890",
+          "key": "twitter.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
           "request": Object {
@@ -241,7 +246,7 @@ Object {
                     "text": "Foo Bar Baz",
                   },
                   "target": Object {
-                    "recipient_id": "1234567890",
+                    "recipient_id": "9876543210",
                   },
                 },
                 "type": "message_create",
@@ -249,7 +254,8 @@ Object {
             },
           },
           "target": TwitterChat {
-            "id": "1234567890",
+            "agentId": "1234567890",
+            "id": "9876543210",
             "platform": "twitter",
           },
         },

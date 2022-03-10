@@ -1,19 +1,23 @@
 import TwitterChat from '../Chat';
 
 test('with id only', () => {
-  const user = new TwitterChat('6253282');
+  const user = new TwitterChat('1234567890', '9876543210');
 
-  expect(user.id).toBe('6253282');
-  expect(user.uid).toBe('twitter.dm_user.6253282');
+  expect(user.agentId).toBe('1234567890');
+  expect(user.id).toBe('9876543210');
+  expect(user.uid).toBe('twitter.1234567890.9876543210');
 
   expect(user.typeName()).toBe('TwitterChat');
-  expect(user.toJSONValue()).toEqual({ id: '6253282' });
+  expect(user.toJSONValue()).toEqual({
+    agentId: '1234567890',
+    id: '9876543210',
+  });
 });
 
 test('marshall type metadata', () => {
   expect(TwitterChat.typeName).toBe('TwitterChat');
 
-  expect(TwitterChat.fromJSONValue({ id: '6253282' })).toStrictEqual(
-    new TwitterChat('6253282')
-  );
+  expect(
+    TwitterChat.fromJSONValue({ agentId: '1234567890', id: '9876543210' })
+  ).toStrictEqual(new TwitterChat('1234567890', '9876543210'));
 });

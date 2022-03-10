@@ -174,7 +174,9 @@ it('respond 200 and pop events', async () => {
   expect(context.event.platform).toBe('twitter');
   expect(context.event.category).toBe('message');
   expect(context.event.type).toBe('text');
-  expect(context.event.channel).toEqual(new TwitterChat('3001969357'));
+  expect(context.event.channel).toEqual(
+    new TwitterChat('4337869213', '3001969357')
+  );
   expect(context.event.user).toEqual(
     new TwitterUser('3001969357', messageEventBody.users['3001969357'] as never)
   );

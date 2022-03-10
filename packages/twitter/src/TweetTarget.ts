@@ -3,6 +3,7 @@ import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { TWITTER } from './constant';
 
 type SerializedTweetTarget = {
+  agentId: string;
   id: string;
 };
 
@@ -10,19 +11,25 @@ export default class TwitterTweetTarget
   implements MachinatChannel, MarshallableInstance<SerializedTweetTarget>
 {
   static typeName = 'TweetTarget';
-  static fromJSONValue({ id }: SerializedTweetTarget): TwitterTweetTarget {
-    return new TwitterTweetTarget(id);
+  static fromJSONValue({
+    agentId,
+    id,
+  }: SerializedTweetTarget): TwitterTweetTarget {
+    return new TwitterTweetTarget(agentId, id);
   }
 
   platform = TWITTER;
-  /** The unique identifier for this Tweet */
+  /** The id of the agent user */
+  agentId: string;
+  /** The id of the Tweet */
   id: string;
-  constructor(statusId: string) {
-    this.id = statusId;
+  constructor(agentId: string, tweetId: string) {
+    this.agentId = agentId;
+    this.id = tweetId;
   }
 
   get uid(): string {
-    return `twitter.tweet.${this.id}`;
+    return `twitter.${this.agentId}.${this.id}`;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -31,6 +38,6 @@ export default class TwitterTweetTarget
   }
 
   toJSONValue(): SerializedTweetTarget {
-    return { id: this.id };
+    return { id: this.id, agentId: this.agentId };
   }
 }

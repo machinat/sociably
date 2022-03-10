@@ -14,9 +14,10 @@ import { makeClassProvider } from '@machinat/core/service';
 import { createTweetJobs, createDirectMessageJobs } from './job';
 import generalElementDelegate from './components/general';
 import TwitterWorker from './Worker';
+import Tweet from './Tweet';
 import TweetTarget from './TweetTarget';
-import DirectMessageChat from './Chat';
 import TwitterUser from './User';
+import DirectMessageChat from './Chat';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TWITTER } from './constant';
 import { getTimeId } from './utils';
@@ -52,6 +53,7 @@ export class TwitterBot
   implements MachinatBot<TwitterChannel, TwitterJob, TwitterApiResult>
 {
   worker: TwitterWorker;
+  agentId: string;
   engine: Engine<
     TwitterChannel,
     TwitterSegmentValue,
@@ -73,6 +75,7 @@ export class TwitterBot
     invariant(appSecret, 'options.appSecret should not be empty');
     invariant(accessToken, 'options.accessToken should not be empty');
     invariant(accessSecret, 'options.accessSecret should not be empty');
+    [this.agentId] = accessToken.split('-', 1);
 
     const queue = new Queue<TwitterJob, TwitterApiResult>();
     this.worker = new TwitterWorker({
@@ -106,22 +109,46 @@ export class TwitterBot
   }
 
   render(
-    target: null | TweetTarget | DirectMessageChat | TwitterUser,
+    channel: null | TweetTarget | DirectMessageChat,
     message: MachinatNode
   ): Promise<null | TwitterDispatchResponse> {
-    if (target === null || target instanceof TweetTarget) {
-      return this.engine.render(
-        target,
-        message,
-        createTweetJobs({ key: getTimeId() })
-      );
+    if (channel instanceof DirectMessageChat) {
+      return this.engine.render(channel, message, createDirectMessageJobs);
     }
 
     return this.engine.render(
-      target instanceof TwitterUser ? new DirectMessageChat(target.id) : target,
+      channel,
       message,
-      createDirectMessageJobs
+      createTweetJobs({ key: getTimeId(), agentId: this.agentId })
     );
+  }
+
+  async renderTweet(
+    target: null | string | Tweet | TweetTarget,
+    message: MachinatNode
+  ): Promise<null | TwitterDispatchResponse> {
+    const channel =
+      typeof target === 'string'
+        ? new TweetTarget(this.agentId, target)
+        : target instanceof Tweet
+        ? new TweetTarget(this.agentId, target.id)
+        : target;
+
+    return this.render(channel, message);
+  }
+
+  async renderDirectMeaasge(
+    target: string | TwitterUser | DirectMessageChat,
+    message: MachinatNode
+  ): Promise<null | TwitterDispatchResponse> {
+    const channel =
+      typeof target === 'string'
+        ? new DirectMessageChat(this.agentId, target)
+        : target instanceof TwitterUser
+        ? new DirectMessageChat(this.agentId, target.id)
+        : target;
+
+    return this.render(channel, message);
   }
 
   async makeApiCall<Result>(

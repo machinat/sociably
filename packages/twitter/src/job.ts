@@ -9,10 +9,10 @@ import type {
   TwitterApiRequest,
 } from './types';
 
-type CreateTweetJobOptions = { key: string };
+type CreateTweetJobOptions = { key: string; agentId: string };
 
-const useCreatedTweetTarget = (_, result: TweetResult) => {
-  return new TweetTarget(result.data.id);
+const useCreatedTweetTarget = (agentId: string) => (_, result: TweetResult) => {
+  return new TweetTarget(agentId, result.data.id);
 };
 const useCurrentTarget = (curTarget: null | TweetTarget) => curTarget;
 
@@ -43,10 +43,15 @@ const accomplishTweetRequest = (
   };
 };
 
-const tweetJob = (target: null | TweetTarget, key: string, text?: string) => ({
+const tweetJob = (
+  agentId: string,
+  target: null | TweetTarget,
+  key: string,
+  text?: string
+) => ({
   target,
   key,
-  refreshTarget: useCreatedTweetTarget,
+  refreshTarget: useCreatedTweetTarget(agentId),
   request: {
     method: 'POST',
     href: '2/tweets',
@@ -57,7 +62,7 @@ const tweetJob = (target: null | TweetTarget, key: string, text?: string) => ({
 });
 
 export const createTweetJobs =
-  ({ key }: CreateTweetJobOptions) =>
+  ({ key, agentId }: CreateTweetJobOptions) =>
   (
     target: null | TweetTarget,
     segments: DispatchableSegment<TwitterSegmentValue>[]
@@ -67,7 +72,7 @@ export const createTweetJobs =
 
     segments.forEach((segment) => {
       if (segment.type === 'text') {
-        lastTweetJob = tweetJob(target, key, segment.value);
+        lastTweetJob = tweetJob(agentId, target, key, segment.value);
 
         jobs.push(lastTweetJob);
       } else if (segment.value.type === 'tweet') {
@@ -75,7 +80,7 @@ export const createTweetJobs =
         lastTweetJob = {
           target,
           key,
-          refreshTarget: useCreatedTweetTarget,
+          refreshTarget: useCreatedTweetTarget(agentId),
           request,
           accomplishRequest:
             segment.value.accomplishRequest || accomplishTweetRequest,
@@ -104,7 +109,7 @@ export const createTweetJobs =
               lastTweetJob.mediaSources[0].type !== 'photo' ||
               lastTweetJob.mediaSources.length >= 4))
         ) {
-          lastTweetJob = tweetJob(target, key);
+          lastTweetJob = tweetJob(agentId, target, key);
           jobs.push(lastTweetJob);
         }
 
@@ -119,7 +124,7 @@ export const createTweetJobs =
           lastTweetJob.request.parameters.quote_tweet_id ||
           lastTweetJob.mediaSources
         ) {
-          lastTweetJob = tweetJob(target, key, '');
+          lastTweetJob = tweetJob(agentId, target, key, '');
           jobs.push(lastTweetJob);
         }
 

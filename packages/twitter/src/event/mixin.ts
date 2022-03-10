@@ -66,7 +66,10 @@ export const TweetBase: TweetBase = {
     return new TwitterUser(rawUser.id_str, rawUser);
   },
   get channel() {
-    return new TweetTarget((this.payload as RawTweet).id_str);
+    return new TweetTarget(
+      (this as EventBase).forUserId,
+      (this.payload as RawTweet).id_str
+    );
   },
 };
 
@@ -129,6 +132,7 @@ export const Favorite: Favorite = {
   },
   get channel() {
     return new TweetTarget(
+      (this as EventBase).forUserId,
       (this.payload as RawFavorite).favorited_status.id_str
     );
   },
@@ -167,6 +171,7 @@ export const UserToUserAction: UserToUserAction = {
   get channel() {
     const action = this.payload as RawActionInfo;
     return new DirectMessageChat(
+      (this as EventBase).forUserId,
       (this as UserToUserAction).isEcho
         ? action.target.id_str
         : action.source.id_str
@@ -255,6 +260,7 @@ export const DirectMessageCreate: DirectMessageCreate = {
   get channel() {
     const rawMessage = (this.payload as RawDirectMessage).message_create;
     return new DirectMessageChat(
+      (this as EventBase).forUserId,
       (this as DirectMessageCreate).isEcho
         ? rawMessage.target.recipient_id
         : rawMessage.sender_id
@@ -382,6 +388,7 @@ export const DirectMessageAction: DirectMessageAction = {
   usersMapping: null as never,
   get channel() {
     return new DirectMessageChat(
+      (this as EventBase).forUserId,
       (this.payload as RawDirectMessageAction).sender_id
     );
   },

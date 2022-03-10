@@ -1,5 +1,4 @@
 import TwitterUser from './User';
-import TweetTarget from './TweetTarget';
 import { polishMentionEntity, polishUrlEntity, polishMedia } from './utils';
 import {
   RawTweet,
@@ -17,13 +16,18 @@ import {
   AnimatedGif,
 } from './types';
 
-export default class Tweet extends TweetTarget {
+export default class Tweet {
   data: RawTweet;
   constructor(data: RawTweet) {
-    super(data.id_str);
     this.data = data;
   }
 
+  /** The id of the tweet */
+  get id(): string {
+    return this.data.id_str;
+  }
+
+  /** The user who create the tweet */
   get user(): TwitterUser {
     const rawUser = this.data.user;
     return new TwitterUser(rawUser.id_str, rawUser);
@@ -153,18 +157,17 @@ export default class Tweet extends TweetTarget {
   }
 
   get replyTo(): null | ReplyToTarget {
-    const statusId = this.data.in_reply_to_status_id_str;
-    if (!statusId) {
+    const tweetId = this.data.in_reply_to_status_id_str;
+    if (!tweetId) {
       return null;
     }
 
     const userId = this.data.in_reply_to_user_id_str as string;
     const screenName = this.data.in_reply_to_screen_name as string;
     return {
-      statusId,
+      tweetId,
       userId,
       screenName,
-      channel: new TweetTarget(statusId),
       user: new TwitterUser(userId),
     };
   }
