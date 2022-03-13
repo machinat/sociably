@@ -29,7 +29,8 @@ type OperatorOptions = {
   apiUrl: URL;
   redirectUrl: URL;
   secret: string;
-  cookieMaxAge: number;
+  tokenCookieMaxAge: number;
+  dataCookieMaxAge: number;
   tokenLifetime: number;
   refreshDuration: number;
   cookieDomain?: string;
@@ -43,7 +44,8 @@ class HttpAuthOperator {
 
   private _cookieScope: { domain?: string; path: string };
 
-  private _dataCookieOpts: CookieSerializeOptions;
+  private _errorCookieOpts: CookieSerializeOptions;
+  private _tokenCookieOpts: CookieSerializeOptions;
   private _signatureCookieOpts: CookieSerializeOptions;
   private _stateCookieOpts: CookieSerializeOptions;
   private _deleteCookieOpts: CookieSerializeOptions;
@@ -51,7 +53,8 @@ class HttpAuthOperator {
   constructor(options: OperatorOptions) {
     const {
       apiUrl,
-      cookieMaxAge,
+      tokenCookieMaxAge,
+      dataCookieMaxAge,
       cookieDomain,
       cookiePath,
       cookieSameSite,
@@ -68,9 +71,14 @@ class HttpAuthOperator {
       secure,
     };
 
-    this._dataCookieOpts = {
+    this._errorCookieOpts = {
       ...baseCookieOpts,
-      maxAge: cookieMaxAge,
+      maxAge: dataCookieMaxAge,
+    };
+
+    this._tokenCookieOpts = {
+      ...baseCookieOpts,
+      maxAge: tokenCookieMaxAge,
     };
 
     this._signatureCookieOpts = {
@@ -79,11 +87,10 @@ class HttpAuthOperator {
     };
 
     this._stateCookieOpts = {
+      ...baseCookieOpts,
       path: apiUrl.pathname,
-      sameSite: cookieSameSite,
-      secure,
       httpOnly: true,
-      maxAge: cookieMaxAge,
+      maxAge: dataCookieMaxAge,
     };
 
     this._deleteCookieOpts = {
@@ -187,7 +194,7 @@ class HttpAuthOperator {
 
     setCookie(res, SIGNATURE_COOKIE_KEY, signature, this._signatureCookieOpts);
     if (!signatureOnly) {
-      setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this._dataCookieOpts);
+      setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this._tokenCookieOpts);
     }
 
     this.deleteCookie(res, STATE_COOKIE_KEY);
@@ -235,7 +242,7 @@ class HttpAuthOperator {
       this.options.secret
     );
 
-    setCookie(res, ERROR_COOKIE_KEY, errEncoded, this._dataCookieOpts);
+    setCookie(res, ERROR_COOKIE_KEY, errEncoded, this._errorCookieOpts);
 
     this.deleteCookie(res, STATE_COOKIE_KEY);
     this.deleteCookie(res, SIGNATURE_COOKIE_KEY);

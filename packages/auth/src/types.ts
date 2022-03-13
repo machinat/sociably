@@ -231,7 +231,9 @@ export type AuthConfigs = {
   /** The max time a token can be refreshed in seconds. Default to 10 days */
   refreshDuration?: number;
   /** The max age of the auth cookies in seconds. Default to 3 minute */
-  cookieMaxAge?: number;
+  tokenCookieMaxAge?: number;
+  /** The max age of the data cookies in seconds. Default to 3 minute */
+  dataCookieMaxAge?: number;
   /** The domain scope of the auth cookies */
   cookieDomain?: string;
   /** The path scope of the auth cookies. Default to '/' */

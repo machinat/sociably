@@ -456,7 +456,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           serverUrl,
           redirectEntry: '/app/pages',
           apiPath: '/app/auth',
-          cookieMaxAge: 999,
+          dataCookieMaxAge: 999,
           cookieDomain: 'machinat.io',
           cookiePath: '/app',
           cookieSameSite: 'none',
@@ -466,7 +466,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(cookies).toMatchInlineSnapshot(`
         Map {
           "machinat_auth_state" => Object {
-            "directives": "HttpOnly; Max-Age=999; Path=/app/auth; SameSite=None",
+            "directives": "Domain=machinat.io; HttpOnly; Max-Age=999; Path=/app/auth; SameSite=None",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMH0.tbccGtUNapTH99Q7SmW6F5CrXlhKWBsN-35NAydX3eg",
           },
         }
@@ -549,7 +549,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         serverUrl,
         redirectEntry: '/app/pages',
         apiPath: '/app/auth',
-        cookieMaxAge: 999,
+        tokenCookieMaxAge: 999,
         tokenLifetime: 9999,
         refreshDuration: 99999,
         cookieDomain: 'machinat.io',
@@ -732,7 +732,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           serverUrl,
           redirectEntry: '/app/pages',
           apiPath: '/app/auth',
-          cookieMaxAge: 999,
+          dataCookieMaxAge: 999,
           cookieDomain: 'machinat.io',
           cookiePath: '/app',
           cookieSameSite: 'none',
@@ -1147,7 +1147,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         serverUrl,
         redirectEntry: '/app/pages',
         apiPath: '/app/auth',
-        cookieMaxAge: 999,
+        tokenCookieMaxAge: 999,
         tokenLifetime: 9999,
         refreshDuration: 99999,
         cookieDomain: 'machinat.io',
@@ -1443,7 +1443,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         serverUrl,
         redirectEntry: '/app/pages',
         apiPath: '/app/auth',
-        cookieMaxAge: 999,
+        tokenCookieMaxAge: 999,
         tokenLifetime: 9999,
         refreshDuration: 99999,
         cookieDomain: 'machinat.io',

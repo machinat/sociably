@@ -91,7 +91,8 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       redirectEntry,
       tokenLifetime = 3600, // 1 hr
       refreshDuration = 864000, // 10 day
-      cookieMaxAge = 180, // 3 min
+      tokenCookieMaxAge = 180, // 3 min
+      dataCookieMaxAge = 180, // 3 min
       cookieDomain,
       cookiePath = '/',
       cookieSameSite = 'lax',
@@ -141,7 +142,8 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       apiUrl,
       redirectUrl,
       secret,
-      cookieMaxAge,
+      tokenCookieMaxAge,
+      dataCookieMaxAge,
       tokenLifetime,
       refreshDuration,
       cookieDomain,
