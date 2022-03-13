@@ -32,6 +32,7 @@
     "access": "public"
   },
   "dependencies": {
+    "bowser": "^2.11.0",
     "form-data": "^3.0.0",
     "invariant": "^2.2.4",
     "json-bigint": "^1.0.0",

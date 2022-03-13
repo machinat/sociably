@@ -576,14 +576,17 @@ test('with mediaSources & accomplishRequest', async () => {
     .post('/1.1/media/upload.json', uploadBodySpy)
     .times(9)
     .delay(50)
-    .reply(200, (_, body) => {
-      const id =
-        body.indexOf('INIT') !== -1
-          ? new Array(18).fill(`${++initMediaCount}`).join('') // eslint-disable-line no-plusplus
-          : /(1{18}|2{18}|3{18}|4{18})/.exec(body as string)?.[0];
-
-      return `{"media_id":${id},"media_id_string":"${id}"}`;
-    });
+    .reply(
+      200,
+      (_, body) => {
+        const id =
+          body.indexOf('INIT') !== -1
+            ? new Array(18).fill(`${++initMediaCount}`).join('') // eslint-disable-line no-plusplus
+            : /(1{18}|2{18}|3{18}|4{18})/.exec(body as string)?.[0];
+        return `{"media_id":${id},"media_id_string":"${id}"}`;
+      },
+      { 'content-type': 'application/json' }
+    );
 
   const apiBodySpy = moxy(() => true);
   const apiCall = twitterApi

@@ -10,7 +10,6 @@ import TwitterApiError from './Error';
 import type {
   TwitterChannel,
   TwitterJob,
-  TwitterApiRequest,
   TwitterApiResult,
   UploadingFileInfo,
   MediaUploadResult,
@@ -18,12 +17,7 @@ import type {
   LinkingMedia,
 } from './types';
 
-const BigIntJSON = _BigIntJSON({ useNativeBigInt: true });
-
 type TwitterJobQueue = Queue<TwitterJob, TwitterApiResult>;
-
-const UPLOAD_URL = 'https://upload.twitter.com/1.1/media/upload.json';
-const API_ENTRY = 'https://api.twitter.com';
 
 type TwitterWorkerOptions = {
   appKey: string;
@@ -33,9 +27,24 @@ type TwitterWorkerOptions = {
   maxConnections: number;
 };
 
-const handleApiResponse = async (response: Response) => {
+type OauthHeaderOption = {
+  token: string;
+  secret: string;
+};
+
+const BigIntJSON = _BigIntJSON({ useNativeBigInt: true });
+const UPLOAD_URL = 'https://upload.twitter.com/1.1/media/upload.json';
+const API_ENTRY = 'https://api.twitter.com';
+
+const getResponseBody = async (response: Response) => {
   const resultStr = await response.text();
-  const result = resultStr ? BigIntJSON.parse(resultStr) : null;
+  const contentType = response.headers.get('content-type');
+  const result = !resultStr
+    ? null
+    : typeof contentType === 'string' &&
+      contentType.indexOf('application/json') !== -1
+    ? BigIntJSON.parse(resultStr)
+    : resultStr;
 
   if (!response.ok) {
     throw new TwitterApiError(response.status, result);
@@ -47,8 +56,9 @@ export default class TwitterWorker
   implements MachinatWorker<TwitterJob, TwitterApiResult>
 {
   private _appKey: string;
+  private _appSecret: string;
   private _accessToken: string;
-  private _signingKey: string;
+  private _accessSecret: string;
 
   private _started: boolean;
   private _lockedKeys: Set<string>;
@@ -65,10 +75,9 @@ export default class TwitterWorker
     maxConnections,
   }: TwitterWorkerOptions) {
     this._appKey = appKey;
+    this._appSecret = appSecret;
     this._accessToken = accessToken;
-    this._signingKey = `${encodeURIComponent(appSecret)}&${encodeURIComponent(
-      accessSecret
-    )}`;
+    this._accessSecret = accessSecret;
 
     this.connectionCount = 0;
     this.maxConnections = maxConnections;
@@ -78,34 +87,26 @@ export default class TwitterWorker
     this._started = false;
   }
 
-  async _requestApi(
-    target: null | TwitterChannel,
-    request: TwitterApiRequest,
-    accomplishRequest: TwitterJob['accomplishRequest'],
-    mediaSources: null | MediaSource[]
-  ): Promise<TwitterApiResult> {
-    const mediaResults = mediaSources
-      ? await this._handleMediaSources(mediaSources)
-      : null;
-
-    const { method, href, parameters } = accomplishRequest
-      ? accomplishRequest(target, request, mediaResults?.mediaIds || null)
-      : request;
-
+  async request(
+    method: string,
+    href: string,
+    parameters?: Record<string, any>,
+    oauth?: OauthHeaderOption
+  ): Promise<{ code: number; body: unknown }> {
     const apiUrl = new URL(href, API_ENTRY);
     const apiLocation = `${apiUrl.origin}${apiUrl.pathname}`;
     let authHeader: string;
     let body: undefined | string;
 
     if (method === 'GET') {
-      authHeader = this.getAuthHeader(method, apiLocation, parameters);
+      authHeader = this.getAuthHeader(method, apiLocation, parameters, oauth);
       if (parameters) {
         Object.entries(parameters).forEach(([k, v]) => {
           apiUrl.searchParams.set(k, v as string);
         });
       }
     } else {
-      authHeader = this.getAuthHeader(method, apiLocation);
+      authHeader = this.getAuthHeader(method, apiLocation, oauth);
       body = JSON.stringify(parameters);
     }
 
@@ -117,15 +118,14 @@ export default class TwitterWorker
         Authorization: authHeader,
       },
     });
-    const result = await handleApiResponse(response);
+    const result = await getResponseBody(response);
     return {
       code: response.status,
       body: result,
-      uploadedMedia: mediaResults?.uploadedMedia || null,
     };
   }
 
-  private async _handleMediaSources(mediaSources: MediaSource[]): Promise<{
+  private async _uploadMediaSources(mediaSources: MediaSource[]): Promise<{
     mediaIds: string[];
     uploadedMedia: TwitterApiResult['uploadedMedia'];
   }> {
@@ -136,7 +136,7 @@ export default class TwitterWorker
         }
         if (media.sourceType === 'file') {
           const { parameters, fileData, fileInfo } = media;
-          return this._uploadMedia(parameters, fileData, fileInfo);
+          return this._uploadMediaFile(parameters, fileData, fileInfo);
         }
         if (media.sourceType === 'url') {
           return this._uploadFromUrl(media);
@@ -192,7 +192,7 @@ export default class TwitterWorker
       total_bytes: parameters.total_bytes || contentLength,
     };
 
-    const uploadResult = await this._uploadMedia(
+    const uploadResult = await this._uploadMediaFile(
       updatedParameters,
       downloadRes.body,
       fileInfo
@@ -200,7 +200,7 @@ export default class TwitterWorker
     return uploadResult;
   }
 
-  async _uploadMedia(
+  async _uploadMediaFile(
     parameters: { [k: string]: string },
     fileData: Buffer | NodeJS.ReadableStream,
     fileInfo?: UploadingFileInfo
@@ -239,7 +239,7 @@ export default class TwitterWorker
       },
     });
 
-    const result = await handleApiResponse(response);
+    const result = await getResponseBody(response);
     return result;
   }
 
@@ -272,27 +272,38 @@ export default class TwitterWorker
   getAuthHeader(
     method: string,
     baseUrl: string,
-    additionalParams?: Record<string, string>
+    additionalParams?: Record<string, string>,
+    oauth?: OauthHeaderOption
   ): string {
     const oauthParams = {
       oauth_consumer_key: this._appKey,
       oauth_nonce: nanoid(),
       oauth_signature_method: 'HMAC-SHA1',
       oauth_timestamp: Math.floor(Date.now() / 1000),
-      oauth_token: this._accessToken,
+      oauth_token: oauth?.token || this._accessToken,
       oauth_version: '1.0',
     };
+
     const paramsToSign = { ...oauthParams, ...additionalParams };
     const paramsStr = Object.keys(paramsToSign)
       .sort()
-      .map((k) => `${k}=${encodeURIComponent(paramsToSign[k])}`)
+      .map((k) => {
+        const v = paramsToSign[k];
+        return v ? `${k}=${encodeURIComponent(v)}` : undefined;
+      })
+      .filter((param) => !!param)
       .join('&');
     const baseStr = [
       method,
       encodeURIComponent(baseUrl),
       encodeURIComponent(paramsStr),
     ].join('&');
-    const signature = createHmac('sha1', this._signingKey)
+    const signature = createHmac(
+      'sha1',
+      `${encodeURIComponent(this._appSecret)}&${encodeURIComponent(
+        oauth?.secret || this._accessSecret
+      )}`
+    )
       .update(baseStr)
       .digest('base64');
     const header = `OAuth ${Object.entries(oauthParams)
@@ -362,16 +373,22 @@ export default class TwitterWorker
     const currentTarget =
       (key && refreshTarget && this._targetCache.get(key)) || initialTarget;
 
-    const result = await this._requestApi(
-      currentTarget,
-      request,
-      accomplishRequest,
-      mediaSources
-    );
+    const mediaResults = mediaSources
+      ? await this._uploadMediaSources(mediaSources)
+      : null;
+
+    const { method, href, parameters } = accomplishRequest
+      ? accomplishRequest(
+          currentTarget,
+          request,
+          mediaResults?.mediaIds || null
+        )
+      : request;
+
+    const { code, body } = await this.request(method, href, parameters);
 
     if (key) {
-      const nextTarget =
-        refreshTarget && refreshTarget(currentTarget, result.body);
+      const nextTarget = refreshTarget && refreshTarget(currentTarget, body);
       if (nextTarget) {
         this._targetCache.set(key, nextTarget);
       } else if (currentTarget !== initialTarget) {
@@ -379,6 +396,17 @@ export default class TwitterWorker
       }
     }
 
-    return [{ success: true, result, job, error: undefined }];
+    return [
+      {
+        success: true,
+        result: {
+          code,
+          body,
+          uploadedMedia: mediaResults?.uploadedMedia || null,
+        },
+        job,
+        error: undefined,
+      },
+    ];
   }
 }

@@ -1,6 +1,6 @@
 import TwitterUser from './User';
 import { polishMentionEntity, polishUrlEntity, polishMedia } from './utils';
-import {
+import type {
   RawTweet,
   Place,
   Coordinates,

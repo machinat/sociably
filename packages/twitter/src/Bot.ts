@@ -52,7 +52,7 @@ type TwitterBotOptions = {
 export class TwitterBot
   implements MachinatBot<TwitterChannel, TwitterJob, TwitterApiResult>
 {
-  worker: TwitterWorker;
+  client: TwitterWorker;
   agentId: string;
   engine: Engine<
     TwitterChannel,
@@ -78,7 +78,7 @@ export class TwitterBot
     [this.agentId] = accessToken.split('-', 1);
 
     const queue = new Queue<TwitterJob, TwitterApiResult>();
-    this.worker = new TwitterWorker({
+    this.client = new TwitterWorker({
       appKey,
       appSecret,
       accessToken,
@@ -94,7 +94,7 @@ export class TwitterBot
       TWITTER,
       renderer,
       queue,
-      this.worker,
+      this.client,
       initScope,
       dispatchWrapper
     );
@@ -184,7 +184,7 @@ export class TwitterBot
   }> {
     const response = await fetch(url, {
       headers: {
-        Authorization: this.worker.getAuthHeader('GET', url),
+        Authorization: this.client.getAuthHeader('GET', url),
       },
     });
 
