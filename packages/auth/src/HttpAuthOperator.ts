@@ -1,11 +1,12 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
+import { join as joinPath } from 'path';
 import type { CookieSerializeOptions } from 'cookie';
 import { sign as signJwt, verify as verifyJWT } from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
 import { getCookies, setCookie, isSubpath } from './utils';
 import type {
-  ResponseHelper,
+  HttpAuthHelper,
   IssueAuthOptions,
   RedirectOptions,
   AuthPayload,
@@ -284,11 +285,18 @@ class HttpAuthOperator {
     return true;
   }
 
-  createResponseHelper(
+  getApiEntry(platform: string, subpath?: string): string {
+    return new URL(
+      joinPath(this.options.apiUrl.pathname, platform, subpath || ''),
+      this.options.apiUrl
+    ).href;
+  }
+
+  createAuthHelper(
     req: IncomingMessage,
     res: ServerResponse,
     platform: string
-  ): ResponseHelper {
+  ): HttpAuthHelper {
     return {
       getState: <State>() => this.getState<State>(req, platform),
       issueState: <State>(state: State) =>
@@ -304,6 +312,8 @@ class HttpAuthOperator {
 
       redirect: (url?: string, options?: RedirectOptions) =>
         this.redirect(res, url, options),
+      getApiEntry: (subpath?: string): string =>
+        this.getApiEntry(platform, subpath),
     };
   }
 }

@@ -5,7 +5,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 import type {
   ServerAuthenticator,
-  ResponseHelper,
+  HttpAuthHelper,
   VerifyResult,
   ContextResult,
 } from '@machinat/auth';
@@ -48,7 +48,7 @@ export class TelegramServerAuthenticator
   async delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    resHelper: ResponseHelper
+    resHelper: HttpAuthHelper
   ): Promise<void> {
     const { query } = parseUrl(req.url as string, true);
     const { [REDIRECT_QUERY]: redirectQuery, [CHAT_QUERY]: chatQuery } = query;

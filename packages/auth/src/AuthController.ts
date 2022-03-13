@@ -202,7 +202,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       await authenticator.delegateAuthRequest(
         req,
         res,
-        this.httpOperator.createResponseHelper(req, res, platform),
+        this.httpOperator.createAuthHelper(req, res, platform),
         {
           originalPath: pathname || '/',
           matchedPath: joinPath(

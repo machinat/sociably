@@ -80,29 +80,29 @@ export type RedirectOptions = {
   assertInternal?: boolean;
 };
 
-export interface ResponseHelper {
+export interface HttpAuthHelper {
   /** Get content of state cookie from request, return null if absent. */
   getState<State>(): Promise<null | State>;
   /** Issue state cookie to response, return the signed JWT string. */
   issueState<State>(state: State): Promise<string>;
-
   /** Get content of auth cookie from request, return null if absent. */
   getAuth<Data>(): Promise<null | Data>;
   /** Issue state cookie to response, return the signed token. */
   issueAuth<Data>(authData: Data, options?: IssueAuthOptions): Promise<string>;
-
   /** Get content of error cookie from request, return null if absent. */
   getError(): Promise<null | ErrorMessage>;
   /** Issue error cookie to response, return the signed JWT string. */
   issueError(code: number, message: string): Promise<string>;
-
   /**
    * Redirect resonse with 302 status. If a relative or empty URL is given, the
    * redirectUrl option of {@link AuthContoller} is taken as the base for
    * resolving the final target.
    */
   redirect(url?: string, options?: RedirectOptions): boolean;
+  getApiEntry(subpath?: string): string;
 }
+
+export type DelegateRoutingInfo = Required<RoutingInfo>;
 
 export interface ServerAuthenticator<
   Credential,
@@ -120,8 +120,8 @@ export interface ServerAuthenticator<
   delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    responseHelper: ResponseHelper,
-    routingInfo: RoutingInfo
+    authHelper: HttpAuthHelper,
+    routingInfo: DelegateRoutingInfo
   ): Promise<void>;
 
   /**
