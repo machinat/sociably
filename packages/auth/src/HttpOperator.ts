@@ -1,14 +1,19 @@
+import { makeClassProvider } from '@machinat/core';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import { join as joinPath } from 'path';
+import invariant from 'invariant';
 import type { CookieSerializeOptions } from 'cookie';
-import { sign as signJwt, verify as verifyJWT } from 'jsonwebtoken';
+import {
+  sign as signJwt,
+  verify as verifyJWT,
+  SignOptions,
+} from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
-import { getCookies, setCookie, isSubpath } from './utils';
+import { ConfigsI } from './interface';
+import { getCookies, setCookie, isSubpath, isSubdomain } from './utils';
+
 import type {
-  HttpAuthHelper,
-  IssueAuthOptions,
-  RedirectOptions,
   AuthPayload,
   StatePayload,
   ErrorPayload,
@@ -26,24 +31,29 @@ import {
 } from './constant';
 
 type OperatorOptions = {
-  apiUrl: URL;
-  redirectUrl: URL;
+  serverUrl: string;
+  apiRoot?: string;
+  redirectRoot?: string;
   secret: string;
-  tokenCookieMaxAge: number;
-  dataCookieMaxAge: number;
-  tokenLifetime: number;
-  refreshDuration: number;
+  tokenCookieMaxAge?: number;
+  dataCookieMaxAge?: number;
+  tokenLifetime?: number;
+  refreshDuration?: number;
   cookieDomain?: string;
-  cookiePath: string;
-  cookieSameSite: 'strict' | 'lax' | 'none';
-  secure: boolean;
+  cookiePath?: string;
+  cookieSameSite?: 'strict' | 'lax' | 'none';
+  secure?: boolean;
 };
 
-class HttpAuthOperator {
-  options: OperatorOptions;
+export class AuthHttpOperator {
+  apiRootUrl: URL;
+  redirectRootUrl: URL;
+  secret: string;
+  tokenLifetime: number;
+  refreshDuration: number;
+  secure: boolean;
 
   private _cookieScope: { domain?: string; path: string };
-
   private _errorCookieOpts: CookieSerializeOptions;
   private _tokenCookieOpts: CookieSerializeOptions;
   private _signatureCookieOpts: CookieSerializeOptions;
@@ -52,17 +62,59 @@ class HttpAuthOperator {
 
   constructor(options: OperatorOptions) {
     const {
-      apiUrl,
-      tokenCookieMaxAge,
-      dataCookieMaxAge,
+      serverUrl,
+      apiRoot,
+      redirectRoot,
+      secret,
+      tokenLifetime = 3600, // 1 hr
+      refreshDuration = 864000, // 10 day
+      dataCookieMaxAge = 180, // 3 min
       cookieDomain,
-      cookiePath,
-      cookieSameSite,
-      secure,
+      cookiePath = '/',
+      cookieSameSite = 'lax',
+      secure = true,
     } = options;
+    invariant(secret, 'options.secret must not be empty');
+    invariant(serverUrl, 'options.serverUrl must not be empty');
 
-    this.options = options;
-    this._cookieScope = { domain: cookieDomain, path: cookiePath };
+    this.secret = secret;
+    this.tokenLifetime = tokenLifetime;
+    this.refreshDuration = refreshDuration;
+    this.secure = secure;
+    this._cookieScope = {
+      domain: cookieDomain,
+      path: cookiePath,
+    };
+
+    const apiUrl = new URL(apiRoot || '', serverUrl);
+    invariant(
+      !secure || apiUrl.protocol === 'https:',
+      'protocol of options.serverUrl should be "https" when options.secure is set to true'
+    );
+    invariant(
+      !cookieDomain || isSubdomain(cookieDomain, apiUrl.hostname),
+      'options.serverUrl should be under a subdomain of options.cookieDomain'
+    );
+    invariant(
+      isSubpath(cookiePath, apiUrl.pathname),
+      'options.apiRoot should be a subpath of options.cookiePath'
+    );
+    this.apiRootUrl = apiUrl;
+
+    const redirectUrl = new URL(redirectRoot || '', serverUrl);
+    invariant(
+      !secure || redirectUrl.protocol === 'https:',
+      'protocol of options.redirectRoot should be "https" when options.secure is set to true'
+    );
+    invariant(
+      !cookieDomain || isSubdomain(cookieDomain, redirectUrl.hostname),
+      'options.redirectRoot should be under a subdomain of options.cookieDomain'
+    );
+    invariant(
+      isSubpath(cookiePath, redirectUrl.pathname),
+      'options.redirectRoot should be under a subpath of options.cookiePath'
+    );
+    this.redirectRootUrl = redirectUrl;
 
     const baseCookieOpts = {
       domain: cookieDomain,
@@ -78,7 +130,6 @@ class HttpAuthOperator {
 
     this._tokenCookieOpts = {
       ...baseCookieOpts,
-      maxAge: tokenCookieMaxAge,
     };
 
     this._signatureCookieOpts = {
@@ -113,7 +164,7 @@ class HttpAuthOperator {
 
     try {
       const { platform, state }: StateTokenPayload<State> =
-        await thenifiedly.call(verifyJWT, encodedState, this.options.secret);
+        await thenifiedly.call(verifyJWT, encodedState, this.secret);
 
       return platform === platformAsserted ? state : null;
     } catch (e) {
@@ -129,7 +180,7 @@ class HttpAuthOperator {
     const encodedState = await thenifiedly.call(
       signJwt,
       { platform, state } as StatePayload<State>,
-      this.options.secret
+      this.secret
     );
 
     setCookie(res, STATE_COOKIE_KEY, encodedState, this._stateCookieOpts);
@@ -155,7 +206,7 @@ class HttpAuthOperator {
       const { platform, data }: AuthTokenPayload<Data> = await thenifiedly.call(
         verifyJWT,
         `${contentVal}.${sigVal}`,
-        this.options.secret
+        this.secret
       );
 
       return platform === platformAsserted ? data : null;
@@ -168,9 +219,9 @@ class HttpAuthOperator {
     res: ServerResponse,
     platform: string,
     data: Data,
-    { refreshTill, signatureOnly = false }: IssueAuthOptions = {}
+    { refreshTill }: { refreshTill?: number } = {}
   ): Promise<string> {
-    const { secret, tokenLifetime, refreshDuration } = this.options;
+    const { secret, tokenLifetime, refreshDuration } = this;
 
     const now = Math.floor(Date.now() / 1000);
 
@@ -193,9 +244,7 @@ class HttpAuthOperator {
     const tokenContent = `${header}.${body}`;
 
     setCookie(res, SIGNATURE_COOKIE_KEY, signature, this._signatureCookieOpts);
-    if (!signatureOnly) {
-      setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this._tokenCookieOpts);
-    }
+    setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this._tokenCookieOpts);
 
     this.deleteCookie(res, STATE_COOKIE_KEY);
     this.deleteCookie(res, ERROR_COOKIE_KEY);
@@ -217,7 +266,7 @@ class HttpAuthOperator {
       const { platform, error }: ErrorTokenPayload = await thenifiedly.call(
         verifyJWT,
         errEncoded,
-        this.options.secret
+        this.secret
       );
 
       return platform === platformAsserted ? error : null;
@@ -239,7 +288,7 @@ class HttpAuthOperator {
         error: { code, reason },
         scope: this._cookieScope,
       } as ErrorPayload,
-      this.options.secret
+      this.secret
     );
 
     setCookie(res, ERROR_COOKIE_KEY, errEncoded, this._errorCookieOpts);
@@ -262,21 +311,32 @@ class HttpAuthOperator {
     setCookie(res, key, '', this._deleteCookieOpts);
   }
 
+  getAuthUrl(platform: string, subpath?: string): string {
+    return new URL(
+      joinPath(this.apiRootUrl.pathname, platform, subpath || '/'),
+      this.apiRootUrl
+    ).href;
+  }
+
+  getRedirectUrl(path?: string): string {
+    return new URL(path || '', joinPath(this.redirectRootUrl.href, '/')).href;
+  }
+
   redirect(
     res: ServerResponse,
     url?: string,
-    { assertInternal }: RedirectOptions = {}
+    { assertInternal }: { assertInternal?: boolean } = {}
   ): boolean {
-    const redirectBase = this.options.redirectUrl;
-    const redirectTarget = new URL(url || '', redirectBase);
+    const redirectRoot = this.redirectRootUrl;
+    const redirectTarget = new URL(url || '', joinPath(redirectRoot.href, '/'));
 
     if (assertInternal) {
       const { protocol, host, pathname } = redirectTarget;
 
       if (
-        (this.options.secure && protocol && protocol !== 'https:') ||
-        host !== redirectBase.host ||
-        !isSubpath(redirectBase.pathname, pathname)
+        (this.secure && protocol && protocol !== 'https:') ||
+        host !== redirectRoot.host ||
+        !isSubpath(redirectRoot.pathname, pathname)
       ) {
         res.writeHead(400);
         res.end('invalid redirect url');
@@ -292,37 +352,30 @@ class HttpAuthOperator {
     return true;
   }
 
-  getApiEntry(platform: string, subpath?: string): string {
-    return new URL(
-      joinPath(this.options.apiUrl.pathname, platform, subpath || ''),
-      this.options.apiUrl
-    ).href;
+  signToken(platform: string, payload: unknown, options?: SignOptions): string {
+    return signJwt({ platform, payload }, this.secret, options);
   }
 
-  createAuthHelper(
-    req: IncomingMessage,
-    res: ServerResponse,
-    platform: string
-  ): HttpAuthHelper {
-    return {
-      getState: <State>() => this.getState<State>(req, platform),
-      issueState: <State>(state: State) =>
-        this.issueState(res, platform, state),
-
-      getAuth: () => this.getAuth(req, platform),
-      issueAuth: <Data>(data: Data, options: IssueAuthOptions) =>
-        this.issueAuth(res, platform, data, options),
-
-      getError: () => this.getError(req, platform),
-      issueError: (code: number, message: string) =>
-        this.issueError(res, platform, code, message),
-
-      redirect: (url?: string, options?: RedirectOptions) =>
-        this.redirect(res, url, options),
-      getApiEntry: (subpath?: string): string =>
-        this.getApiEntry(platform, subpath),
-    };
+  verifyToken<Data>(assertedPlatform: string, token: string): null | Data {
+    try {
+      const { platform, payload } = verifyJWT(token, this.secret) as {
+        platform: string;
+        payload: Data;
+      };
+      if (platform !== assertedPlatform) {
+        return null;
+      }
+      return payload;
+    } catch {
+      return null;
+    }
   }
 }
 
-export default HttpAuthOperator;
+const OperatorP = makeClassProvider({
+  deps: [ConfigsI],
+  factory: (configs) => new AuthHttpOperator(configs),
+})(AuthHttpOperator);
+type OperatorP = AuthHttpOperator;
+
+export default OperatorP;

@@ -6,11 +6,11 @@ import { makeClassProvider } from '@machinat/core/service';
 import type {
   ServerAuthenticator,
   VerifyResult,
-  ContextResult,
+  CheckDataResult,
 } from '@machinat/auth';
 import { ConfigsI } from '../interface';
 import { MESSENGER, MessengerChatType } from '../constant';
-import { supplementContext } from './utils';
+import { getAuthContextDetails } from './utils';
 import type {
   MessengerAuthCredential,
   SignedReuestPayload,
@@ -80,7 +80,7 @@ export class MessengerServerAuthenticator
   ): Promise<VerifyResult<MessengerAuthData>> {
     if (!credential || !credential.signedRequest) {
       return {
-        success: false,
+        ok: false,
         code: 400,
         reason: 'invalid extension context',
       };
@@ -92,7 +92,7 @@ export class MessengerServerAuthenticator
     const sig: Buffer = decodeBase64UrlToBuffer(sigEncoded);
     if (!sigEncoded || !dataEncoded) {
       return {
-        success: false,
+        ok: false,
         code: 400,
         reason: 'invalid signed request token',
       };
@@ -105,7 +105,7 @@ export class MessengerServerAuthenticator
 
     if (!sig.equals(expectedSig)) {
       return {
-        success: false,
+        ok: false,
         code: 401,
         reason: 'invalid signature',
       };
@@ -117,7 +117,7 @@ export class MessengerServerAuthenticator
 
     if (payload.issued_at + this.issueTimeLimit < Date.now() / 1000) {
       return {
-        success: false,
+        ok: false,
         code: 401,
         reason: 'signed request token timeout',
       };
@@ -125,7 +125,7 @@ export class MessengerServerAuthenticator
 
     const { psid, tid, thread_type: threadType, page_id: pageId } = payload;
     return {
-      success: true,
+      ok: true,
       data: {
         user: psid,
         chat: {
@@ -147,19 +147,20 @@ export class MessengerServerAuthenticator
     data: MessengerAuthData
   ): Promise<VerifyResult<MessengerAuthData>> {
     if (data.page !== this.pageId) {
-      return { success: false, code: 400, reason: 'page not match' };
+      return { ok: false, code: 400, reason: 'page not match' };
     }
 
-    return { success: true, data };
+    return { ok: true, data };
   }
 
-  checkAuthContext(
+  checkAuthData(
     data: MessengerAuthData
-  ): ContextResult<MessengerAuthContext> {
+  ): CheckDataResult<MessengerAuthContext> {
     if (data.page !== this.pageId) {
-      return { success: false, code: 400, reason: 'page not match' };
+      return { ok: false, code: 400, reason: 'page not match' };
     }
-    return { success: true, contextSupplment: supplementContext(data) };
+
+    return { ok: true, contextDetails: getAuthContextDetails(data) };
   }
 }
 

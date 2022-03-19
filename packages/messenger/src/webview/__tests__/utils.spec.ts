@@ -1,12 +1,12 @@
 import MessengerChannel from '../../Chat';
 import MessengerUser from '../../User';
 import { MessengerChatType } from '../../constant';
-import { supplementContext } from '../utils';
+import { getAuthContextDetails } from '../utils';
 
-describe('supplementContext(payload))', () => {
+describe('getAuthContextDetails(payload))', () => {
   test('within user to page chat', () => {
     expect(
-      supplementContext({
+      getAuthContextDetails({
         user: '_USER_PSID_',
         chat: {
           type: MessengerChatType.UserToPage,
@@ -25,7 +25,7 @@ describe('supplementContext(payload))', () => {
 
   test('within user to user chat', () => {
     expect(
-      supplementContext({
+      getAuthContextDetails({
         user: '_USER_PSID_',
         chat: {
           type: MessengerChatType.UserToUser,
@@ -48,7 +48,7 @@ describe('supplementContext(payload))', () => {
 
   test('within group chat', () => {
     expect(
-      supplementContext({
+      getAuthContextDetails({
         user: '_USER_PSID_',
         chat: {
           id: '_THREAD_ID_',

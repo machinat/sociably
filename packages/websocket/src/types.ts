@@ -128,15 +128,15 @@ export type WebSocketEventContext<
   reply(message: MachinatNode): Promise<null | WebSocketDispatchResponse>;
 };
 
-type SuccessVerifyLoginResult<User extends null | MachinatUser, AuthContext> = {
-  success: true;
+type OkVerifyLoginResult<User extends null | MachinatUser, AuthContext> = {
+  ok: true;
   user: User;
   authContext: AuthContext;
   expireAt?: Date;
 };
 
-type FailedVerifyLoginResult = {
-  success: false;
+type FailVerifyLoginResult = {
+  ok: false;
   code: number;
   reason: string;
 };
@@ -148,9 +148,7 @@ export type VerifyLoginFn<
 > = (
   request: UpgradeRequestInfo,
   credential: Credential
-) => Promise<
-  SuccessVerifyLoginResult<User, AuthContext> | FailedVerifyLoginResult
->;
+) => Promise<OkVerifyLoginResult<User, AuthContext> | FailVerifyLoginResult>;
 
 export type AnyVerifyLoginFn = VerifyLoginFn<any, unknown, unknown>;
 

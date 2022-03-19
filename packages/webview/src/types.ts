@@ -17,6 +17,7 @@ import type {
   ContextOfAuthenticator,
   UserOfAuthenticator,
 } from '@machinat/auth';
+import type { CodeMessageComponent } from '@machinat/auth/basicAuth';
 import type { NextServerOptions } from '@machinat/next';
 import type {
   EventInput,
@@ -130,14 +131,23 @@ export type WebviewConfigs<
   authPlatforms?: ServiceProvider<AnyServerAuthenticator, unknown[]>[];
   /** The secret for signing auth token */
   authSecret: string;
+  /** Initiate basic auth flow service with the options */
+  basicAuth?: {
+    /** The app name to show while login using basic auth flow */
+    appName?: string;
+    /** The app image to show while login using basic auth flow */
+    appImageUrl?: string;
+    /** The digits of the verify code number. Default to 6 */
+    verifyCodeDigits?: number;
+    /** The customized component to render code message */
+    codeMessageComponent?: CodeMessageComponent;
+  };
   /** Route path to the auth api. Default to `"/auth"` */
   authApiPath?: string;
   /** The lifetime of the token in seconds. Default to an hour */
   tokenLifetime?: number;
   /** The max time a token can be refreshed in seconds. Default to 10 days */
   refreshDuration?: number;
-  /** The max age of the auth cookies in seconds. Default to 3 minute */
-  tokenCookieMaxAge?: number;
   /** The max age of the data cookies in seconds. Default to 3 minute */
   dataCookieMaxAge?: number;
   /** The path scope of the auth cookies. Default to '/' */

@@ -466,7 +466,7 @@ export class WebSocketServer<
       const request = socket.request as HttpRequestInfo;
       const authResult = await this._verifyLogin(request, body.credential);
 
-      if (authResult.success) {
+      if (authResult.ok) {
         const { authContext, user, expireAt } = authResult;
 
         this._connectionStates.set(connId, {
@@ -618,7 +618,7 @@ export const ServerP = makeClassProvider({
       verifyUpgrade: verifyUpgrade || (() => true),
       verifyLogin:
         verifyLogin ||
-        (async () => ({ success: true, user: null, authContext: null })),
+        (async () => ({ ok: true, user: null, authContext: null })),
       heartbeatInterval,
     }),
 })(WebSocketServer);

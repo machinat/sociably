@@ -14,7 +14,7 @@ const request: IncomingMessage = {
 const appSecret = 'APP_SECRET';
 const pageId = 1234567890;
 
-describe('#constructor(options)', () => {
+describe('.constructor(options)', () => {
   it('is messenger platform', () => {
     expect(
       new MessengerServerAuthenticator({ appSecret, pageId }).platform
@@ -41,7 +41,7 @@ describe('#constructor(options)', () => {
   });
 });
 
-describe('#delegateAuthRequest(req, res)', () => {
+describe('.delegateAuthRequest(req, res)', () => {
   it('respond 403', async () => {
     const authenticator = new MessengerServerAuthenticator({
       pageId,
@@ -58,7 +58,7 @@ describe('#delegateAuthRequest(req, res)', () => {
   });
 });
 
-describe('#verifyCredential(credential)', () => {
+describe('.verifyCredential(credential)', () => {
   const MockDate = moxy(Date);
   const _Date = Date;
 
@@ -88,7 +88,7 @@ describe('#verifyCredential(credential)', () => {
         client: 'messenger',
       })
     ).resolves.toStrictEqual({
-      success: true,
+      ok: true,
       data: {
         page: 682498171943165,
         user: '1254459154682919',
@@ -109,32 +109,32 @@ describe('#verifyCredential(credential)', () => {
 
     await expect(authenticator.verifyCredential(null as never)).resolves
       .toMatchInlineSnapshot(`
-                      Object {
-                        "code": 400,
-                        "reason": "invalid extension context",
-                        "success": false,
-                      }
-                `);
+            Object {
+              "code": 400,
+              "ok": false,
+              "reason": "invalid extension context",
+            }
+          `);
     await expect(authenticator.verifyCredential({} as never)).resolves
       .toMatchInlineSnapshot(`
-                      Object {
-                        "code": 400,
-                        "reason": "invalid extension context",
-                        "success": false,
-                      }
-                `);
+            Object {
+              "code": 400,
+              "ok": false,
+              "reason": "invalid extension context",
+            }
+          `);
     await expect(
       authenticator.verifyCredential({
         signedRequest: 'invalid content',
         client: 'messenger',
       })
     ).resolves.toMatchInlineSnapshot(`
-                  Object {
-                    "code": 400,
-                    "reason": "invalid signed request token",
-                    "success": false,
-                  }
-              `);
+            Object {
+              "code": 400,
+              "ok": false,
+              "reason": "invalid signed request token",
+            }
+          `);
   });
 
   it('fail if signature is invalid', async () => {
@@ -150,12 +150,12 @@ describe('#verifyCredential(credential)', () => {
         client: 'messenger',
       })
     ).resolves.toMatchInlineSnapshot(`
-                    Object {
-                      "code": 401,
-                      "reason": "invalid signature",
-                      "success": false,
-                    }
-              `);
+            Object {
+              "code": 401,
+              "ok": false,
+              "reason": "invalid signature",
+            }
+          `);
   });
 
   it('fail is signed request token is outdated', async () => {
@@ -173,16 +173,16 @@ describe('#verifyCredential(credential)', () => {
         client: 'messenger',
       })
     ).resolves.toMatchInlineSnapshot(`
-                  Object {
-                    "code": 401,
-                    "reason": "signed request token timeout",
-                    "success": false,
-                  }
-              `);
+            Object {
+              "code": 401,
+              "ok": false,
+              "reason": "signed request token timeout",
+            }
+          `);
   });
 });
 
-describe('#verifyRefreshment()', () => {
+describe('.verifyRefreshment()', () => {
   it('return success and original data', async () => {
     const authenticator = new MessengerServerAuthenticator({
       pageId,
@@ -199,7 +199,7 @@ describe('#verifyRefreshment()', () => {
     };
 
     await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
-      success: true,
+      ok: true,
       data: authData,
     });
   });
@@ -223,21 +223,21 @@ describe('#verifyRefreshment()', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
+              "ok": false,
               "reason": "page not match",
-              "success": false,
             }
           `);
   });
 });
 
-describe('#checkAuthContext(data)', () => {
+describe('.checkAuthData(data)', () => {
   it('resolve auth context form extension context', () => {
     const authenticator = new MessengerServerAuthenticator({
       pageId,
       appSecret,
     });
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         page: pageId,
         user: '1254459154682919',
         chat: {
@@ -247,8 +247,8 @@ describe('#checkAuthContext(data)', () => {
         client: 'messenger',
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         pageId,
         user: new MessengerUser(pageId, '1254459154682919'),
         channel: new MessengerChannel(pageId, {
@@ -266,7 +266,7 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         page: 666666666666,
         user: '1254459154682919',
         chat: {
@@ -278,8 +278,8 @@ describe('#checkAuthContext(data)', () => {
     ).toMatchInlineSnapshot(`
       Object {
         "code": 400,
+        "ok": false,
         "reason": "page not match",
-        "success": false,
       }
     `);
   });

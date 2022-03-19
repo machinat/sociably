@@ -59,6 +59,8 @@ export class MessengerBot
     MessengerResult
   >;
 
+  platform = MESSENGER;
+
   constructor({
     pageId,
     accessToken,

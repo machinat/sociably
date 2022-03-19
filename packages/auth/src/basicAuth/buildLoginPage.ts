@@ -1,0 +1,173 @@
+type LoginPageOptions = {
+  platformName: string;
+  platformImageUrl: string;
+  platformColor: string;
+  appName?: string;
+  appImageUrl?: string;
+  chatLinkUrl: string;
+};
+
+const buildLoginPage = ({
+  platformName,
+  platformColor,
+  platformImageUrl,
+  appName,
+  appImageUrl,
+  chatLinkUrl,
+}: LoginPageOptions): string => `
+<!DOCTYPE html>
+<html>
+<head>
+<title>${platformName} Webview Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta charset="UTF-8">
+<style>
+body {
+  margin:0;
+  font-family: sans-serif;
+}
+.flex { display: flex }
+.center {
+  justify-content: center;
+  align-items: center;
+}
+.column { flex-direction: column }
+.container {
+  width: 100vw;
+  height: 100vh;
+  gap: 1rem;
+}
+.icons { gap: 1.5rem }
+img {
+  width: 5.5rem;
+  height: 5.5rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+h1 {
+  text-align: center;
+}
+.x {
+  position: relative;
+  margin-top: 1rem;
+  height: 1rem;
+  width: 1rem;
+}
+.x:before,
+.x:after {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 1.5px;
+  background-color: black;
+}
+.x:before { transform: rotate(45deg) }
+.x:after { transform: rotate(-45deg) }
+#codeInput {
+  width: 15rem;
+  height: 3rem;
+  font-family: monospace;
+  font-size: 3rem;
+  text-align: center;
+  margin: 0.2rem 0 0.2rem;
+  border: solid #bbb 2px;
+  border-radius: 0.3rem;
+}
+#errorMsg {
+  color: red;
+}
+.buttons { gap: 0.7rem }
+.button {
+  height: 3rem;
+  margin: 0 5px;
+  border: none;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+#login {
+  background-color: ${platformColor};
+  color: #fff;
+  padding: 0 1.5rem;
+}
+#login:disabled {
+  filter: brightness(70%);
+}
+.checkChat {
+  text-decoration: none;
+  background-color: #eee;
+  color: #222;
+  padding: 0 1rem;
+}
+</style>
+</head>
+<body>
+
+<div class="flex center column container">
+  <div class="flex center icons">
+    <img alt="${platformName}" src="${platformImageUrl}" />${
+  appImageUrl
+    ? `
+    <div class="x"></div>
+    <img alt="${appName}" src="${appImageUrl}" />`
+    : ''
+}
+  </div>
+  <h1>${appName || ''}</h1>
+  <div class="flex column">
+    <label for="codeInput">Login code:</label>
+    <input id="codeInput" type="text" pattern="\\d*" />
+    <div id="errorMsg"></div>
+  </div>
+  <div class="flex center buttons">
+    <a href="${chatLinkUrl}" class="flex center button checkChat">
+      <span>CHECK CHAT</span>
+      <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 23 23" width="20">
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+      </svg>
+    </a>
+    <button id="login" class="button">LOG IN</button>
+  </div>
+</div>
+
+<script>
+
+const input = document.getElementById('codeInput');
+const loginButton = document.getElementById('login');
+const errorMessage = document.getElementById('errorMsg');
+
+loginButton.addEventListener('click', () => {
+  if (input.value) {
+    loginButton.disabled = true;
+
+    fetch('./verify', {
+      method: 'POST',
+      body: JSON.stringify({ code: input.value }),
+    })
+      .then(response => response.json())
+      .then(result => {
+        if (result.ok || result.retryChances === 0) {
+          window.location = result.redirectTo;
+        } else {
+          errorMessage.innerText = '⨯ invalid login code';
+          errorMessage.hidden = false;
+        }
+      });
+  } else {
+    errorMessage.innerText = '⨯ login code is empty';
+    errorMessage.hidden = false;
+  }
+});
+
+input.addEventListener('input', () => {
+  errorMessage.hidden = true;
+  loginButton.disabled = false;
+});
+
+</script>
+</body>
+</html>
+`;
+
+export default buildLoginPage;

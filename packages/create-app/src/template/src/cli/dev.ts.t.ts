@@ -64,7 +64,7 @@ async function dev() {
   });
 
   nodemon.on('start',  () => {
-    console.log(\`[dev:server] Dev server is running on \${PORT} port\`);
+    console.log(\`[dev:server] Dev server is running on localhost:\${PORT}\`);
   });
 
   nodemon.on('restart', (changes: string[]) => {

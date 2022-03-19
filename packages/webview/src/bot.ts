@@ -12,7 +12,7 @@ import { makeClassProvider } from '@machinat/core/service';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type { DispatchResponse } from '@machinat/core/engine';
 import type { AnyServerAuthenticator } from '@machinat/auth';
-import { WebSocketWorker } from '@machinat/websocket';
+import WebSocket, { WebSocketWorker } from '@machinat/websocket';
 import { createJobs } from '@machinat/websocket/utils';
 import type {
   EventInput,
@@ -21,7 +21,7 @@ import type {
   ConnIdentifier,
 } from '@machinat/websocket';
 import { WEBVIEW } from './constant';
-import { SocketServerP, PlatformUtilitiesI } from './interface';
+import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
 import {
   WebviewConnection,
   WebviewTopicChannel,
@@ -51,8 +51,7 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
 export class WebviewBot<Authenticator extends AnyServerAuthenticator>
   implements MachinatBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult>
 {
-  private _server: SocketServerP<Authenticator>;
-
+  private _server: WebviewSocketServer<Authenticator>;
   engine: Engine<
     WebviewDispatchChannel,
     EventInput,
@@ -61,8 +60,10 @@ export class WebviewBot<Authenticator extends AnyServerAuthenticator>
     WebSocketResult
   >;
 
+  platform = WEBVIEW;
+
   constructor(
-    server: SocketServerP<Authenticator>,
+    server: WebviewSocketServer<Authenticator>,
     initScope?: InitScopeFn,
     dispatchWrapper?: DispatchWrapper<
       WebSocketJob,
@@ -175,11 +176,15 @@ export class WebviewBot<Authenticator extends AnyServerAuthenticator>
 export const BotP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
-    SocketServerP,
+    WebSocket.Server,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
   ],
-  factory: (server, moduleUitils, platformUtils) =>
+  factory: (
+    server: WebviewSocketServer<AnyServerAuthenticator>,
+    moduleUitils,
+    platformUtils
+  ) =>
     new WebviewBot(
       server,
       moduleUitils?.initScope,

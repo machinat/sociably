@@ -52,6 +52,8 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
     LineResult
   >;
 
+  platform = LINE;
+
   constructor({
     providerId,
     channelId,

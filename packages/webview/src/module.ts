@@ -7,21 +7,23 @@ import {
 } from '@machinat/core/service';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
-import { AnyServerAuthenticator } from '@machinat/auth';
+import Auth, { AnyServerAuthenticator } from '@machinat/auth';
+import BasicAuthenticator from '@machinat/auth/basicAuth';
 import Http from '@machinat/http';
 import type {
   RequestRoute,
   DefaultRequestRoute,
   UpgradeRoute,
 } from '@machinat/http';
+import Next from '@machinat/next';
 import LocalOnlyBroker from '@machinat/websocket/broker/LocalOnlyBroker';
 import { createWsServer } from '@machinat/websocket/utils';
+import WebSocket from '@machinat/websocket';
 import type {
   WebSocketJob,
   WebSocketResult,
   EventValue,
 } from '@machinat/websocket';
-
 import {
   WEBVIEW,
   DEFAULT_AUTH_PATH,
@@ -29,16 +31,15 @@ import {
   DEFAULT_NEXT_PATH,
 } from './constant';
 import {
+  WebviewSocketServer,
   SocketServerP,
+  WebviewAuthController,
   AuthControllerP,
+  AuthHttpOperatorP,
+  WebviewBasicAuthenticatorP,
   NextReceiverP,
   PlatformUtilitiesI,
-  SocketServerIdI,
   ConfigsI,
-  SocketBrokerI,
-  WsServerI,
-  AuthenticatorListI,
-  NextServerI,
 } from './interface';
 import { BotP } from './bot';
 import { ReceiverP } from './receiver';
@@ -67,7 +68,7 @@ const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
 
 const webSocketRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [SocketServerP, ConfigsI],
+  deps: [WebSocket.Server, ConfigsI],
 })(
   (server, { webSocketPath = DEFAULT_WEBSOCKET_PATH }): UpgradeRoute => ({
     name: 'websocket',
@@ -78,7 +79,7 @@ const webSocketRouteFactory = makeFactoryProvider({
 
 const authRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [AuthControllerP, ConfigsI],
+  deps: [Auth.Controller, ConfigsI],
 })(
   (controller, { authApiPath = DEFAULT_AUTH_PATH }): RequestRoute => ({
     name: 'auth',
@@ -91,7 +92,7 @@ const authRouteFactory = makeFactoryProvider({
 
 const nextRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
-  deps: [NextReceiverP, ConfigsI],
+  deps: [Next.Receiver, ConfigsI],
 })(
   (
     receiver,
@@ -121,34 +122,34 @@ namespace Webview {
   export type Bot<Authenticator extends AnyServerAuthenticator> =
     BotP<Authenticator>;
 
-  export const SocketServer = SocketServerP;
+  export const SocketServer = WebSocket.Server;
   export type SocketServer<Authenticator extends AnyServerAuthenticator> =
-    SocketServerP<Authenticator>;
+    WebviewSocketServer<Authenticator>;
 
   export const Receiver = ReceiverP;
   export type Receiver<Authenticator extends AnyServerAuthenticator> =
     ReceiverP<Authenticator>;
-  export const SocketBroker = SocketBrokerI;
-  export type SocketBroker = SocketBrokerI;
+  export const SocketBroker = WebSocket.Broker;
+  export type SocketBroker = WebSocket.Broker;
 
-  export const SocketServerId = SocketServerIdI;
+  export const SocketServerId = WebSocket.ServerId;
   export type SocketServerId = string;
 
-  export const WsServer = WsServerI;
-  export type WsServer = WsServerI;
+  export const { WsServer } = WebSocket;
+  export type WsServer = WebSocket.WsServer;
 
-  export const AuthController = AuthControllerP;
+  export const AuthController = Auth.Controller;
   export type AuthController<Authenticator extends AnyServerAuthenticator> =
-    AuthControllerP<Authenticator>;
+    WebviewAuthController<Authenticator>;
 
-  export const AuthenticatorList = AuthenticatorListI;
-  export type AuthenticatorList = AuthenticatorListI;
+  export const { AuthenticatorList } = Auth;
+  export type AuthenticatorList = Auth.AuthenticatorList;
 
-  export const NextServer = NextServerI;
-  export type NextServer = NextServerI;
+  export const NextServer = Next.Server;
+  export type NextServer = Next.Server;
 
-  export const NextReceiver = NextReceiverP;
-  export type NextReceiver = NextReceiverP;
+  export const NextReceiver = Next.Receiver;
+  export type NextReceiver = Next.Receiver;
 
   export const initModule = <
     Authenticator extends AnyServerAuthenticator,
@@ -172,9 +173,9 @@ namespace Webview {
         platform: WEBVIEW,
       },
 
-      SocketServerP,
-      { provide: WsServerI, withProvider: wsServerFactory },
-      { provide: SocketBrokerI, withProvider: LocalOnlyBroker },
+      { provide: WebSocket.Server, withProvider: SocketServerP },
+      { provide: WebSocket.WsServer, withProvider: wsServerFactory },
+      { provide: WebSocket.Broker, withProvider: LocalOnlyBroker },
 
       ReceiverP,
       {
@@ -188,14 +189,16 @@ namespace Webview {
       { provide: BaseMarshaler.TypeList, withValue: NoneUser },
       { provide: BaseMarshaler.TypeList, withValue: NoneChannel },
 
-      AuthControllerP,
+      { provide: Auth.HttpOperator, withProvider: AuthHttpOperatorP },
+      { provide: Auth.Controller, withProvider: AuthControllerP },
       { provide: Http.RequestRouteList, withProvider: authRouteFactory },
     ];
 
     if (!configs.noNextServer) {
       provisions.push(
         NextReceiverP,
-        { provide: NextServerI, withProvider: nextServerFactory },
+        { provide: Next.Receiver, withProvider: NextReceiverP },
+        { provide: Next.Server, withProvider: nextServerFactory },
         {
           provide: Http.RequestRouteList,
           withProvider: nextRouteFactory,
@@ -205,11 +208,19 @@ namespace Webview {
 
     if (configs.authPlatforms) {
       provisions.push(
+        ...configs.authPlatforms,
         ...configs.authPlatforms.map((provider) => ({
-          provide: AuthenticatorList,
+          provide: Auth.AuthenticatorList,
           withProvider: provider,
         }))
       );
+    }
+
+    if (configs.basicAuth) {
+      provisions.push({
+        provide: BasicAuthenticator,
+        withProvider: WebviewBasicAuthenticatorP,
+      });
     }
 
     return {

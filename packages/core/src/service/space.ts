@@ -204,7 +204,12 @@ export default class ServiceSpace {
             const { withProvider: argProvider } = binding;
 
             if (subRefLock.indexOf(argProvider) !== -1) {
-              throw new Error(`${argProvider.$$name} is circular dependent`);
+              const argProviderName = argProvider.$$name;
+              throw new Error(
+                `${argProviderName} is circular dependent (${subRefLock
+                  .map(({ $$name: name }) => name)
+                  .join(' > ')} > ${argProviderName})`
+              );
             }
 
             this._verifyDependencies(

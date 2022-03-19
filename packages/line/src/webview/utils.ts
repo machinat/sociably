@@ -1,12 +1,12 @@
 /* eslint-disable import/prefer-default-export  */
-import type { ContextSupplement } from '@machinat/auth';
+import type { ContextDetails } from '@machinat/auth';
 import LineUser from '../User';
 import LineChat from '../Chat';
 import LineUserProfile from '../UserProfile';
 import { LiffContextOs } from '../constant';
 import type { LineAuthContext, LineAuthData } from './types';
 
-export const supplementContext = ({
+export const getAuthContextDetails = ({
   user: userId,
   group: groupId,
   room: roomId,
@@ -17,7 +17,7 @@ export const supplementContext = ({
   os,
   name: displayName,
   pic: pictureUrl,
-}: LineAuthData): ContextSupplement<LineAuthContext> => ({
+}: LineAuthData): ContextDetails<LineAuthContext> => ({
   user: new LineUser(providerId, userId),
   channel: groupId
     ? new LineChat(channelId, 'group', groupId)

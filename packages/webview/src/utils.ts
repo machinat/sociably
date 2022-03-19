@@ -47,14 +47,14 @@ export const useAuthLogin =
   async (request: HttpRequestInfo, credential: string) => {
     const result = await controller.verifyAuth(request, credential);
 
-    if (!result.success) {
+    if (!result.ok) {
       const { code, reason } = result;
-      return { success: false as const, code, reason };
+      return { ok: false as const, code, reason };
     }
 
     const { context } = result;
     return {
-      success: true as const,
+      ok: true as const,
       authContext: context,
       user: context.user,
       expireAt: context.expireAt,

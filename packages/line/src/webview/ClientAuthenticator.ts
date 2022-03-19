@@ -1,13 +1,13 @@
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ContextResult } from '@machinat/auth';
+import type { CheckDataResult } from '@machinat/auth';
 import type { WebviewClientAuthenticator } from '@machinat/webview';
 import { LINE } from '../constant';
 import LineChat from '../Chat';
 import LineUser from '../User';
 import LineUserProfile from '../UserProfile';
 import LineGroupProfile from '../GroupProfile';
-import { supplementContext } from './utils';
+import { getAuthContextDetails } from './utils';
 import type {
   LineAuthCredential,
   LineAuthData,
@@ -88,7 +88,7 @@ class LineClientAuthenticator
 
     const { userId, groupId, roomId }: LiffContext = liff.getContext();
     return {
-      success: true,
+      ok: true,
       credential: {
         accessToken: liff.getAccessToken(),
         os: liff.getOS(),
@@ -101,10 +101,10 @@ class LineClientAuthenticator
   }
 
   // eslint-disable-next-line class-methods-use-this
-  checkAuthContext(data: LineAuthData): ContextResult<LineAuthContext> {
+  checkAuthData(data: LineAuthData): CheckDataResult<LineAuthContext> {
     return {
-      success: true,
-      contextSupplment: supplementContext(data),
+      ok: true,
+      contextDetails: getAuthContextDetails(data),
     };
   }
 

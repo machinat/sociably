@@ -59,6 +59,8 @@ export class TelegramBot
     TelegramResult
   >;
 
+  platform = TELEGRAM;
+
   constructor({
     token,
     maxConnections = 100,

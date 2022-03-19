@@ -1,7 +1,7 @@
 /// <reference lib="DOM" />
 import type {
   AuthenticatorCredentialResult,
-  ContextResult,
+  CheckDataResult,
 } from '@machinat/auth';
 import type { WebviewClientAuthenticator } from '@machinat/webview';
 import { parse as parseBrowser } from 'bowser';
@@ -10,7 +10,7 @@ import TwitterChat from '../Chat';
 import TwitterTweetTarget from '../TweetTarget';
 import TwitterUser from '../User';
 import TwitterUserProfile from '../UserProfile';
-import { supplementContext } from './utils';
+import { getAuthContextDetails } from './utils';
 import type { TwitterAuthContext, TwitterAuthData } from './types';
 
 type TwitterClientOptions = {
@@ -53,17 +53,17 @@ export default class TwitterClientAuthenticator
 
   async fetchCredential(): Promise<AuthenticatorCredentialResult<void>> {
     return {
-      success: false as const,
+      ok: false as const,
       code: 400,
       reason: 'should only initiate from backend',
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  checkAuthContext(data: TwitterAuthData): ContextResult<TwitterAuthContext> {
+  checkAuthData(data: TwitterAuthData): CheckDataResult<TwitterAuthContext> {
     return {
-      success: true,
-      contextSupplment: supplementContext(data),
+      ok: true,
+      contextDetails: getAuthContextDetails(data),
     };
   }
 

@@ -62,6 +62,8 @@ export class TwitterBot
     TwitterApiResult
   >;
 
+  platform = TWITTER;
+
   constructor({
     appKey,
     appSecret,

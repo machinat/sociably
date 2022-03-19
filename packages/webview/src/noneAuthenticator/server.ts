@@ -4,7 +4,7 @@ import { makeClassProvider } from '@machinat/core/service';
 import type {
   ServerAuthenticator,
   VerifyResult,
-  ContextResult,
+  CheckDataResult,
 } from '@machinat/auth';
 import { NoneUser, NoneChannel } from './instance';
 import type { NoneAuthData, NoneAuthContext } from './types';
@@ -26,7 +26,7 @@ export class NoneServerAuthenticator
     data: NoneAuthData
   ): Promise<VerifyResult<NoneAuthData>> {
     return {
-      success: true as const,
+      ok: true as const,
       data,
     };
   }
@@ -35,18 +35,18 @@ export class NoneServerAuthenticator
     data: NoneAuthData
   ): Promise<VerifyResult<NoneAuthData>> {
     return {
-      success: true as const,
+      ok: true as const,
       data,
     };
   }
 
-  checkAuthContext({
+  checkAuthData({
     user: userId,
     channel: channelId,
-  }: NoneAuthData): ContextResult<NoneAuthContext> {
+  }: NoneAuthData): CheckDataResult<NoneAuthContext> {
     return {
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         user: new NoneUser(userId),
         channel: new NoneChannel(channelId),
       },
