@@ -217,11 +217,11 @@ test('.issueAuth(data, options)', async () => {
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDg2NDAwMCwic2NvcGUiOnsicGF0aCI6Ii8ifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDM2MDB9",
       },
       "machinat_auth_state" => Object {
-        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
+        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
       "machinat_auth_error" => Object {
-        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
+        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
     }
@@ -267,11 +267,11 @@ test('.issueAuth(data, options)', async () => {
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA5OTk5OSwic2NvcGUiOnsiZG9tYWluIjoibWFjaGluYXQuaW8iLCJwYXRoIjoiL2FwcCJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwOTk5OX0",
       },
       "machinat_auth_state" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
+        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
         "value": "",
       },
       "machinat_auth_error" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
+        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
         "value": "",
       },
     }
@@ -376,25 +376,25 @@ test('.issueError(code, reason)', async () => {
 
   let [cookies, payload] = await testIssueError(operator);
   expect(cookies).toMatchInlineSnapshot(`
-        Map {
-          "machinat_auth_error" => Object {
-            "directives": "Max-Age=180; Path=/; SameSite=Lax; Secure",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMH0.dCs_-sNRQZoWk1dOHoRcGKCs6LEgGCwky_lWqODov3A",
-          },
-          "machinat_auth_state" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
-            "value": "",
-          },
-          "machinat_auth_signature" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
-            "value": "",
-          },
-          "machinat_auth_token" => Object {
-            "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax",
-            "value": "",
-          },
-        }
-      `);
+    Map {
+      "machinat_auth_error" => Object {
+        "directives": "Max-Age=180; Path=/; SameSite=Lax; Secure",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMH0.dCs_-sNRQZoWk1dOHoRcGKCs6LEgGCwky_lWqODov3A",
+      },
+      "machinat_auth_state" => Object {
+        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/auth; SameSite=Lax; Secure",
+        "value": "",
+      },
+      "machinat_auth_signature" => Object {
+        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/; SameSite=Lax; Secure",
+        "value": "",
+      },
+      "machinat_auth_token" => Object {
+        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
+        "value": "",
+      },
+    }
+  `);
   expect(payload).toMatchInlineSnapshot(`
         Object {
           "error": Object {
@@ -423,25 +423,25 @@ test('.issueError(code, reason)', async () => {
     })
   );
   expect(cookies).toMatchInlineSnapshot(`
-        Map {
-          "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Max-Age=999; Path=/app; SameSite=None",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcHAifSwiaWF0IjoxNTcwMDAwMDAwfQ.Tmq9hADHYlUr4mvOg-V9MZrfW_o6TRqgRMDDn_zZkXI",
-          },
-          "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
-            "value": "",
-          },
-          "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
-            "value": "",
-          },
-          "machinat_auth_token" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Lax",
-            "value": "",
-          },
-        }
-      `);
+    Map {
+      "machinat_auth_error" => Object {
+        "directives": "Domain=machinat.io; Max-Age=999; Path=/app; SameSite=None",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcHAifSwiaWF0IjoxNTcwMDAwMDAwfQ.Tmq9hADHYlUr4mvOg-V9MZrfW_o6TRqgRMDDn_zZkXI",
+      },
+      "machinat_auth_state" => Object {
+        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
+        "value": "",
+      },
+      "machinat_auth_signature" => Object {
+        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/app; SameSite=None",
+        "value": "",
+      },
+      "machinat_auth_token" => Object {
+        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
+        "value": "",
+      },
+    }
+  `);
   expect(payload).toMatchInlineSnapshot(`
         Object {
           "error": Object {

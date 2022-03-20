@@ -3,7 +3,6 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import { join as joinPath } from 'path';
 import invariant from 'invariant';
-import type { CookieSerializeOptions } from 'cookie';
 import {
   sign as signJwt,
   verify as verifyJWT,
@@ -48,17 +47,19 @@ type OperatorOptions = {
 export class AuthHttpOperator {
   apiRootUrl: URL;
   redirectRootUrl: URL;
+
   secret: string;
   tokenLifetime: number;
   refreshDuration: number;
-  secure: boolean;
 
-  private _cookieScope: { domain?: string; path: string };
-  private _errorCookieOpts: CookieSerializeOptions;
-  private _tokenCookieOpts: CookieSerializeOptions;
-  private _signatureCookieOpts: CookieSerializeOptions;
-  private _stateCookieOpts: CookieSerializeOptions;
-  private _deleteCookieOpts: CookieSerializeOptions;
+  secure: boolean;
+  dataCookieMaxAge: number;
+  baseCookieOptions: {
+    domain?: string;
+    path: string;
+    sameSite: 'strict' | 'lax' | 'none';
+    secure: boolean;
+  };
 
   constructor(options: OperatorOptions) {
     const {
@@ -77,15 +78,6 @@ export class AuthHttpOperator {
     invariant(secret, 'options.secret must not be empty');
     invariant(serverUrl, 'options.serverUrl must not be empty');
 
-    this.secret = secret;
-    this.tokenLifetime = tokenLifetime;
-    this.refreshDuration = refreshDuration;
-    this.secure = secure;
-    this._cookieScope = {
-      domain: cookieDomain,
-      path: cookiePath,
-    };
-
     const apiUrl = new URL(apiRoot || '', serverUrl);
     invariant(
       !secure || apiUrl.protocol === 'https:',
@@ -99,7 +91,6 @@ export class AuthHttpOperator {
       isSubpath(cookiePath, apiUrl.pathname),
       'options.apiRoot should be a subpath of options.cookiePath'
     );
-    this.apiRootUrl = apiUrl;
 
     const redirectUrl = new URL(redirectRoot || '', serverUrl);
     invariant(
@@ -114,41 +105,21 @@ export class AuthHttpOperator {
       isSubpath(cookiePath, redirectUrl.pathname),
       'options.redirectRoot should be under a subpath of options.cookiePath'
     );
+
+    this.apiRootUrl = apiUrl;
     this.redirectRootUrl = redirectUrl;
 
-    const baseCookieOpts = {
+    this.secret = secret;
+    this.tokenLifetime = tokenLifetime;
+    this.refreshDuration = refreshDuration;
+    this.secure = secure;
+    this.dataCookieMaxAge = dataCookieMaxAge;
+
+    this.baseCookieOptions = {
       domain: cookieDomain,
       path: cookiePath,
       sameSite: cookieSameSite,
       secure,
-    };
-
-    this._errorCookieOpts = {
-      ...baseCookieOpts,
-      maxAge: dataCookieMaxAge,
-    };
-
-    this._tokenCookieOpts = {
-      ...baseCookieOpts,
-    };
-
-    this._signatureCookieOpts = {
-      ...baseCookieOpts,
-      httpOnly: true,
-    };
-
-    this._stateCookieOpts = {
-      ...baseCookieOpts,
-      path: apiUrl.pathname,
-      httpOnly: true,
-      maxAge: dataCookieMaxAge,
-    };
-
-    this._deleteCookieOpts = {
-      domain: cookieDomain,
-      path: cookiePath,
-      expires: new Date(0),
-      sameSite: 'lax',
     };
   }
 
@@ -183,8 +154,21 @@ export class AuthHttpOperator {
       this.secret
     );
 
-    setCookie(res, STATE_COOKIE_KEY, encodedState, this._stateCookieOpts);
+    setCookie(res, STATE_COOKIE_KEY, encodedState, {
+      ...this.baseCookieOptions,
+      path: this.apiRootUrl.pathname,
+      maxAge: this.dataCookieMaxAge,
+      httpOnly: true,
+    });
     return encodedState;
+  }
+
+  deleteState(res: ServerResponse): void {
+    setCookie(res, STATE_COOKIE_KEY, '', {
+      ...this.baseCookieOptions,
+      path: this.apiRootUrl.pathname,
+      expires: new Date(0),
+    });
   }
 
   async getAuth<Data>(
@@ -233,7 +217,10 @@ export class AuthHttpOperator {
         : refreshTill > now + tokenLifetime
         ? refreshTill
         : undefined,
-      scope: this._cookieScope,
+      scope: {
+        domain: this.baseCookieOptions.domain,
+        path: this.baseCookieOptions.path,
+      },
     };
 
     const token = await thenifiedly.call(signJwt, payload, secret, {
@@ -243,13 +230,28 @@ export class AuthHttpOperator {
     const [header, body, signature] = token.split('.');
     const tokenContent = `${header}.${body}`;
 
-    setCookie(res, SIGNATURE_COOKIE_KEY, signature, this._signatureCookieOpts);
-    setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this._tokenCookieOpts);
+    setCookie(res, SIGNATURE_COOKIE_KEY, signature, {
+      ...this.baseCookieOptions,
+      httpOnly: true,
+    });
+    setCookie(res, TOKEN_COOKIE_KEY, tokenContent, this.baseCookieOptions);
 
-    this.deleteCookie(res, STATE_COOKIE_KEY);
-    this.deleteCookie(res, ERROR_COOKIE_KEY);
+    this.deleteState(res);
+    this.deleteError(res);
 
     return tokenContent;
+  }
+
+  deleteAuth(res: ServerResponse): void {
+    setCookie(res, SIGNATURE_COOKIE_KEY, '', {
+      ...this.baseCookieOptions,
+      expires: new Date(0),
+      httpOnly: true,
+    });
+    setCookie(res, TOKEN_COOKIE_KEY, '', {
+      ...this.baseCookieOptions,
+      expires: new Date(0),
+    });
   }
 
   async getError(
@@ -286,29 +288,36 @@ export class AuthHttpOperator {
       {
         platform,
         error: { code, reason },
-        scope: this._cookieScope,
+        scope: {
+          domain: this.baseCookieOptions.domain,
+          path: this.baseCookieOptions.path,
+        },
       } as ErrorPayload,
       this.secret
     );
 
-    setCookie(res, ERROR_COOKIE_KEY, errEncoded, this._errorCookieOpts);
+    setCookie(res, ERROR_COOKIE_KEY, errEncoded, {
+      ...this.baseCookieOptions,
+      maxAge: this.dataCookieMaxAge,
+    });
 
-    this.deleteCookie(res, STATE_COOKIE_KEY);
-    this.deleteCookie(res, SIGNATURE_COOKIE_KEY);
-    this.deleteCookie(res, TOKEN_COOKIE_KEY);
+    this.deleteState(res);
+    this.deleteAuth(res);
 
     return errEncoded;
   }
 
-  clearCookies(res: ServerResponse): void {
-    this.deleteCookie(res, ERROR_COOKIE_KEY);
-    this.deleteCookie(res, STATE_COOKIE_KEY);
-    this.deleteCookie(res, SIGNATURE_COOKIE_KEY);
-    this.deleteCookie(res, TOKEN_COOKIE_KEY);
+  deleteError(res: ServerResponse): void {
+    setCookie(res, ERROR_COOKIE_KEY, '', {
+      ...this.baseCookieOptions,
+      expires: new Date(0),
+    });
   }
 
-  deleteCookie(res: ServerResponse, key: string): void {
-    setCookie(res, key, '', this._deleteCookieOpts);
+  clearCookies(res: ServerResponse): void {
+    this.deleteAuth(res);
+    this.deleteError(res);
+    this.deleteState(res);
   }
 
   getAuthUrl(platform: string, subpath?: string): string {
