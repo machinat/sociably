@@ -16,7 +16,7 @@ type TokenBase = {
 export type AuthPayload<Data> = {
   platform: string;
   data: Data;
-  refreshTill?: number;
+  init: number;
   scope: { domain?: string; path: string };
 };
 
@@ -197,9 +197,9 @@ export type AuthConfigs = {
   redirectRoot?: string;
   /** The lifetime of the token in seconds. Default to an hour */
   tokenLifetime?: number;
-  /** The max time a token can be refreshed in seconds. Default to 10 days */
+  /** The duration a token can be refreshed in seconds. Default to Infinity */
   refreshDuration?: number;
-  /** The max age of the data cookies in seconds. Default to 5 minute */
+  /** The MaxAge of the data cookies in seconds. Default to 5 minute */
   dataCookieMaxAge?: number;
   /** The domain scope of the auth cookies */
   cookieDomain?: string;

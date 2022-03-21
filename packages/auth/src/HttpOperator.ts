@@ -70,8 +70,8 @@ export class AuthHttpOperator {
       redirectRoot,
       secret,
       tokenLifetime = 3600, // 1 hr
-      refreshDuration = 864000, // 10 day
       dataCookieMaxAge = 300, // 5 min
+      refreshDuration = Infinity, // always refreshable
       cookieDomain,
       cookiePath = '/',
       cookieSameSite = 'lax',
@@ -190,7 +190,7 @@ export class AuthHttpOperator {
     }
 
     try {
-      const { platform, data, refreshTill }: AuthTokenPayload<Data> =
+      const { platform, data, init }: AuthTokenPayload<Data> =
         await thenifiedly.call(
           verifyJWT,
           `${contentVal}.${sigVal}`,
@@ -199,7 +199,7 @@ export class AuthHttpOperator {
         );
 
       return platform !== platformAsserted ||
-        (acceptRefreshable && (!refreshTill || getSecondNow() > refreshTill))
+        (acceptRefreshable && getSecondNow() - init > this.refreshDuration)
         ? null
         : data;
     } catch (e) {
@@ -211,28 +211,20 @@ export class AuthHttpOperator {
     res: ServerResponse,
     platform: string,
     data: Data,
-    { refreshTill }: { refreshTill?: number } = {}
+    initiateAt?: number
   ): Promise<string> {
-    const { secret, tokenLifetime, refreshDuration } = this;
-
-    const now = getSecondNow();
-
     const payload: AuthPayload<Data> = {
       platform,
       data,
-      refreshTill: !refreshTill
-        ? now + refreshDuration
-        : refreshTill > now + tokenLifetime
-        ? refreshTill
-        : undefined,
+      init: initiateAt || getSecondNow(),
       scope: {
         domain: this.baseCookieOptions.domain,
         path: this.baseCookieOptions.path,
       },
     };
 
-    const token = await thenifiedly.call(signJwt, payload, secret, {
-      expiresIn: tokenLifetime,
+    const token = await thenifiedly.call(signJwt, payload, this.secret, {
+      expiresIn: this.tokenLifetime,
     });
 
     const [header, body, signature] = token.split('.');

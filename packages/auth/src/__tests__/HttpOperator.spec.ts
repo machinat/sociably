@@ -185,13 +185,13 @@ test('.issueState(res, data)', async () => {
 });
 
 test('.issueAuth(data, options)', async () => {
-  async function testIssueAuth(operator: HttpOperator, issueOpts?) {
+  async function testIssueAuth(operator: HttpOperator, initiateAt?: number) {
     const res = moxy(new ServerResponse({} as never));
     const token = await operator.issueAuth(
       res,
       'foo',
       { foo: 'data' },
-      issueOpts
+      initiateAt
     );
 
     const cookies = getCookies(res);
@@ -210,11 +210,11 @@ test('.issueAuth(data, options)', async () => {
     Map {
       "machinat_auth_signature" => Object {
         "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
-        "value": "w6dUMfOOWlJNbQOknaf7EIlO0O718VIzSW1ZWvFLaDo",
+        "value": "EKG7WOjtwYDAi7tisgcKPmJ_js11Jaf4347vCrFsXbc",
       },
       "machinat_auth_token" => Object {
         "directives": "Path=/; SameSite=Lax; Secure",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDg2NDAwMCwic2NvcGUiOnsicGF0aCI6Ii8ifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDM2MDB9",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
       },
       "machinat_auth_state" => Object {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
@@ -227,19 +227,19 @@ test('.issueAuth(data, options)', async () => {
     }
   `);
   expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
-            "foo": "data",
-          },
-          "exp": 1570003600,
-          "iat": 1570000000,
-          "platform": "foo",
-          "refreshTill": 1570864000,
-          "scope": Object {
-            "path": "/",
-          },
-        }
-      `);
+    Object {
+      "data": Object {
+        "foo": "data",
+      },
+      "exp": 1570003600,
+      "iat": 1570000000,
+      "init": 1570000000,
+      "platform": "foo",
+      "scope": Object {
+        "path": "/",
+      },
+    }
+  `);
 
   const customizedOperator = new HttpOperator({
     secret,
@@ -260,11 +260,11 @@ test('.issueAuth(data, options)', async () => {
     Map {
       "machinat_auth_signature" => Object {
         "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=None",
-        "value": "-cVGfumsXdwJOZZbeVttI4zdxEH8f7ojfH6W0wKZ6qo",
+        "value": "8an8OTENyMud78c4bF0gb4mj9rMAZ1omS2am0tu9ANA",
       },
       "machinat_auth_token" => Object {
         "directives": "Domain=machinat.io; Path=/app; SameSite=None",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA5OTk5OSwic2NvcGUiOnsiZG9tYWluIjoibWFjaGluYXQuaW8iLCJwYXRoIjoiL2FwcCJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwOTk5OX0",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJkb21haW4iOiJtYWNoaW5hdC5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
       },
       "machinat_auth_state" => Object {
         "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
@@ -277,78 +277,58 @@ test('.issueAuth(data, options)', async () => {
     }
   `);
   expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
-            "foo": "data",
-          },
-          "exp": 1570009999,
-          "iat": 1570000000,
-          "platform": "foo",
-          "refreshTill": 1570099999,
-          "scope": Object {
-            "domain": "machinat.io",
-            "path": "/app",
-          },
-        }
-      `);
+    Object {
+      "data": Object {
+        "foo": "data",
+      },
+      "exp": 1570009999,
+      "iat": 1570000000,
+      "init": 1570000000,
+      "platform": "foo",
+      "scope": Object {
+        "domain": "machinat.io",
+        "path": "/app",
+      },
+    }
+  `);
 
-  // with specified refreshTill
-  [cookies, payload] = await testIssueAuth(customizedOperator, {
-    refreshTill: SEC_NOW + 12345,
-  });
+  // with specified init time
+  [cookies, payload] = await testIssueAuth(customizedOperator, SEC_NOW - 12345);
   expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
-            "foo": "data",
-          },
-          "exp": 1570009999,
-          "iat": 1570000000,
-          "platform": "foo",
-          "refreshTill": 1570012345,
-          "scope": Object {
-            "domain": "machinat.io",
-            "path": "/app",
-          },
-        }
-      `);
-
-  [cookies, payload] = await testIssueAuth(customizedOperator, {
-    refreshTill: SEC_NOW + 12345,
-  });
-  expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
-            "foo": "data",
-          },
-          "exp": 1570009999,
-          "iat": 1570000000,
-          "platform": "foo",
-          "refreshTill": 1570012345,
-          "scope": Object {
-            "domain": "machinat.io",
-            "path": "/app",
-          },
-        }
-      `);
-
-  // ignoer refreshTill if it's before token expire
-  [cookies, payload] = await testIssueAuth(customizedOperator, {
-    refreshTill: SEC_NOW + 1,
-  });
-  expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
-            "foo": "data",
-          },
-          "exp": 1570009999,
-          "iat": 1570000000,
-          "platform": "foo",
-          "scope": Object {
-            "domain": "machinat.io",
-            "path": "/app",
-          },
-        }
-      `);
+    Object {
+      "data": Object {
+        "foo": "data",
+      },
+      "exp": 1570009999,
+      "iat": 1570000000,
+      "init": 1569987655,
+      "platform": "foo",
+      "scope": Object {
+        "domain": "machinat.io",
+        "path": "/app",
+      },
+    }
+  `);
+  expect(cookies).toMatchInlineSnapshot(`
+    Map {
+      "machinat_auth_signature" => Object {
+        "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=None",
+        "value": "--KZSTahSzb1J3uj_DQj6YBnuanf1pLSZBgdlwsIFsQ",
+      },
+      "machinat_auth_token" => Object {
+        "directives": "Domain=machinat.io; Path=/app; SameSite=None",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTg3NjU1LCJzY29wZSI6eyJkb21haW4iOiJtYWNoaW5hdC5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
+      },
+      "machinat_auth_state" => Object {
+        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
+        "value": "",
+      },
+      "machinat_auth_error" => Object {
+        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
+        "value": "",
+      },
+    }
+  `);
 });
 
 test('.issueError(code, reason)', async () => {
@@ -534,6 +514,7 @@ test('.getAuth()', async () => {
     platform,
     data,
     scope,
+    init: SEC_NOW - 100,
     iat: SEC_NOW - 10,
     exp: SEC_NOW + 10,
   });
@@ -567,6 +548,7 @@ test('.getAuth()', async () => {
     platform: 'bar',
     data,
     scope,
+    init: SEC_NOW - 100,
     iat: SEC_NOW - 10,
     exp: SEC_NOW + 10,
   });
@@ -580,6 +562,7 @@ test('.getAuth()', async () => {
     platform,
     data,
     scope,
+    init: SEC_NOW - 100,
     iat: SEC_NOW - 21,
     exp: SEC_NOW - 1,
     refreshTill: SEC_NOW + 101,
@@ -594,21 +577,48 @@ test('.getAuth()', async () => {
     operator.getAuth(req, 'foo', { acceptRefreshable: true })
   ).resolves.toEqual({ foo: 'data' });
 
+  const operatorWithRefreshLimit = new HttpOperator({
+    secret,
+    serverUrl,
+    refreshDuration: 10000,
+  });
+
+  //  refreshable
+  [token, sig] = createTokenAndSig({
+    platform,
+    data,
+    scope,
+    init: SEC_NOW - 9999,
+    iat: SEC_NOW - 999,
+    exp: SEC_NOW - 99,
+  });
+  req.mock.getter('headers').fake(() => ({
+    cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
+  }));
+  await expect(operatorWithRefreshLimit.getAuth(req, 'foo')).resolves.toBe(
+    null
+  );
+  await expect(
+    operatorWithRefreshLimit.getAuth(req, 'foo', { acceptRefreshable: true })
+  ).resolves.toEqual({ foo: 'data' });
+
   // not refreshable
   [token, sig] = createTokenAndSig({
     platform,
     data,
     scope,
-    iat: SEC_NOW - 9999,
-    exp: SEC_NOW - 999,
-    refreshTill: SEC_NOW - 99,
+    init: SEC_NOW - 19999,
+    iat: SEC_NOW - 1999,
+    exp: SEC_NOW - 199,
   });
   req.mock.getter('headers').fake(() => ({
     cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
   }));
-  await expect(operator.getAuth(req, 'foo')).resolves.toBe(null);
+  await expect(operatorWithRefreshLimit.getAuth(req, 'foo')).resolves.toBe(
+    null
+  );
   await expect(
-    operator.getAuth(req, 'foo', { acceptRefreshable: true })
+    operatorWithRefreshLimit.getAuth(req, 'foo', { acceptRefreshable: true })
   ).resolves.toBe(null);
 });
 
@@ -637,7 +647,7 @@ test('.getError()', async () => {
   }));
   await expect(operator.getError(req, 'foo')).resolves.toEqual(error);
 
-  // woring signature
+  // wrong signature
   req.mock.getter('headers').fake(() => ({
     cookie: `machinat_auth_error=${`${errEncoded}_WITH_WRONG_SIG`}`,
   }));

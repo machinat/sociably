@@ -424,7 +424,7 @@ describe('.signIn()', () => {
     scope: { domain: 'machinat.io', path: '/api' },
     iat: SEC_NOW - 10,
     exp: SEC_NOW + 1000,
-    refreshTill: SEC_NOW + 10000,
+    init: SEC_NOW - 9999,
   };
 
   const expectedContext = {
@@ -535,16 +535,14 @@ describe('.signIn()', () => {
   });
 
   test('refresh expird auth token', async () => {
-    const expiredPayload = {
+    const expiredToken = setCookieAuth({
       platform: 'foo',
       data: { foo: 'data' },
       scope: { path: '/' },
       exp: SEC_NOW - 99,
       iat: SEC_NOW - 999,
-      refreshTill: SEC_NOW + 9999,
-    };
-    const expiredToken = makeToken(expiredPayload);
-    setCookieAuth(expiredPayload);
+      init: SEC_NOW - 9999,
+    });
 
     const refreshCall = serverEntry
       .post('/auth/_refresh', { token: expiredToken })
@@ -568,22 +566,20 @@ describe('.signIn()', () => {
   });
 
   test('resign if refresh try fails', async () => {
-    const expiredPayload = {
+    const expiredToken = setCookieAuth({
       platform: 'foo',
       data: { foo: 'data' },
       scope: { path: '/' },
       exp: SEC_NOW - 99,
       iat: SEC_NOW - 999,
-      refreshTill: SEC_NOW + 9999,
-    };
-    const expiredToken = makeToken(expiredPayload);
-    setCookieAuth(expiredPayload);
+      init: SEC_NOW - 9999,
+    });
 
-    const refreshCall = serverEntry
+    const refreshingCall = serverEntry
       .post('/auth/_refresh', { token: expiredToken })
-      .reply(400, {
+      .reply(401, {
         platform: 'foo',
-        error: { code: 400, reason: 'no signature found' },
+        error: { code: 400, reason: 'refreshment period expired' },
       });
 
     const signingCall = serverEntry
@@ -610,33 +606,7 @@ describe('.signIn()', () => {
     expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
       foo: 'data',
     });
-    expect(refreshCall.isDone()).toBe(true);
-    expect(signingCall.isDone()).toBe(true);
-  });
-
-  it('sign again if expired token is not refreshable', async () => {
-    setCookieAuth({
-      platform: 'foo',
-      data: { foo: 'data' },
-      scope: { path: '/' },
-      iat: SEC_NOW - 9999,
-      exp: SEC_NOW - 99,
-    });
-
-    const signingCall = serverEntry
-      .post('/auth/_sign', {
-        platform: 'foo',
-        credential: { foo: 'credential' },
-      })
-      .reply(200, { platform: 'foo', token });
-
-    const client = new AuthClient({ authenticators, serverUrl });
-
-    await expect(client.signIn()).resolves.toEqual({
-      token,
-      context: expectedContext,
-    });
-
+    expect(refreshingCall.isDone()).toBe(true);
     expect(signingCall.isDone()).toBe(true);
   });
 
@@ -735,7 +705,7 @@ describe('refresh flow', () => {
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
-      refreshTill: SEC_NOW + 99999,
+      init: SEC_NOW - 9999,
     });
 
     const client = new AuthClient({
@@ -750,19 +720,19 @@ describe('refresh flow', () => {
     await client.signIn();
 
     for (let i = 1; i <= 10; i += 1) {
-      const { token } = await client.signIn(); // eslint-disable-line no-await-in-loop
+      const { token: currentToken } = await client.signIn(); // eslint-disable-line no-await-in-loop
       const newPayload = {
         platform: 'foo',
         data: { foo: 'data' },
         scope: { path: '/' },
         iat: SEC_NOW + 990 * i,
         exp: SEC_NOW + 1990 * i,
-        refreshTill: SEC_NOW + 99999,
+        init: SEC_NOW - 9999,
       };
       const newToken = makeToken(newPayload);
 
       const refreshingCall = serverEntry
-        .post('/auth/_refresh', { token })
+        .post('/auth/_refresh', { token: currentToken })
         .reply(200, { platform: 'foo', token: newToken });
 
       jest.advanceTimersToNextTimer(1);
@@ -790,65 +760,14 @@ describe('refresh flow', () => {
     expect(expireSpy.mock).not.toHaveBeenCalled();
   });
 
-  it('emit error if _refresh api respond error', async () => {
+  it('resign if refersh call fail', async () => {
     setCookieAuth({
       platform: 'foo',
       data: { foo: 'data' },
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
-      refreshTill: SEC_NOW + 99999,
-    });
-
-    const client = new AuthClient({
-      authenticators,
-      serverUrl,
-      refreshLeadTime: 10,
-    });
-    client.on('expire', expireSpy);
-    client.on('refresh', refreshSpy);
-    client.on('error', errorSpy);
-
-    const { token, context } = await client.signIn();
-    expect(client.isAuthorized).toBe(true);
-
-    const refreshingCall = serverEntry
-      .post('/auth/_refresh', { token })
-      .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
-
-    jest.advanceTimersToNextTimer(1);
-    await delayLoops(5);
-
-    expect(refreshingCall.isDone()).toBe(true);
-    expect(client.isAuthorized).toBe(true);
-    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock).toHaveBeenCalledWith(
-      new Error("I'm a teapot"),
-      context
-    );
-    expect(expireSpy.mock).not.toHaveBeenCalled();
-
-    await expect(client.signIn()).resolves.toEqual({
-      token,
-      context,
-    });
-
-    jest.advanceTimersToNextTimer(1);
-    await delayLoops();
-
-    expect(refreshSpy.mock).not.toHaveBeenCalled();
-    expect(expireSpy.mock).toHaveBeenCalledTimes(1);
-    expect(expireSpy.mock).toHaveBeenCalledWith(context);
-    expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
-  });
-
-  it('resign if no "refreshTill" in the payload ', async () => {
-    setCookieAuth({
-      platform: 'foo',
-      data: { foo: 'data' },
-      scope: { path: '/' },
-      iat: SEC_NOW - 1,
-      exp: SEC_NOW + 999,
+      init: SEC_NOW - 9999,
     });
 
     const client = new AuthClient({
@@ -864,26 +783,33 @@ describe('refresh flow', () => {
     expect(client.isAuthorized).toBe(true);
 
     for (let i = 1; i <= 10; i += 1) {
+      const { token: currentToken } = await client.signIn(); // eslint-disable-line no-await-in-loop
       const newPayload = {
         platform: 'foo',
         data: { foo: 'data' },
         scope: { path: '/' },
         iat: SEC_NOW + 990 * i,
         exp: SEC_NOW + 1990 * i,
+        init: SEC_NOW - 9999,
       };
       const newToken = makeToken(newPayload);
 
       const refreshingCall = serverEntry
+        .post('/auth/_refresh', { token: currentToken })
+        .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
+
+      const resigningCall = serverEntry
         .post('/auth/_sign', {
           platform: 'foo',
           credential: { foo: 'credential' },
         })
-        .reply(200, { platform: 'foo', token: newToken });
+        .reply(200, { platfrefreshingCallorm: 'foo', token: newToken });
 
       jest.advanceTimersToNextTimer(1);
-      await delayLoops(5); // eslint-disable-line no-await-in-loop
+      await delayLoops(10); // eslint-disable-line no-await-in-loop
 
       expect(refreshingCall.isDone()).toBe(true);
+      expect(resigningCall.isDone()).toBe(true);
       expect(client.isAuthorized).toBe(true);
       expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
       expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(i);
@@ -913,6 +839,7 @@ describe('refresh flow', () => {
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
+      init: SEC_NOW - 9999,
     });
 
     const client = new AuthClient({
@@ -933,10 +860,15 @@ describe('refresh flow', () => {
     const { token, context } = await client.signIn();
     expect(client.isAuthorized).toBe(true);
 
+    const refreshingCall = serverEntry
+      .post('/auth/_refresh', { token })
+      .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
+
     jest.advanceTimersToNextTimer(1);
     await delayLoops(5);
 
     expect(client.isAuthorized).toBe(true);
+    expect(refreshingCall.isDone()).toBe(true);
     expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
 
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
@@ -966,6 +898,7 @@ describe('refresh flow', () => {
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
+      init: SEC_NOW - 9999,
     });
 
     const client = new AuthClient({
@@ -981,22 +914,27 @@ describe('refresh flow', () => {
     expect(client.isAuthorized).toBe(true);
 
     const refreshingCall = serverEntry
+      .post('/auth/_refresh', { token })
+      .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
+
+    const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
         credential: { foo: 'credential' },
       })
-      .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
+      .reply(418, { error: { code: 418, reason: "I'm a teapot too" } });
 
     jest.advanceTimersToNextTimer(1);
     await delayLoops(5);
 
     expect(refreshingCall.isDone()).toBe(true);
+    expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(true);
     expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
 
     expect(errorSpy.mock).toHaveBeenCalledTimes(1);
     expect(errorSpy.mock).toHaveBeenCalledWith(
-      new Error("I'm a teapot"),
+      new Error("I'm a teapot too"),
       context
     );
     expect(expireSpy.mock).not.toHaveBeenCalled();
@@ -1021,7 +959,7 @@ describe('refresh flow', () => {
       scope: { path: '/' },
       iat: SEC_NOW - 1,
       exp: SEC_NOW + 999,
-      refreshTill: SEC_NOW + 99999,
+      init: SEC_NOW - 9999,
     });
 
     const client = new AuthClient({
@@ -1046,7 +984,7 @@ describe('refresh flow', () => {
           scope: { path: '/' },
           iat: SEC_NOW + 990,
           exp: SEC_NOW + 1999,
-          refreshTill: SEC_NOW + 99999,
+          init: SEC_NOW - 9999,
         }),
       });
 
@@ -1077,7 +1015,7 @@ test('#signOut()', async () => {
     scope: { path: '/' },
     iat: SEC_NOW - 1,
     exp: SEC_NOW + 999,
-    refreshTill: SEC_NOW + 99999,
+    init: SEC_NOW - 9999,
   });
 
   const client = new AuthClient({ authenticators, serverUrl });

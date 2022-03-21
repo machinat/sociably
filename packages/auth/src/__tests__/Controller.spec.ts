@@ -331,11 +331,11 @@ describe('#delegateAuthRequest(req, res)', () => {
         Map {
           "machinat_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
-            "value": "w6dUMfOOWlJNbQOknaf7EIlO0O718VIzSW1ZWvFLaDo",
+            "value": "EKG7WOjtwYDAi7tisgcKPmJ_js11Jaf4347vCrFsXbc",
           },
           "machinat_auth_token" => Object {
             "directives": "Path=/; SameSite=Lax; Secure",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDg2NDAwMCwic2NvcGUiOnsicGF0aCI6Ii8ifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDM2MDB9",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
           },
           "machinat_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
@@ -360,8 +360,8 @@ describe('#delegateAuthRequest(req, res)', () => {
           },
           "exp": 1570003600,
           "iat": 1570000000,
+          "init": 1570000000,
           "platform": "foo",
-          "refreshTill": 1570864000,
           "scope": Object {
             "path": "/",
           },
@@ -403,11 +403,11 @@ describe('#delegateAuthRequest(req, res)', () => {
         Map {
           "machinat_auth_signature" => Object {
             "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=Strict",
-            "value": "-cVGfumsXdwJOZZbeVttI4zdxEH8f7ojfH6W0wKZ6qo",
+            "value": "8an8OTENyMud78c4bF0gb4mj9rMAZ1omS2am0tu9ANA",
           },
           "machinat_auth_token" => Object {
             "directives": "Domain=machinat.io; Path=/app; SameSite=Strict",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA5OTk5OSwic2NvcGUiOnsiZG9tYWluIjoibWFjaGluYXQuaW8iLCJwYXRoIjoiL2FwcCJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwOTk5OX0",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJkb21haW4iOiJtYWNoaW5hdC5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
           },
           "machinat_auth_state" => Object {
             "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=Strict",
@@ -433,8 +433,8 @@ describe('#delegateAuthRequest(req, res)', () => {
           },
           "exp": 1570009999,
           "iat": 1570000000,
+          "init": 1570000000,
           "platform": "foo",
-          "refreshTill": 1570099999,
           "scope": Object {
             "domain": "machinat.io",
             "path": "/app",
@@ -606,7 +606,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         data: { foo: 'data' },
         exp: SEC_NOW - 1,
         iat: SEC_NOW - 10000,
-        refreshTill: SEC_NOW + 99999,
+        init: SEC_NOW - 19999,
         scope: { path: '/' },
       });
       req = prepareReq(
@@ -638,11 +638,11 @@ describe('#delegateAuthRequest(req, res)', () => {
         Map {
           "machinat_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
-            "value": "JAoD-2IbrB6uVQ2wMBN--WuqBT2WzefriMxb71wkoDI",
+            "value": "3N2v9MBHZEcUr5-EYnyFCKiOk8ShTwu_wj0gAu9FYpw",
           },
           "machinat_auth_token" => Object {
             "directives": "Path=/; SameSite=Lax; Secure",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA5OTk5OSwic2NvcGUiOnsicGF0aCI6Ii8ifSwiaWF0IjoxNTcwMDAwMDAwLCJleHAiOjE1NzAwMDM2MDB9",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTgwMDAxLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
           },
           "machinat_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
@@ -667,8 +667,8 @@ describe('#delegateAuthRequest(req, res)', () => {
           },
           "exp": 1570003600,
           "iat": 1570000000,
+          "init": 1569980001,
           "platform": "foo",
-          "refreshTill": 1570099999,
           "scope": Object {
             "path": "/",
           },
@@ -708,11 +708,11 @@ describe('#delegateAuthRequest(req, res)', () => {
         Map {
           "machinat_auth_signature" => Object {
             "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=Strict",
-            "value": "-cVGfumsXdwJOZZbeVttI4zdxEH8f7ojfH6W0wKZ6qo",
+            "value": "Co490Z-tOabtOHn4V1elNd2zXy0oJTj2vsBNpyVmqwQ",
           },
           "machinat_auth_token" => Object {
             "directives": "Domain=machinat.io; Path=/app; SameSite=Strict",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJyZWZyZXNoVGlsbCI6MTU3MDA5OTk5OSwic2NvcGUiOnsiZG9tYWluIjoibWFjaGluYXQuaW8iLCJwYXRoIjoiL2FwcCJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwOTk5OX0",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTgwMDAxLCJzY29wZSI6eyJkb21haW4iOiJtYWNoaW5hdC5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
           },
           "machinat_auth_state" => Object {
             "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=Strict",
@@ -737,8 +737,8 @@ describe('#delegateAuthRequest(req, res)', () => {
           },
           "exp": 1570009999,
           "iat": 1570000000,
+          "init": 1569980001,
           "platform": "foo",
-          "refreshTill": 1570099999,
           "scope": Object {
             "domain": "machinat.io",
             "path": "/app",
@@ -753,7 +753,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         data: { baz: 'data' },
         exp: SEC_NOW - 1,
         iat: SEC_NOW - 10000,
-        refreshTill: SEC_NOW + 99999,
+        init: SEC_NOW - 19999,
         scope: { path: '/' },
       });
       req = prepareReq(
@@ -784,7 +784,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
     });
 
-    it('respond error if provider.verifyCredential() resolve not success', async () => {
+    it('respond error if provider.verifyCredential() fail', async () => {
       fooAuthenticator.verifyRefreshment.mock.fake(() => ({
         success: false,
         code: 418,
@@ -851,18 +851,18 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
     });
 
-    it('respond 401 if refreshPeriod outdated', async () => {
+    it('respond 401 if refreshDuration expired', async () => {
       const controller = new AuthController(
-        new HttpOperator({ secret, serverUrl }),
+        new HttpOperator({ secret, serverUrl, refreshDuration: 66666 }),
         authenticators
       );
 
       const [token, signature] = prepareToken({
         platform: 'foo',
         data: { foo: 'data' },
-        exp: SEC_NOW - 9999,
-        iat: SEC_NOW - 99999,
-        refreshTill: SEC_NOW - 1,
+        exp: SEC_NOW - 999,
+        iat: SEC_NOW - 9999,
+        init: SEC_NOW - 99999,
         scope: { path: '/' },
       });
       req = prepareReq(
@@ -882,43 +882,6 @@ describe('#delegateAuthRequest(req, res)', () => {
           "error": Object {
             "code": 401,
             "reason": "refreshment period expired",
-          },
-          "platform": "foo",
-        }
-      `);
-      expect(res.getHeader('Set-Cookie')).toBe(undefined);
-    });
-
-    it('respond 400 if no refreshTill existed in payload', async () => {
-      const controller = new AuthController(
-        new HttpOperator({ secret, serverUrl }),
-        authenticators
-      );
-
-      const [token, signature] = prepareToken({
-        platform: 'foo',
-        data: { foo: 'data' },
-        exp: SEC_NOW - 9999,
-        iat: SEC_NOW - 99999,
-        scope: { path: '/' },
-      });
-      req = prepareReq(
-        'POST',
-        'http://auth.machinat.com/_refresh',
-        { cookie: `machinat_auth_signature=${signature}` },
-        { token }
-      );
-
-      await controller.delegateAuthRequest(req, res);
-
-      expect(res.statusCode).toBe(400);
-
-      const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
-      expect(resBody).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "code": 400,
-            "reason": "token not refreshable",
           },
           "platform": "foo",
         }
@@ -1028,7 +991,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         data: { foo: 'data' },
         exp: SEC_NOW + 9999,
         iat: SEC_NOW - 999,
-        refreshTill: SEC_NOW + 99999,
+        init: SEC_NOW - 9999,
         scope: { path: '/' },
       });
     });
@@ -1105,7 +1068,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         data: { baz: 'data' },
         exp: SEC_NOW + 9999,
         iat: SEC_NOW - 999,
-        refreshTill: SEC_NOW + 99999,
+        init: SEC_NOW - 9999,
         scope: { path: '/' },
       });
       const req = prepareReq(
@@ -1257,7 +1220,7 @@ describe('#verifyAuth(req)', () => {
     data: { foo: 'data' },
     exp: SEC_NOW + 9999,
     iat: SEC_NOW - 999,
-    refreshTill: SEC_NOW + 99999,
+    init: SEC_NOW - 9999,
     scope: { path: '/' },
   });
 
@@ -1295,7 +1258,7 @@ describe('#verifyAuth(req)', () => {
                 },
               },
               "ok": true,
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaFRpbGwiOjE1NzAwOTk5OTksInNjb3BlIjp7InBhdGgiOiIvIn19",
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
             }
           `);
 
@@ -1337,7 +1300,7 @@ describe('#verifyAuth(req)', () => {
                 },
               },
               "ok": true,
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaFRpbGwiOjE1NzAwOTk5OTksInNjb3BlIjp7InBhdGgiOiIvIn19",
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
             }
           `);
 
@@ -1369,7 +1332,7 @@ describe('#verifyAuth(req)', () => {
               "code": 400,
               "ok": false,
               "reason": "invalid signature",
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaFRpbGwiOjE1NzAwOTk5OTksInNjb3BlIjp7InBhdGgiOiIvIn19",
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
             }
           `);
 
@@ -1395,7 +1358,7 @@ describe('#verifyAuth(req)', () => {
               "code": 401,
               "ok": false,
               "reason": "require signature",
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaFRpbGwiOjE1NzAwOTk5OTksInNjb3BlIjp7InBhdGgiOiIvIn19",
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
             }
           `);
 
@@ -1461,9 +1424,9 @@ describe('#verifyAuth(req)', () => {
     const [bazToken, bazSignature] = prepareToken({
       platform: 'baz',
       data: { baz: 'data' },
+      init: SEC_NOW - 9999,
       exp: SEC_NOW + 9999,
       iat: SEC_NOW - 999,
-      refreshTill: SEC_NOW + 99999,
       scope: { path: '/' },
     });
 
@@ -1488,7 +1451,7 @@ describe('#verifyAuth(req)', () => {
               "code": 404,
               "ok": false,
               "reason": "unknown platform \\"baz\\"",
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImJheiIsImRhdGEiOnsiYmF6IjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaFRpbGwiOjE1NzAwOTk5OTksInNjb3BlIjp7InBhdGgiOiIvIn19",
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImJheiIsImRhdGEiOnsiYmF6IjoiZGF0YSJ9LCJpbml0IjoxNTY5OTkwMDAxLCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
             }
           `);
 
@@ -1525,7 +1488,7 @@ describe('#verifyAuth(req)', () => {
               "code": 400,
               "ok": false,
               "reason": "invalid auth data",
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwicmVmcmVzaFRpbGwiOjE1NzAwOTk5OTksInNjb3BlIjp7InBhdGgiOiIvIn19",
+              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
             }
           `);
 

@@ -295,14 +295,10 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
         return;
       }
 
-      const { refreshTill, platform, data } = payload;
-      if (!refreshTill) {
-        respondApiError(res, platform, 400, 'token not refreshable');
-        return;
-      }
+      const { platform, data, init } = payload;
 
-      if (refreshTill * 1000 >= Date.now()) {
-        // refresh signature and issue new token
+      if ((init + this.operator.refreshDuration) * 1000 >= Date.now()) {
+        // refresh token
         const authenticator = this._getAuthenticatorOf(platform);
         if (!authenticator) {
           respondApiError(res, platform, 404, `unknown platform "${platform}"`);
@@ -320,7 +316,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
           res,
           platform,
           refreshResult.data,
-          { refreshTill }
+          init
         );
         respondApiOk(res, platform, newToken);
       } else {
