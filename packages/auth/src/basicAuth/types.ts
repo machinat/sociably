@@ -32,18 +32,32 @@ export type CheckAuthDataFn<Data, Channel extends MachinatChannel> = (
 
 export type BasicAuthOptions = {
   codeMessageComponent?: CodeMessageComponent;
-  verifyCodeDigits?: number;
+  loginCodeDigits?: number;
   appName?: string;
   appImageUrl?: string;
+  maxLoginAttempt?: number;
+  loginDuration?: number;
 };
 
-export type BasicAuthState<Data> = {
+export type BasicAuthLoginState<Data> = {
+  status: 'login';
+  ch: string;
+  data: Data;
+  redirect: undefined | string;
+};
+
+export type BasicAuthVerifyState<Data> = {
+  status: 'verify';
   hash: string;
   ts: number;
   ch: string;
   data: Data;
   redirect: undefined | string;
 };
+
+export type BasicAuthState<Data> =
+  | BasicAuthLoginState<Data>
+  | BasicAuthVerifyState<Data>;
 
 export type AuthDelegatorOptions<Data, Channel extends MachinatChannel> = {
   platform: string;

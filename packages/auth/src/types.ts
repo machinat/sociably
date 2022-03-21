@@ -199,7 +199,7 @@ export type AuthConfigs = {
   tokenLifetime?: number;
   /** The max time a token can be refreshed in seconds. Default to 10 days */
   refreshDuration?: number;
-  /** The max age of the data cookies in seconds. Default to 3 minute */
+  /** The max age of the data cookies in seconds. Default to 5 minute */
   dataCookieMaxAge?: number;
   /** The domain scope of the auth cookies */
   cookieDomain?: string;
@@ -219,6 +219,10 @@ export type AuthConfigs = {
     verifyCodeDigits?: number;
     /** The customized component to render code message */
     codeMessageComponent?: CodeMessageComponent;
+    /** Max time to verify login code. Default to 5 */
+    maxLoginAttempt?: number;
+    /** Login session duration in seconds. Default to 5 min */
+    loginDuration?: number;
   };
 };
 

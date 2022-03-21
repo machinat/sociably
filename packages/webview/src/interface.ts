@@ -63,12 +63,12 @@ export class WebviewBasicServerAuthenticator extends BasicServerAuthenticator {}
 export const WebviewBasicAuthenticatorP = makeClassProvider({
   lifetime: 'singleton',
   deps: [StateController, Auth.HttpOperator, ConfigsI],
-  factory: (stateController, httpOperator, { basicAuth }) => {
-    return new WebviewBasicServerAuthenticator(
-      stateController,
-      httpOperator,
-      basicAuth
-    );
+  factory: (stateController, httpOperator, configs) => {
+    return new WebviewBasicServerAuthenticator(stateController, httpOperator, {
+      ...configs.basicAuth,
+      loginDuration:
+        configs.basicAuth?.loginDuration || configs.dataCookieMaxAge,
+    });
   },
 })(WebviewBasicServerAuthenticator);
 

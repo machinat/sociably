@@ -135,13 +135,13 @@ test('.issueState(res, data)', async () => {
 
   let [cookies, payload] = await testIssueState(operator);
   expect(cookies).toMatchInlineSnapshot(`
-        Map {
-          "machinat_auth_state" => Object {
-            "directives": "HttpOnly; Max-Age=180; Path=/auth; SameSite=Lax; Secure",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMH0.tbccGtUNapTH99Q7SmW6F5CrXlhKWBsN-35NAydX3eg",
-          },
-        }
-      `);
+    Map {
+      "machinat_auth_state" => Object {
+        "directives": "HttpOnly; Max-Age=300; Path=/auth; SameSite=Lax; Secure",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMH0.tbccGtUNapTH99Q7SmW6F5CrXlhKWBsN-35NAydX3eg",
+      },
+    }
+  `);
   expect(payload).toMatchInlineSnapshot(`
         Object {
           "iat": 1570000000,
@@ -378,7 +378,7 @@ test('.issueError(code, reason)', async () => {
   expect(cookies).toMatchInlineSnapshot(`
     Map {
       "machinat_auth_error" => Object {
-        "directives": "Max-Age=180; Path=/; SameSite=Lax; Secure",
+        "directives": "Max-Age=300; Path=/; SameSite=Lax; Secure",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMH0.dCs_-sNRQZoWk1dOHoRcGKCs6LEgGCwky_lWqODov3A",
       },
       "machinat_auth_state" => Object {
@@ -509,7 +509,7 @@ test('.getState()', async () => {
   await expect(operator.getState(req, 'foo')).resolves.toBe(null);
 });
 
-it('.getAuth()', async () => {
+test('.getAuth()', async () => {
   function createTokenAndSig(payload) {
     const [headerEncoded, payloadEncoded, signature] = jwt
       .sign(payload, '__SECRET__')
@@ -556,12 +556,6 @@ it('.getAuth()', async () => {
   }));
   await expect(operator.getAuth(req, 'foo')).resolves.toEqual({ foo: 'data' });
 
-  // ok
-  req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
-  }));
-  await expect(operator.getAuth(req, 'foo')).resolves.toEqual({ foo: 'data' });
-
   // wrong signature
   req.mock.getter('headers').fake(() => ({
     cookie: `machinat_auth_token=${token};machinat_auth_signature=WRONG_SIG;`,
@@ -588,11 +582,34 @@ it('.getAuth()', async () => {
     scope,
     iat: SEC_NOW - 21,
     exp: SEC_NOW - 1,
+    refreshTill: SEC_NOW + 101,
   });
   req.mock.getter('headers').fake(() => ({
     cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
   }));
   await expect(operator.getAuth(req, 'foo')).resolves.toBe(null);
+
+  // acceptRefreshable
+  await expect(
+    operator.getAuth(req, 'foo', { acceptRefreshable: true })
+  ).resolves.toEqual({ foo: 'data' });
+
+  // not refreshable
+  [token, sig] = createTokenAndSig({
+    platform,
+    data,
+    scope,
+    iat: SEC_NOW - 9999,
+    exp: SEC_NOW - 999,
+    refreshTill: SEC_NOW - 99,
+  });
+  req.mock.getter('headers').fake(() => ({
+    cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
+  }));
+  await expect(operator.getAuth(req, 'foo')).resolves.toBe(null);
+  await expect(
+    operator.getAuth(req, 'foo', { acceptRefreshable: true })
+  ).resolves.toBe(null);
 });
 
 test('.getError()', async () => {

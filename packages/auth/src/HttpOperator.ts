@@ -44,6 +44,8 @@ type OperatorOptions = {
   secure?: boolean;
 };
 
+const getSecondNow = () => Math.floor(Date.now() / 1000);
+
 export class AuthHttpOperator {
   apiRootUrl: URL;
   redirectRootUrl: URL;
@@ -69,7 +71,7 @@ export class AuthHttpOperator {
       secret,
       tokenLifetime = 3600, // 1 hr
       refreshDuration = 864000, // 10 day
-      dataCookieMaxAge = 180, // 3 min
+      dataCookieMaxAge = 300, // 5 min
       cookieDomain,
       cookiePath = '/',
       cookieSameSite = 'lax',
@@ -173,7 +175,8 @@ export class AuthHttpOperator {
 
   async getAuth<Data>(
     req: IncomingMessage,
-    platformAsserted: string
+    platformAsserted: string,
+    { acceptRefreshable }: { acceptRefreshable?: boolean } = {}
   ): Promise<null | Data> {
     const cookies = getCookies(req);
     if (!cookies) {
@@ -187,13 +190,18 @@ export class AuthHttpOperator {
     }
 
     try {
-      const { platform, data }: AuthTokenPayload<Data> = await thenifiedly.call(
-        verifyJWT,
-        `${contentVal}.${sigVal}`,
-        this.secret
-      );
+      const { platform, data, refreshTill }: AuthTokenPayload<Data> =
+        await thenifiedly.call(
+          verifyJWT,
+          `${contentVal}.${sigVal}`,
+          this.secret,
+          { ignoreExpiration: acceptRefreshable }
+        );
 
-      return platform === platformAsserted ? data : null;
+      return platform !== platformAsserted ||
+        (acceptRefreshable && (!refreshTill || getSecondNow() > refreshTill))
+        ? null
+        : data;
     } catch (e) {
       return null;
     }
@@ -207,7 +215,7 @@ export class AuthHttpOperator {
   ): Promise<string> {
     const { secret, tokenLifetime, refreshDuration } = this;
 
-    const now = Math.floor(Date.now() / 1000);
+    const now = getSecondNow();
 
     const payload: AuthPayload<Data> = {
       platform,

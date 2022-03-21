@@ -5,6 +5,7 @@ type LoginPageOptions = {
   appName?: string;
   appImageUrl?: string;
   chatLinkUrl: string;
+  loginCodeDigits: number;
 };
 
 const buildLoginPage = ({
@@ -14,6 +15,7 @@ const buildLoginPage = ({
   appName,
   appImageUrl,
   chatLinkUrl,
+  loginCodeDigits,
 }: LoginPageOptions): string => `
 <!DOCTYPE html>
 <html>
@@ -115,7 +117,7 @@ h1 {
   </div>
   <h1>${appName || ''}</h1>
   <div class="flex column">
-    <label for="codeInput">Login code:</label>
+    <label for="codeInput">Login code from ${platformName} chat:</label>
     <input id="codeInput" type="text" pattern="\\d*" />
     <div id="errorMsg"></div>
   </div>
@@ -137,10 +139,17 @@ const input = document.getElementById('codeInput');
 const loginButton = document.getElementById('login');
 const errorMessage = document.getElementById('errorMsg');
 
-loginButton.addEventListener('click', () => {
-  if (input.value) {
-    loginButton.disabled = true;
+function checkCodeInput() {
+  return /^[0-9]{${loginCodeDigits}}$/.test(input.value);
+}
 
+function verifyLoginCode() {
+  loginButton.disabled = true;
+
+  if (!input.value) {
+    errorMessage.innerText = '⨯ login code is empty';
+    errorMessage.hidden = false;
+  } else if (checkCodeInput()) {
     fetch('./verify', {
       method: 'POST',
       body: JSON.stringify({ code: input.value }),
@@ -154,15 +163,30 @@ loginButton.addEventListener('click', () => {
           errorMessage.hidden = false;
         }
       });
-  } else {
-    errorMessage.innerText = '⨯ login code is empty';
-    errorMessage.hidden = false;
+  }
+}
+
+loginButton.addEventListener('click', () => {
+  verifyLoginCode();
+});
+
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    verifyLoginCode();
   }
 });
 
 input.addEventListener('input', () => {
   errorMessage.hidden = true;
   loginButton.disabled = false;
+});
+
+input.addEventListener('change', () => {
+  if (!checkCodeInput()) {
+    errorMessage.innerText = '⨯ login code is a ${loginCodeDigits} digits number';
+    errorMessage.hidden = false;
+    loginButton.disabled = true;
+  }
 });
 
 </script>

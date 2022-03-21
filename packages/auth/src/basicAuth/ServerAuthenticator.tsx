@@ -11,6 +11,8 @@ import { respondApiError, parseJsonBody } from '../utils';
 import { ConfigsI } from '../interface';
 import buildLoginPage from './buildLoginPage';
 import {
+  BasicAuthLoginState,
+  BasicAuthVerifyState,
   BasicAuthState,
   BasicAuthOptions,
   CodeMessageComponent,
@@ -21,11 +23,13 @@ import {
 
 const VERIFY_RECORDS_SPACE = 'basic_auth_verify_records';
 const RECORDS_TIME_INDEX = '$time_index';
-const VERIFY_ALLOWANCE_TIME = 180000;
-const VERIFY_COUNT_LIMIT = 4;
 
 const LOGIN_QUERY = 'login';
-const DEFAULT_LOGIN_CODE_DIGITS = 6;
+
+const respondVerify = (res: ServerResponse, body: VerifyCodeResponseBody) => {
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(body));
+};
 
 const numericCode = (n: number) => {
   let code = '';
@@ -38,20 +42,33 @@ const numericCode = (n: number) => {
 export class BasicServerAuthenticator {
   operator: HttpOperator;
   stateController: StateController;
-  options: BasicAuthOptions;
-  CodeMessage: CodeMessageComponent;
+  appName?: string;
+  appImageUrl?: string;
+  loginCodeDigits: number;
+  codeMessageComponent: CodeMessageComponent;
+  maxLoginAttempt: number;
+  loginDurationTime: number;
 
   constructor(
     stateController: StateController,
     operator: HttpOperator,
-    options: BasicAuthOptions = {}
+    {
+      appName,
+      appImageUrl,
+      loginCodeDigits = 6,
+      maxLoginAttempt = 5,
+      loginDuration = 300,
+      codeMessageComponent = ({ code }) => <p>Your login code is: {code}</p>,
+    }: BasicAuthOptions = {}
   ) {
     this.stateController = stateController;
     this.operator = operator;
-    this.options = options;
-    this.CodeMessage =
-      options.codeMessageComponent ||
-      (({ code }) => <p>Your login code is: {code}</p>);
+    this.appName = appName;
+    this.appImageUrl = appImageUrl;
+    this.loginCodeDigits = loginCodeDigits;
+    this.codeMessageComponent = codeMessageComponent;
+    this.maxLoginAttempt = maxLoginAttempt;
+    this.loginDurationTime = loginDuration * 1000;
   }
 
   createRequestDelegator<Data, Channel extends MachinatChannel>(
@@ -90,12 +107,11 @@ export class BasicServerAuthenticator {
   private async _handleStart<Data, Channel extends MachinatChannel>(
     req: IncomingMessage,
     res: ServerResponse,
-    { bot, platform, checkAuthData }: AuthDelegatorOptions<Data, Channel>
+    { platform, checkAuthData }: AuthDelegatorOptions<Data, Channel>
   ) {
     const {
       query: { [LOGIN_QUERY]: loginToken },
     } = parseUrl(req.url as string, true);
-    const now = Date.now();
 
     // check the login query
     let payload: null | { data: Data; redirectUrl: undefined | string };
@@ -107,9 +123,11 @@ export class BasicServerAuthenticator {
       return;
     }
 
-    // redirect to target if it's already logged in
+    // redirect if user is already logged in
     const { data, redirectUrl } = payload;
-    const currentAuth = await this.operator.getAuth<Data>(req, platform);
+    const currentAuth = await this.operator.getAuth<Data>(req, platform, {
+      acceptRefreshable: true,
+    });
     if (currentAuth) {
       this.operator.redirect(res, redirectUrl, { assertInternal: true });
       return;
@@ -125,71 +143,32 @@ export class BasicServerAuthenticator {
     const { data: checkedData, channel } = checkResult;
 
     // redirect to login page if it's during the login process
+    const loginUrl = this.operator.getAuthUrl(platform, 'login');
     const currentState = await this.operator.getState<BasicAuthState<Data>>(
       req,
       platform
     );
-    if (
-      currentState &&
-      currentState.ch === channel.uid &&
-      now - currentState.ts < VERIFY_ALLOWANCE_TIME
-    ) {
-      const verifyCount = await this._checkVerifyCount(
-        currentState.ch,
-        currentState.ts,
-        false
-      );
-
-      if (verifyCount && verifyCount < VERIFY_COUNT_LIMIT) {
-        this.operator.redirect(
-          res,
-          this.operator.getAuthUrl(platform, 'login')
-        );
-        return;
-      }
-    }
-
-    // send login code in chatroom
-    const code = numericCode(
-      this.options.verifyCodeDigits || DEFAULT_LOGIN_CODE_DIGITS
-    );
-    try {
-      await bot.render(
-        channel,
-        Machinat.createElement(this.CodeMessage, { code, channel })
-      );
-    } catch {
-      await this.operator.issueError(
-        res,
-        platform,
-        510,
-        'fail to send login code'
-      );
-      this.operator.redirect(res, redirectUrl);
+    if (currentState && currentState.ch === channel.uid) {
+      this.operator.redirect(res, loginUrl);
       return;
     }
 
-    // save data and encrypted code in state
-    const hashedCode = this._signCodeSignature(
-      platform,
-      channel.uid,
-      now,
-      code
-    );
-    await this.operator.issueState<BasicAuthState<Data>>(res, platform, {
+    await this.operator.issueState<BasicAuthLoginState<Data>>(res, platform, {
+      status: 'login',
       ch: channel.uid,
-      ts: now,
       data: checkedData,
-      hash: hashedCode,
       redirect: redirectUrl,
     });
-    this.operator.redirect(res, this.operator.getAuthUrl(platform, 'login'));
+
+    res.setHeader('X-Robots-Tag', 'none');
+    this.operator.redirect(res, loginUrl);
   }
 
   private async _handleLogin<Data, Channel extends MachinatChannel>(
     req: IncomingMessage,
     res: ServerResponse,
     {
+      bot,
       platform,
       platformName,
       platformColor,
@@ -198,12 +177,18 @@ export class BasicServerAuthenticator {
       getChatLink,
     }: AuthDelegatorOptions<Data, Channel>
   ) {
+    const now = Date.now();
     const state = await this.operator.getState<BasicAuthState<Data>>(
       req,
       platform
     );
     if (!state) {
-      await this.operator.issueError(res, platform, 401, 'invalid login flow');
+      await this.operator.issueError(
+        res,
+        platform,
+        401,
+        'login session expired'
+      );
       this.operator.redirect(res);
       return;
     }
@@ -215,13 +200,66 @@ export class BasicServerAuthenticator {
       this.operator.redirect(res);
       return;
     }
+    const { data: checkedData, channel } = checkResult;
 
-    const { appName, appImageUrl } = this.options;
+    let shouldIssueCode = true;
+    if (state.status === 'verify' && now - state.ts < this.loginDurationTime) {
+      const verifyCount = await this._checkVerifyCount(
+        state.ch,
+        state.ts,
+        false
+      );
+      if (verifyCount < this.maxLoginAttempt) {
+        shouldIssueCode = false;
+      }
+    }
+
+    // send login code in chatroom
+    if (shouldIssueCode) {
+      const code = numericCode(this.loginCodeDigits);
+      try {
+        await bot.render(
+          channel,
+          Machinat.createElement(this.codeMessageComponent, { code, channel })
+        );
+      } catch {
+        await this.operator.issueError(
+          res,
+          platform,
+          510,
+          'fail to send login code'
+        );
+        this.operator.redirect(res, state.redirect);
+        return;
+      }
+
+      // save data and encrypted code in state
+      const hashedCode = this._signCodeSignature(
+        platform,
+        channel.uid,
+        now,
+        code
+      );
+      await this.operator.issueState<BasicAuthVerifyState<Data>>(
+        res,
+        platform,
+        {
+          status: 'verify',
+          ch: channel.uid,
+          ts: now,
+          data: checkedData,
+          hash: hashedCode,
+          redirect: state.redirect,
+        }
+      );
+    }
+
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(
       buildLoginPage({
-        appName,
-        appImageUrl,
+        appName: this.appName,
+        appImageUrl: this.appImageUrl,
+        loginCodeDigits: this.loginCodeDigits,
         platformName,
         platformColor,
         platformImageUrl,
@@ -246,22 +284,37 @@ export class BasicServerAuthenticator {
       req,
       platform
     );
-    if (!state) {
-      respondApiError(res, platform, 400, 'invalid login flow');
+    if (
+      !state ||
+      state.status !== 'verify' ||
+      Date.now() - state.ts > this.loginDurationTime
+    ) {
+      await this.operator.issueError(
+        res,
+        platform,
+        401,
+        'login session expired'
+      );
+      respondVerify(res, {
+        ok: false,
+        retryChances: 0,
+        redirectTo: this.operator.getRedirectUrl(),
+      });
       return;
     }
 
     const { data, hash, ch, ts, redirect } = state;
+
     const hashedCode = this._signCodeSignature(platform, ch, ts, code);
     const isCodeMatched = hashedCode === hash;
-
     const verifyCount = await this._checkVerifyCount(ch, ts, !isCodeMatched);
-    const isOk =
-      isCodeMatched && (!verifyCount || verifyCount < VERIFY_COUNT_LIMIT);
+
+    const isOk = isCodeMatched && verifyCount < this.maxLoginAttempt;
+    const retryChances = isOk ? 0 : this.maxLoginAttempt - verifyCount;
 
     if (isOk) {
       await this.operator.issueAuth(res, platform, data);
-    } else {
+    } else if (retryChances === 0) {
       await this.operator.issueError(
         res,
         platform,
@@ -270,14 +323,11 @@ export class BasicServerAuthenticator {
       );
     }
 
-    const responseBody: VerifyCodeResponseBody = {
-      ok: isCodeMatched && (!verifyCount || verifyCount < VERIFY_COUNT_LIMIT),
-      retryChances: verifyCount ? VERIFY_COUNT_LIMIT - verifyCount : 0,
+    respondVerify(res, {
+      ok: isOk,
+      retryChances,
       redirectTo: this.operator.getRedirectUrl(redirect),
-    };
-
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(responseBody));
+    });
   }
 
   private _signCodeSignature(
@@ -296,17 +346,14 @@ export class BasicServerAuthenticator {
     channelUid: string,
     timestamp: number,
     incremental: boolean
-  ) {
+  ): Promise<number> {
     const now = Date.now();
     const recordsState = this.stateController.globalState(VERIFY_RECORDS_SPACE);
 
     const verifyCount = await recordsState.update<number>(
       `${channelUid}:${timestamp}`,
       (count) => {
-        if (now - timestamp > VERIFY_ALLOWANCE_TIME) {
-          return undefined;
-        }
-        if (incremental && (!count || count < VERIFY_COUNT_LIMIT)) {
+        if (incremental && (!count || count < this.maxLoginAttempt)) {
           return (count || 0) + 1;
         }
         return count;
@@ -323,7 +370,7 @@ export class BasicServerAuthenticator {
         RECORDS_TIME_INDEX,
         (currentRecords = []) => {
           const idxToKeep = currentRecords.findIndex(
-            ({ ts }) => now - ts < VERIFY_ALLOWANCE_TIME
+            ({ ts }) => now - ts < this.loginDurationTime
           );
           if (idxToKeep === -1) {
             recordsToClear = currentRecords;
@@ -349,18 +396,18 @@ export class BasicServerAuthenticator {
     await Promise.all(
       recordsToClear.map(({ ts, ch }) => recordsState.delete(`${ch}:${ts}`))
     );
-    return verifyCount;
+    return verifyCount || 0;
   }
 }
 
 const AuthenticatorP = makeClassProvider({
   deps: [StateController, HttpOperator, ConfigsI],
   factory: (stateController, httpOperator, configs) =>
-    new BasicServerAuthenticator(
-      stateController,
-      httpOperator,
-      configs.basicAuth
-    ),
+    new BasicServerAuthenticator(stateController, httpOperator, {
+      ...configs.basicAuth,
+      loginDuration:
+        configs.basicAuth?.loginDuration || configs.dataCookieMaxAge,
+    }),
 })(BasicServerAuthenticator);
 
 type AuthenticatorP = BasicServerAuthenticator;

@@ -85,7 +85,10 @@ describe('initModule()', () => {
 
     const [basicAuthenticator] = app.useServices([BasicAuthenticator]);
     expect(basicAuthenticator).toBeInstanceOf(BasicAuthenticator);
-    expect(basicAuthenticator.options).toEqual(basicAuthOptions);
+    expect(basicAuthenticator.appName).toBe('Hello World');
+    expect(basicAuthenticator.appImageUrl).toBe(
+      'https://machinat.com/img/logo.png'
+    );
   });
 
   test('provide authenticators', async () => {
