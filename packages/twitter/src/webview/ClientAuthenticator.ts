@@ -36,19 +36,8 @@ export default class TwitterClientAuthenticator
     this.agentId = agentId;
   }
 
-  async init(
-    authEntry: string,
-    error: null | Error,
-    data: null | TwitterAuthData
-  ): Promise<void> {
-    if (!error && !data) {
-      window.location.href = `${authEntry}?redirectUrl=${encodeURIComponent(
-        window.location.href
-      )}`;
-
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      throw new Error('redirect timeout');
-    }
+  async init(): Promise<void> {
+    // do nothing
   }
 
   async fetchCredential(): Promise<AuthenticatorCredentialResult<void>> {
@@ -59,7 +48,6 @@ export default class TwitterClientAuthenticator
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   checkAuthData(data: TwitterAuthData): CheckDataResult<TwitterAuthContext> {
     return {
       ok: true,

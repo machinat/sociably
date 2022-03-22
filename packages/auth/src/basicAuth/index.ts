@@ -1,3 +1,2 @@
-export { default, BasicServerAuthenticator } from './ServerAuthenticator';
-export { default as BasicClientAuthenticator } from './ClientAuthenticator';
+export { default, BasicAuthenticator } from './BasicAuthenticator';
 export * from './types';

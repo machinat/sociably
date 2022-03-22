@@ -39,7 +39,9 @@ const numericCode = (n: number) => {
   return code;
 };
 
-export class BasicServerAuthenticator {
+const DefaultCodeMessage = ({ code }) => <p>Your login code is: {code}</p>;
+
+export class BasicAuthenticator {
   operator: HttpOperator;
   stateController: StateController;
   appName?: string;
@@ -58,7 +60,7 @@ export class BasicServerAuthenticator {
       loginCodeDigits = 6,
       maxLoginAttempt = 5,
       loginDuration = 300,
-      codeMessageComponent = ({ code }) => <p>Your login code is: {code}</p>,
+      codeMessageComponent = DefaultCodeMessage,
     }: BasicAuthOptions = {}
   ) {
     this.stateController = stateController;
@@ -197,7 +199,7 @@ export class BasicServerAuthenticator {
     if (!checkResult.ok) {
       const { code, reason } = checkResult;
       await this.operator.issueError(res, platform, code, reason);
-      this.operator.redirect(res);
+      this.operator.redirect(res, state.redirect);
       return;
     }
     const { data: checkedData, channel } = checkResult;
@@ -298,7 +300,7 @@ export class BasicServerAuthenticator {
       respondVerify(res, {
         ok: false,
         retryChances: 0,
-        redirectTo: this.operator.getRedirectUrl(),
+        redirectTo: this.operator.getRedirectUrl(state?.redirect),
       });
       return;
     }
@@ -403,13 +405,13 @@ export class BasicServerAuthenticator {
 const AuthenticatorP = makeClassProvider({
   deps: [StateController, HttpOperator, ConfigsI],
   factory: (stateController, httpOperator, configs) =>
-    new BasicServerAuthenticator(stateController, httpOperator, {
+    new BasicAuthenticator(stateController, httpOperator, {
       ...configs.basicAuth,
       loginDuration:
         configs.basicAuth?.loginDuration || configs.dataCookieMaxAge,
     }),
-})(BasicServerAuthenticator);
+})(BasicAuthenticator);
 
-type AuthenticatorP = BasicServerAuthenticator;
+type AuthenticatorP = BasicAuthenticator;
 
 export default AuthenticatorP;

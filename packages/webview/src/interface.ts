@@ -6,7 +6,7 @@ import type {
   UserOfAuthenticator,
   ContextOfAuthenticator,
 } from '@machinat/auth';
-import { BasicServerAuthenticator } from '@machinat/auth/basicAuth';
+import { BasicAuthenticator } from '@machinat/auth/basicAuth';
 import Next, { NextReceiver } from '@machinat/next';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
 import { useAuthLogin, verifyOrigin } from './utils';
@@ -58,7 +58,7 @@ export const AuthHttpOperatorP = makeClassProvider({
   },
 })(WebviewAuthHttpOperator);
 
-export class WebviewBasicServerAuthenticator extends BasicServerAuthenticator {}
+export class WebviewBasicServerAuthenticator extends BasicAuthenticator {}
 
 export const WebviewBasicAuthenticatorP = makeClassProvider({
   lifetime: 'singleton',
