@@ -1,4 +1,4 @@
-import { annotateNativeComponent } from '@machinat/core/renderer';
+import { makeNativeComponent } from '@machinat/core/renderer';
 import TwitterUser from './User';
 import TwitterChat from './Chat';
 import TweetTarget from './TweetTarget';
@@ -14,7 +14,7 @@ import type {
   TweetSegmentValue,
 } from './types';
 
-export const makeTwitterComponent = annotateNativeComponent(TWITTER);
+export const makeTwitterComponent = makeNativeComponent(TWITTER);
 
 export const polishMentionEntity = (
   raw: RawEntities['user_mentions'][number]

@@ -1,6 +1,6 @@
 import { MachinatNode } from '@machinat/core';
 import { makePartSegment, PartSegment } from '@machinat/core/renderer';
-import { annotateTelegramComponent } from '../utils';
+import { makeTelegramComponent } from '../utils';
 import type { TelegramComponent } from '../types';
 
 /**
@@ -32,7 +32,7 @@ export interface UrlButtonProps {
 export const UrlButton: TelegramComponent<
   UrlButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(function UrlButton(node, path) {
+> = makeTelegramComponent(function UrlButton(node, path) {
   const { text, url, login, forwardText, botUserName, requestWriteAccess } =
     node.props;
 
@@ -74,7 +74,7 @@ export interface CallbackButtonProps {
 export const CallbackButton: TelegramComponent<
   CallbackButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(function CallbackButton(node, path) {
+> = makeTelegramComponent(function CallbackButton(node, path) {
   const { text, data } = node.props;
 
   return [makePartSegment(node, path, { text, callback_data: data })];
@@ -103,7 +103,7 @@ export interface SwitchQueryButtonProps {
 export const SwitchQueryButton: TelegramComponent<
   SwitchQueryButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(function SwitchQueryButton(node, path) {
+> = makeTelegramComponent(function SwitchQueryButton(node, path) {
   const { text, query, currentChat } = node.props;
 
   return [
@@ -134,7 +134,7 @@ export interface GameButtonProps {
 export const GameButton: TelegramComponent<
   GameButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(function GameButton(node, path) {
+> = makeTelegramComponent(function GameButton(node, path) {
   const { text } = node.props;
   return [
     makePartSegment(node, path, {
@@ -161,7 +161,7 @@ export interface PayButtonProps {
 export const PayButton: TelegramComponent<
   PayButtonProps,
   PartSegment<any>
-> = annotateTelegramComponent(function PayButton(node, path) {
+> = makeTelegramComponent(function PayButton(node, path) {
   const { text } = node.props;
   return [
     makePartSegment(node, path, {
@@ -195,7 +195,7 @@ export interface KeyboardRowProps {
 export const KeyboardRow: TelegramComponent<
   KeyboardRowProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function KeyboardRow(node, path, render) {
+> = makeTelegramComponent(async function KeyboardRow(node, path, render) {
   const { children } = node.props;
   const buttonsSegments = await render(children, '.children');
 
@@ -233,11 +233,7 @@ export interface InlineKeyboardProps {
 export const InlineKeyboard: TelegramComponent<
   InlineKeyboardProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineKeyboard(
-  node,
-  path,
-  render
-) {
+> = makeTelegramComponent(async function InlineKeyboard(node, path, render) {
   const { children } = node.props;
   const buttonsSegments = await render(children, '.children');
 
@@ -271,7 +267,7 @@ export interface TextReplyProps {
 export const TextReply: TelegramComponent<
   TextReplyProps,
   PartSegment<any>
-> = annotateTelegramComponent(function TextReply(node, path) {
+> = makeTelegramComponent(function TextReply(node, path) {
   const { text } = node.props;
   return [makePartSegment(node, path, { text })];
 });
@@ -293,7 +289,7 @@ export interface ContactReplyProps {
 export const ContactReply: TelegramComponent<
   ContactReplyProps,
   PartSegment<any>
-> = annotateTelegramComponent(function ContactReply(node, path) {
+> = makeTelegramComponent(function ContactReply(node, path) {
   const { text } = node.props;
   return [makePartSegment(node, path, { text, request_contact: true })];
 });
@@ -315,7 +311,7 @@ export interface LocationReplyProps {
 export const LocationReply: TelegramComponent<
   LocationReplyProps,
   PartSegment<any>
-> = annotateTelegramComponent(function LocationReply(node, path) {
+> = makeTelegramComponent(function LocationReply(node, path) {
   const { text } = node.props;
   return [makePartSegment(node, path, { text, request_location: true })];
 });
@@ -339,7 +335,7 @@ export interface PollReplyProps {
 export const PollReply: TelegramComponent<
   PollReplyProps,
   PartSegment<any>
-> = annotateTelegramComponent(function PollReply(node, path) {
+> = makeTelegramComponent(function PollReply(node, path) {
   const { text, type } = node.props;
   return [makePartSegment(node, path, { text, request_poll: { type } })];
 });
@@ -377,7 +373,7 @@ export interface ReplyKeyboardProps {
 export const ReplyKeyboard: TelegramComponent<
   ReplyKeyboardProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function ReplyKeyboard(node, path, render) {
+> = makeTelegramComponent(async function ReplyKeyboard(node, path, render) {
   const { children, resizeKeyboard, oneTimeKeyboard, selective } = node.props;
   const rowsSegments = await render(children, '.children');
 
@@ -414,7 +410,7 @@ export interface RemoveReplyKeyboardProps {
 export const RemoveReplyKeyboard: TelegramComponent<
   RemoveReplyKeyboardProps,
   PartSegment<any>
-> = annotateTelegramComponent(function RemoveReplyKeyboard(node, path) {
+> = makeTelegramComponent(function RemoveReplyKeyboard(node, path) {
   const { selective } = node.props;
   return [makePartSegment(node, path, { remove_keyboard: true, selective })];
 });
@@ -436,7 +432,7 @@ export interface ForceReplyProps {
 export const ForceReply: TelegramComponent<
   ForceReplyProps,
   PartSegment<any>
-> = annotateTelegramComponent(function ForceReply(node, path) {
+> = makeTelegramComponent(function ForceReply(node, path) {
   const { selective } = node.props;
   return [makePartSegment(node, path, { force_reply: true, selective })];
 });

@@ -3,7 +3,7 @@ import type { MachinatNode } from '@machinat/core';
 import { formatNode } from '@machinat/core/utils';
 import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
 import type { UnitSegment, PartSegment } from '@machinat/core/renderer';
-import { annotateMessengerComponent } from '../utils';
+import { makeMessengerComponent } from '../utils';
 import type { MessageValue, MessengerComponent } from '../types';
 
 /**
@@ -39,7 +39,7 @@ export type GenericItemProps = {
 export const GenericItem: MessengerComponent<
   GenericItemProps,
   PartSegment<any>
-> = annotateMessengerComponent(async function GenericItem(node, path, render) {
+> = makeMessengerComponent(async function GenericItem(node, path, render) {
   const {
     buttons,
     title,
@@ -104,11 +104,7 @@ export type GenericTemplateProps = {
 export const GenericTemplate: MessengerComponent<
   GenericTemplateProps,
   UnitSegment<MessageValue>
-> = annotateMessengerComponent(async function GenericTemplate(
-  node,
-  path,
-  render
-) {
+> = makeMessengerComponent(async function GenericTemplate(node, path, render) {
   const { children, sharable, imageAspectRatio } = node.props;
   const elementsSegments = await render(children, '.children');
   const elementValues = elementsSegments?.map((segment) => segment.value);
@@ -193,7 +189,7 @@ const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
 export const ButtonTemplate: MessengerComponent<
   ButtonTemplateProps,
   UnitSegment<MessageValue>
-> = annotateMessengerComponent(__ButtonTemplate);
+> = makeMessengerComponent(__ButtonTemplate);
 
 /**
  * @category Props
@@ -252,7 +248,7 @@ const __MediaTemplate = async function MediaTemplate(node, path, render) {
 export const MediaTemplate: MessengerComponent<
   MediaTemplateProps,
   UnitSegment<MessageValue>
-> = annotateMessengerComponent(__MediaTemplate);
+> = makeMessengerComponent(__MediaTemplate);
 
 /**
  * @category Props
@@ -295,7 +291,7 @@ const __ReceiptItem = async function ReceiptItem(node, path) {
 export const ReceiptItem: MessengerComponent<
   ReceiptItemProps,
   PartSegment<any>
-> = annotateMessengerComponent(__ReceiptItem);
+> = makeMessengerComponent(__ReceiptItem);
 
 /**
  * @category Props
@@ -406,4 +402,4 @@ const __ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
 export const ReceiptTemplate: MessengerComponent<
   ReceiptTemplateProps,
   UnitSegment<MessageValue>
-> = annotateMessengerComponent(__ReceiptTemplate);
+> = makeMessengerComponent(__ReceiptTemplate);

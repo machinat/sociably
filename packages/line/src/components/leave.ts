@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { makeUnitSegment } from '@machinat/core/renderer';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
 const LEAVE_REQUESTER = {
@@ -29,7 +29,7 @@ const LEAVE_REQUESTER = {
  * @props `{}`
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/group-chats/).
  */
-export const Leave: LineComponent<{}> = annotateLineComponent(function Leave(
+export const Leave: LineComponent<{}> = makeLineComponent(function Leave(
   node,
   path
 ) {

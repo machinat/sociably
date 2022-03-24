@@ -1,7 +1,7 @@
 import Machinat from '@machinat/core';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
 import {
-  annotateNativeComponent,
+  makeNativeComponent,
   makeTextSegment,
   makeBreakSegment,
   makePartSegment,
@@ -13,7 +13,7 @@ describe('asNativeConponent(platform)(componentFn)', () => {
   it('define "$$native" and "$$platform" metadata property', () => {
     const _component = () => {};
 
-    const Component = annotateNativeComponent('foo')(_component);
+    const Component = makeNativeComponent('foo')(_component);
 
     expect(Component).toBe(_component);
     expect(Component.$$platform).toBe('foo');

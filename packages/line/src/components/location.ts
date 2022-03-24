@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import { LineComponent, LineMessageSegmentValue } from '../types';
 
 /**
@@ -22,7 +22,7 @@ export type LocationProps = {
 export const Location: LineComponent<
   LocationProps,
   UnitSegment<LineMessageSegmentValue>
-> = annotateLineComponent(function Location(node, path) {
+> = makeLineComponent(function Location(node, path) {
   const { title, address, latitude, longitude } = node.props;
 
   return [

@@ -4,7 +4,7 @@ import {
   makePartSegment,
   PartSegment,
 } from '@machinat/core/renderer';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
 /**
@@ -23,7 +23,7 @@ export type ImageProps = {
  * @props {@link ImageProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#image-message).
  */
-export const Image: LineComponent<ImageProps> = annotateLineComponent(
+export const Image: LineComponent<ImageProps> = makeLineComponent(
   function Image(node, path) {
     const { originalContentUrl, previewImageUrl } = node.props;
     return [
@@ -58,7 +58,7 @@ export type StickerProps = {
  * @props {@link StickerProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#sticker-message).
  */
-export const Sticker: LineComponent<StickerProps> = annotateLineComponent(
+export const Sticker: LineComponent<StickerProps> = makeLineComponent(
   function Sticker(node, path) {
     const { stickerId, packageId } = node.props;
     return [
@@ -105,7 +105,7 @@ export type ImageMapAreaProps = {
 export const ImageMapArea: LineComponent<
   ImageMapAreaProps,
   PartSegment<any>
-> = annotateLineComponent(async function ImageMapArea(node, path, render) {
+> = makeLineComponent(async function ImageMapArea(node, path, render) {
   const { action, x, y, width, height } = node.props;
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
@@ -177,7 +177,7 @@ export type ImageMapVideoAreaProps = {
 export const ImageMapVideoArea: LineComponent<
   ImageMapVideoAreaProps,
   PartSegment<any>
-> = annotateLineComponent(async function ImageMapVideoArea(node, path, render) {
+> = makeLineComponent(async function ImageMapVideoArea(node, path, render) {
   const { originalContentUrl, previewImageUrl, x, y, width, height, action } =
     node.props;
 
@@ -230,7 +230,7 @@ export type ImageMapProps = {
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#imagemap-message).
  */
 
-export const ImageMap: LineComponent<ImageMapProps> = annotateLineComponent(
+export const ImageMap: LineComponent<ImageMapProps> = makeLineComponent(
   async function ImageMap(node, path, render) {
     const { baseUrl, altText, height, children, video } = node.props;
 

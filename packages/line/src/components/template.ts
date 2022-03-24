@@ -5,7 +5,7 @@ import {
   PartSegment,
 } from '@machinat/core/renderer';
 
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
 /**
@@ -61,7 +61,7 @@ export type ButtonTemplateProps = {
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#buttons).
  */
 export const ButtonTemplate: LineComponent<ButtonTemplateProps> =
-  annotateLineComponent(async function ButtonTemplate(node, path, render) {
+  makeLineComponent(async function ButtonTemplate(node, path, render) {
     const {
       actions,
       defaultAction,
@@ -128,7 +128,7 @@ export type ConfirmTemplateProps = {
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#confirm).
  */
 export const ConfirmTemplate: LineComponent<ConfirmTemplateProps> =
-  annotateLineComponent(async function ConfirmTemplate(node, path, render) {
+  makeLineComponent(async function ConfirmTemplate(node, path, render) {
     const { actions, altText, children } = node.props;
     const [actionSegments, textSegments] = await Promise.all([
       render(actions, '.actions'),
@@ -185,7 +185,7 @@ export type CarouselItemProps = {
 export const CarouselItem: LineComponent<
   CarouselItemProps,
   PartSegment<any>
-> = annotateLineComponent(async function CarouselItem(node, path, render) {
+> = makeLineComponent(async function CarouselItem(node, path, render) {
   const {
     actions,
     defaultAction,
@@ -254,7 +254,7 @@ export type CarouselTemplateProps = {
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#carousel).
  */
 export const CarouselTemplate: LineComponent<CarouselTemplateProps> =
-  annotateLineComponent(async function CarouselTemplate(node, path, render) {
+  makeLineComponent(async function CarouselTemplate(node, path, render) {
     const { children, altText, imageAspectRatio, imageSize } = node.props;
     const columnSegments = await render(children, '.children');
 
@@ -293,7 +293,7 @@ export type ImageCarouselItemProps = {
 export const ImageCarouselItem: LineComponent<
   ImageCarouselItemProps,
   PartSegment<any>
-> = annotateLineComponent(async function ImageCarouselItem(node, path, render) {
+> = makeLineComponent(async function ImageCarouselItem(node, path, render) {
   const { imageUrl, action } = node.props;
   const actionSegments = await render(action, '.action');
   const actionValue = actionSegments?.[0].value;
@@ -331,11 +331,7 @@ export type ImageCarouselTemplateProps = {
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#image-carousel).
  */
 export const ImageCarouselTemplate: LineComponent<ImageCarouselTemplateProps> =
-  annotateLineComponent(async function ImageCarouselTemplate(
-    node,
-    path,
-    render
-  ) {
+  makeLineComponent(async function ImageCarouselTemplate(node, path, render) {
     const { children, altText } = node.props;
     const columnSegments = await render(children, '.children');
 

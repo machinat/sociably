@@ -1,6 +1,6 @@
 import { makePartSegment } from '@machinat/core/renderer';
 import type { PartSegment } from '@machinat/core/renderer';
-import { annotateMessengerComponent } from '../utils';
+import { makeMessengerComponent } from '../utils';
 import type { MessengerComponent } from '../types';
 
 /**
@@ -44,7 +44,7 @@ export type UrlButtonProps = {
 export const UrlButton: MessengerComponent<
   UrlButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(function UrlButton(node, path) {
+> = makeMessengerComponent(function UrlButton(node, path) {
   const {
     title,
     url,
@@ -92,7 +92,7 @@ export type PostbackButtonProps = {
 export const PostbackButton: MessengerComponent<
   PostbackButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(function PostbackButton(node, path) {
+> = makeMessengerComponent(function PostbackButton(node, path) {
   const { title, payload } = node.props;
   return [
     makePartSegment(node, path, {
@@ -127,7 +127,7 @@ export type CallButtonProps = {
 export const CallButton: MessengerComponent<
   CallButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(function CallButton(node, path) {
+> = makeMessengerComponent(function CallButton(node, path) {
   const { title, number } = node.props;
   return [
     makePartSegment(node, path, {
@@ -156,7 +156,7 @@ export type LoginButtonProps = {
 export const LoginButton: MessengerComponent<
   LoginButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(function LoginButton(node, path) {
+> = makeMessengerComponent(function LoginButton(node, path) {
   const { url } = node.props;
   return [
     makePartSegment(node, path, {
@@ -176,7 +176,7 @@ export const LoginButton: MessengerComponent<
 export const LogoutButton: MessengerComponent<
   {},
   PartSegment<any>
-> = annotateMessengerComponent(function LogoutButton(node, path) {
+> = makeMessengerComponent(function LogoutButton(node, path) {
   return [makePartSegment(node, path, { type: 'account_unlink' })];
 });
 
@@ -205,7 +205,7 @@ export type GamePlayButtonProps = {
 export const GamePlayButton: MessengerComponent<
   GamePlayButtonProps,
   PartSegment<any>
-> = annotateMessengerComponent(function GamePlayButton(node, path) {
+> = makeMessengerComponent(function GamePlayButton(node, path) {
   const { title, payload, playerId, contextId } = node.props;
   return [
     makePartSegment(node, path, {

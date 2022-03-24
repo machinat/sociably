@@ -1,5 +1,5 @@
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { annotateMessengerComponent } from '../utils';
+import { makeMessengerComponent } from '../utils';
 import type { MessengerComponent, SenderActionValue } from '../types';
 
 const MARK_SEEN_VALUE = { sender_action: 'mark_seen' as const };
@@ -18,7 +18,7 @@ const TYPING_ON_VALUE = { sender_action: 'typing_on' as const };
 export const MarkSeen: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(function MarkSeen(node, path) {
+> = makeMessengerComponent(function MarkSeen(node, path) {
   return [makeUnitSegment(node, path, MARK_SEEN_VALUE)];
 });
 
@@ -32,7 +32,7 @@ export const MarkSeen: MessengerComponent<
 export const TypingOn: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(function TypingOn(node, path) {
+> = makeMessengerComponent(function TypingOn(node, path) {
   return [makeUnitSegment(node, path, TYPING_ON_VALUE)];
 });
 
@@ -46,6 +46,6 @@ export const TypingOn: MessengerComponent<
 export const TypingOff: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = annotateMessengerComponent(function TypingOff(node, path) {
+> = makeMessengerComponent(function TypingOff(node, path) {
   return [makeUnitSegment(node, path, TYPING_OFF_VALUE)];
 });

@@ -7,7 +7,7 @@ import {
   PartSegment,
 } from '@machinat/core/renderer';
 import { formatNode } from '@machinat/core/utils';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import type { LineComponent, FlexSegmentValue } from '../types';
 
 type FlexSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
@@ -72,7 +72,7 @@ export type FlexButtonProps = {
 export const FlexButton: LineComponent<
   FlexButtonProps,
   PartSegment<any>
-> = annotateLineComponent(async function FlexButton(node, path, render) {
+> = makeLineComponent(async function FlexButton(node, path, render) {
   const {
     action,
     flex,
@@ -132,7 +132,7 @@ export type FlexFillerProps = {
 export const FlexFiller: LineComponent<
   FlexFillerProps,
   PartSegment<any>
-> = annotateLineComponent(function FlexFiller(node, path) {
+> = makeLineComponent(function FlexFiller(node, path) {
   return [
     makePartSegment(node, path, {
       type: 'filler',
@@ -184,7 +184,7 @@ export type FlexIconProps = {
 export const FlexIcon: LineComponent<
   FlexIconProps,
   PartSegment<any>
-> = annotateLineComponent(function FlexIcon(node, path) {
+> = makeLineComponent(function FlexIcon(node, path) {
   const {
     url,
     margin,
@@ -272,7 +272,7 @@ export type FlexImageProps = {
 export const FlexImage: LineComponent<
   FlexImageProps,
   PartSegment<any>
-> = annotateLineComponent(async function FlexImage(node, path, render) {
+> = makeLineComponent(async function FlexImage(node, path, render) {
   const {
     url,
     flex,
@@ -338,7 +338,7 @@ export type FlextSeparatorProps = {
 export const FlexSeparator: LineComponent<
   FlextSeparatorProps,
   PartSegment<any>
-> = annotateLineComponent(function FlexSeparator(node, path) {
+> = makeLineComponent(function FlexSeparator(node, path) {
   const { margin, color } = node.props;
   return [
     makePartSegment(node, path, {
@@ -366,7 +366,7 @@ export type FlexSpacerProps = {
 export const FlexSpacer: LineComponent<
   FlexSpacerProps,
   PartSegment<any>
-> = annotateLineComponent(function FlexSpacer(node, path) {
+> = makeLineComponent(function FlexSpacer(node, path) {
   return [
     makePartSegment(node, path, {
       type: 'spacer',
@@ -441,7 +441,7 @@ export type FlexTextProps = {
 export const FlexText: LineComponent<
   FlexTextProps,
   PartSegment<any>
-> = annotateLineComponent(async function FlexText(node, path, render) {
+> = makeLineComponent(async function FlexText(node, path, render) {
   const {
     children,
     flex,
@@ -547,7 +547,7 @@ export type FlexSpanProps = {
 export const FlexSpan: LineComponent<
   FlexSpanProps,
   PartSegment<any>
-> = annotateLineComponent(async function FlexBox(node, path, render) {
+> = makeLineComponent(async function FlexBox(node, path, render) {
   const { children, size, weight, color, style, decoration } = node.props;
 
   const textSegments = await render(children, '.children');
@@ -664,7 +664,7 @@ export type FlexBoxProps = {
 export const FlexBox: LineComponent<
   FlexBoxProps,
   PartSegment<any>
-> = annotateLineComponent(async function FlexBox(node, path, render) {
+> = makeLineComponent(async function FlexBox(node, path, render) {
   const {
     children,
     layout,
@@ -777,7 +777,7 @@ const createBlockComponent = (section, _childrenType) => {
     },
   };
 
-  return annotateLineComponent(wrapper[tagName]);
+  return makeLineComponent(wrapper[tagName]);
 };
 
 /**
@@ -856,11 +856,7 @@ export type FlexBubbleContainerProps = {
 export const FlexBubbleContainer: LineComponent<
   FlexBubbleContainerProps,
   PartSegment<any>
-> = annotateLineComponent(async function FlexBubbleContainer(
-  node,
-  path,
-  render
-) {
+> = makeLineComponent(async function FlexBubbleContainer(node, path, render) {
   const { children, direction, rightToLeft, action } = node.props;
   const actionSegments = await render(action, '.action');
   const sectionSegments = await render(children, '.children');
@@ -908,11 +904,7 @@ export type FlexCarouselContainerProps = {
 export const FlexCarouselContainer: LineComponent<
   FlexCarouselContainerProps,
   PartSegment<any>
-> = annotateLineComponent(async function FlexCarouselContainer(
-  node,
-  path,
-  render
-) {
+> = makeLineComponent(async function FlexCarouselContainer(node, path, render) {
   const contentSegments = await render(node.props.children, '.children');
   const bubbleContainers = contentSegments?.map((segment) => segment.value);
 
@@ -945,7 +937,7 @@ export type FlexMessageProps = {
 export const FlexMessage: LineComponent<
   FlexMessageProps,
   UnitSegment<FlexSegmentValue>
-> = annotateLineComponent(async function FlexMessage(node, path, render) {
+> = makeLineComponent(async function FlexMessage(node, path, render) {
   const { children, altText } = node.props;
   const contentSegments = await render(children, '.children');
   const contentValue = contentSegments?.[0].value;

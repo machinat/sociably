@@ -1,6 +1,6 @@
 import { makeUnitSegment } from '@machinat/core/renderer';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
 /**
@@ -18,8 +18,8 @@ export type LinkRichMenuProps = {
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/)
  *   and [reference](https://developers.line.biz/en/reference/messaging-api/#link-rich-menu-to-user).
  */
-export const LinkRichMenu: LineComponent<LinkRichMenuProps> =
-  annotateLineComponent(function LinkRichMenu(node, path) {
+export const LinkRichMenu: LineComponent<LinkRichMenuProps> = makeLineComponent(
+  function LinkRichMenu(node, path) {
     return [
       makeUnitSegment(node, path, {
         id: node.props.id,
@@ -48,7 +48,8 @@ export const LinkRichMenu: LineComponent<LinkRichMenuProps> =
         },
       }),
     ];
-  });
+  }
+);
 
 const UNLINK_RICHMENU_VALUE = {
   [CHANNEL_REQUEST_GETTER](channel) {
@@ -80,7 +81,7 @@ const UNLINK_RICHMENU_VALUE = {
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/)
  *   and [reference](https://developers.line.biz/en/reference/messaging-api/#unlink-rich-menu-from-user).
  */
-export const UnlinkRichMenu: LineComponent<{}> = annotateLineComponent(
+export const UnlinkRichMenu: LineComponent<{}> = makeLineComponent(
   function UnlinkRichMenu(node, path) {
     return [makeUnitSegment(node, path, UNLINK_RICHMENU_VALUE)];
   }

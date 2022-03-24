@@ -1,7 +1,7 @@
 import { MachinatNode } from '@machinat/core';
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import { formatNode } from '@machinat/core/utils';
-import { annotateTelegramComponent } from '../utils';
+import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
   UploadingFile,
@@ -56,7 +56,7 @@ export interface PhotoProps extends MessageProps, FileProps, CaptionProps {}
 export const Photo: TelegramComponent<
   PhotoProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Photo(node, path, render) {
+> = makeTelegramComponent(async function Photo(node, path, render) {
   const {
     fileId,
     url,
@@ -122,7 +122,7 @@ export interface AudioProps
 export const Audio: TelegramComponent<
   AudioProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Audio(node, path, render) {
+> = makeTelegramComponent(async function Audio(node, path, render) {
   const {
     fileId,
     url,
@@ -200,7 +200,7 @@ export interface DocumentProps
 export const Document: TelegramComponent<
   DocumentProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Document(node, path, render) {
+> = makeTelegramComponent(async function Document(node, path, render) {
   const {
     fileId,
     url,
@@ -281,7 +281,7 @@ export interface VideoProps
 export const Video: TelegramComponent<
   VideoProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Video(node, path, render) {
+> = makeTelegramComponent(async function Video(node, path, render) {
   const {
     fileId,
     url,
@@ -368,7 +368,7 @@ export interface AnimationProps
 export const Animation: TelegramComponent<
   AnimationProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Animation(node, path, render) {
+> = makeTelegramComponent(async function Animation(node, path, render) {
   const {
     fileId,
     url,
@@ -445,7 +445,7 @@ export interface VoiceProps extends MessageProps, FileProps, CaptionProps {
 export const Voice: TelegramComponent<
   VoiceProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Voice(node, path, render) {
+> = makeTelegramComponent(async function Voice(node, path, render) {
   const {
     fileId,
     url,
@@ -511,7 +511,7 @@ export interface VideoNoteProps
 export const VideoNote: TelegramComponent<
   VideoNoteProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function VideoNote(node, path, render) {
+> = makeTelegramComponent(async function VideoNote(node, path, render) {
   const {
     fileId,
     url,
@@ -590,7 +590,7 @@ export interface MediaGroupProps {
 export const MediaGroup: TelegramComponent<
   MediaGroupProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function MediaGroup(node, path, render) {
+> = makeTelegramComponent(async function MediaGroup(node, path, render) {
   const { children, disableNotification, replyToMessageId } = node.props;
 
   const mediaSegments = await render(children, '.children');
@@ -688,7 +688,7 @@ export interface StickerProps extends MessageProps, FileProps {}
 export const Sticker: TelegramComponent<
   StickerProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Sticker(node, path, render) {
+> = makeTelegramComponent(async function Sticker(node, path, render) {
   const {
     fileId,
     url,

@@ -1,7 +1,7 @@
 import type { MachinatNode } from '@machinat/core';
 import { formatNode } from '@machinat/core/utils';
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { annotateTelegramComponent } from '../utils';
+import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
   TelegramComponent,
@@ -38,7 +38,7 @@ export interface EditTextProps extends EditMessageProps {
 export const EditText: TelegramComponent<
   EditTextProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function EditText(node, path, render) {
+> = makeTelegramComponent(async function EditText(node, path, render) {
   const {
     children,
     messageId,
@@ -97,7 +97,7 @@ export interface EditCaptionProps extends EditMessageProps {
 export const EditCaption: TelegramComponent<
   EditCaptionProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function EditCaption(node, path, render) {
+> = makeTelegramComponent(async function EditCaption(node, path, render) {
   const {
     children,
     messageId,
@@ -158,7 +158,7 @@ export interface EditMediaProps extends EditMessageProps {
 export const EditMedia: TelegramComponent<
   EditMediaProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function EditMedia(node, path, render) {
+> = makeTelegramComponent(async function EditMedia(node, path, render) {
   const { children, messageId, inlineMessageId, replyMarkup } = node.props;
 
   const mediaSegments = await render(children, '.children');
@@ -266,7 +266,7 @@ export interface StopPollProps {
 export const StopPoll: TelegramComponent<
   StopPollProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function StopPoll(node, path, render) {
+> = makeTelegramComponent(async function StopPoll(node, path, render) {
   const { messageId, replyMarkup } = node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -298,7 +298,7 @@ export interface DeleteMessageProps {
 export const DeleteMessage: TelegramComponent<
   DeleteMessageProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function DeleteMessage(node, path) {
+> = makeTelegramComponent(function DeleteMessage(node, path) {
   const { messageId } = node.props;
 
   return [

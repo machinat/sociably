@@ -7,7 +7,7 @@ import type {
   MessageValue,
   SenderActionValue,
 } from '../types';
-import { annotateMessengerComponent, isMessageEntry } from '../utils';
+import { makeMessengerComponent, isMessageEntry } from '../utils';
 
 /**
  * @category Props
@@ -59,7 +59,7 @@ export type ExpressionProps = {
 export const Expression: MessengerComponent<
   ExpressionProps,
   OutputSegment<MessengerSegmentValue>
-> = annotateMessengerComponent(async function Expression(
+> = makeMessengerComponent(async function Expression(
   {
     props: {
       children,
