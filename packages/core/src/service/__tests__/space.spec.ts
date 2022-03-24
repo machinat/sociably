@@ -236,7 +236,7 @@ it('throw circular dependent provider found when bootstrap', () => {
       { provide: Foo, withProvider: SelfDependentFoo },
     ]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
-    `"SelfDependentFoo is circular dependent"`
+    `"SelfDependentFoo is circular dependent (SelfDependentFoo > SelfDependentFoo)"`
   );
 
   const CircularDependentFoo = makeClassProvider({
@@ -249,7 +249,7 @@ it('throw circular dependent provider found when bootstrap', () => {
       { provide: Bar, withProvider: BarImpl },
     ]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
-    `"CircularDependentFoo is circular dependent"`
+    `"CircularDependentFoo is circular dependent (CircularDependentFoo > BarImpl > CircularDependentFoo)"`
   );
 });
 

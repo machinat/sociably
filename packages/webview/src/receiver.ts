@@ -7,15 +7,14 @@ import {
   ContextOfAuthenticator,
 } from '@machinat/auth';
 import type { HttpRequestInfo } from '@machinat/http';
-import {
+import WebSocket, {
   EventInput,
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
 } from '@machinat/websocket';
-
 import { WEBVIEW } from './constant';
-import { SocketServerP, PlatformUtilitiesI } from './interface';
+import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
 import { BotP } from './bot';
 import { WebviewConnection } from './channel';
 import { createEvent } from './utils';
@@ -29,7 +28,7 @@ export class WebviewReceiver<
   Value extends EventValue = EventValue
 > {
   private _bot: BotP<Authenticator>;
-  private _server: SocketServerP<Authenticator>;
+  private _server: WebviewSocketServer<Authenticator>;
 
   private _popEvent: PopEventFn<
     WebviewEventContext<Authenticator, Value>,
@@ -40,7 +39,7 @@ export class WebviewReceiver<
 
   constructor(
     bot: BotP<Authenticator>,
-    server: SocketServerP<Authenticator>,
+    server: WebviewSocketServer<Authenticator>,
     popEventWrapper: PopEventWrapper<WebviewEventContext<Authenticator>, null>,
     popError: PopErrorFn
   ) {
@@ -109,9 +108,13 @@ export class WebviewReceiver<
 
 export const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, SocketServerP, ModuleUtilitiesI, PlatformUtilitiesI],
-  factory: (bot, server, { popError }, { popEventWrapper }) =>
-    new WebviewReceiver(bot, server, popEventWrapper, popError),
+  deps: [BotP, WebSocket.Server, ModuleUtilitiesI, PlatformUtilitiesI],
+  factory: (
+    bot,
+    server: WebviewSocketServer<AnyServerAuthenticator>,
+    { popError },
+    { popEventWrapper }
+  ) => new WebviewReceiver(bot, server, popEventWrapper, popError),
 })(WebviewReceiver);
 
 export type ReceiverP<

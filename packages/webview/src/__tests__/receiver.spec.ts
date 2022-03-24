@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import moxy, { Mock } from '@moxyjs/moxy';
 import { ServerAuthenticator } from '@machinat/auth';
-import type { SocketServerP } from '../interface';
+import type { WebviewSocketServer } from '../interface';
 import { WebviewReceiver } from '../receiver';
 import { WebviewConnection } from '../channel';
 import { WebviewBot } from '../bot';
@@ -11,7 +11,7 @@ const bot = moxy<WebviewBot<any>>({
 } as never);
 
 const server = moxy<
-  SocketServerP<
+  WebviewSocketServer<
     ServerAuthenticator<
       never,
       never,

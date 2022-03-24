@@ -42,8 +42,8 @@ export type MessengerAuthContext = {
 } & AuthContextBase;
 
 export type AuthenticatorCredentialResult =
-  | { success: true; credential: MessengerAuthCredential }
-  | { success: false; code: number; reason: string };
+  | { ok: true; credential: MessengerAuthCredential }
+  | { ok: false; code: number; reason: string };
 
 export type AuthenticatorRefinement = {
   user: MessengerUser;

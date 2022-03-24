@@ -1,6 +1,6 @@
 import { MachinatNode } from '@machinat/core';
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { annotateTelegramComponent } from '../utils';
+import { makeTelegramComponent } from '../utils';
 import { TelegramSegmentValue, TelegramComponent } from '../types';
 import { MessageProps } from './types';
 
@@ -25,7 +25,7 @@ export interface LocationProps extends MessageProps {
 export const Location: TelegramComponent<
   LocationProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Location(node, path, render) {
+> = makeTelegramComponent(async function Location(node, path, render) {
   const {
     latitude,
     longitude,
@@ -76,11 +76,7 @@ export interface EditLiveLocationProps {
 export const EditLiveLocation: TelegramComponent<
   EditLiveLocationProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function EditLiveLocation(
-  node,
-  path,
-  render
-) {
+> = makeTelegramComponent(async function EditLiveLocation(node, path, render) {
   const { latitude, longitude, messageId, inlineMessageId, replyMarkup } =
     node.props;
 
@@ -120,11 +116,7 @@ export interface StopLiveLocationProps {
 export const StopLiveLocation: TelegramComponent<
   StopLiveLocationProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function StopLiveLocation(
-  node,
-  path,
-  render
-) {
+> = makeTelegramComponent(async function StopLiveLocation(node, path, render) {
   const { messageId, inlineMessageId, replyMarkup } = node.props;
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
 
@@ -167,7 +159,7 @@ export interface VenueProps extends MessageProps {
 export const Venue: TelegramComponent<
   VenueProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Venue(node, path, render) {
+> = makeTelegramComponent(async function Venue(node, path, render) {
   const {
     latitude,
     longitude,

@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import type { NativeComponent } from '@machinat/core';
 import {
-  annotateNativeComponent,
+  makeNativeComponent,
   makeUnitSegment,
   UnitSegment,
 } from '@machinat/core/renderer';
@@ -14,7 +14,7 @@ import type { EventInput } from './types';
 export const Event: NativeComponent<
   EventInput,
   UnitSegment<EventInput>
-> = annotateNativeComponent(WEBSOCKET)(function Event(node, path) {
+> = makeNativeComponent(WEBSOCKET)(function Event(node, path) {
   const { type, category, payload } = node.props;
   return [
     makeUnitSegment(node, path, {

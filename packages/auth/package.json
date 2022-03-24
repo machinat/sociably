@@ -12,7 +12,8 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./client": "./lib/client/index.js"
+    "./client": "./lib/client/index.js",
+    "./basicAuth": "./lib/basicAuth/index.js"
   },
   "files": [
     "lib/*",

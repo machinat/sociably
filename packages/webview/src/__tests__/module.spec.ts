@@ -4,9 +4,11 @@ import Machinat from '@machinat/core';
 import BaseBot from '@machinat/core/base/Bot';
 import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Auth from '@machinat/auth';
+import BasicAuthenticator from '@machinat/auth/basicAuth';
 import Http from '@machinat/http';
 import Next from '@machinat/next';
 import WebSocket from '@machinat/websocket';
+import { InMemoryState } from '@machinat/dev-tools';
 import { WebviewReceiver } from '../receiver';
 import { WebviewBot } from '../bot';
 import {
@@ -35,44 +37,16 @@ it('export interfaces', () => {
 
   expect(Webview.Bot).toBe(WebviewBot);
   expect(Webview.Receiver).toBe(WebviewReceiver);
-  expect(Object.getPrototypeOf(Webview.SocketServer)).toBe(WebSocket.Server);
-  expect(Webview.SocketBroker).toMatchInlineSnapshot(`
-    Object {
-      "$$multi": false,
-      "$$name": "WebviewSocketBroker",
-      "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
-    }
-  `);
-  expect(Webview.SocketServerId).toMatchInlineSnapshot(`
-    Object {
-      "$$multi": false,
-      "$$name": "WebviewSocketServerId",
-      "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
-    }
-  `);
-  expect(Webview.WsServer).toMatchInlineSnapshot(`
-    Object {
-      "$$multi": false,
-      "$$name": "WebviewWsServer",
-      "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
-    }
-  `);
+  expect(Webview.SocketServer).toBe(WebSocket.Server);
+  expect(Webview.SocketBroker).toBe(WebSocket.Broker);
+  expect(Webview.SocketServerId).toBe(WebSocket.ServerId);
+  expect(Webview.WsServer).toBe(WebSocket.WsServer);
 
-  expect(Object.getPrototypeOf(Webview.AuthController)).toBe(Auth.Controller);
-  expect(Webview.AuthenticatorList).toMatchInlineSnapshot(`
-    Object {
-      "$$multi": true,
-      "$$name": "WebviewAuthenticatorsList",
-      "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
-    }
-  `);
+  expect(Webview.AuthController).toBe(Auth.Controller);
+  expect(Webview.AuthenticatorList).toBe(Auth.AuthenticatorList);
 
-  expect(Object.getPrototypeOf(Webview.NextReceiver)).toBe(Next.Receiver);
-  expect(Webview.NextReceiver).toMatchInlineSnapshot(`[Function]`);
+  expect(Webview.NextReceiver).toBe(Next.Receiver);
+  expect(Webview.NextServer).toBe(Next.Server);
 });
 
 test('module object', () => {
@@ -129,6 +103,7 @@ test('service provisions', async () => {
     nextServer,
     requestRoutes,
     upgradeRoutes,
+    basicAuthenticator,
   ] = app.useServices([
     Webview.Configs,
     Webview.Bot,
@@ -140,6 +115,7 @@ test('service provisions', async () => {
     Webview.NextServer,
     Http.RequestRouteList,
     Http.UpgradeRouteList,
+    { require: BasicAuthenticator, optional: true },
   ]);
 
   expect(configs).toEqual(configsInput);
@@ -166,7 +142,35 @@ test('service provisions', async () => {
   expect(upgradeRoutes).toEqual([
     { name: 'websocket', path: '/mySocket', handler: expect.any(Function) },
   ]);
+  expect(basicAuthenticator).toBe(null);
   await app.stop();
+});
+
+test('with basicAuth', async () => {
+  const basicAuthOptions = {
+    appName: 'Hello World',
+    appImageUrl: 'https://machinat.com/img/logo.png',
+  };
+  const app = Machinat.createApp({
+    platforms: [
+      Webview.initModule({
+        authPlatforms: [NoneAuthenticator],
+        webviewHost: 'machinat.io',
+        authSecret: '_SECRET_',
+        basicAuth: basicAuthOptions,
+      }),
+    ],
+    modules: [InMemoryState.initModule()],
+    services: [{ provide: Auth.AuthenticatorList, withValue: moxy() }],
+  });
+  await app.start();
+
+  const [basicAuthenticator] = app.useServices([BasicAuthenticator]);
+  expect(basicAuthenticator).toBeInstanceOf(BasicAuthenticator);
+  expect(basicAuthenticator.appName).toBe('Hello World');
+  expect(basicAuthenticator.appImageUrl).toBe(
+    'https://machinat.com/img/logo.png'
+  );
 });
 
 test('with noNextServer option', async () => {

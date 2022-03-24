@@ -6,7 +6,7 @@ import {
   PartSegment,
 } from '@machinat/core/renderer';
 import { formatNode } from '@machinat/core/utils';
-import { annotateTelegramComponent } from '../utils';
+import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
   TelegramComponent,
@@ -44,7 +44,7 @@ export interface AnswerCallbackQueryProps {
 export const AnswerCallbackQuery: TelegramComponent<
   AnswerCallbackQueryProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function AnswerCallbackQuery(node, path) {
+> = makeTelegramComponent(function AnswerCallbackQuery(node, path) {
   const { queryId, text, url, showAlert, cacheTime } = node.props;
 
   return [
@@ -154,7 +154,7 @@ type InlineQueryResultArticleProps = InlineQueryResultProps & {
 export const InlineQueryResultArticle: TelegramComponent<
   InlineQueryResultArticleProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultArticle(
+> = makeTelegramComponent(async function InlineQueryResultArticle(
   node,
   path,
   render
@@ -237,7 +237,7 @@ type InlineQueryResultPhotoProps = InlineQueryResultProps &
 export const InlineQueryResultPhoto: TelegramComponent<
   InlineQueryResultPhotoProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultPhoto(
+> = makeTelegramComponent(async function InlineQueryResultPhoto(
   node,
   path,
   render
@@ -326,7 +326,7 @@ type InlineQueryResultGifProps = InlineQueryResultProps &
 export const InlineQueryResultGif: TelegramComponent<
   InlineQueryResultGifProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultGif(
+> = makeTelegramComponent(async function InlineQueryResultGif(
   node,
   path,
   render
@@ -417,7 +417,7 @@ type InlineQueryResultMpeg4GifProps = InlineQueryResultProps &
 export const InlineQueryResultMpeg4Gif: TelegramComponent<
   InlineQueryResultMpeg4GifProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultMpeg4Gif(
+> = makeTelegramComponent(async function InlineQueryResultMpeg4Gif(
   node,
   path,
   render
@@ -509,7 +509,7 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
 export const InlineQueryResultVideo: TelegramComponent<
   InlineQueryResultVideoProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultVideo(
+> = makeTelegramComponent(async function InlineQueryResultVideo(
   node,
   path,
   render
@@ -595,7 +595,7 @@ type InlineQueryResultAudioProps = InlineQueryResultProps &
 export const InlineQueryResultAudio: TelegramComponent<
   InlineQueryResultAudioProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultAudio(
+> = makeTelegramComponent(async function InlineQueryResultAudio(
   node,
   path,
   render
@@ -671,7 +671,7 @@ type InlineQueryResultVoiceProps = InlineQueryResultProps &
 export const InlineQueryResultVoice: TelegramComponent<
   InlineQueryResultVoiceProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultVoice(
+> = makeTelegramComponent(async function InlineQueryResultVoice(
   node,
   path,
   render
@@ -753,7 +753,7 @@ type InlineQueryResultDocumentProps = InlineQueryResultProps &
 export const InlineQueryResultDocument: TelegramComponent<
   InlineQueryResultDocumentProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultDocument(
+> = makeTelegramComponent(async function InlineQueryResultDocument(
   node,
   path,
   render
@@ -818,7 +818,7 @@ type InlineQueryResultStickerProps = InlineQueryResultProps & {
 export const InlineQueryResultSticker: TelegramComponent<
   InlineQueryResultStickerProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultSticker(
+> = makeTelegramComponent(async function InlineQueryResultSticker(
   node,
   path,
   render
@@ -872,7 +872,7 @@ type InlineQueryResultLocationProps = InlineQueryResultProps & {
 export const InlineQueryResultLocation: TelegramComponent<
   InlineQueryResultLocationProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultLocation(
+> = makeTelegramComponent(async function InlineQueryResultLocation(
   node,
   path,
   render
@@ -947,7 +947,7 @@ type InlineQueryResultVenueProps = InlineQueryResultProps & {
 export const InlineQueryResultVenue: TelegramComponent<
   InlineQueryResultVenueProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultVenue(
+> = makeTelegramComponent(async function InlineQueryResultVenue(
   node,
   path,
   render
@@ -1022,7 +1022,7 @@ type InlineQueryResultContactProps = InlineQueryResultProps & {
 export const InlineQueryResultContact: TelegramComponent<
   InlineQueryResultContactProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultContact(
+> = makeTelegramComponent(async function InlineQueryResultContact(
   node,
   path,
   render
@@ -1082,7 +1082,7 @@ export interface InlineQueryResultGameProps {
 export const InlineQueryResultGame: TelegramComponent<
   InlineQueryResultGameProps,
   PartSegment<any>
-> = annotateTelegramComponent(async function InlineQueryResultGame(
+> = makeTelegramComponent(async function InlineQueryResultGame(
   node,
   path,
   render
@@ -1144,11 +1144,7 @@ export interface AnswerInlineQueryProps {
 export const AnswerInlineQuery: TelegramComponent<
   AnswerInlineQueryProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function AnswerInlineQuery(
-  node,
-  path,
-  render
-) {
+> = makeTelegramComponent(async function AnswerInlineQuery(node, path, render) {
   const {
     children,
     queryId,
@@ -1219,7 +1215,7 @@ export interface AnswerShippingQueryProps {
 export const AnswerShippingQuery: TelegramComponent<
   AnswerShippingQueryProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function AnswerShippingQuery(node, path) {
+> = makeTelegramComponent(function AnswerShippingQuery(node, path) {
   const { queryId, ok, shippingOptions, errorMessage } = node.props;
 
   return [
@@ -1257,7 +1253,7 @@ export interface AnswerPreCheckoutQueryProps {
 export const AnswerPreCheckoutQuery: TelegramComponent<
   AnswerPreCheckoutQueryProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function AnswerPreCheckoutQuery(node, path) {
+> = makeTelegramComponent(function AnswerPreCheckoutQuery(node, path) {
   const { queryId, ok, errorMessage } = node.props;
 
   return [

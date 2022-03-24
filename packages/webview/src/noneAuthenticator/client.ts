@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import type {
   ClientAuthenticator,
   AuthenticatorCredentialResult,
-  ContextResult,
+  CheckDataResult,
 } from '@machinat/auth';
 import { NoneUser, NoneChannel } from './instance';
 import type { NoneAuthData, NoneAuthContext } from './types';
@@ -42,7 +42,7 @@ class NoneClientAuthenticator
     }
 
     return {
-      success: true as const,
+      ok: true as const,
       credential: {
         user: userId,
         channel: channelId,
@@ -50,13 +50,13 @@ class NoneClientAuthenticator
     };
   }
 
-  checkAuthContext({
+  checkAuthData({
     user: userId,
     channel: channelId,
-  }: NoneAuthData): ContextResult<NoneAuthContext> {
+  }: NoneAuthData): CheckDataResult<NoneAuthContext> {
     return {
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         user: new NoneUser(userId),
         channel: new NoneChannel(channelId),
       },

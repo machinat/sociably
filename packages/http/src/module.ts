@@ -39,7 +39,7 @@ namespace Http {
   export type UpgradeRouteList = UpgradeRouteListI;
 
   export const initModule = (configs: ConfigsI): ServiceModule => {
-    const provisions: ServiceProvision<any>[] = [
+    const provisions: ServiceProvision<unknown>[] = [
       ConnectorP,
       { provide: ConfigsI, withValue: configs },
     ];

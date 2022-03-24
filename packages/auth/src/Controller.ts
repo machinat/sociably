@@ -9,69 +9,39 @@ import {
   decode as decodeJwt,
   VerifyOptions as JWTVerifyOptions,
 } from 'jsonwebtoken';
-import getRawBody from 'raw-body';
 import thenifiedly from 'thenifiedly';
 import { SIGNATURE_COOKIE_KEY } from './constant';
-import { AuthenticatorListI, ConfigsI } from './interface';
+import { AuthenticatorListI } from './interface';
 import AuthError from './error';
+import {
+  getCookies,
+  respondApiOk,
+  respondApiError,
+  parseJsonBody,
+} from './utils';
+import OperatorP from './HttpOperator';
 import type {
   AnyServerAuthenticator,
   AuthTokenPayload,
   SignRequestBody,
   RefreshRequestBody,
   VerifyRequestBody,
-  AuthApiResponseBody,
-  AuthApiErrorBody,
-  AuthConfigs,
   ContextOfAuthenticator,
   WithHeaders,
 } from './types';
-
-import { getCookies, isSubpath, isSubdomain } from './utils';
-import HttpAuthOperator from './HttpAuthOperator';
 
 const getSignature = (req: WithHeaders) => {
   const cookies = getCookies(req);
   return cookies ? cookies[SIGNATURE_COOKIE_KEY] : undefined;
 };
 
-const parseBody = async (req: IncomingMessage): Promise<any> => {
-  try {
-    const rawBody = await getRawBody(req, { encoding: true });
-    const body = JSON.parse(rawBody);
-
-    return typeof body === 'object' ? body : null;
-  } catch (err) {
-    return null;
-  }
-};
-
-const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
-
-const respondApiOk = (res: ServerResponse, platform: string, token: string) => {
-  res.writeHead(200, CONTENT_TYPE_JSON);
-  const body: AuthApiResponseBody = { platform, token };
-  res.end(JSON.stringify(body));
-};
-
-const respondApiError = (
-  res: ServerResponse,
-  platform: undefined | string,
-  code: number,
-  reason: string
-) => {
-  res.writeHead(code, CONTENT_TYPE_JSON);
-  const body: AuthApiErrorBody = { platform, error: { code, reason } };
-  res.end(JSON.stringify(body));
-};
-
 type AuthVerifyResult<Authenticator extends AnyServerAuthenticator> =
   | {
-      success: true;
+      ok: true;
       token: string;
       context: ContextOfAuthenticator<Authenticator>;
     }
-  | { success: false; token: undefined | string; code: number; reason: string };
+  | { ok: false; token: undefined | string; code: number; reason: string };
 
 /**
  * @category Provider
@@ -79,74 +49,19 @@ type AuthVerifyResult<Authenticator extends AnyServerAuthenticator> =
 export class AuthController<Authenticator extends AnyServerAuthenticator> {
   authenticators: Authenticator[];
   secret: string;
-  apiPath: string;
-  httpOperator: HttpAuthOperator;
+  apiPathname: string;
+  operator: OperatorP;
 
-  constructor(
-    authenticators: Authenticator[],
-    {
-      secret,
-      apiPath = '/',
-      redirectUrl,
-      authCookieAge = 180, // 3 min
-      dataCookieAge = 180, // 3 min
-      tokenAge = 3600, // 1 hr
-      refreshPeriod = 864000, // 10 day
-      cookieDomain,
-      cookiePath = '/',
-      sameSite = 'lax',
-      secure = true,
-    }: AuthConfigs = {} as AuthConfigs
-  ) {
+  constructor(operator: OperatorP, authenticators: Authenticator[]) {
     invariant(
       authenticators && authenticators.length > 0,
       'options.authenticators must not be empty'
     );
-    invariant(secret, 'options.secret must not be empty');
-    invariant(redirectUrl, 'options.redirectUrl must not be empty');
-    invariant(
-      isSubpath(cookiePath, apiPath),
-      'options.apiPath should be a subpath of options.cookiePath'
-    );
 
-    const {
-      protocol,
-      pathname: redirectPathname,
-      hostname: redirectDomain,
-    } = parseUrl(redirectUrl);
-
-    invariant(
-      !secure || !protocol || protocol === 'https:',
-      'protocol of options.redirectUrl can only be https when options.secure set to true'
-    );
-    invariant(
-      redirectPathname &&
-        isSubpath(cookiePath, redirectPathname) &&
-        (!cookieDomain ||
-          !redirectDomain ||
-          isSubdomain(cookieDomain, redirectDomain)),
-      `options.redirectUrl should be under cookie scope "${
-        cookieDomain ? `//${cookieDomain}` : ''
-      }${cookiePath}"`
-    );
-
-    this.secret = secret;
+    this.operator = operator;
+    this.secret = operator.secret;
     this.authenticators = authenticators;
-    this.apiPath = apiPath;
-
-    this.httpOperator = new HttpAuthOperator({
-      apiPath,
-      redirectUrl,
-      secret,
-      authCookieAge,
-      dataCookieAge,
-      tokenAge,
-      refreshPeriod,
-      cookieDomain,
-      cookiePath,
-      sameSite,
-      secure,
-    });
+    this.apiPathname = operator.apiRootUrl.pathname;
   }
 
   async delegateAuthRequest(
@@ -157,7 +72,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     const { pathname } = parseUrl(req.url as string);
     const subpath =
       routingInfo?.trailingPath ||
-      getRelativePath(this.apiPath, pathname || '/');
+      getRelativePath(this.apiPathname, pathname || '/');
 
     if (subpath === '' || subpath.slice(0, 2) === '..') {
       respondApiError(res, undefined, 403, 'path forbidden');
@@ -197,20 +112,14 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     }
 
     try {
-      await authenticator.delegateAuthRequest(
-        req,
-        res,
-        this.httpOperator.createResponseHelper(req, res, platform),
-        {
-          originalPath: pathname || '/',
-          matchedPath: joinPath(
-            routingInfo?.matchedPath || this.apiPath,
-            platform
-          ),
-
-          trailingPath: getRelativePath(platform, subpath),
-        }
-      );
+      await authenticator.delegateAuthRequest(req, res, {
+        originalPath: pathname || '/',
+        matchedPath: joinPath(
+          routingInfo?.matchedPath || this.apiPathname,
+          platform
+        ),
+        trailingPath: getRelativePath(platform, subpath),
+      });
     } catch (err) {
       if (!res.writableEnded) {
         respondApiError(res, platform, err.code || 500, err.message);
@@ -237,7 +146,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       const { authorization } = req.headers;
       if (!authorization) {
         return {
-          success: false,
+          ok: false,
           token: undefined,
           code: 401,
           reason: 'no Authorization header',
@@ -247,7 +156,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       const [scheme, tokenFromHeader] = authorization.split(/\s+/, 2);
       if (scheme !== 'Bearer' || !tokenFromHeader) {
         return {
-          success: false,
+          ok: false,
           token: undefined,
           code: 400,
           reason: 'invalid auth scheme',
@@ -259,7 +168,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     const signature = getSignature(req);
     if (!signature) {
       return {
-        success: false,
+        ok: false,
         token,
         code: 401,
         reason: 'require signature',
@@ -270,7 +179,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     if (err) {
       const { code, message } = err;
       return {
-        success: false,
+        ok: false,
         token,
         code,
         reason: message,
@@ -282,32 +191,32 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     const authenticator = this._getAuthenticatorOf(platform);
     if (!authenticator) {
       return {
-        success: false,
+        ok: false,
         token,
         code: 404,
         reason: `unknown platform "${platform}"`,
       };
     }
 
-    const ctxResult = authenticator.checkAuthContext(data);
-    if (!ctxResult.success) {
+    const checkResult = authenticator.checkAuthData(data);
+    if (!checkResult.ok) {
       return {
-        success: false,
+        ok: false,
         token,
-        code: 400,
-        reason: 'invalid auth data',
+        code: checkResult.code,
+        reason: checkResult.reason,
       };
     }
 
     const authData = {
-      ...ctxResult.contextSupplment,
+      ...checkResult.contextDetails,
       platform,
       loginAt: new Date(iat * 1000),
       expireAt: new Date(exp * 1000),
     };
 
     return {
-      success: true,
+      ok: true,
       token,
       context: authData as ContextOfAuthenticator<Authenticator>,
     };
@@ -315,7 +224,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
 
   private async _handleSignRequest(req: IncomingMessage, res: ServerResponse) {
     try {
-      const body = await parseBody(req);
+      const body = await parseJsonBody(req);
       if (!body) {
         respondApiError(res, undefined, 400, 'invalid body format');
         return;
@@ -334,17 +243,16 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       }
 
       const verifyResult = await authenticator.verifyCredential(credential);
-      if (!verifyResult.success) {
+      if (!verifyResult.ok) {
         const { code, reason } = verifyResult;
         respondApiError(res, platform, code, reason);
         return;
       }
 
-      const token = await this.httpOperator.issueAuth(
+      const token = await this.operator.issueAuth(
         res,
         platform,
-        verifyResult.data,
-        { signatureOnly: true }
+        verifyResult.data
       );
 
       respondApiOk(res, platform, token);
@@ -366,7 +274,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
 
     try {
       // verify token in body but ignore expiration
-      const body = await parseBody(req);
+      const body = await parseJsonBody(req);
       if (!body) {
         respondApiError(res, undefined, 400, 'invalid body format');
         return;
@@ -387,14 +295,10 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
         return;
       }
 
-      const { refreshTill, platform, data } = payload;
-      if (!refreshTill) {
-        respondApiError(res, platform, 400, 'token not refreshable');
-        return;
-      }
+      const { platform, data, init } = payload;
 
-      if (refreshTill * 1000 >= Date.now()) {
-        // refresh signature and issue new token
+      if ((init + this.operator.refreshDuration) * 1000 >= Date.now()) {
+        // refresh token
         const authenticator = this._getAuthenticatorOf(platform);
         if (!authenticator) {
           respondApiError(res, platform, 404, `unknown platform "${platform}"`);
@@ -402,17 +306,17 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
         }
 
         const refreshResult = await authenticator.verifyRefreshment(data);
-        if (!refreshResult.success) {
+        if (!refreshResult.ok) {
           const { code, reason } = refreshResult;
           respondApiError(res, platform, code, reason);
           return;
         }
 
-        const newToken = await this.httpOperator.issueAuth(
+        const newToken = await this.operator.issueAuth(
           res,
           platform,
           refreshResult.data,
-          { refreshTill, signatureOnly: true }
+          init
         );
         respondApiOk(res, platform, newToken);
       } else {
@@ -436,7 +340,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
 
     try {
       // verify token in body
-      const body = await parseBody(req);
+      const body = await parseJsonBody(req);
       if (!body) {
         respondApiError(res, undefined, 400, 'invalid body format');
         return;
@@ -512,7 +416,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
 
 const ControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AuthenticatorListI, ConfigsI],
+  deps: [OperatorP, AuthenticatorListI],
 })(AuthController);
 
 type ControllerP<Authenticator extends AnyServerAuthenticator> =

@@ -3,19 +3,16 @@ import type { ParsedUrlQuery } from 'querystring';
 import { createHmac, createHash } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import type {
+import Auth, {
   ServerAuthenticator,
-  ResponseHelper,
   VerifyResult,
-  ContextResult,
+  CheckDataResult,
 } from '@machinat/auth';
-
-import { ConfigsI } from '../interface';
 import { TELEGRAM } from '../constant';
 import BotP from '../Bot';
 import type TelegramApiError from '../Error';
 import type { RawChat, RawUser } from '../types';
-import { supplementContext } from './utils';
+import { getAuthContextDetails } from './utils';
 import type { TelegramAuthContext, TelegramAuthData } from './types';
 
 const CHAT_QUERY = 'telegramChat';
@@ -37,32 +34,43 @@ export class TelegramServerAuthenticator
   implements ServerAuthenticator<never, TelegramAuthData, TelegramAuthContext>
 {
   bot: BotP;
+  operator: Auth.HttpOperator;
   private _secretKey: Buffer;
   platform = TELEGRAM;
 
-  constructor(bot: BotP) {
+  constructor(bot: BotP, operator: Auth.HttpOperator) {
     this.bot = bot;
+    this.operator = operator;
     this._secretKey = createHash('sha256').update(bot.token).digest();
   }
 
   async delegateAuthRequest(
     req: IncomingMessage,
-    res: ServerResponse,
-    resHelper: ResponseHelper
+    res: ServerResponse
   ): Promise<void> {
     const { query } = parseUrl(req.url as string, true);
     const { [REDIRECT_QUERY]: redirectQuery, [CHAT_QUERY]: chatQuery } = query;
 
     if (Array.isArray(redirectQuery)) {
-      await resHelper.issueError(400, 'multiple redirectUrl query received');
-      resHelper.redirect();
+      await this.operator.issueError(
+        res,
+        TELEGRAM,
+        400,
+        'multiple redirectUrl query received'
+      );
+      this.operator.redirect(res);
       return;
     }
 
     const [loginErr, userData] = this._verifyLoginQuery(query);
     if (loginErr) {
-      await resHelper.issueError(loginErr.code, loginErr.message);
-      resHelper.redirect(redirectQuery, { assertInternal: true });
+      await this.operator.issueError(
+        res,
+        TELEGRAM,
+        loginErr.code,
+        loginErr.message
+      );
+      this.operator.redirect(res, redirectQuery, { assertInternal: true });
       return;
     }
 
@@ -74,8 +82,8 @@ export class TelegramServerAuthenticator
           : Number(chatQuery);
 
       if (Number.isNaN(chatId)) {
-        await resHelper.issueError(400, 'invalid chat id');
-        resHelper.redirect(redirectQuery, { assertInternal: true });
+        await this.operator.issueError(res, TELEGRAM, 400, 'invalid chat id');
+        this.operator.redirect(res, redirectQuery, { assertInternal: true });
         return;
       }
 
@@ -85,8 +93,8 @@ export class TelegramServerAuthenticator
       );
 
       if (err) {
-        await resHelper.issueError(err.code, err.message);
-        resHelper.redirect(redirectQuery, { assertInternal: true });
+        await this.operator.issueError(res, TELEGRAM, err.code, err.message);
+        this.operator.redirect(res, redirectQuery, { assertInternal: true });
         return;
       }
 
@@ -100,19 +108,19 @@ export class TelegramServerAuthenticator
       };
     }
 
-    await resHelper.issueAuth<TelegramAuthData>({
+    await this.operator.issueAuth<TelegramAuthData>(res, TELEGRAM, {
       bot: this.bot.id,
       chat: chatData,
       user: userData,
       photo: query.photo_url as string | undefined,
     });
-    resHelper.redirect(redirectQuery, { assertInternal: true });
+    this.operator.redirect(res, redirectQuery, { assertInternal: true });
   }
 
   // eslint-disable-next-line class-methods-use-this
   async verifyCredential(): Promise<VerifyResult<never>> {
     return {
-      success: false,
+      ok: false,
       code: 403,
       reason: 'should initiate st server side only',
     };
@@ -122,24 +130,24 @@ export class TelegramServerAuthenticator
     data: TelegramAuthData
   ): Promise<VerifyResult<TelegramAuthData>> {
     if (data.bot !== this.bot.id) {
-      return { success: false, code: 400, reason: 'bot not match' };
+      return { ok: false, code: 400, reason: 'bot not match' };
     }
 
     return {
-      success: true,
+      ok: true,
       data,
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  checkAuthContext(data: TelegramAuthData): ContextResult<TelegramAuthContext> {
+  checkAuthData(data: TelegramAuthData): CheckDataResult<TelegramAuthContext> {
     if (data.bot !== this.bot.id) {
-      return { success: false, code: 400, reason: 'bot not match' };
+      return { ok: false, code: 400, reason: 'bot not match' };
     }
 
     return {
-      success: true,
-      contextSupplment: supplementContext(data),
+      ok: true,
+      contextDetails: getAuthContextDetails(data),
     };
   }
 
@@ -216,9 +224,9 @@ export class TelegramServerAuthenticator
 
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, ConfigsI],
-  factory: (bot) => {
-    return new TelegramServerAuthenticator(bot);
+  deps: [BotP, Auth.HttpOperator],
+  factory: (bot, operator) => {
+    return new TelegramServerAuthenticator(bot, operator);
   },
 })(TelegramServerAuthenticator);
 

@@ -3,11 +3,7 @@ import { EventEmitter } from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
 import { decode as decodeJwt } from 'jsonwebtoken';
-import {
-  TOKEN_COOKIE_KEY,
-  ERROR_COOKIE_KEY,
-  TOKEN_STORAGE_KEY,
-} from '../constant';
+import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
 import type {
   AnyClientAuthenticator,
   AnyAuthContext,
@@ -96,18 +92,6 @@ const getExistedAuthResult = (): [
         return [err, null];
       }
 
-      const { domain, path } = payload.scope;
-      deleteCookie(TOKEN_COOKIE_KEY, domain, path);
-      return [null, { token, payload }];
-    }
-
-    const token = window.sessionStorage.getItem(TOKEN_STORAGE_KEY);
-    if (token) {
-      const [err, payload] = getAuthPayload(token);
-      if (err) {
-        window.sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-        return [err, null];
-      }
       return [null, { token, payload }];
     }
 
@@ -300,17 +284,13 @@ class AuthClient<
       // got error from back-end
       throw existedErr;
     } else if (existedAuth && existedAuth.payload.exp * 1000 > Date.now()) {
-      // use existed auth from cookie or sessionStorage
+      // use existed auth in the cookie
       ({ token, payload } = existedAuth);
     } else {
       let newToken: undefined | string;
 
       // refresh existed token if possible
-      let refreshTill: undefined | number;
-      if (
-        (refreshTill = existedAuth?.payload.refreshTill) &&
-        refreshTill * 1000 > Date.now()
-      ) {
+      if (existedAuth) {
         const [refreshErr, body] = await this._callAuthPrivateApi('_refresh', {
           token: existedAuth.token,
         });
@@ -365,7 +345,7 @@ class AuthClient<
       this._getAuthEntry(platform)
     );
 
-    if (!result.success) {
+    if (!result.ok) {
       const { code, reason } = result;
       return [new AuthError(platform, code, reason), ''];
     }
@@ -390,16 +370,13 @@ class AuthClient<
     this._authData = { token, payload, context };
     this._clearTimeouts();
 
-    window.sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
-
     const now = Date.now();
     const { exp } = payload;
 
     this._refreshTimeoutId = setTimeout(
       this._refreshFlowCallback,
       (exp - this.refreshLeadTime) * 1000 - now,
-      token,
-      payload
+      token
     );
 
     this._expireTimeoutId = setTimeout(
@@ -409,10 +386,7 @@ class AuthClient<
     );
   }
 
-  private async _refreshFlow(
-    token: string,
-    { refreshTill }: AuthTokenPayload<unknown>
-  ): Promise<void> {
+  private async _refreshFlow(token: string): Promise<void> {
     const beginTime = Date.now();
 
     const [err, authenticator] = this._getAuthenticator(this._platform);
@@ -420,18 +394,12 @@ class AuthClient<
       throw err;
     }
 
-    let newToken: string;
-    if (refreshTill && Date.now() < refreshTill * 1000) {
-      // refresh if token is refreshable
-      const [refreshErr, body] = await this._callAuthPrivateApi('_refresh', {
-        token,
-      });
-      if (refreshErr) {
-        throw refreshErr;
-      }
+    const [refreshErr, body] = await this._callAuthPrivateApi('_refresh', {
+      token,
+    });
+    let newToken = refreshErr ? undefined : body.token;
 
-      newToken = body.token;
-    } else {
+    if (!newToken) {
       const [signErr, signedToken] = await this._signToken(authenticator);
       if (signErr) {
         throw signErr;
@@ -462,13 +430,10 @@ class AuthClient<
     this.emit('refresh', context);
   }
 
-  private _refreshFlowCallback = (
-    token: string,
-    payload: AuthTokenPayload<unknown>
-  ) => {
+  private _refreshFlowCallback = (token: string) => {
     this._refreshTimeoutId = null;
 
-    this._refreshFlow(token, payload).catch((err) => {
+    this._refreshFlow(token).catch((err) => {
       this._emitError(err, this._authData?.context || null);
     });
   };
@@ -545,15 +510,15 @@ class AuthClient<
       return [err, null as never];
     }
 
-    const contextResult = authenticator.checkAuthContext(data);
-    if (!contextResult.success) {
+    const checkResult = authenticator.checkAuthData(data);
+    if (!checkResult.ok) {
       return [new AuthError(platform, 400, 'invalid auth info'), null as never];
     }
 
     return [
       null,
       {
-        ...contextResult.contextSupplment,
+        ...checkResult.contextDetails,
         platform: authenticator.platform,
         loginAt: new Date(iat * 1000),
         expireAt: new Date(exp * 1000),

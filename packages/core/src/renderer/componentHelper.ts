@@ -17,7 +17,7 @@ type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
   ...args: Parameters<Fn>
 ) => ReturnType<Fn>;
 
-export const annotateNativeComponent =
+export const makeNativeComponent =
   (platform: string) =>
   <Component extends NativeComponent<unknown, any>>(
     componentFn: FunctionOf<Component>

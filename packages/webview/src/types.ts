@@ -17,6 +17,7 @@ import type {
   ContextOfAuthenticator,
   UserOfAuthenticator,
 } from '@machinat/auth';
+import type { CodeMessageComponent } from '@machinat/auth/basicAuth';
 import type { NextServerOptions } from '@machinat/next';
 import type {
   EventInput,
@@ -128,19 +129,38 @@ export type WebviewConfigs<
 
   /** Auth providers from the platforms */
   authPlatforms?: ServiceProvider<AnyServerAuthenticator, unknown[]>[];
-  /** Secret to sign token for auth. */
+  /** The secret for signing auth token */
   authSecret: string;
+  /** Initiate basic auth flow service with the options */
+  basicAuth?: {
+    /** The app name to show while login using basic auth flow */
+    appName?: string;
+    /** The app image to show while login using basic auth flow */
+    appImageUrl?: string;
+    /** The digits of the verify code number. Default to 6 */
+    verifyCodeDigits?: number;
+    /** The customized component to render code message */
+    codeMessageComponent?: CodeMessageComponent;
+    /** Max time to verify login code. Default to 5 */
+    maxLoginAttempt?: number;
+    /** Login session duration in seconds. Default to 5 min */
+    loginDuration?: number;
+  };
   /** Route path to the auth api. Default to `"/auth"` */
   authApiPath?: string;
-  /** Survival time of auth token in seconds */
-  tokenAge?: number;
-  authRedirectUrl?: string;
-  authCookieAge?: number;
-  dataCookieAge?: number;
-  refreshPeriod?: number;
-  cookieDomain?: string;
+  /** The lifetime of the token in seconds. Default to an hour */
+  tokenLifetime?: number;
+  /** The duration a token can be refreshed in seconds. Default to Infinity */
+  refreshDuration?: number;
+  /** The MaxAge of the data cookies in seconds. Default to 5 minute */
+  dataCookieMaxAge?: number;
+  /** The path scope of the auth cookies. Default to '/' */
   cookiePath?: string;
-  sameSite?: 'strict' | 'lax' | 'none';
+  /** The domain scope of the auth cookies */
+  cookieDomain?: string;
+  /** The `SameSite` attribute of the auth cookies. Default to `strict` */
+  cookieSameSite?: 'strict' | 'lax' | 'none';
+  /** Force using HTTPS if set to `true` */
   secure?: boolean;
 
   eventMiddlewares?: MaybeContainer<

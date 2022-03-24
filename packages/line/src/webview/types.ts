@@ -54,8 +54,8 @@ export type LineAuthContext = {
 } & AuthContextBase;
 
 export type LineVerifyAuthResult =
-  | { success: true; data: LineAuthData }
-  | { success: false; code: number; reason: string };
+  | { ok: true; data: LineAuthData }
+  | { ok: false; code: number; reason: string };
 
 export type AuthenticatorRefinement = {
   user: LineUser;
@@ -63,6 +63,6 @@ export type AuthenticatorRefinement = {
 };
 
 export type AuthenticatorCredentialResult = {
-  success: true;
+  ok: true;
   credential: LineAuthCredential;
 };

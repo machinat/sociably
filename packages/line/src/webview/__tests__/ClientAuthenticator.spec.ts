@@ -73,7 +73,7 @@ beforeEach(() => {
   `;
 });
 
-describe('#constructor()', () => {
+describe('.constructor()', () => {
   test('properties', () => {
     const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
@@ -100,7 +100,7 @@ describe('#constructor()', () => {
   });
 });
 
-describe('#init()', () => {
+describe('.init()', () => {
   it('add liff sdk and call init() after loaded', async () => {
     const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
@@ -160,7 +160,7 @@ describe('#init()', () => {
   });
 });
 
-describe('#fetchCredential()', () => {
+describe('.fetchCredential()', () => {
   it('resolve credential containing liff infos and access token', async () => {
     const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
@@ -169,7 +169,7 @@ describe('#fetchCredential()', () => {
 
     await authenticator.init();
     await expect(authenticator.fetchCredential()).resolves.toEqual({
-      success: true,
+      ok: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         os: 'ios',
@@ -196,7 +196,7 @@ describe('#fetchCredential()', () => {
 
     await authenticator.init();
     await expect(authenticator.fetchCredential()).resolves.toEqual({
-      success: true,
+      ok: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         os: 'ios',
@@ -224,7 +224,7 @@ describe('#fetchCredential()', () => {
 
     await authenticator.init();
     await expect(authenticator.fetchCredential()).resolves.toEqual({
-      success: true,
+      ok: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         os: 'ios',
@@ -267,7 +267,7 @@ describe('#fetchCredential()', () => {
   });
 });
 
-describe('#checkAuthContext(data)', () => {
+describe('.checkAuthData(data)', () => {
   it('resolve utou chat', () => {
     const authenticator = new ClientAuthenticator({
       liffId: '_LIFF_ID_',
@@ -275,7 +275,7 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
@@ -288,8 +288,8 @@ describe('#checkAuthContext(data)', () => {
         pic: undefined,
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
@@ -309,7 +309,7 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
@@ -322,8 +322,8 @@ describe('#checkAuthContext(data)', () => {
         pic: undefined,
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
@@ -343,7 +343,7 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
@@ -356,8 +356,8 @@ describe('#checkAuthContext(data)', () => {
         pic: undefined,
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
@@ -377,7 +377,7 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
@@ -390,8 +390,8 @@ describe('#checkAuthContext(data)', () => {
         pic: 'http://advanture.com/Egypt.jpg',
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
@@ -409,7 +409,7 @@ describe('#checkAuthContext(data)', () => {
   });
 });
 
-test('#closeWebview', async () => {
+test('.closeWebview', async () => {
   const authenticator = new ClientAuthenticator({
     liffId: '_LIFF_ID_',
     shouldLoadSDK: false,

@@ -1,12 +1,12 @@
 import invariant from 'invariant';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import type { ServerAuthenticator, ContextResult } from '@machinat/auth';
+import type { ServerAuthenticator, CheckDataResult } from '@machinat/auth';
 
 import { ConfigsI } from '../interface';
 import BotP from '../Bot';
 import { LINE, LiffContextOs } from '../constant';
-import { supplementContext } from './utils';
+import { getAuthContextDetails } from './utils';
 import LineApiError from '../error';
 import type { LineRawUserProfile } from '../types';
 import {
@@ -64,7 +64,7 @@ export class LineServerAuthenticator
 
     if (!accessToken) {
       return {
-        success: false,
+        ok: false,
         code: 400,
         reason: 'Empty accessToken received',
       };
@@ -79,7 +79,7 @@ export class LineServerAuthenticator
     } catch (err) {
       if (err instanceof LineApiError) {
         return {
-          success: false,
+          ok: false,
           code: err.code,
           reason: err.message,
         };
@@ -89,7 +89,7 @@ export class LineServerAuthenticator
 
     if (!this._checkClientId(verifyBody.client_id)) {
       return {
-        success: false,
+        ok: false,
         code: 400,
         reason: 'token is from unknown client',
       };
@@ -108,7 +108,7 @@ export class LineServerAuthenticator
       } catch (err) {
         if (err instanceof LineApiError) {
           return {
-            success: false,
+            ok: false,
             code: err.code,
             reason: err.message,
           };
@@ -118,7 +118,7 @@ export class LineServerAuthenticator
     }
 
     return {
-      success: true,
+      ok: true,
       data: {
         channel: this.bot.channelId,
         provider: this.bot.providerId,
@@ -142,19 +142,19 @@ export class LineServerAuthenticator
   async verifyRefreshment(data: LineAuthData): Promise<LineVerifyAuthResult> {
     const [ok, code, reason] = this._checkAuthData(data);
     if (!ok) {
-      return { success: false, code, reason };
+      return { ok: false, code, reason };
     }
 
-    return { success: true, data };
+    return { ok: true, data };
   }
 
-  checkAuthContext(data: LineAuthData): ContextResult<LineAuthContext> {
+  checkAuthData(data: LineAuthData): CheckDataResult<LineAuthContext> {
     const [ok, code, reason] = this._checkAuthData(data);
     if (!ok) {
-      return { success: false, code, reason };
+      return { ok: false, code, reason };
     }
 
-    return { success: true, contextSupplment: supplementContext(data) };
+    return { ok: true, contextDetails: getAuthContextDetails(data) };
   }
 
   private _checkClientId(clientId: string) {

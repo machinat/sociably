@@ -26,7 +26,7 @@ beforeEach(() => {
   bot.mock.reset();
 });
 
-describe('#constructor(options)', () => {
+describe('.constructor(options)', () => {
   it('ok', () => {
     const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
@@ -53,7 +53,7 @@ describe('#constructor(options)', () => {
   });
 });
 
-describe('#delegateAuthRequest(req, res)', () => {
+describe('.delegateAuthRequest(req, res)', () => {
   it('respond 403', async () => {
     const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
@@ -69,7 +69,7 @@ describe('#delegateAuthRequest(req, res)', () => {
   });
 });
 
-describe('#verifyCredential(credential)', () => {
+describe('.verifyCredential(credential)', () => {
   const credential = {
     accessToken: '_ACCESS_TOKEN_',
     os: 'ios' as const,
@@ -91,7 +91,7 @@ describe('#verifyCredential(credential)', () => {
     }));
 
     await expect(authenticator.verifyCredential(credential)).resolves.toEqual({
-      success: true,
+      ok: true,
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
@@ -128,7 +128,7 @@ describe('#verifyCredential(credential)', () => {
     await expect(
       authenticator.verifyCredential({ ...credential, groupId: '_GROUP_ID_' })
     ).resolves.toEqual({
-      success: true,
+      ok: true,
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
@@ -175,7 +175,7 @@ describe('#verifyCredential(credential)', () => {
     await expect(
       authenticator.verifyCredential({ ...credential, roomId: '_ROOM_ID_' })
     ).resolves.toEqual({
-      success: true,
+      ok: true,
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
@@ -209,8 +209,8 @@ describe('#verifyCredential(credential)', () => {
       .toMatchInlineSnapshot(`
             Object {
               "code": 400,
+              "ok": false,
               "reason": "Empty accessToken received",
-              "success": false,
             }
           `);
   });
@@ -235,8 +235,8 @@ describe('#verifyCredential(credential)', () => {
       .toMatchInlineSnapshot(`
             Object {
               "code": 400,
+              "ok": false,
               "reason": "invalid_request: The access token expired",
-              "success": false,
             }
           `);
   });
@@ -256,8 +256,8 @@ describe('#verifyCredential(credential)', () => {
       .toMatchInlineSnapshot(`
             Object {
               "code": 400,
+              "ok": false,
               "reason": "token is from unknown client",
-              "success": false,
             }
           `);
   });
@@ -277,7 +277,7 @@ describe('#verifyCredential(credential)', () => {
   });
 });
 
-describe('#verifyRefreshment()', () => {
+describe('.verifyRefreshment()', () => {
   const authData = {
     provider: '_PROVIDER_ID_',
     channel: '_CHANNEL_ID_',
@@ -291,13 +291,13 @@ describe('#verifyRefreshment()', () => {
     pic: undefined,
   };
 
-  it('return success and original data', async () => {
+  it('return ok and original data', async () => {
     const authenticator = new ServerAuthenticator(bot, {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
     await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
-      success: true,
+      ok: true,
       data: authData,
     });
   });
@@ -315,8 +315,8 @@ describe('#verifyRefreshment()', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
+              "ok": false,
               "reason": "provider not match",
-              "success": false,
             }
           `);
   });
@@ -334,8 +334,8 @@ describe('#verifyRefreshment()', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
+              "ok": false,
               "reason": "channel not match",
-              "success": false,
             }
           `);
   });
@@ -353,14 +353,14 @@ describe('#verifyRefreshment()', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
+              "ok": false,
               "reason": "client not match",
-              "success": false,
             }
           `);
   });
 });
 
-describe('#checkAuthContext(data)', () => {
+describe('.checkAuthData(data)', () => {
   const authData = {
     provider: '_PROVIDER_ID_',
     channel: '_CHANNEL_ID_',
@@ -379,9 +379,9 @@ describe('#checkAuthContext(data)', () => {
       liffChannelIds: ['_CLIENT_ID_'],
     });
 
-    expect(authenticator.checkAuthContext(authData)).toEqual({
-      success: true,
-      contextSupplment: {
+    expect(authenticator.checkAuthData(authData)).toEqual({
+      ok: true,
+      contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
@@ -400,15 +400,15 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         ...authData,
         os: LiffContextOs.Ios,
         lang: 'zh-TW',
         group: '_GROUP_ID_',
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
@@ -427,15 +427,15 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         ...authData,
         os: LiffContextOs.Android,
         lang: 'jp',
         room: '_ROOM_ID_',
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
@@ -454,7 +454,7 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         ...authData,
         os: LiffContextOs.Ios,
         user: '_USER_ID_',
@@ -463,8 +463,8 @@ describe('#checkAuthContext(data)', () => {
         pic: 'http://advanture.com/Egypt.jpg',
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
@@ -487,41 +487,41 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         ...authData,
         provider: '_WRONG_PROVIDER_',
       })
     ).toMatchInlineSnapshot(`
       Object {
         "code": 400,
+        "ok": false,
         "reason": "provider not match",
-        "success": false,
       }
     `);
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         ...authData,
         channel: '_WRONG_CHANNEL_',
       })
     ).toMatchInlineSnapshot(`
       Object {
         "code": 400,
+        "ok": false,
         "reason": "channel not match",
-        "success": false,
       }
     `);
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         ...authData,
         client: '_WRONG_CLIENT_',
       })
     ).toMatchInlineSnapshot(`
       Object {
         "code": 400,
+        "ok": false,
         "reason": "client not match",
-        "success": false,
       }
     `);
   });

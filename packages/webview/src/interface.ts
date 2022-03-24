@@ -1,18 +1,13 @@
-import type Ws from 'ws';
-import {
-  makeInterface,
-  makeClassProvider,
-  ServiceProvider,
-} from '@machinat/core/service';
-import Marshaler from '@machinat/core/base/Marshaler';
-import { AuthController } from '@machinat/auth';
+import { Marshaler, StateController } from '@machinat/core';
+import { makeInterface, makeClassProvider } from '@machinat/core/service';
+import Auth, { AuthController, AuthHttpOperator } from '@machinat/auth';
 import type {
   AnyServerAuthenticator,
   UserOfAuthenticator,
   ContextOfAuthenticator,
 } from '@machinat/auth';
-import { NextReceiver } from '@machinat/next';
-import type { NextServer } from '@machinat/next';
+import { BasicAuthenticator } from '@machinat/auth/basicAuth';
+import Next, { NextReceiver } from '@machinat/next';
 import WebSocket, { WebSocketServer } from '@machinat/websocket';
 import { useAuthLogin, verifyOrigin } from './utils';
 import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant';
@@ -24,69 +19,66 @@ export const ConfigsI = makeInterface<WebviewConfigs<AnyServerAuthenticator>>({
 
 export type ConfigsI = WebviewConfigs<AnyServerAuthenticator>;
 
-// auth interfaces
-
-export const AuthenticatorListI = makeInterface<AnyServerAuthenticator>({
-  name: 'WebviewAuthenticatorsList',
-  multi: true,
-});
-
-export type AuthenticatorListI = AnyServerAuthenticator[];
-
+// auth
 export class WebviewAuthController<
   Authenticator extends AnyServerAuthenticator
 > extends AuthController<Authenticator> {}
 
-export const AuthControllerP: ServiceProvider<
-  AuthController<AnyServerAuthenticator>,
-  [AuthenticatorListI, ConfigsI]
-> = makeClassProvider({
+export const AuthControllerP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [AuthenticatorListI, ConfigsI],
-  factory: (
-    authenticators,
-    {
-      authSecret,
-      authApiPath = DEFAULT_AUTH_PATH,
-      authRedirectUrl,
-      webviewHost,
-      webviewPath = DEFAULT_NEXT_PATH,
-      ...otherOptions
-    }
-  ) => {
+  deps: [Auth.HttpOperator, Auth.AuthenticatorList],
+  factory: (operator, authenticators) => {
     if (authenticators.length === 0) {
       throw new Error('Webview.AuthenticatorsList is empty');
     }
 
-    return new WebviewAuthController(authenticators, {
-      ...otherOptions,
-      secret: authSecret,
-      apiPath: authApiPath,
-      redirectUrl:
-        authRedirectUrl || new URL(webviewPath, `https://${webviewHost}/`).href,
-    });
+    return new WebviewAuthController(operator, authenticators);
   },
 })(WebviewAuthController);
 
-export type AuthControllerP<Authenticator extends AnyServerAuthenticator> =
-  WebviewAuthController<Authenticator>;
+export class WebviewAuthHttpOperator extends AuthHttpOperator {}
+
+export const AuthHttpOperatorP = makeClassProvider({
+  lifetime: 'singleton',
+  deps: [ConfigsI],
+  factory: ({
+    authSecret,
+    authApiPath = DEFAULT_AUTH_PATH,
+    webviewHost,
+    webviewPath = DEFAULT_NEXT_PATH,
+    ...otherOptions
+  }) => {
+    return new AuthHttpOperator({
+      ...otherOptions,
+      serverUrl: `https://${webviewHost}`,
+      secret: authSecret,
+      apiRoot: authApiPath,
+      redirectRoot: webviewPath,
+    });
+  },
+})(WebviewAuthHttpOperator);
+
+export class WebviewBasicServerAuthenticator extends BasicAuthenticator {}
+
+export const WebviewBasicAuthenticatorP = makeClassProvider({
+  lifetime: 'singleton',
+  deps: [StateController, Auth.HttpOperator, ConfigsI],
+  factory: (stateController, httpOperator, configs) => {
+    return new WebviewBasicServerAuthenticator(stateController, httpOperator, {
+      ...configs.basicAuth,
+      loginDuration:
+        configs.basicAuth?.loginDuration || configs.dataCookieMaxAge,
+    });
+  },
+})(WebviewBasicServerAuthenticator);
 
 // next interfaces
 
-export const NextServerI = makeInterface<NextServer>({
-  name: 'WebviewNextServer',
-});
-
-export type NextServerI = NextServer;
-
 export class WebviewNextReceiver extends NextReceiver {}
 
-export const NextReceiverP: ServiceProvider<
-  NextReceiver,
-  [NextServerI, ConfigsI]
-> = makeClassProvider({
+export const NextReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [NextServerI, ConfigsI],
+  deps: [Next.Server, ConfigsI],
   factory: (server, { noPrepareNext, webviewPath = DEFAULT_NEXT_PATH }) =>
     new WebviewNextReceiver(server, {
       entryPath: webviewPath,
@@ -94,25 +86,7 @@ export const NextReceiverP: ServiceProvider<
     }),
 })(WebviewNextReceiver);
 
-export type NextReceiverP = WebviewNextReceiver;
-
 // websocket interfaces
-
-export const SocketServerIdI = makeInterface<string>({
-  name: 'WebviewSocketServerId',
-});
-
-export const WsServerI = makeInterface<Ws.Server>({
-  name: 'WebviewWsServer',
-});
-
-export type WsServerI = Ws.Server;
-
-export const SocketBrokerI = makeInterface<WebSocket.Broker>({
-  name: 'WebviewSocketBroker',
-});
-
-export type SocketBrokerI = WebSocket.Broker;
 
 export class WebviewSocketServer<
   Authenticator extends AnyServerAuthenticator
@@ -121,26 +95,13 @@ export class WebviewSocketServer<
   ContextOfAuthenticator<Authenticator>
 > {}
 
-export const SocketServerP: ServiceProvider<
-  WebSocketServer<
-    UserOfAuthenticator<AnyServerAuthenticator>,
-    ContextOfAuthenticator<AnyServerAuthenticator>
-  >,
-  [
-    null | string,
-    WsServerI,
-    SocketBrokerI,
-    AuthController<AnyServerAuthenticator>,
-    Marshaler,
-    ConfigsI
-  ]
-> = makeClassProvider({
+export const SocketServerP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
-    { require: SocketServerIdI, optional: true },
-    WsServerI,
-    SocketBrokerI,
-    AuthControllerP,
+    { require: WebSocket.ServerId, optional: true },
+    WebSocket.WsServer,
+    WebSocket.Broker,
+    Auth.Controller,
     Marshaler,
     ConfigsI,
   ],
@@ -163,9 +124,6 @@ export const SocketServerP: ServiceProvider<
       heartbeatInterval,
     }),
 })(WebviewSocketServer);
-
-export type SocketServerP<Authenticator extends AnyServerAuthenticator> =
-  WebviewSocketServer<Authenticator>;
 
 export const PlatformUtilitiesI = makeInterface<
   WebviewPlatformUtilities<AnyServerAuthenticator>

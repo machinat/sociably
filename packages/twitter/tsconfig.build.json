@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "baseUrl": ".",
+    "paths": {
+      "@machinat/auth/*": ["../auth/lib/*"],
+      "@machinat/core/*": ["../core/lib/*"],
+      "@machinat/http/*": ["../http/lib/*"],
+      "@machinat/webview/*": ["../webview/lib/*"]
+    }
+  },
+  "references": [
+    { "path": "../auth/tsconfig.build.json" },
+    { "path": "../core/tsconfig.build.json" },
+    { "path": "../http/tsconfig.build.json" },
+    { "path": "../webview/tsconfig.build.json" }
+  ]
+}

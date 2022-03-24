@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { MachinatNode } from '@machinat/core';
 import { makePartSegment, PartSegment } from '@machinat/core/renderer';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
 /**
@@ -25,7 +25,7 @@ export type QuickReplyProps = {
 export const QuickReply: LineComponent<
   QuickReplyProps,
   PartSegment<any>
-> = annotateLineComponent(async function QuickReply(node, path, render) {
+> = makeLineComponent(async function QuickReply(node, path, render) {
   const { imageUrl, children } = node.props;
 
   const actionSegments = await render(children, '.children');

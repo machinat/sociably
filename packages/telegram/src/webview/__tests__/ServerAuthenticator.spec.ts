@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 import moxy from '@moxyjs/moxy';
-import type { ResponseHelper } from '@machinat/auth';
+import type { AuthHttpOperator } from '@machinat/auth';
 import type { TelegramBot } from '../../Bot';
 import { TelegramServerAuthenticator } from '../ServerAuthenticator';
 import TelegramChat from '../../Chat';
@@ -16,7 +16,7 @@ const createReq = ({ url }) =>
 
 const res = {};
 
-const resHelper = moxy<ResponseHelper>({
+const httpOperator = moxy<AuthHttpOperator>({
   async issueAuth() {},
   async issueError() {},
   redirect() {
@@ -32,11 +32,11 @@ const bot = moxy<TelegramBot>({
   },
 } as never);
 
-const authenticator = new TelegramServerAuthenticator(bot);
+const authenticator = new TelegramServerAuthenticator(bot, httpOperator);
 
 beforeEach(() => {
   bot.mock.reset();
-  resHelper.mock.reset();
+  httpOperator.mock.reset();
 });
 
 const MockDate = moxy(Date);
@@ -66,16 +66,16 @@ describe('.delegateAuthRequest()', () => {
     const search = new URLSearchParams(telegramLoginSearch);
 
     const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authenticator.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never);
 
-    expect(resHelper.redirect.mock).toHaveBeenCalledTimes(1);
-    expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
+    expect(httpOperator.redirect.mock).toHaveBeenCalledTimes(1);
+    expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
-    expect(resHelper.issueError.mock).not.toHaveBeenCalled();
-    expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
-    expect(resHelper.issueAuth.mock).toHaveBeenCalledWith({
+    expect(httpOperator.issueError.mock).not.toHaveBeenCalled();
+    expect(httpOperator.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueAuth.mock).toHaveBeenCalledWith(res, 'telegram', {
       bot: 12345,
       chat: undefined,
       user: {
@@ -115,7 +115,7 @@ describe('.delegateAuthRequest()', () => {
       title: 'Does',
     }));
 
-    await authenticator.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never);
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
     expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(1, 'getChatMember', {
@@ -126,8 +126,8 @@ describe('.delegateAuthRequest()', () => {
       chat_id: 23456,
     });
 
-    expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
-    expect(resHelper.issueAuth.mock).toHaveBeenCalledWith({
+    expect(httpOperator.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueAuth.mock).toHaveBeenCalledWith(res, 'telegram', {
       bot: 12345,
       chat: {
         type: 'group',
@@ -161,17 +161,20 @@ describe('.delegateAuthRequest()', () => {
       });
     });
 
-    await authenticator.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never);
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
 
-    expect(resHelper.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(resHelper.issueError.mock.calls[0].args).toMatchInlineSnapshot(`
-      Array [
-        400,
-        "Bad Request: user not found",
-      ]
-    `);
+    expect(httpOperator.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError.mock).toHaveBeenCalledWith(
+      res,
+      'telegram',
+      400,
+      expect.any(String)
+    );
+    expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
+      `"Bad Request: user not found"`
+    );
   });
 
   it('redirect to `redirectUrl` query param if specified', async () => {
@@ -181,17 +184,16 @@ describe('.delegateAuthRequest()', () => {
     });
 
     const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authenticator.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never);
 
-    expect(resHelper.redirect.mock).toHaveBeenCalledWith(
+    expect(httpOperator.redirect.mock).toHaveBeenCalledWith(
+      res,
       '/webview/hello_world.html',
-      {
-        assertInternal: true,
-      }
+      { assertInternal: true }
     );
 
-    expect(resHelper.issueError.mock).not.toHaveBeenCalled();
-    expect(resHelper.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError.mock).not.toHaveBeenCalled();
+    expect(httpOperator.issueAuth.mock).toHaveBeenCalledTimes(1);
   });
 
   it('issue error if auth_date expired (20 second)', async () => {
@@ -202,16 +204,21 @@ describe('.delegateAuthRequest()', () => {
     });
 
     const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authenticator.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never);
 
-    expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
+    expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
-    expect(resHelper.issueAuth.mock).not.toHaveBeenCalled();
-    expect(resHelper.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(resHelper.issueError.mock.calls[0].args[0]).toBe(401);
-    expect(resHelper.issueError.mock.calls[0].args[1]).toMatchInlineSnapshot(
+    expect(httpOperator.issueAuth.mock).not.toHaveBeenCalled();
+    expect(httpOperator.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError.mock).toHaveBeenCalledWith(
+      res,
+      'telegram',
+      401,
+      expect.any(String)
+    );
+    expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
       `"login expired"`
     );
   });
@@ -225,16 +232,21 @@ describe('.delegateAuthRequest()', () => {
     const req = createReq({
       url: `/auth/telegram?${search}`,
     });
-    await authenticator.delegateAuthRequest(req, res as never, resHelper);
+    await authenticator.delegateAuthRequest(req, res as never);
 
-    expect(resHelper.redirect.mock).toHaveBeenCalledWith(undefined, {
+    expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
-    expect(resHelper.issueAuth.mock).not.toHaveBeenCalled();
-    expect(resHelper.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(resHelper.issueError.mock.calls[0].args[0]).toBe(401);
-    expect(resHelper.issueError.mock.calls[0].args[1]).toMatchInlineSnapshot(
+    expect(httpOperator.issueAuth.mock).not.toHaveBeenCalled();
+    expect(httpOperator.issueError.mock).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError.mock).toHaveBeenCalledWith(
+      res,
+      'telegram',
+      401,
+      expect.any(String)
+    );
+    expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
       `"invalid login signature"`
     );
   });
@@ -245,14 +257,14 @@ test('.verifyCredential() simply return not ok', async () => {
     .toMatchInlineSnapshot(`
           Object {
             "code": 403,
+            "ok": false,
             "reason": "should initiate st server side only",
-            "success": false,
           }
         `);
 });
 
 describe('.verifyRefreshment()', () => {
-  test('return success and original data', async () => {
+  test('return ok and original data', async () => {
     const authData = {
       bot: 12345,
       chat: {
@@ -268,7 +280,7 @@ describe('.verifyRefreshment()', () => {
       photo: undefined,
     };
     await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
-      success: true,
+      ok: true,
       data: authData,
     });
   });
@@ -289,14 +301,14 @@ describe('.verifyRefreshment()', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "code": 400,
+              "ok": false,
               "reason": "bot not match",
-              "success": false,
             }
           `);
   });
 });
 
-test('.checkAuthContext()', () => {
+test('.checkAuthData()', () => {
   const authData = {
     bot: 12345,
     user: {
@@ -321,9 +333,9 @@ test('.checkAuthContext()', () => {
     'http://crazy.dm/stand.png'
   );
 
-  expect(authenticator.checkAuthContext(authData)).toEqual({
-    success: true,
-    contextSupplment: {
+  expect(authenticator.checkAuthData(authData)).toEqual({
+    ok: true,
+    contextDetails: {
       botId: 12345,
       user: expectedUser,
       channel: new TelegramChat(12345, {
@@ -338,13 +350,13 @@ test('.checkAuthContext()', () => {
   });
 
   expect(
-    authenticator.checkAuthContext({
+    authenticator.checkAuthData({
       ...authData,
       chat: { type: 'group', id: 98765 },
     })
   ).toEqual({
-    success: true,
-    contextSupplment: {
+    ok: true,
+    contextDetails: {
       botId: 12345,
       user: expectedUser,
       channel: new TelegramChat(12345, { type: 'group', id: 98765 }),

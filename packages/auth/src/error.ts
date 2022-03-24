@@ -1,3 +1,5 @@
+import { STATUS_CODES } from 'http';
+
 class AuthError extends Error {
   code: number;
   platform: undefined | string;
@@ -10,6 +12,7 @@ class AuthError extends Error {
     }
 
     this.code = code;
+    this.name = `AuthError(${STATUS_CODES[code]})`;
     this.platform = platform;
   }
 }

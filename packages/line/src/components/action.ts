@@ -1,5 +1,5 @@
 import { makePartSegment, PartSegment } from '@machinat/core/renderer';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import type { LineComponent } from '../types';
 
 /**
@@ -31,7 +31,7 @@ export type PostbackActionProps = {
 export const PostbackAction: LineComponent<
   PostbackActionProps,
   PartSegment<any>
-> = annotateLineComponent(function PostbackAction(node, path) {
+> = makeLineComponent(function PostbackAction(node, path) {
   const { label, data, displayText } = node.props;
   return [
     makePartSegment(node, path, {
@@ -63,7 +63,7 @@ export type MessageActionProps = {
 export const MessageAction: LineComponent<
   MessageActionProps,
   PartSegment<any>
-> = annotateLineComponent(function MessageAction(node, path) {
+> = makeLineComponent(function MessageAction(node, path) {
   const { label, text } = node.props;
   return [
     makePartSegment(node, path, {
@@ -97,7 +97,7 @@ export type UriActionProps = {
 export const UriAction: LineComponent<
   UriActionProps,
   PartSegment<any>
-> = annotateLineComponent(function UriAction(node, path) {
+> = makeLineComponent(function UriAction(node, path) {
   const { label, uri } = node.props;
   return [
     makePartSegment(node, path, {
@@ -163,7 +163,7 @@ export type DateTimePickerActionProps = {
 export const DateTimePickerAction: LineComponent<
   DateTimePickerActionProps,
   PartSegment<any>
-> = annotateLineComponent(function DateTimePickerAction(node, path) {
+> = makeLineComponent(function DateTimePickerAction(node, path) {
   const { label, data, mode = 'datetime', initial, min, max } = node.props;
 
   return [
@@ -197,7 +197,7 @@ export type CameraActionProps = {
 export const CameraAction: LineComponent<
   CameraActionProps,
   PartSegment<any>
-> = annotateLineComponent(function CameraAction(node, path) {
+> = makeLineComponent(function CameraAction(node, path) {
   return [
     makePartSegment(node, path, {
       type: 'camera',
@@ -225,7 +225,7 @@ export type CameraRollActionProps = {
 export const CameraRollAction: LineComponent<
   CameraRollActionProps,
   PartSegment<any>
-> = annotateLineComponent(function CameraRollAction(node, path) {
+> = makeLineComponent(function CameraRollAction(node, path) {
   return [
     makePartSegment(node, path, {
       type: 'cameraRoll',
@@ -252,7 +252,7 @@ export type LocationActionProps = {
 export const LocationAction: LineComponent<
   LocationActionProps,
   PartSegment<any>
-> = annotateLineComponent(function LocationAction(node, path) {
+> = makeLineComponent(function LocationAction(node, path) {
   return [
     makePartSegment(node, path, {
       type: 'location',

@@ -1,5 +1,5 @@
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import { LineComponent, LineMessageSegmentValue } from '../types';
 
 /**
@@ -27,7 +27,7 @@ export type VideoProps = {
 export const Video: LineComponent<
   VideoProps,
   UnitSegment<LineMessageSegmentValue>
-> = annotateLineComponent(function Video(node, path) {
+> = makeLineComponent(function Video(node, path) {
   const { originalContentUrl, previewImageUrl, trackingId } = node.props;
 
   return [
@@ -59,7 +59,7 @@ export type AudioProps = {
 export const Audio: LineComponent<
   AudioProps,
   UnitSegment<LineMessageSegmentValue>
-> = annotateLineComponent(function Audio(node, path) {
+> = makeLineComponent(function Audio(node, path) {
   const { originalContentUrl, duration } = node.props;
   return [
     makeUnitSegment(node, path, {

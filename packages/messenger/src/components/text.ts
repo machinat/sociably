@@ -1,7 +1,7 @@
 import type { MachinatNode } from '@machinat/core';
 import { formatNode } from '@machinat/core/utils';
 import { makeTextSegment, TextSegment } from '@machinat/core/renderer';
-import { annotateMessengerComponent } from '../utils';
+import { makeMessengerComponent } from '../utils';
 import type { MessengerComponent } from '../types';
 
 /**
@@ -23,7 +23,7 @@ const LATEX_END = '\\)';
  * @guides Check [help page](https://www.facebook.com/help/147348452522644).
  */
 export const Latex: MessengerComponent<LatexProps, TextSegment> =
-  annotateMessengerComponent(async function Latex(node, path, render) {
+  makeMessengerComponent(async function Latex(node, path, render) {
     const segments = await render(node.props.children, '.children');
     if (segments === null) {
       return null;

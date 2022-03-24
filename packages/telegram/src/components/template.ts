@@ -1,7 +1,7 @@
 import type { MachinatNode } from '@machinat/core';
 import { formatNode } from '@machinat/core/utils';
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { annotateTelegramComponent } from '../utils';
+import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
   TelegramComponent,
@@ -30,7 +30,7 @@ export interface TextProps extends MessageProps {
 export const Text: TelegramComponent<
   TextProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Text(node, path, render) {
+> = makeTelegramComponent(async function Text(node, path, render) {
   const {
     children,
     parseMode = 'HTML',
@@ -92,7 +92,7 @@ export interface ContactProps extends MessageProps {
 export const Contact: TelegramComponent<
   ContactProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Contact(node, path, render) {
+> = makeTelegramComponent(async function Contact(node, path, render) {
   const {
     phoneNumber,
     firstName,
@@ -157,7 +157,7 @@ export interface PollProps extends MessageProps {
 export const Poll: TelegramComponent<
   PollProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Poll(node, path, render) {
+> = makeTelegramComponent(async function Poll(node, path, render) {
   const {
     question,
     options,
@@ -221,7 +221,7 @@ export interface DiceProps extends MessageProps {
 export const Dice: TelegramComponent<
   DiceProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Dice(node, path, render) {
+> = makeTelegramComponent(async function Dice(node, path, render) {
   const { emoji, disableNotification, replyToMessageId, replyMarkup } =
     node.props;
 
@@ -292,7 +292,7 @@ export interface InvoiceProps extends MessageProps {
 export const Invoice: TelegramComponent<
   InvoiceProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Invoice(node, path, render) {
+> = makeTelegramComponent(async function Invoice(node, path, render) {
   const {
     title,
     description,
@@ -367,7 +367,7 @@ export interface GameProps extends MessageProps {
 export const Game: TelegramComponent<
   GameProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Game(node, path, render) {
+> = makeTelegramComponent(async function Game(node, path, render) {
   const { gameShortName, disableNotification, replyToMessageId, replyMarkup } =
     node.props;
 

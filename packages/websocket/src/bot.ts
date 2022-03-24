@@ -55,6 +55,8 @@ export class WebSocketBot
     WebSocketResult
   >;
 
+  platform = WEBSOCKET;
+
   constructor(
     server: ServerP<any, unknown>,
     initScope?: InitScopeFn,

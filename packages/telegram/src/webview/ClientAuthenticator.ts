@@ -1,7 +1,7 @@
 /// <reference lib="DOM" />
 import type {
   AuthenticatorCredentialResult,
-  ContextResult,
+  CheckDataResult,
 } from '@machinat/auth';
 import type { WebviewClientAuthenticator } from '@machinat/webview';
 import { parse as parseBrowser } from 'bowser';
@@ -11,7 +11,7 @@ import TelegramChatSender from '../ChatSender';
 import TelegramChatProfile from '../ChatProfile';
 import TelegramUser from '../User';
 import TelegramUserProfile from '../UserProfile';
-import { supplementContext } from './utils';
+import { getAuthContextDetails } from './utils';
 import type { TelegramAuthContext, TelegramAuthData } from './types';
 
 type TelegramClientOptions = {
@@ -44,17 +44,17 @@ export default class TelegramClientAuthenticator
 
   async fetchCredential(): Promise<AuthenticatorCredentialResult<void>> {
     return {
-      success: false as const,
+      ok: false as const,
       code: 400,
       reason: 'should only initiate from backend',
     };
   }
 
   // eslint-disable-next-line class-methods-use-this
-  checkAuthContext(data: TelegramAuthData): ContextResult<TelegramAuthContext> {
+  checkAuthData(data: TelegramAuthData): CheckDataResult<TelegramAuthContext> {
     return {
-      success: true,
-      contextSupplment: supplementContext(data),
+      ok: true,
+      contextDetails: getAuthContextDetails(data),
     };
   }
 

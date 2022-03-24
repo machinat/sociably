@@ -1,5 +1,5 @@
 import { makePartSegment, PartSegment } from '@machinat/core/renderer';
-import { annotateLineComponent } from '../utils';
+import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
 /**
@@ -27,7 +27,7 @@ export type EmojiProps = {
 export const Emoji: LineComponent<
   EmojiProps,
   PartSegment<any>
-> = annotateLineComponent(function Emoji(node, path) {
+> = makeLineComponent(function Emoji(node, path) {
   const { productId, emojiId } = node.props;
   return [
     makePartSegment(node, path, {

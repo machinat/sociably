@@ -49,7 +49,7 @@ const app = Machinat.createApp({
             // verify request authorization with AuthController
             const verifyResult = await authController.verifyAuth(req);
 
-            if (verifyResult.success) {
+            if (verifyResult.ok) {
               res.end(JSON.string({ hello: verifyResult.auth.user.uid }));
             } else {
               res.writeHead(verifyResult.code);

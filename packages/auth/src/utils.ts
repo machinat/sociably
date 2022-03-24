@@ -1,10 +1,16 @@
-import type { ServerResponse } from 'http';
+import type { ServerResponse, IncomingMessage } from 'http';
+import { relative as getRelativePath } from 'path';
+import getRawBody from 'raw-body';
 import {
   parse as parseCookie,
   serialize as serializeCookie,
   CookieSerializeOptions,
 } from 'cookie';
-import type { WithHeaders } from './types';
+import type {
+  WithHeaders,
+  AuthApiResponseBody,
+  AuthApiErrorBody,
+} from './types';
 
 export const respondRedirect = (res: ServerResponse, url: string): void => {
   res.writeHead(302, { Location: url });
@@ -52,8 +58,38 @@ export const isSubpath = (
   path: null | string,
   subpath: null | string
 ): boolean =>
-  !!(path && subpath) &&
-  subpath.slice(0, path.length) === path &&
-  (subpath.length === path.length ||
-    path[path.length - 1] === '/' ||
-    subpath[path.length] === '/');
+  !!(path && subpath) && getRelativePath(path, subpath).slice(0, 2) !== '..';
+
+const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
+
+export const respondApiOk = (
+  res: ServerResponse,
+  platform: string,
+  token: string
+): void => {
+  res.writeHead(200, CONTENT_TYPE_JSON);
+  const body: AuthApiResponseBody = { platform, token };
+  res.end(JSON.stringify(body));
+};
+
+export const respondApiError = (
+  res: ServerResponse,
+  platform: undefined | string,
+  code: number,
+  reason: string
+): void => {
+  res.writeHead(code, CONTENT_TYPE_JSON);
+  const body: AuthApiErrorBody = { platform, error: { code, reason } };
+  res.end(JSON.stringify(body));
+};
+
+export const parseJsonBody = async (req: IncomingMessage): Promise<any> => {
+  try {
+    const rawBody = await getRawBody(req, { encoding: true });
+    const body = JSON.parse(rawBody);
+
+    return typeof body === 'object' ? body : null;
+  } catch (err) {
+    return null;
+  }
+};

@@ -23,7 +23,7 @@ const wsServer = moxy<Ws.Server>({
 } as never);
 
 const verifyLogin = moxy(async () => ({
-  success: true as const,
+  ok: true as const,
   user: null,
   authContext: null,
 }));
@@ -143,7 +143,7 @@ it('handle sockets and connections lifecycle', async () => {
   });
 
   verifyLogin.mock.fake(async () => ({
-    success: true,
+    ok: true,
     user: { john: 'doe' },
     authContext: { rookie: true },
   }));
@@ -230,7 +230,7 @@ test('multi sockets and connections', async () => {
 
   expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
   verifyLogin.mock.fake(async () => ({
-    success: true,
+    ok: true,
     user: { john: 'doe' },
     authContext: 'foo',
   }));
@@ -240,7 +240,7 @@ test('multi sockets and connections', async () => {
 
   expect(verifyLogin.mock).toHaveBeenCalledTimes(2);
   verifyLogin.mock.fake(async () => ({
-    success: true,
+    ok: true,
     user: { jojo: 'doe' },
     authContext: 'bar',
   }));
@@ -490,14 +490,14 @@ it('respond 404 if verifyUpgrade fn return false', async () => {
   expect(netSocket.destroy.mock).toHaveBeenCalledTimes(1);
 });
 
-it('reject sign in if verifyLogin resolve not success', async () => {
+it('reject sign in if verifyLogin resolve not ok', async () => {
   await testServer.handleUpgrade(req, netSocket, head);
 
   const socket = Socket.mock.calls[0].instance;
   socket.connect.mock.fake(async () => {});
 
   verifyLogin.mock.fake(async () => ({
-    success: false,
+    ok: false,
     code: 401,
     reason: 'no no no',
   }));
@@ -858,14 +858,14 @@ describe('dispatch()', () => {
 
   it('broadcast to user', async () => {
     verifyLogin.mock.fake(() => ({
-      success: true,
+      ok: true,
       user: { platform: 'test', uid: 'john_doe' },
       authContext: 'foo',
     }));
     const [socket, conn1] = await openConnection(testServer);
 
     verifyLogin.mock.fake(() => ({
-      success: true,
+      ok: true,
       user: { platform: 'test', uid: 'jane_doe' },
       authContext: 'bar',
     }));
@@ -987,7 +987,7 @@ test('handle remote dispatch', async () => {
   });
 
   verifyLogin.mock.fake(() => ({
-    success: true,
+    ok: true,
     user: { platform: 'test', uid: 'john_doe' },
   }));
 

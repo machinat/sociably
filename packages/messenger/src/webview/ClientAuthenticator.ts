@@ -1,6 +1,6 @@
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { ContextResult } from '@machinat/auth';
+import type { CheckDataResult } from '@machinat/auth';
 import type { WebviewClientAuthenticator } from '@machinat/webview';
 import { MESSENGER } from '../constant';
 import MessengerChat from '../Chat';
@@ -13,7 +13,7 @@ import type {
   ExtensionContext,
   AuthenticatorCredentialResult,
 } from './types';
-import { supplementContext } from './utils';
+import { getAuthContextDetails } from './utils';
 
 type MessengerClientAuthOpts = {
   appId: string;
@@ -95,7 +95,7 @@ class MessengerClientAuthenticator
       });
 
       return {
-        success: true,
+        ok: true,
         credential: {
           signedRequest: context.signed_request,
           client: window.name === 'messenger_ref' ? 'messenger' : 'facebook',
@@ -103,7 +103,7 @@ class MessengerClientAuthenticator
       };
     } catch (code) {
       return {
-        success: false,
+        ok: false,
         code: 401,
         reason: `Messenger extension error ${code}`,
       };
@@ -111,12 +111,12 @@ class MessengerClientAuthenticator
   }
 
   // eslint-disable-next-line class-methods-use-this
-  checkAuthContext(
+  checkAuthData(
     data: MessengerAuthData
-  ): ContextResult<MessengerAuthContext> {
+  ): CheckDataResult<MessengerAuthContext> {
     return {
-      success: true,
-      contextSupplment: supplementContext(data),
+      ok: true,
+      contextDetails: getAuthContextDetails(data),
     };
   }
 

@@ -1,5 +1,5 @@
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { annotateTelegramComponent } from '../utils';
+import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
   UploadingFileInfo,
@@ -27,7 +27,7 @@ export interface ForwardMessageProps {
 export const ForwardMessage: TelegramComponent<
   ForwardMessageProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function ForwardMessage(node, path) {
+> = makeTelegramComponent(function ForwardMessage(node, path) {
   const { fromChatId, disableNotification, messageId } = node.props;
 
   return [
@@ -69,7 +69,7 @@ export interface ChatActionProps {
 export const ChatAction: TelegramComponent<
   ChatActionProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function ChatAction(node, path) {
+> = makeTelegramComponent(function ChatAction(node, path) {
   const { action } = node.props;
 
   return [
@@ -99,7 +99,7 @@ export interface KickChatMemberProps {
 export const KickChatMember: TelegramComponent<
   KickChatMemberProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function KickChatMember(node, path) {
+> = makeTelegramComponent(function KickChatMember(node, path) {
   const { userId, untilDate } = node.props;
 
   return [
@@ -133,7 +133,7 @@ export interface UnbanChatMemberProps {
 export const UnbanChatMember: TelegramComponent<
   UnbanChatMemberProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function UnbanChatMember(node, path) {
+> = makeTelegramComponent(function UnbanChatMember(node, path) {
   const { userId } = node.props;
 
   return [
@@ -187,7 +187,7 @@ export interface RestrictChatMemberProps extends ChatPromotionProps {
 export const RestrictChatMember: TelegramComponent<
   RestrictChatMemberProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function RestrictChatMember(node, path) {
+> = makeTelegramComponent(function RestrictChatMember(node, path) {
   const {
     userId,
     canSendMessages,
@@ -258,7 +258,7 @@ export interface PromoteChatMemberProps {
 export const PromoteChatMember: TelegramComponent<
   PromoteChatMemberProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function PromoteChatMember(node, path) {
+> = makeTelegramComponent(function PromoteChatMember(node, path) {
   const {
     userId,
     canPostMessages,
@@ -308,10 +308,7 @@ export interface SetChatAdministratorCustomTitleProps {
 export const SetChatAdministratorCustomTitle: TelegramComponent<
   SetChatAdministratorCustomTitleProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function SetChatAdministratorCustomTitle(
-  node,
-  path
-) {
+> = makeTelegramComponent(function SetChatAdministratorCustomTitle(node, path) {
   const { userId, customTitle } = node.props;
 
   return [
@@ -334,7 +331,7 @@ export const SetChatAdministratorCustomTitle: TelegramComponent<
 export const SetChatPermissions: TelegramComponent<
   ChatPromotionProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function SetChatPermissions(node, path) {
+> = makeTelegramComponent(function SetChatPermissions(node, path) {
   const {
     canSendMessages,
     canSendMediaMessages,
@@ -384,7 +381,7 @@ export interface SetChatPhotoProps {
 export const SetChatPhoto: TelegramComponent<
   SetChatPhotoProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function SetChatPhoto(node, path) {
+> = makeTelegramComponent(function SetChatPhoto(node, path) {
   const { fileData, fileInfo } = node.props;
 
   return [
@@ -409,7 +406,7 @@ export const SetChatPhoto: TelegramComponent<
 export const DeleteChatPhoto: TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function DeleteChatPhoto(node, path) {
+> = makeTelegramComponent(function DeleteChatPhoto(node, path) {
   return [
     makeUnitSegment(node, path, {
       method: 'deleteChatPhoto',
@@ -435,7 +432,7 @@ export interface SetChatTitleProps {
 export const SetChatTitle: TelegramComponent<
   SetChatTitleProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function SetChatTitle(node, path) {
+> = makeTelegramComponent(function SetChatTitle(node, path) {
   const { title } = node.props;
 
   return [
@@ -463,7 +460,7 @@ export interface SetChatDescriptionProps {
 export const SetChatDescription: TelegramComponent<
   SetChatDescriptionProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function SetChatDescription(node, path) {
+> = makeTelegramComponent(function SetChatDescription(node, path) {
   const { description } = node.props;
 
   return [
@@ -493,7 +490,7 @@ export interface PinChatMessageProps {
 export const PinChatMessage: TelegramComponent<
   PinChatMessageProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function PinChatMessage(node, path) {
+> = makeTelegramComponent(function PinChatMessage(node, path) {
   const { messageId, disableNotification } = node.props;
 
   return [
@@ -516,7 +513,7 @@ export const PinChatMessage: TelegramComponent<
 export const UnpinChatMessage: TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function UnpinChatMessage(node, path) {
+> = makeTelegramComponent(function UnpinChatMessage(node, path) {
   return [
     makeUnitSegment(node, path, {
       method: 'unpinChatMessage',
@@ -534,7 +531,7 @@ export const UnpinChatMessage: TelegramComponent<
 export const LeaveChat: TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function LeaveChat(node, path) {
+> = makeTelegramComponent(function LeaveChat(node, path) {
   return [
     makeUnitSegment(node, path, {
       method: 'leaveChat',
@@ -560,7 +557,7 @@ export interface SetChatStickerSetProps {
 export const SetChatStickerSet: TelegramComponent<
   SetChatStickerSetProps,
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function SetChatStickerSet(node, path) {
+> = makeTelegramComponent(function SetChatStickerSet(node, path) {
   const { stickerSetName } = node.props;
 
   return [
@@ -580,7 +577,7 @@ export const SetChatStickerSet: TelegramComponent<
 export const DeleteChatStickerSet: TelegramComponent<
   {},
   UnitSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(function DeleteChatStickerSet(node, path) {
+> = makeTelegramComponent(function DeleteChatStickerSet(node, path) {
   return [
     makeUnitSegment(node, path, {
       method: 'deleteChatStickerSet',

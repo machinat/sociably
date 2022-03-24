@@ -43,7 +43,7 @@ beforeEach(() => {
   `;
 });
 
-describe('#constructor(options)', () => {
+describe('.constructor(options)', () => {
   test('properties', () => {
     const authenticator = new MessengerClientAuthenticator({ appId: 'MY_APP' });
     expect(authenticator.platform).toBe('messenger');
@@ -78,7 +78,7 @@ describe('#constructor(options)', () => {
   });
 });
 
-describe('#init()', () => {
+describe('.init()', () => {
   it('add extension script and callback', async () => {
     const authenticator = new MessengerClientAuthenticator({
       appId: '_APP_ID_',
@@ -134,7 +134,7 @@ describe('#init()', () => {
   });
 });
 
-describe('#fetchCredential()', () => {
+describe('.fetchCredential()', () => {
   const extensionContext = {
     psid: '1254459154682919',
     thread_type: 'USER_TO_PAGE',
@@ -152,7 +152,7 @@ describe('#fetchCredential()', () => {
     await authenticator.init();
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
-      success: true,
+      ok: true,
       credential: {
         signedRequest: extensionContext.signed_request,
         client: 'messenger',
@@ -180,8 +180,8 @@ describe('#fetchCredential()', () => {
       .toMatchInlineSnapshot(`
             Object {
               "code": 401,
+              "ok": false,
               "reason": "Messenger extension error -12345",
-              "success": false,
             }
           `);
   });
@@ -196,7 +196,7 @@ describe('#fetchCredential()', () => {
 
     window.mock.getter('name').fake(() => 'facebook_ref');
     await expect(authenticator.fetchCredential()).resolves.toEqual({
-      success: true,
+      ok: true,
       credential: {
         signedRequest: extensionContext.signed_request,
         client: 'facebook',
@@ -205,7 +205,7 @@ describe('#fetchCredential()', () => {
 
     window.mock.getter('name').fake(() => 'messenger_ref');
     await expect(authenticator.fetchCredential()).resolves.toEqual({
-      success: true,
+      ok: true,
       credential: {
         signedRequest: extensionContext.signed_request,
         client: 'messenger',
@@ -214,7 +214,7 @@ describe('#fetchCredential()', () => {
   });
 });
 
-describe('#checkAuthContext(data)', () => {
+describe('.checkAuthData(data)', () => {
   it('resolve auth context form extension context', () => {
     const authenticator = new MessengerClientAuthenticator({
       appId: 'APP_ID',
@@ -222,7 +222,7 @@ describe('#checkAuthContext(data)', () => {
     });
 
     expect(
-      authenticator.checkAuthContext({
+      authenticator.checkAuthData({
         page: 682498171943165,
         user: '1254459154682919',
         chat: {
@@ -232,8 +232,8 @@ describe('#checkAuthContext(data)', () => {
         client: 'messenger',
       })
     ).toEqual({
-      success: true,
-      contextSupplment: {
+      ok: true,
+      contextDetails: {
         user: new MessengerUser(682498171943165, '1254459154682919'),
         channel: new MessengerChannel(682498171943165, {
           id: '1254459154682919',
@@ -245,7 +245,7 @@ describe('#checkAuthContext(data)', () => {
   });
 });
 
-test('#closeWebview()', async () => {
+test('.closeWebview()', async () => {
   const authenticator = new MessengerClientAuthenticator({
     appId: 'APP_ID',
     isSdkReady: true,

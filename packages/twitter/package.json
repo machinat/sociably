@@ -1,0 +1,58 @@
+{
+  "name": "@machinat/twitter",
+  "version": "0.5.0",
+  "description": "Twitter platform of Machinat.js",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/machinat.git",
+    "directory": "packages/twitter"
+  },
+  "homepage": "https://github.com/machinat/machinat#readme",
+  "bugs": "https://github.com/machinat/machinat/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./components": "./lib/components/index.js",
+    "./asset": "./lib/asset/index.js",
+    "./webview": "./lib/webview/index.js",
+    "./webview/client": "./lib/webview/client.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md",
+    "polyfill-exports.js"
+  ],
+  "scripts": {
+    "postinstall": "node ./polyfill-exports.js",
+    "prepack": "make -f ../../package.mk prepack"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "bowser": "^2.11.0",
+    "form-data": "^3.0.0",
+    "invariant": "^2.2.4",
+    "json-bigint": "^1.0.0",
+    "nanoid": "^3.3.1",
+    "node-fetch": "^2.6.7",
+    "twitter-text": "^3.1.0",
+    "warning": "^4.0.2"
+  },
+  "peerDependencies": {
+    "@machinat/auth": "^0.5.0",
+    "@machinat/core": "^0.5.0",
+    "@machinat/http": "^0.5.0",
+    "@machinat/webview": "^0.5.0"
+  },
+  "peerDependenciesMeta": {
+    "@machinat/auth": {
+      "optional": true
+    },
+    "@machinat/webview": {
+      "optional": true
+    }
+  }
+}

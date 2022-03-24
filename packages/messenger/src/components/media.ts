@@ -1,6 +1,6 @@
 import { makeUnitSegment } from '@machinat/core/renderer';
 import type { UnitSegment } from '@machinat/core/renderer';
-import { annotateMessengerComponent } from '../utils';
+import { makeMessengerComponent } from '../utils';
 import {
   ATTACHMENT_ASSET_TAG,
   ATTACHMENT_DATA,
@@ -73,7 +73,7 @@ const mediaFactory = (
     },
   };
 
-  return annotateMessengerComponent(container[name]);
+  return makeMessengerComponent(container[name]);
 };
 
 /**

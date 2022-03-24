@@ -1,6 +1,6 @@
 import { MachinatNode } from '@machinat/core';
 import { IntermediateSegment, TextSegment } from '@machinat/core/renderer';
-import { annotateLineComponent, isMessageValue } from '../utils';
+import { makeLineComponent, isMessageValue } from '../utils';
 import { LineComponent } from '../types';
 
 /**
@@ -19,7 +19,7 @@ export type ExpressionProps = {
  * @props {@link ExpressionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#quick-reply).
  */
-export const Expression: LineComponent<ExpressionProps> = annotateLineComponent(
+export const Expression: LineComponent<ExpressionProps> = makeLineComponent(
   async function Expression(
     { props: { children, quickReplies } },
     path,

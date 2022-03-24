@@ -41,13 +41,13 @@ test('.fetchCredential() return not ok', async () => {
   await expect(authenticator.fetchCredential()).resolves.toMatchInlineSnapshot(`
           Object {
             "code": 400,
+            "ok": false,
             "reason": "should only initiate from backend",
-            "success": false,
           }
         `);
 });
 
-test('.checkAuthContext()', () => {
+test('.checkAuthData()', () => {
   const authData = {
     bot: 12345,
     chat: undefined,
@@ -72,9 +72,9 @@ test('.checkAuthContext()', () => {
     'http://crazy.dm/stand.png'
   );
 
-  expect(authenticator.checkAuthContext(authData)).toEqual({
-    success: true,
-    contextSupplment: {
+  expect(authenticator.checkAuthData(authData)).toEqual({
+    ok: true,
+    contextDetails: {
       botId: 12345,
       user: expectedUser,
       channel: new TelegramChat(12345, {
@@ -88,13 +88,13 @@ test('.checkAuthContext()', () => {
     },
   });
   expect(
-    authenticator.checkAuthContext({
+    authenticator.checkAuthData({
       ...authData,
       chat: { type: 'group', id: 67890 },
     })
   ).toEqual({
-    success: true,
-    contextSupplment: {
+    ok: true,
+    contextDetails: {
       botId: 12345,
       user: expectedUser,
       channel: new TelegramChat(12345, { type: 'group', id: 67890 }),

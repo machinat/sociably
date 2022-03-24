@@ -1,4 +1,4 @@
-import { annotateNativeComponent } from '@machinat/core/renderer';
+import { makeNativeComponent } from '@machinat/core/renderer';
 import type {
   MessengerSegmentValue,
   MessageValue,
@@ -15,4 +15,4 @@ export const isMessageEntry = (
     value !== null &&
     !hasOwnProperty.call(value, API_PATH));
 
-export const annotateMessengerComponent = annotateNativeComponent(MESSENGER);
+export const makeMessengerComponent = makeNativeComponent(MESSENGER);

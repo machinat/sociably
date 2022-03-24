@@ -1,6 +1,6 @@
 import { MachinatNode } from '@machinat/core';
 import { makeUnitSegment, IntermediateSegment } from '@machinat/core/renderer';
-import { annotateTelegramComponent } from '../utils';
+import { makeTelegramComponent } from '../utils';
 import {
   TelegramComponent,
   TelegramSegmentValue,
@@ -26,7 +26,7 @@ export interface ExpressionProps {
 export const Expression: TelegramComponent<
   ExpressionProps,
   IntermediateSegment<TelegramSegmentValue>
-> = annotateTelegramComponent(async function Expression(node, path, render) {
+> = makeTelegramComponent(async function Expression(node, path, render) {
   const {
     children,
     disableNotification,
