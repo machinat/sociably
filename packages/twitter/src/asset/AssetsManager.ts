@@ -5,6 +5,8 @@ import BotP from '../Bot';
 
 const MEDIA = 'media';
 const WEBHOOK = 'webhook';
+const WELCOME_MESSAGE = 'welcome_message';
+const CUSTOM_PROFILE = 'custom_profile';
 
 /**
  * TwitterAssetsManager stores ids of assets created at Twitter platform.
@@ -25,24 +27,21 @@ export class TwitterAssetsManager {
     return `twitter.assets.${this.appId}.${resource}`;
   }
 
-  async getAssetId(
-    resource: string,
-    name: string
-  ): Promise<undefined | string> {
+  async getAssetId(resource: string, tag: string): Promise<undefined | string> {
     const existed = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .get<string>(name);
+      .get<string>(tag);
     return existed || undefined;
   }
 
   async saveAssetId(
     resource: string,
-    name: string,
+    tag: string,
     id: string
   ): Promise<boolean> {
     const isUpdated = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .set<string>(name, id);
+      .set<string>(tag, id);
     return isUpdated;
   }
 
@@ -52,54 +51,56 @@ export class TwitterAssetsManager {
       .getAll();
   }
 
-  async unsaveAssetId(resource: string, name: string): Promise<boolean> {
+  async unsaveAssetId(resource: string, tag: string): Promise<boolean> {
     const isDeleted = await this._stateController
       .globalState(this._makeResourceToken(resource))
-      .delete(name);
+      .delete(tag);
 
     return isDeleted;
   }
 
-  getMedia(name: string): Promise<undefined | string> {
-    return this.getAssetId(MEDIA, name);
+  // media
+  getMedia(tag: string): Promise<undefined | string> {
+    return this.getAssetId(MEDIA, tag);
   }
 
-  saveMedia(name: string, id: string): Promise<boolean> {
-    return this.saveAssetId(MEDIA, name, id);
+  saveMedia(tag: string, id: string): Promise<boolean> {
+    return this.saveAssetId(MEDIA, tag, id);
   }
 
   getAllMedia(): Promise<null | Map<string, string>> {
     return this.getAllAssets(MEDIA);
   }
 
-  unsaveMedia(name: string): Promise<boolean> {
-    return this.unsaveAssetId(MEDIA, name);
+  unsaveMedia(tag: string): Promise<boolean> {
+    return this.unsaveAssetId(MEDIA, tag);
   }
 
-  getWebhook(name: string): Promise<undefined | string> {
-    return this.getAssetId(WEBHOOK, name);
+  // webhook
+  getWebhook(tag: string): Promise<undefined | string> {
+    return this.getAssetId(WEBHOOK, tag);
   }
 
-  saveWebhook(name: string, id: string): Promise<boolean> {
-    return this.saveAssetId(WEBHOOK, name, id);
+  saveWebhook(tag: string, id: string): Promise<boolean> {
+    return this.saveAssetId(WEBHOOK, tag, id);
   }
 
   getAllWebhooks(): Promise<null | Map<string, string>> {
     return this.getAllAssets(WEBHOOK);
   }
 
-  unsaveWebhook(name: string): Promise<boolean> {
-    return this.unsaveAssetId(WEBHOOK, name);
+  unsaveWebhook(tag: string): Promise<boolean> {
+    return this.unsaveAssetId(WEBHOOK, tag);
   }
 
   async createWebhook(
+    tag: string,
     envName: string,
-    webhookName: string,
     url: string
   ): Promise<string> {
-    const existedId = await this.getWebhook(webhookName);
+    const existedId = await this.getWebhook(tag);
     if (existedId) {
-      throw new Error(`webhook "${webhookName}" already exists`);
+      throw new Error(`webhook [${tag}] already exists`);
     }
 
     const { id: webhookId } = await this.bot.makeApiCall(
@@ -107,22 +108,92 @@ export class TwitterAssetsManager {
       `1.1/account_activity/all/${envName}/webhooks.json`,
       { url }
     );
-    await this.saveWebhook(webhookName, webhookId);
+    await this.saveWebhook(tag, webhookId);
     return webhookId;
   }
 
-  async removeWebhook(envName: string, webhookName: string): Promise<string> {
-    const webhookId = await this.getWebhook(webhookName);
+  async deleteWebhook(tag: string, envName: string): Promise<string> {
+    const webhookId = await this.getWebhook(tag);
     if (!webhookId) {
-      throw new Error(`webhook "${webhookName}" doesn't exist`);
+      throw new Error(`webhook "${tag}" doesn't exist`);
     }
 
     await this.bot.makeApiCall(
       'DELETE',
       `1.1/account_activity/all/${envName}/webhooks/${webhookId}.json`
     );
-    await this.unsaveWebhook(webhookName);
+    await this.unsaveWebhook(tag);
     return webhookId;
+  }
+
+  // welcome message
+  getWelcomeMessage(tag: string): Promise<undefined | string> {
+    return this.getAssetId(WELCOME_MESSAGE, tag);
+  }
+
+  saveWelcomeMessage(tag: string, id: string): Promise<boolean> {
+    return this.saveAssetId(WELCOME_MESSAGE, tag, id);
+  }
+
+  getAllWelcomeMessages(): Promise<null | Map<string, string>> {
+    return this.getAllAssets(WELCOME_MESSAGE);
+  }
+
+  unsaveWelcomeMessage(tag: string): Promise<boolean> {
+    return this.unsaveAssetId(WELCOME_MESSAGE, tag);
+  }
+
+  // custome profile
+  getCustomProfile(tag: string): Promise<undefined | string> {
+    return this.getAssetId(CUSTOM_PROFILE, tag);
+  }
+
+  saveCustomProfile(tag: string, id: string): Promise<boolean> {
+    return this.saveAssetId(CUSTOM_PROFILE, tag, id);
+  }
+
+  getAllCustomProfiles(): Promise<null | Map<string, string>> {
+    return this.getAllAssets(CUSTOM_PROFILE);
+  }
+
+  unsaveCustomProfile(tag: string): Promise<boolean> {
+    return this.unsaveAssetId(CUSTOM_PROFILE, tag);
+  }
+
+  async createCustomProfile(
+    tag: string,
+    name: string,
+    mediaId: string
+  ): Promise<string> {
+    const existedId = await this.getCustomProfile(tag);
+    if (existedId) {
+      throw new Error(`custom profile [${tag}] already exists`);
+    }
+
+    const {
+      custom_profile: { id: customProfileId },
+    } = await this.bot.makeApiCall('POST', `1.1/custom_profiles/new.json`, {
+      custom_profile: {
+        name,
+        avatar: { media: { id: mediaId } },
+      },
+    });
+
+    await this.saveCustomProfile(tag, customProfileId);
+    return customProfileId;
+  }
+
+  async deleteCustomProfile(tag: string): Promise<string> {
+    const customProfileId = await this.getCustomProfile(tag);
+    if (!customProfileId) {
+      throw new Error(`custom profile [${tag}] doesn't exist`);
+    }
+
+    await this.bot.makeApiCall('DELETE', '1.1/custom_profiles/destroy.json', {
+      id: customProfileId,
+    });
+    await this.unsaveCustomProfile(tag);
+    return customProfileId;
   }
 }
 
