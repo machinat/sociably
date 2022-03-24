@@ -5,32 +5,32 @@ import { TwitterSegmentValue, TwitterComponent } from '../types';
 /**
  * @category Props
  */
-export type LikeProps = {
-  /** The tweet id to be liked */
+export type UnlikeProps = {
+  /** The tweet id to be unliked */
   tweetId: string;
 };
 
 /**
- * Like a tweet
+ * Unlike a tweet
  * @category Component
- * @props {@link LikeProps}
+ * @props {@link UnlikeProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction).
  */
-export const Like: TwitterComponent<
-  LikeProps,
+export const Unlike: TwitterComponent<
+  UnlikeProps,
   UnitSegment<TwitterSegmentValue>
-> = makeTwitterComponent(function Like(node, path) {
+> = makeTwitterComponent(function Unlike(node, path) {
   return [
     makeUnitSegment(node, path, {
       type: 'action',
       request: {
-        method: 'POST',
-        href: '2/users/:id/likes',
-        parameters: { tweet_id: node.props.tweetId },
+        method: 'DELETE',
+        href: '2/users/:id/likes/:tweet_id',
+        parameters: null,
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/likes`,
+        href: `2/users/${target.agentId}/likes/${node.props.tweetId}`,
       }),
       mediaSources: null,
     }),

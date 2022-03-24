@@ -74,7 +74,11 @@ export const Expression: MessengerComponent<
   _path,
   render
 ) {
-  const childrenSegments = await render(children, '.children');
+  const [childrenSegments, quickReplySegments] = await Promise.all([
+    render<MessengerSegmentValue>(children, '.children'),
+    render(quickReplies, '.quickReplies'),
+  ]);
+
   if (childrenSegments === null) {
     return null;
   }
@@ -107,7 +111,10 @@ export const Expression: MessengerComponent<
         node: segment.node,
         path: segment.path,
       });
-    } else if (isMessageEntry(segment.value)) {
+    } else if (
+      (segment.type === 'unit' || segment.type === 'raw') &&
+      isMessageEntry(segment.value)
+    ) {
       const { value } = segment as UnitSegment<MessengerSegmentValue>;
 
       if ('message' in value) {
@@ -146,7 +153,6 @@ export const Expression: MessengerComponent<
       lastMessageIdx
     ] as UnitSegment<MessengerSegmentValue>;
 
-    const quickReplySegments = await render(quickReplies, '.quickReplies');
     const { value } = lastMessageSeg;
 
     segments.splice(lastMessageIdx, 1, {

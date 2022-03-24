@@ -52,7 +52,7 @@ type RenderTraverseContext<Value> = {
 type GeneralComponentDelegate<Value> = (
   element: GeneralElement,
   path: string,
-  render: InnerRenderFn<Value>
+  render: InnerRenderFn
 ) => Promise<null | IntermediateSegment<Value>[]>;
 
 export default class MachinatRenderer<

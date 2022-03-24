@@ -1,0 +1,328 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AnimatedGif rendering 1`] = `
+Array [
+  Object {
+    "node": <AnimatedGif
+      mediaId="12345"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "id": "12345",
+        "parameters": Object {
+          "additional_owners": undefined,
+          "media_category": undefined,
+          "shared": undefined,
+        },
+        "sourceType": "id",
+        "type": "animated_gif",
+      },
+      "type": "media",
+    },
+  },
+]
+`;
+
+exports[`AnimatedGif rendering 2`] = `
+Array [
+  Object {
+    "node": <AnimatedGif
+      shared={true}
+      url="http://foo.io/bar.mp4"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "parameters": Object {
+          "additional_owners": undefined,
+          "media_category": undefined,
+          "shared": "true",
+        },
+        "sourceType": "url",
+        "type": "animated_gif",
+        "url": "http://foo.io/bar.mp4",
+      },
+      "type": "media",
+    },
+  },
+]
+`;
+
+exports[`AnimatedGif rendering 3`] = `
+Array [
+  Object {
+    "node": <AnimatedGif
+      additionalOwners={
+        Array [
+          "12345",
+        ]
+      }
+      assetTag="MyAnimatedGif"
+      file={
+        Object {
+          "data": Array [
+            102,
+            111,
+            111,
+          ],
+          "type": "Buffer",
+        }
+      }
+      fileSize={1234}
+      fileType="image/gif"
+      mediaCategory="dm_gif"
+      shared={true}
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "assetTag": "MyAnimatedGif",
+        "fileData": Object {
+          "data": Array [
+            102,
+            111,
+            111,
+          ],
+          "type": "Buffer",
+        },
+        "fileInfo": Object {
+          "contentType": "image/gif",
+          "knownLength": 1234,
+        },
+        "parameters": Object {
+          "additional_owners": "12345",
+          "media_category": "dm_gif",
+          "media_type": "image/gif",
+          "shared": "true",
+          "total_bytes": "1234",
+        },
+        "sourceType": "file",
+        "type": "animated_gif",
+      },
+      "type": "media",
+    },
+  },
+]
+`;
+
+exports[`Photo rendering 1`] = `
+Array [
+  Object {
+    "node": <Photo
+      mediaId="12345"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "id": "12345",
+        "parameters": Object {
+          "additional_owners": undefined,
+          "media_category": undefined,
+          "shared": undefined,
+        },
+        "sourceType": "id",
+        "type": "photo",
+      },
+      "type": "media",
+    },
+  },
+]
+`;
+
+exports[`Photo rendering 2`] = `
+Array [
+  Object {
+    "node": <Photo
+      shared={true}
+      url="http://foo.io/bar.mp4"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "parameters": Object {
+          "additional_owners": undefined,
+          "media_category": undefined,
+          "shared": "true",
+        },
+        "sourceType": "url",
+        "type": "photo",
+        "url": "http://foo.io/bar.mp4",
+      },
+      "type": "media",
+    },
+  },
+]
+`;
+
+exports[`Photo rendering 3`] = `
+Array [
+  Object {
+    "node": <Photo
+      additionalOwners={
+        Array [
+          "12345",
+        ]
+      }
+      assetTag="MyPhoto"
+      file={
+        Object {
+          "data": Array [
+            102,
+            111,
+            111,
+          ],
+          "type": "Buffer",
+        }
+      }
+      fileSize={1234}
+      fileType="image/jpeg"
+      mediaCategory="dm_image"
+      shared={true}
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "assetTag": "MyPhoto",
+        "fileData": Object {
+          "data": Array [
+            102,
+            111,
+            111,
+          ],
+          "type": "Buffer",
+        },
+        "fileInfo": Object {
+          "contentType": "image/jpeg",
+          "knownLength": 1234,
+        },
+        "parameters": Object {
+          "additional_owners": "12345",
+          "media_category": "dm_image",
+          "media_type": "image/jpeg",
+          "shared": "true",
+          "total_bytes": "1234",
+        },
+        "sourceType": "file",
+        "type": "photo",
+      },
+      "type": "media",
+    },
+  },
+]
+`;
+
+exports[`Video rendering 1`] = `
+Array [
+  Object {
+    "node": <Video
+      mediaId="12345"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "id": "12345",
+        "parameters": Object {
+          "additional_owners": undefined,
+          "media_category": undefined,
+          "shared": undefined,
+        },
+        "sourceType": "id",
+        "type": "video",
+      },
+      "type": "media",
+    },
+  },
+]
+`;
+
+exports[`Video rendering 2`] = `
+Array [
+  Object {
+    "node": <Video
+      shared={true}
+      url="http://foo.io/bar.mp4"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "parameters": Object {
+          "additional_owners": undefined,
+          "media_category": undefined,
+          "shared": "true",
+        },
+        "sourceType": "url",
+        "type": "video",
+        "url": "http://foo.io/bar.mp4",
+      },
+      "type": "media",
+    },
+  },
+]
+`;
+
+exports[`Video rendering 3`] = `
+Array [
+  Object {
+    "node": <Video
+      additionalOwners={
+        Array [
+          "12345",
+        ]
+      }
+      assetTag="MyVideo"
+      file={
+        Object {
+          "data": Array [
+            102,
+            111,
+            111,
+          ],
+          "type": "Buffer",
+        }
+      }
+      fileSize={1234}
+      fileType="video/mp4"
+      mediaCategory="dm_video"
+      shared={true}
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "media": Object {
+        "assetTag": "MyVideo",
+        "fileData": Object {
+          "data": Array [
+            102,
+            111,
+            111,
+          ],
+          "type": "Buffer",
+        },
+        "fileInfo": Object {
+          "contentType": "video/mp4",
+          "knownLength": 1234,
+        },
+        "parameters": Object {
+          "additional_owners": "12345",
+          "media_category": "dm_video",
+          "media_type": "video/mp4",
+          "shared": "true",
+          "total_bytes": "1234",
+        },
+        "sourceType": "file",
+        "type": "video",
+      },
+      "type": "media",
+    },
+  },
+]
+`;

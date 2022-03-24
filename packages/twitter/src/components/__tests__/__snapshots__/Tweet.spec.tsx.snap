@@ -1,0 +1,211 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`rendering as a reply 1`] = `
+Array [
+  Object {
+    "node": <Tweet
+      excludeUsersInReply={
+        Array [
+          "56789",
+        ]
+      }
+      placeId="55555"
+      poll={
+        Object {
+          "durationMinutes": 60,
+          "options": Array [
+            "foo",
+            "bar",
+            "baz",
+          ],
+        }
+      }
+    >
+      Hello World
+    </Tweet>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "accomplishRequest": [Function],
+      "mediaSources": null,
+      "request": Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "direct_message_deep_link": undefined,
+          "for_super_followers_only": undefined,
+          "geo": Object {
+            "place_id": "55555",
+          },
+          "media": undefined,
+          "poll": Object {
+            "duration_minutes": 60,
+            "options": Array [
+              "foo",
+              "bar",
+              "baz",
+            ],
+          },
+          "quote_tweet_id": undefined,
+          "reply": Object {
+            "exclude_reply_user_ids": Array [
+              "56789",
+            ],
+            "in_reply_to_tweet_id": "",
+          },
+          "reply_settings": undefined,
+          "text": "Hello World",
+        },
+      },
+      "type": "tweet",
+    },
+  },
+]
+`;
+
+exports[`rendering to agent's page 1`] = `
+Array [
+  Object {
+    "node": <Tweet
+      quoteTweetId="67890"
+      replySetting="following"
+      superFollowersOnly={true}
+    >
+      Hello World
+    </Tweet>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "accomplishRequest": [Function],
+      "mediaSources": null,
+      "request": Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "direct_message_deep_link": undefined,
+          "for_super_followers_only": true,
+          "geo": undefined,
+          "media": undefined,
+          "poll": undefined,
+          "quote_tweet_id": "67890",
+          "reply": undefined,
+          "reply_settings": "following",
+          "text": "Hello World",
+        },
+      },
+      "type": "tweet",
+    },
+  },
+]
+`;
+
+exports[`rendering with media 1`] = `
+Array [
+  Object {
+    "node": <Tweet
+      media={
+        <Machinat.Fragment>
+          <Photo
+            mediaId="123"
+          />
+          <Photo
+            url="http://foo.bar/baz.png"
+          />
+          <Photo
+            file={
+              Object {
+                "data": Array [
+                  102,
+                  111,
+                  111,
+                ],
+                "type": "Buffer",
+              }
+            }
+            fileSize={123}
+            fileType="image/jpeg"
+          />
+        </Machinat.Fragment>
+      }
+      superFollowersOnly={true}
+      tagUsersInMedia={
+        Array [
+          "56789",
+        ]
+      }
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "accomplishRequest": [Function],
+      "mediaSources": Array [
+        Object {
+          "id": "123",
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": undefined,
+            "shared": undefined,
+          },
+          "sourceType": "id",
+          "type": "photo",
+        },
+        Object {
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": "tweet_image",
+            "shared": undefined,
+          },
+          "sourceType": "url",
+          "type": "photo",
+          "url": "http://foo.bar/baz.png",
+        },
+        Object {
+          "assetTag": undefined,
+          "fileData": Object {
+            "data": Array [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
+          "fileInfo": Object {
+            "contentType": "image/jpeg",
+            "knownLength": 123,
+          },
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": "tweet_image",
+            "media_type": "image/jpeg",
+            "shared": undefined,
+            "total_bytes": "123",
+          },
+          "sourceType": "file",
+          "type": "photo",
+        },
+      ],
+      "request": Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "direct_message_deep_link": undefined,
+          "for_super_followers_only": true,
+          "geo": undefined,
+          "media": Object {
+            "media_ids": Array [],
+            "tagged_user_ids": Array [
+              "56789",
+            ],
+          },
+          "poll": undefined,
+          "quote_tweet_id": undefined,
+          "reply": undefined,
+          "reply_settings": undefined,
+          "text": undefined,
+        },
+      },
+      "type": "tweet",
+    },
+  },
+]
+`;

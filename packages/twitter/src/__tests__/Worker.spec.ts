@@ -421,7 +421,7 @@ test('with target & accomplishRequest', async () => {
     },
     {
       key: 'alpha',
-      target: null,
+      target: channel1,
       request: { method: 'POST', href: '2/foo', parameters: { n: 2 } },
       accomplishRequest,
     },
@@ -436,7 +436,7 @@ test('with target & accomplishRequest', async () => {
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
     success: true,
-    batch: ['12345', undefined, '67890'].map((id, i) => ({
+    batch: ['12345', '12345', '67890'].map((id, i) => ({
       success: true,
       result: { code: 200, body: { n: i + 1, id }, uploadedMedia: null },
       job: jobs[i],
@@ -449,7 +449,7 @@ test('with target & accomplishRequest', async () => {
   expect(accomplishRequest.mock.calls.map(({ args }) => args)).toEqual([
     [channel1, jobs[0].request, null],
     [channel2, jobs[2].request, null],
-    [null, jobs[1].request, null],
+    [channel1, jobs[1].request, null],
   ]);
 
   expect(scope.isDone()).toBe(true);
@@ -458,7 +458,7 @@ test('with target & accomplishRequest', async () => {
 test('with target & refreshTarget & accomplishRequest', async () => {
   const accomplishRequest = moxy((target, request) => ({
     ...request,
-    parameters: { ...request.parameters, id: target?.id },
+    parameters: { ...request.parameters, id: target.id },
   }));
   const refreshTarget = moxy((target, body) => ({ id: body.id }));
 
@@ -469,7 +469,7 @@ test('with target & refreshTarget & accomplishRequest', async () => {
     .delay(50)
     .reply(200, (_, body: Record<string, number>) => ({
       n: body.n,
-      id: (body.id || 0) + 1,
+      id: body.id + 1,
     }));
 
   const jobs = [
@@ -489,14 +489,14 @@ test('with target & refreshTarget & accomplishRequest', async () => {
     },
     {
       key: 'beta',
-      target: null,
+      target: { id: 10 },
       refreshTarget,
       accomplishRequest,
       request: { method: 'POST', href: '2/foo', parameters: { n: 3 } },
     },
     {
       key: 'beta',
-      target: null,
+      target: { id: 10 },
       refreshTarget,
       accomplishRequest,
       request: { method: 'POST', href: '2/foo', parameters: { n: 4 } },
@@ -506,7 +506,7 @@ test('with target & refreshTarget & accomplishRequest', async () => {
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
     success: true,
-    batch: [2, 3, 1, 2].map((id, i) => ({
+    batch: [2, 3, 11, 12].map((id, i) => ({
       success: true,
       result: { code: 200, body: { n: i + 1, id }, uploadedMedia: null },
       job: jobs[i],
@@ -521,7 +521,11 @@ test('with target & refreshTarget & accomplishRequest', async () => {
     { id: 1 },
     { id: 2, n: 1 }
   );
-  expect(refreshTarget.mock).toHaveBeenNthCalledWith(2, null, { id: 1, n: 3 });
+  expect(refreshTarget.mock).toHaveBeenNthCalledWith(
+    2,
+    { id: 10 },
+    { id: 11, n: 3 }
+  );
   expect(refreshTarget.mock).toHaveBeenNthCalledWith(
     3,
     { id: 2 },
@@ -529,14 +533,14 @@ test('with target & refreshTarget & accomplishRequest', async () => {
   );
   expect(refreshTarget.mock).toHaveBeenNthCalledWith(
     4,
-    { id: 1 },
-    { id: 2, n: 4 }
+    { id: 11 },
+    { id: 12, n: 4 }
   );
   expect(accomplishRequest.mock.calls.map(({ args }) => args[0])).toEqual([
     { id: 1 },
-    null,
+    { id: 10 },
     { id: 2 },
-    { id: 1 },
+    { id: 11 },
   ]);
 
   // reset target if refreshTarget return null
@@ -544,7 +548,7 @@ test('with target & refreshTarget & accomplishRequest', async () => {
 
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
     success: true,
-    batch: [4, 2, 3, 1].map((id, i) => ({
+    batch: [4, 2, 13, 11].map((id, i) => ({
       success: true,
       result: { code: 200, body: { n: i + 1, id }, uploadedMedia: null },
       job: jobs[i],
@@ -553,13 +557,13 @@ test('with target & refreshTarget & accomplishRequest', async () => {
   });
   expect(refreshTarget.mock.calls.slice(4).map(({ args }) => args)).toEqual([
     [{ id: 3 }, { n: 1, id: 4 }],
-    [{ id: 2 }, { n: 3, id: 3 }],
+    [{ id: 12 }, { n: 3, id: 13 }],
     [{ id: 1 }, { n: 2, id: 2 }],
-    [null, { n: 4, id: 1 }],
+    [{ id: 10 }, { n: 4, id: 11 }],
   ]);
   expect(
     accomplishRequest.mock.calls.slice(4).map(({ args }) => args[0])
-  ).toEqual([{ id: 3 }, { id: 2 }, { id: 1 }, null]);
+  ).toEqual([{ id: 3 }, { id: 12 }, { id: 1 }, { id: 10 }]);
 
   expect(scope.isDone()).toBe(true);
 });

@@ -106,8 +106,10 @@ export default class TwitterWorker
         });
       }
     } else {
+      if (parameters) {
+        body = JSON.stringify(parameters);
+      }
       authHeader = this.getAuthHeader(method, apiLocation, oauth);
-      body = JSON.stringify(parameters);
     }
 
     const response = await fetch(apiUrl.href, {
@@ -188,8 +190,8 @@ export default class TwitterWorker
     };
     const updatedParameters = {
       ...parameters,
-      media_type: parameters.media_type || contentType,
-      total_bytes: parameters.total_bytes || contentLength,
+      media_type: parameters.media_type || contentType || undefined,
+      total_bytes: parameters.total_bytes || contentLength || undefined,
     };
 
     const uploadResult = await this._uploadMediaFile(
@@ -201,14 +203,16 @@ export default class TwitterWorker
   }
 
   async _uploadMediaFile(
-    parameters: { [k: string]: string },
+    parameters: { [k: string]: undefined | string },
     fileData: Buffer | NodeJS.ReadableStream,
     fileInfo?: UploadingFileInfo
   ): Promise<MediaUploadResult> {
     const initForm = new FormData();
     initForm.append('command', 'INIT');
     Object.entries(parameters).forEach(([filed, value]) => {
-      initForm.append(filed, value);
+      if (value) {
+        initForm.append(filed, value);
+      }
     });
     const initResult = await this._requestUpload(initForm);
 

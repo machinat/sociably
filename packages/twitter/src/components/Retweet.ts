@@ -5,32 +5,32 @@ import { TwitterSegmentValue, TwitterComponent } from '../types';
 /**
  * @category Props
  */
-export type FollowProps = {
-  /** The user id to follow */
-  userId: string;
+export type RetweetProps = {
+  /** The tweet id to be retweeted */
+  tweetId: string;
 };
 
 /**
- * Follow a user
+ * Retweet a tweet
  * @category Component
- * @props {@link FollowProps}
- * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/users/follows/introduction).
+ * @props {@link RetweetProps}
+ * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/tweets/retweets/introduction).
  */
-export const Follow: TwitterComponent<
-  FollowProps,
+export const Retweet: TwitterComponent<
+  RetweetProps,
   UnitSegment<TwitterSegmentValue>
-> = makeTwitterComponent(function Follow(node, path) {
+> = makeTwitterComponent(function Retweet(node, path) {
   return [
     makeUnitSegment(node, path, {
       type: 'action',
       request: {
         method: 'POST',
-        href: '2/users/:id/following',
-        parameters: { target_user_id: node.props.userId },
+        href: '2/users/:id/retweets',
+        parameters: { tweet_id: node.props.tweetId },
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/following`,
+        href: `2/users/${target.agentId}/retweets`,
       }),
       mediaSources: null,
     }),

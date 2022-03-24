@@ -39,7 +39,11 @@ Array [
         "text": "Hello World",
       },
     },
-    "target": null,
+    "target": TwitterTweetTarget {
+      "agentId": "1234567890",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
   },
   Object {
     "accomplishRequest": [Function],
@@ -53,7 +57,11 @@ Array [
         "text": "Foo Bar Baz",
       },
     },
-    "target": null,
+    "target": TwitterTweetTarget {
+      "agentId": "1234567890",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
   },
 ]
 `;
@@ -99,8 +107,8 @@ Array [
     },
     "target": TwitterTweetTarget {
       "agentId": "1234567890",
-      "id": "1111111111111",
       "platform": "twitter",
+      "tweetId": "1111111111111",
     },
   },
   Object {
@@ -117,8 +125,8 @@ Array [
     },
     "target": TwitterTweetTarget {
       "agentId": "1234567890",
-      "id": "1111111111111",
       "platform": "twitter",
+      "tweetId": "1111111111111",
     },
   },
 ]
@@ -128,7 +136,7 @@ exports[`.render(channel, content) send direct message 1`] = `
 Object {
   "jobs": Array [
     Object {
-      "accomplishRequest": null,
+      "accomplishRequest": [Function],
       "key": "twitter.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
@@ -139,6 +147,7 @@ Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
+                "attachment": undefined,
                 "text": "Hello World",
               },
               "target": Object {
@@ -156,7 +165,7 @@ Object {
       },
     },
     Object {
-      "accomplishRequest": null,
+      "accomplishRequest": [Function],
       "key": "twitter.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
@@ -167,6 +176,7 @@ Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
+                "attachment": undefined,
                 "text": "Foo Bar Baz",
               },
               "target": Object {
@@ -204,7 +214,7 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "accomplishRequest": null,
+          "accomplishRequest": [Function],
           "key": "twitter.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
@@ -215,6 +225,7 @@ Object {
               "event": Object {
                 "message_create": Object {
                   "message_data": Object {
+                    "attachment": undefined,
                     "text": "Hello World",
                   },
                   "target": Object {
@@ -232,7 +243,7 @@ Object {
           },
         },
         Object {
-          "accomplishRequest": null,
+          "accomplishRequest": [Function],
           "key": "twitter.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
@@ -243,6 +254,7 @@ Object {
               "event": Object {
                 "message_create": Object {
                   "message_data": Object {
+                    "attachment": undefined,
                     "text": "Foo Bar Baz",
                   },
                   "target": Object {

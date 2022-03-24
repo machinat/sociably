@@ -232,6 +232,8 @@ export interface DirectMessageCreate {
   text: string;
   /** The message id */
   id: string;
+  initiatedViaTweet?: string;
+  initiatedViaWelcomeMessage?: string;
   sourceApp: RawApp;
   /** The hashtags in the message text */
   hashtags: HashtagEntity[];
@@ -290,6 +292,14 @@ export const DirectMessageCreate: DirectMessageCreate = {
   },
   get id() {
     return (this.payload as RawDirectMessage).id;
+  },
+  get initiatedViaTweet() {
+    return (this.payload as RawDirectMessage).message_create.initiated_via
+      ?.tweet_id;
+  },
+  get initiatedViaWelcomeMessage() {
+    return (this.payload as RawDirectMessage).message_create.initiated_via
+      ?.welcome_message_id;
   },
   get sourceApp() {
     return (this as DirectMessageCreate).appsMapping[

@@ -38,12 +38,13 @@
     "json-bigint": "^1.0.0",
     "nanoid": "^3.3.1",
     "node-fetch": "^2.6.7",
+    "twitter-text": "^3.1.0",
     "warning": "^4.0.2"
   },
   "peerDependencies": {
+    "@machinat/auth": "^0.5.0",
     "@machinat/core": "^0.5.0",
     "@machinat/http": "^0.5.0",
-    "@machinat/auth": "^0.5.0",
     "@machinat/webview": "^0.5.0"
   },
   "peerDependenciesMeta": {

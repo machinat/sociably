@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import type {
   PlatformUtilities,
   EventMiddleware,
@@ -49,14 +50,14 @@ export type LinkingMedia = {
   sourceType: 'url';
   type: MediaType;
   url: string;
-  parameters: { [k: string]: any };
+  parameters: { [k: string]: undefined | string };
   assetTag?: string;
 };
 
 export type UploadingMedia = {
   sourceType: 'file';
   type: MediaType;
-  parameters: { [k: string]: any };
+  parameters: { [k: string]: undefined | string };
   fileData: Buffer | NodeJS.ReadableStream;
   fileInfo?: UploadingFileInfo;
   assetTag?: string;
@@ -71,7 +72,7 @@ export type TwitterApiRequest = {
 };
 
 type AccomplishRequestFn = (
-  target: null | TwitterChannel,
+  target: TwitterChannel,
   request: TwitterApiRequest,
   uploadedMedia: null | string[]
 ) => TwitterApiRequest;
@@ -79,11 +80,11 @@ type AccomplishRequestFn = (
 export type TwitterJob = {
   key: undefined | string;
   request: TwitterApiRequest;
-  target: null | TwitterChannel;
+  target: TwitterChannel;
   refreshTarget:
     | null
     | ((
-        currentTarget: null | TwitterChannel,
+        currentTarget: TwitterChannel,
         result: unknown
       ) => null | TwitterChannel);
   accomplishRequest: null | AccomplishRequestFn;
@@ -111,14 +112,6 @@ export type ActionSegmentValue = {
   mediaSources: null | MediaSource[];
 };
 
-export type PollSegmentValue = {
-  type: 'poll';
-  poll: {
-    options: string[];
-    durationMinutes: number;
-  };
-};
-
 export type MediaSegmentValue = {
   type: 'media';
   media: MediaSource;
@@ -128,8 +121,7 @@ export type TwitterSegmentValue =
   | DirectMessageSegmentValue
   | TweetSegmentValue
   | ActionSegmentValue
-  | MediaSegmentValue
-  | PollSegmentValue;
+  | MediaSegmentValue;
 
 export type TwitterComponent<
   Props,
@@ -315,7 +307,6 @@ export type AnimatedGif = Media & {
   videoInfo: AnimateInfo;
 };
 
-/* eslint-disable camelcase */
 export type FailApiResult = {
   title: string;
   detail: string;
@@ -610,6 +601,10 @@ export type RawDirectMessage = {
       recipient_id: string;
     };
     sender_id: string;
+    initiated_via?: {
+      tweet_id?: string;
+      welcome_message_id?: string;
+    };
     source_app_id: string;
     message_data: {
       text: string;
@@ -678,7 +673,6 @@ export type RawTweetDeleteEvent = {
   for_user_id: string;
   tweet_delete_events: RawTweetDelete[];
 };
-/* eslint-enable camelcase */
 
 export type RawTwitterEventBody =
   | RawTweetCreateEvent

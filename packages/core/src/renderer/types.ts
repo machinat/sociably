@@ -66,7 +66,7 @@ export type IntermediateSegment<UnitValue, PartValue = any> =
   | BreakSegment
   | PartSegment<PartValue>;
 
-export type InnerRenderFn<Value> = (
+export type InnerRenderFn = <UnitValue, PartValue = any>(
   node: MachinatNode,
   path: string
-) => Promise<null | IntermediateSegment<Value>[]>;
+) => Promise<null | IntermediateSegment<UnitValue, PartValue>[]>;

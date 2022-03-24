@@ -119,7 +119,7 @@ export class TwitterBot
     }
 
     return this.engine.render(
-      channel,
+      channel || new TweetTarget(this.agentId),
       message,
       createTweetJobs({ key: getTimeId(), agentId: this.agentId })
     );
@@ -134,6 +134,8 @@ export class TwitterBot
         ? new TweetTarget(this.agentId, target)
         : target instanceof Tweet
         ? new TweetTarget(this.agentId, target.id)
+        : !target
+        ? new TweetTarget(this.agentId)
         : target;
 
     return this.render(channel, message);
@@ -162,7 +164,7 @@ export class TwitterBot
       const response = await this.engine.dispatchJobs(null, [
         {
           request: { method, href, parameters },
-          target: null,
+          target: new TweetTarget(this.agentId),
           refreshTarget: null,
           key: undefined,
           accomplishRequest: null,

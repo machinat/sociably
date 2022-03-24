@@ -96,7 +96,7 @@ export type NativeComponent<
   (
     element: NativeElement<Props, NativeComponent<Props, Segment>>,
     path: string,
-    render: InnerRenderFn<any>
+    render: InnerRenderFn
   ): null | Segment[] | Promise<null | Segment[]>;
   $$typeof: typeof MACHINAT_NATIVE_TYPE;
   $$platform: string;
@@ -196,8 +196,6 @@ export interface MachinatBot<Channel extends MachinatChannel, Job, Result> {
     channel: Channel,
     message: MachinatNode
   ): Promise<null | DispatchResponse<Job, Result>>;
-  start(): Promise<void>;
-  stop(): Promise<void>;
 }
 
 export type EventContext<
