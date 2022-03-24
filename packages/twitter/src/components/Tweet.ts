@@ -1,7 +1,8 @@
 import type { MachinatNode } from '@machinat/core';
 import { formatNode } from '@machinat/core/utils';
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { makeTwitterComponent, createTweetSegmentValue } from '../utils';
+import makeTwitterComponent from '../utils/makeTwitterComponent';
+import createTweetSegmentValue from '../utils/createTweetSegmentValue';
 import { TwitterSegmentValue, TwitterComponent, MediaSource } from '../types';
 
 /**

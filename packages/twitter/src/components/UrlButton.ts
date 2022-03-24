@@ -1,5 +1,5 @@
 import { makePartSegment, PartSegment } from '@machinat/core/renderer';
-import { makeTwitterComponent } from '../utils';
+import makeTwitterComponent from '../utils/makeTwitterComponent';
 import { TwitterComponent } from '../types';
 
 /**

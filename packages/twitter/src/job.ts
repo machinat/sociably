@@ -2,11 +2,9 @@ import { formatNode } from '@machinat/core/utils';
 import type { DispatchableSegment } from '@machinat/core/engine';
 import TweetTarget from './TweetTarget';
 import TwitterChat from './Chat';
-import {
-  createDmSegmentValue,
-  createTweetSegmentValue,
-  annotateTweetMedia,
-} from './utils';
+import createDmSegmentValue from './utils/createDmSegmentValue';
+import createTweetSegmentValue from './utils/createTweetSegmentValue';
+import annotateTweetMedia from './utils/annotateTweetMedia';
 import type { TwitterSegmentValue, TwitterJob, TweetResult } from './types';
 
 type CreateTweetJobOptions = { key: string; agentId: string };

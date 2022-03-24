@@ -3,7 +3,9 @@ import Tweet from '../Tweet';
 import TweetTarget from '../TweetTarget';
 import DirectMessageChat from '../Chat';
 import { TWITTER } from '../constant';
-import { polishUrlEntity, polishMentionEntity, polishMedia } from '../utils';
+import polishUrlEntity from '../utils/polishUrlEntity';
+import polishMentionEntity from '../utils/polishMentionEntity';
+import polishMedia from '../utils/polishMedia';
 import type {
   RawFavorite,
   RawTweet,

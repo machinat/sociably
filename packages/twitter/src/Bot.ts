@@ -20,7 +20,7 @@ import TwitterUser from './User';
 import DirectMessageChat from './Chat';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TWITTER } from './constant';
-import { getTimeId } from './utils';
+import getTimeId from './utils/getTimeId';
 import TwitterApiError from './Error';
 import type {
   TwitterChannel,

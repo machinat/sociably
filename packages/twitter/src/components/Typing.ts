@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import TwitterChat from '../Chat';
-import { makeTwitterComponent } from '../utils';
+import makeTwitterComponent from '../utils/makeTwitterComponent';
 import { TwitterSegmentValue, TwitterComponent } from '../types';
 
 /**
