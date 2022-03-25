@@ -121,7 +121,7 @@ export class TwitterBot
     return this.engine.render(
       channel || new TweetTarget(this.agentId),
       message,
-      createTweetJobs({ key: getTimeId(), agentId: this.agentId })
+      createTweetJobs({ key: getTimeId() })
     );
   }
 

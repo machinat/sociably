@@ -5,16 +5,15 @@ import TwitterChat from './Chat';
 import createDmSegmentValue from './utils/createDmSegmentValue';
 import createTweetSegmentValue from './utils/createTweetSegmentValue';
 import annotateTweetMedia from './utils/annotateTweetMedia';
+import splitTweetText from './utils/splitTweetText';
 import type { TwitterSegmentValue, TwitterJob, TweetResult } from './types';
-
-type CreateTweetJobOptions = { key: string; agentId: string };
 
 const useCreatedTweetTarget = (agentId: string) => (_, result: TweetResult) => {
   return new TweetTarget(agentId, result.data.id);
 };
 const useCurrentTarget = (curTarget: TweetTarget) => curTarget;
 
-const tweetJob = (
+const plainTweetJob = (
   agentId: string,
   target: TweetTarget,
   key: string,
@@ -34,31 +33,37 @@ const tweetJob = (
 };
 
 export const createTweetJobs =
-  ({ key, agentId }: CreateTweetJobOptions) =>
+  ({ key }: { key: string }) =>
   (
     target: TweetTarget,
     segments: DispatchableSegment<TwitterSegmentValue>[]
   ): TwitterJob[] => {
     const jobs: TwitterJob[] = [];
-    let lastTweetJob: null | TwitterJob = null;
+    let lastPlainTweet: null | TwitterJob = null;
 
     segments.forEach((segment) => {
       if (segment.type === 'text') {
-        lastTweetJob = tweetJob(agentId, target, key, segment.value);
+        const splietdContent = splitTweetText(segment.value);
+        const newJobs = splietdContent?.map((text) =>
+          plainTweetJob(target.agentId, target, key, text)
+        );
 
-        jobs.push(lastTweetJob);
+        if (newJobs) {
+          jobs.push(...newJobs);
+          lastPlainTweet = newJobs[newJobs.length - 1];
+        }
       } else if (segment.value.type === 'tweet') {
         const { request, mediaSources } = segment.value;
-        lastTweetJob = {
+        jobs.push({
           target,
           key,
           request,
           mediaSources,
-          refreshTarget: useCreatedTweetTarget(agentId),
+          refreshTarget: useCreatedTweetTarget(target.agentId),
           accomplishRequest: segment.value.accomplishRequest,
-        };
+        });
 
-        jobs.push(lastTweetJob);
+        lastPlainTweet = null;
       } else if (segment.value.type === 'action') {
         const { request, mediaSources } = segment.value;
         jobs.push({
@@ -72,22 +77,22 @@ export const createTweetJobs =
       } else if (segment.value.type === 'media') {
         const { media } = segment.value;
         if (
-          !lastTweetJob ||
-          lastTweetJob.request.parameters.poll ||
-          lastTweetJob.request.parameters.quote_tweet_id ||
-          (lastTweetJob.mediaSources &&
+          !lastPlainTweet ||
+          lastPlainTweet.request.parameters.poll ||
+          lastPlainTweet.request.parameters.quote_tweet_id ||
+          (lastPlainTweet.mediaSources &&
             (media.type !== 'photo' ||
-              lastTweetJob.mediaSources[0].type !== 'photo' ||
-              lastTweetJob.mediaSources.length >= 4))
+              lastPlainTweet.mediaSources[0].type !== 'photo' ||
+              lastPlainTweet.mediaSources.length >= 4))
         ) {
-          lastTweetJob = tweetJob(agentId, target, key);
-          jobs.push(lastTweetJob);
+          lastPlainTweet = plainTweetJob(target.agentId, target, key);
+          jobs.push(lastPlainTweet);
         }
 
-        if (!lastTweetJob.mediaSources) {
-          lastTweetJob.mediaSources = [];
+        if (!lastPlainTweet.mediaSources) {
+          lastPlainTweet.mediaSources = [];
         }
-        lastTweetJob.mediaSources.push(annotateTweetMedia(media));
+        lastPlainTweet.mediaSources.push(annotateTweetMedia(media));
       } else {
         throw new Error(
           `direct message feature ${formatNode(

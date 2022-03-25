@@ -209,3 +209,90 @@ Array [
   },
 ]
 `;
+
+exports[`spliting long content into tweet thread 1`] = `
+Array [
+  Object {
+    "node": <Tweet
+      placeId="98765"
+      quoteTweetId="67890"
+      replySetting="following"
+      superFollowersOnly={true}
+    >
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+    </Tweet>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "accomplishRequest": [Function],
+      "mediaSources": null,
+      "request": Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "direct_message_deep_link": undefined,
+          "for_super_followers_only": true,
+          "geo": Object {
+            "place_id": "98765",
+          },
+          "media": undefined,
+          "poll": undefined,
+          "quote_tweet_id": "67890",
+          "reply": undefined,
+          "reply_settings": "following",
+          "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國",
+        },
+      },
+      "type": "tweet",
+    },
+  },
+  Object {
+    "node": <Tweet
+      placeId="98765"
+      quoteTweetId="67890"
+      replySetting="following"
+      superFollowersOnly={true}
+    >
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+    </Tweet>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "accomplishRequest": [Function],
+      "mediaSources": null,
+      "request": Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "text": "國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國",
+        },
+      },
+      "type": "tweet",
+    },
+  },
+  Object {
+    "node": <Tweet
+      placeId="98765"
+      quoteTweetId="67890"
+      replySetting="following"
+      superFollowersOnly={true}
+    >
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+    </Tweet>,
+    "path": "$",
+    "type": "unit",
+    "value": Object {
+      "accomplishRequest": [Function],
+      "mediaSources": null,
+      "request": Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國",
+        },
+      },
+      "type": "tweet",
+    },
+  },
+]
+`;

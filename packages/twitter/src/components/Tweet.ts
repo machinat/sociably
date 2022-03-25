@@ -3,6 +3,7 @@ import { formatNode } from '@machinat/core/utils';
 import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent';
 import createTweetSegmentValue from '../utils/createTweetSegmentValue';
+import splitTweetText from '../utils/splitTweetText';
 import { TwitterSegmentValue, TwitterComponent, MediaSource } from '../types';
 
 /**
@@ -112,13 +113,16 @@ export const Tweet: TwitterComponent<
     throw new TypeError(`no text or media in <Tweet/>`);
   }
 
-  return [
+  const content = contentSegments?.[0].value;
+  const splitedContent = splitTweetText(content);
+
+  const segments = [
     makeUnitSegment(
       node,
       path,
       createTweetSegmentValue(
         {
-          text: contentSegments?.[0].value,
+          text: splitedContent?.[0],
           reply: excludeUsersInReply
             ? {
                 in_reply_to_tweet_id: '',
@@ -148,4 +152,16 @@ export const Tweet: TwitterComponent<
       )
     ),
   ];
+
+  if (splitedContent) {
+    segments.push(
+      ...splitedContent
+        .slice(1)
+        .map((text) =>
+          makeUnitSegment(node, path, createTweetSegmentValue({ text }))
+        )
+    );
+  }
+
+  return segments;
 });

@@ -9,13 +9,9 @@ import DirectMessageChat from '../Chat';
 import TweetTarget from '../TweetTarget';
 import TwitterBot from '../Bot';
 
-nock.disableNetConnect();
-
 const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Worker = _Worker as Moxy<typeof _Worker>;
-
-nock.disableNetConnect();
 
 jest.mock('@machinat/core/engine', () =>
   jest
@@ -34,6 +30,8 @@ jest.mock('../Worker', () =>
     mockNewInstance: false,
   })
 );
+
+nock.disableNetConnect();
 
 const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);

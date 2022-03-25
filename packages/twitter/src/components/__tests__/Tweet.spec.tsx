@@ -279,3 +279,80 @@ it('throw if no content available', async () => {
     `"no text or media in <Tweet/>"`
   );
 });
+
+test('spliting long content into tweet thread', async () => {
+  const segments = await render(
+    <Tweet
+      placeId="98765"
+      quoteTweetId="67890"
+      replySetting="following"
+      superFollowersOnly
+    >
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+      國國國國國國國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+      國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
+    </Tweet>
+  );
+  expect(segments).toMatchSnapshot();
+  expect(
+    (segments as any).map(({ value: { request, accomplishRequest } }, i) =>
+      accomplishRequest(
+        i === 0
+          ? new TweetTarget('12345')
+          : new TweetTarget('12345', String(11111 * i)),
+        request,
+        null
+      )
+    )
+  ).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "direct_message_deep_link": undefined,
+          "for_super_followers_only": true,
+          "geo": Object {
+            "place_id": "98765",
+          },
+          "media": undefined,
+          "poll": undefined,
+          "quote_tweet_id": "67890",
+          "reply": undefined,
+          "reply_settings": "following",
+          "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國",
+        },
+      },
+      Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "direct_message_deep_link": undefined,
+          "media": undefined,
+          "reply": Object {
+            "exclude_reply_user_ids": undefined,
+            "in_reply_to_tweet_id": "11111",
+          },
+          "text": "國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國",
+        },
+      },
+      Object {
+        "href": "2/tweets",
+        "method": "POST",
+        "parameters": Object {
+          "direct_message_deep_link": undefined,
+          "media": undefined,
+          "reply": Object {
+            "exclude_reply_user_ids": undefined,
+            "in_reply_to_tweet_id": "22222",
+          },
+          "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國",
+        },
+      },
+    ]
+  `);
+});

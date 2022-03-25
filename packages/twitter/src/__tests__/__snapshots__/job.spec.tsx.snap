@@ -1,0 +1,579 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createDmSegmentValue(chat, segment) jobs from all kinds og segment 1`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "key": "twitter.12345.67890",
+    "mediaSources": null,
+    "refreshTarget": null,
+    "request": Object {
+      "href": "1.1/direct_messages/events/new.json",
+      "method": "POST",
+      "parameters": Object {
+        "event": Object {
+          "message_create": Object {
+            "message_data": Object {
+              "attachment": undefined,
+              "text": "Hello",
+            },
+            "target": Object {
+              "recipient_id": "",
+            },
+          },
+          "type": "message_create",
+        },
+      },
+    },
+    "target": TwitterChat {
+      "agentId": "12345",
+      "id": "67890",
+      "platform": "twitter",
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "twitter.12345.67890",
+    "mediaSources": Array [
+      Object {
+        "id": "11111",
+        "sourceType": "id",
+        "type": "photo",
+      },
+    ],
+    "refreshTarget": null,
+    "request": Object {
+      "href": "1.1/direct_messages/events/new.json",
+      "method": "POST",
+      "parameters": Object {
+        "event": Object {
+          "message_create": Object {
+            "message_data": Object {
+              "attachment": Object {
+                "media": Object {
+                  "id": "",
+                },
+                "type": "media",
+              },
+              "text": undefined,
+            },
+            "target": Object {
+              "recipient_id": "",
+            },
+          },
+          "type": "message_create",
+        },
+      },
+    },
+    "target": TwitterChat {
+      "agentId": "12345",
+      "id": "67890",
+      "platform": "twitter",
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "twitter.12345.67890",
+    "mediaSources": Array [
+      Object {
+        "id": "22222",
+        "sourceType": "id",
+        "type": "video",
+      },
+    ],
+    "refreshTarget": null,
+    "request": Object {
+      "href": "1.1/direct_messages/events/new.json",
+      "method": "POST",
+      "parameters": Object {
+        "event": Object {
+          "message_create": Object {
+            "message_data": Object {
+              "attachment": Object {
+                "media": Object {
+                  "id": "",
+                },
+                "type": "media",
+              },
+              "text": "World",
+            },
+            "target": Object {
+              "recipient_id": "",
+            },
+          },
+          "type": "message_create",
+        },
+      },
+    },
+    "target": TwitterChat {
+      "agentId": "12345",
+      "id": "67890",
+      "platform": "twitter",
+    },
+  },
+  Object {
+    "accomplishRequest": null,
+    "key": "twitter.12345.67890",
+    "mediaSources": null,
+    "refreshTarget": null,
+    "request": Object {
+      "href": "1.1/foo",
+      "method": "POST",
+      "parameters": null,
+    },
+    "target": TwitterChat {
+      "agentId": "12345",
+      "id": "67890",
+      "platform": "twitter",
+    },
+  },
+]
+`;
+
+exports[`createTweetJobs(options)(tweetTarget, segments) more continuous media that exceed the limit of a tweet 1`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "11111",
+        "sourceType": "id",
+        "type": "video",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "Hello",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "22222",
+        "sourceType": "id",
+        "type": "animated_gif",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": undefined,
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "33333",
+        "sourceType": "id",
+        "type": "photo",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": undefined,
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "44444",
+        "sourceType": "id",
+        "type": "photo",
+      },
+      Object {
+        "id": "55555",
+        "sourceType": "id",
+        "type": "photo",
+      },
+      Object {
+        "id": "66666",
+        "sourceType": "id",
+        "type": "photo",
+      },
+      Object {
+        "id": "77777",
+        "sourceType": "id",
+        "type": "photo",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "World",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "88888",
+        "sourceType": "id",
+        "type": "photo",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": undefined,
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+]
+`;
+
+exports[`createTweetJobs(options)(tweetTarget, segments) with media, poll and quote tweet 1`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "poll": Object {
+          "duration": 60,
+          "options": Array [
+            "foo",
+            "bar",
+          ],
+        },
+        "text": "Yo",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "11111",
+        "sourceType": "id",
+        "type": "video",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": undefined,
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "quote_tweet_id": "98765",
+        "text": "Hi",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "22222",
+        "sourceType": "id",
+        "type": "animated_gif",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": undefined,
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "33333",
+        "sourceType": "id",
+        "type": "video",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "Howdy",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "44444",
+        "sourceType": "id",
+        "type": "photo",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": undefined,
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+]
+`;
+
+exports[`createTweetJobs(options)(tweetTarget, segments) with text and media 1`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "11111",
+        "sourceType": "id",
+        "type": "photo",
+      },
+      Object {
+        "id": "22222",
+        "sourceType": "id",
+        "type": "photo",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "Hello",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "World",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "33333",
+        "sourceType": "id",
+        "type": "video",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": undefined,
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "44444",
+        "sourceType": "id",
+        "type": "animated_gif",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "Haro",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+  Object {
+    "accomplishRequest": null,
+    "key": "123",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "1.1/foo",
+      "method": "POST",
+      "parameters": null,
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": undefined,
+    },
+  },
+]
+`;
+
+exports[`createTweetJobs(options)(tweetTarget, segments) with text longer than the limit tweet 1`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": null,
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": "56789",
+    },
+  },
+  Object {
+    "accomplishRequest": [Function],
+    "key": "123",
+    "mediaSources": Array [
+      Object {
+        "id": "11111",
+        "sourceType": "id",
+        "type": "photo",
+      },
+    ],
+    "refreshTarget": [Function],
+    "request": Object {
+      "href": "2/tweets",
+      "method": "POST",
+      "parameters": Object {
+        "text": "龍龜",
+      },
+    },
+    "target": TwitterTweetTarget {
+      "agentId": "12345",
+      "platform": "twitter",
+      "tweetId": "56789",
+    },
+  },
+]
+`;
