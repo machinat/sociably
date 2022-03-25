@@ -1,7 +1,7 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext) => when(
+export default ({ platforms }: CreateAppContext): string => when(
   platforms.includes('webview')
 )`
 /// <reference types="next" />

@@ -1,4 +1,4 @@
-export default () => `
+export default (): string => `
 export default {
   defaultLanguage: 'en',
   languages: ['en'],

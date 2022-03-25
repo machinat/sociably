@@ -1,6 +1,6 @@
 export const name = '.gitignore';
 
-export default () => `
+export default (): string => `
 # Build output
 lib
 dist

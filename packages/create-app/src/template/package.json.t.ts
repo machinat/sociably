@@ -2,7 +2,7 @@ import sortPackageJson from 'sort-package-json';
 import { when } from '../utils';
 import { CreateAppContext } from '../types';
 
-export default ({ projectName, platforms }: CreateAppContext) => {
+export default ({ projectName, platforms }: CreateAppContext): string => {
   const packageConfigs = {
     name: projectName,
     private: true,

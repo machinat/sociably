@@ -1,4 +1,4 @@
-export default () => `
+export default (): string => `
 import { fromApp } from '@machinat/stream';
 import main from './main';
 import createApp from './app'

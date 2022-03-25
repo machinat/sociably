@@ -1,6 +1,6 @@
 export const mode = 0o775;
 
-export default () => `
+export default (): string => `
 #!/usr/bin/env node
 import { parse as parseUrl } from 'url';
 import localtunnel from 'localtunnel';

@@ -3,7 +3,7 @@ import { when } from '../../../utils';
 
 export const mode = 0o775;
 
-export default ({ platforms, recognizer }: CreateAppContext) => `
+export default ({ recognizer }: CreateAppContext): string => `
 #!/usr/bin/env node
 import { resolve as resolvePath } from 'path';${when(
   recognizer === 'dialogflow'

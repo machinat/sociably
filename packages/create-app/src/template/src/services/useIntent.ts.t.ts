@@ -1,7 +1,7 @@
 import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext) => `
+export default ({ platforms }: CreateAppContext): string => `
 import { makeFactoryProvider, IntentRecognizer } from '@machinat/core';
 import { ChatEventContext } from '../types';
 

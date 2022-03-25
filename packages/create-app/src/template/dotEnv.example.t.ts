@@ -3,7 +3,7 @@ import type { CreateAppContext } from '../types';
 
 export const name = '.env.example';
 
-export default ({ platforms, recognizer }: CreateAppContext) => `
+export default ({ platforms, recognizer }: CreateAppContext): string => `
 # NOTICE! This file is an example for reference.
 # DO NOT save any secret data here!
 # The real settings should go to \`.env\` file.

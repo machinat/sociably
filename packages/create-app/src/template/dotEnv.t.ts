@@ -5,7 +5,7 @@ import type { CreateAppContext } from '../types';
 
 export const name = '.env';
 
-export default ({ platforms, recognizer }: CreateAppContext) => {
+export default ({ platforms, recognizer }: CreateAppContext): string => {
   const localTunnelSubDomain = randomName({ number: true }).dashed;
   return `
 NODE_ENV=development

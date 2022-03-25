@@ -1,7 +1,7 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext) => `
+export default ({ platforms }: CreateAppContext): string => `
 import ${when(platforms.includes('telegram'))`Machinat, `}{
     makeContainer,
 } from '@machinat/core';${when(platforms.includes('telegram'))`

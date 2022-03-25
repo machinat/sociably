@@ -1,4 +1,4 @@
-export default () => `
+export default (): string => `
 import Machinat, { makeContainer } from '@machinat/core';
 import { build } from '@machinat/script';
 import * as $ from '@machinat/script/keywords';

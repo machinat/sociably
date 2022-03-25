@@ -1,7 +1,7 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms, recognizer, projectName }: CreateAppContext) => `
+export default ({ platforms, recognizer }: CreateAppContext): string => `
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';${when(

@@ -1,7 +1,7 @@
 import { CreateAppContext } from '../../types';
 import { when } from '../../utils';
 
-export default ({ platforms }: CreateAppContext) => `${when(
+export default ({ platforms }: CreateAppContext): string => `${when(
   platforms.includes('messenger')
 )`
 import type { MessengerEventContext } from '@machinat/messenger';${when(

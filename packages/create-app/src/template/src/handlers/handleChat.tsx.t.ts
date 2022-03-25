@@ -1,7 +1,7 @@
 import { CreateAppContext } from '../../../types';
 import { when } from '../../../utils';
 
-export default ({ platforms }: CreateAppContext) => `
+export default ({ platforms }: CreateAppContext): string => `
 import Machinat, { makeContainer } from '@machinat/core';
 import About from '../scenes/About';
 import WithMenu from '../components/WithMenu';

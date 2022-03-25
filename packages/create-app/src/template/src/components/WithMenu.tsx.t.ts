@@ -1,7 +1,7 @@
 import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext) => `
+export default ({ platforms }: CreateAppContext): string => `
 import Machinat, {
   MachinatNode,${when(platforms.includes('webview'))`
   makeContainer,`}
