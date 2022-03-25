@@ -8,7 +8,7 @@ import type { Socket, ListenOptions } from 'net';
 export type RoutingInfo = {
   originalPath: string;
   matchedPath?: string;
-  trailingPath?: string;
+  trailingPath: string;
 };
 
 export type RequestHandler = (

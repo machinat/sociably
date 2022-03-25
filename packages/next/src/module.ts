@@ -1,8 +1,12 @@
 import createNextServer from 'next';
 import type { ServiceModule } from '@machinat/core';
-import { makeFactoryProvider, makeContainer } from '@machinat/core/service';
+import {
+  makeFactoryProvider,
+  makeContainer,
+  ServiceProvision,
+} from '@machinat/core/service';
 import Http from '@machinat/http';
-import type { RequestRoute } from '@machinat/http';
+import type { RequestRoute, UpgradeRoute } from '@machinat/http';
 import { ReceiverP } from './receiver';
 import { ConfigsI, ServerI } from './interface';
 
@@ -11,7 +15,7 @@ const nextServerFactory = makeFactoryProvider({
   deps: [ConfigsI],
 })(({ serverOptions }) => createNextServer((serverOptions || {}) as {}));
 
-const routingFactory = makeFactoryProvider({
+const requestRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [ReceiverP, ConfigsI],
 })(
@@ -19,6 +23,17 @@ const routingFactory = makeFactoryProvider({
     name: 'next',
     path: configs.entryPath || '/',
     handler: receiver.handleRequestCallback(),
+  })
+);
+
+const hmrRouteFactory = makeFactoryProvider({
+  lifetime: 'transient',
+  deps: [ReceiverP, ConfigsI],
+})(
+  (receiver, configs): UpgradeRoute => ({
+    name: 'webpack-hmr',
+    path: configs.entryPath || '/',
+    handler: receiver.handleHmrUpgradeCallback(),
   })
 );
 
@@ -35,21 +50,31 @@ namespace Next {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
-  export const initModule = (configs: ConfigsI = {}): ServiceModule => ({
-    provisions: [
+  export const initModule = (configs: ConfigsI = {}): ServiceModule => {
+    const provisions: ServiceProvision<unknown>[] = [
       ReceiverP,
       { provide: ConfigsI, withValue: configs },
       { provide: ServerI, withProvider: nextServerFactory },
-      { provide: Http.RequestRouteList, withProvider: routingFactory },
-    ],
+      { provide: Http.RequestRouteList, withProvider: requestRouteFactory },
+    ];
 
-    startHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
-      receiver.prepare()
-    ),
-    stopHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
-      receiver.close()
-    ),
-  });
+    if (configs.serverOptions?.dev) {
+      provisions.push({
+        provide: Http.UpgradeRouteList,
+        withProvider: hmrRouteFactory,
+      });
+    }
+
+    return {
+      provisions,
+      startHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
+        receiver.prepare()
+      ),
+      stopHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
+        receiver.close()
+      ),
+    };
+  };
 }
 
 export default Next;

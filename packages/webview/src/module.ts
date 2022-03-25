@@ -14,6 +14,7 @@ import type {
   RequestRoute,
   DefaultRequestRoute,
   UpgradeRoute,
+  DefaultUpgradeRoute,
 } from '@machinat/http';
 import Next from '@machinat/next';
 import LocalOnlyBroker from '@machinat/websocket/broker/LocalOnlyBroker';
@@ -90,7 +91,7 @@ const authRouteFactory = makeFactoryProvider({
   })
 );
 
-const nextRouteFactory = makeFactoryProvider({
+const nextRequestRouteFactory = makeFactoryProvider({
   lifetime: 'transient',
   deps: [Next.Receiver, ConfigsI],
 })(
@@ -108,6 +109,27 @@ const nextRouteFactory = makeFactoryProvider({
           name: 'next',
           path: webviewPath,
           handler: receiver.handleRequestCallback(),
+        }
+);
+
+const hmrRouteFactory = makeFactoryProvider({
+  lifetime: 'transient',
+  deps: [Next.Receiver, ConfigsI],
+})(
+  (
+    receiver,
+    { webviewPath = DEFAULT_NEXT_PATH }
+  ): UpgradeRoute | DefaultUpgradeRoute =>
+    webviewPath === '/'
+      ? {
+          name: 'webpack-hmr',
+          default: true,
+          handler: receiver.handleHmrUpgradeCallback(),
+        }
+      : {
+          name: 'webpack-hmr',
+          path: webviewPath,
+          handler: receiver.handleHmrUpgradeCallback(),
         }
 );
 
@@ -201,9 +223,15 @@ namespace Webview {
         { provide: Next.Server, withProvider: nextServerFactory },
         {
           provide: Http.RequestRouteList,
-          withProvider: nextRouteFactory,
+          withProvider: nextRequestRouteFactory,
         }
       );
+      if (configs.nextServerOptions?.dev) {
+        provisions.push({
+          provide: Http.UpgradeRouteList,
+          withProvider: hmrRouteFactory,
+        });
+      }
     }
 
     if (configs.authPlatforms) {

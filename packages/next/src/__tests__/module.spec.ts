@@ -33,7 +33,7 @@ describe('initModule()', () => {
       Next.initModule({
         entryPath: '/webview',
         noPrepare: false,
-        serverOptions: { dev: true },
+        serverOptions: { dir: './webview' },
         handleRequest: () => ({ ok: true }),
       })
     ).toMatchInlineSnapshot(`
@@ -52,7 +52,7 @@ describe('initModule()', () => {
               "handleRequest": [Function],
               "noPrepare": false,
               "serverOptions": Object {
-                "dev": true,
+                "dir": "./webview",
               },
             },
           },
@@ -120,6 +120,44 @@ describe('initModule()', () => {
         },
       ]
     `);
+  });
+
+  test('register hmr route when dev', async () => {
+    let app = Machinat.createApp({
+      modules: [
+        Next.initModule({
+          entryPath: '/webview',
+          noPrepare: false,
+          serverOptions: { dev: true },
+        }),
+      ],
+    });
+    await app.start();
+
+    let [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
+    expect(upgradeRoutings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "handler": [Function],
+          "name": "webpack-hmr",
+          "path": "/webview",
+        },
+      ]
+    `);
+
+    app = Machinat.createApp({
+      modules: [
+        Next.initModule({
+          entryPath: '/webview',
+          noPrepare: false,
+          serverOptions: { dev: false },
+        }),
+      ],
+    });
+    await app.start();
+
+    [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
+    expect(upgradeRoutings).toEqual([]);
   });
 
   test('startHook() call receiver.prepare()', async () => {

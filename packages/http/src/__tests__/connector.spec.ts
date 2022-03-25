@@ -190,7 +190,7 @@ describe('handling requests', () => {
     expect(defaultHandler.mock).toHaveBeenCalledWith(rootReq, res, {
       originalPath: '/',
       matchedPath: undefined,
-      trailingPath: undefined,
+      trailingPath: '',
     });
 
     const barReq = moxy({ url: '/bar' });
@@ -200,7 +200,7 @@ describe('handling requests', () => {
     expect(defaultHandler.mock).toHaveBeenCalledWith(barReq, res, {
       originalPath: '/bar',
       matchedPath: undefined,
-      trailingPath: undefined,
+      trailingPath: 'bar',
     });
 
     expect(res.end.mock).not.toHaveBeenCalled();
@@ -466,7 +466,7 @@ describe('handling upgrade', () => {
     expect(defaultHandler.mock).toHaveBeenCalledWith(rootReq, socket, head, {
       originalPath: '/',
       matchedPath: undefined,
-      trailingPath: undefined,
+      trailingPath: '',
     });
 
     const barReq = moxy({ url: '/bar' });
@@ -476,7 +476,7 @@ describe('handling upgrade', () => {
     expect(defaultHandler.mock).toHaveBeenCalledWith(barReq, socket, head, {
       originalPath: '/bar',
       matchedPath: undefined,
-      trailingPath: undefined,
+      trailingPath: 'bar',
     });
 
     expect(socket.write.mock).not.toHaveBeenCalled();

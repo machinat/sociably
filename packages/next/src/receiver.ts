@@ -1,5 +1,6 @@
-import { parse as parseUrl, UrlWithParsedQuery } from 'url';
+import { parse as parseUrl } from 'url';
 import { STATUS_CODES, IncomingMessage, ServerResponse } from 'http';
+import { Socket as NetSocket } from 'net';
 import {
   maybeInjectContainer,
   makeClassProvider,
@@ -8,7 +9,11 @@ import {
 } from '@machinat/core/service';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import type { PopErrorFn } from '@machinat/core';
-import type { RequestHandler } from '@machinat/http';
+import type {
+  RequestHandler,
+  UpgradeHandler,
+  RoutingInfo,
+} from '@machinat/http';
 import { ServerI, ConfigsI } from './interface';
 import type { NextServer, NextRequestHandler } from './types';
 
@@ -25,11 +30,7 @@ type NextReceiverOptions = {
  */
 export class NextReceiver {
   private _next: NextServer;
-  private _defaultNextHandler: (
-    req: IncomingMessage,
-    res: ServerResponse,
-    parsedUrl: UrlWithParsedQuery
-  ) => void;
+  private _defaultNextHandler: ReturnType<NextServer['getRequestHandler']>;
 
   private _pathPrefix: string;
   private _shouldPrepare: boolean;
@@ -80,6 +81,32 @@ export class NextReceiver {
 
   handleRequestCallback(): RequestHandler {
     return this.handleRequest.bind(this);
+  }
+
+  handleHmrUpgrade(
+    req: IncomingMessage,
+    socket: NetSocket,
+    _head: Buffer,
+    { trailingPath }: RoutingInfo
+  ): void {
+    if (trailingPath !== '_next/webpack-hmr') {
+      socket.write(
+        `HTTP/1.1 404 Not Found\r\n` +
+          'Connection: close\r\n' +
+          'Content-Type: text/html\r\n' +
+          `Content-Length: 9\r\n` +
+          `\r\nNot Found`
+      );
+      socket.destroy();
+    } else {
+      this._defaultNextHandler(req, new ServerResponse(req)).catch(
+        this._popError
+      );
+    }
+  }
+
+  handleHmrUpgradeCallback(): UpgradeHandler {
+    return this.handleHmrUpgrade.bind(this);
   }
 
   private async _handleRequestImpl(req: IncomingMessage, res: ServerResponse) {

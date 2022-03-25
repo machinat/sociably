@@ -139,7 +139,7 @@ export class HttpConnector {
     this._defaultRequestRoute.handler(req, res, {
       originalPath: pathname,
       matchedPath: undefined,
-      trailingPath: undefined,
+      trailingPath: pathname.slice(1),
     });
   }
 
@@ -172,7 +172,7 @@ export class HttpConnector {
     this._defaultUpgradeRoute.handler(req, socket, head, {
       originalPath: pathname,
       matchedPath: undefined,
-      trailingPath: undefined,
+      trailingPath: pathname.slice(1),
     });
   }
 }

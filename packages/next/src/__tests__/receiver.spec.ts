@@ -9,7 +9,7 @@ import type createNextApp from 'next';
 import { IncomingMessage, ServerResponse } from 'http';
 import { NextReceiver } from '../receiver';
 
-const nextDefaultHandler = moxy();
+const nextDefaultHandler = moxy(async () => {});
 
 const nextApp = moxy<ReturnType<typeof createNextApp>>({
   getRequestHandler: () => nextDefaultHandler,
@@ -493,4 +493,53 @@ it('call next.renderError() if middlewares reject', async () => {
 
   expect(popError.mock).toHaveBeenCalledTimes(1);
   expect(popError.mock).toHaveBeenCalledWith(new Error("I'm a teapot"));
+});
+
+it('pass hmr upgrade request to next server', async () => {
+  const receiver = new NextReceiver(nextApp, {
+    noPrepare: true,
+    entryPath: '/hello',
+    popError,
+    handleRequest,
+  });
+  await receiver.prepare();
+
+  const socket = moxy({ write: () => {}, destroy: () => {} });
+
+  receiver.handleHmrUpgrade(req, socket as never, Buffer.from(''), {
+    originalPath: '/hello/_next/webpack-hmr',
+    matchedPath: '/hello',
+    trailingPath: '_next/webpack-hmr',
+  });
+  await nextTick();
+
+  expect(nextDefaultHandler.mock).toHaveBeenCalledWith(
+    req,
+    expect.any(ServerResponse)
+  );
+  expect(socket.write.mock).not.toHaveBeenCalled();
+  expect(socket.destroy.mock).not.toHaveBeenCalled();
+
+  receiver.handleHmrUpgrade(req, socket as never, Buffer.from(''), {
+    originalPath: '/hello/_next/wrong-path',
+    matchedPath: '/hello',
+    trailingPath: '_next/wrong-path',
+  });
+  await nextTick();
+
+  expect(socket.destroy.mock).toHaveBeenCalledTimes(1);
+  expect(socket.write.mock).toHaveBeenCalledTimes(1);
+  expect(socket.write.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    "HTTP/1.1 404 Not Found
+    Connection: close
+    Content-Type: text/html
+    Content-Length: 9
+
+    Not Found"
+  `);
+
+  expect(nextDefaultHandler.mock).toHaveBeenCalledTimes(1);
+  expect(handleRequest.mock).not.toHaveBeenCalled();
+  expect(nextApp.render.mock).not.toHaveBeenCalled();
+  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
 });

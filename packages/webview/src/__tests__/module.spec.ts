@@ -84,7 +84,7 @@ test('service provisions', async () => {
     webSocketPath: '/mySocket',
     webviewHost: 'machinat.io',
     authSecret: '_SECRET_',
-    nextServerOptions: { dev: true, conf: { dist: '../../' } },
+    nextServerOptions: { dir: './webview', conf: { dist: '../../' } },
   };
 
   const app = Machinat.createApp({
@@ -222,9 +222,6 @@ test('default routing paths', async () => {
         authSecret: '_SECRET_',
       }),
     ],
-    services: [
-      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
-    ],
   });
   await app.start();
 
@@ -263,9 +260,6 @@ test('provide base interfaces', async () => {
         authSecret: '_SECRET_',
       }),
     ],
-    services: [
-      { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
-    ],
   });
   await app.start();
 
@@ -283,6 +277,78 @@ test('provide base interfaces', async () => {
     ])
   );
   await app.stop();
+});
+
+test('register hmr route when dev', async () => {
+  let app = Machinat.createApp({
+    platforms: [
+      Webview.initModule({
+        authPlatforms: [NoneAuthenticator],
+        webviewHost: 'machinat.io',
+        authSecret: '_SECRET_',
+        nextServerOptions: { dev: true },
+      }),
+    ],
+  });
+  await app.start();
+  let [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
+  expect(upgradeRoutings).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "handler": [Function],
+        "name": "websocket",
+        "path": "/websocket",
+      },
+      Object {
+        "default": true,
+        "handler": [Function],
+        "name": "webpack-hmr",
+      },
+    ]
+  `);
+
+  app = Machinat.createApp({
+    platforms: [
+      Webview.initModule({
+        authPlatforms: [NoneAuthenticator],
+        webviewHost: 'machinat.io',
+        webviewPath: '/webview',
+        authSecret: '_SECRET_',
+        nextServerOptions: { dev: true },
+      }),
+    ],
+  });
+  await app.start();
+  [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
+  expect(upgradeRoutings).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "handler": [Function],
+        "name": "websocket",
+        "path": "/websocket",
+      },
+      Object {
+        "handler": [Function],
+        "name": "webpack-hmr",
+        "path": "/webview",
+      },
+    ]
+  `);
+
+  app = Machinat.createApp({
+    platforms: [
+      Webview.initModule({
+        authPlatforms: [NoneAuthenticator],
+        webviewHost: 'machinat.io',
+        authSecret: '_SECRET_',
+        nextServerOptions: { dev: false },
+      }),
+    ],
+  });
+  await app.start();
+
+  [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
+  expect(upgradeRoutings.length).toBe(1);
 });
 
 test('startHook & stopHook', async () => {
