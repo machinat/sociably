@@ -1,7 +1,7 @@
 import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext) => when(
+export default ({ platforms }: CreateAppContext): string => when(
   platforms.includes('webview')
 )`
 import React from 'react';
@@ -65,10 +65,6 @@ const WebAppHome = () => {
     <div>
       <Head>
         <title>Machinat Webview</title>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
-        />
       </Head>
 
       <main>
