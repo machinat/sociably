@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   relative as relativePath,
   join as joinPath,
@@ -5,7 +6,7 @@ import {
   dirname,
   extname,
 } from 'path';
-import { writeFile, existsSync as fileExistsSync, mkdir } from 'fs';
+import { writeFile, copyFile, existsSync as fileExistsSync, mkdir } from 'fs';
 import { spawn as spawnChildProcess } from 'child_process';
 import glob from 'glob';
 import chalk from 'chalk';
@@ -23,36 +24,11 @@ type CreateAppOptions = {
 const formatCode = (code: string, parser: PrettierOptions['parser']) =>
   prettierFormat(code, { parser, singleQuote: true });
 
-const getMachinatDependencies = (
-  platforms: string[],
-  recognizer: 'regex' | 'dialogflow'
-): string[] => {
-  const dependencies = [
-    '@machinat/core',
-    '@machinat/http',
-    '@machinat/dev-tools',
-    '@machinat/redis-state',
-    '@machinat/stream',
-    '@machinat/script',
-  ];
-
-  if (platforms.includes('webview')) {
-    dependencies.push('@machinat/webview');
+const makeSureOfDir = async (file: string) => {
+  const targetDir = dirname(file);
+  if (!fileExistsSync(targetDir)) {
+    await thenifiedly.call(mkdir, targetDir, { recursive: true });
   }
-  if (platforms.includes('messenger')) {
-    dependencies.push('@machinat/messenger');
-  }
-  if (platforms.includes('telegram')) {
-    dependencies.push('@machinat/telegram');
-  }
-  if (platforms.includes('line')) {
-    dependencies.push('@machinat/line');
-  }
-  if (recognizer === 'dialogflow') {
-    dependencies.push('@machinat/dialogflow');
-  }
-
-  return dependencies.map((depName) => `${depName}@latest`);
 };
 
 const supportedPlatforms = ['messenger', 'telegram', 'line', 'webview'];
@@ -107,9 +83,11 @@ const createMachinatApp = async ({
 
   const templateFiles: string[] = await thenifiedly.call(
     glob,
-    `${__dirname}/template/**/*.t.+(ts|js)`,
-    { dot: true }
+    `${__dirname}/template/**/*`,
+    { nodir: true }
   );
+
+  const renderableExt = /\.t\.[t|j]s$/;
 
   // write file content
   await Promise.all(
@@ -117,21 +95,23 @@ const createMachinatApp = async ({
       const targetPath = joinPath(
         projectPath,
         relativePath(joinPath(__dirname, 'template'), file).replace(
-          /\.t\.[t|j]s$/,
+          renderableExt,
           ''
         )
       );
+
+      if (!file.match(renderableExt)) {
+        await makeSureOfDir(targetPath);
+        await thenifiedly.call(copyFile, file, targetPath);
+        return;
+      }
 
       const { default: buildContent, mode, name } = await import(file);
       const content = polishFileContent(buildContent(context));
 
       if (content) {
-        const targetDir = dirname(targetPath);
-        if (!fileExistsSync(targetDir)) {
-          await thenifiedly.call(mkdir, targetDir, { recursive: true });
-        }
-
         const ext = extname(targetPath);
+        await makeSureOfDir(targetPath);
         await thenifiedly.call(
           writeFile,
           name ? joinPath(dirname(targetPath), name) : targetPath,
@@ -154,7 +134,21 @@ const createMachinatApp = async ({
     `Install ${chalk.yellow('Machinat')} framework and other dependencies...\n`
   );
 
-  const machinatDeps = getMachinatDependencies(platforms, recognizer);
+  const machinatDeps = [
+    '@machinat/core',
+    '@machinat/http',
+    '@machinat/dev-tools',
+    '@machinat/redis-state',
+    '@machinat/stream',
+    '@machinat/script',
+    platforms.includes('webview') ? '@machinat/webview' : undefined,
+    platforms.includes('messenger') ? '@machinat/messenger' : undefined,
+    platforms.includes('telegram') ? '@machinat/telegram' : undefined,
+    platforms.includes('line') ? '@machinat/line' : undefined,
+    recognizer === 'dialogflow' ? '@machinat/dialogflow' : undefined,
+  ]
+    .filter((pkgName) => !!pkgName)
+    .map((pkgName) => `${pkgName}@latest`);
 
   const npmInstallProcess = spawnChildProcess(
     'npm',

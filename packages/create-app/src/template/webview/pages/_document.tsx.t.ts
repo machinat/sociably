@@ -14,6 +14,7 @@ export default function Document() {
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
         />
+        <link rel="icon" href="/webview/favicon.ico" />
       </Head>
       <body>
         <Main />
