@@ -41,8 +41,8 @@ body {
 }
 .icons { gap: 1.5rem }
 img {
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 90px;
+  height: 90px;
   object-fit: cover;
   border-radius: 0.5rem;
 }
@@ -67,9 +67,9 @@ h1 {
 .x:after { transform: rotate(-45deg) }
 #codeInput {
   width: 15rem;
-  height: 3rem;
+  height: 2.8rem;
   font-family: monospace;
-  font-size: 3rem;
+  font-size: 2.6rem;
   text-align: center;
   margin: 0.2rem 0 0.2rem;
   border: solid #bbb 2px;
@@ -99,7 +99,7 @@ h1 {
   text-decoration: none;
   background-color: #eee;
   color: #222;
-  padding: 0 1rem;
+  padding: 0 0.9rem;
 }
 </style>
 </head>
@@ -117,7 +117,7 @@ h1 {
   </div>
   <h1>${appName || ''}</h1>
   <div class="flex column">
-    <label for="codeInput">Login code from ${platformName} chat:</label>
+    <label for="codeInput">Login code at ${platformName} chat:</label>
     <input id="codeInput" type="text" pattern="\\d*" />
     <div id="errorMsg"></div>
   </div>
