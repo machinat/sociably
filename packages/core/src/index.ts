@@ -9,7 +9,7 @@ import createMachinatElement from './createElement';
 import App from './app';
 import type {
   AppConfig,
-  MachinatElement,
+  MachinatNode,
   NativeComponent,
   ContainerComponent,
   AnyMachinatPlatform,
@@ -65,7 +65,7 @@ namespace Machinat {
   export const Raw = MACHINAT_RAW_TYPE as unknown as (props: RawProps) => null;
 
   export namespace JSX {
-    export type Element = MachinatElement<any, any>;
+    export type Element = MachinatNode;
     export type ElementClass =
       | NativeComponent<any, any>
       | ContainerComponent<any>;
