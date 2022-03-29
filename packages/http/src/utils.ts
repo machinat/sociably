@@ -1,13 +1,13 @@
 import { STATUS_CODES } from 'http';
 import type { ServerResponse } from 'http';
-import { relative as getRelativePath } from 'path';
+import { posix as posixPath } from 'path';
 import type { Socket } from 'net';
 
 export const getTrailingPath = (
   parent: string,
   child: string
 ): string | undefined => {
-  const relativePath = getRelativePath(parent, child);
+  const relativePath = posixPath.relative(parent, child);
   return relativePath === '' || relativePath.slice(0, 2) !== '..'
     ? relativePath
     : undefined;

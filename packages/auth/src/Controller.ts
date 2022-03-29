@@ -1,5 +1,5 @@
 import { parse as parseUrl } from 'url';
-import { relative as getRelativePath, join as joinPath } from 'path';
+import { posix as posixPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 import { HttpRequestInfo, RoutingInfo } from '@machinat/http';
@@ -72,7 +72,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     const { pathname } = parseUrl(req.url as string);
     const subpath =
       routingInfo?.trailingPath ||
-      getRelativePath(this.apiPathname, pathname || '/');
+      posixPath.relative(this.apiPathname, pathname || '/');
 
     if (subpath === '' || subpath.slice(0, 2) === '..') {
       respondApiError(res, undefined, 403, 'path forbidden');
@@ -114,11 +114,11 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     try {
       await authenticator.delegateAuthRequest(req, res, {
         originalPath: pathname || '/',
-        matchedPath: joinPath(
+        matchedPath: posixPath.join(
           routingInfo?.matchedPath || this.apiPathname,
           platform
         ),
-        trailingPath: getRelativePath(platform, subpath),
+        trailingPath: posixPath.relative(platform, subpath),
       });
     } catch (err) {
       if (!res.writableEnded) {

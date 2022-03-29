@@ -1,5 +1,5 @@
 import type { ServerResponse, IncomingMessage } from 'http';
-import { relative as getRelativePath } from 'path';
+import { posix as posixPath } from 'path';
 import getRawBody from 'raw-body';
 import {
   parse as parseCookie,
@@ -58,7 +58,7 @@ export const isSubpath = (
   path: null | string,
   subpath: null | string
 ): boolean =>
-  !!(path && subpath) && getRelativePath(path, subpath).slice(0, 2) !== '..';
+  !!(path && subpath) && posixPath.relative(path, subpath).slice(0, 2) !== '..';
 
 const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 

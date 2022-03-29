@@ -1,4 +1,4 @@
-import { join as joinPath } from 'path';
+import { posix as posixPath } from 'path';
 import Machinat, { makeContainer, RenderingChannel } from '@machinat/core';
 import TwitterChat from '../Chat';
 import { UrlButton } from '../components';
@@ -20,7 +20,7 @@ const WebviewButton =
 
     const url = authenticator.getAuthUrl(
       channel.id,
-      page ? joinPath('.', page) : undefined
+      page ? posixPath.join('.', page) : undefined
     );
     return <UrlButton label={label} url={url} />;
   };

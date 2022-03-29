@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { URL } from 'url';
+import { posix as posixPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
 import Auth, { ServerAuthenticator, CheckDataResult } from '@machinat/auth';
@@ -54,7 +54,10 @@ export class LineServerAuthenticator
   }
 
   getLiffUrl(path?: string): string {
-    return new URL(path || '', `https://liff.line.me/${this.liffId}/`).href;
+    return new URL(
+      posixPath.join(this.liffId, path || ''),
+      'https://liff.line.me'
+    ).href;
   }
 
   // eslint-disable-next-line class-methods-use-this

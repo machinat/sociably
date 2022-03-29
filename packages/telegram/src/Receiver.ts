@@ -1,5 +1,5 @@
 import { parse as parseUrl } from 'url';
-import { join as joinPath } from 'path';
+import { posix as posixPath } from 'path';
 import invariant from 'invariant';
 import type { PopEventWrapper } from '@machinat/core';
 import { WebhookReceiver } from '@machinat/http/webhook';
@@ -50,7 +50,7 @@ const handleWebhook = ({
         }
       } else {
         const { pathname } = parseUrl(url);
-        if (pathname !== joinPath(webhookPath, secretPath)) {
+        if (pathname !== posixPath.join('/', webhookPath, secretPath)) {
           return { code: 401 };
         }
       }

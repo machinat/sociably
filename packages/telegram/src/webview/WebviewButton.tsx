@@ -1,4 +1,4 @@
-import { join as joinPath } from 'path';
+import { posix as posixPath } from 'path';
 import Machinat, { makeContainer } from '@machinat/core';
 import { UrlButton } from '../components';
 import ServerAuthenticator from './ServerAuthenticator';
@@ -26,7 +26,7 @@ const WebviewButton =
     requestWriteAccess,
   }: WebviewButtonProps) => {
     const url = authenticator.getAuthUrl(
-      page ? joinPath('.', page) : undefined
+      page ? posixPath.join('.', page) : undefined
     );
     return (
       <UrlButton

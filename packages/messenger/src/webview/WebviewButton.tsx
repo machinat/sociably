@@ -1,5 +1,5 @@
 import Machinat, { makeContainer, RenderingChannel } from '@machinat/core';
-import { join as joinPath } from 'path';
+import { posix as posixPath } from 'path';
 import MessengerChat from '../Chat';
 import { UrlButton } from '../components';
 import ServerAuthenticator from './ServerAuthenticator';
@@ -29,7 +29,7 @@ const WebviewButton =
 
     const url = authenticator.getAuthUrl(
       channel.id,
-      page ? joinPath('.', page) : undefined
+      page ? posixPath.join('.', page) : undefined
     );
     return (
       <UrlButton

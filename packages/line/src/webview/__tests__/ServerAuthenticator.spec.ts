@@ -64,7 +64,7 @@ it('.getLiffUrl(path)', async () => {
     liffId,
   });
   expect(authenticator.getLiffUrl()).toMatchInlineSnapshot(
-    `"https://liff.line.me/1234567890-AaBbCcDd/"`
+    `"https://liff.line.me/1234567890-AaBbCcDd"`
   );
   expect(authenticator.getLiffUrl('foo?bar=baz')).toMatchInlineSnapshot(
     `"https://liff.line.me/1234567890-AaBbCcDd/foo?bar=baz"`

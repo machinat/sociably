@@ -1,7 +1,7 @@
 import { makeClassProvider } from '@machinat/core';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
-import { join as joinPath } from 'path';
+import { posix as posixPath } from 'path';
 import invariant from 'invariant';
 import {
   sign as signJwt,
@@ -322,13 +322,14 @@ export class AuthHttpOperator {
 
   getAuthUrl(platform: string, subpath?: string): string {
     return new URL(
-      joinPath(this.apiRootUrl.pathname, platform, subpath || '/'),
+      posixPath.join(this.apiRootUrl.pathname, platform, subpath || '/'),
       this.apiRootUrl
     ).href;
   }
 
   getRedirectUrl(path?: string): string {
-    return new URL(path || '', joinPath(this.redirectRootUrl.href, '/')).href;
+    return new URL(path || '', posixPath.join(this.redirectRootUrl.href, '/'))
+      .href;
   }
 
   redirect(
@@ -337,7 +338,10 @@ export class AuthHttpOperator {
     { assertInternal }: { assertInternal?: boolean } = {}
   ): boolean {
     const redirectRoot = this.redirectRootUrl;
-    const redirectTarget = new URL(url || '', joinPath(redirectRoot.href, '/'));
+    const redirectTarget = new URL(
+      url || '',
+      posixPath.join(redirectRoot.href, '/')
+    );
 
     if (assertInternal) {
       const { protocol, host, pathname } = redirectTarget;
