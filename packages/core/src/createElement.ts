@@ -14,7 +14,7 @@ const createMachinatElement = (
 
   const props = config || {};
   if (childrenLen === 1) {
-    props.children = children[0]; // eslint-disable-line prefer-destructuring
+    props.children = children[0];
   } else if (childrenLen > 1) {
     props.children = children;
   }

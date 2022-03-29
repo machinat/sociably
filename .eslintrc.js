@@ -41,6 +41,7 @@ module.exports = {
       'always',
       { exceptAfterSingleLine: true },
     ],
+    'prefer-destructuring': ['error', { object: true, array: false }],
     'max-classes-per-file': 'off',
     'import/extensions': 'off',
     'import/no-unresolved': ['error', { ignore: ['@machinat/.*'] }],

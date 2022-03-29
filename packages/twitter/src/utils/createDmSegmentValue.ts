@@ -33,7 +33,7 @@ const createDmSegmentValue = (
     request.parameters.event.message_create.target.recipient_id = target.id;
 
     if (mediaResults) {
-      // eslint-disable-next-line no-param-reassign, prefer-destructuring
+      // eslint-disable-next-line no-param-reassign
       request.parameters.event.message_create.message_data.attachment.media.id =
         mediaResults[0];
     }
