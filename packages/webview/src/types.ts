@@ -143,7 +143,7 @@ export type WebviewConfigs<
     codeMessageComponent?: CodeMessageComponent;
     /** Max time to verify login code. Default to 5 */
     maxLoginAttempt?: number;
-    /** Login session duration in seconds. Default to 5 min */
+    /** Login session duration in seconds. Default to 10 min */
     loginDuration?: number;
   };
   /** Route path to the auth api. Default to `"/auth"` */

@@ -221,7 +221,7 @@ export type AuthConfigs = {
     codeMessageComponent?: CodeMessageComponent;
     /** Max time to verify login code. Default to 5 */
     maxLoginAttempt?: number;
-    /** Login session duration in seconds. Default to 5 min */
+    /** Login session duration in seconds. Default to 10 min */
     loginDuration?: number;
   };
 };

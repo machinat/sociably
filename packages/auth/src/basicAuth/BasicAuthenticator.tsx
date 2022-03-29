@@ -61,7 +61,7 @@ export class BasicAuthenticator {
       appImageUrl,
       loginCodeDigits = 6,
       maxLoginAttempt = 5,
-      loginDuration = 300,
+      loginDuration = 600,
       codeMessageComponent = DefaultCodeMessage,
     }: BasicAuthOptions = {}
   ) {
