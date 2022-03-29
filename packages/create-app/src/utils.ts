@@ -14,8 +14,10 @@ export const when =
     return outputStr;
   };
 
-export const polishFileContent = (inputString: string): null | string => {
-  if (inputString === '') {
+export const polishFileContent = (
+  inputString: null | string
+): null | string => {
+  if (!inputString) {
     return null;
   }
 

@@ -2,6 +2,7 @@
 import {
   relative as relativePath,
   join as joinPath,
+  resolve as resolvePath,
   basename,
   dirname,
   extname,
@@ -24,13 +25,6 @@ type CreateAppOptions = {
 
 const formatCode = (code: string, parser: PrettierOptions['parser']) =>
   prettierFormat(code, { parser, singleQuote: true });
-
-const makeSureOfDir = async (file: string) => {
-  const targetDir = dirname(file);
-  if (!fileExistsSync(targetDir)) {
-    await thenifiedly.call(mkdir, targetDir, { recursive: true });
-  }
-};
 
 const supportedPlatforms = ['messenger', 'telegram', 'line', 'webview'];
 
@@ -85,38 +79,41 @@ const createMachinatApp = async ({
 
   const templateFiles: string[] = await thenifiedly.call(
     glob,
-    `${__dirname}/template/**/*`,
+    `${__dirname}/template/**/*.t.+(ts|js)`,
     { nodir: true }
   );
-
-  const renderableExt = /\.t\.[t|j]s$/;
 
   // write file content
   await Promise.all(
     templateFiles.map(async (file) => {
-      const targetPath = joinPath(
-        projectPath,
-        relativePath(joinPath(__dirname, 'template'), file).replace(
-          renderableExt,
-          ''
+      const targetDir = dirname(
+        joinPath(
+          projectPath,
+          relativePath(joinPath(__dirname, 'template'), file)
         )
       );
 
-      if (!file.match(renderableExt)) {
-        await makeSureOfDir(targetPath);
-        await thenifiedly.call(copyFile, file, targetPath);
-        return;
+      const { default: buildContent, mode, name, binary } = await import(file);
+      const targetName = name || basename(file).replace(/\.t\.[t|j]s$/, '');
+      const targetPath = joinPath(targetDir, targetName);
+
+      const content = polishFileContent(buildContent(context));
+      if ((content || binary) && !fileExistsSync(targetDir)) {
+        await thenifiedly.call(mkdir, targetDir, { recursive: true });
       }
 
-      const { default: buildContent, mode, name } = await import(file);
-      const content = polishFileContent(buildContent(context));
-
-      if (content) {
+      if (binary) {
+        await thenifiedly.call(
+          copyFile,
+          joinPath(resolvePath(__dirname, '..'), 'binaries', binary),
+          targetPath,
+          mode
+        );
+      } else if (content) {
         const ext = extname(targetPath);
-        await makeSureOfDir(targetPath);
         await thenifiedly.call(
           writeFile,
-          name ? joinPath(dirname(targetPath), name) : targetPath,
+          targetPath,
           ext === '.ts' || ext === '.tsx'
             ? formatCode(content, 'typescript')
             : ext === '.js' || ext === '.jsx'
