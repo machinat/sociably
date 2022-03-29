@@ -1,4 +1,4 @@
-import Machinat from '../..';
+import Machinat, { RenderingChannel } from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
 import { makeInterface, makeContainer } from '../../service';
 import {
@@ -23,7 +23,9 @@ Native.$$platform = test;
 const fooInterface = makeInterface({ name: 'Foo' });
 
 const MyComponent = () => <foo />;
-const MyContainer = makeContainer({ deps: [] })(() => () => <bar />);
+const MyContainer = makeContainer({ deps: [RenderingChannel] })(() => () => (
+  <bar />
+));
 
 describe('isEmpty', () => {
   it('return true if empty node passed', () => {

@@ -68,7 +68,7 @@ type RenderEnv = {
 export type FunctionalComponent<Props> = (
   props: Props,
   circs: RenderEnv
-) => MachinatNode;
+) => MachinatElement<unknown, unknown>;
 
 export type FunctionalElement<
   Props,
