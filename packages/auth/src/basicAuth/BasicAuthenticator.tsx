@@ -1,5 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { parse as parseUrl, URL } from 'url';
+import { parse as parseAgent } from 'bowser';
+import { getClientIp } from 'request-ip';
 import Machinat, {
   makeClassProvider,
   MachinatChannel,
@@ -215,10 +217,25 @@ export class BasicAuthenticator {
     // send login code in chatroom
     if (shouldIssueCode) {
       const code = numericCode(this.loginCodeDigits);
+      const CodeMessage = this.codeMessageComponent;
+
+      const { headers } = req;
+      const agentHeader = headers['user-agent'];
+      const agent = agentHeader ? parseAgent(agentHeader) : null;
+      const domain = new URL(this.operator.getRedirectUrl(state.redirect))
+        .hostname;
       try {
         await bot.render(
           channel,
-          Machinat.createElement(this.codeMessageComponent, { code, channel })
+          <CodeMessage
+            code={code}
+            domain={domain}
+            ip={getClientIp(req)}
+            osName={agent?.os.name}
+            deviceModel={agent?.platform.model}
+            deviceType={agent?.platform.type}
+            browserName={agent?.browser.name}
+          />
         );
       } catch {
         await this.operator.issueError(

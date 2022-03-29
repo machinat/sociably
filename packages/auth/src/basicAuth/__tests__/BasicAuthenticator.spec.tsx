@@ -54,6 +54,13 @@ const delegateOptions = moxy({
   getChatLink: () => 'https://test.platform.com/foo.bar',
 });
 
+const createReq = (url, header = {}) => {
+  const req = moxy(new IncomingMessage({} as never));
+  req.mock.getter('url').fakeReturnValue(url);
+  req.mock.getter('headers').fakeReturnValue(header);
+  return req;
+};
+
 const _dateNow = Date.now;
 const now = 1647870481457;
 beforeAll(() => {
@@ -108,9 +115,9 @@ describe('root page', () => {
   const delegateRequest = authenticator.createRequestDelegator(delegateOptions);
 
   test('redirect to login page with state', async () => {
-    const req = moxy<IncomingMessage>({
-      url: 'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__',
-    } as never);
+    const req = createReq(
+      'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
+    );
     const res = moxy<ServerResponse>(new ServerResponse(req));
 
     await delegateRequest(req, res, routing);
@@ -178,9 +185,9 @@ describe('root page', () => {
   });
 
   test('redirect to webview if alredy logged in', async () => {
-    const req = moxy<IncomingMessage>({
-      url: 'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__',
-    } as never);
+    const req = createReq(
+      'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
+    );
     const res = moxy<ServerResponse>(new ServerResponse(req));
 
     operator.getAuth.mock.fake(async () => ({ foo: 'bar' }));
@@ -214,9 +221,9 @@ describe('root page', () => {
   });
 
   test("redirect to login page if it's alredy in later phase", async () => {
-    const req = moxy<IncomingMessage>({
-      url: 'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__',
-    } as never);
+    const req = createReq(
+      'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
+    );
     const res = moxy<ServerResponse>(new ServerResponse(req));
 
     operator.getState.mock.fake(async () => ({
@@ -252,9 +259,9 @@ describe('root page', () => {
   });
 
   test('reset state if channel has changed', async () => {
-    const req = moxy<IncomingMessage>({
-      url: 'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__',
-    } as never);
+    const req = createReq(
+      'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
+    );
     const res = moxy<ServerResponse>(new ServerResponse(req));
 
     operator.getState.mock.fake(async () => ({
@@ -301,9 +308,7 @@ describe('root page', () => {
   });
 
   it('respond 400 if no login query param', async () => {
-    const req = moxy<IncomingMessage>({
-      url: 'https://machinat.io/myApp/auth/test/',
-    } as never);
+    const req = createReq('https://machinat.io/myApp/auth/test/');
     const res = moxy<ServerResponse>(new ServerResponse(req));
 
     await delegateRequest(req, res, routing);
@@ -323,9 +328,9 @@ describe('root page', () => {
   });
 
   it('respond 400 if login query is invalid', async () => {
-    const req = moxy<IncomingMessage>({
-      url: 'https://machinat.io/myApp/auth/test/?login=__INVALID_LOGIN_TOKEN__',
-    } as never);
+    const req = createReq(
+      'https://machinat.io/myApp/auth/test/?login=__INVALID_LOGIN_TOKEN__'
+    );
     const res = moxy<ServerResponse>(new ServerResponse(req));
 
     operator.verifyToken.mock.fakeReturnValue(null);
@@ -352,9 +357,9 @@ describe('root page', () => {
   });
 
   it('respond error from checkAuthData', async () => {
-    const req = moxy<IncomingMessage>({
-      url: 'https://machinat.io/myApp/auth/test/?login=__LOGIN_TOKEN__',
-    } as never);
+    const req = createReq(
+      'https://machinat.io/myApp/auth/test/?login=__LOGIN_TOKEN__'
+    );
     const res = moxy<ServerResponse>(new ServerResponse(req));
 
     delegateOptions.checkAuthData.mock.fakeReturnValue({
@@ -386,9 +391,11 @@ describe('login page', () => {
     matchedPath: '/myApp/auth/test/',
     trailingPath: 'login',
   };
-  const req = moxy<IncomingMessage>({
-    url: 'https://machinat.io/myApp/auth/test/login',
-  } as never);
+  const req = createReq('https://machinat.io/myApp/auth/test/login', {
+    'user-agent':
+      'Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405',
+    'x-client-ip': '222.222.222.222',
+  });
 
   test('render login page with state', async () => {
     const authenticator = new BasicAuthenticator(stateController, operator);
@@ -408,16 +415,16 @@ describe('login page', () => {
     expect(bot.render.mock).toHaveBeenCalledWith(channel, expect.any(Object));
 
     expect(bot.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
-      { props: { code: expect.any(String) } },
+      { props: { code: expect.stringMatching(/^[0-9]{6}$/) } },
       `
       <DefaultCodeMessage
-        channel={
-          Object {
-            "platform": "test",
-            "uid": "test.foo.bar",
-          }
-        }
-        code={Any<String>}
+        browserName="Safari"
+        code={StringMatching /\\^\\[0-9\\]\\{6\\}\\$/}
+        deviceModel="iPad"
+        deviceType="tablet"
+        domain="machinat.io"
+        ip="222.222.222.222"
+        osName="iOS"
       />
     `
     );
@@ -489,16 +496,16 @@ describe('login page', () => {
     expect(bot.render.mock).toHaveBeenCalledWith(channel, expect.any(Object));
 
     expect(bot.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
-      { props: { code: expect.any(String) } },
+      { props: { code: expect.stringMatching(/^[0-9]{20}$/) } },
       `
       <CodeMessage
-        channel={
-          Object {
-            "platform": "test",
-            "uid": "test.foo.bar",
-          }
-        }
-        code={Any<String>}
+        browserName="Safari"
+        code={StringMatching /\\^\\[0-9\\]\\{20\\}\\$/}
+        deviceModel="iPad"
+        deviceType="tablet"
+        domain="machinat.io"
+        ip="222.222.222.222"
+        osName="iOS"
       />
     `
     );

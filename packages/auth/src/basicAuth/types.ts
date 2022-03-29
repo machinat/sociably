@@ -17,7 +17,12 @@ export type VerifyCodeResponseBody = {
 
 export type CodeMessageComponentProps = {
   code: string;
-  channel: MachinatChannel;
+  domain: string;
+  ip: string;
+  osName?: string;
+  deviceModel?: string;
+  deviceType?: string;
+  browserName?: string;
 };
 
 export type CodeMessageComponent =
