@@ -17,7 +17,7 @@ import {
 } from './types';
 
 type LineServerAuthenticatorOpts = {
-  loginChannelId: string;
+  liffId: string;
 };
 
 type VerifyTokenResult = {
@@ -37,18 +37,20 @@ export class LineServerAuthenticator
 {
   bot: BotP;
   httpOperator: Auth.HttpOperator;
+  liffId: string;
   loginChannelId: string;
   platform = LINE;
 
   constructor(
     bot: BotP,
     httpOperator: Auth.HttpOperator,
-    { loginChannelId }: LineServerAuthenticatorOpts
+    { liffId }: LineServerAuthenticatorOpts
   ) {
-    invariant(loginChannelId, 'options.loginChannelId should not be empty');
+    invariant(liffId, 'options.liffId should not be empty');
     this.bot = bot;
     this.httpOperator = httpOperator;
-    this.loginChannelId = loginChannelId;
+    this.liffId = liffId;
+    this.loginChannelId = liffId.split('-', 1)[0];
   }
 
   getWebviewUrl(path?: string): string {
@@ -188,13 +190,10 @@ export class LineServerAuthenticator
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'transient',
   deps: [BotP, Auth.HttpOperator, ConfigsI],
-  factory: (bot, httpOperator, { loginChannelId }) => {
-    invariant(
-      loginChannelId,
-      'configs.loginChannelId is required to authorize with LIFF'
-    );
+  factory: (bot, httpOperator, { liffId }) => {
+    invariant(liffId, 'configs.liffId is required to authorize with LIFF');
 
-    return new LineServerAuthenticator(bot, httpOperator, { loginChannelId });
+    return new LineServerAuthenticator(bot, httpOperator, { liffId });
   },
 })(LineServerAuthenticator);
 
