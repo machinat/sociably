@@ -19,6 +19,7 @@ type CreateAppOptions = {
   platforms: string[];
   projectPath: string;
   recognizer: string;
+  npmTag?: string;
 };
 
 const formatCode = (code: string, parser: PrettierOptions['parser']) =>
@@ -37,6 +38,7 @@ const createMachinatApp = async ({
   platforms,
   projectPath,
   recognizer,
+  npmTag = 'latest',
 }: CreateAppOptions): Promise<number> => {
   console.log(
     `Create a ${chalk.yellow('Machinat')} app in ${chalk.green(
@@ -148,7 +150,7 @@ const createMachinatApp = async ({
     recognizer === 'dialogflow' ? '@machinat/dialogflow' : undefined,
   ]
     .filter((pkgName) => !!pkgName)
-    .map((pkgName) => `${pkgName}@latest`);
+    .map((pkgName) => `${pkgName}@${npmTag}`);
 
   const npmInstallProcess = spawnChildProcess(
     'npm',

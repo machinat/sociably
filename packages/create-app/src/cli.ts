@@ -12,6 +12,7 @@ Options
   -p, --platform   platforms to install; supported platforms: messenger, telegram, line, webview
   -n, --name,      the app name (default: project dir name)
   -r, --recognizer the intent recognition provider; regex or dialogflow (default: regex)
+  --npmTag         the npm tag to install the packages with (default: latest)
 
 Example
   $ create-machinat-app -p messenger -p webview
@@ -33,6 +34,9 @@ Example
         alias: 'r',
         default: 'regex',
       },
+      npmTag: {
+        type: 'string',
+      },
     },
   }
 );
@@ -44,8 +48,11 @@ if (!projectInput) {
 }
 
 const projectPath = resolvePath(projectInput);
-const { recognizer, platform: platforms } = cli.flags;
+const { recognizer, npmTag, platform: platforms } = cli.flags;
 
-createApp({ platforms, projectPath, recognizer }).then((code) =>
-  process.exit(code)
-);
+createApp({
+  platforms,
+  projectPath,
+  recognizer,
+  npmTag,
+}).then((code) => process.exit(code));
