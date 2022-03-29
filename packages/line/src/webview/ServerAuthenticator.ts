@@ -53,10 +53,8 @@ export class LineServerAuthenticator
     this.loginChannelId = liffId.split('-', 1)[0];
   }
 
-  getWebviewUrl(path?: string): string {
-    const url = new URL(this.httpOperator.getRedirectUrl(path));
-    url.searchParams.set('platform', 'line');
-    return url.href;
+  getLiffUrl(path?: string): string {
+    return new URL(path || '', `https://liff.line.me/${this.liffId}/`).href;
   }
 
   // eslint-disable-next-line class-methods-use-this

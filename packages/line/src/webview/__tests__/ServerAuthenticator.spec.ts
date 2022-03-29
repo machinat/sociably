@@ -28,7 +28,7 @@ const httpOperator = moxy<AuthHttpOperator>({
     `https://machinat.io/my_app/webview${path ? `/${path}` : ''}`,
 } as never);
 
-const liffId = '_LOGIN_CHAN_-_LIFF_CODE_';
+const liffId = '1234567890-AaBbCcDd';
 
 beforeEach(() => {
   bot.mock.reset();
@@ -42,7 +42,7 @@ describe('.constructor(options)', () => {
     });
 
     expect(authenticator.platform).toBe('line');
-    expect(authenticator.loginChannelId).toBe('_LOGIN_CHAN_');
+    expect(authenticator.loginChannelId).toBe('1234567890');
   });
 
   it('throw if liffId is empty', () => {
@@ -59,21 +59,15 @@ describe('.constructor(options)', () => {
   });
 });
 
-it('.getWebviewUrl(path)', async () => {
+it('.getLiffUrl(path)', async () => {
   const authenticator = new ServerAuthenticator(bot, httpOperator, {
     liffId,
   });
-  expect(authenticator.getWebviewUrl()).toMatchInlineSnapshot(
-    `"https://machinat.io/my_app/webview?platform=line"`
+  expect(authenticator.getLiffUrl()).toMatchInlineSnapshot(
+    `"https://liff.line.me/1234567890-AaBbCcDd/"`
   );
-  expect(authenticator.getWebviewUrl('foo?bar=baz')).toMatchInlineSnapshot(
-    `"https://machinat.io/my_app/webview/foo?bar=baz&platform=line"`
-  );
-
-  expect(httpOperator.getRedirectUrl.mock).toHaveBeenCalledTimes(2);
-  expect(httpOperator.getRedirectUrl.mock).toHaveBeenNthCalledWith(
-    2,
-    'foo?bar=baz'
+  expect(authenticator.getLiffUrl('foo?bar=baz')).toMatchInlineSnapshot(
+    `"https://liff.line.me/1234567890-AaBbCcDd/foo?bar=baz"`
   );
 });
 
@@ -108,7 +102,7 @@ describe('.verifyCredential(credential)', () => {
 
     bot.makeApiCall.mock.fake(async () => ({
       scope: 'profile',
-      client_id: '_LOGIN_CHAN_',
+      client_id: '1234567890',
       expires_in: 2591659,
     }));
 
@@ -117,7 +111,7 @@ describe('.verifyCredential(credential)', () => {
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
-        client: '_LOGIN_CHAN_',
+        client: '1234567890',
         os: LiffContextOs.Ios,
         lang: 'zh-TW',
         user: '_USER_ID_',
@@ -137,7 +131,7 @@ describe('.verifyCredential(credential)', () => {
 
     bot.makeApiCall.mock.fakeOnce(async () => ({
       scope: 'profile',
-      client_id: '_LOGIN_CHAN_',
+      client_id: '1234567890',
       expires_in: 2591659,
     }));
 
@@ -154,7 +148,7 @@ describe('.verifyCredential(credential)', () => {
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
-        client: '_LOGIN_CHAN_',
+        client: '1234567890',
         os: LiffContextOs.Ios,
         lang: 'zh-TW',
         user: '_USER_ID_',
@@ -184,7 +178,7 @@ describe('.verifyCredential(credential)', () => {
 
     bot.makeApiCall.mock.fakeOnce(async () => ({
       scope: 'profile',
-      client_id: '_LOGIN_CHAN_',
+      client_id: '1234567890',
       expires_in: 2591659,
     }));
 
@@ -201,7 +195,7 @@ describe('.verifyCredential(credential)', () => {
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
-        client: '_LOGIN_CHAN_',
+        client: '1234567890',
         os: LiffContextOs.Ios,
         lang: 'zh-TW',
         user: '_USER_ID_',
@@ -303,7 +297,7 @@ describe('.verifyRefreshment()', () => {
   const authData = {
     provider: '_PROVIDER_ID_',
     channel: '_CHANNEL_ID_',
-    client: '_LOGIN_CHAN_',
+    client: '1234567890',
     os: LiffContextOs.Ios,
     lang: 'zh-TW',
     user: '_USER_ID_',
@@ -386,7 +380,7 @@ describe('.checkAuthData(data)', () => {
   const authData = {
     provider: '_PROVIDER_ID_',
     channel: '_CHANNEL_ID_',
-    client: '_LOGIN_CHAN_',
+    client: '1234567890',
     os: LiffContextOs.Web,
     lang: 'en-US',
     user: '_USER_ID_',
@@ -406,7 +400,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
-        clientId: '_LOGIN_CHAN_',
+        clientId: '1234567890',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'),
         profile: null,
@@ -433,7 +427,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
-        clientId: '_LOGIN_CHAN_',
+        clientId: '1234567890',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
         profile: null,
@@ -460,7 +454,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
-        clientId: '_LOGIN_CHAN_',
+        clientId: '1234567890',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'),
         profile: null,
@@ -489,7 +483,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
-        clientId: '_LOGIN_CHAN_',
+        clientId: '1234567890',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
         profile: new LineUserProfile({

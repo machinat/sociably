@@ -3,7 +3,7 @@ import ServerAuthenticator from '../ServerAuthenticator';
 import WebviewAction from '../WebviewAction';
 
 const authenticator = moxy<ServerAuthenticator>({
-  getWebviewUrl: () => `https://machinat.io/MyApp/webview?platform=line`,
+  getLiffUrl: () => `https://liff.line.me/1234567890-AaBbCcDd/`,
 } as never);
 
 beforeEach(() => {
@@ -14,23 +14,23 @@ test('rendering to UrlButton', () => {
   expect(WebviewAction(authenticator)({ label: 'Foo' })).toMatchInlineSnapshot(`
     <UriAction
       label="Foo"
-      uri="https://machinat.io/MyApp/webview?platform=line"
+      uri="https://liff.line.me/1234567890-AaBbCcDd/"
     />
   `);
 
-  authenticator.getWebviewUrl.mock.fakeReturnValue(
-    `https://machinat.io/MyApp/webview/foo?bar=baz&platform=line`
+  authenticator.getLiffUrl.mock.fakeReturnValue(
+    `https://liff.line.me/1234567890-AaBbCcDd/foo?bar=baz`
   );
   expect(WebviewAction(authenticator)({ label: 'Foo', page: '/foo?bar=baz' }))
     .toMatchInlineSnapshot(`
     <UriAction
       label="Foo"
-      uri="https://machinat.io/MyApp/webview/foo?bar=baz&platform=line"
+      uri="https://liff.line.me/1234567890-AaBbCcDd/foo?bar=baz"
     />
   `);
 
-  expect(authenticator.getWebviewUrl.mock).toHaveBeenCalledTimes(2);
-  expect(authenticator.getWebviewUrl.mock).toHaveBeenNthCalledWith(
+  expect(authenticator.getLiffUrl.mock).toHaveBeenCalledTimes(2);
+  expect(authenticator.getLiffUrl.mock).toHaveBeenNthCalledWith(
     2,
     'foo?bar=baz'
   );

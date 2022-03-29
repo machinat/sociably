@@ -1,4 +1,4 @@
-import { join as joinPath } from 'path';
+import { posix as posixPath } from 'path';
 import Machinat, { makeContainer } from '@machinat/core';
 import { UriAction } from '../components';
 import ServerAuthenticator from './ServerAuthenticator';
@@ -13,8 +13,8 @@ type WebviewActionProps = {
 const WebviewAction =
   (authenticator: ServerAuthenticator) =>
   ({ label, page }: WebviewActionProps) => {
-    const url = authenticator.getWebviewUrl(
-      page ? joinPath('.', page) : undefined
+    const url = authenticator.getLiffUrl(
+      page ? posixPath.join('.', page) : undefined
     );
     return <UriAction label={label} uri={url} />;
   };
