@@ -1,6 +1,6 @@
 {
   "name": "@machinat/telegram",
-  "version": "0.5.0",
+  "version": "0.6.0-canary.0",
   "description": "Messenger platform for Machinat.",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -39,9 +39,9 @@
     "thenifiedly": "^0.2.1"
   },
   "peerDependencies": {
+    "@machinat/auth": "^0.6.0-canary",
     "@machinat/core": "^0.6.0-canary",
     "@machinat/http": "^0.6.0-canary",
-    "@machinat/auth": "^0.6.0-canary",
     "@machinat/webview": "^0.6.0-canary"
   },
   "peerDependenciesMeta": {
