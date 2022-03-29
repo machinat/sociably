@@ -55,7 +55,7 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
       "checkAuthData": [Function],
       "getChatLink": [Function],
       "platform": "messenger",
-      "platformColor": "#635BFF",
+      "platformColor": "#4B69FF",
       "platformImageUrl": "https://machinat.com/img/icon/messenger.png",
       "platformName": "Messenger",
     }

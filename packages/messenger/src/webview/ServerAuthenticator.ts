@@ -38,7 +38,7 @@ export class MessengerServerAuthenticator
       bot,
       platform: MESSENGER,
       platformName: 'Messenger',
-      platformColor: '#635BFF',
+      platformColor: '#4B69FF',
       platformImageUrl: 'https://machinat.com/img/icon/messenger.png',
       checkAuthData: (data) => {
         const result = this.checkAuthData(data);
