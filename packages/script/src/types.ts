@@ -23,7 +23,6 @@ import type {
 } from './keyword';
 
 type StartScriptProps<Params> = {
-  channel: MachinatChannel;
   params?: Params;
   goto?: string;
 };

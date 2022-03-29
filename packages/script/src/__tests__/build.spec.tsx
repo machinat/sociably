@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
+import Machinat, { RenderingChannel } from '@machinat/core';
 import { isContainerType } from '@machinat/core/utils/isX';
 import ProcessorP from '../processor';
 import build from '../build';
@@ -110,28 +110,28 @@ test('Script.Start', () => {
   });
 
   expect(typeof MyScript.Start).toBe('function');
-  expect(isContainerType(<MyScript.Start channel={channel} />)).toBe(true);
+  expect(isContainerType(<MyScript.Start />)).toBe(true);
   expect(MyScript.Start.$$name).toBe('MyScript');
   expect(MyScript.Start.$$deps).toEqual([
     { require: ProcessorP, optional: false },
+    { require: RenderingChannel, optional: false },
   ]);
 
-  expect((MyScript.Start as any)(mockProcessor)({ channel })).resolves.toBe(
+  expect((MyScript.Start as any)(mockProcessor, channel)({})).resolves.toBe(
     'Hello Script'
   );
   expect(mockProcessor.start.mock).toHaveBeenCalledTimes(1);
   expect(mockProcessor.start.mock).toHaveBeenCalledWith(channel, MyScript, {});
 
   expect(typeof ChildScript.Start).toBe('function');
-  expect(isContainerType(<ChildScript.Start channel={channel} />)).toBe(true);
+  expect(isContainerType(<ChildScript.Start />)).toBe(true);
   expect(ChildScript.Start.$$name).toBe('ChildScript');
-  expect(ChildScript.Start.$$deps).toEqual([
-    { require: ProcessorP, optional: false },
-  ]);
 
   expect(
-    (ChildScript.Start as any)(mockProcessor)({
-      channel,
+    (ChildScript.Start as any)(
+      mockProcessor,
+      channel
+    )({
       params: { foo: 'baz' },
       goto: 'bar',
     })

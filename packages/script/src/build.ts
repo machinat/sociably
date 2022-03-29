@@ -1,5 +1,6 @@
 import {
   makeContainer,
+  RenderingChannel,
   MachinatElement,
   AnyEventContext,
 } from '@machinat/core';
@@ -42,13 +43,17 @@ const build = <
     commands,
   };
 
-  lib.Start = makeContainer({ deps: [ProcessorP], name: scriptName })(
-    (processor) =>
-      async ({ channel, params, goto }) => {
-        const runtime = await processor.start(channel, lib, { params, goto });
-        return runtime.output();
-      }
-  );
+  lib.Start = makeContainer({
+    deps: [ProcessorP, RenderingChannel],
+    name: scriptName,
+  })((processor, channel) => async ({ params, goto }) => {
+    if (!channel) {
+      return null;
+    }
+
+    const runtime = await processor.start(channel, lib, { params, goto });
+    return runtime.output();
+  });
 
   return lib;
 };
