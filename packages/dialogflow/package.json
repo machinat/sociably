@@ -30,6 +30,6 @@
     "object-hash": "^2.2.0"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.5.0"
+    "@machinat/core": "^0.6.0-canary"
   }
 }

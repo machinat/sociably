@@ -37,8 +37,8 @@
     "ws": "^7.2.5"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.5.0",
-    "@machinat/http": "^0.5.0"
+    "@machinat/core": "^0.6.0-canary",
+    "@machinat/http": "^0.6.0-canary"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
