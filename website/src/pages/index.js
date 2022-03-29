@@ -214,8 +214,8 @@ function Home() {
           <ThemedImage
             className={styles.heroLogo}
             sources={{
-              light: 'img/logo.svg',
-              dark: 'img/logo-dark.svg',
+              light: 'img/hero-logo.svg',
+              dark: 'img/hero-logo-dark.svg',
             }}
           />
 
