@@ -15,6 +15,7 @@
   },
   "files": [
     "lib/*",
+    "binaries/*",
     "README.md"
   ],
   "bin": "./lib/cli.js",
