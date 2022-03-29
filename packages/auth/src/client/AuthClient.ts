@@ -262,7 +262,9 @@ class AuthClient<
       !this._initiatedPlatforms.has(authenticator.platform) &&
       !this._initiatingPlatforms.has(authenticator.platform)
     ) {
-      const platformAuthEntry = this._getAuthEntry(authenticator.platform);
+      const platformAuthEntry = this._getAuthEntry(
+        `${authenticator.platform}/`
+      );
       this._initiatingPlatforms.add(authenticator.platform);
 
       try {

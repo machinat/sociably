@@ -1,4 +1,4 @@
-import type { IncomingMessage } from 'http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import moxy from '@moxyjs/moxy';
 import type { AuthHttpOperator } from '@machinat/auth';
 import type { TelegramBot } from '../../Bot';
@@ -14,14 +14,16 @@ const createReq = ({ url }) =>
     url,
   } as never);
 
-const res = {};
+const res = moxy<ServerResponse>({
+  writeHead() {},
+  end() {},
+} as never);
 
 const httpOperator = moxy<AuthHttpOperator>({
   async issueAuth() {},
   async issueError() {},
-  redirect() {
-    return '';
-  },
+  redirect() {},
+  getAuthUrl: () => 'https://machinat.io/MyApp/auth/telegram',
 } as never);
 
 const bot = moxy<TelegramBot>({
@@ -32,10 +34,13 @@ const bot = moxy<TelegramBot>({
   },
 } as never);
 
-const authenticator = new TelegramServerAuthenticator(bot, httpOperator);
+const authenticator = new TelegramServerAuthenticator(bot, httpOperator, {
+  botName: 'MyBot',
+});
 
 beforeEach(() => {
   bot.mock.reset();
+  res.mock.reset();
   httpOperator.mock.reset();
 });
 
@@ -51,7 +56,7 @@ afterAll(() => {
   global.Date = _Date;
 });
 
-describe('.delegateAuthRequest()', () => {
+describe('.delegateAuthRequest() on root route', () => {
   const telegramLoginSearch = {
     id: '12345',
     auth_date: '1601136776',
@@ -65,8 +70,12 @@ describe('.delegateAuthRequest()', () => {
   it('receive login request and redirct user to webview', async () => {
     const search = new URLSearchParams(telegramLoginSearch);
 
-    const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authenticator.delegateAuthRequest(req, res as never);
+    const req = createReq({ url: `/auth/telegram?${search}` });
+    await authenticator.delegateAuthRequest(req, res, {
+      originalPath: '/auth/telegram',
+      matchedPath: '/auth/telegram',
+      trailingPath: '',
+    });
 
     expect(httpOperator.redirect.mock).toHaveBeenCalledTimes(1);
     expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
@@ -94,7 +103,7 @@ describe('.delegateAuthRequest()', () => {
       telegramChat: '23456',
     });
 
-    const req = createReq({ url: `/auth/telegram/login?${search}` });
+    const req = createReq({ url: `/auth/telegram?${search}` });
 
     // getChatMember
     bot.makeApiCall.mock.fakeOnce(async () => ({
@@ -115,7 +124,11 @@ describe('.delegateAuthRequest()', () => {
       title: 'Does',
     }));
 
-    await authenticator.delegateAuthRequest(req, res as never);
+    await authenticator.delegateAuthRequest(req, res, {
+      originalPath: '/auth/telegram',
+      matchedPath: '/auth/telegram',
+      trailingPath: '',
+    });
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
     expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(1, 'getChatMember', {
@@ -151,7 +164,7 @@ describe('.delegateAuthRequest()', () => {
       telegramChat: '23456',
     });
 
-    const req = createReq({ url: `/auth/telegram/login?${search}` });
+    const req = createReq({ url: `/auth/telegram?${search}` });
 
     bot.makeApiCall.mock.fake(async () => {
       throw new TelegramApiError({
@@ -161,7 +174,11 @@ describe('.delegateAuthRequest()', () => {
       });
     });
 
-    await authenticator.delegateAuthRequest(req, res as never);
+    await authenticator.delegateAuthRequest(req, res, {
+      originalPath: '/auth/telegram',
+      matchedPath: '/auth/telegram',
+      trailingPath: '',
+    });
 
     expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
 
@@ -183,8 +200,12 @@ describe('.delegateAuthRequest()', () => {
       redirectUrl: '/webview/hello_world.html',
     });
 
-    const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authenticator.delegateAuthRequest(req, res as never);
+    const req = createReq({ url: `/auth/telegram?${search}` });
+    await authenticator.delegateAuthRequest(req, res, {
+      originalPath: '/auth/telegram',
+      matchedPath: '/auth/telegram',
+      trailingPath: '',
+    });
 
     expect(httpOperator.redirect.mock).toHaveBeenCalledWith(
       res,
@@ -203,8 +224,12 @@ describe('.delegateAuthRequest()', () => {
       hash: '6fe5c0198e70297fffec814bf443afef5d3f6587d722399816d808e61217e571',
     });
 
-    const req = createReq({ url: `/auth/telegram/login?${search}` });
-    await authenticator.delegateAuthRequest(req, res as never);
+    const req = createReq({ url: `/auth/telegram?${search}` });
+    await authenticator.delegateAuthRequest(req, res, {
+      originalPath: '/auth/telegram',
+      matchedPath: '/auth/telegram',
+      trailingPath: '',
+    });
 
     expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
@@ -232,7 +257,11 @@ describe('.delegateAuthRequest()', () => {
     const req = createReq({
       url: `/auth/telegram?${search}`,
     });
-    await authenticator.delegateAuthRequest(req, res as never);
+    await authenticator.delegateAuthRequest(req, res, {
+      originalPath: '/auth/telegram',
+      matchedPath: '/auth/telegram',
+      trailingPath: '',
+    });
 
     expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
@@ -250,6 +279,74 @@ describe('.delegateAuthRequest()', () => {
       `"invalid login signature"`
     );
   });
+});
+
+test('.delegateAuthRequest() on login route', async () => {
+  const req = createReq({ url: `/auth/telegram/login` });
+  const loginRoute = {
+    originalPath: '/auth/telegram/login',
+    matchedPath: '/auth/telegram',
+    trailingPath: 'login',
+  };
+
+  await authenticator.delegateAuthRequest(req, res, loginRoute);
+
+  expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
+  expect(res.writeHead.mock.calls[0].args).toMatchInlineSnapshot(`
+    Array [
+      200,
+      Object {
+        "Content-Type": "text/html",
+      },
+    ]
+  `);
+  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end.mock.calls[0].args[0]).toMatchSnapshot();
+
+  const authenticatorWithAppDetails = new TelegramServerAuthenticator(
+    bot,
+    httpOperator,
+    {
+      botName: 'MyBot',
+      appName: 'Mine Mine Mine App',
+      appImageUrl: 'http://machinat.io/MyApp/icon.png',
+    }
+  );
+  await authenticatorWithAppDetails.delegateAuthRequest(req, res, loginRoute);
+
+  expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
+  expect(res.end.mock).toHaveBeenCalledTimes(2);
+  expect(res.end.mock.calls[1].args[0]).toMatchSnapshot();
+});
+
+test('.delegateAuthRequest() on unknown route', async () => {
+  const req = createReq({ url: `/auth/telegram/unknown` });
+  await authenticator.delegateAuthRequest(req, res, {
+    originalPath: '/auth/telegram/unknown',
+    matchedPath: '/auth/telegram',
+    trailingPath: 'unknown',
+  });
+
+  expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
+  expect(res.writeHead.mock.calls[0].args).toMatchInlineSnapshot(`
+    Array [
+      404,
+    ]
+  `);
+  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(`undefined`);
+});
+
+test('.getAuthUrl()', () => {
+  expect(authenticator.getAuthUrl()).toMatchInlineSnapshot(
+    `"https://machinat.io/MyApp/auth/telegram"`
+  );
+  expect(authenticator.getAuthUrl('foo?bar=baz')).toMatchInlineSnapshot(
+    `"https://machinat.io/MyApp/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz"`
+  );
+
+  expect(httpOperator.getAuthUrl.mock).toHaveBeenCalledTimes(2);
+  expect(httpOperator.getAuthUrl.mock).toHaveBeenCalledWith('telegram');
 });
 
 test('.verifyCredential() simply return not ok', async () => {

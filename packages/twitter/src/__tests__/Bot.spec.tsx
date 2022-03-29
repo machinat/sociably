@@ -91,7 +91,7 @@ describe('new TwitterBot(options)', () => {
       appSecret,
       accessToken,
       accessSecret,
-      maxConnections: 999,
+      maxRequestConnections: 999,
     });
 
     expect(bot.engine).toBeInstanceOf(Engine);

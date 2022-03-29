@@ -35,7 +35,7 @@ jest.mock('../Worker', () =>
 const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
 
-const pageId = 1234567890;
+const pageId = '1234567890';
 const accessToken = '_ACCESS_TOKEN_';
 const appSecret = '_APP_SECRET_';
 
@@ -122,7 +122,7 @@ describe('#constructor(options)', () => {
         accessToken,
         appSecret,
         graphApiVersion: 'v8.0',
-        consumeInterval: 0,
+        apiBatchRequestInterval: 0,
       })
     );
 

@@ -225,7 +225,7 @@ describe('bootstraping phase', () => {
       if (expectedPlatform === 'foo') {
         expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
         expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
-          'https://machinat.io/auth/foo',
+          'https://machinat.io/auth/foo/',
           cookieError === 'foo'
             ? new AuthError('foo', 418, "I'm a teapot")
             : null,
@@ -234,7 +234,7 @@ describe('bootstraping phase', () => {
       } else if (expectedPlatform === 'bar') {
         expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
         expect(barAuthenticator.init.mock).toHaveBeenCalledWith(
-          'https://machinat.io/auth/bar',
+          'https://machinat.io/auth/bar/',
           cookieError === 'bar'
             ? new AuthError('bar', 418, "I'm a teapot")
             : null,
@@ -264,7 +264,7 @@ describe('bootstraping phase', () => {
 
     expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
-      'https://machinat.io/auth/foo',
+      'https://machinat.io/auth/foo/',
       null,
       {
         foo: 'data',
@@ -364,7 +364,7 @@ describe('bootstraping phase', () => {
 
     expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
-      'https://machinat.io/auth/foo',
+      'https://machinat.io/auth/foo/',
       null,
       null
     );
@@ -374,7 +374,7 @@ describe('bootstraping phase', () => {
 
     expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
     expect(barAuthenticator.init.mock).toHaveBeenCalledWith(
-      'https://machinat.io/auth/bar',
+      'https://machinat.io/auth/bar/',
       null,
       null
     );

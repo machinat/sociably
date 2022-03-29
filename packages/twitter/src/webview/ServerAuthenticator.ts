@@ -27,14 +27,6 @@ export class TwitterServerAuthenticator
 
   platform = TWITTER;
 
-  getLoginUrl(userId: string, redirectUrl?: string): string {
-    return this.basicAuthenticator.getLoginUrl<TwitterAuthData>(
-      TWITTER,
-      { agent: this.bot.agentId, id: userId },
-      redirectUrl
-    );
-  }
-
   constructor(bot: BotP, basicAuthenticator: BasicAuthenticator) {
     this.bot = bot;
     this.basicAuthenticator = basicAuthenticator;
@@ -64,6 +56,14 @@ export class TwitterServerAuthenticator
     });
   }
 
+  getAuthUrl(userId: string, redirectUrl?: string): string {
+    return this.basicAuthenticator.getAuthUrl<TwitterAuthData>(
+      TWITTER,
+      { agent: this.bot.agentId, id: userId },
+      redirectUrl
+    );
+  }
+
   // eslint-disable-next-line class-methods-use-this
   async verifyCredential(): Promise<VerifyResult<TwitterAuthData>> {
     return {
@@ -82,7 +82,6 @@ export class TwitterServerAuthenticator
     return { ok: true, data };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   checkAuthData(data: TwitterAuthData): CheckDataResult<TwitterAuthContext> {
     if (data.agent !== this.bot.agentId) {
       return { ok: false, code: 400, reason: 'agent not match' };

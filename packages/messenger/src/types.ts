@@ -11,11 +11,14 @@ import type { MaybeContainer } from '@machinat/core/service';
 import type { IntermediateSegment } from '@machinat/core/renderer';
 import type { WebhookMetadata } from '@machinat/http/webhook';
 import type { MessengerBot } from './Bot';
-import type MessengerChannel from './Chat';
+import type MessengerChat from './Chat';
+import type SendingTarget from './SendingTarget';
 import type { MessengerEvent } from './event/types';
 import type { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from './constant';
 
 export * from './event/types';
+
+export type MessengerChannel = MessengerChat | SendingTarget;
 
 export type PSIDTarget = { id: string };
 export type UserRefTarget = { user_ref: string };
@@ -38,8 +41,6 @@ export type MessengerRawEvent = any;
 
 // TODO: detailed message type
 export type RawMessage = any;
-
-export type MessengerThreadType = 'USER_TO_PAGE' | 'USER_TO_USER' | 'GROUP';
 
 type MessagingType = 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG';
 type NotificationType = 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH';
@@ -176,16 +177,25 @@ export type MessengerDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type MessengerConfigs = {
-  pageId: number;
+  /** The Facebook page id */
+  pageId: string;
+  /** The page access token for the app */
   accessToken: string;
+  /** The Facebook app secret */
   appSecret?: string;
+  /** To verify the webhook request by the signature or not. Default to `true` */
   shouldVerifyRequest?: boolean;
+  /** To handle the webhook challenge request or not. Default to `true` */
   shouldHandleChallenge?: boolean;
+  /** The secret string to verify the webhook challenge request */
   verifyToken?: string;
+  /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
+  /** The graph API version to make API calls */
   graphApiVersion?: string;
-  consumeInterval?: number;
+  /** Request additional info of user profile. This requires addtional permisions of your app */
   optionalProfileFields?: ('locale' | 'timezone' | 'gender')[];
+  apiBatchRequestInterval?: number;
   eventMiddlewares?: MaybeContainer<MessengerEventMiddleware>[];
   dispatchMiddlewares?: MaybeContainer<MessengerDispatchMiddleware>[];
 };

@@ -26,13 +26,14 @@ import type {
   Referral,
 } from './mixin';
 import type MessengerChat from '../Chat';
+import type SendingTarget from '../SendingTarget';
 import type MessengerUser from '../User';
-import type { MessengerRawEvent } from '../types';
+import type { MessengerChannel, MessengerRawEvent } from '../types';
 
 interface EventObject<
   Category extends string,
   Type extends string,
-  Channel extends null | MessengerChat = MessengerChat,
+  Channel extends null | MessengerChannel = MessengerChat,
   User extends null | MessengerUser = MessengerUser
 > {
   category: Category;
@@ -412,7 +413,12 @@ export interface AppRolesEvent
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_optins).
  */
 export interface OptinEvent
-  extends EventObject<'action', 'optin', MessengerChat, null | MessengerUser>,
+  extends EventObject<
+      'action',
+      'optin',
+      MessengerChat | SendingTarget,
+      null | MessengerUser
+    >,
     EventBase,
     Optin {}
 

@@ -193,10 +193,16 @@ export type TelegramPlatformUtilities = PlatformUtilities<
 >;
 
 export type TelegramConfigs = {
+  /** The access token of the bot. Like: `1234567890:AaBbCc_321-DdEeFf` */
   botToken: string;
+  /** The username of the bot without the prefixing `@`. Like `MyBot` */
+  botName: string;
+  /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
+  /** A secret string suffixed after the `webhookPath`. This helps to filter out requests not from Telegram platform */
   secretPath?: string;
-  maxConnections?: number;
+  /** The max API request connections at the same time */
+  maxRequestConnections?: number;
   eventMiddlewares?: TelegramEventMiddleware[];
   dispatchMiddlewares?: TelegramDispatchMiddleware[];
 };

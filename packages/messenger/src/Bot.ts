@@ -14,9 +14,11 @@ import MessengerWorker from './Worker';
 import generalComponentDelegator from './components/general';
 import { MESSENGER } from './constant';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
-import MessengerChannel from './Chat';
+import MessengerChat from './Chat';
+import SendingTarget from './SendingTarget';
 import { createChatJobs, createAttachmentJobs } from './job';
 import type {
+  MessengerChannel,
   MessengerTarget,
   MessengerComponent,
   MessengerJob,
@@ -35,11 +37,11 @@ type MessengerBotOptions = {
     MessengerDispatchFrame,
     MessengerResult
   >;
-  pageId: number;
+  pageId: string;
   accessToken: string;
   appSecret?: string;
   graphApiVersion?: string;
-  consumeInterval?: number;
+  apiBatchRequestInterval?: number;
 };
 
 /**
@@ -49,7 +51,7 @@ type MessengerBotOptions = {
 export class MessengerBot
   implements MachinatBot<MessengerChannel, MessengerJob, MessengerResult>
 {
-  pageId: number;
+  pageId: string;
   worker: MessengerWorker;
   engine: Engine<
     MessengerChannel,
@@ -66,7 +68,7 @@ export class MessengerBot
     accessToken,
     appSecret,
     graphApiVersion = 'v11.0',
-    consumeInterval = 500,
+    apiBatchRequestInterval = 500,
     initScope,
     dispatchWrapper,
   }: MessengerBotOptions) {
@@ -83,7 +85,7 @@ export class MessengerBot
     const queue = new Queue<MessengerJob, MessengerResult>();
     const worker = new MessengerWorker(
       accessToken,
-      consumeInterval,
+      apiBatchRequestInterval,
       graphApiVersion,
       appSecret
     );
@@ -112,12 +114,11 @@ export class MessengerBot
     options?: MessengerSendOptions
   ): Promise<null | MessengerDispatchResponse> {
     const channel =
-      target instanceof MessengerChannel
+      typeof target === 'string'
+        ? new MessengerChat(this.pageId, target)
+        : target instanceof MessengerChat || target instanceof SendingTarget
         ? target
-        : new MessengerChannel(
-            this.pageId,
-            typeof target === 'string' ? { id: target } : target
-          );
+        : new SendingTarget(this.pageId, target);
 
     return this.engine.render(channel, messages, createChatJobs(options));
   }
@@ -162,7 +163,7 @@ const BotP = makeClassProvider({
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { pageId, accessToken, appSecret, consumeInterval },
+    { pageId, accessToken, appSecret, apiBatchRequestInterval },
     moduleUitils,
     platformUtils
   ) =>
@@ -170,7 +171,7 @@ const BotP = makeClassProvider({
       pageId,
       accessToken,
       appSecret,
-      consumeInterval,
+      apiBatchRequestInterval,
       initScope: moduleUitils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
     }),

@@ -37,7 +37,7 @@ type TwitterBotOptions = {
   appSecret: string;
   accessToken: string;
   accessSecret: string;
-  maxConnections?: number;
+  maxRequestConnections?: number;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<
     TwitterJob,
@@ -69,7 +69,7 @@ export class TwitterBot
     appSecret,
     accessToken,
     accessSecret,
-    maxConnections = 100,
+    maxRequestConnections = 100,
     initScope,
     dispatchWrapper,
   }: TwitterBotOptions) {
@@ -85,7 +85,7 @@ export class TwitterBot
       appSecret,
       accessToken,
       accessSecret,
-      maxConnections,
+      maxConnections: maxRequestConnections,
     });
     const renderer = new Renderer<
       TwitterSegmentValue,
@@ -213,7 +213,7 @@ const BotP = makeClassProvider({
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { appKey, appSecret, accessToken, accessSecret, maxConnections },
+    { appKey, appSecret, accessToken, accessSecret, maxRequestConnections },
     moduleUtils,
     platformUtils
   ) => {
@@ -224,7 +224,7 @@ const BotP = makeClassProvider({
       appSecret,
       accessToken,
       accessSecret,
-      maxConnections,
+      maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
     });

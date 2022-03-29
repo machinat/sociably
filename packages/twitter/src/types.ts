@@ -18,15 +18,22 @@ import type TwitterUser from './User';
 export type TwitterChannel = TweetTarget | TwitterChat;
 
 export type TwitterPlatformConfigs = {
-  webhookPath?: string;
+  /** The id of Twitter app */
   appId: string;
+  /** The key of Twitter app */
   appKey: string;
+  /** The secret of Twitter app */
   appSecret: string;
+  /** The access token for the agent user */
   accessToken: string;
+  /** The secret of the access token */
   accessSecret: string;
-  maxConnections?: number;
+  /** The webhook path to receive events. Default to `/` */
+  webhookPath?: string;
+  /** The max API request connections at the same time */
+  maxRequestConnections?: number;
+  /** To verify the request by the signature or not. Default to `true` */
   shouldVerifyRequest?: boolean;
-  shouldHandleChallenge?: boolean;
   eventMiddlewares?: TwitterEventMiddleware[];
   dispatchMiddlewares?: TwitterDispatchMiddleware[];
 };

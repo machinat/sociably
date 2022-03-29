@@ -17,7 +17,6 @@ type TwitterReceiverOptions = {
   bot: BotP;
   appSecret: string;
   shouldVerifyRequest?: boolean;
-  shouldHandleChallenge?: boolean;
   popEventWrapper: PopEventWrapper<TwitterEventContext, null>;
 };
 
@@ -33,7 +32,6 @@ const handleWebhook = ({
   popEventWrapper,
   appSecret,
   shouldVerifyRequest = true,
-  shouldHandleChallenge = true,
 }: TwitterReceiverOptions): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
 
@@ -41,7 +39,7 @@ const handleWebhook = ({
     const { method, url, headers, body: rawBody } = metadata.request;
 
     // handle webhook challenge
-    if (shouldHandleChallenge && method === 'GET') {
+    if (method === 'GET') {
       const { crc_token: crcToken, nonce } = parseUrl(url, true).query;
       if (typeof crcToken !== 'string') {
         return { code: 400 };
@@ -129,17 +127,12 @@ export class TwitterReceiver extends WebhookReceiver {
 const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, PlatformUtilitiesI],
-  factory: (
-    { appSecret, shouldVerifyRequest, shouldHandleChallenge },
-    bot,
-    { popEventWrapper }
-  ) =>
+  factory: ({ appSecret, shouldVerifyRequest }, bot, { popEventWrapper }) =>
     new TwitterReceiver({
       bot,
       popEventWrapper,
       appSecret,
       shouldVerifyRequest,
-      shouldHandleChallenge,
     }),
 })(TwitterReceiver);
 

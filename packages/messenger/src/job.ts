@@ -5,8 +5,8 @@ import type {
   MessengerSegmentValue,
   MessengerJob,
   MessengerSendOptions,
+  MessengerChannel,
 } from './types';
-import type MessengerChat from './Chat';
 import { isMessageEntry } from './utils';
 import {
   API_PATH,
@@ -23,14 +23,10 @@ const POST = 'POST';
 export const createChatJobs =
   (options?: MessengerSendOptions) =>
   (
-    channel: MessengerChat,
+    channel: MessengerChannel,
     segments: DispatchableSegment<MessengerSegmentValue>[]
   ): MessengerJob[] => {
     const { target, uid } = channel;
-    if (!target) {
-      throw new Error(`unable to send to ${channel.threadType} channel`);
-    }
-
     const jobs: MessengerJob[] = new Array(segments.length);
 
     for (let i = 0; i < segments.length; i += 1) {

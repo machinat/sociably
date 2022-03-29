@@ -1,96 +1,48 @@
-import crypto from 'crypto';
 import type { MachinatChannel } from '@machinat/core';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
-import { MESSENGER, MessengerChatType } from './constant';
+import { MESSENGER } from './constant';
 import type MessengerUser from './User';
-import type { MessengerTarget, MessengerThreadType } from './types';
+import type { PSIDTarget } from './types';
 
 type MessengerChatValue = {
-  pageId: number;
-  type: MessengerChatType;
-  target: MessengerTarget;
+  page: string;
+  id: string;
 };
 
 class MessengerChat
   implements MachinatChannel, MarshallableInstance<MessengerChatValue>
 {
   static typeName = 'MessengerChat';
-
   static fromUser(user: MessengerUser): MessengerChat {
-    return new MessengerChat(user.pageId, { id: user.psid });
+    return new MessengerChat(user.pageId, user.id);
   }
 
   static fromJSONValue(value: MessengerChatValue): MessengerChat {
-    const { pageId, target, type } = value;
-    return new MessengerChat(pageId, target, type);
+    const { page, id } = value;
+    return new MessengerChat(page, id);
   }
 
-  pageId: number;
-  private _type: MessengerChatType;
-  private _target: MessengerTarget;
-
+  pageId: string;
+  id: string;
   platform = MESSENGER;
+  type = 'id';
 
-  constructor(
-    pageId: number,
-    target: MessengerTarget,
-    type: MessengerChatType = MessengerChatType.UserToPage
-  ) {
+  constructor(pageId: string, id: string) {
     this.pageId = pageId;
-    this._type = type;
-    this._target = target;
-  }
-
-  get targetType(): string {
-    const { _target: target } = this;
-
-    return this._type !== MessengerChatType.UserToPage || 'id' in target
-      ? 'psid'
-      : 'user_ref' in target
-      ? 'user_ref'
-      : 'phone_number' in target
-      ? 'phone_number'
-      : 'post_id' in target
-      ? 'post_id'
-      : 'comment_id' in target
-      ? 'comment_id'
-      : 'unknown';
-  }
-
-  get identifier(): string {
-    const target = this._target as Record<string, undefined | string>;
-
-    return (
-      target.id ||
-      target.user_ref ||
-      target.post_id ||
-      target.comment_id ||
-      (target.phone_number
-        ? // hash phone_number for private data concern
-          crypto.createHash('sha1').update(target.phone_number).digest('base64')
-        : '*')
-    );
+    this.id = id;
   }
 
   get uid(): string {
-    return `messenger.${this.pageId}.${this.targetType}.${this.identifier}`;
+    return `messenger.${this.pageId}.id.${this.id}`;
   }
 
-  get target(): null | MessengerTarget {
-    return this._type === MessengerChatType.UserToPage ? this._target : null;
-  }
-
-  get threadType(): MessengerThreadType {
-    return this._type === MessengerChatType.Group
-      ? 'GROUP'
-      : this._type === MessengerChatType.UserToUser
-      ? 'USER_TO_USER'
-      : 'USER_TO_PAGE';
+  get target(): PSIDTarget {
+    return { id: this.id };
   }
 
   toJSONValue(): MessengerChatValue {
-    const { pageId, _target: target, _type: type } = this;
-    return { pageId, target, type };
+    const { pageId, id } = this;
+    return { page: pageId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this

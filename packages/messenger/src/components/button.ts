@@ -24,13 +24,8 @@ export type UrlButtonProps = {
   messengerExtensions?: boolean;
   /** Height of the Webview. */
   webviewHeightRatio?: 'compact' | 'tall' | 'full';
-  /**
-   * Set to hide to disable the share button in the Webview (for sensitive
-   * info).
-   */
-  webviewShareButton?: 'hide';
-  /** Alias of `webviewShareButton="hide"` when set to true. */
-  hideWebviewShare?: boolean;
+  /** Set to `true` to disable the share button in the Webview (for sensitive info) */
+  hideShareButton?: boolean;
 };
 
 /**
@@ -51,8 +46,7 @@ export const UrlButton: MessengerComponent<
     fallbackUrl,
     messengerExtensions,
     webviewHeightRatio,
-    webviewShareButton,
-    hideWebviewShare,
+    hideShareButton,
   } = node.props;
 
   return [
@@ -63,8 +57,7 @@ export const UrlButton: MessengerComponent<
       webview_height_ratio: webviewHeightRatio,
       messenger_extensions: messengerExtensions,
       fallback_url: fallbackUrl,
-      webview_share_button:
-        webviewShareButton || hideWebviewShare ? 'hide' : undefined,
+      webview_share_button: hideShareButton ? 'hide' : undefined,
     }),
   ];
 });

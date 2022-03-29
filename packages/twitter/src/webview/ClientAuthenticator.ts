@@ -15,7 +15,7 @@ import type { TwitterAuthContext, TwitterAuthData } from './types';
 
 type TwitterClientOptions = {
   /** The agent user id */
-  agentId?: string;
+  agentId: string;
 };
 
 /* eslint-disable class-methods-use-this */
@@ -24,7 +24,7 @@ export default class TwitterClientAuthenticator
     WebviewClientAuthenticator<void, TwitterAuthData, TwitterAuthContext>
 {
   platform = TWITTER;
-  agentId?: string;
+  agentId: string;
   marshalTypes = [
     TwitterChat,
     TwitterTweetTarget,
@@ -32,7 +32,7 @@ export default class TwitterClientAuthenticator
     TwitterUserProfile,
   ];
 
-  constructor({ agentId }: TwitterClientOptions = {}) {
+  constructor({ agentId }: TwitterClientOptions) {
     this.agentId = agentId;
   }
 
@@ -49,6 +49,10 @@ export default class TwitterClientAuthenticator
   }
 
   checkAuthData(data: TwitterAuthData): CheckDataResult<TwitterAuthContext> {
+    if (data.agent !== this.agentId) {
+      return { ok: false, code: 400, reason: 'agent not match' };
+    }
+
     return {
       ok: true,
       contextDetails: getAuthContextDetails(data),
@@ -56,10 +60,7 @@ export default class TwitterClientAuthenticator
   }
 
   closeWebview(): boolean {
-    if (
-      !this.agentId ||
-      parseBrowser(window.navigator.userAgent).platform.type === 'desktop'
-    ) {
+    if (parseBrowser(window.navigator.userAgent).platform.type === 'desktop') {
       return false;
     }
 

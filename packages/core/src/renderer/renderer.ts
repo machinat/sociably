@@ -350,7 +350,7 @@ export default class MachinatRenderer<
     path: string
   ): Promise<null | IntermediateSegment<Value>[]> {
     const { type: component, props } = node;
-    const rendered = await component(props, { platform: this.platform });
+    const rendered = await component(props, { path, platform: this.platform });
 
     const segments = await this._renderImpl(
       scope,
@@ -372,7 +372,7 @@ export default class MachinatRenderer<
     const { type: container, props } = node;
     const component = scope.injectContainer(container, servicesProvided);
 
-    const rendered = await component(props, { platform: this.platform });
+    const rendered = await component(props, { path, platform: this.platform });
 
     const segments = await this._renderImpl(
       scope,

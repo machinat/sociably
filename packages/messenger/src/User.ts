@@ -3,8 +3,8 @@ import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { MESSENGER } from './constant';
 
 type MessengerUserValue = {
-  pageId: number;
-  psid: string;
+  page: string;
+  id: string;
 };
 
 export default class MessengerUser
@@ -13,30 +13,26 @@ export default class MessengerUser
   static typeName = 'MessengerUser';
 
   static fromJSONValue(value: MessengerUserValue): MessengerUser {
-    const { pageId, psid } = value;
-    return new MessengerUser(pageId, psid);
+    const { page, id } = value;
+    return new MessengerUser(page, id);
   }
 
   platform = MESSENGER;
-  pageId: number;
-  psid: string;
+  pageId: string;
+  id: string;
 
-  constructor(pageId: number, psid: string) {
+  constructor(pageId: string, id: string) {
     this.pageId = pageId;
-    this.psid = psid;
-  }
-
-  get id(): string {
-    return this.psid;
+    this.id = id;
   }
 
   get uid(): string {
-    return `messenger.${this.pageId}.${this.psid}`;
+    return `messenger.${this.pageId}.${this.id}`;
   }
 
   toJSONValue(): MessengerUserValue {
-    const { pageId, psid } = this;
-    return { pageId, psid };
+    const { pageId, id } = this;
+    return { page: pageId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this

@@ -71,14 +71,14 @@ beforeEach(() => {
   delegateOptions.mock.reset();
 });
 
-test('.getLoginUrl()', () => {
+test('.getAuthUrl()', () => {
   const authenticator = new BasicAuthenticator(stateController, operator);
 
   const loginToken = '__SIGNED_LOGIN_TOKEN__';
   operator.signToken.mock.fakeReturnValue(loginToken);
 
   expect(
-    authenticator.getLoginUrl('test', { foo: 'bar' })
+    authenticator.getAuthUrl('test', { foo: 'bar' })
   ).toMatchInlineSnapshot(
     `"https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__"`
   );
@@ -87,13 +87,13 @@ test('.getLoginUrl()', () => {
   });
 
   expect(
-    authenticator.getLoginUrl('test', { foo: 'bar' }, '/baz')
+    authenticator.getAuthUrl('test', { hello: 'world' }, '/foo?bar=baz')
   ).toMatchInlineSnapshot(
     `"https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__"`
   );
   expect(operator.signToken.mock).toHaveBeenCalledWith('test', {
-    data: { foo: 'bar' },
-    redirectUrl: '/baz',
+    data: { hello: 'world' },
+    redirectUrl: '/foo?bar=baz',
   });
   expect(operator.signToken.mock).toHaveBeenCalledTimes(2);
 });

@@ -96,14 +96,13 @@ it('throw if options.appSecret is empty', () => {
   );
 });
 
-it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
+it.each(['PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async (method) => {
     const receiver = new TwitterReceiver({
       bot,
       popEventWrapper,
       appSecret,
-      shouldHandleChallenge: false,
     });
 
     const req = createReq({ method });

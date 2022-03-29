@@ -1,179 +1,104 @@
-import invariant from 'invariant';
-import crypto from 'crypto';
-import type { IncomingMessage, ServerResponse } from 'http';
-import base64url from 'base64url';
 import { makeClassProvider } from '@machinat/core/service';
-import type {
+import {
   ServerAuthenticator,
   VerifyResult,
   CheckDataResult,
 } from '@machinat/auth';
-import { ConfigsI } from '../interface';
-import { MESSENGER, MessengerChatType } from '../constant';
+import BasicAuthenticator from '@machinat/auth/basicAuth';
+import BotP from '../Bot';
+import { MESSENGER } from '../constant';
+import MessengerChat from '../Chat';
 import { getAuthContextDetails } from './utils';
-import type {
-  MessengerAuthCredential,
-  SignedReuestPayload,
-  MessengerAuthContext,
-  MessengerAuthData,
-} from './types';
-
-const { decode: decodeBase64Url, toBuffer: decodeBase64UrlToBuffer } =
-  base64url;
-
-type ServerAuthenticatorOptions = {
-  /** Page id which the app is running on. */
-  pageId: number;
-  /** App secret for verifying auth data. */
-  appSecret: string;
-  /**
-   * Time limit in seconds for authorization, used to verify the `issued_at`
-   * field from `signed_request`. Default to 5 minute.
-   */
-  issueTimeLimit?: number;
-};
+import type { MessengerAuthContext, MessengerAuthData } from './types';
 
 /**
- * MessengerServerAuthenticator provide auth flow implementation for
- * `@machinat/auth`.
  * @category Provider
  */
 export class MessengerServerAuthenticator
   implements
-    ServerAuthenticator<
-      MessengerAuthCredential,
-      MessengerAuthData,
-      MessengerAuthContext
-    >
+    ServerAuthenticator<never, MessengerAuthData, MessengerAuthContext>
 {
+  bot: BotP;
+  basicAuthenticator: BasicAuthenticator;
+  delegateAuthRequest: ServerAuthenticator<
+    never,
+    MessengerAuthData,
+    MessengerAuthContext
+  >['delegateAuthRequest'];
+
   platform = MESSENGER;
-  pageId: number;
-  appSecret: string;
-  issueTimeLimit: number;
 
-  constructor(options: ServerAuthenticatorOptions) {
-    invariant(options?.appSecret, 'options.appSecret must not be empty');
-    invariant(options.pageId, 'options.pageId must not be empty');
+  constructor(bot: BotP, basicAuthenticator: BasicAuthenticator) {
+    this.bot = bot;
+    this.basicAuthenticator = basicAuthenticator;
+    this.delegateAuthRequest = this.basicAuthenticator.createRequestDelegator<
+      MessengerAuthData,
+      MessengerChat
+    >({
+      bot,
+      platform: MESSENGER,
+      platformName: 'Messenger',
+      platformColor: '#635BFF',
+      platformImageUrl: 'https://machinat.com/img/icon/messenger.png',
+      checkAuthData: (data) => {
+        const result = this.checkAuthData(data);
+        if (!result.ok) {
+          return result;
+        }
 
-    const {
-      pageId,
-      appSecret,
-      issueTimeLimit = 300, // 5 min;
-    } = options;
+        return {
+          ok: true,
+          data,
+          channel: result.contextDetails.channel,
+        };
+      },
+      getChatLink: () => `https://m.me/${this.bot.pageId}`,
+    });
+  }
 
-    this.pageId = Number(pageId);
-    this.appSecret = appSecret;
-    this.issueTimeLimit = issueTimeLimit;
+  getAuthUrl(userId: string, redirectUrl?: string): string {
+    return this.basicAuthenticator.getAuthUrl<MessengerAuthData>(
+      MESSENGER,
+      { id: userId, page: this.bot.pageId },
+      redirectUrl
+    );
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async delegateAuthRequest(
-    req: IncomingMessage,
-    res: ServerResponse
-  ): Promise<void> {
-    res.writeHead(403);
-    res.end();
-  }
-
-  async verifyCredential(
-    credential: MessengerAuthCredential
-  ): Promise<VerifyResult<MessengerAuthData>> {
-    if (!credential || !credential.signedRequest) {
-      return {
-        ok: false,
-        code: 400,
-        reason: 'invalid extension context',
-      };
-    }
-
-    const { signedRequest, client } = credential;
-    const [sigEncoded, dataEncoded] = signedRequest.split('.', 2);
-
-    const sig: Buffer = decodeBase64UrlToBuffer(sigEncoded);
-    if (!sigEncoded || !dataEncoded) {
-      return {
-        ok: false,
-        code: 400,
-        reason: 'invalid signed request token',
-      };
-    }
-
-    const expectedSig = crypto
-      .createHmac('sha256', this.appSecret)
-      .update(dataEncoded)
-      .digest();
-
-    if (!sig.equals(expectedSig)) {
-      return {
-        ok: false,
-        code: 401,
-        reason: 'invalid signature',
-      };
-    }
-
-    const payload: SignedReuestPayload = JSON.parse(
-      decodeBase64Url(dataEncoded)
-    );
-
-    if (payload.issued_at + this.issueTimeLimit < Date.now() / 1000) {
-      return {
-        ok: false,
-        code: 401,
-        reason: 'signed request token timeout',
-      };
-    }
-
-    const { psid, tid, thread_type: threadType, page_id: pageId } = payload;
+  async verifyCredential(): Promise<VerifyResult<MessengerAuthData>> {
     return {
-      ok: true,
-      data: {
-        user: psid,
-        chat: {
-          type:
-            threadType === 'USER_TO_USER'
-              ? MessengerChatType.UserToUser
-              : threadType === 'GROUP'
-              ? MessengerChatType.Group
-              : MessengerChatType.UserToPage,
-          id: tid,
-        },
-        page: pageId,
-        client,
-      },
+      ok: false as const,
+      code: 403,
+      reason: 'should use backend based flow only',
     };
   }
 
   async verifyRefreshment(
     data: MessengerAuthData
   ): Promise<VerifyResult<MessengerAuthData>> {
-    if (data.page !== this.pageId) {
+    if (data.page !== this.bot.pageId) {
       return { ok: false, code: 400, reason: 'page not match' };
     }
-
     return { ok: true, data };
   }
 
   checkAuthData(
     data: MessengerAuthData
   ): CheckDataResult<MessengerAuthContext> {
-    if (data.page !== this.pageId) {
+    if (data.page !== this.bot.pageId) {
       return { ok: false, code: 400, reason: 'page not match' };
     }
 
-    return { ok: true, contextDetails: getAuthContextDetails(data) };
+    return {
+      ok: true,
+      contextDetails: getAuthContextDetails(data),
+    };
   }
 }
 
 const ServerAuthenticatorP = makeClassProvider({
-  lifetime: 'transient',
-  deps: [ConfigsI],
-  factory: ({ pageId, appSecret }) => {
-    if (!appSecret) {
-      throw new Error('configs.appSecret must be set to authorize webview');
-    }
-
-    return new MessengerServerAuthenticator({ pageId, appSecret });
-  },
+  lifetime: 'singleton',
+  deps: [BotP, BasicAuthenticator],
 })(MessengerServerAuthenticator);
 
 type ServerAuthenticatorP = MessengerServerAuthenticator;

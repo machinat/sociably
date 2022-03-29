@@ -226,14 +226,22 @@ export type LineDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type LineConfigs = {
-  webhookPath?: string;
+  /** The LINE  */
   providerId: string;
+  /** The id of the messaging API channel */
   channelId: string;
+  /** The secret of the messaging API channel */
   channelSecret?: string;
-  shouldVerifyRequest?: boolean;
+  /** The access token of the messaging API channel */
   accessToken: string;
-  maxConnections?: number;
-  liffChannelIds?: string[];
+  /** The webhook path to receive events. Default to `/` */
+  webhookPath?: string;
+  /** To verify the webhook request by the signature or not. Default to `true` */
+  shouldVerifyRequest?: boolean;
+  /** The max API request connections at the same time */
+  maxRequestConnections?: number;
+  /** The login channel id for the LIFF app. This is required when using webview */
+  loginChannelId?: string;
   eventMiddlewares?: MaybeContainer<LineEventMiddleware>[];
   dispatchMiddlewares?: MaybeContainer<LineDispatchMiddleware>[];
 };

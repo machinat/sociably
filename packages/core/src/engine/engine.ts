@@ -1,3 +1,4 @@
+import RenderingChannelI from '../base/RenderingChannel';
 import MachinatQueue, { JobBatchResponse } from '../queue';
 import { createEmptyScope, ServiceScope } from '../service';
 import type MachinatRenderer from '../renderer';
@@ -87,7 +88,9 @@ export default class MachinatEngine<
     ) => Job[]
   ): Promise<null | DispatchResponse<Job, Result>> {
     const scope = this._initScope();
-    const segments = await this.renderer.render(node, scope, null);
+    const segments = await this.renderer.render(node, scope, [
+      [RenderingChannelI, target],
+    ]);
     if (segments === null) {
       return null;
     }

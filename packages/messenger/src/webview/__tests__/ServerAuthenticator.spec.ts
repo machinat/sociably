@@ -1,286 +1,155 @@
 import moxy from '@moxyjs/moxy';
-import { IncomingMessage, ServerResponse } from 'http';
-import { MessengerServerAuthenticator } from '../ServerAuthenticator';
-import MessengerChannel from '../../Chat';
+import BasicAuthenticator from '@machinat/auth/basicAuth';
 import MessengerUser from '../../User';
-import { MessengerChatType } from '../../constant';
+import MessengerChat from '../../Chat';
+import MessengerBot from '../../Bot';
+import ServerAuthenticator from '../ServerAuthenticator';
 
-const request: IncomingMessage = {
-  url: '/foo',
-  type: 'GET',
-  headers: {},
-} as never;
+const bot = moxy<MessengerBot>({
+  pageId: '12345',
+} as never);
 
-const appSecret = 'APP_SECRET';
-const pageId = 1234567890;
+const requestDelegator = moxy(async () => {});
+const loginUrl = `https://machinat.io/foo/auth/messenger?login=__LOGIN_TOKEN__`;
 
-describe('.constructor(options)', () => {
-  it('is messenger platform', () => {
-    expect(
-      new MessengerServerAuthenticator({ appSecret, pageId }).platform
-    ).toBe('messenger');
-  });
+const basicAuthenticator = moxy<BasicAuthenticator>({
+  getAuthUrl() {
+    return loginUrl;
+  },
+  createRequestDelegator() {
+    return requestDelegator;
+  },
+} as never);
 
-  it('throw if options.appSecret not given', () => {
-    expect(
-      () => new MessengerServerAuthenticator(undefined as never)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.appSecret must not be empty"`
-    );
-    expect(
-      () => new MessengerServerAuthenticator({ pageId } as never)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.appSecret must not be empty"`
-    );
-  });
-
-  it('throw if options.pageId not given', () => {
-    expect(
-      () => new MessengerServerAuthenticator({ appSecret } as never)
-    ).toThrowErrorMatchingInlineSnapshot(`"options.pageId must not be empty"`);
-  });
+beforeEach(() => {
+  requestDelegator.mock.reset();
+  basicAuthenticator.mock.reset();
 });
 
-describe('.delegateAuthRequest(req, res)', () => {
-  it('respond 403', async () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-    });
-    const res = moxy(new ServerResponse({} as never));
+test('.delegateAuthRequest(req, res, routing)', async () => {
+  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
+  const req = moxy();
+  const res = moxy();
+  const routing = {
+    originalPath: '/auth/messenger/login',
+    matchedPath: '/auth/messenger',
+    trailingPath: 'login',
+  };
 
-    await expect(authenticator.delegateAuthRequest(request, res)).resolves.toBe(
-      undefined
-    );
+  await expect(
+    authenticator.delegateAuthRequest(req, res, routing)
+  ).resolves.toBe(undefined);
 
-    expect(res.statusCode).toBe(403);
-    expect(res.end.mock).toHaveBeenCalled();
-  });
-});
+  expect(requestDelegator.mock).toHaveReturnedTimes(1);
+  expect(requestDelegator.mock).toHaveBeenCalledWith(req, res, routing);
 
-describe('.verifyCredential(credential)', () => {
-  const MockDate = moxy(Date);
-  const _Date = Date;
+  expect(basicAuthenticator.createRequestDelegator.mock).toHaveReturnedTimes(1);
 
-  beforeAll(() => {
-    global.Date = MockDate;
-  });
-
-  afterAll(() => {
-    global.Date = _Date;
-  });
-
-  beforeEach(() => {
-    MockDate.mock.reset();
-  });
-
-  it('resolve auth context if verification ok', async () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-    });
-    MockDate.now.mock.fake(() => 1504046389999);
-
-    await expect(
-      authenticator.verifyCredential({
-        signedRequest:
-          'djtx96RQaNCtszsQ7GOIXy8jBF659cNCBVM69n3g6h8.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
-        client: 'messenger',
-      })
-    ).resolves.toStrictEqual({
-      ok: true,
-      data: {
-        page: 682498171943165,
-        user: '1254459154682919',
-        chat: {
-          id: '1254459154682919',
-          type: MessengerChatType.UserToPage,
-        },
-        client: 'messenger',
+  const delegatorOptions =
+    basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
+  expect(delegatorOptions).toMatchInlineSnapshot(`
+    Object {
+      "bot": Object {
+        "pageId": "12345",
       },
-    });
+      "checkAuthData": [Function],
+      "getChatLink": [Function],
+      "platform": "messenger",
+      "platformColor": "#635BFF",
+      "platformImageUrl": "https://machinat.com/img/icon/messenger.png",
+      "platformName": "Messenger",
+    }
+  `);
+
+  expect(
+    delegatorOptions.getChatLink(new MessengerChat('12345', '67890'))
+  ).toBe('https://m.me/12345');
+
+  expect(
+    delegatorOptions.checkAuthData({ page: '12345', id: '67890' })
+  ).toEqual({
+    ok: true,
+    channel: new MessengerChat('12345', '67890'),
+    data: { page: '12345', id: '67890' },
   });
-
-  it('fail if context is invalid', async () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-    });
-
-    await expect(authenticator.verifyCredential(null as never)).resolves
-      .toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "invalid extension context",
-            }
-          `);
-    await expect(authenticator.verifyCredential({} as never)).resolves
-      .toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "invalid extension context",
-            }
-          `);
-    await expect(
-      authenticator.verifyCredential({
-        signedRequest: 'invalid content',
-        client: 'messenger',
-      })
-    ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "invalid signed request token",
-            }
-          `);
-  });
-
-  it('fail if signature is invalid', async () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-    });
-
-    await expect(
-      authenticator.verifyCredential({
-        signedRequest:
-          '__invalid_signature_part__.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
-        client: 'messenger',
-      })
-    ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 401,
-              "ok": false,
-              "reason": "invalid signature",
-            }
-          `);
-  });
-
-  it('fail is signed request token is outdated', async () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-      issueTimeLimit: 999,
-    });
-    MockDate.now.mock.fake(() => 1504047380000);
-
-    await expect(
-      authenticator.verifyCredential({
-        signedRequest:
-          'djtx96RQaNCtszsQ7GOIXy8jBF659cNCBVM69n3g6h8.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTUwNDA0NjM4MCwicGFnZV9pZCI6NjgyNDk4MTcxOTQzMTY1LCJwc2lkIjoiMTI1NDQ1OTE1NDY4MjkxOSIsInRocmVhZF90eXBlIjoiVVNFUl9UT19QQUdFIiwidGlkIjoiMTI1NDQ1OTE1NDY4MjkxOSJ9',
-        client: 'messenger',
-      })
-    ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 401,
-              "ok": false,
-              "reason": "signed request token timeout",
-            }
-          `);
-  });
+  expect(delegatorOptions.checkAuthData({ agent: '54321', id: '67890' }))
+    .toMatchInlineSnapshot(`
+    Object {
+      "code": 400,
+      "ok": false,
+      "reason": "page not match",
+    }
+  `);
 });
 
-describe('.verifyRefreshment()', () => {
-  it('return success and original data', async () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-    });
-    const authData = {
-      page: pageId,
-      user: '1254459154682919',
-      chat: {
-        type: MessengerChatType.UserToPage,
-        id: '1254459154682919',
-      },
-      client: 'facebook' as const,
-    };
+test('.getAuthUrl(id, path)', () => {
+  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
+  expect(authenticator.getAuthUrl('67890')).toBe(loginUrl);
+  expect(authenticator.getAuthUrl('67890', '/foo?bar=baz')).toBe(loginUrl);
 
-    await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
-      ok: true,
-      data: authData,
-    });
-  });
-
-  it('fail is pageId not match', async () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-    });
-
-    await expect(
-      authenticator.verifyRefreshment({
-        page: 666666666,
-        user: '1254459154682919',
-        chat: {
-          type: MessengerChatType.UserToPage,
-          id: '1254459154682919',
-        },
-        client: 'facebook',
-      })
-    ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "page not match",
-            }
-          `);
-  });
+  expect(basicAuthenticator.getAuthUrl.mock).toHaveBeenCalledTimes(2);
+  expect(basicAuthenticator.getAuthUrl.mock).toHaveBeenNthCalledWith(
+    1,
+    'messenger',
+    { page: '12345', id: '67890' },
+    undefined
+  );
+  expect(basicAuthenticator.getAuthUrl.mock).toHaveBeenNthCalledWith(
+    2,
+    'messenger',
+    { page: '12345', id: '67890' },
+    '/foo?bar=baz'
+  );
 });
 
-describe('.checkAuthData(data)', () => {
-  it('resolve auth context form extension context', () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-    });
-    expect(
-      authenticator.checkAuthData({
-        page: pageId,
-        user: '1254459154682919',
-        chat: {
-          type: MessengerChatType.UserToPage,
-          id: '1254459154682919',
-        },
-        client: 'messenger',
-      })
-    ).toEqual({
-      ok: true,
-      contextDetails: {
-        pageId,
-        user: new MessengerUser(pageId, '1254459154682919'),
-        channel: new MessengerChannel(pageId, {
-          id: '1254459154682919',
-        }),
-        clientType: 'messenger',
-      },
-    });
+test('.verifyCredential() fails anyway', async () => {
+  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
+  await expect(authenticator.verifyCredential()).resolves
+    .toMatchInlineSnapshot(`
+          Object {
+            "code": 403,
+            "ok": false,
+            "reason": "should use backend based flow only",
+          }
+        `);
+});
+
+test('.verifyRefreshment(data)', async () => {
+  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
+  await expect(
+    authenticator.verifyRefreshment({ page: '12345', id: '67890' })
+  ).resolves.toEqual({
+    ok: true,
+    data: { page: '12345', id: '67890' },
   });
 
-  it('fail if pageId not match', () => {
-    const authenticator = new MessengerServerAuthenticator({
-      pageId,
-      appSecret,
-    });
+  await expect(authenticator.verifyRefreshment({ page: '54321', id: '67890' }))
+    .resolves.toMatchInlineSnapshot(`
+          Object {
+            "code": 400,
+            "ok": false,
+            "reason": "page not match",
+          }
+        `);
+});
 
-    expect(
-      authenticator.checkAuthData({
-        page: 666666666666,
-        user: '1254459154682919',
-        chat: {
-          type: MessengerChatType.UserToPage,
-          id: '1254459154682919',
-        },
-        client: 'messenger',
-      })
-    ).toMatchInlineSnapshot(`
-      Object {
-        "code": 400,
-        "ok": false,
-        "reason": "page not match",
-      }
-    `);
+test('.checkAuthData(data)', () => {
+  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
+  expect(authenticator.checkAuthData({ page: '12345', id: '67890' })).toEqual({
+    ok: true,
+    contextDetails: {
+      pageId: '12345',
+      channel: new MessengerChat('12345', '67890'),
+      user: new MessengerUser('12345', '67890'),
+    },
   });
+
+  expect(authenticator.checkAuthData({ page: '54321', id: '67890' }))
+    .toMatchInlineSnapshot(`
+          Object {
+            "code": 400,
+            "ok": false,
+            "reason": "page not match",
+          }
+        `);
 });

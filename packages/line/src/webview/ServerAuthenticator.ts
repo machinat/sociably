@@ -1,8 +1,8 @@
 import invariant from 'invariant';
+import { URL } from 'url';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
-import type { ServerAuthenticator, CheckDataResult } from '@machinat/auth';
-
+import Auth, { ServerAuthenticator, CheckDataResult } from '@machinat/auth';
 import { ConfigsI } from '../interface';
 import BotP from '../Bot';
 import { LINE, LiffContextOs } from '../constant';
@@ -17,7 +17,7 @@ import {
 } from './types';
 
 type LineServerAuthenticatorOpts = {
-  liffChannelIds: string[];
+  loginChannelId: string;
 };
 
 type VerifyTokenResult = {
@@ -36,16 +36,25 @@ export class LineServerAuthenticator
     ServerAuthenticator<LineAuthCredential, LineAuthData, LineAuthContext>
 {
   bot: BotP;
-  liffChannelIds: string[];
+  httpOperator: Auth.HttpOperator;
+  loginChannelId: string;
   platform = LINE;
 
-  constructor(bot: BotP, { liffChannelIds }: LineServerAuthenticatorOpts) {
-    invariant(
-      liffChannelIds && liffChannelIds.length,
-      'options.liffChannelIds should not be empty'
-    );
+  constructor(
+    bot: BotP,
+    httpOperator: Auth.HttpOperator,
+    { loginChannelId }: LineServerAuthenticatorOpts
+  ) {
+    invariant(loginChannelId, 'options.loginChannelId should not be empty');
     this.bot = bot;
-    this.liffChannelIds = liffChannelIds;
+    this.httpOperator = httpOperator;
+    this.loginChannelId = loginChannelId;
+  }
+
+  getWebviewUrl(path?: string): string {
+    const url = new URL(this.httpOperator.getRedirectUrl(path));
+    url.searchParams.set('platform', 'line');
+    return url.href;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -158,7 +167,7 @@ export class LineServerAuthenticator
   }
 
   private _checkClientId(clientId: string) {
-    return this.liffChannelIds.includes(clientId);
+    return this.loginChannelId === clientId;
   }
 
   private _checkAuthData(data: LineAuthData): [boolean, number, string] {
@@ -178,16 +187,14 @@ export class LineServerAuthenticator
 
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'transient',
-  deps: [BotP, ConfigsI],
-  factory: (bot, { liffChannelIds }) => {
+  deps: [BotP, Auth.HttpOperator, ConfigsI],
+  factory: (bot, httpOperator, { loginChannelId }) => {
     invariant(
-      liffChannelIds,
-      'provide configs.liffChannelIds to authorize with liff'
+      loginChannelId,
+      'configs.loginChannelId is required to authorize with LIFF'
     );
 
-    return new LineServerAuthenticator(bot, {
-      liffChannelIds,
-    });
+    return new LineServerAuthenticator(bot, httpOperator, { loginChannelId });
   },
 })(LineServerAuthenticator);
 

@@ -6,7 +6,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": "_FOO_",
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.john",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -15,7 +15,7 @@ Array [
           },
         },
         "recipient": Object {
-          "id": "john",
+          "id": "67890",
         },
       },
       "method": "POST",
@@ -30,7 +30,7 @@ Array [
       "filename": "deathangel.jpg",
       "knownLength": 66666,
     },
-    "channelUid": "messenger.1234567890.psid.john",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -39,7 +39,7 @@ Array [
           },
         },
         "recipient": Object {
-          "id": "john",
+          "id": "67890",
         },
       },
       "method": "POST",
@@ -55,12 +55,12 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.john",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "persona_id": "your-dearest-friend",
         "recipient": Object {
-          "id": "john",
+          "id": "67890",
         },
         "sender_action": "typing_on",
       },
@@ -72,7 +72,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.john",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -82,7 +82,7 @@ Array [
         "notification_type": "SILENT_PUSH",
         "persona_id": "your-dearest-friend",
         "recipient": Object {
-          "id": "john",
+          "id": "67890",
         },
         "tag": "PAYMENT_UPDATE",
       },
@@ -94,12 +94,12 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.john",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "id": 2,
         "recipient": Object {
-          "id": "john",
+          "id": "67890",
         },
       },
       "method": "POST",
@@ -110,7 +110,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.john",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -120,7 +120,7 @@ Array [
         "notification_type": "SILENT_PUSH",
         "persona_id": "your-dearest-friend",
         "recipient": Object {
-          "id": "john",
+          "id": "67890",
         },
         "tag": "PAYMENT_UPDATE",
       },
@@ -132,7 +132,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.john",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -142,7 +142,7 @@ Array [
         "notification_type": "SILENT_PUSH",
         "persona_id": "your-dearest-friend",
         "recipient": Object {
-          "id": "john",
+          "id": "67890",
         },
         "tag": "PAYMENT_UPDATE",
       },
@@ -159,7 +159,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.Luke",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -169,7 +169,7 @@ Array [
         "notification_type": "SILENT_PUSH",
         "persona_id": "astromech-droid",
         "recipient": Object {
-          "id": "Luke",
+          "id": "67890",
         },
         "tag": "POST_PURCHASE_UPDATE",
       },
@@ -181,7 +181,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.Luke",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -191,7 +191,7 @@ Array [
         "notification_type": "REGULAR",
         "persona_id": "protocol-droid",
         "recipient": Object {
-          "id": "Luke",
+          "id": "67890",
         },
         "tag": undefined,
       },
@@ -208,7 +208,7 @@ Array [
     "attachmentAssetTag": undefined,
     "attachmentFileData": undefined,
     "attachmentFileInfo": undefined,
-    "channelUid": "messenger.1234567890.psid.Luke",
+    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -218,7 +218,7 @@ Array [
         "notification_type": "SILENT_PUSH",
         "persona_id": "astromech-droid",
         "recipient": Object {
-          "id": "Luke",
+          "id": "67890",
         },
       },
       "method": "POST",

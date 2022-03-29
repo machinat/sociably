@@ -105,7 +105,7 @@ describe('#constructor(options)', () => {
       accessToken: '_ACCESS_TOKEN_',
       providerId: '_PROVIDER_ID_',
       channelId: '_CHANNEL_ID_',
-      maxConnections: 999,
+      maxRequestConnections: 999,
       initScope,
       dispatchWrapper,
     });

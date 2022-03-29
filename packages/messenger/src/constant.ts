@@ -23,9 +23,3 @@ export const PATH_MESSAGE_ATTACHMENTS = 'me/message_attachments';
 export const PATH_MESSENGER_PROFILE = 'me/messenger_profile';
 
 export const PATH_PERSONAS = 'me/personas';
-
-export enum MessengerChatType {
-  UserToPage,
-  UserToUser,
-  Group,
-}

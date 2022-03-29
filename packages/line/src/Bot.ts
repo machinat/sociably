@@ -32,7 +32,7 @@ type LineBotOptions = {
   providerId: string;
   channelId: string;
   accessToken: string;
-  maxConnections?: number;
+  maxRequestConnections?: number;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<LineJob, LineDispatchFrame, LineResult>;
 };
@@ -43,7 +43,7 @@ type LineBotOptions = {
 export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
   providerId: string;
   channelId: string;
-  maxConnections: number;
+  maxRequestConnections: number;
   engine: Engine<
     LineChat,
     LineSegmentValue,
@@ -58,7 +58,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
     providerId,
     channelId,
     accessToken,
-    maxConnections = 100,
+    maxRequestConnections = 100,
     initScope,
     dispatchWrapper,
   }: LineBotOptions) {
@@ -68,10 +68,10 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
 
     this.providerId = providerId;
     this.channelId = channelId;
-    this.maxConnections = maxConnections;
+    this.maxRequestConnections = maxRequestConnections;
 
     const queue = new Queue<LineJob, LineResult>();
-    const worker = new LineWorker(accessToken, maxConnections);
+    const worker = new LineWorker(accessToken, maxRequestConnections);
     const renderer = new Renderer<LineSegmentValue, LineComponent<unknown>>(
       LINE,
       generalElementDelegate
@@ -149,7 +149,7 @@ const BotP = makeClassProvider({
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { providerId, channelId, accessToken, maxConnections },
+    { providerId, channelId, accessToken, maxRequestConnections },
     moduleUtils,
     platformUtils
   ) =>
@@ -157,7 +157,7 @@ const BotP = makeClassProvider({
       providerId,
       channelId,
       accessToken,
-      maxConnections,
+      maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
     }),

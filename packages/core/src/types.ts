@@ -61,6 +61,7 @@ export type MachinatEmpty = null | undefined | boolean;
 export type GeneralElement = MachinatElement<{ [key: string]: any }, string>;
 
 type RenderEnv = {
+  path: string;
   platform: string;
 };
 

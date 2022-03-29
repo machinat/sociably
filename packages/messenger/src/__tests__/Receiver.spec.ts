@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
 import MessengerChat from '../Chat';
+import SendingTarget from '../SendingTarget';
 import MessengerUser from '../User';
 import { MessengerReceiver } from '../Receiver';
 import type { MessengerBot } from '../Bot';
@@ -237,20 +238,20 @@ describe('handling POST', () => {
       object: 'page',
       entry: [
         {
-          id: 1234567890,
+          id: '12345',
           time: 1458692752478,
           messaging: [
             {
-              sender: { id: '_PSID_' },
-              recipient: { id: 1234567890 },
+              recipient: { id: '12345' },
+              sender: { id: '67890' },
               message: {
                 mid: 'xxx',
                 text: 'hello',
               },
             },
             {
-              sender: { id: '_PSID_' },
-              recipient: { id: 1234567890 },
+              recipient: { id: '12345' },
+              sender: { id: '67890' },
               message: {
                 mid: 'xxx',
                 attachments: [
@@ -283,11 +284,9 @@ describe('handling POST', () => {
       expect(context.platform).toBe('messenger');
       expect(context.bot).toBe(bot);
 
-      expect(context.event.user).toEqual(
-        new MessengerUser(1234567890, '_PSID_')
-      );
+      expect(context.event.user).toEqual(new MessengerUser('12345', '67890'));
       expect(context.event.channel).toEqual(
-        new MessengerChat(1234567890, { id: '_PSID_' })
+        new MessengerChat('12345', '67890')
       );
 
       expect(context.metadata).toEqual({
@@ -319,18 +318,18 @@ describe('handling POST', () => {
       object: 'page',
       entry: [
         {
-          id: 1234567890,
+          id: '12345',
           time: 1458692752478,
           messaging: [
             {
-              sender: { id: '_PSID_' },
-              recipient: { id: 1234567890 },
+              sender: { id: '67890' },
+              recipient: { id: '12345' },
               optin: {
                 ref: '<PASS_THROUGH_PARAM>',
               },
             },
             {
-              recipient: { id: 1234567890 },
+              recipient: { id: '12345' },
               optin: {
                 ref: '<PASS_THROUGH_PARAM>',
                 user_ref: '<REF_FROM_CHECKBOX_PLUGIN>',
@@ -353,15 +352,13 @@ describe('handling POST', () => {
     expect(popEventMock).toHaveBeenCalledTimes(2);
 
     const ctx1 = popEventMock.calls[0].args[0];
-    expect(ctx1.event.user).toEqual(new MessengerUser(1234567890, '_PSID_'));
-    expect(ctx1.event.channel).toEqual(
-      new MessengerChat(1234567890, { id: '_PSID_' })
-    );
+    expect(ctx1.event.user).toEqual(new MessengerUser('12345', '67890'));
+    expect(ctx1.event.channel).toEqual(new MessengerChat('12345', '67890'));
 
     const ctx2 = popEventMock.calls[1].args[0];
     expect(ctx2.event.user).toBe(null);
     expect(ctx2.event.channel).toEqual(
-      new MessengerChat(1234567890, { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' })
+      new SendingTarget('12345', { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' })
     );
 
     for (const { args } of popEventMock.calls) {
@@ -417,8 +414,8 @@ describe('handling POST', () => {
     });
 
     const body =
-      '{"object":"page","entry":[{"id":1234567890,"time":1458692752478,"messaging":[{"sender":{"id":"_PSID_"},"recipient":{"id":1234567890},"message":{"mid":"xxx","text":"foo"}}]}]}';
-    const hmac = '2536e88144bf4e7c4c2e34bebd4c0c9d24e3342b';
+      '{"object":"page","entry":[{"id":"12345","time":1458692752478,"messaging":[{"sender":{"id":"67890"},"recipient":{"id":"12345"},"message":{"mid":"xxx","text":"foo"}}]}]}';
+    const hmac = '96674bf6c7363f2582a3e18434e4b720fe4f8abc';
 
     const req = createReq({
       method: 'POST',
@@ -433,10 +430,8 @@ describe('handling POST', () => {
     expect(res.finished).toBe(true);
 
     const { event } = popEventMock.calls[0].args[0];
-    expect(event.user).toEqual(new MessengerUser(1234567890, '_PSID_'));
-    expect(event.channel).toEqual(
-      new MessengerChat(1234567890, { id: '_PSID_' })
-    );
+    expect(event.user).toEqual(new MessengerUser('12345', '67890'));
+    expect(event.channel).toEqual(new MessengerChat('12345', '67890'));
 
     expect(event.platform).toBe('messenger');
     expect(event.category).toBe('message');

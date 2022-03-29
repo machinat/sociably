@@ -94,11 +94,7 @@ export class BasicAuthenticator {
     };
   }
 
-  getLoginUrl<Data>(
-    platform: string,
-    data: Data,
-    redirectUrl?: string
-  ): string {
+  getAuthUrl<Data>(platform: string, data: Data, redirectUrl?: string): string {
     const loginToken = this.operator.signToken(platform, { data, redirectUrl });
     const authRoot = new URL(this.operator.getAuthUrl(platform));
 

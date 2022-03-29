@@ -76,7 +76,7 @@ describe('.constructor(options)', () => {
       initScope,
       dispatchWrapper,
       token,
-      maxConnections: 999,
+      maxRequestConnections: 999,
     });
 
     expect(bot.engine).toBeInstanceOf(Engine);
@@ -101,7 +101,7 @@ describe('.constructor(options)', () => {
     expect(Worker.mock).toHaveBeenCalledWith('12345:_BOT_TOKEN_', 999);
   });
 
-  test('default maxConnections', () => {
+  test('default maxRequestConnections', () => {
     expect(
       new TelegramBot({
         initScope,

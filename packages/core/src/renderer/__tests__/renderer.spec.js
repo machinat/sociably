@@ -196,7 +196,7 @@ describe('.render()', () => {
     expect(Custom.mock).toHaveBeenCalledTimes(1);
     expect(Custom.mock).toHaveBeenCalledWith(
       { a: 'A', b: 2 },
-      { platform: 'test' }
+      { platform: 'test', path: '$::7' }
     );
 
     expect(generalElementDelegate.mock).toHaveBeenCalledTimes(2);
@@ -642,7 +642,7 @@ describe('.render()', () => {
     expect(componentMock).toHaveBeenCalledTimes(10);
     expect(componentMock).toHaveBeenCalledWith(
       { n: expect.any(Number) },
-      { platform: 'test' }
+      { platform: 'test', path: expect.any(String) }
     );
   });
 

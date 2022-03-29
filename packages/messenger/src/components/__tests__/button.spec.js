@@ -69,7 +69,7 @@ describe('UrlButton', () => {
           webviewHeightRatio="compact"
           messengerExtensions
           fallbackUrl="http://..."
-          hideWebviewShare
+          hideShareButton
         />
       )
     ).resolves.toMatchInlineSnapshot(`
@@ -77,7 +77,7 @@ describe('UrlButton', () => {
               Object {
                 "node": <UrlButton
                   fallbackUrl="http://..."
-                  hideWebviewShare={true}
+                  hideShareButton={true}
                   messengerExtensions={true}
                   title="my button"
                   url="http://machinat.com"

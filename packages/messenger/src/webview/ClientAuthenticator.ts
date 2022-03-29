@@ -1,119 +1,54 @@
 /// <reference lib="DOM" />
-import invariant from 'invariant';
-import type { CheckDataResult } from '@machinat/auth';
+import type {
+  AuthenticatorCredentialResult,
+  CheckDataResult,
+} from '@machinat/auth';
 import type { WebviewClientAuthenticator } from '@machinat/webview';
+import { parse as parseBrowser } from 'bowser';
 import { MESSENGER } from '../constant';
 import MessengerChat from '../Chat';
 import MessengerUser from '../User';
 import MessengerUserProfile from '../UserProfile';
-import type {
-  MessengerAuthCredential,
-  MessengerAuthData,
-  MessengerAuthContext,
-  ExtensionContext,
-  AuthenticatorCredentialResult,
-} from './types';
 import { getAuthContextDetails } from './utils';
+import type { MessengerAuthContext, MessengerAuthData } from './types';
 
-type MessengerClientAuthOpts = {
-  appId: string;
-  isSdkReady?: boolean;
+type MessengerClientOptions = {
+  /** The Facebook page id */
+  pageId: string;
 };
 
-declare const window: Window & {
-  extAsyncInit(): void;
-  MessengerExtensions: any;
-};
-
-const INIT_TIMEOUT = 20000; // 20s;
-
-class MessengerClientAuthenticator
+/* eslint-disable class-methods-use-this */
+export default class MessengerClientAuthenticator
   implements
-    WebviewClientAuthenticator<
-      MessengerAuthCredential,
-      MessengerAuthData,
-      MessengerAuthContext
-    >
+    WebviewClientAuthenticator<void, MessengerAuthData, MessengerAuthContext>
 {
-  appId: string;
-  isSdkReady: boolean;
-  extensionsSdk: any;
-
   platform = MESSENGER;
+  pageId: string;
   marshalTypes = [MessengerChat, MessengerUser, MessengerUserProfile];
 
-  constructor(options: MessengerClientAuthOpts) {
-    invariant(
-      options?.appId,
-      'options.appId is required to retrieve chat context'
-    );
-    const { appId, isSdkReady = false } = options;
-
-    this.appId = appId;
-    this.isSdkReady = isSdkReady;
+  constructor({ pageId }: MessengerClientOptions) {
+    this.pageId = pageId;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async init(): Promise<void> {
-    if (!this.isSdkReady) {
-      const initPromise = new Promise<void>((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          reject(new Error('extension initiation timeout'));
-        }, INIT_TIMEOUT);
-
-        const existedInitCallback = window.extAsyncInit;
-        window.extAsyncInit = () => {
-          resolve();
-          clearTimeout(timeoutId);
-
-          if (typeof existedInitCallback === 'function') {
-            existedInitCallback();
-          }
-        };
-      });
-
-      // eslint-disable-next-line func-names
-      (function (d, s, id) {
-        if (d.getElementById(id)) return;
-        const fjs: any = d.getElementsByTagName(s)[0];
-        const js: any = d.createElement(s);
-        js.id = id;
-        js.src = '//connect.facebook.net/en_US/messenger.Extensions.js';
-        fjs.parentNode.insertBefore(js, fjs);
-      })(document, 'script', 'Messenger');
-
-      await initPromise;
-    }
-
-    this.extensionsSdk = window.MessengerExtensions;
+    // do nothing
   }
 
-  async fetchCredential(): Promise<AuthenticatorCredentialResult> {
-    try {
-      const context: ExtensionContext = await new Promise((resolve, reject) => {
-        this.extensionsSdk.getContext(this.appId, resolve, reject);
-      });
-
-      return {
-        ok: true,
-        credential: {
-          signedRequest: context.signed_request,
-          client: window.name === 'messenger_ref' ? 'messenger' : 'facebook',
-        },
-      };
-    } catch (code) {
-      return {
-        ok: false,
-        code: 401,
-        reason: `Messenger extension error ${code}`,
-      };
-    }
+  async fetchCredential(): Promise<AuthenticatorCredentialResult<void>> {
+    return {
+      ok: false as const,
+      code: 400,
+      reason: 'should only initiate from backend',
+    };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   checkAuthData(
     data: MessengerAuthData
   ): CheckDataResult<MessengerAuthContext> {
+    if (data.page !== this.pageId) {
+      return { ok: false, code: 400, reason: 'agent not match' };
+    }
+
     return {
       ok: true,
       contextDetails: getAuthContextDetails(data),
@@ -121,12 +56,11 @@ class MessengerClientAuthenticator
   }
 
   closeWebview(): boolean {
-    this.extensionsSdk.requestCloseBrowser(
-      () => {},
-      () => {}
-    );
+    if (parseBrowser(window.navigator.userAgent).platform.type === 'desktop') {
+      return false;
+    }
+
+    window.location.href = `https://m.me/${this.pageId}`;
     return true;
   }
 }
-
-export default MessengerClientAuthenticator;

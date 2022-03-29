@@ -1,31 +1,30 @@
-import { parse as parseUrl } from 'url';
+import { parse as parseUrl, URL } from 'url';
 import type { ParsedUrlQuery } from 'querystring';
 import { createHmac, createHash } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { makeClassProvider } from '@machinat/core/service';
+import type { RoutingInfo } from '@machinat/http';
 import Auth, {
   ServerAuthenticator,
   VerifyResult,
   CheckDataResult,
 } from '@machinat/auth';
+import BasicAuthenticator from '@machinat/auth/basicAuth';
 import { TELEGRAM } from '../constant';
 import BotP from '../Bot';
+import { ConfigsI } from '../interface';
 import type TelegramApiError from '../Error';
 import type { RawChat, RawUser } from '../types';
 import { getAuthContextDetails } from './utils';
+import renderLoginPage from './renderLoginPage';
+import { REDIRECT_QUERY, CHAT_QUERY, LOGIN_PARAMETERS } from './constant';
 import type { TelegramAuthContext, TelegramAuthData } from './types';
 
-const CHAT_QUERY = 'telegramChat';
-const REDIRECT_QUERY = 'redirectUrl';
-
-const LOGIN_PARAMETERS = [
-  'auth_date',
-  'first_name',
-  'id',
-  'last_name',
-  'photo_url',
-  'username',
-];
+type ServerAuthenticatorOptions = {
+  botName: string;
+  appName?: string;
+  appImageUrl?: string;
+};
 
 /**
  * @category Provider
@@ -35,16 +34,89 @@ export class TelegramServerAuthenticator
 {
   bot: BotP;
   operator: Auth.HttpOperator;
+  options: ServerAuthenticatorOptions;
   private _secretKey: Buffer;
+
   platform = TELEGRAM;
 
-  constructor(bot: BotP, operator: Auth.HttpOperator) {
+  constructor(
+    bot: BotP,
+    operator: Auth.HttpOperator,
+    options: ServerAuthenticatorOptions
+  ) {
     this.bot = bot;
     this.operator = operator;
+    this.options = options;
     this._secretKey = createHash('sha256').update(bot.token).digest();
   }
 
+  getAuthUrl(redirectUrl?: string): string {
+    const url = new URL(this.operator.getAuthUrl(TELEGRAM));
+
+    if (redirectUrl) {
+      url.searchParams.set(REDIRECT_QUERY, redirectUrl);
+    }
+    return url.href;
+  }
+
   async delegateAuthRequest(
+    req: IncomingMessage,
+    res: ServerResponse,
+    { trailingPath }: RoutingInfo
+  ): Promise<void> {
+    if (trailingPath === '') {
+      await this._handleAuthCallback(req, res);
+    } else if (trailingPath === 'login') {
+      const { botName, appName, appImageUrl } = this.options;
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(
+        renderLoginPage({
+          botName,
+          appName,
+          appImageUrl,
+          callbackUrl: this.getAuthUrl(),
+        })
+      );
+    } else {
+      res.writeHead(404);
+      res.end();
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async verifyCredential(): Promise<VerifyResult<never>> {
+    return {
+      ok: false,
+      code: 403,
+      reason: 'should initiate st server side only',
+    };
+  }
+
+  async verifyRefreshment(
+    data: TelegramAuthData
+  ): Promise<VerifyResult<TelegramAuthData>> {
+    if (data.bot !== this.bot.id) {
+      return { ok: false, code: 400, reason: 'bot not match' };
+    }
+
+    return {
+      ok: true,
+      data,
+    };
+  }
+
+  checkAuthData(data: TelegramAuthData): CheckDataResult<TelegramAuthContext> {
+    if (data.bot !== this.bot.id) {
+      return { ok: false, code: 400, reason: 'bot not match' };
+    }
+
+    return {
+      ok: true,
+      contextDetails: getAuthContextDetails(data),
+    };
+  }
+
+  private async _handleAuthCallback(
     req: IncomingMessage,
     res: ServerResponse
   ): Promise<void> {
@@ -115,40 +187,6 @@ export class TelegramServerAuthenticator
       photo: query.photo_url as string | undefined,
     });
     this.operator.redirect(res, redirectQuery, { assertInternal: true });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  async verifyCredential(): Promise<VerifyResult<never>> {
-    return {
-      ok: false,
-      code: 403,
-      reason: 'should initiate st server side only',
-    };
-  }
-
-  async verifyRefreshment(
-    data: TelegramAuthData
-  ): Promise<VerifyResult<TelegramAuthData>> {
-    if (data.bot !== this.bot.id) {
-      return { ok: false, code: 400, reason: 'bot not match' };
-    }
-
-    return {
-      ok: true,
-      data,
-    };
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  checkAuthData(data: TelegramAuthData): CheckDataResult<TelegramAuthContext> {
-    if (data.bot !== this.bot.id) {
-      return { ok: false, code: 400, reason: 'bot not match' };
-    }
-
-    return {
-      ok: true,
-      contextDetails: getAuthContextDetails(data),
-    };
   }
 
   private _verifyLoginQuery(
@@ -224,9 +262,18 @@ export class TelegramServerAuthenticator
 
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, Auth.HttpOperator],
-  factory: (bot, operator) => {
-    return new TelegramServerAuthenticator(bot, operator);
+  deps: [
+    BotP,
+    Auth.HttpOperator,
+    ConfigsI,
+    { require: BasicAuthenticator, optional: true },
+  ],
+  factory: (bot, operator, configs, basicAuthenticator) => {
+    return new TelegramServerAuthenticator(bot, operator, {
+      botName: configs.botName,
+      appName: basicAuthenticator?.appName,
+      appImageUrl: basicAuthenticator?.appImageUrl,
+    });
   },
 })(TelegramServerAuthenticator);
 

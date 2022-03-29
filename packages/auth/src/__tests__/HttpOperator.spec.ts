@@ -763,12 +763,12 @@ test('.redirect(url, options) with assertInternal set to true', () => {
 test('.getAuthUrl(url, options)', () => {
   const operator = new HttpOperator({ secret, serverUrl, apiRoot: '/auth' });
 
-  expect(operator.getAuthUrl('foo')).toBe('https://machinat.io/auth/foo/');
-  expect(operator.getAuthUrl('foo', '/bar')).toBe(
-    'https://machinat.io/auth/foo/bar'
+  expect(operator.getAuthUrl('test')).toBe('https://machinat.io/auth/test/');
+  expect(operator.getAuthUrl('test', 'foo?bar=baz')).toBe(
+    'https://machinat.io/auth/test/foo?bar=baz'
   );
-  expect(operator.getAuthUrl('foo', 'bar/baz')).toBe(
-    'https://machinat.io/auth/foo/bar/baz'
+  expect(operator.getAuthUrl('test', 'foo/bar/baz')).toBe(
+    'https://machinat.io/auth/test/foo/bar/baz'
   );
 });
 
@@ -780,11 +780,11 @@ test('.getRedirectUrl(url, options)', () => {
   });
 
   expect(operator.getRedirectUrl()).toBe('https://machinat.io/webview/');
-  expect(operator.getRedirectUrl('foo')).toBe(
-    'https://machinat.io/webview/foo'
+  expect(operator.getRedirectUrl('foo?bar=baz')).toBe(
+    'https://machinat.io/webview/foo?bar=baz'
   );
-  expect(operator.getRedirectUrl('bar/baz')).toBe(
-    'https://machinat.io/webview/bar/baz'
+  expect(operator.getRedirectUrl('foo/bar/baz')).toBe(
+    'https://machinat.io/webview/foo/bar/baz'
   );
 });
 

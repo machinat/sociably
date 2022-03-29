@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
+import { AuthHttpOperator } from '@machinat/auth';
 import moxy from '@moxyjs/moxy';
 import type { LineBot } from '../../Bot';
 import LineChat from '../../Chat';
@@ -9,7 +10,7 @@ import ServerAuthenticator from '../ServerAuthenticator';
 import { LiffContextOs } from '../../constant';
 
 const request = {
-  url: '/foo/auth/line',
+  url: '/my_app/auth/line',
   type: 'GET',
   headers: {},
 } as unknown as IncomingMessage;
@@ -22,51 +23,70 @@ const bot = moxy<LineBot>({
   },
 } as never);
 
+const httpOperator = moxy<AuthHttpOperator>({
+  getRedirectUrl: (path) =>
+    `https://machinat.io/my_app/webview${path ? `/${path}` : ''}`,
+} as never);
+
 beforeEach(() => {
   bot.mock.reset();
+  httpOperator.mock.reset();
 });
 
 describe('.constructor(options)', () => {
   it('ok', () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     expect(authenticator.platform).toBe('line');
-    expect(authenticator.liffChannelIds).toEqual([
-      '_LOGIN_CHAN_1_',
-      '_LOGIN_CHAN_2_',
-    ]);
+    expect(authenticator.loginChannelId).toBe('_LOGIN_CHAN_');
   });
 
-  it('throw if liffChannelIds is empty', () => {
+  it('throw if loginChannelId is empty', () => {
     expect(
-      () => new ServerAuthenticator(bot, {} as never)
+      () => new ServerAuthenticator(bot, httpOperator, {} as never)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.liffChannelIds should not be empty"`
+      `"options.loginChannelId should not be empty"`
     );
     expect(
-      () => new ServerAuthenticator(bot, { liffChannelIds: [] })
+      () => new ServerAuthenticator(bot, httpOperator, { loginChannelId: '' })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.liffChannelIds should not be empty"`
+      `"options.loginChannelId should not be empty"`
     );
   });
 });
 
-describe('.delegateAuthRequest(req, res)', () => {
-  it('respond 403', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
-    });
-    const res = moxy(new ServerResponse({} as never));
-
-    await expect(authenticator.delegateAuthRequest(request, res)).resolves.toBe(
-      undefined
-    );
-
-    expect(res.statusCode).toBe(403);
-    expect(res.end.mock).toHaveBeenCalled();
+it('.getWebviewUrl(path)', async () => {
+  const authenticator = new ServerAuthenticator(bot, httpOperator, {
+    loginChannelId: '_LOGIN_CHAN_',
   });
+  expect(authenticator.getWebviewUrl()).toMatchInlineSnapshot(
+    `"https://machinat.io/my_app/webview?platform=line"`
+  );
+  expect(authenticator.getWebviewUrl('foo?bar=baz')).toMatchInlineSnapshot(
+    `"https://machinat.io/my_app/webview/foo?bar=baz&platform=line"`
+  );
+
+  expect(httpOperator.getRedirectUrl.mock).toHaveBeenCalledTimes(2);
+  expect(httpOperator.getRedirectUrl.mock).toHaveBeenNthCalledWith(
+    2,
+    'foo?bar=baz'
+  );
+});
+
+test('.delegateAuthRequest() respond 403', async () => {
+  const authenticator = new ServerAuthenticator(bot, httpOperator, {
+    loginChannelId: '_LOGIN_CHAN_',
+  });
+  const res = moxy(new ServerResponse({} as never));
+
+  await expect(authenticator.delegateAuthRequest(request, res)).resolves.toBe(
+    undefined
+  );
+
+  expect(res.statusCode).toBe(403);
+  expect(res.end.mock).toHaveBeenCalled();
 });
 
 describe('.verifyCredential(credential)', () => {
@@ -80,13 +100,13 @@ describe('.verifyCredential(credential)', () => {
   };
 
   it('calls line social api to verify access token', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     bot.makeApiCall.mock.fake(async () => ({
       scope: 'profile',
-      client_id: '_LOGIN_CHAN_2_',
+      client_id: '_LOGIN_CHAN_',
       expires_in: 2591659,
     }));
 
@@ -95,7 +115,7 @@ describe('.verifyCredential(credential)', () => {
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
-        client: '_LOGIN_CHAN_2_',
+        client: '_LOGIN_CHAN_',
         os: LiffContextOs.Ios,
         lang: 'zh-TW',
         user: '_USER_ID_',
@@ -109,13 +129,13 @@ describe('.verifyCredential(credential)', () => {
   });
 
   test('verify user is group member if groupId given', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     bot.makeApiCall.mock.fakeOnce(async () => ({
       scope: 'profile',
-      client_id: '_LOGIN_CHAN_2_',
+      client_id: '_LOGIN_CHAN_',
       expires_in: 2591659,
     }));
 
@@ -132,7 +152,7 @@ describe('.verifyCredential(credential)', () => {
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
-        client: '_LOGIN_CHAN_2_',
+        client: '_LOGIN_CHAN_',
         os: LiffContextOs.Ios,
         lang: 'zh-TW',
         user: '_USER_ID_',
@@ -156,13 +176,13 @@ describe('.verifyCredential(credential)', () => {
   });
 
   test('verify user is room member if roomId given', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     bot.makeApiCall.mock.fakeOnce(async () => ({
       scope: 'profile',
-      client_id: '_LOGIN_CHAN_2_',
+      client_id: '_LOGIN_CHAN_',
       expires_in: 2591659,
     }));
 
@@ -179,7 +199,7 @@ describe('.verifyCredential(credential)', () => {
       data: {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
-        client: '_LOGIN_CHAN_2_',
+        client: '_LOGIN_CHAN_',
         os: LiffContextOs.Ios,
         lang: 'zh-TW',
         user: '_USER_ID_',
@@ -202,8 +222,8 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('return fail if accessToken is absent', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
     await expect(authenticator.verifyCredential({} as never)).resolves
       .toMatchInlineSnapshot(`
@@ -216,8 +236,8 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('return fail if token verify api respond error', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     bot.makeApiCall.mock.fake(async () => {
@@ -241,9 +261,9 @@ describe('.verifyCredential(credential)', () => {
           `);
   });
 
-  it('return fail if client_id from token not in options.liffChannelIds', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+  it('return fail if client_id not match options.loginChannelId', async () => {
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     bot.makeApiCall.mock.fake(async () => ({
@@ -263,8 +283,8 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('throw if unknown error happen', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_LOGIN_CHAN_1_', '_LOGIN_CHAN_2_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     bot.makeApiCall.mock.fake(async () => {
@@ -281,7 +301,7 @@ describe('.verifyRefreshment()', () => {
   const authData = {
     provider: '_PROVIDER_ID_',
     channel: '_CHANNEL_ID_',
-    client: '_CLIENT_ID_',
+    client: '_LOGIN_CHAN_',
     os: LiffContextOs.Ios,
     lang: 'zh-TW',
     user: '_USER_ID_',
@@ -292,8 +312,8 @@ describe('.verifyRefreshment()', () => {
   };
 
   it('return ok and original data', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
@@ -303,8 +323,8 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('return fail if providerId not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     await expect(
@@ -322,8 +342,8 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('return fail if channelId not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     await expect(
@@ -341,8 +361,8 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('return fail if clientId not valid', async () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     await expect(
@@ -364,7 +384,7 @@ describe('.checkAuthData(data)', () => {
   const authData = {
     provider: '_PROVIDER_ID_',
     channel: '_CHANNEL_ID_',
-    client: '_CLIENT_ID_',
+    client: '_LOGIN_CHAN_',
     os: LiffContextOs.Web,
     lang: 'en-US',
     user: '_USER_ID_',
@@ -375,8 +395,8 @@ describe('.checkAuthData(data)', () => {
   };
 
   it('resolve private chat', () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     expect(authenticator.checkAuthData(authData)).toEqual({
@@ -384,7 +404,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
-        clientId: '_CLIENT_ID_',
+        clientId: '_LOGIN_CHAN_',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'),
         profile: null,
@@ -395,8 +415,8 @@ describe('.checkAuthData(data)', () => {
   });
 
   it('resolve group chat', () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     expect(
@@ -411,7 +431,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
-        clientId: '_CLIENT_ID_',
+        clientId: '_LOGIN_CHAN_',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
         profile: null,
@@ -422,8 +442,8 @@ describe('.checkAuthData(data)', () => {
   });
 
   it('resolve room chat', () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     expect(
@@ -438,7 +458,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
-        clientId: '_CLIENT_ID_',
+        clientId: '_LOGIN_CHAN_',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'),
         profile: null,
@@ -449,8 +469,8 @@ describe('.checkAuthData(data)', () => {
   });
 
   it('resolve profile if profile data proivded', () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     expect(
@@ -467,7 +487,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
-        clientId: '_CLIENT_ID_',
+        clientId: '_LOGIN_CHAN_',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
         profile: new LineUserProfile({
@@ -482,8 +502,8 @@ describe('.checkAuthData(data)', () => {
   });
 
   it('fail if id providerId, channelId or clientId not matched', () => {
-    const authenticator = new ServerAuthenticator(bot, {
-      liffChannelIds: ['_CLIENT_ID_'],
+    const authenticator = new ServerAuthenticator(bot, httpOperator, {
+      loginChannelId: '_LOGIN_CHAN_',
     });
 
     expect(

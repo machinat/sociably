@@ -7,16 +7,10 @@ import type { MessengerAuthContext, MessengerAuthData } from './types';
 export const getAuthContextDetails = (
   data: MessengerAuthData
 ): ContextDetails<MessengerAuthContext> => {
-  const {
-    user: userId,
-    page: pageId,
-    chat: { type: chatType, id: chatId },
-    client,
-  } = data;
+  const { page: pageId, id } = data;
   return {
-    user: new MessengerUser(pageId, userId),
-    channel: new MessengerChat(pageId, { id: chatId }, chatType),
+    user: new MessengerUser(pageId, id),
+    channel: new MessengerChat(pageId, id),
     pageId,
-    clientType: client,
   };
 };

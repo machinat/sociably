@@ -1,6 +1,7 @@
 import { mixin } from '@machinat/core/utils';
-import type { MessengerRawEvent } from '../types';
+import type { MessengerRawEvent, MessengerChannel } from '../types';
 import MessengerChat from '../Chat';
+import SendingTarget from '../SendingTarget';
 import MessengerUser from '../User';
 import {
   EventBase as Base,
@@ -33,8 +34,8 @@ import {
 import type { MessengerEvent } from './types';
 
 const makeEvent = <
-  Proto extends object, // eslint-disable-line @typescript-eslint/ban-types
-  Channel extends null | MessengerChat,
+  Proto extends {},
+  Channel extends null | MessengerChannel,
   User extends null | MessengerUser
 >(
   payload: MessengerRawEvent,
@@ -264,7 +265,7 @@ const objectHasOwnProperty = Object.prototype.hasOwnProperty;
 const hasOwnProperty = (obj, prop) => objectHasOwnProperty.call(obj, prop);
 
 const createEvent = (
-  pageId: number,
+  pageId: string,
   isStandby: boolean,
   payload: MessengerRawEvent
 ): MessengerEvent => {
@@ -272,8 +273,8 @@ const createEvent = (
     const { message, sender, recepient } = payload;
 
     const channel = message.is_echo
-      ? new MessengerChat(pageId, recepient)
-      : new MessengerChat(pageId, sender);
+      ? new MessengerChat(pageId, recepient.id)
+      : new MessengerChat(pageId, sender.id);
     const user = message.is_echo
       ? new MessengerUser(pageId, recepient.id)
       : new MessengerUser(pageId, sender.id);
@@ -347,10 +348,11 @@ const createEvent = (
   if (hasOwnProperty(payload, 'optin')) {
     const { optin, sender } = payload;
 
-    const channel =
-      sender !== undefined
-        ? new MessengerChat(pageId, sender)
-        : new MessengerChat(pageId, { user_ref: optin.user_ref });
+    const channel = !sender
+      ? new SendingTarget(pageId, { user_ref: optin.user_ref })
+      : sender.id
+      ? new MessengerChat(pageId, sender.id)
+      : new SendingTarget(pageId, sender);
 
     const user =
       sender !== undefined ? new MessengerUser(pageId, sender.id) : null;
@@ -360,13 +362,13 @@ const createEvent = (
 
   if (hasOwnProperty(payload, 'referral')) {
     const { sender } = payload;
-    const channel = new MessengerChat(pageId, sender);
+    const channel = new MessengerChat(pageId, sender.id);
     const user = sender.id ? new MessengerUser(pageId, sender.id) : null;
     return makeEvent(payload, channel, user, ReferralProto);
   }
 
   const { sender } = payload;
-  const channel = new MessengerChat(pageId, sender);
+  const channel = new MessengerChat(pageId, sender.id);
   const user = new MessengerUser(pageId, sender.id);
 
   return hasOwnProperty(payload, 'reaction')
