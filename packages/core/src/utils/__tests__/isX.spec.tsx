@@ -1,4 +1,4 @@
-import Machinat, { RenderingChannel } from '../..';
+import Machinat from '../..';
 import { MACHINAT_NATIVE_TYPE } from '../../symbol';
 import { makeInterface, makeContainer } from '../../service';
 import {
@@ -13,6 +13,7 @@ import {
   isProviderType,
   isThunkType,
   isRawType,
+  isElementTypeValid,
 } from '../isX';
 
 const Native = () => null;
@@ -22,9 +23,7 @@ Native.$$platform = test;
 const fooInterface = makeInterface({ name: 'Foo' });
 
 const MyComponent = () => <foo />;
-const MyContainer = makeContainer({ deps: [RenderingChannel] })(() => () => (
-  <bar />
-));
+const MyContainer = makeContainer({ deps: [] })(() => () => <bar />);
 
 describe('isEmpty', () => {
   it('return true if empty node passed', () => {
@@ -76,7 +75,7 @@ describe('isElement', () => {
       123,
     ];
     nonElements.forEach((ele) => {
-      expect(isElement(ele as never)).toBe(false);
+      expect(isElement(ele)).toBe(false);
     });
   });
 });
@@ -312,6 +311,37 @@ describe('isRawType', () => {
     ];
     nonPauselies.forEach((ele) => {
       expect(isRawType(ele)).toBe(false);
+    });
+  });
+});
+
+describe('isElementTypeValid', () => {
+  it('return true if element with valid type passed', () => {
+    const validEles = [
+      <a />,
+      <Native />,
+      <MyComponent />,
+      <MyContainer />,
+      <Machinat.Fragment> </Machinat.Fragment>,
+      <Machinat.Pause />,
+      <Machinat.Provider provide={fooInterface} value="foo">
+        <b />
+      </Machinat.Provider>,
+      <Machinat.Thunk effect={async () => {}} />,
+      <Machinat.Raw value={{ foo: 'bar' }} />,
+    ];
+    validEles.forEach((ele) => {
+      expect(isElementTypeValid(ele)).toBe(true);
+    });
+  });
+
+  it('return false if element has invalid type', () => {
+    const Obj: any = {};
+    const Sym: any = Symbol('foo');
+    const Num: any = 123;
+    const invalidEles = [<Obj />, <Sym />, <Num />];
+    invalidEles.forEach((ele) => {
+      expect(isElementTypeValid(ele)).toBe(false);
     });
   });
 });

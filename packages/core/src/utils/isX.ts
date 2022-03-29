@@ -1,6 +1,5 @@
 import type {
   MachinatEmpty,
-  MachinatNode,
   MachinatElement,
   FragmentElement,
   PauseElement,
@@ -26,53 +25,68 @@ import {
   MACHINAT_SERVICE_CONTAINER,
 } from '../symbol';
 
-export const isEmpty = (node: MachinatNode): node is MachinatEmpty =>
+export const isEmpty = (node: unknown): node is MachinatEmpty =>
   typeof node === 'boolean' || node === null || node === undefined;
 
-export const isElement = (
-  node: MachinatNode
-): node is MachinatElement<unknown, unknown> =>
+export const isElement = (node: unknown): node is MachinatElement<any, any> =>
   typeof node === 'object' &&
   node !== null &&
-  !Array.isArray(node) &&
-  node.$$typeof === MACHINAT_ELEMENT_TYPE;
+  (node as any).$$typeof === MACHINAT_ELEMENT_TYPE;
 
-export const isFragmentType = (node: MachinatNode): node is FragmentElement =>
-  isElement(node) && node.type === MACHINAT_FRAGMENT_TYPE;
+export const isFragmentType = (
+  node: MachinatElement<any, any>
+): node is FragmentElement => node.type === MACHINAT_FRAGMENT_TYPE;
 
-export const isPauseType = (node: MachinatNode): node is PauseElement =>
-  isElement(node) && node.type === MACHINAT_PAUSE_TYPE;
+export const isPauseType = (
+  node: MachinatElement<any, any>
+): node is PauseElement => node.type === MACHINAT_PAUSE_TYPE;
 
-export const isThunkType = (node: MachinatNode): node is ThunkElement =>
-  isElement(node) && node.type === MACHINAT_THUNK_TYPE;
+export const isThunkType = (
+  node: MachinatElement<any, any>
+): node is ThunkElement => node.type === MACHINAT_THUNK_TYPE;
 
-export const isRawType = (node: MachinatNode): node is RawElement =>
-  isElement(node) && node.type === MACHINAT_RAW_TYPE;
+export const isRawType = (
+  node: MachinatElement<any, any>
+): node is RawElement => node.type === MACHINAT_RAW_TYPE;
 
-export const isProviderType = (node: MachinatNode): node is ProviderElement =>
-  isElement(node) && node.type === MACHINAT_PROVIDER_TYPE;
+export const isProviderType = (
+  node: MachinatElement<any, any>
+): node is ProviderElement => node.type === MACHINAT_PROVIDER_TYPE;
 
 export const isFunctionalType = (
-  node: MachinatNode
-): node is FunctionalElement<unknown, FunctionalComponent<unknown>> =>
-  isElement(node) &&
+  node: MachinatElement<any, any>
+): node is FunctionalElement<any, FunctionalComponent<any>> =>
   typeof node.type === 'function' &&
   node.type.$$typeof !== MACHINAT_NATIVE_TYPE &&
   node.type.$$typeof !== MACHINAT_SERVICE_CONTAINER;
 
 export const isContainerType = (
-  node: MachinatNode
-): node is ContainerElement<unknown, ContainerComponent<unknown>> =>
-  isElement(node) &&
+  node: MachinatElement<any, any>
+): node is ContainerElement<any, ContainerComponent<any>> =>
   typeof node.type === 'function' &&
   node.type.$$typeof === MACHINAT_SERVICE_CONTAINER;
 
-export const isGeneralType = (node: MachinatNode): node is GeneralElement =>
-  isElement(node) && typeof node.type === 'string';
+export const isGeneralType = (
+  node: MachinatElement<any, any>
+): node is GeneralElement => typeof node.type === 'string';
 
-export const isNativeType = <Component extends NativeComponent<unknown, any>>(
-  node: MachinatNode
-): node is NativeElement<unknown, Component> =>
-  isElement(node) &&
+export const isNativeType = <Component extends NativeComponent<any, any>>(
+  node: MachinatElement<any, any>
+): node is NativeElement<any, Component> =>
   typeof node.type === 'function' &&
   node.type.$$typeof === MACHINAT_NATIVE_TYPE;
+
+export const isElementTypeValid = (
+  node: MachinatElement<any, any>
+): boolean => {
+  const { type } = node;
+  return (
+    typeof type === 'string' ||
+    typeof type === 'function' ||
+    type === MACHINAT_FRAGMENT_TYPE ||
+    type === MACHINAT_PAUSE_TYPE ||
+    type === MACHINAT_PROVIDER_TYPE ||
+    type === MACHINAT_THUNK_TYPE ||
+    type === MACHINAT_RAW_TYPE
+  );
+};
