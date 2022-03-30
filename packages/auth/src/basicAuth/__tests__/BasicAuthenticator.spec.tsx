@@ -313,18 +313,16 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(res.writeHead.mock).toHaveBeenCalledWith(400, {
-      'Content-Type': 'application/json',
-    });
-    expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
-        "error": Object {
-          "code": 400,
-          "reason": "invald login param",
-        },
-        "platform": "test",
-      }
-    `);
+    expect(operator.issueError.mock).toHaveBeenCalledWith(
+      res,
+      'test',
+      400,
+      expect.any(String)
+    );
+    expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
+      `"invald login param"`
+    );
+    expect(operator.redirect.mock).toHaveBeenCalledWith(res);
   });
 
   it('respond 400 if login query is invalid', async () => {
@@ -342,18 +340,16 @@ describe('root page', () => {
       '__INVALID_LOGIN_TOKEN__'
     );
 
-    expect(res.writeHead.mock).toHaveBeenCalledWith(400, {
-      'Content-Type': 'application/json',
-    });
-    expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
-        "error": Object {
-          "code": 400,
-          "reason": "invald login param",
-        },
-        "platform": "test",
-      }
-    `);
+    expect(operator.issueError.mock).toHaveBeenCalledWith(
+      res,
+      'test',
+      400,
+      expect.any(String)
+    );
+    expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
+      `"invald login param"`
+    );
+    expect(operator.redirect.mock).toHaveBeenCalledWith(res);
   });
 
   it('respond error from checkAuthData', async () => {
@@ -370,18 +366,15 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(res.writeHead.mock).toHaveBeenCalledWith(418, {
-      'Content-Type': 'application/json',
+    expect(operator.issueError.mock).toHaveBeenCalledWith(
+      res,
+      'test',
+      418,
+      "I'm a Teapot"
+    );
+    expect(operator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+      assertInternal: true,
     });
-    expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
-        "error": Object {
-          "code": 418,
-          "reason": "I'm a Teapot",
-        },
-        "platform": "test",
-      }
-    `);
   });
 });
 

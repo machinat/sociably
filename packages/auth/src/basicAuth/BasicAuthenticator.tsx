@@ -119,7 +119,8 @@ export class BasicAuthenticator {
       typeof loginToken !== 'string' ||
       !(payload = this.operator.verifyToken(platform, loginToken))
     ) {
-      respondApiError(res, platform, 400, 'invald login param');
+      await this.operator.issueError(res, platform, 400, 'invald login param');
+      this.operator.redirect(res);
       return;
     }
 
@@ -137,7 +138,8 @@ export class BasicAuthenticator {
     const checkResult = checkAuthData(data);
     if (!checkResult.ok) {
       const { code, reason } = checkResult;
-      respondApiError(res, platform, code, reason);
+      await this.operator.issueError(res, platform, code, reason);
+      this.operator.redirect(res, redirectUrl, { assertInternal: true });
       return;
     }
     const { data: checkedData, channel } = checkResult;
