@@ -24,7 +24,7 @@ const client = new WebviewClient({
   mockupMode: typeof window === 'undefined',
   authPlatforms: [${when(platforms.includes('messenger'))`
     new MessengerWebviewAuth({
-      appId: publicRuntimeConfig.messengerAppId,
+      pageId: publicRuntimeConfig.messengerPageId,
     }),`}${when(platforms.includes('telegram'))`
     new TelegramWebviewAuth({
       botName: publicRuntimeConfig.telegramBotName,

@@ -1,7 +1,11 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms, recognizer }: CreateAppContext): string => `
+export default ({
+  platforms,
+  recognizer,
+  projectName,
+}: CreateAppContext): string => `
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';${when(
@@ -28,10 +32,6 @@ import {
 import Dialogflow from '@machinat/dialogflow';`}${when(
   platforms.includes('webview')
 )`
-import {
-  ServerDomain,${when(platforms.includes('line'))`
-  LineLiffId,`}
-} from './interface';
 import nextConfigs from '../webview/next.config.js';`}
 import useIntent from './services/useIntent';
 import useUserProfile from './services/useUserProfile';
@@ -50,6 +50,7 @@ const {
   MESSENGER_APP_SECRET,
   MESSENGER_VERIFY_TOKEN,`}${when(platforms.includes('telegram'))`
   // telegram
+  TELEGRAM_BOT_NAME,
   TELEGRAM_BOT_TOKEN,
   TELEGRAM_SECRET_PATH,`}${when(platforms.includes('line'))`
   // line
@@ -106,7 +107,7 @@ ${when(recognizer === 'dialogflow')`
     platforms: [${when(platforms.includes('messenger'))`
       Messenger.initModule({
         webhookPath: '/webhook/messenger',
-        pageId: Number(MESSENGER_PAGE_ID),
+        pageId: MESSENGER_PAGE_ID,
         appSecret: MESSENGER_APP_SECRET,
         accessToken: MESSENGER_ACCESS_TOKEN,
         verifyToken: MESSENGER_VERIFY_TOKEN,
@@ -114,6 +115,7 @@ ${when(recognizer === 'dialogflow')`
 
       Telegram.initModule({
         webhookPath: '/webhook/telegram',
+        botName: TELEGRAM_BOT_NAME,
         botToken: TELEGRAM_BOT_TOKEN,
         secretPath: TELEGRAM_SECRET_PATH,
       }),`}${when(platforms.includes('line'))`
@@ -126,7 +128,7 @@ ${when(recognizer === 'dialogflow')`
         channelSecret: LINE_CHANNEL_SECRET,${when(
           platforms.includes('webview')
         )`
-        liffChannelIds: [LINE_LIFF_ID.split('-')[0]],`}
+        liffId: LINE_LIFF_ID,`}
       }),`}${when(platforms.includes('webview'))`
 
       Webview.initModule<${when(platforms.includes('messenger'))`
@@ -142,23 +144,26 @@ ${when(recognizer === 'dialogflow')`
           TelegramWebviewAuth,`}${when(platforms.includes('line'))`
           LineWebviewAuth,`}
         ],${when(platforms.includes('messenger'))`
-        sameSite: 'none',`}
+        cookieSameSite: 'none',`}
         noNextServer: options?.noServer,
         nextServerOptions: {
           dev: DEV,
           dir: './webview',
           conf: nextConfigs,
         },
+        basicAuth: {
+          appName: '${projectName
+            .split(/[-_\s]+/)
+            .map((str) => str.charAt(0).toUpperCase() + str.slice(1))
+            .join(' ')}',
+          appImageUrl: 'https://machinat.com/img/logo.jpg',
+        },
       }),`}
     ],
 
     services: [
       useIntent,
-      useUserProfile,${when(platforms.includes('webview'))`
-      { provide: ServerDomain, withValue: DOMAIN },${when(
-        platforms.includes('line')
-      )`
-      { provide: LineLiffId, withValue: LINE_LIFF_ID },`}`}
+      useUserProfile,
     ],
   });
 };

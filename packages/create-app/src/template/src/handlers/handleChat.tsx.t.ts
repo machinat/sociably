@@ -30,7 +30,7 @@ const handleChat = makeContainer({
       }
 
       if (intent.type === 'about') {
-        return reply(<About.Start channel={event.channel} />);
+        return reply(<About.Start />);
       }
 
       return reply(
