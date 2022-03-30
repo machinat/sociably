@@ -200,7 +200,7 @@ export interface PostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface DatePostbackEvent
-  extends EventObject<'postback', 'date_postback'>,
+  extends EventObject<'postback', 'date'>,
     EventBase,
     Repliable,
     Postback,
@@ -211,7 +211,7 @@ export interface DatePostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface TimePostbackEvent
-  extends EventObject<'postback', 'time_postback'>,
+  extends EventObject<'postback', 'time'>,
     EventBase,
     Repliable,
     Postback,
@@ -222,7 +222,7 @@ export interface TimePostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface DateTimePostbackEvent
-  extends EventObject<'postback', 'datetime_postback'>,
+  extends EventObject<'postback', 'datetime'>,
     EventBase,
     Repliable,
     Postback,

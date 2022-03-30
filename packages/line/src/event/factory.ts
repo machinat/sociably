@@ -117,22 +117,24 @@ const MemberLeaveProto = mixin(EventBase, Repliable, MemberLeft, {
   type: 'member_leave' as const,
 });
 
-const PostbackProto = mixin(EventBase, Repliable, Postback, {
+const PostbackBase = mixin(EventBase, Repliable, Postback);
+
+const PostbackProto = mixin(PostbackBase, {
   category: 'postback' as const,
   type: 'postback' as const,
 });
 
-const PostbackDateProto = mixin(PostbackProto, DateParam, {
+const PostbackDateProto = mixin(PostbackBase, DateParam, {
   category: 'postback' as const,
-  type: 'date_postback' as const,
+  type: 'date' as const,
 });
-const PostbackTimeProto = mixin(EventBase, Repliable, Postback, TimeParam, {
+const PostbackTimeProto = mixin(PostbackBase, TimeParam, {
   category: 'postback' as const,
-  type: 'time_postback' as const,
+  type: 'time' as const,
 });
-const PostbackDatetimeProto = mixin(PostbackProto, DatetimeParam, {
+const PostbackDatetimeProto = mixin(PostbackBase, DatetimeParam, {
   category: 'postback' as const,
-  type: 'datetime_postback' as const,
+  type: 'datetime' as const,
 });
 
 const BeaconProto = mixin(EventBase, Repliable, Beacon, {
