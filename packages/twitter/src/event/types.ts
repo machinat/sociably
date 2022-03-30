@@ -131,7 +131,7 @@ export interface AnimatedGifMessageEvent
  * @eventType `'quick_reply'`
  */
 export interface QuickReplyMessageEvent
-  extends EventObject<'message', 'quick_reply'>,
+  extends EventObject<'postback', 'quick_reply'>,
     EventBase,
     DirectMessageCreate,
     QuickReply {}

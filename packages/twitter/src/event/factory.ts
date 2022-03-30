@@ -145,7 +145,7 @@ const GifMessageProto = mixin(MediaProto, AnimatedGifAttachment, {
 });
 
 const QuickReplyProto = mixin(DirectMessageProto, QuickReply, {
-  category: 'message' as const,
+  category: 'postback' as const,
   type: 'quick_reply' as const,
 });
 
