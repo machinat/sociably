@@ -1,7 +1,4 @@
-import { when } from '../../../utils';
-import { CreateAppContext } from '../../../types';
-
-export default ({ platforms }: CreateAppContext): string => `
+export default (): string => `
 import { makeFactoryProvider, IntentRecognizer } from '@machinat/core';
 import { ChatEventContext } from '../types';
 
@@ -13,27 +10,13 @@ const useIntent =
       return intent;
     }
 
-    if (${`${when(platforms.includes('messenger'))`
-      (event.platform === 'messenger' &&
-        (event.type === 'quick_reply' || event.type === 'postback')) ||`}${when(
-      platforms.includes('telegram')
-    )`
-      (event.platform === 'telegram' && event.type === 'callback_query') ||`}${when(
-      platforms.includes('line')
-    )`
-      (event.platform === 'line' && event.type === 'postback') ||`}`.slice(
-      0,
-      -3
-    )}
-    ) {
-      if (event.data) {
-        const { action, ...payload } = JSON.parse(event.data);
-        return {
-          type: action,
-          confidence: 1,
-          payload,
-        };
-      }
+    if ('data' in event && event.data) {
+      const { action, ...payload } = JSON.parse(event.data);
+      return {
+        type: action,
+        confidence: 1,
+        payload,
+      };
     }
 
     return {

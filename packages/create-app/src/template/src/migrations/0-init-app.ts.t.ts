@@ -6,6 +6,10 @@ import { makeContainer } from '@machinat/core';${when(
   platforms.includes('messenger')
 )`
 import Messenger from '@machinat/messenger';`}${when(
+  platforms.includes('twitter')
+)`
+import Twitter from '@machinat/twitter';
+import TwitterAssetManager from '@machinat/twitter/asset';`}${when(
   platforms.includes('telegram')
 )`
 import Telegram from '@machinat/telegram';`}${when(platforms.includes('line'))`
@@ -16,20 +20,25 @@ const {
   MESSENGER_PAGE_ID,
   MESSENGER_APP_ID,
   MESSENGER_APP_SECRET,
-  MESSENGER_VERIFY_TOKEN,`}${when(platforms.includes('telegram'))`
+  MESSENGER_VERIFY_TOKEN,`}${when(platforms.includes('twitter'))`
+  TWITTER_WEBHOOK_ENV,`}${when(platforms.includes('telegram'))`
   TELEGRAM_SECRET_PATH,`}
-} = process.env;
+} = process.env as Record<string, string>;
 
 const ENTRY_URL = \`https://\${DOMAIN}\`;
 
 export const up = makeContainer({
   deps: [${when(platforms.includes('messenger'))`
-    Messenger.Bot,`}${when(platforms.includes('telegram'))`
+    Messenger.Bot,`}${when(platforms.includes('twitter'))`
+    Twitter.Bot,
+    TwitterAssetManager,`}${when(platforms.includes('telegram'))`
     Telegram.Bot,`}${when(platforms.includes('line'))`
     Line.Bot,`}
   ],
 })(async (${when(platforms.includes('messenger'))`
-  messengerBot,`}${when(platforms.includes('telegram'))`
+  messengerBot,`}${when(platforms.includes('twitter'))`
+  twitterBot,
+  twitterAssetManager,`}${when(platforms.includes('telegram'))`
   telegramBot,`}${when(platforms.includes('line'))`
   lineBot`}
 ) => {${when(platforms.includes('messenger'))`
@@ -58,7 +67,20 @@ export const up = makeContainer({
   // add page to Messenger webhook
   await messengerBot.makeApiCall('POST', 'me/subscribed_apps', {
       subscribed_fields: ['messages', 'messaging_postbacks'],
-  });`}${when(platforms.includes('telegram'))`
+  });`}${when(platforms.includes('twitter'))`
+
+  // register webhook on Twitter
+  await twitterAssetManager.setUpWebhook(
+    'default',
+    TWITTER_WEBHOOK_ENV,
+    \`\${ENTRY_URL}/webhook/twitter\`
+  );
+
+  // subscribe to Twitter agent user
+  await twitterBot.makeApiCall(
+    'POST',
+    \`1.1/account_activity/all/\${TWITTER_WEBHOOK_ENV}/subscriptions.json\`
+  );`}${when(platforms.includes('telegram'))`
 
   // setup webhook of the Telegram bot
   await telegramBot.makeApiCall('setWebhook', {
@@ -73,11 +95,13 @@ export const up = makeContainer({
 
 export const down = makeContainer({
   deps: [${when(platforms.includes('messenger'))`
-    Messenger.Bot,`}${when(platforms.includes('telegram'))`
+    Messenger.Bot,`}${when(platforms.includes('twitter'))`
+    TwitterAssetManager,`}${when(platforms.includes('telegram'))`
     Telegram.Bot,`}
   ],
 })(async (${when(platforms.includes('messenger'))`
-  messengerBot,`}${when(platforms.includes('telegram'))`
+  messengerBot,`}${when(platforms.includes('twitter'))`
+  twitterAssetManager,`}${when(platforms.includes('telegram'))`
   telegramBot,`}
 ) => {
 ${when(platforms.includes('messenger'))`
@@ -107,9 +131,13 @@ ${when(platforms.includes('messenger'))`
       object: 'page',
     }
   );`}
+${when(platforms.includes('twitter'))`
+
+  // delete Twitter webhook
+  await twitterAssetManager.deleteWebhook('default', TWITTER_WEBHOOK_ENV);`}
 ${when(platforms.includes('telegram'))`
 
-  // delete webhook of the Telegram bot
+  // delete Telegram webhook
   await telegramBot.makeApiCall('deleteWebhook');`}
 });
 `;

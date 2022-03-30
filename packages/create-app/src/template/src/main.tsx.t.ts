@@ -21,6 +21,10 @@ const main = (event$: Stream<AppEventContext>): void => {
     .pipe(${when(platforms.includes('webview'))`
       filter((ctx) => ctx.event.platform !== 'webview'),`}
       filter(
+        (ctx) =>
+          ctx.event.category === 'message' || ctx.event.category === 'postback'
+      ),
+      filter(
         makeContainer({ deps: [Script.Processor] })(
           (processor) => async (ctx: ChatEventContext) => {
             if (!ctx.event.channel) {
@@ -38,17 +42,11 @@ const main = (event$: Stream<AppEventContext>): void => {
 
   // handle messages and postbacks from chat platforms
   chat$
-    .pipe(
-      filter(
-        (ctx) =>
-          ctx.event.category === 'message' || ctx.event.category === 'postback'
-      )
-    )
     .subscribe(handleChat)
     .catch(console.error);${when(platforms.includes('telegram'))`
 
   // answer Telegram callback_query
-  chat$
+  event$
     .pipe(filter((ctx) => ctx.event.type === 'callback_query'))
     .subscribe(
       (ctx: ChatEventContext & { event: { type: 'callback_query' } }) =>

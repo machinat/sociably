@@ -6,6 +6,9 @@ import Machinat, { MachinatNode } from '@machinat/core';${when(
   platforms.includes('messenger')
 )`
 import * as Messenger from '@machinat/messenger/components';`}${when(
+  platforms.includes('twitter')
+)`
+import * as Twitter from '@machinat/twitter/components';`}${when(
   platforms.includes('telegram')
 )`
 import * as Telegram from '@machinat/telegram/components';`}${when(
@@ -55,6 +58,21 @@ const WithYesNoReplies = (
       >
         {children}
       </Telegram.Expression>
+    );
+  }`}${when(platforms.includes('twitter'))`
+
+  if (platform === 'twitter') {
+    return (
+      <Twitter.Expression
+        quickReplies={
+          <>
+            <Twitter.QuickReply label={yesWords} metadata={yesData} />
+            <Twitter.QuickReply label={noWords} metadata={noData} />
+          </>
+        }
+      >
+        {children}
+      </Twitter.Expression>
     );
   }`}${when(platforms.includes('line'))`
 

@@ -54,5 +54,18 @@ export default ({ projectName, platforms }: CreateAppContext): string => {
     packageConfigs.devDependencies['@types/react'] = '^17.0.38';
   }
 
+  if (platforms.includes('twitter')) {
+    packageConfigs.scripts = {
+      ...packageConfigs.scripts,
+      ...{
+        activateTwitterWebhook: 'per-env',
+        'activateTwitterWebhook:development':
+          'dotenv -- ts-node ./src/cli/activateTwitterWebhook.ts',
+        'activateTwitterWebhook:production':
+          'node ./lib/cli/activateTwitterWebhook.js',
+      },
+    };
+  }
+
   return JSON.stringify(sortPackageJson(packageConfigs), null, 2);
 };

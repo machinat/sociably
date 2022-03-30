@@ -2,14 +2,19 @@ import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
 export default ({ platforms }: CreateAppContext): string => `
-import Machinat, {
-  MachinatNode,${when(platforms.includes('webview'))`
-  makeContainer,`}
-} from '@machinat/core';${when(platforms.includes('messenger'))`
+import Machinat, { MachinatNode } from '@machinat/core';${when(
+  platforms.includes('messenger')
+)`
 import * as Messenger from '@machinat/messenger/components';${when(
   platforms.includes('webview')
 )`
 import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';`}`}${when(
+  platforms.includes('twitter')
+)`
+import * as Twitter from '@machinat/twitter/components';${when(
+  platforms.includes('webview')
+)`
+import { WebviewButton as TwitterWebviewButton } from '@machinat/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
 import * as Telegram from '@machinat/telegram/components';${when(
@@ -49,6 +54,19 @@ ${when(platforms.includes('messenger'))`
       >
         {children}
       </Messenger.ButtonTemplate>
+    );
+  }`}
+${when(platforms.includes('twitter'))`
+  if (platform === 'twitter') {
+    return (
+      <Twitter.DirectMessage${when(platforms.includes('webview'))`
+        buttons={<TwitterWebviewButton label={webviewText} />}`}
+        quickReplies={
+          <Twitter.QuickReply label={aboutText} metadata={aboutData} />
+        }
+      >
+        {children}
+      </Twitter.DirectMessage>
     );
   }`}
 ${when(platforms.includes('telegram'))`

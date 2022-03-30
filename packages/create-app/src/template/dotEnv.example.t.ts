@@ -4,7 +4,7 @@ import type { CreateAppContext } from '../types';
 export const name = '.env.example';
 
 export default ({ platforms, recognizer }: CreateAppContext): string => `
-# NOTICE! This file is an example for reference.
+# NOTICE! This file is for reference only.
 # DO NOT save any secret data here!
 # The real settings should go to \`.env\` file.
 
@@ -49,6 +49,41 @@ MESSENGER_APP_SECRET= abcde12345...
 
 # random token for webhook verification
 MESSENGER_VERIFY_TOKEN= <random secret string>
+`}${when(platforms.includes('twitter'))`
+
+# Twitter Settings
+#   Follow the first 2 sections of this official guide:
+#     https://developer.twitter.com/en/docs/twitter-api/premium/account-activity-api/guides/getting-started-with-webhooks
+#   You'll create a Twitter app and set up the Account Activity API.
+#   Then you can get the following information in the developer portal.
+
+# app id, available at:
+#   App Page > Settings > APP ID
+TWITTER_APP_ID= 123456789
+
+# app key, available at:
+#   App Page > Keys and tokens > Consumer Keys > API Key and Secret
+TWITTER_APP_KEY= Aa1Bb2Cc3Dd4Ee5Ff6Gg
+
+# app secret, available at:
+#   App Page > Keys and tokens > Consumer Keys > API Key and Secret
+TWITTER_APP_SECRET= Aa1Bb2Cc3Dd4Ee5Ff6Gg7Hh8Ii9Jj0
+
+# app bearer token, available at:
+#   App Page > Keys and tokens > Authentication Tokens > Bearer Token
+TWITTER_BEARER_TOKEN= AAAAAAAAAAAAAAAAAAAAAa1Bb2Cc3Dd4Ee5Ff6Gg7Hh8Ii9Jj0
+
+# user access token, available at:
+#   App Page > Keys and tokens > Authentication Tokens > Authentication Tokens
+TWITTER_ACCESS_TOKEN= 09876543210123456789-Aa1Bb2Cc3Dd4Ee5Ff6Gg7Hh8Ii9Jj0
+
+# user access token secret, available at:
+#   App Page > Keys and tokens > Authentication Tokens > Authentication Tokens
+TWITTER_ACCESS_SECRET= Aa1Bb2Cc3Dd4Ee5Ff6Gg7Hh8Ii9Jj0Kk1Ll2Mm3Nn4Oo5Pp6
+
+# env label for account activity API, available at:
+#   Products > Premium > Dev Environments > Account Activity API
+TWITTER_WEBHOOK_ENV= default
 `}${when(platforms.includes('telegram'))`
 
 # Telegram Settings

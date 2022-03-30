@@ -26,7 +26,13 @@ type CreateAppOptions = {
 const formatCode = (code: string, parser: PrettierOptions['parser']) =>
   prettierFormat(code, { parser, singleQuote: true });
 
-const supportedPlatforms = ['messenger', 'telegram', 'line', 'webview'];
+const supportedPlatforms = [
+  'messenger',
+  'twitter',
+  'telegram',
+  'line',
+  'webview',
+];
 
 const createMachinatApp = async ({
   platforms,
@@ -142,6 +148,7 @@ const createMachinatApp = async ({
     '@machinat/script',
     platforms.includes('webview') ? '@machinat/webview' : undefined,
     platforms.includes('messenger') ? '@machinat/messenger' : undefined,
+    platforms.includes('twitter') ? '@machinat/twitter' : undefined,
     platforms.includes('telegram') ? '@machinat/telegram' : undefined,
     platforms.includes('line') ? '@machinat/line' : undefined,
     recognizer === 'dialogflow' ? '@machinat/dialogflow' : undefined,

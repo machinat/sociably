@@ -16,6 +16,13 @@ import MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
 )`
 import Line from '@machinat/line';${when(platforms.includes('webview'))`
 import LineWebviewAuth from '@machinat/line/webview';`}`}${when(
+  platforms.includes('twitter')
+)`
+import Twitter from '@machinat/twitter';
+import TwitterAssetManager from '@machinat/twitter/asset';${when(
+  platforms.includes('webview')
+)`
+import TwitterWebviewAuth from '@machinat/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
 import Telegram from '@machinat/telegram';${when(platforms.includes('webview'))`
@@ -48,7 +55,14 @@ const {
   MESSENGER_PAGE_ID,
   MESSENGER_ACCESS_TOKEN,
   MESSENGER_APP_SECRET,
-  MESSENGER_VERIFY_TOKEN,`}${when(platforms.includes('telegram'))`
+  MESSENGER_VERIFY_TOKEN,`}${when(platforms.includes('twitter'))`
+  // twitter
+  TWITTER_APP_ID,
+  TWITTER_APP_KEY,
+  TWITTER_APP_SECRET,
+  TWITTER_BEARER_TOKEN,
+  TWITTER_ACCESS_TOKEN,
+  TWITTER_ACCESS_SECRET,`}${when(platforms.includes('telegram'))`
   // telegram
   TELEGRAM_BOT_NAME,
   TELEGRAM_BOT_TOKEN,
@@ -111,6 +125,16 @@ ${when(recognizer === 'dialogflow')`
         appSecret: MESSENGER_APP_SECRET,
         accessToken: MESSENGER_ACCESS_TOKEN,
         verifyToken: MESSENGER_VERIFY_TOKEN,
+      }),`}${when(platforms.includes('twitter'))`
+
+      Twitter.initModule({
+        webhookPath: '/webhook/twitter',
+        appId: TWITTER_APP_ID,
+        appKey: TWITTER_APP_KEY,
+        appSecret: TWITTER_APP_SECRET,
+        bearerToken: TWITTER_BEARER_TOKEN,
+        accessToken: TWITTER_ACCESS_TOKEN,
+        accessSecret: TWITTER_ACCESS_SECRET,
       }),`}${when(platforms.includes('telegram'))`
 
       Telegram.initModule({
@@ -140,7 +164,8 @@ ${when(recognizer === 'dialogflow')`
         webviewPath: '/webview',
         authSecret: WEBVIEW_AUTH_SECRET,
         authPlatforms: [${when(platforms.includes('messenger'))`
-          MessengerWebviewAuth,`}${when(platforms.includes('telegram'))`
+          MessengerWebviewAuth,`}${when(platforms.includes('twitter'))`
+          TwitterWebviewAuth,`}${when(platforms.includes('telegram'))`
           TelegramWebviewAuth,`}${when(platforms.includes('line'))`
           LineWebviewAuth,`}
         ],${when(platforms.includes('messenger'))`
@@ -163,7 +188,8 @@ ${when(recognizer === 'dialogflow')`
 
     services: [
       useIntent,
-      useUserProfile,
+      useUserProfile,${when(platforms.includes('twitter'))`
+      TwitterAssetManager,`}
     ],
   });
 };

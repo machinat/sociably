@@ -11,6 +11,9 @@ import WebviewClient, { useEventReducer } from '@machinat/webview/client';${when
   platforms.includes('messenger')
 )`
 import MessengerWebviewAuth from '@machinat/messenger/webview/client';`}${when(
+  platforms.includes('twitter')
+)`
+import TwitterWebviewAuth from '@machinat/twitter/webview/client';`}${when(
   platforms.includes('telegram')
 )`
 import TelegramWebviewAuth from '@machinat/telegram/webview/client';`}${when(
@@ -25,6 +28,9 @@ const client = new WebviewClient({
   authPlatforms: [${when(platforms.includes('messenger'))`
     new MessengerWebviewAuth({
       pageId: publicRuntimeConfig.messengerPageId,
+    }),`}${when(platforms.includes('twitter'))`
+    new TwitterWebviewAuth({
+      agentId: publicRuntimeConfig.twitterAgentId,
     }),`}${when(platforms.includes('telegram'))`
     new TelegramWebviewAuth({
       botName: publicRuntimeConfig.telegramBotName,
