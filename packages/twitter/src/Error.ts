@@ -6,12 +6,14 @@ export default class TwitterApiError extends Error {
   detail: string;
   data?: FailApiResult;
 
-  constructor(code: number, errorBody?: FailApiResult) {
+  constructor(code: number, body?: FailApiResult) {
     super(
-      errorBody?.detail || `API returns status ${code} (${STATUS_CODES[code]})`
+      body?.detail ||
+        body?.errors?.[0].message ||
+        `API returns status ${code} (${STATUS_CODES[code]})`
     );
     this.statusCode = code;
-    this.name = `TwitterApiError (${errorBody?.title || STATUS_CODES[code]})`;
-    this.data = errorBody;
+    this.name = `TwitterApiError (${body?.title || STATUS_CODES[code]})`;
+    this.data = body;
   }
 }

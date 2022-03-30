@@ -370,10 +370,12 @@ it('throw if connection error happen', async () => {
 it('throw if api error happen', async () => {
   const scope1 = twitterApi.post('/2/foo').reply(200, { data: { n: 1 } });
   const scope2 = twitterApi.post('/2/bar').reply(400, {
-    errors: {
-      code: 222,
-      message: 'something is wrong',
-    },
+    errors: [
+      {
+        code: 222,
+        message: 'something is wrong',
+      },
+    ],
   });
 
   const jobs = [
@@ -397,7 +399,7 @@ it('throw if api error happen', async () => {
   expect(result.success).toBe(false);
   expect(result.errors).toMatchInlineSnapshot(`
     Array [
-      [TwitterApiError (Bad Request): API returns status 400 (Bad Request)],
+      [TwitterApiError (Bad Request): something is wrong],
     ]
   `);
   expect(result.batch).toEqual([
