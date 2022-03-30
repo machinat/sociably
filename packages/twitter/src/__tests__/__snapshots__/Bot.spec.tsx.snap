@@ -29,6 +29,7 @@ exports[`.render(channel, content) post a tweet 2`] = `
 Array [
   Object {
     "accomplishRequest": [Function],
+    "asApplication": false,
     "key": "---",
     "mediaSources": null,
     "refreshTarget": [Function],
@@ -47,6 +48,7 @@ Array [
   },
   Object {
     "accomplishRequest": [Function],
+    "asApplication": false,
     "key": "---",
     "mediaSources": null,
     "refreshTarget": [Function],
@@ -95,6 +97,7 @@ exports[`.render(channel, content) reply to a tweet 2`] = `
 Array [
   Object {
     "accomplishRequest": [Function],
+    "asApplication": false,
     "key": "---",
     "mediaSources": null,
     "refreshTarget": [Function],
@@ -113,6 +116,7 @@ Array [
   },
   Object {
     "accomplishRequest": [Function],
+    "asApplication": false,
     "key": "---",
     "mediaSources": null,
     "refreshTarget": [Function],
@@ -137,6 +141,7 @@ Object {
   "jobs": Array [
     Object {
       "accomplishRequest": [Function],
+      "asApplication": false,
       "key": "twitter.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
@@ -166,6 +171,7 @@ Object {
     },
     Object {
       "accomplishRequest": [Function],
+      "asApplication": false,
       "key": "twitter.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
@@ -215,6 +221,7 @@ Object {
       "payload": Array [
         Object {
           "accomplishRequest": [Function],
+          "asApplication": false,
           "key": "twitter.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
@@ -244,6 +251,7 @@ Object {
         },
         Object {
           "accomplishRequest": [Function],
+          "asApplication": false,
           "key": "twitter.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,

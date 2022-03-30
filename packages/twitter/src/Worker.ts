@@ -22,14 +22,18 @@ type TwitterJobQueue = Queue<TwitterJob, TwitterApiResult>;
 type TwitterWorkerOptions = {
   appKey: string;
   appSecret: string;
+  bearerToken: string;
   accessToken: string;
   accessSecret: string;
   maxConnections: number;
 };
 
-type OauthHeaderOption = {
-  token: string;
-  secret: string;
+type OauthOptions = {
+  asApplication?: boolean;
+  asUser?: {
+    token: string;
+    secret: string;
+  };
 };
 
 const BigIntJSON = _BigIntJSON({ useNativeBigInt: true });
@@ -55,43 +59,27 @@ const getResponseBody = async (response: Response) => {
 export default class TwitterWorker
   implements MachinatWorker<TwitterJob, TwitterApiResult>
 {
-  private _appKey: string;
-  private _appSecret: string;
-  private _accessToken: string;
-  private _accessSecret: string;
+  options: TwitterWorkerOptions;
+  connectionCount: number;
 
   private _started: boolean;
   private _lockedKeys: Set<string>;
   private _targetCache: Map<string, TwitterChannel>;
 
-  connectionCount: number;
-  maxConnections: number;
-
-  constructor({
-    appKey,
-    appSecret,
-    accessToken,
-    accessSecret,
-    maxConnections,
-  }: TwitterWorkerOptions) {
-    this._appKey = appKey;
-    this._appSecret = appSecret;
-    this._accessToken = accessToken;
-    this._accessSecret = accessSecret;
-
+  constructor(options: TwitterWorkerOptions) {
+    this.options = options;
     this.connectionCount = 0;
-    this.maxConnections = maxConnections;
 
     this._lockedKeys = new Set();
     this._targetCache = new Map();
     this._started = false;
   }
 
-  async request(
+  async requestApi(
     method: string,
     href: string,
     parameters?: Record<string, any>,
-    oauth?: OauthHeaderOption
+    oauth?: OauthOptions
   ): Promise<{ code: number; body: unknown }> {
     const apiUrl = new URL(href, API_ENTRY);
     const apiLocation = `${apiUrl.origin}${apiUrl.pathname}`;
@@ -109,7 +97,7 @@ export default class TwitterWorker
       if (parameters) {
         body = JSON.stringify(parameters);
       }
-      authHeader = this.getAuthHeader(method, apiLocation, oauth);
+      authHeader = this.getAuthHeader(method, apiLocation, undefined, oauth);
     }
 
     const response = await fetch(apiUrl.href, {
@@ -276,15 +264,19 @@ export default class TwitterWorker
   getAuthHeader(
     method: string,
     baseUrl: string,
-    additionalParams?: Record<string, string>,
-    oauth?: OauthHeaderOption
+    additionalParams?: null | Record<string, string>,
+    { asApplication, asUser }: OauthOptions = {}
   ): string {
+    if (asApplication) {
+      return `Bearer ${(this, this.options.bearerToken)}`;
+    }
+
     const oauthParams = {
-      oauth_consumer_key: this._appKey,
+      oauth_consumer_key: this.options.appKey,
       oauth_nonce: nanoid(),
       oauth_signature_method: 'HMAC-SHA1',
       oauth_timestamp: Math.floor(Date.now() / 1000),
-      oauth_token: oauth?.token || this._accessToken,
+      oauth_token: asUser?.token || this.options.accessToken,
       oauth_version: '1.0',
     };
 
@@ -304,8 +296,8 @@ export default class TwitterWorker
     ].join('&');
     const signature = createHmac(
       'sha1',
-      `${encodeURIComponent(this._appSecret)}&${encodeURIComponent(
-        oauth?.secret || this._accessSecret
+      `${encodeURIComponent(this.options.appSecret)}&${encodeURIComponent(
+        asUser?.secret || this.options.accessSecret
       )}`
     )
       .update(baseStr)
@@ -319,7 +311,10 @@ export default class TwitterWorker
   private _consumeCallback = this._consume.bind(this);
 
   private _consume(queue: Queue<TwitterJob, TwitterApiResult>) {
-    const { _lockedKeys: lockedKeys, maxConnections } = this;
+    const {
+      _lockedKeys: lockedKeys,
+      options: { maxConnections },
+    } = this;
 
     for (let i = 0; i < queue.length; ) {
       if (this.connectionCount >= maxConnections) {
@@ -373,6 +368,7 @@ export default class TwitterWorker
       request,
       accomplishRequest,
       mediaSources,
+      asApplication,
     } = job;
     const currentTarget =
       (key && refreshTarget && this._targetCache.get(key)) || initialTarget;
@@ -389,7 +385,9 @@ export default class TwitterWorker
         )
       : request;
 
-    const { code, body } = await this.request(method, href, parameters);
+    const { code, body } = await this.requestApi(method, href, parameters, {
+      asApplication,
+    });
 
     if (key) {
       const nextTarget = refreshTarget && refreshTarget(currentTarget, body);

@@ -93,23 +93,42 @@ export class TwitterAssetsManager {
     return this.unsaveAssetId(WEBHOOK, tag);
   }
 
-  async createWebhook(
+  async setUpWebhook(
     tag: string,
     envName: string,
     url: string
   ): Promise<string> {
-    const existedId = await this.getWebhook(tag);
-    if (existedId) {
-      throw new Error(`webhook [${tag}] already exists`);
+    const savedId = await this.getWebhook(tag);
+    if (savedId) {
+      return savedId;
     }
 
-    const { id: webhookId } = await this.bot.makeApiCall(
+    const { environments } = await this.bot.makeApiCall(
+      'GET',
+      `1.1/account_activity/all/webhooks.json`,
+      undefined,
+      { asApplication: true }
+    );
+
+    const environment = environments.find(
+      ({ environment_name: name }) => name === envName
+    );
+    const existedWebhook = environment?.webhooks.find(
+      ({ url: webhookUrl }) => webhookUrl === url
+    );
+
+    if (existedWebhook) {
+      await this.saveWebhook(tag, existedWebhook.id);
+      return existedWebhook.id;
+    }
+
+    const { id: newWebhookId } = await this.bot.makeApiCall(
       'POST',
       `1.1/account_activity/all/${envName}/webhooks.json`,
       { url }
     );
-    await this.saveWebhook(tag, webhookId);
-    return webhookId;
+    await this.saveWebhook(tag, newWebhookId);
+    return newWebhookId;
   }
 
   async deleteWebhook(tag: string, envName: string): Promise<string> {

@@ -12,6 +12,7 @@ const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const appKey = '__APP_KEY__';
 const appSecret = '__APP_SECRET__';
+const bearerToken = '__BEARER_TOKEN__';
 const accessToken = '__ACCESS_TOKEN__';
 const accessSecret = '__ACCESS_SECRET__';
 
@@ -42,6 +43,7 @@ beforeEach(() => {
   worker = new TwitterWorker({
     appKey,
     appSecret,
+    bearerToken,
     accessToken,
     accessSecret,
     maxConnections: 99,
@@ -98,6 +100,20 @@ test('api request', async () => {
         .delay(50)
         .reply(200, { data: 6 }),
     ] as const,
+    [
+      {
+        request: { method: 'GET', href: '2/foo', parameters: { a: 1 } },
+        asApplication: true,
+      },
+      twitterApi.get(`/2/foo?a=1`).delay(50).reply(200, { data: 7 }),
+    ] as const,
+    [
+      {
+        request: { method: 'POST', href: '2/bar', parameters: { a: 1 } },
+        asApplication: true,
+      },
+      twitterApi.post(`/2/bar`, { a: 1 }).delay(50).reply(200, { data: 8 }),
+    ] as const,
   ];
 
   worker.start(queue);
@@ -120,7 +136,7 @@ test('api request', async () => {
     })),
   });
 
-  expect(authorizationSpy.mock).toHaveBeenCalledTimes(6);
+  expect(authorizationSpy.mock).toHaveBeenCalledTimes(8);
   expect(
     authorizationSpy.mock.calls.map(({ args }) => args[0])
   ).toMatchSnapshot();
@@ -213,6 +229,7 @@ it('open requests up to maxConnections', async () => {
   const poorWorker = new TwitterWorker({
     appKey,
     appSecret,
+    bearerToken,
     accessToken,
     accessSecret,
     maxConnections: 2,

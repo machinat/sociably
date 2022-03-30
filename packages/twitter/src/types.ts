@@ -24,6 +24,8 @@ export type TwitterPlatformConfigs = {
   appKey: string;
   /** The secret of Twitter app */
   appSecret: string;
+  /** The bearer token of Twitter app */
+  bearerToken: string;
   /** The access token for the agent user */
   accessToken: string;
   /** The secret of the access token */
@@ -88,6 +90,7 @@ export type TwitterJob = {
   key: undefined | string;
   request: TwitterApiRequest;
   target: TwitterChannel;
+  asApplication: boolean;
   refreshTarget:
     | null
     | ((

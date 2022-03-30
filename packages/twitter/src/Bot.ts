@@ -35,6 +35,7 @@ import type {
 type TwitterBotOptions = {
   appKey: string;
   appSecret: string;
+  bearerToken: string;
   accessToken: string;
   accessSecret: string;
   maxRequestConnections?: number;
@@ -67,6 +68,7 @@ export class TwitterBot
   constructor({
     appKey,
     appSecret,
+    bearerToken,
     accessToken,
     accessSecret,
     maxRequestConnections = 100,
@@ -75,14 +77,16 @@ export class TwitterBot
   }: TwitterBotOptions) {
     invariant(appKey, 'options.appKey should not be empty');
     invariant(appSecret, 'options.appSecret should not be empty');
+    invariant(bearerToken, 'options.bearerToken should not be empty');
     invariant(accessToken, 'options.accessToken should not be empty');
     invariant(accessSecret, 'options.accessSecret should not be empty');
-    [this.agentId] = accessToken.split('-', 1);
+    this.agentId = accessToken.split('-', 1)[0];
 
     const queue = new Queue<TwitterJob, TwitterApiResult>();
     this.client = new TwitterWorker({
       appKey,
       appSecret,
+      bearerToken,
       accessToken,
       accessSecret,
       maxConnections: maxRequestConnections,
@@ -158,7 +162,8 @@ export class TwitterBot
   async makeApiCall<Result>(
     method: string,
     href: string,
-    parameters?: Record<string, unknown>
+    parameters?: Record<string, unknown>,
+    options?: { asApplication?: boolean }
   ): Promise<Result> {
     try {
       const response = await this.engine.dispatchJobs(null, [
@@ -167,6 +172,7 @@ export class TwitterBot
           target: new TweetTarget(this.agentId),
           refreshTarget: null,
           key: undefined,
+          asApplication: !!options?.asApplication,
           accomplishRequest: null,
           mediaSources: null,
         },
@@ -213,7 +219,14 @@ const BotP = makeClassProvider({
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { appKey, appSecret, accessToken, accessSecret, maxRequestConnections },
+    {
+      appKey,
+      appSecret,
+      bearerToken,
+      accessToken,
+      accessSecret,
+      maxRequestConnections,
+    },
     moduleUtils,
     platformUtils
   ) => {
@@ -222,6 +235,7 @@ const BotP = makeClassProvider({
     return new TwitterBot({
       appKey,
       appSecret,
+      bearerToken,
       accessToken,
       accessSecret,
       maxRequestConnections,

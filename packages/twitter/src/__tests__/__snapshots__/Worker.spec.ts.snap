@@ -8,6 +8,8 @@ Array [
   "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"7NEpWRPllCva7OdkaUXLgndvpL4%3D\\"",
   "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"pQSigOM3kkVn2pDRb40E5nJ1eB4%3D\\"",
   "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"0Rs122n6H%2F%2BBHo6R5%2BZOUPdhjGU%3D\\"",
+  "Bearer __BEARER_TOKEN__",
+  "Bearer __BEARER_TOKEN__",
 ]
 `;
 

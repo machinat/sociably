@@ -233,41 +233,94 @@ test('unsave asset id', async () => {
   expect(state.delete.mock).toHaveBeenCalledTimes(10);
 });
 
-test('.createWebhook(tag, env, url)', async () => {
+describe('.setUpWebhook(tag, env, url)', () => {
   const manager = new TwitterAssetsManager(appId, stateController, bot);
   const url = 'https://your_domain.com/webhook/twitter';
+  const envName = 'production';
+  const tagName = 'my_app_webhook';
 
-  bot.makeApiCall.mock.fake(async () => ({
-    id: '1234567890',
-    url,
-    valid: true,
-    created_at: '2016-06-02T23:54:02Z',
-  }));
+  test('return saved webhook', async () => {
+    state.get.mock.fake(async () => '1234567890');
 
-  await expect(
-    manager.createWebhook('my_app_webhook', 'production', url)
-  ).resolves.toBe('1234567890');
+    await expect(manager.setUpWebhook(tagName, envName, url)).resolves.toBe(
+      '1234567890'
+    );
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
-    'POST',
-    '1.1/account_activity/all/production/webhooks.json',
-    { url }
-  );
+    expect(bot.makeApiCall.mock).not.toHaveBeenCalled();
+    expect(state.set.mock).not.toHaveBeenCalled();
+  });
 
-  expect(
-    stateController.globalState.mock.calls[0].args[0]
-  ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.webhook"`);
-  expect(state.set.mock).toHaveBeenCalledWith('my_app_webhook', '1234567890');
+  test('save existed webhook if the url is matched', async () => {
+    bot.makeApiCall.mock.fake(async () => ({
+      environments: [
+        {
+          environment_name: envName,
+          webhooks: [
+            {
+              id: '1234567890',
+              url: 'https://your_domain.com/webhook/twitter',
+              valid: true,
+              created_at: '2017-06-02T23:54:02Z',
+            },
+          ],
+        },
+      ],
+    }));
 
-  state.get.mock.fake(async () => '1234567890');
-  await expect(
-    manager.createWebhook('my_app_webhook', 'production', url)
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"webhook [my_app_webhook] already exists"`
-  );
+    await expect(manager.setUpWebhook(tagName, envName, url)).resolves.toBe(
+      '1234567890'
+    );
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-  expect(state.set.mock).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+      'GET',
+      '1.1/account_activity/all/webhooks.json',
+      undefined,
+      { asApplication: true }
+    );
+
+    expect(
+      stateController.globalState.mock.calls[0].args[0]
+    ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.webhook"`);
+    expect(state.set.mock).toHaveBeenCalledWith(tagName, '1234567890');
+
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+    expect(state.set.mock).toHaveBeenCalledTimes(1);
+  });
+
+  test('create a new webhook if no existed one', async () => {
+    bot.makeApiCall.mock.fakeOnce(async () => ({
+      environments: [
+        {
+          environment_name: envName,
+          webhooks: [],
+        },
+      ],
+    }));
+    bot.makeApiCall.mock.fakeOnce(async () => ({
+      id: '1234567890',
+      url,
+      valid: true,
+      created_at: '2016-06-02T23:54:02Z',
+    }));
+
+    await expect(manager.setUpWebhook(tagName, envName, url)).resolves.toBe(
+      '1234567890'
+    );
+
+    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+      'POST',
+      '1.1/account_activity/all/production/webhooks.json',
+      { url }
+    );
+
+    expect(
+      stateController.globalState.mock.calls[0].args[0]
+    ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.webhook"`);
+    expect(state.set.mock).toHaveBeenCalledWith(tagName, '1234567890');
+
+    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
+    expect(state.set.mock).toHaveBeenCalledTimes(1);
+  });
 });
 
 test('.deleteWebhook(tag, env)', async () => {

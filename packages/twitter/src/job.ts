@@ -28,6 +28,7 @@ const plainTweetJob = (
     request,
     accomplishRequest,
     mediaSources,
+    asApplication: false,
     refreshTarget: useCreatedTweetTarget(agentId),
   };
 };
@@ -59,6 +60,7 @@ export const createTweetJobs =
           key,
           request,
           mediaSources,
+          asApplication: false,
           refreshTarget: useCreatedTweetTarget(target.agentId),
           accomplishRequest: segment.value.accomplishRequest,
         });
@@ -69,10 +71,11 @@ export const createTweetJobs =
         jobs.push({
           target,
           key,
-          refreshTarget: useCurrentTarget,
           request,
-          accomplishRequest: segment.value.accomplishRequest,
           mediaSources,
+          asApplication: false,
+          refreshTarget: useCurrentTarget,
+          accomplishRequest: segment.value.accomplishRequest,
         });
       } else if (segment.value.type === 'media') {
         const { media } = segment.value;
@@ -120,21 +123,23 @@ export const createDirectMessageJobs = (
 
       jobs.push({
         target: chat,
-        refreshTarget: null,
         key,
         request,
         mediaSources,
         accomplishRequest,
+        asApplication: false,
+        refreshTarget: null,
       });
     } else if (segment.value.type === 'dm' || segment.value.type === 'action') {
       const { request, mediaSources, accomplishRequest } = segment.value;
       jobs.push({
         target: chat,
-        refreshTarget: null,
         key,
         request,
         accomplishRequest,
         mediaSources,
+        refreshTarget: null,
+        asApplication: false,
       });
     } else if (segment.value.type === 'media') {
       const { request, mediaSources, accomplishRequest } = createDmSegmentValue(
@@ -144,11 +149,12 @@ export const createDirectMessageJobs = (
 
       jobs.push({
         target: chat,
-        refreshTarget: null,
         key,
         request,
         mediaSources,
         accomplishRequest,
+        refreshTarget: null,
+        asApplication: false,
       });
     } else {
       throw new Error(

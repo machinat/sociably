@@ -17,6 +17,7 @@ const minimumConfigs = {
   appId: '123456',
   appKey: '__APP_KEY__',
   appSecret: '__APP_SECRET__',
+  bearerToken: '__BEARER_TOKEN__',
   accessToken: '__ACCESS_TOKEN__',
   accessSecret: '__ACCESS_SECRET__',
 };
@@ -43,7 +44,7 @@ describe('initModule(configs)', () => {
     const module = Twitter.initModule({
       ...minimumConfigs,
       webhookPath: '/webhook/twitter',
-      maxConnections: 999,
+      maxRequestConnections: 999,
       eventMiddlewares,
       dispatchMiddlewares,
     });
@@ -67,7 +68,7 @@ describe('initModule(configs)', () => {
     const configs = {
       ...minimumConfigs,
       webhookPath: '/webhook/twitter',
-      maxConnections: 999,
+      maxRequestConnections: 999,
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 

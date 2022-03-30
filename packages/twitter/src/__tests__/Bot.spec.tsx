@@ -40,7 +40,14 @@ const appKey = '__APP_KEY__';
 const appSecret = '__APP_SECRET__';
 const accessToken = '1234567890-__ACCESS_TOKEN__';
 const accessSecret = '__ACCESS_SECRET__';
-const authOptions = { appKey, appSecret, accessToken, accessSecret };
+const bearerToken = '__BEARER_TOKEN__';
+const authOptions = {
+  appKey,
+  appSecret,
+  bearerToken,
+  accessToken,
+  accessSecret,
+};
 
 const twitterApi = nock('https://api.twitter.com');
 const bodySpy = moxy(() => true);
@@ -56,28 +63,60 @@ beforeEach(() => {
 describe('new TwitterBot(options)', () => {
   it('throw if options.appKey is empty', () => {
     expect(
-      () => new TwitterBot({ appSecret, accessToken, accessSecret } as never)
+      () =>
+        new TwitterBot({
+          appSecret,
+          bearerToken,
+          accessToken,
+          accessSecret,
+        } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.appKey should not be empty"`
     );
   });
   it('throw if options.appSecret is empty', () => {
     expect(
-      () => new TwitterBot({ appKey, accessToken, accessSecret } as never)
+      () =>
+        new TwitterBot({
+          appKey,
+          bearerToken,
+          accessToken,
+          accessSecret,
+        } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.appSecret should not be empty"`
     );
   });
+  it('throw if options.bearerToken is empty', () => {
+    expect(
+      () =>
+        new TwitterBot({
+          appKey,
+          appSecret,
+          accessToken,
+          accessSecret,
+        } as never)
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"options.bearerToken should not be empty"`
+    );
+  });
   it('throw if options.accessToken is empty', () => {
     expect(
-      () => new TwitterBot({ appKey, appSecret, accessSecret } as never)
+      () =>
+        new TwitterBot({
+          appKey,
+          appSecret,
+          bearerToken,
+          accessSecret,
+        } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.accessToken should not be empty"`
     );
   });
   it('throw if options.accessSecret is empty', () => {
     expect(
-      () => new TwitterBot({ appKey, appSecret, accessToken } as never)
+      () =>
+        new TwitterBot({ appKey, appSecret, bearerToken, accessToken } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.accessSecret should not be empty"`
     );
@@ -85,12 +124,9 @@ describe('new TwitterBot(options)', () => {
 
   it('construct engine', () => {
     const bot = new TwitterBot({
+      ...authOptions,
       initScope,
       dispatchWrapper,
-      appKey,
-      appSecret,
-      accessToken,
-      accessSecret,
       maxRequestConnections: 999,
     });
 
@@ -113,6 +149,7 @@ describe('new TwitterBot(options)', () => {
     expect(Worker.mock).toHaveBeenCalledWith({
       appKey,
       appSecret,
+      bearerToken,
       accessToken,
       accessSecret,
       maxConnections: 999,
@@ -120,7 +157,7 @@ describe('new TwitterBot(options)', () => {
   });
 
   test('default maxConnections', () => {
-    expect(new TwitterBot({ appKey, appSecret, accessToken, accessSecret }));
+    expect(new TwitterBot(authOptions));
 
     expect(Worker.mock).toHaveBeenCalledTimes(1);
     expect(Worker.mock.calls[0].args[0]).toMatchInlineSnapshot(`
@@ -129,6 +166,7 @@ describe('new TwitterBot(options)', () => {
         "accessToken": "1234567890-__ACCESS_TOKEN__",
         "appKey": "__APP_KEY__",
         "appSecret": "__APP_SECRET__",
+        "bearerToken": "__BEARER_TOKEN__",
         "maxConnections": 100,
       }
     `);
@@ -136,7 +174,7 @@ describe('new TwitterBot(options)', () => {
 });
 
 test('.start() and .stop() start/stop the engine', () => {
-  const bot = new TwitterBot({ appKey, appSecret, accessToken, accessSecret });
+  const bot = new TwitterBot(authOptions);
 
   type MockEngine = Moxy<TwitterBot['engine']>;
 
@@ -347,6 +385,25 @@ describe('.makeApiCall(method, uri, params)', () => {
 
     await expect(
       bot.makeApiCall('POST', '2/foo', { a: 0, b: 1 })
+    ).resolves.toEqual({ data: { id: '11111' } });
+
+    expect(apiCall.isDone()).toBe(true);
+  });
+
+  test('with asApplication option', async () => {
+    const bot = new TwitterBot(authOptions);
+    bot.start();
+
+    const apiCall = twitterApi
+      .post(
+        '/2/foo',
+        { a: 0, b: 1 },
+        { reqheaders: { Authorization: 'Bearer __BEARER_TOKEN__' } }
+      )
+      .reply(200, { data: { id: '11111' } });
+
+    await expect(
+      bot.makeApiCall('POST', '2/foo', { a: 0, b: 1 }, { asApplication: true })
     ).resolves.toEqual({ data: { id: '11111' } });
 
     expect(apiCall.isDone()).toBe(true);
