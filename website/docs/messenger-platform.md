@@ -47,7 +47,7 @@ const app = Machinat.createApp({
   platforms: [
     Messenger.intiModule({
       entryPath: '/webhook/messenger',     // webhook path
-      pageId: Number(MESSENGER_PAGE_ID),   // Facebook page id
+      pageId: MESSENGER_PAGE_ID,           // Facebook page id
       appSecret: MESSENGER_APP_SECRET,     // Facebook app secret
       accessToken: MESSENGER_ACCESS_TOKEN, // page access token
       verifyToken: MESSENGER_VERIFY_TOKEN, // token for webhook verification
@@ -96,20 +96,12 @@ and [components](https://machinat.com/api/modules/messenger_components).
 
 ## Webview
 
-:::warning
-There is [a Facebook bug](https://developers.facebook.com/support/bugs/294949372549147)
-that breaks the webview on the **Messenger website** client.
-You have to test your app with the **mobile app**.
-:::
-
 ### Auth Setup
 
 To use [webviews](./embedded-webview) in Messenger,
 configure the app with these steps:
 
-1. Add the server domain to [`whitelisted_domains`](https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/domain-whitelisting)
-  of the page.
-2. Add the auth provider to the `webview` platform. Like:
+1. Add the auth provider to the `webview` platform. Like:
 
 ```ts
 import Webview from '@machinat/webview';
@@ -127,18 +119,18 @@ const app = Machinat.createApp({
 });
 ```
 
-3. Expose your Facebook app id in `next.config.js`:
+2. Expose your Facebook page id in `next.config.js`:
 
 ```js {5}
 module.exports = {
   publicRuntimeConfig: {
-    messengerAppId: process.env.MESSENGER_APP_ID,
+    messengerPageId: process.env.MESSENGER_PAGE_ID,
   },
   // ...
 };
 ```
 
-4. Set up the `WebviewClient` in the webview:
+3. Set up the `WebviewClient` in the webview:
 
 ```ts
 import getConfig from 'next/config';
@@ -150,7 +142,7 @@ const { publicRuntimeConfig } = getConfig();
 const client =  new WebviewClient({
   authPlatforms: [
     new MessengerAuth({
-      appId: publicRuntimeConfig.messengerAppId,
+      pageId: publicRuntimeConfig.messengerPageId,
     }),
   ],
 });
@@ -158,19 +150,18 @@ const client =  new WebviewClient({
 
 ### Open the Webview
 
-The webview can be opened with an `UrlButton` in the chatroom.
+The webview can be opened with a `WebviewButton` in the chatroom.
 For example:
 
 ```tsx
+import * as Messenger from '@machinat/messenger/components';
+import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';
+
 app.onEvent(async ({ reply }) => {
   await reply(
     <Messenger.ButtonTemplate
       buttons={
-        <Messenger.UrlButton
-          title="Open 📤"
-          messengerExtensions
-          url="https://your.server.domain/webview?platform=messenger"
-        />
+        <MessengerWebviewButton title="Open 📤" />
       }
     >
       Hello Webview!
@@ -179,13 +170,11 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Two thing to note here:
+The users will be asked to enter a login code sent in the chat.
+After login, webview can communicate to the server as the authenticated user.
 
-1. `messengerExtensions` prop has to be `true`.
-2. `url` prop should link to the webview page with `platform=messenger` query.
-
-The users will be logged in with the Messenger account in the webview.
-Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more.
+Check the [webview platform document](https://machinat.com/docs/embedded-webview)
+to learn more.
 
 ## Assets Manager
 

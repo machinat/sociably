@@ -10,12 +10,6 @@ You can learn more about them here:
 - [Next.js](https://nextjs.org/docs/getting-started) - The React Framework for Production.
 :::
 
-:::warning
-There is [a Facebook bug](https://developers.facebook.com/support/bugs/294949372549147)
-that breaks webviews on the **Messenger website** client.
-If your app is on Messenger, test it with the **mobile app**.
-:::
-
 Chat UI brings a new way to communicate with users,
 but it cannot totally replace GUI.
 For the features that require precise control, instant interactions and richer displays, GUI is still a better choice.

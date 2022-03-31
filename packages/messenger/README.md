@@ -37,7 +37,7 @@ const app = Machinat.createApp({
   platforms: [
     Messenger.intiModule({
       entryPath: '/webhook/messenger',
-      pageId: Number(MESSENGER_PAGE_ID),
+      pageId: MESSENGER_PAGE_ID,
       appSecret: MESSENGER_APP_SECRET,
       accessToken: MESSENGER_ACCESS_TOKEN,
       verifyToken: MESSENGER_VERIFY_TOKEN,

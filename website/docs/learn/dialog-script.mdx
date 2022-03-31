@@ -79,7 +79,7 @@ const handleChat = makeContainer({
       }` : ''}\n
       if (intent.type === 'add') {
         // highlight-next-line
-        return reply(<AddingTodo.Start channel={event.channel} />);
+        return reply(<AddingTodo.Start />);
       }
       //...`}
     </CodeBlock>
@@ -365,7 +365,7 @@ import AskingFirstTodo from '../scenes/AskingFirstTodo';
       return reply(
         <>
           {hello}
-          <AskingFirstTodo.Start channel={event.channel} />
+          <AskingFirstTodo.Start />
         </>
       );
     }

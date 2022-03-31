@@ -315,137 +315,149 @@ Edit `src/components/WithMenu.tsx` component like this:
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'},
   ]}>
-  <TabItem value="messenger">
+<TabItem value="messenger">
 
 
-```tsx {4,9-14,18-36,41-44} tsx title="src/components/WithMenu.tsx"
+```tsx tsx title="src/components/WithMenu.tsx"
 //...
 type WithMenuProps = {
   children: MachinatNode;
+  // highlight-next-line
   todoCount: number;
 };
 
-const WithMenu =
-  (domain: string) =>
-  ({ children, todoCount }: WithMenuProps, { platform }) => {
-    const info = <>You have <b>{todoCount}</b> todos now.</>;
-    const listLabel = 'Show Todos 📑';
-    const listData = JSON.stringify({ action: 'list' });
-    const addLabel = 'New Todo ➕';
-    const addData = JSON.stringify({ action: 'add' });
+// highlight-start
+const WithMenu = ({ children, todoCount }: WithMenuProps, { platform }) => {
+  const info = <>You have <b>{todoCount}</b> todos now.</>;
+  const listLabel = 'Show Todos 📑';
+  const listData = JSON.stringify({ action: 'list' });
+  const addLabel = 'New Todo ➕';
+  const addData = JSON.stringify({ action: 'add' });
+  // highlight-end
 
-    if (platform === 'messenger') {
-      return (
-        <>
-          {children}
-          <Messenger.ButtonTemplate
-            buttons={
-              <>
-                <Messenger.PostbackButton
-                  title={listLabel}
-                  payload={listData}
-                />
-                <Messenger.PostbackButton
-                  title={addLabel}
-                  payload={addData}
-                />
-              </>
-            }
-          >
-            {info}
-          </Messenger.ButtonTemplate>
-        </>
-      );
-    }
-
+  if (platform === 'messenger') {
     return (
+      // highlight-start
       <>
         {children}
-        <p>{info}</p>
+        <Messenger.ButtonTemplate
+          buttons={
+            <>
+              <Messenger.PostbackButton
+                title={listLabel}
+                payload={listData}
+              />
+              <Messenger.PostbackButton
+                title={addLabel}
+                payload={addData}
+              />
+            </>
+          }
+        >
+          {info}
+        </Messenger.ButtonTemplate>
       </>
+      // highlight-end
     );
-  };
+  }
+
+  // highlight-start
+  return (
+    <>
+      {children}
+      <p>{info}</p>
+    </>
+  );
+  // highlight-end
+};
 //...
 ```
 
 
-  </TabItem>
-  <TabItem value="telegram">
+</TabItem>
+<TabItem value="telegram">
 
 
-```tsx {4,9-14,18-36,41-44} title="src/components/WithMenu.tsx"
+```tsx title="src/components/WithMenu.tsx"
 //...
 type WithMenuProps = {
   children: MachinatNode;
+  // highlight-next-line
   todoCount: number;
 };
 
-const WithMenu =
-  (domain: string) =>
-  ({ children, todoCount }: WithMenuProps, { platform }) => {
-    const info = <>You have <b>{todoCount}</b> todos now.</>;
-    const listLabel = 'Show Todos 📑';
-    const listData = JSON.stringify({ action: 'list' });
-    const addLabel = 'New Todo ➕';
-    const addData = JSON.stringify({ action: 'add' });
+// highlight-start
+const WithMenu = ({ children, todoCount }: WithMenuProps, { platform }) => {
+  const info = <>You have <b>{todoCount}</b> todos now.</>;
+  const listLabel = 'Show Todos 📑';
+  const listData = JSON.stringify({ action: 'list' });
+  const addLabel = 'New Todo ➕';
+  const addData = JSON.stringify({ action: 'add' });
+  // highlight-end
 
-    if (platform === 'telegram') {
-      return (
-        <>
-          {children}
-          <Telegram.Text
-            replyMarkup={
-              <Telegram.InlineKeyboard>
-                <Telegram.CallbackButton
-                  text={listLabel}
-                  data={listData}
-                />
-                <Telegram.CallbackButton
-                  text={addLabel}
-                  data={addData}
-                />
-              </Telegram.InlineKeyboard>
-            }
-          >
-            {info}
-          </Telegram.Text>
-        </>
-      );
-    }
-
+  if (platform === 'telegram') {
     return (
+      // highlight-start
       <>
         {children}
-        <p>{info}</p>
+        <Telegram.Text
+          replyMarkup={
+            <Telegram.InlineKeyboard>
+              <Telegram.CallbackButton
+                text={listLabel}
+                data={listData}
+              />
+              <Telegram.CallbackButton
+                text={addLabel}
+                data={addData}
+              />
+            </Telegram.InlineKeyboard>
+          }
+        >
+          {info}
+        </Telegram.Text>
       </>
+      // highlight-end
     );
-  };
+  }
+
+  // highlight-start
+  return (
+    <>
+      {children}
+      <p>{info}</p>
+    </>
+  );
+  // highlight-end
+};
 //...
 ```
 
 
-  </TabItem>
-  <TabItem value="line">
+</TabItem>
+<TabItem value="line">
 
 
-```tsx {4,9-14,18-39,44-47} title="src/components/WithMenu.tsx"
+```tsx title="src/components/WithMenu.tsx"
 //...
 type WithMenuProps = {
   children: MachinatNode;
+  // highlight-next-line
   todoCount: number;
 };
 
-const WithMenu =
-  (domain: string, lineLiffId: string) =>
-  ({ children, todoCount }: WithMenuProps, { platform }) => {
-    const info = <>You have <b>{todoCount}</b> todos now.</>;
-    const listLabel = 'Show Todos 📑';
-    const listData = JSON.stringify({ action: 'list' });
-    const addLabel = 'New Todo ➕';
-    const addData = JSON.stringify({ action: 'add' });
+// highlight-start
+const WithMenu = ({ children, todoCount }: WithMenuProps, { platform }) => {
+  const info = <>You have <b>{todoCount}</b> todos now.</>;
+  const listLabel = 'Show Todos 📑';
+  const listData = JSON.stringify({ action: 'list' });
+  const addLabel = 'New Todo ➕';
+  const addData = JSON.stringify({ action: 'add' });
+  // highlight-end
 
   if (platform === 'line') {
     return (
+      // highlight-start
       <>
         {children}
         <Line.ButtonTemplate
@@ -468,21 +480,24 @@ const WithMenu =
           {info}
         </Line.ButtonTemplate>
       </>
+      // highlight-end
     );
   }
 
+  // highlight-start
   return (
     <>
       {children}
       <p>{info}<p/>
     </>
   );
+  // highlight-end
 };
 //...
 ```
 
 
-  </TabItem>
+</TabItem>
 </Tabs>
 
 

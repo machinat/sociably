@@ -33,7 +33,11 @@ import Machinat from '@machinat/core';
 import Http from '@machinat/http';
 import Telegram from '@machinat/telegram';
 
-const { TELEGRAM_BOT_TOKEN, TELEGRAM_SECRET_PATH } = process.env;
+const {
+  TELEGRAM_BOT_NAME,
+  TELEGRAM_BOT_TOKEN,
+  TELEGRAM_SECRET_PATH,
+} = process.env;
 
 const app = Machinat.createApp({
   modules: [
@@ -42,6 +46,7 @@ const app = Machinat.createApp({
   platforms: [
     Telegram.intiModule({
       webhookPath: '/webhook/telegram', // webhook path
+      botName: TELEGRAM_BOT_NAME,       // bot name
       botToken: TELEGRAM_BOT_TOKEN,     // bot token
       secretPath: TELEGRAM_SECRET_PATH, // secret path for webhook
     }),
@@ -158,20 +163,19 @@ const client =  new WebviewClient({
 
 ### Open the Webview
 
-The webview can be opened with an `UrlButton`. 
+The webview can be opened by a `WebviewButton` in the chatroom.
 Like:
 
 ```tsx
+import * as Telegram from '@machinat/telegram/components';
+import { WebviewButton as TelegramWebviewButton } from '@machinat/telegram/webview';
+
 app.onEvent(async ({ reply }) => {
   await reply(
     <Telegram.Expression
       replyMarkup={
         <Telegram.InlineKeyboard>
-          <Telegram.UrlButton
-            text="Open 📤"
-            url="https://your.server.domain/auth/telegram"
-            login
-          />
+          <TelegramWebviewButton text="Open 📤" />
         </Telegram.InlineKeyboard>
       }
     >
@@ -181,12 +185,7 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-Two things to note here:
-
-1. `login` prop has to be `true`.
-2. `url` prop should link to the `/auth/telegram` endpoint of your server.
-
-The users will be logged in with the Telegram account in the webview.
+The users will be logged in with Telegram account in the webview.
 Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more.
 
 ## Assets Manager

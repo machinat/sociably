@@ -370,12 +370,7 @@ If no script is currently running on a chat,
 you can start a dialog script like this:
 
 ```js
-await reply(
-  <Ordering.Start
-    channel={event.channel}
-    params={{ mainDishes: ['🍖', '🍛', '🍜'] }}
-  />
-);
+await reply(<Ordering.Start params={{ mainDishes: ['🍖', '🍛', '🍜'] }} />);
 ```
 
 When the `Start` component is rendered,
@@ -383,7 +378,7 @@ it executes the script and sends the beginning messages.
 After that, the chat is handled by the processor till the script is finished.
 
 The `params` prop is passed to the `initVars` of the script.
-This works just like the function prarms so you can flexibly use the dialog.
+It works just like the function parameters that you can flexibly reuse the flow.
 
 ### Filter Event Type
 

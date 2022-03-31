@@ -162,18 +162,19 @@ const client =  new WebviewClient({
 
 ### Open the Webview
 
-The webview can be opened by the LIFF URL:
+The webview can be opened by a `WebviewAction` in the chatroom.
+Like:
 
 ```jsx
-const { LINE_LIFF_ID } = process.env;
-const liffUrl = `https://liff.line.me/${LINE_LIFF_ID}`;
+import * as Line from '@machinat/line/components';
+import { WebviewAction as LineWebviewAction } from '@machinat/line/webview';
 
 app.onEvent(async ({ reply }) => {
   await reply(
     <Line.ButtonTemplate
-      altText={liffUrl}
+      altText="Hello World"
       actions={
-        <Line.UriAction label="Open 📤" uri={liffUrl} />
+        <LineWebviewAction label="Open 📤" />
       }
     >
       Hello Webview!
@@ -182,7 +183,7 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-The users will be logged in with the LINE account in the webview.
+The users will be logged in with LINE account in the webview.
 Check the [webview document](https://machinat.com/docs/embedded-webview)
 to learn more.
 

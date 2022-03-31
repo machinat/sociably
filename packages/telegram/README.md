@@ -22,7 +22,11 @@ import Machinat from '@machinat/core';
 import Http from '@machinat/http';
 import Telegram from '@machinat/telegram';
 
-const { TELEGRAM_BOT_TOKEN, TELEGRAM_SECRET_PATH } = process.env;
+const {
+  TELEGRAM_BOT_NAME,
+  TELEGRAM_BOT_TOKEN,
+  TELEGRAM_SECRET_PATH,
+} = process.env;
 
 const app = Machinat.createApp({
   modules: [
@@ -31,6 +35,7 @@ const app = Machinat.createApp({
   platforms: [
     Telegram.intiModule({
       webhookPath: '/webhook/telegram',
+      botName: TELEGRAM_BOT_NAME,
       botToken: TELEGRAM_BOT_TOKEN,
       secretPath: TELEGRAM_SECRET_PATH,
     }),

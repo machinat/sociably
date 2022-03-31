@@ -16,12 +16,6 @@ You can learn more about them here:
 - [Next.js](https://nextjs.org/docs/getting-started) - The React Framework for Production.
 :::
 
-:::warning
-There is [a Facebook bug](https://developers.facebook.com/support/bugs/294949372549147)
-that breaks webviews on the **Messenger website** client.
-If your app is on Messenger, test it with the **mobile app**.
-:::
-
 ## Extend a Webview
 
 Finally let's implement the deleting todo feature.
@@ -43,137 +37,126 @@ import TabItem from '@theme/TabItem';
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'},
   ]}>
-  <TabItem value="messenger">
+<TabItem value="messenger">
 
 
 Edit the `WithMenu` component like this:
 
-```tsx {17-21} title="src/components/WithMenu.tsx"
-    //...
-    if (platform === 'messenger') {
-      return (
-        <>
-          {children}
-          <Messenger.ButtonTemplate
-              buttons={
-                <>
-                  <Messenger.PostbackButton
-                    title={listLabel}
-                    payload={listData}
-                  />
-                  <Messenger.PostbackButton
-                    title={addLabel}
-                    payload={addData}
-                  />
-                  <Messenger.UrlButton
-                    messengerExtensions
-                    title="Edit 📤"
-                    url={`https://${domain}/webview?platform=messenger`}
-                  />
-                </>
-              }
-          >
-              {info}
-          </Messenger.ButtonTemplate>
-        </>
-      );
-    }
-    //...
-```
-
-Here we add an `UrlButton` that links to the `/webview` endpoint of our server.
-Two things to note here:
-- Set the `messengerExtensions` prop to `true`.
-- Add querystring param `platform=messenger`.
-
-
-  </TabItem>
-  <TabItem value="telegram">
-
-Edit the `WithMenu` component like this:
-
-```tsx {17-21} title="src/components/WithMenu.tsx"
-    //...
-    if (platform === 'telegram') {
-      return (
-        <>
-          {children}
-          <Telegram.Text
-            replyMarkup={
-              <Telegram.InlineKeyboard>
-                <Telegram.CallbackButton
-                  text={listLabel}
-                  data={listData}
-                />
-                <Telegram.CallbackButton
-                  text={addLabel}
-                  data={addData}
-                />
-                <Telegram.UrlButton
-                  login
-                  text="Edit 📤"
-                  url={`https://${domain}/auth/telegram`}
-                />
-              </Telegram.InlineKeyboard>
-            }
-          >
-            {info}
-          </Telegram.Text>
-        </>
-      );
-    }
-    //...
-```
-
-Here we add an `UrlButton` that links to the `/auth/telegram` endpoint of our server.
-Note that the `login` prop has to be `true`.
-
-
-  </TabItem>
-  <TabItem value="line">
-
-Edit the `WithMenu` component like this:
-
-```tsx {20-23} title="src/components/WithMenu.tsx"
-    //...
-    if (platform === 'line') {
-      return (
-        <>
-          {children}
-          <Line.ButtonTemplate
-            altText={`You have ${todoCount} todos now.`}
-            actions={
+```tsx title="src/components/WithMenu.tsx"
+// highlight-next-line
+import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';
+  //...
+  if (platform === 'messenger') {
+    return (
+      <>
+        {children}
+        <Messenger.ButtonTemplate
+            buttons={
               <>
-                <Line.PostbackAction
-                  label={listLabel}
-                  displayText={listLabel}
-                  data={listData}
+                <Messenger.PostbackButton
+                  title={listLabel}
+                  payload={listData}
                 />
-                <Line.PostbackAction
-                  label={addLabel}
-                  displayText={addLabel}
-                  data={addData}
+                <Messenger.PostbackButton
+                  title={addLabel}
+                  payload={addData}
                 />
-                <Line.UriAction
-                  label="Edit 📤"
-                  uri={`https://liff.line.me/${lineLiffId}`}
-                />
+                {/* highlight-next-line */}
+                <MessengerWebviewButton title="Edit 📤" />
               </>
             }
-          >
+        >
             {info}
-          </Line.ButtonTemplate>
-        </>
-      );
-    }
-    //...
+        </Messenger.ButtonTemplate>
+      </>
+    );
+  }
+  //...
 ```
 
-Here we add an `UriAction` that links to the [LIFF](https://developers.line.biz/en/docs/liff/overview/)
-app we created at lesson 1.
+
+</TabItem>
+<TabItem value="telegram">
 
 
-  </TabItem>
+Edit the `WithMenu` component like this:
+
+```tsx title="src/components/WithMenu.tsx"
+// highlight-next-line
+import { WebviewButton as TelegramWebviewButton } from '@machinat/telegram/webview';
+  //...
+  if (platform === 'telegram') {
+    return (
+      <>
+        {children}
+        <Telegram.Text
+          replyMarkup={
+            <Telegram.InlineKeyboard>
+              <Telegram.CallbackButton
+                text={listLabel}
+                data={listData}
+              />
+              <Telegram.CallbackButton
+                text={addLabel}
+                data={addData}
+              />
+              {/* highlight-next-line */}
+              <TelegramWebviewButton text="Edit 📤" />
+            </Telegram.InlineKeyboard>
+          }
+        >
+          {info}
+        </Telegram.Text>
+      </>
+    );
+  }
+  //...
+```
+
+
+</TabItem>
+<TabItem value="line">
+
+
+Edit the `WithMenu` component like this:
+
+```tsx title="src/components/WithMenu.tsx"
+// highlight-next-line
+import { WebviewAction as LineWebviewAction } from '@machinat/line/webview';
+  //...
+  if (platform === 'line') {
+    return (
+      <>
+        {children}
+        <Line.ButtonTemplate
+          altText={`You have ${todoCount} todos now.`}
+          actions={
+            <>
+              <Line.PostbackAction
+                label={listLabel}
+                displayText={listLabel}
+                data={listData}
+              />
+              <Line.PostbackAction
+                label={addLabel}
+                displayText={addLabel}
+                data={addData}
+              />
+              {/* highlight-next-line */}
+              <LineWebviewAction label="Edit 📤" />
+            </>
+          }
+        >
+          {info}
+        </Line.ButtonTemplate>
+      </>
+    );
+  }
+  //...
+```
+
+
+</TabItem>
 </Tabs>
 
 
@@ -186,7 +169,7 @@ Try tapping the button and you should see the default webview is already working
 ### Webview Client
 
 The web front-end codes are in the `webview` directory.
-Check `webview/pages/index.tsx` file and you'll see the `WebviewClient` constructed like this:
+Check `webview/pages/index.tsx` file and you'll see the `WebviewClient` constructed like:
 
 
 <Tabs
@@ -205,7 +188,7 @@ const client = new WebviewClient({
   mockupMode: typeof window === 'undefined',
   authPlatforms: [
     new MessengerWebviewAuth({
-      appId: publicRuntimeConfig.messengerAppId,
+      pageId: publicRuntimeConfig.messengerPageId,
     }),
   ],
 });
