@@ -384,7 +384,7 @@ test('EditMedia match snapshot', async () => {
         <Document
           fileData="__DATA__"
           fileInfo={{ fileName: 'baz.txt' }}
-          fileAssetTag="my_doc"
+          assetTag="my_doc"
           caption={<b>Important Document</b>}
         />
       </EditMedia>
@@ -396,12 +396,12 @@ test('EditMedia match snapshot', async () => {
                 messageId={123}
               >
                 <Document
+                  assetTag="my_doc"
                   caption={
                     <b>
                       Important Document
                     </b>
                   }
-                  fileAssetTag="my_doc"
                   fileData="__DATA__"
                   fileInfo={
                     Object {
@@ -429,8 +429,8 @@ test('EditMedia match snapshot', async () => {
                 "toNonChatTarget": false,
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_doc",
                     "fieldName": "document",
-                    "fileAssetTag": "my_doc",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.txt",
@@ -447,7 +447,7 @@ test('EditMedia match snapshot', async () => {
         <Video
           fileData="__DATA__"
           fileInfo={{ fileName: 'baz.mp4' }}
-          fileAssetTag="my_video"
+          assetTag="my_video"
           parseMode="MarkdownV2"
           caption="__MyVideo__"
           thumbnailFileData="__THUMB_DATA__"
@@ -466,9 +466,9 @@ test('EditMedia match snapshot', async () => {
                 messageId={123}
               >
                 <Video
+                  assetTag="my_video"
                   caption="__MyVideo__"
                   duration={100}
-                  fileAssetTag="my_video"
                   fileData="__DATA__"
                   fileInfo={
                     Object {
@@ -510,16 +510,16 @@ test('EditMedia match snapshot', async () => {
                 "toNonChatTarget": false,
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_video",
                     "fieldName": "video",
-                    "fileAssetTag": "my_video",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.mp4",
                     },
                   },
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "thumb",
-                    "fileAssetTag": undefined,
                     "fileData": "__THUMB_DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
@@ -543,7 +543,7 @@ test('EditMedia match snapshot', async () => {
         <Photo
           fileData="__DATA__"
           fileInfo={{ fileName: 'baz.jpg' }}
-          fileAssetTag="my_photo"
+          assetTag="my_photo"
         />
       </EditMedia>
     )
@@ -562,7 +562,7 @@ test('EditMedia match snapshot', async () => {
                 }
               >
                 <Photo
-                  fileAssetTag="my_photo"
+                  assetTag="my_photo"
                   fileData="__DATA__"
                   fileInfo={
                     Object {
@@ -598,8 +598,8 @@ test('EditMedia match snapshot', async () => {
                 "toNonChatTarget": true,
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_photo",
                     "fieldName": "photo",
-                    "fileAssetTag": "my_photo",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",

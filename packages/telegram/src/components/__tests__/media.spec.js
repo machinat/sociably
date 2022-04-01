@@ -110,7 +110,7 @@ test('Photo match snapshot', async () => {
       <Photo
         fileData="__DATA__"
         fileInfo={{ fileName: 'baz.jpg' }}
-        fileAssetTag="my_photo"
+        assetTag="my_photo"
         parseMode="MarkdownV2"
         caption="__MyPhoto__"
         disableNotification
@@ -126,9 +126,9 @@ test('Photo match snapshot', async () => {
           Array [
             Object {
               "node": <Photo
+                assetTag="my_photo"
                 caption="__MyPhoto__"
                 disableNotification={true}
-                fileAssetTag="my_photo"
                 fileData="__DATA__"
                 fileInfo={
                   Object {
@@ -169,8 +169,8 @@ test('Photo match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_photo",
                     "fieldName": "photo",
-                    "fileAssetTag": "my_photo",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
@@ -258,7 +258,7 @@ test('Animation match snapshot', async () => {
       <Animation
         fileData="__DATA__"
         fileInfo={{ fileName: 'baz.gif' }}
-        fileAssetTag="my_animate"
+        assetTag="my_animate"
         parseMode="MarkdownV2"
         caption="__MyAnimation__"
         thumbnailFileData="__THUMB_DATA__"
@@ -279,10 +279,10 @@ test('Animation match snapshot', async () => {
           Array [
             Object {
               "node": <Animation
+                assetTag="my_animate"
                 caption="__MyAnimation__"
                 disableNotification={true}
                 duration={100}
-                fileAssetTag="my_animate"
                 fileData="__DATA__"
                 fileInfo={
                   Object {
@@ -334,16 +334,16 @@ test('Animation match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_animate",
                     "fieldName": "animation",
-                    "fileAssetTag": "my_animate",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.gif",
                     },
                   },
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "thumb",
-                    "fileAssetTag": undefined,
                     "fileData": "__THUMB_DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
@@ -431,7 +431,7 @@ test('Audio match snapshot', async () => {
       <Audio
         fileData="__DATA__"
         fileInfo={{ fileName: 'baz.mp3' }}
-        fileAssetTag="my_audio"
+        assetTag="my_audio"
         parseMode="MarkdownV2"
         caption="__MyAudio__"
         thumbnailFileData="__THUMB_DATA__"
@@ -452,10 +452,10 @@ test('Audio match snapshot', async () => {
           Array [
             Object {
               "node": <Audio
+                assetTag="my_audio"
                 caption="__MyAudio__"
                 disableNotification={true}
                 duration={100}
-                fileAssetTag="my_audio"
                 fileData="__DATA__"
                 fileInfo={
                   Object {
@@ -507,16 +507,16 @@ test('Audio match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_audio",
                     "fieldName": "audio",
-                    "fileAssetTag": "my_audio",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.mp3",
                     },
                   },
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "thumb",
-                    "fileAssetTag": undefined,
                     "fileData": "__THUMB_DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
@@ -598,7 +598,7 @@ test('Document match snapshot', async () => {
       <Document
         fileData="__DATA__"
         fileInfo={{ fileName: 'baz.txt' }}
-        fileAssetTag="my_doc"
+        assetTag="my_doc"
         parseMode="MarkdownV2"
         caption="__MyDocument__"
         thumbnailFileData="__THUMB_DATA__"
@@ -616,9 +616,9 @@ test('Document match snapshot', async () => {
           Array [
             Object {
               "node": <Document
+                assetTag="my_doc"
                 caption="__MyDocument__"
                 disableNotification={true}
-                fileAssetTag="my_doc"
                 fileData="__DATA__"
                 fileInfo={
                   Object {
@@ -665,16 +665,16 @@ test('Document match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_doc",
                     "fieldName": "document",
-                    "fileAssetTag": "my_doc",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.txt",
                     },
                   },
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "thumb",
-                    "fileAssetTag": undefined,
                     "fileData": "__THUMB_DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
@@ -764,7 +764,7 @@ test('Video match snapshot', async () => {
       <Video
         fileData="__DATA__"
         fileInfo={{ fileName: 'baz.mp4' }}
-        fileAssetTag="my_video"
+        assetTag="my_video"
         parseMode="MarkdownV2"
         caption="__MyVideo__"
         thumbnailFileData="__THUMB_DATA__"
@@ -786,10 +786,10 @@ test('Video match snapshot', async () => {
           Array [
             Object {
               "node": <Video
+                assetTag="my_video"
                 caption="__MyVideo__"
                 disableNotification={true}
                 duration={100}
-                fileAssetTag="my_video"
                 fileData="__DATA__"
                 fileInfo={
                   Object {
@@ -843,16 +843,16 @@ test('Video match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_video",
                     "fieldName": "video",
-                    "fileAssetTag": "my_video",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.mp4",
                     },
                   },
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "thumb",
-                    "fileAssetTag": undefined,
                     "fileData": "__THUMB_DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
@@ -936,7 +936,7 @@ test('Voice match snapshot', async () => {
       <Voice
         fileData="__DATA__"
         fileInfo={{ fileName: 'baz.wmv' }}
-        fileAssetTag="my_voice"
+        assetTag="my_voice"
         parseMode="MarkdownV2"
         caption="__MyVoice__"
         duration={100}
@@ -953,10 +953,10 @@ test('Voice match snapshot', async () => {
           Array [
             Object {
               "node": <Voice
+                assetTag="my_voice"
                 caption="__MyVoice__"
                 disableNotification={true}
                 duration={100}
-                fileAssetTag="my_voice"
                 fileData="__DATA__"
                 fileInfo={
                   Object {
@@ -998,8 +998,8 @@ test('Voice match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_voice",
                     "fieldName": "voice",
-                    "fileAssetTag": "my_voice",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.wmv",
@@ -1085,7 +1085,7 @@ test('VideoNote match snapshot', async () => {
       <VideoNote
         fileData="__DATA__"
         fileInfo={{ fileName: 'baz.mpeg' }}
-        fileAssetTag="my_video_note"
+        assetTag="my_video_note"
         parseMode="MarkdownV2"
         caption="__MyVideoNote__"
         thumbnailFileData="__THUMB_DATA__"
@@ -1105,10 +1105,10 @@ test('VideoNote match snapshot', async () => {
           Array [
             Object {
               "node": <VideoNote
+                assetTag="my_video_note"
                 caption="__MyVideoNote__"
                 disableNotification={true}
                 duration={100}
-                fileAssetTag="my_video_note"
                 fileData="__DATA__"
                 fileInfo={
                   Object {
@@ -1158,16 +1158,16 @@ test('VideoNote match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_video_note",
                     "fieldName": "video_note",
-                    "fileAssetTag": "my_video_note",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.mpeg",
                     },
                   },
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "thumb",
-                    "fileAssetTag": undefined,
                     "fileData": "__THUMB_DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
@@ -1243,14 +1243,14 @@ test('MediaGroup match snapshot', async () => {
         <Photo
           fileData="__DATA__"
           fileInfo={{ fileName: 'baz.jpg' }}
-          fileAssetTag="my_photo"
+          assetTag="my_photo"
           parseMode="MarkdownV2"
           caption="__MyPhoto__"
         />
         <Video
           fileData="__DATA__"
           fileInfo={{ fileName: 'baz.mpeg' }}
-          fileAssetTag="my_video"
+          assetTag="my_video"
           parseMode="MarkdownV2"
           caption="__MyVideo__"
           thumbnailFileData="__THUMB_DATA__"
@@ -1269,8 +1269,8 @@ test('MediaGroup match snapshot', async () => {
                 replyToMessageId={123}
               >
                 <Photo
+                  assetTag="my_photo"
                   caption="__MyPhoto__"
-                  fileAssetTag="my_photo"
                   fileData="__DATA__"
                   fileInfo={
                     Object {
@@ -1280,9 +1280,9 @@ test('MediaGroup match snapshot', async () => {
                   parseMode="MarkdownV2"
                 />
                 <Video
+                  assetTag="my_video"
                   caption="__MyVideo__"
                   duration={100}
-                  fileAssetTag="my_video"
                   fileData="__DATA__"
                   fileInfo={
                     Object {
@@ -1329,24 +1329,24 @@ test('MediaGroup match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_photo",
                     "fieldName": "file_0",
-                    "fileAssetTag": "my_photo",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
                     },
                   },
                   Object {
+                    "assetTag": "my_video",
                     "fieldName": "file_1",
-                    "fileAssetTag": "my_video",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.mpeg",
                     },
                   },
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "file_2",
-                    "fileAssetTag": undefined,
                     "fileData": "__THUMB_DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.jpg",
@@ -1409,7 +1409,7 @@ test('Sticker match snapshot', async () => {
       <Sticker
         fileData="__DATA__"
         fileInfo={{ fileName: 'baz.gif' }}
-        fileAssetTag="my_sticker"
+        assetTag="my_sticker"
         disableNotification
         replyToMessageId={123}
         replyMarkup={
@@ -1423,8 +1423,8 @@ test('Sticker match snapshot', async () => {
           Array [
             Object {
               "node": <Sticker
+                assetTag="my_sticker"
                 disableNotification={true}
-                fileAssetTag="my_sticker"
                 fileData="__DATA__"
                 fileInfo={
                   Object {
@@ -1462,8 +1462,8 @@ test('Sticker match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": "my_sticker",
                     "fieldName": "sticker",
-                    "fileAssetTag": "my_sticker",
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "fileName": "baz.gif",

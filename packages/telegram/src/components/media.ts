@@ -25,7 +25,7 @@ export interface FileProps {
    * id with. This prop only annotates on the created job, you have to add
    * {@link saveUplodedFile} middleware to make automatical saving happen.
    */
-  fileAssetTag?: string;
+  assetTag?: string;
 }
 
 export interface CaptionProps {
@@ -67,7 +67,7 @@ export const Photo: TelegramComponent<
     disableNotification,
     replyToMessageId,
     replyMarkup,
-    fileAssetTag,
+    assetTag,
   } = node.props;
 
   const captionSegments = await render(caption, '.caption');
@@ -89,7 +89,7 @@ export const Photo: TelegramComponent<
               fieldName: 'photo',
               fileData,
               fileInfo,
-              fileAssetTag,
+              assetTag,
             },
           ]
         : undefined,
@@ -138,7 +138,7 @@ export const Audio: TelegramComponent<
     title,
     thumbnailFileData,
     thumbnailFileInfo,
-    fileAssetTag,
+    assetTag,
   } = node.props;
 
   const captionSegments = await render(caption, '.caption');
@@ -150,7 +150,7 @@ export const Audio: TelegramComponent<
       fieldName: 'audio',
       fileData,
       fileInfo,
-      fileAssetTag,
+      assetTag,
     });
   }
 
@@ -159,7 +159,7 @@ export const Audio: TelegramComponent<
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
-      fileAssetTag: undefined,
+      assetTag: undefined,
     });
   }
 
@@ -213,7 +213,7 @@ export const Document: TelegramComponent<
     replyMarkup,
     thumbnailFileData,
     thumbnailFileInfo,
-    fileAssetTag,
+    assetTag,
   } = node.props;
 
   const captionSegments = await render(caption, '.caption');
@@ -225,7 +225,7 @@ export const Document: TelegramComponent<
       fieldName: 'document',
       fileData,
       fileInfo,
-      fileAssetTag,
+      assetTag,
     });
   }
 
@@ -234,7 +234,7 @@ export const Document: TelegramComponent<
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
-      fileAssetTag: undefined,
+      assetTag: undefined,
     });
   }
 
@@ -298,7 +298,7 @@ export const Video: TelegramComponent<
     width,
     height,
     supportsStreaming,
-    fileAssetTag,
+    assetTag,
   } = node.props;
 
   const captionSegments = await render(caption, '.caption');
@@ -310,7 +310,7 @@ export const Video: TelegramComponent<
       fieldName: 'video',
       fileData,
       fileInfo,
-      fileAssetTag,
+      assetTag,
     });
   }
 
@@ -319,7 +319,7 @@ export const Video: TelegramComponent<
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
-      fileAssetTag: undefined,
+      assetTag: undefined,
     });
   }
 
@@ -384,7 +384,7 @@ export const Animation: TelegramComponent<
     duration,
     width,
     height,
-    fileAssetTag,
+    assetTag,
   } = node.props;
 
   const captionSegments = await render(caption, '.caption');
@@ -396,7 +396,7 @@ export const Animation: TelegramComponent<
       fieldName: 'animation',
       fileData,
       fileInfo,
-      fileAssetTag,
+      assetTag,
     });
   }
 
@@ -405,7 +405,7 @@ export const Animation: TelegramComponent<
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
-      fileAssetTag: undefined,
+      assetTag: undefined,
     });
   }
 
@@ -457,7 +457,7 @@ export const Voice: TelegramComponent<
     replyToMessageId,
     replyMarkup,
     duration,
-    fileAssetTag,
+    assetTag,
   } = node.props;
 
   const captionSegments = await render(caption, '.caption');
@@ -480,7 +480,7 @@ export const Voice: TelegramComponent<
               fieldName: 'voice',
               fileData,
               fileInfo,
-              fileAssetTag,
+              assetTag,
             },
           ]
         : undefined,
@@ -526,7 +526,7 @@ export const VideoNote: TelegramComponent<
     thumbnailFileInfo,
     duration,
     length,
-    fileAssetTag,
+    assetTag,
   } = node.props;
 
   const captionSegments = await render(caption, '.caption');
@@ -538,7 +538,7 @@ export const VideoNote: TelegramComponent<
       fieldName: 'video_note',
       fileData,
       fileInfo,
-      fileAssetTag,
+      assetTag,
     });
   }
 
@@ -547,7 +547,7 @@ export const VideoNote: TelegramComponent<
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
-      fileAssetTag: undefined,
+      assetTag: undefined,
     });
   }
 
@@ -637,25 +637,23 @@ export const MediaGroup: TelegramComponent<
           };
 
     if (uploadingFiles) {
-      uploadingFiles.forEach(
-        ({ fieldName, fileData, fileInfo, fileAssetTag }) => {
-          const fileName = `file_${fileCount}`;
-          fileCount += 1;
+      uploadingFiles.forEach(({ fieldName, fileData, fileInfo, assetTag }) => {
+        const fileName = `file_${fileCount}`;
+        fileCount += 1;
 
-          if (fieldName === 'thumb') {
-            input.thumb = `attach://${fileName}`;
-          } else {
-            input.media = `attach://${fileName}`;
-          }
-
-          mediaFiles.push({
-            fieldName: fileName,
-            fileData,
-            fileInfo,
-            fileAssetTag,
-          });
+        if (fieldName === 'thumb') {
+          input.thumb = `attach://${fileName}`;
+        } else {
+          input.media = `attach://${fileName}`;
         }
-      );
+
+        mediaFiles.push({
+          fieldName: fileName,
+          fileData,
+          fileInfo,
+          assetTag,
+        });
+      });
     }
 
     inputMedia.push(input);
@@ -697,7 +695,7 @@ export const Sticker: TelegramComponent<
     disableNotification,
     replyToMessageId,
     replyMarkup,
-    fileAssetTag,
+    assetTag,
   } = node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
@@ -708,7 +706,7 @@ export const Sticker: TelegramComponent<
       fieldName: 'sticker',
       fileData,
       fileInfo,
-      fileAssetTag,
+      assetTag,
     });
   }
 

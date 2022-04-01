@@ -299,7 +299,7 @@ test('with uploadingFiles', async () => {
         {
           fieldName: 'photo',
           fileData: '__PHOTO_CONTENT__',
-          fileAssetTag: 'foo',
+          assetTag: 'foo',
           fileInfo: {
             contentType: 'image/png',
             filename: 'my_photo.png',
@@ -322,12 +322,12 @@ test('with uploadingFiles', async () => {
         {
           fieldName: 'my_video',
           fileData: '__VIDEO_CONTENT__',
-          fileAssetTag: 'bar',
+          assetTag: 'bar',
         },
         {
           fieldName: 'my_audio',
           fileData: '__AUDIO_CONTENT__',
-          fileAssetTag: 'bar',
+          assetTag: 'bar',
         },
       ],
     },

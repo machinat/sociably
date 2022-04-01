@@ -391,7 +391,7 @@ export const SetChatPhoto: TelegramComponent<
         photo: undefined,
       },
       uploadingFiles: [
-        { fieldName: 'photo', fileData, fileInfo, fileAssetTag: undefined },
+        { fieldName: 'photo', fileData, fileInfo, assetTag: undefined },
       ],
     }),
   ];

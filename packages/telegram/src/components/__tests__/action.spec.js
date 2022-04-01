@@ -544,8 +544,8 @@ test('SetChatPhoto match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "photo",
-                    "fileAssetTag": undefined,
                     "fileData": "__DATA__",
                     "fileInfo": undefined,
                   },
@@ -589,8 +589,8 @@ test('SetChatPhoto match snapshot', async () => {
                 },
                 "uploadingFiles": Array [
                   Object {
+                    "assetTag": undefined,
                     "fieldName": "photo",
-                    "fileAssetTag": undefined,
                     "fileData": "__DATA__",
                     "fileInfo": Object {
                       "contentType": "image/jpeg",

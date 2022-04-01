@@ -28,7 +28,7 @@ describe('createChatJob(channel, segments)', () => {
                 fieldName: 'photo',
                 fileData: Buffer.from('BAR'),
                 fileInfo: { filename: 'bar.jpg' },
-                fileAssetTag: 'MyBar',
+                assetTag: 'MyBar',
               },
             ],
           },
@@ -61,8 +61,8 @@ describe('createChatJob(channel, segments)', () => {
           },
           "uploadingFiles": Array [
             Object {
+              "assetTag": "MyBar",
               "fieldName": "photo",
-              "fileAssetTag": "MyBar",
               "fileData": Object {
                 "data": Array [
                   66,
@@ -140,7 +140,7 @@ describe('createNonChatJobs(segments)', () => {
                 fieldName: 'photo',
                 fileData: Buffer.from('BAR'),
                 fileInfo: { filename: 'bar.jpg' },
-                fileAssetTag: 'MyBar',
+                assetTag: 'MyBar',
               },
             ],
           },
@@ -177,8 +177,8 @@ describe('createNonChatJobs(segments)', () => {
           },
           "uploadingFiles": Array [
             Object {
+              "assetTag": "MyBar",
               "fieldName": "photo",
-              "fileAssetTag": "MyBar",
               "fileData": Object {
                 "data": Array [
                   66,

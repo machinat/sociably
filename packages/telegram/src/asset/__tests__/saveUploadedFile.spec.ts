@@ -85,7 +85,7 @@ beforeEach(() => {
   manager.mock.reset();
 });
 
-it('ignore noraml messages and media message without fileAssetTag', async () => {
+it('ignore noraml messages and media message without assetTag', async () => {
   const frame = moxy();
 
   const response = {
@@ -122,7 +122,7 @@ it('ignore noraml messages and media message without fileAssetTag', async () => 
   expect(manager.saveFile.mock).not.toHaveBeenCalled();
 });
 
-it('save files uploaded when sending media with fileAssetTag', async () => {
+it('save files uploaded when sending media with assetTag', async () => {
   const frame = moxy();
 
   const sendPhotoJob = {
@@ -132,7 +132,7 @@ it('save files uploaded when sending media with fileAssetTag', async () => {
       {
         fieldName: 'photo',
         fileData: Buffer.from('__BINARY_DATA__'),
-        fileAssetTag: 'my_photo',
+        assetTag: 'my_photo',
       },
       {
         fieldName: 'thumb',
@@ -148,7 +148,7 @@ it('save files uploaded when sending media with fileAssetTag', async () => {
       {
         fieldName: mediaType,
         fileData: Buffer.from('__BINARY_DATA__'),
-        fileAssetTag: `my_${mediaType}`,
+        assetTag: `my_${mediaType}`,
       },
       {
         fieldName: 'thumb',
@@ -186,7 +186,7 @@ it('save files uploaded when sending media with fileAssetTag', async () => {
   });
 });
 
-it('save files uploaded by editMessageMedia with fileAssetTag', async () => {
+it('save files uploaded by editMessageMedia with assetTag', async () => {
   const frame = moxy();
   const editableMedias = ['animation', 'audio', 'document', 'video'];
 
@@ -205,7 +205,7 @@ it('save files uploaded by editMessageMedia with fileAssetTag', async () => {
       {
         fieldName: 'photo',
         fileData: Buffer.from('__BINARY_DATA__'),
-        fileAssetTag: 'my_photo',
+        assetTag: 'my_photo',
       },
       {
         fieldName: 'thumb',
@@ -230,7 +230,7 @@ it('save files uploaded by editMessageMedia with fileAssetTag', async () => {
       {
         fieldName: mediaType,
         fileData: Buffer.from('__BINARY_DATA__'),
-        fileAssetTag: `my_${mediaType}`,
+        assetTag: `my_${mediaType}`,
       },
       {
         fieldName: 'thumb',
@@ -262,7 +262,7 @@ it('save files uploaded by editMessageMedia with fileAssetTag', async () => {
   });
 });
 
-it('save files uploaded by sendMediaGroup with fileAssetTag', async () => {
+it('save files uploaded by sendMediaGroup with assetTag', async () => {
   const frame = moxy();
 
   const response = {
@@ -290,7 +290,7 @@ it('save files uploaded by sendMediaGroup with fileAssetTag', async () => {
           {
             fieldName: 'file_0',
             fileData: Buffer.from('__BINARY_DATA__'),
-            fileAssetTag: 'my_photo',
+            assetTag: 'my_photo',
           },
           {
             fieldName: 'file_1',
@@ -299,7 +299,7 @@ it('save files uploaded by sendMediaGroup with fileAssetTag', async () => {
           {
             fieldName: 'file_2',
             fileData: Buffer.from('__BINARY_DATA__'),
-            fileAssetTag: 'my_video',
+            assetTag: 'my_video',
           },
           {
             fieldName: 'file_3',

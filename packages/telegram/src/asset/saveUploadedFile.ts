@@ -11,10 +11,9 @@ const getLargestFileIdOfPhotoMessage = (message) => {
 };
 
 /**
- * saveUplodedFile save the id of uploaded files with the `fileAssetTag` prop
- * annotated. The file id can then be retrieved using the tag through
- * {@link TelegramAssetsManager.getFileId}.
- * @category Container
+ * saveUplodedFile save the id of uploaded files with the `assetTag` prop.
+ * The file id can then be retrieved by the tag through
+ * {@link TelegramAssetsManager.getFile}.
  */
 const saveUplodedFile =
   (manager: AssetsManagerP): TelegramDispatchMiddleware =>
@@ -29,8 +28,8 @@ const saveUplodedFile =
       const { result } = results[i];
 
       if (uploadingFiles) {
-        for (const { fieldName, fileAssetTag } of uploadingFiles) {
-          if (fileAssetTag) {
+        for (const { fieldName, assetTag } of uploadingFiles) {
+          if (assetTag) {
             let fileId: string | undefined;
 
             if (method === 'sendPhoto') {
@@ -62,7 +61,7 @@ const saveUplodedFile =
             }
 
             if (fileId) {
-              updatingAssets.push(manager.saveFile(fileAssetTag, fileId));
+              updatingAssets.push(manager.saveFile(assetTag, fileId));
             }
           }
         }
