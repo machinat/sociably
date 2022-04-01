@@ -22,9 +22,9 @@ You can check [setup section in the tutorial](https://machinat.com/docs/learn/cr
 It brings you to set up everything step by step.
 :::
 
-First, you need a Telegram bot to use with.
-You can [the official guide](https://core.telegram.org/bots#6-botfather)
-to create one from [@Botfather](https://t.me/botfather).
+First, you need to apply a Telegram bot from [@Botfather](https://t.me/botfather).
+Follow [the official guide](https://core.telegram.org/bots#6-botfather)
+for the setup procedures.
 
 Then set up the `http` and `telegram` module like this:
 
@@ -133,11 +133,10 @@ const app = Machinat.createApp({
 
 3. Expose your bot name in `next.config.js`:
 
-```js {5}
+```js
 module.exports = {
-  distDir: '../dist',
-  basePath: '/webview',
   publicRuntimeConfig: {
+    // highlight-next-line
     telegramBotName: process.env.TELEGRAM_BOT_NAME,
   },
 };
@@ -197,24 +196,29 @@ like files.
 To use it, you have to install a [state provider](./using-states) first.
 Then register `TelegramAssetsManager` like this:
 
-```ts {2,11-13,17}
+```ts
 import { FileState } from '@machinat/dev-tools';
+// highlight-next-line
 import TelegramAssetsManager, { saveUplodedFile } from '@machinat/telegram/asssets';
 
 const app = Machinat.createApp({
-  modules: [
-    FileState.initModule({ path: '.state_data.json' }),
+  services: [
+    // highlight-next-line
+    TelegramAssetsManager,
   ],
   platforms: [
     Telegram.initModule({
       dispatchMiddlewares: [
+        // highlight-next-line
         saveUplodedFile,
       ],
       // ...
     }),
   ],
-  services: [
-    TelegramAssetsManager,
+  modules: [
+    RedisState.initModule({
+      clientOptions: { url: REDIS_URL },
+    }),
   ],
 });
 ```
@@ -239,7 +243,7 @@ app.onEvent(makeContainer({ deps: [TelegramAssetsManager] })(
       } else {
         await reply(
           <Telegram.Image
-            fileAssetTag="foo.image"
+            assetTag="foo.image"
             fileData={fs.createReadStream('./assets/foo.jpg')}
           />
         );
@@ -248,7 +252,7 @@ app.onEvent(makeContainer({ deps: [TelegramAssetsManager] })(
 ));
 ```
 
-If you upload a file with `fileAssetTag` prop,
+If you upload a file with `assetTag` prop,
 `saveUplodedFile` middleware will save the returned file id.
 You can reuse the stored id for the next time.
 

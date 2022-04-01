@@ -21,9 +21,9 @@ You can check [setup section in the tutorial](https://machinat.com/docs/learn/cr
 It brings you to set up everything step by step.
 :::
 
-First, you need a LINE messaging API channel to use with.
-You can follow [the official guide](https://developers.line.biz/en/docs/messaging-api/building-bot/)
-to create one.
+First, you need to apply a LINE messaging API channel for the chatbot.
+Follow [the official guide](https://developers.line.biz/en/docs/messaging-api/building-bot/)
+for the setup procedures.
 
 Then set up the `http` and `line` module like this:
 
@@ -90,7 +90,7 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check the API references for the details of [events](https://machinat.com/api/modules/line#lineevent)
+Check API references for the details of [events](https://machinat.com/api/modules/line#lineevent)
 and [components](https://machinat.com/api/modules/line_components).
 
 ## Webview
@@ -132,11 +132,10 @@ const app = Machinat.createApp({
 
 3. Expose LIFF id in `next.config.js`:
 
-```js {5}
+```js
 module.exports = {
-  distDir: '../dist',
-  basePath: '/webview',
   publicRuntimeConfig: {
+    // highlight-next-line
     lineLiffId: process.env.LINE_LIFF_ID,
   },
 };
@@ -196,19 +195,23 @@ like [richmenu](https://developers.line.biz/en/docs/messaging-api/using-rich-men
 To use it, you have to install a [state provider](./using-states) first.
 Then register `LineAssetsManager` like this:
 
-```ts {2,12}
-import { FileState } from '@machinat/dev-tools';
+```ts
+import RedisState from '@machiniat/redis';
+// highlight-next-line
 import LineAssetsManager from '@machinat/line/asssets';
 
 const app = Machinat.createApp({
-  modules: [
-    FileState.initModule({ path: '.state_data.json' }),
+  services: [
+    // highlight-next-line
+    LineAssetsManager,
   ],
   platforms: [
     Line.initModule({/* ... */}),
   ],
-  services: [
-    LineAssetsManager,
+  modules: [
+    RedisState.initModule({
+      clientOptions: { url: REDIS_URL },
+    }),
   ],
 });
 ```

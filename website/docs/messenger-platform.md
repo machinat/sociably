@@ -21,9 +21,9 @@ You can check [setup section in the tutorial](https://machinat.com/docs/learn/cr
 It brings you to set up everything step by step.
 :::
 
-First you need to apply a Facebook app to use with.
-You can follow the [official guide](https://developers.facebook.com/docs/messenger-platform/getting-started/app-setup)
-to create one.
+First you need to apply a Facebook app and set up the page binding.
+Follow the [official guide](https://developers.facebook.com/docs/messenger-platform/getting-started/app-setup)
+for the setup procedures.
 
 Then set up the `http` and `messenger` modules like this:
 
@@ -91,7 +91,7 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check the API reference for the details of [events](https://machinat.com/api/modules/messenger#messengerevent)
+Check API references for the details of [events](https://machinat.com/api/modules/messenger#messengerevent)
 and [components](https://machinat.com/api/modules/messenger_components).
 
 ## Webview
@@ -101,10 +101,13 @@ and [components](https://machinat.com/api/modules/messenger_components).
 To use [webviews](./embedded-webview) in Messenger,
 configure the app with these steps:
 
-1. Add the auth provider to the `webview` platform. Like:
+1. Add auth provider to the `webview` platform and set app info at the `basicAuth`.
+   And make sure you have a state provider installed.
+   Like this:
 
 ```ts
 import Webview from '@machinat/webview';
+import RedisState from '@machiniat/redis';
 import MessengerAuth from '@machinat/messenger/webview';
 
 const app = Machinat.createApp({
@@ -113,7 +116,18 @@ const app = Machinat.createApp({
       authPlatforms:[
         MessengerAuth
       ],
+      basicAuth: {
+        appName: 'My Foo App',
+        appImageUrl: './webview/img/logo.png'
+      },
       // ...
+    }),
+  ],
+  modules: [
+    RedisState.initModule({
+      clientOptions: {
+        url: REDIS_URL,
+      },
     }),
   ],
 });
@@ -121,9 +135,10 @@ const app = Machinat.createApp({
 
 2. Expose your Facebook page id in `next.config.js`:
 
-```js {5}
+```js
 module.exports = {
   publicRuntimeConfig: {
+    // highlight-next-line
     messengerPageId: process.env.MESSENGER_PAGE_ID,
   },
   // ...
@@ -170,7 +185,7 @@ app.onEvent(async ({ reply }) => {
 });
 ```
 
-The users will be asked to enter a login code sent in the chat.
+The user will be asked to enter a login code sent in the chat.
 After login, webview can communicate to the server as the authenticated user.
 
 Check the [webview platform document](https://machinat.com/docs/embedded-webview)
@@ -185,24 +200,29 @@ like attachments and personas.
 To use it, you have to install a [state provider](./using-states) first.
 Then register `MessengerAssetsManager` like this:
 
-```ts {2,11-13,17}
-import { FileState } from '@machinat/dev-tools';
-import MessengerAssetsManager from '@machinat/messenger/asssets';
+```ts
+import RedisState from '@machiniat/redis';
+// highlight-next-line
+import MessengerAssetsManager, { saveReusableAttachments } from '@machinat/messenger/asssets';
 
 const app = Machinat.createApp({
-  modules: [
-    FileState.initModule({ path: '.state_data.json' }),
+  services: [
+    // highlight-next-line
+    MessengerAssetsManager,
   ],
   platforms: [
     Messenger.initModule({
       // ...
       dispatchMiddlewares: [
+        // highlight-next-line
         saveReusableAttachments,
       ]
     }),
   ],
-  services: [for
-    MessengerAssetsManager,
+  modules: [
+    RedisState.initModule({
+      clientOptions: { url: REDIS_URL },
+    }),
   ],
 });
 ```
@@ -213,7 +233,7 @@ Here is an example to upload a reusable attachment:
 import fs from 'fs';
 import { makeContainer } from '@machinat/core';
 import * as Messenger from '@machinat/messenger/components';
-import MessengerAssetsManager, { saveReusableAttachments } from '@machinat/messenger/asssets';
+import MessengerAssetsManager from '@machinat/messenger/asssets';
 
 app.onEvent(makeContainer({ deps: [MessengerAssetsManager] })(
   (assetsManager) =>
@@ -227,9 +247,9 @@ app.onEvent(makeContainer({ deps: [MessengerAssetsManager] })(
       } else {
         await reply(
           <Messenger.Image
-            isReusable
-            attachmentAssetTag="foo.image"
-            attachmentFileData={fs.createReadStream('./assets/foo.jpg')}
+            reusable
+            assetTag="foo.image"
+            fileData={fs.createReadStream('./assets/foo.jpg')}
           />
         );
       }
@@ -237,8 +257,8 @@ app.onEvent(makeContainer({ deps: [MessengerAssetsManager] })(
 ));
 ```
 
-If you upload an attachment with `isReusable` and `attachmentAssetTag` props,
-the `saveReusableAttachments` middleware will save the returned id.
+If you upload an attachment with `reusable` and `assetTag` props,
+the `saveReusableAttachments` middleware will save the returned attachment id.
 You can reuse the saved id for the next time.
 
 ## Resources
