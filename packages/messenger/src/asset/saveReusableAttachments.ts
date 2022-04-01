@@ -3,11 +3,11 @@ import type { MessengerDispatchMiddleware } from '../types';
 import AssetsManagerP from './AssetsManager';
 
 /**
- * collectReusableAttachments collect attachmentId of reusable from response
- * and store it MessengerAssetsManager.
- * @category Container
+ * saveReusableAttachments save the id of uploaded attachments with `assetTag`
+ *  props. The attachment id can then be retrieved by the tag through
+ * {@link MessengerAssetsManager.getAttachment}.
  */
-const collectReusableAttachments =
+const saveReusableAttachments =
   (manager: AssetsManagerP): MessengerDispatchMiddleware =>
   async (frame, next) => {
     const response = await next(frame);
@@ -16,12 +16,12 @@ const collectReusableAttachments =
     const updatingAssets: Promise<boolean>[] = [];
 
     for (let i = 0; i < jobs.length; i += 1) {
-      const { attachmentAssetTag } = jobs[i];
+      const { assetTag } = jobs[i];
       const { body } = results[i];
 
-      if (attachmentAssetTag && body.attachment_id) {
+      if (assetTag && body.attachment_id) {
         updatingAssets.push(
-          manager.saveAttachment(attachmentAssetTag, body.attachment_id)
+          manager.saveAttachment(assetTag, body.attachment_id)
         );
       }
     }
@@ -30,8 +30,6 @@ const collectReusableAttachments =
     return response;
   };
 
-const collectReusableAttachmentsC = makeContainer({
+export default makeContainer({
   deps: [AssetsManagerP],
-})(collectReusableAttachments);
-
-export default collectReusableAttachmentsC;
+})(saveReusableAttachments);

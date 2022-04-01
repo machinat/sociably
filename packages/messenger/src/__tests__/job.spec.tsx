@@ -248,9 +248,9 @@ describe('createChatJobs(options)(channel, segments)', () => {
     expect(jobs).toMatchSnapshot();
 
     jobs.forEach((job, i) => {
-      expect(job.attachmentFileData).toBe(i === 0 ? '_FOO_' : '_BAR_');
+      expect(job.fileData).toBe(i === 0 ? '_FOO_' : '_BAR_');
 
-      expect(job.attachmentFileInfo).toEqual(i === 0 ? undefined : fileInfo);
+      expect(job.fileInfo).toEqual(i === 0 ? undefined : fileInfo);
     });
   });
 });
@@ -317,8 +317,8 @@ describe('createAttachmentJobs()', () => {
       ])
     ).toEqual([
       {
-        attachmentFileData: '_FILE_CONTENT_DATA_',
-        attachmentFileInfo: fileInfo,
+        fileData: '_FILE_CONTENT_DATA_',
+        fileInfo,
         request: {
           method: 'POST',
           relative_url: 'me/message_attachments',

@@ -34,16 +34,16 @@ export const createChatJobs =
 
       let body: any;
       let relativeUrl: undefined | string;
-      let attachmentAssetTag: undefined | string;
-      let attachmentFileData: undefined | any;
-      let attachmentFileInfo: undefined | any;
+      let assetTag: undefined | string;
+      let fileData: undefined | any;
+      let fileInfo: undefined | any;
 
       if (typeof value === 'object') {
         body = filterSymbolKeys(value);
         relativeUrl = value[API_PATH];
-        attachmentAssetTag = value[ATTACHMENT_ASSET_TAG];
-        attachmentFileData = value[ATTACHMENT_DATA];
-        attachmentFileInfo = value[ATTACHMENT_INFO];
+        assetTag = value[ATTACHMENT_ASSET_TAG];
+        fileData = value[ATTACHMENT_DATA];
+        fileInfo = value[ATTACHMENT_INFO];
       } else if (typeof value === 'string') {
         body = { message: { text: value } };
       } else {
@@ -79,9 +79,9 @@ export const createChatJobs =
           body,
         },
         channelUid: uid,
-        attachmentAssetTag,
-        attachmentFileData,
-        attachmentFileInfo,
+        assetTag,
+        fileData,
+        fileInfo,
       };
     }
 
@@ -112,8 +112,8 @@ export const createAttachmentJobs = (
   const body = filterSymbolKeys(value);
   return [
     {
-      attachmentFileData: value[ATTACHMENT_DATA],
-      attachmentFileInfo: value[ATTACHMENT_INFO],
+      fileData: value[ATTACHMENT_DATA],
+      fileInfo: value[ATTACHMENT_INFO],
       request: {
         method: POST,
         relative_url: PATH_MESSAGE_ATTACHMENTS,

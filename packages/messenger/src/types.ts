@@ -106,9 +106,9 @@ export type MessengerJob = {
   request: BatchApiRequest;
   pageId?: string;
   channelUid?: string;
-  attachmentAssetTag?: string;
-  attachmentFileData?: string | Buffer | ReadableStream;
-  attachmentFileInfo?: {
+  assetTag?: string;
+  fileData?: string | Buffer | ReadableStream;
+  fileInfo?: {
     filename?: string;
     filepath?: string;
     contentType?: string;

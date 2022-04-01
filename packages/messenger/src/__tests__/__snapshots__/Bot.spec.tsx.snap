@@ -4,10 +4,10 @@ exports[`#render(channel, message, options) render options 1`] = `
 Object {
   "jobs": Array [
     Object {
-      "attachmentAssetTag": undefined,
-      "attachmentFileData": undefined,
-      "attachmentFileInfo": undefined,
+      "assetTag": undefined,
       "channelUid": "messenger.1234567890.id.john",
+      "fileData": undefined,
+      "fileInfo": undefined,
       "request": Object {
         "body": Object {
           "message": Object {
@@ -28,10 +28,10 @@ Object {
       },
     },
     Object {
-      "attachmentAssetTag": undefined,
-      "attachmentFileData": undefined,
-      "attachmentFileInfo": undefined,
+      "assetTag": undefined,
       "channelUid": "messenger.1234567890.id.john",
+      "fileData": undefined,
+      "fileInfo": undefined,
       "request": Object {
         "body": Object {
           "message": Object {
@@ -89,10 +89,10 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "attachmentAssetTag": undefined,
-          "attachmentFileData": undefined,
-          "attachmentFileInfo": undefined,
+          "assetTag": undefined,
           "channelUid": "messenger.1234567890.id.john",
+          "fileData": undefined,
+          "fileInfo": undefined,
           "request": Object {
             "body": Object {
               "message": Object {
@@ -113,10 +113,10 @@ Object {
           },
         },
         Object {
-          "attachmentAssetTag": undefined,
-          "attachmentFileData": undefined,
-          "attachmentFileInfo": undefined,
+          "assetTag": undefined,
           "channelUid": "messenger.1234567890.id.john",
+          "fileData": undefined,
+          "fileInfo": undefined,
           "request": Object {
             "body": Object {
               "message": Object {
@@ -192,10 +192,10 @@ exports[`#render(channel, message, options) send messages to me/messages api 1`]
 Object {
   "jobs": Array [
     Object {
-      "attachmentAssetTag": undefined,
-      "attachmentFileData": undefined,
-      "attachmentFileInfo": undefined,
+      "assetTag": undefined,
       "channelUid": "messenger.1234567890.id.john",
+      "fileData": undefined,
+      "fileInfo": undefined,
       "request": Object {
         "body": Object {
           "message": Object {
@@ -216,10 +216,10 @@ Object {
       },
     },
     Object {
-      "attachmentAssetTag": undefined,
-      "attachmentFileData": undefined,
-      "attachmentFileInfo": undefined,
+      "assetTag": undefined,
       "channelUid": "messenger.1234567890.id.john",
+      "fileData": undefined,
+      "fileInfo": undefined,
       "request": Object {
         "body": Object {
           "message": Object {
@@ -277,10 +277,10 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "attachmentAssetTag": undefined,
-          "attachmentFileData": undefined,
-          "attachmentFileInfo": undefined,
+          "assetTag": undefined,
           "channelUid": "messenger.1234567890.id.john",
+          "fileData": undefined,
+          "fileInfo": undefined,
           "request": Object {
             "body": Object {
               "message": Object {
@@ -301,10 +301,10 @@ Object {
           },
         },
         Object {
-          "attachmentAssetTag": undefined,
-          "attachmentFileData": undefined,
-          "attachmentFileInfo": undefined,
+          "assetTag": undefined,
           "channelUid": "messenger.1234567890.id.john",
+          "fileData": undefined,
+          "fileInfo": undefined,
           "request": Object {
             "body": Object {
               "message": Object {
@@ -380,8 +380,8 @@ exports[`#renderAttachment(message) call message_attachments api 1`] = `
 Object {
   "jobs": Array [
     Object {
-      "attachmentFileData": undefined,
-      "attachmentFileInfo": undefined,
+      "fileData": undefined,
+      "fileInfo": undefined,
       "request": Object {
         "body": Object {
           "message": Object {
@@ -413,8 +413,8 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "attachmentFileData": undefined,
-          "attachmentFileInfo": undefined,
+          "fileData": undefined,
+          "fileInfo": undefined,
           "request": Object {
             "body": Object {
               "message": Object {

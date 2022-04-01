@@ -182,8 +182,7 @@ export default class MessengerWorker
     const requests = new Array(jobs.length);
 
     for (let i = 0; i < jobs.length; i += 1) {
-      const { request, channelUid, attachmentFileData, attachmentFileInfo } =
-        jobs[i];
+      const { request, channelUid, fileData, fileInfo } = jobs[i];
 
       if (channelUid !== undefined) {
         // keep the order of requests per channel
@@ -202,7 +201,7 @@ export default class MessengerWorker
       request.omit_response_on_success = false;
 
       // if binary data attached, use from-data and add the file field
-      if (attachmentFileData !== undefined) {
+      if (fileData !== undefined) {
         if (filesForm === undefined) {
           filesForm = new FormData();
         }
@@ -210,7 +209,7 @@ export default class MessengerWorker
         const filename = makeFileName(fileCount);
         fileCount += 1;
 
-        filesForm.append(filename, attachmentFileData, attachmentFileInfo);
+        filesForm.append(filename, fileData, fileInfo);
         request.attached_files = filename;
       }
 

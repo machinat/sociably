@@ -3,10 +3,10 @@
 exports[`createChatJobs(options)(channel, segments) add attached file data and info if there are 1`] = `
 Array [
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": "_FOO_",
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": "_FOO_",
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "message": Object {
@@ -23,14 +23,14 @@ Array [
     },
   },
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": "_BAR_",
-    "attachmentFileInfo": Object {
+    "assetTag": undefined,
+    "channelUid": "messenger.12345.id.67890",
+    "fileData": "_BAR_",
+    "fileInfo": Object {
       "contentType": "image/jpeg",
       "filename": "deathangel.jpg",
       "knownLength": 66666,
     },
-    "channelUid": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -52,10 +52,10 @@ Array [
 exports[`createChatJobs(options)(channel, segments) add coresponding options to body on messages 1`] = `
 Array [
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": undefined,
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "persona_id": "your-dearest-friend",
@@ -69,10 +69,10 @@ Array [
     },
   },
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": undefined,
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "message": Object {
@@ -91,10 +91,10 @@ Array [
     },
   },
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": undefined,
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "id": 2,
@@ -107,10 +107,10 @@ Array [
     },
   },
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": undefined,
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "message": Object {
@@ -129,10 +129,10 @@ Array [
     },
   },
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": undefined,
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "message": Object {
@@ -156,10 +156,10 @@ Array [
 exports[`createChatJobs(options)(channel, segments) respect options originally set in job value 1`] = `
 Array [
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": undefined,
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "message": Object {
@@ -178,10 +178,10 @@ Array [
     },
   },
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": undefined,
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "message": Object {
@@ -205,10 +205,10 @@ Array [
 exports[`createChatJobs(options)(channel, segments) respect the empty tag if messaging_type has already been set 1`] = `
 Array [
   Object {
-    "attachmentAssetTag": undefined,
-    "attachmentFileData": undefined,
-    "attachmentFileInfo": undefined,
+    "assetTag": undefined,
     "channelUid": "messenger.12345.id.67890",
+    "fileData": undefined,
+    "fileInfo": undefined,
     "request": Object {
       "body": Object {
         "message": Object {

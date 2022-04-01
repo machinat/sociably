@@ -21,16 +21,16 @@ export type MediaProps = {
    * Set to true to make the saved asset sendable to other message recipients.
    * Defaults to false.
    */
-  isReusable?: boolean;
+  reusable?: boolean;
   /**
    * Set to true to make the saved asset sendable to other message recipients.
    * Defaults to false.
    */
   attachmentId?: string;
 
-  attachmentAssetTag?: string;
-  attachmentFileData?: string | Buffer | ReadableStream;
-  attachmentFileInfo?: {
+  assetTag?: string;
+  fileData?: string | Buffer | ReadableStream;
+  fileInfo?: {
     filename?: string;
     filepath?: string;
     contentType?: string;
@@ -44,14 +44,8 @@ const mediaFactory = (
 ): MessengerComponent<MediaProps, UnitSegment<MessageValue>> => {
   const container = {
     [name]: (node, path) => {
-      const {
-        url,
-        isReusable,
-        attachmentId,
-        attachmentAssetTag,
-        attachmentFileData,
-        attachmentFileInfo,
-      } = node.props;
+      const { url, reusable, attachmentId, assetTag, fileData, fileInfo } =
+        node.props;
 
       return [
         makeUnitSegment(node, path, {
@@ -60,14 +54,14 @@ const mediaFactory = (
               type,
               payload: {
                 url,
-                is_reusable: isReusable,
+                is_reusable: reusable,
                 attachment_id: attachmentId,
               },
             },
           },
-          [ATTACHMENT_ASSET_TAG]: attachmentAssetTag,
-          [ATTACHMENT_DATA]: attachmentFileData,
-          [ATTACHMENT_INFO]: attachmentFileInfo,
+          [ATTACHMENT_ASSET_TAG]: assetTag,
+          [ATTACHMENT_DATA]: fileData,
+          [ATTACHMENT_INFO]: fileInfo,
         }),
       ];
     },

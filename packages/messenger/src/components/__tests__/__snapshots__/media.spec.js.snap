@@ -4,7 +4,7 @@ exports[`media Components match snapshot 1`] = `
 Array [
   Object {
     "node": <Image
-      isReusable={true}
+      reusable={true}
       url="http://this.is/a/picture"
     />,
     "path": "$::0",
@@ -49,7 +49,7 @@ Array [
   },
   Object {
     "node": <Video
-      isReusable={true}
+      reusable={true}
       url="http://this.is/a/video"
     />,
     "path": "$::2",
@@ -94,7 +94,7 @@ Array [
   },
   Object {
     "node": <Audio
-      isReusable={true}
+      reusable={true}
       url="http://this.is/an/audio"
     />,
     "path": "$::4",
@@ -139,7 +139,7 @@ Array [
   },
   Object {
     "node": <File
-      isReusable={true}
+      reusable={true}
       url="http://this.is/a/file"
     />,
     "path": "$::6",

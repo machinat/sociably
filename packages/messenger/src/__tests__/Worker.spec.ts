@@ -186,11 +186,11 @@ it('upload files with form data if binary attached on job', async () => {
   worker.start(queue);
 
   const jobsWithFiles = [
-    { ...jobs[0], attachmentFileData: '_file0_' },
+    { ...jobs[0], fileData: '_file0_' },
     {
       ...jobs[1],
-      attachmentFileData: '_file1_',
-      attachmentFileInfo: {
+      fileData: '_file1_',
+      fileInfo: {
         filename: 'YouDontSay.jpg',
         contentType: 'image/jpeg',
         knownLength: 19806,
@@ -206,11 +206,11 @@ it('upload files with form data if binary attached on job', async () => {
 
   await expect(
     queue.executeJobs([
-      { ...jobs[0], attachmentFileData: '_file0_' },
+      { ...jobs[0], fileData: '_file0_' },
       {
         ...jobs[1],
-        attachmentFileData: '_file1_',
-        attachmentFileInfo: {
+        fileData: '_file1_',
+        fileInfo: {
           filename: 'YouDontSay.jpg',
           contentType: 'image/jpeg',
           knownLength: 19806,

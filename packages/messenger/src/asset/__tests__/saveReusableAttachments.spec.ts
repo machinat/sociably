@@ -18,11 +18,11 @@ it('register asset created within send api', async () => {
   const response = {
     jobs: [
       { request: {} },
-      { attachmentAssetTag: 'foo', request: {} },
+      { assetTag: 'foo', request: {} },
       { request: {} },
-      { attachmentAssetTag: 'bar', request: {} },
+      { assetTag: 'bar', request: {} },
       { request: {} },
-      { attachmentAssetTag: 'baz', request: {} },
+      { assetTag: 'baz', request: {} },
     ],
     results: [
       _result,
