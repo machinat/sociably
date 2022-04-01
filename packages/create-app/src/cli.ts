@@ -2,6 +2,7 @@
 import { resolve as resolvePath } from 'path';
 import meow from 'meow';
 import createApp from './createApp';
+import type { PlatformType } from './types';
 
 const cli = meow(
   `
@@ -15,7 +16,7 @@ Options
   --npmTag         the npm tag to install the packages with (default: latest)
 
 Example
-  $ create-machinat-app -p messenger -p webview
+  $ create-machinat-app -p messenger --webview
 `,
   {
     flags: {
@@ -28,6 +29,11 @@ Example
       name: {
         type: 'string',
         alias: 'n',
+      },
+      webview: {
+        type: 'boolean',
+        alias: 'w',
+        default: false,
       },
       recognizer: {
         type: 'string',
@@ -48,11 +54,17 @@ if (!projectInput) {
 }
 
 const projectPath = resolvePath(projectInput);
-const { recognizer, npmTag, platform: platforms } = cli.flags;
+const {
+  recognizer,
+  npmTag,
+  platform: platforms,
+  webview: withWebview,
+} = cli.flags;
 
 createApp({
-  platforms,
+  platforms: platforms as PlatformType[],
   projectPath,
   recognizer,
+  withWebview,
   npmTag,
 }).then((code) => process.exit(code));

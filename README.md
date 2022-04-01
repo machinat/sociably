@@ -155,16 +155,16 @@ to make your first in-chat app.
 Create an app project with the command:
 
 ```bash
-npm init @machinat/app@latest -- -p <platform> [-p ...] my-project
+npm init @machinat/app@latest -- -p <platform> [-p ...] [--webview] my-project
 ```
 
 Or using yarn:
 
 ```bash
-yarn create @machinat/app -- -p <platform> [-p ...] my-project
+yarn create @machinat/app -- -p <platform> [-p ...] [--webview] my-project
 ```
 
-> Supported platforms: `messenger`, `telegram`, `line` and `webview`
+> Supported platforms: `messenger`, `twitter`, `telegram`, `line`
 
 ## Documents
 

@@ -1,31 +1,23 @@
 import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext): string => `
+export default ({ platforms, withWebview }: CreateAppContext): string => `
 import Machinat, { MachinatNode } from '@machinat/core';${when(
   platforms.includes('messenger')
 )`
-import * as Messenger from '@machinat/messenger/components';${when(
-  platforms.includes('webview')
-)`
+import * as Messenger from '@machinat/messenger/components';${when(withWebview)`
 import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';`}`}${when(
   platforms.includes('twitter')
 )`
-import * as Twitter from '@machinat/twitter/components';${when(
-  platforms.includes('webview')
-)`
+import * as Twitter from '@machinat/twitter/components';${when(withWebview)`
 import { WebviewButton as TwitterWebviewButton } from '@machinat/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
-import * as Telegram from '@machinat/telegram/components';${when(
-  platforms.includes('webview')
-)`
+import * as Telegram from '@machinat/telegram/components';${when(withWebview)`
 import { WebviewButton as TelegramWebviewButton } from '@machinat/telegram/webview';`}`}${when(
   platforms.includes('line')
 )`
-import * as Line from '@machinat/line/components';${when(
-  platforms.includes('webview')
-)`
+import * as Line from '@machinat/line/components';${when(withWebview)`
 import { WebviewAction as LineWebviewAction } from '@machinat/line/webview';`}`}
 
 type WithMenuProps = {
@@ -33,7 +25,7 @@ type WithMenuProps = {
 };
 
 const WithMenu = ({ children }: WithMenuProps, { platform }) => {${when(
-  platforms.includes('webview')
+  withWebview
 )`
   const webviewText = 'Open Webview ↗️';`}
   const aboutText = 'About ℹ';
@@ -43,10 +35,10 @@ ${when(platforms.includes('messenger'))`
   if (platform === 'messenger') {
     return (
       <Messenger.ButtonTemplate
-        buttons={${`${when(platforms.includes('webview'))`
+        buttons={${`${when(withWebview)`
           <>`}
             <Messenger.PostbackButton title={aboutText} payload={aboutData} />${when(
-              platforms.includes('webview')
+              withWebview
             )`
             <MessengerWebviewButton title={webviewText} />
           </>`}
@@ -59,7 +51,7 @@ ${when(platforms.includes('messenger'))`
 ${when(platforms.includes('twitter'))`
   if (platform === 'twitter') {
     return (
-      <Twitter.DirectMessage${when(platforms.includes('webview'))`
+      <Twitter.DirectMessage${when(withWebview)`
         buttons={<TwitterWebviewButton label={webviewText} />}`}
         quickReplies={
           <Twitter.QuickReply label={aboutText} metadata={aboutData} />
@@ -76,7 +68,7 @@ ${when(platforms.includes('telegram'))`
         replyMarkup={
           <Telegram.InlineKeyboard>
             <Telegram.CallbackButton text={aboutText} data={aboutData} />${when(
-              platforms.includes('webview')
+              withWebview
             )`
             <TelegramWebviewButton text={webviewText} />`}
           </Telegram.InlineKeyboard>
@@ -91,13 +83,13 @@ ${when(platforms.includes('line'))`
     return (
       <Line.ButtonTemplate
         altText={(template) => template.text}
-        actions={${`${when(platforms.includes('webview'))`
+        actions={${`${when(withWebview)`
           <>`}
             <Line.PostbackAction
               label={aboutText}
               displayText={aboutText}
               data={aboutData}
-            />${when(platforms.includes('webview'))`
+            />${when(withWebview)`
             <LineWebviewAction label={webviewText} />
           </>`}
         `}}

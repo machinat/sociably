@@ -15,18 +15,20 @@ export const when =
   };
 
 export const polishFileContent = (
-  inputString: null | string
-): null | string => {
-  if (!inputString) {
+  input: null | string | boolean
+): null | string | boolean => {
+  if (typeof input !== 'string') {
+    return input;
+  }
+  if (input === '') {
     return null;
   }
 
-  let content = inputString;
+  let content = input;
 
   if (content[0] === '\n') {
     content = content.slice(1);
   }
-
   if (content[content.length - 1] !== '\n') {
     content = `${content}\n`;
   }

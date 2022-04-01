@@ -1,32 +1,31 @@
 import { CreateAppContext } from '../../types';
 import { when } from '../../utils';
 
-export default ({ platforms }: CreateAppContext): string => `${when(
-  platforms.includes('messenger')
-)`
+export default ({
+  platforms,
+  withWebview,
+}: CreateAppContext): string => `${when(platforms.includes('messenger'))`
 import type { MessengerEventContext } from '@machinat/messenger';${when(
-  platforms.includes('webview')
+  withWebview
 )`
 import type MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
   platforms.includes('twitter')
 )`
 import type { TwitterEventContext } from '@machinat/twitter';${when(
-  platforms.includes('webview')
+  withWebview
 )`
 import type TwitterWebviewAuth from '@machinat/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
 import type { TelegramEventContext } from '@machinat/telegram';${when(
-  platforms.includes('webview')
+  withWebview
 )`
 import type TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
   platforms.includes('line')
 )`
-import type { LineEventContext } from '@machinat/line';${when(
-  platforms.includes('webview')
-)`
+import type { LineEventContext } from '@machinat/line';${when(withWebview)`
 import type LineWebviewAuth from '@machinat/line/webview';`}`}${when(
-  platforms.includes('webview')
+  withWebview
 )`
 import type { WebviewEventContext } from '@machinat/webview';`}
 
@@ -35,7 +34,7 @@ export type ChatEventContext =${when(platforms.includes('messenger'))`
   | TwitterEventContext`}${when(platforms.includes('telegram'))`
   | TelegramEventContext`}${when(platforms.includes('line'))`
   | LineEventContext`};
-${when(platforms.includes('webview'))`
+${when(withWebview)`
 
 export type WebAppEventContext = WebviewEventContext<${when(
   platforms.includes('messenger')
@@ -47,6 +46,6 @@ export type WebAppEventContext = WebviewEventContext<${when(
   >;`}
 
 export type AppEventContext =
-  | ChatEventContext${when(platforms.includes('webview'))`
+  | ChatEventContext${when(withWebview)`
   | WebAppEventContext`};
 `;

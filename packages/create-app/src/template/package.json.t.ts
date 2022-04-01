@@ -2,7 +2,11 @@ import sortPackageJson from 'sort-package-json';
 import { when } from '../utils';
 import { CreateAppContext } from '../types';
 
-export default ({ projectName, platforms }: CreateAppContext): string => {
+export default ({
+  projectName,
+  platforms,
+  withWebview,
+}: CreateAppContext): string => {
   const packageConfigs = {
     name: projectName,
     private: true,
@@ -14,10 +18,10 @@ export default ({ projectName, platforms }: CreateAppContext): string => {
       'migrate:production': 'node ./lib/cli/migrate.js',
 
       build: `npm run clean && npm run build:src${when(
-        platforms.includes('webview')
+        withWebview
       )` && npm run build:webview`}`,
       'build:src': 'tsc',
-      'build:webview': platforms.includes('webview')
+      'build:webview': withWebview
         ? 'dotenv -- next build ./webview'
         : undefined,
 
@@ -42,7 +46,7 @@ export default ({ projectName, platforms }: CreateAppContext): string => {
     },
   };
 
-  if (platforms.includes('webview')) {
+  if (withWebview) {
     packageConfigs.dependencies = {
       ...packageConfigs.dependencies,
       ...{

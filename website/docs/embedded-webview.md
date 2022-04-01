@@ -30,11 +30,11 @@ It does these three things in the background:
 ## Install With Creator
 
 If you are creating a new project with the app creator,
-add a `-p webview` flag and everything will be set up.
+add a `--webview` flag and everything will be set up.
 Like this:
 
 ```bash
-npm init @machinat/app@latest -- -p telegram -p webview my-project
+npm init @machinat/app@latest -- -p telegram --webview my-project
 ```
 
 :::info

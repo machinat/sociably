@@ -1,9 +1,7 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext): string => when(
-  platforms.includes('webview')
-)`
+export default ({ withWebview }: CreateAppContext): string => when(withWebview)`
 {
   "compilerOptions": {
     "target": "es5",

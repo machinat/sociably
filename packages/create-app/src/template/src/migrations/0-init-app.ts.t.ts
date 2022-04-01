@@ -1,7 +1,7 @@
 import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
-export default ({ platforms }: CreateAppContext): string => `
+export default ({ platforms, withWebview }: CreateAppContext): string => `
 import { makeContainer } from '@machinat/core';${when(
   platforms.includes('messenger')
 )`
@@ -46,7 +46,7 @@ export const up = makeContainer({
   await messengerBot.makeApiCall('POST', 'me/messenger_profile', {
     greeting: [
       { locale: 'default', text: 'Hello World!' },
-    ],${when(platforms.includes('webview'))`
+    ],${when(withWebview)`
     whitelisted_domains: [ENTRY_URL],`}
   });
   

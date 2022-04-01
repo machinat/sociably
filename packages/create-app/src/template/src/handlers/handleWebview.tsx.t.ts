@@ -1,8 +1,8 @@
 import { CreateAppContext } from '../../../types';
 import { when } from '../../../utils';
 
-export default ({ platforms }: CreateAppContext): string => when(
-  platforms.includes('webview')
+export default ({ platforms, withWebview }: CreateAppContext): string => when(
+  withWebview
 )`
 import Machinat, { makeContainer, BasicBot } from '@machinat/core';
 import WithMenu from '../components/WithMenu';

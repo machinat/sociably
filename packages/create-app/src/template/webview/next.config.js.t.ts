@@ -1,8 +1,8 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext): string => when(
-  platforms.includes('webview')
+export default ({ platforms, withWebview }: CreateAppContext): string => when(
+  withWebview
 )`
 module.exports = {
   distDir: '../dist',

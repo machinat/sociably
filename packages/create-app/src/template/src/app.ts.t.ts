@@ -5,29 +5,26 @@ export default ({
   platforms,
   recognizer,
   projectName,
+  withWebview,
 }: CreateAppContext): string => `
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';${when(platforms.includes('messenger'))`
-import Messenger from '@machinat/messenger';${when(
-  platforms.includes('webview')
-)`
+import Messenger from '@machinat/messenger';${when(withWebview)`
 import MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
   platforms.includes('line')
 )`
-import Line from '@machinat/line';${when(platforms.includes('webview'))`
+import Line from '@machinat/line';${when(withWebview)`
 import LineWebviewAuth from '@machinat/line/webview';`}`}${when(
   platforms.includes('twitter')
 )`
 import Twitter from '@machinat/twitter';
-import TwitterAssetManager from '@machinat/twitter/asset';${when(
-  platforms.includes('webview')
-)`
+import TwitterAssetManager from '@machinat/twitter/asset';${when(withWebview)`
 import TwitterWebviewAuth from '@machinat/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
-import Telegram from '@machinat/telegram';${when(platforms.includes('webview'))`
+import Telegram from '@machinat/telegram';${when(withWebview)`
 import TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
-  platforms.includes('webview')
+  withWebview
 )`
 import Webview from '@machinat/webview';`}
 import Script from '@machinat/script';
@@ -36,9 +33,7 @@ import {
   FileState,${when(recognizer === 'regex')`
   RegexRecognition,`}
 } from '@machinat/dev-tools';${when(recognizer === 'dialogflow')`
-import Dialogflow from '@machinat/dialogflow';`}${when(
-  platforms.includes('webview')
-)`
+import Dialogflow from '@machinat/dialogflow';`}${when(withWebview)`
 import nextConfigs from '../webview/next.config.js';`}
 import useIntent from './services/useIntent';
 import useUserProfile from './services/useUserProfile';
@@ -47,7 +42,7 @@ import * as scenes from './scenes';
 
 const {
   NODE_ENV,
-  PORT,${when(platforms.includes('webview'))`
+  PORT,${when(withWebview)`
   DOMAIN,
   // webview
   WEBVIEW_AUTH_SECRET,`}${when(platforms.includes('messenger'))`
@@ -71,7 +66,7 @@ const {
   LINE_PROVIDER_ID,
   LINE_CHANNEL_ID,
   LINE_ACCESS_TOKEN,
-  LINE_CHANNEL_SECRET,${when(platforms.includes('webview'))`
+  LINE_CHANNEL_SECRET,${when(withWebview)`
   LINE_LIFF_ID,`}`}
   // redis
   REDIS_URL,${when(recognizer === 'dialogflow')`
@@ -149,11 +144,9 @@ ${when(recognizer === 'dialogflow')`
         providerId: LINE_PROVIDER_ID,
         channelId: LINE_CHANNEL_ID,
         accessToken: LINE_ACCESS_TOKEN,
-        channelSecret: LINE_CHANNEL_SECRET,${when(
-          platforms.includes('webview')
-        )`
+        channelSecret: LINE_CHANNEL_SECRET,${when(withWebview)`
         liffId: LINE_LIFF_ID,`}
-      }),`}${when(platforms.includes('webview'))`
+      }),`}${when(withWebview)`
 
       Webview.initModule<${when(platforms.includes('messenger'))`
         | MessengerWebviewAuth`}${when(platforms.includes('telegram'))`

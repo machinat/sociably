@@ -3,7 +3,11 @@ import type { CreateAppContext } from '../types';
 
 export const name = '.env.example';
 
-export default ({ platforms, recognizer }: CreateAppContext): string => `
+export default ({
+  platforms,
+  recognizer,
+  withWebview,
+}: CreateAppContext): string => `
 # NOTICE! This file is for reference only.
 # DO NOT save any secret data here!
 # The real settings should go to \`.env\` file.
@@ -117,7 +121,7 @@ LINE_CHANNEL_SECRET = abcdef123456...
 
 # LIFF id for webview, available at: Login Channel Page > LIFF
 LINE_LIFF_ID= 1234567890-abcd1234
-`}${when(platforms.includes('webview'))`
+`}${when(withWebview)`
 
 # Webview Settings
 

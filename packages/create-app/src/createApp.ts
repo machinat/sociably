@@ -14,30 +14,26 @@ import chalk from 'chalk';
 import thenifiedly from 'thenifiedly';
 import { format as prettierFormat, Options as PrettierOptions } from 'prettier';
 import { polishFileContent } from './utils';
-import type { CreateAppContext } from './types';
+import type { CreateAppContext, PlatformType } from './types';
 
 type CreateAppOptions = {
-  platforms: string[];
+  platforms: PlatformType[];
   projectPath: string;
   recognizer: string;
+  withWebview: boolean;
   npmTag?: string;
 };
 
 const formatCode = (code: string, parser: PrettierOptions['parser']) =>
   prettierFormat(code, { parser, singleQuote: true });
 
-const supportedPlatforms = [
-  'messenger',
-  'twitter',
-  'telegram',
-  'line',
-  'webview',
-];
+const supportedPlatforms = ['messenger', 'twitter', 'telegram', 'line'];
 
 const createMachinatApp = async ({
   platforms,
   projectPath,
   recognizer,
+  withWebview,
   npmTag = 'latest',
 }: CreateAppOptions): Promise<number> => {
   console.log(
@@ -53,7 +49,9 @@ const createMachinatApp = async ({
       console.log(
         `${chalk.redBright(
           'Error:'
-        )} "${platform}" is not a supported platform, only 'messenger', 'telegram', 'line', and 'webview' are supported now`
+        )} '${platform}' is not a supported platform, only ${supportedPlatforms
+          .map((p) => `'${p}'`)
+          .join(', ')} are supported now`
       );
       return 1;
     }
@@ -72,6 +70,7 @@ const createMachinatApp = async ({
     projectName,
     platforms,
     recognizer,
+    withWebview,
   };
 
   if (fileExistsSync(projectPath)) {
@@ -104,7 +103,11 @@ const createMachinatApp = async ({
       const targetPath = joinPath(targetDir, targetName);
 
       const content = polishFileContent(buildContent(context));
-      if ((content || binary) && !fileExistsSync(targetDir)) {
+      if (!content) {
+        return;
+      }
+
+      if (!fileExistsSync(targetDir)) {
         await thenifiedly.call(mkdir, targetDir, { recursive: true });
       }
 
@@ -115,7 +118,7 @@ const createMachinatApp = async ({
           targetPath,
           mode
         );
-      } else if (content) {
+      } else if (typeof content === 'string') {
         const ext = extname(targetPath);
         await thenifiedly.call(
           writeFile,
@@ -146,7 +149,7 @@ const createMachinatApp = async ({
     '@machinat/redis-state',
     '@machinat/stream',
     '@machinat/script',
-    platforms.includes('webview') ? '@machinat/webview' : undefined,
+    withWebview ? '@machinat/webview' : undefined,
     platforms.includes('messenger') ? '@machinat/messenger' : undefined,
     platforms.includes('twitter') ? '@machinat/twitter' : undefined,
     platforms.includes('telegram') ? '@machinat/telegram' : undefined,

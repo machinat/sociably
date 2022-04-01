@@ -5,7 +5,11 @@ import type { CreateAppContext } from '../types';
 
 export const name = '.env';
 
-export default ({ platforms, recognizer }: CreateAppContext): string => {
+export default ({
+  platforms,
+  recognizer,
+  withWebview,
+}: CreateAppContext): string => {
   const localTunnelSubDomain = randomName({ number: true }).dashed;
   return `
 NODE_ENV=development
@@ -44,9 +48,9 @@ TELEGRAM_SECRET_PATH=${nanoid(32)}
 LINE_PROVIDER_ID=
 LINE_CHANNEL_ID=
 LINE_ACCESS_TOKEN=
-LINE_CHANNEL_SECRET=${when(platforms.includes('webview'))`
+LINE_CHANNEL_SECRET=${when(withWebview)`
 LINE_LIFF_ID=`}
-`}${when(platforms.includes('webview'))`
+`}${when(withWebview)`
 # Webview
 
 WEBVIEW_AUTH_SECRET=${nanoid(32)}

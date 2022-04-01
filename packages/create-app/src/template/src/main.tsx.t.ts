@@ -1,7 +1,7 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext): string => `
+export default ({ platforms, withWebview }: CreateAppContext): string => `
 import ${when(platforms.includes('telegram'))`Machinat, `}{
     makeContainer,
 } from '@machinat/core';${when(platforms.includes('telegram'))`
@@ -9,16 +9,14 @@ import { AnswerCallbackQuery } from '@machinat/telegram/components';`}
 import { Stream } from '@machinat/stream';
 import { filter } from '@machinat/stream/operators';
 import Script from '@machinat/script';
-import handleChat from './handlers/handleChat';${when(
-  platforms.includes('webview')
-)`
+import handleChat from './handlers/handleChat';${when(withWebview)`
 import handleWebview from './handlers/handleWebview';`}
 import { AppEventContext, ChatEventContext } from './types';
 
 const main = (event$: Stream<AppEventContext>): void => {
   // continue running scripts
   const chat$ = event$
-    .pipe(${when(platforms.includes('webview'))`
+    .pipe(${when(withWebview)`
       filter((ctx) => ctx.event.platform !== 'webview'),`}
       filter(
         (ctx) =>
@@ -52,7 +50,7 @@ const main = (event$: Stream<AppEventContext>): void => {
       (ctx: ChatEventContext & { event: { type: 'callback_query' } }) =>
         ctx.reply(<AnswerCallbackQuery queryId={ctx.event.queryId} />)
     )
-    .catch(console.error);`}${when(platforms.includes('webview'))`
+    .catch(console.error);`}${when(withWebview)`
 
   // handle events from webview
   event$

@@ -1,9 +1,7 @@
 import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
-export default ({ platforms }: CreateAppContext): string => when(
-  platforms.includes('webview')
-)`
+export default ({ withWebview }: CreateAppContext): string => when(withWebview)`
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
 
