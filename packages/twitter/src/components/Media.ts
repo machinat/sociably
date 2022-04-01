@@ -20,7 +20,7 @@ export type MediaProps = {
   /** The uploaded media id */
   mediaId?: string;
   /** The file content to be upload */
-  file?: Buffer | NodeJS.ReadableStream;
+  fileData?: Buffer | NodeJS.ReadableStream;
   /** The content type of the file. Required when uploading using `file` */
   fileType?: string;
   /** The file size in bytes. Required when uploading using `file` */
@@ -39,7 +39,7 @@ const makeMediaComponent = (name: string, type: MediaType) =>
           assetTag,
           url,
           mediaId,
-          file,
+          fileData,
           fileSize,
           fileType,
           mediaCategory,
@@ -47,18 +47,18 @@ const makeMediaComponent = (name: string, type: MediaType) =>
         } = node.props;
 
         if (
-          !(url || mediaId || file) ||
+          !(url || mediaId || fileData) ||
           (url && mediaId) ||
-          (url && file) ||
-          (file && mediaId)
+          (url && fileData) ||
+          (fileData && mediaId)
         ) {
           throw new TypeError(
-            'there should be exactly one of "url", "mediaId" or "file" prop'
+            'there should be exactly one of "url", "mediaId" or "fileData" prop'
           );
         }
-        if (file && (!fileType || !fileSize)) {
+        if (fileData && (!fileType || !fileSize)) {
           throw new TypeError(
-            '"fileType" and "fileSize" props are required when using "file" source'
+            '"fileType" and "fileSize" props are required when using "fileData" source'
           );
         }
 
@@ -87,7 +87,7 @@ const makeMediaComponent = (name: string, type: MediaType) =>
                   url,
                   parameters,
                 }
-              : file
+              : fileData
               ? {
                   type,
                   sourceType: 'file',
@@ -96,7 +96,7 @@ const makeMediaComponent = (name: string, type: MediaType) =>
                     total_bytes: String(fileSize),
                     media_type: fileType,
                   },
-                  fileData: file,
+                  fileData,
                   fileInfo: {
                     contentType: fileType,
                     knownLength: fileSize,

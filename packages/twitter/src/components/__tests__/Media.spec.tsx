@@ -24,7 +24,7 @@ test.each(mediaNameComponentPairs)('%s rendering', async (mediaName, Media) => {
   await expect(
     render(
       <Media
-        file={Buffer.from('foo')}
+        fileData={Buffer.from('foo')}
         fileSize={1234}
         fileType={
           Media === Photo
@@ -47,8 +47,8 @@ test.each(mediaNameComponentPairs)('%s rendering', async (mediaName, Media) => {
 test.each(mediaNameComponentPairs)(
   'throw if no media source is provided',
   async (_, Media) => {
-    await expect(render(<Media />)).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"file\\" prop"`
+    await expect(render(<Media />)).rejects.toThrow(
+      'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
   }
 );
@@ -58,25 +58,25 @@ test.each(mediaNameComponentPairs)(
   async (_, Media) => {
     await expect(
       render(<Media mediaId="12345" url="http://..." />)
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"file\\" prop"`
+    ).rejects.toThrow(
+      'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
     await expect(
-      render(<Media mediaId="12345" file={Buffer.from('foo')} />)
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"file\\" prop"`
+      render(<Media mediaId="12345" fileData={Buffer.from('foo')} />)
+    ).rejects.toThrow(
+      'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
     await expect(
-      render(<Media url="http://..." file={Buffer.from('foo')} />)
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"file\\" prop"`
+      render(<Media url="http://..." fileData={Buffer.from('foo')} />)
+    ).rejects.toThrow(
+      'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
     await expect(
       render(
-        <Media mediaId="12345" url="http://..." file={Buffer.from('foo')} />
+        <Media mediaId="12345" url="http://..." fileData={Buffer.from('foo')} />
       )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"file\\" prop"`
+    ).rejects.toThrow(
+      'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
   }
 );

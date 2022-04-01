@@ -98,7 +98,7 @@ test('rendering with media', async () => {
           <Photo mediaId="123" />
           <Photo url="http://foo.bar/baz.png" />
           <Photo
-            file={Buffer.from('foo')}
+            fileData={Buffer.from('foo')}
             fileSize={123}
             fileType="image/jpeg"
           />

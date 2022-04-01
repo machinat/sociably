@@ -61,7 +61,7 @@ Array [
         ]
       }
       assetTag="MyAnimatedGif"
-      file={
+      fileData={
         Object {
           "data": Array [
             102,
@@ -170,7 +170,7 @@ Array [
         ]
       }
       assetTag="MyPhoto"
-      file={
+      fileData={
         Object {
           "data": Array [
             102,
@@ -279,7 +279,7 @@ Array [
         ]
       }
       assetTag="MyVideo"
-      file={
+      fileData={
         Object {
           "data": Array [
             102,

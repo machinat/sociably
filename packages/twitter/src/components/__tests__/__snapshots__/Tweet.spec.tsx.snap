@@ -112,7 +112,7 @@ Array [
             url="http://foo.bar/baz.png"
           />
           <Photo
-            file={
+            fileData={
               Object {
                 "data": Array [
                   102,

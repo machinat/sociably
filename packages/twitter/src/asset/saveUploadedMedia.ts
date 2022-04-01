@@ -3,12 +3,11 @@ import type { TwitterDispatchMiddleware } from '../types';
 import AssetsManagerP from './AssetsManager';
 
 /**
- * saveUplodedFile save the id of uploaded files with the `fileAssetTag` prop
- * annotated. The file id can then be retrieved using the tag through
- * {@link TwitterAssetsManager.getFileId}.
- * @category Container
+ * saveUplodedMedia save the id of uploaded media with the `assetTag` prop.
+ * The media id can then be retrieved by the tag through
+ * {@link TwitterAssetsManager.getMedia}.
  */
-const saveUplodedFile =
+const saveUplodedMedia =
   (manager: AssetsManagerP): TwitterDispatchMiddleware =>
   async (frame, next) => {
     const response = await next(frame);
@@ -34,8 +33,6 @@ const saveUplodedFile =
     return response;
   };
 
-const saveUplodedFileC = makeContainer({
+export default makeContainer({
   deps: [AssetsManagerP],
-})(saveUplodedFile);
-
-export default saveUplodedFileC;
+})(saveUplodedMedia);
