@@ -93,7 +93,7 @@ class WebviewClient<
       .on('error', this._emitError.bind(this));
 
     if (!this.isMockupMode) {
-      this._connector.start().catch(this._emitError.bind(this));
+      this._connector.connect();
     }
   }
 
@@ -101,8 +101,8 @@ class WebviewClient<
     await this._connector.send(Array.isArray(content) ? content : [content]);
   }
 
-  disconnect(reason: string): void {
-    this._connector.disconnect(reason);
+  close(code?: number, reason?: string): void {
+    this._connector.close(code, reason);
   }
 
   /**

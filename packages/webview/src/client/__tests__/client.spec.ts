@@ -19,9 +19,9 @@ jest.mock('@machinat/websocket/client/Connector', () => {
     default: _moxy(function FakeConnector() {
       return _moxy(
         Object.assign(new _EventEmitter(), {
-          start: async () => {},
+          connect: () => {},
           send: async () => {},
-          disconnect: () => {},
+          close: () => {},
           isConnected: () => false,
         })
       );
@@ -107,7 +107,7 @@ it('start connector and auth client', async () => {
   );
 
   const connector = Connector.mock.calls[0].instance;
-  expect(connector.start.mock).toHaveBeenCalledTimes(1);
+  expect(connector.connect.mock).toHaveBeenCalledTimes(1);
 
   expect(AuthClient.mock).toHaveBeenCalledTimes(1);
   expect(AuthClient.mock).toHaveBeenCalledWith({
@@ -160,7 +160,7 @@ test('mockupMode', async () => {
   expect(client.channel).toBe(null);
 
   const connector = Connector.mock.calls[0].instance;
-  expect(connector.start.mock).not.toHaveBeenCalled();
+  expect(connector.connect.mock).not.toHaveBeenCalled();
 
   const authClient = AuthClient.mock.calls[0].instance;
   expect(authClient.getAuthContext.mock).not.toHaveBeenCalled();
@@ -374,7 +374,7 @@ test('disconnected by server', async () => {
   expect(client.channel).toBe(null);
 });
 
-test('#disconnect()', async () => {
+test('.close()', async () => {
   const client = new Client({ authPlatforms: [testAuthenticator] });
   client.onEvent(eventSpy);
 
@@ -387,10 +387,10 @@ test('#disconnect()', async () => {
   expect(client.user).toEqual(user);
   expect(client.channel).toEqual(new WebviewConnection('*', '#conn'));
 
-  expect(client.disconnect('Bye!')).toBe(undefined);
+  expect(client.close(4567, 'Bye!')).toBe(undefined);
 
-  expect(connector.disconnect.mock).toHaveBeenCalledTimes(1);
-  expect(connector.disconnect.mock).toHaveBeenCalledWith('Bye!');
+  expect(connector.close.mock).toHaveBeenCalledTimes(1);
+  expect(connector.close.mock).toHaveBeenCalledWith(4567, 'Bye!');
 
   connector.emit('disconnect', { reason: 'Bye!' }, { connId: '#conn', user });
   expect(eventSpy.mock).toHaveBeenLastCalledWith({
@@ -409,7 +409,7 @@ test('#disconnect()', async () => {
   expect(client.channel).toBe(null);
 });
 
-test('#closeWebview()', async () => {
+test('.closeWebview()', async () => {
   const client = new Client({ authPlatforms: [testAuthenticator] });
   expect(client.closeWebview()).toBe(true);
   expect(testAuthenticator.closeWebview.mock).toHaveBeenCalledTimes(1);

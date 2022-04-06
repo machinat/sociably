@@ -22,9 +22,9 @@ jest.mock('../Connector', () => {
     default: _moxy(function FakeConnector() {
       return _moxy(
         Object.assign(new _EventEmitter(), {
-          start: async () => {},
+          connect: () => {},
           send: async () => {},
-          disconnect: () => {},
+          close: () => {},
           isConnected: () => false,
         })
       );
@@ -66,7 +66,7 @@ it('start connector', async () => {
   );
 
   const connector = Connector.mock.calls[0].instance;
-  expect(connector.start.mock).toHaveBeenCalledTimes(1);
+  expect(connector.connect.mock).toHaveBeenCalledTimes(1);
 
   connector.emit('connect', { connId: '#conn', user });
   connector.isConnected.mock.fake(() => true);
@@ -260,7 +260,7 @@ test('disconnected by server', async () => {
   expect(client.channel).toBe(null);
 });
 
-test('#disconnect()', async () => {
+test('.close()', async () => {
   const client = new Client({ login });
   const connector = Connector.mock.calls[0].instance;
 
@@ -270,10 +270,10 @@ test('#disconnect()', async () => {
   expect(client.user).toEqual(user);
   expect(client.channel).toEqual(new WebSocketConnection('*', '#conn'));
 
-  expect(client.disconnect('Bye!')).toBe(undefined);
+  expect(client.close(4567, 'Bye!')).toBe(undefined);
 
-  expect(connector.disconnect.mock).toHaveBeenCalledTimes(1);
-  expect(connector.disconnect.mock).toHaveBeenCalledWith('Bye!');
+  expect(connector.close.mock).toHaveBeenCalledTimes(1);
+  expect(connector.close.mock).toHaveBeenCalledWith(4567, 'Bye!');
 
   connector.emit('disconnect', { reason: 'Bye!' }, { connId: '#conn', user });
   expect(eventSpy.mock).toHaveBeenLastCalledWith({

@@ -27,6 +27,9 @@ export type ConnectorContext<User extends null | MachinatUser> = {
   user: User;
 };
 
+const RECONNECT_INTERVAL_BASE = 5000; // 5 sec
+const MAX_RECONNECT_INTERVAL = 10000; // 100 sec
+
 class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
   connect: (ctx: ConnectorContext<User>) => void;
   events: (events: EventInput[], ctx: ConnectorContext<User>) => void;
@@ -47,6 +50,8 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
   private _connId: undefined | string;
   private _user: User;
   private _isDisconnecting: boolean;
+  private _reconnectCount: number;
+  isClosed: boolean;
 
   constructor(
     serverUrl: string,
@@ -62,13 +67,34 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
     this._queuedEvents = [];
     this._connId = undefined;
     this._isDisconnecting = false;
+    this._reconnectCount = 0;
+    this.isClosed = false;
   }
 
   isConnected(): boolean {
     return !this._isDisconnecting && !!this._connId;
   }
 
-  async start(): Promise<void> {
+  connect(): void {
+    this.isClosed = false;
+    let promise = this._open();
+
+    const tryAgain = (err: Error) => {
+      this._emitError(err);
+
+      setTimeout(() => {
+        if (!this.isClosed) {
+          promise = this._open().catch(tryAgain);
+        }
+      }, Math.min(this._reconnectCount * RECONNECT_INTERVAL_BASE, MAX_RECONNECT_INTERVAL));
+
+      this._reconnectCount += 1;
+    };
+
+    promise.catch(tryAgain);
+  }
+
+  private async _open(): Promise<void> {
     const { host, pathname } = window.location;
     const { user, credential } = await this._login();
 
@@ -84,6 +110,8 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
     socket.on('events', this._handleEvents.bind(this));
     socket.on('reject', this._handleReject.bind(this));
     socket.on('error', this._emitError.bind(this));
+    socket.on('open', this._handleOpen.bind(this));
+    socket.on('close', this._handleClose.bind(this));
 
     this._loginSeq = await socket.login({ credential });
   }
@@ -111,16 +139,11 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
     }
   }
 
-  disconnect(reason: string): void {
-    if (!this._socket) {
-      return;
-    }
-
+  close(code?: number, reason?: string): void {
     this._isDisconnecting = true;
-    if (this._connId) {
-      this._socket
-        .disconnect({ connId: this._connId, reason })
-        .catch(this._emitError.bind(this));
+    this.isClosed = true;
+    if (this._socket) {
+      this._socket.close(code, reason);
     }
   }
 
@@ -169,6 +192,16 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
   private _handleReject({ seq, reason }: RejectBody) {
     if (seq === this._loginSeq) {
       this._emitError(new SocketError(reason));
+    }
+  }
+
+  private _handleOpen() {
+    this._reconnectCount = 0;
+  }
+
+  private _handleClose() {
+    if (!this.isClosed) {
+      this.connect();
     }
   }
 

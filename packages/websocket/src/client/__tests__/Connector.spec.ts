@@ -46,7 +46,7 @@ const connId = '#conn';
 
 const openConnection = async () => {
   const connector = new Connector('/websocket', login, marshaler);
-  connector.start();
+  connector.connect();
   await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
@@ -60,9 +60,9 @@ const openConnection = async () => {
   return [connector, socket];
 };
 
-test('start()', async () => {
+test('.connect()', async () => {
   const connector = new Connector('/websocket', login, marshaler);
-  connector.start();
+  connector.connect();
   await nextTick();
 
   expect(Ws.mock).toHaveBeenCalledTimes(1);
@@ -81,7 +81,7 @@ test('use ws: protocol', async () => {
     login,
     marshaler
   );
-  connector.start();
+  connector.connect();
   await nextTick();
 
   expect(Ws.mock).toHaveBeenCalledTimes(1);
@@ -97,7 +97,7 @@ test('use ws: protocol', async () => {
 it('login with credential from login fn', async () => {
   const connector = new Connector('/websocket', login, marshaler);
   connector.on('connect', connectSpy);
-  connector.start();
+  connector.connect();
   await nextTick();
 
   expect(login.mock).toHaveBeenCalledTimes(1);
@@ -125,7 +125,7 @@ it('emit "error" if login rejected', async () => {
   const errorSpy = moxy();
   connector.on('error', errorSpy);
 
-  connector.start();
+  connector.connect();
   await nextTick();
   const socket = Socket.mock.calls[0].instance;
 
@@ -228,7 +228,7 @@ it('send events after connected', async () => {
 
 it('queue events and dispatch them after connected', async () => {
   const connector = new Connector('wss://machinat.io', login, marshaler);
-  connector.start();
+  connector.connect();
   await nextTick();
 
   const socket = Socket.mock.calls[0].instance;
@@ -304,26 +304,78 @@ test('disconnect by server', async () => {
   );
 });
 
-test('#disconnect()', async () => {
+test('.close()', async () => {
   const [connector, socket] = await openConnection();
-  socket.disconnect.mock.fake(async () => ++socket._seq); // eslint-disable-line no-plusplus
   connector.on('disconnect', disconnectSpy);
 
   expect(connector.isConnected()).toBe(true);
-  expect(connector.disconnect('Bye!')).toBe(undefined);
+  expect(connector.close(4567, 'Bye!')).toBe(undefined);
 
-  expect(socket.disconnect.mock).toHaveBeenCalledTimes(1);
-  expect(socket.disconnect.mock).toHaveBeenCalledWith({
-    connId,
-    reason: 'Bye!',
-  });
+  expect(socket.close.mock).toHaveBeenCalledTimes(1);
+  expect(socket.close.mock).toHaveBeenCalledWith(4567, 'Bye!');
 
   expect(connector.isConnected()).toBe(false);
 
   socket.emit('disconnect', { connId, reason: 'Bye!' }, 4, socket);
-
   expect(disconnectSpy.mock).toHaveBeenCalledWith(
     { reason: 'Bye!' },
     { connId, user }
   );
+});
+
+test('reconnect behavior at initial connect', async () => {
+  jest.useFakeTimers();
+
+  const connector = new Connector('/websocket', login, marshaler);
+  const errorSpy = moxy();
+  connector.on('error', errorSpy);
+
+  connector.connect();
+
+  for (let i = 0; i < 20; i += 1) {
+    await nextTick(); // eslint-disable-line no-await-in-loop
+    expect(login.mock).toHaveBeenCalledTimes(i + 1);
+
+    const socket = Socket.mock.calls[i].instance;
+    socket.emit('error', new Error('boom'), socket);
+    await nextTick(); // eslint-disable-line no-await-in-loop
+
+    expect(errorSpy.mock).toHaveBeenCalledTimes(i + 1);
+    jest.advanceTimersByTime(i * 5000);
+  }
+
+  connector.close();
+  jest.advanceTimersByTime(999999);
+  expect(Socket.mock).toHaveBeenCalledTimes(20);
+
+  jest.useRealTimers();
+});
+
+test('reconnect behavior after being close', async () => {
+  jest.useFakeTimers();
+
+  const [connector, initialSocket] = await openConnection();
+  const errorSpy = moxy();
+  connector.on('error', errorSpy);
+
+  expect(login.mock).toHaveBeenCalledTimes(1);
+  initialSocket.emit('close');
+
+  for (let i = 0; i < 20; i += 1) {
+    await nextTick(); // eslint-disable-line no-await-in-loop
+    expect(login.mock).toHaveBeenCalledTimes(i + 2);
+
+    const socket = Socket.mock.calls[i + 1].instance;
+    socket.emit('error', new Error('boom'), socket);
+    await nextTick(); // eslint-disable-line no-await-in-loop
+
+    expect(errorSpy.mock).toHaveBeenCalledTimes(i + 1);
+    jest.advanceTimersByTime(i * 5000);
+  }
+
+  connector.close();
+  jest.advanceTimersByTime(999999);
+  expect(Socket.mock).toHaveBeenCalledTimes(21);
+
+  jest.useRealTimers();
 });

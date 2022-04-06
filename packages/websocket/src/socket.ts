@@ -322,7 +322,7 @@ class Socket extends EventEmitter {
     this._ws.ping();
   }
 
-  close(code: number, reason: string): void {
+  close(code?: number, reason?: string): void {
     this._ws.close(code, reason);
   }
 

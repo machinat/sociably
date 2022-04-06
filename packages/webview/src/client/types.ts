@@ -19,8 +19,8 @@ export type ClientEventContext<
 };
 
 export type EventContextOfClient<
-  Client extends WebviewClient<AnyClientAuthenticator, EventValue>
-> = Client extends WebviewClient<infer Authenticator, infer Value>
+  Client extends WebviewClient<EventValue, AnyClientAuthenticator>
+> = Client extends WebviewClient<infer Value, infer Authenticator>
   ? ClientEventContext<Authenticator, Value>
   : never;
 

@@ -6,9 +6,9 @@ import type { ClientEventContext, EventContextOfClient } from './types';
 function useEventReducer<
   T,
   Client extends WebviewClient<
-    AnyClientAuthenticator,
-    EventValue
-  > = WebviewClient<AnyClientAuthenticator, EventValue>
+    EventValue,
+    AnyClientAuthenticator
+  > = WebviewClient<EventValue, AnyClientAuthenticator>
 >(
   client: Client,
   reducer: (value: T, context: EventContextOfClient<Client>) => T,
@@ -16,7 +16,7 @@ function useEventReducer<
 ): T;
 
 function useEventReducer<T>(
-  client: WebviewClient<AnyClientAuthenticator, EventValue>,
+  client: WebviewClient<EventValue, AnyClientAuthenticator>,
   reducer: (
     value: T,
     context: ClientEventContext<AnyClientAuthenticator, EventValue>
