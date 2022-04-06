@@ -6,18 +6,21 @@ import type { CreateAppContext } from '../types';
 export const name = '.env';
 
 export default ({
+  projectName,
   platforms,
   recognizer,
   withWebview,
 }: CreateAppContext): string => {
   const localTunnelSubDomain = randomName({ number: true }).dashed;
   return `
+APP_NAME= "${projectName
+    .split(/[-_\s]+/)
+    .map((str) => str.charAt(0).toUpperCase() + str.slice(1))
+    .join(' ')}"
 NODE_ENV=development
-
 DEV_TUNNEL_SUBDOMAIN=${localTunnelSubDomain}
 DOMAIN=${localTunnelSubDomain}.t.machinat.dev
 PORT=8080
-
 ${when(platforms.includes('messenger'))`
 # Messenger
 

@@ -10,32 +10,32 @@ import getConfig from 'next/config';
 import WebviewClient, { useEventReducer } from '@machinat/webview/client';${when(
   platforms.includes('messenger')
 )`
-import MessengerWebviewAuth from '@machinat/messenger/webview/client';`}${when(
+import MessengerAuth from '@machinat/messenger/webview/client';`}${when(
   platforms.includes('twitter')
 )`
-import TwitterWebviewAuth from '@machinat/twitter/webview/client';`}${when(
+import TwitterAuth from '@machinat/twitter/webview/client';`}${when(
   platforms.includes('telegram')
 )`
-import TelegramWebviewAuth from '@machinat/telegram/webview/client';`}${when(
+import TelegramAuth from '@machinat/telegram/webview/client';`}${when(
   platforms.includes('line')
 )`
-import LineWebviewAuth from '@machinat/line/webview/client';`}
+import LineAuth from '@machinat/line/webview/client';`}
 
 const { publicRuntimeConfig } = getConfig();
 
 const client = new WebviewClient({
   mockupMode: typeof window === 'undefined',
   authPlatforms: [${when(platforms.includes('messenger'))`
-    new MessengerWebviewAuth({
+    new MessengerAuth({
       pageId: publicRuntimeConfig.messengerPageId,
     }),`}${when(platforms.includes('twitter'))`
-    new TwitterWebviewAuth({
+    new TwitterAuth({
       agentId: publicRuntimeConfig.twitterAgentId,
     }),`}${when(platforms.includes('telegram'))`
-    new TelegramWebviewAuth({
+    new TelegramAuth({
       botName: publicRuntimeConfig.telegramBotName,
     }),`}${when(platforms.includes('line'))`
-    new LineWebviewAuth({
+    new LineAuth({
       liffId: publicRuntimeConfig.lineLiffId,
     }),`}
   ],

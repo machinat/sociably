@@ -4,28 +4,25 @@ import { CreateAppContext } from '../../types';
 export default ({
   platforms,
   recognizer,
-  projectName,
   withWebview,
 }: CreateAppContext): string => `
 import Machinat from '@machinat/core';
 import Http from '@machinat/http';${when(platforms.includes('messenger'))`
 import Messenger from '@machinat/messenger';${when(withWebview)`
-import MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
-  platforms.includes('line')
-)`
-import Line from '@machinat/line';${when(withWebview)`
-import LineWebviewAuth from '@machinat/line/webview';`}`}${when(
+import MessengerAuth from '@machinat/messenger/webview';`}`}${when(
   platforms.includes('twitter')
 )`
 import Twitter from '@machinat/twitter';
 import TwitterAssetManager from '@machinat/twitter/asset';${when(withWebview)`
-import TwitterWebviewAuth from '@machinat/twitter/webview';`}`}${when(
+import TwitterAuth from '@machinat/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
 import Telegram from '@machinat/telegram';${when(withWebview)`
-import TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
-  withWebview
+import TelegramAuth from '@machinat/telegram/webview';`}`}${when(
+  platforms.includes('line')
 )`
+import Line from '@machinat/line';${when(withWebview)`
+import LineAuth from '@machinat/line/webview';`}`}${when(withWebview)`
 import Webview from '@machinat/webview';`}
 import Script from '@machinat/script';
 import RedisState from '@machinat/redis-state';
@@ -41,6 +38,8 @@ import recognitionData from './recognitionData';
 import * as scenes from './scenes';
 
 const {
+  // basic
+  APP_NAME,
   NODE_ENV,
   PORT,${when(withWebview)`
   DOMAIN,
@@ -149,18 +148,19 @@ ${when(recognizer === 'dialogflow')`
       }),`}${when(withWebview)`
 
       Webview.initModule<${when(platforms.includes('messenger'))`
-        | MessengerWebviewAuth`}${when(platforms.includes('telegram'))`
-        | TelegramWebviewAuth`}${when(platforms.includes('line'))`
-        | LineWebviewAuth`}
+        | MessengerAuth`}${when(platforms.includes('twitter'))`
+        | TwitterAuth`}${when(platforms.includes('telegram'))`
+        | TelegramAuth`}${when(platforms.includes('line'))`
+        | LineAuth`}
       >({
         webviewHost: DOMAIN,
         webviewPath: '/webview',
         authSecret: WEBVIEW_AUTH_SECRET,
         authPlatforms: [${when(platforms.includes('messenger'))`
-          MessengerWebviewAuth,`}${when(platforms.includes('twitter'))`
-          TwitterWebviewAuth,`}${when(platforms.includes('telegram'))`
-          TelegramWebviewAuth,`}${when(platforms.includes('line'))`
-          LineWebviewAuth,`}
+          MessengerAuth,`}${when(platforms.includes('twitter'))`
+          TwitterAuth,`}${when(platforms.includes('telegram'))`
+          TelegramAuth,`}${when(platforms.includes('line'))`
+          LineAuth,`}
         ],${when(platforms.includes('messenger'))`
         cookieSameSite: 'none',`}
         noNextServer: options?.noServer,
@@ -170,11 +170,8 @@ ${when(recognizer === 'dialogflow')`
           conf: nextConfigs,
         },
         basicAuth: {
-          appName: '${projectName
-            .split(/[-_\s]+/)
-            .map((str) => str.charAt(0).toUpperCase() + str.slice(1))
-            .join(' ')}',
-          appImageUrl: 'https://machinat.com/img/logo.jpg',
+          appName: APP_NAME,
+          appIconUrl: 'https://machinat.com/img/logo.jpg',
         },
       }),`}
     ],

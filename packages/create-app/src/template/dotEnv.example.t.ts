@@ -14,6 +14,9 @@ export default ({
 
 # Basic Setting
 
+# app name to display
+APP_NAME= "My App"
+
 # app environment, "production", "staging", "development", etc.
 NODE_ENV= development
 
