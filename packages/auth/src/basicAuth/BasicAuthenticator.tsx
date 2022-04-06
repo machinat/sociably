@@ -44,6 +44,7 @@ const numericCode = (n: number) => {
 const DefaultCodeMessage = ({ code }) => <p>Your login code is: {code}</p>;
 
 export class BasicAuthenticator {
+  mode: 'strict' | 'loose';
   operator: HttpOperator;
   stateController: StateController;
   appName?: string;
@@ -59,12 +60,14 @@ export class BasicAuthenticator {
     {
       appName,
       appIconUrl,
+      mode = 'strict',
       loginCodeDigits = 6,
       maxLoginAttempt = 5,
       loginDuration = 600,
       codeMessageComponent = DefaultCodeMessage,
     }: BasicAuthOptions = {}
   ) {
+    this.mode = mode;
     this.stateController = stateController;
     this.operator = operator;
     this.appName = appName;
@@ -124,8 +127,27 @@ export class BasicAuthenticator {
       return;
     }
 
-    // redirect if user is already logged in
     const { data, redirectUrl } = payload;
+
+    // skip verifying code in 'loose' mode
+    if (this.mode === 'loose') {
+      const checkResult = checkAuthData(data);
+      if (checkResult.ok) {
+        await this.operator.issueAuth(res, platform, checkResult.data);
+      } else {
+        await this.operator.issueError(
+          res,
+          platform,
+          checkResult.code,
+          checkResult.reason
+        );
+      }
+
+      this.operator.redirect(res, redirectUrl, { assertInternal: true });
+      return;
+    }
+
+    // redirect if user is already logged in
     const currentAuth = await this.operator.getAuth<Data>(req, platform, {
       acceptRefreshable: true,
     });

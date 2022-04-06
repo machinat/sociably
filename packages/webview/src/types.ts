@@ -133,6 +133,8 @@ export type WebviewConfigs<
   authSecret: string;
   /** Initiate basic auth flow service with the options */
   basicAuth?: {
+    /** The user needs to enter a verify code in `strict` mode. Default to `strict` */
+    mode?: 'loose' | 'strict';
     /** The app name to show while login using basic auth flow */
     appName?: string;
     /** The app image to show while login using basic auth flow */

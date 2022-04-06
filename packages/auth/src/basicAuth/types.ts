@@ -42,6 +42,7 @@ export type BasicAuthOptions = {
   appIconUrl?: string;
   maxLoginAttempt?: number;
   loginDuration?: number;
+  mode?: 'loose' | 'strict';
 };
 
 export type BasicAuthLoginState<Data> = {

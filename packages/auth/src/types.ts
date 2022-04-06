@@ -209,8 +209,10 @@ export type AuthConfigs = {
   cookieSameSite?: 'strict' | 'lax' | 'none';
   /** Force using HTTPS if set to `true` */
   secure?: boolean;
-  /** Initiate basic auth flow service with the options */
+  /** Initiate basic auth service */
   basicAuth?: {
+    /** The user needs to enter a verify code in `strict` mode. Default to `strict` */
+    mode?: 'loose' | 'strict';
     /** The app name to show while login using basic auth flow */
     appName?: string;
     /** The app image to show while login using basic auth flow */

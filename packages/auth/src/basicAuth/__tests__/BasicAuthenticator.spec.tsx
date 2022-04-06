@@ -46,9 +46,9 @@ const delegateOptions = moxy({
   platformName: 'Test',
   platformColor: '#009',
   platformImageUrl: 'http://machinat.test/platform/img/icon.png',
-  checkAuthData: () => ({
+  checkAuthData: (data) => ({
     ok: true as const,
-    data: { foo: 'bar' },
+    data,
     channel,
   }),
   getChatLink: () => 'https://test.platform.com/foo.bar',
@@ -114,12 +114,12 @@ describe('root page', () => {
   const authenticator = new BasicAuthenticator(stateController, operator);
   const delegateRequest = authenticator.createRequestDelegator(delegateOptions);
 
-  test('redirect to login page with state', async () => {
-    const req = createReq(
-      'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
-    );
-    const res = moxy<ServerResponse>(new ServerResponse(req));
+  const req = createReq(
+    'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
+  );
+  const res = moxy<ServerResponse>(new ServerResponse(req));
 
+  test('redirect to login page with state', async () => {
     await delegateRequest(req, res, routing);
 
     expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(1);
@@ -185,11 +185,6 @@ describe('root page', () => {
   });
 
   test('redirect to webview if alredy logged in', async () => {
-    const req = createReq(
-      'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
-    );
-    const res = moxy<ServerResponse>(new ServerResponse(req));
-
     operator.getAuth.mock.fake(async () => ({ foo: 'bar' }));
 
     await delegateRequest(req, res, routing);
@@ -221,11 +216,6 @@ describe('root page', () => {
   });
 
   test("redirect to login page if it's alredy in later phase", async () => {
-    const req = createReq(
-      'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
-    );
-    const res = moxy<ServerResponse>(new ServerResponse(req));
-
     operator.getState.mock.fake(async () => ({
       status: 'login',
       ch: 'test.foo.bar',
@@ -259,11 +249,6 @@ describe('root page', () => {
   });
 
   test('reset state if channel has changed', async () => {
-    const req = createReq(
-      'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
-    );
-    const res = moxy<ServerResponse>(new ServerResponse(req));
-
     operator.getState.mock.fake(async () => ({
       status: 'login',
       ch: 'test.foo.baz',
@@ -307,11 +292,115 @@ describe('root page', () => {
     expect(operator.issueAuth.mock).not.toHaveBeenCalled();
   });
 
-  it('respond 400 if no login query param', async () => {
-    const req = createReq('https://machinat.io/myApp/auth/test/');
-    const res = moxy<ServerResponse>(new ServerResponse(req));
+  test('redirect directly in loose mode', async () => {
+    const looseAuthenticator = new BasicAuthenticator(
+      stateController,
+      operator,
+      { mode: 'loose' }
+    );
 
-    await delegateRequest(req, res, routing);
+    await looseAuthenticator.createRequestDelegator(delegateOptions)(
+      req,
+      res,
+      routing
+    );
+
+    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledWith({
+      foo: 'bar',
+    });
+    expect(operator.issueAuth.mock).toHaveBeenCalledWith(res, 'test', {
+      foo: 'bar',
+    });
+    expect(operator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+      assertInternal: true,
+    });
+
+    operator.verifyToken.mock.fake(() => ({
+      redirectUrl: '/foo?bar=baz',
+      data: { hello: 'world' },
+    }));
+    await looseAuthenticator.createRequestDelegator(delegateOptions)(
+      req,
+      res,
+      routing
+    );
+    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledWith({
+      hello: 'world',
+    });
+    expect(operator.issueAuth.mock).toHaveBeenCalledWith(res, 'test', {
+      hello: 'world',
+    });
+    expect(operator.redirect.mock).toHaveBeenNthCalledWith(
+      2,
+      res,
+      '/foo?bar=baz',
+      { assertInternal: true }
+    );
+
+    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
+    expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
+    expect(operator.issueAuth.mock).toHaveBeenCalledTimes(2);
+    expect(operator.issueError.mock).not.toHaveBeenCalled();
+    expect(operator.issueState.mock).not.toHaveBeenCalled();
+  });
+
+  test('checkAuthData fail in loose mode', async () => {
+    delegateOptions.checkAuthData.mock.fakeReturnValue({
+      ok: false,
+      code: 418,
+      reason: "I'm a Teapot",
+    });
+    const looseAuthenticator = new BasicAuthenticator(
+      stateController,
+      operator,
+      { mode: 'loose' }
+    );
+
+    await looseAuthenticator.createRequestDelegator(delegateOptions)(
+      req,
+      res,
+      routing
+    );
+
+    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledWith({
+      foo: 'bar',
+    });
+    expect(operator.issueError.mock).toHaveBeenCalledWith(
+      res,
+      'test',
+      418,
+      "I'm a Teapot"
+    );
+    expect(operator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+      assertInternal: true,
+    });
+
+    operator.verifyToken.mock.fake(() => ({
+      redirectUrl: '/foo?bar=baz',
+      data: { hello: 'world' },
+    }));
+    await looseAuthenticator.createRequestDelegator(delegateOptions)(
+      req,
+      res,
+      routing
+    );
+    expect(operator.redirect.mock).toHaveBeenNthCalledWith(
+      2,
+      res,
+      '/foo?bar=baz',
+      { assertInternal: true }
+    );
+
+    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
+    expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
+    expect(operator.issueError.mock).toHaveBeenCalledTimes(2);
+    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
+    expect(operator.issueState.mock).not.toHaveBeenCalled();
+  });
+
+  it('respond 400 if no login query param', async () => {
+    const invalidReq = createReq('https://machinat.io/myApp/auth/test/');
+    await delegateRequest(invalidReq, res, routing);
 
     expect(operator.issueError.mock).toHaveBeenCalledWith(
       res,
@@ -326,13 +415,12 @@ describe('root page', () => {
   });
 
   it('respond 400 if login query is invalid', async () => {
-    const req = createReq(
+    const invalidReq = createReq(
       'https://machinat.io/myApp/auth/test/?login=__INVALID_LOGIN_TOKEN__'
     );
-    const res = moxy<ServerResponse>(new ServerResponse(req));
 
     operator.verifyToken.mock.fakeReturnValue(null);
-    await delegateRequest(req, res, routing);
+    await delegateRequest(invalidReq, res, routing);
 
     expect(operator.verifyToken.mock).toHaveBeenCalledTimes(1);
     expect(operator.verifyToken.mock).toHaveBeenCalledWith(
@@ -353,11 +441,6 @@ describe('root page', () => {
   });
 
   it('respond error from checkAuthData', async () => {
-    const req = createReq(
-      'https://machinat.io/myApp/auth/test/?login=__LOGIN_TOKEN__'
-    );
-    const res = moxy<ServerResponse>(new ServerResponse(req));
-
     delegateOptions.checkAuthData.mock.fakeReturnValue({
       ok: false,
       code: 418,
