@@ -118,7 +118,7 @@ const app = Machinat.createApp({
       ],
       basicAuth: {
         appName: 'My Foo App',
-        appImageUrl: './webview/img/logo.png'
+        appIconUrl: './webview/img/logo.png'
       },
       // ...
     }),

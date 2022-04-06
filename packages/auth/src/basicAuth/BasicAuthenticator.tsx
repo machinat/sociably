@@ -47,7 +47,7 @@ export class BasicAuthenticator {
   operator: HttpOperator;
   stateController: StateController;
   appName?: string;
-  appImageUrl?: string;
+  appIconUrl?: string;
   loginCodeDigits: number;
   codeMessageComponent: CodeMessageComponent;
   maxLoginAttempt: number;
@@ -58,7 +58,7 @@ export class BasicAuthenticator {
     operator: HttpOperator,
     {
       appName,
-      appImageUrl,
+      appIconUrl,
       loginCodeDigits = 6,
       maxLoginAttempt = 5,
       loginDuration = 600,
@@ -68,7 +68,7 @@ export class BasicAuthenticator {
     this.stateController = stateController;
     this.operator = operator;
     this.appName = appName;
-    this.appImageUrl = appImageUrl;
+    this.appIconUrl = appIconUrl;
     this.loginCodeDigits = loginCodeDigits;
     this.codeMessageComponent = codeMessageComponent;
     this.maxLoginAttempt = maxLoginAttempt;
@@ -275,7 +275,7 @@ export class BasicAuthenticator {
     res.end(
       buildLoginPage({
         appName: this.appName,
-        appImageUrl: this.appImageUrl,
+        appIconUrl: this.appIconUrl,
         loginCodeDigits: this.loginCodeDigits,
         platformName,
         platformColor,

@@ -136,7 +136,7 @@ export type WebviewConfigs<
     /** The app name to show while login using basic auth flow */
     appName?: string;
     /** The app image to show while login using basic auth flow */
-    appImageUrl?: string;
+    appIconUrl?: string;
     /** The digits of the verify code number. Default to 6 */
     verifyCodeDigits?: number;
     /** The customized component to render code message */

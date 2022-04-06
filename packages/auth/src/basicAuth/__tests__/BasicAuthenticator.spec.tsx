@@ -469,7 +469,7 @@ describe('login page', () => {
     const CodeMessage = ({ code }) => <p>Yo! Check your login code {code}</p>;
     const authenticator = new BasicAuthenticator(stateController, operator, {
       appName: 'My Test App',
-      appImageUrl: 'https://machinat.io/myApp/img/icon.png',
+      appIconUrl: 'https://machinat.io/myApp/img/icon.png',
       loginCodeDigits: 20,
       codeMessageComponent: CodeMessage,
     });

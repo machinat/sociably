@@ -23,7 +23,7 @@ import type { TelegramAuthContext, TelegramAuthData } from './types';
 type ServerAuthenticatorOptions = {
   botName: string;
   appName?: string;
-  appImageUrl?: string;
+  appIconUrl?: string;
 };
 
 /**
@@ -67,13 +67,13 @@ export class TelegramServerAuthenticator
     if (trailingPath === '') {
       await this._handleAuthCallback(req, res);
     } else if (trailingPath === 'login') {
-      const { botName, appName, appImageUrl } = this.options;
+      const { botName, appName, appIconUrl } = this.options;
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(
         renderLoginPage({
           botName,
           appName,
-          appImageUrl,
+          appIconUrl,
           callbackUrl: this.getAuthUrl(),
         })
       );
@@ -272,7 +272,7 @@ const ServerAuthenticatorP = makeClassProvider({
     return new TelegramServerAuthenticator(bot, operator, {
       botName: configs.botName,
       appName: basicAuthenticator?.appName,
-      appImageUrl: basicAuthenticator?.appImageUrl,
+      appIconUrl: basicAuthenticator?.appIconUrl,
     });
   },
 })(TelegramServerAuthenticator);

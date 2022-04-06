@@ -309,7 +309,7 @@ test('.delegateAuthRequest() on login route', async () => {
     {
       botName: 'MyBot',
       appName: 'Mine Mine Mine App',
-      appImageUrl: 'http://machinat.io/MyApp/icon.png',
+      appIconUrl: 'http://machinat.io/MyApp/icon.png',
     }
   );
   await authenticatorWithAppDetails.delegateAuthRequest(req, res, loginRoute);

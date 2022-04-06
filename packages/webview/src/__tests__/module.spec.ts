@@ -149,7 +149,7 @@ test('service provisions', async () => {
 test('with basicAuth', async () => {
   const basicAuthOptions = {
     appName: 'Hello World',
-    appImageUrl: 'https://machinat.com/img/logo.png',
+    appIconUrl: 'https://machinat.com/img/logo.png',
   };
   const app = Machinat.createApp({
     platforms: [
@@ -168,7 +168,7 @@ test('with basicAuth', async () => {
   const [basicAuthenticator] = app.useServices([BasicAuthenticator]);
   expect(basicAuthenticator).toBeInstanceOf(BasicAuthenticator);
   expect(basicAuthenticator.appName).toBe('Hello World');
-  expect(basicAuthenticator.appImageUrl).toBe(
+  expect(basicAuthenticator.appIconUrl).toBe(
     'https://machinat.com/img/logo.png'
   );
 });

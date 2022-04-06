@@ -3,7 +3,7 @@ type LoginPageOptions = {
   platformImageUrl: string;
   platformColor: string;
   appName?: string;
-  appImageUrl?: string;
+  appIconUrl?: string;
   chatLinkUrl: string;
   loginCodeDigits: number;
 };
@@ -13,7 +13,7 @@ const buildLoginPage = ({
   platformColor,
   platformImageUrl,
   appName,
-  appImageUrl,
+  appIconUrl,
   chatLinkUrl,
   loginCodeDigits,
 }: LoginPageOptions): string => `
@@ -108,10 +108,10 @@ h1 {
 <div class="flex center column container">
   <div class="flex center icons">
     <img alt="${platformName}" src="${platformImageUrl}" />${
-  appImageUrl
+  appIconUrl
     ? `
     <div class="x"></div>
-    <img alt="${appName}" src="${appImageUrl}" />`
+    <img alt="${appName}" src="${appIconUrl}" />`
     : ''
 }
   </div>

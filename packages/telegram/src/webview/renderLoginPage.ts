@@ -4,14 +4,14 @@ type LoginPageOptions = {
   botName: string;
   callbackUrl: string;
   appName?: string;
-  appImageUrl?: string;
+  appIconUrl?: string;
 };
 
 const renderLoginPage = ({
   botName,
   callbackUrl,
   appName,
-  appImageUrl,
+  appIconUrl,
 }: LoginPageOptions): string => `
 <!DOCTYPE html>
 <html>
@@ -68,10 +68,10 @@ h1 {
 <div class="flex center column container">
   <div class="flex center icons">
     <img alt="Telegram" src="https://machinat.com/img/icon/telegram.png" />${
-      appImageUrl
+      appIconUrl
         ? `
     <div class="x"></div>
-    <img alt="${appName}" src="${appImageUrl}" />`
+    <img alt="${appName}" src="${appIconUrl}" />`
         : ''
     }
   </div>

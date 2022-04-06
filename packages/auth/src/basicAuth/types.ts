@@ -39,7 +39,7 @@ export type BasicAuthOptions = {
   codeMessageComponent?: CodeMessageComponent;
   loginCodeDigits?: number;
   appName?: string;
-  appImageUrl?: string;
+  appIconUrl?: string;
   maxLoginAttempt?: number;
   loginDuration?: number;
 };
