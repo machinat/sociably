@@ -25,9 +25,9 @@ import type { WebviewEventContext } from './types';
  */
 export class WebviewReceiver<
   Authenticator extends AnyServerAuthenticator,
-  Value extends EventValue = EventValue
+  Value extends EventValue
 > {
-  private _bot: BotP<Authenticator>;
+  private _bot: BotP;
   private _server: WebviewSocketServer<Authenticator>;
 
   private _popEvent: PopEventFn<
@@ -38,9 +38,12 @@ export class WebviewReceiver<
   private _popError: PopErrorFn;
 
   constructor(
-    bot: BotP<Authenticator>,
+    bot: BotP,
     server: WebviewSocketServer<Authenticator>,
-    popEventWrapper: PopEventWrapper<WebviewEventContext<Authenticator>, null>,
+    popEventWrapper: PopEventWrapper<
+      WebviewEventContext<Authenticator, Value>,
+      null
+    >,
     popError: PopErrorFn
   ) {
     this._bot = bot;
@@ -119,5 +122,5 @@ export const ReceiverP = makeClassProvider({
 
 export type ReceiverP<
   Authenticator extends AnyServerAuthenticator,
-  Value extends EventValue = EventValue
+  Value extends EventValue
 > = WebviewReceiver<Authenticator, Value>;

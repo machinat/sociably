@@ -48,10 +48,10 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
 /**
  * @category Provider
  */
-export class WebviewBot<Authenticator extends AnyServerAuthenticator>
+export class WebviewBot
   implements MachinatBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult>
 {
-  private _server: WebviewSocketServer<Authenticator>;
+  private _server: WebviewSocketServer<AnyServerAuthenticator>;
   engine: Engine<
     WebviewDispatchChannel,
     EventInput,
@@ -63,7 +63,7 @@ export class WebviewBot<Authenticator extends AnyServerAuthenticator>
   platform = WEBVIEW;
 
   constructor(
-    server: WebviewSocketServer<Authenticator>,
+    server: WebviewSocketServer<AnyServerAuthenticator>,
     initScope?: InitScopeFn,
     dispatchWrapper?: DispatchWrapper<
       WebSocketJob,
@@ -192,5 +192,4 @@ export const BotP = makeClassProvider({
     ),
 })(WebviewBot);
 
-export type BotP<Authenticator extends AnyServerAuthenticator> =
-  WebviewBot<Authenticator>;
+export type BotP = WebviewBot;

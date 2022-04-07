@@ -77,18 +77,18 @@ export type AnyClientAuthenticator = WebviewClientAuthenticator<
 >;
 
 export type WebviewEventContext<
-  Authenticator extends AnyServerAuthenticator,
+  Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
   Value extends EventValue = EventValue
 > = {
   platform: 'webview';
   event: WebviewEvent<Value, UserOfAuthenticator<Authenticator>>;
   metadata: WebviewMetadata<ContextOfAuthenticator<Authenticator>>;
-  bot: BotP<Authenticator>;
+  bot: BotP;
   reply(message: MachinatNode): Promise<null | WebSocketDispatchResponse>;
 };
 
 export type WebviewEventMiddleware<
-  Authenticator extends AnyServerAuthenticator,
+  Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
   Value extends EventValue = EventValue
 > = EventMiddleware<WebviewEventContext<Authenticator, Value>, null>;
 
@@ -109,7 +109,7 @@ export type WebviewDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type WebviewConfigs<
-  Authenticator extends AnyServerAuthenticator,
+  Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
   Value extends EventValue = EventValue
 > = {
   /** Host of the webview. */
@@ -128,7 +128,7 @@ export type WebviewConfigs<
   heartbeatInterval?: number;
 
   /** Auth providers from the platforms */
-  authPlatforms?: ServiceProvider<AnyServerAuthenticator, unknown[]>[];
+  authPlatforms?: ServiceProvider<Authenticator, unknown[]>[];
   /** The secret for signing auth token */
   authSecret: string;
   /** Initiate basic auth flow service with the options */

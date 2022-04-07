@@ -19,8 +19,8 @@ import type {
 import type { ClientEventContext, ClientOptions } from './types';
 
 class WebviewClient<
-  Value extends EventValue = EventValue,
-  Authenticator extends AnyClientAuthenticator = AnyClientAuthenticator
+  Authenticator extends AnyClientAuthenticator = AnyClientAuthenticator,
+  Value extends EventValue = EventValue
 > extends ClientEmitter<
   ClientEventContext<
     Authenticator,

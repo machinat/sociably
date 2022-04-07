@@ -138,19 +138,23 @@ const hmrRouteFactory = makeFactoryProvider({
  */
 namespace Webview {
   export const Configs = ConfigsI;
-  export type Configs = ConfigsI;
+  export type Configs<
+    Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
+    Value extends EventValue = EventValue
+  > = WebviewConfigs<Authenticator, Value>;
 
   export const Bot = BotP;
-  export type Bot<Authenticator extends AnyServerAuthenticator> =
-    BotP<Authenticator>;
+  export type Bot = BotP;
 
   export const SocketServer = WebSocket.Server;
   export type SocketServer<Authenticator extends AnyServerAuthenticator> =
     WebviewSocketServer<Authenticator>;
 
   export const Receiver = ReceiverP;
-  export type Receiver<Authenticator extends AnyServerAuthenticator> =
-    ReceiverP<Authenticator>;
+  export type Receiver<
+    Authenticator extends AnyServerAuthenticator,
+    Value extends EventValue
+  > = ReceiverP<Authenticator, Value>;
   export const SocketBroker = WebSocket.Broker;
   export type SocketBroker = WebSocket.Broker;
 

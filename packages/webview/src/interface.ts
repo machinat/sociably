@@ -13,11 +13,9 @@ import { useAuthLogin, verifyOrigin } from './utils';
 import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant';
 import type { WebviewConfigs, WebviewPlatformUtilities } from './types';
 
-export const ConfigsI = makeInterface<WebviewConfigs<AnyServerAuthenticator>>({
+export const ConfigsI = makeInterface<WebviewConfigs>({
   name: 'WebviewConfigs',
 });
-
-export type ConfigsI = WebviewConfigs<AnyServerAuthenticator>;
 
 // auth
 export class WebviewAuthController<
