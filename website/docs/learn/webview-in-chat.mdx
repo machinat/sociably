@@ -169,7 +169,8 @@ Try tapping the button and you should see the default webview is already working
 ### Webview Client
 
 The web front-end codes are in the `webview` directory.
-Check `webview/pages/index.tsx` file and you'll see the `WebviewClient` constructed like:
+Check `webview/pages/index.tsx` file and you'll see a `WebviewClient` is created with the `useClient` hook.
+Like:
 
 
 <Tabs
@@ -183,66 +184,62 @@ Check `webview/pages/index.tsx` file and you'll see the `WebviewClient` construc
   <TabItem value="messenger">
 
 ```tsx title="webview/pages/index.tsx"
-// ...
-const client = new WebviewClient({
-  mockupMode: typeof window === 'undefined',
-  authPlatforms: [
-    new MessengerWebviewAuth({
-      pageId: publicRuntimeConfig.messengerPageId,
-    }),
-  ],
-});
-// ...
+  // ...
+  const client = useClient({
+    mockupMode: typeof window === 'undefined',
+    authPlatforms: [
+      new MessengerWebviewAuth({ pageId: messengerPageId }),
+    ],
+  });
+  // ...
 ```
 
   </TabItem>
   <TabItem value="telegram">
 
 ```tsx title="webview/pages/index.tsx"
-// ...
-const client = new WebviewClient({
-  mockupMode: typeof window === 'undefined',
-  authPlatforms: [
-    new TelegramWebviewAuth({
-      botName: publicRuntimeConfig.telegramBotName,
-    }),
-  ],
-});
-// ...
+  // ...
+  const client = useClient({
+    mockupMode: typeof window === 'undefined',
+    authPlatforms: [
+      new TelegramWebviewAuth({ botName: telegramBotName }),
+    ],
+  });
+  // ...
 ```
 
   </TabItem>
   <TabItem value="line">
 
 ```tsx title="webview/pages/index.tsx"
-// ...
-const client = new WebviewClient({
-  mockupMode: typeof window === 'undefined',
-  authPlatforms: [
-    new LineWebviewAuth({
-      liffId: publicRuntimeConfig.lineLiffId,
-    }),
-  ],
-});
-// ...
+  // ...
+  const client = useClient({
+    mockupMode: typeof window === 'undefined',
+    authPlatforms: [
+      new LineWebviewAuth({ liffId: lineLiffId }),
+    ],
+  });
+  // ...
 ```
 
   </TabItem>
 </Tabs>
 
-
-After the `client` is constructed, it logs in the user and opens a connection to the server.
+The `client` will log in the user and opens a connection to the server.
 We can then use it to communicate with the server.
 
 ### Webview Page
 
 Let's display all the todos in the webview. Edit the index page to this:
 
-```tsx {1,5-14,19,27-39} title="webview/pages/index.tsx"
+```tsx title="webview/pages/index.tsx"
+// highlight-next-line
 import { TodoState } from '../../src/types';
 // ...
 
 const WebAppHome = () => {
+  // ...
+  // highlight-start
   const data = useEventReducer<null | TodoState>(
     client,
     (currentData, { event }) => {
@@ -253,10 +250,12 @@ const WebAppHome = () => {
     },
     null
   );
+  // highlight-end
 
   return (
     <div>
       <Head>
+        {/* highlight-next-line */}
         <title>Edit Todos</title>
         <link
           rel="stylesheet"
@@ -265,6 +264,7 @@ const WebAppHome = () => {
       </Head>
 
       <main>
+        {/* highlight-start */}
         <h4>You have {data ? data.todos.length : '?'} Todo:</h4>
         <table>
           <tbody>
@@ -278,6 +278,7 @@ const WebAppHome = () => {
             {data?.finishedTodos.map((todo) => <tr><td>{todo.name}</td></tr>)}
           </tbody>
         </table>
+        {/* highlight-end */}
       </main>
     </div>
   );
@@ -351,28 +352,30 @@ Now the webview should display the todos like this:
 
 Let's add a button to delete a todo. Edit the index page like this:
 
-```tsx {2-19,34,39,46} title="webview/pages/index.tsx"
+```tsx title="webview/pages/index.tsx"
 // ...
-const TodoRow = ({ todo }) => (
-    <tr>
-      <td style={{ verticalAlign: 'middle' }}>{todo.name}</td>
-      <td style={{ textAlign: 'right' }}>
-        <button
-          onClick={() => {
-            client.send({
-              type: 'delete_todo',
-              payload: { id: todo.id },
-            })
-          }}
-        >
-          ❌
-        </button>
-      </td>
-    </tr>
-);
-
 const WebAppHome = () => {
   // ...
+  // highlight-start
+  const TodoRow = ({ todo }) => (
+      <tr>
+        <td style={{ verticalAlign: 'middle' }}>{todo.name}</td>
+        <td style={{ textAlign: 'right' }}>
+          <button
+            onClick={() => {
+              client.send({
+                type: 'delete_todo',
+                payload: { id: todo.id },
+              })
+            }}
+          >
+            ❌
+          </button>
+        </td>
+      </tr>
+  );
+  // highlight-end
+
   return (
     <div>
       <Head>
@@ -384,11 +387,13 @@ const WebAppHome = () => {
       </Head>
 
       <main>
+        {/* highlight-next-line */}
         <h3>Press ❌ to delete todos</h3>
 
         <h4>You have {data ? data.todos.length : '?'} Todo:</h4>
         <table>
           <tbody>
+            {/* highlight-next-line */}
             {data?.todos.map((todo) => <TodoRow todo={todo} />)}
           </tbody>
         </table>
@@ -396,6 +401,7 @@ const WebAppHome = () => {
         <h4>You have {data ? data.finishedTodos.length : '?'} finished Todo:</h4>
         <table>
           <tbody>
+            {/* highlight-next-line */}
             {data?.finishedTodos.map((todo) => <TodoRow todo={todo} />)}
           </tbody>
         </table>

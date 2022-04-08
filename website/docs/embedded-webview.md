@@ -29,7 +29,7 @@ It does these three things in the background:
 
 ## Install With Creator
 
-If you are creating a new project with the app creator,
+If you are creating a new project with our app creator,
 add a `--webview` flag and everything will be set up.
 Like this:
 
@@ -43,18 +43,17 @@ Check [Manually Install](#manually-install) section for step-by-step setup guide
 
 ## Open the Webview
 
-Each platform needs some procedures to open the webview.
-For example, it takes an `UrlButton` with `messengerExtensions` in Messenger:
+The chat platforms may provide some special components to open the webview in the chatroom.
+For example:
 
 ```js
+import * as Messenger from '@machinat/messenger/components';
+import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';
+
 <Messenger.ButtonTemplate
   buttons={
     // highlight-start
-    <Messenger.UrlButton
-      title="Open Webview ↗️"
-      url={`https://${serverDomain}?platform=messenger`}
-      messengerExtensions
-    />
+    <MessengerWebviewButton title="Open Webview ↗️" />
     // highlight-end
   }
 >
@@ -62,17 +61,18 @@ For example, it takes an `UrlButton` with `messengerExtensions` in Messenger:
 </Messenger.ButtonTemplate>
 ```
 
-With the codes above, the webview will be opened in the Messenger app if the `UrlButton` is tapped.
-Check the document of each platform for details.
+With the codes above, the webview will be opened in the Messenger app when the `WebviewButton` is tapped.
+Check the document of each platform for the details.
 
 - [Messenger](./messenger-platform#open-the-webview)
-- [Telegram](./messenger-platform#open-the-webview)
-- [LINE](./messenger-platform#open-the-webview)
+- [Twitter](./twitter-platform#open-the-webview)
+- [Telegram](./telegram-platform#open-the-webview)
+- [LINE](./line-platform#open-the-webview)
 
 ### Determine the `platform`
 
 Sometimes you might want to decide which platform to log in,
-for example, when a user opens the web page in the browser.
+for example, when a user opens the web page in the browser directly.
 It's determined in this order:
 
 1. The `platform` option while constructing `WebviewClient`. For example:
@@ -92,16 +92,58 @@ https://my.machinat.app/webview?platform=messenger
 
 3. The platform that already logged in.
 
-Notice that some platforms only support opening webviews in the chatroom,
+Notice that some platforms only support opening webviews from the chatroom,
 like Messenger.
 
-## Communication on Client
+## Webview Client
 
-The webview page and the server can communicate to each other through a `WebSocket` connection.
+In the front-end, the `WebviewClient` handles the login flow and the communication to the server.
+It can be constructed like this:
+
+```js
+import WebviewClient from '@machinat/webview/client';
+import MessengerAuth from '@machinat/messenger/webview/client';
+
+const client = new WebviewClient({
+  authPlatforms: [MessengerAuth],
+});
+```
+
+You have to add the chat platforms to log in with at `authPlatforms`.
+The client will sign in the user and connect to the server after constructed.
+
+### `useClient` Hook
+
+If you are using React.js in front-end,
+use the `useClient` hook to create a client in the lifetime of a component.
+Like this:
+
+```jsx
+import { useClient } from '@machinat/webview/client';
+import MessengerAuth from '@machinat/messenger/webview/client';
+
+export default function MyApp() {
+  const client = useClient({
+    authPlatforms: [MessengerAuth],
+  });
+
+  const sayHello = () => {
+    client.send({ type: 'hello', payload: 'world' });
+  };
+
+  return (
+    <div>
+      <h1>Hello World</h1>
+      <button onClick={sayHello}>hello</button>
+    </div>
+  );
+}
+```
 
 ### Receive Events from Server
 
-On the client-side, you can use `client.onEvent(listener)` to subscribe events from the server. Like this:
+On the client-side, you can use `client.onEvent(listener)` to subscribe events from the server.
+Like this:
 
 ```js
 client.onEvent(({ event }) => {
@@ -121,6 +163,7 @@ The listener receive an event context object with following info:
   - `type` - `string`, event type.
   - `user` - `object`, the logged-in user
   - `channel` - `object`, the connection to the server.
+
 - `auth` - `object`, auth info.
   - `platform` - `string`, authenticating platform.
   - `user` - `object`, the logged-in user.
@@ -128,16 +171,18 @@ The listener receive an event context object with following info:
   - `loginAt` - `Date`, the logged-in time.
   - `expireAt` - `Date`, the time when authorization expires.
   - `data` - `any`, raw auth data from chat platform.
-- `authenticator` - `object`, the authenticator instance of the authenticating platform.
+
+- `authenticator` - `object`, the authenticator instance of the authenticated platform.
 
 ### `connect` and `disconnect`
 
-Two system events will be received when connection status changes:
+Two system events will be received when the connection status is changed:
 
 - `connect` - received when the connection is connected.
   - `category` - `'connection'`.
   - `type` - `'connect'`.
   - `payload` - `null`.
+
 - `disconnect` - received when the connection is disconnected.
   - `category` - `'connection'`.
   - `type` - `'disconnect'`.
@@ -164,8 +209,7 @@ The `eventObj` take these properties:
 - `payload` - optional, `any`, the value will be serialized and sent to the server.
 
 You don't have to wait for `'connect'` to send events.
-The events sent before it are queued,
-and they'll be delivered after it's connected.
+The events sent before it are queued and delivered after it's connected.
 
 ### `useEventReducer` Hook
 
@@ -179,26 +223,30 @@ import WebviewClient, { useEventReducer } from '@machinat/webview/client';
 export default function Home() {
   const { color, content } = useEventReducer(
     client,
-    (data, { event }) =>
-      event.type === 'app_data'
-        ? event.payload
-        : event.type === 'color_updated'
-        ? { ...data, color: event.payload.color }
-        : data
+    (data, { event }) => {
+      if (event.type === 'app_data') {
+        return event.payload;
+      }
+      if (event.type === 'color_updated') {
+        return { ...data, color: event.payload.color };
+      }
+      return data;
     },
     { color: '#000', content: 'loading...' }
   );
-  
-  function handleColorChange(e) {
-    client.send({
-      type: 'update_color',
-      payload: { color: e.target.value },
-    });
-  }
 
   return (
     <main>
-      <input type="color" value={color} onChange={handleColorChange} />
+      <input
+        type="color"
+        value={color}
+        onChange={(e) =>
+          client.send({
+            type: 'update_color',
+            payload: { color: e.target.value },
+          })
+        }
+      />
       <div style={{ textColor: color }}>Content: {content}</div>
     </main>
   );
@@ -209,12 +257,45 @@ export default function Home() {
 Everytime an event is received, the reducer is called to update the new state.
 It's useful to maintain the _real-time_ app data.
 
-## Communication on Server
+## Webview Platform
 
-### Receiving Events
+On the server side, the `@machinat/webview` platform need to be registered in your app.
+Like this:
+
+```js
+import Machinat from '@machinat/core';
+import Http from '@machinat/http';
+import Webview from '@machinat/webview';
+import TelegramAuth from '@machinat/telegram/webview';
+import nextConfig from '../webview/next.config.js';
+
+const app = Machinat.createApp({
+  modules: [
+    Http.initModule({/* ... */}),
+  ],
+  platforms: [
+    Webview.initModule({
+      webviewHost: 'your.domain.com',
+      authSecret: '_secret_string_to_sign_token_',
+      authPlatforms: [TelegramAuth],
+      nextServerOptions: {
+        dev: process.env.NODE_ENV !== 'production',
+        dir: `./webview`,
+        conf: nextConfig,
+      },
+    }),
+  ],
+});
+```
+
+The `authPlatforms` should correspond to the client settings.
+Add the auth providers from all the platforms that requires webviews.
+More options can be found [here](pathname:///api/modules/webview.html#webviewconfigs).
+
+### Receive Events from Clients
 
 On the server-side, events from the client are received as ordinary event context.
-For example, this respond the previous client example:
+For example:
 
 ```js
 app.onEvent(async ({ platform, event, bot }) => {
@@ -243,13 +324,16 @@ app.onEvent(async ({ platform, event, bot }) => {
 The webview event context contains the following info:
 
 - `platform` - `'webview'`.
+
 - `bot` - `object`, the webview bot.
+
 - `event` - `object`, event object.
   - `platform` - `'webview'`.
   - `category` - `string`, event category.
   - `type` - `string`, event type.
   - `user` - `object`, the logged-in user.
   - `channel` - `object`, the connection to the client.
+
 - `metadata` - `object`, meta info about the connection.
   - `source` - `'websocket'`.
   - `request` - `object`, http upgrade request info.
@@ -262,7 +346,7 @@ The webview event context contains the following info:
     - `expireAt` - `Date`, the time when authorization expires.
     - `data` - `any`, raw auth data from chat platform.
  
-The `connect` and `disconnect` events are emitted on server-side too when the status of a connection has changed.
+The `'connect'` and `'disconnect'` events are emitted on server-side too when the status of a connection has changed.
 
 ### Send Event to the Client
 
@@ -493,8 +577,9 @@ The supported `authPlatforms` also need to be added at the client.
 Check the guide of each platform for the details.
 
 - [Messenger](./messenger-platform#auth-setup)
-- [Telegram](./messenger-platform#auth-setup)
-- [LINE](./messenger-platform#auth-setup)
+- [Twitter](./twitter-platform#auth-setup)
+- [Telegram](./telegram-platform#auth-setup)
+- [LINE](./line-platform#auth-setup)
 
 ### Get Settings from Server
 
