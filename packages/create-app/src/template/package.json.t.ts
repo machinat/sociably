@@ -50,7 +50,7 @@ export default ({
     packageConfigs.dependencies = {
       ...packageConfigs.dependencies,
       ...{
-        next: '^12.0.8',
+        next: '^12.1.4',
         react: '^17.0.2',
         'react-dom': '^17.0.2',
       },

@@ -7,7 +7,7 @@ export default ({ platforms, withWebview }: CreateAppContext): string => when(
 import React from 'react';
 import Head from 'next/head';
 import getConfig from 'next/config';
-import WebviewClient, { useEventReducer } from '@machinat/webview/client';${when(
+import { useClient, useEventReducer } from '@machinat/webview/client';${when(
   platforms.includes('messenger')
 )`
 import MessengerAuth from '@machinat/messenger/webview/client';`}${when(
@@ -21,38 +21,43 @@ import TelegramAuth from '@machinat/telegram/webview/client';`}${when(
 )`
 import LineAuth from '@machinat/line/webview/client';`}
 
-const { publicRuntimeConfig } = getConfig();
-
-const client = new WebviewClient({
-  mockupMode: typeof window === 'undefined',
-  authPlatforms: [${when(platforms.includes('messenger'))`
-    new MessengerAuth({
-      pageId: publicRuntimeConfig.messengerPageId,
-    }),`}${when(platforms.includes('twitter'))`
-    new TwitterAuth({
-      agentId: publicRuntimeConfig.twitterAgentId,
-    }),`}${when(platforms.includes('telegram'))`
-    new TelegramAuth({
-      botName: publicRuntimeConfig.telegramBotName,
-    }),`}${when(platforms.includes('line'))`
-    new LineAuth({
-      liffId: publicRuntimeConfig.lineLiffId,
-    }),`}
-  ],
-});
+const {
+  publicRuntimeConfig: {${when(platforms.includes('messenger'))`
+    messengerPageId,`}${when(platforms.includes('twitter'))`
+    twitterAgentId,`}${when(platforms.includes('telegram'))`
+    telegramBotName,`}${when(platforms.includes('line'))`
+    lineLiffId,`}
+  },
+} = getConfig();
 
 const WebAppHome = () => {
-  const [isButtonTapped, setButtonTapped] = React.useState(false);
+  const client = useClient({
+    mockupMode: typeof window === 'undefined',
+    authPlatforms: [${when(platforms.includes('messenger'))`
+      new MessengerAuth({ pageId: messengerPageId }),`}${when(
+  platforms.includes('twitter')
+)`
+      new TwitterAuth({ agentId: twitterAgentId }),`}${when(
+  platforms.includes('telegram')
+)`
+      new TelegramAuth({ botName: telegramBotName }),`}${when(
+  platforms.includes('line')
+)`
+      new LineAuth({ liffId: lineLiffId }),`}
+    ],
+  });
   const { hello } = useEventReducer(
     client,
-    (data: { hello?: string }, { event }): { hello?: string } => {
+    (data, { event }) => {
       if (event.type === 'hello') {
         return { hello: event.payload };
       }
       return data;
     },
-    { hello: undefined }
+    { hello: '' }
   );
+
+  const [isButtonTapped, setButtonTapped] = React.useState(false);
 
   const Button = ({ payload }) => (
     <button
@@ -71,6 +76,12 @@ const WebAppHome = () => {
     <div>
       <Head>
         <title>Machinat Webview</title>
+
+        <link rel="icon" href="/webview/favicon.ico" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+        />
       </Head>
 
       <main>

@@ -8,25 +8,23 @@ export default ({
 import type { MessengerEventContext } from '@machinat/messenger';${when(
   withWebview
 )`
-import type MessengerWebviewAuth from '@machinat/messenger/webview';`}`}${when(
+import type MessengerAuth from '@machinat/messenger/webview';`}`}${when(
   platforms.includes('twitter')
 )`
 import type { TwitterEventContext } from '@machinat/twitter';${when(
   withWebview
 )`
-import type TwitterWebviewAuth from '@machinat/twitter/webview';`}`}${when(
+import type TwitterAuth from '@machinat/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
 import type { TelegramEventContext } from '@machinat/telegram';${when(
   withWebview
 )`
-import type TelegramWebviewAuth from '@machinat/telegram/webview';`}`}${when(
+import type TelegramAuth from '@machinat/telegram/webview';`}`}${when(
   platforms.includes('line')
 )`
 import type { LineEventContext } from '@machinat/line';${when(withWebview)`
-import type LineWebviewAuth from '@machinat/line/webview';`}`}${when(
-  withWebview
-)`
+import type LineAuth from '@machinat/line/webview';`}`}${when(withWebview)`
 import type { WebviewEventContext } from '@machinat/webview';`}
 
 export type ChatEventContext =${when(platforms.includes('messenger'))`
@@ -39,10 +37,10 @@ ${when(withWebview)`
 export type WebAppEventContext = WebviewEventContext<${when(
   platforms.includes('messenger')
 )`
-    | MessengerWebviewAuth`}${when(platforms.includes('twitter'))`
-    | TwitterWebviewAuth`}${when(platforms.includes('telegram'))`
-    | TelegramWebviewAuth`}${when(platforms.includes('line'))`
-    | LineWebviewAuth`}
+    | MessengerAuth`}${when(platforms.includes('twitter'))`
+    | TwitterAuth`}${when(platforms.includes('telegram'))`
+    | TelegramAuth`}${when(platforms.includes('line'))`
+    | LineAuth`}
   >;`}
 
 export type AppEventContext =
