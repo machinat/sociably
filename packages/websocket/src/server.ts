@@ -35,7 +35,7 @@ import type {
   DispatchTarget,
 } from './types';
 
-const DEFAULT_HEARTBEAT_INTERVAL = 1200000; // 20min
+const DEFAULT_HEARTBEAT_INTERVAL = 60000; // 1 min
 
 type ConnectionInfo<User extends null | MachinatUser, Auth> = {
   connId: string;
