@@ -128,7 +128,7 @@ export type WebviewConfigs<
   heartbeatInterval?: number;
 
   /** Auth providers from the platforms */
-  authPlatforms?: ServiceProvider<Authenticator, unknown[]>[];
+  authPlatforms?: ServiceProvider<AnyServerAuthenticator, unknown[]>[];
   /** The secret for signing auth token */
   authSecret: string;
   /** Initiate basic auth flow service with the options */

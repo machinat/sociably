@@ -7,17 +7,18 @@ function useClient<
   Authenticator extends AnyClientAuthenticator,
   Value extends EventValue = EventValue
 >(options: ClientOptions<Authenticator>): WebviewClient<Authenticator, Value> {
-  const [client, setClient] = useState(
-    // HACK: use a mock client as the initial value. The real client is created
-    //       later in useEffect. This forces the client to be refreshed while
-    //       hot reloading in dev mode.
-    () => new WebviewClient({ ...options, mockupMode: true })
-  );
+  const [client, setClient] = useState(() => new WebviewClient(options));
+  const [isInitial, setIsInitial] = useState(true);
 
   useEffect(() => {
+    if (isInitial) {
+      setIsInitial(false);
+      return () => client.close();
+    }
+
+    // refresh the client while hot reloading in dev mode.
     const newClient = new WebviewClient(options);
     setClient(newClient);
-
     return () => newClient.close();
   }, []);
 
