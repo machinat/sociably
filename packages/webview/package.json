@@ -1,6 +1,6 @@
 {
   "name": "@machinat/webview",
-  "version": "0.6.0-canary.5",
+  "version": "0.6.0-canary.6",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
   "dependencies": {
     "@machinat/auth": "^0.6.0-canary.4",
     "@machinat/next": "^0.6.0-canary",
-    "@machinat/websocket": "^0.6.0-canary.4",
+    "@machinat/websocket": "^0.6.0-canary.6",
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
