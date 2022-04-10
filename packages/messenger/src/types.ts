@@ -50,14 +50,21 @@ type MessageTags =
   | 'ACCOUNT_UPDATE'
   | 'HUMAN_AGENT';
 
+export type FileInfo = {
+  filename?: string;
+  filepath?: string;
+  contentType?: string;
+  knownLength?: number;
+};
+
 export type MessageValue = {
   message: RawMessage;
   messaging_type?: MessagingType;
   notification_type?: NotificationType;
   tag?: MessageTags;
   persona_id?: string;
-  [ATTACHMENT_DATA]?: string | Buffer | ReadableStream;
-  [ATTACHMENT_INFO]?: Record<string, string | number>;
+  [ATTACHMENT_DATA]?: string | Buffer | NodeJS.ReadableStream;
+  [ATTACHMENT_INFO]?: FileInfo;
 };
 
 export type SenderActionValue = {
@@ -104,10 +111,9 @@ export type BatchApiRequest = {
 
 export type MessengerJob = {
   request: BatchApiRequest;
-  pageId?: string;
-  channelUid?: string;
+  key?: string;
   assetTag?: string;
-  fileData?: string | Buffer | ReadableStream;
+  fileData?: string | Buffer | NodeJS.ReadableStream;
   fileInfo?: {
     filename?: string;
     filepath?: string;
@@ -205,6 +211,7 @@ export type MessengerSendOptions = {
   tag?: string;
   notificationType?: NotificationType;
   personaId?: string;
+  oneTimeNotifToken?: string;
 };
 
 export type MessengerPlatformUtilities = PlatformUtilities<

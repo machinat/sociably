@@ -183,7 +183,7 @@ export type GamePlayButtonProps = {
   payload?: string;
   /** Player ID (Instant Game name-space) to play against. */
   playerId?: string;
-  /** ontext ID (Instant Game name-space) of the THREAD to play in. */
+  /** Context ID (Instant Game name-space) of the THREAD to play in. */
   contextId?: string;
 };
 
@@ -192,8 +192,8 @@ export type GamePlayButtonProps = {
  * page.
  * @category Component
  * @props {@link GamePlayButtonProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#logout)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/logout).
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#game_play)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/game-play).
  */
 export const GamePlayButton: MessengerComponent<
   GamePlayButtonProps,

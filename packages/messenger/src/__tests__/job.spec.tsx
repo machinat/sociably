@@ -48,7 +48,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
-        channelUid: 'messenger.12345.id.67890',
+        key: 'messenger.12345.id.67890',
         request: {
           method: 'POST',
           relative_url: i === 2 ? 'bar/baz' : 'me/messages',
@@ -61,7 +61,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
     });
   });
 
-  it('add coresponding options to body on messages', () => {
+  test('with message metadata', () => {
     const channel = new MessengerChat('12345', '67890');
 
     const jobs = createChatJobs({
@@ -212,6 +212,40 @@ describe('createChatJobs(options)(channel, segments)', () => {
       notification_type: 'SILENT_PUSH',
       persona_id: 'astromech-droid',
     });
+  });
+
+  test('use oneTimeNotifToken as recipient', () => {
+    const channel = new MessengerChat('12345', '67890');
+    const helloJob = {
+      type: 'unit' as const,
+      path: '?',
+      node: <Foo />,
+      value: { message: { text: 'hello' } },
+    };
+
+    const jobs = createChatJobs({
+      oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
+    })(channel, [helloJob]);
+
+    expect(jobs[0].request.body.recipient).toEqual({
+      one_time_notif_token: '__ONE_TIME_NOTIF_TOKEN__',
+    });
+
+    expect(() =>
+      createChatJobs({
+        oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
+      })(channel, [
+        helloJob,
+        {
+          type: 'unit',
+          path: '?',
+          node: <Foo />,
+          value: { message: { text: 'world' } },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"oneTimeNotifToken can only be used to send one message"`
+    );
   });
 
   it('add attached file data and info if there are', () => {

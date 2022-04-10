@@ -27,6 +27,7 @@ import {
   RequestThreadControl,
   AppRoles,
   Optin,
+  OneTimeNotifOptin,
   PolicyEnforcement,
   Postback,
   Referral,
@@ -198,8 +199,13 @@ const ReferralProto = mixin(Base, Referral, {
 });
 
 const OptinProto = mixin(Base, Optin, {
-  category: 'action' as const,
+  category: 'postback' as const,
   type: 'optin' as const,
+});
+
+const OneTimeNotifOptinProto = mixin(Base, OneTimeNotifOptin, {
+  category: 'postback' as const,
+  type: 'one_time_notif_optin' as const,
 });
 
 const ReadProto = mixin(Base, Read, {
@@ -347,6 +353,15 @@ const createEvent = (
 
   if (hasOwnProperty(payload, 'optin')) {
     const { optin, sender } = payload;
+
+    if (optin.type === 'one_time_notif_req') {
+      return makeEvent(
+        payload,
+        new MessengerChat(pageId, sender.id),
+        new MessengerUser(pageId, sender.id),
+        OneTimeNotifOptinProto
+      );
+    }
 
     const channel = !sender
       ? new SendingTarget(pageId, { user_ref: optin.user_ref })

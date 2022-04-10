@@ -17,7 +17,7 @@ const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
 const appendField = (body: string, key: string, value: string) =>
   `${body.length === 0 ? body : `${body}&`}${key}=${encodeURIComponent(value)}`;
 
-const encodeUriBody = (fields: { [key: string]: any }): string => {
+const encodeUriBody = (fields: { [key: string]: unknown }): string => {
   let body = '';
 
   for (const key of Object.keys(fields)) {
@@ -175,30 +175,33 @@ export default class MessengerWorker
   private _executeJobsCallback = this._executeJobs.bind(this);
 
   private async _executeJobs(jobs: MessengerJob[]) {
-    const channelSendingRec = new Map();
+    const sendingKeysCounts = new Map<string, number>();
     let fileCount = 0;
     let filesForm: undefined | FormData;
 
     const requests = new Array(jobs.length);
 
     for (let i = 0; i < jobs.length; i += 1) {
-      const { request, channelUid, fileData, fileInfo } = jobs[i];
+      const { request, key, fileData, fileInfo } = jobs[i];
 
-      if (channelUid !== undefined) {
+      const requestWithMeta = {
+        ...request,
+        omit_response_on_success: false,
+      };
+
+      if (key) {
         // keep the order of requests per channel
-        let count = channelSendingRec.get(channelUid);
+        let count = sendingKeysCounts.get(key);
         if (count !== undefined) {
-          request.depends_on = makeRequestName(channelUid, count);
+          requestWithMeta.depends_on = makeRequestName(key, count);
           count += 1;
         } else {
           count = 1;
         }
 
-        channelSendingRec.set(channelUid, count);
-        request.name = makeRequestName(channelUid, count);
+        sendingKeysCounts.set(key, count);
+        requestWithMeta.name = makeRequestName(key, count);
       }
-
-      request.omit_response_on_success = false;
 
       // if binary data attached, use from-data and add the file field
       if (fileData !== undefined) {
@@ -210,10 +213,10 @@ export default class MessengerWorker
         fileCount += 1;
 
         filesForm.append(filename, fileData, fileInfo);
-        request.attached_files = filename;
+        requestWithMeta.attached_files = filename;
       }
 
-      requests[i] = formatRequest(request);
+      requests[i] = formatRequest(requestWithMeta);
     }
 
     const batchBody = {

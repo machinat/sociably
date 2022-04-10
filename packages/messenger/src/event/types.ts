@@ -20,6 +20,7 @@ import type {
   TakeThreadControl,
   RequestThreadControl,
   AppRoles,
+  OneTimeNotifOptin,
   Optin,
   PolicyEnforcement,
   Postback,
@@ -282,8 +283,6 @@ export interface PostbackEvent
  *
  * - Following an m.me link with a referral parameter
  * - Clicking on a Messenger Conversation Ad
- * - Scanning a parametric Messenger Code.
- * - Starting a conversation from the Discover tab.
  * - Starting or resuming a conversation from the customer chat plugin.
  *
  * For tracking referrals in new threads, refer to {@link PostbackEvent}.
@@ -349,7 +348,7 @@ export interface GamePlayEvent
     GamePlay {}
 
 /**
- * PassThreadControlEvent will occur when thread ownership for a user has been
+ * PassThreadControlEvent occurs when the thread ownership for a user has been
  * passed to your application.
  * @category Event
  * @subscription `messaging_handovers`
@@ -362,7 +361,7 @@ export interface PassThreadControlEvent
     PassThreadControl {}
 
 /**
- * TakeThreadControlEvent will occur when thread ownership for a user has been
+ * TakeThreadControlEvent occurs when the thread ownership for a user has been
  * taken away from your application.
  * @category Event
  * @subscription `messaging_handovers`
@@ -375,7 +374,7 @@ export interface TakeThreadControlEvent
     TakeThreadControl {}
 
 /**
- * RequestThreadControlEvent will be sent to the Primary Receiver app when a
+ * RequestThreadControlEvent is sent to the Primary Receiver app when a
  * Secondary Receiver app calls the Request Thread Control API. The Primary
  * Receiver may then choose to honor the request and pass thread control, or
  * ignore the request.
@@ -390,7 +389,7 @@ export interface RequestThreadControlEvent
     RequestThreadControl {}
 
 /**
- * AppRolesEvent will occur when a page admin changes the role of your
+ * AppRolesEvent occurs when a page admin changes the role of your
  * application. An app can be assigned the roles of _primary_receiver_ or
  * _secondary_receiver_.
  * @category Event
@@ -404,7 +403,7 @@ export interface AppRolesEvent
     AppRoles {}
 
 /**
- * OptinEvent will occur when the [send to Messenger](https://developers.facebook.com/docs/messenger-platform/plugin-reference/send-to-messenger)
+ * OptinEvent occurs when the [send to Messenger](https://developers.facebook.com/docs/messenger-platform/discovery/send-to-messenger-plugin)
  * plugin has been tapped, a user has accepted a message request using
  * [customer matching](https://developers.facebook.com/docs/messenger-platform/guides/customer-matching),
  * or a user has opted in to receive messages via the [checkbox plugin](https://developers.facebook.com/docs/messenger-platform/discovery/checkbox-plugin).
@@ -414,13 +413,25 @@ export interface AppRolesEvent
  */
 export interface OptinEvent
   extends EventObject<
-      'action',
+      'postback',
       'optin',
       MessengerChat | SendingTarget,
       null | MessengerUser
     >,
     EventBase,
     Optin {}
+
+/**
+ * OneTimeNotifOptinEvent occurs when the user consents to be notified on a
+ * specific update.
+ * @category Event
+ * @subscription `messaging_optins`
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/one-time-notification).
+ */
+export interface OneTimeNotifOptinEvent
+  extends EventObject<'postback', 'one_time_notif_optin'>,
+    EventBase,
+    OneTimeNotifOptin {}
 
 /**
  * PolicyEnforcementEvent will be sent to an app if the page it manages does not
@@ -473,5 +484,6 @@ export type MessengerEvent =
   | RequestThreadControlEvent
   | AppRolesEvent
   | OptinEvent
+  | OneTimeNotifOptinEvent
   | PolicyEnforcementEvent
   | UnknownEvent;

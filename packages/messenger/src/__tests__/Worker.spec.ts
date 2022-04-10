@@ -9,7 +9,7 @@ nock.disableNetConnect();
 
 const jobs = [
   {
-    channelId: 'messenger:default:id:foo',
+    key: 'messenger:default:id:foo',
     request: {
       method: 'POST',
       relative_url: 'me/messages',
@@ -17,7 +17,7 @@ const jobs = [
     },
   },
   {
-    channelId: 'messenger:default:id:foo',
+    key: 'messenger:default:id:foo',
     request: {
       method: 'POST',
       relative_url: 'bar/baz',
@@ -25,7 +25,7 @@ const jobs = [
     },
   },
   {
-    channelId: 'messenger:default:id:foo',
+    key: 'messenger:default:id:foo',
     request: {
       method: 'POST',
       relative_url: 'me/messages',
@@ -232,7 +232,7 @@ it('upload files with form data if binary attached on job', async () => {
   const body = bodySpy.mock.calls[0].args[0];
 
   expect(
-    body.replace(/-+[0-9]+/g, '-----MULTIPART_SEPARATOR-----')
+    body.replace(/-----+[0-9]+/g, '-----MULTIPART_SEPARATOR-----')
   ).toMatchSnapshot();
 
   const file0Field = new RegExp(
@@ -456,7 +456,7 @@ it('place params at query if DELETE job met', async () => {
   worker.start(queue);
 
   const job = {
-    channelId: null,
+    key: undefined,
     request: {
       method: 'DELETE',
       relative_url: 'me/messenger_profile',

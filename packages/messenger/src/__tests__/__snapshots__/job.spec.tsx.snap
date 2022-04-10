@@ -4,9 +4,9 @@ exports[`createChatJobs(options)(channel, segments) add attached file data and i
 Array [
   Object {
     "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
     "fileData": "_FOO_",
     "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -24,13 +24,13 @@ Array [
   },
   Object {
     "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
     "fileData": "_BAR_",
     "fileInfo": Object {
       "contentType": "image/jpeg",
       "filename": "deathangel.jpg",
       "knownLength": 66666,
     },
+    "key": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -49,117 +49,13 @@ Array [
 ]
 `;
 
-exports[`createChatJobs(options)(channel, segments) add coresponding options to body on messages 1`] = `
-Array [
-  Object {
-    "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
-    "fileData": undefined,
-    "fileInfo": undefined,
-    "request": Object {
-      "body": Object {
-        "persona_id": "your-dearest-friend",
-        "recipient": Object {
-          "id": "67890",
-        },
-        "sender_action": "typing_on",
-      },
-      "method": "POST",
-      "relative_url": "me/messages",
-    },
-  },
-  Object {
-    "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
-    "fileData": undefined,
-    "fileInfo": undefined,
-    "request": Object {
-      "body": Object {
-        "message": Object {
-          "id": 1,
-        },
-        "messaging_type": "MESSAGE_TAG",
-        "notification_type": "SILENT_PUSH",
-        "persona_id": "your-dearest-friend",
-        "recipient": Object {
-          "id": "67890",
-        },
-        "tag": "PAYMENT_UPDATE",
-      },
-      "method": "POST",
-      "relative_url": "me/messages",
-    },
-  },
-  Object {
-    "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
-    "fileData": undefined,
-    "fileInfo": undefined,
-    "request": Object {
-      "body": Object {
-        "id": 2,
-        "recipient": Object {
-          "id": "67890",
-        },
-      },
-      "method": "POST",
-      "relative_url": "bar/baz",
-    },
-  },
-  Object {
-    "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
-    "fileData": undefined,
-    "fileInfo": undefined,
-    "request": Object {
-      "body": Object {
-        "message": Object {
-          "text": "id:3",
-        },
-        "messaging_type": "MESSAGE_TAG",
-        "notification_type": "SILENT_PUSH",
-        "persona_id": "your-dearest-friend",
-        "recipient": Object {
-          "id": "67890",
-        },
-        "tag": "PAYMENT_UPDATE",
-      },
-      "method": "POST",
-      "relative_url": "me/messages",
-    },
-  },
-  Object {
-    "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
-    "fileData": undefined,
-    "fileInfo": undefined,
-    "request": Object {
-      "body": Object {
-        "message": Object {
-          "text": "4",
-        },
-        "messaging_type": "MESSAGE_TAG",
-        "notification_type": "SILENT_PUSH",
-        "persona_id": "your-dearest-friend",
-        "recipient": Object {
-          "id": "67890",
-        },
-        "tag": "PAYMENT_UPDATE",
-      },
-      "method": "POST",
-      "relative_url": "me/messages",
-    },
-  },
-]
-`;
-
 exports[`createChatJobs(options)(channel, segments) respect options originally set in job value 1`] = `
 Array [
   Object {
     "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
     "fileData": undefined,
     "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -179,9 +75,9 @@ Array [
   },
   Object {
     "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
     "fileData": undefined,
     "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -206,9 +102,9 @@ exports[`createChatJobs(options)(channel, segments) respect the empty tag if mes
 Array [
   Object {
     "assetTag": undefined,
-    "channelUid": "messenger.12345.id.67890",
     "fileData": undefined,
     "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -220,6 +116,110 @@ Array [
         "recipient": Object {
           "id": "67890",
         },
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+  },
+]
+`;
+
+exports[`createChatJobs(options)(channel, segments) with message metadata 1`] = `
+Array [
+  Object {
+    "assetTag": undefined,
+    "fileData": undefined,
+    "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
+    "request": Object {
+      "body": Object {
+        "persona_id": "your-dearest-friend",
+        "recipient": Object {
+          "id": "67890",
+        },
+        "sender_action": "typing_on",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+  },
+  Object {
+    "assetTag": undefined,
+    "fileData": undefined,
+    "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "id": 1,
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": Object {
+          "id": "67890",
+        },
+        "tag": "PAYMENT_UPDATE",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+  },
+  Object {
+    "assetTag": undefined,
+    "fileData": undefined,
+    "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
+    "request": Object {
+      "body": Object {
+        "id": 2,
+        "recipient": Object {
+          "id": "67890",
+        },
+      },
+      "method": "POST",
+      "relative_url": "bar/baz",
+    },
+  },
+  Object {
+    "assetTag": undefined,
+    "fileData": undefined,
+    "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "id:3",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": Object {
+          "id": "67890",
+        },
+        "tag": "PAYMENT_UPDATE",
+      },
+      "method": "POST",
+      "relative_url": "me/messages",
+    },
+  },
+  Object {
+    "assetTag": undefined,
+    "fileData": undefined,
+    "fileInfo": undefined,
+    "key": "messenger.12345.id.67890",
+    "request": Object {
+      "body": Object {
+        "message": Object {
+          "text": "4",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": Object {
+          "id": "67890",
+        },
+        "tag": "PAYMENT_UPDATE",
       },
       "method": "POST",
       "relative_url": "me/messages",

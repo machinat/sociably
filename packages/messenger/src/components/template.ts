@@ -140,7 +140,18 @@ export type ButtonTemplateProps = {
   sharable?: boolean;
 };
 
-const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
+/**
+ * The button template allows you to send a structured message that includes
+ * text and buttons.
+ * @category Component
+ * @props {@link ButtonTemplateProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/button)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/button).
+ */
+export const ButtonTemplate: MessengerComponent<
+  ButtonTemplateProps,
+  UnitSegment<MessageValue>
+> = makeMessengerComponent(async function ButtonTemplate(node, path, render) {
   const { children, buttons, sharable } = node.props;
   const textSegments = await render(children, '.children');
   let text = '';
@@ -177,19 +188,7 @@ const __ButtonTemplate = async function ButtonTemplate(node, path, render) {
       },
     }),
   ];
-};
-/**
- * The button template allows you to send a structured message that includes
- * text and buttons.
- * @category Component
- * @props {@link ButtonTemplateProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/button)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/button).
- */
-export const ButtonTemplate: MessengerComponent<
-  ButtonTemplateProps,
-  UnitSegment<MessageValue>
-> = makeMessengerComponent(__ButtonTemplate);
+});
 
 /**
  * @category Props
@@ -210,7 +209,18 @@ export type MediaTemplateProps = {
   sharable?: boolean;
 };
 
-const __MediaTemplate = async function MediaTemplate(node, path, render) {
+/**
+ * The media template allows you to send a structured message that includes an
+ * image or video, and an optional button.
+ * @category Component
+ * @props {@link MediaTemplate}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/media)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/media).
+ */
+export const MediaTemplate: MessengerComponent<
+  MediaTemplateProps,
+  UnitSegment<MessageValue>
+> = makeMessengerComponent(async function MediaTemplate(node, path, render) {
   const { buttons, mediaType, attachmentId, url, sharable } = node.props;
   const buttonSegments = await render(buttons, '.buttons');
   const buttonValues = buttonSegments?.map((segment) => segment.value);
@@ -236,19 +246,7 @@ const __MediaTemplate = async function MediaTemplate(node, path, render) {
       },
     }),
   ];
-};
-/**
- * The media template allows you to send a structured message that includes an
- * image or video, and an optional button.
- * @category Component
- * @props {@link MediaTemplate}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/media)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/media).
- */
-export const MediaTemplate: MessengerComponent<
-  MediaTemplateProps,
-  UnitSegment<MessageValue>
-> = makeMessengerComponent(__MediaTemplate);
+});
 
 /**
  * @category Props
@@ -268,7 +266,17 @@ export type ReceiptItemProps = {
   imageUrl?: string;
 };
 
-const __ReceiptItem = async function ReceiptItem(node, path) {
+/**
+ * The item of {@link ReceiptTemplate}
+ * @category Component
+ * @props {@link ReceiptItemProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/receipt)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/receipt).
+ */
+export const ReceiptItem: MessengerComponent<
+  ReceiptItemProps,
+  PartSegment<any>
+> = makeMessengerComponent(async function ReceiptItem(node, path) {
   const { title, subtitle, quantity, price, currency, imageUrl } = node.props;
   return [
     makePartSegment(node, path, {
@@ -280,18 +288,7 @@ const __ReceiptItem = async function ReceiptItem(node, path) {
       image_url: imageUrl,
     }),
   ];
-};
-/**
- * The item of {@link ReceiptTemplate}
- * @category Component
- * @props {@link ReceiptItemProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/receipt)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/receipt).
- */
-export const ReceiptItem: MessengerComponent<
-  ReceiptItemProps,
-  PartSegment<any>
-> = makeMessengerComponent(__ReceiptItem);
+});
 
 /**
  * @category Props
@@ -323,7 +320,7 @@ export type ReceiptTemplateProps = {
   paymentMethod: string;
   orderUrl?: string;
   /** Timestamp of the order in seconds. */
-  timestamp?: string;
+  timestamp?: string | Date;
   /** The shipping address of the order. */
   address?: string;
   summary: {
@@ -344,7 +341,18 @@ export type ReceiptTemplateProps = {
   }[];
 };
 
-const __ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
+/**
+ * The receipt template allows you to send an order confirmation as a structured
+ * message.
+ * @category Component
+ * @props {@link ReceiptTemplateProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/receipt)
+ *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/receipt).
+ */
+export const ReceiptTemplate: MessengerComponent<
+  ReceiptTemplateProps,
+  UnitSegment<MessageValue>
+> = makeMessengerComponent(async function ReceiptTemplate(node, path, render) {
   const {
     children,
     sharable,
@@ -390,16 +398,46 @@ const __ReceiptTemplate = async function ReceiptTemplate(node, path, render) {
       },
     }),
   ];
-};
+});
+
 /**
- * The receipt template allows you to send an order confirmation as a structured
- * message.
- * @category Component
- * @props {@link ReceiptTemplateProps}
- * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/receipt)
- *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/receipt).
+ * @category Props
  */
-export const ReceiptTemplate: MessengerComponent<
-  ReceiptTemplateProps,
+export type RequestOneTimeNotifProps = {
+  /** The title to be displayed in the request message, limited to 65 characters. */
+  title: string;
+  /** The data to be posted back with the `one_time_notif_optin` event. */
+  payload: string;
+};
+
+/**
+ * The Messenger Platform's One-Time Notification API (Beta) allows a page to
+ * request a user to send one follow-up message after 24-hour messaging window
+ * have ended. The user will be offered to receive a future notification. Once
+ * the user asks to be notified, the page will receive a token which is an
+ * equivalent to a permission to send a single message to the user. The token
+ * can only be used once and will expire within 1 year of creation.
+ * @category Component
+ * @props {@link RequestOneTimeNotifProps}
+ * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/one-time-notification).
+ */
+export const RequestOneTimeNotif: MessengerComponent<
+  RequestOneTimeNotifProps,
   UnitSegment<MessageValue>
-> = makeMessengerComponent(__ReceiptTemplate);
+> = makeMessengerComponent(function RequestOneTimeNotif(node, path) {
+  const { title, payload } = node.props;
+  return [
+    makeUnitSegment(node, path, {
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'one_time_notif_req',
+            title,
+            payload,
+          },
+        },
+      },
+    }),
+  ];
+});

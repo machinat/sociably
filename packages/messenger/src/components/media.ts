@@ -6,7 +6,7 @@ import {
   ATTACHMENT_DATA,
   ATTACHMENT_INFO,
 } from '../constant';
-import type { MessageValue, MessengerComponent } from '../types';
+import type { MessageValue, MessengerComponent, FileInfo } from '../types';
 
 /**
  * @category Props
@@ -29,13 +29,8 @@ export type MediaProps = {
   attachmentId?: string;
 
   assetTag?: string;
-  fileData?: string | Buffer | ReadableStream;
-  fileInfo?: {
-    filename?: string;
-    filepath?: string;
-    contentType?: string;
-    knownLength?: number;
-  };
+  fileData?: string | Buffer | NodeJS.ReadableStream;
+  fileInfo?: FileInfo;
 };
 
 const mediaFactory = (

@@ -6,6 +6,7 @@ import type {
   MessengerJob,
   MessengerSendOptions,
   MessengerChannel,
+  FileInfo,
 } from './types';
 import { isMessageEntry } from './utils';
 import {
@@ -20,23 +21,23 @@ import {
 
 const POST = 'POST';
 
-export const createChatJobs =
-  (options?: MessengerSendOptions) =>
-  (
+export const createChatJobs = (options?: MessengerSendOptions) => {
+  let isOneTimeTokenUsed = false;
+
+  return (
     channel: MessengerChannel,
     segments: DispatchableSegment<MessengerSegmentValue>[]
   ): MessengerJob[] => {
-    const { target, uid } = channel;
     const jobs: MessengerJob[] = new Array(segments.length);
 
     for (let i = 0; i < segments.length; i += 1) {
       const { value } = segments[i];
 
-      let body: any;
+      let body: { [k: string]: unknown };
       let relativeUrl: undefined | string;
       let assetTag: undefined | string;
-      let fileData: undefined | any;
-      let fileInfo: undefined | any;
+      let fileData: undefined | string | Buffer | NodeJS.ReadableStream;
+      let fileInfo: undefined | FileInfo;
 
       if (typeof value === 'object') {
         body = filterSymbolKeys(value);
@@ -50,7 +51,7 @@ export const createChatJobs =
         throw new TypeError('invalid segment value');
       }
 
-      body.recipient = target;
+      body.recipient = channel.target;
 
       if (options && isMessageEntry(value)) {
         if (body.message) {
@@ -64,6 +65,19 @@ export const createChatJobs =
             body.notification_type || options.notificationType;
 
           body.persona_id = body.persona_id || options.personaId;
+
+          if (options.oneTimeNotifToken) {
+            if (isOneTimeTokenUsed) {
+              throw new Error(
+                'oneTimeNotifToken can only be used to send one message'
+              );
+            }
+
+            isOneTimeTokenUsed = true;
+            body.recipient = {
+              one_time_notif_token: options.oneTimeNotifToken,
+            };
+          }
         } else if (
           body.sender_action === 'typing_on' ||
           body.sender_action === 'typing_off'
@@ -78,7 +92,7 @@ export const createChatJobs =
           relative_url: relativeUrl || PATH_MESSAGES,
           body,
         },
-        channelUid: uid,
+        key: channel.uid,
         assetTag,
         fileData,
         fileInfo,
@@ -87,9 +101,10 @@ export const createChatJobs =
 
     return jobs;
   };
+};
 
 export const createAttachmentJobs = (
-  target: null,
+  _target: null,
   segments: DispatchableSegment<MessengerSegmentValue>[]
 ): MessengerJob[] => {
   invariant(segments.length === 1, 'more than 1 message received');

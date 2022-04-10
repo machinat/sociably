@@ -518,6 +518,26 @@ export const Optin: Optin = {
 /**
  * @category Event Mixin
  */
+export interface OneTimeNotifOptin {
+  /** The payload attached with the request message */
+  readonly data: string;
+  /** The token to send one time notification with */
+  readonly token: string;
+}
+
+export const OneTimeNotifOptin: OneTimeNotifOptin = {
+  get data() {
+    return this.payload.optin.payload;
+  },
+
+  get token() {
+    return this.payload.optin.token;
+  },
+};
+
+/**
+ * @category Event Mixin
+ */
 export interface PolicyEnforcement {
   /** The raw `policy_enforcement` object. */
   readonly policyEnforcement: { action: 'block' | 'unblock'; reason: string };

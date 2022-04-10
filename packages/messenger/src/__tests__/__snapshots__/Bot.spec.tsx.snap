@@ -5,9 +5,9 @@ Object {
   "jobs": Array [
     Object {
       "assetTag": undefined,
-      "channelUid": "messenger.1234567890.id.john",
       "fileData": undefined,
       "fileInfo": undefined,
+      "key": "messenger.1234567890.id.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -22,16 +22,14 @@ Object {
           "tag": "TRANSPORTATION_UPDATE",
         },
         "method": "POST",
-        "name": "messenger.1234567890.id.john-1",
-        "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
     },
     Object {
       "assetTag": undefined,
-      "channelUid": "messenger.1234567890.id.john",
       "fileData": undefined,
       "fileInfo": undefined,
+      "key": "messenger.1234567890.id.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -61,10 +59,7 @@ Object {
           },
           "tag": "TRANSPORTATION_UPDATE",
         },
-        "depends_on": "messenger.1234567890.id.john-1",
         "method": "POST",
-        "name": "messenger.1234567890.id.john-2",
-        "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
     },
@@ -90,9 +85,9 @@ Object {
       "payload": Array [
         Object {
           "assetTag": undefined,
-          "channelUid": "messenger.1234567890.id.john",
           "fileData": undefined,
           "fileInfo": undefined,
+          "key": "messenger.1234567890.id.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -107,16 +102,14 @@ Object {
               "tag": "TRANSPORTATION_UPDATE",
             },
             "method": "POST",
-            "name": "messenger.1234567890.id.john-1",
-            "omit_response_on_success": false,
             "relative_url": "me/messages",
           },
         },
         Object {
           "assetTag": undefined,
-          "channelUid": "messenger.1234567890.id.john",
           "fileData": undefined,
           "fileInfo": undefined,
+          "key": "messenger.1234567890.id.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -146,10 +139,7 @@ Object {
               },
               "tag": "TRANSPORTATION_UPDATE",
             },
-            "depends_on": "messenger.1234567890.id.john-1",
             "method": "POST",
-            "name": "messenger.1234567890.id.john-2",
-            "omit_response_on_success": false,
             "relative_url": "me/messages",
           },
         },
@@ -193,9 +183,9 @@ Object {
   "jobs": Array [
     Object {
       "assetTag": undefined,
-      "channelUid": "messenger.1234567890.id.john",
       "fileData": undefined,
       "fileInfo": undefined,
+      "key": "messenger.1234567890.id.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -210,16 +200,14 @@ Object {
           "tag": undefined,
         },
         "method": "POST",
-        "name": "messenger.1234567890.id.john-1",
-        "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
     },
     Object {
       "assetTag": undefined,
-      "channelUid": "messenger.1234567890.id.john",
       "fileData": undefined,
       "fileInfo": undefined,
+      "key": "messenger.1234567890.id.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -249,10 +237,7 @@ Object {
           },
           "tag": undefined,
         },
-        "depends_on": "messenger.1234567890.id.john-1",
         "method": "POST",
-        "name": "messenger.1234567890.id.john-2",
-        "omit_response_on_success": false,
         "relative_url": "me/messages",
       },
     },
@@ -278,9 +263,9 @@ Object {
       "payload": Array [
         Object {
           "assetTag": undefined,
-          "channelUid": "messenger.1234567890.id.john",
           "fileData": undefined,
           "fileInfo": undefined,
+          "key": "messenger.1234567890.id.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -295,16 +280,14 @@ Object {
               "tag": undefined,
             },
             "method": "POST",
-            "name": "messenger.1234567890.id.john-1",
-            "omit_response_on_success": false,
             "relative_url": "me/messages",
           },
         },
         Object {
           "assetTag": undefined,
-          "channelUid": "messenger.1234567890.id.john",
           "fileData": undefined,
           "fileInfo": undefined,
+          "key": "messenger.1234567890.id.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -334,10 +317,7 @@ Object {
               },
               "tag": undefined,
             },
-            "depends_on": "messenger.1234567890.id.john-1",
             "method": "POST",
-            "name": "messenger.1234567890.id.john-2",
-            "omit_response_on_success": false,
             "relative_url": "me/messages",
           },
         },
@@ -396,7 +376,6 @@ Object {
           },
         },
         "method": "POST",
-        "omit_response_on_success": false,
         "relative_url": "me/message_attachments",
       },
     },
@@ -429,7 +408,6 @@ Object {
               },
             },
             "method": "POST",
-            "omit_response_on_success": false,
             "relative_url": "me/message_attachments",
           },
         },
