@@ -9,7 +9,6 @@ import type {
   Location,
   Fallback,
   Echo,
-  Template,
   TemplateProduct,
   Reaction,
   Read,
@@ -194,7 +193,6 @@ export interface ProductTemplateEvent
   extends EventObject<'message' | 'standby', 'product_template'>,
     EventBase,
     Message,
-    Template,
     TemplateProduct {}
 
 /**
@@ -208,7 +206,6 @@ export interface TemplateEchoEvent
   extends EventObject<'echo', 'template'>,
     EventBase,
     Message,
-    Template,
     Echo {}
 
 /**

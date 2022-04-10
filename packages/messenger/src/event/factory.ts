@@ -15,7 +15,6 @@ import {
   Fallback,
   Echo,
   Standby,
-  Template,
   TemplateProduct,
   Reaction,
   Read,
@@ -138,7 +137,7 @@ const StandbyLocationProto = mixin(LocationProto, Standby, {
   type: 'location' as const,
 });
 
-const ProductTemplateProto = mixin(Base, Message, Template, TemplateProduct, {
+const ProductTemplateProto = mixin(Base, Message, TemplateProduct, {
   category: 'message' as const,
   type: 'product_template' as const,
 });
@@ -148,7 +147,7 @@ const StandbyProductTemplateProto = mixin(ProductTemplateProto, Standby, {
   type: 'product_template' as const,
 });
 
-const EchoTemplateProto = mixin(Base, Message, Echo, Template, {
+const EchoTemplateProto = mixin(Base, Message, Echo, {
   category: 'echo' as const,
   type: 'template' as const,
 });

@@ -177,14 +177,6 @@ type ReactionType =
  * @category Event Mixin
  */
 export interface Reaction {
-  /** The raw `reaction` object. */
-  readonly reaction: {
-    reaction: ReactionType;
-    emoji: string;
-    action: 'react' | 'unreact';
-    mid: string;
-  };
-
   /** Text description of the reaction. */
   readonly reactionType: ReactionType;
   /** Reference to the emoji corresponding to the reaction. */
@@ -196,10 +188,6 @@ export interface Reaction {
 }
 
 export const Reaction: Reaction = {
-  get reaction() {
-    return this.payload.reaction;
-  },
-
   get reactionType() {
     return this.payload.reaction.reaction;
   },
@@ -220,32 +208,25 @@ export const Reaction: Reaction = {
 /**
  * @category Event Mixin
  */
-export interface Template {
-  readonly template: any;
-}
-
-export const Template: Template = {
-  get template() {
-    return this.payload.message.attachments[0].payload;
-  },
-};
-
-/**
- * @category Event Mixin
- */
 export interface TemplateProduct {
-  readonly productElements: {
+  readonly products: {
     id: string;
-    retailer_id: string;
-    image_url: string;
+    retailerId: string;
+    imageUrl: string;
     title: string;
     subtitle: string;
   }[];
 }
 
 export const TemplateProduct: TemplateProduct = {
-  get productElements() {
-    return this.payload.message.attachments[0].payload.product.elements;
+  get products() {
+    return this.payload.message.attachments[0].payload.product.elements.map(
+      ({ retailer_id: retailerId, image_url: imageUrl, ...restElement }) => ({
+        ...restElement,
+        retailerId,
+        imageUrl,
+      })
+    );
   },
 };
 
@@ -253,8 +234,6 @@ export const TemplateProduct: TemplateProduct = {
  * @category Event Mixin
  */
 export interface Delivery {
-  /** The raw `dilivery` object. */
-  readonly delivery: { messageIds: string[]; watermark: number };
   /**
    * Array containing message IDs of messages that were delivered. Field may not
    * be present.
@@ -265,10 +244,6 @@ export interface Delivery {
 }
 
 export const Delivery: Delivery = {
-  get delivery() {
-    return this.payload.delivery;
-  },
-
   get messageIds() {
     return this.payload.delivery.mids;
   },
@@ -282,16 +257,11 @@ export const Delivery: Delivery = {
  * @category Event Mixin
  */
 export interface Read {
-  /** The raw `read` object. */
-  readonly read: { watermark: number };
   /** All messages that were sent before or at this timestamp were read. */
   readonly watermark: number;
 }
 
 export const Read: Read = {
-  get read() {
-    return this.payload.read;
-  },
   get watermark() {
     return this.payload.read.watermark;
   },
@@ -339,11 +309,6 @@ export const Standby: Standby = {
  * @category Event Mixin
  */
 export interface AccountLinking {
-  /** The raw `account_linking` object. */
-  readonly accountLinking: {
-    status: 'linked' | 'unlinked';
-    authorization_code: string;
-  };
   /** Indicate whether the user linked or unlinked their account. */
   readonly status: 'linked' | 'unlinked';
   /**
@@ -354,10 +319,6 @@ export interface AccountLinking {
 }
 
 export const AccountLinking: AccountLinking = {
-  get accountLinking() {
-    return this.payload.account_linking;
-  },
-
   get status() {
     return this.payload.account_linking.status;
   },
@@ -371,20 +332,38 @@ export const AccountLinking: AccountLinking = {
  * @category Event Mixin
  */
 export interface GamePlay {
-  /** The raw `game_play` object. */
-  readonly gamePlay: {
-    game_id: string;
-    player_id: string;
-    context_type: 'SOLO' | 'THREAD' | 'GROUP';
-    context_id: string;
-    score: undefined | number;
-    payload: undefined | string;
-  };
+  /** App ID of the game */
+  readonly gameId: string;
+  /** ID of the user in the Instant Game name-space. By linking this ID to the PSID received in the sender field, the bot can send messages to a user after a game play */
+  readonly playerId: string;
+  /** Type of the social context a game is played in */
+  readonly contextType: 'SOLO' | 'THREAD' | 'GROUP';
+  /** ID of the context if not a SOLO type. This ID is in the Instant Game name-space */
+  readonly contextId: string;
+  /** Best score achieved by this user in this game round. Only available to Classic score based games */
+  readonly score: undefined | number;
+  /** JSON encoded payload data, set using FBInstant.setSessionData(). Only available to game with Rich Games Feature enabled */
+  readonly data: undefined | string;
 }
 
 export const GamePlay: GamePlay = {
-  get gamePlay() {
-    return this.payload.game_play;
+  get gameId() {
+    return this.payload.game_play.game_id;
+  },
+  get playerId() {
+    return this.payload.game_play.player_id;
+  },
+  get contextType() {
+    return this.payload.game_play.context_type;
+  },
+  get contextId() {
+    return this.payload.game_play.context_id;
+  },
+  get score() {
+    return this.payload.game_play.score;
+  },
+  get data() {
+    return this.payload.game_play.payload;
   },
 };
 
@@ -392,8 +371,6 @@ export const GamePlay: GamePlay = {
  * @category Event Mixin
  */
 export interface PassThreadControl {
-  /** The raw `pass_thread_control` object. */
-  readonly passThreadControl: { new_owner_app_id: string; metadata: string };
   /** App ID that thread control is passed to. */
   readonly newOwnerAppId: string;
   /** Custom string specified in the API request. */
@@ -401,10 +378,6 @@ export interface PassThreadControl {
 }
 
 export const PassThreadControl: PassThreadControl = {
-  get passThreadControl() {
-    return this.payload.pass_thread_control;
-  },
-
   get newOwnerAppId() {
     return this.payload.pass_thread_control.new_owner_app_id;
   },
@@ -418,11 +391,6 @@ export const PassThreadControl: PassThreadControl = {
  * @category Event Mixin
  */
 export interface TakeThreadControl {
-  /** The raw `take_thread_control` object. */
-  readonly takeThreadControl: {
-    previous_owner_app_id: string;
-    metadata: string;
-  };
   /** App ID that thread control was taken from. */
   readonly previousOwnerAppId: string;
   /** Custom string specified in the API request. */
@@ -430,10 +398,6 @@ export interface TakeThreadControl {
 }
 
 export const TakeThreadControl: TakeThreadControl = {
-  get takeThreadControl() {
-    return this.payload.take_thread_control;
-  },
-
   get previousOwnerAppId() {
     return this.payload.take_thread_control.previous_owner_app_id;
   },
@@ -447,11 +411,6 @@ export const TakeThreadControl: TakeThreadControl = {
  * @category Event Mixin
  */
 export interface RequestThreadControl {
-  /** The raw `request_thread_control` object. */
-  readonly requestThreadControl: {
-    requested_owner_app_id: string;
-    metadata: string;
-  };
   /** App ID of the Secondary Receiver that is requesting thread control. */
   readonly requestedOwnerAppId: string;
   /** Custom string specified in the API request. */
@@ -459,10 +418,6 @@ export interface RequestThreadControl {
 }
 
 export const RequestThreadControl: RequestThreadControl = {
-  get requestThreadControl() {
-    return this.payload.request_thread_control;
-  },
-
   get requestedOwnerAppId() {
     return this.payload.request_thread_control.requested_owner_app_id;
   },
@@ -490,8 +445,6 @@ export const AppRoles: AppRoles = {
  * @category Event Mixin
  */
 export interface Optin {
-  /** The raw `optin` object. */
-  readonly optin: { ref: string; user_ref: undefined | string };
   /** The `data-ref` attribute that was defined with the entry point. */
   readonly dataRef: string;
   /**
@@ -502,10 +455,6 @@ export interface Optin {
 }
 
 export const Optin: Optin = {
-  get optin() {
-    return this.payload.optin;
-  },
-
   get dataRef() {
     return this.payload.optin.ref;
   },
@@ -539,8 +488,6 @@ export const OneTimeNotifOptin: OneTimeNotifOptin = {
  * @category Event Mixin
  */
 export interface PolicyEnforcement {
-  /** The raw `policy_enforcement` object. */
-  readonly policyEnforcement: { action: 'block' | 'unblock'; reason: string };
   readonly action: 'warning' | 'block' | 'unblock';
   /**
    * The reason for being warned or blocked. This field is absent if `action` is
@@ -550,10 +497,6 @@ export interface PolicyEnforcement {
 }
 
 export const PolicyEnforcement: PolicyEnforcement = {
-  get policyEnforcement() {
-    return this.payload['policy-enforcement'];
-  },
-
   get action() {
     return this.payload['policy-enforcement'].action;
   },
@@ -583,8 +526,6 @@ type RawReferral = {
  * @category Event Mixin
  */
 export interface Referral {
-  /** The raw `referral` object. */
-  readonly referral: RawReferral;
   /** The source of the referral. */
   readonly source: ReferralSource;
   /** The optional `ref` attribute set in the referrer. */
@@ -603,10 +544,6 @@ export interface Referral {
 }
 
 export const Referral: Referral = {
-  get referral() {
-    return this.payload.referral;
-  },
-
   get source() {
     return this.payload.referral.source;
   },
@@ -632,8 +569,6 @@ export const Referral: Referral = {
  * @category Event Mixin
  */
 export interface Postback {
-  /** The raw `postback` object. */
-  readonly postback: { title: string; payload: string; referral: any };
   /**
    * Title for the CTA that was clicked on. This is sent to all apps subscribed
    * to the page. For apps other than the original CTA sender, the postback
@@ -657,10 +592,6 @@ export interface Postback {
 }
 
 export const Postback: Postback = {
-  get postback() {
-    return this.payload.postback;
-  },
-
   get title() {
     return this.payload.postback.title;
   },
