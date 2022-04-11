@@ -36,13 +36,7 @@ export type ScriptLibrary<Vars, Input, Params, Return, Yield> = {
   stopPointIndex: Map<string, number>;
 };
 
-export type AnyScriptLibrary = ScriptLibrary<
-  unknown,
-  unknown,
-  unknown,
-  unknown,
-  unknown
->;
+export type AnyScriptLibrary = ScriptLibrary<any, any, any, any, any>;
 
 export type ScriptCircs<Vars> = {
   platform: string;
