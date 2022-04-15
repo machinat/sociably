@@ -9,7 +9,7 @@ export interface StateAccessor {
   get<T>(key: string): Promise<undefined | T>;
   /**
    * Store the value on a specific key. Return `true` if the old value is
-   * pdated, and return `false` if data is newly stored on the key.
+   * updated, `false` if it's newly stored on the key.
    */
   set<T>(key: string, value: T): Promise<boolean>;
   /**
