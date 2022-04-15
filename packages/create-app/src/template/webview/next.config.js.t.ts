@@ -15,12 +15,12 @@ module.exports = {
   distDir: '../dist',
   basePath: '/webview',
   publicRuntimeConfig: {${when(platforms.includes('messenger'))`
-    messengerPageId: MESSENGER_PAGE_ID,`}${when(platforms.includes('twitter'))`
-    twitterAgentId: TWITTER_ACCESS_TOKEN.split('-', 1)[0],`}${when(
+    MESSENGER_PAGE_ID,`}${when(platforms.includes('twitter'))`
+    TWITTER_AGENT_ID: TWITTER_ACCESS_TOKEN.split('-', 1)[0],`}${when(
   platforms.includes('telegram')
 )`
-    telegramBotName: TELEGRAM_BOT_NAME,`}${when(platforms.includes('line'))`
-    lineLiffId: LINE_LIFF_ID,`}
+    TELEGRAM_BOT_NAME,`}${when(platforms.includes('line'))`
+    LINE_LIFF_ID,`}
   }
 };
 `;

@@ -23,10 +23,10 @@ import LineAuth from '@machinat/line/webview/client';`}
 
 const {
   publicRuntimeConfig: {${when(platforms.includes('messenger'))`
-    messengerPageId,`}${when(platforms.includes('twitter'))`
-    twitterAgentId,`}${when(platforms.includes('telegram'))`
-    telegramBotName,`}${when(platforms.includes('line'))`
-    lineLiffId,`}
+    MESSENGER_PAGE_ID,`}${when(platforms.includes('twitter'))`
+    TWITTER_AGENT_ID,`}${when(platforms.includes('telegram'))`
+    TELEGRAM_BOT_NAME,`}${when(platforms.includes('line'))`
+    LINE_LIFF_ID,`}
   },
 } = getConfig();
 
@@ -34,16 +34,16 @@ const WebAppHome = () => {
   const client = useClient({
     mockupMode: typeof window === 'undefined',
     authPlatforms: [${when(platforms.includes('messenger'))`
-      new MessengerAuth({ pageId: messengerPageId }),`}${when(
+      new MessengerAuth({ pageId: MESSENGER_PAGE_ID }),`}${when(
   platforms.includes('twitter')
 )`
-      new TwitterAuth({ agentId: twitterAgentId }),`}${when(
+      new TwitterAuth({ agentId: TWITTER_AGENT_ID }),`}${when(
   platforms.includes('telegram')
 )`
-      new TelegramAuth({ botName: telegramBotName }),`}${when(
+      new TelegramAuth({ botName: TELEGRAM_BOT_NAME }),`}${when(
   platforms.includes('line')
 )`
-      new LineAuth({ liffId: lineLiffId }),`}
+      new LineAuth({ liffId: LINE_LIFF_ID }),`}
     ],
   });
   const { hello } = useEventReducer(
