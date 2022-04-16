@@ -134,10 +134,13 @@ const app = Machinat.createApp({
 3. Expose your bot name in `next.config.js`:
 
 ```js
+// highlight-next-line
+const { TELEGRAM_BOT_NAME } = process.env;
+
 module.exports = {
   publicRuntimeConfig: {
     // highlight-next-line
-    telegramBotName: process.env.TELEGRAM_BOT_NAME,
+    TELEGRAM_BOT_NAME,
   },
 };
 ```
@@ -149,13 +152,13 @@ import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
 import TelegramAuth from '@machinat/telegram/webview/client';
 
-const { publicRuntimeConfig } = getConfig();
+const {
+  publicRuntimeConfig: { TELEGRAM_BOT_NAME },
+} = getConfig();
 
 const client =  new WebviewClient({
   authPlatforms: [
-    new TelegramAuth({
-      botName: publicRuntimeConfig.telegramBotName,
-    }),
+    new TelegramAuth({ botName: TELEGRAM_BOT_NAME }),
   ],
 });
 ```

@@ -188,7 +188,7 @@ Like:
   const client = useClient({
     mockupMode: typeof window === 'undefined',
     authPlatforms: [
-      new MessengerWebviewAuth({ pageId: messengerPageId }),
+      new MessengerAuth({ pageId: MESSENGER_PAGE_ID }),
     ],
   });
   // ...
@@ -202,7 +202,7 @@ Like:
   const client = useClient({
     mockupMode: typeof window === 'undefined',
     authPlatforms: [
-      new TelegramWebviewAuth({ botName: telegramBotName }),
+      new TelegramAuth({ botName: TELEGRAM_BOT_NAME }),
     ],
   });
   // ...
@@ -216,7 +216,7 @@ Like:
   const client = useClient({
     mockupMode: typeof window === 'undefined',
     authPlatforms: [
-      new LineWebviewAuth({ liffId: lineLiffId }),
+      new LineAuth({ liffId: LINE_LIFF_ID }),
     ],
   });
   // ...

@@ -116,7 +116,7 @@ const app = Machinat.createApp({
   platforms: [
     Line.initModule({
       // add the login channel id
-      liffChannelIds: [LINE_LIFF_ID.split('-')[0]],
+      liffId: LINE_LIFF_ID,
       // ...
     }),
     Webview.initModule({
@@ -133,10 +133,12 @@ const app = Machinat.createApp({
 3. Expose LIFF id in `next.config.js`:
 
 ```js
+const { LINE_LIFF_ID } = process.env;
+
 module.exports = {
   publicRuntimeConfig: {
     // highlight-next-line
-    lineLiffId: process.env.LINE_LIFF_ID,
+    LINE_LIFF_ID,
   },
 };
 ```
@@ -148,13 +150,13 @@ import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
 import LineAuth from '@machinat/line/webview/client';
 
-const { publicRuntimeConfig } = getConfig();
+const {
+  publicRuntimeConfig: { LINE_LIFF_ID },
+} = getConfig();
 
 const client =  new WebviewClient({
   authPlatforms: [
-    new LineAuth({
-      liffId: publicRuntimeConfig.lineLiffId,
-    }),
+    new LineAuth({ liffId: LINE_LIFF_ID }),
   ],
 });
 ```

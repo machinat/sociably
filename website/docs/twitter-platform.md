@@ -123,10 +123,13 @@ const app = Machinat.createApp({
 2. Expose your Twitter agent user id in `next.config.js`:
 
 ```js
+// highlight-next-line
+const { TWITTER_ACCESS_TOKEN } = process.env;
+
 module.exports = {
   publicRuntimeConfig: {
     // highlight-next-line
-    twitterAgentId: process.env.TWITTER_ACCESS_TOKEN.split('-', 1)[0],
+    TWITTER_AGENT_ID: TWITTER_ACCESS_TOKEN.split('-', 1)[0],
   },
   // ...
 };
@@ -139,13 +142,13 @@ import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
 import TwitterAuth from '@machinat/twitter/webview/client';
 
-const { publicRuntimeConfig } = getConfig();
+const {
+  publicRuntimeConfig: { TWITTER_AGENT_ID },
+} = getConfig();
 
 const client =  new WebviewClient({
   authPlatforms: [
-    new TwitterAuth({
-      agentId: publicRuntimeConfig.twitterAgentId,
-    }),
+    new TwitterAuth({ agentId: TWITTER_AGENT_ID }),
   ],
 });
 ```

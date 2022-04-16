@@ -136,10 +136,12 @@ const app = Machinat.createApp({
 2. Expose your Facebook page id in `next.config.js`:
 
 ```js
+const { MESSENGER_PAGE_ID } = process.env;
+
 module.exports = {
   publicRuntimeConfig: {
     // highlight-next-line
-    messengerPageId: process.env.MESSENGER_PAGE_ID,
+    MESSENGER_PAGE_ID,
   },
   // ...
 };
@@ -152,13 +154,13 @@ import getConfig from 'next/config';
 import WebviewClient from '@machinat/webview/client';
 import MessengerAuth from '@machinat/messenger/webview/client';
 
-const { publicRuntimeConfig } = getConfig();
+const {
+  publicRuntimeConfig: { MESSENGER_PAGE_ID },
+} = getConfig();
 
 const client =  new WebviewClient({
   authPlatforms: [
-    new MessengerAuth({
-      pageId: publicRuntimeConfig.messengerPageId,
-    }),
+    new MessengerAuth({ pageId: MESSENGER_PAGE_ID }),
   ],
 });
 ```
