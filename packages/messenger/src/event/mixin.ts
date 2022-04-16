@@ -480,7 +480,7 @@ export const OneTimeNotifOptin: OneTimeNotifOptin = {
   },
 
   get token() {
-    return this.payload.optin.token;
+    return this.payload.optin.one_time_notif_token;
   },
 };
 
