@@ -31,9 +31,9 @@
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.6.0-canary"
+    "@machinat/core": "^0.6.0-beta"
   },
   "devDependencies": {
-    "@machinat/dev-tools": "^0.6.0-canary"
+    "@machinat/dev-tools": "^0.6.0-beta"
   }
 }
