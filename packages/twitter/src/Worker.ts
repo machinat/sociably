@@ -11,10 +11,8 @@ import type {
   TwitterChannel,
   TwitterJob,
   TwitterApiResult,
-  UploadingFileInfo,
   MediaUploadResult,
   MediaSource,
-  LinkingMedia,
 } from './types';
 
 type TwitterJobQueue = Queue<TwitterJob, TwitterApiResult>;
@@ -115,23 +113,27 @@ export default class TwitterWorker
     };
   }
 
-  private async _uploadMediaSources(mediaSources: MediaSource[]): Promise<{
+  async uploadMediaSources(mediaSources: MediaSource[]): Promise<{
     mediaIds: string[];
     uploadedMedia: TwitterApiResult['uploadedMedia'];
   }> {
     const mediaResults = await Promise.all(
-      mediaSources.map((media) => {
-        if (media.sourceType === 'id') {
-          return media.id;
+      mediaSources.map((source) => {
+        if (source.type === 'id') {
+          return source.id;
         }
-        if (media.sourceType === 'file') {
-          const { parameters, fileData, fileInfo } = media;
-          return this._uploadMediaFile(parameters, fileData, fileInfo);
+        if (source.type === 'file') {
+          const { parameters, fileData } = source;
+          return this.uploadMediaFile(fileData, parameters, {
+            contentType: parameters.media_type as string | undefined,
+            knownLength: parameters.total_bytes as number | undefined,
+          });
         }
-        if (media.sourceType === 'url') {
-          return this._uploadFromUrl(media);
+        if (source.type === 'url') {
+          const { url, parameters } = source;
+          return this.uploadMediaUrl(url, parameters);
         }
-        throw new Error(`unknown media source ${(media as any).sourceType}`);
+        throw new Error(`unknown media source ${(source as any).type}`);
       })
     );
 
@@ -144,12 +146,12 @@ export default class TwitterWorker
     const uploadedMedia: TwitterApiResult['uploadedMedia'] = [];
     mediaResults.forEach((uploadResult, idx) => {
       if (typeof uploadResult === 'object') {
-        const media = mediaSources[idx];
+        const source = mediaSources[idx];
         uploadedMedia.push({
-          type: media.type,
+          source,
           result: uploadResult,
           assetTag:
-            media && media.sourceType !== 'id' ? media.assetTag : undefined,
+            source && source.type !== 'id' ? source.assetTag : undefined,
         });
       }
     });
@@ -160,40 +162,41 @@ export default class TwitterWorker
     };
   }
 
-  private async _uploadFromUrl(media: LinkingMedia) {
-    const { type: mediaType, url, parameters } = media;
+  async uploadMediaUrl(
+    url: string,
+    parameters: Record<string, undefined | string | number>
+  ): Promise<MediaUploadResult> {
     const downloadRes = await fetch(url);
     if (!downloadRes.ok) {
       throw new Error(
-        `fail to download ${mediaType} at ${url} (${downloadRes.status} ${downloadRes.statusText})`
+        `fail to download file at ${url} (${downloadRes.status} ${downloadRes.statusText})`
       );
     }
 
     const contentType = downloadRes.headers.get('Content-Type');
     const contentLength = downloadRes.headers.get('Content-Length');
 
-    const fileInfo = {
-      contentType: contentType || undefined,
-      knownLength: contentLength ? Number(contentLength) : undefined,
-    };
     const updatedParameters = {
       ...parameters,
       media_type: parameters.media_type || contentType || undefined,
       total_bytes: parameters.total_bytes || contentLength || undefined,
     };
 
-    const uploadResult = await this._uploadMediaFile(
-      updatedParameters,
+    const uploadResult = await this.uploadMediaFile(
       downloadRes.body,
-      fileInfo
+      updatedParameters,
+      {
+        contentType: contentType || undefined,
+        knownLength: contentLength ? Number(contentLength) : undefined,
+      }
     );
     return uploadResult;
   }
 
-  async _uploadMediaFile(
-    parameters: { [k: string]: undefined | string },
+  async uploadMediaFile(
     fileData: Buffer | NodeJS.ReadableStream,
-    fileInfo?: UploadingFileInfo
+    parameters: Record<string, undefined | string | number>,
+    contentOptions: FormData.AppendOptions
   ): Promise<MediaUploadResult> {
     const initForm = new FormData();
     initForm.append('command', 'INIT');
@@ -208,7 +211,7 @@ export default class TwitterWorker
     const appendForm = new FormData();
     appendForm.append('command', 'APPEND');
     appendForm.append('media_id', mediaId);
-    appendForm.append('media', fileData, fileInfo);
+    appendForm.append('media', fileData, contentOptions);
     appendForm.append('segment_index', 0);
 
     await this._requestUpload(appendForm);
@@ -374,7 +377,7 @@ export default class TwitterWorker
       (key && refreshTarget && this._targetCache.get(key)) || initialTarget;
 
     const mediaResults = mediaSources
-      ? await this._uploadMediaSources(mediaSources)
+      ? await this.uploadMediaSources(mediaSources)
       : null;
 
     const { method, href, parameters } = accomplishRequest

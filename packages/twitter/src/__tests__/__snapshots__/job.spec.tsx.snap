@@ -39,8 +39,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "11111",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
     ],
     "refreshTarget": null,
@@ -80,8 +79,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "22222",
-        "sourceType": "id",
-        "type": "video",
+        "type": "id",
       },
     ],
     "refreshTarget": null,
@@ -143,8 +141,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "11111",
-        "sourceType": "id",
-        "type": "video",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -168,8 +165,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "22222",
-        "sourceType": "id",
-        "type": "animated_gif",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -193,8 +189,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "33333",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -218,23 +213,19 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "44444",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
       Object {
         "id": "55555",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
       Object {
         "id": "66666",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
       Object {
         "id": "77777",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -258,8 +249,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "88888",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -314,8 +304,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "11111",
-        "sourceType": "id",
-        "type": "video",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -359,8 +348,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "22222",
-        "sourceType": "id",
-        "type": "animated_gif",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -384,8 +372,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "33333",
-        "sourceType": "id",
-        "type": "video",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -409,8 +396,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "44444",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -439,13 +425,11 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "11111",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
       Object {
         "id": "22222",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -488,8 +472,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "33333",
-        "sourceType": "id",
-        "type": "video",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -513,8 +496,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "44444",
-        "sourceType": "id",
-        "type": "animated_gif",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],
@@ -579,8 +561,7 @@ Array [
     "mediaSources": Array [
       Object {
         "id": "11111",
-        "sourceType": "id",
-        "type": "photo",
+        "type": "id",
       },
     ],
     "refreshTarget": [Function],

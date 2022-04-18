@@ -6,7 +6,12 @@ import createDmSegmentValue from './utils/createDmSegmentValue';
 import createTweetSegmentValue from './utils/createTweetSegmentValue';
 import annotateTweetMedia from './utils/annotateTweetMedia';
 import splitTweetText from './utils/splitTweetText';
-import type { TwitterSegmentValue, TwitterJob, TweetResult } from './types';
+import type {
+  MediaType,
+  TwitterSegmentValue,
+  TwitterJob,
+  TweetResult,
+} from './types';
 
 const useCreatedTweetTarget = (agentId: string) => (_, result: TweetResult) => {
   return new TweetTarget(agentId, result.data.id);
@@ -40,18 +45,20 @@ export const createTweetJobs =
     segments: DispatchableSegment<TwitterSegmentValue>[]
   ): TwitterJob[] => {
     const jobs: TwitterJob[] = [];
-    let lastPlainTweet: null | TwitterJob = null;
+    let lastOpenTweet: null | TwitterJob = null;
+    let lastTweetMediaType: undefined | MediaType;
 
     segments.forEach((segment) => {
       if (segment.type === 'text') {
-        const splietdContent = splitTweetText(segment.value);
-        const newJobs = splietdContent?.map((text) =>
+        const splitedContent = splitTweetText(segment.value);
+        const newJobs = splitedContent?.map((text) =>
           plainTweetJob(target.agentId, target, key, text)
         );
 
         if (newJobs) {
           jobs.push(...newJobs);
-          lastPlainTweet = newJobs[newJobs.length - 1];
+          lastOpenTweet = newJobs[newJobs.length - 1];
+          lastTweetMediaType = undefined;
         }
       } else if (segment.value.type === 'tweet') {
         const { request, mediaSources } = segment.value;
@@ -65,7 +72,7 @@ export const createTweetJobs =
           accomplishRequest: segment.value.accomplishRequest,
         });
 
-        lastPlainTweet = null;
+        lastOpenTweet = null;
       } else if (segment.value.type === 'action') {
         const { request, mediaSources } = segment.value;
         jobs.push({
@@ -78,24 +85,25 @@ export const createTweetJobs =
           accomplishRequest: segment.value.accomplishRequest,
         });
       } else if (segment.value.type === 'media') {
-        const { media } = segment.value;
+        const { type: mediaType, source } = segment.value.attachment;
         if (
-          !lastPlainTweet ||
-          lastPlainTweet.request.parameters.poll ||
-          lastPlainTweet.request.parameters.quote_tweet_id ||
-          (lastPlainTweet.mediaSources &&
-            (media.type !== 'photo' ||
-              lastPlainTweet.mediaSources[0].type !== 'photo' ||
-              lastPlainTweet.mediaSources.length >= 4))
+          !lastOpenTweet ||
+          lastOpenTweet.request.parameters.poll ||
+          lastOpenTweet.request.parameters.quote_tweet_id ||
+          (lastOpenTweet.mediaSources &&
+            (mediaType !== 'photo' ||
+              lastTweetMediaType !== 'photo' ||
+              lastOpenTweet.mediaSources.length >= 4))
         ) {
-          lastPlainTweet = plainTweetJob(target.agentId, target, key);
-          jobs.push(lastPlainTweet);
+          lastOpenTweet = plainTweetJob(target.agentId, target, key);
+          jobs.push(lastOpenTweet);
         }
 
-        if (!lastPlainTweet.mediaSources) {
-          lastPlainTweet.mediaSources = [];
+        if (!lastOpenTweet.mediaSources) {
+          lastOpenTweet.mediaSources = [];
         }
-        lastPlainTweet.mediaSources.push(annotateTweetMedia(media));
+        lastOpenTweet.mediaSources.push(annotateTweetMedia(mediaType, source));
+        lastTweetMediaType = mediaType;
       } else {
         throw new Error(
           `direct message feature ${formatNode(
@@ -144,7 +152,7 @@ export const createDirectMessageJobs = (
     } else if (segment.value.type === 'media') {
       const { request, mediaSources, accomplishRequest } = createDmSegmentValue(
         undefined,
-        segment.value.media
+        segment.value.attachment
       );
 
       jobs.push({

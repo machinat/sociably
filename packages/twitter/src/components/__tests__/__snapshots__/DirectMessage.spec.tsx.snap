@@ -145,8 +145,7 @@ Array [
             "media_category": undefined,
             "shared": undefined,
           },
-          "sourceType": "id",
-          "type": "photo",
+          "type": "id",
         },
       ],
       "request": Object {

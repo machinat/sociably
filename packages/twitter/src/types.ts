@@ -40,39 +40,33 @@ export type TwitterPlatformConfigs = {
   dispatchMiddlewares?: TwitterDispatchMiddleware[];
 };
 
-export type UploadingFileInfo = {
-  filename?: string;
-  filepath?: string;
-  contentType?: string;
-  knownLength?: number;
-};
-
 export type MediaType = 'photo' | 'video' | 'animated_gif';
 
-export type ExistingMedia = {
-  sourceType: 'id';
-  type: MediaType;
+export type IdMediaSource = {
+  type: 'id';
   id: string;
 };
 
-export type LinkingMedia = {
-  sourceType: 'url';
-  type: MediaType;
+export type UrlMediaSource = {
+  type: 'url';
   url: string;
-  parameters: { [k: string]: undefined | string };
+  parameters: { [k: string]: undefined | string | number };
   assetTag?: string;
 };
 
-export type UploadingMedia = {
-  sourceType: 'file';
-  type: MediaType;
-  parameters: { [k: string]: undefined | string };
+export type FileMediaSource = {
+  type: 'file';
+  parameters: { [k: string]: undefined | string | number };
   fileData: Buffer | NodeJS.ReadableStream;
-  fileInfo?: UploadingFileInfo;
   assetTag?: string;
 };
 
-export type MediaSource = ExistingMedia | LinkingMedia | UploadingMedia;
+export type MediaSource = IdMediaSource | UrlMediaSource | FileMediaSource;
+
+export type MediaAttachment = {
+  type: MediaType;
+  source: MediaSource;
+};
 
 export type TwitterApiRequest = {
   method: string;
@@ -124,7 +118,7 @@ export type ActionSegmentValue = {
 
 export type MediaSegmentValue = {
   type: 'media';
-  media: MediaSource;
+  attachment: MediaAttachment;
 };
 
 export type TwitterSegmentValue =
@@ -144,7 +138,7 @@ export type TwitterApiResult = {
   uploadedMedia:
     | null
     | {
-        type: MediaType;
+        source: MediaSource;
         assetTag: undefined | string;
         result: MediaUploadResult;
       }[];

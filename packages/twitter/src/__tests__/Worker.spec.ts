@@ -639,18 +639,16 @@ test('with mediaSources & accomplishRequest', async () => {
       accomplishRequest,
       request: { method: 'POST', href: '2/foo', parameters: { n: 1 } },
       mediaSources: [
-        { sourceType: 'id', type: 'photo', id: '111111111111111111' },
+        { type: 'id', id: '111111111111111111' },
         {
-          sourceType: 'file',
-          type: 'photo',
+          type: 'file',
           parameters: { total_bytes: 11, media_type: 'image/png' },
           fileData: Buffer.from('hello media'),
           fileInfo: { contentType: 'image/png', knownLength: 11 },
           assetTag: 'foo',
         },
         {
-          sourceType: 'url',
-          type: 'photo',
+          type: 'url',
           parameters: {},
           url: 'https://cat.io/cute',
           assetTag: 'bar',
@@ -664,8 +662,7 @@ test('with mediaSources & accomplishRequest', async () => {
       request: { method: 'POST', href: '2/foo', parameters: { n: 2 } },
       mediaSources: [
         {
-          sourceType: 'url',
-          type: 'animated_gif',
+          type: 'url',
           parameters: {
             total_bytes: 66,
             media_type: 'video/mp4',
@@ -696,7 +693,7 @@ test('with mediaSources & accomplishRequest', async () => {
           },
           uploadedMedia: [
             {
-              type: 'photo',
+              source: jobs[0].mediaSources[1],
               assetTag: 'foo',
               result: {
                 media_id: BigInt('222222222222222222'),
@@ -704,7 +701,7 @@ test('with mediaSources & accomplishRequest', async () => {
               },
             },
             {
-              type: 'photo',
+              source: jobs[0].mediaSources[2],
               assetTag: 'bar',
               result: {
                 media_id: BigInt('333333333333333333'),
@@ -722,7 +719,7 @@ test('with mediaSources & accomplishRequest', async () => {
           body: { n: 2, media: ['444444444444444444'] },
           uploadedMedia: [
             {
-              type: 'animated_gif',
+              source: jobs[1].mediaSources[0],
               assetTag: 'baz',
               result: {
                 media_id: BigInt('444444444444444444'),

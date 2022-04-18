@@ -1,10 +1,10 @@
 import TweetTarget from '../TweetTarget';
-import type { MediaSource, TweetSegmentValue } from '../types';
+import type { MediaAttachment, TweetSegmentValue } from '../types';
 import annotateTweetMedia from './annotateTweetMedia';
 
 const createTweetSegmentValue = (
   parameters: Record<string, any>,
-  mediaSources?: null | MediaSource[],
+  media?: null | MediaAttachment[],
   dmLink?:
     | boolean
     | string
@@ -16,7 +16,9 @@ const createTweetSegmentValue = (
     href: '2/tweets',
     parameters,
   },
-  mediaSources: mediaSources ? mediaSources.map(annotateTweetMedia) : null,
+  mediaSources: media
+    ? media.map(({ source, type }) => annotateTweetMedia(type, source))
+    : null,
   accomplishRequest: (target: TweetTarget, request, mediaIds) => {
     const params = request.parameters;
     return {

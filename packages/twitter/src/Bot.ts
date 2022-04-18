@@ -30,6 +30,7 @@ import type {
   TwitterDispatchFrame,
   TwitterDispatchResponse,
   TwitterComponent,
+  MediaUploadResult,
 } from './types';
 
 type TwitterBotOptions = {
@@ -185,6 +186,31 @@ export class TwitterBot
       }
       throw err;
     }
+  }
+
+  async uploadMediaUrl(
+    url: string,
+    parameters: Record<string, string | number>
+  ): Promise<{ id: string; result: MediaUploadResult }> {
+    const result = await this.client.uploadMediaUrl(url, parameters);
+    return {
+      id: result.media_id_string,
+      result,
+    };
+  }
+
+  async uploadMediaFile(
+    fileData: Buffer | NodeJS.ReadableStream,
+    parameters: Record<string, string | number>
+  ): Promise<{ id: string; result: MediaUploadResult }> {
+    const result = await this.client.uploadMediaFile(fileData, parameters, {
+      contentType: parameters.media_type as string | undefined,
+      knownLength: parameters.total_bytes as number | undefined,
+    });
+    return {
+      id: result.media_id_string,
+      result,
+    };
   }
 
   async fetchMediaFile(url: string): Promise<{

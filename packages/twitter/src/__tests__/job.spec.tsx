@@ -16,7 +16,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:2',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '11111' },
+          attachment: { type: 'photo', source: { type: 'id', id: '11111' } },
         },
       },
       {
@@ -25,7 +25,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:3',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '22222' },
+          attachment: { type: 'photo', source: { type: 'id', id: '22222' } },
         },
       },
       {
@@ -40,7 +40,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:5',
         value: {
           type: 'media',
-          media: { type: 'video', sourceType: 'id', id: '33333' },
+          attachment: { type: 'video', source: { type: 'id', id: '33333' } },
         },
       },
       { type: 'text', node: <foo />, path: '$:6', value: 'Haro' },
@@ -61,7 +61,10 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:8',
         value: {
           type: 'media',
-          media: { type: 'animated_gif', sourceType: 'id', id: '44444' },
+          attachment: {
+            type: 'animated_gif',
+            source: { type: 'id', id: '44444' },
+          },
         },
       },
     ]);
@@ -169,7 +172,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:2',
         value: {
           type: 'media',
-          media: { type: 'video', sourceType: 'id', id: '11111' },
+          attachment: { type: 'video', source: { type: 'id', id: '11111' } },
         },
       },
       {
@@ -178,7 +181,10 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:3',
         value: {
           type: 'media',
-          media: { type: 'animated_gif', sourceType: 'id', id: '22222' },
+          attachment: {
+            type: 'animated_gif',
+            source: { type: 'id', id: '22222' },
+          },
         },
       },
       {
@@ -187,7 +193,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:4',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '33333' },
+          attachment: { type: 'photo', source: { type: 'id', id: '33333' } },
         },
       },
       { type: 'text', node: <foo />, path: '$:5', value: 'World' },
@@ -197,7 +203,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:6',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '44444' },
+          attachment: { type: 'photo', source: { type: 'id', id: '44444' } },
         },
       },
       {
@@ -206,7 +212,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:7',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '55555' },
+          attachment: { type: 'photo', source: { type: 'id', id: '55555' } },
         },
       },
       {
@@ -215,7 +221,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:8',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '66666' },
+          attachment: { type: 'photo', source: { type: 'id', id: '66666' } },
         },
       },
       {
@@ -224,7 +230,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:9',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '77777' },
+          attachment: { type: 'photo', source: { type: 'id', id: '77777' } },
         },
       },
       {
@@ -233,7 +239,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:10',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '88888' },
+          attachment: { type: 'photo', source: { type: 'id', id: '88888' } },
         },
       },
     ]);
@@ -372,7 +378,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:2',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '11111' },
+          attachment: { type: 'photo', source: { type: 'id', id: '11111' } },
         },
       },
     ]);
@@ -443,7 +449,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:2',
         value: {
           type: 'media',
-          media: { type: 'video', sourceType: 'id', id: '11111' },
+          attachment: { type: 'video', source: { type: 'id', id: '11111' } },
         },
       },
       {
@@ -461,7 +467,10 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:4',
         value: {
           type: 'media',
-          media: { type: 'animated_gif', sourceType: 'id', id: '22222' },
+          attachment: {
+            type: 'animated_gif',
+            source: { type: 'id', id: '22222' },
+          },
         },
       },
       {
@@ -469,7 +478,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         node: <foo />,
         path: '$:5',
         value: createTweetSegmentValue({ text: 'Howdy' }, [
-          { type: 'video', sourceType: 'id', id: '33333' },
+          { type: 'video', source: { type: 'id', id: '33333' } },
         ]),
       },
       {
@@ -478,7 +487,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:6',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '44444' },
+          attachment: { type: 'photo', source: { type: 'id', id: '44444' } },
         },
       },
     ]);
@@ -647,7 +656,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
         path: '$:2',
         value: {
           type: 'media',
-          media: { type: 'photo', sourceType: 'id', id: '11111' },
+          attachment: { type: 'photo', source: { type: 'id', id: '11111' } },
         },
       },
       {
@@ -656,8 +665,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
         path: '$:3',
         value: createDmSegmentValue('World', {
           type: 'video',
-          sourceType: 'id',
-          id: '22222',
+          source: { type: 'id', id: '22222' },
         }),
       },
       {

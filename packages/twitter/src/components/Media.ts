@@ -27,7 +27,7 @@ export type MediaProps = {
   fileSize?: number;
 };
 
-const makeMediaComponent = (name: string, type: MediaType) =>
+const makeMediaComponent = (name: string, mediaType: MediaType) =>
   makeTwitterComponent(
     {
       [name](
@@ -73,35 +73,29 @@ const makeMediaComponent = (name: string, type: MediaType) =>
         return [
           makeUnitSegment(node, path, {
             type: 'media',
-            media: mediaId
+            attachment: mediaId
               ? {
-                  sourceType: 'id',
-                  type,
-                  id: mediaId,
-                  parameters,
+                  type: mediaType,
+                  source: { type: 'id', id: mediaId, parameters },
                 }
               : url
               ? {
-                  sourceType: 'url',
-                  type,
-                  url,
-                  parameters,
+                  type: mediaType,
+                  source: { type: 'url', url, parameters },
                 }
               : fileData
               ? {
-                  type,
-                  sourceType: 'file',
-                  parameters: {
-                    ...parameters,
-                    total_bytes: String(fileSize),
-                    media_type: fileType,
+                  type: mediaType,
+                  source: {
+                    type: 'file',
+                    parameters: {
+                      ...parameters,
+                      total_bytes: fileSize,
+                      media_type: fileType,
+                    },
+                    fileData,
+                    assetTag,
                   },
-                  fileData,
-                  fileInfo: {
-                    contentType: fileType,
-                    knownLength: fileSize,
-                  },
-                  assetTag,
                 }
               : (null as never),
           }),

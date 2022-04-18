@@ -9,14 +9,16 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "id": "12345",
-        "parameters": Object {
-          "additional_owners": undefined,
-          "media_category": undefined,
-          "shared": undefined,
+      "attachment": Object {
+        "source": Object {
+          "id": "12345",
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": undefined,
+            "shared": undefined,
+          },
+          "type": "id",
         },
-        "sourceType": "id",
         "type": "animated_gif",
       },
       "type": "media",
@@ -35,15 +37,17 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "parameters": Object {
-          "additional_owners": undefined,
-          "media_category": undefined,
-          "shared": "true",
+      "attachment": Object {
+        "source": Object {
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": undefined,
+            "shared": "true",
+          },
+          "type": "url",
+          "url": "http://foo.io/bar.mp4",
         },
-        "sourceType": "url",
         "type": "animated_gif",
-        "url": "http://foo.io/bar.mp4",
       },
       "type": "media",
     },
@@ -79,28 +83,26 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "assetTag": "MyAnimatedGif",
-        "fileData": Object {
-          "data": Array [
-            102,
-            111,
-            111,
-          ],
-          "type": "Buffer",
+      "attachment": Object {
+        "source": Object {
+          "assetTag": "MyAnimatedGif",
+          "fileData": Object {
+            "data": Array [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
+          "parameters": Object {
+            "additional_owners": "12345",
+            "media_category": "dm_gif",
+            "media_type": "image/gif",
+            "shared": "true",
+            "total_bytes": 1234,
+          },
+          "type": "file",
         },
-        "fileInfo": Object {
-          "contentType": "image/gif",
-          "knownLength": 1234,
-        },
-        "parameters": Object {
-          "additional_owners": "12345",
-          "media_category": "dm_gif",
-          "media_type": "image/gif",
-          "shared": "true",
-          "total_bytes": "1234",
-        },
-        "sourceType": "file",
         "type": "animated_gif",
       },
       "type": "media",
@@ -118,14 +120,16 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "id": "12345",
-        "parameters": Object {
-          "additional_owners": undefined,
-          "media_category": undefined,
-          "shared": undefined,
+      "attachment": Object {
+        "source": Object {
+          "id": "12345",
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": undefined,
+            "shared": undefined,
+          },
+          "type": "id",
         },
-        "sourceType": "id",
         "type": "photo",
       },
       "type": "media",
@@ -144,15 +148,17 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "parameters": Object {
-          "additional_owners": undefined,
-          "media_category": undefined,
-          "shared": "true",
+      "attachment": Object {
+        "source": Object {
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": undefined,
+            "shared": "true",
+          },
+          "type": "url",
+          "url": "http://foo.io/bar.mp4",
         },
-        "sourceType": "url",
         "type": "photo",
-        "url": "http://foo.io/bar.mp4",
       },
       "type": "media",
     },
@@ -188,28 +194,26 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "assetTag": "MyPhoto",
-        "fileData": Object {
-          "data": Array [
-            102,
-            111,
-            111,
-          ],
-          "type": "Buffer",
+      "attachment": Object {
+        "source": Object {
+          "assetTag": "MyPhoto",
+          "fileData": Object {
+            "data": Array [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
+          "parameters": Object {
+            "additional_owners": "12345",
+            "media_category": "dm_image",
+            "media_type": "image/jpeg",
+            "shared": "true",
+            "total_bytes": 1234,
+          },
+          "type": "file",
         },
-        "fileInfo": Object {
-          "contentType": "image/jpeg",
-          "knownLength": 1234,
-        },
-        "parameters": Object {
-          "additional_owners": "12345",
-          "media_category": "dm_image",
-          "media_type": "image/jpeg",
-          "shared": "true",
-          "total_bytes": "1234",
-        },
-        "sourceType": "file",
         "type": "photo",
       },
       "type": "media",
@@ -227,14 +231,16 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "id": "12345",
-        "parameters": Object {
-          "additional_owners": undefined,
-          "media_category": undefined,
-          "shared": undefined,
+      "attachment": Object {
+        "source": Object {
+          "id": "12345",
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": undefined,
+            "shared": undefined,
+          },
+          "type": "id",
         },
-        "sourceType": "id",
         "type": "video",
       },
       "type": "media",
@@ -253,15 +259,17 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "parameters": Object {
-          "additional_owners": undefined,
-          "media_category": undefined,
-          "shared": "true",
+      "attachment": Object {
+        "source": Object {
+          "parameters": Object {
+            "additional_owners": undefined,
+            "media_category": undefined,
+            "shared": "true",
+          },
+          "type": "url",
+          "url": "http://foo.io/bar.mp4",
         },
-        "sourceType": "url",
         "type": "video",
-        "url": "http://foo.io/bar.mp4",
       },
       "type": "media",
     },
@@ -297,28 +305,26 @@ Array [
     "path": "$",
     "type": "unit",
     "value": Object {
-      "media": Object {
-        "assetTag": "MyVideo",
-        "fileData": Object {
-          "data": Array [
-            102,
-            111,
-            111,
-          ],
-          "type": "Buffer",
+      "attachment": Object {
+        "source": Object {
+          "assetTag": "MyVideo",
+          "fileData": Object {
+            "data": Array [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
+          "parameters": Object {
+            "additional_owners": "12345",
+            "media_category": "dm_video",
+            "media_type": "video/mp4",
+            "shared": "true",
+            "total_bytes": 1234,
+          },
+          "type": "file",
         },
-        "fileInfo": Object {
-          "contentType": "video/mp4",
-          "knownLength": 1234,
-        },
-        "parameters": Object {
-          "additional_owners": "12345",
-          "media_category": "dm_video",
-          "media_type": "video/mp4",
-          "shared": "true",
-          "total_bytes": "1234",
-        },
-        "sourceType": "file",
         "type": "video",
       },
       "type": "media",

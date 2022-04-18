@@ -1,10 +1,10 @@
 import TwitterChat from '../Chat';
-import type { MediaSource, DirectMessageSegmentValue } from '../types';
+import type { MediaAttachment, DirectMessageSegmentValue } from '../types';
 import annotateDmMedia from './annotateDmMedia';
 
 const createDmSegmentValue = (
   text?: string,
-  media?: MediaSource
+  media?: MediaAttachment
 ): DirectMessageSegmentValue => ({
   type: 'dm',
   request: {
@@ -39,7 +39,7 @@ const createDmSegmentValue = (
     }
     return request;
   },
-  mediaSources: media ? [annotateDmMedia(media)] : null,
+  mediaSources: media ? [annotateDmMedia(media.type, media.source)] : null,
 });
 
 export default createDmSegmentValue;

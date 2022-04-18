@@ -4,7 +4,11 @@ import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent';
 import createTweetSegmentValue from '../utils/createTweetSegmentValue';
 import splitTweetText from '../utils/splitTweetText';
-import { TwitterSegmentValue, TwitterComponent, MediaSource } from '../types';
+import {
+  TwitterSegmentValue,
+  TwitterComponent,
+  MediaAttachment,
+} from '../types';
 
 /**
  * @category Props
@@ -92,9 +96,9 @@ export const Tweet: TwitterComponent<
     }
   }
 
-  let mediaSources: null | MediaSource[] = null;
+  let mediaAttachments: null | MediaAttachment[] = null;
   if (mediaSegments) {
-    mediaSources = [];
+    mediaAttachments = [];
 
     for (const segment of mediaSegments) {
       if (
@@ -105,11 +109,12 @@ export const Tweet: TwitterComponent<
           `${formatNode(segment.node)} can't be placed in "media" prop`
         );
       }
-      mediaSources.push(segment.value.media);
+
+      mediaAttachments.push(segment.value.attachment);
     }
   }
 
-  if (!contentSegments && !mediaSources) {
+  if (!contentSegments && !mediaAttachments) {
     throw new TypeError(`no text or media in <Tweet/>`);
   }
 
@@ -147,7 +152,7 @@ export const Tweet: TwitterComponent<
           for_super_followers_only: superFollowersOnly,
           direct_message_deep_link: undefined,
         },
-        mediaSources,
+        mediaAttachments,
         directMessageLink
       )
     ),

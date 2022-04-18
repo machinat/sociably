@@ -146,8 +146,7 @@ Array [
             "media_category": undefined,
             "shared": undefined,
           },
-          "sourceType": "id",
-          "type": "photo",
+          "type": "id",
         },
         Object {
           "parameters": Object {
@@ -155,8 +154,7 @@ Array [
             "media_category": "tweet_image",
             "shared": undefined,
           },
-          "sourceType": "url",
-          "type": "photo",
+          "type": "url",
           "url": "http://foo.bar/baz.png",
         },
         Object {
@@ -169,19 +167,14 @@ Array [
             ],
             "type": "Buffer",
           },
-          "fileInfo": Object {
-            "contentType": "image/jpeg",
-            "knownLength": 123,
-          },
           "parameters": Object {
             "additional_owners": undefined,
             "media_category": "tweet_image",
             "media_type": "image/jpeg",
             "shared": undefined,
-            "total_bytes": "123",
+            "total_bytes": 123,
           },
-          "sourceType": "file",
-          "type": "photo",
+          "type": "file",
         },
       ],
       "request": Object {

@@ -1,19 +1,22 @@
-import type { MediaSource } from '../types';
+import type { MediaSource, MediaType } from '../types';
 
-const annotateTweetMedia = (media: MediaSource): MediaSource =>
-  media.sourceType === 'id'
-    ? media
+const annotateTweetMedia = (
+  mediaType: MediaType,
+  source: MediaSource
+): MediaSource =>
+  source.type === 'id'
+    ? source
     : {
-        ...media,
+        ...source,
         parameters: {
-          ...media.parameters,
+          ...source.parameters,
           media_category:
-            media.parameters.media_category ||
-            (media.type === 'photo'
+            source.parameters.media_category ||
+            (mediaType === 'photo'
               ? 'tweet_image'
-              : media.type === 'video'
+              : mediaType === 'video'
               ? 'tweet_video'
-              : media.type === 'animated_gif'
+              : mediaType === 'animated_gif'
               ? 'tweet_gif'
               : undefined),
         },

@@ -56,11 +56,13 @@ const unsuportedMedia = (node, path) => [
 const img = (node, path) => [
   makeUnitSegment<TwitterSegmentValue>(node, path, {
     type: 'media',
-    media: {
-      sourceType: 'url',
+    attachment: {
       type: 'photo',
-      url: node.props.src,
-      parameters: {},
+      source: {
+        type: 'url',
+        url: node.props.src,
+        parameters: {},
+      },
     },
   }),
 ];
@@ -68,11 +70,13 @@ const img = (node, path) => [
 const video = (node, path) => [
   makeUnitSegment<TwitterSegmentValue>(node, path, {
     type: 'media',
-    media: {
-      sourceType: 'url',
+    attachment: {
       type: 'video',
-      url: node.props.src,
-      parameters: {},
+      source: {
+        type: 'url',
+        url: node.props.src,
+        parameters: {},
+      },
     },
   }),
 ];

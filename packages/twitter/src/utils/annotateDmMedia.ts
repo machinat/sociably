@@ -1,19 +1,22 @@
-import type { MediaSource } from '../types';
+import type { MediaSource, MediaType } from '../types';
 
-const annotateDmMedia = (media: MediaSource): MediaSource =>
-  media.sourceType === 'id'
-    ? media
+const annotateDmMedia = (
+  mediaType: MediaType,
+  source: MediaSource
+): MediaSource =>
+  source.type === 'id'
+    ? source
     : {
-        ...media,
+        ...source,
         parameters: {
-          ...media.parameters,
+          ...source.parameters,
           media_category:
-            media.parameters.media_category ||
-            (media.type === 'photo'
+            source.parameters.media_category ||
+            (mediaType === 'photo'
               ? 'dm_image'
-              : media.type === 'video'
+              : mediaType === 'video'
               ? 'dm_video'
-              : media.type === 'animated_gif'
+              : mediaType === 'animated_gif'
               ? 'dm_gif'
               : undefined),
         },

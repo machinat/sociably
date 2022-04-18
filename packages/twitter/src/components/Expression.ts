@@ -74,7 +74,7 @@ export const Expression: TwitterComponent<
         createDmRequest = segValue.request;
         outputSegment.push(segment);
       } else if (segValue.type === 'media') {
-        const dmSegValue = createDmSegmentValue(undefined, segValue.media);
+        const dmSegValue = createDmSegmentValue(undefined, segValue.attachment);
         createDmRequest = dmSegValue.request;
 
         outputSegment.push({

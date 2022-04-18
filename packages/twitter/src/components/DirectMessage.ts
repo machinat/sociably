@@ -94,7 +94,7 @@ export const DirectMessage: TwitterComponent<
 
   const dmSegmentValue = createDmSegmentValue(
     contentSegments?.[0].value,
-    mediaSegments?.[0].value.media
+    mediaSegments?.[0].value.attachment
   );
 
   const messageCreateParams =
