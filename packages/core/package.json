@@ -1,6 +1,6 @@
 {
   "name": "@machinat/core",
-  "version": "0.6.0-canary.8",
+  "version": "0.6.0-beta.1",
   "description": "The sociable app framework",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
