@@ -1,7 +1,9 @@
+import { MachinatNode } from '@machinat/core';
 import { makeClassProvider } from '@machinat/core/service';
 import StateControllerI from '@machinat/core/base/StateController';
 import { ConfigsI } from '../interface';
 import BotP from '../Bot';
+import { RenderMediaResponse } from '../types';
 
 const MEDIA = 'media';
 const WEBHOOK = 'webhook';
@@ -74,6 +76,21 @@ export class TwitterAssetsManager {
 
   unsaveMedia(tag: string): Promise<boolean> {
     return this.unsaveAssetId(MEDIA, tag);
+  }
+
+  async renderMedia(
+    tag: string,
+    media: MachinatNode
+  ): Promise<RenderMediaResponse> {
+    const results = await this.bot.renderMedia(media);
+    if (!results) {
+      throw new Error('media content is empty');
+    }
+
+    const result = results[0];
+    this.saveMedia(tag, result.id);
+
+    return result;
   }
 
   // webhook

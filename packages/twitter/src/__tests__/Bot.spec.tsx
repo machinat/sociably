@@ -8,6 +8,8 @@ import _Worker from '../Worker';
 import DirectMessageChat from '../Chat';
 import TweetTarget from '../TweetTarget';
 import TwitterBot from '../Bot';
+import { DirectMessage } from '../components/DirectMessage';
+import { Photo } from '../components/Media';
 
 const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
@@ -410,6 +412,120 @@ describe('.makeApiCall(method, uri, params)', () => {
   });
 });
 
+describe('.renderMedia(media)', () => {
+  test('render and upload media', async () => {
+    let initMediaCount = 1;
+    const uploadCall = nock('https://upload.twitter.com')
+      .post('/1.1/media/upload.json', bodySpy)
+      .times(6)
+      .reply(
+        200,
+        (_, body) => {
+          const id =
+            body.indexOf('INIT') !== -1
+              ? new Array(18).fill(`${initMediaCount++}`).join('') // eslint-disable-line no-plusplus
+              : /(1{18}|2{18})/.exec(body as string)?.[0];
+          return `{"media_id":${id},"media_id_string":"${id}"}`;
+        },
+        { 'content-type': 'application/json' }
+      );
+
+    const externalMediaFileCall = nock('https://machinat.io')
+      .get('/img/foo.jpg')
+      .reply(200, '__FILE_CONTENT_FROM_EXTERNAL_URL__', {
+        'content-type': 'image/jpg',
+        'content-length': '34',
+      });
+
+    const bot = new TwitterBot(authOptions);
+
+    await expect(
+      bot.renderMedia(
+        <>
+          <Photo shared url="https://machinat.io/img/foo.jpg" />
+          <Photo
+            fileData={Buffer.from('foo')}
+            fileSize={3}
+            fileType="image/jpg"
+          />
+        </>
+      )
+    ).resolves.toMatchInlineSnapshot(`
+            Array [
+              Object {
+                "id": "222222222222222222",
+                "result": Object {
+                  "media_id": 222222222222222222n,
+                  "media_id_string": "222222222222222222",
+                },
+                "source": Object {
+                  "parameters": Object {
+                    "additional_owners": undefined,
+                    "media_category": undefined,
+                    "shared": "true",
+                  },
+                  "type": "url",
+                  "url": "https://machinat.io/img/foo.jpg",
+                },
+                "type": "photo",
+              },
+              Object {
+                "id": "111111111111111111",
+                "result": Object {
+                  "media_id": 111111111111111111n,
+                  "media_id_string": "111111111111111111",
+                },
+                "source": Object {
+                  "assetTag": undefined,
+                  "fileData": Object {
+                    "data": Array [
+                      102,
+                      111,
+                      111,
+                    ],
+                    "type": "Buffer",
+                  },
+                  "parameters": Object {
+                    "additional_owners": undefined,
+                    "media_category": undefined,
+                    "media_type": "image/jpg",
+                    "shared": undefined,
+                    "total_bytes": 3,
+                  },
+                  "type": "file",
+                },
+                "type": "photo",
+              },
+            ]
+          `);
+
+    expect(uploadCall.isDone()).toBe(true);
+    expect(externalMediaFileCall.isDone()).toBe(true);
+  });
+
+  it('throw if the non media content received', async () => {
+    const bot = new TwitterBot(authOptions);
+
+    await expect(
+      bot.renderMedia('foo')
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"\\"foo\\" is not media"`);
+    await expect(
+      bot.renderMedia(<Machinat.Pause />)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"<Pause /> is not media"`);
+    await expect(
+      bot.renderMedia(<DirectMessage>foo</DirectMessage>)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"<DirectMessage /> is not media"`
+    );
+  });
+
+  it('return null if the node is empty', async () => {
+    const bot = new TwitterBot(authOptions);
+
+    await expect(bot.renderMedia(<>{null}</>)).resolves.toBe(null);
+  });
+});
+
 test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
   const authSpy = moxy(() => true);
   const mediaContent = Buffer.from('__MEDIA_CONTENT__');
@@ -440,6 +556,16 @@ test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
       content = data;
     });
   });
+
+  expect(authSpy.mock).toHaveBeenCalledTimes(1);
+  expect(
+    authSpy.mock.calls[0].args[0]
+      .replace(/oauth_nonce="[^"]+"/, 'oauth_nonce="_NONCE_"')
+      .replace(/oauth_timestamp="\d+"/, 'oauth_timestamp="1234567890"')
+      .replace(/oauth_signature="[^"]+"/, 'oauth_signature="_SIGNATURE_"')
+  ).toMatchInlineSnapshot(
+    `"OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"_NONCE_\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1234567890\\",oauth_token=\\"1234567890-__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"_SIGNATURE_\\""`
+  );
 
   expect(content).toEqual(mediaContent);
   expect(mediaFileApi.isDone()).toBe(true);

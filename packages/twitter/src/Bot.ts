@@ -9,6 +9,7 @@ import type {
 import Renderer from '@machinat/core/renderer';
 import Queue from '@machinat/core/queue';
 import Engine, { DispatchError } from '@machinat/core/engine';
+import { formatNode } from '@machinat/core/utils';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import { makeClassProvider } from '@machinat/core/service';
 import { createTweetJobs, createDirectMessageJobs } from './job';
@@ -30,7 +31,8 @@ import type {
   TwitterDispatchFrame,
   TwitterDispatchResponse,
   TwitterComponent,
-  MediaUploadResult,
+  MediaAttachment,
+  RenderMediaResponse,
 } from './types';
 
 type TwitterBotOptions = {
@@ -188,29 +190,40 @@ export class TwitterBot
     }
   }
 
-  async uploadMediaUrl(
-    url: string,
-    parameters: Record<string, string | number>
-  ): Promise<{ id: string; result: MediaUploadResult }> {
-    const result = await this.client.uploadMediaUrl(url, parameters);
-    return {
-      id: result.media_id_string,
-      result,
-    };
-  }
+  async renderMedia(
+    media: MachinatNode
+  ): Promise<null | RenderMediaResponse[]> {
+    const segments = await this.engine.renderer.render(media, null, null);
+    if (!segments) {
+      return null;
+    }
 
-  async uploadMediaFile(
-    fileData: Buffer | NodeJS.ReadableStream,
-    parameters: Record<string, string | number>
-  ): Promise<{ id: string; result: MediaUploadResult }> {
-    const result = await this.client.uploadMediaFile(fileData, parameters, {
-      contentType: parameters.media_type as string | undefined,
-      knownLength: parameters.total_bytes as number | undefined,
-    });
-    return {
+    const attachments: MediaAttachment[] = [];
+
+    for (const segment of segments) {
+      if (segment.type !== 'unit' || segment.value.type !== 'media') {
+        throw new Error(`${formatNode(segment.node)} is not media`);
+      }
+
+      const { attachment } = segment.value;
+      if (attachment.source.type !== 'id') {
+        attachments.push(attachment);
+      }
+    }
+
+    const { uploadedMedia } = await this.client.uploadMediaSources(
+      attachments.map(({ source }) => source)
+    );
+    if (!uploadedMedia) {
+      return null;
+    }
+
+    return uploadedMedia.map(({ source, result }, i) => ({
+      type: attachments[i].type,
       id: result.media_id_string,
+      source,
       result,
-    };
+    }));
   }
 
   async fetchMediaFile(url: string): Promise<{

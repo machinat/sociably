@@ -1,6 +1,8 @@
 import moxy from '@moxyjs/moxy';
+import Machinat from '@machinat/core';
 import type StateControllerI from '@machinat/core/base/StateController';
 import type { TwitterBot } from '../../Bot';
+import { Photo } from '../../components/Media';
 import { TwitterAssetsManager } from '../AssetsManager';
 
 const state = moxy({
@@ -23,6 +25,7 @@ const stateController = moxy<StateControllerI>({
 const bot = moxy<TwitterBot>({
   id: 123456,
   makeApiCall() {},
+  renderMedia() {},
 } as never);
 
 beforeEach(() => {
@@ -231,6 +234,52 @@ test('unsave asset id', async () => {
 
   expect(stateController.globalState.mock).toHaveBeenCalledTimes(10);
   expect(state.delete.mock).toHaveBeenCalledTimes(10);
+});
+
+describe('.renderMedia(tag, media)', () => {
+  it('render and save media', async () => {
+    const manager = new TwitterAssetsManager(appId, stateController, bot);
+    const photo = <Photo url="https://machinat.io/img/foo.jpg" />;
+    const uploadResponse = {
+      type: 'photo',
+      id: '111111111111111111',
+      source: {
+        type: 'url',
+        url: 'https://machinat.io/img/foo.jpg',
+        parameters: {},
+      },
+      result: {
+        media_id: BigInt('111111111111111111'),
+        media_id_string: '111111111111111111',
+      },
+    };
+    bot.renderMedia.mock.fake(async () => [uploadResponse]);
+
+    await expect(manager.renderMedia('foo', photo)).resolves.toEqual(
+      uploadResponse
+    );
+
+    expect(bot.renderMedia.mock).toHaveBeenCalledTimes(1);
+    expect(bot.renderMedia.mock).toHaveBeenCalledWith(photo);
+
+    expect(stateController.globalState.mock).toHaveBeenCalledTimes(1);
+    expect(
+      stateController.globalState.mock.calls[0].args[0]
+    ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.media"`);
+
+    expect(state.set.mock).toHaveBeenCalledTimes(1);
+    expect(state.set.mock).toHaveBeenCalledWith('foo', '111111111111111111');
+  });
+
+  it('throw if media is empty', async () => {
+    const manager = new TwitterAssetsManager(appId, stateController, bot);
+
+    await expect(
+      manager.renderMedia('foo', null)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"media content is empty"`);
+
+    expect(state.set.mock).not.toHaveBeenCalled();
+  });
 });
 
 describe('.setUpWebhook(tag, env, url)', () => {

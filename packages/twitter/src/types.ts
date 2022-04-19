@@ -175,6 +175,13 @@ export type TwitterPlatformUtilities = PlatformUtilities<
   TwitterApiResult
 >;
 
+export type RenderMediaResponse = {
+  type: MediaType;
+  id: string;
+  source: MediaSource;
+  result: MediaUploadResult;
+};
+
 export type NumberPairs = [number, number];
 
 export type HashtagEntity = {
