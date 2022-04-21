@@ -42,22 +42,22 @@ const makeEvent = <Proto extends TwitterEvent>(
 const TweetProto = mixin(EventBase, TweetBase);
 
 const ReplyTweetProto = mixin(TweetProto, ReplyTweet, {
-  category: 'linked_tweet' as const,
-  type: 'reply_tweet' as const,
+  category: 'tweet' as const,
+  type: 'reply' as const,
 });
 
 const QuoteTweetProto = mixin(TweetProto, QuoteTweet, {
-  category: 'linked_tweet' as const,
+  category: 'tweet' as const,
   type: 'quote_tweet' as const,
 });
 
 const RetweetProto = mixin(TweetProto, Retweet, {
-  category: 'linked_tweet' as const,
+  category: 'tweet' as const,
   type: 'retweet' as const,
 });
 
 const TweetMentionProto = mixin(TweetProto, CreateTweet, {
-  category: 'linked_tweet' as const,
+  category: 'tweet' as const,
   type: 'mention' as const,
 });
 
@@ -194,7 +194,10 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
       if (rawTweet.user.id_str === forUserId) {
         return makeEvent(forUserId, userHasBlocked, rawTweet, EchoTweetProto);
       }
-      if (rawTweet.in_reply_to_user_id_str === forUserId) {
+      if (
+        rawTweet.in_reply_to_status_id &&
+        rawTweet.in_reply_to_user_id_str === forUserId
+      ) {
         return makeEvent(forUserId, userHasBlocked, rawTweet, ReplyTweetProto);
       }
       if (rawTweet.retweeted_status?.user.id_str === forUserId) {

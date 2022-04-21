@@ -29,11 +29,11 @@ interface EventObject<Category extends string, Type extends string> {
 /**
  * The subscribing user's tweet is quoted
  * @category Event
- * @eventCategory `'linked_tweet'`
+ * @eventCategory `'tweet'`
  * @eventType `'reply_tweet'`
  */
 export interface ReplyTweetEvent
-  extends EventObject<'linked_tweet', 'reply_tweet'>,
+  extends EventObject<'tweet', 'reply'>,
     EventBase,
     TweetBase,
     ReplyTweet {}
@@ -41,11 +41,11 @@ export interface ReplyTweetEvent
 /**
  * The subscribing user's tweet is quoted
  * @category Event
- * @eventCategory `'linked_tweet'`
+ * @eventCategory `'tweet'`
  * @eventType `'quote_tweet'`
  */
 export interface QuotedTweetEvent
-  extends EventObject<'linked_tweet', 'quote_tweet'>,
+  extends EventObject<'tweet', 'quote_tweet'>,
     EventBase,
     TweetBase,
     QuoteTweet {}
@@ -53,11 +53,11 @@ export interface QuotedTweetEvent
 /**
  * The subscribing user's tweet is retweeted
  * @category Event
- * @eventCategory `'linked_tweet'`
+ * @eventCategory `'tweet'`
  * @eventType `'retweet'`
  */
 export interface RetweetEvent
-  extends EventObject<'linked_tweet', 'retweet'>,
+  extends EventObject<'tweet', 'retweet'>,
     EventBase,
     TweetBase,
     Retweet {}
@@ -65,11 +65,11 @@ export interface RetweetEvent
 /**
  * The subscribing user is mentioned in a tweet
  * @category Event
- * @eventCategory `'linked_tweet'`
+ * @eventCategory `'tweet'`
  * @eventType `'mention'`
  */
 export interface MentionedTweetEvent
-  extends EventObject<'linked_tweet', 'mention'>,
+  extends EventObject<'tweet', 'mention'>,
     EventBase,
     TweetBase,
     CreateTweet {}
