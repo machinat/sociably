@@ -40,6 +40,10 @@ class WebviewClient<
     return this._connector.isConnected();
   }
 
+  get isClosed(): boolean {
+    return this._connector.isClosed;
+  }
+
   get user(): null | UserOfAuthenticator<Authenticator> {
     return this._user;
   }

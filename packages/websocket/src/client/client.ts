@@ -60,6 +60,10 @@ class WebScoketClient<
     return this._connector.isConnected();
   }
 
+  get isClosed(): boolean {
+    return this._connector.isClosed;
+  }
+
   get user(): null | User {
     return this._user;
   }

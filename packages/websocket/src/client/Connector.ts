@@ -72,7 +72,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
   }
 
   isConnected(): boolean {
-    return !this._isDisconnecting && !!this._connId;
+    return !!this._socket && !!this._connId && !this._isDisconnecting;
   }
 
   connect(): void {
@@ -117,6 +117,10 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
   }
 
   async send(events: EventInput[]): Promise<void> {
+    if (this.isClosed) {
+      throw new SocketError('socket is already closed');
+    }
+
     const marshaledEvents = events.map(({ category, type, payload }) => ({
       category,
       type,
@@ -200,6 +204,7 @@ class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
   }
 
   private _handleClose() {
+    this._socket = null;
     if (!this.isClosed) {
       this.connect();
     }

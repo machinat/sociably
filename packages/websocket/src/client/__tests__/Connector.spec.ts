@@ -310,6 +310,7 @@ test('.close()', async () => {
 
   expect(connector.isConnected()).toBe(true);
   expect(connector.close(4567, 'Bye!')).toBe(undefined);
+  expect(connector.isClosed).toBe(true);
 
   expect(socket.close.mock).toHaveBeenCalledTimes(1);
   expect(socket.close.mock).toHaveBeenCalledWith(4567, 'Bye!');
@@ -321,6 +322,19 @@ test('.close()', async () => {
     { reason: 'Bye!' },
     { connId, user }
   );
+});
+
+test('throw when sending event after closed', async () => {
+  const [connector, socket] = await openConnection();
+  connector.on('disconnect', disconnectSpy);
+
+  connector.close(4567, 'Bye!');
+
+  await expect(
+    connector.send([{ type: 'foo', payload: 'bar' }])
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"socket is already closed"`);
+
+  expect(socket.dispatch.mock).not.toHaveBeenCalled();
 });
 
 test('reconnect behavior at initial connect', async () => {
