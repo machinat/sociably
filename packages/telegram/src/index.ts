@@ -1,6 +1,5 @@
 export { default } from './module';
 export { default as TelegramChat } from './Chat';
-export { default as TelegramChatTarget } from './ChatTarget';
 export { default as TelegramChatProfile } from './ChatProfile';
 export { default as TelegramUser } from './User';
 export { default as TelegramUserProfile } from './UserProfile';

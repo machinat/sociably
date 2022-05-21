@@ -3,12 +3,16 @@ import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import type { LineRawUserProfile } from './types';
 import { LINE } from './constant';
 
+type UserProfileValue = {
+  data: LineRawUserProfile;
+};
+
 class LineUserProfile
-  implements MachinatProfile, MarshallableInstance<LineRawUserProfile>
+  implements MachinatProfile, MarshallableInstance<UserProfileValue>
 {
   static typeName = 'LineUserProfile';
 
-  static fromJSONValue(data: LineRawUserProfile): LineUserProfile {
+  static fromJSONValue({ data }: UserProfileValue): LineUserProfile {
     return new LineUserProfile(data);
   }
 
@@ -42,8 +46,8 @@ class LineUserProfile
     return this.data.statusMessage;
   }
 
-  toJSONValue(): LineRawUserProfile {
-    return this.data;
+  toJSONValue(): UserProfileValue {
+    return { data: this.data };
   }
 
   // eslint-disable-next-line class-methods-use-this

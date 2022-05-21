@@ -11,7 +11,7 @@ type TelegramChatProfileValue = {
 class TelegramChatProfile
   implements MachinatProfile, MarshallableInstance<TelegramChatProfileValue>
 {
-  static typeName = 'TelegramChatProfile';
+  static typeName = 'TgChatProfile';
   static fromJSONValue(value: TelegramChatProfileValue): TelegramChatProfile {
     return new TelegramChatProfile(value.data, value.avatar);
   }

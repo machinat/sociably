@@ -12,27 +12,22 @@ import type { IntermediateSegment } from '@machinat/core/renderer';
 import type { WebhookMetadata } from '@machinat/http/webhook';
 import type { MessengerBot } from './Bot';
 import type MessengerChat from './Chat';
-import type SendingTarget from './SendingTarget';
+import type SendTarget from './SendTarget';
 import type { MessengerEvent } from './event/types';
 import type { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from './constant';
 
 export * from './event/types';
 
-export type MessengerChannel = MessengerChat | SendingTarget;
+export type MessengerChannel = MessengerChat | SendTarget;
 
 export type PSIDTarget = { id: string };
 export type UserRefTarget = { user_ref: string };
-export type PhoneNumberTarget = {
-  phone_number: string;
-  name?: { first_name: string; last_name: string };
-};
 export type PostPrivateReplyTarget = { post_id: string };
 export type CommentPrivateReplyTarget = { comment_id: string };
 
 export type MessengerTarget =
   | PSIDTarget
   | UserRefTarget
-  | PhoneNumberTarget
   | PostPrivateReplyTarget
   | CommentPrivateReplyTarget;
 

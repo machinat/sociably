@@ -15,7 +15,7 @@ import generalComponentDelegator from './components/general';
 import { MESSENGER } from './constant';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import MessengerChat from './Chat';
-import SendingTarget from './SendingTarget';
+import SendTarget from './SendTarget';
 import { createChatJobs, createAttachmentJobs } from './job';
 import type {
   MessengerChannel,
@@ -116,9 +116,9 @@ export class MessengerBot
     const channel =
       typeof target === 'string'
         ? new MessengerChat(this.pageId, target)
-        : target instanceof MessengerChat || target instanceof SendingTarget
+        : target instanceof MessengerChat || target instanceof SendTarget
         ? target
-        : new SendingTarget(this.pageId, target);
+        : new SendTarget(this.pageId, target);
 
     return this.engine.render(channel, messages, createChatJobs(options));
   }

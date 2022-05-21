@@ -100,7 +100,7 @@ test('.checkAuthData()', () => {
     bot: 12345,
     chat: undefined,
     user: {
-      id: 12345,
+      id: 67890,
       first_name: 'Jojo',
       last_name: 'Doe',
       username: 'jojodoe',
@@ -109,9 +109,9 @@ test('.checkAuthData()', () => {
   };
 
   const expectedUser = new TelegramUser(
-    12345,
+    67890,
     {
-      id: 12345,
+      id: 67890,
       is_bot: false,
       first_name: 'Jojo',
       last_name: 'Doe',
@@ -125,9 +125,9 @@ test('.checkAuthData()', () => {
     contextDetails: {
       botId: 12345,
       user: expectedUser,
-      channel: new TelegramChat(12345, {
+      channel: new TelegramChat(12345, 67890, {
         type: 'private',
-        id: 12345,
+        id: 67890,
         first_name: 'Jojo',
         last_name: 'Doe',
         username: 'jojodoe',
@@ -145,7 +145,7 @@ test('.checkAuthData()', () => {
     contextDetails: {
       botId: 12345,
       user: expectedUser,
-      channel: new TelegramChat(12345, { type: 'group', id: 67890 }),
+      channel: new TelegramChat(12345, 67890, { type: 'group', id: 67890 }),
       photoUrl: 'http://crazy.dm/stand.png',
     },
   });

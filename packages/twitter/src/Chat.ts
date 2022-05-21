@@ -3,16 +3,16 @@ import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { TWITTER } from './constant';
 
 type SerializedDmChat = {
-  agentId: string;
+  agent: string;
   id: string;
 };
 
 export default class TwitterChat
   implements MachinatChannel, MarshallableInstance<SerializedDmChat>
 {
-  static typeName = 'TwitterChat';
-  static fromJSONValue({ id, agentId }: SerializedDmChat): TwitterChat {
-    return new TwitterChat(agentId, id);
+  static typeName = 'TwtrChat';
+  static fromJSONValue({ id, agent }: SerializedDmChat): TwitterChat {
+    return new TwitterChat(agent, id);
   }
 
   platform = TWITTER;
@@ -27,7 +27,7 @@ export default class TwitterChat
 
   /** The unique id of the direct message channel */
   get uid(): string {
-    return `twitter.${this.agentId}.${this.id}`;
+    return `twtr.${this.agentId}.${this.id}`;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -36,6 +36,6 @@ export default class TwitterChat
   }
 
   toJSONValue(): SerializedDmChat {
-    return { id: this.id, agentId: this.agentId };
+    return { id: this.id, agent: this.agentId };
   }
 }

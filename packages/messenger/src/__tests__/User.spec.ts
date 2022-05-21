@@ -1,18 +1,18 @@
-import MessengerUser from '../User';
+import User from '../User';
 
 test('properties', () => {
-  const user = new MessengerUser('1234567890', 'foo');
+  const user = new User('1234567890', 'foo');
 
   expect(user.platform).toBe('messenger');
   expect(user.pageId).toBe('1234567890');
   expect(user.id).toBe('foo');
-  expect(user.uid).toMatchInlineSnapshot(`"messenger.1234567890.foo"`);
+  expect(user.uid).toMatchInlineSnapshot(`"fb.1234567890.foo"`);
 });
 
 test('marshallable', () => {
-  const user = new MessengerUser('1234567890', 'foo');
+  const user = new User('1234567890', 'foo');
 
-  expect(user.typeName()).toBe('MessengerUser');
+  expect(user.typeName()).toBe('FbUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": "foo",
@@ -20,5 +20,5 @@ test('marshallable', () => {
     }
   `);
 
-  expect(MessengerUser.fromJSONValue(user.toJSONValue())).toStrictEqual(user);
+  expect(User.fromJSONValue(user.toJSONValue())).toStrictEqual(user);
 });

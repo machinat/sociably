@@ -1,7 +1,7 @@
 import { mixin } from '@machinat/core/utils';
 import type { MessengerRawEvent, MessengerChannel } from '../types';
 import MessengerChat from '../Chat';
-import SendingTarget from '../SendingTarget';
+import SendTarget from '../SendTarget';
 import MessengerUser from '../User';
 import {
   EventBase as Base,
@@ -363,10 +363,10 @@ const createEvent = (
     }
 
     const channel = !sender
-      ? new SendingTarget(pageId, { user_ref: optin.user_ref })
+      ? new SendTarget(pageId, { user_ref: optin.user_ref })
       : sender.id
       ? new MessengerChat(pageId, sender.id)
-      : new SendingTarget(pageId, sender);
+      : new SendTarget(pageId, sender);
 
     const user =
       sender !== undefined ? new MessengerUser(pageId, sender.id) : null;

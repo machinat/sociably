@@ -61,11 +61,13 @@ describe('#getUserProfile(user)', () => {
     const profileValue = profile.toJSONValue();
     expect(profileValue).toMatchInlineSnapshot(`
       Object {
-        "displayName": "LINE taro",
-        "language": "en",
-        "pictureUrl": "https://obs.line-apps.com/...",
-        "statusMessage": "Hello, LINE!",
-        "userId": "_USER_ID_",
+        "data": Object {
+          "displayName": "LINE taro",
+          "language": "en",
+          "pictureUrl": "https://obs.line-apps.com/...",
+          "statusMessage": "Hello, LINE!",
+          "userId": "_USER_ID_",
+        },
       }
     `);
     expect(LineUserProfile.fromJSONValue(profileValue)).toStrictEqual(profile);
@@ -181,9 +183,11 @@ describe('#getGroupProfile(user)', () => {
     const profileValue = profile.toJSONValue();
     expect(profileValue).toMatchInlineSnapshot(`
       Object {
-        "groupId": "_GROUP_ID_",
-        "groupName": "Group name",
-        "pictureUrl": "https://profile.line-scdn.net/abcdefghijklmn",
+        "data": Object {
+          "groupId": "_GROUP_ID_",
+          "groupName": "Group name",
+          "pictureUrl": "https://profile.line-scdn.net/abcdefghijklmn",
+        },
       }
     `);
     expect(LineGroupProfile.fromJSONValue(profileValue)).toStrictEqual(profile);

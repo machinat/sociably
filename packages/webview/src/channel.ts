@@ -8,7 +8,7 @@ import type {
 import { WEBVIEW } from './constant';
 
 type ConnectionValue = {
-  serverId: string;
+  server: string;
   id: string;
 };
 
@@ -18,10 +18,10 @@ export class WebviewConnection
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
-  static typeName = 'WebviewConnection';
+  static typeName = 'WvConnection';
 
-  static fromJSONValue({ id, serverId }: ConnectionValue): WebviewConnection {
-    return new WebviewConnection(serverId, id);
+  static fromJSONValue({ id, server }: ConnectionValue): WebviewConnection {
+    return new WebviewConnection(server, id);
   }
 
   platform = WEBVIEW;
@@ -36,12 +36,12 @@ export class WebviewConnection
   }
 
   get uid(): string {
-    return `${WEBVIEW}.conn.${this.serverId}.${this.id}`;
+    return `wv.conn.${this.serverId}.${this.id}`;
   }
 
   toJSONValue(): ConnectionValue {
     const { serverId, id } = this;
-    return { serverId, id };
+    return { server: serverId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -51,7 +51,7 @@ export class WebviewConnection
 }
 
 type UserChannelValue = {
-  userUid: string;
+  user: string;
 };
 
 export class WebviewUserChannel
@@ -60,10 +60,10 @@ export class WebviewUserChannel
     UserTarget,
     MarshallableInstance<UserChannelValue>
 {
-  static typeName = 'WebviewUserChannel';
+  static typeName = 'WvUserCh';
 
-  static fromJSONValue({ userUid }: UserChannelValue): WebviewUserChannel {
-    return new WebviewUserChannel(userUid);
+  static fromJSONValue({ user }: UserChannelValue): WebviewUserChannel {
+    return new WebviewUserChannel(user);
   }
 
   platform = WEBVIEW;
@@ -76,11 +76,11 @@ export class WebviewUserChannel
   }
 
   get uid(): string {
-    return `${WEBVIEW}.user.${this.userUid}`;
+    return `wv.user.${this.userUid}`;
   }
 
   toJSONValue(): UserChannelValue {
-    return { userUid: this.userUid };
+    return { user: this.userUid };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -96,7 +96,7 @@ type TopicValue = {
 export class WebviewTopicChannel
   implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue>
 {
-  static typeName = 'WebviewTopicChannel';
+  static typeName = 'WvTopicCh';
 
   static fromJSONValue({ name }: TopicValue): WebviewTopicChannel {
     return new WebviewTopicChannel(name);
@@ -111,7 +111,7 @@ export class WebviewTopicChannel
   }
 
   get uid(): string {
-    return `${WEBVIEW}.topic.${this.name}`;
+    return `wv.topic.${this.name}`;
   }
 
   toJSONValue(): TopicValue {

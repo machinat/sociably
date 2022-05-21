@@ -1,15 +1,15 @@
-import MessengerUser from '../User';
-import MessengerChat from '../Chat';
+import User from '../User';
+import Chat from '../Chat';
 
 test('from id', () => {
-  const chat = new MessengerChat('12345', '67890');
+  const chat = new Chat('12345', '67890');
 
   expect(chat.platform).toBe('messenger');
-  expect(chat.typeName()).toBe('MessengerChat');
-  expect(chat.uid).toMatchInlineSnapshot(`"messenger.12345.id.67890"`);
+  expect(chat.typeName()).toBe('FbChat');
+  expect(chat.uid).toMatchInlineSnapshot(`"fb.12345.67890"`);
 
   expect(chat.id).toBe('67890');
-  expect(chat.type).toBe('id');
+  expect(chat.type).toBe('psid');
   expect(chat.target).toEqual({ id: '67890' });
 
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
@@ -18,13 +18,11 @@ test('from id', () => {
       "page": "12345",
     }
   `);
-  expect(MessengerChat.fromJSONValue(chat.toJSONValue())).toStrictEqual(chat);
+  expect(Chat.fromJSONValue(chat.toJSONValue())).toStrictEqual(chat);
 });
 
 test('from user', () => {
-  const user = new MessengerUser('12345', '67890');
+  const user = new User('12345', '67890');
 
-  expect(MessengerChat.fromUser(user)).toEqual(
-    new MessengerChat('12345', '67890')
-  );
+  expect(Chat.fromUser(user)).toEqual(new Chat('12345', '67890'));
 });

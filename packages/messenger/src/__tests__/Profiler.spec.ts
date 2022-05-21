@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import type { MessengerBot } from '../Bot';
-import MessengerUser from '../User';
-import MessengerUserProfile from '../UserProfile';
+import FacebookUser from '../User';
+import FacebookUserProfile from '../UserProfile';
 import { MessengerProfiler } from '../Profiler';
 import GraphApiError from '../Error';
 
@@ -18,7 +18,7 @@ const bot = moxy<MessengerBot>({
   makeApiCall: async () => rawProfileData,
 } as never);
 
-const user = new MessengerUser(1234567890, '_USER_ID_');
+const user = new FacebookUser('1234567890', '_USER_ID_');
 
 beforeEach(() => {
   bot.mock.reset();
@@ -48,7 +48,7 @@ test('fetch profile from api', async () => {
     ]
   `);
 
-  expect(profile.typeName()).toBe('MessengerUserProfile');
+  expect(profile.typeName()).toBe('FbUserProfile');
   expect(profile.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "first_name": "Peter",
@@ -59,7 +59,7 @@ test('fetch profile from api', async () => {
     }
   `);
   expect(
-    MessengerUserProfile.fromJSONValue(profile.toJSONValue())
+    FacebookUserProfile.fromJSONValue(profile.toJSONValue())
   ).toStrictEqual(profile);
 });
 
@@ -95,7 +95,7 @@ it('query additional optionalProfileFields if given', async () => {
     ]
   `);
 
-  expect(profile.typeName()).toBe('MessengerUserProfile');
+  expect(profile.typeName()).toBe('FbUserProfile');
   expect(profile.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "first_name": "Peter",
@@ -109,7 +109,7 @@ it('query additional optionalProfileFields if given', async () => {
     }
   `);
   expect(
-    MessengerUserProfile.fromJSONValue(profile.toJSONValue())
+    FacebookUserProfile.fromJSONValue(profile.toJSONValue())
   ).toStrictEqual(profile);
 });
 

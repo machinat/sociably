@@ -11,13 +11,13 @@ test('WebSocketConnection(serverId, connId)', () => {
   expect(channel.type).toBe('connection');
   expect(channel.serverId).toBe('#server');
   expect(channel.id).toBe('#conn');
-  expect(channel.uid).toMatchInlineSnapshot(`"websocket.conn.#server.#conn"`);
+  expect(channel.uid).toMatchInlineSnapshot(`"ws.conn.#server.#conn"`);
 
-  expect(channel.typeName()).toBe('WebSocketConnection');
+  expect(channel.typeName()).toBe('WsConnection');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": "#conn",
-      "serverId": "#server",
+      "server": "#server",
     }
   `);
   expect(
@@ -30,9 +30,9 @@ test('WebSocketTopicChannel(name, id)', () => {
   expect(channel.platform).toBe('websocket');
   expect(channel.type).toBe('topic');
   expect(channel.name).toBe('foo');
-  expect(channel.uid).toMatchInlineSnapshot(`"websocket.topic.foo"`);
+  expect(channel.uid).toMatchInlineSnapshot(`"ws.topic.foo"`);
 
-  expect(channel.typeName()).toBe('WebSocketTopicChannel');
+  expect(channel.typeName()).toBe('WsTopicCh');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "name": "foo",
@@ -49,12 +49,12 @@ test('WebSocketUserChannel(user)', () => {
   expect(channel.platform).toBe('websocket');
   expect(channel.type).toBe('user');
   expect(channel.userUid).toBe('jojo_doe');
-  expect(channel.uid).toMatchInlineSnapshot(`"websocket.user.jojo_doe"`);
+  expect(channel.uid).toMatchInlineSnapshot(`"ws.user.jojo_doe"`);
 
-  expect(channel.typeName()).toBe('WebSocketUserChannel');
+  expect(channel.typeName()).toBe('WsUserCh');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`
     Object {
-      "userUid": "jojo_doe",
+      "user": "jojo_doe",
     }
   `);
   expect(

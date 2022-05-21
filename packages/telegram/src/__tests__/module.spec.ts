@@ -6,7 +6,6 @@ import BaseMarshaler from '@machinat/core/base/Marshaler';
 import Http from '@machinat/http';
 import Telegram from '../module';
 import TelegramChat from '../Chat';
-import TelegramChatTarget from '../ChatTarget';
 import TelegramChatSender from '../ChatSender';
 import TelegramUser from '../User';
 import { TelegramReceiver } from '../Receiver';
@@ -36,9 +35,10 @@ describe('initModule(configs)', () => {
 
     const module = Telegram.initModule({
       botToken: '12345:_BOT_TOKEN_',
+      botName: 'FooBot',
       webhookPath: '/webhook/telegram',
       secretPath: '_SECRET_',
-      maxConnections: 999,
+      maxRequestConnections: 999,
       eventMiddlewares,
       dispatchMiddlewares,
     });
@@ -61,10 +61,11 @@ describe('initModule(configs)', () => {
   test('provisions', async () => {
     const configs = {
       botToken: '12345:_BOT_TOKEN_',
+      botName: 'FooBot',
       webhookPath: '/webhook/telegram',
       secretPath: '_SECRET_',
       authRedirectUrl: '/webview/index.html',
-      maxConnections: 999,
+      maxRequestConnections: 999,
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
@@ -97,7 +98,12 @@ describe('initModule(configs)', () => {
 
   test('provide base interface', async () => {
     const app = Machinat.createApp({
-      platforms: [Telegram.initModule({ botToken: '12345:_BOT_TOKEN_' })],
+      platforms: [
+        Telegram.initModule({
+          botToken: '12345:_BOT_TOKEN_',
+          botName: 'FooBot',
+        }),
+      ],
     });
     await app.start();
 
@@ -114,7 +120,6 @@ describe('initModule(configs)', () => {
         TelegramUser,
         TelegramChat,
         TelegramChatSender,
-        TelegramChatTarget,
         TelegramUserProfile,
         TelegramChatProfile,
       ])
@@ -124,6 +129,7 @@ describe('initModule(configs)', () => {
   test('default webhookPath to "/"', async () => {
     const configs = {
       botToken: '12345:_BOT_TOKEN_',
+      botName: 'FooBot',
     };
 
     const app = Machinat.createApp({
@@ -141,6 +147,7 @@ describe('initModule(configs)', () => {
     const bot = moxy({ start: async () => {} });
     const module = Telegram.initModule({
       botToken: '12345:_BOT_TOKEN_',
+      botName: 'FooBot',
     });
 
     const startHook = module.startHook as any;
@@ -152,6 +159,7 @@ describe('initModule(configs)', () => {
     const bot = moxy({ stop: async () => {} });
     const module = Telegram.initModule({
       botToken: '12345:_BOT_TOKEN_',
+      botName: 'FooBot',
     });
 
     const stopHook = module.stopHook as any;

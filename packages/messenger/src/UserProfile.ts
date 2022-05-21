@@ -3,13 +3,13 @@ import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import type { RawUserProfile } from './types';
 import { MESSENGER } from './constant';
 
-class MessengerUserProfile
+class FacebookUserProfile
   implements MachinatProfile, MarshallableInstance<RawUserProfile>
 {
-  static typeName = 'MessengerUserProfile';
+  static typeName = 'FbUserProfile';
 
-  static fromJSONValue(data: RawUserProfile): MessengerUserProfile {
-    return new MessengerUserProfile(data);
+  static fromJSONValue(data: RawUserProfile): FacebookUserProfile {
+    return new FacebookUserProfile(data);
   }
 
   data: RawUserProfile;
@@ -57,8 +57,8 @@ class MessengerUserProfile
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return MessengerUserProfile.typeName;
+    return FacebookUserProfile.typeName;
   }
 }
 
-export default MessengerUserProfile;
+export default FacebookUserProfile;

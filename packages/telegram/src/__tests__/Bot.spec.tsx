@@ -159,7 +159,7 @@ describe('.render(channel, message, options)', () => {
       .post('/bot12345:_BOT_TOKEN_/sendPhoto', bodySpy)
       .reply(200, { ok: true, result: { id: 2 } });
 
-    const response = await bot.render(123456, message);
+    const response = await bot.render(67890, message);
     expect(response).toMatchSnapshot();
 
     expect(response!.results).toEqual([
@@ -170,14 +170,14 @@ describe('.render(channel, message, options)', () => {
     expect(bodySpy.mock).toHaveBeenCalledTimes(2);
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
-        "chat_id": 123456,
+        "chat_id": 67890,
         "parse_mode": "HTML",
         "text": "Hello <b>World!</b>",
       }
     `);
     expect(bodySpy.mock.calls[1].args[0]).toMatchInlineSnapshot(`
       Object {
-        "chat_id": 123456,
+        "chat_id": 67890,
         "parse_mode": "HTML",
         "photo": "https://machinat.com/greeting.png",
         "reply_markup": Object {

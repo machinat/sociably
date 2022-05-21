@@ -4,7 +4,7 @@ import BotP from './Bot';
 import type LineChat from './Chat';
 import type LineUser from './User';
 import LineUserProfile from './UserProfile';
-import LineGroupProfile, { LineGroupSummary } from './GroupProfile';
+import LineGroupProfile, { LineGroupData } from './GroupProfile';
 import type { LineRawUserProfile } from './types';
 
 type GetUserProfileOptions = {
@@ -49,7 +49,7 @@ export class LineProfiler implements UserProfiler<LineUser> {
       throw new Error(`expect a group chat, got ${chat.type}`);
     }
 
-    const groupSummary: LineGroupSummary = await this.bot.makeApiCall(
+    const groupSummary: LineGroupData = await this.bot.makeApiCall(
       'GET',
       `v2/bot/group/${chat.id}/summary`
     );

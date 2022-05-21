@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
 import MessengerChat from '../Chat';
-import SendingTarget from '../SendingTarget';
+import SendTarget from '../SendTarget';
 import MessengerUser from '../User';
 import { MessengerReceiver } from '../Receiver';
 import type { MessengerBot } from '../Bot';
@@ -358,7 +358,7 @@ describe('handling POST', () => {
     const ctx2 = popEventMock.calls[1].args[0];
     expect(ctx2.event.user).toBe(null);
     expect(ctx2.event.channel).toEqual(
-      new SendingTarget('12345', { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' })
+      new SendTarget('12345', { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' })
     );
 
     for (const { args } of popEventMock.calls) {

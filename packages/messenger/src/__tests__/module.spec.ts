@@ -33,7 +33,7 @@ describe('initModule(configs)', () => {
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
 
     const module = Messenger.initModule({
-      pageId: 1234567890,
+      pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
@@ -58,7 +58,7 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
-      pageId: 1234567890,
+      pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
@@ -99,7 +99,7 @@ describe('initModule(configs)', () => {
     const app = Machinat.createApp({
       platforms: [
         Messenger.initModule({
-          pageId: 1234567890,
+          pageId: '1234567890',
           accessToken: '_ACCESS_TOKEN_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
@@ -133,7 +133,7 @@ describe('initModule(configs)', () => {
     const app = Machinat.createApp({
       platforms: [
         Messenger.initModule({
-          pageId: 1234567890,
+          pageId: '1234567890',
           accessToken: '_ACCESS_TOKEN_',
           shouldHandleChallenge: false,
           shouldVerifyRequest: false,
@@ -153,7 +153,7 @@ describe('initModule(configs)', () => {
   test('#startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Messenger.initModule({
-      pageId: 1234567890,
+      pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_',
     });
 
@@ -164,7 +164,7 @@ describe('initModule(configs)', () => {
   test('#stopHook() stop bot', async () => {
     const bot = moxy({ stop: async () => {} });
     const module = Messenger.initModule({
-      pageId: 1234567890,
+      pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_',
     });
 

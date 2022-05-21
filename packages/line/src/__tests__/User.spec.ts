@@ -16,7 +16,7 @@ test('marshallable', () => {
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": "_USER_ID_",
-      "providerId": "_PROVIDER_ID_",
+      "provider": "_PROVIDER_ID_",
     }
   `);
   expect(LineUser.fromJSONValue(user.toJSONValue())).toStrictEqual(user);

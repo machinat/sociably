@@ -26,7 +26,7 @@ import type {
   Referral,
 } from './mixin';
 import type MessengerChat from '../Chat';
-import type SendingTarget from '../SendingTarget';
+import type SendTarget from '../SendTarget';
 import type MessengerUser from '../User';
 import type { MessengerChannel, MessengerRawEvent } from '../types';
 
@@ -412,7 +412,7 @@ export interface OptinEvent
   extends EventObject<
       'postback',
       'optin',
-      MessengerChat | SendingTarget,
+      MessengerChat | SendTarget,
       null | MessengerUser
     >,
     EventBase,

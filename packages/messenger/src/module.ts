@@ -13,6 +13,7 @@ import ReceiverP from './Receiver';
 import MessengerUserProfile from './UserProfile';
 import ProfilerP from './Profiler';
 import MessengerChat from './Chat';
+import SendTarget from './SendTarget';
 import MessengerUser from './User';
 import type {
   MessengerConfigs,
@@ -88,6 +89,7 @@ namespace Messenger {
 
         { provide: ConfigsI, withValue: configs },
         { provide: BaseMarshaler.TypeList, withValue: MessengerChat },
+        { provide: BaseMarshaler.TypeList, withValue: SendTarget },
         { provide: BaseMarshaler.TypeList, withValue: MessengerUser },
         { provide: BaseMarshaler.TypeList, withValue: MessengerUserProfile },
       ],

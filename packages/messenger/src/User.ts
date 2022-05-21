@@ -2,19 +2,19 @@ import type { MachinatUser } from '@machinat/core';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { MESSENGER } from './constant';
 
-type MessengerUserValue = {
+type FacebookUserValue = {
   page: string;
   id: string;
 };
 
-export default class MessengerUser
-  implements MachinatUser, MarshallableInstance<MessengerUserValue>
+export default class FacebookUser
+  implements MachinatUser, MarshallableInstance<FacebookUserValue>
 {
-  static typeName = 'MessengerUser';
+  static typeName = 'FbUser';
 
-  static fromJSONValue(value: MessengerUserValue): MessengerUser {
+  static fromJSONValue(value: FacebookUserValue): FacebookUser {
     const { page, id } = value;
-    return new MessengerUser(page, id);
+    return new FacebookUser(page, id);
   }
 
   platform = MESSENGER;
@@ -27,16 +27,16 @@ export default class MessengerUser
   }
 
   get uid(): string {
-    return `messenger.${this.pageId}.${this.id}`;
+    return `fb.${this.pageId}.${this.id}`;
   }
 
-  toJSONValue(): MessengerUserValue {
+  toJSONValue(): FacebookUserValue {
     const { pageId, id } = this;
     return { page: pageId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return MessengerUser.typeName;
+    return FacebookUser.typeName;
   }
 }

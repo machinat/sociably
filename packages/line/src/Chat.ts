@@ -7,7 +7,7 @@ import type { LineSource } from './types';
 type LineChatType = 'room' | 'group' | 'user';
 
 type LineChatValue = {
-  channelId: string;
+  channel: string;
   type: LineChatType;
   id: string;
 };
@@ -34,8 +34,8 @@ class LineChat implements MachinatChannel, MarshallableInstance<LineChatValue> {
     }
   }
 
-  static fromJSONValue({ channelId, type, id }: LineChatValue): LineChat {
-    return new LineChat(channelId, type, id);
+  static fromJSONValue({ channel, type, id }: LineChatValue): LineChat {
+    return new LineChat(channel, type, id);
   }
 
   platform = LINE;
@@ -55,7 +55,7 @@ class LineChat implements MachinatChannel, MarshallableInstance<LineChatValue> {
 
   toJSONValue(): LineChatValue {
     const { type, channelId, id } = this;
-    return { type, channelId, id };
+    return { type, channel: channelId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this

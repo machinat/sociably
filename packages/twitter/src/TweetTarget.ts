@@ -10,7 +10,7 @@ type SerializedTweetTarget = {
 export default class TwitterTweetTarget
   implements MachinatChannel, MarshallableInstance<SerializedTweetTarget>
 {
-  static typeName = 'TweetTarget';
+  static typeName = 'TwtrTweetTarget';
   static fromJSONValue(val: SerializedTweetTarget): TwitterTweetTarget {
     return new TwitterTweetTarget(val.agent, val.tweet);
   }
@@ -27,7 +27,7 @@ export default class TwitterTweetTarget
   }
 
   get uid(): string {
-    return `twitter.${this.agentId}.${this.tweetId || '-'}`;
+    return `twtr.${this.agentId}.${this.tweetId || '-'}`;
   }
 
   // eslint-disable-next-line class-methods-use-this

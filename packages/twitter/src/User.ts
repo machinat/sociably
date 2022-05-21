@@ -11,7 +11,7 @@ type SerializedUser = {
 export default class TwitterUser
   implements MachinatUser, MarshallableInstance<SerializedUser>
 {
-  static typeName = 'TwitterUser';
+  static typeName = 'TwtrUser';
   static fromJSONValue({ id }: SerializedUser): TwitterUser {
     return new TwitterUser(id);
   }
@@ -26,7 +26,7 @@ export default class TwitterUser
   }
 
   get uid(): string {
-    return `twitter.${this.id}`;
+    return `twtr.${this.id}`;
   }
 
   get profile(): null | UserProfile {

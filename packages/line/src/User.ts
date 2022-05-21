@@ -3,7 +3,7 @@ import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { LINE } from './constant';
 
 type LineUserValue = {
-  providerId: string;
+  provider: string;
   id: string;
 };
 
@@ -16,8 +16,8 @@ export default class LineUser
   providerId: string;
   id: string;
 
-  static fromJSONValue({ providerId, id }: LineUserValue): LineUser {
-    return new LineUser(providerId, id);
+  static fromJSONValue({ provider, id }: LineUserValue): LineUser {
+    return new LineUser(provider, id);
   }
 
   constructor(providerId: string, id: string) {
@@ -31,7 +31,7 @@ export default class LineUser
 
   toJSONValue(): LineUserValue {
     const { providerId, id } = this;
-    return { providerId, id };
+    return { provider: providerId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this

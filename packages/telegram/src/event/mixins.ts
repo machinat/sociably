@@ -840,14 +840,14 @@ export const SuccessfulPayment: SuccessfulPayment = {
 };
 
 export interface InlineQuery {
+  /** The chat channel */
   channel: null;
+  /** Sender */
   user: TelegramUser;
   /** Inline query object. */
   inlineQuery: RawInlineQuery;
   /**	Unique identifier for this query */
   queryId: string;
-  /** Sender */
-  fromUser: RawUser;
   /** Sender location, only for bots that request user location */
   location?: RawLocation;
   /** Text of the query (up to 256 characters) */
@@ -859,16 +859,13 @@ export interface InlineQuery {
 export const InlineQuery: InlineQuery = {
   channel: null,
   get user() {
-    return this.payload.inline_query.from;
+    return new TelegramUser(this.payload.inline_query.from);
   },
   get inlineQuery() {
     return this.payload.inline_query;
   },
   get queryId() {
     return this.payload.inline_query.id;
-  },
-  get fromUser() {
-    return this.payload.inline_query.from;
   },
   get location() {
     return this.payload.inline_query.location;
@@ -883,13 +880,12 @@ export const InlineQuery: InlineQuery = {
 
 export interface ChosenInlineResult {
   channel: null;
+  /**	The user that chose the result */
   user: TelegramUser;
   /** Inline result object. */
   chosenInlineResult: RawChosenInlineResult;
   /**	The unique identifier for the result that was chosen */
   resultId: string;
-  /**	The user that chose the result */
-  fromUser: RawUser;
   /** Sender location, only for bots that require user location */
   location?: RawLocation;
   /** Identifier of the sent inline message. Available only if there is an inline keyboard attached to the message. Will be also received in callback queries and can be used to edit the message. */
@@ -901,16 +897,13 @@ export interface ChosenInlineResult {
 export const ChosenInlineResult: ChosenInlineResult = {
   channel: null,
   get user() {
-    return this.payload.chosen_inline_result.from;
+    return new TelegramUser(this.payload.chosen_inline_result.from);
   },
   get chosenInlineResult() {
     return this.payload.chosen_inline_result;
   },
   get resultId() {
     return this.payload.chosen_inline_result.result_id;
-  },
-  get fromUser() {
-    return this.payload.chosen_inline_result.from;
   },
   get location() {
     return this.payload.chosen_inline_result.location;
@@ -924,14 +917,14 @@ export const ChosenInlineResult: ChosenInlineResult = {
 };
 
 export interface CallbackBase {
+  /** The chat channel. It's null if the callback is triggered by an inline message */
   channel: null | TelegramChat;
+  /** Sender */
   user: TelegramUser;
   /** Callback query object. */
   callbackQuery: RawCallbackQuery;
   /** Unique identifier for this query */
   queryId: string;
-  /** Sender */
-  fromUser: RawUser;
   /** Message with the callback button that originated the query. Note that message content and message date will not be available if the message is too old */
   message?: RawMessage;
   /** Identifier of the message sent via the bot in inline mode, that originated the query. */
@@ -946,16 +939,13 @@ export const CallbackBase: CallbackBase = {
     return message ? new TelegramChat(this.botId, message.chat) : null;
   },
   get user() {
-    return this.payload.callback_query.from;
+    return new TelegramUser(this.payload.callback_query.from);
   },
   get callbackQuery() {
     return this.payload.callback_query;
   },
   get queryId() {
     return this.payload.callback_query.id;
-  },
-  get fromUser() {
-    return this.payload.callback_query.from;
   },
   get message() {
     return this.payload.callback_query.message;
@@ -991,14 +981,14 @@ export const CallbackGame: CallbackGame = {
 };
 
 export interface ShippingQuery {
+  /** The chat channel */
   channel: TelegramChat;
+  /** User who sent the query */
   user: TelegramUser;
   /** Shipping query object. */
   shippingQuery: RawShippingQuery;
   /** Unique query identifier */
   queryId: string;
-  /** User who sent the query */
-  fromUser: RawUser;
   /** Bot specified invoice payload */
   invoicePayload: string;
   /** User specified shipping address */
@@ -1007,7 +997,7 @@ export interface ShippingQuery {
 
 export const ShippingQuery: ShippingQuery = {
   get channel() {
-    return TelegramChat.fromUser(this.botId, this.user);
+    return TelegramChat.fromUser(this.botId, this.payload.shipping_query.from);
   },
   get user() {
     return new TelegramUser(this.payload.shipping_query.from);
@@ -1018,9 +1008,6 @@ export const ShippingQuery: ShippingQuery = {
   get queryId() {
     return this.payload.shipping_query.id;
   },
-  get fromUser() {
-    return this.payload.shipping_query.from;
-  },
   get invoicePayload() {
     return this.payload.shipping_query.invoice_payload;
   },
@@ -1030,14 +1017,14 @@ export const ShippingQuery: ShippingQuery = {
 };
 
 export interface PreCheckoutQuery {
+  /** The chat channel */
   channel: TelegramChat;
+  /** User who sent the query */
   user: TelegramUser;
   /** Pre-checkout query object. */
   preCheckoutQuery: RawPreCheckoutQuery;
   /** Unique query identifier */
   queryId: string;
-  /** User who sent the query */
-  fromUser: RawUser;
   /** Three-letter ISO 4217 currency code */
   currency: string;
   /** Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
@@ -1052,7 +1039,10 @@ export interface PreCheckoutQuery {
 
 export const PreCheckoutQuery: PreCheckoutQuery = {
   get channel() {
-    return TelegramChat.fromUser(this.botId, this.user);
+    return TelegramChat.fromUser(
+      this.botId,
+      this.payload.pre_checkout_query.from
+    );
   },
   get user() {
     return new TelegramUser(this.payload.pre_checkout_query.from);
@@ -1062,9 +1052,6 @@ export const PreCheckoutQuery: PreCheckoutQuery = {
   },
   get queryId() {
     return this.payload.pre_checkout_query.id;
-  },
-  get fromUser() {
-    return this.payload.pre_checkout_query.from;
   },
   get currency() {
     return this.payload.pre_checkout_query.currency;
@@ -1099,14 +1086,14 @@ export const PollChange: PollChange = {
 };
 
 export interface PollAnswer {
+  /** The chat channel */
   channel: null;
+  /** The user, who changed the answer to the poll */
   user: TelegramUser;
   /** Poll answer object. */
   pollAnswer: RawPollAnswer;
   /** Unique poll identifier */
   pollId: string;
-  /** The user, who changed the answer to the poll */
-  fromUser: RawUser;
   /**	0-based identifiers of answer options, chosen by the user. May be empty if the user retracted their vote. */
   optionIds: number[];
 }
@@ -1114,16 +1101,13 @@ export interface PollAnswer {
 export const PollAnswer: PollAnswer = {
   channel: null,
   get user() {
-    return new TelegramUser(this.payload.poll_answer.from);
+    return new TelegramUser(this.payload.poll_answer.user);
   },
   get pollAnswer() {
     return this.payload.poll_answer;
   },
   get pollId() {
     return this.payload.poll_answer.poll_id;
-  },
-  get fromUser() {
-    return this.payload.poll_answer.user;
   },
   get optionIds() {
     return this.payload.poll_answer.option_ids;

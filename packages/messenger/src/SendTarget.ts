@@ -1,21 +1,20 @@
-import crypto from 'crypto';
 import type { MachinatChannel } from '@machinat/core';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { MESSENGER } from './constant';
 import type { MessengerTarget } from './types';
 
-type SendingTargetValue = {
+type SendTargetValue = {
   page: string;
   target: MessengerTarget;
 };
 
-class MessengerSendingTarget
-  implements MachinatChannel, MarshallableInstance<SendingTargetValue>
+class FacebookSendTarget
+  implements MachinatChannel, MarshallableInstance<SendTargetValue>
 {
-  static typeName = 'MessengerSendingTarget';
-  static fromJSONValue(value: SendingTargetValue): MessengerSendingTarget {
+  static typeName = 'FbSendTarget';
+  static fromJSONValue(value: SendTargetValue): FacebookSendTarget {
     const { page, target } = value;
-    return new MessengerSendingTarget(page, target);
+    return new FacebookSendTarget(page, target);
   }
 
   pageId: string;
@@ -31,15 +30,13 @@ class MessengerSendingTarget
     const { target } = this;
 
     return 'id' in target
-      ? 'id'
+      ? 'psid'
       : 'user_ref' in target
       ? 'user_ref'
-      : 'phone_number' in target
-      ? 'phone_number'
       : 'post_id' in target
-      ? 'post_id'
+      ? 'post'
       : 'comment_id' in target
-      ? 'comment_id'
+      ? 'comment'
       : 'unknown';
   }
 
@@ -47,30 +44,23 @@ class MessengerSendingTarget
     const target = this.target as Record<string, undefined | string>;
 
     return (
-      target.id ||
-      target.user_ref ||
-      target.post_id ||
-      target.comment_id ||
-      (target.phone_number
-        ? // hash phone_number for private data concern
-          crypto.createHash('sha1').update(target.phone_number).digest('base64')
-        : '*')
+      target.id || target.user_ref || target.post_id || target.comment_id || '-'
     );
   }
 
   get uid(): string {
-    return `messenger.${this.pageId}.${this.type}.${this.identifier}`;
+    return `fb.${this.pageId}.${this.identifier}`;
   }
 
-  toJSONValue(): SendingTargetValue {
+  toJSONValue(): SendTargetValue {
     const { pageId, target } = this;
     return { page: pageId, target };
   }
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return MessengerSendingTarget.typeName;
+    return FacebookSendTarget.typeName;
   }
 }
 
-export default MessengerSendingTarget;
+export default FacebookSendTarget;

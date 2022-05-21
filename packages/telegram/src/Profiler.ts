@@ -105,7 +105,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
     } else {
       const { id, data } = chat;
 
-      if (!fromApi && (data.title || data.first_name)) {
+      if (!fromApi && data) {
         return new TelegramChatProfile(data, avatarUrl);
       }
       chatId = id;

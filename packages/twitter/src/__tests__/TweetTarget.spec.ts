@@ -5,9 +5,9 @@ test('with no reply tweet', () => {
 
   expect(user.agentId).toBe('1234567890');
   expect(user.tweetId).toBe(undefined);
-  expect(user.uid).toBe('twitter.1234567890.-');
+  expect(user.uid).toBe('twtr.1234567890.-');
 
-  expect(user.typeName()).toBe('TweetTarget');
+  expect(user.typeName()).toBe('TwtrTweetTarget');
   expect(user.toJSONValue()).toEqual({ agent: '1234567890' });
 });
 
@@ -16,9 +16,9 @@ test('with reply tweet id', () => {
 
   expect(user.agentId).toBe('1234567890');
   expect(user.tweetId).toBe('1111111111');
-  expect(user.uid).toBe('twitter.1234567890.1111111111');
+  expect(user.uid).toBe('twtr.1234567890.1111111111');
 
-  expect(user.typeName()).toBe('TweetTarget');
+  expect(user.typeName()).toBe('TwtrTweetTarget');
   expect(user.toJSONValue()).toEqual({
     agent: '1234567890',
     tweet: '1111111111',
@@ -26,7 +26,7 @@ test('with reply tweet id', () => {
 });
 
 test('marshall type metadata', () => {
-  expect(TweetTarget.typeName).toBe('TweetTarget');
+  expect(TweetTarget.typeName).toBe('TwtrTweetTarget');
 
   expect(
     TweetTarget.fromJSONValue({ agent: '1234567890', tweet: '1111111111' })

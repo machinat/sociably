@@ -7,7 +7,7 @@ Object {
       "assetTag": undefined,
       "fileData": undefined,
       "fileInfo": undefined,
-      "key": "messenger.1234567890.id.john",
+      "key": "fb.1234567890.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -29,7 +29,7 @@ Object {
       "assetTag": undefined,
       "fileData": undefined,
       "fileInfo": undefined,
-      "key": "messenger.1234567890.id.john",
+      "key": "fb.1234567890.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -87,7 +87,7 @@ Object {
           "assetTag": undefined,
           "fileData": undefined,
           "fileInfo": undefined,
-          "key": "messenger.1234567890.id.john",
+          "key": "fb.1234567890.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -109,7 +109,7 @@ Object {
           "assetTag": undefined,
           "fileData": undefined,
           "fileInfo": undefined,
-          "key": "messenger.1234567890.id.john",
+          "key": "fb.1234567890.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -163,15 +163,15 @@ Array [
   Object {
     "body": "message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
     "method": "POST",
-    "name": "messenger.1234567890.id.john-1",
+    "name": "fb.1234567890.john-1",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
   Object {
     "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
-    "depends_on": "messenger.1234567890.id.john-1",
+    "depends_on": "fb.1234567890.john-1",
     "method": "POST",
-    "name": "messenger.1234567890.id.john-2",
+    "name": "fb.1234567890.john-2",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
@@ -185,7 +185,7 @@ Object {
       "assetTag": undefined,
       "fileData": undefined,
       "fileInfo": undefined,
-      "key": "messenger.1234567890.id.john",
+      "key": "fb.1234567890.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -207,7 +207,7 @@ Object {
       "assetTag": undefined,
       "fileData": undefined,
       "fileInfo": undefined,
-      "key": "messenger.1234567890.id.john",
+      "key": "fb.1234567890.john",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -265,7 +265,7 @@ Object {
           "assetTag": undefined,
           "fileData": undefined,
           "fileInfo": undefined,
-          "key": "messenger.1234567890.id.john",
+          "key": "fb.1234567890.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -287,7 +287,7 @@ Object {
           "assetTag": undefined,
           "fileData": undefined,
           "fileInfo": undefined,
-          "key": "messenger.1234567890.id.john",
+          "key": "fb.1234567890.john",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -341,15 +341,15 @@ Array [
   Object {
     "body": "message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%22john%22%7D",
     "method": "POST",
-    "name": "messenger.1234567890.id.john-1",
+    "name": "fb.1234567890.john-1",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },
   Object {
     "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%22john%22%7D",
-    "depends_on": "messenger.1234567890.id.john-1",
+    "depends_on": "fb.1234567890.john-1",
     "method": "POST",
-    "name": "messenger.1234567890.id.john-2",
+    "name": "fb.1234567890.john-2",
     "omit_response_on_success": false,
     "relative_url": "me/messages",
   },

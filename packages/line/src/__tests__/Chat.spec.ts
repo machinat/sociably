@@ -14,7 +14,7 @@ test('user chat', () => {
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     Object {
-      "channelId": "_CHANNEL_ID_",
+      "channel": "_CHANNEL_ID_",
       "id": "_USER_ID_",
       "type": "user",
     }
@@ -35,7 +35,7 @@ test('room chat', () => {
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     Object {
-      "channelId": "_CHANNEL_ID_",
+      "channel": "_CHANNEL_ID_",
       "id": "_ROOM_ID_",
       "type": "room",
     }
@@ -56,7 +56,7 @@ test('group chat', () => {
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     Object {
-      "channelId": "_CHANNEL_ID_",
+      "channel": "_CHANNEL_ID_",
       "id": "_GROUP_ID_",
       "type": "group",
     }

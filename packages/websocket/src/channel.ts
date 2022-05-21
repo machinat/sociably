@@ -4,7 +4,7 @@ import { WEBSOCKET } from './constant';
 import type { ConnectionTarget, UserTarget, TopicTarget } from './types';
 
 type ConnectionValue = {
-  serverId: string;
+  server: string;
   id: string;
 };
 
@@ -14,10 +14,10 @@ export class WebSocketConnection
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
-  static typeName = 'WebSocketConnection';
+  static typeName = 'WsConnection';
 
-  static fromJSONValue({ id, serverId }: ConnectionValue): WebSocketConnection {
-    return new WebSocketConnection(serverId, id);
+  static fromJSONValue({ id, server }: ConnectionValue): WebSocketConnection {
+    return new WebSocketConnection(server, id);
   }
 
   platform = WEBSOCKET;
@@ -32,12 +32,12 @@ export class WebSocketConnection
   }
 
   get uid(): string {
-    return `${WEBSOCKET}.conn.${this.serverId}.${this.id}`;
+    return `ws.conn.${this.serverId}.${this.id}`;
   }
 
   toJSONValue(): ConnectionValue {
     const { serverId, id } = this;
-    return { serverId, id };
+    return { server: serverId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -47,7 +47,7 @@ export class WebSocketConnection
 }
 
 type UserChannelValue = {
-  userUid: string;
+  user: string;
 };
 
 export class WebSocketUserChannel
@@ -56,10 +56,10 @@ export class WebSocketUserChannel
     UserTarget,
     MarshallableInstance<UserChannelValue>
 {
-  static typeName = 'WebSocketUserChannel';
+  static typeName = 'WsUserCh';
 
-  static fromJSONValue({ userUid }: UserChannelValue): WebSocketUserChannel {
-    return new WebSocketUserChannel(userUid);
+  static fromJSONValue({ user }: UserChannelValue): WebSocketUserChannel {
+    return new WebSocketUserChannel(user);
   }
 
   platform = WEBSOCKET;
@@ -72,11 +72,11 @@ export class WebSocketUserChannel
   }
 
   get uid(): string {
-    return `${WEBSOCKET}.user.${this.userUid}`;
+    return `ws.user.${this.userUid}`;
   }
 
   toJSONValue(): UserChannelValue {
-    return { userUid: this.userUid };
+    return { user: this.userUid };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -92,7 +92,7 @@ type TopicValue = {
 export class WebSocketTopicChannel
   implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue>
 {
-  static typeName = 'WebSocketTopicChannel';
+  static typeName = 'WsTopicCh';
 
   static fromJSONValue({ name }: TopicValue): WebSocketTopicChannel {
     return new WebSocketTopicChannel(name);
@@ -107,7 +107,7 @@ export class WebSocketTopicChannel
   }
 
   get uid(): string {
-    return `${WEBSOCKET}.topic.${this.name}`;
+    return `ws.topic.${this.name}`;
   }
 
   toJSONValue(): TopicValue {

@@ -48,7 +48,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
-        key: 'messenger.12345.id.67890',
+        key: 'fb.12345.67890',
         request: {
           method: 'POST',
           relative_url: i === 2 ? 'bar/baz' : 'me/messages',

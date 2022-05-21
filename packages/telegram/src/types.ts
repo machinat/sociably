@@ -11,7 +11,6 @@ import { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
 import type { WebhookMetadata } from '@machinat/http/webhook';
 import type { TelegramEvent } from './event/types';
 import type TelegramChat from './Chat';
-import type TelegramChatTarget from './ChatTarget';
 import type { TelegramBot } from './Bot';
 
 export * from './event/types';
@@ -150,10 +149,7 @@ export type TelegramEventMiddleware = EventMiddleware<
   null
 >;
 
-export type TelegramDispatchFrame = DispatchFrame<
-  TelegramChat | TelegramChatTarget,
-  TelegramJob
->;
+export type TelegramDispatchFrame = DispatchFrame<TelegramChat, TelegramJob>;
 
 export type BotApiResult = Record<string, any>;
 

@@ -16,7 +16,6 @@ import { createChatJob, createNonChatJobs } from './job';
 import generalElementDelegate from './components/general';
 import TelegramWorker from './Worker';
 import TelegramChat from './Chat';
-import TelegramChatTarget from './ChatTarget';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TELEGRAM } from './constant';
 import TelegramApiError from './Error';
@@ -51,7 +50,7 @@ export class TelegramBot
   token: string;
   id: number;
   engine: Engine<
-    TelegramChat | TelegramChatTarget,
+    TelegramChat,
     TelegramSegmentValue,
     TelegramComponent<unknown>,
     TelegramJob,
@@ -113,7 +112,7 @@ export class TelegramBot
 
     const channel =
       typeof target === 'number' || typeof target === 'string'
-        ? new TelegramChatTarget(this.id, target)
+        ? new TelegramChat(this.id, target)
         : target;
 
     return this.engine.render(channel, message, createChatJob);

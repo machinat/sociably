@@ -4,28 +4,28 @@ import { MESSENGER } from './constant';
 import type MessengerUser from './User';
 import type { PSIDTarget } from './types';
 
-type MessengerChatValue = {
+type FacebookChatValue = {
   page: string;
   id: string;
 };
 
-class MessengerChat
-  implements MachinatChannel, MarshallableInstance<MessengerChatValue>
+class FacebookChat
+  implements MachinatChannel, MarshallableInstance<FacebookChatValue>
 {
-  static typeName = 'MessengerChat';
-  static fromUser(user: MessengerUser): MessengerChat {
-    return new MessengerChat(user.pageId, user.id);
+  static typeName = 'FbChat';
+  static fromUser(user: MessengerUser): FacebookChat {
+    return new FacebookChat(user.pageId, user.id);
   }
 
-  static fromJSONValue(value: MessengerChatValue): MessengerChat {
+  static fromJSONValue(value: FacebookChatValue): FacebookChat {
     const { page, id } = value;
-    return new MessengerChat(page, id);
+    return new FacebookChat(page, id);
   }
 
   pageId: string;
   id: string;
   platform = MESSENGER;
-  type = 'id';
+  type = 'psid';
 
   constructor(pageId: string, id: string) {
     this.pageId = pageId;
@@ -33,22 +33,22 @@ class MessengerChat
   }
 
   get uid(): string {
-    return `messenger.${this.pageId}.id.${this.id}`;
+    return `fb.${this.pageId}.${this.id}`;
   }
 
   get target(): PSIDTarget {
     return { id: this.id };
   }
 
-  toJSONValue(): MessengerChatValue {
+  toJSONValue(): FacebookChatValue {
     const { pageId, id } = this;
     return { page: pageId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return MessengerChat.typeName;
+    return FacebookChat.typeName;
   }
 }
 
-export default MessengerChat;
+export default FacebookChat;

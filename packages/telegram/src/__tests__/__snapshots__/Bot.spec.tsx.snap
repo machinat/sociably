@@ -90,10 +90,10 @@ exports[`.render(channel, message, options) send rendered messages to telegram a
 Object {
   "jobs": Array [
     Object {
-      "key": "telegram.12345.123456",
+      "key": "tg.12345.67890",
       "method": "sendMessage",
       "parameters": Object {
-        "chat_id": 123456,
+        "chat_id": 67890,
         "disable_notification": undefined,
         "parse_mode": "HTML",
         "text": "Hello <b>World!</b>",
@@ -101,11 +101,11 @@ Object {
       "uploadingFiles": null,
     },
     Object {
-      "key": "telegram.12345.123456",
+      "key": "tg.12345.67890",
       "method": "sendPhoto",
       "parameters": Object {
         "caption": undefined,
-        "chat_id": 123456,
+        "chat_id": 67890,
         "disable_notification": undefined,
         "parse_mode": "HTML",
         "photo": "https://machinat.com/greeting.png",
@@ -136,10 +136,10 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "key": "telegram.12345.123456",
+          "key": "tg.12345.67890",
           "method": "sendMessage",
           "parameters": Object {
-            "chat_id": 123456,
+            "chat_id": 67890,
             "disable_notification": undefined,
             "parse_mode": "HTML",
             "text": "Hello <b>World!</b>",
@@ -147,11 +147,11 @@ Object {
           "uploadingFiles": null,
         },
         Object {
-          "key": "telegram.12345.123456",
+          "key": "tg.12345.67890",
           "method": "sendPhoto",
           "parameters": Object {
             "caption": undefined,
-            "chat_id": 123456,
+            "chat_id": 67890,
             "disable_notification": undefined,
             "parse_mode": "HTML",
             "photo": "https://machinat.com/greeting.png",

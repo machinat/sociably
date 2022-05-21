@@ -100,7 +100,7 @@ describe('.getUserProfile(user)', () => {
 
     const profiler = new TelegramProfiler(bot);
     const profile = await profiler.getUserProfile(new TelegramUser(12345), {
-      inChat: new TelegramChat(54321, { type: 'group', id: 67890 }),
+      inChat: new TelegramChat(54321, 67890),
     });
 
     expect(profile.platform).toBe('telegram');
@@ -164,7 +164,7 @@ describe('.getUserProfile(user)', () => {
       { avatarUrl: 'http://jane.doe/avatar' }
     );
 
-    expect(profile.typeName()).toBe('TelegramUserProfile');
+    expect(profile.typeName()).toBe('TgUserProfile');
     expect(profile.toJSONValue()).toMatchInlineSnapshot(`
       Object {
         "avatar": "http://jane.doe/avatar",
@@ -209,8 +209,8 @@ describe('.getChatProfile(user)', () => {
     const profiler = new TelegramProfiler(bot);
 
     const profile = await profiler.getChatProfile(
-      new TelegramChat(12345, {
-        id: 12345,
+      new TelegramChat(12345, 67890, {
+        id: 67890,
         type: 'private',
         first_name: 'Jane',
         last_name: 'Doe',
@@ -218,7 +218,7 @@ describe('.getChatProfile(user)', () => {
       })
     );
     expect(profile.platform).toBe('telegram');
-    expect(profile.id).toBe(12345);
+    expect(profile.id).toBe(67890);
     expect(profile.name).toBe('Jane Doe');
     expect(profile.type).toBe('private');
     expect(profile.firstName).toBe('Jane');
@@ -230,8 +230,8 @@ describe('.getChatProfile(user)', () => {
   it('get profile with avatar', async () => {
     const profiler = new TelegramProfiler(bot);
 
-    const chat = new TelegramChat(12345, {
-      id: 12345,
+    const chat = new TelegramChat(12345, 67890, {
+      id: 67890,
       type: 'group',
       title: 'J Family',
     });
@@ -241,7 +241,7 @@ describe('.getChatProfile(user)', () => {
     });
 
     expect(profile.platform).toBe('telegram');
-    expect(profile.id).toBe(12345);
+    expect(profile.id).toBe(67890);
     expect(profile.type).toBe('group');
     expect(profile.name).toBe('J Family');
     expect(profile.title).toBe('J Family');
@@ -259,7 +259,7 @@ describe('.getChatProfile(user)', () => {
 
     const profiler = new TelegramProfiler(bot);
     const profile = await profiler.getChatProfile(
-      new TelegramChat(12345, { type: 'private', id: 67890 })
+      new TelegramChat(12345, 67890)
     );
 
     expect(profile.platform).toBe('telegram');
@@ -313,7 +313,7 @@ describe('.getChatProfile(user)', () => {
 
     const profiler = new TelegramProfiler(bot);
     const profile = await profiler.getChatProfile(
-      new TelegramChat(12345, {
+      new TelegramChat(12345, 67890, {
         id: 67890,
         type: 'private',
         first_name: 'Jojo',
@@ -338,8 +338,8 @@ describe('.getChatProfile(user)', () => {
   test('profile object is marshallable', async () => {
     const profiler = new TelegramProfiler(bot);
     const profile = await profiler.getChatProfile(
-      new TelegramChat(12345, {
-        id: 12345,
+      new TelegramChat(12345, 67890, {
+        id: 67890,
         type: 'private',
         first_name: 'Jane',
         last_name: 'Doe',
@@ -348,13 +348,13 @@ describe('.getChatProfile(user)', () => {
       { avatarUrl: 'http://jane.doe/avatar' }
     );
 
-    expect(profile.typeName()).toBe('TelegramChatProfile');
+    expect(profile.typeName()).toBe('TgChatProfile');
     expect(profile.toJSONValue()).toMatchInlineSnapshot(`
       Object {
         "avatar": "http://jane.doe/avatar",
         "data": Object {
           "first_name": "Jane",
-          "id": 12345,
+          "id": 67890,
           "last_name": "Doe",
           "type": "private",
           "username": "janedoe",
@@ -556,9 +556,7 @@ describe('.fetchChatPhoto(user)', () => {
     };
 
     await expect(
-      profiler.fetchChatPhoto(
-        new TelegramChat(12345, { id: 67890, type: 'group' })
-      )
+      profiler.fetchChatPhoto(new TelegramChat(12345, 67890))
     ).resolves.toEqual(expectedResponse);
 
     await expect(profiler.fetchChatPhoto('@foo_channel')).resolves.toEqual(

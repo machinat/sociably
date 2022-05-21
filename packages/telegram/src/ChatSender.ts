@@ -3,7 +3,6 @@ import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { TELEGRAM } from './constant';
 import ChatProfile from './ChatProfile';
 import type { TelegramChatType, RawChat } from './types';
-import type TelegramChat from './Chat';
 
 type TelegramChatSenderValue = {
   type: TelegramChatType;
@@ -13,16 +12,10 @@ type TelegramChatSenderValue = {
 class TelegramChatSender
   implements MachinatUser, MarshallableInstance<TelegramChatSenderValue>
 {
-  static typeName = 'TelegramChatSender';
+  static typeName = 'TgChatSender';
   static fromJSONValue(value: TelegramChatSenderValue): TelegramChatSender {
     const { type, id } = value;
     return new TelegramChatSender({ id, type });
-  }
-
-  static fromChat(chat: TelegramChat): null | TelegramChatSender {
-    return chat.type === 'channel' || chat.type === 'supergroup'
-      ? new TelegramChatSender(chat.data)
-      : null;
   }
 
   platform = TELEGRAM;
@@ -44,7 +37,7 @@ class TelegramChatSender
 
   /** Unique id of the chat sender user */
   get uid(): string {
-    return `telegram.${this.id}`;
+    return `tg.${this.id}`;
   }
 
   /** Profile of the chat */

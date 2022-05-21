@@ -2,29 +2,33 @@ import type { MachinatProfile } from '@machinat/core/base/Profiler';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
 import { LINE } from './constant';
 
-export type LineGroupSummary = {
+export type LineGroupData = {
   groupId: string;
   groupName: string;
   pictureUrl: string;
 };
 
+type GroupProfileValue = {
+  data: LineGroupData;
+};
+
 class LineGroupProfile
-  implements MachinatProfile, MarshallableInstance<LineGroupSummary>
+  implements MachinatProfile, MarshallableInstance<GroupProfileValue>
 {
   static typeName = 'LineGroupProfile';
 
-  static fromJSONValue(data: LineGroupSummary): LineGroupProfile {
+  static fromJSONValue({ data }: GroupProfileValue): LineGroupProfile {
     return new LineGroupProfile(data);
   }
 
-  data: LineGroupSummary;
+  data: LineGroupData;
   platform = LINE;
   firstName = undefined;
   lastName = undefined;
   languageCode = undefined;
   timeZone = undefined;
 
-  constructor(data: LineGroupSummary) {
+  constructor(data: LineGroupData) {
     this.data = data;
   }
 
@@ -40,8 +44,8 @@ class LineGroupProfile
     return this.data.pictureUrl;
   }
 
-  toJSONValue(): LineGroupSummary {
-    return this.data;
+  toJSONValue(): GroupProfileValue {
+    return { data: this.data };
   }
 
   // eslint-disable-next-line class-methods-use-this

@@ -2,7 +2,7 @@ import TelegramChat from '../Chat';
 import { createChatJob, createNonChatJobs } from '../job';
 
 describe('createChatJob(channel, segments)', () => {
-  const chat = new TelegramChat(12345, { id: 67890, type: 'private' });
+  const chat = new TelegramChat(12345, 67890);
 
   it('create jobs from segments', () => {
     expect(
@@ -43,7 +43,7 @@ describe('createChatJob(channel, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "key": "telegram.12345.67890",
+          "key": "tg.12345.67890",
           "method": "sendMesage",
           "parameters": Object {
             "chat_id": 67890,
@@ -52,7 +52,7 @@ describe('createChatJob(channel, segments)', () => {
           "uploadingFiles": null,
         },
         Object {
-          "key": "telegram.12345.67890",
+          "key": "tg.12345.67890",
           "method": "sendPhoto",
           "parameters": Object {
             "caption": "bar",
@@ -78,7 +78,7 @@ describe('createChatJob(channel, segments)', () => {
           ],
         },
         Object {
-          "key": "telegram.12345.67890",
+          "key": "tg.12345.67890",
           "method": "sendMessage",
           "parameters": Object {
             "chat_id": 67890,
