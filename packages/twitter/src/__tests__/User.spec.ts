@@ -19,11 +19,11 @@ test('with id only', () => {
   const user = new TwitterUser('6253282');
 
   expect(user.id).toBe('6253282');
-  expect(user.uid).toBe('twtr.6253282');
+  expect(user.uid).toBe('twitter.6253282');
   expect(user.data).toBe(null);
   expect(user.profile).toBe(null);
 
-  expect(user.typeName()).toBe('TwtrUser');
+  expect(user.typeName()).toBe('TwitterUser');
   expect(user.toJSONValue()).toEqual({ id: '6253282' });
 });
 
@@ -31,16 +31,16 @@ test('with user data', () => {
   const user = new TwitterUser('6253282', userData);
 
   expect(user.id).toBe('6253282');
-  expect(user.uid).toBe('twtr.6253282');
+  expect(user.uid).toBe('twitter.6253282');
   expect(user.data).toEqual(userData);
   expect(user.profile).toStrictEqual(new TwitterUserProfile(userData));
 
-  expect(user.typeName()).toBe('TwtrUser');
+  expect(user.typeName()).toBe('TwitterUser');
   expect(user.toJSONValue()).toEqual({ id: '6253282' });
 });
 
 test('marshall type metadata', () => {
-  expect(TwitterUser.typeName).toBe('TwtrUser');
+  expect(TwitterUser.typeName).toBe('TwitterUser');
 
   expect(TwitterUser.fromJSONValue({ id: '6253282' })).toStrictEqual(
     new TwitterUser('6253282')

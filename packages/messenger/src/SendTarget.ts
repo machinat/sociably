@@ -1,6 +1,6 @@
 import type { MachinatChannel } from '@machinat/core';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
-import { MESSENGER } from './constant';
+import { MESSENGER, FACEBOOK } from './constant';
 import type { MessengerTarget } from './types';
 
 type SendTargetValue = {
@@ -11,7 +11,7 @@ type SendTargetValue = {
 class FacebookSendTarget
   implements MachinatChannel, MarshallableInstance<SendTargetValue>
 {
-  static typeName = 'FbSendTarget';
+  static typeName = 'FacebookSendTarget';
   static fromJSONValue(value: SendTargetValue): FacebookSendTarget {
     const { page, target } = value;
     return new FacebookSendTarget(page, target);
@@ -49,7 +49,7 @@ class FacebookSendTarget
   }
 
   get uid(): string {
-    return `fb.${this.pageId}.${this.identifier}`;
+    return `${FACEBOOK}.${this.pageId}.${this.identifier}`;
   }
 
   toJSONValue(): SendTargetValue {

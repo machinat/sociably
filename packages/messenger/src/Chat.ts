@@ -1,6 +1,6 @@
 import type { MachinatChannel } from '@machinat/core';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
-import { MESSENGER } from './constant';
+import { MESSENGER, FACEBOOK } from './constant';
 import type MessengerUser from './User';
 import type { PSIDTarget } from './types';
 
@@ -12,7 +12,7 @@ type FacebookChatValue = {
 class FacebookChat
   implements MachinatChannel, MarshallableInstance<FacebookChatValue>
 {
-  static typeName = 'FbChat';
+  static typeName = 'FacebookChat';
   static fromUser(user: MessengerUser): FacebookChat {
     return new FacebookChat(user.pageId, user.id);
   }
@@ -33,7 +33,7 @@ class FacebookChat
   }
 
   get uid(): string {
-    return `fb.${this.pageId}.${this.id}`;
+    return `${FACEBOOK}.${this.pageId}.${this.id}`;
   }
 
   get target(): PSIDTarget {

@@ -12,7 +12,7 @@ type TelegramChatValue = {
 class TelegramChat
   implements MachinatChannel, MarshallableInstance<TelegramChatValue>
 {
-  static typeName = 'TgChat';
+  static typeName = 'TelegramChat';
 
   static fromJSONValue(value: TelegramChatValue): TelegramChat {
     const { bot, id } = value;
@@ -47,7 +47,7 @@ class TelegramChat
 
   /** Unique id of the chat channel */
   get uid(): string {
-    return `tg.${this.botId}.${this.id}`;
+    return `${TELEGRAM}.${this.botId}.${this.id}`;
   }
 
   /** Profile of the chat */

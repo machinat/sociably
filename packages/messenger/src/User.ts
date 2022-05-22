@@ -1,6 +1,6 @@
 import type { MachinatUser } from '@machinat/core';
 import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
-import { MESSENGER } from './constant';
+import { MESSENGER, FACEBOOK } from './constant';
 
 type FacebookUserValue = {
   page: string;
@@ -10,7 +10,7 @@ type FacebookUserValue = {
 export default class FacebookUser
   implements MachinatUser, MarshallableInstance<FacebookUserValue>
 {
-  static typeName = 'FbUser';
+  static typeName = 'FacebookUser';
 
   static fromJSONValue(value: FacebookUserValue): FacebookUser {
     const { page, id } = value;
@@ -27,7 +27,7 @@ export default class FacebookUser
   }
 
   get uid(): string {
-    return `fb.${this.pageId}.${this.id}`;
+    return `${FACEBOOK}.${this.pageId}.${this.id}`;
   }
 
   toJSONValue(): FacebookUserValue {

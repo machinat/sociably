@@ -4,8 +4,8 @@ test('from id', () => {
   const chat = new SendTarget('12345', { id: '67890' });
 
   expect(chat.platform).toBe('messenger');
-  expect(chat.typeName()).toMatchInlineSnapshot(`"FbSendTarget"`);
-  expect(chat.uid).toMatchInlineSnapshot(`"fb.12345.67890"`);
+  expect(chat.typeName()).toMatchInlineSnapshot(`"FacebookSendTarget"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"facebook.12345.67890"`);
 
   expect(chat.identifier).toBe('67890');
   expect(chat.type).toBe('psid');
@@ -26,8 +26,8 @@ test('from user_ref', () => {
   const chat = new SendTarget('12345', { user_ref: '_USER_REF_' });
 
   expect(chat.platform).toBe('messenger');
-  expect(chat.typeName()).toMatchInlineSnapshot(`"FbSendTarget"`);
-  expect(chat.uid).toMatchInlineSnapshot(`"fb.12345._USER_REF_"`);
+  expect(chat.typeName()).toMatchInlineSnapshot(`"FacebookSendTarget"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"facebook.12345._USER_REF_"`);
 
   expect(chat.identifier).toBe('_USER_REF_');
   expect(chat.type).toBe('user_ref');
@@ -48,8 +48,8 @@ test('from post', () => {
   const chat = new SendTarget('12345', { post_id: '_POST_ID_' });
 
   expect(chat.platform).toBe('messenger');
-  expect(chat.typeName()).toMatchInlineSnapshot(`"FbSendTarget"`);
-  expect(chat.uid).toMatchInlineSnapshot(`"fb.12345._POST_ID_"`);
+  expect(chat.typeName()).toMatchInlineSnapshot(`"FacebookSendTarget"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"facebook.12345._POST_ID_"`);
 
   expect(chat.identifier).toBe('_POST_ID_');
   expect(chat.type).toBe('post');
@@ -72,8 +72,8 @@ test('from comment', () => {
   });
 
   expect(chat.platform).toBe('messenger');
-  expect(chat.typeName()).toMatchInlineSnapshot(`"FbSendTarget"`);
-  expect(chat.uid).toMatchInlineSnapshot(`"fb.12345._COMMENT_ID_"`);
+  expect(chat.typeName()).toMatchInlineSnapshot(`"FacebookSendTarget"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"facebook.12345._COMMENT_ID_"`);
 
   expect(chat.identifier).toBe('_COMMENT_ID_');
   expect(chat.type).toBe('comment');

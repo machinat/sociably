@@ -12,7 +12,7 @@ type TelegramChatSenderValue = {
 class TelegramChatSender
   implements MachinatUser, MarshallableInstance<TelegramChatSenderValue>
 {
-  static typeName = 'TgChatSender';
+  static typeName = 'TelegramChatSender';
   static fromJSONValue(value: TelegramChatSenderValue): TelegramChatSender {
     const { type, id } = value;
     return new TelegramChatSender({ id, type });
@@ -37,7 +37,7 @@ class TelegramChatSender
 
   /** Unique id of the chat sender user */
   get uid(): string {
-    return `tg.${this.id}`;
+    return `${TELEGRAM}.${this.id}`;
   }
 
   /** Profile of the chat */

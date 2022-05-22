@@ -5,9 +5,9 @@ test('with id only', () => {
 
   expect(chat.agentId).toBe('1234567890');
   expect(chat.id).toBe('9876543210');
-  expect(chat.uid).toBe('twtr.1234567890.9876543210');
+  expect(chat.uid).toBe('twitter.1234567890.9876543210');
 
-  expect(chat.typeName()).toBe('TwtrChat');
+  expect(chat.typeName()).toBe('TwitterChat');
   expect(chat.toJSONValue()).toEqual({
     agent: '1234567890',
     id: '9876543210',
@@ -15,7 +15,7 @@ test('with id only', () => {
 });
 
 test('marshall type metadata', () => {
-  expect(TwitterChat.typeName).toBe('TwtrChat');
+  expect(TwitterChat.typeName).toBe('TwitterChat');
 
   expect(
     TwitterChat.fromJSONValue({ agent: '1234567890', id: '9876543210' })

@@ -164,7 +164,7 @@ describe('.getUserProfile(user)', () => {
       { avatarUrl: 'http://jane.doe/avatar' }
     );
 
-    expect(profile.typeName()).toBe('TgUserProfile');
+    expect(profile.typeName()).toBe('TelegramUserProfile');
     expect(profile.toJSONValue()).toMatchInlineSnapshot(`
       Object {
         "avatar": "http://jane.doe/avatar",
@@ -348,7 +348,7 @@ describe('.getChatProfile(user)', () => {
       { avatarUrl: 'http://jane.doe/avatar' }
     );
 
-    expect(profile.typeName()).toBe('TgChatProfile');
+    expect(profile.typeName()).toBe('TelegramChatProfile');
     expect(profile.toJSONValue()).toMatchInlineSnapshot(`
       Object {
         "avatar": "http://jane.doe/avatar",

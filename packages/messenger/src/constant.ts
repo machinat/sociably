@@ -1,3 +1,6 @@
+export const MESSENGER = 'messenger' as const;
+export const FACEBOOK = 'facebook' as const;
+
 export const ATTACHMENT_DATA = Symbol.for('attachment_data.messenger.machinat');
 export const ATTACHMENT_INFO = Symbol.for('attachment_info.messenger.machinat');
 
@@ -5,8 +8,6 @@ export const ATTACHMENT_ASSET_TAG = Symbol.for(
   'attatchment_asset_tag.messenger.machinat'
 );
 export const API_PATH = Symbol.for('api_path.messenger.machinat');
-
-export const MESSENGER = 'messenger' as const;
 
 export const MESSENGER_MESSAGING_TYPE_RESPONSE = 'RESPONSE';
 

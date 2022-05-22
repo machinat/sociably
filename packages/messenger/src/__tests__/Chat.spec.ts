@@ -5,8 +5,8 @@ test('from id', () => {
   const chat = new Chat('12345', '67890');
 
   expect(chat.platform).toBe('messenger');
-  expect(chat.typeName()).toBe('FbChat');
-  expect(chat.uid).toMatchInlineSnapshot(`"fb.12345.67890"`);
+  expect(chat.typeName()).toBe('FacebookChat');
+  expect(chat.uid).toMatchInlineSnapshot(`"facebook.12345.67890"`);
 
   expect(chat.id).toBe('67890');
   expect(chat.type).toBe('psid');

@@ -11,7 +11,7 @@ type TelegramUserValue = {
 class TelegramUser
   implements MachinatUser, MarshallableInstance<TelegramUserValue>
 {
-  static typeName = 'TgUser';
+  static typeName = 'TelegramUser';
   static fromJSONValue({ id }: TelegramUserValue): TelegramUser {
     return new TelegramUser(id);
   }
@@ -32,7 +32,7 @@ class TelegramUser
 
   /** Unique id of the user */
   get uid(): string {
-    return `tg.${this.id}`;
+    return `${TELEGRAM}.${this.id}`;
   }
 
   /** Profile of the user */

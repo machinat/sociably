@@ -12,7 +12,7 @@ type SerializedUserProfile = {
 export default class TwitterUserProfile
   implements MachinatProfile, MarshallableInstance<SerializedUserProfile>
 {
-  static typeName = 'TwtrUserProfile';
+  static typeName = 'TwitterUserProfile';
   static fromJSONValue({
     user,
     settings,

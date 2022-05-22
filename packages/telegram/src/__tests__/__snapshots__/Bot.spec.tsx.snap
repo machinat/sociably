@@ -90,7 +90,7 @@ exports[`.render(channel, message, options) send rendered messages to telegram a
 Object {
   "jobs": Array [
     Object {
-      "key": "tg.12345.67890",
+      "key": "telegram.12345.67890",
       "method": "sendMessage",
       "parameters": Object {
         "chat_id": 67890,
@@ -101,7 +101,7 @@ Object {
       "uploadingFiles": null,
     },
     Object {
-      "key": "tg.12345.67890",
+      "key": "telegram.12345.67890",
       "method": "sendPhoto",
       "parameters": Object {
         "caption": undefined,
@@ -136,7 +136,7 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "key": "tg.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendMessage",
           "parameters": Object {
             "chat_id": 67890,
@@ -147,7 +147,7 @@ Object {
           "uploadingFiles": null,
         },
         Object {
-          "key": "tg.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendPhoto",
           "parameters": Object {
             "caption": undefined,

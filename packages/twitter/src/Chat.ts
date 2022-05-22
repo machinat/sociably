@@ -10,7 +10,7 @@ type SerializedDmChat = {
 export default class TwitterChat
   implements MachinatChannel, MarshallableInstance<SerializedDmChat>
 {
-  static typeName = 'TwtrChat';
+  static typeName = 'TwitterChat';
   static fromJSONValue({ id, agent }: SerializedDmChat): TwitterChat {
     return new TwitterChat(agent, id);
   }
@@ -27,7 +27,7 @@ export default class TwitterChat
 
   /** The unique id of the direct message channel */
   get uid(): string {
-    return `twtr.${this.agentId}.${this.id}`;
+    return `${TWITTER}.${this.agentId}.${this.id}`;
   }
 
   // eslint-disable-next-line class-methods-use-this

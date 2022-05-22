@@ -6,7 +6,7 @@ import { MESSENGER } from './constant';
 class FacebookUserProfile
   implements MachinatProfile, MarshallableInstance<RawUserProfile>
 {
-  static typeName = 'FbUserProfile';
+  static typeName = 'FacebookUserProfile';
 
   static fromJSONValue(data: RawUserProfile): FacebookUserProfile {
     return new FacebookUserProfile(data);

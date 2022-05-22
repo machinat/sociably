@@ -14,7 +14,7 @@ export class WebSocketConnection
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
-  static typeName = 'WsConnection';
+  static typeName = 'WebSocketConnection';
 
   static fromJSONValue({ id, server }: ConnectionValue): WebSocketConnection {
     return new WebSocketConnection(server, id);
@@ -32,7 +32,7 @@ export class WebSocketConnection
   }
 
   get uid(): string {
-    return `ws.conn.${this.serverId}.${this.id}`;
+    return `${WEBSOCKET}.conn.${this.serverId}.${this.id}`;
   }
 
   toJSONValue(): ConnectionValue {
@@ -56,7 +56,7 @@ export class WebSocketUserChannel
     UserTarget,
     MarshallableInstance<UserChannelValue>
 {
-  static typeName = 'WsUserCh';
+  static typeName = 'WebSocketUserCh';
 
   static fromJSONValue({ user }: UserChannelValue): WebSocketUserChannel {
     return new WebSocketUserChannel(user);
@@ -72,7 +72,7 @@ export class WebSocketUserChannel
   }
 
   get uid(): string {
-    return `ws.user.${this.userUid}`;
+    return `${WEBSOCKET}.user.${this.userUid}`;
   }
 
   toJSONValue(): UserChannelValue {
@@ -92,7 +92,7 @@ type TopicValue = {
 export class WebSocketTopicChannel
   implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue>
 {
-  static typeName = 'WsTopicCh';
+  static typeName = 'WebSocketTopicCh';
 
   static fromJSONValue({ name }: TopicValue): WebSocketTopicChannel {
     return new WebSocketTopicChannel(name);
@@ -107,7 +107,7 @@ export class WebSocketTopicChannel
   }
 
   get uid(): string {
-    return `ws.topic.${this.name}`;
+    return `${WEBSOCKET}.topic.${this.name}`;
   }
 
   toJSONValue(): TopicValue {

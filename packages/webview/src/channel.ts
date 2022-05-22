@@ -18,7 +18,7 @@ export class WebviewConnection
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
-  static typeName = 'WvConnection';
+  static typeName = 'WebviewConnection';
 
   static fromJSONValue({ id, server }: ConnectionValue): WebviewConnection {
     return new WebviewConnection(server, id);
@@ -36,7 +36,7 @@ export class WebviewConnection
   }
 
   get uid(): string {
-    return `wv.conn.${this.serverId}.${this.id}`;
+    return `${WEBVIEW}.conn.${this.serverId}.${this.id}`;
   }
 
   toJSONValue(): ConnectionValue {
@@ -60,7 +60,7 @@ export class WebviewUserChannel
     UserTarget,
     MarshallableInstance<UserChannelValue>
 {
-  static typeName = 'WvUserCh';
+  static typeName = 'WebviewUserCh';
 
   static fromJSONValue({ user }: UserChannelValue): WebviewUserChannel {
     return new WebviewUserChannel(user);
@@ -76,7 +76,7 @@ export class WebviewUserChannel
   }
 
   get uid(): string {
-    return `wv.user.${this.userUid}`;
+    return `${WEBVIEW}.user.${this.userUid}`;
   }
 
   toJSONValue(): UserChannelValue {
@@ -96,7 +96,7 @@ type TopicValue = {
 export class WebviewTopicChannel
   implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue>
 {
-  static typeName = 'WvTopicCh';
+  static typeName = 'WebviewTopicCh';
 
   static fromJSONValue({ name }: TopicValue): WebviewTopicChannel {
     return new WebviewTopicChannel(name);
@@ -111,7 +111,7 @@ export class WebviewTopicChannel
   }
 
   get uid(): string {
-    return `wv.topic.${this.name}`;
+    return `${WEBVIEW}.topic.${this.name}`;
   }
 
   toJSONValue(): TopicValue {
