@@ -1,5 +1,9 @@
 import Machinat from '@machinat/core';
-import { createTweetJobs, createDirectMessageJobs } from '../job';
+import {
+  createTweetJobs,
+  createDirectMessageJobs,
+  createWelcomeMessageJobs,
+} from '../job';
 import createTweetSegmentValue from '../utils/createTweetSegmentValue';
 import createDmSegmentValue from '../utils/createDmSegmentValue';
 import TweetTarget from '../TweetTarget';
@@ -789,6 +793,180 @@ describe('createDmSegmentValue(chat, segment)', () => {
       ])
     ).toThrowErrorMatchingInlineSnapshot(
       `"tweeting feature <foo /> cannot be used while tweeting"`
+    );
+  });
+});
+
+describe('createWelcomeMessageJobs', () => {
+  test('with text segment', async () => {
+    const jobs = createWelcomeMessageJobs({ name: 'foo' })(null, [
+      { type: 'text', node: 'Foo!', value: 'Foo!', path: '$' },
+    ]);
+    expect(jobs).toMatchSnapshot();
+
+    const [job] = jobs;
+    expect(job.accomplishRequest!(job.target, job.request, null))
+      .toMatchInlineSnapshot(`
+      Object {
+        "href": "1.1/direct_messages/welcome_messages/new.json",
+        "method": "POST",
+        "parameters": Object {
+          "welcome_message": Object {
+            "message_data": Object {
+              "attachment": undefined,
+              "text": "Foo!",
+            },
+            "name": "foo",
+          },
+        },
+      }
+    `);
+  });
+
+  test('with media segment', async () => {
+    const jobs = createWelcomeMessageJobs({ name: 'foo' })(null, [
+      {
+        type: 'unit',
+        node: <img src="http://..." />,
+        value: {
+          type: 'media',
+          attachment: {
+            type: 'photo',
+            source: { type: 'url', url: 'http://...', parameters: {} },
+          },
+        },
+        path: '$',
+      },
+    ]);
+    expect(jobs).toMatchSnapshot();
+
+    const [job] = jobs;
+    expect(job.accomplishRequest!(job.target, job.request, ['1234567890']))
+      .toMatchInlineSnapshot(`
+      Object {
+        "href": "1.1/direct_messages/welcome_messages/new.json",
+        "method": "POST",
+        "parameters": Object {
+          "welcome_message": Object {
+            "message_data": Object {
+              "attachment": Object {
+                "media": Object {
+                  "id": "1234567890",
+                },
+                "type": "media",
+              },
+              "text": undefined,
+            },
+            "name": "foo",
+          },
+        },
+      }
+    `);
+  });
+
+  test('with dm segment', async () => {
+    const jobs = createWelcomeMessageJobs({ name: 'foo' })(null, [
+      {
+        type: 'unit',
+        node: <p />,
+        value: createDmSegmentValue('Foo!', {
+          type: 'photo',
+          source: { type: 'id', id: '1234567890' },
+        }),
+        path: '$',
+      },
+    ]);
+    expect(jobs).toMatchSnapshot();
+
+    const [job] = jobs;
+    expect(job.accomplishRequest!(job.target, job.request, ['1234567890']))
+      .toMatchInlineSnapshot(`
+      Object {
+        "href": "1.1/direct_messages/welcome_messages/new.json",
+        "method": "POST",
+        "parameters": Object {
+          "welcome_message": Object {
+            "message_data": Object {
+              "attachment": Object {
+                "media": Object {
+                  "id": "1234567890",
+                },
+                "type": "media",
+              },
+              "text": "Foo!",
+            },
+            "name": "foo",
+          },
+        },
+      }
+    `);
+  });
+
+  test('throw if invalid message received', () => {
+    expect(() =>
+      createWelcomeMessageJobs({ name: 'foo' })(null, [
+        {
+          type: 'unit',
+          node: <foo />,
+          value: {
+            type: 'tweet',
+            request: {
+              method: 'POST',
+              href: '2/tweets',
+              parameters: { text: 'Foo!' },
+            },
+            mediaSources: null,
+            accomplishRequest: null,
+          },
+          path: '$',
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<foo /> cannot be used as welcome message"`
+    );
+
+    expect(() =>
+      createWelcomeMessageJobs({ name: 'foo' })(null, [
+        {
+          type: 'unit',
+          node: <foo />,
+          value: {
+            type: 'action',
+            request: {
+              method: 'POST',
+              href: '2/foo',
+              parameters: { bar: 'baz' },
+            },
+            mediaSources: null,
+            accomplishRequest: null,
+          },
+          path: '$',
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<foo /> cannot be used as welcome message"`
+    );
+  });
+
+  test('throw if multiple messages received', () => {
+    expect(() =>
+      createWelcomeMessageJobs({ name: 'foo' })(null, [
+        { type: 'text', node: 'Bar!', value: 'Bar!', path: '$:1' },
+        { type: 'text', node: 'Baz!', value: 'Baz!', path: '$:1' },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"welcome message should contain only one direct message"`
+    );
+
+    const creator = createWelcomeMessageJobs({ name: 'foo' });
+    creator(null, [{ type: 'text', node: 'Bar!', value: 'Bar!', path: '$:0' }]);
+
+    expect(() =>
+      creator(null, [
+        { type: 'text', node: 'Baz!', value: 'Baz!', path: '$:2' },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"welcome message should contain only one direct message"`
     );
   });
 });

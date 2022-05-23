@@ -12,7 +12,11 @@ import Engine, { DispatchError } from '@machinat/core/engine';
 import { formatNode } from '@machinat/core/utils';
 import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
 import { makeClassProvider } from '@machinat/core/service';
-import { createTweetJobs, createDirectMessageJobs } from './job';
+import {
+  createTweetJobs,
+  createDirectMessageJobs,
+  createWelcomeMessageJobs,
+} from './job';
 import generalElementDelegate from './components/general';
 import TwitterWorker from './Worker';
 import Tweet from './Tweet';
@@ -224,6 +228,27 @@ export class TwitterBot
       source,
       result,
     }));
+  }
+
+  async renderWelcomeMessage(
+    name: undefined | string,
+    message: MachinatNode
+  ): Promise<null | {
+    /* eslint-disable camelcase */
+    welcome_message: {
+      id: string;
+      created_timestamp: string;
+      message_data: any;
+    };
+    /* eslint-enable camelcase */
+    name: string;
+  }> {
+    const response = await this.engine.render(
+      null,
+      message,
+      createWelcomeMessageJobs({ name })
+    );
+    return (response?.results[0].body as any) || null;
   }
 
   async fetchMediaFile(url: string): Promise<{

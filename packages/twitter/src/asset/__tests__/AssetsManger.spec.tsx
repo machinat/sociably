@@ -26,6 +26,7 @@ const bot = moxy<TwitterBot>({
   id: 123456,
   makeApiCall() {},
   renderMedia() {},
+  renderWelcomeMessage() {},
 } as never);
 
 beforeEach(() => {
@@ -262,7 +263,6 @@ describe('.renderMedia(tag, media)', () => {
     expect(bot.renderMedia.mock).toHaveBeenCalledTimes(1);
     expect(bot.renderMedia.mock).toHaveBeenCalledWith(photo);
 
-    expect(stateController.globalState.mock).toHaveBeenCalledTimes(1);
     expect(
       stateController.globalState.mock.calls[0].args[0]
     ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.media"`);
@@ -279,6 +279,20 @@ describe('.renderMedia(tag, media)', () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"media content is empty"`);
 
     expect(state.set.mock).not.toHaveBeenCalled();
+  });
+
+  it('throw if media already exist', async () => {
+    const manager = new TwitterAssetsManager(appId, stateController, bot);
+
+    state.get.mock.fake(async () => '1234567890');
+    await expect(
+      manager.renderWelcomeMessage('my_welcome_message', 'foo')
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"welcome message [my_welcome_message] already exists"`
+    );
+
+    expect(state.set.mock).not.toHaveBeenCalled();
+    expect(bot.renderMedia.mock).not.toHaveBeenCalled();
   });
 });
 
@@ -397,6 +411,83 @@ test('.deleteWebhook(tag, env)', async () => {
     manager.deleteWebhook('my_app_webhook', 'production')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"webhook \\"my_app_webhook\\" doesn't exist"`
+  );
+
+  expect(state.delete.mock).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+});
+
+test('.renderWelcomeMessage(name, message)', async () => {
+  const manager = new TwitterAssetsManager(appId, stateController, bot);
+
+  bot.renderWelcomeMessage.mock.fake(async () => ({
+    welcome_message: {
+      id: '844385345234',
+      created_timestamp: '1470182274821',
+      name: 'my_welcome_message',
+      message_data: { text: 'Hello World!' },
+    },
+  }));
+
+  await expect(
+    manager.renderWelcomeMessage('my_welcome_message', <p>Hello World!</p>)
+  ).resolves.toBe('844385345234');
+
+  expect(bot.renderWelcomeMessage.mock).toHaveBeenCalledWith(
+    'my_welcome_message',
+    <p>Hello World!</p>
+  );
+
+  expect(
+    stateController.globalState.mock.calls[0].args[0]
+  ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.welcome_message"`);
+  expect(state.set.mock).toHaveBeenCalledWith(
+    'my_welcome_message',
+    '844385345234'
+  );
+
+  bot.renderWelcomeMessage.mock.fake(async () => null);
+  await expect(
+    manager.renderWelcomeMessage('my_welcome_message', null)
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"message content is empty"`);
+
+  state.get.mock.fake(async () => '1234567890');
+  await expect(
+    manager.renderWelcomeMessage('my_welcome_message', 'foo')
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"welcome message [my_welcome_message] already exists"`
+  );
+
+  expect(state.set.mock).toHaveBeenCalledTimes(1);
+  expect(bot.renderWelcomeMessage.mock).toHaveBeenCalledTimes(2);
+});
+
+test('.deleteWelcomeMessage(name)', async () => {
+  const manager = new TwitterAssetsManager(appId, stateController, bot);
+
+  state.get.mock.fake(async () => '11111');
+  bot.makeApiCall.mock.fake(async () => ({}));
+
+  await expect(
+    manager.deleteWelcomeMessage('my_welcome_message')
+  ).resolves.toBe('11111');
+
+  expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+    'DELETE',
+    '1.1/direct_messages/welcome_messages/destroy.json',
+    { id: '11111' }
+  );
+
+  expect(
+    stateController.globalState.mock.calls[0].args[0]
+  ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.welcome_message"`);
+  expect(state.delete.mock).toHaveBeenCalledWith('my_welcome_message');
+
+  state.get.mock.fake(async () => undefined);
+  await expect(
+    manager.deleteCustomProfile('my_welcome_message')
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"custom profile [my_welcome_message] doesn't exist"`
   );
 
   expect(state.delete.mock).toHaveBeenCalledTimes(1);

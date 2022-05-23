@@ -526,6 +526,60 @@ describe('.renderMedia(media)', () => {
   });
 });
 
+describe('.renderWelcomeMessage(name, message)', () => {
+  test('create welcome message', async () => {
+    const bot = new TwitterBot(authOptions);
+    bot.start();
+
+    const createWelcomeCall = twitterApi
+      .post('/1.1/direct_messages/welcome_messages/new.json', bodySpy)
+      .reply(200, {
+        welcome_message: {
+          id: '844385345234',
+          created_timestamp: '1470182274821',
+          name: 'foo_welcome',
+          message_data: { text: 'Foo!' },
+        },
+      });
+
+    await expect(
+      bot.renderWelcomeMessage(
+        'foo_welcome',
+        <DirectMessage>Foo!</DirectMessage>
+      )
+    ).resolves.toMatchInlineSnapshot(`
+            Object {
+              "welcome_message": Object {
+                "created_timestamp": "1470182274821",
+                "id": "844385345234",
+                "message_data": Object {
+                  "text": "Foo!",
+                },
+                "name": "foo_welcome",
+              },
+            }
+          `);
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    expect(bodySpy.mock).toHaveBeenCalledWith({
+      welcome_message: {
+        name: 'foo_welcome',
+        message_data: { text: 'Foo!' },
+      },
+    });
+    expect(createWelcomeCall.isDone()).toBe(true);
+  });
+
+  test('return null if content is empty', async () => {
+    const bot = new TwitterBot(authOptions);
+    bot.start();
+
+    await expect(bot.renderWelcomeMessage('foo_welcome', null)).resolves.toBe(
+      null
+    );
+  });
+});
+
 test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
   const authSpy = moxy(() => true);
   const mediaContent = Buffer.from('__MEDIA_CONTENT__');

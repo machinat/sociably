@@ -82,6 +82,11 @@ export class TwitterAssetsManager {
     tag: string,
     media: MachinatNode
   ): Promise<RenderMediaResponse> {
+    const existedId = await this.getMedia(tag);
+    if (existedId) {
+      throw new Error(`media [${tag}] already exists`);
+    }
+
     const results = await this.bot.renderMedia(media);
     if (!results) {
       throw new Error('media content is empty');
@@ -177,6 +182,40 @@ export class TwitterAssetsManager {
 
   unsaveWelcomeMessage(tag: string): Promise<boolean> {
     return this.unsaveAssetId(WELCOME_MESSAGE, tag);
+  }
+
+  async renderWelcomeMessage(
+    tag: string,
+    message: MachinatNode
+  ): Promise<undefined | string> {
+    const existedId = await this.getWelcomeMessage(tag);
+    if (existedId) {
+      throw new Error(`welcome message [${tag}] already exists`);
+    }
+
+    const result = await this.bot.renderWelcomeMessage(tag, message);
+    if (!result) {
+      throw new Error('message content is empty');
+    }
+
+    const { id: welcomeId } = result.welcome_message;
+    await this.saveAssetId(WELCOME_MESSAGE, tag, welcomeId);
+    return welcomeId;
+  }
+
+  async deleteWelcomeMessage(tag: string): Promise<string> {
+    const welcomeId = await this.getWelcomeMessage(tag);
+    if (!welcomeId) {
+      throw new Error(`welcome message [${tag}] doesn't exist`);
+    }
+
+    await this.bot.makeApiCall(
+      'DELETE',
+      '1.1/direct_messages/welcome_messages/destroy.json',
+      { id: welcomeId }
+    );
+    await this.unsaveWelcomeMessage(tag);
+    return welcomeId;
   }
 
   // custome profile

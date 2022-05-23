@@ -580,3 +580,131 @@ Array [
   },
 ]
 `;
+
+exports[`createWelcomeMessageJobs with dm segment 1`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "asApplication": false,
+    "key": undefined,
+    "mediaSources": Array [
+      Object {
+        "id": "1234567890",
+        "type": "id",
+      },
+    ],
+    "refreshTarget": null,
+    "request": Object {
+      "href": "1.1/direct_messages/events/new.json",
+      "method": "POST",
+      "parameters": Object {
+        "event": Object {
+          "message_create": Object {
+            "message_data": Object {
+              "attachment": Object {
+                "media": Object {
+                  "id": "",
+                },
+                "type": "media",
+              },
+              "text": "Foo!",
+            },
+            "target": Object {
+              "recipient_id": "",
+            },
+          },
+          "type": "message_create",
+        },
+      },
+    },
+    "target": TwitterChat {
+      "agentId": "",
+      "id": "",
+      "platform": "twitter",
+    },
+  },
+]
+`;
+
+exports[`createWelcomeMessageJobs with media segment 1`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "asApplication": false,
+    "key": undefined,
+    "mediaSources": Array [
+      Object {
+        "parameters": Object {
+          "media_category": "dm_image",
+        },
+        "type": "url",
+        "url": "http://...",
+      },
+    ],
+    "refreshTarget": null,
+    "request": Object {
+      "href": "1.1/direct_messages/events/new.json",
+      "method": "POST",
+      "parameters": Object {
+        "event": Object {
+          "message_create": Object {
+            "message_data": Object {
+              "attachment": Object {
+                "media": Object {
+                  "id": "",
+                },
+                "type": "media",
+              },
+              "text": undefined,
+            },
+            "target": Object {
+              "recipient_id": "",
+            },
+          },
+          "type": "message_create",
+        },
+      },
+    },
+    "target": TwitterChat {
+      "agentId": "",
+      "id": "",
+      "platform": "twitter",
+    },
+  },
+]
+`;
+
+exports[`createWelcomeMessageJobs with text segment 1`] = `
+Array [
+  Object {
+    "accomplishRequest": [Function],
+    "asApplication": false,
+    "key": undefined,
+    "mediaSources": null,
+    "refreshTarget": null,
+    "request": Object {
+      "href": "1.1/direct_messages/events/new.json",
+      "method": "POST",
+      "parameters": Object {
+        "event": Object {
+          "message_create": Object {
+            "message_data": Object {
+              "attachment": undefined,
+              "text": "Foo!",
+            },
+            "target": Object {
+              "recipient_id": "",
+            },
+          },
+          "type": "message_create",
+        },
+      },
+    },
+    "target": TwitterChat {
+      "agentId": "",
+      "id": "",
+      "platform": "twitter",
+    },
+  },
+]
+`;

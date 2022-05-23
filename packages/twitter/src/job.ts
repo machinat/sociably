@@ -9,6 +9,7 @@ import splitTweetText from './utils/splitTweetText';
 import type {
   MediaType,
   TwitterSegmentValue,
+  DirectMessageSegmentValue,
   TwitterJob,
   TweetResult,
 } from './types';
@@ -174,4 +175,62 @@ export const createDirectMessageJobs = (
   });
 
   return jobs;
+};
+
+export const createWelcomeMessageJobs = ({ name }: { name?: string }) => {
+  let isCreated = false;
+
+  return (
+    _targe: null,
+    segments: DispatchableSegment<TwitterSegmentValue>[]
+  ): TwitterJob[] => {
+    if (isCreated || segments.length > 1) {
+      throw new Error('welcome message should contain only one direct message');
+    }
+    isCreated = true;
+
+    const segment = segments[0];
+    let dmSegValue: DirectMessageSegmentValue;
+
+    if (segment.type === 'text') {
+      dmSegValue = createDmSegmentValue(segment.value);
+    } else if (segment.value.type === 'media') {
+      dmSegValue = createDmSegmentValue(undefined, segment.value.attachment);
+    } else if (segment.value.type === 'dm') {
+      dmSegValue = segment.value;
+    } else {
+      throw new Error(
+        `${formatNode(segment.node)} cannot be used as welcome message`
+      );
+    }
+
+    return [
+      {
+        // HACK: to pass accomplishRequest
+        target: new TwitterChat('', ''),
+        key: undefined,
+        request: dmSegValue.request,
+        mediaSources: dmSegValue.mediaSources,
+        accomplishRequest: (target, request, mediaResults) => {
+          const dmRequest = dmSegValue.accomplishRequest
+            ? dmSegValue.accomplishRequest(target, request, mediaResults)
+            : request;
+
+          return {
+            method: 'POST',
+            href: '1.1/direct_messages/welcome_messages/new.json',
+            parameters: {
+              welcome_message: {
+                name,
+                message_data:
+                  dmRequest.parameters.event.message_create.message_data,
+              },
+            },
+          };
+        },
+        refreshTarget: null,
+        asApplication: false,
+      },
+    ];
+  };
 };
