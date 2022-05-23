@@ -465,17 +465,16 @@ test('.renderWelcomeMessage(name, message)', async () => {
 test('.deleteWelcomeMessage(name)', async () => {
   const manager = new TwitterAssetsManager(appId, stateController, bot);
 
-  state.get.mock.fake(async () => '11111');
+  state.get.mock.fake(async () => '1234567890');
   bot.makeApiCall.mock.fake(async () => ({}));
 
   await expect(
     manager.deleteWelcomeMessage('my_welcome_message')
-  ).resolves.toBe('11111');
+  ).resolves.toBe('1234567890');
 
   expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
     'DELETE',
-    '1.1/direct_messages/welcome_messages/destroy.json',
-    { id: '11111' }
+    '1.1/direct_messages/welcome_messages/destroy.json?id=1234567890'
   );
 
   expect(
@@ -499,7 +498,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
 
   bot.makeApiCall.mock.fake(async () => ({
     custom_profile: {
-      id: '11111',
+      id: '1234567890',
       created_timestamp: '1479767168196',
       name: 'Jon C, Partner Engineer',
       avatar: {
@@ -514,9 +513,9 @@ test('.createCustomProfile(tag, name, img)', async () => {
     manager.createCustomProfile(
       'my_custom_profile',
       'Jon C, Partner Engineer',
-      '77777'
+      '9876543210'
     )
-  ).resolves.toBe('11111');
+  ).resolves.toBe('1234567890');
 
   expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
     'POST',
@@ -524,7 +523,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
     {
       custom_profile: {
         name: 'Jon C, Partner Engineer',
-        avatar: { media: { id: '77777' } },
+        avatar: { media: { id: '9876543210' } },
       },
     }
   );
@@ -532,14 +531,17 @@ test('.createCustomProfile(tag, name, img)', async () => {
   expect(
     stateController.globalState.mock.calls[0].args[0]
   ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.custom_profile"`);
-  expect(state.set.mock).toHaveBeenCalledWith('my_custom_profile', '11111');
+  expect(state.set.mock).toHaveBeenCalledWith(
+    'my_custom_profile',
+    '1234567890'
+  );
 
-  state.get.mock.fake(async () => '11111');
+  state.get.mock.fake(async () => '1234567890');
   await expect(
     manager.createCustomProfile(
       'my_custom_profile',
       'Jon C, Partner Engineer',
-      '77777'
+      '9876543210'
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"custom profile [my_custom_profile] already exists"`
@@ -552,17 +554,16 @@ test('.createCustomProfile(tag, name, img)', async () => {
 test('.deleteCustomProfile(name)', async () => {
   const manager = new TwitterAssetsManager(appId, stateController, bot);
 
-  state.get.mock.fake(async () => '11111');
+  state.get.mock.fake(async () => '1234567890');
   bot.makeApiCall.mock.fake(async () => ({}));
 
   await expect(manager.deleteCustomProfile('my_custom_profile')).resolves.toBe(
-    '11111'
+    '1234567890'
   );
 
   expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
     'DELETE',
-    '1.1/custom_profiles/destroy.json',
-    { id: '11111' }
+    '1.1/custom_profiles/destroy.json?id=1234567890'
   );
 
   expect(

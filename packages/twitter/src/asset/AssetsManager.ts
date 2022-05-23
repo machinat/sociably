@@ -211,8 +211,7 @@ export class TwitterAssetsManager {
 
     await this.bot.makeApiCall(
       'DELETE',
-      '1.1/direct_messages/welcome_messages/destroy.json',
-      { id: welcomeId }
+      `1.1/direct_messages/welcome_messages/destroy.json?id=${welcomeId}`
     );
     await this.unsaveWelcomeMessage(tag);
     return welcomeId;
@@ -264,9 +263,10 @@ export class TwitterAssetsManager {
       throw new Error(`custom profile [${tag}] doesn't exist`);
     }
 
-    await this.bot.makeApiCall('DELETE', '1.1/custom_profiles/destroy.json', {
-      id: customProfileId,
-    });
+    await this.bot.makeApiCall(
+      'DELETE',
+      `1.1/custom_profiles/destroy.json?id=${customProfileId}`
+    );
     await this.unsaveCustomProfile(tag);
     return customProfileId;
   }
