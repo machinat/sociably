@@ -81,22 +81,23 @@ export default class TwitterWorker
   ): Promise<{ code: number; body: unknown }> {
     const apiUrl = new URL(href, API_ENTRY);
     const apiLocation = `${apiUrl.origin}${apiUrl.pathname}`;
-    let authHeader: string;
     let body: undefined | string;
 
     if (method === 'GET') {
-      authHeader = this.getAuthHeader(method, apiLocation, parameters, oauth);
       if (parameters) {
         Object.entries(parameters).forEach(([k, v]) => {
           apiUrl.searchParams.set(k, v as string);
         });
       }
-    } else {
-      if (parameters) {
-        body = JSON.stringify(parameters);
-      }
-      authHeader = this.getAuthHeader(method, apiLocation, undefined, oauth);
+    } else if (parameters) {
+      body = JSON.stringify(parameters);
     }
+    const authHeader = this.getAuthHeader(
+      method,
+      apiLocation,
+      Object.fromEntries(apiUrl.searchParams.entries()),
+      oauth
+    );
 
     const response = await fetch(apiUrl.href, {
       method,

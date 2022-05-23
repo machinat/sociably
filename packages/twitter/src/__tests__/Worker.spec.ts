@@ -70,18 +70,23 @@ test('api request', async () => {
       {
         request: {
           method: 'GET',
-          href: '1.1/bar/baz',
+          href: '1.1/bar/baz?f=oo',
           parameters: { s: 'hello world' },
         },
       },
       twitterApi
-        .get(`/1.1/bar/baz?s=hello%20world`)
+        .get(`/1.1/bar/baz?f=oo&s=hello%20world`)
         .delay(50)
         .reply(200, { data: 3 }),
     ] as const,
     [
-      { request: { method: 'DELETE', href: '2/bar', parameters: { a: 1 } } },
-      twitterApi.delete(`/2/bar`, { a: 1 }).delay(50).reply(200, { data: 4 }),
+      {
+        request: { method: 'DELETE', href: '2/bar?z=0', parameters: { a: 1 } },
+      },
+      twitterApi
+        .delete(`/2/bar?z=0`, { a: 1 })
+        .delay(50)
+        .reply(200, { data: 4 }),
     ] as const,
     [
       { request: { method: 'POST', href: '2/baz', parameters: { a: 1 } } },
