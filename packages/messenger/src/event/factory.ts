@@ -376,7 +376,9 @@ const createEvent = (
 
   if (hasOwnProperty(payload, 'referral')) {
     const { sender } = payload;
-    const channel = new MessengerChat(pageId, sender.id);
+    const channel = sender.id
+      ? new MessengerChat(pageId, sender.id)
+      : new SendTarget(pageId, sender);
     const user = sender.id ? new MessengerUser(pageId, sender.id) : null;
     return makeEvent(payload, channel, user, ReferralProto);
   }

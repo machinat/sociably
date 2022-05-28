@@ -291,7 +291,7 @@ export interface ReferralEvent
   extends EventObject<
       'action',
       'referral',
-      MessengerChat,
+      MessengerChat | SendTarget,
       null | MessengerUser
     >,
     EventBase,
