@@ -2,20 +2,22 @@
 // / <reference lib="DOM" />
 import { nanoid } from 'nanoid';
 import type {
-  ClientAuthenticator,
   AuthenticatorCredentialResult,
   CheckDataResult,
 } from '@machinat/auth';
 import { NoneUser, NoneChannel } from './instance';
+import { WebviewClientAuthenticator } from '../types';
 import type { NoneAuthData, NoneAuthContext } from './types';
 
 const USER_KEY = 'none_user';
 const CHANNEL_KEY = 'none_channel';
 
 class NoneClientAuthenticator
-  implements ClientAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>
+  implements
+    WebviewClientAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>
 {
   platform = 'none';
+  marshalTypes = [NoneUser, NoneChannel];
 
   async init(): Promise<void> {}
 
@@ -61,6 +63,10 @@ class NoneClientAuthenticator
         channel: new NoneChannel(channelId),
       },
     };
+  }
+
+  closeWebview(): boolean {
+    return false;
   }
 }
 
