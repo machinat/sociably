@@ -383,6 +383,17 @@ const createEvent = (
     return makeEvent(payload, channel, user, ReferralProto);
   }
 
+  if (hasOwnProperty(payload, 'postback')) {
+    const { sender } = payload;
+    const channel = sender.id
+      ? new MessengerChat(pageId, sender.id)
+      : new SendTarget(pageId, sender);
+    const user = sender.id ? new MessengerUser(pageId, sender.id) : null;
+    return isStandby
+      ? makeEvent(payload, channel, user, StandbyPostbackProto)
+      : makeEvent(payload, channel, user, PostbackProto);
+  }
+
   const { sender } = payload;
   const channel = new MessengerChat(pageId, sender.id);
   const user = new MessengerUser(pageId, sender.id);
@@ -409,10 +420,6 @@ const createEvent = (
     ? makeEvent(payload, channel, user, RequestThreadControlProto)
     : hasOwnProperty(payload, 'app_roles')
     ? makeEvent(payload, channel, user, AppRolesProto)
-    : hasOwnProperty(payload, 'postback')
-    ? isStandby
-      ? makeEvent(payload, channel, user, StandbyPostbackProto)
-      : makeEvent(payload, channel, user, PostbackProto)
     : makeEvent(payload, channel, user, UnknownProto);
 };
 

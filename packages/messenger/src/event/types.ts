@@ -270,7 +270,12 @@ export interface QuickReplyEvent
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_postbacks).
  */
 export interface PostbackEvent
-  extends EventObject<'postback' | 'standby', 'postback'>,
+  extends EventObject<
+      'postback' | 'standby',
+      'postback',
+      MessengerChat | SendTarget,
+      MessengerUser | null
+    >,
     EventBase,
     Postback {}
 
