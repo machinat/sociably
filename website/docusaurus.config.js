@@ -93,6 +93,7 @@ module.exports = {
           showReadingTime: true,
           editUrl:
             'https://github.com/machinat/machinat/edit/master/website/blog/',
+          path: './blog',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -101,6 +102,16 @@ module.exports = {
           trackingID: 'G-9NF8CTC8SH',
           anonymizeIP: true,
         },
+      },
+    ],
+  ],
+  plugins: [
+    [
+      '@docusaurus/plugin-content-blog',
+      {
+        id: 'blog-zh_tw',
+        routeBasePath: 'blog/zh-tw',
+        path: './blog-zh_tw',
       },
     ],
   ],
