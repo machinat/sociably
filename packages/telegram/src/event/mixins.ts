@@ -147,7 +147,8 @@ export interface MessageDetail {
 
 export const MessageDetail: MessageDetail = {
   get channel() {
-    return new TelegramChat(this.botId, this.message.chat);
+    const rawChat = this.message.chat;
+    return new TelegramChat(this.botId, rawChat.id, rawChat);
   },
   get messageId(): number {
     return this.message.message_id;
@@ -936,7 +937,9 @@ export interface CallbackBase {
 export const CallbackBase: CallbackBase = {
   get channel() {
     const { message } = this.payload.callback_query;
-    return message ? new TelegramChat(this.botId, message.chat) : null;
+    return message
+      ? new TelegramChat(this.botId, message.chat.id, message.chat)
+      : null;
   },
   get user() {
     return new TelegramUser(this.payload.callback_query.from);
@@ -1151,7 +1154,8 @@ export type ChatMemberUpdated = {
 
 export const ChatMemberUpdated: ChatMemberUpdated = {
   get channel() {
-    return new TelegramChat(this.botId, this.chatMember.chat);
+    const rawChat = this.chatMember.chat;
+    return new TelegramChat(this.botId, rawChat.id, rawChat);
   },
   get user() {
     const rawUser: RawUser = this.chatMember.from;

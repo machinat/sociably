@@ -50,14 +50,14 @@ const updateBody = {
   message: {
     message_id: 123,
     chat: {
-      id: 12345,
+      id: 67890,
       type: 'private',
       username: 'jojodoe',
       first_name: 'jojo',
       last_name: 'doe',
     },
     from: {
-      id: 12345,
+      id: 67890,
       is_bot: false,
       username: 'jojodoe',
       first_name: 'jojo',
@@ -154,10 +154,10 @@ it('respond 200 and pop events received', async () => {
   expect(context.event.category).toBe('message');
   expect(context.event.type).toBe('text');
   expect(context.event.channel).toEqual(
-    new TelegramChat(12345, updateBody.message.chat as never)
+    new TelegramChat(12345, 67890, updateBody.message.chat as never)
   );
   expect(context.event.user).toEqual(
-    new TelegramUser(12345, updateBody.message.from)
+    new TelegramUser(67890, updateBody.message.from)
   );
   expect(context.event.payload).toEqual(updateBody);
 });
