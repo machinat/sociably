@@ -49,7 +49,11 @@ class WebScoketClient<
     this._connector = this._initConnector(
       url || '/',
       login ||
-        (() => Promise.resolve({ user: null as any, credential: null as any })),
+        (() =>
+          Promise.resolve({
+            user: null as never,
+            credential: null as never,
+          })),
       new BaseMarshaler(marshalTypes || [])
     );
 
