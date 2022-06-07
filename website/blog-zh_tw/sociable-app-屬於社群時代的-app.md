@@ -10,12 +10,10 @@ tags: ["framework", "sociable app"]
 keywords: ["machinat","chatbot","sociable app"]
 ---
 
-> **tl;dr** Machinat.js 是一個在社群平台上打造 App 的程式框架。如果你想直接了解框架，可以從我們的 [GitHub](https://github.com/machinat/machinat)、[文件](https://machinat.com/docs/)及[課程](https://machinat.com/docs/learn/)開始。而這篇文章會介紹這如何在社群媒體上，帶來一種全新的 App 形式。
-
 <img height={500} src={require("../blog/assets/Steve_Jobs_presents_iPhone.jpg").default} />
 
-> <large><strong><i>＂Every once in a while a revolutionary product comes along that changes everything.＂</i></strong>
-> <br/> &emsp; &emsp; <i>-- Steve Jobs, 2007</i></large>
+> <strong>＂Every once in a while a revolutionary product comes along that changes everything.＂</strong>
+> <br/> &emsp; &emsp; <i>-- Steve Jobs, 2007</i>
 
 從 1970 年代電腦進入我們的生活開始，每隔十年，總會出現一種全新的 app 形式。
 而每次發生時，不僅僅改變我們使用軟體的方式，往往也影響了整個人類世界的運作。
@@ -25,17 +23,17 @@ keywords: ["machinat","chatbot","sociable app"]
 2000 年代，[網路應用程式](https://zh.wikipedia.org/zh-tw/%E7%BD%91%E7%BB%9C%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F)開啟了線上服務的概念。  
 2010 年代，[行動應用程式](https://zh.wikipedia.org/zh-tw/%E6%B5%81%E5%8B%95%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F)讓我們能把軟體隨時帶在身邊。
 
-但在 2022 年的今天，我們似乎仍無法回答：下一個世代的 app 會是什麼樣子？
+但在 2022 年的今天，時間似乎慢了下來，我們仍然無法回答：下一個世代的 app 究竟會是什麼？
 
 ## 大社群時代
 
-但確定的是，現在全世界都圍繞著社群媒體運作。相比十年前，[我們幾乎不再下載新的行動 app 了](https://techcrunch.com/2017/08/25/majority-of-u-s-consumers-still-download-zero-apps-per-month-says-comscore/)，打開手機也只需要少少幾款社群軟體，人們的時間及注意力也都轉移到了社群平台上。
+不過有件事是確定的，現在全世界都圍繞著社群媒體運作。相比十年前，[我們幾乎不再下載新的行動 app](https://techcrunch.com/2017/08/25/majority-of-u-s-consumers-still-download-zero-apps-per-month-says-comscore/)，打開手機也只需要少少幾款社群軟體，人們的時間及注意力也都轉移到了社群平台上。
 
 <img height={500} src={require("../blog/assets/social-media-status-2022-4.png").default} />
 
-> <small>幾乎所有網路使用者都在社群平台上 - <i>DataReportal (2022), <a href="https://datareportal.com/reports/digital-2022-global-overview-report">“Digital 2022 April Global Statshot Report”</a></i></small>
+> <small>幾乎所有網路使用者都使用社群平台 - <i>DataReportal (2022), <a href="https://datareportal.com/reports/digital-2022-global-overview-report">“Digital 2022 April Global Statshot Report”</a></i></small>
 
-記得曾經每個商家、活動、企業都會做一款自己的 app 嗎？現在大家已經不再下載這類的 app 了，而幾乎所有的行銷活動、新聞資訊、甚至大部分的服務，都是透過社群平台來跟大眾聯繫。
+記得曾經每個商家、活動、企業都會做一款自己的 app 嗎？現在這類的行銷活動、新聞資訊、甚至大部分的服務，都是透過社群平台來跟大眾聯繫。
 
 問題是程序化的 app 應該怎麼辦？
 
@@ -43,18 +41,18 @@ keywords: ["machinat","chatbot","sociable app"]
 
 幾年前的 [Chatbot](https://en.wikipedia.org/wiki/Chatbot) 熱潮裡，我們就曾嘗試在聊天平台上打造自動化的服務。但很快就不再有人使用這些機器人，因為他們：
 
-- 只提供靜態的內容而非動態的功能。事實上大部分 bot 提供的功能根本少於一個靜態的網頁。
+- 只提供靜態的內容而非動態的功能。事實上大部分 bot 提供的資訊還少於一個靜態的網頁。
 - 只在聊天平台上運作，而非所有的社群平台。但社群媒體的經營才是商業上最需要的。
 - 只提供貧乏、缺少變化的體驗。沒有程式邏輯攘我們難以優化 UI/UX 的細節。
-- 只在聊天室內用文字及有限的 UI 溝通。這讓 bot 難以像基於 GUI 的 app 一樣提供豐富的功能。
+- 只能用文字及有限的 UI 溝通。這讓它難以像基於 GUI 的 app 一樣提供豐富的功能。
 
-問題可能是我們建造 Chatbot 的方式:
+問題可能是我們建造 chatbot 的方式:
 
 <img height={500} src={require("../blog/assets/no-code-tools.png").default} />
 
 > <i><small>主流的 chatbot 工具： BotFramework(↖), DialogFlow(↗), BotPress(↙) and Rasa(↘).</small></i>
 
-這些無程式碼（no-code）工具功能有限且沒有使用上的彈性，這造成了上述 chatbot 的問題。沒有編程的邏輯，是不可能完成一個功能齊全、體驗良好的 “軟體” 的。這是為什麼我們需要一個程式框架來打造下一代的 app。
+這些無程式碼（no-code）工具功能有限且沒有使用上的彈性，這造成了上述的問題。沒有編程的邏輯，是不可能完成一個功能齊全、體驗良好的 “軟體” 的。這是為什麼我們需要一個程式框架來打造下一代的 app。
 
 這驅使我花了三年打磨出一個程式框架 [Machinat.js](https://github.com/machinat/machinat)來解決這些問題，而在這之上誕生的新 app 形式，我稱之為 _Sociable App_。
 
@@ -102,7 +100,6 @@ Sociable App 能在社群平台上完成幾乎所有的工作：
 
 在聊天室裡我們可以提供基礎的功能，像選單、教學、通知，以及任何方便在對話中完成的服務。
 Machinat.js 提供了所有打造聊天界面所需的工具，如豐富的訊息格式、對話流程、語意辨識等。
-
 
 ### 圖形化網頁界面
 

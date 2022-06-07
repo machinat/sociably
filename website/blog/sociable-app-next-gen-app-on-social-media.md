@@ -10,19 +10,17 @@ tags: ["framework", "sociable app"]
 keywords: ["machinat","chatbot","sociable app"]
 ---
 
-> **tl;dr** Machinat.js is a framework for making apps on the social platforms. You can start from our [GitHub](https://github.com/machinat/machinat), [document](https://machinat.com/docs/) and [tutorial](https://machinat.com/docs/learn/). And we want to introduce a brand new kind of app based on it.
-
 <img src={require("./assets/Steve_Jobs_presents_iPhone.jpg").default} />
 
-> <large><strong><i>＂Every once in a while a revolutionary product comes along that changes everything.＂</i></strong>
-> <br/> &emsp; &emsp; <i>-- Steve Jobs, 2007</i></large>
+> <strong>＂Every once in a while a revolutionary product comes along that changes everything.＂</strong>
+> <br/> &emsp; &emsp; <i>-- Steve Jobs, 2007</i>
  
 Since the computer entered our lives, there comes a new way to ship app about every decade:
 
-In 1980s, apps were still running in [command-line](https://en.wikipedia.org/wiki/Command-line_interface).  
-In 1990s, the [desktop app](https://en.wikipedia.org/wiki/Application_software) shaped the modern software in GUI.  
-In 2000s, the [web app](https://en.wikipedia.org/wiki/Web_application) delivered software as online services.  
-In 2010s, the [mobile app](https://en.wikipedia.org/wiki/Mobile_app) brought software along our side.
+In the 1980s, apps were still running in [command-line](https://en.wikipedia.org/wiki/Command-line_interface).  
+In the 1990s, the [desktop app](https://en.wikipedia.org/wiki/Application_software) shaped the modern software in GUI.  
+In the 2000s, the [web app](https://en.wikipedia.org/wiki/Web_application) delivered software as online services.  
+In the 2010s, the [mobile app](https://en.wikipedia.org/wiki/Mobile_app) brought software along our side.
 
 But weirdly in 2022 today, we are still not able to answer: _What is the next-gen app?_
 
@@ -60,7 +58,7 @@ Without programming logic, they just can't make useful software.
 Instead, we need a new programming solution for the next-gen app.
 
 This drove me to develop the [Machinat.js](https://github.com/machinat/machinat) to fix the issues of chatbots.
-And it brings a brand new way to make apps on the social platforms.
+And it brings a brand new way to make apps on social platforms.
 
 I call it _Sociable App_.
 
@@ -73,13 +71,13 @@ A sociable app does these works seamlessly:
 - Shipping features in an extended web app
 
 So it's not only a chatbot, a web app or an automated social account.
-It combines them all in one app that provide even better user experiences.
+It combines them all in one app that provides even better user experiences.
 
-Below, I'll show you how it work with [a sociable Wordle game](https://twitter.com/WordleMachina).
+Below, I'll show you how it works with [a sociable Wordle game](https://twitter.com/WordleMachina).
 
 ### Enter from Social Media
 
-The original Wordle has a problem: lacking of an entry point.
+The original Wordle has a problem: lack of an entry point.
 A sociable app can manage its own social media accounts, which work as the entry of the app.
 
 <video height={400} autoplay="autoplay" loop inline muted>
@@ -94,18 +92,18 @@ On social media, it can promote a campaign, interact with users and serve commun
 
 > <small>The app can do social media operations directly</small>
 
-This solve the traffic source issue of web apps. And it also means the app can do marketing by itself.
+This solves the traffic source issue of web apps. And it also means the app can market itself automatically.
 
 ### Communicate by Messaging
 
-The app then points users to private messaging chatroom, which is the core of the app.
+The app then points users to the private messaging chat, which is the core of the app.
 It provides 1-on-1 services here with the most friendly UI, the human language.
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/wordle-chat.mp4").default} type="video/mp4" />
 </video>
 
-> <small>The app serves statistics and notification in chatroom</small>
+> <small>The app serves statistics and notification features in chatroom</small>
 
 In the chat, it can provide basic features like menus, guides and notifications.
 Machinat has all the tools you need to build UI/UX in a chat, including rich message formats, chat flow and intent recognition.
@@ -137,7 +135,7 @@ Like in another example:
 ### All Platforms, All Features
 
 Moreover, all the utilities mentioned above are cross-platform.
-This means everyone on the social networking can easily access your app.
+This means everyone on social networking can easily access your app.
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/wordle-cross.mp4").default} type="video/mp4" />
@@ -146,7 +144,7 @@ This means everyone on the social networking can easily access your app.
 > <small>The app is cross-platform that also works on Messenger, Telegram and LINE (in order)</small>
 
 One issue for cross-platform apps is we often need to customize UI/UX and logic for each platform.
-Machinat.js supports such the customization for every functionality.
+Machinat.js supports such customization for every functionality.
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/wordle-optimize.mp4").default} type="video/mp4" />
@@ -166,7 +164,7 @@ This provides a unified experience just as in one single app.
   <source src={require("./assets/wordle-whole.mp4").default} type="video/mp4" />
 </video>
 
-> <small>The app works smoothely even it's embedded on Twitter</small>
+> <small>The app works smoothly even it's embedded on Twitter</small>
 
 Machinat.js integrates all these mechanism together as one revolutionary UI,
 the all-in-one UI for every social platform.
@@ -185,7 +183,7 @@ Sociable apps are super easy to use, because:
 - you can access them on any device
 - you use them by simply chatting
 
-It's perfect for the lightweight apps that has once prospered on the mobile devices.
+It's perfect for the lightweight apps that have once prospered on mobile devices.
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/pomo-example.mp4").default} type="video/mp4" />
@@ -193,12 +191,12 @@ It's perfect for the lightweight apps that has once prospered on the mobile devi
 
 > <small>A pomodoro timer that is always available to you</small>
 
-It may especially fits small games, informational apps and apps for an event/location/store.
+It may especially fit small games, informational apps and apps for an event/location/store.
 These apps benefit from the social media traffic the most.
 
 ### Personification of Software
 
-A sociable app can have its own image and personality on social media. It can be either original or linked to an existed character.
+A sociable app can have its own image and personality on social media. It can be either original or linked to an existing character.
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/holo-image.mp4").default} type="video/mp4" />
@@ -206,12 +204,12 @@ A sociable app can have its own image and personality on social media. It can be
 
 > <small><a href="https://github.com/lrills/HoloPomodoro">HoloPomodoro</a> is a pomodoro timer with VTuber image</small>
 
-An well-designed image helps users to know it, recognize it and get closer to it.
-This make it like a real-life NPC.
+A well-designed image helps users to know it, recognize it and get closer to it.
+This makes it like a real-life NPC.
 
 ### Automating Social Media
 
-Businesses spend lots of human resource on social media today, mainly for marketing and customer services.
+Businesses spend lots of human resources on social media today, mainly for marketing and customer services.
 A sociable app can automate these works and save huge cost.
 
 <video height={400} autoplay="autoplay" loop inline muted>
@@ -247,11 +245,11 @@ For example:
   <source src={require("./assets/travel-example.mp4").default} type="video/mp4" />
 </video>
 
-> <small>An app that does marketing, sales, customer services by its own</small>
+> <small>The app does marketing, sales, customer services by its own</small>
 
-A sociable app can integrate all the services and even other apps,
+Sociable app can integrate all the services and even other apps,
 which provides one unified user experience to the customers.
-That implements the [_omni-channel experience_](https://en.wikipedia.org/wiki/Omnichannel) automatically.
+This implements the [_omni-channel experience_](https://en.wikipedia.org/wiki/Omnichannel) automatically.
 
 ## Try It Today
 
@@ -277,14 +275,14 @@ You can start your first app from [our tutorial](https://machinat.com/docs/learn
 
 ## Join Us
 
-Our goal is to ship software on all the social platforms.  
+Our goal is to ship software on all social platforms.  
 So apps can provide features in real life, everywhere, all around us.  
 So they can ease the social media works and bring amazing new strategies.  
 So they can serve in our most familiar way, like a close friend.
 
 However, to push such a paradigm shift, it's not only about the framework. 
 It requires a whole ecosystem!
-Machinat.js is extensible that everyone can easily add 3rd-party platforms, plugins and UIs.
+Machinat.js is extensible so that everyone can easily add 3rd-party platforms, plugins and UIs.
 The more people join this, the more likely it comes true.
 
 If you are a developer, you can find more resources on [the GitHub repo](https://github.com/machinat/machinat). And welcome to discuss anything on [our Discord server](https://discord.com/channels/976145555812139058/976145555812139061).
@@ -292,7 +290,7 @@ If you are a developer, you can find more resources on [the GitHub repo](https:/
 If you have a cool idea or any cooperation chances, please mail me and let's see how to push it:
 [`patrick.liu@machinat.com`](mailto:patrick.liu@machinat.com)
 
-At last, I might need your help to continue developing the framework. I've spent last three years on it and written 170k+ lines of code. Your support can really help me to keep pushing this forward, and I'll provide some feedback like technical support.
+At last, I might need your help to continue developing the framework. I've spent the last three years on it and written 170k+ lines of code. Your support can really help me to push this forward, and I'll provide some feedback like technical support.
 
 
 import BuyMeACoffee from './assets/buymeacoffee.svg';
