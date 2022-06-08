@@ -1,6 +1,6 @@
 {
   "name": "@machinat/jest-snapshot-serializer",
-  "version": "0.6.0-beta.0",
+  "version": "0.6.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
