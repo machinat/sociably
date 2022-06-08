@@ -15,46 +15,45 @@ keywords: ["machinat","chatbot","sociable app"]
 > <strong>＂Every once in a while a revolutionary product comes along that changes everything.＂</strong>
 > <br/> &emsp; &emsp; <i>-- Steve Jobs, 2007</i>
 
-從 1970 年代電腦進入我們的生活開始，每隔十年，總會出現一種全新的 app 形式。
-而每次發生時，不僅僅改變我們使用軟體的方式，往往也影響了整個人類世界的運作。
+這句話來自經典的第一代 iPhone 發表會，在這之後，行動應用程式完全改變了我們生活的樣貌。而如話中說的，這樣的軟體革命，大概每隔十年就會發生一次：
 
 1980 年代，大部分軟體仍運行在[命令列終端](https://zh.wikipedia.org/wiki/%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%95%8C%E9%9D%A2)裡。  
 1990 年代，[桌面應用程式](https://zh.wikipedia.org/zh-tw/%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F)奠定了圖形化界面的軟體形式。  
 2000 年代，[網路應用程式](https://zh.wikipedia.org/zh-tw/%E7%BD%91%E7%BB%9C%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F)開啟了線上服務的概念。  
 2010 年代，[行動應用程式](https://zh.wikipedia.org/zh-tw/%E6%B5%81%E5%8B%95%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F)讓我們能把軟體隨時帶在身邊。
 
-但在 2022 年的今天，時間似乎慢了下來，我們仍然無法回答：下一個世代的 app 究竟會是什麼？
+但這之後，我們似乎迷失了接下來的方向。從 Chatbot、VR 到 Web3，這些科技浪潮都沒有帶來真正的改變。在 2022 年的今天，我們仍然無法回答：下一個世代的 app 究竟會是什麼？
 
 ## 大社群時代
 
-不過有件事是確定的，現在全世界都圍繞著社群媒體運作。相比十年前，[我們幾乎不再下載新的行動 app](https://techcrunch.com/2017/08/25/majority-of-u-s-consumers-still-download-zero-apps-per-month-says-comscore/)，打開手機也只需要少少幾款社群軟體，人們的時間及注意力也都轉移到了社群平台上。
+不過有件事是確定的：現在全世界都圍繞著社群媒體運作。我們知道 app 的變革總是在軟體平台的興盛後發生，從電腦、網路到手機都是如此。而現在，社群媒體是所有人都在使用，最為炙手可熱的平台。
 
 <img height={500} src={require("../blog/assets/social-media-status-2022-4.png").default} />
 
-> <small>幾乎所有網路使用者都使用社群平台 - <i>DataReportal (2022), <a href="https://datareportal.com/reports/digital-2022-global-overview-report">“Digital 2022 April Global Statshot Report”</a></i></small>
+> <small>幾乎所有網路使用者都在使用社群平台，並且仍然高速成長 - <i>DataReportal (2022), <a href="https://datareportal.com/reports/digital-2022-global-overview-report">“Digital 2022 April Global Statshot Report”</a></i></small>
 
-記得曾經每個商家、活動、企業都會做一款自己的 app 嗎？現在這類的行銷活動、新聞資訊、甚至大部分的服務，都是透過社群平台來跟大眾聯繫。
+記得曾經每個商家、活動、企業都會做一款自己的 app 嗎？現在[我們幾乎不再下載各式各樣的 app](https://techcrunch.com/2017/08/25/majority-of-u-s-consumers-still-download-zero-apps-per-month-says-comscore/)，打開手機只需要少少幾款的社群軟體。而人們的時間及注意力，還有各種的服務和生意，都不斷的轉移到社群媒體之上。
 
-問題是程序化的 app 應該怎麼辦？
+問題是我們要如何在社群平台上發布軟體呢？
 
 ### 在社群平台上的 App？
 
-幾年前的 [Chatbot](https://en.wikipedia.org/wiki/Chatbot) 熱潮裡，我們就曾嘗試在聊天平台上打造自動化的服務。但很快就不再有人使用這些機器人，因為他們：
+幾年前的 [chatbot](https://en.wikipedia.org/wiki/Chatbot) 熱潮裡，我們就曾在聊天平台上打造自動化的服務。因為通訊軟體越來越熱門，chatbot 的未來也被一片看好。但很快就不再有人使用這些機器人，因為他們：
 
 - 只提供靜態的內容而非動態的功能。事實上大部分 bot 提供的資訊還少於一個靜態的網頁。
 - 只在聊天平台上運作，而非所有的社群平台。但社群媒體的經營才是商業上最需要的。
 - 只提供貧乏、缺少變化的體驗。沒有程式邏輯攘我們難以優化 UI/UX 的細節。
 - 只能用文字及有限的 UI 溝通。這讓它難以像基於 GUI 的 app 一樣提供豐富的功能。
 
-問題可能是我們建造 chatbot 的方式:
+問題可能是我們建造他們的方式:
 
 <img height={500} src={require("../blog/assets/no-code-tools.png").default} />
 
 > <i><small>主流的 chatbot 工具： BotFramework(↖), DialogFlow(↗), BotPress(↙) and Rasa(↘).</small></i>
 
-這些無程式碼（no-code）工具功能有限且沒有使用上的彈性，這造成了上述的問題。沒有編程的邏輯，是不可能完成一個功能齊全、體驗良好的 “軟體” 的。這是為什麼我們需要一個程式框架來打造下一代的 app。
+這些無程式碼（no-code）工具功能有限且缺乏使用上的彈性，造成了以上 chatbot 的問題。綜觀歷史，沒有編程的邏輯，是不可能完成一個功能齊全、體驗良好的軟體的。反之，如果我們能夠透過編程解決這些挑戰，或許就能找到通往下一代 app 的關鍵。
 
-這驅使我花了三年打磨出一個程式框架 [Machinat.js](https://github.com/machinat/machinat)來解決這些問題，而在這之上誕生的新 app 形式，我稱之為 _Sociable App_。
+這驅使我花了三年打磨出 [Machinat.js](https://github.com/machinat/machinat) 框架，而在這之上誕生的新 app 形式，我稱之為 _Sociable App_。
 
 ## Sociable App = Social Media + Chatbots + Web App
 
@@ -71,7 +70,7 @@ Sociable App 能在社群平台上完成幾乎所有的工作：
 ### 從社群媒體出發
 
 原本的 Wordle 作為一個網頁程式有個缺陷：沒有一個方便的入口，僅能透過網址連結。
-而 Sociable App 能經營自己的社群媒體帳號，讓廣大的社群用戶能容易找到並互動。
+而 Sociable App 能經營自己的社群媒體帳號，讓廣大的社群用戶能容易找到並使用。
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("../blog/assets/wordle-social-media.mp4").default} type="video/mp4" />
@@ -135,7 +134,7 @@ Machinat.js 提供了所有打造聊天界面所需的工具，如豐富的訊�
 > <small>相同功能在不同平台上的運作，依順序是 Messenger、Telegram、LINE</small>
 
 由於每個社群平台間的差異太過巨大，所以我們常需要為每個平台訂製 UI/UX，甚至是流程邏輯。
-Machinat.js 中幾乎所有的功能都支援這樣的客製化。
+Machinat.js 中幾乎所有的功能都支援這樣的最佳化。
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("../blog/assets/wordle-optimize.mp4").default} type="video/mp4" />
@@ -143,8 +142,8 @@ Machinat.js 中幾乎所有的功能都支援這樣的客製化。
 
 > <small>在 Messenger 上需要額外的步驟才能在 24 小時後通知</small>
 
-除了能夠支援所有的平台，我們還會提供每個平台上的所有功能。
-這讓我們可以針對每個平台最佳化，而不需要為了跨平台而犧牲用戶體驗。
+而除了能夠支援所有的平台，我們還會提供每個平台上的所有功能。
+這些讓我們可以針對每個平台最佳化用戶體驗，而不需要為了跨平台而妥協。
 
 ### 組成完整的 App
 

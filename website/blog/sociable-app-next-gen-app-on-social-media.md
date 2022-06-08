@@ -14,32 +14,36 @@ keywords: ["machinat","chatbot","sociable app"]
 
 > <strong>＂Every once in a while a revolutionary product comes along that changes everything.＂</strong>
 > <br/> &emsp; &emsp; <i>-- Steve Jobs, 2007</i>
- 
-Since the computer entered our lives, there comes a new way to ship app about every decade:
 
-In the 1980s, apps were still running in [command-line](https://en.wikipedia.org/wiki/Command-line_interface).  
+This classic quote comes from the presentation of the [1st-gen iPhone](https://en.wikipedia.org/wiki/IPhone_(1st_generation)). From then on, mobile apps have totally changed how everything works in our lives. Such the revolutions of software, as the quote says, happen about every decade:
+
+In the 1980s, most apps were running in [command-line](https://en.wikipedia.org/wiki/Command-line_interface).  
 In the 1990s, the [desktop app](https://en.wikipedia.org/wiki/Application_software) shaped the modern software in GUI.  
 In the 2000s, the [web app](https://en.wikipedia.org/wiki/Web_application) delivered software as online services.  
 In the 2010s, the [mobile app](https://en.wikipedia.org/wiki/Mobile_app) brought software along our side.
 
-But weirdly in 2022 today, we are still not able to answer: _What is the next-gen app?_
+But after that, we seemed to lost our way to the next one.
+From Chatbot to VR to Web3, several technology hypes have passed, but none of them became a phenomenon.
+Today, in 2022, we are still not able to answer: _What is the next-gen app?_
 
 ## Social Media Age
 
-However, one thing is certain: everything works around social media now. While people [stop downloading various of mobile apps](https://techcrunch.com/2017/08/25/majority-of-u-s-consumers-still-download-zero-apps-per-month-says-comscore/), our time and attention have been continuously transferred onto the social platforms.
+However, one thing is certain: everything is on the social media now. We know the revolution of apps always comes after the prosperity of platforms. This has happened on PC, Web and mobile devices. And social media is the hottest platform today.
 
 <img src={require("./assets/social-media-status-2022-4.png").default} />
 
-> <small>Social media is dominant now - <i>DataReportal (2022), <a href="https://datareportal.com/reports/digital-2022-global-overview-report">“Digital 2022: Global Overview Report”</a></i></small>
+> <small>Social media is dominant and still fast growing - <i>DataReportal (2022), <a href="https://datareportal.com/reports/digital-2022-global-overview-report">“Digital 2022: Global Overview Report”</a></i></small>
 
 Remember the days that every business/organization/campaign built their own apps?
-Today, all these services for marketing, information and customer services have mostly migrated to social platforms.
+People [just don't download such various apps](https://techcrunch.com/2017/08/25/majority-of-u-s-consumers-still-download-zero-apps-per-month-says-comscore/), instead, a few social media only.
+While our time and attention continuously move to social platforms, so do all kinds of businesses and services as well.
 
-But how about the programmatic apps?
+But how can we build software on the social media?
 
 ### Apps on Social Platforms?
 
-We've actually tried shipping automated services on the chat platforms, that's the [Chatbot](https://en.wikipedia.org/wiki/Chatbot).
+We've actually tried shipping automated services on the instant messaging, that's the [Chatbot](https://en.wikipedia.org/wiki/Chatbot).
+Its future seemed to be bright since the chat platforms is so popular.
 Unfortunately, it finally failed because of:
 
 - **Lacking of programmatic features**. Most bots only provide little static content.
@@ -53,12 +57,12 @@ The problem is how do we made these bots:
 
 > <small>Popular tools for chatbot: BotFramework(↖), DialogFlow(↗), BotPress(↙) and Rasa(↘).</small>
 
-These no-code tools have only so limited and inflexible functions that caused the issues above.
-Without programming logic, they just can't make useful software.
-Instead, we need a new programming solution for the next-gen app.
+These no-code tools have only so limited and inflexible functions that caused the problems above.
+If you look at history, it's almost impossible make useful software without programming logic.
+However, if we do have a programming solution that fix these issues,
+it could be the key to the next-gen app.
 
-This drove me to develop the [Machinat.js](https://github.com/machinat/machinat) to fix the issues of chatbots.
-And it brings a brand new way to make apps on social platforms.
+That's the reason I spend last 3 years developing the [Machinat.js](https://github.com/machinat/machinat) framework, which brings a brand new way to make apps on social platforms.
 
 I call it _Sociable App_.
 
@@ -135,7 +139,7 @@ Like in another example:
 ### All Platforms, All Features
 
 Moreover, all the utilities mentioned above are cross-platform.
-This means everyone on social networking can easily access your app.
+This means everyone on social network can easily access your app.
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/wordle-cross.mp4").default} type="video/mp4" />
@@ -144,7 +148,7 @@ This means everyone on social networking can easily access your app.
 > <small>The app is cross-platform that also works on Messenger, Telegram and LINE (in order)</small>
 
 One issue for cross-platform apps is we often need to customize UI/UX and logic for each platform.
-Machinat.js supports such customization for every functionality.
+Such optimization can be easily done too.
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/wordle-optimize.mp4").default} type="video/mp4" />
@@ -152,8 +156,8 @@ Machinat.js supports such customization for every functionality.
 
 > <small>In Messenger, it requires one special step to notify after 24 hr</small>
 
-Furthermore, it can support all the features of all the social platforms.
-So we can optimize user experiences using any native feature everywhere.
+Furthermore, Machinat.js can support all the features of all the platforms.
+So we can always optimize user experiences using any native feature.
 
 ### Integrate Everything
 
@@ -247,8 +251,8 @@ For example:
 
 > <small>The app does marketing, sales, customer services by its own</small>
 
-Sociable app can integrate all the services and even other apps,
-which provides one unified user experience to the customers.
+Sociable app can integrate all the services even including other apps.
+It provides one unified user experience to the customers everywhere.
 This implements the [_omni-channel experience_](https://en.wikipedia.org/wiki/Omnichannel) automatically.
 
 ## Try It Today
