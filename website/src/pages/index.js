@@ -22,7 +22,7 @@ const features = [
           <div className={styles.platformBox}>
             <div className={styles.platformBoxLabel}>Currently support:</div>
             <div className={styles.platformIconContainer}>
-              {['messenger', 'telegram', 'line'].map((platform) => (
+              {['twitter', 'messenger', 'telegram', 'line'].map((platform) => (
                 <div className={styles.platformIcon}>
                   <img src={`img/icon/${platform}.png`} />
                 </div>
@@ -33,7 +33,6 @@ const features = [
             <div className={styles.platformBoxLabel}>More in the future:</div>
             <div className={styles.platformIconContainer}>
               {[
-                'twitter',
                 'whatsapp',
                 'instagram',
                 'facebook',

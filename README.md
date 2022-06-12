@@ -105,6 +105,9 @@ Machinat is designed to support ALL the social platforms. Here's the covering st
 
 ##### Currently supported:
 <div>
+  <a href="https://twitter.com">
+    <img width="50px" src="./website/static/img/icon/twitter.png" />
+  </a>
   <a href="https://messenger.com">
     <img width="50px" src="./website/static/img/icon/messenger.png" />
   </a>
@@ -119,9 +122,6 @@ Machinat is designed to support ALL the social platforms. Here's the covering st
 
 ##### Scheduled in road map:
 <div>
-  <a href="https://twitter.com">
-    <img width="50px" src="./website/static/img/icon/twitter.png" />
-  </a>
   <a href="https://instagram.com">
     <img width="50px" src="./website/static/img/icon/instagram.png" />
   </a>
