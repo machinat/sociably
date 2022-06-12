@@ -22,7 +22,7 @@ keywords: ["machinat","chatbot","sociable app"]
 2000 年代，[網路應用程式](https://zh.wikipedia.org/zh-tw/%E7%BD%91%E7%BB%9C%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F)開啟了線上服務的概念。  
 2010 年代，[行動應用程式](https://zh.wikipedia.org/zh-tw/%E6%B5%81%E5%8B%95%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F)讓我們能把軟體隨時帶在身邊。
 
-但這之後，我們似乎迷失了接下來的方向。從 Chatbot、VR 到 Web3，這些科技浪潮都沒有帶來真正的改變。在 2022 年的今天，我們仍然無法回答：下一個世代的 app 究竟會是什麼？
+但這之後，我們似乎迷失了接下來的方向。從 Chatbot、VR 到 Web3，這些科技浪潮都沒有帶來真正的改變。2022 年的今天，我們仍然無法回答：下一個世代的 app 究竟會是什麼？
 
 ## 大社群時代
 
@@ -34,7 +34,7 @@ keywords: ["machinat","chatbot","sociable app"]
 
 記得曾經每個商家、活動、企業都會做一款自己的 app 嗎？現在[我們幾乎不再下載各式各樣的 app](https://techcrunch.com/2017/08/25/majority-of-u-s-consumers-still-download-zero-apps-per-month-says-comscore/)，打開手機只需要少少幾款的社群軟體。而人們的時間及注意力，還有各種的服務和生意，都不斷的轉移到社群媒體之上。
 
-問題是我們要如何在社群平台上發布軟體呢？
+問題是我們要如何在社群平台上發布軟體？
 
 ### 在社群平台上的 App？
 
@@ -44,6 +44,7 @@ keywords: ["machinat","chatbot","sociable app"]
 - 只在聊天平台上運作，而非所有的社群平台。但社群媒體的經營才是商業上最需要的。
 - 只提供貧乏、缺少變化的體驗。沒有程式邏輯攘我們難以優化 UI/UX 的細節。
 - 只能用文字及有限的 UI 溝通。這讓它難以像基於 GUI 的 app 一樣提供豐富的功能。
+- 缺少標準化的 UI。這讓開發生態系沒辦法順利成長。
 
 問題可能是我們建造他們的方式:
 
@@ -156,8 +157,9 @@ Machinat.js 中幾乎所有的功能都支援這樣的最佳化。
 
 > <small>所有功能都可以無縫的嵌入在 Twitter 上</small>
 
-我們把這些機制都成功整合在一起，成為一個支援所有社群平台的整合性 UI，這就是 Machinat.js 框架。
-而這將會是大社群時代裡，通往的下一代 app 的關鍵。
+Machinat.js 把這些機制整合在一起，成為一個標準化、跨平台並且可以自由擴充的全新 UI 框架。這讓開發者可以自由開發各種第三方的 UI、插件甚至平台，並形成一個完整的開發生態系。
+
+而這會是大社群時代裡，打造下一代 app 的關鍵。
 
 ## 對未來的影響
 
@@ -218,7 +220,7 @@ Sociable App 雖然是一個軟體，但可以在社群平台上擁有自己的�
 
 > <small>Sociable App 可以包辦所有跟客戶聯繫的平台</small>
 
-這代表 Sociable App 可以在任何地方提供全方位的服務，包括整個行銷、銷售、客服的流程，而使用者體驗就跟同一個 app 內一樣流暢。
+這代表 Sociable App 可以在任何地方提供全方位的服務，包括行銷、銷售、客服的流程，而體驗就跟同一個 app 內一樣流暢。
 如這個範例：
 
 <video height={400} autoplay="autoplay" loop inline muted>
@@ -227,7 +229,7 @@ Sociable App 雖然是一個軟體，但可以在社群平台上擁有自己的�
 
 > <small>Sociable App 可以自己完成行銷、銷售、客服等工作</small>
 
-Sociable App 能串起所有的服務甚至其他 app，同時讓整體的形象與客戶體驗更加一致，而這讓企業自動達成了[全通路體驗](https://en.wikipedia.org/wiki/Omnichannel)的理想。
+這讓他能串起所有的服務甚至其他 app，同時讓形象與客戶體驗更加一致，而這讓企業自動達成了[全通路體驗](https://en.wikipedia.org/wiki/Omnichannel)的理想。
 
 ## 現在就是最好的時候
 
@@ -246,26 +248,17 @@ Machinat.js 能讓你輕鬆快速的打造社群平台上的各種應用。你�
 
 ## 加入我們
 
-Machinat 的目標是讓開發者能發布各種軟體到所有的社群平台上。  
+Machinat.js 的目標是讓開發者能發布各種軟體到所有的社群平台上。  
 讓軟體能真的在我們日常生活裡，隨時隨地提供各種功能；  
 能自動化社群媒體上的各種工作，並為社群服務帶來新的可能性；  
 能用我們最熟悉的方式提供服務，像一個貼身秘書甚至是最好的朋友。
 
-但要達成這樣的技術變革，不是一個框架就能完成，這需要一整個技術生態系。
-Machinat.js 設計成讓所有人都能加入各種第三方平台、插件、以及 UI。
-有更多人加入這個生態圈，越有可能實現這個社群時代裡的典範轉移。
+但要達成這樣的技術變革，不是一個框架就能完成，這需要一整個開發生態系！
+不論是開發自己的 app、套件或一起參與維護框架，越多人加入這個生態圈，越有可能實現這個社群時代裡的典範轉移。
+想像一下，未來只要加入一個插件，就能讓 bot 學會說笑話或各種技能，
+這甚至能幫助之後能開發更好的 AI!
 
-如果你是開發者，可以在 [GitHub](https://github.com/machinat/machinat) 上找到各種資源，並歡迎加入我們的 [Discord](https://discord.com/channels/976145555812139058/976145555812139061) 討論各種想法。
+如果你是開發者，可以在 [GitHub](https://github.com/machinat/machinat) 上找到各種資源，並歡迎加入 [Discord 伺服器](https://discord.com/channels/976145555812139058/976145555812139061) 討論各種想法。
 如果你有個很酷的點子，或是有任何合作的機會，請 mail 給我一起討論看看如何將他實現：[`patrick.liu@machinat.com`](mailto:patrick.liu@machinat.com)
-
-最後，我可能需要你的幫助才有辦法繼續完成接下來的工作。過去三年我寫了17萬行以上的程式碼，讓框架能作到現在的體驗。你的一點抖內可以幫助我繼續推進這個願景，並且我會提供一些技術支援之類的回饋。
-
-
-import BuyMeACoffee from '../blog/assets/buymeacoffee.svg';
-
-<a href="https://www.buymeacoffee.com/machinatjs">
-  <BuyMeACoffee />
-</a>
-
 
 祝各位開心的開發新一代 app！

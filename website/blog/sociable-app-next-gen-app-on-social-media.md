@@ -22,9 +22,9 @@ In the 1990s, the [desktop app](https://en.wikipedia.org/wiki/Application_softwa
 In the 2000s, the [web app](https://en.wikipedia.org/wiki/Web_application) delivered software as online services.  
 In the 2010s, the [mobile app](https://en.wikipedia.org/wiki/Mobile_app) brought software along our side.
 
-But after that, we seemed to lost our way to the next one.
+But after the mobile app wave, we've kept asking: _What is the next-gen app?_
 From Chatbot to VR to Web3, several technology hypes have passed, but none of them became a phenomenon.
-Today, in 2022, we are still not able to answer: _What is the next-gen app?_
+Today, in 2022, it's still a mystery.
 
 ## Social Media Age
 
@@ -46,10 +46,11 @@ We've actually tried shipping automated services on the instant messaging, that'
 Its future seemed to be bright since the chat platforms is so popular.
 Unfortunately, it finally failed because of:
 
-- **Lacking of programmatic features**. Most bots only provide little static content.
-- **Poor user experiences**. It's really hard to optimize chatting UI/UX.
-- **Messaging UI is limited**. They can't provide complicated features as in GUI.
+- **Lack of programmatic features**. Most bots only provide little static content.
+- **Poor user experiences**. It's hard to optimize chatting UI/UX.
+- **Messaging UI is limited**. So they can't provide complicated features as in GUI.
 - **No social media support**. Chatbots only work on chat platforms.
+- **No standard UI**. So the development ecosystem failed to grow.
 
 The problem is how do we made these bots:
 
@@ -159,25 +160,27 @@ Such optimization can be easily done too.
 Furthermore, Machinat.js can support all the features of all the platforms.
 So we can always optimize user experiences using any native feature.
 
-### Integrate Everything
+### One Integrated UI
 
-Finally, the social media, the chatbot, the web app are integrated together seamlessly.
-This provides a unified experience just as in one single app.
+Finally, the social media, the chatbot, the web app are integrated seamlessly.
+Thus, sociable apps can ship a unified experience just as in one app.
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/wordle-whole.mp4").default} type="video/mp4" />
 </video>
 
-> <small>The app works smoothly even it's embedded on Twitter</small>
+> <small>The app works smoothly on Twitter</small>
 
-Machinat.js integrates all these mechanism together as one revolutionary UI,
-the all-in-one UI for every social platform.
+Machinat.js integrates these mechanisms as one revolutionary UI.
+It's _standardized, cross-platform and extensible_ so developers can easily build 3rd-party UIs, plugins and even platforms.
+This make it possible for the ecosystem to grow together.
+
 That's the key to the next-gen apps.
 
 ## The Impact
 
-The UI revolutions had not only changed the software, but also how everything works in the world.
-We think sociable apps are going to make these new changes:
+The UI revolutions before had not only changed the software, but also how everything works in our world.
+Sociable apps is going to make these new changes:
 
 ### The Revival of Lightweight Apps
 
@@ -239,21 +242,18 @@ That includes SMS, email, voice assistants and embedded chat in websites or mobi
 
 <img width={500} src={require("./assets/omni-channel.png").default} />
 
-> <small>Sociable app can serve on all the media for communicating with customers</small>
+> <small>Sociable app can serve on all the media for communication</small>
 
-Therefore, all the marketing, sales and customer services can be programmed into one app.
-And the whole experience is just as smooth as one.
+Therefore, the marketing, sales and customer services can all be programmed into one app.
 For example:
 
 <video height={400} autoplay="autoplay" loop inline muted>
   <source src={require("./assets/travel-example.mp4").default} type="video/mp4" />
 </video>
 
-> <small>The app does marketing, sales, customer services by its own</small>
+> <small>Integrating other services and apps smoothly</small>
 
-Sociable app can integrate all the services even including other apps.
-It provides one unified user experience to the customers everywhere.
-This implements the [_omni-channel experience_](https://en.wikipedia.org/wiki/Omnichannel) automatically.
+This provides one unified user experience to the customers everywhere, which implements the [_omni-channel experience_](https://en.wikipedia.org/wiki/Omnichannel) automatically.
 
 ## Try It Today
 
@@ -284,24 +284,13 @@ So apps can provide features in real life, everywhere, all around us.
 So they can ease the social media works and bring amazing new strategies.  
 So they can serve in our most familiar way, like a close friend.
 
-However, to push such a paradigm shift, it's not only about the framework. 
-It requires a whole ecosystem!
-Machinat.js is extensible so that everyone can easily add 3rd-party platforms, plugins and UIs.
-The more people join this, the more likely it comes true.
+However, to push such a paradigm shift, it's not only about a framework.
+It requires the whole ecosystem!
+The more people join, whether to develop apps, packages or the framework itself, the more we can push this vision forward.
+Imagine that an app can learn telling jokes by simply adding a component.
+That can even possibly lead us to build better AI!
 
-If you are a developer, you can find more resources on [the GitHub repo](https://github.com/machinat/machinat). And welcome to discuss anything on [our Discord server](https://discord.com/channels/976145555812139058/976145555812139061).
-
-If you have a cool idea or any cooperation chances, please mail me and let's see how to push it:
+If you are a developer, you can find more resources on [the GitHub repo](https://github.com/machinat/machinat). And welcome to discuss anything on [our Discord server](https://discord.com/channels/976145555812139058/976145555812139061). If you have a cool idea or any cooperation chances, mail me and let's see how to push it:
 [`patrick.liu@machinat.com`](mailto:patrick.liu@machinat.com)
-
-At last, I might need your help to continue developing the framework. I've spent the last three years on it and written 170k+ lines of code. Your support can really help me to push this forward, and I'll provide some feedback like technical support.
-
-
-import BuyMeACoffee from './assets/buymeacoffee.svg';
-
-<a href="https://www.buymeacoffee.com/machinatjs">
-  <BuyMeACoffee />
-</a>
-
 
 Happy coding the next-gen app!
