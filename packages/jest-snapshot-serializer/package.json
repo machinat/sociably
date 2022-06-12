@@ -25,6 +25,6 @@
     "prepack": "make -f ../../package.mk prepack"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.6.0-beta"
+    "@machinat/core": "^0.6.0"
   }
 }

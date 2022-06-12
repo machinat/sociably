@@ -42,10 +42,10 @@
     "warning": "^4.0.2"
   },
   "peerDependencies": {
-    "@machinat/auth": "^0.6.0-beta",
-    "@machinat/core": "^0.6.0-beta",
-    "@machinat/http": "^0.6.0-beta",
-    "@machinat/webview": "^0.6.0-beta"
+    "@machinat/auth": "^0.6.0",
+    "@machinat/core": "^0.6.0",
+    "@machinat/http": "^0.6.0",
+    "@machinat/webview": "^0.6.0"
   },
   "peerDependenciesMeta": {
     "@machinat/auth": {
