@@ -73,7 +73,7 @@ Sociable App 能在社群平台上完成幾乎所有的工作：
 原本的 Wordle 作為一個網頁程式有個缺陷：沒有一個方便的入口，僅能透過網址連結。
 而 Sociable App 能經營自己的社群媒體帳號，讓廣大的社群用戶能容易找到並使用。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/wordle-social-media.mp4").default} type="video/mp4" />
 </video>
 
@@ -92,7 +92,7 @@ Sociable App 能在社群平台上完成幾乎所有的工作：
 
 接著我們把使用者引導到聊天訊息裡，這是整個 app 運作的主體，透過淺顯易懂的對話介面提供一對一的服務。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/wordle-chat.mp4").default} type="video/mp4" />
 </video>
 
@@ -106,7 +106,7 @@ Machinat.js 提供了所有打造聊天界面所需的工具，如豐富的訊�
 在聊天室裡 Sociable App 能打開一個網頁，在其中透過圖形化介面提供更複雜的功能。
 範例裡，我們就能跟原版一樣在網頁遊玩 Wordle。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/wordle-webview.mp4").default} type="video/mp4" />
 </video>
 
@@ -118,7 +118,7 @@ Machinat.js 提供了所有打造聊天界面所需的工具，如豐富的訊�
 另一個常見的用法是延伸聊天室的體驗，像是在網頁中呈現豐富的資料或更複雜的輸入。
 如另一個範例：
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/pomo-settings.mp4").default} type="video/mp4" />
 </video>
 
@@ -128,7 +128,7 @@ Machinat.js 提供了所有打造聊天界面所需的工具，如豐富的訊�
 
 更重要的是，以上提到的所有功能都是跨平台支援的。所以 Sociable App 可以輕易的運行在所有的社群平台之上，這讓它可以接觸到更多更廣的使用者。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/wordle-cross.mp4").default} type="video/mp4" />
 </video>
 
@@ -137,7 +137,7 @@ Machinat.js 提供了所有打造聊天界面所需的工具，如豐富的訊�
 由於每個社群平台間的差異太過巨大，所以我們常需要為每個平台訂製 UI/UX，甚至是流程邏輯。
 Machinat.js 中幾乎所有的功能都支援這樣的最佳化。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/wordle-optimize.mp4").default} type="video/mp4" />
 </video>
 
@@ -151,7 +151,7 @@ Machinat.js 中幾乎所有的功能都支援這樣的最佳化。
 最後，社群媒體、聊天機器人、網頁畫面，三者能夠流暢的整合在用戶體驗裡。
 這讓我們能夠在任何社群平台上，提供一個近似於單一 app 的體驗。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/wordle-whole.mp4").default} type="video/mp4" />
 </video>
 
@@ -170,7 +170,7 @@ Machinat.js 把這些機制整合在一起，成為一個標準化、跨平台�
 
 Sociable App 的幾個特性：在所有的裝置上使用、不需要下載、打開即登入、透過語言溝通，讓使用者幾乎不需要任何成本就能上手，因此非常適合輕量的 app 提供簡單實用的服務。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/pomo-example.mp4").default} type="video/mp4" />
 </video>
 
@@ -183,7 +183,7 @@ Sociable App 的幾個特性：在所有的裝置上使用、不需要下載、�
 Sociable App 雖然是一個軟體，但可以在社群平台上擁有自己的形象與個性。
 他既可以是原創的，也能連結到既有的角色與形象。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/holo-image.mp4").default} type="video/mp4" />
 </video>
 
@@ -196,7 +196,7 @@ Sociable App 雖然是一個軟體，但可以在社群平台上擁有自己的�
 
 今天各個組織、企業都花相當多的人力在經營社群平台。Sociable App 可以自動化這些行銷及客服工作，即便只是部份，也能省下大量成本並讓工作更有效率。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/cs-example.mp4").default} type="video/mp4" />
 </video>
 
@@ -204,7 +204,7 @@ Sociable App 雖然是一個軟體，但可以在社群平台上擁有自己的�
 
 同時自動化的 app 也能帶來許多新的社群策略，譬如遊戲化的體驗。
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/sm-example.mp4").default} type="video/mp4" />
 </video>
 
@@ -223,7 +223,7 @@ Sociable App 雖然是一個軟體，但可以在社群平台上擁有自己的�
 這代表 Sociable App 可以在任何地方提供全方位的服務，包括行銷、銷售、客服的流程，而體驗就跟同一個 app 內一樣流暢。
 如這個範例：
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/travel-example.mp4").default} type="video/mp4" />
 </video>
 

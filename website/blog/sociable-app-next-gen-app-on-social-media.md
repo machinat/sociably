@@ -85,7 +85,7 @@ Below, I'll show you how it works with [a sociable Wordle game](https://twitter.
 The original Wordle has a problem: lack of an entry point.
 A sociable app can manage its own social media accounts, which work as the entry of the app.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/wordle-social-media.mp4").default} type="video/mp4" />
 </video>
 
@@ -104,7 +104,7 @@ This solves the traffic source issue of web apps. And it also means the app can 
 The app then points users to the private messaging chat, which is the core of the app.
 It provides 1-on-1 services here with the most friendly UI, the human language.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/wordle-chat.mp4").default} type="video/mp4" />
 </video>
 
@@ -118,7 +118,7 @@ Machinat has all the tools you need to build UI/UX in a chat, including rich mes
 Then the app can open a webview to provide more complicated features in the chatroom.
 In the example, it's the Wordle game itself.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/wordle-webview.mp4").default} type="video/mp4" />
 </video>
 
@@ -131,7 +131,7 @@ Another common usage is extending the chat experiences,
 like showing rich data or selecting complicated input.
 Like in another example:
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/pomo-settings.mp4").default} type="video/mp4" />
 </video>
 
@@ -142,7 +142,7 @@ Like in another example:
 Moreover, all the utilities mentioned above are cross-platform.
 This means everyone on social network can easily access your app.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/wordle-cross.mp4").default} type="video/mp4" />
 </video>
 
@@ -151,7 +151,7 @@ This means everyone on social network can easily access your app.
 One issue for cross-platform apps is we often need to customize UI/UX and logic for each platform.
 Such optimization can be easily done too.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/wordle-optimize.mp4").default} type="video/mp4" />
 </video>
 
@@ -165,7 +165,7 @@ So we can always optimize user experiences using any native feature.
 Finally, the social media, the chatbot, the web app are integrated seamlessly.
 Thus, sociable apps can ship a unified experience just as in one app.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/wordle-whole.mp4").default} type="video/mp4" />
 </video>
 
@@ -192,7 +192,7 @@ Sociable apps are super easy to use, because:
 
 It's perfect for the lightweight apps that have once prospered on mobile devices.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/pomo-example.mp4").default} type="video/mp4" />
 </video>
 
@@ -205,7 +205,7 @@ These apps benefit from the social media traffic the most.
 
 A sociable app can have its own image and personality on social media. It can be either original or linked to an existing character.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/holo-image.mp4").default} type="video/mp4" />
 </video>
 
@@ -219,7 +219,7 @@ This makes it like a real-life NPC.
 Businesses spend lots of human resources on social media today, mainly for marketing and customer services.
 A sociable app can automate these works and save huge cost.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/cs-example.mp4").default} type="video/mp4" />
 </video>
 
@@ -227,7 +227,7 @@ A sociable app can automate these works and save huge cost.
 
 It also enables some new strategies on social media, like a gamified experience.
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/sm-example.mp4").default} type="video/mp4" />
 </video>
 
@@ -247,7 +247,7 @@ That includes SMS, email, voice assistants and embedded chat in websites or mobi
 Therefore, the marketing, sales and customer services can all be programmed into one app.
 For example:
 
-<video height={400} autoplay="autoplay" loop inline muted>
+<video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("./assets/travel-example.mp4").default} type="video/mp4" />
 </video>
 
