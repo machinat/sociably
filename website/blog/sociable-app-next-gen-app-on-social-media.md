@@ -182,7 +182,7 @@ That's the key to the next-gen apps.
 ## The Impact
 
 The UI revolutions before had not only changed the software, but also how everything works in our world.
-Sociable apps is going to make these new changes:
+We think sociable apps is going to make these new changes:
 
 ### The Revival of Lightweight Apps
 
@@ -288,11 +288,12 @@ So they can serve in our most familiar way, like a close friend.
 
 However, to push such a paradigm shift, it's not only about a framework.
 It requires the whole ecosystem!
+
 The more people join, whether to develop apps, packages or the framework itself, the more we can push this vision forward.
 Imagine that an app can learn telling jokes by simply adding a component.
 That can even possibly lead us to build better AI!
 
-If you are a developer, you can find more resources on [the GitHub repo](https://github.com/machinat/machinat). And welcome to discuss anything on [our Discord server](https://discord.com/channels/976145555812139058/976145555812139061). If you have a cool idea or any cooperation chances, mail me and let's see how to push it:
+If you are a developer, you can find more resources on [the GitHub repo](https://github.com/machinat/machinat). And welcome to discuss anything on [our Discord server](https://discord.gg/emTAcH7aST). If you have a cool idea or any cooperation chances, mail me and let's see how to push it:
 [`patrick.liu@machinat.com`](mailto:patrick.liu@machinat.com)
 
 Happy coding the next-gen app!

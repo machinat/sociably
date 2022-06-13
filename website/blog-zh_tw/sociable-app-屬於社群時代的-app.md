@@ -258,7 +258,7 @@ Machinat.js 的目標是讓開發者能發布各種軟體到所有的社群平�
 想像一下，未來只要加入一個插件，就能讓 bot 學會說笑話或各種技能，
 這甚至能幫助之後能開發更好的 AI!
 
-如果你是開發者，可以在 [GitHub](https://github.com/machinat/machinat) 上找到各種資源，並歡迎加入 [Discord 伺服器](https://discord.com/channels/976145555812139058/976145555812139061) 討論各種想法。
+如果你是開發者，可以在 [GitHub](https://github.com/machinat/machinat) 上找到各種資源，並歡迎加入 [Discord 伺服器](https://discord.gg/emTAcH7aST) 討論各種想法。
 如果你有個很酷的點子，或是有任何合作的機會，請 mail 給我一起討論看看如何將他實現：[`patrick.liu@machinat.com`](mailto:patrick.liu@machinat.com)
 
 祝各位開心的開發新一代 app！
