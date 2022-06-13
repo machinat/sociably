@@ -10,19 +10,21 @@ tags: ["framework", "sociable app"]
 keywords: ["machinat","chatbot","sociable app"]
 ---
 
+> [Machinat.js](https://github.com/machinat/machinat) is the first programming framework that covers _Social Media, Chatbot and Web App_ at the same time. And this empowers us to make a brand new kind of app on social platforms...
+
 <img src={require("./assets/Steve_Jobs_presents_iPhone.jpg").default} />
 
 > <strong>＂Every once in a while a revolutionary product comes along that changes everything.＂</strong>
 > <br/> &emsp; &emsp; <i>-- Steve Jobs, 2007</i>
 
-This classic quote comes from the presentation of the [1st-gen iPhone](https://en.wikipedia.org/wiki/IPhone_(1st_generation)). From then on, mobile apps have totally changed how everything works in our lives. Such the revolutions of software, as the quote says, happen about every decade:
+This classic quote comes from the presentation of the [1st-gen iPhone](https://en.wikipedia.org/wiki/IPhone_(1st_generation)). From then on, mobile apps have totally changed everything in our lives. Such the revolutions of software happen about every decade:
 
 In the 1980s, most apps were running in [command-line](https://en.wikipedia.org/wiki/Command-line_interface).  
 In the 1990s, the [desktop app](https://en.wikipedia.org/wiki/Application_software) shaped the modern software in GUI.  
 In the 2000s, the [web app](https://en.wikipedia.org/wiki/Web_application) delivered software as online services.  
 In the 2010s, the [mobile app](https://en.wikipedia.org/wiki/Mobile_app) brought software along our side.
 
-But after the mobile app wave, we've kept asking: _What is the next-gen app?_
+But after the mobile app wave, we've kept asking: **What is the next-gen app?**
 From Chatbot to VR to Web3, several technology hypes have passed, but none of them became a phenomenon.
 Today, in 2022, it's still a mystery.
 
