@@ -1,4 +1,4 @@
-import type { MachinatNode, MachinatRenderable } from '../types';
+import type { SociablyNode, SociablyRenderable } from '../types';
 import type { NodeReducer } from './types';
 import traverse from './traverse';
 
@@ -9,7 +9,7 @@ export type ReduceTraverseContext<Reduced, Payload> = {
 };
 
 const reduceCallback = <Reduced, Payload>(
-  child: MachinatRenderable,
+  child: SociablyRenderable,
   path: string,
   context: ReduceTraverseContext<Reduced, Payload>
 ) => {
@@ -18,7 +18,7 @@ const reduceCallback = <Reduced, Payload>(
 };
 
 const reduce = <Reduced, Payload>(
-  children: MachinatNode,
+  children: SociablyNode,
   reducer: NodeReducer<Reduced, Payload>,
   initial: Reduced,
   prefix: string,

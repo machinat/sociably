@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-import type { MachinatNode } from '@machinat/core';
-import { formatNode } from '@machinat/core/utils';
-import { makeUnitSegment, makePartSegment } from '@machinat/core/renderer';
-import type { UnitSegment, PartSegment } from '@machinat/core/renderer';
+import type { SociablyNode } from '@sociably/core';
+import { formatNode } from '@sociably/core/utils';
+import { makeUnitSegment, makePartSegment } from '@sociably/core/renderer';
+import type { UnitSegment, PartSegment } from '@sociably/core/renderer';
 import { makeMessengerComponent } from '../utils';
 import type { MessageValue, MessengerComponent } from '../types';
 
@@ -21,12 +21,12 @@ export type GenericItemProps = {
    * Button elements to append to the template. A maximum of 3 buttons is
    * supported.
    */
-  buttons?: MachinatNode;
+  buttons?: SociablyNode;
   /**
    * One {@link UrlButton} element to act as the default action executed when
    * the template is tapped.
    */
-  defaultAction?: MachinatNode;
+  defaultAction?: SociablyNode;
 };
 
 /**
@@ -82,7 +82,7 @@ export type GenericTemplateProps = {
    * elements will send a horizontally scrollable carousel of templates. A
    * maximum of 10 elements is supported.
    */
-  children: MachinatNode;
+  children: SociablyNode;
   sharable?: boolean;
   /**
    * The aspect ratio used to render images specified by element.image_url.
@@ -134,9 +134,9 @@ export type ButtonTemplateProps = {
    * Textual node with content up to 640 characters. Text will appear above the
    * buttons.
    */
-  children: MachinatNode;
+  children: SociablyNode;
   /** 1-3 button elements to append after the text. */
-  buttons: MachinatNode;
+  buttons: SociablyNode;
   sharable?: boolean;
 };
 
@@ -197,7 +197,7 @@ export type MediaTemplateProps = {
   /** The type of media being sent */
   mediaType: 'image' | 'video';
   /** One optional button element to be appended to the template */
-  buttons?: MachinatNode;
+  buttons?: SociablyNode;
   /** The attachment ID of the image or video. Cannot be used if url is set. */
   attachmentId?: string;
   /** The URL of the image. Cannot be used if attachment_id is set. */
@@ -298,7 +298,7 @@ export type ReceiptTemplateProps = {
    * Maximum of 100 {@line ReceiptItem} elements that describe items in the
    * order. Sort order of the elements is not guaranteed.
    */
-  children: MachinatNode;
+  children: SociablyNode;
   /**
    * Set to true to enable the native share button in Messenger for the
    * template message. Defaults to false.

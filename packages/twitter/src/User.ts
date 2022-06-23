@@ -1,5 +1,5 @@
-import type { MachinatUser } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyUser } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import UserProfile from './UserProfile';
 import { TWITTER } from './constant';
 import type { RawUser } from './types';
@@ -9,7 +9,7 @@ type SerializedUser = {
 };
 
 export default class TwitterUser
-  implements MachinatUser, MarshallableInstance<SerializedUser>
+  implements SociablyUser, MarshallableInstance<SerializedUser>
 {
   static typeName = 'TwitterUser';
   static fromJSONValue({ id }: SerializedUser): TwitterUser {

@@ -9,30 +9,30 @@ has a [great article](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754) intro
 The reactive paradigm naturally suits a sociable app which listens to events from chat platforms reactively.
 It's our recommended way to control the business logic flow.
 
-## Machinat Stream Package
+## Sociably Stream Package
 
-`@machinat/stream` implements the reactive programming utilities that are optimized for sociable apps.
+`@sociably/stream` implements the reactive programming utilities that are optimized for sociable apps.
 The most important specialty is: All the events on a chat are processed in a strict order in the stream.
 
 ### Install
 
-Install the `@machinat/stream` package with:
+Install the `@sociably/stream` package with:
 
 ```bash
-npm install @machinat/stream
+npm install @sociably/stream
 ```
 
 ## Usage
 
 ### Root Stream From App
 
-Use `fromApp` helper to create a stream from a Machinat app:
+Use `fromApp` helper to create a stream from a Sociably app:
 
 ```js
-import Machinat from '@machinat/core';
-import { fromApp } from '@machinat/stream';
+import Sociably from '@sociably/core';
+import { fromApp } from '@sociably/stream';
 
-const app = Machinat.createApp({...});
+const app = Sociably.createApp({...});
 
 const event$ = fromApp(app);
 ```
@@ -59,7 +59,7 @@ It can also take a service container as the listener.
 Like:
 
 ```js
-import Machinat, { BasicProfiler } from '@machinat/core';
+import Sociably, { BasicProfiler } from '@sociably/core';
 
 event$.subscribe(
   makeContainer({ deps: [BasicProfiler] })(
@@ -91,7 +91,7 @@ We can use it to extract a fraction of events so they can be handled separately.
 For example:
 
 ```js
-import { filter } from '@machinat/stream/operators';
+import { filter } from '@sociably/stream/operators';
 
 event$
   .pipe(filter((ctx) => ctx.platform === 'webview'))
@@ -113,8 +113,8 @@ We can use it to execute a job and attach the result onto the context.
 For example:
 
 ```js
-import { makeContainer, IntentRecognizer } from '@machinat/core';
-import { map } from '@machinat/stream/operators';
+import { makeContainer, IntentRecognizer } from '@sociably/core';
+import { map } from '@sociably/stream/operators';
 
 const eventWithIntent$ = event$.pipe(
   map(
@@ -142,8 +142,8 @@ const eventWithIntent$ = event$.pipe(
 The difference from `stream.subscribe(operator)` is that `tap` guarantees the execution order is one-by-one under a chat.
 
 ```js
-import Machinat, { makeContainer, StateController } from '@machinat/core';
-import { tap } from '@machinat/stream/operators';
+import Sociably, { makeContainer, StateController } from '@sociably/core';
+import { tap } from '@sociably/stream/operators';
 
 event$.pipe(
   tap(
@@ -177,7 +177,7 @@ As the examples above, you can require services to handle business logic.
 `merge(...streams)` merge multiple streams into one.
 
 ```js
-import { merge } from '@machinat/stream';
+import { merge } from '@sociably/stream';
 
 const greeting$ = merge(webviewGreeting$, chatGreeting$);
 ```

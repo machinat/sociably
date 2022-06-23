@@ -3,11 +3,11 @@ title: "Sociable App: 屬於社群時代的 App"
 date: 2022-06-01
 authors:
   - name: Patrck Liu
-    title: Author of Machinat.js
+    title: Author of Sociably.js
     url: https://github.com/lrills
     image_url: https://avatars.githubusercontent.com/u/7855890?s=96&v=4
 tags: ["framework", "sociable app"]
-keywords: ["machinat","chatbot","sociable app"]
+keywords: ["sociably","chatbot","sociable app"]
 ---
 
 <img height={500} src={require("../blog/assets/Steve_Jobs_presents_iPhone.jpg").default} />
@@ -54,7 +54,7 @@ keywords: ["machinat","chatbot","sociable app"]
 
 這些無程式碼（no-code）工具功能有限且缺乏使用上的彈性，造成了以上 chatbot 的問題。綜觀歷史，沒有編程的邏輯，是不可能完成一個功能齊全、體驗良好的軟體的。反之，如果我們能夠透過編程解決這些挑戰，或許就能找到通往下一代 app 的關鍵。
 
-這驅使我花了三年打磨出 [Machinat.js](https://github.com/machinat/machinat) 框架，而在這之上誕生的新 app 形式，我稱之為 _Sociable App_。
+這驅使我花了三年打磨出 [Sociably.js](https://github.com/machinat/sociably) 框架，而在這之上誕生的新 app 形式，我稱之為 _Sociable App_。
 
 ## Sociable App = Social Media + Chatbots + Web App
 
@@ -99,7 +99,7 @@ Sociable App 能在社群平台上完成幾乎所有的工作：
 > <small>在聊天室裡檢視數據及啟用通知功能</small>
 
 在聊天室裡我們可以提供基礎的功能，像選單、教學、通知，以及任何方便在對話中完成的服務。
-Machinat.js 提供了所有打造聊天界面所需的工具，如豐富的訊息格式、對話流程、語意辨識等。
+Sociably.js 提供了所有打造聊天界面所需的工具，如豐富的訊息格式、對話流程、語意辨識等。
 
 ### 圖形化網頁界面
 
@@ -135,7 +135,7 @@ Machinat.js 提供了所有打造聊天界面所需的工具，如豐富的訊�
 > <small>相同功能在不同平台上的運作，依順序是 Messenger、Telegram、LINE</small>
 
 由於每個社群平台間的差異太過巨大，所以我們常需要為每個平台訂製 UI/UX，甚至是流程邏輯。
-Machinat.js 中幾乎所有的功能都支援這樣的最佳化。
+Sociably.js 中幾乎所有的功能都支援這樣的最佳化。
 
 <video height={400} autoplay="autoplay" loop inline muted playsInline>
   <source src={require("../blog/assets/wordle-optimize.mp4").default} type="video/mp4" />
@@ -157,7 +157,7 @@ Machinat.js 中幾乎所有的功能都支援這樣的最佳化。
 
 > <small>所有功能都可以無縫的嵌入在 Twitter 上</small>
 
-Machinat.js 把這些機制整合在一起，成為一個標準化、跨平台並且可以自由擴充的全新 UI 框架。這讓開發者可以自由開發各種第三方的 UI、插件甚至平台，並形成一個完整的開發生態系。
+Sociably.js 把這些機制整合在一起，成為一個標準化、跨平台並且可以自由擴充的全新 UI 框架。這讓開發者可以自由開發各種第三方的 UI、插件甚至平台，並形成一個完整的開發生態系。
 
 而這會是大社群時代裡，打造下一代 app 的關鍵。
 
@@ -214,7 +214,7 @@ Sociable App 雖然是一個軟體，但可以在社群平台上擁有自己的�
 
 ### 一切都是 App
 
-未來 Machinat.js 會支援所有用語言溝通的平台，包括 SMS、email、語音助理、網頁/移動 app 裡的內嵌聊天室，都能透過同一個 app 整合在一起。
+未來 Sociably.js 會支援所有用語言溝通的平台，包括 SMS、email、語音助理、網頁/移動 app 裡的內嵌聊天室，都能透過同一個 app 整合在一起。
 
 <img height={500} src={require("../blog/assets/omni-channel.png").default} />
 
@@ -235,7 +235,7 @@ Sociable App 雖然是一個軟體，但可以在社群平台上擁有自己的�
 
 跟 chatbot 熱潮的時候相比，今天社群媒體甚至更流行了，相關科技如語意辨識也更加成熟。[Whatsapp 最近也終於開放了 API](https://developers.facebook.com/blog/post/2022/05/19/whatsapp-cloud-based-api/)，這讓平台的支援更加完整。現在正是改變發生的時候！
 
-Machinat.js 能讓你輕鬆快速的打造社群平台上的各種應用。你可以用一行指令創建一個跨平台的 app，幾分鐘就能運行起來並開始開發，並且一天內讓他上線運作。在這個社群時代裡，這是最簡單發布一個 app 給使用者的方式。
+Sociably.js 能讓你輕鬆快速的打造社群平台上的各種應用。你可以用一行指令創建一個跨平台的 app，幾分鐘就能運行起來並開始開發，並且一天內讓他上線運作。在這個社群時代裡，這是最簡單發布一個 app 給使用者的方式。
 
 <img height={500} src={require("../static/img/start-dev.webp").default} />
 
@@ -244,11 +244,11 @@ Machinat.js 能讓你輕鬆快速的打造社群平台上的各種應用。你�
 目前我們支援 4 個社群平台：[Twitter](https://twitter.com/)、[Messenger](https://www.messenger.com/)、[Telegram](https://telegram.org/)、[LINE](https://line.me/)。
 未來我們會陸續支援更多平台，並預計今年內會涵蓋所有主流的社群平台。
 
-你可以從我們的[教學](https://machinat.com/docs/learn/)開始第一個 Sociable App。
+你可以從我們的[教學](https://sociably.js.org/docs/learn/)開始第一個 Sociable App。
 
 ## 加入我們
 
-Machinat.js 的目標是讓開發者能發布各種軟體到所有的社群平台上。  
+Sociably.js 的目標是讓開發者能發布各種軟體到所有的社群平台上。  
 讓軟體能真的在我們日常生活裡，隨時隨地提供各種功能；  
 能自動化社群媒體上的各種工作，並為社群服務帶來新的可能性；  
 能用我們最熟悉的方式提供服務，像一個貼身秘書甚至是最好的朋友。
@@ -258,7 +258,7 @@ Machinat.js 的目標是讓開發者能發布各種軟體到所有的社群平�
 想像一下，未來只要加入一個插件，就能讓 bot 學會說笑話或各種技能，
 這甚至能幫助之後能開發更好的 AI!
 
-如果你是開發者，可以在 [GitHub](https://github.com/machinat/machinat) 上找到各種資源，並歡迎加入 [Discord 伺服器](https://discord.gg/emTAcH7aST) 討論各種想法。
+如果你是開發者，可以在 [GitHub](https://github.com/machinat/sociably) 上找到各種資源，並歡迎加入 [Discord 伺服器](https://discord.gg/emTAcH7aST) 討論各種想法。
 如果你有個很酷的點子，或是有任何合作的機會，請 mail 給我一起討論看看如何將他實現：[`patrick.liu@machinat.com`](mailto:patrick.liu@machinat.com)
 
 祝各位開心的開發新一代 app！

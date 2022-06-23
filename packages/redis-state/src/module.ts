@@ -1,7 +1,7 @@
 import redis from 'redis';
-import type { ServiceModule } from '@machinat/core';
-import { makeFactoryProvider, makeContainer } from '@machinat/core/service';
-import StateControllerI from '@machinat/core/base/StateController';
+import type { ServiceModule } from '@sociably/core';
+import { makeFactoryProvider, makeContainer } from '@sociably/core/service';
+import StateControllerI from '@sociably/core/base/StateController';
 
 import { ControllerP } from './controller';
 import { ConfigsI, ClientI } from './interface';

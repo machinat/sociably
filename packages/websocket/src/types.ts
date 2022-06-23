@@ -1,15 +1,15 @@
 import type {
   NativeComponent,
-  MachinatNode,
-  MachinatUser,
+  SociablyNode,
+  SociablyUser,
   PlatformUtilities,
   EventMiddleware,
   DispatchMiddleware,
-} from '@machinat/core';
-import type { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
-import type { MaybeContainer } from '@machinat/core/service';
-import type { UnitSegment } from '@machinat/core/renderer';
-import type { HttpRequestInfo } from '@machinat/http';
+} from '@sociably/core';
+import type { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
+import type { MaybeContainer } from '@sociably/core/service';
+import type { UnitSegment } from '@sociably/core/renderer';
+import type { HttpRequestInfo } from '@sociably/http';
 import type { WebSocketBot } from './bot';
 import type {
   WebSocketTopicChannel,
@@ -18,7 +18,7 @@ import type {
 } from './channel';
 
 export type { Server as WsServer } from 'ws';
-export type { HttpRequestInfo } from '@machinat/http';
+export type { HttpRequestInfo } from '@sociably/http';
 
 export type ConnIdentifier = {
   serverId: string;
@@ -49,7 +49,7 @@ export type ConnectionEventValue = ConnectEventValue | DisconnectEventValue;
 
 export type WebSocketEvent<
   Value extends EventValue,
-  User extends null | MachinatUser
+  User extends null | SociablyUser
 > = Value & {
   platform: 'websokcet';
   channel: WebSocketConnection;
@@ -117,7 +117,7 @@ export type WebSocketDispatchResponse = DispatchResponse<
 >;
 
 export type WebSocketEventContext<
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   AuthContext,
   Value extends EventValue = EventValue
 > = {
@@ -125,10 +125,10 @@ export type WebSocketEventContext<
   event: WebSocketEvent<Value, User>;
   metadata: WebSocketMetadata<AuthContext>;
   bot: WebSocketBot;
-  reply(message: MachinatNode): Promise<null | WebSocketDispatchResponse>;
+  reply(message: SociablyNode): Promise<null | WebSocketDispatchResponse>;
 };
 
-type OkVerifyLoginResult<User extends null | MachinatUser, AuthContext> = {
+type OkVerifyLoginResult<User extends null | SociablyUser, AuthContext> = {
   ok: true;
   user: User;
   authContext: AuthContext;
@@ -142,7 +142,7 @@ type FailVerifyLoginResult = {
 };
 
 export type VerifyLoginFn<
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   AuthContext,
   Credential
 > = (
@@ -157,7 +157,7 @@ export type VerifyUpgradeFn = (
 ) => boolean | Promise<boolean>;
 
 export type ClientLoginFn<
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   Credential
 > = () => Promise<{
   user: User;
@@ -165,7 +165,7 @@ export type ClientLoginFn<
 }>;
 
 export type WebSocketEventMiddleware<
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   Auth
 > = EventMiddleware<WebSocketEventContext<User, Auth>, null>;
 
@@ -176,7 +176,7 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type WebSocketConfigs<
-  User extends null | MachinatUser = null,
+  User extends null | SociablyUser = null,
   Auth = null
 > = {
   entryPath?: string;
@@ -186,7 +186,7 @@ export type WebSocketConfigs<
 };
 
 export type WebSocketPlatformUtilities<
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   Auth
 > = PlatformUtilities<
   WebSocketEventContext<User, Auth>,

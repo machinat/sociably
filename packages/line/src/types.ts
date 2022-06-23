@@ -3,12 +3,12 @@ import type {
   EventMiddleware,
   DispatchMiddleware,
   PlatformUtilities,
-  MachinatNode,
-} from '@machinat/core';
-import type { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
-import type { MaybeContainer } from '@machinat/core/service';
-import type { IntermediateSegment } from '@machinat/core/renderer';
-import type { WebhookMetadata } from '@machinat/http/webhook';
+  SociablyNode,
+} from '@sociably/core';
+import type { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
+import type { MaybeContainer } from '@sociably/core/service';
+import type { IntermediateSegment } from '@sociably/core/renderer';
+import type { WebhookMetadata } from '@sociably/http/webhook';
 import { LineBot } from './Bot';
 import type LineChat from './Chat';
 import type { LineEvent, LineRawEvent } from './event/types';
@@ -48,7 +48,7 @@ export type LineEventContext = {
   event: LineEvent;
   metadata: WebhookMetadata;
   bot: LineBot;
-  reply(message: MachinatNode): Promise<null | LineDispatchResponse>;
+  reply(message: SociablyNode): Promise<null | LineDispatchResponse>;
 };
 
 export type LineWebhookRequestBody = {

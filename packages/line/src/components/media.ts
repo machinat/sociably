@@ -1,4 +1,4 @@
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { makeLineComponent } from '../utils';
 import { LineComponent, LineMessageSegmentValue } from '../types';
 

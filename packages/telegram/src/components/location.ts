@@ -1,5 +1,5 @@
-import { MachinatNode } from '@machinat/core';
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
+import { SociablyNode } from '@sociably/core';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { makeTelegramComponent } from '../utils';
 import { TelegramSegmentValue, TelegramComponent } from '../types';
 import { MessageProps } from './types';
@@ -64,7 +64,7 @@ export interface EditLiveLocationProps {
   /** Longitude of the location */
   longitude: number;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
-  replyMarkup?: MachinatNode;
+  replyMarkup?: SociablyNode;
 }
 
 /**
@@ -104,7 +104,7 @@ export interface StopLiveLocationProps {
   /** Required if `messageId` are not specified. Identifier of the inline message */
   inlineMessageId?: string;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
-  replyMarkup?: MachinatNode;
+  replyMarkup?: SociablyNode;
 }
 
 /**

@@ -1,7 +1,7 @@
 import url from 'url';
 import fetch from 'node-fetch';
-import type { MachinatWorker } from '@machinat/core/engine';
-import type Queue from '@machinat/core/queue';
+import type { SociablyWorker } from '@sociably/core/engine';
+import type Queue from '@sociably/core/queue';
 import type { LineJob, LineResult } from './types';
 import LineApiError from './error';
 
@@ -9,7 +9,7 @@ const API_HOST = 'https://api.line.me';
 
 type LineJobQueue = Queue<LineJob, LineResult>;
 
-class LineWorker implements MachinatWorker<LineJob, LineResult> {
+class LineWorker implements SociablyWorker<LineJob, LineResult> {
   accessToken: string;
   connectionCount: number;
   maxConnections: number;

@@ -1,18 +1,18 @@
 import {
-  MACHINAT_FRAGMENT_TYPE,
-  MACHINAT_PAUSE_TYPE,
-  MACHINAT_PROVIDER_TYPE,
-  MACHINAT_THUNK_TYPE,
-  MACHINAT_RAW_TYPE,
+  SOCIABLY_FRAGMENT_TYPE,
+  SOCIABLY_PAUSE_TYPE,
+  SOCIABLY_PROVIDER_TYPE,
+  SOCIABLY_THUNK_TYPE,
+  SOCIABLY_RAW_TYPE,
 } from './symbol';
-import createMachinatElement from './createElement';
+import createSociablyElement from './createElement';
 import App from './app';
 import type {
   AppConfig,
-  MachinatElement,
+  SociablyElement,
   NativeComponent,
   ContainerComponent,
-  AnyMachinatPlatform,
+  AnySociablyPlatform,
   FragmentProps,
   PauseProps,
   ProviderProps,
@@ -37,35 +37,35 @@ export * from './types';
 /**
  * @category Root
  */
-namespace Machinat {
-  export const createElement = createMachinatElement;
-  export const createApp = <Platform extends AnyMachinatPlatform>(
+namespace Sociably {
+  export const createElement = createSociablyElement;
+  export const createApp = <Platform extends AnySociablyPlatform>(
     config: AppConfig<Platform>
   ): App<Platform> => {
     const app = new App(config);
     return app;
   };
 
-  export const Fragment = MACHINAT_FRAGMENT_TYPE as unknown as (
+  export const Fragment = SOCIABLY_FRAGMENT_TYPE as unknown as (
     props: FragmentProps
   ) => null;
 
-  export const Pause = MACHINAT_PAUSE_TYPE as unknown as (
+  export const Pause = SOCIABLY_PAUSE_TYPE as unknown as (
     props: PauseProps
   ) => null;
 
-  export const Provider = MACHINAT_PROVIDER_TYPE as unknown as (
+  export const Provider = SOCIABLY_PROVIDER_TYPE as unknown as (
     props: ProviderProps
   ) => null;
 
-  export const Thunk = MACHINAT_THUNK_TYPE as unknown as (
+  export const Thunk = SOCIABLY_THUNK_TYPE as unknown as (
     props: ThunkProps
   ) => null;
 
-  export const Raw = MACHINAT_RAW_TYPE as unknown as (props: RawProps) => null;
+  export const Raw = SOCIABLY_RAW_TYPE as unknown as (props: RawProps) => null;
 
   export namespace JSX {
-    export type Element = MachinatElement<any, any>;
+    export type Element = SociablyElement<any, any>;
     export type ElementClass =
       | NativeComponent<any, any>
       | ContainerComponent<any>;
@@ -90,4 +90,4 @@ namespace Machinat {
   }
 }
 
-export default Machinat;
+export default Sociably;

@@ -1,6 +1,6 @@
-import { MachinatNode } from '@machinat/core';
-import type { UnitSegment, OutputSegment } from '@machinat/core/renderer';
-import { formatNode } from '@machinat/core/utils';
+import { SociablyNode } from '@sociably/core';
+import type { UnitSegment, OutputSegment } from '@sociably/core/renderer';
+import { formatNode } from '@sociably/core/utils';
 import type {
   MessengerSegmentValue,
   MessengerComponent,
@@ -14,7 +14,7 @@ import { makeMessengerComponent, isMessageEntry } from '../utils';
  */
 export type ExpressionProps = {
   /** Content nodes to be annotated. */
-  children: MachinatNode;
+  children: SociablyNode;
   /**
    * The messaging type of the message being sent. For more information, see
    * [Sending Messages - Messaging Types](https://developers.facebook.com/docs/messenger-platform/send-messages/#messaging_types).
@@ -43,7 +43,7 @@ export type ExpressionProps = {
    */
   metadata?: string;
   /** {@link QuickReply} elements to be sent with messages. */
-  quickReplies?: MachinatNode;
+  quickReplies?: SociablyNode;
   /** The persona id to use. */
   personaId?: string;
 };

@@ -76,10 +76,10 @@ const Ws =
         }
       };
 
-const MACHINAT_WEBSOCKET_PROTOCOL_V0 = 'machinat-websocket-v0';
+const SOCIABLY_WEBSOCKET_PROTOCOL_V0 = 'sociably-websocket-v0';
 
 const createClientSocket = (url: string): Promise<Socket> => {
-  const ws = new Ws(url, MACHINAT_WEBSOCKET_PROTOCOL_V0);
+  const ws = new Ws(url, SOCIABLY_WEBSOCKET_PROTOCOL_V0);
   const socket = new Socket(ws);
 
   return new Promise((resolve, reject) => {

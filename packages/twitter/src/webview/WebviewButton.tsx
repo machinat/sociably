@@ -1,5 +1,5 @@
 import { posix as posixPath } from 'path';
-import Machinat, { makeContainer, RenderingChannel } from '@machinat/core';
+import Sociably, { makeContainer, RenderingChannel } from '@sociably/core';
 import TwitterChat from '../Chat';
 import { UrlButton } from '../components';
 import ServerAuthenticator from './ServerAuthenticator';

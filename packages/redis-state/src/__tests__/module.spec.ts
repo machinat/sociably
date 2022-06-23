@@ -1,8 +1,8 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import redis, { RedisClient } from 'redis';
 import { EventEmitter } from 'events';
-import Machinat from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateController';
+import Sociably from '@sociably/core';
+import StateControllerI from '@sociably/core/base/StateController';
 import RedisState from '../module';
 import { ControllerP as RedisStateController } from '../controller';
 
@@ -19,7 +19,7 @@ test('export interfaces', () => {
       "$$multi": false,
       "$$name": "RedisStateConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(RedisState.Client).toMatchInlineSnapshot(`
@@ -27,13 +27,13 @@ test('export interfaces', () => {
       "$$multi": false,
       "$$name": "RedisClient",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
 
 test('provisions', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
         clientOptions: { host: 'my.redis.com', port: 23456 },
@@ -61,7 +61,7 @@ test('provisions', async () => {
 });
 
 test('provide base state controller', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
         clientOptions: { host: 'my.redis.com', port: 23456 },
@@ -75,7 +75,7 @@ test('provide base state controller', async () => {
 });
 
 test('startHook wait for client connected', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
         clientOptions: { host: 'my.redis.com', port: 23456 },
@@ -100,7 +100,7 @@ test('startHook wait for client connected', async () => {
 });
 
 test('startHook throw if error happen when connect', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
         clientOptions: { host: 'my.redis.com', port: 23456 },
@@ -121,7 +121,7 @@ test('startHook throw if error happen when connect', async () => {
 });
 
 test('stopHook quit client', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
         clientOptions: { host: 'my.redis.com', port: 23456 },

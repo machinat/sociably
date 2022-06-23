@@ -2,14 +2,14 @@ import { parse as parseUrl, URL } from 'url';
 import type { ParsedUrlQuery } from 'querystring';
 import { createHmac, createHash } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@machinat/core/service';
-import type { RoutingInfo } from '@machinat/http';
+import { makeClassProvider } from '@sociably/core/service';
+import type { RoutingInfo } from '@sociably/http';
 import Auth, {
   ServerAuthenticator,
   VerifyResult,
   CheckDataResult,
-} from '@machinat/auth';
-import BasicAuthenticator from '@machinat/auth/basicAuth';
+} from '@sociably/auth';
+import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { TELEGRAM } from '../constant';
 import BotP from '../Bot';
 import { ConfigsI } from '../interface';

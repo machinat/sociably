@@ -5,20 +5,20 @@ Array [
   Object {
     "node": <DirectMessage
       buttons={
-        <Machinat.Fragment>
+        <Sociably.Fragment>
           <UrlButton
             label="foo"
-            url="http://machinat.io/foo"
+            url="http://sociably.io/foo"
           />
           <UrlButton
             label="bar"
-            url="http://machinat.io/bar"
+            url="http://sociably.io/bar"
           />
           <UrlButton
             label="baz"
-            url="http://machinat.io/baz"
+            url="http://sociably.io/baz"
           />
-        </Machinat.Fragment>
+        </Sociably.Fragment>
       }
     >
       Guess one
@@ -40,17 +40,17 @@ Array [
                   Object {
                     "label": "foo",
                     "type": "web_url",
-                    "url": "http://machinat.io/foo",
+                    "url": "http://sociably.io/foo",
                   },
                   Object {
                     "label": "bar",
                     "type": "web_url",
-                    "url": "http://machinat.io/bar",
+                    "url": "http://sociably.io/bar",
                   },
                   Object {
                     "label": "baz",
                     "type": "web_url",
-                    "url": "http://machinat.io/baz",
+                    "url": "http://sociably.io/baz",
                   },
                 ],
                 "text": "Guess one",
@@ -302,7 +302,7 @@ Array [
   Object {
     "node": <DirectMessage
       quickReplies={
-        <Machinat.Fragment>
+        <Sociably.Fragment>
           <QuickReply
             description="FOOOOOOO"
             label="foo"
@@ -318,7 +318,7 @@ Array [
             label="baz"
             metadata="BAZ"
           />
-        </Machinat.Fragment>
+        </Sociably.Fragment>
       }
     >
       Guess one

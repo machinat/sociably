@@ -1,4 +1,4 @@
-import type { AuthContextBase } from '@machinat/auth';
+import type { AuthContextBase } from '@sociably/auth';
 import type LineUserProfile from '../UserProfile';
 import type LineUser from '../User';
 import type LineChat from '../Chat';

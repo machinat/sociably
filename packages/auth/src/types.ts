@@ -3,8 +3,8 @@ import type {
   ServerResponse,
   IncomingHttpHeaders,
 } from 'http';
-import type { MachinatUser, MachinatChannel } from '@machinat/core';
-import type { RoutingInfo } from '@machinat/http';
+import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import type { RoutingInfo } from '@sociably/http';
 import type { CodeMessageComponent } from './basicAuth';
 import type AuthError from './error';
 
@@ -45,15 +45,15 @@ export type AuthContextBase = {
 };
 
 export type AuthContext<
-  User extends MachinatUser,
-  Channel extends MachinatChannel
+  User extends SociablyUser,
+  Channel extends SociablyChannel
 > = {
   platform: string;
   user: User;
   channel: Channel;
 } & AuthContextBase;
 
-export type AnyAuthContext = AuthContext<MachinatUser, MachinatChannel>;
+export type AnyAuthContext = AuthContext<SociablyUser, SociablyChannel>;
 
 export type ContextDetails<Context extends AnyAuthContext> = Omit<
   Context,

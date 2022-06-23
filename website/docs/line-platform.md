@@ -3,7 +3,7 @@ title: Line Platform
 sidebar_label: Line
 ---
 
-The `@machinat/line` platform enable your app to receive/send messages as a
+The `@sociably/line` platform enable your app to receive/send messages as a
 [LINE official account](https://www.linebiz.com/jp-en/other/).
 
 ## Install
@@ -11,13 +11,13 @@ The `@machinat/line` platform enable your app to receive/send messages as a
 Install the `core`, `http` and `line` packages:
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/line
+npm install @sociably/core @sociably/http @sociably/line
 ```
 
 ## Setup
 
 :::tip
-You can check [setup section in the tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=line).
+You can check [setup section in the tutorial](https://sociably.js.org/docs/learn/create-app#platform-setup?p=line).
 It brings you to set up everything step by step.
 :::
 
@@ -28,9 +28,9 @@ for the setup procedures.
 Then set up the `http` and `line` module like this:
 
 ```ts
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Line from '@machinat/line';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Line from '@sociably/line';
 
 const {
   LINE_PROVIDER_ID,
@@ -39,7 +39,7 @@ const {
   LINE_CHANNEL_SECRET,
 } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ port: 8080 }),
   ],
@@ -60,8 +60,8 @@ const app = Machinat.createApp({
 Here's an example to receive events and send replies back:
 
 ```tsx
-import Machinat from '@machinat/core';
-import * as Line from '@machinat/line/components';
+import Sociably from '@sociably/core';
+import * as Line from '@sociably/line/components';
 import app from './app';
 
 app.onEvent(async ({ platform, event, reply }) => {
@@ -90,8 +90,8 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check API references for the details of [events](https://machinat.com/api/modules/line#lineevent)
-and [components](https://machinat.com/api/modules/line_components).
+Check API references for the details of [events](https://sociably.js.org/api/modules/line#lineevent)
+and [components](https://sociably.js.org/api/modules/line_components).
 
 ## Webview
 
@@ -106,13 +106,13 @@ configure the app with these steps:
 2. Set up `line` and `webview` platform like this:
 
 ```ts
-import Webview from '@machinat/webview';
-import Line from '@machinat/line';
-import LineAuth from '@machinat/line/webview';
+import Webview from '@sociably/webview';
+import Line from '@sociably/line';
+import LineAuth from '@sociably/line/webview';
 
 const { LINE_LIFF_ID } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   platforms: [
     Line.initModule({
       // add the login channel id
@@ -147,8 +147,8 @@ module.exports = {
 
 ```ts
 import getConfig from 'next/config';
-import WebviewClient from '@machinat/webview/client';
-import LineAuth from '@machinat/line/webview/client';
+import WebviewClient from '@sociably/webview/client';
+import LineAuth from '@sociably/line/webview/client';
 
 const {
   publicRuntimeConfig: { LINE_LIFF_ID },
@@ -167,8 +167,8 @@ The webview can be opened by a `WebviewAction` in the chatroom.
 Like:
 
 ```jsx
-import * as Line from '@machinat/line/components';
-import { WebviewAction as LineWebviewAction } from '@machinat/line/webview';
+import * as Line from '@sociably/line/components';
+import { WebviewAction as LineWebviewAction } from '@sociably/line/webview';
 
 app.onEvent(async ({ reply }) => {
   await reply(
@@ -185,12 +185,12 @@ app.onEvent(async ({ reply }) => {
 ```
 
 The users will be logged in with LINE account in the webview.
-Check the [webview document](https://machinat.com/docs/embedded-webview)
+Check the [webview document](https://sociably.js.org/docs/embedded-webview)
 to learn more.
 
 ## Assets Manager
 
-[`LineAssetsManager`](https://machinat.com/api/classes/line_asset.lineassetsmanager.html)
+[`LineAssetsManager`](https://sociably.js.org/api/classes/line_asset.lineassetsmanager.html)
 service helps you to manage resources on the LINE platform,
 like [richmenu](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/#using-rich-menus-introduction).
 
@@ -200,9 +200,9 @@ Then register `LineAssetsManager` like this:
 ```ts
 import RedisState from '@machiniat/redis';
 // highlight-next-line
-import LineAssetsManager from '@machinat/line/asssets';
+import LineAssetsManager from '@sociably/line/asssets';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   services: [
     // highlight-next-line
     LineAssetsManager,
@@ -221,9 +221,9 @@ const app = Machinat.createApp({
 Here is an example to reuse a richmenu:
 
 ```tsx
-import { makeContainer } from '@machinat/core';
-import * as Line from '@machinat/line/components';
-import LineAssetsManager from '@machinat/line/asssets';
+import { makeContainer } from '@sociably/core';
+import * as Line from '@sociably/line/components';
+import LineAssetsManager from '@sociably/line/asssets';
 
 app.onEvent(
   makeContainer({ deps: [LineAssetsManager] })(
@@ -240,6 +240,6 @@ app.onEvent(
 
 Here are some resources for further reading:
 
-- [`@machinat/line` package reference](https://machinat.com/api/modules/line.html)
+- [`@sociably/line` package reference](https://sociably.js.org/api/modules/line.html)
 - [LINE Messaging API document](https://developers.line.biz/en/docs/messaging-api/overview/)
 - [LINE Front-end Framework document](https://developers.line.biz/en/docs/liff/overview/)

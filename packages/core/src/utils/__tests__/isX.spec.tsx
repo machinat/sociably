@@ -1,5 +1,5 @@
-import Machinat, { RenderingChannel } from '../..';
-import { MACHINAT_NATIVE_TYPE } from '../../symbol';
+import Sociably, { RenderingChannel } from '../..';
+import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
 import { makeInterface, makeContainer } from '../../service';
 import {
   isEmpty,
@@ -17,7 +17,7 @@ import {
 } from '../isX';
 
 const Native = () => null;
-Native.$$typeof = MACHINAT_NATIVE_TYPE;
+Native.$$typeof = SOCIABLY_NATIVE_TYPE;
 Native.$$platform = test;
 
 const fooInterface = makeInterface({ name: 'Foo' });
@@ -42,7 +42,7 @@ describe('isEmpty', () => {
       <a />,
       <b>BBB</b>,
       <>123</>,
-      <Machinat.Pause />,
+      <Sociably.Pause />,
       <MyComponent />,
     ];
     nonEmpties.forEach((ele) => {
@@ -58,7 +58,7 @@ describe('isElement', () => {
       <b>BBB</b>,
       <>123</>,
       <MyComponent />,
-      <Machinat.Pause />,
+      <Sociably.Pause />,
     ];
     elements.forEach((ele) => {
       expect(isElement(ele)).toBe(true);
@@ -93,12 +93,12 @@ describe('isGeneralType', () => {
   it('return false if non general element passed', () => {
     const nonFragments = [
       <MyComponent />,
-      <Machinat.Pause />,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Pause />,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Provider>,
-      <Machinat.Thunk effect={async () => {}} />,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      </Sociably.Provider>,
+      <Sociably.Thunk effect={async () => {}} />,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     nonFragments.forEach((ele) => {
       expect(isGeneralType(ele)).toBe(false);
@@ -118,12 +118,12 @@ describe('isNativeType', () => {
     const nonFragments = [
       <a />,
       <MyComponent />,
-      <Machinat.Pause />,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Pause />,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Provider>,
-      <Machinat.Thunk effect={async () => {}} />,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      </Sociably.Provider>,
+      <Sociably.Thunk effect={async () => {}} />,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     nonFragments.forEach((ele) => {
       expect(isNativeType(ele)).toBe(false);
@@ -148,12 +148,12 @@ describe('isFunctionalType', () => {
       <a />,
       <Native />,
       <MyContainer />,
-      <Machinat.Pause />,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Pause />,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Provider>,
-      <Machinat.Thunk effect={async () => {}} />,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      </Sociably.Provider>,
+      <Sociably.Thunk effect={async () => {}} />,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     nonFragments.forEach((ele) => {
       expect(isFunctionalType(ele)).toBe(false);
@@ -178,12 +178,12 @@ describe('isContainerType', () => {
       <a />,
       <Native />,
       <MyComponent />,
-      <Machinat.Pause />,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Pause />,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Provider>,
-      <Machinat.Thunk effect={async () => {}} />,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      </Sociably.Provider>,
+      <Sociably.Thunk effect={async () => {}} />,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     nonFragments.forEach((ele) => {
       expect(isContainerType(ele)).toBe(false);
@@ -193,7 +193,7 @@ describe('isContainerType', () => {
 
 describe('isFragmentType', () => {
   it('return true if Fragment element passed', () => {
-    const fragments = [<>123</>, <Machinat.Fragment> </Machinat.Fragment>];
+    const fragments = [<>123</>, <Sociably.Fragment> </Sociably.Fragment>];
     fragments.forEach((ele) => {
       expect(isFragmentType(ele)).toBe(true);
     });
@@ -203,12 +203,12 @@ describe('isFragmentType', () => {
     const nonFragments = [
       <a />,
       <MyComponent />,
-      <Machinat.Pause />,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Pause />,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Provider>,
-      <Machinat.Thunk effect={async () => {}} />,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      </Sociably.Provider>,
+      <Sociably.Thunk effect={async () => {}} />,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     nonFragments.forEach((ele) => {
       expect(isFragmentType(ele)).toBe(false);
@@ -219,10 +219,10 @@ describe('isFragmentType', () => {
 describe('isPauseType', () => {
   it('return true if Pause element passed', () => {
     const pauses = [
-      <Machinat.Pause />,
-      <Machinat.Pause time={1000} />,
-      <Machinat.Pause delay={() => Promise.resolve()} />,
-      <Machinat.Pause time={1000} delay={() => Promise.resolve()} />,
+      <Sociably.Pause />,
+      <Sociably.Pause time={1000} />,
+      <Sociably.Pause delay={() => Promise.resolve()} />,
+      <Sociably.Pause time={1000} delay={() => Promise.resolve()} />,
     ];
     pauses.forEach((ele) => {
       expect(isPauseType(ele)).toBe(true);
@@ -233,12 +233,12 @@ describe('isPauseType', () => {
     const nonPauselies = [
       <a />,
       <MyComponent />,
-      <Machinat.Fragment> </Machinat.Fragment>,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Fragment> </Sociably.Fragment>,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Provider>,
-      <Machinat.Thunk effect={async () => {}} />,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      </Sociably.Provider>,
+      <Sociably.Thunk effect={async () => {}} />,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     nonPauselies.forEach((ele) => {
       expect(isPauseType(ele)).toBe(false);
@@ -250,9 +250,9 @@ describe('isProviderType', () => {
   it('return true if Provider element passed', () => {
     expect(
       isProviderType(
-        <Machinat.Provider provide={fooInterface} value="foo">
+        <Sociably.Provider provide={fooInterface} value="foo">
           <a />
-        </Machinat.Provider>
+        </Sociably.Provider>
       )
     ).toBe(true);
   });
@@ -261,10 +261,10 @@ describe('isProviderType', () => {
     const nonPauselies = [
       <a />,
       <MyComponent />,
-      <Machinat.Fragment> </Machinat.Fragment>,
-      <Machinat.Pause />,
-      <Machinat.Thunk effect={async () => {}} />,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      <Sociably.Fragment> </Sociably.Fragment>,
+      <Sociably.Pause />,
+      <Sociably.Thunk effect={async () => {}} />,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     nonPauselies.forEach((ele) => {
       expect(isProviderType(ele)).toBe(false);
@@ -274,19 +274,19 @@ describe('isProviderType', () => {
 
 describe('isThunkType', () => {
   it('return true if Thunk passed', () => {
-    expect(isThunkType(<Machinat.Thunk effect={async () => {}} />)).toBe(true);
+    expect(isThunkType(<Sociably.Thunk effect={async () => {}} />)).toBe(true);
   });
 
   it('return false if non Pause element passed', () => {
     const nonPauselies = [
       <a />,
       <MyComponent />,
-      <Machinat.Fragment> </Machinat.Fragment>,
-      <Machinat.Pause />,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Fragment> </Sociably.Fragment>,
+      <Sociably.Pause />,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Provider>,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      </Sociably.Provider>,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     nonPauselies.forEach((ele) => {
       expect(isThunkType(ele)).toBe(false);
@@ -296,7 +296,7 @@ describe('isThunkType', () => {
 
 describe('isRawType', () => {
   it('return true if Raw effect passed', () => {
-    expect(isRawType(<Machinat.Raw value={{ foo: 'bar' }} />)).toBe(true);
+    expect(isRawType(<Sociably.Raw value={{ foo: 'bar' }} />)).toBe(true);
   });
 
   it('return false if non Pause element passed', () => {
@@ -304,12 +304,12 @@ describe('isRawType', () => {
       <a />,
       <b>BBB</b>,
       <MyComponent />,
-      <Machinat.Fragment> </Machinat.Fragment>,
-      <Machinat.Pause />,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Fragment> </Sociably.Fragment>,
+      <Sociably.Pause />,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <a />
-      </Machinat.Provider>,
-      <Machinat.Thunk effect={async () => {}} />,
+      </Sociably.Provider>,
+      <Sociably.Thunk effect={async () => {}} />,
     ];
     nonPauselies.forEach((ele) => {
       expect(isRawType(ele)).toBe(false);
@@ -324,13 +324,13 @@ describe('isElementTypeValid', () => {
       <Native />,
       <MyComponent />,
       <MyContainer />,
-      <Machinat.Fragment> </Machinat.Fragment>,
-      <Machinat.Pause />,
-      <Machinat.Provider provide={fooInterface} value="foo">
+      <Sociably.Fragment> </Sociably.Fragment>,
+      <Sociably.Pause />,
+      <Sociably.Provider provide={fooInterface} value="foo">
         <b />
-      </Machinat.Provider>,
-      <Machinat.Thunk effect={async () => {}} />,
-      <Machinat.Raw value={{ foo: 'bar' }} />,
+      </Sociably.Provider>,
+      <Sociably.Thunk effect={async () => {}} />,
+      <Sociably.Raw value={{ foo: 'bar' }} />,
     ];
     validEles.forEach((ele) => {
       expect(isElementTypeValid(ele)).toBe(true);

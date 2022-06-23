@@ -1,5 +1,5 @@
-import type { MachinatUser } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyUser } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { MESSENGER, FACEBOOK } from './constant';
 
 type FacebookUserValue = {
@@ -8,7 +8,7 @@ type FacebookUserValue = {
 };
 
 export default class FacebookUser
-  implements MachinatUser, MarshallableInstance<FacebookUserValue>
+  implements SociablyUser, MarshallableInstance<FacebookUserValue>
 {
   static typeName = 'FacebookUser';
 

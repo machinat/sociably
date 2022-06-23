@@ -1,16 +1,16 @@
-# Machinat Core
+# Sociably Core
 
-This is the core module of Machinat framework.
+This is the core module of Sociably framework.
 
 ## Install
 
 ```bash
-npm install @machinat/core
+npm install @sociably/core
 # or with yarn
-yarn add @machinat/core
+yarn add @sociably/core
 ```
 
 ## Docs
 
-Check the [framework documents](https://machinat.com/docs/) and the
-[package references](https://machinat.com/api/modules/core.html).
+Check the [framework documents](https://sociably.js.org/docs/) and the
+[package references](https://sociably.js.org/api/modules/core.html).

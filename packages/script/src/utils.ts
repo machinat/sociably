@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { MACHINAT_SCRIPT_TYPE } from './constant';
+import { SOCIABLY_SCRIPT_TYPE } from './constant';
 import type {
   AnyScriptLibrary,
   CallStatus,
@@ -9,7 +9,7 @@ import type {
 export const isScript = (type: any): type is AnyScriptLibrary =>
   typeof type === 'object' &&
   type !== null &&
-  type.$$typeof === MACHINAT_SCRIPT_TYPE;
+  type.$$typeof === SOCIABLY_SCRIPT_TYPE;
 
 export const serializeScriptStatus = <Vars>({
   script,

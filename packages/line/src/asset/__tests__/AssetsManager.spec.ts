@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import type StateControllerI from '@machinat/core/base/StateController';
+import type StateControllerI from '@sociably/core/base/StateController';
 import type { LineBot } from '../../Bot';
 import { LineAssetsManager } from '../AssetsManager';
 

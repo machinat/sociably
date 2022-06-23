@@ -15,8 +15,8 @@ import {
 } from '../utils/isX';
 import { createEmptyScope, Interfaceable, ServiceScope } from '../service';
 import type {
-  MachinatNode,
-  MachinatRenderable,
+  SociablyNode,
+  SociablyRenderable,
   PauseElement,
   ThunkElement,
   RawElement,
@@ -55,7 +55,7 @@ type GeneralComponentDelegate<Value> = (
   render: InnerRenderFn
 ) => Promise<null | IntermediateSegment<Value>[]>;
 
-export default class MachinatRenderer<
+export default class SociablyRenderer<
   Value,
   Component extends NativeComponent<unknown, any>
 > {
@@ -74,7 +74,7 @@ export default class MachinatRenderer<
   }
 
   async render(
-    node: MachinatNode,
+    node: SociablyNode,
     scopeInput: null | ServiceScope,
     runtimeProvisions: null | [Interfaceable<unknown>, unknown][]
   ): Promise<null | OutputSegment<Value>[]> {
@@ -119,7 +119,7 @@ export default class MachinatRenderer<
     scope: ServiceScope,
     servicesProvided: Map<Interfaceable<unknown>, unknown>,
     location: string,
-    node: MachinatNode,
+    node: SociablyNode,
     path?: string
   ): Promise<null | IntermediateSegment<Value>[]> {
     if (isEmpty(node)) {
@@ -177,7 +177,7 @@ export default class MachinatRenderer<
   }
 
   private _renderingTraverser(
-    node: MachinatRenderable,
+    node: SociablyRenderable,
     path: string,
     context: RenderTraverseContext<Value>
   ) {

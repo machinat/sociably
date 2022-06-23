@@ -3,7 +3,7 @@ import ServerAuthenticator from '../ServerAuthenticator';
 import WebviewButton from '../WebviewButton';
 
 const authenticator = moxy<ServerAuthenticator>({
-  getAuthUrl: () => 'https://machinat.io/foo/auth/telegram',
+  getAuthUrl: () => 'https://sociably.io/foo/auth/telegram',
 } as never);
 
 beforeEach(() => {
@@ -15,7 +15,7 @@ test('rendering to UrlButton', () => {
     <UrlButton
       login={true}
       text="Foo"
-      url="https://machinat.io/foo/auth/telegram"
+      url="https://sociably.io/foo/auth/telegram"
     />
   `);
   expect(
@@ -32,19 +32,19 @@ test('rendering to UrlButton', () => {
       login={true}
       requestWriteAccess={true}
       text="Foo"
-      url="https://machinat.io/foo/auth/telegram"
+      url="https://sociably.io/foo/auth/telegram"
     />
   `);
 
   authenticator.getAuthUrl.mock.fakeReturnValue(
-    'https://machinat.io/foo/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz'
+    'https://sociably.io/foo/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz'
   );
   expect(WebviewButton(authenticator)({ text: 'Foo', page: '/foo?bar=baz' }))
     .toMatchInlineSnapshot(`
     <UrlButton
       login={true}
       text="Foo"
-      url="https://machinat.io/foo/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz"
+      url="https://sociably.io/foo/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz"
     />
   `);
 

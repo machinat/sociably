@@ -1,6 +1,6 @@
-import { MachinatNode } from '@machinat/core';
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { formatNode } from '@machinat/core/utils';
+import { SociablyNode } from '@sociably/core';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
+import { formatNode } from '@sociably/core/utils';
 import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -30,7 +30,7 @@ export interface FileProps {
 
 export interface CaptionProps {
   /** File caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing */
-  caption?: MachinatNode;
+  caption?: SociablyNode;
   /** Mode for parsing entities in the `caption`. Default to `'HTML'`.  */
   parseMode?: TelegramParseMode;
 }
@@ -574,7 +574,7 @@ export interface MediaGroupProps {
    * {@link Photo} and {@link Video} elements to be presented in the group.
    * Please note that {@link MessageProps} of the children are ignored.
    */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Sends the message silently. Users will receive a notification with no sound. */
   disableNotification?: boolean;
   /** If the message is a reply, ID of the original message */

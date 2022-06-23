@@ -1,14 +1,14 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import { InMemoryState } from '@machinat/dev-tools';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import { InMemoryState } from '@sociably/dev-tools';
 import Auth from '../module';
 import BasicAuthenticator from '../basicAuth';
 import ControllerP from '../Controller';
 import HttpOperatorP from '../HttpOperator';
 
 const secret = '_SECRET_';
-const serverUrl = 'https://machinat.io';
+const serverUrl = 'https://sociably.io';
 const apiRoot = '/auth';
 
 test('interfaces', () => {
@@ -19,7 +19,7 @@ test('interfaces', () => {
       "$$multi": false,
       "$$name": "AuthConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(Auth.AuthenticatorList).toMatchInlineSnapshot(`
@@ -27,14 +27,14 @@ test('interfaces', () => {
       "$$multi": true,
       "$$name": "AuthAuthenticatorList",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
 
 describe('initModule()', () => {
   test('provisions', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       modules: [Auth.initModule({ secret, apiRoot, serverUrl })],
       services: [{ provide: Auth.AuthenticatorList, withValue: moxy() }],
     });
@@ -67,9 +67,9 @@ describe('initModule()', () => {
   test('with basicAuth', async () => {
     const basicAuthOptions = {
       appName: 'Hello World',
-      appIconUrl: 'https://machinat.com/img/logo.png',
+      appIconUrl: 'https://sociably.io/img/logo.png',
     };
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       modules: [
         InMemoryState.initModule(),
         Auth.initModule({
@@ -87,7 +87,7 @@ describe('initModule()', () => {
     expect(basicAuthenticator).toBeInstanceOf(BasicAuthenticator);
     expect(basicAuthenticator.appName).toBe('Hello World');
     expect(basicAuthenticator.appIconUrl).toBe(
-      'https://machinat.com/img/logo.png'
+      'https://sociably.io/img/logo.png'
     );
   });
 
@@ -95,7 +95,7 @@ describe('initModule()', () => {
     const fooAuthenticator = moxy();
     const barAuthenticator = moxy();
     const ControllerSpy = moxy(ControllerP);
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       modules: [Auth.initModule({ secret, apiRoot, serverUrl })],
       services: [
         { provide: Auth.AuthenticatorList, withValue: fooAuthenticator },
@@ -117,7 +117,7 @@ describe('initModule()', () => {
 
   it('register auth api entry', async () => {
     const fakeController = moxy({ delegateAuthRequest: async () => {} });
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       modules: [Auth.initModule({ secret, serverUrl, apiRoot })],
       services: [
         {

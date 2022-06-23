@@ -4,13 +4,13 @@ import {
   watch,
   FSWatcher,
 } from 'fs';
-import type { MachinatUser, MachinatChannel } from '@machinat/core';
-import { makeClassProvider } from '@machinat/core/service';
+import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import { makeClassProvider } from '@sociably/core/service';
 import {
   BaseStateController,
   StateAccessor,
-} from '@machinat/core/base/StateController';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
+} from '@sociably/core/base/StateController';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
 import { ConfigsI, SerializerI } from './interface';
 import type { FileStateConfigs } from './types';
 
@@ -139,7 +139,7 @@ export class FileStateController implements BaseStateController {
     this._writingJob = Promise.resolve();
   }
 
-  channelState(channel: string | MachinatChannel): FileStateAccessor {
+  channelState(channel: string | SociablyChannel): FileStateAccessor {
     const channelUid = typeof channel === 'string' ? channel : channel.uid;
     return new FileStateAccessor(
       this.marshaler,
@@ -148,7 +148,7 @@ export class FileStateController implements BaseStateController {
     );
   }
 
-  userState(user: string | MachinatUser): FileStateAccessor {
+  userState(user: string | SociablyUser): FileStateAccessor {
     const userUid = typeof user === 'string' ? user : user.uid;
     return new FileStateAccessor(
       this.marshaler,

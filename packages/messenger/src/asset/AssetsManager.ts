@@ -1,7 +1,7 @@
-import type { MachinatNode } from '@machinat/core';
-import { makeClassProvider } from '@machinat/core/service';
-import StateControllerI from '@machinat/core/base/StateController';
-import { formatNode } from '@machinat/core/utils';
+import type { SociablyNode } from '@sociably/core';
+import { makeClassProvider } from '@sociably/core/service';
+import StateControllerI from '@sociably/core/base/StateController';
+import { formatNode } from '@sociably/core/utils';
 import { PATH_PERSONAS } from '../constant';
 import BotP from '../Bot';
 
@@ -79,7 +79,7 @@ export class MessengerAssetsManager {
     return this.unsaveAssetId(ATTACHMENT, name);
   }
 
-  async renderAttachment(name: string, node: MachinatNode): Promise<string> {
+  async renderAttachment(name: string, node: SociablyNode): Promise<string> {
     const existed = await this.getAttachment(name);
     if (existed !== undefined) {
       throw new Error(`attachment [ ${name} ] already exist`);

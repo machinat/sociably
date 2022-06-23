@@ -1,15 +1,15 @@
-import type { MachinatUser } from '@machinat/core';
+import type { SociablyUser } from '@sociably/core';
 import type {
   AuthController,
   AnyServerAuthenticator,
   ContextOfAuthenticator,
-} from '@machinat/auth';
+} from '@sociably/auth';
 import type {
   EventInput,
   VerifyLoginFn,
   HttpRequestInfo,
   EventValue,
-} from '@machinat/websocket';
+} from '@sociably/websocket';
 import { WEBVIEW } from './constant';
 import { WebviewConnection } from './channel';
 import type { WebviewEvent } from './types';
@@ -17,7 +17,7 @@ import type { WebviewEvent } from './types';
 const WebEventProto = { platform: WEBVIEW };
 
 export const createEvent = <
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   Value extends EventValue
 >(
   value: EventInput,
@@ -40,7 +40,7 @@ export const useAuthLogin =
   <Authenticator extends AnyServerAuthenticator>(
     controller: AuthController<Authenticator>
   ): VerifyLoginFn<
-    MachinatUser,
+    SociablyUser,
     ContextOfAuthenticator<Authenticator>,
     string
   > =>

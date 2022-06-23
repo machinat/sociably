@@ -1,5 +1,5 @@
-import { makeClassProvider } from '@machinat/core/service';
-import type { UserProfiler } from '@machinat/core/base/Profiler';
+import { makeClassProvider } from '@sociably/core/service';
+import type { UserProfiler } from '@sociably/core/base/Profiler';
 import type TelegramUser from './User';
 import TelegramChat from './Chat';
 import TelegramChatSender from './ChatSender';

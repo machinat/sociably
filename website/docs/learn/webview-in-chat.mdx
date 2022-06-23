@@ -44,7 +44,7 @@ Edit the `WithMenu` component like this:
 
 ```tsx title="src/components/WithMenu.tsx"
 // highlight-next-line
-import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';
+import { WebviewButton as MessengerWebviewButton } from '@sociably/messenger/webview';
   //...
   if (platform === 'messenger') {
     return (
@@ -83,7 +83,7 @@ Edit the `WithMenu` component like this:
 
 ```tsx title="src/components/WithMenu.tsx"
 // highlight-next-line
-import { WebviewButton as TelegramWebviewButton } from '@machinat/telegram/webview';
+import { WebviewButton as TelegramWebviewButton } from '@sociably/telegram/webview';
   //...
   if (platform === 'telegram') {
     return (
@@ -122,7 +122,7 @@ Edit the `WithMenu` component like this:
 
 ```tsx title="src/components/WithMenu.tsx"
 // highlight-next-line
-import { WebviewAction as LineWebviewAction } from '@machinat/line/webview';
+import { WebviewAction as LineWebviewAction } from '@sociably/line/webview';
   //...
   if (platform === 'line') {
     return (
@@ -288,7 +288,7 @@ const WebAppHome = () => {
 
 :::info
 The JSX in the webview is [React.js](https://reactjs.org) element.
-While the _Machinat_ JSX is rendered into chat messages,
+While the _Sociably_ JSX is rendered into chat messages,
 the _React_ JSX is rendered into HTML content.
 :::
 
@@ -311,7 +311,7 @@ On the server side, we have to send the todos data to the webview.
 Edit the `handleWebview` handlers to this:
 
 ```tsx title="src/handlers/handleWebview.tsx"
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@sociably/core/service';
 import TodoController from '../services/TodoController';
 import { WebAppEventContext } from '../types';
 
@@ -449,19 +449,19 @@ Now the todos can be deleted in the webview like this:
 
 ---
 
-Congratulations! 🎉 You have finished the Machinat app tutorial. Now you are able to
+Congratulations! 🎉 You have finished the Sociably app tutorial. Now you are able to
 combine **JSX Chat UI**, **Services**, **Dialog Scripts** and **Webview** to build
 a feature-rich app with amazing experiences in chat.
 
 Here are some resources you can go next:
 
-- Learn more about Machinat at our [Documents](/docs).
-- Check the complete [Todo Example](https://github.com/machinat/todo-example/).
-  You can find some omitted features there, like [paging](https://github.com/machinat/todo-example/blob/main/src/components/ShowTodos.tsx)
-  and [editing todo](https://github.com/machinat/todo-example/blob/main/webview/pages/index.tsx#L46-L65).
+- Learn more about Sociably at our [Documents](/docs).
+- Check the complete [Todo Example](https://github.com/machinat/sociably-todo-example/).
+  You can find some omitted features there, like [paging](https://github.com/machinat/sociably-todo-example/blob/main/src/components/ShowTodos.tsx)
+  and [editing todo](https://github.com/machinat/sociably-todo-example/blob/main/webview/pages/index.tsx#L46-L65).
 - Check more examples:
-  - [Note Example](https://github.com/machinat/note-example) - take notes in the webview.
-  - [Pomodoro Eample](https://github.com/machinat/pomodoro-example) - pomodoro timer in chat.
-  - [4digits Example](https://github.com/machinat/4digits-example) - play guessing 4 digits game in chat.
-- Visit [GitHub discussions](https://github.com/machinat/machinat/discussions) to ask a question.
-- Follow our [Twitter](https://twitter.com/machinatjs) to know any updates.
+  - [Note Example](https://github.com/machinat/sociably-note-example) - take notes in the webview.
+  - [Pomodoro Eample](https://github.com/machinat/sociably-pomodoro-example) - pomodoro timer in chat.
+  - [4digits Example](https://github.com/machinat/sociably-4digits-example) - play guessing 4 digits game in chat.
+- Visit [GitHub discussions](https://github.com/machinat/sociably/discussions) to ask a question.
+- Follow our [Twitter](https://twitter.com/Sociablyjs) to know any updates.

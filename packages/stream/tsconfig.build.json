@@ -6,7 +6,7 @@
     "outDir": "./lib",
     "baseUrl": ".",
     "paths": {
-      "@machinat/core/*": ["../core/lib/*"]
+      "@sociably/core/*": ["../core/lib/*"]
     }
   },
   "references": [

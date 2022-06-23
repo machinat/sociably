@@ -1,40 +1,40 @@
 import RenderingChannelI from '../base/RenderingChannel';
-import MachinatQueue, { JobBatchResponse } from '../queue';
+import SociablyQueue, { JobBatchResponse } from '../queue';
 import { createEmptyScope, ServiceScope } from '../service';
-import type MachinatRenderer from '../renderer';
+import type SociablyRenderer from '../renderer';
 import type {
-  MachinatNode,
+  SociablyNode,
   NativeComponent,
   InitScopeFn,
   DispatchWrapper,
   ThunkEffectFn,
-  MachinatChannel,
+  SociablyChannel,
 } from '../types';
 import DispatchError from './error';
 import {
-  MachinatWorker,
+  SociablyWorker,
   DispatchableSegment,
-  MachinatTask,
+  SociablyTask,
   DispatchResponse,
   DispatchFrame,
 } from './types';
 
 /**
- * MachinatEngine provide helpers to render element tree into tasks to execute,
+ * SociablyEngine provide helpers to render element tree into tasks to execute,
  * it pass tasks through dispatch middlewares, execute tasks and return the
  * results poped through middlewares.
  */
-export default class MachinatEngine<
-  Channel extends MachinatChannel,
+export default class SociablyEngine<
+  Channel extends SociablyChannel,
   SegmentValue,
   Component extends NativeComponent<unknown, any>,
   Job,
   Result
 > {
   platform: string;
-  renderer: MachinatRenderer<SegmentValue, Component>;
-  queue: MachinatQueue<Job, Result>;
-  worker: MachinatWorker<Job, Result>;
+  renderer: SociablyRenderer<SegmentValue, Component>;
+  queue: SociablyQueue<Job, Result>;
+  worker: SociablyWorker<Job, Result>;
 
   private _initScope: InitScopeFn;
   private _dispatcher: (
@@ -44,9 +44,9 @@ export default class MachinatEngine<
 
   constructor(
     platform: string,
-    renderer: MachinatRenderer<SegmentValue, Component>,
-    queue: MachinatQueue<Job, Result>,
-    worker: MachinatWorker<Job, Result>,
+    renderer: SociablyRenderer<SegmentValue, Component>,
+    queue: SociablyQueue<Job, Result>,
+    worker: SociablyWorker<Job, Result>,
     initScope: InitScopeFn = () => createEmptyScope(),
     dispatchWrapper: DispatchWrapper<
       Job,
@@ -72,7 +72,7 @@ export default class MachinatEngine<
   }
 
   /**
-   * render renders machinat element tree into task to be executed. There are
+   * render renders sociably element tree into task to be executed. There are
    * three kinds of task: "dispatch" contains the jobs to be executed on the
    * certain platform, "pause" represent the interval made by <Pause />
    * element which should be waited between "dispatch" tasks, "thunk" holds a
@@ -81,7 +81,7 @@ export default class MachinatEngine<
    */
   async render<Target extends null | Channel>(
     target: Target,
-    node: MachinatNode,
+    node: SociablyNode,
     createJobs: (
       target: Target,
       segments: DispatchableSegment<SegmentValue>[]
@@ -95,7 +95,7 @@ export default class MachinatEngine<
       return null;
     }
 
-    const tasks: MachinatTask<Job>[] = [];
+    const tasks: SociablyTask<Job>[] = [];
     let thunks: ThunkEffectFn[] = [];
     let dispatchables: DispatchableSegment<SegmentValue>[] = [];
 

@@ -1,29 +1,29 @@
-# Machinat Stream
+# Sociably Stream
 
 Reactive programming stream for handling events in back-end.
 
 > ⚠ This package is still on early experimental. There might be breaking changes
-> in the future for supporting cluster. You can check the future road map [here](https://machinat.com/docs/reactive-programming/#designs-and-road-map).
+> in the future for supporting cluster. You can check the future road map [here](https://sociably.js.org/docs/reactive-programming/#designs-and-road-map).
 
 ## Install
 
 ```bash
-npm install @machinat/stream
+npm install @sociably/stream
 # or with yarn
-yarn add @machinat/stream
+yarn add @sociably/stream
 ```
 
 ## Docs
 
-Check the [Reactive Programming](https://machinat.com/docs/reactive-programming)
-document and the [package reference](https://machinat.com/api/modules/stream.html).
+Check the [Reactive Programming](https://sociably.js.org/docs/reactive-programming)
+document and the [package reference](https://sociably.js.org/api/modules/stream.html).
 
 ## Example
 
 ```js
-import { makeContainer, IntentRecognizer } from '@machinat/core';
-import { fromApp } from '@machinat/stream';
-import { map, filter } from '@machinat/stream/operators';
+import { makeContainer, IntentRecognizer } from '@sociably/core';
+import { fromApp } from '@sociably/stream';
+import { map, filter } from '@sociably/stream/operators';
 import app from './app';
 
 const event$ = fromApp(app);

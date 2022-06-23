@@ -10,20 +10,20 @@ import type {
 } from './service';
 import type { DispatchFrame, DispatchResponse } from './engine/types';
 import type {
-  MACHINAT_ELEMENT_TYPE,
-  MACHINAT_NATIVE_TYPE,
-  MACHINAT_FRAGMENT_TYPE,
-  MACHINAT_PAUSE_TYPE,
-  MACHINAT_PROVIDER_TYPE,
-  MACHINAT_THUNK_TYPE,
-  MACHINAT_RAW_TYPE,
+  SOCIABLY_ELEMENT_TYPE,
+  SOCIABLY_NATIVE_TYPE,
+  SOCIABLY_FRAGMENT_TYPE,
+  SOCIABLY_PAUSE_TYPE,
+  SOCIABLY_PROVIDER_TYPE,
+  SOCIABLY_THUNK_TYPE,
+  SOCIABLY_RAW_TYPE,
 } from './symbol';
 
-export type { default as MachinatApp } from './app';
-export type { MachinatProfile } from './base/Profiler';
+export type { default as SociablyApp } from './app';
+export type { SociablyProfile } from './base/Profiler';
 
-export type MachinatRenderable =
-  | MachinatText
+export type SociablyRenderable =
+  | SociablyText
   | GeneralElement
   | PauseElement
   | ProviderElement
@@ -32,33 +32,33 @@ export type MachinatRenderable =
   | FunctionalElement<unknown, any>
   | ContainerElement<unknown, any>;
 
-export type MachinatNode =
-  | MachinatEmpty
-  | MachinatRenderable
+export type SociablyNode =
+  | SociablyEmpty
+  | SociablyRenderable
   | ThunkElement
-  | Array<MachinatNode>;
+  | Array<SociablyNode>;
 
-export type MachinatElementType =
+export type SociablyElementType =
   | string
   | FunctionalComponent<unknown>
   | ContainerComponent<unknown>
   | NativeComponent<unknown, any>
-  | typeof MACHINAT_FRAGMENT_TYPE
-  | typeof MACHINAT_PAUSE_TYPE
-  | typeof MACHINAT_PROVIDER_TYPE
-  | typeof MACHINAT_THUNK_TYPE
-  | typeof MACHINAT_RAW_TYPE;
+  | typeof SOCIABLY_FRAGMENT_TYPE
+  | typeof SOCIABLY_PAUSE_TYPE
+  | typeof SOCIABLY_PROVIDER_TYPE
+  | typeof SOCIABLY_THUNK_TYPE
+  | typeof SOCIABLY_RAW_TYPE;
 
-export type MachinatElement<P, T> = {
-  $$typeof: typeof MACHINAT_ELEMENT_TYPE;
+export type SociablyElement<P, T> = {
+  $$typeof: typeof SOCIABLY_ELEMENT_TYPE;
   type: T;
   props: P;
 };
 
-export type MachinatText = string | number;
-export type MachinatEmpty = null | undefined | boolean;
+export type SociablyText = string | number;
+export type SociablyEmpty = null | undefined | boolean;
 
-export type GeneralElement = MachinatElement<{ [key: string]: any }, string>;
+export type GeneralElement = SociablyElement<{ [key: string]: any }, string>;
 
 type RenderEnv = {
   path: string;
@@ -68,17 +68,17 @@ type RenderEnv = {
 export type FunctionalComponent<Props> = (
   props: Props,
   circs: RenderEnv
-) => MachinatElement<unknown, unknown>;
+) => SociablyElement<unknown, unknown>;
 
 export type FunctionalElement<
   Props,
   Component extends FunctionalComponent<Props>
-> = MachinatElement<Props, Component>;
+> = SociablyElement<Props, Component>;
 
 type ContainerComponentFn<Props> = (
   props: Props,
   circs: RenderEnv
-) => MachinatNode | Promise<MachinatNode>;
+) => SociablyNode | Promise<SociablyNode>;
 
 export type ContainerComponent<Props> = ServiceContainer<
   ContainerComponentFn<Props>,
@@ -88,7 +88,7 @@ export type ContainerComponent<Props> = ServiceContainer<
 export type ContainerElement<
   Props,
   Component extends ContainerComponent<Props>
-> = MachinatElement<Props, Component>;
+> = SociablyElement<Props, Component>;
 
 export type NativeComponent<
   Props,
@@ -99,7 +99,7 @@ export type NativeComponent<
     path: string,
     render: InnerRenderFn
   ): null | Segment[] | Promise<null | Segment[]>;
-  $$typeof: typeof MACHINAT_NATIVE_TYPE;
+  $$typeof: typeof SOCIABLY_NATIVE_TYPE;
   $$platform: string;
   // HACK: make ts accept it as class component
   new (): NativeComponent<Props, Segment>;
@@ -108,59 +108,59 @@ export type NativeComponent<
 export type NativeElement<
   Props,
   Component extends NativeComponent<Props, any>
-> = MachinatElement<Props, Component>;
+> = SociablyElement<Props, Component>;
 
-export type FragmentProps = { children: MachinatNode };
-export type FragmentElement = MachinatElement<
+export type FragmentProps = { children: SociablyNode };
+export type FragmentElement = SociablyElement<
   FragmentProps,
-  typeof MACHINAT_FRAGMENT_TYPE
+  typeof SOCIABLY_FRAGMENT_TYPE
 >;
 
 export type ProviderProps = {
   provide: Interfaceable<unknown>;
   value: unknown;
-  children: MachinatNode;
+  children: SociablyNode;
 };
 
-export type ProviderElement = MachinatElement<
+export type ProviderElement = SociablyElement<
   ProviderProps,
-  typeof MACHINAT_PROVIDER_TYPE
+  typeof SOCIABLY_PROVIDER_TYPE
 >;
 
 export type PauseDelayFn = () => Promise<unknown>;
 export type PauseProps = { time?: number; delay?: PauseDelayFn };
-export type PauseElement = MachinatElement<
+export type PauseElement = SociablyElement<
   PauseProps,
-  typeof MACHINAT_PAUSE_TYPE
+  typeof SOCIABLY_PAUSE_TYPE
 >;
 
 export type ThunkEffectFn = () => unknown | Promise<unknown>;
 export type ThunkProps = { effect: ThunkEffectFn };
-export type ThunkElement = MachinatElement<
+export type ThunkElement = SociablyElement<
   ThunkProps,
-  typeof MACHINAT_THUNK_TYPE
+  typeof SOCIABLY_THUNK_TYPE
 >;
 
 export type RawProps = { value: unknown };
-export type RawElement = MachinatElement<RawProps, typeof MACHINAT_RAW_TYPE>;
+export type RawElement = SociablyElement<RawProps, typeof SOCIABLY_RAW_TYPE>;
 
-export interface MachinatChannel {
+export interface SociablyChannel {
   readonly platform: string;
   readonly uid: string;
 }
 
-export interface MachinatUser {
+export interface SociablyUser {
   readonly platform: string;
   readonly uid: string;
 }
 
-export interface MachinatEvent<Payload> {
+export interface SociablyEvent<Payload> {
   readonly platform: string;
   readonly category: string;
   readonly type: string;
   readonly payload: Payload;
-  readonly channel: null | MachinatChannel;
-  readonly user: null | MachinatUser;
+  readonly channel: null | SociablyChannel;
+  readonly user: null | SociablyUser;
 }
 
 export interface TextMessageMixin {
@@ -188,27 +188,27 @@ export interface PostbackMixin {
   readonly data: string;
 }
 
-export interface MachinatMetadata {
+export interface SociablyMetadata {
   source: string;
 }
 
-export interface MachinatBot<Channel extends MachinatChannel, Job, Result> {
+export interface SociablyBot<Channel extends SociablyChannel, Job, Result> {
   render(
     channel: Channel,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | DispatchResponse<Job, Result>>;
 }
 
 export type EventContext<
-  Event extends MachinatEvent<unknown>,
-  Metadata extends MachinatMetadata,
-  Bot extends MachinatBot<MachinatChannel, unknown, unknown>
+  Event extends SociablyEvent<unknown>,
+  Metadata extends SociablyMetadata,
+  Bot extends SociablyBot<SociablyChannel, unknown, unknown>
 > = {
   platform: string;
   event: Event;
   metadata: Metadata;
   bot: Bot;
-  reply(message: MachinatNode): ReturnType<Bot['render']>;
+  reply(message: SociablyNode): ReturnType<Bot['render']>;
 };
 
 export type AnyEventContext = EventContext<any, any, any>;
@@ -225,7 +225,7 @@ export type EventMiddleware<
 
 export type DispatchMiddleware<
   Job,
-  Frame extends DispatchFrame<MachinatChannel, Job>,
+  Frame extends DispatchFrame<SociablyChannel, Job>,
   Result
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
@@ -235,11 +235,11 @@ export type ServiceModule = {
   stopHook?: null | ServiceContainer<Promise<void>, unknown[]>;
 };
 
-export type MachinatPlatform<
+export type SociablyPlatform<
   Context extends AnyEventContext,
   EventResp,
   Job,
-  Frame extends DispatchFrame<MachinatChannel, Job>,
+  Frame extends DispatchFrame<SociablyChannel, Job>,
   Result
 > = {
   name: string;
@@ -255,7 +255,7 @@ export type MachinatPlatform<
   >[];
 };
 
-export type AnyMachinatPlatform = MachinatPlatform<
+export type AnySociablyPlatform = SociablyPlatform<
   any,
   unknown,
   unknown,
@@ -263,14 +263,14 @@ export type AnyMachinatPlatform = MachinatPlatform<
   unknown
 >;
 
-export type AppConfig<Platform extends AnyMachinatPlatform> = {
+export type AppConfig<Platform extends AnySociablyPlatform> = {
   platforms?: Platform[];
   modules?: ServiceModule[];
   services?: ServiceProvision<unknown>[];
 };
 
-export type EventContextOfPlatform<Platform extends AnyMachinatPlatform> =
-  Platform extends MachinatPlatform<
+export type EventContextOfPlatform<Platform extends AnySociablyPlatform> =
+  Platform extends SociablyPlatform<
     infer Context,
     unknown,
     unknown,
@@ -295,7 +295,7 @@ export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
 
 export type DispatchFn<
   Job,
-  Frame extends DispatchFrame<MachinatChannel, Job>,
+  Frame extends DispatchFrame<SociablyChannel, Job>,
   Result
 > = (
   frame: Frame,
@@ -304,7 +304,7 @@ export type DispatchFn<
 
 export type DispatchWrapper<
   Job,
-  Frame extends DispatchFrame<MachinatChannel, Job>,
+  Frame extends DispatchFrame<SociablyChannel, Job>,
   Result
 > = (
   dispatch: (frame: Frame) => Promise<DispatchResponse<Job, Result>>
@@ -319,7 +319,7 @@ export type PlatformUtilities<
   Context extends AnyEventContext,
   EventResponse,
   Job,
-  Frame extends DispatchFrame<MachinatChannel, Job>,
+  Frame extends DispatchFrame<SociablyChannel, Job>,
   Result
 > = {
   popEventWrapper: PopEventWrapper<Context, EventResponse>;

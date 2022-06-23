@@ -1,4 +1,4 @@
-import Machinat from '../..';
+import Sociably from '../..';
 import traverse from '../traverse';
 
 it('traverse through node tree and pass all non empty element to callback', () => {

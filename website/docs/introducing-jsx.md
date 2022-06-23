@@ -2,14 +2,14 @@
 title: Introducing JSX
 ---
 
-In Machinat, we use the _JSX_ API to build _Chat UI_ in a more expressive way.
+In Sociably, we use the _JSX_ API to build _Chat UI_ in a more expressive way.
 
 ```js
 app.onEvent(async ({ reply }) => {
   await reply(
     <>
       <p>Hello World!</p>
-      <img src="https://machinat.io/greeting.jpg" />
+      <img src="https://sociably.io/greeting.jpg" />
     </>
   );
 });
@@ -22,7 +22,7 @@ For example, `<p>...</p>` represents a message bubble in the chatroom.
 ## JSX Syntax
 
 This section is WIP. You can check the introduction in [React document](https://reactjs.org/docs/introducing-jsx.html#embedding-expressions-in-jsx)
-since Machinat shares the same JSX syntax with React.
+since Sociably shares the same JSX syntax with React.
 
 ## Why JSX?
 
@@ -41,7 +41,7 @@ They look like a _view_ in the chatroom:
 ![Example Message as view](./assets/example-message-as-view.png)
 
 Such an expression is the basic unit to advance a conversation.
-In Machinat, we build an _expression view_ like:
+In Sociably, we build an _expression view_ like:
 
 ```js
 await reply(
@@ -97,12 +97,12 @@ Like this:
 await reply(
   <>
     <Messenger.MarkSeen />
-    <Machinat.Pause time={1000} />
+    <Sociably.Pause time={1000} />
 
     <p>Hakuna Matata!</p>
     <Messenger.TypingOn />
 
-    <Machinat.Pause time={2000} />
+    <Sociably.Pause time={2000} />
     <p>It means no worry!</p>
   </>
 );

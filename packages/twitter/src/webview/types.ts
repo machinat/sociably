@@ -1,4 +1,4 @@
-import type { AuthContextBase } from '@machinat/auth';
+import type { AuthContextBase } from '@sociably/auth';
 import type TwitterChat from '../Chat';
 import type TwitterUser from '../User';
 

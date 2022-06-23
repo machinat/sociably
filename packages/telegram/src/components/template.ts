@@ -1,6 +1,6 @@
-import type { MachinatNode } from '@machinat/core';
-import { formatNode } from '@machinat/core/utils';
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
+import type { SociablyNode } from '@sociably/core';
+import { formatNode } from '@sociably/core/utils';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -14,7 +14,7 @@ import { MessageProps } from './types';
  */
 export interface TextProps extends MessageProps {
   /** Texual content of the message to be sent, 1-4096 characters after entities parsing */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
@@ -137,7 +137,7 @@ export interface PollProps extends MessageProps {
   /** 0-based identifier of the correct answer option, required for polls in quiz mode */
   correctOptionId?: number;
   /** Textual node that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing */
-  explanation?: MachinatNode;
+  explanation?: SociablyNode;
   /** Mode for parsing entities in the explanation. */
   explanationParseMode?: TelegramParseMode;
   /** Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with closeDate. */

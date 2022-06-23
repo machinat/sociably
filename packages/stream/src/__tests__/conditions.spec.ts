@@ -1,4 +1,4 @@
-import { makeContainer, createEmptyScope } from '@machinat/core/service';
+import { makeContainer, createEmptyScope } from '@sociably/core/service';
 import moxy from '@moxyjs/moxy';
 import Stream from '../stream';
 import conditions from '../conditions';

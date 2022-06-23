@@ -1,6 +1,6 @@
 import invariant from 'invariant';
-import { filterSymbolKeys, formatNode } from '@machinat/core/utils';
-import type { DispatchableSegment } from '@machinat/core/engine';
+import { filterSymbolKeys, formatNode } from '@sociably/core/utils';
+import type { DispatchableSegment } from '@sociably/core/engine';
 import type {
   MessengerSegmentValue,
   MessengerJob,

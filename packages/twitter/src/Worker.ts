@@ -4,8 +4,8 @@ import fetch, { Response } from 'node-fetch';
 import FormData from 'form-data';
 import _BigIntJSON from 'json-bigint';
 import { nanoid } from 'nanoid';
-import type { MachinatWorker } from '@machinat/core/engine';
-import Queue from '@machinat/core/queue';
+import type { SociablyWorker } from '@sociably/core/engine';
+import Queue from '@sociably/core/queue';
 import TwitterApiError from './Error';
 import type {
   TwitterChannel,
@@ -55,7 +55,7 @@ const getResponseBody = async (response: Response) => {
 };
 
 export default class TwitterWorker
-  implements MachinatWorker<TwitterJob, TwitterApiResult>
+  implements SociablyWorker<TwitterJob, TwitterApiResult>
 {
   options: TwitterWorkerOptions;
   connectionCount: number;

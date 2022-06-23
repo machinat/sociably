@@ -7,7 +7,7 @@ import Connector from '../Connector';
 const Socket = _Socket as Moxy<typeof _Socket>;
 const Ws = _Ws as Moxy<typeof _Ws>;
 
-const location = url.parse('https://machinat.io/hello');
+const location = url.parse('https://sociably.io/hello');
 (global as any).window = { location };
 
 jest.mock('../../socket', () =>
@@ -67,8 +67,8 @@ test('.connect()', async () => {
 
   expect(Ws.mock).toHaveBeenCalledTimes(1);
   expect(Ws.mock).toHaveBeenCalledWith(
-    'wss://machinat.io/websocket',
-    'machinat-websocket-v0'
+    'wss://sociably.io/websocket',
+    'sociably-websocket-v0'
   );
 
   expect(Socket.mock).toHaveBeenCalledTimes(1);
@@ -77,7 +77,7 @@ test('.connect()', async () => {
 
 test('use ws: protocol', async () => {
   const connector = new Connector(
-    'ws://machinat.io/websocket',
+    'ws://sociably.io/websocket',
     login,
     marshaler
   );
@@ -86,8 +86,8 @@ test('use ws: protocol', async () => {
 
   expect(Ws.mock).toHaveBeenCalledTimes(1);
   expect(Ws.mock).toHaveBeenCalledWith(
-    'ws://machinat.io/websocket',
-    'machinat-websocket-v0'
+    'ws://sociably.io/websocket',
+    'sociably-websocket-v0'
   );
 
   expect(Socket.mock).toHaveBeenCalledTimes(1);
@@ -227,7 +227,7 @@ it('send events after connected', async () => {
 });
 
 it('queue events and dispatch them after connected', async () => {
-  const connector = new Connector('wss://machinat.io', login, marshaler);
+  const connector = new Connector('wss://sociably.io', login, marshaler);
   connector.connect();
   await nextTick();
 

@@ -26,7 +26,7 @@ Array [
     "goto": "childPrompt",
     "key": "call_1",
     "script": Object {
-      "$$typeof": Symbol(lib.script.machinat),
+      "$$typeof": Symbol(lib.script.sociably),
       "Start": [Function],
       "commands": Array [
         Object {

@@ -1,20 +1,20 @@
 # Next Module
 
 This package is an underlying module of webview platform for serving a [Next.js](https://nextjs.org)
-web front-end. You might want to use [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview)
+web front-end. You might want to use [`@sociably/webview`](https://github.com/machinat/sociably/tree/master/packages/webview)
 unless you want to serve your own web service.
 
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/next
+npm install @sociably/core @sociably/http @sociably/next
 # or with yarn
-yarn add @machinat/core @machinat/http @machinat/next
+yarn add @sociably/core @sociably/http @sociably/next
 ```
 
 ## Docs
 
-Check the [package reference](https://machinat.com/api/modules/next.html).
+Check the [package reference](https://sociably.js.org/api/modules/next.html).
 
 ## Setup
 
@@ -22,14 +22,14 @@ Assume you have the Next.js project at `../webview`, set up the module like
 this:
 
 ```js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Next from '@machinat/next';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Next from '@sociably/next';
 import nextConfigs from '../webview/next.config.js'
 
 const DEV = process.env.NODE_ENV !== 'production';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
     Next.initModule({

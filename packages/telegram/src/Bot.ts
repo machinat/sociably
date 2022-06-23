@@ -1,16 +1,16 @@
 import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type {
-  MachinatNode,
-  MachinatBot,
+  SociablyNode,
+  SociablyBot,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import Engine, { DispatchError } from '@machinat/core/engine';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider } from '@machinat/core/service';
+} from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
+import Queue from '@sociably/core/queue';
+import Engine, { DispatchError } from '@sociably/core/engine';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import { makeClassProvider } from '@sociably/core/service';
 
 import { createChatJob, createNonChatJobs } from './job';
 import generalElementDelegate from './components/general';
@@ -45,7 +45,7 @@ type TelegramBotOptions = {
  * @category Provider
  */
 export class TelegramBot
-  implements MachinatBot<TelegramChat, TelegramJob, TelegramResult>
+  implements SociablyBot<TelegramChat, TelegramJob, TelegramResult>
 {
   token: string;
   id: number;
@@ -104,7 +104,7 @@ export class TelegramBot
    */
   render(
     target: null | number | string | TelegramChat,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | TelegramDispatchResponse> {
     if (!target) {
       return this.engine.render(null, message, createNonChatJobs);

@@ -1,4 +1,4 @@
-import type { ContextDetails } from '@machinat/auth';
+import type { ContextDetails } from '@sociably/auth';
 import TwitterUser from '../User';
 import TwitterChat from '../Chat';
 import type { TwitterAuthContext, TwitterAuthData } from './types';

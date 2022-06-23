@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import Queue from '@machinat/core/queue';
+import Queue from '@sociably/core/queue';
 import type { WebSocketServer } from '../server';
 import Worker from '../worker';
 import type { WebSocketJob, WebSocketResult } from '../types';

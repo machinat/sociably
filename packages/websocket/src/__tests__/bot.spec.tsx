@@ -1,8 +1,8 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import Queue from '@machinat/core/queue';
-import _Engine from '@machinat/core/engine';
-import _Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import Queue from '@sociably/core/queue';
+import _Engine from '@sociably/core/engine';
+import _Renderer from '@sociably/core/renderer';
 import _Worker from '../worker';
 import {
   WebSocketConnection,
@@ -17,16 +17,16 @@ const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Worker = _Worker as Moxy<typeof _Worker>;
 
-jest.mock('@machinat/core/engine', () =>
+jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/engine'))
+    .default(jest.requireActual('@sociably/core/engine'))
 );
 
-jest.mock('@machinat/core/renderer', () =>
+jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/renderer'))
+    .default(jest.requireActual('@sociably/core/renderer'))
 );
 
 jest.mock('../worker', () =>

@@ -2,18 +2,18 @@ import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
-import { makeContainer } from '@machinat/core';${when(
+import { makeContainer } from '@sociably/core';${when(
   platforms.includes('messenger')
 )`
-import Messenger from '@machinat/messenger';`}${when(
+import Messenger from '@sociably/messenger';`}${when(
   platforms.includes('twitter')
 )`
-import Twitter from '@machinat/twitter';
-import TwitterAssetManager from '@machinat/twitter/asset';`}${when(
+import Twitter from '@sociably/twitter';
+import TwitterAssetManager from '@sociably/twitter/asset';`}${when(
   platforms.includes('telegram')
 )`
-import Telegram from '@machinat/telegram';`}${when(platforms.includes('line'))`
-import Line from '@machinat/line';`}
+import Telegram from '@sociably/telegram';`}${when(platforms.includes('line'))`
+import Line from '@sociably/line';`}
 
 const {
   DOMAIN,${when(platforms.includes('messenger'))`

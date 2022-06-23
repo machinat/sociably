@@ -1,8 +1,8 @@
 import { parse as parseUrl } from 'url';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import { BaseMarshaler as _BaseMarshaler } from '@machinat/core/base/Marshaler';
-import _Connector from '@machinat/websocket/client/Connector';
-import _AuthClient from '@machinat/auth/client';
+import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
+import _Connector from '@sociably/websocket/client/Connector';
+import _AuthClient from '@sociably/auth/client';
 import { WebviewConnection } from '../../channel';
 import { AnyClientAuthenticator } from '../../types';
 import Client from '../client';
@@ -11,7 +11,7 @@ const Connector = _Connector as Moxy<typeof _Connector>;
 const AuthClient = _AuthClient as Moxy<typeof _AuthClient>;
 const BaseMarshaler = _BaseMarshaler as Moxy<typeof _BaseMarshaler>;
 
-jest.mock('@machinat/websocket/client/Connector', () => {
+jest.mock('@sociably/websocket/client/Connector', () => {
   const _moxy = jest.requireActual('@moxyjs/moxy').default;
   const _EventEmitter = jest.requireActual('events').EventEmitter;
   return {
@@ -29,7 +29,7 @@ jest.mock('@machinat/websocket/client/Connector', () => {
   };
 });
 
-jest.mock('@machinat/auth/client', () => {
+jest.mock('@sociably/auth/client', () => {
   const _moxy = jest.requireActual('@moxyjs/moxy').default;
   return {
     __esModule: true,
@@ -45,13 +45,13 @@ jest.mock('@machinat/auth/client', () => {
   };
 });
 
-jest.mock('@machinat/core/base/Marshaler', () =>
+jest.mock('@sociably/core/base/Marshaler', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/base/Marshaler'))
+    .default(jest.requireActual('@sociably/core/base/Marshaler'))
 );
 
-const location = moxy(parseUrl('https://machinat.com/hello'));
+const location = moxy(parseUrl('https://sociably.io/hello'));
 (global as any).window = { location };
 
 const testAuthenticator = moxy<AnyClientAuthenticator>({
@@ -172,12 +172,12 @@ test('websocket url', async () => {
   (() =>
     new Client({
       authPlatforms: [testAuthenticator],
-      webSocketUrl: 'ws://machinat.io/foo_socket',
+      webSocketUrl: 'ws://sociably.io/foo_socket',
     }))();
 
   expect(Connector.mock).toHaveBeenCalledTimes(1);
   expect(Connector.mock).toHaveBeenCalledWith(
-    'ws://machinat.io/foo_socket',
+    'ws://sociably.io/foo_socket',
     expect.any(Function),
     expect.any(BaseMarshaler)
   );

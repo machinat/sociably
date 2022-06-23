@@ -1,12 +1,12 @@
 import invariant from 'invariant';
-import type { MachinatNode } from '@machinat/core';
+import type { SociablyNode } from '@sociably/core';
 import {
   makeUnitSegment,
   makePartSegment,
   UnitSegment,
   PartSegment,
-} from '@machinat/core/renderer';
-import { formatNode } from '@machinat/core/utils';
+} from '@sociably/core/renderer';
+import { formatNode } from '@sociably/core/utils';
 import { makeLineComponent } from '../utils';
 import type { LineComponent, FlexSegmentValue } from '../types';
 
@@ -20,7 +20,7 @@ type FlexGravity = 'top' | 'bottom' | 'center';
  */
 export type FlexButtonProps = {
   /** An {@link Action} element performed when this button is tapped. */
-  action?: MachinatNode;
+  action?: SociablyNode;
   /**
    * The ratio of the width or height of this component within the parent box.
    */
@@ -260,7 +260,7 @@ export type FlexImageProps = {
   /** Background color of the image. Use a hexadecimal color code. */
   backgroundColor?: string;
   /** An {@link Action} element performed when this image is tapped. */
-  action?: MachinatNode;
+  action?: SociablyNode;
 };
 
 /**
@@ -380,7 +380,7 @@ export const FlexSpacer: LineComponent<
  */
 export type FlexTextProps = {
   /** Texual nodes and {@link FlexSpan} elements as the content text. */
-  children: MachinatNode;
+  children: SociablyNode;
   /**
    * The ratio of the width or height of this component within the parent box.
    */
@@ -425,7 +425,7 @@ export type FlexTextProps = {
   /** Font color. Use a hexadecimal color code. */
   color?: string;
   /** An {@link Action} element performed when this image is tapped. */
-  action?: MachinatNode;
+  action?: SociablyNode;
   /** Style of the text. */
   style?: 'normal' | 'italic';
   /** Decoration of the text. */
@@ -524,7 +524,7 @@ export const FlexText: LineComponent<
  */
 export type FlexSpanProps = {
   /** Content textual nodes. */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Font size. */
   size?: FlexFullSize;
   /** Font weight. The default value is regular. */
@@ -571,7 +571,7 @@ export const FlexSpan: LineComponent<
  */
 export type FlexBoxProps = {
   /** Content nodes. */
-  children: MachinatNode;
+  children: SociablyNode;
   /** The layout style of components in this box. */
   layout?: 'horizontal' | 'vertical' | 'baseline';
   /**
@@ -622,7 +622,7 @@ export type FlexBoxProps = {
   /** The right offset. */
   offsetEnd?: number | string | 'none' | FlexSize;
   /** An {@link Action} element performed when this image is tapped. */
-  action?: MachinatNode;
+  action?: SociablyNode;
   /**
    * Background color of the block. In addition to the RGB color, an alpha
    * channel (transparency) can also be set. Use a hexadecimal color code.
@@ -732,7 +732,7 @@ type BlockStyle = {
 
 type BubbleBlock = {
   name: string;
-  content: MachinatNode;
+  content: SociablyNode;
   style?: BlockStyle;
 };
 
@@ -741,7 +741,7 @@ type BubbleBlock = {
  */
 export type FlexBlockProps = {
   /** Exactly one content node of the block. */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Background color of the block. Use a hexadecimal color code. */
   backgroundColor?: string;
   /** `true` to place a separator above the block. Default to `false`. */
@@ -833,7 +833,7 @@ export type FlexBubbleContainerProps = {
    * {@link FlexBody} and {@flex FlexFooter}. Each kind of bubble part should
    * present no more than once.
    */
-  children: MachinatNode;
+  children: SociablyNode;
   /**
    * Text directionality and the direction of placement of components in
    * horizontal boxes.
@@ -842,7 +842,7 @@ export type FlexBubbleContainerProps = {
   /** Alias of `direction="rtl"` when set to `true`. */
   rightToLeft?: boolean;
   /** An {@link Action} element performed when this image is tapped. */
-  action?: MachinatNode;
+  action?: SociablyNode;
 };
 
 /**
@@ -891,7 +891,7 @@ export const FlexBubbleContainer: LineComponent<
  */
 export type FlexCarouselContainerProps = {
   /** {@link FlexBubbleContainer} elements in the carousel. Max: 10 bubbles */
-  children: MachinatNode;
+  children: SociablyNode;
 };
 
 /**
@@ -921,7 +921,7 @@ export const FlexCarouselContainer: LineComponent<
  */
 export type FlexMessageProps = {
   /** {@link FlexBubbleContainer} or {@link FlexCarouselContainer} element. */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Alternative text. Max character limit: 400 */
   altText: string;
 };

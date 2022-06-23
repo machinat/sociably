@@ -1,14 +1,14 @@
 {
-  "name": "@machinat/next",
+  "name": "@sociably/next",
   "version": "0.6.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/machinat/machinat.git",
+    "url": "https://github.com/machinat/sociably.git",
     "directory": "packages/next"
   },
-  "homepage": "https://github.com/machinat/machinat#readme",
-  "bugs": "https://github.com/machinat/machinat/issues",
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js"
@@ -28,8 +28,8 @@
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.6.0",
-    "@machinat/http": "^0.6.0",
+    "@sociably/core": "^0.6.0",
+    "@sociably/http": "^0.6.0",
     "next": "^12.0.9",
     "react": "^17.0.2 || ^18.0.0-0",
     "react-dom": "^17.0.2 || ^18.0.0-0"

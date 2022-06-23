@@ -1,25 +1,25 @@
 import type {
-  MachinatNode,
-  MachinatBot,
-  MachinatUser,
+  SociablyNode,
+  SociablyBot,
+  SociablyUser,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core';
-import Engine from '@machinat/core/engine';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import { makeClassProvider } from '@machinat/core/service';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import type { DispatchResponse } from '@machinat/core/engine';
-import type { AnyServerAuthenticator } from '@machinat/auth';
-import WebSocket, { WebSocketWorker } from '@machinat/websocket';
-import { createJobs } from '@machinat/websocket/utils';
+} from '@sociably/core';
+import Engine from '@sociably/core/engine';
+import Renderer from '@sociably/core/renderer';
+import Queue from '@sociably/core/queue';
+import { makeClassProvider } from '@sociably/core/service';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import type { DispatchResponse } from '@sociably/core/engine';
+import type { AnyServerAuthenticator } from '@sociably/auth';
+import WebSocket, { WebSocketWorker } from '@sociably/websocket';
+import { createJobs } from '@sociably/websocket/utils';
 import type {
   EventInput,
   WebSocketJob,
   WebSocketResult,
   ConnIdentifier,
-} from '@machinat/websocket';
+} from '@sociably/websocket';
 import { WEBVIEW } from './constant';
 import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
 import {
@@ -49,7 +49,7 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
  * @category Provider
  */
 export class WebviewBot
-  implements MachinatBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult>
+  implements SociablyBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult>
 {
   private _server: WebviewSocketServer<AnyServerAuthenticator>;
   engine: Engine<
@@ -104,7 +104,7 @@ export class WebviewBot
 
   render(
     channel: WebviewDispatchChannel,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | WebSocketDispatchResponse> {
     return this.engine.render<WebviewDispatchChannel>(
       channel,
@@ -127,7 +127,7 @@ export class WebviewBot
   }
 
   async sendUser(
-    user: MachinatUser,
+    user: SociablyUser,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
     const channel = new WebviewUserChannel(user.uid);

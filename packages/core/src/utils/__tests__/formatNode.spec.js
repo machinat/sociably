@@ -1,8 +1,8 @@
-import Machinat from '../..';
+import Sociably from '../..';
 import formatNode from '../formatNode';
 import makeInterface from '../../service/decorators/makeInterface';
 
-const { Pause, Fragment, Provider, Raw, Thunk } = Machinat;
+const { Pause, Fragment, Provider, Raw, Thunk } = Sociably;
 
 const MyComp = () => {};
 const Sym = Symbol('_symbol_component_');

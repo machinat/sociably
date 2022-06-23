@@ -3,7 +3,7 @@ title: Rendering Messages
 ---
 
 The expression in JSX will be rendered into the messages to be sent.
-Once you describe the JSX view, Machinat would handle all the works behind.
+Once you describe the JSX view, Sociably would handle all the works behind.
 
 Typically there are two ways to render the messages: `reply` and `bot.render`.
 
@@ -124,7 +124,7 @@ These platform-specific features are available as **Native Components**.
 You can require them from platform packages and use them like:
 
 ```js
-import * as Messenger from '@machinat/messenger/components'
+import * as Messenger from '@sociably/messenger/components'
 
 await bot.render(
   channel,
@@ -160,18 +160,18 @@ app.onEvent(async ({ platform, reply }) => {
 
 ### Pause
 
-`Machinat.Pause` adds a pause between messages.
-For example, `<Machinat.Pause time={1000}/>` element delays all the messages after it by 1000 ms.
+`Sociably.Pause` adds a pause between messages.
+For example, `<Sociably.Pause time={1000}/>` element delays all the messages after it by 1000 ms.
 
 ```js
 await bot.render(channel,
   <>
     1
-    <Machinat.Pause time={1000} />
+    <Sociably.Pause time={1000} />
     2
-    <Machinat.Pause time={1000} />
+    <Sociably.Pause time={1000} />
     3
-    <Machinat.Pause time={1000} />
+    <Sociably.Pause time={1000} />
     Red light!
   </>
 );
@@ -189,7 +189,7 @@ async function waitForSomething() {
 bot.render(channel,
   <>
     hello
-    <Machinat.Pause delay={waitForSomething} />
+    <Sociably.Pause delay={waitForSomething} />
     world
   </>
 );

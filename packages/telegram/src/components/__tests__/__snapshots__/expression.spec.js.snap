@@ -4,7 +4,7 @@ exports[`add replyMarkup to the last supported message 1`] = `
 Array [
   Object {
     "node": <Photo
-      url="http://machinat.com/foo.jpg"
+      url="http://sociably.io/foo.jpg"
     />,
     "path": "$#Expression.children:0",
     "type": "unit",
@@ -14,7 +14,7 @@ Array [
         "caption": undefined,
         "disable_notification": true,
         "parse_mode": "HTML",
-        "photo": "http://machinat.com/foo.jpg",
+        "photo": "http://sociably.io/foo.jpg",
         "reply_markup": Object {
           "force_reply": true,
           "selective": undefined,
@@ -50,7 +50,7 @@ Array [
       foo
       <Photo
         replyMarkup={<ForceReply />}
-        url="http://machinat.com/foo.jpg"
+        url="http://sociably.io/foo.jpg"
       />
     </Expression>,
     "path": "$",
@@ -71,7 +71,7 @@ Array [
   Object {
     "node": <Photo
       replyMarkup={<ForceReply />}
-      url="http://machinat.com/foo.jpg"
+      url="http://sociably.io/foo.jpg"
     />,
     "path": "$#Expression.children:1",
     "type": "unit",
@@ -81,7 +81,7 @@ Array [
         "caption": undefined,
         "disable_notification": true,
         "parse_mode": "HTML",
-        "photo": "http://machinat.com/foo.jpg",
+        "photo": "http://sociably.io/foo.jpg",
         "reply_markup": Object {
           "force_reply": true,
           "selective": undefined,
@@ -96,11 +96,13 @@ Array [
 
 exports[`hoist text value into message object 1`] = `undefined`;
 
-exports[`respect the original disableNotification setting set on the messgage 1`] = `
+exports[
+  `respect the original disableNotification setting set on the messgage 1`
+] = `
 Array [
   Object {
     "node": <Photo
-      url="http://machinat.com/bar.jpg"
+      url="http://sociably.io/bar.jpg"
     />,
     "path": "$#Expression.children:0",
     "type": "unit",
@@ -110,7 +112,7 @@ Array [
         "caption": undefined,
         "disable_notification": true,
         "parse_mode": "HTML",
-        "photo": "http://machinat.com/bar.jpg",
+        "photo": "http://sociably.io/bar.jpg",
         "reply_markup": undefined,
         "reply_to_message_id": undefined,
       },
@@ -120,7 +122,7 @@ Array [
   Object {
     "node": <Photo
       disableNotification={false}
-      url="http://machinat.com/baz.jpg"
+      url="http://sociably.io/baz.jpg"
     />,
     "path": "$#Expression.children:1",
     "type": "unit",
@@ -130,7 +132,7 @@ Array [
         "caption": undefined,
         "disable_notification": false,
         "parse_mode": "HTML",
-        "photo": "http://machinat.com/baz.jpg",
+        "photo": "http://sociably.io/baz.jpg",
         "reply_markup": undefined,
         "reply_to_message_id": undefined,
       },

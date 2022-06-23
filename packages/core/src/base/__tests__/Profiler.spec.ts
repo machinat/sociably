@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { BasicProfiler, MachinatProfile } from '../Profiler';
+import { BasicProfiler, SociablyProfile } from '../Profiler';
 
 const fooProfiler = moxy({
   getUserProfile: async () =>
@@ -7,7 +7,7 @@ const fooProfiler = moxy({
       platform: 'test',
       name: 'FOO',
       avatarUrl: 'http://foo...',
-    } as MachinatProfile),
+    } as SociablyProfile),
 });
 const barProfiler = moxy({
   getUserProfile: async () =>
@@ -15,7 +15,7 @@ const barProfiler = moxy({
       platform: 'test',
       name: 'BAR',
       avatarUrl: 'http://bar...',
-    } as MachinatProfile),
+    } as SociablyProfile),
 });
 
 it('proxy #getUserProfile() call to the profiler corresponded to the user platform', async () => {

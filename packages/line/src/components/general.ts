@@ -2,8 +2,8 @@ import {
   makeUnitSegment,
   makeTextSegment,
   makeBreakSegment,
-} from '@machinat/core/renderer';
-import { formatNode } from '@machinat/core/utils';
+} from '@sociably/core/renderer';
+import { formatNode } from '@sociably/core/utils';
 
 const p = async (node, path, render) => {
   const contentSegments = await render(node.props.children, '.children');

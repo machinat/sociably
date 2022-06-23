@@ -1,5 +1,5 @@
-import Machinat from '@machinat/core';
-import { MACHINAT_NATIVE_TYPE } from '../../symbol';
+import Sociably from '@sociably/core';
+import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
 import {
   makeNativeComponent,
   makeTextSegment,
@@ -17,7 +17,7 @@ describe('asNativeConponent(platform)(componentFn)', () => {
 
     expect(Component).toBe(_component);
     expect(Component.$$platform).toBe('foo');
-    expect(Component.$$typeof).toBe(MACHINAT_NATIVE_TYPE);
+    expect(Component.$$typeof).toBe(SOCIABLY_NATIVE_TYPE);
   });
 });
 

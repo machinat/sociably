@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { makeClassProvider } from '@machinat/core/service';
+import { makeClassProvider } from '@sociably/core/service';
 import { BrokerI } from '../interface';
 import type { ConnIdentifier } from '../types';
 

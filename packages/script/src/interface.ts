@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { makeInterface } from '@machinat/core/service';
+import { makeInterface } from '@sociably/core/service';
 import type { AnyScriptLibrary } from './types';
 
 /**

@@ -1,8 +1,8 @@
 import { parse as parseUrl } from 'url';
 import { posix as posixPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@machinat/core/service';
-import { HttpRequestInfo, RoutingInfo } from '@machinat/http';
+import { makeClassProvider } from '@sociably/core/service';
+import { HttpRequestInfo, RoutingInfo } from '@sociably/http';
 import invariant from 'invariant';
 import {
   verify as verifyJwt,

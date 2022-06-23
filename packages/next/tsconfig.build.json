@@ -7,8 +7,8 @@
     "lib": ["DOM", "es2015"],
     "baseUrl": ".",
     "paths": {
-      "@machinat/core/*": ["../core/lib/*"],
-      "@machinat/http/*": ["../http/lib/*"]
+      "@sociably/core/*": ["../core/lib/*"],
+      "@sociably/http/*": ["../http/lib/*"]
     }
   },
   "references": [

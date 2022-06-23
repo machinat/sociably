@@ -1,9 +1,9 @@
-import type { MachinatUser, MachinatChannel } from '@machinat/core';
+import type { SociablyUser, SociablyChannel } from '@sociably/core';
 import type {
   BaseStateController,
   StateAccessor,
-} from '@machinat/core/base/StateController';
-import { makeClassProvider } from '@machinat/core/service';
+} from '@sociably/core/base/StateController';
+import { makeClassProvider } from '@sociably/core/service';
 
 export class InMemoryStateAccessor implements StateAccessor {
   _stateData: Map<string, any>;
@@ -73,7 +73,7 @@ export class InMemoryStateController implements BaseStateController {
     this._globalStates = new Map();
   }
 
-  channelState(channel: string | MachinatChannel): InMemoryStateAccessor {
+  channelState(channel: string | SociablyChannel): InMemoryStateAccessor {
     const channelUid = typeof channel === 'string' ? channel : channel.uid;
 
     const data = this._channelStates.get(channelUid);
@@ -87,7 +87,7 @@ export class InMemoryStateController implements BaseStateController {
     return new InMemoryStateAccessor(newStateData);
   }
 
-  userState(user: string | MachinatUser): InMemoryStateAccessor {
+  userState(user: string | SociablyUser): InMemoryStateAccessor {
     const userUid = typeof user === 'string' ? user : user.uid;
 
     const data = this._userStates.get(userUid);

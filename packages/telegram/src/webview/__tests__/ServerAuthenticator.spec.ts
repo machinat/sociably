@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import moxy from '@moxyjs/moxy';
-import type { AuthHttpOperator } from '@machinat/auth';
+import type { AuthHttpOperator } from '@sociably/auth';
 import type { TelegramBot } from '../../Bot';
 import { TelegramServerAuthenticator } from '../ServerAuthenticator';
 import TelegramChat from '../../Chat';
@@ -23,7 +23,7 @@ const httpOperator = moxy<AuthHttpOperator>({
   async issueAuth() {},
   async issueError() {},
   redirect() {},
-  getAuthUrl: () => 'https://machinat.io/MyApp/auth/telegram',
+  getAuthUrl: () => 'https://sociably.io/MyApp/auth/telegram',
 } as never);
 
 const bot = moxy<TelegramBot>({
@@ -309,7 +309,7 @@ test('.delegateAuthRequest() on login route', async () => {
     {
       botName: 'MyBot',
       appName: 'Mine Mine Mine App',
-      appIconUrl: 'http://machinat.io/MyApp/icon.png',
+      appIconUrl: 'http://sociably.io/MyApp/icon.png',
     }
   );
   await authenticatorWithAppDetails.delegateAuthRequest(req, res, loginRoute);
@@ -339,10 +339,10 @@ test('.delegateAuthRequest() on unknown route', async () => {
 
 test('.getAuthUrl()', () => {
   expect(authenticator.getAuthUrl()).toMatchInlineSnapshot(
-    `"https://machinat.io/MyApp/auth/telegram"`
+    `"https://sociably.io/MyApp/auth/telegram"`
   );
   expect(authenticator.getAuthUrl('foo?bar=baz')).toMatchInlineSnapshot(
-    `"https://machinat.io/MyApp/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz"`
+    `"https://sociably.io/MyApp/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz"`
   );
 
   expect(httpOperator.getAuthUrl.mock).toHaveBeenCalledTimes(2);

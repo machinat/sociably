@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
-import Machinat from '@machinat/core';
-import _Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import _Engine from '@machinat/core/engine';
+import Sociably from '@sociably/core';
+import _Renderer from '@sociably/core/renderer';
+import Queue from '@sociably/core/queue';
+import _Engine from '@sociably/core/engine';
 import _Worker from '../Worker';
 import { MessengerBot } from '../Bot';
 import GraphApiError from '../Error';
@@ -16,16 +16,16 @@ const Worker = _Worker as Moxy<typeof _Worker>;
 
 nock.disableNetConnect();
 
-jest.mock('@machinat/core/engine', () =>
+jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/engine'))
+    .default(jest.requireActual('@sociably/core/engine'))
 );
 
-jest.mock('@machinat/core/renderer', () =>
+jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/renderer'))
+    .default(jest.requireActual('@sociably/core/renderer'))
 );
 
 jest.mock('../Worker', () =>
@@ -42,7 +42,7 @@ const appSecret = '_APP_SECRET_';
 const message = (
   <Expression quickReplies={<TextReply title="Hi!" payload="👋" />}>
     Hello <b>World!</b>
-    <Image url="https://machinat.com/greeting.png" />
+    <Image url="https://sociably.io/greeting.png" />
   </Expression>
 );
 
@@ -255,7 +255,7 @@ describe('#renderAttachment(message)', () => {
     ]);
 
     const response = await bot.renderAttachment(
-      <Image url="https://machinat.com/trollface.png" />
+      <Image url="https://sociably.io/trollface.png" />
     );
     expect(response).toMatchSnapshot();
     expect(response!.results).toEqual([
@@ -272,7 +272,7 @@ describe('#renderAttachment(message)', () => {
     expect(JSON.parse(body.batch)).toMatchInlineSnapshot(`
       Array [
         Object {
-          "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Ftrollface.png%22%7D%7D%7D",
+          "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D",
           "method": "POST",
           "omit_response_on_success": false,
           "relative_url": "me/message_attachments",

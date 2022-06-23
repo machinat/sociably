@@ -1,15 +1,15 @@
 import type {
-  MachinatNode,
-  MachinatBot,
-  MachinatUser,
+  SociablyNode,
+  SociablyBot,
+  SociablyUser,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core';
-import Engine from '@machinat/core/engine';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider } from '@machinat/core/service';
+} from '@sociably/core';
+import Engine from '@sociably/core/engine';
+import Renderer from '@sociably/core/renderer';
+import Queue from '@sociably/core/queue';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import { makeClassProvider } from '@sociably/core/service';
 
 import { WEBSOCKET } from './constant';
 import { PlatformUtilitiesI } from './interface';
@@ -44,7 +44,7 @@ const toConnection = ({ serverId, id }: ConnIdentifier) =>
  */
 export class WebSocketBot
   implements
-    MachinatBot<WebSocketDispatchChannel, WebSocketJob, WebSocketResult>
+    SociablyBot<WebSocketDispatchChannel, WebSocketJob, WebSocketResult>
 {
   private _server: ServerP<any, unknown>;
   engine: Engine<
@@ -102,7 +102,7 @@ export class WebSocketBot
 
   render(
     channel: WebSocketDispatchChannel,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | WebSocketDispatchResponse> {
     return this.engine.render<WebSocketDispatchChannel>(
       channel,
@@ -128,7 +128,7 @@ export class WebSocketBot
   }
 
   async sendUser(
-    user: MachinatUser,
+    user: SociablyUser,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
     const channel = new WebSocketUserChannel(user.uid);

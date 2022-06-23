@@ -1,5 +1,5 @@
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
 import {
   PostbackAction,
   MessageAction,
@@ -81,20 +81,20 @@ test('<MessageAction/>', async () => {
 
 test('<UriAction/>', async () => {
   await expect(
-    renderInner(<UriAction uri="http://machinat.com" label="Try it!" />)
+    renderInner(<UriAction uri="http://sociably.js.org" label="Try it!" />)
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <UriAction
                 label="Try it!"
-                uri="http://machinat.com"
+                uri="http://sociably.js.org"
               />,
               "path": "$#container",
               "type": "part",
               "value": Object {
                 "label": "Try it!",
                 "type": "uri",
-                "uri": "http://machinat.com",
+                "uri": "http://sociably.js.org",
               },
             },
           ]

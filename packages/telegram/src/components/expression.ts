@@ -1,5 +1,5 @@
-import { MachinatNode } from '@machinat/core';
-import { makeUnitSegment, IntermediateSegment } from '@machinat/core/renderer';
+import { SociablyNode } from '@sociably/core';
+import { makeUnitSegment, IntermediateSegment } from '@sociably/core/renderer';
 import { makeTelegramComponent } from '../utils';
 import {
   TelegramComponent,
@@ -11,10 +11,10 @@ import {
  * @category Props
  */
 export interface ExpressionProps {
-  children: MachinatNode;
+  children: SociablyNode;
   disableNotification?: boolean;
   parseMode?: TelegramParseMode;
-  replyMarkup?: MachinatNode;
+  replyMarkup?: SociablyNode;
 }
 
 /**

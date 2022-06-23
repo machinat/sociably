@@ -1,30 +1,30 @@
 import createNextServer from 'next';
-import type { MachinatPlatform } from '@machinat/core';
+import type { SociablyPlatform } from '@sociably/core';
 import {
   makeContainer,
   makeFactoryProvider,
   ServiceProvision,
-} from '@machinat/core/service';
-import BaseBot from '@machinat/core/base/Bot';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
-import Auth, { AnyServerAuthenticator } from '@machinat/auth';
-import BasicAuthenticator from '@machinat/auth/basicAuth';
-import Http from '@machinat/http';
+} from '@sociably/core/service';
+import BaseBot from '@sociably/core/base/Bot';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
+import Auth, { AnyServerAuthenticator } from '@sociably/auth';
+import BasicAuthenticator from '@sociably/auth/basicAuth';
+import Http from '@sociably/http';
 import type {
   RequestRoute,
   DefaultRequestRoute,
   UpgradeRoute,
   DefaultUpgradeRoute,
-} from '@machinat/http';
-import Next from '@machinat/next';
-import LocalOnlyBroker from '@machinat/websocket/broker/LocalOnlyBroker';
-import { createWsServer } from '@machinat/websocket/utils';
-import WebSocket from '@machinat/websocket';
+} from '@sociably/http';
+import Next from '@sociably/next';
+import LocalOnlyBroker from '@sociably/websocket/broker/LocalOnlyBroker';
+import { createWsServer } from '@sociably/websocket/utils';
+import WebSocket from '@sociably/websocket';
 import type {
   WebSocketJob,
   WebSocketResult,
   EventValue,
-} from '@machinat/websocket';
+} from '@sociably/websocket';
 import {
   WEBVIEW,
   DEFAULT_AUTH_PATH,
@@ -182,7 +182,7 @@ namespace Webview {
     Value extends EventValue = EventValue
   >(
     configs: WebviewConfigs<Authenticator, Value>
-  ): MachinatPlatform<
+  ): SociablyPlatform<
     WebviewEventContext<Authenticator, Value>,
     null,
     WebSocketJob,

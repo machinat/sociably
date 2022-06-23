@@ -3,14 +3,14 @@ title: "The Next-Gen App on Social Media"
 date: 2022-06-01
 authors:
   - name: Patrck Liu
-    title: Author of Machinat.js
+    title: Author of Sociably.js
     url: https://github.com/lrills
     image_url: https://avatars.githubusercontent.com/u/7855890?s=96&v=4
 tags: ["framework", "sociable app"]
-keywords: ["machinat","chatbot","sociable app"]
+keywords: ["sociably","chatbot","sociable app"]
 ---
 
-> [Machinat.js](https://github.com/machinat/machinat) is the first programming framework that covers _Social Media, Chatbot and Web App_ at the same time. And this empowers us to make a brand new kind of app on social platforms...
+> [Sociably.js](https://github.com/machinat/sociably) is the first programming framework that covers _Social Media, Chatbot and Web App_ at the same time. And this empowers us to make a brand new kind of app on social platforms...
 
 <img src={require("./assets/Steve_Jobs_presents_iPhone.jpg").default} />
 
@@ -65,7 +65,7 @@ If you look at history, it's almost impossible make useful software without prog
 However, if we do have a programming solution that fix these issues,
 it could be the key to the next-gen app.
 
-That's the reason I spend last 3 years developing the [Machinat.js](https://github.com/machinat/machinat) framework, which brings a brand new way to make apps on social platforms.
+That's the reason I spend last 3 years developing the [Sociably.js](https://github.com/machinat/sociably) framework, which brings a brand new way to make apps on social platforms.
 
 I call it _Sociable App_.
 
@@ -113,7 +113,7 @@ It provides 1-on-1 services here with the most friendly UI, the human language.
 > <small>The app serves statistics and notification features in chatroom</small>
 
 In the chat, it can provide basic features like menus, guides and notifications.
-Machinat has all the tools you need to build UI/UX in a chat, including rich message formats, chat flow and intent recognition.
+Sociably has all the tools you need to build UI/UX in a chat, including rich message formats, chat flow and intent recognition.
 
 ### Advanced Features in Webviews
 
@@ -159,7 +159,7 @@ Such optimization can be easily done too.
 
 > <small>In Messenger, it requires one special step to notify after 24 hr</small>
 
-Furthermore, Machinat.js can support all the features of all the platforms.
+Furthermore, Sociably.js can support all the features of all the platforms.
 So we can always optimize user experiences using any native feature.
 
 ### One Integrated UI
@@ -173,7 +173,7 @@ Thus, sociable apps can ship a unified experience just as in one app.
 
 > <small>The app works smoothly on Twitter</small>
 
-Machinat.js integrates these mechanisms as one revolutionary UI.
+Sociably.js integrates these mechanisms as one revolutionary UI.
 It's _standardized, cross-platform and extensible_ so developers can easily build 3rd-party UIs, plugins and even platforms.
 This make it possible for the ecosystem to grow together.
 
@@ -239,7 +239,7 @@ And to a developer, since you always need to promote your app on social media, w
 
 ### The Omni-Channel App
 
-In the future, Machinat.js will support every platform that uses human language.
+In the future, Sociably.js will support every platform that uses human language.
 That includes SMS, email, voice assistants and embedded chat in websites or mobile apps.
 
 <img width={500} src={require("./assets/omni-channel.png").default} />
@@ -265,7 +265,7 @@ Technologies like intent recognition are mature.
 Platforms' support is complete since [Whatsapp finally opened the cloud API](https://developers.facebook.com/blog/post/2022/05/19/whatsapp-cloud-based-api/).
 It's time for the revolution to happen.
 
-Machinat.js makes it super easy to build sociable apps.
+Sociably.js makes it super easy to build sociable apps.
 You can create an app with one command; run it and start developing in minutes; launch the app in merely one day.
 It's the most efficient way to reach users in this social media age.
 
@@ -277,7 +277,7 @@ For now we support 4 platforms: [Twitter](https://twitter.com/), [Messenger](htt
 We'll keep supporting more in the future,
 and plan to cover all the mainstream platforms this year.
 
-You can start your first app from [our tutorial](https://machinat.com/docs/learn/).
+You can start your first app from [our tutorial](https://sociably.js.org/docs/learn/).
 
 ## Join Us
 
@@ -293,7 +293,7 @@ The more people join, whether to develop apps, packages or the framework itself,
 Imagine that an app can learn telling jokes by simply adding a component.
 That can even possibly lead us to build better AI!
 
-If you are a developer, you can find more resources on [the GitHub repo](https://github.com/machinat/machinat). And welcome to discuss anything on [our Discord server](https://discord.gg/emTAcH7aST). If you have a cool idea or any cooperation chances, mail me and let's see how to push it:
+If you are a developer, you can find more resources on [the GitHub repo](https://github.com/machinat/sociably). And welcome to discuss anything on [our Discord server](https://discord.gg/emTAcH7aST). If you have a cool idea or any cooperation chances, mail me and let's see how to push it:
 [`patrick.liu@machinat.com`](mailto:patrick.liu@machinat.com)
 
 Happy coding the next-gen app!

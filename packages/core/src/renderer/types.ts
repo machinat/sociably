@@ -1,5 +1,5 @@
 import type {
-  MachinatNode,
+  SociablyNode,
   RawElement,
   ThunkEffectFn,
   PauseDelayFn,
@@ -7,21 +7,21 @@ import type {
 
 export type TextSegment = {
   type: 'text';
-  node: MachinatNode;
+  node: SociablyNode;
   value: string;
   path: string;
 };
 
 export type PartSegment<Value> = {
   type: 'part';
-  node: MachinatNode;
+  node: SociablyNode;
   value: Value;
   path: string;
 };
 
 export type UnitSegment<Value> = {
   type: 'unit';
-  node: MachinatNode;
+  node: SociablyNode;
   value: Value;
   path: string;
 };
@@ -35,21 +35,21 @@ export type RawSegment<Value> = {
 
 export type PauseSegment = {
   type: 'pause';
-  node: MachinatNode;
+  node: SociablyNode;
   value: null | PauseDelayFn;
   path: string;
 };
 
 export type BreakSegment = {
   type: 'break';
-  node: MachinatNode;
+  node: SociablyNode;
   value: null;
   path: string;
 };
 
 export type ThunkSegment = {
   type: 'thunk';
-  node: MachinatNode;
+  node: SociablyNode;
   value: ThunkEffectFn;
   path: string;
 };
@@ -67,6 +67,6 @@ export type IntermediateSegment<UnitValue, PartValue = any> =
   | PartSegment<PartValue>;
 
 export type InnerRenderFn = <UnitValue, PartValue = any>(
-  node: MachinatNode,
+  node: SociablyNode,
   path: string
 ) => Promise<null | IntermediateSegment<UnitValue, PartValue>[]>;

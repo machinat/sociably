@@ -5,27 +5,27 @@ export default ({
   platforms,
   withWebview,
 }: CreateAppContext): string => `${when(platforms.includes('messenger'))`
-import type { MessengerEventContext } from '@machinat/messenger';${when(
+import type { MessengerEventContext } from '@sociably/messenger';${when(
   withWebview
 )`
-import type MessengerAuth from '@machinat/messenger/webview';`}`}${when(
+import type MessengerAuth from '@sociably/messenger/webview';`}`}${when(
   platforms.includes('twitter')
 )`
-import type { TwitterEventContext } from '@machinat/twitter';${when(
+import type { TwitterEventContext } from '@sociably/twitter';${when(
   withWebview
 )`
-import type TwitterAuth from '@machinat/twitter/webview';`}`}${when(
+import type TwitterAuth from '@sociably/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
-import type { TelegramEventContext } from '@machinat/telegram';${when(
+import type { TelegramEventContext } from '@sociably/telegram';${when(
   withWebview
 )`
-import type TelegramAuth from '@machinat/telegram/webview';`}`}${when(
+import type TelegramAuth from '@sociably/telegram/webview';`}`}${when(
   platforms.includes('line')
 )`
-import type { LineEventContext } from '@machinat/line';${when(withWebview)`
-import type LineAuth from '@machinat/line/webview';`}`}${when(withWebview)`
-import type { WebviewEventContext } from '@machinat/webview';`}
+import type { LineEventContext } from '@sociably/line';${when(withWebview)`
+import type LineAuth from '@sociably/line/webview';`}`}${when(withWebview)`
+import type { WebviewEventContext } from '@sociably/webview';`}
 
 export type ChatEventContext =${when(platforms.includes('messenger'))`
   | MessengerEventContext`}${when(platforms.includes('twitter'))`

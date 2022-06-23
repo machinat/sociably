@@ -2,7 +2,7 @@ import { parse as parseUrl } from 'url';
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
-import { makeClassProvider } from '@machinat/core/service';
+import { makeClassProvider } from '@sociably/core/service';
 import { ServerI, RequestRouteListI, UpgradeRouteListI } from './interface';
 import {
   endRes,

@@ -92,7 +92,7 @@ h1 {
 
 <div class=\\"flex center column container\\">
   <div class=\\"flex center icons\\">
-    <img alt=\\"Test\\" src=\\"http://machinat.test/platform/img/icon.png\\" />
+    <img alt=\\"Test\\" src=\\"http://sociably.test/platform/img/icon.png\\" />
   </div>
   <h1></h1>
   <div class=\\"flex column\\">
@@ -266,9 +266,9 @@ h1 {
 
 <div class=\\"flex center column container\\">
   <div class=\\"flex center icons\\">
-    <img alt=\\"Test\\" src=\\"http://machinat.test/platform/img/icon.png\\" />
+    <img alt=\\"Test\\" src=\\"http://sociably.test/platform/img/icon.png\\" />
     <div class=\\"x\\"></div>
-    <img alt=\\"My Test App\\" src=\\"https://machinat.io/myApp/img/icon.png\\" />
+    <img alt=\\"My Test App\\" src=\\"https://sociably.io/myApp/img/icon.png\\" />
   </div>
   <h1>My Test App</h1>
   <div class=\\"flex column\\">

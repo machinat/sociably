@@ -5,22 +5,22 @@ Receive events and send messages through [Messenger platform](https://developers
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/messenger
+npm install @sociably/core @sociably/http @sociably/messenger
 # or with yarn
-yarn add @machinat/core @machinat/http @machinat/messenger
+yarn add @sociably/core @sociably/http @sociably/messenger
 ```
 
 ## Docs
 
-Check the [platform document](https://machinat.com/docs/messenger-platform)
-and the [package reference](https://machinat.com/api/modules/messenger.html).
+Check the [platform document](https://sociably.js.org/docs/messenger-platform)
+and the [package reference](https://sociably.js.org/api/modules/messenger.html).
 
 ## Setup
 
 ```ts
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Messenger from '@machinat/messenger';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Messenger from '@sociably/messenger';
 
 const {
   MESSENGER_PAGE_ID,
@@ -30,7 +30,7 @@ const {
   MESSENGER_VERIFY_TOKEN,
 } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
   ],

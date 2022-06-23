@@ -3,7 +3,7 @@ import {
   createEmptyScope,
   makeContainer,
   ServiceScope,
-} from '@machinat/core/service';
+} from '@sociably/core/service';
 import moxy from '@moxyjs/moxy';
 import type createNextApp from 'next';
 import { IncomingMessage, ServerResponse } from 'http';
@@ -29,7 +29,7 @@ const popError = moxy();
 
 const req = moxy<IncomingMessage>({
   method: 'GET',
-  url: 'http://machinat.com/hello?foo=bar',
+  url: 'http://sociably.io/hello?foo=bar',
   headers: { 'x-y-z': 'abc' },
 } as never);
 let res;
@@ -112,9 +112,9 @@ test('handle http request', async () => {
     Url {
       "auth": null,
       "hash": null,
-      "host": "machinat.com",
-      "hostname": "machinat.com",
-      "href": "http://machinat.com/hello?foo=bar",
+      "host": "sociably.io",
+      "hostname": "sociably.io",
+      "href": "http://sociably.io/hello?foo=bar",
       "path": "/hello?foo=bar",
       "pathname": "/hello",
       "port": null,
@@ -130,7 +130,7 @@ test('handle http request', async () => {
   expect(handleRequest.mock).toHaveBeenCalledTimes(1);
   expect(handleRequest.mock).toHaveBeenCalledWith({
     method: 'GET',
-    url: 'http://machinat.com/hello?foo=bar',
+    url: 'http://sociably.io/hello?foo=bar',
     route: '/hello',
     headers: { 'x-y-z': 'abc' },
   });
@@ -145,7 +145,7 @@ test('with entryPath', async () => {
   });
   await receiver.prepare();
 
-  req.mock.getter('url').fakeReturnValue('http://machinat.com/hello/world');
+  req.mock.getter('url').fakeReturnValue('http://sociably.io/hello/world');
   receiver.handleRequest(req, res);
   await nextTick();
 
@@ -156,13 +156,13 @@ test('with entryPath', async () => {
   expect(nextDefaultHandler.mock).toHaveBeenCalledWith(
     req,
     res,
-    parseUrl('http://machinat.com/hello/world', true)
+    parseUrl('http://sociably.io/hello/world', true)
   );
 
   expect(handleRequest.mock).toHaveBeenCalledTimes(1);
   expect(handleRequest.mock).toHaveBeenCalledWith({
     method: 'GET',
-    url: 'http://machinat.com/hello/world',
+    url: 'http://sociably.io/hello/world',
     route: '/world',
     headers: { 'x-y-z': 'abc' },
   });
@@ -177,7 +177,7 @@ it('respond 404 if entryPath not match', async () => {
   });
   await receiver.prepare();
 
-  req.mock.getter('url').fakeReturnValue('http://machinat.com/foo/world');
+  req.mock.getter('url').fakeReturnValue('http://sociably.io/foo/world');
 
   receiver.handleRequest(req, res);
   await nextTick();
@@ -219,7 +219,7 @@ test('customized headers returned by handleRequest', async () => {
   expect(handleRequest.mock).toHaveBeenCalledTimes(1);
   expect(handleRequest.mock).toHaveBeenCalledWith({
     method: 'GET',
-    url: 'http://machinat.com/hello?foo=bar',
+    url: 'http://sociably.io/hello?foo=bar',
     route: '/hello',
     headers: { 'x-y-z': 'abc' },
   });
@@ -265,9 +265,9 @@ it('call next.render() with page/query returned by handleRequest', async () => {
     Url {
       "auth": null,
       "hash": null,
-      "host": "machinat.com",
-      "hostname": "machinat.com",
-      "href": "http://machinat.com/hello?foo=bar",
+      "host": "sociably.io",
+      "hostname": "sociably.io",
+      "href": "http://sociably.io/hello?foo=bar",
       "path": "/hello?foo=bar",
       "pathname": "/hello",
       "port": null,
@@ -283,7 +283,7 @@ it('call next.render() with page/query returned by handleRequest', async () => {
   expect(handleRequest.mock).toHaveBeenCalledTimes(1);
   expect(handleRequest.mock).toHaveBeenCalledWith({
     method: 'GET',
-    url: 'http://machinat.com/hello?foo=bar',
+    url: 'http://sociably.io/hello?foo=bar',
     route: '/hello',
     headers: { 'x-y-z': 'abc' },
   });
@@ -328,7 +328,7 @@ test('use service container for handleRequest', async () => {
   expect(handleRequestFn.mock).toHaveBeenCalledTimes(1);
   expect(handleRequestFn.mock).toHaveBeenCalledWith({
     method: 'GET',
-    url: 'http://machinat.com/hello?foo=bar',
+    url: 'http://sociably.io/hello?foo=bar',
     route: '/hello',
     headers: { 'x-y-z': 'abc' },
   });
@@ -412,7 +412,7 @@ it('pass "_next" api calls to next directly', async () => {
   });
   await receiver.prepare();
 
-  req.mock.getter('url').fakeReturnValue('http://machinat.com/hello/_next/xxx');
+  req.mock.getter('url').fakeReturnValue('http://sociably.io/hello/_next/xxx');
 
   receiver.handleRequest(req, res);
   await nextTick();

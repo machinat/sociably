@@ -1,5 +1,5 @@
-import type { MachinatChannel } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyChannel } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { WEBSOCKET } from './constant';
 import type { ConnectionTarget, UserTarget, TopicTarget } from './types';
 
@@ -10,7 +10,7 @@ type ConnectionValue = {
 
 export class WebSocketConnection
   implements
-    MachinatChannel,
+    SociablyChannel,
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
@@ -52,7 +52,7 @@ type UserChannelValue = {
 
 export class WebSocketUserChannel
   implements
-    MachinatChannel,
+    SociablyChannel,
     UserTarget,
     MarshallableInstance<UserChannelValue>
 {
@@ -90,7 +90,7 @@ type TopicValue = {
 };
 
 export class WebSocketTopicChannel
-  implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue>
+  implements SociablyChannel, TopicTarget, MarshallableInstance<TopicValue>
 {
   static typeName = 'WebSocketTopicCh';
 

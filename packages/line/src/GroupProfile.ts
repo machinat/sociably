@@ -1,5 +1,5 @@
-import type { MachinatProfile } from '@machinat/core/base/Profiler';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyProfile } from '@sociably/core/base/Profiler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant';
 
 export type LineGroupData = {
@@ -13,7 +13,7 @@ type GroupProfileValue = {
 };
 
 class LineGroupProfile
-  implements MachinatProfile, MarshallableInstance<GroupProfileValue>
+  implements SociablyProfile, MarshallableInstance<GroupProfileValue>
 {
   static typeName = 'LineGroupProfile';
 

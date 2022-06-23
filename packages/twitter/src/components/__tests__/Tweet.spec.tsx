@@ -1,6 +1,6 @@
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
+import Renderer from '@sociably/core/renderer';
 import TweetTarget from '../../TweetTarget';
 import { Tweet } from '../Tweet';
 import { Photo } from '../Media';
@@ -252,7 +252,7 @@ it('throw if non-textual content in children', async () => {
   await expect(
     render(
       <Tweet>
-        <Machinat.Pause />
+        <Sociably.Pause />
       </Tweet>
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -268,7 +268,7 @@ it('throw if invalid media received', async () => {
   );
 
   await expect(
-    render(<Tweet media={<Machinat.Pause />} />)
+    render(<Tweet media={<Sociably.Pause />} />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"<Pause /> can't be placed in \\"media\\" prop"`
   );

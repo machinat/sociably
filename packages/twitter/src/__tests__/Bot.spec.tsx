@@ -1,9 +1,9 @@
-import Machinat from '@machinat/core';
+import Sociably from '@sociably/core';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
-import Queue from '@machinat/core/queue';
-import _Engine from '@machinat/core/engine';
-import _Renderer from '@machinat/core/renderer';
+import Queue from '@sociably/core/queue';
+import _Engine from '@sociably/core/engine';
+import _Renderer from '@sociably/core/renderer';
 import _Worker from '../Worker';
 import DirectMessageChat from '../Chat';
 import TweetTarget from '../TweetTarget';
@@ -15,16 +15,16 @@ const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Worker = _Worker as Moxy<typeof _Worker>;
 
-jest.mock('@machinat/core/engine', () =>
+jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/engine'))
+    .default(jest.requireActual('@sociably/core/engine'))
 );
 
-jest.mock('@machinat/core/renderer', () =>
+jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/renderer'))
+    .default(jest.requireActual('@sociably/core/renderer'))
 );
 
 jest.mock('../Worker', () =>
@@ -430,7 +430,7 @@ describe('.renderMedia(media)', () => {
         { 'content-type': 'application/json' }
       );
 
-    const externalMediaFileCall = nock('https://machinat.io')
+    const externalMediaFileCall = nock('https://sociably.io')
       .get('/img/foo.jpg')
       .reply(200, '__FILE_CONTENT_FROM_EXTERNAL_URL__', {
         'content-type': 'image/jpg',
@@ -442,7 +442,7 @@ describe('.renderMedia(media)', () => {
     await expect(
       bot.renderMedia(
         <>
-          <Photo shared url="https://machinat.io/img/foo.jpg" />
+          <Photo shared url="https://sociably.io/img/foo.jpg" />
           <Photo
             fileData={Buffer.from('foo')}
             fileSize={3}
@@ -465,7 +465,7 @@ describe('.renderMedia(media)', () => {
                     "shared": "true",
                   },
                   "type": "url",
-                  "url": "https://machinat.io/img/foo.jpg",
+                  "url": "https://sociably.io/img/foo.jpg",
                 },
                 "type": "photo",
               },
@@ -510,7 +510,7 @@ describe('.renderMedia(media)', () => {
       bot.renderMedia('foo')
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"\\"foo\\" is not media"`);
     await expect(
-      bot.renderMedia(<Machinat.Pause />)
+      bot.renderMedia(<Sociably.Pause />)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<Pause /> is not media"`);
     await expect(
       bot.renderMedia(<DirectMessage>foo</DirectMessage>)

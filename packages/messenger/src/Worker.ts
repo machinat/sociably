@@ -1,14 +1,14 @@
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
-import type { MachinatWorker } from '@machinat/core/engine';
-import MachinatQueue, { JobResponse } from '@machinat/core/queue';
+import type { SociablyWorker } from '@sociably/core/engine';
+import SociablyQueue, { JobResponse } from '@sociably/core/queue';
 import GraphAPIError from './Error';
 import type { MessengerJob, MessengerResult, BatchApiRequest } from './types';
 
 type MessengerSendingResponse = JobResponse<MessengerJob, MessengerResult>;
 
-type MessengerQueue = MachinatQueue<MessengerJob, MessengerResult>;
+type MessengerQueue = SociablyQueue<MessengerJob, MessengerResult>;
 
 const POST = 'POST';
 
@@ -74,7 +74,7 @@ const appendFieldsToForm = (
 type TimeoutID = ReturnType<typeof setTimeout>;
 
 export default class MessengerWorker
-  implements MachinatWorker<MessengerJob, MessengerResult>
+  implements SociablyWorker<MessengerJob, MessengerResult>
 {
   token: string;
   consumeInterval: number;

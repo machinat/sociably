@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { makeContainer, createEmptyScope } from '@machinat/core/service';
+import { makeContainer, createEmptyScope } from '@sociably/core/service';
 import { STREAMING_KEY_I } from '../../interface';
 import Stream from '../../stream';
 import filter from '../filter';

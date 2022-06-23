@@ -1,4 +1,4 @@
-import { makeContainer } from '@machinat/core/service';
+import { makeContainer } from '@sociably/core/service';
 import type { TwitterDispatchMiddleware } from '../types';
 import AssetsManagerP from './AssetsManager';
 

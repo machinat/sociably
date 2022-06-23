@@ -1,7 +1,7 @@
 {
-  "name": "@machinat/stream",
+  "name": "@sociably/stream",
   "version": "0.6.0",
-  "description": "Reactive programming library for Machinat.js",
+  "description": "Reactive programming library for Sociably.js",
   "main": "./lib/index.js",
   "exports": {
     ".": "./lib/index.js",
@@ -10,11 +10,11 @@
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/machinat/machinat.git",
+    "url": "https://github.com/machinat/sociably.git",
     "directory": "packages/stream"
   },
-  "homepage": "https://github.com/machinat/machinat#readme",
-  "bugs": "https://github.com/machinat/machinat/issues",
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -32,6 +32,6 @@
     "rxjs": "^6.5.5"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.6.0"
+    "@sociably/core": "^0.6.0"
   }
 }

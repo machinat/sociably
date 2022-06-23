@@ -1,6 +1,6 @@
-import { MachinatNode } from '@machinat/core';
-import { makeClassProvider } from '@machinat/core/service';
-import StateControllerI from '@machinat/core/base/StateController';
+import { SociablyNode } from '@sociably/core';
+import { makeClassProvider } from '@sociably/core/service';
+import StateControllerI from '@sociably/core/base/StateController';
 import { ConfigsI } from '../interface';
 import BotP from '../Bot';
 import { RenderMediaResponse } from '../types';
@@ -80,7 +80,7 @@ export class TwitterAssetsManager {
 
   async renderMedia(
     tag: string,
-    media: MachinatNode
+    media: SociablyNode
   ): Promise<RenderMediaResponse> {
     const existedId = await this.getMedia(tag);
     if (existedId) {
@@ -186,7 +186,7 @@ export class TwitterAssetsManager {
 
   async renderWelcomeMessage(
     tag: string,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<undefined | string> {
     const existedId = await this.getWelcomeMessage(tag);
     if (existedId) {

@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import type StateControllerI from '@machinat/core/base/StateController';
+import Sociably from '@sociably/core';
+import type StateControllerI from '@sociably/core/base/StateController';
 import type { TwitterBot } from '../../Bot';
 import { Photo } from '../../components/Media';
 import { TwitterAssetsManager } from '../AssetsManager';
@@ -240,13 +240,13 @@ test('unsave asset id', async () => {
 describe('.renderMedia(tag, media)', () => {
   it('render and save media', async () => {
     const manager = new TwitterAssetsManager(appId, stateController, bot);
-    const photo = <Photo url="https://machinat.io/img/foo.jpg" />;
+    const photo = <Photo url="https://sociably.io/img/foo.jpg" />;
     const uploadResponse = {
       type: 'photo',
       id: '111111111111111111',
       source: {
         type: 'url',
-        url: 'https://machinat.io/img/foo.jpg',
+        url: 'https://sociably.io/img/foo.jpg',
         parameters: {},
       },
       result: {

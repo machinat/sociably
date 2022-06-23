@@ -1,5 +1,5 @@
-import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
 import generalComponentDelegator from '../general';
 
 const renderer = new Renderer('messenger', generalComponentDelegator);

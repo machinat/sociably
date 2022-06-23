@@ -1,6 +1,6 @@
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
+import Renderer from '@sociably/core/renderer';
 import renderGeneralType from '../general';
 import { ChatAction } from '../action';
 import { Photo } from '../media';
@@ -38,7 +38,7 @@ it('set disableNotification in message parameters', async () => {
   const result = await renderer.render(
     <Expression disableNotification>
       foo
-      <Photo url="http://machinat.com/bar.jpg" />
+      <Photo url="http://sociably.io/bar.jpg" />
     </Expression>
   );
   expect(result[0].value.parameters.disable_notification).toBe(true);
@@ -49,8 +49,8 @@ it('set disableNotification in message parameters', async () => {
 it('respect the original disableNotification setting set on the messgage', async () => {
   const result = await renderer.render(
     <Expression disableNotification>
-      <Photo url="http://machinat.com/bar.jpg" />
-      <Photo disableNotification={false} url="http://machinat.com/baz.jpg" />
+      <Photo url="http://sociably.io/bar.jpg" />
+      <Photo disableNotification={false} url="http://sociably.io/baz.jpg" />
     </Expression>
   );
   expect(result[0].value.parameters.disable_notification).toBe(true);
@@ -61,7 +61,7 @@ it('respect the original disableNotification setting set on the messgage', async
 it('add replyMarkup to the last supported message', async () => {
   let result = await renderer.render(
     <Expression disableNotification replyMarkup={<ForceReply />}>
-      <Photo url="http://machinat.com/foo.jpg" />
+      <Photo url="http://sociably.io/foo.jpg" />
       <ChatAction action="upload_photo" />
     </Expression>
   );
@@ -76,7 +76,7 @@ it('add replyMarkup to the last supported message', async () => {
   result = await renderer.render(
     <Expression disableNotification replyMarkup={<ForceReply />}>
       foo
-      <Photo url="http://machinat.com/foo.jpg" replyMarkup={<ForceReply />} />
+      <Photo url="http://sociably.io/foo.jpg" replyMarkup={<ForceReply />} />
     </Expression>
   );
   expect(result).toMatchSnapshot();
@@ -92,7 +92,7 @@ it('throw if no message available to attach replyMarkup', async () => {
   await expect(
     renderer.render(
       <Expression disableNotification replyMarkup={<ForceReply />}>
-        <Photo url="http://machinat.com/foo.jpg" replyMarkup={<ForceReply />} />
+        <Photo url="http://sociably.io/foo.jpg" replyMarkup={<ForceReply />} />
         <ChatAction action="upload_photo" />
       </Expression>
     )

@@ -1,9 +1,9 @@
-import { MachinatNode } from '@machinat/core';
+import { SociablyNode } from '@sociably/core';
 import {
   makeUnitSegment,
   makePartSegment,
   PartSegment,
-} from '@machinat/core/renderer';
+} from '@sociably/core/renderer';
 
 import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
@@ -41,17 +41,17 @@ export type ButtonTemplateProps = {
   imageBackgroundColor?: string;
   title?: string;
   /** Texual nodes of message text. */
-  children: MachinatNode;
+  children: SociablyNode;
   /**
    * {@link Action} elements displayed as the buttons at the template. Max 4
    * buttons.
    */
-  actions: MachinatNode;
+  actions: SociablyNode;
   /**
    * An {@link Action} element to be triggered when image, title or text area is
    * tapped.
    */
-  defaultAction?: MachinatNode;
+  defaultAction?: SociablyNode;
 };
 
 /**
@@ -116,7 +116,7 @@ export type ConfirmTemplateProps = {
   /**
    * Exactly 2 {@link Action} elements displayed as the buttons at the template.
    */
-  actions: MachinatNode;
+  actions: SociablyNode;
   /** Texual nodes of message text. */
   children: string;
 };
@@ -158,12 +158,12 @@ export type CarouselItemProps = {
    * {@link Action} elements displayed as the buttons at the template. Max 3
    * buttons.
    */
-  actions: MachinatNode;
+  actions: SociablyNode;
   /**
    * An {@link Action} element to be triggered when image, title or text area is
    * tapped.
    */
-  defaultAction?: MachinatNode;
+  defaultAction?: SociablyNode;
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
   /**
@@ -222,7 +222,7 @@ export type CarouselTemplateProps = {
    * {@link CarouselItem} elements displayed as bubble columns in the carousel.
    * Max 10 columns.
    */
-  children: MachinatNode;
+  children: SociablyNode;
   /**
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400
@@ -281,7 +281,7 @@ export type ImageCarouselItemProps = {
   /** Image URL (Max character limit: 1,000) */
   imageUrl: string;
   /** One {@link Action} element to be triggered the when image is tapped. */
-  action?: MachinatNode;
+  action?: SociablyNode;
 };
 
 /**
@@ -313,7 +313,7 @@ export type ImageCarouselTemplateProps = {
   /** {@link ImageCarouselItem} elements displayed as image columns in the
    * carousel. Max 10 columns.
    */
-  children: MachinatNode;
+  children: SociablyNode;
   /**
    * Alternative text. Displayed on devices that do not support template
    * messages. Max character limit: 400

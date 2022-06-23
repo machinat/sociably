@@ -1,4 +1,4 @@
-import type { ContextDetails } from '@machinat/auth';
+import type { ContextDetails } from '@sociably/auth';
 import TelegramUser from '../User';
 import TelegramChat from '../Chat';
 import type { RawUser } from '../types';

@@ -1,6 +1,6 @@
 import { parse as parseUrl } from 'url';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import { BaseMarshaler as _BaseMarshaler } from '@machinat/core/base/Marshaler';
+import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
 import _Connector from '../Connector';
 import { WebSocketConnection } from '../../channel';
 import Client from '../client';
@@ -8,10 +8,10 @@ import Client from '../client';
 const Connector = _Connector as Moxy<typeof _Connector>;
 const BaseMarshaler = _BaseMarshaler as Moxy<typeof _BaseMarshaler>;
 
-jest.mock('@machinat/core/base/Marshaler', () =>
+jest.mock('@sociably/core/base/Marshaler', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/base/Marshaler'))
+    .default(jest.requireActual('@sociably/core/base/Marshaler'))
 );
 
 jest.mock('../Connector', () => {
@@ -32,7 +32,7 @@ jest.mock('../Connector', () => {
   };
 });
 
-const location = moxy(parseUrl('https://machinat.com/hello'));
+const location = moxy(parseUrl('https://sociably.io/hello'));
 (global as any).window = { location } as never;
 
 const user = { platform: 'test', uid: 'john_doe' };
@@ -88,11 +88,11 @@ it('start connector', async () => {
 });
 
 test('specify url', async () => {
-  (() => new Client({ url: 'ws://machinat.io/websocket', login }))();
+  (() => new Client({ url: 'ws://sociably.io/websocket', login }))();
 
   expect(Connector.mock).toHaveBeenCalledTimes(1);
   expect(Connector.mock).toHaveBeenCalledWith(
-    'ws://machinat.io/websocket',
+    'ws://sociably.io/websocket',
     login,
     expect.any(BaseMarshaler)
   );

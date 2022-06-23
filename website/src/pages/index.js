@@ -14,7 +14,7 @@ const features = [
     title: 'All Social Platforms as One',
     description: (
       <>
-        Machinat integrates all the social media as{' '}
+        Sociably integrates all the social media as{' '}
         <strong>a new app platform</strong>. Thus a{' '}
         <strong>sociable app</strong> can serve features as a real person in the
         social network.
@@ -179,7 +179,7 @@ const GithubButton = () => (
       'button button--outline button--secondary button--lg',
       styles.button
     )}
-    to="https://github.com/machinat/machinat"
+    to="https://github.com/machinat/sociably"
   >
     GitHub
     <ThemedImage

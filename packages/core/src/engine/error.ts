@@ -1,14 +1,14 @@
-import type { MachinatTask } from './types';
+import type { SociablyTask } from './types';
 
 class DispatchError<Job, Result> extends Error {
   errors: ReadonlyArray<Error>;
-  tasks: MachinatTask<Job>[];
+  tasks: SociablyTask<Job>[];
   jobs: Job[];
   results: ReadonlyArray<void | Result>;
 
   constructor(
     errors: ReadonlyArray<Error>,
-    tasks: MachinatTask<Job>[],
+    tasks: SociablyTask<Job>[],
     jobs: Job[],
     results: ReadonlyArray<void | Result>
   ) {

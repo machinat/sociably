@@ -1,5 +1,5 @@
-import { formatNode } from '@machinat/core/utils';
-import type { DispatchableSegment } from '@machinat/core/engine';
+import { formatNode } from '@sociably/core/utils';
+import type { DispatchableSegment } from '@sociably/core/engine';
 import TweetTarget from './TweetTarget';
 import TwitterChat from './Chat';
 import createDmSegmentValue from './utils/createDmSegmentValue';

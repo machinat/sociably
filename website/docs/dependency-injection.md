@@ -6,26 +6,26 @@ While building an app, we may rely on many services to ship features.
 The dependent relationship between the services could be complex,
 especially for a cross-platform app.
 
-Machinat has a built-in [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
+Sociably has a built-in [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
 system to help with that.
 Actually the whole framework is built upon the DI system.
 
 ## Initiate Services
 
-When you create and start a Machinat app,
+When you create and start a Sociably app,
 a set of services are initiated to make the app works.
 For example:
 
 ```js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Messenger from '@machinat/messenger';
-import Telegram from '@machinat/telegram';
-import { FileState } from '@machinat/dev-tools';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Messenger from '@sociably/messenger';
+import Telegram from '@sociably/telegram';
+import { FileState } from '@sociably/dev-tools';
 import FooService from './services/Foo';
 import BarService from './services/Bar';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   platforms: [
     Messenger.initModule({/*...*/}),
     Telegram.initModule({/*...*/}),
@@ -48,7 +48,7 @@ The `platforms` and `modules` options add services for a particular platform or 
 For example, `Messenger.Bot` service is added by the `Messenger` platform.
 The bot instance is then created when `app.start()`.
 
-Machinat is made with _progressive framework_ paradigm.
+Sociably is made with _progressive framework_ paradigm.
 You can start with minimum modules and gradually add more when you need.
 
 Check [API references](pathname:///api) to see all the available modules.
@@ -58,11 +58,11 @@ Check [API references](pathname:///api) to see all the available modules.
 After the app is started, we can require services and use them like:
 
 ```js
-import Machinat from '@machinat/core';
-import Messenger from '@machinat/messenger';
-import Telegram from '@machinat/telegram';
+import Sociably from '@sociably/core';
+import Messenger from '@sociably/messenger';
+import Telegram from '@sociably/telegram';
 
-const app = Machinat.createApp({/* ... */});
+const app = Sociably.createApp({/* ... */});
 
 app.start().then(() => {
   const [messengerBot, telegramBot] = app.useServices([
@@ -84,7 +84,7 @@ The `makeContainer` decorator annotates a JavaScript function as a container.
 Like:
 
 ```js
-import { makeContainer } from '@machinat/core';
+import { makeContainer } from '@sociably/core';
 import FooService from './services/Foo';
 import BarService from './services/Bar';
 
@@ -104,7 +104,7 @@ The `app.onEvent` and `app.onError` methods can accept a container of the handle
 For example:
 
 ```js
-import { makeContainer, BasicProfiler } from '@machinat/core';
+import { makeContainer, BasicProfiler } from '@sociably/core';
 
 app.onEvent(
   makeContainer({ deps: [BasicProfiler] })(
@@ -121,8 +121,8 @@ The container receives a `BasicProfiler` instance and returns an ordinary handle
 When an event is popped, the _contained_ handler receives event context as usual.
 Then it can use the required `profiler` for replying.
 
-Many Machinat APIs support using a container as the callback handler,
-like [`@machinat/script`](pathname:///api/modules/script) and [`@machinat/stream`](pathname:///api/modules/script).
+Many Sociably APIs support using a container as the callback handler,
+like [`@sociably/script`](pathname:///api/modules/script) and [`@sociably/stream`](pathname:///api/modules/script).
 We'll introduce them later.
 
 ### Optional Requisition
@@ -143,7 +143,7 @@ makeContainer({
 
 ### Standard Services
 
-Machinat defines some standard services which are commonly used while making conversational apps.
+Sociably defines some standard services which are commonly used while making conversational apps.
 Like recognizing intent, fetching an user’s profile and accessing chat state.
 
 Here is an example to put them together:
@@ -154,7 +154,7 @@ import {
   IntentRecognizer,
   BasicProfiler,
   StateController,
-} from '@machinat/core';
+} from '@sociably/core';
 
 app.onEvent(
   makeContainer({
@@ -194,10 +194,10 @@ Here are the list of the standard services:
 We can also register individual service in the `services` option:
 
 ```js
-import MessengerAssetsManager from '@machinat/messenger/asset';
+import MessengerAssetsManager from '@sociably/messenger/asset';
 import FooService from './foo';
 
-Machinat.createApp({
+Sociably.createApp({
   platforms: [/*...*/],
   modules: [/*...*/],
   services: [
@@ -232,7 +232,7 @@ You only have to mark a normal class as a service provider.
 For example:
 
 ```js
-import { makeClassProvider } from '@machinat/core';
+import { makeClassProvider } from '@sociably/core';
 import BeerService from './Beer';
 
 class BarService {
@@ -265,7 +265,7 @@ It takes the following options:
 Now we can register the service and use it like:
 
 ```js
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   services: [BeerService, BarService],
 });
 
@@ -281,7 +281,7 @@ We can make a provider with another style: a factory function.
 For example:
 
 ```js
-import { makeFactoryProvider } from '@machinat/core';
+import { makeFactoryProvider } from '@sociably/core';
 import BeerService from './Beer';
 
 const useBar = (beerService) => (drink) =>
@@ -304,7 +304,7 @@ It takes the following options:
 Then we can register and use the service like:
 
 ```js
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   services: [BeerService, useBar],
 });
 
@@ -320,11 +320,11 @@ The provider is also a _service interface_ so we can require it as a dependency.
 When we register the provider, it provides the service instance for _itself_.
 
 ```js
-Machinat.createApp({
+Sociably.createApp({
   services: [MyService],
 });
 // is equivalent to
-Machinat.crrateApp({
+Sociably.crrateApp({
   services: [
     { provide: MyService, withProvider: MyService },
   ],
@@ -336,7 +336,7 @@ The interface can be bound to another provider,
 so we can swap the service implementation.
 
 ```js
-const app = Machinat.crrateApp({
+const app = Sociably.crrateApp({
   services: [
     { provide: MyService, withProvider: AnotherService },
   ],
@@ -353,12 +353,12 @@ we can create an interface with `makeInterface` for binding different implementa
 For example:
 
 ```js
-import { makeInterface } from '@machinat/core';
+import { makeInterface } from '@sociably/core';
 import MyServiceImpl from './MyServiceImpl';
 
 const MyService = makeInterface({ name: 'MyService' });
 
-Machinat.crrateApp({
+Sociably.crrateApp({
   services: [
     { provide: MyService, withProvider: MyServiceImpl },
   ],
@@ -376,7 +376,7 @@ This is especially useful to pass configurations in a decoupled way:
 ```js
 const BotName = makeInterface({ name: 'BotName' })
 
-Machinat.crrateApp({
+Sociably.crrateApp({
   services: [
     { provide: BotName, withValue: 'David' },
   ],
@@ -393,11 +393,11 @@ When we require a `multi` interface, a list of services is resolved.
 Like this:
 
 ```js
-import { makeInterface } from '@machinat/core';
+import { makeInterface } from '@sociably/core';
 
 const MyFavoriteFood = makeInterface({ name: 'MyService', multi: true })
 
-Machinat.crrateApp({
+Sociably.crrateApp({
   services: [
     { provide: MyFavoriteFood, withValue: '🌮' },
     { provide: MyFavoriteFood, withValue: '🥙' },

@@ -1,4 +1,4 @@
-import { MACHINAT_SERVICE_PROVIDER } from '../../symbol';
+import { SOCIABLY_SERVICE_PROVIDER } from '../../symbol';
 import type {
   ServiceLifetime,
   ServiceProvider,
@@ -176,7 +176,7 @@ function makeClassProvider<_T, Deps extends AnyDep[]>({
       klazz as ServiceProvider<T, ResolveDependencies<Deps>> & Klazz,
       {
         $$name: { value: name || klazz.name, configurable: true },
-        $$typeof: { value: MACHINAT_SERVICE_PROVIDER, configurable: true },
+        $$typeof: { value: SOCIABLY_SERVICE_PROVIDER, configurable: true },
         $$deps: { value: requirements, configurable: true },
         $$factory: {
           value: factory || ((...args) => new klazz(...args)), // eslint-disable-line new-cap

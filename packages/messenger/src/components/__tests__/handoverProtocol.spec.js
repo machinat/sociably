@@ -1,6 +1,6 @@
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
+import Renderer from '@sociably/core/renderer';
 import {
   PassThreadControl,
   RequestThreadControl,
@@ -35,7 +35,7 @@ test('PassThreadControl', async () => {
               "value": Object {
                 "metadata": "you have my bow",
                 "target_app_id": "Legolas",
-                Symbol(api_path.messenger.machinat): "me/pass_thread_control",
+                Symbol(api_path.messenger.sociably): "me/pass_thread_control",
               },
             },
           ]
@@ -55,7 +55,7 @@ test('RequestThreadControl', async () => {
               "type": "unit",
               "value": Object {
                 "metadata": "give me the ring",
-                Symbol(api_path.messenger.machinat): "me/request_thread_control",
+                Symbol(api_path.messenger.sociably): "me/request_thread_control",
               },
             },
           ]
@@ -74,7 +74,7 @@ test('TakeThreadContorl', async () => {
               "type": "unit",
               "value": Object {
                 "metadata": "my precious",
-                Symbol(api_path.messenger.machinat): "me/take_thread_control",
+                Symbol(api_path.messenger.sociably): "me/take_thread_control",
               },
             },
           ]

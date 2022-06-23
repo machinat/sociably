@@ -1,5 +1,5 @@
-import type { MachinatChannel } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyChannel } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant';
 import type LineUser from './User';
 import type { LineSource } from './types';
@@ -12,7 +12,7 @@ type LineChatValue = {
   id: string;
 };
 
-class LineChat implements MachinatChannel, MarshallableInstance<LineChatValue> {
+class LineChat implements SociablyChannel, MarshallableInstance<LineChatValue> {
   static typeName = 'LineChat';
 
   static fromUser(channelId: string, user: LineUser): LineChat {

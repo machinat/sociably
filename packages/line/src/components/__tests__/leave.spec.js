@@ -1,6 +1,6 @@
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
+import Renderer from '@sociably/core/renderer';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../../constant';
 import LineChat from '../../Chat';
 import { Leave } from '../leave';

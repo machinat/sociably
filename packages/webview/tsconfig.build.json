@@ -6,11 +6,11 @@
     "outDir": "./lib",
     "baseUrl": ".",
     "paths": {
-      "@machinat/auth/*": ["../auth/lib/*"],
-      "@machinat/core/*": ["../core/lib/*"],
-      "@machinat/http/*": ["../http/lib/*"],
-      "@machinat/next/*": ["../next/lib/*"],
-      "@machinat/websocket/*": ["../websocket/lib/*"]
+      "@sociably/auth/*": ["../auth/lib/*"],
+      "@sociably/core/*": ["../core/lib/*"],
+      "@sociably/http/*": ["../http/lib/*"],
+      "@sociably/next/*": ["../next/lib/*"],
+      "@sociably/websocket/*": ["../websocket/lib/*"]
     }
   },
   "references": [

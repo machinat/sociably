@@ -1,4 +1,4 @@
-import type { MachinatChannel } from '../types';
+import type { SociablyChannel } from '../types';
 import { makeInterface } from '../service';
 
 export type RecognitionData<
@@ -43,7 +43,7 @@ export interface IntentRecognizer<
   Payload = unknown
 > {
   detectText(
-    channel: MachinatChannel,
+    channel: SociablyChannel,
     text: string,
     options?: DetectTextOptions
   ): Promise<DetectIntentResult<Recognition, Payload>>;

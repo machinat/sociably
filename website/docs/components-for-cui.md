@@ -133,8 +133,8 @@ it's common to have different presentations according to the platform.
 For example:
 
 ```js
-import * as Messenger from '@machinat/messenger/components';
-import * as Telegram from '@machinat/telegram/components';
+import * as Messenger from '@sociably/messenger/components';
+import * as Telegram from '@sociably/telegram/components';
 
 function AskForOrder(props, { platform }) {
   if (platform === 'messenger') {

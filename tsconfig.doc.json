@@ -8,7 +8,7 @@
     "**/__mocks__/*"
   ],
   "typedocOptions": {
-    "name": "Machinat",
+    "name": "Sociably",
     "excludePrivate": true,
     "excludeInternal": true,
     "categorizeByGroup": false,

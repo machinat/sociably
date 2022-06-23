@@ -1,11 +1,11 @@
 /* eslint-disable class-methods-use-this */
 import type { IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@machinat/core/service';
+import { makeClassProvider } from '@sociably/core/service';
 import type {
   ServerAuthenticator,
   VerifyResult,
   CheckDataResult,
-} from '@machinat/auth';
+} from '@sociably/auth';
 import { NoneUser, NoneChannel } from './instance';
 import type { NoneAuthData, NoneAuthContext } from './types';
 

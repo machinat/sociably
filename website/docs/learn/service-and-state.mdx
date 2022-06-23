@@ -108,13 +108,13 @@ import {
   makeFactoryProvider,
   BasicProfiler,
   StateController,
-  MachinatUser,
-  MachinatProfile,
-} from '@machinat/core';
+  SociablyUser,
+  SociablyProfile,
+} from '@sociably/core';
 // ...
 const useUserProfile =
   (profiler: BasicProfiler, stateController: StateController) =>
-  async (user: MachinatUser) => {
+  async (user: SociablyUser) => {
     // ...
     return profile;
   };
@@ -210,7 +210,7 @@ To not repeat similar steps,
 please download the `TodoController.ts` file with this command:
 
 ```bash
-curl -o ./src/services/TodoController.ts https://raw.githubusercontent.com/machinat/todo-example/main/src/services/TodoController.ts
+curl -o ./src/services/TodoController.ts https://raw.githubusercontent.com/machinat/sociably-todo-example/main/src/services/TodoController.ts
 ```
 
 In the file we create a `TodoController` service to manage todos.
@@ -244,7 +244,7 @@ It works the same as `userState`, but it saves the data of a chat instead.
 ```ts {6} title="src/services/TodoController.ts"
 //...
 async getTodos(
-  channel: MachinatChannel
+  channel: SociablyChannel
 ): Promise<{ todo: null; data: TodoState }> {
   const data = await this.stateController
     .channelState(channel)
@@ -267,7 +267,7 @@ Register the `TodoController` in `src/app.ts` like:
 import TodoController from './services/TodoController';
 //...
 const createApp = (options?: CreateAppOptions) => {
-  return Machinat.createApp({
+  return Sociably.createApp({
     modules: [/* ... */],
     platforms: [/* ... */],
     services: [

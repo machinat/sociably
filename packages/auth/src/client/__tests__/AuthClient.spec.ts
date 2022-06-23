@@ -18,7 +18,7 @@ const delayLoops = (n = 1) =>
   new Promise((resolve) => resolveAfterLoops(resolve, n));
 
 nock.disableNetConnect();
-const serverEntry = nock('https://machinat.io');
+const serverEntry = nock('https://sociably.io');
 
 const makeToken = (payload) =>
   jsonwebtoken.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
@@ -84,7 +84,7 @@ const FAKE_NOW = 1570000000000;
 const SEC_NOW = FAKE_NOW / 1000;
 
 const location = moxy<Location>(
-  url.parse('https://machinat.io/app?platform=foo') as never
+  url.parse('https://sociably.io/app?platform=foo') as never
 );
 const document = moxy<Document>({ cookie: '' } as never);
 
@@ -92,7 +92,7 @@ const setCookieAuth = (payload) => {
   const token = makeToken(payload);
   document.mock
     .getter('cookie')
-    .fakeReturnValue(`machinat_auth_token=${token}`);
+    .fakeReturnValue(`sociably_auth_token=${token}`);
   return token;
 };
 
@@ -100,7 +100,7 @@ const setCookieError = (payload) => {
   const token = jsonwebtoken.sign(payload, '__SECRET__');
   document.mock
     .getter('cookie')
-    .fakeReturnValue(`machinat_auth_error=${token}`);
+    .fakeReturnValue(`sociably_auth_error=${token}`);
   return token;
 };
 
@@ -225,7 +225,7 @@ describe('bootstraping phase', () => {
       if (expectedPlatform === 'foo') {
         expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
         expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
-          'https://machinat.io/auth/foo/',
+          'https://sociably.io/auth/foo/',
           cookieError === 'foo'
             ? new AuthError('foo', 418, "I'm a teapot")
             : null,
@@ -234,7 +234,7 @@ describe('bootstraping phase', () => {
       } else if (expectedPlatform === 'bar') {
         expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
         expect(barAuthenticator.init.mock).toHaveBeenCalledWith(
-          'https://machinat.io/auth/bar/',
+          'https://sociably.io/auth/bar/',
           cookieError === 'bar'
             ? new AuthError('bar', 418, "I'm a teapot")
             : null,
@@ -264,7 +264,7 @@ describe('bootstraping phase', () => {
 
     expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
-      'https://machinat.io/auth/foo/',
+      'https://sociably.io/auth/foo/',
       null,
       {
         foo: 'data',
@@ -364,7 +364,7 @@ describe('bootstraping phase', () => {
 
     expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
-      'https://machinat.io/auth/foo/',
+      'https://sociably.io/auth/foo/',
       null,
       null
     );
@@ -374,7 +374,7 @@ describe('bootstraping phase', () => {
 
     expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
     expect(barAuthenticator.init.mock).toHaveBeenCalledWith(
-      'https://machinat.io/auth/bar/',
+      'https://sociably.io/auth/bar/',
       null,
       null
     );
@@ -421,7 +421,7 @@ describe('.signIn()', () => {
   const authPayload = {
     platform: 'foo',
     data: { foo: 'data' },
-    scope: { domain: 'machinat.io', path: '/api' },
+    scope: { domain: 'sociably.io', path: '/api' },
     iat: SEC_NOW - 10,
     exp: SEC_NOW + 1000,
     init: SEC_NOW - 9999,
@@ -463,7 +463,7 @@ describe('.signIn()', () => {
     setCookieError({
       platform: 'foo',
       error: { code: 418, reason: "I'm a teapot" },
-      scope: { domain: 'machinat.io', path: '/api' },
+      scope: { domain: 'sociably.io', path: '/api' },
     });
 
     const client = new AuthClient({ authenticators, serverUrl });
@@ -500,7 +500,7 @@ describe('.signIn()', () => {
     expect(client.isAuthorized).toBe(true);
     expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledWith(
-      'https://machinat.io/auth/foo'
+      'https://sociably.io/auth/foo'
     );
     expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
@@ -600,7 +600,7 @@ describe('.signIn()', () => {
 
     expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledWith(
-      'https://machinat.io/auth/foo'
+      'https://sociably.io/auth/foo'
     );
     expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({

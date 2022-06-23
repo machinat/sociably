@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
-import { isNativeType } from '@machinat/core/utils';
+import Sociably from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
+import { isNativeType } from '@sociably/core/utils';
 
 import {
   GenericItem,

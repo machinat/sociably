@@ -1,11 +1,11 @@
-import type { MachinatNode } from '../types';
+import type { SociablyNode } from '../types';
 import { isElement, isFragmentType, isEmpty } from '../utils/isX';
 import type { TraverseNodeCallback } from './types';
 
 const ITER_SEPARATOR = ':';
 
 const traverse = <Context>(
-  children: MachinatNode,
+  children: SociablyNode,
   prefix: string,
   context: Context,
   callback: TraverseNodeCallback<Context>

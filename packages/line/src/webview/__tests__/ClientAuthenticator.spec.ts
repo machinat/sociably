@@ -47,7 +47,7 @@ const window = moxy(
     document,
     liff,
     location: url.parse(
-      'https://machinat.io/foo?bar=baz'
+      'https://sociably.io/foo?bar=baz'
     ) as unknown as Moxy<Location>,
   },
   { includeProperties: ['*'] }
@@ -256,7 +256,7 @@ describe('.fetchCredential()', () => {
     expect(liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
     expect(liff.login.mock).toHaveBeenCalledTimes(1);
     expect(liff.login.mock).toHaveBeenCalledWith({
-      redirectUri: 'https://machinat.io/foo?bar=baz',
+      redirectUri: 'https://sociably.io/foo?bar=baz',
     });
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(

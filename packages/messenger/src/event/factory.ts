@@ -1,4 +1,4 @@
-import { mixin } from '@machinat/core/utils';
+import { mixin } from '@sociably/core/utils';
 import type { MessengerRawEvent, MessengerChannel } from '../types';
 import MessengerChat from '../Chat';
 import SendTarget from '../SendTarget';

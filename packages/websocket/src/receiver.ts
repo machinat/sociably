@@ -1,12 +1,12 @@
 import type {
-  MachinatUser,
+  SociablyUser,
   PopEventWrapper,
   PopEventFn,
   PopErrorFn,
-} from '@machinat/core';
-import { makeClassProvider } from '@machinat/core/service';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import type { HttpRequestInfo } from '@machinat/http';
+} from '@sociably/core';
+import { makeClassProvider } from '@sociably/core/service';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import type { HttpRequestInfo } from '@sociably/http';
 
 import { WebSocketConnection } from './channel';
 import { BotP } from './bot';
@@ -24,7 +24,7 @@ import type {
 /**
  * @category Provider
  */
-export class WebSocketReceiver<User extends null | MachinatUser, Auth> {
+export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
   private _bot: BotP;
   private _server: ServerP<User, Auth>;
 
@@ -115,6 +115,6 @@ export const ReceiverP = makeClassProvider({
 })(WebSocketReceiver);
 
 export type ReceiverP<
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   Auth
 > = WebSocketReceiver<User, Auth>;

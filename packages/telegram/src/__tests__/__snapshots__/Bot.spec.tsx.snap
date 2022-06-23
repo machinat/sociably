@@ -1,6 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`.render(channel, message, options) render global actions without a chat target 1`] = `
+exports[
+  `.render(channel, message, options) render global actions without a chat target 1`
+] = `
 Object {
   "jobs": Array [
     Object {
@@ -23,7 +25,7 @@ Object {
         "inline_message_id": "2",
         "media": Object {
           "caption": undefined,
-          "media": "https://machinat.com/trollface.png",
+          "media": "https://sociably.io/trollface.png",
           "parse_mode": "HTML",
           "type": "photo",
         },
@@ -70,7 +72,7 @@ Object {
             "inline_message_id": "2",
             "media": Object {
               "caption": undefined,
-              "media": "https://machinat.com/trollface.png",
+              "media": "https://sociably.io/trollface.png",
               "parse_mode": "HTML",
               "type": "photo",
             },
@@ -86,7 +88,9 @@ Object {
 }
 `;
 
-exports[`.render(channel, message, options) send rendered messages to telegram api 1`] = `
+exports[
+  `.render(channel, message, options) send rendered messages to telegram api 1`
+] = `
 Object {
   "jobs": Array [
     Object {
@@ -108,7 +112,7 @@ Object {
         "chat_id": 67890,
         "disable_notification": undefined,
         "parse_mode": "HTML",
-        "photo": "https://machinat.com/greeting.png",
+        "photo": "https://sociably.io/greeting.png",
         "reply_markup": Object {
           "force_reply": true,
           "selective": undefined,
@@ -154,7 +158,7 @@ Object {
             "chat_id": 67890,
             "disable_notification": undefined,
             "parse_mode": "HTML",
-            "photo": "https://machinat.com/greeting.png",
+            "photo": "https://sociably.io/greeting.png",
             "reply_markup": Object {
               "force_reply": true,
               "selective": undefined,

@@ -2,9 +2,9 @@ import { parse as parseUrl } from 'url';
 import crypto from 'crypto';
 import invariant from 'invariant';
 import _BigIntJSON from 'json-bigint';
-import type { PopEventWrapper, MachinatNode } from '@machinat/core';
-import { WebhookReceiver, WebhookHandler } from '@machinat/http/webhook';
-import { makeClassProvider } from '@machinat/core/service';
+import type { PopEventWrapper, SociablyNode } from '@sociably/core';
+import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
+import { makeClassProvider } from '@sociably/core/service';
 import eventFactory from './event/factory';
 import BotP from './Bot';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
@@ -101,7 +101,7 @@ const handleWebhook = ({
           bot,
           event,
           metadata,
-          reply: async (message: MachinatNode) =>
+          reply: async (message: SociablyNode) =>
             bot.render(event.channel, message),
         })
       );

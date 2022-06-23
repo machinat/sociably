@@ -3,17 +3,17 @@ import {
   makeFactoryProvider,
   BasicProfiler,
   StateController,
-  MachinatUser,
-  MachinatProfile
- } from '@machinat/core';
+  SociablyUser,
+  SociablyProfile
+ } from '@sociably/core';
 
 type ProfileCache = {
-  profile: MachinatProfile,
+  profile: SociablyProfile,
 }
 
 const useUserProfile =
   (profiler: BasicProfiler, stateController: StateController) =>
-  async (user: MachinatUser | null) => {
+  async (user: SociablyUser | null) => {
     if (!user) {
       return null;
     }

@@ -1,6 +1,6 @@
-import type { MachinatNode } from '@machinat/core';
-import { formatNode } from '@machinat/core/utils';
-import { makeTextSegment, TextSegment } from '@machinat/core/renderer';
+import type { SociablyNode } from '@sociably/core';
+import { formatNode } from '@sociably/core/utils';
+import { makeTextSegment, TextSegment } from '@sociably/core/renderer';
 import { makeMessengerComponent } from '../utils';
 import type { MessengerComponent } from '../types';
 
@@ -9,7 +9,7 @@ import type { MessengerComponent } from '../types';
  */
 export type LatexProps = {
   /** Texual node to be wrapped in the LATEX block. */
-  children: MachinatNode;
+  children: SociablyNode;
 };
 
 const LATEX_BEGIN = '\\(';

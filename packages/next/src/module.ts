@@ -1,12 +1,12 @@
 import createNextServer from 'next';
-import type { ServiceModule } from '@machinat/core';
+import type { ServiceModule } from '@sociably/core';
 import {
   makeFactoryProvider,
   makeContainer,
   ServiceProvision,
-} from '@machinat/core/service';
-import Http from '@machinat/http';
-import type { RequestRoute, UpgradeRoute } from '@machinat/http';
+} from '@sociably/core/service';
+import Http from '@sociably/http';
+import type { RequestRoute, UpgradeRoute } from '@sociably/http';
 import { ReceiverP } from './receiver';
 import { ConfigsI, ServerI } from './interface';
 

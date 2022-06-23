@@ -1,4 +1,4 @@
-import { makeNativeComponent } from '@machinat/core/renderer';
+import { makeNativeComponent } from '@sociably/core/renderer';
 import type { LineMessageSegmentValue } from './types';
 import { LINE, CHANNEL_REQUEST_GETTER } from './constant';
 

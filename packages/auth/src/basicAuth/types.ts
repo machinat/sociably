@@ -1,9 +1,9 @@
 import {
-  MachinatChannel,
+  SociablyChannel,
   FunctionalComponent,
   ContainerComponent,
-  MachinatBot,
-} from '@machinat/core';
+  SociablyBot,
+} from '@sociably/core';
 
 export type VerifyCodeRequestBody = {
   code: string;
@@ -29,7 +29,7 @@ export type CodeMessageComponent =
   | FunctionalComponent<CodeMessageComponentProps>
   | ContainerComponent<CodeMessageComponentProps>;
 
-export type CheckAuthDataFn<Data, Channel extends MachinatChannel> = (
+export type CheckAuthDataFn<Data, Channel extends SociablyChannel> = (
   data: Data
 ) =>
   | { ok: true; channel: Channel; data: Data }
@@ -65,9 +65,9 @@ export type BasicAuthState<Data> =
   | BasicAuthLoginState<Data>
   | BasicAuthVerifyState<Data>;
 
-export type AuthDelegatorOptions<Data, Channel extends MachinatChannel> = {
+export type AuthDelegatorOptions<Data, Channel extends SociablyChannel> = {
   platform: string;
-  bot: MachinatBot<Channel, unknown, unknown>;
+  bot: SociablyBot<Channel, unknown, unknown>;
   platformName: string;
   platformImageUrl: string;
   platformColor: string;

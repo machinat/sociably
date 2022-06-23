@@ -1,6 +1,6 @@
-import { MachinatNode } from '@machinat/core';
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
-import { formatNode } from '@machinat/core/utils';
+import { SociablyNode } from '@sociably/core';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
+import { formatNode } from '@sociably/core/utils';
 import makeTwitterComponent from '../utils/makeTwitterComponent';
 import createDmSegmentValue from '../utils/createDmSegmentValue';
 import { TwitterSegmentValue, TwitterComponent } from '../types';
@@ -10,17 +10,17 @@ import { TwitterSegmentValue, TwitterComponent } from '../types';
  */
 export type DirectMessageProps = {
   /** Texual content of the direct message */
-  children?: MachinatNode;
+  children?: SociablyNode;
   /** The media attached to the message. Should contain exactly one {@link Photo}, {@link Video} or {@link AnimatedGif} */
-  media?: MachinatNode;
+  media?: SociablyNode;
   /** The twitter place represent the location. You can search places using [`geo/search API`](https://developer.twitter.com/en/docs/twitter-api/v1/geo/places-near-location/api-reference/get-geo-search) */
   placeId?: string;
   /** The coordinates of the location */
   coordinates?: { latitude: number; longitude: number };
   /** Url buttons to be attached below the messages. Should contain only {@link UrlButton} */
-  buttons?: MachinatNode;
+  buttons?: SociablyNode;
   /** Quick replies to be attached after the messages. Should contain only {@link QuickReply} */
-  quickReplies?: MachinatNode;
+  quickReplies?: SociablyNode;
   /** The custome profile to send the messages with */
   customProfileId?: string;
 };

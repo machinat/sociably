@@ -2,26 +2,26 @@ import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
-import Machinat, { MachinatNode } from '@machinat/core';${when(
+import Sociably, { SociablyNode } from '@sociably/core';${when(
   platforms.includes('messenger')
 )`
-import * as Messenger from '@machinat/messenger/components';${when(withWebview)`
-import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';`}`}${when(
+import * as Messenger from '@sociably/messenger/components';${when(withWebview)`
+import { WebviewButton as MessengerWebviewButton } from '@sociably/messenger/webview';`}`}${when(
   platforms.includes('twitter')
 )`
-import * as Twitter from '@machinat/twitter/components';${when(withWebview)`
-import { WebviewButton as TwitterWebviewButton } from '@machinat/twitter/webview';`}`}${when(
+import * as Twitter from '@sociably/twitter/components';${when(withWebview)`
+import { WebviewButton as TwitterWebviewButton } from '@sociably/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
-import * as Telegram from '@machinat/telegram/components';${when(withWebview)`
-import { WebviewButton as TelegramWebviewButton } from '@machinat/telegram/webview';`}`}${when(
+import * as Telegram from '@sociably/telegram/components';${when(withWebview)`
+import { WebviewButton as TelegramWebviewButton } from '@sociably/telegram/webview';`}`}${when(
   platforms.includes('line')
 )`
-import * as Line from '@machinat/line/components';${when(withWebview)`
-import { WebviewAction as LineWebviewAction } from '@machinat/line/webview';`}`}
+import * as Line from '@sociably/line/components';${when(withWebview)`
+import { WebviewAction as LineWebviewAction } from '@sociably/line/webview';`}`}
 
 type WithMenuProps = {
-  children: MachinatNode;
+  children: SociablyNode;
 };
 
 const WithMenu = ({ children }: WithMenuProps, { platform }) => {${when(

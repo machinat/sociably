@@ -1,6 +1,6 @@
-import type { MachinatNode } from '@machinat/core';
-import { formatNode } from '@machinat/core/utils';
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
+import type { SociablyNode } from '@sociably/core';
+import { formatNode } from '@sociably/core/utils';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -14,7 +14,7 @@ export interface EditMessageProps {
   /** Required if messageId are not specified. Identifier of the inline message */
   inlineMessageId?: string;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
-  replyMarkup?: MachinatNode;
+  replyMarkup?: SociablyNode;
 }
 
 /**
@@ -22,7 +22,7 @@ export interface EditMessageProps {
  */
 export interface EditTextProps extends EditMessageProps {
   /** Texual content for the new text of the message, 1-4096 characters after entities parsing */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
@@ -83,7 +83,7 @@ export const EditText: TelegramComponent<
  */
 export interface EditCaptionProps extends EditMessageProps {
   /** Texual content for the new caption of the message, 1-1024 characters after entities parsing */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode: TelegramParseMode;
 }
@@ -146,7 +146,7 @@ export interface EditMediaProps extends EditMessageProps {
    * {@link Video} element as the new media of the message. Please note that the
    * {@link MessageProps} of the children are ignored.
    */
-  children: MachinatNode;
+  children: SociablyNode;
 }
 
 /**
@@ -254,7 +254,7 @@ export interface StopPollProps {
   /**  	Identifier of the original message with the poll */
   messageId: number;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
-  replyMarkup?: MachinatNode;
+  replyMarkup?: SociablyNode;
 }
 
 /**

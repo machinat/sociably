@@ -1,4 +1,4 @@
-import { MaybeContainer } from '@machinat/core/service';
+import { MaybeContainer } from '@sociably/core/service';
 import injectMaybe from './injectMaybe';
 import Stream from './stream';
 

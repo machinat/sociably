@@ -1,6 +1,6 @@
-# Create Machinat App
+# Create Sociably App
 
-Project creator for Machinat framework.
+Project creator for Sociably framework.
 
 ## Usage
 
@@ -8,13 +8,13 @@ Create a hello-world project with specified platforms:
 
 ```bash
 # with npm
-npm init @machinat/app@latest -- -p <platform> [-p ...] [--webview] my-project
+npm init @sociably/app@latest -- -p <platform> [-p ...] [--webview] my-project
 
 # with yarn
-yarn create @machinat/app -- -p <platform> [-p ...] [--webview] my-project
+yarn create @sociably/app -- -p <platform> [-p ...] [--webview] my-project
 ```
 
 ## Docs
 
-Check the [Getting Started](https://machinat.com/docs/#create-machinat-app)
+Check the [Getting Started](https://sociably.js.org/docs/#create-sociably-app)
 document for the usage guide.

@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { MachinatNode } from '@machinat/core';
-import { makePartSegment, PartSegment } from '@machinat/core/renderer';
+import { SociablyNode } from '@sociably/core';
+import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -11,7 +11,7 @@ export type QuickReplyProps = {
   /** URL of the icon that is displayed at the beginning of the button. */
   imageUrl?: string;
   /** One {@link Action} element to be performed when the button is touched. */
-  children: MachinatNode;
+  children: SociablyNode;
 };
 
 /**

@@ -1,11 +1,11 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
-import Machinat, {
+import Sociably, {
   StateController,
-  MachinatBot,
-  MachinatChannel,
-} from '@machinat/core';
+  SociablyBot,
+  SociablyChannel,
+} from '@sociably/core';
 import HttpOperator from '../../HttpOperator';
 import { BasicAuthenticator } from '../BasicAuthenticator';
 
@@ -29,12 +29,12 @@ const operator = moxy<HttpOperator>({
   signToken: () => '__TOKEN_HEAD__.__TOKEN_BODY__.__TOKEN_SIGNATURE__',
   verifyToken: () => ({ data: { foo: 'bar' } }),
   getAuthUrl: (platform, subpath = '') =>
-    `https://machinat.io/myApp/auth/${platform}/${subpath}`,
+    `https://sociably.io/myApp/auth/${platform}/${subpath}`,
   getRedirectUrl: (subpath = '') =>
-    `https://machinat.io/myApp/webview/${subpath}`,
+    `https://sociably.io/myApp/webview/${subpath}`,
 } as never);
 
-const bot = moxy<MachinatBot<MachinatChannel, unknown, unknown>>({
+const bot = moxy<SociablyBot<SociablyChannel, unknown, unknown>>({
   render: async () => null,
 } as never);
 
@@ -45,7 +45,7 @@ const delegateOptions = moxy({
   platform: 'test',
   platformName: 'Test',
   platformColor: '#009',
-  platformImageUrl: 'http://machinat.test/platform/img/icon.png',
+  platformImageUrl: 'http://sociably.test/platform/img/icon.png',
   checkAuthData: (data) => ({
     ok: true as const,
     data,
@@ -87,7 +87,7 @@ test('.getAuthUrl()', () => {
   expect(
     authenticator.getAuthUrl('test', { foo: 'bar' })
   ).toMatchInlineSnapshot(
-    `"https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__"`
+    `"https://sociably.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__"`
   );
   expect(operator.signToken.mock).toHaveBeenCalledWith('test', {
     data: { foo: 'bar' },
@@ -96,7 +96,7 @@ test('.getAuthUrl()', () => {
   expect(
     authenticator.getAuthUrl('test', { hello: 'world' }, '/foo?bar=baz')
   ).toMatchInlineSnapshot(
-    `"https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__"`
+    `"https://sociably.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__"`
   );
   expect(operator.signToken.mock).toHaveBeenCalledWith('test', {
     data: { hello: 'world' },
@@ -115,7 +115,7 @@ describe('root page', () => {
   const delegateRequest = authenticator.createRequestDelegator(delegateOptions);
 
   const req = createReq(
-    'https://machinat.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
+    'https://sociably.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__'
   );
   const res = moxy<ServerResponse>(new ServerResponse(req));
 
@@ -164,7 +164,7 @@ describe('root page', () => {
     expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
     expect(operator.redirect.mock).toHaveBeenCalledWith(
       res,
-      'https://machinat.io/myApp/auth/test/login'
+      'https://sociably.io/myApp/auth/test/login'
     );
     expect(operator.verifyToken.mock).toHaveBeenCalledTimes(2);
     expect(operator.verifyToken.mock).toHaveBeenCalledWith(
@@ -239,7 +239,7 @@ describe('root page', () => {
     expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
     expect(operator.redirect.mock).toHaveBeenCalledWith(
       res,
-      'https://machinat.io/myApp/auth/test/login'
+      'https://sociably.io/myApp/auth/test/login'
     );
 
     expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
@@ -284,7 +284,7 @@ describe('root page', () => {
     expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
     expect(operator.redirect.mock).toHaveBeenCalledWith(
       res,
-      'https://machinat.io/myApp/auth/test/login'
+      'https://sociably.io/myApp/auth/test/login'
     );
 
     expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
@@ -399,7 +399,7 @@ describe('root page', () => {
   });
 
   it('respond 400 if no login query param', async () => {
-    const invalidReq = createReq('https://machinat.io/myApp/auth/test/');
+    const invalidReq = createReq('https://sociably.io/myApp/auth/test/');
     await delegateRequest(invalidReq, res, routing);
 
     expect(operator.issueError.mock).toHaveBeenCalledWith(
@@ -416,7 +416,7 @@ describe('root page', () => {
 
   it('respond 400 if login query is invalid', async () => {
     const invalidReq = createReq(
-      'https://machinat.io/myApp/auth/test/?login=__INVALID_LOGIN_TOKEN__'
+      'https://sociably.io/myApp/auth/test/?login=__INVALID_LOGIN_TOKEN__'
     );
 
     operator.verifyToken.mock.fakeReturnValue(null);
@@ -467,7 +467,7 @@ describe('login page', () => {
     matchedPath: '/myApp/auth/test/',
     trailingPath: 'login',
   };
-  const req = createReq('https://machinat.io/myApp/auth/test/login', {
+  const req = createReq('https://sociably.io/myApp/auth/test/login', {
     'user-agent':
       'Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405',
     'x-client-ip': '222.222.222.222',
@@ -498,7 +498,7 @@ describe('login page', () => {
         code={StringMatching /\\^\\[0-9\\]\\{6\\}\\$/}
         deviceModel="iPad"
         deviceType="tablet"
-        domain="machinat.io"
+        domain="sociably.io"
         ip="222.222.222.222"
         osName="iOS"
       />
@@ -552,7 +552,7 @@ describe('login page', () => {
     const CodeMessage = ({ code }) => <p>Yo! Check your login code {code}</p>;
     const authenticator = new BasicAuthenticator(stateController, operator, {
       appName: 'My Test App',
-      appIconUrl: 'https://machinat.io/myApp/img/icon.png',
+      appIconUrl: 'https://sociably.io/myApp/img/icon.png',
       loginCodeDigits: 20,
       codeMessageComponent: CodeMessage,
     });
@@ -579,7 +579,7 @@ describe('login page', () => {
         code={StringMatching /\\^\\[0-9\\]\\{20\\}\\$/}
         deviceModel="iPad"
         deviceType="tablet"
-        domain="machinat.io"
+        domain="sociably.io"
         ip="222.222.222.222"
         osName="iOS"
       />
@@ -823,7 +823,7 @@ describe('verify code api', () => {
     );
     req.mock
       .getter('url')
-      .fake(() => 'https://machinat.io/myApp/auth/test/login');
+      .fake(() => 'https://sociably.io/myApp/auth/test/login');
     req.mock.getter('method').fake(() => 'POST');
     return req as never;
   };
@@ -853,7 +853,7 @@ describe('verify code api', () => {
     expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "ok": true,
-        "redirectTo": "https://machinat.io/myApp/webview/foo/bar",
+        "redirectTo": "https://sociably.io/myApp/webview/foo/bar",
         "retryChances": 0,
       }
     `);
@@ -920,7 +920,7 @@ describe('verify code api', () => {
       expect(res.end.mock).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toEqual({
         ok: false,
-        redirectTo: 'https://machinat.io/myApp/webview/foo/bar',
+        redirectTo: 'https://sociably.io/myApp/webview/foo/bar',
         retryChances: Math.max(5 - i, 0),
       });
 
@@ -1068,7 +1068,7 @@ describe('verify code api', () => {
     expect(JSON.parse(res1.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "ok": false,
-        "redirectTo": "https://machinat.io/myApp/webview/",
+        "redirectTo": "https://sociably.io/myApp/webview/",
         "retryChances": 0,
       }
     `);
@@ -1102,7 +1102,7 @@ describe('verify code api', () => {
     expect(JSON.parse(res2.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "ok": false,
-        "redirectTo": "https://machinat.io/myApp/webview/foo/bar",
+        "redirectTo": "https://sociably.io/myApp/webview/foo/bar",
         "retryChances": 0,
       }
     `);
@@ -1131,7 +1131,7 @@ describe('verify code api', () => {
     expect(JSON.parse(res3.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "ok": false,
-        "redirectTo": "https://machinat.io/myApp/webview/foo/bar",
+        "redirectTo": "https://sociably.io/myApp/webview/foo/bar",
         "retryChances": 0,
       }
     `);

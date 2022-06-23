@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import moxy, { Mock } from '@moxyjs/moxy';
-import Machinat from '../..';
+import Sociably from '../..';
 import Engine from '../engine';
 import RenderingChannelI from '../../base/RenderingChannel';
 import type Render from '../../renderer';
@@ -182,16 +182,16 @@ describe('.render(channel, node, createJobs)', () => {
     const segmentsWithPauses = [
       {
         type: 'pause',
-        node: <Machinat.Pause delay={delayFn} />,
+        node: <Sociably.Pause delay={delayFn} />,
         value: delayFn,
       },
       unitSegments[0],
-      { type: 'pause', node: <Machinat.Pause />, value: null },
+      { type: 'pause', node: <Sociably.Pause />, value: null },
       unitSegments[1],
       unitSegments[2],
       {
         type: 'pause',
-        node: <Machinat.Pause delay={delayFn} />,
+        node: <Sociably.Pause delay={delayFn} />,
         value: delayFn,
       },
       unitSegments[3],
@@ -272,25 +272,25 @@ describe('.render(channel, node, createJobs)', () => {
       unitSegments[0],
       {
         type: 'thunk',
-        node: <Machinat.Thunk effect={thunkEffect1} />,
+        node: <Sociably.Thunk effect={thunkEffect1} />,
         value: thunkEffect1,
       },
-      { type: 'pause', node: <Machinat.Pause />, value: null },
+      { type: 'pause', node: <Sociably.Pause />, value: null },
       unitSegments[1],
       {
         type: 'thunk',
-        node: <Machinat.Thunk effect={thunkEffect2} />,
+        node: <Sociably.Thunk effect={thunkEffect2} />,
         value: thunkEffect2,
       },
       unitSegments[2],
       {
         type: 'pause',
-        node: <Machinat.Pause delay={delayFn} />,
+        node: <Sociably.Pause delay={delayFn} />,
         value: delayFn,
       },
       {
         type: 'thunk',
-        node: <Machinat.Thunk effect={thunkEffect3} />,
+        node: <Sociably.Thunk effect={thunkEffect3} />,
         value: thunkEffect3,
       },
       unitSegments[3],
@@ -373,12 +373,12 @@ describe('.render(channel, node, createJobs)', () => {
 
     const thunkSegment = {
       type: 'thunk',
-      node: <Machinat.Thunk effect={thunkEffect} />,
+      node: <Sociably.Thunk effect={thunkEffect} />,
       value: thunkEffect,
     };
     const failThunkSegment = {
       type: 'thunk',
-      node: <Machinat.Thunk effect={failThunkEffect} />,
+      node: <Sociably.Thunk effect={failThunkEffect} />,
       value: failThunkEffect,
     };
 

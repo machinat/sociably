@@ -1,10 +1,10 @@
 import moxy from '@moxyjs/moxy';
-import { MachinatApp } from '@machinat/core';
+import { SociablyApp } from '@sociably/core';
 import {
   isServiceContainer,
   makeContainer,
   ServiceScope,
-} from '@machinat/core/service';
+} from '@sociably/core/service';
 import { STREAMING_KEY_I } from '../interface';
 import fromApp from '../fromApp';
 
@@ -14,7 +14,7 @@ const scope = moxy({
   },
 });
 
-const app = moxy<MachinatApp<any, any>>({
+const app = moxy<SociablyApp<any, any>>({
   onError() {
     return undefined;
   },

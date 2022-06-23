@@ -15,13 +15,13 @@ like `RedisState`.
 You can register the state module like this:
 
 ```js
-import { FileState } from '@machinat/dev-tools';
-import RedisState from '@machinat/redis-state';
+import { FileState } from '@sociably/dev-tools';
+import RedisState from '@sociably/redis-state';
 
 const { NODE_ENV, REDIS_URL } = process.env;
 const DEV = NODE_ENV !== 'production';
 
-Machinat.createApp({
+Sociably.createApp({
   modules: [
     DEV
       ? FileState.initModule({
@@ -41,8 +41,8 @@ Machinat.createApp({
 For now the following state modules are officially supported,
 please check the references for more details:
 
-- [`@machinat/dev-tools`](pathname:///api/modules/dev_tools): provide `FileState` and `InMemoryState` for testing and debugging. Don't use them in production.
-- [`@machinat/redis-state`](pathname:///api/modules/redis_state): save and load state in [Redis](https://redis.io/) database.
+- [`@sociably/dev-tools`](pathname:///api/modules/dev_tools): provide `FileState` and `InMemoryState` for testing and debugging. Don't use them in production.
+- [`@sociably/redis-state`](pathname:///api/modules/redis_state): save and load state in [Redis](https://redis.io/) database.
 
 ## Get Chat State
 
@@ -51,7 +51,7 @@ you can use the `StateController` service to access the state.
 For example:
 
 ```js
-import { makeContainer, StateController } from '@machinat/core';
+import { makeContainer, StateController } from '@sociably/core';
 
 app.onEvent(
   makeContainer({ deps: [StateController] })(

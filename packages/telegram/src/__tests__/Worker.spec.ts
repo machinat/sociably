@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import nock from 'nock';
-import Queue from '@machinat/core/queue';
+import Queue from '@sociably/core/queue';
 import TelegramWorker from '../Worker';
 
 nock.disableNetConnect();

@@ -1,8 +1,8 @@
 /// <reference lib="DOM" />
 import { EventEmitter } from 'events';
 import type TypedEmitter from 'typed-emitter';
-import type { MachinatUser } from '@machinat/core';
-import type { Marshaler } from '@machinat/core/base/Marshaler';
+import type { SociablyUser } from '@sociably/core';
+import type { Marshaler } from '@sociably/core/base/Marshaler';
 import type {
   default as Socket, // eslint-disable-line import/no-named-default
   ConnectBody,
@@ -22,7 +22,7 @@ type PendingEvent = {
 
 const Emitter = EventEmitter as { new <T>(): TypedEmitter<T> };
 
-export type ConnectorContext<User extends null | MachinatUser> = {
+export type ConnectorContext<User extends null | SociablyUser> = {
   connId: string;
   user: User;
 };
@@ -30,7 +30,7 @@ export type ConnectorContext<User extends null | MachinatUser> = {
 const RECONNECT_INTERVAL_BASE = 5000; // 5 sec
 const MAX_RECONNECT_INTERVAL = 10000; // 100 sec
 
-class WebScoketConnector<User extends null | MachinatUser> extends Emitter<{
+class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
   connect: (ctx: ConnectorContext<User>) => void;
   events: (events: EventInput[], ctx: ConnectorContext<User>) => void;
   disconnect: (

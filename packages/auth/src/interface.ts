@@ -1,4 +1,4 @@
-import { makeInterface } from '@machinat/core/service';
+import { makeInterface } from '@sociably/core/service';
 import type { AnyServerAuthenticator, AuthConfigs } from './types';
 
 /** @category Interface */

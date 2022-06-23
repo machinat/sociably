@@ -1,4 +1,4 @@
-import Machinat from '../..';
+import Sociably from '../..';
 import reduce from '../reduce';
 
 it('returns initial value if null or undefined passed', () => {

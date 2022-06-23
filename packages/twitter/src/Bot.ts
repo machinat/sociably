@@ -1,17 +1,17 @@
 import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type {
-  MachinatNode,
-  MachinatBot,
+  SociablyNode,
+  SociablyBot,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import Engine, { DispatchError } from '@machinat/core/engine';
-import { formatNode } from '@machinat/core/utils';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider } from '@machinat/core/service';
+} from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
+import Queue from '@sociably/core/queue';
+import Engine, { DispatchError } from '@sociably/core/engine';
+import { formatNode } from '@sociably/core/utils';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import { makeClassProvider } from '@sociably/core/service';
 import {
   createTweetJobs,
   createDirectMessageJobs,
@@ -58,7 +58,7 @@ type TwitterBotOptions = {
  * @category Provider
  */
 export class TwitterBot
-  implements MachinatBot<TwitterChannel, TwitterJob, TwitterApiResult>
+  implements SociablyBot<TwitterChannel, TwitterJob, TwitterApiResult>
 {
   client: TwitterWorker;
   agentId: string;
@@ -123,7 +123,7 @@ export class TwitterBot
 
   render(
     channel: null | TweetTarget | DirectMessageChat,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | TwitterDispatchResponse> {
     if (channel instanceof DirectMessageChat) {
       return this.engine.render(channel, message, createDirectMessageJobs);
@@ -138,7 +138,7 @@ export class TwitterBot
 
   async renderTweet(
     target: null | string | Tweet | TweetTarget,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | TwitterDispatchResponse> {
     const channel =
       typeof target === 'string'
@@ -154,7 +154,7 @@ export class TwitterBot
 
   async renderDirectMeaasge(
     target: string | TwitterUser | DirectMessageChat,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | TwitterDispatchResponse> {
     const channel =
       typeof target === 'string'
@@ -195,7 +195,7 @@ export class TwitterBot
   }
 
   async renderMedia(
-    media: MachinatNode
+    media: SociablyNode
   ): Promise<null | RenderMediaResponse[]> {
     const segments = await this.engine.renderer.render(media, null, null);
     if (!segments) {
@@ -232,7 +232,7 @@ export class TwitterBot
 
   async renderWelcomeMessage(
     name: undefined | string,
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | {
     /* eslint-disable camelcase */
     welcome_message: {

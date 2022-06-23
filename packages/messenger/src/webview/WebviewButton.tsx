@@ -1,4 +1,4 @@
-import Machinat, { makeContainer, RenderingChannel } from '@machinat/core';
+import Sociably, { makeContainer, RenderingChannel } from '@sociably/core';
 import { posix as posixPath } from 'path';
 import MessengerChat from '../Chat';
 import { UrlButton } from '../components';

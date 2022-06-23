@@ -1,4 +1,4 @@
-import Machinat from '@machinat/core';
+import Sociably from '@sociably/core';
 import {
   createTweetJobs,
   createDirectMessageJobs,

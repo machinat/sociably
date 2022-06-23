@@ -3,12 +3,12 @@ import type {
   PlatformUtilities,
   EventMiddleware,
   DispatchMiddleware,
-  MachinatNode,
+  SociablyNode,
   NativeComponent,
-} from '@machinat/core';
-import { IntermediateSegment, UnitSegment } from '@machinat/core/renderer';
-import { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
-import type { WebhookMetadata } from '@machinat/http/webhook';
+} from '@sociably/core';
+import { IntermediateSegment, UnitSegment } from '@sociably/core/renderer';
+import { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
+import type { WebhookMetadata } from '@sociably/http/webhook';
 import type { TwitterEvent } from './event/types';
 import type TwitterChat from './Chat';
 import type TweetTarget from './TweetTarget';
@@ -154,7 +154,7 @@ export type TwitterEventContext = {
   event: TwitterEvent;
   metadata: WebhookMetadata;
   bot: TwitterBot;
-  reply(node: MachinatNode): Promise<null | TwitterDispatchResponse>;
+  reply(node: SociablyNode): Promise<null | TwitterDispatchResponse>;
 };
 
 export type TwitterEventMiddleware = EventMiddleware<TwitterEventContext, null>;

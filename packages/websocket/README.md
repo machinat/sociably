@@ -1,32 +1,32 @@
 # WebSocket Module
 
 This package is an underlying module of webview platform for serving WebSocket.
-You might want to use [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview)
+You might want to use [`@sociably/webview`](https://github.com/machinat/sociably/tree/master/packages/webview)
 unless you want to serve your own web service.
 
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/websocket
+npm install @sociably/core @sociably/http @sociably/websocket
 # or with yarn
-yarn add @machinat/core @machinat/http @machinat/websocket
+yarn add @sociably/core @sociably/http @sociably/websocket
 ```
 
 ## Docs
 
-Check the [package reference](https://machinat.com/api/modules/websocket.html).
+Check the [package reference](https://sociably.js.org/api/modules/websocket.html).
 
 ## Setup
 
 #### Back-end
 ```js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import WebSocket from '@machinat/websocket';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import WebSocket from '@sociably/websocket';
 
 const DEV = process.env.NODE_ENV !== 'production';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
   ],
@@ -54,7 +54,7 @@ const app = Machinat.createApp({
 #### Front-end
 
 ```js
-import Client from '@machinat/websocket/client';
+import Client from '@sociably/websocket/client';
 
 const client = new Client({ url: '/websocket' });
 

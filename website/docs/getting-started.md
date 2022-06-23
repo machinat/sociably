@@ -3,28 +3,28 @@ title: Getting Started
 slug: /
 ---
 
-Welcome to the Machinat framework document!
+Welcome to the Sociably framework document!
 
-If you are new to Machinat, we recommend starting from [the tutorial](/docs/learn).
+If you are new to Sociably, we recommend starting from [the tutorial](/docs/learn).
 It brings you to build a complete app step by step.
 
 ## System Requirement
 
 - [Node.js](https://nodejs.org/) 10.13 or later
 
-## Create Machinat App
+## Create Sociably App
 
-We recommend to create a Machinat app project with `@machinat/create-app`
+We recommend to create a Sociably app project with `@sociably/create-app`
 initiator. Run this command to create a hello-world project:
 
 ```bash
-npm init @machinat/app@latest -- -p <platform> [-p <platform> ...] <project-path>
+npm init @sociably/app@latest -- -p <platform> [-p <platform> ...] <project-path>
 ```
 
 Or using `yarn`:
 
 ```bash
-yarn create @machinat/app -p <platform> [-p <platform> ...] <project-path>
+yarn create @sociably/app -p <platform> [-p <platform> ...] <project-path>
 ```
 
 ### Platforms
@@ -91,8 +91,8 @@ The managing operations are described in migration files under `/src/migrations`
 A migration file might looks like this:
 
 ```js
-import { makeContainer } from '@machinat/core';
-import Messenger from '@machinat/messenger';
+import { makeContainer } from '@sociably/core';
+import Messenger from '@sociably/messenger';
 
 export const up = makeContainer({
   deps: [Messenger.Bot],
@@ -151,26 +151,26 @@ You can skip if you choose to use the creator.
 
 ### Core Modules
 
-Machinat framework is built in progressive framework paradigm,
+Sociably framework is built in progressive framework paradigm,
 that you can install the modules you need progressively.
-First you need `@machinat/core` and also `@machinat/http` to receive HTTP requests:
+First you need `@sociably/core` and also `@sociably/http` to receive HTTP requests:
 
 ```bash
-npm install @machinat/core @machinat/http
+npm install @sociably/core @sociably/http
 # or with yarn
-yarn add @machinat/core @machinat/http
+yarn add @sociably/core @sociably/http
 ```
 
-A simple Machinat app may look like this:
+A simple Sociably app may look like this:
 
 ```js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Messenger from '@machinat/messenger';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Messenger from '@sociably/messenger';
 
 const ENV = process.env;
 
-Machinat.createApp({
+Sociably.createApp({
   modules: [
     Http.initModule({ port: 8080 }),
   ],
@@ -200,21 +200,21 @@ That's how a _sociable app_ works.
 Install the platform packages that you like to communicate your users with:
 
 ```bash
-npm install @machinat/messenger @machinat/webview # ...
+npm install @sociably/messenger @sociably/webview # ...
 # or with yarn
-yarn add @machinat/messenger @machinat/webview # ...
+yarn add @sociably/messenger @sociably/webview # ...
 ```
 
-For now, Machinat supports the platforms below. Check the readme of the package for the usage guide.
+For now, Sociably supports the platforms below. Check the readme of the package for the usage guide.
 
-- [`@machinat/messenger`](https://github.com/machinat/machinat/tree/master/packages/messenger) - receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
-- [`@machinat/telegram`](https://github.com/machinat/machinat/tree/master/packages/telegram) - receive/send messages as a Telegram bot.
-- [`@machinat/line`](https://github.com/machinat/machinat/tree/master/packages/line) - receive/send messages as a [LINE](https://line.me) official account.
-- [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview) - extend embedded webviews on the chat platforms.
+- [`@sociably/messenger`](https://github.com/machinat/sociably/tree/master/packages/messenger) - receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
+- [`@sociably/telegram`](https://github.com/machinat/sociably/tree/master/packages/telegram) - receive/send messages as a Telegram bot.
+- [`@sociably/line`](https://github.com/machinat/sociably/tree/master/packages/line) - receive/send messages as a [LINE](https://line.me) official account.
+- [`@sociably/webview`](https://github.com/machinat/sociably/tree/master/packages/webview) - extend embedded webviews on the chat platforms.
 
 ## Enabling JSX
 
-To enable Machinat JSX syntax, you need to configure the transpiling environment.
+To enable Sociably JSX syntax, you need to configure the transpiling environment.
 You can choose either [Babel.js](https://babeljs.io/) or [TypeScript](https://www.typescriptlang.org/).
 
 ### With TypeScript
@@ -225,8 +225,8 @@ Add the following `compilerOptions` settings in your `tsconfig.json`:
 {
   "compilerOptions": {
     "jsx": "react",
-    "jsxFactory": "Machinat.createElement",
-    "jsxFragmentFactory": "Machinat.Fragment"
+    "jsxFactory": "Sociably.createElement",
+    "jsxFragmentFactory": "Sociably.Fragment"
     // ...
   }
 }
@@ -234,12 +234,12 @@ Add the following `compilerOptions` settings in your `tsconfig.json`:
 
 ### With Babel
 
-Install `@machinat/babel-preset` package:
+Install `@sociably/babel-preset` package:
 
 ```bash
-npm install -D @machinat/babel-preset
+npm install -D @sociably/babel-preset
 # or using yarn
-yarn add --dev @machinat/babel-preset
+yarn add --dev @sociably/babel-preset
 ```
 
 Then add it into `babel.config.js` like this:
@@ -250,17 +250,17 @@ module.exports = {
     ['@babel/preset-env', {
       //...
     }],
-    '@machinat/babel-preset',
+    '@sociably/babel-preset',
   ],
 };
 ```
 
-### Import `Machinat`
+### Import `Sociably`
 
-Finally you have to import `Machinat` in the file before using JSX:
+Finally you have to import `Sociably` in the file before using JSX:
 
 ```js
-import Machinat from '@machinat/core';
+import Sociably from '@sociably/core';
 
 const greeting = <p>Hello World!</p>;
 ```
@@ -271,7 +271,7 @@ In `TypeScript`, the file extension must be `.tsx` to enable JSX syntax.
 
 ## Listening to HTTP
 
-Use `listenOptions` of the `@machinat/http` module to configure HTTP server.
+Use `listenOptions` of the `@sociably/http` module to configure HTTP server.
 It take the same options as [`server.listen()`](https://nodejs.org/dist/latest/docs/api/net.html#net_server_listen_options_callback).
 For example:
 
@@ -290,7 +290,7 @@ set the route path for each platform. Like:
 
 
 ```js
-Machinat.createApp({
+Sociably.createApp({
   platforms: [
     Messenger.initModule({
       webhookPath: '/webhook/messenger',
@@ -312,7 +312,7 @@ You can check the [API reference](pathname:///api) for the details.
 After all modules are configured, call `app.start()` to run the app. Like:
 
 ```js
-const app = Machinat.createApp({ ... });
+const app = Sociably.createApp({ ... });
 
 app
   .start()

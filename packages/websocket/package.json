@@ -1,14 +1,14 @@
 {
-  "name": "@machinat/websocket",
+  "name": "@sociably/websocket",
   "version": "0.6.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/machinat/machinat.git",
+    "url": "https://github.com/machinat/sociably.git",
     "directory": "packages/websocket"
   },
-  "homepage": "https://github.com/machinat/machinat#readme",
-  "bugs": "https://github.com/machinat/machinat/issues",
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
@@ -37,8 +37,8 @@
     "ws": "^7.2.5"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.6.0",
-    "@machinat/http": "^0.6.0"
+    "@sociably/core": "^0.6.0",
+    "@sociably/http": "^0.6.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",

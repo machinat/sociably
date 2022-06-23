@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img width="500" src="media/logo.svg" alt="Machinat" />
+  <img width="500" src="media/logo.svg" alt="Sociably" />
   <br/>
 </h1>
 
@@ -8,25 +8,25 @@
     <img src="https://img.shields.io/badge/platforms-3-red?style=for-the-badge" />
   </a>
   <a href="https://machinat.testspace.com/projects/66804/spaces">
-    <img src="https://img.shields.io/testspace/tests/machinat/machinat:machinat/master?compact_message&style=for-the-badge" />
+    <img src="https://img.shields.io/testspace/tests/machinat/machinat:sociably/master?compact_message&style=for-the-badge" />
   </a>
-  <a href="https://www.npmjs.com/package/@machinat">
-    <img src="https://img.shields.io/npm/v/@machinat/core?style=for-the-badge&color=blue" />
+  <a href="https://www.npmjs.com/package/@sociably">
+    <img src="https://img.shields.io/npm/v/@sociably/core?style=for-the-badge&color=blue" />
   </a>
-  <a href="https://github.com/machinat/machinat/blob/master/LICENSE">
-    <img src="https://img.shields.io/npm/l/@machinat/core?style=for-the-badge" />
+  <a href="https://github.com/machinat/sociably/blob/master/LICENSE">
+    <img src="https://img.shields.io/npm/l/@sociably/core?style=for-the-badge" />
   </a>
-  <a href="https://twitter.com/machinatjs">
-    <img src="https://img.shields.io/badge/-machinatjs-555?logo=twitter&style=for-the-badge" />
+  <a href="https://twitter.com/Sociablyjs">
+    <img src="https://img.shields.io/badge/-sociablyjs-555?logo=twitter&style=for-the-badge" />
   </a>
 </div>
 <br />
 
-Machint.js builds _cross-platform, feature-rich and intelligent **sociable apps**_.
+Sociably.js builds _cross-platform, feature-rich and intelligent **sociable apps**_.
 
 ## The _Sociable App_
 
-Today we reach almost everything through many social platforms. Machinat integrate all the platforms together as _**a new app platform**_. That's the _**Sociable App**_.
+Today we reach almost everything through many social platforms. Sociably integrate all the platforms together as _**a new app platform**_. That's the _**Sociable App**_.
 
 - Sociable apps can do more and better than static Chatbots. They provide _functional and dynamic features on all the social platforms_.
 
@@ -101,7 +101,7 @@ Today we reach almost everything through many social platforms. Machinat integra
 
 ## Platforms
 
-Machinat is designed to support ALL the social platforms. Here's the covering status:
+Sociably is designed to support ALL the social platforms. Here's the covering status:
 
 ##### Currently supported:
 <div>
@@ -147,7 +147,7 @@ Machinat is designed to support ALL the social platforms. Here's the covering st
 
 ## Get Started
 
-Follow our [tutorial](https://machinat.com/docs/learn/)
+Follow our [tutorial](https://sociably.js.org/docs/learn/)
 to make your first in-chat app.
 
 ## Install
@@ -155,35 +155,35 @@ to make your first in-chat app.
 Create an app project with the command:
 
 ```bash
-npm init @machinat/app@latest -- -p <platform> [-p ...] [--webview] my-project
+npm init @sociably/app@latest -- -p <platform> [-p ...] [--webview] my-project
 ```
 
 Or using yarn:
 
 ```bash
-yarn create @machinat/app -- -p <platform> [-p ...] [--webview] my-project
+yarn create @sociably/app -- -p <platform> [-p ...] [--webview] my-project
 ```
 
 > Supported platforms: `messenger`, `twitter`, `telegram`, `line`
 
 ## Documents
 
-- [**Document**](https://machinat.com/docs/) - the usage guides by topics.
-- [**Tutorial**](https://machinat.com/docs/learn/) - a course to build an app step by step.
-- [**API Reference**](https://machinat.com/api/) - detailed framework API.
+- [**Document**](https://sociably.js.org/docs/) - the usage guides by topics.
+- [**Tutorial**](https://sociably.js.org/docs/learn/) - a course to build an app step by step.
+- [**API Reference**](https://sociably.js.org/api/) - detailed framework API.
 
 ## Examples
 
 Here are some simple but production-ready sample apps:
 
-- [Note Example](https://github.com/machinat/note-example) - taking notes in chat.
-- [Todo Example](https://github.com/machinat/todo-example) - managing todos in chat.
-- [Pomodoro Example](https://github.com/machinat/pomodoro-example) - a pomodoro timer in chat.
-- [4digits Example](https://github.com/machinat/4digits-example) - playing guessing 4 digits game in chat.
+- [Note Example](https://github.com/machinat/sociably-note-example) - taking notes in chat.
+- [Todo Example](https://github.com/machinat/sociably-todo-example) - managing todos in chat.
+- [Pomodoro Example](https://github.com/machinat/sociably-pomodoro-example) - a pomodoro timer in chat.
+- [4digits Example](https://github.com/machinat/sociably-4digits-example) - playing guessing 4 digits game in chat.
 
 ## Comparison
 
-|   | Machinat | Dialogflow | BotFramework | Botpress | Rasa |
+|   | Sociably | Dialogflow | BotFramework | Botpress | Rasa |
 |---|---|---|---|---|---|
 | Open-sourced | ✓ |   |   | ✓ | ✓ |
 | Cross-platform | ✓ | ✓ | ✓ | ✓ | ✓ |
@@ -200,5 +200,5 @@ Here are some simple but production-ready sample apps:
 | Extensibility | ✓ |   |   | ✓ |   |
 | Fully controlled<br/>deployment | ✓ |   |   | ✓ | ✓ |
 
-> [Let us know](https://github.com/machinat/machinat/issues/new)
+> [Let us know](https://github.com/machinat/sociably/issues/new)
 > if there is any mistake in the comparison chart.

@@ -2,7 +2,7 @@ import { CreateAppContext } from '../../../types';
 import { when } from '../../../utils';
 
 export default ({ platforms }: CreateAppContext): string => `
-import Machinat, { makeContainer } from '@machinat/core';
+import Sociably, { makeContainer } from '@sociably/core';
 import About from '../scenes/About';
 import WithMenu from '../components/WithMenu';
 import useIntent from '../services/useIntent';

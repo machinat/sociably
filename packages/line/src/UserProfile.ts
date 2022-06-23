@@ -1,5 +1,5 @@
-import type { MachinatProfile } from '@machinat/core/base/Profiler';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyProfile } from '@sociably/core/base/Profiler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import type { LineRawUserProfile } from './types';
 import { LINE } from './constant';
 
@@ -8,7 +8,7 @@ type UserProfileValue = {
 };
 
 class LineUserProfile
-  implements MachinatProfile, MarshallableInstance<UserProfileValue>
+  implements SociablyProfile, MarshallableInstance<UserProfileValue>
 {
   static typeName = 'LineUserProfile';
 

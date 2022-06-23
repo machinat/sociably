@@ -1,14 +1,14 @@
-import Machinat, {
-  MachinatNode,
-  MachinatEmpty,
-  MachinatElement,
-  MachinatChannel,
+import Sociably, {
+  SociablyNode,
+  SociablyEmpty,
+  SociablyElement,
+  SociablyChannel,
   ContainerComponent,
-} from '@machinat/core';
+} from '@sociably/core';
 
-import type { MaybeContainer } from '@machinat/core/service';
+import type { MaybeContainer } from '@sociably/core/service';
 
-import { MACHINAT_SCRIPT_TYPE } from './constant';
+import { SOCIABLY_SCRIPT_TYPE } from './constant';
 import type {
   IF,
   THEN,
@@ -28,7 +28,7 @@ type StartScriptProps<Params> = {
 };
 
 export type ScriptLibrary<Vars, Input, Params, Return, Yield> = {
-  $$typeof: typeof MACHINAT_SCRIPT_TYPE;
+  $$typeof: typeof SOCIABLY_SCRIPT_TYPE;
   Start: ContainerComponent<StartScriptProps<Params>>;
   commands: ScriptCommand<Vars, Input, Return, Yield>[];
   initVars: (params: Params) => Vars;
@@ -40,13 +40,13 @@ export type AnyScriptLibrary = ScriptLibrary<any, any, any, any, any>;
 
 export type ScriptCircs<Vars> = {
   platform: string;
-  channel: MachinatChannel;
+  channel: SociablyChannel;
   vars: Vars;
 };
 
 export type ContentFn<Vars> = (
   circs: ScriptCircs<Vars>
-) => MachinatNode | Promise<MachinatNode>;
+) => SociablyNode | Promise<SociablyNode>;
 
 export type ContentNode<Vars> = MaybeContainer<ContentFn<Vars>>;
 
@@ -74,7 +74,7 @@ export type IfProps<Vars, Input, Return, Yield> = {
 /**
  * @category Keyword Element
  */
-export type IfElement<Vars, Input, Return, Yield> = MachinatElement<
+export type IfElement<Vars, Input, Return, Yield> = SociablyElement<
   IfProps<Vars, Input, Return, Yield>,
   typeof IF
 >;
@@ -89,7 +89,7 @@ export type BlockProps<Vars, Input, Return, Yield> = {
 /**
  * @category Keyword Element
  */
-export type ThenElement<Vars, Input, Return, Yield> = MachinatElement<
+export type ThenElement<Vars, Input, Return, Yield> = SociablyElement<
   BlockProps<Vars, Input, Return, Yield>,
   typeof THEN
 >;
@@ -97,7 +97,7 @@ export type ThenElement<Vars, Input, Return, Yield> = MachinatElement<
 /**
  * @category Keyword Element
  */
-export type ElseElement<Vars, Input, Return, Yield> = MachinatElement<
+export type ElseElement<Vars, Input, Return, Yield> = SociablyElement<
   BlockProps<Vars, Input, Return, Yield>,
   typeof ELSE
 >;
@@ -113,7 +113,7 @@ export type ElseIfProps<Vars, Input, Return, Yield> = {
 /**
  * @category Keyword Element
  */
-export type ElseIfElement<Vars, Input, Return, Yield> = MachinatElement<
+export type ElseIfElement<Vars, Input, Return, Yield> = SociablyElement<
   ElseIfProps<Vars, Input, Return, Yield>,
   typeof ELSE_IF
 >;
@@ -129,7 +129,7 @@ export type WhileProps<Vars, Input, Return, Yield> = {
 /**
  * @category Keyword Element
  */
-export type WhileElement<Vars, Input, Return, Yield> = MachinatElement<
+export type WhileElement<Vars, Input, Return, Yield> = SociablyElement<
   WhileProps<Vars, Input, Return, Yield>,
   typeof WHILE
 >;
@@ -154,7 +154,7 @@ export type PromptProps<Vars, Input> = {
 /**
  * @category Keyword Element
  */
-export type PromptElement<Vars, Input> = MachinatElement<
+export type PromptElement<Vars, Input> = SociablyElement<
   PromptProps<Vars, Input>,
   typeof PROMPT
 >;
@@ -167,7 +167,7 @@ export type LabelProps = { key: string };
 /**
  * @category Keyword Element
  */
-export type LabelElement = MachinatElement<LabelProps, typeof LABEL>;
+export type LabelElement = SociablyElement<LabelProps, typeof LABEL>;
 
 export type CallParamsFn<Vars, Params> = (
   circs: ScriptCircs<Vars>
@@ -214,7 +214,7 @@ export type CallProps<
 export type CallElement<
   Vars,
   Script extends AnyScriptLibrary
-> = MachinatElement<CallProps<Vars, Script>, typeof CALL>;
+> = SociablyElement<CallProps<Vars, Script>, typeof CALL>;
 
 export type EffectSetFn<Vars> = (
   circs: ScriptCircs<Vars>
@@ -242,7 +242,7 @@ export type EffectProps<Vars, Yield> = {
 /**
  * @category Keyword Element
  */
-export type EffectElement<Vars, Yield> = MachinatElement<
+export type EffectElement<Vars, Yield> = SociablyElement<
   EffectProps<Vars, Yield>,
   typeof EFFECT
 >;
@@ -265,7 +265,7 @@ export type ReturnProps<Vars, Return> = {
 /**
  * @category Keyword Element
  */
-export type ReturnElement<Vars, Return> = MachinatElement<
+export type ReturnElement<Vars, Return> = SociablyElement<
   ReturnProps<Vars, Return>,
   typeof RETURN
 >;
@@ -279,13 +279,13 @@ export type ScriptElement<Vars, Input, Return, Yield> =
   | ReturnElement<Vars, Return>;
 
 export type ScriptNode<Vars, Input, Return, Yield> =
-  | MachinatEmpty
+  | SociablyEmpty
   | ContentNode<Vars>
   | ScriptElement<Vars, Input, Return, Yield>
   | ScriptNode<Vars, Input, Return, Yield>[]
-  | MachinatElement<
+  | SociablyElement<
       { children: ScriptNode<Vars, Input, Return, Yield> },
-      typeof Machinat.Fragment
+      typeof Sociably.Fragment
     >;
 
 export type ConditionsSegment<Vars> = {

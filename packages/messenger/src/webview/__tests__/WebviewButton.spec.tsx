@@ -5,7 +5,7 @@ import WebviewButton from '../WebviewButton';
 
 const authenticator = moxy<ServerAuthenticator>({
   getAuthUrl: () =>
-    'https://machinat.io/foo/auth/twitter?login=__LOGIN_TOKEN__',
+    'https://sociably.io/foo/auth/messenger?login=__LOGIN_TOKEN__',
 } as never);
 
 beforeEach(() => {
@@ -21,7 +21,7 @@ test('rendering to UrlButton', () => {
   ).toMatchInlineSnapshot(`
     <UrlButton
       title="Foo"
-      url="https://machinat.io/foo/auth/twitter?login=__LOGIN_TOKEN__"
+      url="https://sociably.io/foo/auth/messenger?login=__LOGIN_TOKEN__"
     />
   `);
 
@@ -34,7 +34,7 @@ test('rendering to UrlButton', () => {
     <UrlButton
       hideShareButton={true}
       title="Foo"
-      url="https://machinat.io/foo/auth/twitter?login=__LOGIN_TOKEN__"
+      url="https://sociably.io/foo/auth/messenger?login=__LOGIN_TOKEN__"
       webviewHeightRatio="compact"
     />
   `);
@@ -47,7 +47,7 @@ test('rendering to UrlButton', () => {
   ).toMatchInlineSnapshot(`
     <UrlButton
       title="Foo"
-      url="https://machinat.io/foo/auth/twitter?login=__LOGIN_TOKEN__"
+      url="https://sociably.io/foo/auth/messenger?login=__LOGIN_TOKEN__"
     />
   `);
 

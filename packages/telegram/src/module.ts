@@ -1,10 +1,10 @@
-import type { MachinatPlatform } from '@machinat/core';
-import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
-import BaseBot from '@machinat/core/base/Bot';
-import BaseProfiler from '@machinat/core/base/Profiler';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
-import Http from '@machinat/http';
-import type { RequestRoute } from '@machinat/http';
+import type { SociablyPlatform } from '@sociably/core';
+import { makeContainer, makeFactoryProvider } from '@sociably/core/service';
+import BaseBot from '@sociably/core/base/Bot';
+import BaseProfiler from '@sociably/core/base/Profiler';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
+import Http from '@sociably/http';
+import type { RequestRoute } from '@sociably/http';
 
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TELEGRAM } from './constant';
@@ -53,7 +53,7 @@ namespace Telegram {
 
   export const initModule = (
     configs: ConfigsI
-  ): MachinatPlatform<
+  ): SociablyPlatform<
     TelegramEventContext,
     null,
     TelegramJob,

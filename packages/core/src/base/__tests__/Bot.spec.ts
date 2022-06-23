@@ -1,8 +1,8 @@
 import moxy from '@moxyjs/moxy';
-import { MachinatBot, MachinatChannel } from '../../types';
+import { SociablyBot, SociablyChannel } from '../../types';
 import { BasicBot } from '../Bot';
 
-type UnknownBot = MachinatBot<MachinatChannel, unknown, unknown>;
+type UnknownBot = SociablyBot<SociablyChannel, unknown, unknown>;
 
 const fooBot = moxy<UnknownBot>({ render: async () => 'FOO' } as never);
 const barBot = moxy<UnknownBot>({ render: async () => 'BAR' } as never);

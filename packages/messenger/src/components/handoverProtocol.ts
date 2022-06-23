@@ -1,5 +1,5 @@
-import { makeUnitSegment } from '@machinat/core/renderer';
-import type { UnitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@sociably/core/renderer';
+import type { UnitSegment } from '@sociably/core/renderer';
 import { makeMessengerComponent } from '../utils';
 import {
   API_PATH,

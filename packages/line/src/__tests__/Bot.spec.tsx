@@ -1,9 +1,9 @@
 import nock from 'nock';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import _Engine from '@machinat/core/engine';
-import _Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
+import Sociably from '@sociably/core';
+import _Engine from '@sociably/core/engine';
+import _Renderer from '@sociably/core/renderer';
+import Queue from '@sociably/core/queue';
 import { LineBot } from '../Bot';
 import LineWorker from '../Worker';
 import LineApiError from '../error';
@@ -18,16 +18,16 @@ import {
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
 
-jest.mock('@machinat/core/engine', () =>
+jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/engine'))
+    .default(jest.requireActual('@sociably/core/engine'))
 );
 
-jest.mock('@machinat/core/renderer', () =>
+jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/renderer'))
+    .default(jest.requireActual('@sociably/core/renderer'))
 );
 
 nock.disableNetConnect();

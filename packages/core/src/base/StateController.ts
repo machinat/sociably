@@ -1,4 +1,4 @@
-import type { MachinatChannel, MachinatUser } from '../types';
+import type { SociablyChannel, SociablyUser } from '../types';
 import { makeInterface } from '../service';
 
 export interface StateAccessor {
@@ -40,7 +40,7 @@ export interface BaseStateController {
    */
   channelState(
     /** The channel object or uid of the channel */
-    channel: string | MachinatChannel
+    channel: string | SociablyChannel
   ): StateAccessor;
 
   /**
@@ -48,7 +48,7 @@ export interface BaseStateController {
    */
   userState(
     /** The user object or uid of the user */
-    user: string | MachinatUser
+    user: string | SociablyUser
   ): StateAccessor;
 
   /**

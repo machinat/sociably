@@ -6,14 +6,14 @@ import {
   makeClassProvider,
   createEmptyScope,
   ServiceScope,
-} from '@machinat/core/service';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import type { PopErrorFn } from '@machinat/core';
+} from '@sociably/core/service';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import type { PopErrorFn } from '@sociably/core';
 import type {
   RequestHandler,
   UpgradeHandler,
   RoutingInfo,
-} from '@machinat/http';
+} from '@sociably/http';
 import { ServerI, ConfigsI } from './interface';
 import type { NextServer, NextRequestHandler } from './types';
 

@@ -1,15 +1,15 @@
 import invariant from 'invariant';
-import Engine, { DispatchError } from '@machinat/core/engine';
-import Queue from '@machinat/core/queue';
-import Renderer from '@machinat/core/renderer';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider } from '@machinat/core/service';
+import Engine, { DispatchError } from '@sociably/core/engine';
+import Queue from '@sociably/core/queue';
+import Renderer from '@sociably/core/renderer';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import { makeClassProvider } from '@sociably/core/service';
 import type {
-  MachinatNode,
-  MachinatBot,
+  SociablyNode,
+  SociablyBot,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core';
+} from '@sociably/core';
 import MessengerWorker from './Worker';
 import generalComponentDelegator from './components/general';
 import { MESSENGER } from './constant';
@@ -49,7 +49,7 @@ type MessengerBotOptions = {
  * @category Provider
  */
 export class MessengerBot
-  implements MachinatBot<MessengerChannel, MessengerJob, MessengerResult>
+  implements SociablyBot<MessengerChannel, MessengerJob, MessengerResult>
 {
   pageId: string;
   worker: MessengerWorker;
@@ -110,7 +110,7 @@ export class MessengerBot
 
   async render(
     target: string | MessengerTarget | MessengerChannel,
-    messages: MachinatNode,
+    messages: SociablyNode,
     options?: MessengerSendOptions
   ): Promise<null | MessengerDispatchResponse> {
     const channel =
@@ -124,7 +124,7 @@ export class MessengerBot
   }
 
   async renderAttachment(
-    node: MachinatNode
+    node: SociablyNode
   ): Promise<null | MessengerDispatchResponse> {
     return this.engine.render(null, node, createAttachmentJobs);
   }

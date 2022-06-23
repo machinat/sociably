@@ -1,20 +1,20 @@
 import moxy from '@moxyjs/moxy';
 import {
-  MACHINAT_SERVICE_PROVIDER,
-  MACHINAT_SERVICE_INTERFACE,
+  SOCIABLY_SERVICE_PROVIDER,
+  SOCIABLY_SERVICE_INTERFACE,
 } from '../../../symbol';
 import makeFactoryProvider from '../makeFactoryProvider';
 
 const FooServiceI = {
-  $$typeof: MACHINAT_SERVICE_PROVIDER,
+  $$typeof: SOCIABLY_SERVICE_PROVIDER,
   /* ... */
 } as any;
 const BarServiceI = {
-  $$typeof: MACHINAT_SERVICE_INTERFACE,
+  $$typeof: SOCIABLY_SERVICE_INTERFACE,
   /* ... */
 } as any;
 const BazServiceI = {
-  $$typeof: MACHINAT_SERVICE_INTERFACE,
+  $$typeof: SOCIABLY_SERVICE_INTERFACE,
   /* ... */
 } as any;
 
@@ -35,7 +35,7 @@ describe('makeFactoryProvider({ deps, lifetime })(factory)', () => {
     })(factoryFn);
 
     expect(factoryProvider).toBe(factoryFn);
-    expect(factoryProvider.$$typeof).toBe(MACHINAT_SERVICE_PROVIDER);
+    expect(factoryProvider.$$typeof).toBe(SOCIABLY_SERVICE_PROVIDER);
     expect(factoryProvider.$$name).toBe('myFactory');
     expect(factoryProvider.$$deps).toEqual([
       { require: FooServiceI, optional: false },

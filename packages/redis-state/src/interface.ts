@@ -1,5 +1,5 @@
 import type { RedisClient } from 'redis';
-import { makeInterface } from '@machinat/core/service';
+import { makeInterface } from '@sociably/core/service';
 import type { RedisStateConfigs } from './types';
 
 /**

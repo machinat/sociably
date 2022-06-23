@@ -3,7 +3,7 @@ title: Recognizing Intent
 ---
 
 Recognizing users' intent is essential to interact in a conversation.
-Machinat provides a standard interface for intent recognition,
+Sociably provides a standard interface for intent recognition,
 that you can choose any recognition provider you like.
 
 ## Install
@@ -11,8 +11,8 @@ that you can choose any recognition provider you like.
 You have to install one recognition provider package.
 For now these packages are officially supported:
 
-- [@machinat/dialogflow](pathname:///api/modules/dialogflow) - detect intent using [`Dialogflow ES`](https://cloud.google.com/dialogflow/es/docs).
-- [@machinat/dev-tools](pathname:///api/modules/dev_tools#regexp-intent-recognition) - provide `RegexRecognition`, a simple implementation using `RegExp`. It should only be used for testing or debugging.
+- [@sociably/dialogflow](pathname:///api/modules/dialogflow) - detect intent using [`Dialogflow ES`](https://cloud.google.com/dialogflow/es/docs).
+- [@sociably/dev-tools](pathname:///api/modules/dev_tools#regexp-intent-recognition) - provide `RegexRecognition`, a simple implementation using `RegExp`. It should only be used for testing or debugging.
 
 Please check the references for the setup guides.
 We'll support more recognition suppliers in the future.
@@ -50,7 +50,7 @@ Then pass the recognition data to the provider like:
 ```js
 import recognitionData from './recognitionData';
 
-Machinat.createApp({
+Sociably.createApp({
   modules:[
     Dialogflow.initModule({
       recognitionData,
@@ -75,7 +75,7 @@ you can use the `IntentRecognizer` service to detect intent.
 For example:
 
 ```js
-import { makeContainer, IntentRecognizer } from '@machinat/core';
+import { makeContainer, IntentRecognizer } from '@sociably/core';
 
 app.onEvent(
   makeContainer({ deps: [IntentRecognizer] })(
@@ -117,7 +117,7 @@ Like handling postback data, recognizing emoji or parsing special formats.
 You can make your own recognizing service for that, like:
 
 ```js
-import { makeFactoryProvider, IntentRecognizer } from '@machinat/core';
+import { makeFactoryProvider, IntentRecognizer } from '@sociably/core';
 
 const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
   (recognizer) =>
@@ -151,7 +151,7 @@ const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
 Then use your recognizing service to detect intent like:
 
 ```js
-import { makeContainer } from '@machinat/core';
+import { makeContainer } from '@sociably/core';
 import useIntent from './useIntent';
 
 app.onEvent(
@@ -172,8 +172,8 @@ you can use the implementation provider directly.
 For example, use `DialogFlow.Recognizer` like this:
 
 ```js
-import { makeContainer } from '@machinat/core';
-import DialogFlow from '@machinat/dialogflow';
+import { makeContainer } from '@sociably/core';
+import DialogFlow from '@sociably/dialogflow';
 
 makeContainer({ deps: [DialogFlow.Recognizer] })(
   (recognizer) =>

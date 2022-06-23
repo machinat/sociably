@@ -3,14 +3,14 @@ title: Twitter Platform
 sidebar_label: Twitter
 ---
 
-`@machinat/twitter` platform enable your app to tweet, likes and send/receive direct messages on [Twitter platform](https://developers.facebook.com/docs/twitter-platform/).
+`@sociably/twitter` platform enable your app to tweet, likes and send/receive direct messages on [Twitter platform](https://developers.facebook.com/docs/twitter-platform/).
 
 ## Install
 
 Install the `core`, `http` and `twitter` packages:
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/twitter
+npm install @sociably/core @sociably/http @sociably/twitter
 ```
 
 ## Setup
@@ -22,9 +22,9 @@ for setup procedures.
 Then set up the `http` and `twitter` modules like this:
 
 ```ts
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Twitter from '@machinat/twitter';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Twitter from '@sociably/twitter';
 
 const {
   TWITTER_APP_ID,
@@ -35,7 +35,7 @@ const {
   TWITTER_ACCESS_SECRET,
 } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ port: 8080 }),
   ],
@@ -58,8 +58,8 @@ const app = Machinat.createApp({
 Here's an example to receive messages and send replies through direct messages.
 
 ```tsx
-import Machinat from '@machinat/core';
-import * as Twitter from '@machinat/twitter/components';
+import Sociably from '@sociably/core';
+import * as Twitter from '@sociably/twitter/components';
 import app from './app';
 
 app.onEvent(async ({ platform, event, reply }) => {
@@ -80,8 +80,8 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check API references for the details of [events](https://machinat.com/api/modules/twitter#twitterevent)
-and [components](https://machinat.com/api/modules/twitter_components).
+Check API references for the details of [events](https://sociably.js.org/api/modules/twitter#twitterevent)
+and [components](https://sociably.js.org/api/modules/twitter_components).
 
 ## Webview
 
@@ -95,11 +95,11 @@ configure the app with these steps:
    Like this:
 
 ```ts
-import Webview from '@machinat/webview';
+import Webview from '@sociably/webview';
 import RedisState from '@machiniat/redis';
-import TwitterAuth from '@machinat/twitter/webview';
+import TwitterAuth from '@sociably/twitter/webview';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   platforms: [
     Webview.initModule({
       authPlatforms:[
@@ -139,8 +139,8 @@ module.exports = {
 
 ```ts
 import getConfig from 'next/config';
-import WebviewClient from '@machinat/webview/client';
-import TwitterAuth from '@machinat/twitter/webview/client';
+import WebviewClient from '@sociably/webview/client';
+import TwitterAuth from '@sociably/twitter/webview/client';
 
 const {
   publicRuntimeConfig: { TWITTER_AGENT_ID },
@@ -159,8 +159,8 @@ The webview can be opened with a `WebviewButton` in the chatroom.
 For example:
 
 ```tsx
-import * as Twitter from '@machinat/twitter/components';
-import { WebviewButton as TwitterWebviewButton } from '@machinat/twitter/webview';
+import * as Twitter from '@sociably/twitter/components';
+import { WebviewButton as TwitterWebviewButton } from '@sociably/twitter/webview';
 
 app.onEvent(async ({ reply }) => {
   await reply(
@@ -178,12 +178,12 @@ app.onEvent(async ({ reply }) => {
 The user will be asked to enter a login code sent in the chat.
 After login, webview can communicate to the server as the authenticated user.
 
-Check the [webview platform document](https://machinat.com/docs/embedded-webview)
+Check the [webview platform document](https://sociably.js.org/docs/embedded-webview)
 to learn more.
 
 ## Assets Manager
 
-[`TwitterAssetsManager`](https://machinat.com/api/classes/twitter_asset.twitterassetsmanager.html)
+[`TwitterAssetsManager`](https://sociably.js.org/api/classes/twitter_asset.twitterassetsmanager.html)
 service helps you to manage resources on the Twitter platform,
 like media, webhook, custom profile and welcome message.
 
@@ -193,9 +193,9 @@ Then register `TwitterAssetsManager` like this:
 ```ts
 import RedisState from '@machiniat/redis';
 // highlight-next-line
-import TwitterAssetsManager, { saveUploadedMedia } from '@machinat/twitter/asssets';
+import TwitterAssetsManager, { saveUploadedMedia } from '@sociably/twitter/asssets';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   services: [
     // highlight-next-line
     TwitterAssetsManager,
@@ -221,9 +221,9 @@ Here's an example to upload a reusable media from an external URL:
 
 ```tsx
 import fs from 'fs';
-import { makeContainer } from '@machinat/core';
-import * as Twitter from '@machinat/twitter/components';
-import TwitterAssetsManager from '@machinat/twitter/asssets';
+import { makeContainer } from '@sociably/core';
+import * as Twitter from '@sociably/twitter/components';
+import TwitterAssetsManager from '@sociably/twitter/asssets';
 
 app.onEvent(makeContainer({ deps: [TwitterAssetsManager] })(
   (assetsManager) =>
@@ -254,5 +254,5 @@ You can reuse the saved id for the next time.
 
 Here are some resources for further reading:
 
-- [`@machinat/twitter` package reference](https://machinat.com/api/modules/twitter.html)
+- [`@sociably/twitter` package reference](https://sociably.js.org/api/modules/twitter.html)
 - [Twitter Platform document](https://developers.facebook.com/docs/twitter-platform)

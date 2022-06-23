@@ -1,11 +1,11 @@
-import { MachinatNode } from '@machinat/core';
+import { SociablyNode } from '@sociably/core';
 import {
   makeUnitSegment,
   makePartSegment,
   UnitSegment,
   PartSegment,
-} from '@machinat/core/renderer';
-import { formatNode } from '@machinat/core/utils';
+} from '@sociably/core/renderer';
+import { formatNode } from '@sociably/core/utils';
 import { makeTelegramComponent } from '../utils';
 import {
   TelegramSegmentValue,
@@ -66,9 +66,9 @@ export interface InlineQueryResultProps {
   /** Unique identifier for this result, 1-64 bytes */
   id: string;
   /** One {@link InlineKeyboardMarkup} element attached to the message */
-  replyMarkup?: MachinatNode;
+  replyMarkup?: SociablyNode;
   /** One {@link Text}, {@link Location}, {@link Venue} or {@link Contact} element as the replacement of message content to be sent */
-  inputMessageContent?: MachinatNode;
+  inputMessageContent?: SociablyNode;
 }
 
 const renderInputMessageContent = async (node, render) => {
@@ -223,7 +223,7 @@ type InlineQueryResultPhotoProps = InlineQueryResultProps &
     /** Short description of the result */
     description?: string;
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
-    caption?: MachinatNode;
+    caption?: SociablyNode;
     /** Mode for parsing entities of the. See formatting options for more details. */
     parseMode?: TelegramParseMode;
   };
@@ -312,7 +312,7 @@ type InlineQueryResultGifProps = InlineQueryResultProps &
     /** Title for the result */
     title?: string;
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
-    caption?: MachinatNode;
+    caption?: SociablyNode;
     /** Mode for parsing entities of the file caption. See formatting options for more details. */
     parseMode?: TelegramParseMode;
   };
@@ -403,7 +403,7 @@ type InlineQueryResultMpeg4GifProps = InlineQueryResultProps &
     /** Title for the result */
     title?: string;
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
-    caption?: MachinatNode;
+    caption?: SociablyNode;
     /** Mode for parsing entities of the file caption. */
     parseMode?: TelegramParseMode;
   };
@@ -495,7 +495,7 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
     /**  Short description for the result */
     description?: string;
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
-    caption?: MachinatNode;
+    caption?: SociablyNode;
     /** Mode for parsing entities of the file caption. */
     parseMode?: TelegramParseMode;
   };
@@ -581,7 +581,7 @@ type InlineQueryResultAudioProps = InlineQueryResultProps &
       }
   ) & {
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
-    caption?: MachinatNode;
+    caption?: SociablyNode;
     /** Mode for parsing entities of the file caption. */
     parseMode?: TelegramParseMode;
   };
@@ -657,7 +657,7 @@ type InlineQueryResultVoiceProps = InlineQueryResultProps &
     /** Title */
     title?: string;
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
-    caption?: MachinatNode;
+    caption?: SociablyNode;
     /** Mode for parsing entities of the file caption. */
     parseMode?: TelegramParseMode;
   };
@@ -739,7 +739,7 @@ type InlineQueryResultDocumentProps = InlineQueryResultProps &
     /** Short description of the result */
     description?: string;
     /** Texual node as  the caption of the photo to be sent, 0-1024 characters after entities parsing */
-    caption?: MachinatNode;
+    caption?: SociablyNode;
     /** Mode for parsing entities in the photo caption. See formatting options for more details. */
     parseMode?: TelegramParseMode;
   };
@@ -1070,7 +1070,7 @@ export interface InlineQueryResultGameProps {
   /** Short name of the game */
   gameShortName: string;
   /** One {@link InlineKeyboardMarkup} element attached to the message */
-  replyMarkup?: MachinatNode;
+  replyMarkup?: SociablyNode;
 }
 
 /**
@@ -1122,7 +1122,7 @@ export interface AnswerInlineQueryProps {
   /** Unique identifier for the answered query */
   queryId: string;
   /** {@link InlineQueryResult} elements as the results to be displayed */
-  children?: MachinatNode;
+  children?: SociablyNode;
   /** The maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300. */
   cacheTime?: number;
   /** Pass True, if results may be cached on the server side only for the user that sent the query. By default, results may be returned to any user who sends the same query */

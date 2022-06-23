@@ -1,10 +1,10 @@
-import type { MachinatChannel } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyChannel } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import type {
   ConnectionTarget,
   UserTarget,
   TopicTarget,
-} from '@machinat/websocket';
+} from '@sociably/websocket';
 import { WEBVIEW } from './constant';
 
 type ConnectionValue = {
@@ -14,7 +14,7 @@ type ConnectionValue = {
 
 export class WebviewConnection
   implements
-    MachinatChannel,
+    SociablyChannel,
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
@@ -56,7 +56,7 @@ type UserChannelValue = {
 
 export class WebviewUserChannel
   implements
-    MachinatChannel,
+    SociablyChannel,
     UserTarget,
     MarshallableInstance<UserChannelValue>
 {
@@ -94,7 +94,7 @@ type TopicValue = {
 };
 
 export class WebviewTopicChannel
-  implements MachinatChannel, TopicTarget, MarshallableInstance<TopicValue>
+  implements SociablyChannel, TopicTarget, MarshallableInstance<TopicValue>
 {
   static typeName = 'WebviewTopicCh';
 

@@ -1,10 +1,10 @@
-import { makeClassProvider } from '@machinat/core/service';
+import { makeClassProvider } from '@sociably/core/service';
 import type {
   RecognitionData,
   IntentRecognizer,
   DetectIntentResult,
   DetectTextOptions,
-} from '@machinat/core/base/IntentRecognizer';
+} from '@sociably/core/base/IntentRecognizer';
 import { ConfigsI } from './interface';
 import { RegexRecognitionConfigs } from './types';
 

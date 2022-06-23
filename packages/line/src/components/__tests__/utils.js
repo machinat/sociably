@@ -1,5 +1,5 @@
-import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
 
 // eslint-disable-next-line import/prefer-default-export
 export const renderInner = async (node) => {

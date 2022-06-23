@@ -7,19 +7,19 @@ export default ({ platforms, withWebview }: CreateAppContext): string => when(
 import React from 'react';
 import Head from 'next/head';
 import getConfig from 'next/config';
-import { useClient, useEventReducer } from '@machinat/webview/client';${when(
+import { useClient, useEventReducer } from '@sociably/webview/client';${when(
   platforms.includes('messenger')
 )`
-import MessengerAuth from '@machinat/messenger/webview/client';`}${when(
+import MessengerAuth from '@sociably/messenger/webview/client';`}${when(
   platforms.includes('twitter')
 )`
-import TwitterAuth from '@machinat/twitter/webview/client';`}${when(
+import TwitterAuth from '@sociably/twitter/webview/client';`}${when(
   platforms.includes('telegram')
 )`
-import TelegramAuth from '@machinat/telegram/webview/client';`}${when(
+import TelegramAuth from '@sociably/telegram/webview/client';`}${when(
   platforms.includes('line')
 )`
-import LineAuth from '@machinat/line/webview/client';`}
+import LineAuth from '@sociably/line/webview/client';`}
 
 const {
   publicRuntimeConfig: {${when(platforms.includes('messenger'))`
@@ -75,7 +75,7 @@ const WebAppHome = () => {
   return (
     <div>
       <Head>
-        <title>Machinat Webview</title>
+        <title>Sociably Webview</title>
 
         <link rel="icon" href="/webview/favicon.ico" />
         <link

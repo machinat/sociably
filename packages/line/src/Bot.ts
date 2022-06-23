@@ -1,15 +1,15 @@
 import invariant from 'invariant';
 import type {
-  MachinatNode,
-  MachinatBot,
+  SociablyNode,
+  SociablyBot,
   InitScopeFn,
   DispatchWrapper,
-} from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
-import Queue from '@machinat/core/queue';
-import Engine, { DispatchError } from '@machinat/core/engine';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
-import { makeClassProvider } from '@machinat/core/service';
+} from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
+import Queue from '@sociably/core/queue';
+import Engine, { DispatchError } from '@sociably/core/engine';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import { makeClassProvider } from '@sociably/core/service';
 
 import { createChatJobs, createMulticastJobs } from './job';
 import generalElementDelegate from './components/general';
@@ -40,7 +40,7 @@ type LineBotOptions = {
 /**
  * @category Provider
  */
-export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
+export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
   providerId: string;
   channelId: string;
   maxRequestConnections: number;
@@ -97,7 +97,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
 
   render(
     source: string | LineSource | LineChat,
-    message: MachinatNode,
+    message: SociablyNode,
     options?: { replyToken?: string }
   ): Promise<null | LineDispatchResponse> {
     const channel =
@@ -116,7 +116,7 @@ export class LineBot implements MachinatBot<LineChat, LineJob, LineResult> {
 
   renderMulticast(
     targets: string[],
-    message: MachinatNode
+    message: SociablyNode
   ): Promise<null | LineDispatchResponse> {
     return this.engine.render(null, message, createMulticastJobs(targets));
   }

@@ -1,9 +1,9 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import BaseBot from '@machinat/core/base/Bot';
-import BaseProfiler from '@machinat/core/base/Profiler';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
-import Http from '@machinat/http';
+import Sociably from '@sociably/core';
+import BaseBot from '@sociably/core/base/Bot';
+import BaseProfiler from '@sociably/core/base/Profiler';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
+import Http from '@sociably/http';
 import Messenger from '../module';
 import MessengerChat from '../Chat';
 import MessengerUser from '../User';
@@ -22,7 +22,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "MessengerConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
@@ -47,7 +47,7 @@ describe('initModule(configs)', () => {
         "$$multi": false,
         "$$name": "MessengerPlatformUtilities",
         "$$polymorphic": false,
-        "$$typeof": Symbol(interface.service.machinat),
+        "$$typeof": Symbol(interface.service.sociably),
       }
     `);
     expect(module.provisions).toBeInstanceOf(Array);
@@ -66,7 +66,7 @@ describe('initModule(configs)', () => {
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [Messenger.initModule(configs)],
     });
     await app.start();
@@ -96,7 +96,7 @@ describe('initModule(configs)', () => {
   });
 
   test('provide base interfaces', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [
         Messenger.initModule({
           pageId: '1234567890',
@@ -130,7 +130,7 @@ describe('initModule(configs)', () => {
   });
 
   test('default webhookPath to "/"', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [
         Messenger.initModule({
           pageId: '1234567890',

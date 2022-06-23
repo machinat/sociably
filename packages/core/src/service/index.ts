@@ -14,7 +14,7 @@ export {
 export * from './types';
 
 /**
- * Machinat DI
+ * Sociably DI
  *
  * container:
  *   The containter is the unit to consume the services with IoC style. It is

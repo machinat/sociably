@@ -1,8 +1,8 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import { ServiceScope } from '@machinat/core/service';
-import { traverse as traverseMessage } from '@machinat/core/iterator';
-import { InMemoryStateController } from '@machinat/dev-tools/InMemoryState';
+import Sociably from '@sociably/core';
+import { ServiceScope } from '@sociably/core/service';
+import { traverse as traverseMessage } from '@sociably/core/iterator';
+import { InMemoryStateController } from '@sociably/dev-tools/InMemoryState';
 import { ScriptProcessor } from '../processor';
 import build from '../build';
 import {
@@ -130,19 +130,19 @@ describe('#start(channel, Script)', () => {
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
-      <Machinat.Fragment>
+      <Sociably.Fragment>
         Lorem 
         ipsum 
         dolor 
-        <Machinat.Thunk
+        <Sociably.Thunk
           effect={[Function]}
         />
-      </Machinat.Fragment>
+      </Sociably.Fragment>
     `);
 
     let thunk;
     traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+      if (typeof node === 'object' && node.type === Sociably.Thunk) {
         thunk = node;
       }
     });
@@ -151,7 +151,7 @@ describe('#start(channel, Script)', () => {
 
     expect(runtime.requireSaving).toBe(false);
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -198,24 +198,24 @@ describe('#start(channel, Script)', () => {
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
-      <Machinat.Fragment>
+      <Sociably.Fragment>
         est 
-        <Machinat.Thunk
+        <Sociably.Thunk
           effect={[Function]}
         />
-      </Machinat.Fragment>
+      </Sociably.Fragment>
     `);
 
     let thunk;
     traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+      if (typeof node === 'object' && node.type === Sociably.Thunk) {
         thunk = node;
       }
     });
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -261,26 +261,26 @@ describe('#start(channel, Script)', () => {
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
-      <Machinat.Fragment>
+      <Sociably.Fragment>
         Lorem 
         ipsum 
         est 
-        <Machinat.Thunk
+        <Sociably.Thunk
           effect={[Function]}
         />
-      </Machinat.Fragment>
+      </Sociably.Fragment>
     `);
 
     let thunk;
     traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+      if (typeof node === 'object' && node.type === Sociably.Thunk) {
         thunk = node;
       }
     });
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -314,7 +314,7 @@ describe('#start(channel, Script)', () => {
 
   it('throw if there is already script processing in the channel', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$$machinat:script', {
+    await stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -333,7 +333,7 @@ describe('#start(channel, Script)', () => {
 describe('#continue(channel, input)', () => {
   it('continue from prompt point', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$$machinat:script', {
+    await stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -358,25 +358,25 @@ describe('#continue(channel, input)', () => {
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
-      <Machinat.Fragment>
+      <Sociably.Fragment>
         consectetur 
         adipiscing 
-        <Machinat.Thunk
+        <Sociably.Thunk
           effect={[Function]}
         />
-      </Machinat.Fragment>
+      </Sociably.Fragment>
     `);
 
     let thunk;
     traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+      if (typeof node === 'object' && node.type === Sociably.Thunk) {
         thunk = node;
       }
     });
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -410,7 +410,7 @@ describe('#continue(channel, input)', () => {
 
   it('continue under subscript', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$$machinat:script', {
+    await stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'call_1' },
@@ -438,25 +438,25 @@ describe('#continue(channel, input)', () => {
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
-      <Machinat.Fragment>
+      <Sociably.Fragment>
         elit, 
         sed 
-        <Machinat.Thunk
+        <Sociably.Thunk
           effect={[Function]}
         />
-      </Machinat.Fragment>
+      </Sociably.Fragment>
     `);
 
     let thunk;
     traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Machinat.Thunk) {
+      if (typeof node === 'object' && node.type === Sociably.Thunk) {
         thunk = node;
       }
     });
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -497,7 +497,7 @@ describe('#continue(channel, input)', () => {
 
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$$machinat:script', {
+    await stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
@@ -515,7 +515,7 @@ describe('#continue(channel, input)', () => {
 describe('#getRuntime(channel)', () => {
   test('manually call runtime.run()', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$$machinat:script', {
+    await stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -595,7 +595,7 @@ describe('#getRuntime(channel)', () => {
 
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$$machinat:script', {
+    await stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
@@ -613,7 +613,7 @@ describe('#getRuntime(channel)', () => {
 describe('Runtime#exit(channel)', () => {
   it('delete saved runtime state', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$$machinat:script', {
+    await stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -625,7 +625,7 @@ describe('Runtime#exit(channel)', () => {
     await expect(runtime.exit()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toBe(undefined);
   });
 
@@ -637,7 +637,7 @@ describe('Runtime#exit(channel)', () => {
     await expect(runtime.exit()).resolves.toBe(false);
 
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toBe(undefined);
   });
 });
@@ -656,7 +656,7 @@ describe('Runtime#save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toEqual({
       callStack: [{ name: 'MyScript', stopAt: 'ask_2', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
@@ -671,7 +671,7 @@ describe('Runtime#save(runtime)', () => {
       AnotherScript,
     ]);
 
-    stateController.channelState(channel).set('$$machinat:script', {
+    stateController.channelState(channel).set('$sociably:script', {
       callStack: [{ name: 'MyScript', stopAt: 'ask_3', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
       version: '0',
@@ -682,7 +682,7 @@ describe('Runtime#save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toEqual({
       callStack: [
         { name: 'MyScript', stopAt: 'call_1', vars: { foo: 'bar' } },
@@ -710,7 +710,7 @@ describe('Runtime#save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(false);
 
     await expect(
-      stateController.channelState(channel).get('$$machinat:script')
+      stateController.channelState(channel).get('$sociably:script')
     ).resolves.toBe(undefined);
   });
 
@@ -725,7 +725,7 @@ describe('Runtime#save(runtime)', () => {
       goto: '#3',
     });
 
-    stateController.channelState(channel).set('$$machinat:script', {
+    stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
@@ -740,7 +740,7 @@ describe('Runtime#save(runtime)', () => {
 
   test('throw if continued runtime save while no runtime state existing', async () => {
     const stateController = new InMemoryStateController();
-    stateController.channelState(channel).set('$$machinat:script', {
+    stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -754,7 +754,7 @@ describe('Runtime#save(runtime)', () => {
     ]);
     const runtime = (await processor.getRuntime(channel))!;
 
-    stateController.channelState(channel).delete('$$machinat:script');
+    stateController.channelState(channel).delete('$sociably:script');
     await runtime.run();
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
@@ -764,7 +764,7 @@ describe('Runtime#save(runtime)', () => {
 
   test('throw if saveTimestamp not match', async () => {
     const stateController = new InMemoryStateController();
-    stateController.channelState(channel).set('$$machinat:script', {
+    stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -778,7 +778,7 @@ describe('Runtime#save(runtime)', () => {
     ]);
     const runtime = (await processor.getRuntime(channel))!;
 
-    stateController.channelState(channel).set('$$machinat:script', {
+    stateController.channelState(channel).set('$sociably:script', {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },

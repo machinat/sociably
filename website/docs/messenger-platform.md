@@ -3,7 +3,7 @@ title: Messenger Platform
 sidebar_label: Messenger
 ---
 
-`@machinat/messenger` platform enable your app to receive/send messages on [Messenger platform](https://developers.facebook.com/docs/messenger-platform/)
+`@sociably/messenger` platform enable your app to receive/send messages on [Messenger platform](https://developers.facebook.com/docs/messenger-platform/)
 as a Facebook page.
 
 ## Install
@@ -11,13 +11,13 @@ as a Facebook page.
 Install the `core`, `http` and `messenger` packages:
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/messenger
+npm install @sociably/core @sociably/http @sociably/messenger
 ```
 
 ## Setup
 
 :::tip
-You can check [setup section in the tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=messenger).
+You can check [setup section in the tutorial](https://sociably.js.org/docs/learn/create-app#platform-setup?p=messenger).
 It brings you to set up everything step by step.
 :::
 
@@ -28,9 +28,9 @@ for the setup procedures.
 Then set up the `http` and `messenger` modules like this:
 
 ```ts
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Messenger from '@machinat/messenger';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Messenger from '@sociably/messenger';
 
 const {
   MESSENGER_PAGE_ID,
@@ -40,7 +40,7 @@ const {
   MESSENGER_VERIFY_TOKEN,
 } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ port: 8080 }),
   ],
@@ -61,8 +61,8 @@ const app = Machinat.createApp({
 Here's an example to receive events and send replies back:
 
 ```tsx
-import Machinat from '@machinat/core';
-import * as Messenger from '@machinat/messenger/components';
+import Sociably from '@sociably/core';
+import * as Messenger from '@sociably/messenger/components';
 import app from './app';
 
 app.onEvent(async ({ platform, event, reply }) => {
@@ -91,8 +91,8 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check API references for the details of [events](https://machinat.com/api/modules/messenger#messengerevent)
-and [components](https://machinat.com/api/modules/messenger_components).
+Check API references for the details of [events](https://sociably.js.org/api/modules/messenger#messengerevent)
+and [components](https://sociably.js.org/api/modules/messenger_components).
 
 ## Webview
 
@@ -106,11 +106,11 @@ configure the app with these steps:
    Like this:
 
 ```ts
-import Webview from '@machinat/webview';
+import Webview from '@sociably/webview';
 import RedisState from '@machiniat/redis';
-import MessengerAuth from '@machinat/messenger/webview';
+import MessengerAuth from '@sociably/messenger/webview';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   platforms: [
     Webview.initModule({
       authPlatforms:[
@@ -151,8 +151,8 @@ module.exports = {
 
 ```ts
 import getConfig from 'next/config';
-import WebviewClient from '@machinat/webview/client';
-import MessengerAuth from '@machinat/messenger/webview/client';
+import WebviewClient from '@sociably/webview/client';
+import MessengerAuth from '@sociably/messenger/webview/client';
 
 const {
   publicRuntimeConfig: { MESSENGER_PAGE_ID },
@@ -171,8 +171,8 @@ The webview can be opened with a `WebviewButton` in the chatroom.
 For example:
 
 ```tsx
-import * as Messenger from '@machinat/messenger/components';
-import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';
+import * as Messenger from '@sociably/messenger/components';
+import { WebviewButton as MessengerWebviewButton } from '@sociably/messenger/webview';
 
 app.onEvent(async ({ reply }) => {
   await reply(
@@ -190,12 +190,12 @@ app.onEvent(async ({ reply }) => {
 The user will be asked to enter a login code sent in the chat.
 After login, webview can communicate to the server as the authenticated user.
 
-Check the [webview platform document](https://machinat.com/docs/embedded-webview)
+Check the [webview platform document](https://sociably.js.org/docs/embedded-webview)
 to learn more.
 
 ## Assets Manager
 
-[`MessengerAssetsManager`](https://machinat.com/api/classes/messenger_asset.messengerassetsmanager.html)
+[`MessengerAssetsManager`](https://sociably.js.org/api/classes/messenger_asset.messengerassetsmanager.html)
 service helps you to manage resources on the Messenger platform,
 like attachments and personas.
 
@@ -205,9 +205,9 @@ Then register `MessengerAssetsManager` like this:
 ```ts
 import RedisState from '@machiniat/redis';
 // highlight-next-line
-import MessengerAssetsManager, { saveReusableAttachments } from '@machinat/messenger/asssets';
+import MessengerAssetsManager, { saveReusableAttachments } from '@sociably/messenger/asssets';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   services: [
     // highlight-next-line
     MessengerAssetsManager,
@@ -233,9 +233,9 @@ Here is an example to upload a reusable attachment:
 
 ```tsx
 import fs from 'fs';
-import { makeContainer } from '@machinat/core';
-import * as Messenger from '@machinat/messenger/components';
-import MessengerAssetsManager from '@machinat/messenger/asssets';
+import { makeContainer } from '@sociably/core';
+import * as Messenger from '@sociably/messenger/components';
+import MessengerAssetsManager from '@sociably/messenger/asssets';
 
 app.onEvent(makeContainer({ deps: [MessengerAssetsManager] })(
   (assetsManager) =>
@@ -267,5 +267,5 @@ You can reuse the saved id for the next time.
 
 Here are some resources for further reading:
 
-- [`@machinat/messenger` package reference](https://machinat.com/api/modules/messenger.html)
+- [`@sociably/messenger` package reference](https://sociably.js.org/api/modules/messenger.html)
 - [Messenger Platform document](https://developers.facebook.com/docs/messenger-platform)

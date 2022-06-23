@@ -1,4 +1,4 @@
-import type { AuthContextBase } from '@machinat/auth';
+import type { AuthContextBase } from '@sociably/auth';
 import type TelegramChat from '../Chat';
 import type TelegramUser from '../User';
 import type { RawChat, RawUser } from '../types';

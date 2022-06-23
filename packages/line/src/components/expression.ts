@@ -1,5 +1,5 @@
-import { MachinatNode } from '@machinat/core';
-import { IntermediateSegment, TextSegment } from '@machinat/core/renderer';
+import { SociablyNode } from '@sociably/core';
+import { IntermediateSegment, TextSegment } from '@sociably/core/renderer';
 import { makeLineComponent, isMessageValue } from '../utils';
 import { LineComponent } from '../types';
 
@@ -8,9 +8,9 @@ import { LineComponent } from '../types';
  */
 export type ExpressionProps = {
   /** Content nodes. */
-  children: MachinatNode;
+  children: SociablyNode;
   /** {@link QuickReply} elements to be appended after content. */
-  quickReplies?: MachinatNode;
+  quickReplies?: SociablyNode;
 };
 
 /**

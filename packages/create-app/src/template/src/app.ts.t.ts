@@ -6,31 +6,31 @@ export default ({
   recognizer,
   withWebview,
 }: CreateAppContext): string => `
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';${when(platforms.includes('messenger'))`
-import Messenger from '@machinat/messenger';${when(withWebview)`
-import MessengerAuth from '@machinat/messenger/webview';`}`}${when(
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';${when(platforms.includes('messenger'))`
+import Messenger from '@sociably/messenger';${when(withWebview)`
+import MessengerAuth from '@sociably/messenger/webview';`}`}${when(
   platforms.includes('twitter')
 )`
-import Twitter from '@machinat/twitter';
-import TwitterAssetManager from '@machinat/twitter/asset';${when(withWebview)`
-import TwitterAuth from '@machinat/twitter/webview';`}`}${when(
+import Twitter from '@sociably/twitter';
+import TwitterAssetManager from '@sociably/twitter/asset';${when(withWebview)`
+import TwitterAuth from '@sociably/twitter/webview';`}`}${when(
   platforms.includes('telegram')
 )`
-import Telegram from '@machinat/telegram';${when(withWebview)`
-import TelegramAuth from '@machinat/telegram/webview';`}`}${when(
+import Telegram from '@sociably/telegram';${when(withWebview)`
+import TelegramAuth from '@sociably/telegram/webview';`}`}${when(
   platforms.includes('line')
 )`
-import Line from '@machinat/line';${when(withWebview)`
-import LineAuth from '@machinat/line/webview';`}`}${when(withWebview)`
-import Webview from '@machinat/webview';`}
-import Script from '@machinat/script';
-import RedisState from '@machinat/redis-state';
+import Line from '@sociably/line';${when(withWebview)`
+import LineAuth from '@sociably/line/webview';`}`}${when(withWebview)`
+import Webview from '@sociably/webview';`}
+import Script from '@sociably/script';
+import RedisState from '@sociably/redis-state';
 import {
   FileState,${when(recognizer === 'regex')`
   RegexRecognition,`}
-} from '@machinat/dev-tools';${when(recognizer === 'dialogflow')`
-import Dialogflow from '@machinat/dialogflow';`}${when(withWebview)`
+} from '@sociably/dev-tools';${when(recognizer === 'dialogflow')`
+import Dialogflow from '@sociably/dialogflow';`}${when(withWebview)`
 import nextConfigs from '../webview/next.config.js';`}
 import useIntent from './services/useIntent';
 import useUserProfile from './services/useUserProfile';
@@ -80,7 +80,7 @@ type CreateAppOptions = {
 };
 
 const createApp = (options?: CreateAppOptions) => {
-  return Machinat.createApp({
+  return Sociably.createApp({
     modules: [
       Http.initModule({
         noServer: options?.noServer,
@@ -171,7 +171,7 @@ ${when(recognizer === 'dialogflow')`
         },
         basicAuth: {
           appName: APP_NAME,
-          appIconUrl: 'https://machinat.com/img/logo.jpg',
+          appIconUrl: 'https://machinat.github.io/sociably/img/logo.jpg',
         },
       }),`}
     ],

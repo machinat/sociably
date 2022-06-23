@@ -1,15 +1,15 @@
-import { MACHINAT_ELEMENT_TYPE } from './symbol';
+import { SOCIABLY_ELEMENT_TYPE } from './symbol';
 import type {
-  MachinatElementType,
-  MachinatNode,
-  MachinatElement,
+  SociablyElementType,
+  SociablyNode,
+  SociablyElement,
 } from './types';
 
-const createMachinatElement = (
-  type: MachinatElementType,
+const createSociablyElement = (
+  type: SociablyElementType,
   config: any,
-  ...children: Array<MachinatNode>
-): MachinatElement<unknown, unknown> => {
+  ...children: Array<SociablyNode>
+): SociablyElement<unknown, unknown> => {
   const childrenLen = children.length;
 
   const props = config || {};
@@ -22,8 +22,8 @@ const createMachinatElement = (
   return {
     type,
     props,
-    $$typeof: MACHINAT_ELEMENT_TYPE,
+    $$typeof: SOCIABLY_ELEMENT_TYPE,
   };
 };
 
-export default createMachinatElement;
+export default createSociablyElement;

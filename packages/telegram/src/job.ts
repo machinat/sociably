@@ -1,5 +1,5 @@
-import { formatNode } from '@machinat/core/utils';
-import type { DispatchableSegment } from '@machinat/core/engine';
+import { formatNode } from '@sociably/core/utils';
+import type { DispatchableSegment } from '@sociably/core/engine';
 import type { TelegramSegmentValue, TelegramJob } from './types';
 import type TelegramChat from './Chat';
 

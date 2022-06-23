@@ -1,11 +1,11 @@
 import type { TextSegment, UnitSegment, RawSegment } from '../renderer/types';
 import type {
-  MachinatNode,
-  MachinatChannel,
+  SociablyNode,
+  SociablyChannel,
   PauseDelayFn,
   ThunkEffectFn,
 } from '../types';
-import type MachinatQueue from '../queue';
+import type SociablyQueue from '../queue';
 
 export type DispatchableSegment<SegmentValue> =
   | TextSegment
@@ -16,22 +16,22 @@ type DispatchTask<Job> = { type: 'dispatch'; payload: Job[] };
 type PauseTask = { type: 'pause'; payload: null | PauseDelayFn };
 type ThunkTask = { type: 'thunk'; payload: ThunkEffectFn };
 
-export type MachinatTask<Job> = DispatchTask<Job> | PauseTask | ThunkTask;
+export type SociablyTask<Job> = DispatchTask<Job> | PauseTask | ThunkTask;
 
-export type DispatchFrame<Channel extends MachinatChannel, Job> = {
+export type DispatchFrame<Channel extends SociablyChannel, Job> = {
   platform: string;
   channel: null | Channel;
-  tasks: MachinatTask<Job>[];
-  node: null | MachinatNode;
+  tasks: SociablyTask<Job>[];
+  node: null | SociablyNode;
 };
 
 export type DispatchResponse<Job, Result> = {
-  tasks: MachinatTask<Job>[];
+  tasks: SociablyTask<Job>[];
   jobs: Job[];
   results: Result[];
 };
 
-export interface MachinatWorker<Job, Result> {
-  start(queue: MachinatQueue<Job, Result>): boolean;
-  stop(queue: MachinatQueue<Job, Result>): boolean;
+export interface SociablyWorker<Job, Result> {
+  start(queue: SociablyQueue<Job, Result>): boolean;
+  stop(queue: SociablyQueue<Job, Result>): boolean;
 }

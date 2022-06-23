@@ -8,7 +8,7 @@ it('exports interfaces', () => {
       "$$multi": true,
       "$$name": "ScriptLibraryList",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });

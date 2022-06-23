@@ -2,8 +2,8 @@
 import type {
   AuthenticatorCredentialResult,
   CheckDataResult,
-} from '@machinat/auth';
-import type { WebviewClientAuthenticator } from '@machinat/webview';
+} from '@sociably/auth';
+import type { WebviewClientAuthenticator } from '@sociably/webview';
 import { parse as parseBrowser } from 'bowser';
 import { TWITTER } from '../constant';
 import TwitterChat from '../Chat';

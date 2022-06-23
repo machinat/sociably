@@ -1,8 +1,8 @@
 /* eslint @typescript-eslint/no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
-import { MachinatElement } from '@machinat/core';
-import { reduce } from '@machinat/core/iterator';
-import { formatNode, isElement } from '@machinat/core/utils';
+import { SociablyElement } from '@sociably/core';
+import { reduce } from '@sociably/core/iterator';
+import { formatNode, isElement } from '@sociably/core/utils';
 
 import { isScript } from './utils';
 import {
@@ -284,7 +284,7 @@ const parseBlock = <Vars, Input, Return, Yield>(
 };
 
 const parse = <Vars, Input, Return, Yield>(
-  node: MachinatElement<unknown, unknown>
+  node: SociablyElement<unknown, unknown>
 ): ScriptSegment<Vars, Input, Return, Yield>[] => {
   return parseBlock<Vars, Input, Return, Yield>(
     node as ScriptNode<Vars, Input, Return, Yield>,

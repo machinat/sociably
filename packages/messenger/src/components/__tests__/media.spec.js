@@ -1,6 +1,6 @@
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
+import Renderer from '@sociably/core/renderer';
 
 import { Image, Video, Audio, File } from '../media';
 
@@ -40,9 +40,9 @@ describe('media Components', () => {
               "type": "image",
             },
           },
-          Symbol(attatchment_asset_tag.messenger.machinat): undefined,
-          Symbol(attachment_data.messenger.machinat): undefined,
-          Symbol(attachment_info.messenger.machinat): undefined,
+          Symbol(attatchment_asset_tag.messenger.sociably): undefined,
+          Symbol(attachment_data.messenger.sociably): undefined,
+          Symbol(attachment_info.messenger.sociably): undefined,
         },
         Object {
           "message": Object {
@@ -55,9 +55,9 @@ describe('media Components', () => {
               "type": "image",
             },
           },
-          Symbol(attatchment_asset_tag.messenger.machinat): undefined,
-          Symbol(attachment_data.messenger.machinat): undefined,
-          Symbol(attachment_info.messenger.machinat): undefined,
+          Symbol(attatchment_asset_tag.messenger.sociably): undefined,
+          Symbol(attachment_data.messenger.sociably): undefined,
+          Symbol(attachment_info.messenger.sociably): undefined,
         },
         Object {
           "message": Object {
@@ -70,9 +70,9 @@ describe('media Components', () => {
               "type": "video",
             },
           },
-          Symbol(attatchment_asset_tag.messenger.machinat): undefined,
-          Symbol(attachment_data.messenger.machinat): undefined,
-          Symbol(attachment_info.messenger.machinat): undefined,
+          Symbol(attatchment_asset_tag.messenger.sociably): undefined,
+          Symbol(attachment_data.messenger.sociably): undefined,
+          Symbol(attachment_info.messenger.sociably): undefined,
         },
         Object {
           "message": Object {
@@ -85,9 +85,9 @@ describe('media Components', () => {
               "type": "video",
             },
           },
-          Symbol(attatchment_asset_tag.messenger.machinat): undefined,
-          Symbol(attachment_data.messenger.machinat): undefined,
-          Symbol(attachment_info.messenger.machinat): undefined,
+          Symbol(attatchment_asset_tag.messenger.sociably): undefined,
+          Symbol(attachment_data.messenger.sociably): undefined,
+          Symbol(attachment_info.messenger.sociably): undefined,
         },
         Object {
           "message": Object {
@@ -100,9 +100,9 @@ describe('media Components', () => {
               "type": "audio",
             },
           },
-          Symbol(attatchment_asset_tag.messenger.machinat): undefined,
-          Symbol(attachment_data.messenger.machinat): undefined,
-          Symbol(attachment_info.messenger.machinat): undefined,
+          Symbol(attatchment_asset_tag.messenger.sociably): undefined,
+          Symbol(attachment_data.messenger.sociably): undefined,
+          Symbol(attachment_info.messenger.sociably): undefined,
         },
         Object {
           "message": Object {
@@ -115,9 +115,9 @@ describe('media Components', () => {
               "type": "audio",
             },
           },
-          Symbol(attatchment_asset_tag.messenger.machinat): undefined,
-          Symbol(attachment_data.messenger.machinat): undefined,
-          Symbol(attachment_info.messenger.machinat): undefined,
+          Symbol(attatchment_asset_tag.messenger.sociably): undefined,
+          Symbol(attachment_data.messenger.sociably): undefined,
+          Symbol(attachment_info.messenger.sociably): undefined,
         },
         Object {
           "message": Object {
@@ -130,9 +130,9 @@ describe('media Components', () => {
               "type": "file",
             },
           },
-          Symbol(attatchment_asset_tag.messenger.machinat): undefined,
-          Symbol(attachment_data.messenger.machinat): undefined,
-          Symbol(attachment_info.messenger.machinat): undefined,
+          Symbol(attatchment_asset_tag.messenger.sociably): undefined,
+          Symbol(attachment_data.messenger.sociably): undefined,
+          Symbol(attachment_info.messenger.sociably): undefined,
         },
         Object {
           "message": Object {
@@ -145,9 +145,9 @@ describe('media Components', () => {
               "type": "file",
             },
           },
-          Symbol(attatchment_asset_tag.messenger.machinat): undefined,
-          Symbol(attachment_data.messenger.machinat): undefined,
-          Symbol(attachment_info.messenger.machinat): undefined,
+          Symbol(attatchment_asset_tag.messenger.sociably): undefined,
+          Symbol(attachment_data.messenger.sociably): undefined,
+          Symbol(attachment_info.messenger.sociably): undefined,
         },
       ]
     `);

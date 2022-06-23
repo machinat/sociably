@@ -1,14 +1,14 @@
 {
-  "name": "@machinat/webview",
+  "name": "@sociably/webview",
   "version": "0.6.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/machinat/machinat.git",
+    "url": "https://github.com/machinat/sociably.git",
     "directory": "packages/webview"
   },
-  "homepage": "https://github.com/machinat/machinat#readme",
-  "bugs": "https://github.com/machinat/machinat/issues",
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
@@ -28,8 +28,8 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.6.0",
-    "@machinat/http": "^0.6.0",
+    "@sociably/core": "^0.6.0",
+    "@sociably/http": "^0.6.0",
     "next": "^12.0.9",
     "react": "^17.0.2 || ^18.0.0-0",
     "react-dom": "^17.0.2 || ^18.0.0-0"
@@ -39,9 +39,9 @@
     "utf-8-validate": "^5.0.2"
   },
   "dependencies": {
-    "@machinat/auth": "^0.6.0",
-    "@machinat/next": "^0.6.0",
-    "@machinat/websocket": "^0.6.0",
+    "@sociably/auth": "^0.6.0",
+    "@sociably/next": "^0.6.0",
+    "@sociably/websocket": "^0.6.0",
     "nanoid": "^3.1.20"
   },
   "devDependencies": {

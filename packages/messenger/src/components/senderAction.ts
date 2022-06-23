@@ -1,4 +1,4 @@
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { makeMessengerComponent } from '../utils';
 import type { MessengerComponent, SenderActionValue } from '../types';
 

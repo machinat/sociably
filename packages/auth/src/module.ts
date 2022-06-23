@@ -1,7 +1,7 @@
-import type { ServiceModule } from '@machinat/core';
-import { makeFactoryProvider, ServiceProvision } from '@machinat/core/service';
-import Http from '@machinat/http';
-import type { RequestRoute } from '@machinat/http';
+import type { ServiceModule } from '@sociably/core';
+import { makeFactoryProvider, ServiceProvision } from '@sociably/core/service';
+import Http from '@sociably/http';
+import type { RequestRoute } from '@sociably/http';
 import ControllerP from './Controller';
 import HttpOperatorP from './HttpOperator';
 import BasicAuthenticator from './basicAuth';

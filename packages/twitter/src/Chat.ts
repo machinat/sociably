@@ -1,5 +1,5 @@
-import type { MachinatChannel } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyChannel } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TWITTER } from './constant';
 
 type SerializedDmChat = {
@@ -8,7 +8,7 @@ type SerializedDmChat = {
 };
 
 export default class TwitterChat
-  implements MachinatChannel, MarshallableInstance<SerializedDmChat>
+  implements SociablyChannel, MarshallableInstance<SerializedDmChat>
 {
   static typeName = 'TwitterChat';
   static fromJSONValue({ id, agent }: SerializedDmChat): TwitterChat {

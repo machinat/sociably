@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import BasicAuthenticator from '@machinat/auth/basicAuth';
+import BasicAuthenticator from '@sociably/auth/basicAuth';
 import MessengerUser from '../../User';
 import MessengerChat from '../../Chat';
 import MessengerBot from '../../Bot';
@@ -10,7 +10,7 @@ const bot = moxy<MessengerBot>({
 } as never);
 
 const requestDelegator = moxy(async () => {});
-const loginUrl = `https://machinat.io/foo/auth/messenger?login=__LOGIN_TOKEN__`;
+const loginUrl = `https://sociably.io/foo/auth/messenger?login=__LOGIN_TOKEN__`;
 
 const basicAuthenticator = moxy<BasicAuthenticator>({
   getAuthUrl() {
@@ -56,7 +56,7 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
       "getChatLink": [Function],
       "platform": "messenger",
       "platformColor": "#4B69FF",
-      "platformImageUrl": "https://machinat.com/img/icon/messenger.png",
+      "platformImageUrl": "https://machinat.github.io/sociably/img/icon/messenger.png",
       "platformName": "Messenger",
     }
   `);

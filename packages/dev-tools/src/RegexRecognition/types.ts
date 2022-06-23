@@ -1,4 +1,4 @@
-import type { RecognitionData } from '@machinat/core/base/IntentRecognizer';
+import type { RecognitionData } from '@sociably/core/base/IntentRecognizer';
 
 export type RegexRecognitionConfigs<
   Language extends string,

@@ -1,11 +1,11 @@
 /// <reference lib="DOM" />
-import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
-import AuthClient from '@machinat/auth/client';
+import { AnyMarshalType, BaseMarshaler } from '@sociably/core/base/Marshaler';
+import AuthClient from '@sociably/auth/client';
 import type {
   UserOfAuthenticator,
   ContextOfAuthenticator,
-} from '@machinat/auth';
-import { Connector, ClientEmitter } from '@machinat/websocket/client';
+} from '@sociably/auth';
+import { Connector, ClientEmitter } from '@sociably/websocket/client';
 import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
 import { WebviewConnection } from '../channel';
 import { createEvent } from '../utils';

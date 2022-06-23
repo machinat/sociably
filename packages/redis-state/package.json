@@ -1,14 +1,14 @@
 {
-  "name": "@machinat/redis-state",
+  "name": "@sociably/redis-state",
   "version": "0.6.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/machinat/machinat.git",
+    "url": "https://github.com/machinat/sociably.git",
     "directory": "packages/session"
   },
-  "homepage": "https://github.com/machinat/machinat#readme",
-  "bugs": "https://github.com/machinat/machinat/issues",
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js"
@@ -32,6 +32,6 @@
     "thenifiedly": "^0.2.1"
   },
   "peerDependencies": {
-    "@machinat/core": "^0.6.0"
+    "@sociably/core": "^0.6.0"
   }
 }

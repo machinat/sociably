@@ -1,4 +1,4 @@
-import { MACHINAT_SERVICE_CONTAINER } from '../../symbol';
+import { SOCIABLY_SERVICE_CONTAINER } from '../../symbol';
 import type {
   ServiceContainer,
   ServiceDependency,
@@ -146,7 +146,7 @@ function makeContainer<Deps extends AnyDep[]>({
     const requirements = deps.map(polishServiceRequirement);
 
     return Object.defineProperties(fn as ContainerFn<T, Deps>, {
-      $$typeof: { value: MACHINAT_SERVICE_CONTAINER, configurable: true },
+      $$typeof: { value: SOCIABLY_SERVICE_CONTAINER, configurable: true },
       $$name: { value: name || fn.name, configurable: true },
       $$deps: { value: requirements, configurable: true },
       $$factory: { value: fn, configurable: true },

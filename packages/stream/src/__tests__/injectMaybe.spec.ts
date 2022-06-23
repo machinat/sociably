@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { makeContainer, ServiceScope } from '@machinat/core/service';
+import { makeContainer, ServiceScope } from '@sociably/core/service';
 import { STREAMING_KEY_I } from '../interface';
 import injectMaybe from '../injectMaybe';
 

@@ -20,7 +20,7 @@ we can extend a webview to ship more amazing features in GUI.
 
 ## Webview Platform
 
-`@machinat/webview` platform serves embedded webviews in the chat.
+`@sociably/webview` platform serves embedded webviews in the chat.
 It does these three things in the background:
 
 1. Host a web app with [Next.js](https://nextjs.org).
@@ -34,7 +34,7 @@ add a `--webview` flag and everything will be set up.
 Like this:
 
 ```bash
-npm init @machinat/app@latest -- -p telegram --webview my-project
+npm init @sociably/app@latest -- -p telegram --webview my-project
 ```
 
 :::info
@@ -47,8 +47,8 @@ The chat platforms may provide some special components to open the webview in th
 For example:
 
 ```js
-import * as Messenger from '@machinat/messenger/components';
-import { WebviewButton as MessengerWebviewButton } from '@machinat/messenger/webview';
+import * as Messenger from '@sociably/messenger/components';
+import { WebviewButton as MessengerWebviewButton } from '@sociably/messenger/webview';
 
 <Messenger.ButtonTemplate
   buttons={
@@ -87,7 +87,7 @@ const client = new WebviewClient({
 2. The `platform` querystring param on the URL. Like:
 
 ```
-https://my.machinat.app/webview?platform=messenger
+https://my.sociably.app/webview?platform=messenger
 ```
 
 3. The platform that already logged in.
@@ -101,8 +101,8 @@ In the front-end, the `WebviewClient` handles the login flow and the communicati
 It can be constructed like this:
 
 ```js
-import WebviewClient from '@machinat/webview/client';
-import MessengerAuth from '@machinat/messenger/webview/client';
+import WebviewClient from '@sociably/webview/client';
+import MessengerAuth from '@sociably/messenger/webview/client';
 
 const client = new WebviewClient({
   authPlatforms: [MessengerAuth],
@@ -119,8 +119,8 @@ use the `useClient` hook to create a client in the lifetime of a component.
 Like this:
 
 ```jsx
-import { useClient } from '@machinat/webview/client';
-import MessengerAuth from '@machinat/messenger/webview/client';
+import { useClient } from '@sociably/webview/client';
+import MessengerAuth from '@sociably/messenger/webview/client';
 
 export default function MyApp() {
   const client = useClient({
@@ -217,7 +217,7 @@ The events sent before it are queued and delivered after it's connected.
 For example, an app can display data from the server like this:
 
 ```js
-import WebviewClient, { useEventReducer } from '@machinat/webview/client';
+import WebviewClient, { useEventReducer } from '@sociably/webview/client';
 // ...
 
 export default function Home() {
@@ -259,17 +259,17 @@ It's useful to maintain the _real-time_ app data.
 
 ## Webview Platform
 
-On the server side, the `@machinat/webview` platform need to be registered in your app.
+On the server side, the `@sociably/webview` platform need to be registered in your app.
 Like this:
 
 ```js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Webview from '@machinat/webview';
-import TelegramAuth from '@machinat/telegram/webview';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Webview from '@sociably/webview';
+import TelegramAuth from '@sociably/telegram/webview';
 import nextConfig from '../webview/next.config.js';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({/* ... */}),
   ],
@@ -436,7 +436,7 @@ To send messages back to the original chatroom,
 you can use `BasicBot` service like:
 
 ```js
-import Machinat, { BasicBot } from '@machinat/core';
+import Sociably, { BasicBot } from '@sociably/core';
 
 app.onEvent(
   makeContainer({ deps: [BasicBot] })(
@@ -458,7 +458,7 @@ app.onEvent(
 First install the following packages:
 
 ```bash
-npm install react react-dom next @machinat/webview
+npm install react react-dom next @sociably/webview
 ```
 
 ### Create Web App
@@ -474,18 +474,18 @@ Check [Next.js document](https://nextjs.org/docs/getting-started) for more detai
 
 ### Server-Side Setup
 
-Then register the `@machinat/webview` platform to your app like this:
+Then register the `@sociably/webview` platform to your app like this:
 
 ```js
 // src/app.js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Webview from '@machinat/webview';
-import Telegram from '@machinat/telegram';
-import TelegramAuth from '@machinat/telegram/webview';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Webview from '@sociably/webview';
+import Telegram from '@sociably/telegram';
+import TelegramAuth from '@sociably/telegram/webview';
 import nextConfig from '../webview/next.config.js';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     // http module must be installed
     Http.initModule({
@@ -495,7 +495,7 @@ const app = Machinat.createApp({
   platforms: [
     Webview.initModule({
       // hostname of your server
-      webviewHost: 'xxx.machinat.com',
+      webviewHost: 'xxx.sociably.io',
       // secret string for siging auth token
       authSecret: '_some_secret_string_',
       // authenticators from chat platforms
@@ -524,12 +524,12 @@ You can check more platform options [here](pathname:///api/modules/webview.html#
 
 To integrate with the chatroom,
 you have to add the supported `authPlatforms` to log in users.
-Conventionally, the providers are available at `@machinat/<platform>/webview`.
+Conventionally, the providers are available at `@sociably/<platform>/webview`.
 
 ```js
-import MessengerAuth from '@machinat/messenger/webview';
-import TelegramAuth from '@machinat/telegram/webview';
-import LineAuth from '@machinat/line/webview';
+import MessengerAuth from '@sociably/messenger/webview';
+import TelegramAuth from '@sociably/telegram/webview';
+import LineAuth from '@sociably/line/webview';
 // ...
   Webview.initModule({
     authPlatforms: [
@@ -549,8 +549,8 @@ For example:
 
 ```js
 // webview/pages/index.js
-import WebviewClient from '@machinat/webview/client';
-import TelegramAuth from '@machinat/telegram/webview/client';
+import WebviewClient from '@sociably/webview/client';
+import TelegramAuth from '@sociably/telegram/webview/client';
 
 const client = new WebviewClient({
   // prevent connections while rendering on server-side
@@ -588,7 +588,7 @@ use [`publicRuntimeConfig`](https://nextjs.org/docs/api-reference/next.config.js
 For example:
 
 ```js
-import MessengerAuth from '@machinat/messenger/webview/client';
+import MessengerAuth from '@sociably/messenger/webview/client';
 
 // to activate publicRuntimeConfig
 export const getServerSideProps = () => ({ props: {} });

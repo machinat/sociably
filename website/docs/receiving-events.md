@@ -5,10 +5,10 @@ title: Receiving Events
 A sociable app is actually an _event-driven_ server behind the scene.
 It receives events from external platforms and makes reactions to the users.
 
-In Machinat, you can listen to all the events in a single `app.onEvent()` entry.
+In Sociably, you can listen to all the events in a single `app.onEvent()` entry.
 
 ```js
-const app = Machinat.createApp({/*...*/});
+const app = Sociably.createApp({/*...*/});
 
 app
   .onEvent(context => {
@@ -167,7 +167,7 @@ For example, `context.metadata` of a webhook event might look like:
   source: 'webhook',
   request: {
     method: 'POST',
-    url: 'https://machinat.io/webhook/messenger',
+    url: 'https://sociably.io/webhook/messenger',
     headers: {/*...*/},
     body: '{"some":"json"}'
   }

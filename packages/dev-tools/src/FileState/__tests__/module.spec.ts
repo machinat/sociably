@@ -1,5 +1,5 @@
-import Machinat from '@machinat/core';
-import BaseStateControllerI from '@machinat/core/base/StateController';
+import Sociably from '@sociably/core';
+import BaseStateControllerI from '@sociably/core/base/StateController';
 import { tmpNameSync } from 'tmp';
 import FileState from '../module';
 import { ControllerP as FileStateController } from '../controller';
@@ -13,7 +13,7 @@ test('export interfaces', () => {
       "$$multi": false,
       "$$name": "FileStateConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 
@@ -22,13 +22,13 @@ test('export interfaces', () => {
     Object {
       "$$multi": false,
       "$$name": "FileStateSerializer",
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
 
 test('provisions', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [FileState.initModule({ path: storageFilePath })],
   });
   await app.start();

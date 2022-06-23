@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import moxy, { Mock } from '@moxyjs/moxy';
-import { ServerAuthenticator } from '@machinat/auth';
+import { ServerAuthenticator } from '@sociably/auth';
 import type { WebviewSocketServer } from '../interface';
 import { WebviewReceiver } from '../receiver';
 import { WebviewConnection } from '../channel';

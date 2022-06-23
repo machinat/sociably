@@ -29,7 +29,7 @@ const formatCode = (code: string, parser: PrettierOptions['parser']) =>
 
 const supportedPlatforms = ['messenger', 'twitter', 'telegram', 'line'];
 
-const createMachinatApp = async ({
+const createSociablyApp = async ({
   platforms,
   projectPath,
   recognizer,
@@ -37,7 +37,7 @@ const createMachinatApp = async ({
   npmTag = 'latest',
 }: CreateAppOptions): Promise<number> => {
   console.log(
-    `Create a ${chalk.yellow('Machinat')} app in ${chalk.green(
+    `Create a ${chalk.yellow('Sociably')} app in ${chalk.green(
       projectPath
     )}...\n`
   );
@@ -139,29 +139,29 @@ const createMachinatApp = async ({
   );
 
   console.log(
-    `Install ${chalk.yellow('Machinat')} framework and other dependencies...\n`
+    `Install ${chalk.yellow('Sociably')} framework and other dependencies...\n`
   );
 
-  const machinatDeps = [
-    '@machinat/core',
-    '@machinat/http',
-    '@machinat/dev-tools',
-    '@machinat/redis-state',
-    '@machinat/stream',
-    '@machinat/script',
-    withWebview ? '@machinat/webview' : undefined,
-    platforms.includes('messenger') ? '@machinat/messenger' : undefined,
-    platforms.includes('twitter') ? '@machinat/twitter' : undefined,
-    platforms.includes('telegram') ? '@machinat/telegram' : undefined,
-    platforms.includes('line') ? '@machinat/line' : undefined,
-    recognizer === 'dialogflow' ? '@machinat/dialogflow' : undefined,
+  const sociablyDeps = [
+    '@sociably/core',
+    '@sociably/http',
+    '@Sociably/dev-tools',
+    '@Sociably/redis-state',
+    '@Sociably/stream',
+    '@Sociably/script',
+    withWebview ? '@sociably/webview' : undefined,
+    platforms.includes('messenger') ? '@Sociably/messenger' : undefined,
+    platforms.includes('twitter') ? '@Sociably/twitter' : undefined,
+    platforms.includes('telegram') ? '@Sociably/telegram' : undefined,
+    platforms.includes('line') ? '@Sociably/line' : undefined,
+    recognizer === 'dialogflow' ? '@Sociably/dialogflow' : undefined,
   ]
     .filter((pkgName) => !!pkgName)
     .map((pkgName) => `${pkgName}@${npmTag}`);
 
   const npmInstallProcess = spawnChildProcess(
     'npm',
-    ['install', ...machinatDeps],
+    ['install', ...sociablyDeps],
     { cwd: projectPath, shell: true, stdio: 'inherit' }
   );
 
@@ -174,7 +174,7 @@ const createMachinatApp = async ({
   console.log(`Initiate ${chalk.cyan('git')}...\n`);
 
   const gitInitProcess = spawnChildProcess(
-    'git init && git add . && git commit -m "Init project with Create Machinat App"',
+    'git init && git add . && git commit -m "Init project with Create Sociably App"',
     { cwd: projectPath, shell: true, stdio: 'inherit' }
   );
 
@@ -214,4 +214,4 @@ After that, you can begin by typing:
   return 0;
 };
 
-export default createMachinatApp;
+export default createSociablyApp;

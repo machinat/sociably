@@ -1,4 +1,4 @@
-import Machinat from '@machinat/core';
+import Sociably from '@sociably/core';
 import type {
   IfProps,
   BlockProps,
@@ -16,7 +16,7 @@ import type {
 /**
  * @category Keyword
  */
-export const BLOCK = Machinat.Fragment as unknown as <
+export const BLOCK = Sociably.Fragment as unknown as <
   Vars = any,
   Input = any,
   Return = any,

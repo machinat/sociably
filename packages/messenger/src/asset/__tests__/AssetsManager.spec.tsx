@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import type StateControllerI from '@machinat/core/base/StateController';
+import Sociably from '@sociably/core';
+import type StateControllerI from '@sociably/core/base/StateController';
 import type { MessengerBot } from '../../Bot';
 import { MessengerAssetsManager } from '../AssetsManager';
 

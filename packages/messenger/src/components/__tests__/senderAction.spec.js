@@ -1,7 +1,7 @@
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
 
-import Renderer from '@machinat/core/renderer';
+import Renderer from '@sociably/core/renderer';
 import { MarkSeen, TypingOn, TypingOff } from '../senderAction';
 
 const renderer = new Renderer('messenger', () => null);

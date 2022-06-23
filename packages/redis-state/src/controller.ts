@@ -1,12 +1,12 @@
 import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
-import type { MachinatUser, MachinatChannel } from '@machinat/core';
-import { makeClassProvider } from '@machinat/core/service';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
+import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import { makeClassProvider } from '@sociably/core/service';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
 import type {
   BaseStateController,
   StateAccessor,
-} from '@machinat/core/base/StateController';
+} from '@sociably/core/base/StateController';
 import { ClientI } from './interface';
 
 type CallClientFn = (method: string, ...params: string[]) => Promise<any>;
@@ -118,7 +118,7 @@ export class RedisStateController implements BaseStateController {
     };
   }
 
-  channelState(channel: string | MachinatChannel): RedisStateAccessor {
+  channelState(channel: string | SociablyChannel): RedisStateAccessor {
     const channelUid = typeof channel === 'string' ? channel : channel.uid;
 
     return new RedisStateAccessor(
@@ -128,7 +128,7 @@ export class RedisStateController implements BaseStateController {
     );
   }
 
-  userState(user: string | MachinatUser): RedisStateAccessor {
+  userState(user: string | SociablyUser): RedisStateAccessor {
     const userUid = typeof user === 'string' ? user : user.uid;
 
     return new RedisStateAccessor(

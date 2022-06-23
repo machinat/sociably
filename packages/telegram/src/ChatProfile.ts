@@ -1,5 +1,5 @@
-import type { MachinatProfile } from '@machinat/core/base/Profiler';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyProfile } from '@sociably/core/base/Profiler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TELEGRAM } from './constant';
 import type { RawChat, TelegramChatType } from './types';
 
@@ -9,7 +9,7 @@ type TelegramChatProfileValue = {
 };
 
 class TelegramChatProfile
-  implements MachinatProfile, MarshallableInstance<TelegramChatProfileValue>
+  implements SociablyProfile, MarshallableInstance<TelegramChatProfileValue>
 {
   static typeName = 'TelegramChatProfile';
   static fromJSONValue(value: TelegramChatProfileValue): TelegramChatProfile {

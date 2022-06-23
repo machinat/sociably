@@ -25,7 +25,7 @@ import type {
   DispatchWrapper,
   ModuleUtilities,
   PlatformUtilities,
-  AnyMachinatPlatform,
+  AnySociablyPlatform,
 } from './types';
 
 type EventListenable<Context> = MaybeContainer<(ctx: Context) => void>;
@@ -44,8 +44,8 @@ const ENUM_UNSTARTED = 0;
 const ENUM_STARTING = 1;
 const ENUM_STARTED = 2;
 
-export default class MachinatApp<
-  Platform extends AnyMachinatPlatform,
+export default class SociablyApp<
+  Platform extends AnySociablyPlatform,
   Context extends AnyEventContext = EventContextOfPlatform<Platform>
 > {
   config: AppConfig<Platform>;
@@ -165,7 +165,7 @@ export default class MachinatApp<
     return scope.useServices(dependencies);
   }
 
-  onEvent(listener: EventListenable<Context>): MachinatApp<Platform, Context> {
+  onEvent(listener: EventListenable<Context>): SociablyApp<Platform, Context> {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }
@@ -194,7 +194,7 @@ export default class MachinatApp<
     }
   }
 
-  onError(listener: ErrorListenable): MachinatApp<Platform, Context> {
+  onError(listener: ErrorListenable): SociablyApp<Platform, Context> {
     if (typeof listener !== 'function') {
       throw new TypeError('listener must be a function');
     }

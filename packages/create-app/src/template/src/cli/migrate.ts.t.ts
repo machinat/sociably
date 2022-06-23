@@ -8,7 +8,7 @@ export default ({ recognizer }: CreateAppContext): string => `
 import { resolve as resolvePath } from 'path';${when(
   recognizer === 'dialogflow'
 )`
-import DialogFlow from '@machinat/dialogflow';`}
+import DialogFlow from '@sociably/dialogflow';`}
 import { Umzug, JSONStorage } from 'umzug';
 import { program } from 'commander';
 import createApp from '../app';

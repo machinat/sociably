@@ -7,7 +7,7 @@ import type { PlatformType } from './types';
 const cli = meow(
   `
 Usage
-  $ create-machinat-app -p <platform> [-p <platform> ...] <project-path>
+  $ npm init @sociably/app -- -p <platform> [-p <platform> ...] <project-path>
 
 Options
   -p, --platform   platforms to install; supported platforms: messenger, telegram, line, webview
@@ -16,7 +16,7 @@ Options
   --npmTag         the npm tag to install the packages with (default: latest)
 
 Example
-  $ create-machinat-app -p messenger --webview
+  $ npm init @sociably/app -- -p messenger --webview
 `,
   {
     flags: {

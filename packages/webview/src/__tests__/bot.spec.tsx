@@ -1,10 +1,10 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import Queue from '@machinat/core/queue';
-import _Engine from '@machinat/core/engine';
-import _Renderer from '@machinat/core/renderer';
-import type { AnyServerAuthenticator } from '@machinat/auth';
-import { WebSocketWorker } from '@machinat/websocket';
+import Sociably from '@sociably/core';
+import Queue from '@sociably/core/queue';
+import _Engine from '@sociably/core/engine';
+import _Renderer from '@sociably/core/renderer';
+import type { AnyServerAuthenticator } from '@sociably/auth';
+import { WebSocketWorker } from '@sociably/websocket';
 import {
   WebviewConnection,
   WebviewUserChannel,
@@ -18,22 +18,22 @@ const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Worker = WebSocketWorker as Moxy<typeof WebSocketWorker>;
 
-jest.mock('@machinat/core/engine', () =>
+jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/engine'))
+    .default(jest.requireActual('@sociably/core/engine'))
 );
 
-jest.mock('@machinat/core/renderer', () =>
+jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/renderer'))
+    .default(jest.requireActual('@sociably/core/renderer'))
 );
 
-jest.mock('@machinat/websocket', () =>
+jest.mock('@sociably/websocket', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/websocket'))
+    .default(jest.requireActual('@sociably/websocket'))
 );
 
 const server = moxy<SocketServerP<AnyServerAuthenticator>>({

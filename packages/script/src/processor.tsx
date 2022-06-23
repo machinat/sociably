@@ -1,8 +1,8 @@
 import invariant from 'invariant';
-import Machinat from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateController';
-import type { MachinatChannel, MachinatNode } from '@machinat/core';
-import { ServiceScope, makeClassProvider } from '@machinat/core/service';
+import Sociably from '@sociably/core';
+import StateControllerI from '@sociably/core/base/StateController';
+import type { SociablyChannel, SociablyNode } from '@sociably/core';
+import { ServiceScope, makeClassProvider } from '@sociably/core/service';
 import execute from './execute';
 import { SCRIPT_STATE_KEY } from './constant';
 import { LibraryListI } from './interface';
@@ -21,11 +21,11 @@ type RuntimeResult<Return, Yield> = {
   finished: boolean;
   returnValue: undefined | Return;
   yieldValue: undefined | Yield;
-  contents: MachinatNode;
+  contents: SociablyNode;
 };
 
 export class ScriptRuntime<Script extends AnyScriptLibrary> {
-  channel: MachinatChannel;
+  channel: SociablyChannel;
   callStack: null | CallStatus<unknown>[];
   saveTimestamp: undefined | number;
 
@@ -33,7 +33,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   private _serviceScope: ServiceScope;
 
   private _requireSaving: boolean;
-  private _queuedMessages: MachinatNode[];
+  private _queuedMessages: SociablyNode[];
 
   private _returnValue: undefined | ReturnOfScript<Script>;
   private _yieldValue: undefined | YieldOfScript<Script>;
@@ -41,7 +41,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   constructor(
     stateContoller: StateControllerI,
     scope: ServiceScope,
-    channel: MachinatChannel,
+    channel: SociablyChannel,
     stack: CallStatus<unknown>[],
     promptTimestamp?: number
   ) {
@@ -114,12 +114,12 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     };
   }
 
-  output(): MachinatNode {
+  output(): SociablyNode {
     const { callStack, saveTimestamp } = this;
     return (
       <>
         {this._queuedMessages}
-        <Machinat.Thunk effect={() => this._save(callStack, saveTimestamp)} />
+        <Sociably.Thunk effect={() => this._save(callStack, saveTimestamp)} />
       </>
     );
   }
@@ -206,7 +206,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
   }
 
   async start<StartingScript extends Script>(
-    channel: MachinatChannel,
+    channel: SociablyChannel,
     script: StartingScript,
     options: StartRuntimeOptions<ParamsOfScript<StartingScript>> = {} as any
   ): Promise<ScriptRuntime<Script>> {
@@ -245,7 +245,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
   }
 
   async getRuntime(
-    channel: MachinatChannel
+    channel: SociablyChannel
   ): Promise<null | ScriptRuntime<Script>> {
     const state = await this._stateContoller
       .channelState(channel)
@@ -278,7 +278,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
   }
 
   async continue(
-    channel: MachinatChannel,
+    channel: SociablyChannel,
     input: InputOfScript<Script>
   ): Promise<null | ScriptRuntime<Script>> {
     const runtime = await this.getRuntime(channel);

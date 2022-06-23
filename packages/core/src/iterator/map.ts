@@ -1,4 +1,4 @@
-import type { MachinatNode, MachinatRenderable } from '../types';
+import type { SociablyNode, SociablyRenderable } from '../types';
 import type { NodeMapper } from './types';
 import traverse from './traverse';
 
@@ -9,7 +9,7 @@ type MapTraverseContext<Mapped, Payload> = {
 };
 
 const mapCallback = <Mapped, Payload>(
-  child: MachinatRenderable,
+  child: SociablyRenderable,
   path: string,
   context: MapTraverseContext<Mapped, Payload>
 ) => {
@@ -19,7 +19,7 @@ const mapCallback = <Mapped, Payload>(
 };
 
 const map = <Mapped, Payload>(
-  children: MachinatNode,
+  children: SociablyNode,
   mapper: NodeMapper<Mapped, Payload>,
   prefix: string,
   payload: Payload

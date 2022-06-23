@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export  */
-import type { ContextDetails } from '@machinat/auth';
+import type { ContextDetails } from '@sociably/auth';
 import LineUser from '../User';
 import LineChat from '../Chat';
 import LineUserProfile from '../UserProfile';

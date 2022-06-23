@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import BasicAuthenticator from '@machinat/auth/basicAuth';
+import BasicAuthenticator from '@sociably/auth/basicAuth';
 import TwitterUser from '../../User';
 import TwitterChat from '../../Chat';
 import TwitterBot from '../../Bot';
@@ -10,7 +10,7 @@ const bot = moxy<TwitterBot>({
 } as never);
 
 const requestDelegator = moxy(async () => {});
-const loginUrl = `https://machinat.io/MyApp/auth/twitter?login=__LOGIN_TOKEN__`;
+const loginUrl = `https://sociably.io/MyApp/auth/twitter?login=__LOGIN_TOKEN__`;
 
 const basicAuthenticator = moxy<BasicAuthenticator>({
   getAuthUrl() {
@@ -56,7 +56,7 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
       "getChatLink": [Function],
       "platform": "twitter",
       "platformColor": "#1D9BF0",
-      "platformImageUrl": "https://machinat.com/img/icon/twitter.png",
+      "platformImageUrl": "https://machinat.github.io/sociably/img/icon/twitter.png",
       "platformName": "Twitter",
     }
   `);

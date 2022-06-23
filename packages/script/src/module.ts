@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import type { ServiceModule } from '@machinat/core';
+import type { ServiceModule } from '@sociably/core';
 import ProcessorP from './processor';
 import { LibraryListI } from './interface';
 import type { AnyScriptLibrary } from './types';

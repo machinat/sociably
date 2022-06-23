@@ -11,7 +11,7 @@ title: Native UI and Postback
 ## Native Component
 
 On most chat platforms, you can interact with users by widgets or actions.
-In Machinat, they are available as **Native Component** of each platform.
+In Sociably, they are available as **Native Component** of each platform.
 
 Let's add a button in the message to list user's todos. Follow the
 guide of the platform to edit `handleChat`:
@@ -31,8 +31,8 @@ import TabItem from '@theme/TabItem';
   <TabItem value="messenger">
 
 ```tsx {2,18-27} title="src/handlers/handleChat.tsx"
-import Machinat, { makeContainer } from '@machinat/core';
-import * as Messenger from '@machinat/messenger/components';
+import Sociably, { makeContainer } from '@sociably/core';
+import * as Messenger from '@sociably/messenger/components';
 // ...
     async (
       ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
@@ -46,7 +46,7 @@ import * as Messenger from '@machinat/messenger/components';
           return reply(
             <>
               <p>Todo "<b>{todoName}</b>" is added!</p>
-              <Machinat.Pause time={1500} />
+              <Sociably.Pause time={1500} />
 
               <Messenger.ButtonTemplate
                 buttons={
@@ -79,8 +79,8 @@ We use these Messenger native components above:
 
 
 ```tsx {2,18-29} title="src/handlers/handleChat.tsx"
-import Machinat, { makeContainer } from '@machinat/core';
-import * as Telegram from '@machinat/telegram/components';
+import Sociably, { makeContainer } from '@sociably/core';
+import * as Telegram from '@sociably/telegram/components';
 // ...
     async (
       ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
@@ -94,7 +94,7 @@ import * as Telegram from '@machinat/telegram/components';
           return reply(
             <>
               <p>Todo "<b>{todoName}</b>" is added!</p>
-              <Machinat.Pause time={1500} />
+              <Sociably.Pause time={1500} />
 
               <Telegram.Text
                 replyMarkup={
@@ -130,8 +130,8 @@ We use these Telegram native components above:
 
 
 ```tsx {2,18-28} title="src/handlers/handleChat.tsx"
-import Machinat, { makeContainer } from '@machinat/core';
-import * as Line from '@machinat/line/components';
+import Sociably, { makeContainer } from '@sociably/core';
+import * as Line from '@sociably/line/components';
 //...
   async (
     ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
@@ -145,7 +145,7 @@ import * as Line from '@machinat/line/components';
         return reply(
           <>
             <p>Todo "<b>{todoName}</b>" is added!</p>
-            <Machinat.Pause time={1500} />
+            <Sociably.Pause time={1500} />
 
             <Line.ButtonTemplate
               altText="You have 3 todos now."
@@ -185,7 +185,7 @@ If you are building a cross-platform app, reply according to the platform like:
 //...
     <>
       <p>Todo "<b>{todoName}</b>" is added!</p>
-      <Machinat.Pause time={1500} />
+      <Sociably.Pause time={1500} />
 
       {
         event.platform === 'messenger' ? (

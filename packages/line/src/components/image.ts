@@ -1,9 +1,9 @@
-import { MachinatNode } from '@machinat/core';
+import { SociablyNode } from '@sociably/core';
 import {
   makeUnitSegment,
   makePartSegment,
   PartSegment,
-} from '@machinat/core/renderer';
+} from '@sociably/core/renderer';
 import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';
 
@@ -79,7 +79,7 @@ export type ImageMapAreaProps = {
    * An {@link UriAction} or {@link MessageAction} element to be triggered when
    * the area is touched.
    */
-  action: MachinatNode;
+  action: SociablyNode;
   /**
    * Horizontal position relative to the left edge of the area. Value must be 0
    * or higher.
@@ -164,7 +164,7 @@ export type ImageMapVideoAreaProps = {
   /** Height of the video area */
   height: number;
   /** An {@link UriAction} element to be displayed after the video is finished. */
-  action?: MachinatNode;
+  action?: SociablyNode;
 };
 
 /**
@@ -207,7 +207,7 @@ export const ImageMapVideoArea: LineComponent<
  */
 export type ImageMapProps = {
   /** ImageMapArea elements for the actions on touching. */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Base URL of the image */
   baseUrl?: string;
   /** Alternative text. */
@@ -218,7 +218,7 @@ export type ImageMapProps = {
    */
   height: number;
   /** One ImageMapVideoArea element to play video within the image map. */
-  video?: MachinatNode;
+  video?: SociablyNode;
 };
 
 /**

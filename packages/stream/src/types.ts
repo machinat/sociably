@@ -1,5 +1,5 @@
-import type { MachinatApp } from '@machinat/core';
-import { ServiceScope } from '@machinat/core/service';
+import type { SociablyApp } from '@sociably/core';
+import { ServiceScope } from '@sociably/core/service';
 import Stream from './stream';
 
 export type StreamingFrame<T> = {
@@ -10,5 +10,5 @@ export type StreamingFrame<T> = {
 
 export type OperatorFunction<T, R> = (input: Stream<T>) => Stream<R>;
 
-export type EventContextOfApp<App extends MachinatApp<any, any>> =
-  App extends MachinatApp<any, infer Context> ? Context : never;
+export type EventContextOfApp<App extends SociablyApp<any, any>> =
+  App extends SociablyApp<any, infer Context> ? Context : never;

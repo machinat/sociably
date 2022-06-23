@@ -1,4 +1,4 @@
-import Machinat from '../..';
+import Sociably from '../..';
 import toArray from '../toArray';
 
 it('returns null or undefined if null or undefined passed', () => {

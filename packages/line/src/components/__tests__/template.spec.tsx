@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
+import Renderer from '@sociably/core/renderer';
 import {
   ButtonTemplate,
   ConfirmTemplate,
@@ -121,7 +121,7 @@ describe.each(
 
   test('altText as function', async () => {
     const altTextGetter = moxy(() => 'ALT_TEXT_FOO');
-    const element = Machinat.createElement(templateElement.type, {
+    const element = Sociably.createElement(templateElement.type, {
       ...templateElement.props,
       altText: altTextGetter,
     });

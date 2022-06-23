@@ -1,7 +1,7 @@
 import { makeInterface } from '../service';
-import type { MachinatChannel } from '../types';
+import type { SociablyChannel } from '../types';
 
-type RenderingChannelI = null | MachinatChannel;
+type RenderingChannelI = null | SociablyChannel;
 
 const RenderingChannelI = makeInterface<RenderingChannelI>({
   name: 'RenderingChannel',

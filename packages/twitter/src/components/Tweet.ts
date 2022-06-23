@@ -1,6 +1,6 @@
-import type { MachinatNode } from '@machinat/core';
-import { formatNode } from '@machinat/core/utils';
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
+import type { SociablyNode } from '@sociably/core';
+import { formatNode } from '@sociably/core/utils';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent';
 import createTweetSegmentValue from '../utils/createTweetSegmentValue';
 import splitTweetText from '../utils/splitTweetText';
@@ -15,7 +15,7 @@ import {
  */
 export type TweetProps = {
   /** Texual content of the tweet */
-  children?: MachinatNode;
+  children?: SociablyNode;
   /**
    * Tweets a link directly to a Direct Message conversation with an account.
    * By default it links to the agent who create the tweet. You can directly
@@ -34,7 +34,7 @@ export type TweetProps = {
   /** Link to the Tweet being quoted.  This is mutually exclusive from `media` and `poll` */
   quoteTweetId?: string;
   /** Attach media to the tweet. Should contain only {@link Media}. This is mutually exclusive from `poll` and `quoteTweetId` */
-  media?: MachinatNode;
+  media?: SociablyNode;
   /** A list of User IDs being tagged in the Tweet with Media. If the user you're tagging doesn't have photo-tagging enabled, their names won't show up in the list of tagged users even though the Tweet is successfully created */
   tagUsersInMedia?: string[];
   /** Attach a poll to the tweet. This is mutually exclusive from `media` and `quoteTweetId` */

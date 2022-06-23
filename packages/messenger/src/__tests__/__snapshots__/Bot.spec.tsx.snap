@@ -37,7 +37,7 @@ Object {
               "payload": Object {
                 "attachment_id": undefined,
                 "is_reusable": undefined,
-                "url": "https://machinat.com/greeting.png",
+                "url": "https://sociably.io/greeting.png",
               },
               "type": "image",
             },
@@ -117,7 +117,7 @@ Object {
                   "payload": Object {
                     "attachment_id": undefined,
                     "is_reusable": undefined,
-                    "url": "https://machinat.com/greeting.png",
+                    "url": "https://sociably.io/greeting.png",
                   },
                   "type": "image",
                 },
@@ -168,7 +168,7 @@ Array [
     "relative_url": "me/messages",
   },
   Object {
-    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
+    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D",
     "depends_on": "facebook.1234567890.john-1",
     "method": "POST",
     "name": "facebook.1234567890.john-2",
@@ -215,7 +215,7 @@ Object {
               "payload": Object {
                 "attachment_id": undefined,
                 "is_reusable": undefined,
-                "url": "https://machinat.com/greeting.png",
+                "url": "https://sociably.io/greeting.png",
               },
               "type": "image",
             },
@@ -295,7 +295,7 @@ Object {
                   "payload": Object {
                     "attachment_id": undefined,
                     "is_reusable": undefined,
-                    "url": "https://machinat.com/greeting.png",
+                    "url": "https://sociably.io/greeting.png",
                   },
                   "type": "image",
                 },
@@ -346,7 +346,7 @@ Array [
     "relative_url": "me/messages",
   },
   Object {
-    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fmachinat.com%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%22john%22%7D",
+    "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%22john%22%7D",
     "depends_on": "facebook.1234567890.john-1",
     "method": "POST",
     "name": "facebook.1234567890.john-2",
@@ -369,7 +369,7 @@ Object {
               "payload": Object {
                 "attachment_id": undefined,
                 "is_reusable": undefined,
-                "url": "https://machinat.com/trollface.png",
+                "url": "https://sociably.io/trollface.png",
               },
               "type": "image",
             },
@@ -401,7 +401,7 @@ Object {
                   "payload": Object {
                     "attachment_id": undefined,
                     "is_reusable": undefined,
-                    "url": "https://machinat.com/trollface.png",
+                    "url": "https://sociably.io/trollface.png",
                   },
                   "type": "image",
                 },

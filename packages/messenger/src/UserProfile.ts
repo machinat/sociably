@@ -1,10 +1,10 @@
-import type { MachinatProfile } from '@machinat/core/base/Profiler';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyProfile } from '@sociably/core/base/Profiler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import type { RawUserProfile } from './types';
 import { MESSENGER } from './constant';
 
 class FacebookUserProfile
-  implements MachinatProfile, MarshallableInstance<RawUserProfile>
+  implements SociablyProfile, MarshallableInstance<RawUserProfile>
 {
   static typeName = 'FacebookUserProfile';
 

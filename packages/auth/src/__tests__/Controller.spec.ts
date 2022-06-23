@@ -78,7 +78,7 @@ const barAuthenticator: Moxy<AnyServerAuthenticator> = moxy({
 
 const authenticators = [fooAuthenticator, barAuthenticator];
 const secret = '__SECRET__';
-const serverUrl = 'https://machinat.io';
+const serverUrl = 'https://sociably.io';
 
 beforeEach(() => {
   fooAuthenticator.mock.reset();
@@ -134,7 +134,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         authenticators
       );
 
-      let req = prepareReq('GET', 'https://auth.machinat.com', {}, '');
+      let req = prepareReq('GET', 'https://auth.sociably.io', {}, '');
       await controller.delegateAuthRequest(req, res);
       expect(res.statusCode).toBe(403);
       expect(res.end.mock).toHaveBeenCalled();
@@ -148,7 +148,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       `);
 
       res = moxy(new ServerResponse({} as never));
-      req = prepareReq('GET', 'https://machinat.com/someWhereElse', {}, '');
+      req = prepareReq('GET', 'https://sociably.io/someWhereElse', {}, '');
       await controller.delegateAuthRequest(req, res);
       expect(res.statusCode).toBe(403);
       expect(res.end.mock).toHaveBeenCalled();
@@ -167,7 +167,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      const req = prepareReq('GET', 'https://auth.machinat.com', {}, '');
+      const req = prepareReq('GET', 'https://auth.sociably.io', {}, '');
 
       await controller.delegateAuthRequest(req, res);
 
@@ -190,7 +190,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       res.mock.getter('finished').fakeReturnValue(true);
 
-      let req = prepareReq('GET', 'https://auth.machinat.com/foo', {}, '');
+      let req = prepareReq('GET', 'https://auth.sociably.io/foo', {}, '');
       await controller.delegateAuthRequest(req, res);
 
       expect(fooAuthenticator.delegateAuthRequest.mock).toHaveBeenCalledTimes(
@@ -202,7 +202,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         { originalPath: '/foo', matchedPath: '/foo', trailingPath: '' }
       );
 
-      req = prepareReq('GET', 'https://auth.machinat.com/bar/baz', {}, '');
+      req = prepareReq('GET', 'https://auth.sociably.io/bar/baz', {}, '');
       await controller.delegateAuthRequest(req, res);
 
       expect(barAuthenticator.delegateAuthRequest.mock).toHaveBeenCalledTimes(
@@ -222,7 +222,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      const req = prepareReq('GET', 'https://auth.machinat.com/foo', {}, '');
+      const req = prepareReq('GET', 'https://auth.sociably.io/foo', {}, '');
 
       await controller.delegateAuthRequest(req, res);
 
@@ -248,7 +248,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      const req = prepareReq('GET', 'https://auth.machinat.com/baz', {}, '');
+      const req = prepareReq('GET', 'https://auth.sociably.io/baz', {}, '');
 
       await controller.delegateAuthRequest(req, res);
 
@@ -268,7 +268,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     });
 
     it('respond 404 if unknown private api called', async () => {
-      const req = prepareReq('POST', 'https://machinat.com/_unknown', {}, '');
+      const req = prepareReq('POST', 'https://sociably.io/_unknown', {}, '');
 
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
@@ -299,7 +299,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       res = moxy(new ServerResponse({} as never));
       req = prepareReq(
         'POST',
-        'http://auth.machinat.com/_sign',
+        'http://auth.sociably.io/_sign',
         {},
         { platform: 'foo', credential: { foo: 'data' } }
       );
@@ -329,19 +329,19 @@ describe('#delegateAuthRequest(req, res)', () => {
       const cookies = getCookies(res);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "machinat_auth_signature" => Object {
+          "sociably_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
             "value": "EKG7WOjtwYDAi7tisgcKPmJ_js11Jaf4347vCrFsXbc",
           },
-          "machinat_auth_token" => Object {
+          "sociably_auth_token" => Object {
             "directives": "Path=/; SameSite=Lax; Secure",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
           },
-          "machinat_auth_state" => Object {
+          "sociably_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
             "value": "",
           },
-          "machinat_auth_error" => Object {
+          "sociably_auth_error" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
             "value": "",
           },
@@ -350,7 +350,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(
         jwt.verify(
-          `${resBody.token}.${cookies.get('machinat_auth_signature').value}`,
+          `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
           '__SECRET__'
         )
       ).toMatchInlineSnapshot(`
@@ -372,7 +372,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     test('sign with more detailed controller options', async () => {
       req.mock
         .getter('url')
-        .fakeReturnValue('https://machinat.io/app/auth/_sign');
+        .fakeReturnValue('https://sociably.io/app/auth/_sign');
 
       const controller = new AuthController(
         new HttpOperator({
@@ -383,7 +383,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           tokenCookieMaxAge: 999,
           tokenLifetime: 9999,
           refreshDuration: 99999,
-          cookieDomain: 'machinat.io',
+          cookieDomain: 'sociably.io',
           cookiePath: '/app',
           cookieSameSite: 'strict',
           secure: false,
@@ -401,20 +401,20 @@ describe('#delegateAuthRequest(req, res)', () => {
       const cookies = getCookies(res);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=Strict",
-            "value": "8an8OTENyMud78c4bF0gb4mj9rMAZ1omS2am0tu9ANA",
+          "sociably_auth_signature" => Object {
+            "directives": "Domain=sociably.io; HttpOnly; Path=/app; SameSite=Strict",
+            "value": "ajZ9AB8MXaQ710FVOeRiebapqvdFaIejKqd8LRfCicQ",
           },
-          "machinat_auth_token" => Object {
-            "directives": "Domain=machinat.io; Path=/app; SameSite=Strict",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJkb21haW4iOiJtYWNoaW5hdC5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
+          "sociably_auth_token" => Object {
+            "directives": "Domain=sociably.io; Path=/app; SameSite=Strict",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJkb21haW4iOiJzb2NpYWJseS5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
           },
-          "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=Strict",
+          "sociably_auth_state" => Object {
+            "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=Strict",
             "value": "",
           },
-          "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Strict",
+          "sociably_auth_error" => Object {
+            "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Strict",
             "value": "",
           },
         }
@@ -423,7 +423,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const { token } = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(
         jwt.verify(
-          `${token}.${cookies.get('machinat_auth_signature').value}`,
+          `${token}.${cookies.get('sociably_auth_signature').value}`,
           '__SECRET__'
         )
       ).toMatchInlineSnapshot(`
@@ -436,7 +436,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "init": 1570000000,
           "platform": "foo",
           "scope": Object {
-            "domain": "machinat.io",
+            "domain": "sociably.io",
             "path": "/app",
           },
         }
@@ -446,7 +446,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 404 if platform not found', async () => {
       req = prepareReq(
         'POST',
-        'http://auth.machinat.com/_sign',
+        'http://auth.sociably.io/_sign',
         {},
         { platform: 'baz', credential: { baz: 'data' } }
       );
@@ -508,7 +508,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      const url = 'http://auth.machinat.com/_sign';
+      const url = 'http://auth.sociably.io/_sign';
 
       await controller.delegateAuthRequest(
         prepareReq('POST', url, {}, '"Woooof"'),
@@ -581,7 +581,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         authenticators
       );
       await controller.delegateAuthRequest(
-        prepareReq('GET', 'https://auth.machinat.com/_sign', {}, ''),
+        prepareReq('GET', 'https://auth.sociably.io/_sign', {}, ''),
         res
       );
       expect(res.statusCode).toBe(405);
@@ -611,8 +611,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       });
       req = prepareReq(
         'POST',
-        'http://auth.machinat.com/_refresh',
-        { cookie: `machinat_auth_signature=${signature}` },
+        'http://auth.sociably.io/_refresh',
+        { cookie: `sociably_auth_signature=${signature}` },
         { token }
       );
       res = moxy(new ServerResponse({} as never));
@@ -636,19 +636,19 @@ describe('#delegateAuthRequest(req, res)', () => {
       const cookies = getCookies(res);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "machinat_auth_signature" => Object {
+          "sociably_auth_signature" => Object {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
             "value": "3N2v9MBHZEcUr5-EYnyFCKiOk8ShTwu_wj0gAu9FYpw",
           },
-          "machinat_auth_token" => Object {
+          "sociably_auth_token" => Object {
             "directives": "Path=/; SameSite=Lax; Secure",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTgwMDAxLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
           },
-          "machinat_auth_state" => Object {
+          "sociably_auth_state" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
             "value": "",
           },
-          "machinat_auth_error" => Object {
+          "sociably_auth_error" => Object {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
             "value": "",
           },
@@ -657,7 +657,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(
         jwt.verify(
-          `${resBody.token}.${cookies.get('machinat_auth_signature').value}`,
+          `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
           '__SECRET__'
         )
       ).toMatchInlineSnapshot(`
@@ -679,7 +679,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     test('refresh with more detailed controller options', async () => {
       req.mock
         .getter('url')
-        .fake(() => 'https://machinat.io/app/auth/_refresh');
+        .fake(() => 'https://sociably.io/app/auth/_refresh');
 
       const controller = new AuthController(
         new HttpOperator({
@@ -690,7 +690,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           tokenCookieMaxAge: 999,
           tokenLifetime: 9999,
           refreshDuration: 99999,
-          cookieDomain: 'machinat.io',
+          cookieDomain: 'sociably.io',
           cookiePath: '/app',
           cookieSameSite: 'strict',
           secure: false,
@@ -706,20 +706,20 @@ describe('#delegateAuthRequest(req, res)', () => {
       const cookies = getCookies(res);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "machinat_auth_signature" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=Strict",
-            "value": "Co490Z-tOabtOHn4V1elNd2zXy0oJTj2vsBNpyVmqwQ",
+          "sociably_auth_signature" => Object {
+            "directives": "Domain=sociably.io; HttpOnly; Path=/app; SameSite=Strict",
+            "value": "xC5b7EcZ937SYP3QVOix0PpbhG-OySyZYBIsSjvHQlo",
           },
-          "machinat_auth_token" => Object {
-            "directives": "Domain=machinat.io; Path=/app; SameSite=Strict",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTgwMDAxLCJzY29wZSI6eyJkb21haW4iOiJtYWNoaW5hdC5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
+          "sociably_auth_token" => Object {
+            "directives": "Domain=sociably.io; Path=/app; SameSite=Strict",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTgwMDAxLCJzY29wZSI6eyJkb21haW4iOiJzb2NpYWJseS5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
           },
-          "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=Strict",
+          "sociably_auth_state" => Object {
+            "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=Strict",
             "value": "",
           },
-          "machinat_auth_error" => Object {
-            "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Strict",
+          "sociably_auth_error" => Object {
+            "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Strict",
             "value": "",
           },
         }
@@ -727,7 +727,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(
         jwt.verify(
-          `${resBody.token}.${cookies.get('machinat_auth_signature').value}`,
+          `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
           '__SECRET__'
         )
       ).toMatchInlineSnapshot(`
@@ -740,7 +740,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           "init": 1569980001,
           "platform": "foo",
           "scope": Object {
-            "domain": "machinat.io",
+            "domain": "sociably.io",
             "path": "/app",
           },
         }
@@ -758,8 +758,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       });
       req = prepareReq(
         'POST',
-        'http://auth.machinat.com/_refresh',
-        { cookie: `machinat_auth_signature=${signature}` },
+        'http://auth.sociably.io/_refresh',
+        { cookie: `sociably_auth_signature=${signature}` },
         { token }
       );
 
@@ -833,7 +833,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
 
       req.mock.getter('headers').fakeReturnValue({
-        cookie: 'machinat_auth_signature=INVALID_SIGNATURE',
+        cookie: 'sociably_auth_signature=INVALID_SIGNATURE',
       });
       res = moxy(new ServerResponse({} as never));
       await controller.delegateAuthRequest(req, res);
@@ -867,8 +867,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       });
       req = prepareReq(
         'POST',
-        'http://auth.machinat.com/_refresh',
-        { cookie: `machinat_auth_signature=${signature}` },
+        'http://auth.sociably.io/_refresh',
+        { cookie: `sociably_auth_signature=${signature}` },
         { token }
       );
 
@@ -894,8 +894,8 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      const url = 'http://auth.machinat.com/_refresh';
-      const header = { cookie: `machinat_auth_signature=SOMETHING_WHATEVER` };
+      const url = 'http://auth.sociably.io/_refresh';
+      const header = { cookie: `sociably_auth_signature=SOMETHING_WHATEVER` };
 
       await controller.delegateAuthRequest(
         prepareReq('POST', url, header, '"Woooof"'),
@@ -967,7 +967,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         authenticators
       );
       await controller.delegateAuthRequest(
-        prepareReq('get', 'https://auth.machinat.com/_refresh', {}, ''),
+        prepareReq('get', 'https://auth.sociably.io/_refresh', {}, ''),
         res
       );
       expect(res.statusCode).toBe(405);
@@ -1004,8 +1004,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const req = prepareReq(
         'POST',
-        'http://auth.machinat.com/_verify',
-        { cookie: `machinat_auth_signature=${signature}` },
+        'http://auth.sociably.io/_verify',
+        { cookie: `sociably_auth_signature=${signature}` },
         { token }
       );
       const res = moxy(new ServerResponse({} as never));
@@ -1035,8 +1035,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       });
       const req = prepareReq(
         'POST',
-        'http://auth.machinat.com/_verify',
-        { cookie: `machinat_auth_signature=${signature}` },
+        'http://auth.sociably.io/_verify',
+        { cookie: `sociably_auth_signature=${signature}` },
         { token }
       );
       const res = moxy(new ServerResponse({} as never));
@@ -1073,8 +1073,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       });
       const req = prepareReq(
         'POST',
-        'http://auth.machinat.com/_verify',
-        { cookie: `machinat_auth_signature=${signature}` },
+        'http://auth.sociably.io/_verify',
+        { cookie: `sociably_auth_signature=${signature}` },
         { token }
       );
       const res = moxy(new ServerResponse({} as never));
@@ -1102,7 +1102,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       let res;
 
       await controller.delegateAuthRequest(
-        prepareReq('POST', 'http://auth.machinat.com/_verify', {}, { token }),
+        prepareReq('POST', 'http://auth.sociably.io/_verify', {}, { token }),
         (res = moxy(new ServerResponse({} as never)))
       );
 
@@ -1120,8 +1120,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       await controller.delegateAuthRequest(
         prepareReq(
           'POST',
-          'http://auth.machinat.com/_verify',
-          { cookie: `machinat_auth_signature=INVALID_SIGNATURE` },
+          'http://auth.sociably.io/_verify',
+          { cookie: `sociably_auth_signature=INVALID_SIGNATURE` },
           { token }
         ),
         (res = moxy(new ServerResponse({} as never)))
@@ -1144,8 +1144,8 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      const url = 'http://auth.machinat.com/_verify';
-      const header = { cookie: `machinat_auth_signature=SOMETHING_WHATEVER` };
+      const url = 'http://auth.sociably.io/_verify';
+      const header = { cookie: `sociably_auth_signature=SOMETHING_WHATEVER` };
       let res;
 
       await controller.delegateAuthRequest(
@@ -1198,7 +1198,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         authenticators
       );
       await controller.delegateAuthRequest(
-        prepareReq('GET', 'https://auth.machinat.com/_verify', {}, ''),
+        prepareReq('GET', 'https://auth.sociably.io/_verify', {}, ''),
         res
       );
       expect(res.statusCode).toBe(405);
@@ -1233,10 +1233,10 @@ describe('#verifyAuth(req)', () => {
       controller.verifyAuth(
         prepareReq(
           'POST',
-          'https://auth.machinat.com/foo',
+          'https://auth.sociably.io/foo',
           {
             authorization: `Bearer ${token}`,
-            cookie: `machinat_auth_signature=${signature}`,
+            cookie: `sociably_auth_signature=${signature}`,
           },
           { user_api: 'stuff' }
         )
@@ -1277,8 +1277,8 @@ describe('#verifyAuth(req)', () => {
       controller.verifyAuth(
         prepareReq(
           'POST',
-          'https://auth.machinat.com/foo',
-          { cookie: `machinat_auth_signature=${signature}` },
+          'https://auth.sociably.io/foo',
+          { cookie: `sociably_auth_signature=${signature}` },
           { user_api: 'stuff' }
         ),
         token
@@ -1319,10 +1319,10 @@ describe('#verifyAuth(req)', () => {
       controller.verifyAuth(
         prepareReq(
           'POST',
-          'https://auth.machinat.com/foo',
+          'https://auth.sociably.io/foo',
           {
             authorization: `Bearer ${token}`,
-            cookie: `machinat_auth_signature=INVALID_SIGNATURE`,
+            cookie: `sociably_auth_signature=INVALID_SIGNATURE`,
           },
           { user_api: 'stuff' }
         )
@@ -1348,7 +1348,7 @@ describe('#verifyAuth(req)', () => {
       controller.verifyAuth(
         prepareReq(
           'POST',
-          'https://auth.machinat.com/foo',
+          'https://auth.sociably.io/foo',
           { authorization: `Bearer ${token}` },
           { user_api: 'stuff' }
         )
@@ -1374,8 +1374,8 @@ describe('#verifyAuth(req)', () => {
       controller.verifyAuth(
         prepareReq(
           'POST',
-          'https://auth.machinat.com/foo',
-          { cookie: `machinat_auth_signature=${signature}` },
+          'https://auth.sociably.io/foo',
+          { cookie: `sociably_auth_signature=${signature}` },
           { user_api: 'stuff' }
         )
       )
@@ -1400,10 +1400,10 @@ describe('#verifyAuth(req)', () => {
       controller.verifyAuth(
         prepareReq(
           'POST',
-          'https://auth.machinat.com/foo',
+          'https://auth.sociably.io/foo',
           {
             authorization: `Unknown-Scheme ${token}`,
-            cookie: `machinat_auth_signature=${signature}`,
+            cookie: `sociably_auth_signature=${signature}`,
           },
           { user_api: 'stuff' }
         )
@@ -1438,10 +1438,10 @@ describe('#verifyAuth(req)', () => {
       controller.verifyAuth(
         prepareReq(
           'POST',
-          'https://auth.machinat.com/foo',
+          'https://auth.sociably.io/foo',
           {
             authorization: `Bearer ${bazToken}`,
-            cookie: `machinat_auth_signature=${bazSignature}`,
+            cookie: `sociably_auth_signature=${bazSignature}`,
           },
           { user_api: 'stuff' }
         )
@@ -1475,10 +1475,10 @@ describe('#verifyAuth(req)', () => {
       controller.verifyAuth(
         prepareReq(
           'POST',
-          'https://auth.machinat.com/foo',
+          'https://auth.sociably.io/foo',
           {
             authorization: `Bearer ${token}`,
-            cookie: `machinat_auth_signature=${signature}`,
+            cookie: `sociably_auth_signature=${signature}`,
           },
           { user_api: 'stuff' }
         )

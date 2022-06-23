@@ -1,5 +1,5 @@
 import type { Server } from 'http';
-import { makeInterface } from '@machinat/core/service';
+import { makeInterface } from '@sociably/core/service';
 import type {
   HttpConfigs,
   RequestRoute,

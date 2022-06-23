@@ -3,7 +3,7 @@ module.exports = {
     ['@babel/preset-typescript', {
       isTSX: true,
       allExtensions: true,
-      jsxPragma: 'Machinat',
+      jsxPragma: 'Sociably',
       allowNamespaces: true,
       onlyRemoveTypeImports: true,
     }],
@@ -11,11 +11,15 @@ module.exports = {
         targets: { node: 10 },
         loose: true,
     }],
-    '@machinat/babel-preset',
   ],
   plugins: [
     ['@babel/plugin-proposal-class-properties', { loose: true }],
     ['@babel/plugin-proposal-private-methods', { loose: true }],
+    '@babel/plugin-syntax-jsx',
+    ['@babel/plugin-transform-react-jsx', {
+      pragma: 'Sociably.createElement',
+      pragmaFrag: 'Sociably.Fragment',
+    }],
   ],
   env: {
     production: {

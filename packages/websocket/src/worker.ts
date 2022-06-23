@@ -1,11 +1,11 @@
-import type { MachinatWorker } from '@machinat/core/engine';
-import MachinatQueue from '@machinat/core/queue';
-import type { JobResponse } from '@machinat/core/queue';
+import type { SociablyWorker } from '@sociably/core/engine';
+import SociablyQueue from '@sociably/core/queue';
+import type { JobResponse } from '@sociably/core/queue';
 
 import type { WebSocketServer } from './server';
 import type { WebSocketJob, WebSocketResult } from './types';
 
-class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
+class WebSocketWorker implements SociablyWorker<WebSocketJob, WebSocketResult> {
   _started: boolean;
   server: WebSocketServer<any, unknown>;
 
@@ -14,7 +14,7 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
     this._started = false;
   }
 
-  start(queue: MachinatQueue<WebSocketJob, WebSocketResult>): boolean {
+  start(queue: SociablyQueue<WebSocketJob, WebSocketResult>): boolean {
     if (this._started) {
       return false;
     }
@@ -25,7 +25,7 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
     return true;
   }
 
-  stop(queue: MachinatQueue<WebSocketJob, WebSocketResult>): boolean {
+  stop(queue: SociablyQueue<WebSocketJob, WebSocketResult>): boolean {
     if (!this._started) {
       return false;
     }
@@ -38,7 +38,7 @@ class WebSocketWorker implements MachinatWorker<WebSocketJob, WebSocketResult> {
 
   _listenJobsCallback = this._listenJobs.bind(this);
 
-  _listenJobs(queue: MachinatQueue<WebSocketJob, WebSocketResult>): void {
+  _listenJobs(queue: SociablyQueue<WebSocketJob, WebSocketResult>): void {
     queue.acquire(queue.length, this._executeJobsCallback);
   }
 

@@ -1,4 +1,4 @@
-import { MACHINAT_NATIVE_TYPE } from '../symbol';
+import { SOCIABLY_NATIVE_TYPE } from '../symbol';
 import type {
   GeneralElement,
   NativeElement,
@@ -24,7 +24,7 @@ export const makeNativeComponent =
   ): Component =>
     Object.defineProperties(componentFn as unknown as Component, {
       $$typeof: {
-        value: MACHINAT_NATIVE_TYPE,
+        value: SOCIABLY_NATIVE_TYPE,
         configurable: true,
       },
       $$platform: {

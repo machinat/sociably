@@ -1,6 +1,6 @@
-import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
-import { isNativeType } from '@machinat/core/utils';
+import Sociably from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
+import { isNativeType } from '@sociably/core/utils';
 
 import {
   UrlButton,
@@ -53,19 +53,19 @@ test.each([
 
 describe('UrlButton', () => {
   test('non login mode match snapshot', async () => {
-    await expect(render(<UrlButton text="Go" url="http://machinat.com" />))
+    await expect(render(<UrlButton text="Go" url="http://sociably.io" />))
       .resolves.toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <UrlButton
                   text="Go"
-                  url="http://machinat.com"
+                  url="http://sociably.io"
                 />,
                 "path": "$#container",
                 "type": "part",
                 "value": Object {
                   "text": "Go",
-                  "url": "http://machinat.com",
+                  "url": "http://sociably.io",
                 },
               },
             ]
@@ -74,14 +74,14 @@ describe('UrlButton', () => {
 
   test('login mode match snapshot', async () => {
     await expect(
-      render(<UrlButton login text="Go and Log in" url="http://machinat.com" />)
+      render(<UrlButton login text="Go and Log in" url="http://sociably.io" />)
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <UrlButton
                   login={true}
                   text="Go and Log in"
-                  url="http://machinat.com"
+                  url="http://sociably.io"
                 />,
                 "path": "$#container",
                 "type": "part",
@@ -90,7 +90,7 @@ describe('UrlButton', () => {
                     "bot_username": undefined,
                     "forward_text": undefined,
                     "request_write_access": undefined,
-                    "url": "http://machinat.com",
+                    "url": "http://sociably.io",
                   },
                   "text": "Go and Log in",
                 },
@@ -103,7 +103,7 @@ describe('UrlButton', () => {
         <UrlButton
           login
           text="Go and Log in"
-          url="http://machinat.com"
+          url="http://sociably.io"
           forwardText="Forwarded Login"
           botUserName="R2"
           requestWriteAccess
@@ -118,7 +118,7 @@ describe('UrlButton', () => {
                   login={true}
                   requestWriteAccess={true}
                   text="Go and Log in"
-                  url="http://machinat.com"
+                  url="http://sociably.io"
                 />,
                 "path": "$#container",
                 "type": "part",
@@ -127,7 +127,7 @@ describe('UrlButton', () => {
                     "bot_username": "R2",
                     "forward_text": "Forwarded Login",
                     "request_write_access": true,
-                    "url": "http://machinat.com",
+                    "url": "http://sociably.io",
                   },
                   "text": "Go and Log in",
                 },
@@ -283,7 +283,7 @@ describe('InlineKeyboard', () => {
     await expect(
       render(
         <InlineKeyboard>
-          <UrlButton text="Go" url="http://machinat.com" />
+          <UrlButton text="Go" url="http://sociably.io" />
 
           <KeyboardRow>
             <CallbackButton text="Hello" data="World!" />
@@ -297,7 +297,7 @@ describe('InlineKeyboard', () => {
                 "node": <InlineKeyboard>
                   <UrlButton
                     text="Go"
-                    url="http://machinat.com"
+                    url="http://sociably.io"
                   />
                   <KeyboardRow>
                     <CallbackButton
@@ -316,7 +316,7 @@ describe('InlineKeyboard', () => {
                     Array [
                       Object {
                         "text": "Go",
-                        "url": "http://machinat.com",
+                        "url": "http://sociably.io",
                       },
                     ],
                     Array [

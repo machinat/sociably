@@ -1,11 +1,11 @@
 import { createServer } from 'http';
 import thenifiedly from 'thenifiedly';
-import { ServiceModule } from '@machinat/core';
+import { ServiceModule } from '@sociably/core';
 import {
   ServiceProvision,
   makeContainer,
   makeFactoryProvider,
-} from '@machinat/core/service';
+} from '@sociably/core/service';
 
 import {
   ServerI,

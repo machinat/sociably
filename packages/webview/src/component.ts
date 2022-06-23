@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
-import type { NativeComponent } from '@machinat/core';
-import { UnitSegment, makeNativeComponent } from '@machinat/core/renderer';
-import { EventInput, Event as _Event } from '@machinat/websocket';
+import type { NativeComponent } from '@sociably/core';
+import { UnitSegment, makeNativeComponent } from '@sociably/core/renderer';
+import { EventInput, Event as _Event } from '@sociably/websocket';
 import { WEBVIEW } from './constant';
 
 /**

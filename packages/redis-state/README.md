@@ -1,28 +1,28 @@
 # Redis State Module
 
-This module implement the [`BaseStateController`](https://machinat.com/api/modules/core_base_statecontroller.html)
+This module implement the [`BaseStateController`](https://sociably.js.org/api/modules/core_base_statecontroller.html)
 interface with redis in-memory database.
 
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/redis-state
+npm install @sociably/core @sociably/redis-state
 # or with yarn
-yarn add @machinat/core @machinat/redis-state
+yarn add @sociably/core @sociably/redis-state
 ```
 
 ## Docs
 
-Check the [Using State](https://machinat.com/docs/using-states)
-document and the [package reference](https://machinat.com/api/modules/redis_state.html).
+Check the [Using State](https://sociably.js.org/docs/using-states)
+document and the [package reference](https://sociably.js.org/api/modules/redis_state.html).
 
 ## Setup
 
 ```js
-import Machinat from '@machinat/core';
-import RedisState from '@machinat/redis-state';
+import Sociably from '@sociably/core';
+import RedisState from '@sociably/redis-state';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     RedisState.initModule({
       clientOptions: {

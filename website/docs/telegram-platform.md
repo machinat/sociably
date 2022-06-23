@@ -3,7 +3,7 @@ title: Telegram Platform
 sidebar_label: Telegram
 ---
 
-The `@machinat/telegram` platform enable your app to receive/send messages as a
+The `@sociably/telegram` platform enable your app to receive/send messages as a
 [Telegram bot](https://core.telegram.org/bots).
 
 ## Install
@@ -11,14 +11,14 @@ The `@machinat/telegram` platform enable your app to receive/send messages as a
 Install the `core`, `http` and `telegram` packages:
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/telegram
+npm install @sociably/core @sociably/http @sociably/telegram
 ```
 
 ## Steup
 
 :::tip
 :::tip
-You can check [setup section in the tutorial](https://machinat.com/docs/learn/create-app#platform-setup?p=telegram).
+You can check [setup section in the tutorial](https://sociably.js.org/docs/learn/create-app#platform-setup?p=telegram).
 It brings you to set up everything step by step.
 :::
 
@@ -29,9 +29,9 @@ for the setup procedures.
 Then set up the `http` and `telegram` module like this:
 
 ```ts
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Telegram from '@machinat/telegram';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Telegram from '@sociably/telegram';
 
 const {
   TELEGRAM_BOT_NAME,
@@ -39,7 +39,7 @@ const {
   TELEGRAM_SECRET_PATH,
 } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ port: 8080 }),
   ],
@@ -58,7 +58,7 @@ Finally, you have to register the webhook to subscribe to events from Telegram.
 You can use these codes to do that:
 
 ```ts
-import { TelegramBot } from '@machinat/telegram';
+import { TelegramBot } from '@sociably/telegram';
 const { DOMAIN, TELEGRAM_BOT_TOKEN, TELEGRAM_SECRET_PATH } = process.env;
 
 const bot = new TelegramBot({ token: TELEGRAM_BOT_TOKEN });
@@ -77,8 +77,8 @@ bot
 Here is an example to receive events and send replies back:
 
 ```tsx
-import Machinat from '@machinat/core';
-import * as Telegram from '@machinat/telegram/components';
+import Sociably from '@sociably/core';
+import * as Telegram from '@sociably/telegram/components';
 import app from './app';
 
 app.onEvent(async ({ platform, event, reply }) => {
@@ -102,8 +102,8 @@ app.onEvent(async ({ platform, event, reply }) => {
 });
 ```
 
-Check the API reference for the details of [events](https://machinat.com/api/modules/telegram.html#telegramevent)
-and [components](https://machinat.com/api/modules/telegram_components.html).
+Check the API reference for the details of [events](https://sociably.js.org/api/modules/telegram.html#telegramevent)
+and [components](https://sociably.js.org/api/modules/telegram_components.html).
 
 ## Webview
 
@@ -116,10 +116,10 @@ configure the app with these steps:
 2. Add the auth provider to the `webview` platform. Like:
 
 ```ts
-import Webview from '@machinat/webview';
-import TelegramAuth from '@machinat/telegram/webview';
+import Webview from '@sociably/webview';
+import TelegramAuth from '@sociably/telegram/webview';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   platforms: [
     Webview.intiModule({
       authPlatforms: [
@@ -149,8 +149,8 @@ module.exports = {
 
 ```ts
 import getConfig from 'next/config';
-import WebviewClient from '@machinat/webview/client';
-import TelegramAuth from '@machinat/telegram/webview/client';
+import WebviewClient from '@sociably/webview/client';
+import TelegramAuth from '@sociably/telegram/webview/client';
 
 const {
   publicRuntimeConfig: { TELEGRAM_BOT_NAME },
@@ -169,8 +169,8 @@ The webview can be opened by a `WebviewButton` in the chatroom.
 Like:
 
 ```tsx
-import * as Telegram from '@machinat/telegram/components';
-import { WebviewButton as TelegramWebviewButton } from '@machinat/telegram/webview';
+import * as Telegram from '@sociably/telegram/components';
+import { WebviewButton as TelegramWebviewButton } from '@sociably/telegram/webview';
 
 app.onEvent(async ({ reply }) => {
   await reply(
@@ -188,11 +188,11 @@ app.onEvent(async ({ reply }) => {
 ```
 
 The users will be logged in with Telegram account in the webview.
-Check the [webview document](https://machinat.com/docs/embedded-webview) to learn more.
+Check the [webview document](https://sociably.js.org/docs/embedded-webview) to learn more.
 
 ## Assets Manager
 
-[`TelegramAssetsManager`](https://machinat.com/api/classes/telegram_asset.telegramassetsmanager.html)
+[`TelegramAssetsManager`](https://sociably.js.org/api/classes/telegram_asset.telegramassetsmanager.html)
 service helps you to manage resources on Telegram platform,
 like files.
 
@@ -200,11 +200,11 @@ To use it, you have to install a [state provider](./using-states) first.
 Then register `TelegramAssetsManager` like this:
 
 ```ts
-import { FileState } from '@machinat/dev-tools';
+import { FileState } from '@sociably/dev-tools';
 // highlight-next-line
-import TelegramAssetsManager, { saveUplodedFile } from '@machinat/telegram/asssets';
+import TelegramAssetsManager, { saveUplodedFile } from '@sociably/telegram/asssets';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   services: [
     // highlight-next-line
     TelegramAssetsManager,
@@ -230,9 +230,9 @@ Here's an example to upload an image message and reuse it:
 
 ```tsx
 import fs from 'fs';
-import { makeContainer } from '@machinat/core';
-import * as Telegram from '@machinat/telegram/components';
-import TelegramAssetsManager from '@machinat/telegram/asssets';
+import { makeContainer } from '@sociably/core';
+import * as Telegram from '@sociably/telegram/components';
+import TelegramAssetsManager from '@sociably/telegram/asssets';
 
 app.onEvent(makeContainer({ deps: [TelegramAssetsManager] })(
   (assetsManager) =>
@@ -263,5 +263,5 @@ You can reuse the stored id for the next time.
 
 Here are some resources for further reading:
 
-- [`@machinat/telegram` package reference](https://machinat.com/api/modules/telegram.html)
+- [`@sociably/telegram` package reference](https://sociably.js.org/api/modules/telegram.html)
 - [Telegram bot API reference](https://core.telegram.org/bots)

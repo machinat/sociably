@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { makeUnitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment } from '@sociably/core/renderer';
 import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
 import { makeLineComponent } from '../utils';
 import { LineComponent } from '../types';

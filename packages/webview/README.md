@@ -6,23 +6,23 @@ Serve webviews that integrated with the chat platforms.
 - Automatically log in users with the chat platform account.
 - Mutually communicate to the server with WebSocket.
 
-This package combines three modules: [`@machinat/auth`](https://github.com/machinat/machinat/tree/master/packages/auth),
-[`@machinat/next`](https://github.com/machinat/machinat/tree/master/packages/next)
-and [`@machinat/websocket`](https://github.com/machinat/machinat/tree/master/packages/webview).
+This package combines three modules: [`@sociably/auth`](https://github.com/machinat/sociably/tree/master/packages/auth),
+[`@sociably/next`](https://github.com/machinat/sociably/tree/master/packages/next)
+and [`@sociably/websocket`](https://github.com/machinat/sociably/tree/master/packages/webview).
 You can use them separatedly if you don't need them all.
 
 ## Install
 
 ```bash
-npm install react react-dom next @machinat/core @machinat/http @machinat/webview
+npm install react react-dom next @sociably/core @sociably/http @sociably/webview
 # or with yarn
-yarn add react react-dom next @machinat/core @machinat/http @machinat/webview
+yarn add react react-dom next @sociably/core @sociably/http @sociably/webview
 ```
 
 ## Docs
 
-Check the [Embedded Webview](https://machinat.com/docs/embedded-webview)
-document and the [API references](https://machinat.com/api/modules/webview.html).
+Check the [Embedded Webview](https://sociably.js.org/docs/embedded-webview)
+document and the [API references](https://sociably.js.org/api/modules/webview.html).
 
 ## Setup
 
@@ -32,17 +32,17 @@ Assume you have the Next.js app directory at `./webview`, set up webview platfor
 
 ```ts
 // src/app.js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Webview from '@machinat/webview';
-import Messenger from '@machinat/messenger';
-import MessengerWebviewAuth from '@machinat/messenger/webview';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Webview from '@sociably/webview';
+import Messenger from '@sociably/messenger';
+import MessengerWebviewAuth from '@sociably/messenger/webview';
 import nextConfigs from '../webview/next.config.js';
 
 const { DOMAIN, WEBVIEW_AUTH_SECRET, NODE_ENV, MESSENGER_APP_ID } = process.env;
 const DEV = NODE_ENV !== 'production';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({/* ... */}),
   ],
@@ -100,8 +100,8 @@ Then you can use `WebviewClient` in the front-end pages like this:
 // webview/pages/index.js
 import { useEffect } from 'react';
 import getConfig from 'next/config';
-import WebviewClient from '@machinat/webview/client';
-import MessengerWebviewAuth from '@machinat/messenger/webview/client';
+import WebviewClient from '@sociably/webview/client';
+import MessengerWebviewAuth from '@sociably/messenger/webview/client';
 
 // get settings if needed
 const { publicRuntimeConfig } = getConfig();

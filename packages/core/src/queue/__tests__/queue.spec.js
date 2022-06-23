@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop, no-loop-func, no-return-assign, no-fallthrough, default-case */
 import moxy from '@moxyjs/moxy';
-import MachinatQueue from '../queue';
+import SociablyQueue from '../queue';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 const makeJobs = (n) => new Array(n).fill(0).map((_, i) => ({ id: i }));
@@ -31,7 +31,7 @@ const batch3Resolved = jest.fn();
 
 beforeEach(() => {
   jest.useFakeTimers('modern');
-  queue = new MachinatQueue();
+  queue = new SociablyQueue();
 
   consume.mockImplementation(async (acquired) => {
     await delay(10);
@@ -48,7 +48,7 @@ afterEach(() => {
 });
 
 it('is a constructor', () => {
-  expect(() => new MachinatQueue()).not.toThrow();
+  expect(() => new SociablyQueue()).not.toThrow();
 });
 
 describe('#onJobs(cb)', () => {

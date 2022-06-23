@@ -1,10 +1,10 @@
-import { makeClassProvider } from '@machinat/core/service';
+import { makeClassProvider } from '@sociably/core/service';
 import {
   ServerAuthenticator,
   VerifyResult,
   CheckDataResult,
-} from '@machinat/auth';
-import BasicAuthenticator from '@machinat/auth/basicAuth';
+} from '@sociably/auth';
+import BasicAuthenticator from '@sociably/auth/basicAuth';
 import BotP from '../Bot';
 import { MESSENGER } from '../constant';
 import MessengerChat from '../Chat';
@@ -39,7 +39,8 @@ export class MessengerServerAuthenticator
       platform: MESSENGER,
       platformName: 'Messenger',
       platformColor: '#4B69FF',
-      platformImageUrl: 'https://machinat.com/img/icon/messenger.png',
+      platformImageUrl:
+        'https://machinat.github.io/sociably/img/icon/messenger.png',
       checkAuthData: (data) => {
         const result = this.checkAuthData(data);
         if (!result.ok) {

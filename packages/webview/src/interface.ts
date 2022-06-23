@@ -1,14 +1,14 @@
-import { Marshaler, StateController } from '@machinat/core';
-import { makeInterface, makeClassProvider } from '@machinat/core/service';
-import Auth, { AuthController, AuthHttpOperator } from '@machinat/auth';
+import { Marshaler, StateController } from '@sociably/core';
+import { makeInterface, makeClassProvider } from '@sociably/core/service';
+import Auth, { AuthController, AuthHttpOperator } from '@sociably/auth';
 import type {
   AnyServerAuthenticator,
   UserOfAuthenticator,
   ContextOfAuthenticator,
-} from '@machinat/auth';
-import { BasicAuthenticator } from '@machinat/auth/basicAuth';
-import Next, { NextReceiver } from '@machinat/next';
-import WebSocket, { WebSocketServer } from '@machinat/websocket';
+} from '@sociably/auth';
+import { BasicAuthenticator } from '@sociably/auth/basicAuth';
+import Next, { NextReceiver } from '@sociably/next';
+import WebSocket, { WebSocketServer } from '@sociably/websocket';
 import { useAuthLogin, verifyOrigin } from './utils';
 import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant';
 import type { WebviewConfigs, WebviewPlatformUtilities } from './types';

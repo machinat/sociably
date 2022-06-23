@@ -3,8 +3,8 @@ import {
   makeBreakSegment,
   makeUnitSegment,
   IntermediateSegment,
-} from '@machinat/core/renderer';
-import { formatNode } from '@machinat/core/utils';
+} from '@sociably/core/renderer';
+import { formatNode } from '@sociably/core/utils';
 import { TwitterSegmentValue } from '../types';
 
 const p = async (node, path, render) => {

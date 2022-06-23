@@ -1,6 +1,6 @@
 import moxy, { Mock } from '@moxyjs/moxy';
-import Machinat from '../..';
-import { MACHINAT_NATIVE_TYPE } from '../../symbol';
+import Sociably from '../..';
+import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
 import {
   ServiceSpace,
   createEmptyScope,
@@ -28,7 +28,7 @@ beforeEach(() => {
 describe('.render()', () => {
   it('works', async () => {
     const delayCallback = () => Promise.resolve();
-    const WrappedPause = () => <Machinat.Pause delay={delayCallback} />;
+    const WrappedPause = () => <Sociably.Pause delay={delayCallback} />;
 
     const sideEffect1 = moxy();
     const sideEffect2 = moxy();
@@ -36,7 +36,7 @@ describe('.render()', () => {
     const NativeUnit1 = moxy(function NativeUnit1(node, path) {
       return Promise.resolve([{ type: 'unit', node, value: node.props, path }]);
     });
-    NativeUnit1.$$typeof = MACHINAT_NATIVE_TYPE;
+    NativeUnit1.$$typeof = SOCIABLY_NATIVE_TYPE;
     NativeUnit1.$$platform = 'test';
 
     const Custom = moxy(function Custom(props) {
@@ -44,8 +44,8 @@ describe('.render()', () => {
         <>
           wrapped head
           <NativeUnit1 {...props} />
-          <Machinat.Raw value={{ wrapped: 'footer' }} />
-          <Machinat.Thunk effect={sideEffect1} />
+          <Sociably.Raw value={{ wrapped: 'footer' }} />
+          <Sociably.Thunk effect={sideEffect1} />
         </>
       );
     });
@@ -54,7 +54,7 @@ describe('.render()', () => {
       return Promise.resolve([
         {
           type: 'pause',
-          node: <Machinat.Pause />,
+          node: <Sociably.Pause />,
           value: undefined,
           path: `${path}.propA`,
         },
@@ -72,22 +72,22 @@ describe('.render()', () => {
         },
       ]);
     });
-    NativeUnit2.$$typeof = MACHINAT_NATIVE_TYPE;
+    NativeUnit2.$$typeof = SOCIABLY_NATIVE_TYPE;
     NativeUnit2.$$platform = 'test';
 
     const message = (
       <>
         {123}
         abc
-        <Machinat.Pause delay={delayCallback} />
+        <Sociably.Pause delay={delayCallback} />
         <a>AAA</a>
         <b>BBB</b>
         <WrappedPause />
         <NativeUnit1 x="true" y={false} />
         <Custom a="A" b={2} />
-        <Machinat.Raw value={{ raw: 'object' }} />
+        <Sociably.Raw value={{ raw: 'object' }} />
         <NativeUnit2>somthing wrapped</NativeUnit2>
-        <Machinat.Thunk effect={sideEffect2} />
+        <Sociably.Thunk effect={sideEffect2} />
       </>
     );
 
@@ -103,7 +103,7 @@ describe('.render()', () => {
       },
       {
         type: 'pause',
-        node: <Machinat.Pause delay={delayCallback} />,
+        node: <Sociably.Pause delay={delayCallback} />,
         value: delayCallback,
         path: '$::2',
       },
@@ -127,7 +127,7 @@ describe('.render()', () => {
       },
       {
         type: 'pause',
-        node: <Machinat.Pause delay={delayCallback} />,
+        node: <Sociably.Pause delay={delayCallback} />,
         value: delayCallback,
         path: '$::5#WrappedPause',
       },
@@ -151,25 +151,25 @@ describe('.render()', () => {
       },
       {
         type: 'raw',
-        node: <Machinat.Raw value={{ wrapped: 'footer' }} />,
+        node: <Sociably.Raw value={{ wrapped: 'footer' }} />,
         value: { wrapped: 'footer' },
         path: '$::7#Custom::2',
       },
       {
         type: 'thunk',
-        node: <Machinat.Thunk effect={sideEffect1} />,
+        node: <Sociably.Thunk effect={sideEffect1} />,
         value: sideEffect1,
         path: '$::7#Custom::3',
       },
       {
         type: 'raw',
-        node: <Machinat.Raw value={{ raw: 'object' }} />,
+        node: <Sociably.Raw value={{ raw: 'object' }} />,
         value: { raw: 'object' },
         path: '$::8',
       },
       {
         type: 'pause',
-        node: <Machinat.Pause />,
+        node: <Sociably.Pause />,
         value: undefined,
         path: '$::9.propA',
       },
@@ -187,7 +187,7 @@ describe('.render()', () => {
       },
       {
         type: 'thunk',
-        node: <Machinat.Thunk effect={sideEffect2} />,
+        node: <Sociably.Thunk effect={sideEffect2} />,
         value: sideEffect2,
         path: '$::10',
       },
@@ -284,13 +284,13 @@ describe('.render()', () => {
     const Vestibulum = (node, path) => [
       { type: 'text', value: 'Vestibulum', node, path },
     ];
-    Vestibulum.$$typeof = MACHINAT_NATIVE_TYPE;
+    Vestibulum.$$typeof = SOCIABLY_NATIVE_TYPE;
     Vestibulum.$$platform = 'test';
 
     const Unit = (node, path) => [
       { type: 'unit', value: { foo: 'bar' }, node, path },
     ];
-    Unit.$$typeof = MACHINAT_NATIVE_TYPE;
+    Unit.$$typeof = SOCIABLY_NATIVE_TYPE;
     Unit.$$platform = 'test';
 
     const message = (
@@ -298,9 +298,9 @@ describe('.render()', () => {
         Lorem ipsum <dolor /> {'sit amet,'}
         <br />
         <consectetur /> adipiscing <elit />. <Vestibulum /> interdum
-        <Machinat.Pause />
+        <Sociably.Pause />
         aliquam <justo /> ut <aliquam />.
-        <Machinat.Raw value={{ baz: 'bae' }} />
+        <Sociably.Raw value={{ baz: 'bae' }} />
         Donec <nec_odio /> auctor, <ultricies />
         <Unit />
         <elit /> at, <pretium /> erat.
@@ -323,7 +323,7 @@ describe('.render()', () => {
       {
         type: 'pause',
         value: null,
-        node: <Machinat.Pause />,
+        node: <Sociably.Pause />,
         path: '$::11',
       },
       {
@@ -335,7 +335,7 @@ describe('.render()', () => {
       {
         type: 'raw',
         value: { baz: 'bae' },
-        node: <Machinat.Raw value={{ baz: 'bae' }} />,
+        node: <Sociably.Raw value={{ baz: 'bae' }} />,
         path: '$::17',
       },
       {
@@ -363,14 +363,14 @@ describe('.render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     const None = () => Promise.resolve(null);
-    None.$$typeof = MACHINAT_NATIVE_TYPE;
+    None.$$typeof = SOCIABLY_NATIVE_TYPE;
     None.$$platform = 'test';
 
     const Break = () =>
       Promise.resolve([
         { type: 'break', node: <br />, value: undefined, path: '$:0' },
       ]);
-    Break.$$typeof = MACHINAT_NATIVE_TYPE;
+    Break.$$typeof = SOCIABLY_NATIVE_TYPE;
     Break.$$platform = 'test';
 
     const Empty = () => (
@@ -420,7 +420,7 @@ describe('.render()', () => {
       ])
     );
     Section.mock.getter('name').fakeReturnValue('Section');
-    Section.$$typeof = MACHINAT_NATIVE_TYPE;
+    Section.$$typeof = SOCIABLY_NATIVE_TYPE;
     Section.$$platform = 'test';
 
     await expect(renderer.render(<Section />, null)).resolves.toEqual([
@@ -443,14 +443,14 @@ describe('.render()', () => {
         { type: 'unit', node, value: { root: true }, path: '$' },
       ]);
     });
-    Unit.$$typeof = MACHINAT_NATIVE_TYPE;
+    Unit.$$typeof = SOCIABLY_NATIVE_TYPE;
     Unit.$$platform = 'test';
 
     const Part = () =>
       Promise.resolve([
         { type: 'part', node: <Part />, value: { root: false }, path: '$' },
       ]);
-    Part.$$typeof = MACHINAT_NATIVE_TYPE;
+    Part.$$typeof = SOCIABLY_NATIVE_TYPE;
     Part.$$platform = 'test';
 
     const renderer = new Renderer('test', generalElementDelegate);
@@ -471,7 +471,7 @@ describe('.render()', () => {
     );
   });
 
-  it('provide services with Machinat.Provider', async () => {
+  it('provide services with Sociably.Provider', async () => {
     const FooI = makeInterface('Foo');
     const BarI = makeInterface('Bar');
     const BazI = makeInterface('Baz');
@@ -487,7 +487,7 @@ describe('.render()', () => {
         ],
       })(function Container(foo, bar, baz) {
         return componentMock.proxify(({ n }) => (
-          <Machinat.Raw
+          <Sociably.Raw
             value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${
               baz || 'x'
             }`}
@@ -500,14 +500,14 @@ describe('.render()', () => {
 
     const Native = ({ props: { children } }, path, render) =>
       render(children, '.children');
-    Native.$$typeof = MACHINAT_NATIVE_TYPE;
+    Native.$$typeof = SOCIABLY_NATIVE_TYPE;
     Native.$$platform = 'test';
 
     const Wrapper = ({ children }) => (
-      <Machinat.Provider provide={BarI} value={1}>
+      <Sociably.Provider provide={BarI} value={1}>
         <Container n={3} />
         {children}
-      </Machinat.Provider>
+      </Sociably.Provider>
     );
 
     await expect(
@@ -515,33 +515,33 @@ describe('.render()', () => {
         <>
           <Container n={1} />
 
-          <Machinat.Provider provide={FooI} value={1}>
+          <Sociably.Provider provide={FooI} value={1}>
             <Container n={2} />
 
             <Wrapper>
-              <Machinat.Provider provide={BazI} value={1}>
+              <Sociably.Provider provide={BazI} value={1}>
                 <Container n={4} />
 
                 <Native>
                   <Container n={5} />
                 </Native>
 
-                <Machinat.Provider provide={FooI} value={2}>
+                <Sociably.Provider provide={FooI} value={2}>
                   <Container n={6} />
 
-                  <Machinat.Provider provide={BarI} value={2}>
-                    <Machinat.Provider provide={BazI} value={2}>
+                  <Sociably.Provider provide={BarI} value={2}>
+                    <Sociably.Provider provide={BazI} value={2}>
                       <Container n={7} />
-                    </Machinat.Provider>
+                    </Sociably.Provider>
 
                     <Container n={8} />
-                  </Machinat.Provider>
-                </Machinat.Provider>
-              </Machinat.Provider>
+                  </Sociably.Provider>
+                </Sociably.Provider>
+              </Sociably.Provider>
             </Wrapper>
 
             <Container n={9} />
-          </Machinat.Provider>
+          </Sociably.Provider>
 
           <Container n={10} />
         </>,
@@ -550,7 +550,7 @@ describe('.render()', () => {
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#1 foo:x bar:x baz:x"
                 />,
                 "path": "$::0#Container",
@@ -558,7 +558,7 @@ describe('.render()', () => {
                 "value": "#1 foo:x bar:x baz:x",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#2 foo:1 bar:x baz:x"
                 />,
                 "path": "$::1.children:0#Container",
@@ -566,7 +566,7 @@ describe('.render()', () => {
                 "value": "#2 foo:1 bar:x baz:x",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#3 foo:1 bar:1 baz:x"
                 />,
                 "path": "$::1.children:1#Wrapper.children:0#Container",
@@ -574,7 +574,7 @@ describe('.render()', () => {
                 "value": "#3 foo:1 bar:1 baz:x",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#4 foo:1 bar:1 baz:1"
                 />,
                 "path": "$::1.children:1#Wrapper.children:1.children:0#Container",
@@ -582,7 +582,7 @@ describe('.render()', () => {
                 "value": "#4 foo:1 bar:1 baz:1",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#5 foo:1 bar:1 baz:1"
                 />,
                 "path": "$::1.children:1#Wrapper.children:1.children:1#Native.children#Container",
@@ -590,7 +590,7 @@ describe('.render()', () => {
                 "value": "#5 foo:1 bar:1 baz:1",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#6 foo:2 bar:1 baz:1"
                 />,
                 "path": "$::1.children:1#Wrapper.children:1.children:2.children:0#Container",
@@ -598,7 +598,7 @@ describe('.render()', () => {
                 "value": "#6 foo:2 bar:1 baz:1",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#7 foo:2 bar:2 baz:2"
                 />,
                 "path": "$::1.children:1#Wrapper.children:1.children:2.children:1.children:0.children#Container",
@@ -606,7 +606,7 @@ describe('.render()', () => {
                 "value": "#7 foo:2 bar:2 baz:2",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#8 foo:2 bar:2 baz:1"
                 />,
                 "path": "$::1.children:1#Wrapper.children:1.children:2.children:1.children:1#Container",
@@ -614,7 +614,7 @@ describe('.render()', () => {
                 "value": "#8 foo:2 bar:2 baz:1",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#9 foo:1 bar:x baz:x"
                 />,
                 "path": "$::1.children:2#Container",
@@ -622,7 +622,7 @@ describe('.render()', () => {
                 "value": "#9 foo:1 bar:x baz:x",
               },
               Object {
-                "node": <Machinat.Raw
+                "node": <Sociably.Raw
                   value="#10 foo:x bar:x baz:x"
                 />,
                 "path": "$::2#Container",
@@ -742,7 +742,7 @@ describe('.render()', () => {
 
   it('throw if native component of other platform received', async () => {
     const AnotherPlatformUnit = () => {};
-    AnotherPlatformUnit.$$typeof = MACHINAT_NATIVE_TYPE;
+    AnotherPlatformUnit.$$typeof = SOCIABLY_NATIVE_TYPE;
     AnotherPlatformUnit.$$native = Symbol('some other platform');
 
     const renderer = new Renderer('test', generalElementDelegate);
@@ -761,10 +761,10 @@ describe('.render()', () => {
 
     const segments = await renderer.render(
       <>
-        <Machinat.Pause />
-        <Machinat.Pause delay={delayFn} />
-        <Machinat.Pause time={1000} />
-        <Machinat.Pause time={1000} delay={delayFn} />
+        <Sociably.Pause />
+        <Sociably.Pause delay={delayFn} />
+        <Sociably.Pause time={1000} />
+        <Sociably.Pause time={1000} delay={delayFn} />
       </>,
       null
     );
@@ -772,25 +772,25 @@ describe('.render()', () => {
     expect(segments).toEqual([
       {
         type: 'pause',
-        node: <Machinat.Pause />,
+        node: <Sociably.Pause />,
         value: null,
         path: '$::0',
       },
       {
         type: 'pause',
-        node: <Machinat.Pause delay={delayFn} />,
+        node: <Sociably.Pause delay={delayFn} />,
         value: delayFn,
         path: '$::1',
       },
       {
         type: 'pause',
-        node: <Machinat.Pause time={1000} />,
+        node: <Sociably.Pause time={1000} />,
         value: expect.any(Function),
         path: '$::2',
       },
       {
         type: 'pause',
-        node: <Machinat.Pause time={1000} delay={delayFn} />,
+        node: <Sociably.Pause time={1000} delay={delayFn} />,
         value: expect.any(Function),
         path: '$::3',
       },

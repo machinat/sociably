@@ -1,5 +1,5 @@
-import Machinat from '@machinat/core';
-import { UnitSegment, TextSegment } from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { UnitSegment, TextSegment } from '@sociably/core/renderer';
 import { createChatJobs, createAttachmentJobs } from '../job';
 import MessengerChat from '../Chat';
 import { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';
@@ -301,7 +301,7 @@ describe('createAttachmentJobs()', () => {
             message: {
               attachment: {
                 type: 'image',
-                src: 'https://machinat.com/doge.jpg',
+                src: 'https://sociably.io/doge.jpg',
                 is_sharable: true,
               },
             },
@@ -317,7 +317,7 @@ describe('createAttachmentJobs()', () => {
             message: {
               attachment: {
                 type: 'image',
-                src: 'https://machinat.com/doge.jpg',
+                src: 'https://sociably.io/doge.jpg',
                 is_sharable: true,
               },
             },
@@ -375,7 +375,7 @@ describe('createAttachmentJobs()', () => {
         message: {
           attachment: {
             type: 'image',
-            src: 'https://machinat.com/you_dont_say.jpg',
+            src: 'https://sociably.io/you_dont_say.jpg',
             is_sharable: true,
           },
         },

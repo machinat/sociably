@@ -2,10 +2,10 @@
 import { Readable } from 'stream';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
-import Machinat from '@machinat/core';
-import Queue from '@machinat/core/queue';
-import _Engine from '@machinat/core/engine';
-import _Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import Queue from '@sociably/core/queue';
+import _Engine from '@sociably/core/engine';
+import _Renderer from '@sociably/core/renderer';
 import _Worker from '../Worker';
 import TelegramApiError from '../Error';
 import { TelegramBot } from '../Bot';
@@ -23,16 +23,16 @@ const Worker = _Worker as Moxy<typeof _Worker>;
 
 nock.disableNetConnect();
 
-jest.mock('@machinat/core/engine', () =>
+jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/engine'))
+    .default(jest.requireActual('@sociably/core/engine'))
 );
 
-jest.mock('@machinat/core/renderer', () =>
+jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@machinat/core/renderer'))
+    .default(jest.requireActual('@sociably/core/renderer'))
 );
 
 jest.mock('../Worker', () =>
@@ -49,7 +49,7 @@ const token = '12345:_BOT_TOKEN_';
 const message = (
   <Expression replyMarkup={<ForceReply />}>
     Hello <b>World!</b>
-    <Photo url="https://machinat.com/greeting.png" />
+    <Photo url="https://sociably.io/greeting.png" />
   </Expression>
 );
 
@@ -179,7 +179,7 @@ describe('.render(channel, message, options)', () => {
       Object {
         "chat_id": 67890,
         "parse_mode": "HTML",
-        "photo": "https://machinat.com/greeting.png",
+        "photo": "https://sociably.io/greeting.png",
         "reply_markup": Object {
           "force_reply": true,
         },
@@ -205,7 +205,7 @@ describe('.render(channel, message, options)', () => {
           foo <b>bar</b>
         </EditText>
         <EditMedia inlineMessageId="2">
-          <Photo url="https://machinat.com/trollface.png" />
+          <Photo url="https://sociably.io/trollface.png" />
         </EditMedia>
       </>
     );
@@ -227,7 +227,7 @@ describe('.render(channel, message, options)', () => {
       Object {
         "inline_message_id": "2",
         "media": Object {
-          "media": "https://machinat.com/trollface.png",
+          "media": "https://sociably.io/trollface.png",
           "parse_mode": "HTML",
           "type": "photo",
         },

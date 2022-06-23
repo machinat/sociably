@@ -1,4 +1,4 @@
-import Machinat from '../..';
+import Sociably from '../..';
 import map from '../map';
 
 it('maps all elements', () => {

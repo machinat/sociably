@@ -1,15 +1,15 @@
 {
-  "name": "@machinat/telegram",
+  "name": "@sociably/telegram",
   "version": "0.6.0",
-  "description": "Messenger platform for Machinat.",
+  "description": "Telegram platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/machinat/machinat.git",
+    "url": "https://github.com/machinat/sociably.git",
     "directory": "packages/telegram"
   },
-  "homepage": "https://github.com/machinat/machinat#readme",
-  "bugs": "https://github.com/machinat/machinat/issues",
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
@@ -39,16 +39,16 @@
     "thenifiedly": "^0.2.1"
   },
   "peerDependencies": {
-    "@machinat/auth": "^0.6.0",
-    "@machinat/core": "^0.6.0",
-    "@machinat/http": "^0.6.0",
-    "@machinat/webview": "^0.6.0"
+    "@sociably/auth": "^0.6.0",
+    "@sociably/core": "^0.6.0",
+    "@sociably/http": "^0.6.0",
+    "@sociably/webview": "^0.6.0"
   },
   "peerDependenciesMeta": {
-    "@machinat/auth": {
+    "@sociably/auth": {
       "optional": true
     },
-    "@machinat/webview": {
+    "@sociably/webview": {
       "optional": true
     }
   }

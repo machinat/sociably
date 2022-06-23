@@ -40,8 +40,8 @@ import TabItem from '@theme/TabItem';
 
 
 ```tsx title="src/components/TodoList.tsx"
-import Machinat from '@machinat/core';
-import * as Messenger from '@machinat/messenger/components';
+import Sociably from '@sociably/core';
+import * as Messenger from '@sociably/messenger/components';
 import { Todo } from '../types';
 
 type TodoListProps = {
@@ -94,8 +94,8 @@ export default TodoList;
 
 
 ```tsx title="src/components/TodoList.tsx"
-import Machinat from '@machinat/core';
-import * as Telegram from '@machinat/telegram/components';
+import Sociably from '@sociably/core';
+import * as Telegram from '@sociably/telegram/components';
 import { Todo } from '../types';
 
 type TodoListProps = {
@@ -149,8 +149,8 @@ export default TodoList;
 
 
 ```tsx title="src/components/TodoList.tsx"
-import Machinat from '@machinat/core';
-import * as Line from '@machinat/line/components';
+import Sociably from '@sociably/core';
+import * as Line from '@sociably/line/components';
 import { Todo } from '../types';
 
 type TodoListProps = {
@@ -321,7 +321,7 @@ Edit `src/components/WithMenu.tsx` component like this:
 ```tsx tsx title="src/components/WithMenu.tsx"
 //...
 type WithMenuProps = {
-  children: MachinatNode;
+  children: SociablyNode;
   // highlight-next-line
   todoCount: number;
 };
@@ -381,7 +381,7 @@ const WithMenu = ({ children, todoCount }: WithMenuProps, { platform }) => {
 ```tsx title="src/components/WithMenu.tsx"
 //...
 type WithMenuProps = {
-  children: MachinatNode;
+  children: SociablyNode;
   // highlight-next-line
   todoCount: number;
 };
@@ -441,7 +441,7 @@ const WithMenu = ({ children, todoCount }: WithMenuProps, { platform }) => {
 ```tsx title="src/components/WithMenu.tsx"
 //...
 type WithMenuProps = {
-  children: MachinatNode;
+  children: SociablyNode;
   // highlight-next-line
   todoCount: number;
 };

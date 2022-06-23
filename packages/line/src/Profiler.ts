@@ -1,5 +1,5 @@
-import { makeClassProvider } from '@machinat/core/service';
-import type { UserProfiler } from '@machinat/core/base/Profiler';
+import { makeClassProvider } from '@sociably/core/service';
+import type { UserProfiler } from '@sociably/core/base/Profiler';
 import BotP from './Bot';
 import type LineChat from './Chat';
 import type LineUser from './User';

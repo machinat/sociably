@@ -1,4 +1,4 @@
-import { isServiceContainer, MaybeContainer } from '@machinat/core/service';
+import { isServiceContainer, MaybeContainer } from '@sociably/core/service';
 import { StreamingFrame } from './types';
 import { STREAMING_KEY_I } from './interface';
 

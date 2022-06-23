@@ -1,24 +1,24 @@
 import type {
-  MachinatUser,
-  MachinatNode,
+  SociablyUser,
+  SociablyNode,
   PlatformUtilities,
   EventMiddleware,
   DispatchMiddleware,
   NativeComponent,
-} from '@machinat/core';
-import { AnyMarshalType } from '@machinat/core/base/Marshaler';
-import type { UnitSegment } from '@machinat/core/renderer';
-import type { DispatchFrame } from '@machinat/core/engine';
-import type { MaybeContainer, ServiceProvider } from '@machinat/core/service';
+} from '@sociably/core';
+import { AnyMarshalType } from '@sociably/core/base/Marshaler';
+import type { UnitSegment } from '@sociably/core/renderer';
+import type { DispatchFrame } from '@sociably/core/engine';
+import type { MaybeContainer, ServiceProvider } from '@sociably/core/service';
 import type {
   AnyServerAuthenticator,
   ClientAuthenticator,
   AnyAuthContext,
   ContextOfAuthenticator,
   UserOfAuthenticator,
-} from '@machinat/auth';
-import type { CodeMessageComponent } from '@machinat/auth/basicAuth';
-import type { NextServerOptions } from '@machinat/next';
+} from '@sociably/auth';
+import type { CodeMessageComponent } from '@sociably/auth/basicAuth';
+import type { NextServerOptions } from '@sociably/next';
 import type {
   EventInput,
   EventValue,
@@ -26,7 +26,7 @@ import type {
   WebSocketJob,
   WebSocketResult,
   WebSocketDispatchResponse,
-} from '@machinat/websocket';
+} from '@sociably/websocket';
 import type { BotP } from './bot';
 import type {
   WebviewConnection,
@@ -40,7 +40,7 @@ export type {
   ConnectEventValue,
   DisconnectEventValue,
   ConnectionEventValue,
-} from '@machinat/websocket';
+} from '@sociably/websocket';
 
 export type WebviewComponent = NativeComponent<
   unknown,
@@ -49,7 +49,7 @@ export type WebviewComponent = NativeComponent<
 
 export type WebviewEvent<
   Value extends EventValue,
-  User extends null | MachinatUser
+  User extends null | SociablyUser
 > = Value & {
   platform: 'webview';
   channel: WebviewConnection;
@@ -84,7 +84,7 @@ export type WebviewEventContext<
   event: WebviewEvent<Value, UserOfAuthenticator<Authenticator>>;
   metadata: WebviewMetadata<ContextOfAuthenticator<Authenticator>>;
   bot: BotP;
-  reply(message: MachinatNode): Promise<null | WebSocketDispatchResponse>;
+  reply(message: SociablyNode): Promise<null | WebSocketDispatchResponse>;
 };
 
 export type WebviewEventMiddleware<

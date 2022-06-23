@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import TwitterChat from '../Chat';
 import makeTwitterComponent from '../utils/makeTwitterComponent';
 import { TwitterSegmentValue, TwitterComponent } from '../types';

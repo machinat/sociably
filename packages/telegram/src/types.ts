@@ -3,12 +3,12 @@ import type {
   PlatformUtilities,
   EventMiddleware,
   DispatchMiddleware,
-  MachinatNode,
+  SociablyNode,
   NativeComponent,
-} from '@machinat/core';
-import { IntermediateSegment, UnitSegment } from '@machinat/core/renderer';
-import { DispatchFrame, DispatchResponse } from '@machinat/core/engine';
-import type { WebhookMetadata } from '@machinat/http/webhook';
+} from '@sociably/core';
+import { IntermediateSegment, UnitSegment } from '@sociably/core/renderer';
+import { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
+import type { WebhookMetadata } from '@sociably/http/webhook';
 import type { TelegramEvent } from './event/types';
 import type TelegramChat from './Chat';
 import type { TelegramBot } from './Bot';
@@ -141,7 +141,7 @@ export type TelegramEventContext = {
   event: TelegramEvent;
   metadata: WebhookMetadata;
   bot: TelegramBot;
-  reply(node: MachinatNode): Promise<null | TelegramDispatchResponse>;
+  reply(node: SociablyNode): Promise<null | TelegramDispatchResponse>;
 };
 
 export type TelegramEventMiddleware = EventMiddleware<

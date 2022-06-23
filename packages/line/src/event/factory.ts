@@ -1,4 +1,4 @@
-import { mixin } from '@machinat/core/utils';
+import { mixin } from '@sociably/core/utils';
 import LineUser from '../User';
 import LineChat from '../Chat';
 import {

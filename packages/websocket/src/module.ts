@@ -1,9 +1,9 @@
-import type { MachinatPlatform, MachinatUser } from '@machinat/core';
-import { makeContainer, makeFactoryProvider } from '@machinat/core/service';
-import BaseBot from '@machinat/core/base/Bot';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
-import Http from '@machinat/http';
-import type { UpgradeRoute } from '@machinat/http';
+import type { SociablyPlatform, SociablyUser } from '@sociably/core';
+import { makeContainer, makeFactoryProvider } from '@sociably/core/service';
+import BaseBot from '@sociably/core/base/Bot';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
+import Http from '@sociably/http';
+import type { UpgradeRoute } from '@sociably/http';
 
 import { WEBSOCKET } from './constant';
 import {
@@ -56,13 +56,13 @@ namespace WebSocket {
   export type Bot = BotP;
 
   export const Receiver = ReceiverP;
-  export type Receiver<User extends null | MachinatUser, Auth> = ReceiverP<
+  export type Receiver<User extends null | SociablyUser, Auth> = ReceiverP<
     User,
     Auth
   >;
 
   export const Server = ServerP;
-  export type Server<User extends null | MachinatUser, Auth> = ServerP<
+  export type Server<User extends null | SociablyUser, Auth> = ServerP<
     User,
     Auth
   >;
@@ -85,9 +85,9 @@ namespace WebSocket {
   export const ServerId = ServerIdI;
   export type ServerId = string;
 
-  export const initModule = <User extends null | MachinatUser, Auth>(
+  export const initModule = <User extends null | SociablyUser, Auth>(
     configs: WebSocketConfigs<User, Auth> = {}
-  ): MachinatPlatform<
+  ): SociablyPlatform<
     WebSocketEventContext<User, Auth>,
     null,
     WebSocketJob,

@@ -1,9 +1,9 @@
 import {
-  MACHINAT_PAUSE_TYPE,
-  MACHINAT_FRAGMENT_TYPE,
-  MACHINAT_PROVIDER_TYPE,
-  MACHINAT_THUNK_TYPE,
-  MACHINAT_RAW_TYPE,
+  SOCIABLY_PAUSE_TYPE,
+  SOCIABLY_FRAGMENT_TYPE,
+  SOCIABLY_PROVIDER_TYPE,
+  SOCIABLY_THUNK_TYPE,
+  SOCIABLY_RAW_TYPE,
 } from '../symbol';
 
 const formatProps = (props) => {
@@ -29,15 +29,15 @@ const formatNode = (element: any, withProps = false): string =>
     : typeof element.type === 'string'
     ? `<${element.type} ${withProps ? formatProps(element.props) : ''}/>`
     : typeof element.type === 'symbol'
-    ? element.type === MACHINAT_PAUSE_TYPE
+    ? element.type === SOCIABLY_PAUSE_TYPE
       ? `<Pause ${withProps ? formatProps(element.props) : ''}/>`
-      : element.type === MACHINAT_FRAGMENT_TYPE
+      : element.type === SOCIABLY_FRAGMENT_TYPE
       ? `<Fragment ${withProps ? formatProps(element.props) : ''}/>`
-      : element.type === MACHINAT_PROVIDER_TYPE
+      : element.type === SOCIABLY_PROVIDER_TYPE
       ? `<Provider ${withProps ? formatProps(element.props) : ''}/>`
-      : element.type === MACHINAT_THUNK_TYPE
+      : element.type === SOCIABLY_THUNK_TYPE
       ? `<Thunk ${withProps ? formatProps(element.props) : ''}/>`
-      : element.type === MACHINAT_RAW_TYPE
+      : element.type === SOCIABLY_RAW_TYPE
       ? `<Raw ${withProps ? formatProps(element.props) : ''}/>`
       : `<${element.type.toString()} ${
           withProps ? formatProps(element.props) : ''

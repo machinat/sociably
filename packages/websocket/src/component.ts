@@ -1,10 +1,10 @@
 /* eslint-disable import/prefer-default-export */
-import type { NativeComponent } from '@machinat/core';
+import type { NativeComponent } from '@sociably/core';
 import {
   makeNativeComponent,
   makeUnitSegment,
   UnitSegment,
-} from '@machinat/core/renderer';
+} from '@sociably/core/renderer';
 import { WEBSOCKET } from './constant';
 import type { EventInput } from './types';
 

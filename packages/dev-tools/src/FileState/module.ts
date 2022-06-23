@@ -1,5 +1,5 @@
-import type { ServiceModule } from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateController';
+import type { ServiceModule } from '@sociably/core';
+import StateControllerI from '@sociably/core/base/StateController';
 import { ControllerP } from './controller';
 import { ConfigsI, SerializerI } from './interface';
 

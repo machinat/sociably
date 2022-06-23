@@ -104,7 +104,7 @@ Array [
   Object {
     "node": <Tweet
       media={
-        <Machinat.Fragment>
+        <Sociably.Fragment>
           <Photo
             mediaId="123"
           />
@@ -125,7 +125,7 @@ Array [
             fileSize={123}
             fileType="image/jpeg"
           />
-        </Machinat.Fragment>
+        </Sociably.Fragment>
       }
       superFollowersOnly={true}
       tagUsersInMedia={

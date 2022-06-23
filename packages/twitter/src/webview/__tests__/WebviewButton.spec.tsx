@@ -6,7 +6,7 @@ import WebviewButton from '../WebviewButton';
 
 const authenticator = moxy<ServerAuthenticator>({
   getAuthUrl: () =>
-    'https://machinat.io/foo/auth/twitter?login=__LOGIN_TOKEN__',
+    'https://sociably.io/foo/auth/twitter?login=__LOGIN_TOKEN__',
 } as never);
 
 beforeEach(() => {
@@ -22,7 +22,7 @@ test('rendering to UrlButton', () => {
   ).toMatchInlineSnapshot(`
     <UrlButton
       label="Foo"
-      url="https://machinat.io/foo/auth/twitter?login=__LOGIN_TOKEN__"
+      url="https://sociably.io/foo/auth/twitter?login=__LOGIN_TOKEN__"
     />
   `);
 
@@ -34,7 +34,7 @@ test('rendering to UrlButton', () => {
   ).toMatchInlineSnapshot(`
     <UrlButton
       label="Foo"
-      url="https://machinat.io/foo/auth/twitter?login=__LOGIN_TOKEN__"
+      url="https://sociably.io/foo/auth/twitter?login=__LOGIN_TOKEN__"
     />
   `);
 

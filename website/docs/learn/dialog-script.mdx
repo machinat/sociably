@@ -12,7 +12,7 @@ title: Dialog Script
 After recognizing the adding todo intent, the bot should ask for the new todo name.
 To do this, we have to handle the _prompt and wait_ flow in our codes.
 
-In Machinat, it can be done by a **Dialog Script**.
+In Sociably, it can be done by a **Dialog Script**.
 
 ### Build a Script
 
@@ -20,9 +20,9 @@ Let's add our first script for adding a todo.
 Create `src/scenes/AddingTodo.tsx` file with the following content:
 
 ```tsx title="src/scenes/AddingTodo.tsx"
-import Machinat from '@machinat/core';
-import { build } from '@machinat/script';
-import * as $ from '@machinat/script/keywords';
+import Sociably from '@sociably/core';
+import { build } from '@sociably/script';
+import * as $ from '@sociably/script/keywords';
 
 export default build(
   {
@@ -124,9 +124,9 @@ Let's add a `PROMPT` to stop the script and wait for the answer.
 Add the these codes in the script:
 
 ```tsx {5-7,9,12,17-23} title="src/scenes/AddingTodo.tsx"
-import Machinat from '@machinat/core';
-import { build } from '@machinat/script';
-import * as $ from '@machinat/script/keywords';
+import Sociably from '@sociably/core';
+import { build } from '@sociably/script';
+import * as $ from '@sociably/script/keywords';
 
 type AddingTodoVars = {
   todoName: string;
@@ -175,9 +175,9 @@ the next thing is to save it in the state.
 We can use the `EFFECT` keyword to do that:
 
 ```tsx {1,4,8,14,27-38} title="src/scenes/AddingTodo.tsx"
-import Machinat, { makeContainer } from '@machinat/core';
-import { build } from '@machinat/script';
-import * as $ from '@machinat/script/keywords';
+import Sociably, { makeContainer } from '@sociably/core';
+import { build } from '@sociably/script';
+import * as $ from '@sociably/script/keywords';
 import TodoController from '../services/TodoController';
 
 type AddingTodoVars = {
@@ -297,9 +297,9 @@ Let's try calling `AddingTodo` in a new script.
 Create `src/scenes/AskingFirstTodo.tsx` file with the following content:
 
 ```tsx {39} title="src/scenes/AskingFirstTodo.tsx"
-import Machinat, { makeContainer } from '@machinat/core';
-import { build } from '@machinat/script';
-import * as $ from '@machinat/script/keywords';
+import Sociably, { makeContainer } from '@sociably/core';
+import { build } from '@sociably/script';
+import * as $ from '@sociably/script/keywords';
 import AddingTodo from './AddingTodo';
 import useIntent from '../services/useIntent';
 

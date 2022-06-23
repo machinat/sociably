@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { MACHINAT_SERVICE_INTERFACE } from '../../symbol';
+import { SOCIABLY_SERVICE_INTERFACE } from '../../symbol';
 import type {
   ServiceInterface,
   PolymorphicServiceInterface,
@@ -47,7 +47,7 @@ function makeInterface<T>({
     $$name: name,
     $$multi: multi as never,
     $$polymorphic: polymorphic,
-    $$typeof: MACHINAT_SERVICE_INTERFACE,
+    $$typeof: SOCIABLY_SERVICE_INTERFACE,
   };
 }
 

@@ -1,6 +1,6 @@
-import type { MachinatNode } from '@machinat/core';
-import { formatNode } from '@machinat/core/utils';
-import { OutputSegment } from '@machinat/core/renderer';
+import type { SociablyNode } from '@sociably/core';
+import { formatNode } from '@sociably/core/utils';
+import { OutputSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent';
 import createDmSegmentValue from '../utils/createDmSegmentValue';
 import {
@@ -14,9 +14,9 @@ import {
  */
 export type ExpressionProps = {
   /** Direct messages content  */
-  children: MachinatNode;
+  children: SociablyNode;
   /** Quick replies to be attached after the messages. Should contain only {@link QuickReply} */
-  quickReplies?: MachinatNode;
+  quickReplies?: SociablyNode;
   /** The custome profile to send the messages with */
   customProfileId?: string;
 };

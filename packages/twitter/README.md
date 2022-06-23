@@ -5,27 +5,27 @@ Tweeting and direct messaging on [Twitter](https://twitter.com).
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/twitter
+npm install @sociably/core @sociably/http @sociably/twitter
 # or with yarn
-yarn add @machinat/core @machinat/http @machinat/twitter
+yarn add @sociably/core @sociably/http @sociably/twitter
 ```
 
 ## Docs
 
-Check the [platform document](https://machinat.com/docs/twitter-platform)
-and the [package reference](https://machinat.com/api/modules/twitter.html).
+Check the [platform document](https://sociably.js.org/docs/twitter-platform)
+and the [package reference](https://sociably.js.org/api/modules/twitter.html).
 
 ## Setup
 
 ```ts
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Twitter from '@machinat/twitter';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Twitter from '@sociably/twitter';
 
 const {
 } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
   ],

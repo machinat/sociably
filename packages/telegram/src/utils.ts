@@ -1,4 +1,4 @@
-import { makeNativeComponent } from '@machinat/core/renderer';
+import { makeNativeComponent } from '@sociably/core/renderer';
 import { TELEGRAM } from './constant';
 
 // eslint-disable-next-line import/prefer-default-export

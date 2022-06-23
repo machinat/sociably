@@ -2,12 +2,12 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { parse as parseUrl, URL } from 'url';
 import { parse as parseAgent } from 'bowser';
 import { getClientIp } from 'request-ip';
-import Machinat, {
+import Sociably, {
   makeClassProvider,
-  MachinatChannel,
+  SociablyChannel,
   StateController,
-} from '@machinat/core';
-import type { RoutingInfo } from '@machinat/http';
+} from '@sociably/core';
+import type { RoutingInfo } from '@sociably/http';
 import HttpOperator from '../HttpOperator';
 import { respondApiError, parseJsonBody } from '../utils';
 import { ConfigsI } from '../interface';
@@ -78,7 +78,7 @@ export class BasicAuthenticator {
     this.loginDurationTime = loginDuration * 1000;
   }
 
-  createRequestDelegator<Data, Channel extends MachinatChannel>(
+  createRequestDelegator<Data, Channel extends SociablyChannel>(
     options: AuthDelegatorOptions<Data, Channel>
   ) {
     return async (
@@ -107,7 +107,7 @@ export class BasicAuthenticator {
     return authRoot.href;
   }
 
-  private async _handleStart<Data, Channel extends MachinatChannel>(
+  private async _handleStart<Data, Channel extends SociablyChannel>(
     req: IncomingMessage,
     res: ServerResponse,
     { platform, checkAuthData }: AuthDelegatorOptions<Data, Channel>
@@ -188,7 +188,7 @@ export class BasicAuthenticator {
     this.operator.redirect(res, loginUrl);
   }
 
-  private async _handleLogin<Data, Channel extends MachinatChannel>(
+  private async _handleLogin<Data, Channel extends SociablyChannel>(
     req: IncomingMessage,
     res: ServerResponse,
     {
@@ -307,7 +307,7 @@ export class BasicAuthenticator {
     );
   }
 
-  private async _handleVerify<Data, Channel extends MachinatChannel>(
+  private async _handleVerify<Data, Channel extends SociablyChannel>(
     req: IncomingMessage,
     res: ServerResponse,
     { platform }: AuthDelegatorOptions<Data, Channel>

@@ -1,14 +1,14 @@
 {
-  "name": "@machinat/create-app",
+  "name": "@sociably/create-app",
   "version": "0.6.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/machinat/machinat.git",
-    "directory": "packages/create"
+    "url": "https://github.com/machinat/sociably.git",
+    "directory": "packages/create-app"
   },
-  "homepage": "https://github.com/machinat/machinat#readme",
-  "bugs": "https://github.com/machinat/machinat/issues",
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js"

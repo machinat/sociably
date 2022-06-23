@@ -1,7 +1,7 @@
 import type {
-  MACHINAT_SERVICE_CONTAINER,
-  MACHINAT_SERVICE_PROVIDER,
-  MACHINAT_SERVICE_INTERFACE,
+  SOCIABLY_SERVICE_CONTAINER,
+  SOCIABLY_SERVICE_PROVIDER,
+  SOCIABLY_SERVICE_INTERFACE,
 } from '../symbol';
 import type ServiceScope from './scope';
 
@@ -9,21 +9,21 @@ export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 
 export type SingularServiceInterface<T> = {
   $$name: string;
-  $$typeof: typeof MACHINAT_SERVICE_INTERFACE;
+  $$typeof: typeof SOCIABLY_SERVICE_INTERFACE;
   $$multi: false;
   $$polymorphic: false;
 };
 
 export type MultiServiceInterface<T> = {
   $$name: string;
-  $$typeof: typeof MACHINAT_SERVICE_INTERFACE;
+  $$typeof: typeof SOCIABLY_SERVICE_INTERFACE;
   $$multi: true;
   $$polymorphic: false;
 };
 
 export type PolymorphicServiceInterface<T> = {
   $$name: string;
-  $$typeof: typeof MACHINAT_SERVICE_INTERFACE;
+  $$typeof: typeof SOCIABLY_SERVICE_INTERFACE;
   $$multi: false;
   $$polymorphic: true;
 };
@@ -35,7 +35,7 @@ export type ServiceInterface<T> =
 
 export interface ServiceProvider<T, Args extends unknown[]> {
   $$name: string;
-  $$typeof: typeof MACHINAT_SERVICE_PROVIDER;
+  $$typeof: typeof SOCIABLY_SERVICE_PROVIDER;
   $$multi: false;
   $$polymorphic: false;
   $$lifetime: ServiceLifetime;
@@ -96,7 +96,7 @@ export type ResolveDependencies<
 
 export type ServiceContainer<T, Args extends unknown[]> = {
   $$name: string;
-  $$typeof: typeof MACHINAT_SERVICE_CONTAINER;
+  $$typeof: typeof SOCIABLY_SERVICE_CONTAINER;
   $$deps: ServiceRequirement<Interfaceable<Args[number]>>[];
   $$factory(...args: Args): T;
   // HACK: make ts compiler accept it as class component

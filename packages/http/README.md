@@ -6,24 +6,24 @@ For example, to serve a webhook for subscribing events from chat platform.
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http
+npm install @sociably/core @sociably/http
 # or with yarn
-yarn add @machinat/core @machinat/http
+yarn add @sociably/core @sociably/http
 ```
 
 ## Docs
 
-Check the [package reference](https://machinat.com/api/modules/http.html).
+Check the [package reference](https://sociably.js.org/api/modules/http.html).
 
 ## Setup
 
 Use `listenOptions` to set the network options for [`server.listen()`](https://nodejs.org/dist/latest/docs/api/net.html#net_server_listen_options_callback).
 
 ```js
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({
       listenOptions: {
@@ -43,7 +43,7 @@ be received by the handler. You can also use `default: true` to catch all
 unmatch requests.
 
 ```js
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
   ],

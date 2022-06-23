@@ -1,8 +1,8 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import BaseBot from '@machinat/core/base/Bot';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
-import Http from '@machinat/http';
+import Sociably from '@sociably/core';
+import BaseBot from '@sociably/core/base/Bot';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
+import Http from '@sociably/http';
 import {
   WebSocketConnection,
   WebSocketUserChannel,
@@ -22,7 +22,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "WebSocketConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(WebSocket.LoginVerifier).toMatchInlineSnapshot(`
@@ -30,7 +30,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "WebSocketLoginVerifier",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(WebSocket.UpgradeVerifier).toMatchInlineSnapshot(`
@@ -38,7 +38,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "WebSocketUpgradeVerifier",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(WebSocket.ServerId).toMatchInlineSnapshot(`
@@ -46,7 +46,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "WebSocketServerId",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(WebSocket.WsServer).toMatchInlineSnapshot(`
@@ -54,7 +54,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "WebSocketWsServer",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
@@ -75,7 +75,7 @@ describe('initModule()', () => {
         "$$multi": false,
         "$$name": "WebSocketPlatformUtilities",
         "$$polymorphic": false,
-        "$$typeof": Symbol(interface.service.machinat),
+        "$$typeof": Symbol(interface.service.sociably),
       }
     `);
     expect(module.provisions).toBeInstanceOf(Array);
@@ -85,7 +85,7 @@ describe('initModule()', () => {
   });
 
   test('provisions', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [
         WebSocket.initModule({
           entryPath: '/my_web_socket_server',
@@ -120,7 +120,7 @@ describe('initModule()', () => {
   });
 
   test('set default routing path to "/"', async () => {
-    const app = Machinat.createApp({ platforms: [WebSocket.initModule()] });
+    const app = Sociably.createApp({ platforms: [WebSocket.initModule()] });
     await app.start();
 
     const [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
@@ -134,7 +134,7 @@ describe('initModule()', () => {
   });
 
   test('provide base interface', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [WebSocket.initModule({})],
     });
     await app.start();
@@ -157,7 +157,7 @@ describe('initModule()', () => {
   test('startHook() calls bot.start()', async () => {
     const fakeBot = moxy({ start: async () => {} });
 
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [WebSocket.initModule()],
       services: [{ provide: WebSocket.Bot, withValue: fakeBot }],
     });
@@ -169,7 +169,7 @@ describe('initModule()', () => {
   test('stopHook() calls bot.stop()', async () => {
     const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
 
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [WebSocket.initModule()],
       services: [{ provide: WebSocket.Bot, withValue: fakeBot }],
     });

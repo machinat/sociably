@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { createEmptyScope } from '@machinat/core/service';
+import { createEmptyScope } from '@sociably/core/service';
 import Stream from '../../stream';
 import debounce from '../debounce';
 

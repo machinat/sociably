@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { AuthHttpOperator } from '@machinat/auth';
+import { AuthHttpOperator } from '@sociably/auth';
 import moxy from '@moxyjs/moxy';
 import type { LineBot } from '../../Bot';
 import LineChat from '../../Chat';
@@ -25,7 +25,7 @@ const bot = moxy<LineBot>({
 
 const httpOperator = moxy<AuthHttpOperator>({
   getRedirectUrl: (path) =>
-    `https://machinat.io/my_app/webview${path ? `/${path}` : ''}`,
+    `https://sociably.io/my_app/webview${path ? `/${path}` : ''}`,
 } as never);
 
 const liffId = '1234567890-AaBbCcDd';

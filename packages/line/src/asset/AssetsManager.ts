@@ -1,5 +1,5 @@
-import { makeClassProvider } from '@machinat/core/service';
-import StateControllerI from '@machinat/core/base/StateController';
+import { makeClassProvider } from '@sociably/core/service';
+import StateControllerI from '@sociably/core/base/StateController';
 import BotP from '../Bot';
 import { PATH_RICHMENU } from '../constant';
 

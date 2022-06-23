@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
-import { isNativeType } from '@machinat/core/utils';
+import Sociably from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
+import { isNativeType } from '@sociably/core/utils';
 import { API_PATH } from '../../constant';
 import { TextReply, EmailReply, PhoneReply } from '../quickReply';
 import { Expression } from '../expression';
@@ -91,9 +91,9 @@ it.each([
       foo
       <br />
       bar
-      <Machinat.Pause time={2000} />
+      <Sociably.Pause time={2000} />
       baz
-      <Machinat.Thunk effect={async () => {}} />
+      <Sociably.Thunk effect={async () => {}} />
     </Expression>,
   ],
 ])('%s match snapshot', async (_, element) => {

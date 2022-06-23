@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
+import Renderer from '@sociably/core/renderer';
 import { Expression } from '../expression';
 import { QuickReply } from '../quickReply';
 import { MessageAction } from '../action';
@@ -247,8 +247,8 @@ it('attach quickReply to last message object', async () => {
               "path": "$:0#Expression.children:3",
               "type": "unit",
               "value": Object {
-                Symbol(channel_request_getter.line.machinat): [Function],
-                Symbol(bulk_request_getter.line.machinat): [Function],
+                Symbol(channel_request_getter.line.sociably): [Function],
+                Symbol(bulk_request_getter.line.sociably): [Function],
               },
             },
           ]

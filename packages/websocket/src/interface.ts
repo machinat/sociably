@@ -1,5 +1,5 @@
-import type { MachinatUser } from '@machinat/core';
-import { makeInterface } from '@machinat/core/service';
+import type { SociablyUser } from '@sociably/core';
+import { makeInterface } from '@sociably/core/service';
 import type {
   WsServer,
   AnyVerifyLoginFn,
@@ -47,7 +47,7 @@ export const ServerIdI = makeInterface<string>({
  * @category Interface
  */
 export const PlatformUtilitiesI = makeInterface<
-  WebSocketPlatformUtilities<MachinatUser, unknown>
+  WebSocketPlatformUtilities<SociablyUser, unknown>
 >({
   name: 'WebSocketPlatformUtilities',
 });
@@ -55,11 +55,11 @@ export const PlatformUtilitiesI = makeInterface<
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<WebSocketConfigs<MachinatUser, unknown>>({
+export const ConfigsI = makeInterface<WebSocketConfigs<SociablyUser, unknown>>({
   name: 'WebSocketConfigs',
 });
 
-export type ConfigsI = WebSocketConfigs<MachinatUser, unknown>;
+export type ConfigsI = WebSocketConfigs<SociablyUser, unknown>;
 
 /**
  * @category Interface

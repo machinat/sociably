@@ -1,18 +1,18 @@
-import type { PopEventWrapper, PopEventFn, PopErrorFn } from '@machinat/core';
-import { makeClassProvider } from '@machinat/core/service';
-import ModuleUtilitiesI from '@machinat/core/base/ModuleUtilities';
+import type { PopEventWrapper, PopEventFn, PopErrorFn } from '@sociably/core';
+import { makeClassProvider } from '@sociably/core/service';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import {
   AnyServerAuthenticator,
   UserOfAuthenticator,
   ContextOfAuthenticator,
-} from '@machinat/auth';
-import type { HttpRequestInfo } from '@machinat/http';
+} from '@sociably/auth';
+import type { HttpRequestInfo } from '@sociably/http';
 import WebSocket, {
   EventInput,
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
-} from '@machinat/websocket';
+} from '@sociably/websocket';
 import { WEBVIEW } from './constant';
 import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
 import { BotP } from './bot';

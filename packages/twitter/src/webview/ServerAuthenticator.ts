@@ -1,10 +1,10 @@
-import { makeClassProvider } from '@machinat/core/service';
+import { makeClassProvider } from '@sociably/core/service';
 import {
   ServerAuthenticator,
   VerifyResult,
   CheckDataResult,
-} from '@machinat/auth';
-import BasicAuthenticator from '@machinat/auth/basicAuth';
+} from '@sociably/auth';
+import BasicAuthenticator from '@sociably/auth/basicAuth';
 import BotP from '../Bot';
 import { TWITTER } from '../constant';
 import TwitterChat from '../Chat';
@@ -38,7 +38,8 @@ export class TwitterServerAuthenticator
       platform: TWITTER,
       platformName: 'Twitter',
       platformColor: '#1D9BF0',
-      platformImageUrl: 'https://machinat.com/img/icon/twitter.png',
+      platformImageUrl:
+        'https://machinat.github.io/sociably/img/icon/twitter.png',
       checkAuthData: (data) => {
         const result = this.checkAuthData(data);
         if (!result.ok) {

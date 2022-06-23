@@ -1,8 +1,8 @@
 import invariant from 'invariant';
 import {
-  MACHINAT_SERVICE_CONTAINER,
-  MACHINAT_SERVICE_PROVIDER,
-  MACHINAT_SERVICE_INTERFACE,
+  SOCIABLY_SERVICE_CONTAINER,
+  SOCIABLY_SERVICE_PROVIDER,
+  SOCIABLY_SERVICE_INTERFACE,
 } from '../symbol';
 import ServiceScope from './scope';
 import ServiceMaker from './maker';
@@ -20,14 +20,14 @@ export const isServiceContainer = <T>(
 ): target is ServiceContainer<T, unknown[]> =>
   typeof target === 'function' &&
   '$$typeof' in target &&
-  target.$$typeof === MACHINAT_SERVICE_CONTAINER;
+  target.$$typeof === SOCIABLY_SERVICE_CONTAINER;
 
 export const isServiceProvider = (
   target: any
 ): target is ServiceProvider<unknown, unknown[]> =>
   (typeof target === 'function' ||
     (typeof target === 'object' && target !== null)) &&
-  target.$$typeof === MACHINAT_SERVICE_PROVIDER;
+  target.$$typeof === SOCIABLY_SERVICE_PROVIDER;
 
 export const maybeInjectContainer = <T>(
   scope: ServiceScope,
@@ -40,8 +40,8 @@ export const maybeInjectContainer = <T>(
 export const isInterfaceable = (target: any): target is Interfaceable<any> =>
   (typeof target === 'function' ||
     (typeof target === 'object' && target !== null)) &&
-  (target.$$typeof === MACHINAT_SERVICE_INTERFACE ||
-    target.$$typeof === MACHINAT_SERVICE_PROVIDER);
+  (target.$$typeof === SOCIABLY_SERVICE_INTERFACE ||
+    target.$$typeof === SOCIABLY_SERVICE_PROVIDER);
 
 export const createEmptyScope = (): ServiceScope =>
   new ServiceScope(new ServiceMaker(new ProvisionMap()), new Map());

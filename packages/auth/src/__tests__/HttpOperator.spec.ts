@@ -5,7 +5,7 @@ import HttpOperator from '../HttpOperator';
 import { getCookies } from './utils';
 
 const secret = '__SECRET__';
-const serverUrl = 'https://machinat.io';
+const serverUrl = 'https://sociably.io';
 const apiRoot = '/auth';
 const redirectRoot = '/webview';
 
@@ -29,8 +29,8 @@ describe('#constructor()', () => {
       redirectRoot,
     });
     expect(operator.secret).toBe(secret);
-    expect(operator.apiRootUrl.href).toBe('https://machinat.io/auth');
-    expect(operator.redirectRootUrl.href).toBe('https://machinat.io/webview');
+    expect(operator.apiRootUrl.href).toBe('https://sociably.io/auth');
+    expect(operator.redirectRootUrl.href).toBe('https://sociably.io/webview');
   });
 
   it('throw if options.secret is empty', () => {
@@ -90,9 +90,9 @@ describe('#constructor()', () => {
         new HttpOperator({
           secret,
           serverUrl,
-          redirectRoot: '//view.machinat.io',
+          redirectRoot: '//view.sociably.io',
           apiRoot: '/auth',
-          cookieDomain: 'api.machinat.io',
+          cookieDomain: 'api.sociably.io',
         })
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.serverUrl should be under a subdomain of options.cookieDomain"`
@@ -104,14 +104,14 @@ describe('#constructor()', () => {
       new HttpOperator({
         secure: false,
         secret,
-        serverUrl: 'http://machinat.io',
+        serverUrl: 'http://sociably.io',
       }))();
 
     expect(
       () =>
         new HttpOperator({
           secret,
-          serverUrl: 'http://machinat.io',
+          serverUrl: 'http://sociably.io',
         })
     ).toThrowErrorMatchingInlineSnapshot(
       `"protocol of options.serverUrl should be \\"https\\" when options.secure is set to true"`
@@ -126,7 +126,7 @@ test('.issueState(res, data)', async () => {
     const stateToken = await operator.issueState(res, 'foo', { foo: 'state' });
     const cookies = getCookies(res);
 
-    expect(cookies.get('machinat_auth_state').value).toBe(stateToken);
+    expect(cookies.get('sociably_auth_state').value).toBe(stateToken);
     const payload = jwt.verify(stateToken, '__SECRET__');
     return [cookies, payload];
   }
@@ -136,7 +136,7 @@ test('.issueState(res, data)', async () => {
   let [cookies, payload] = await testIssueState(operator);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "machinat_auth_state" => Object {
+      "sociably_auth_state" => Object {
         "directives": "HttpOnly; Max-Age=300; Path=/auth; SameSite=Lax; Secure",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMH0.tbccGtUNapTH99Q7SmW6F5CrXlhKWBsN-35NAydX3eg",
       },
@@ -159,7 +159,7 @@ test('.issueState(res, data)', async () => {
       redirectRoot: '/app/pages',
       apiRoot: '/app/auth',
       dataCookieMaxAge: 999,
-      cookieDomain: 'machinat.io',
+      cookieDomain: 'sociably.io',
       cookiePath: '/app',
       cookieSameSite: 'none',
       secure: false,
@@ -167,8 +167,8 @@ test('.issueState(res, data)', async () => {
   );
   expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "machinat_auth_state" => Object {
-            "directives": "Domain=machinat.io; HttpOnly; Max-Age=999; Path=/app/auth; SameSite=None",
+          "sociably_auth_state" => Object {
+            "directives": "Domain=sociably.io; HttpOnly; Max-Age=999; Path=/app/auth; SameSite=None",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMH0.tbccGtUNapTH99Q7SmW6F5CrXlhKWBsN-35NAydX3eg",
           },
         }
@@ -195,11 +195,11 @@ test('.issueAuth(data, options)', async () => {
     );
 
     const cookies = getCookies(res);
-    expect(cookies.get('machinat_auth_state').value).toBe('');
-    expect(cookies.get('machinat_auth_error').value).toBe('');
-    expect(cookies.get('machinat_auth_token').value).toBe(token);
+    expect(cookies.get('sociably_auth_state').value).toBe('');
+    expect(cookies.get('sociably_auth_error').value).toBe('');
+    expect(cookies.get('sociably_auth_token').value).toBe(token);
 
-    const signature = cookies.get('machinat_auth_signature').value;
+    const signature = cookies.get('sociably_auth_signature').value;
     const payload = jwt.verify(`${token}.${signature}`, '__SECRET__');
     return [cookies, payload];
   }
@@ -208,19 +208,19 @@ test('.issueAuth(data, options)', async () => {
   let [cookies, payload] = await testIssueAuth(operator);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "machinat_auth_signature" => Object {
+      "sociably_auth_signature" => Object {
         "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
         "value": "EKG7WOjtwYDAi7tisgcKPmJ_js11Jaf4347vCrFsXbc",
       },
-      "machinat_auth_token" => Object {
+      "sociably_auth_token" => Object {
         "directives": "Path=/; SameSite=Lax; Secure",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
       },
-      "machinat_auth_state" => Object {
+      "sociably_auth_state" => Object {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
-      "machinat_auth_error" => Object {
+      "sociably_auth_error" => Object {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
@@ -249,7 +249,7 @@ test('.issueAuth(data, options)', async () => {
     tokenCookieMaxAge: 999,
     tokenLifetime: 9999,
     refreshDuration: 99999,
-    cookieDomain: 'machinat.io',
+    cookieDomain: 'sociably.io',
     cookiePath: '/app',
     cookieSameSite: 'none',
     secure: false,
@@ -258,20 +258,20 @@ test('.issueAuth(data, options)', async () => {
   [cookies, payload] = await testIssueAuth(customizedOperator);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "machinat_auth_signature" => Object {
-        "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=None",
-        "value": "8an8OTENyMud78c4bF0gb4mj9rMAZ1omS2am0tu9ANA",
+      "sociably_auth_signature" => Object {
+        "directives": "Domain=sociably.io; HttpOnly; Path=/app; SameSite=None",
+        "value": "ajZ9AB8MXaQ710FVOeRiebapqvdFaIejKqd8LRfCicQ",
       },
-      "machinat_auth_token" => Object {
-        "directives": "Domain=machinat.io; Path=/app; SameSite=None",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJkb21haW4iOiJtYWNoaW5hdC5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
+      "sociably_auth_token" => Object {
+        "directives": "Domain=sociably.io; Path=/app; SameSite=None",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJkb21haW4iOiJzb2NpYWJseS5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
       },
-      "machinat_auth_state" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
+      "sociably_auth_state" => Object {
+        "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
         "value": "",
       },
-      "machinat_auth_error" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
+      "sociably_auth_error" => Object {
+        "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
         "value": "",
       },
     }
@@ -286,7 +286,7 @@ test('.issueAuth(data, options)', async () => {
       "init": 1570000000,
       "platform": "foo",
       "scope": Object {
-        "domain": "machinat.io",
+        "domain": "sociably.io",
         "path": "/app",
       },
     }
@@ -304,27 +304,27 @@ test('.issueAuth(data, options)', async () => {
       "init": 1569987655,
       "platform": "foo",
       "scope": Object {
-        "domain": "machinat.io",
+        "domain": "sociably.io",
         "path": "/app",
       },
     }
   `);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "machinat_auth_signature" => Object {
-        "directives": "Domain=machinat.io; HttpOnly; Path=/app; SameSite=None",
-        "value": "--KZSTahSzb1J3uj_DQj6YBnuanf1pLSZBgdlwsIFsQ",
+      "sociably_auth_signature" => Object {
+        "directives": "Domain=sociably.io; HttpOnly; Path=/app; SameSite=None",
+        "value": "cOah-4Tjdw3fiEMmUG5vj5eUsDmlkFP09NRG32zuTLQ",
       },
-      "machinat_auth_token" => Object {
-        "directives": "Domain=machinat.io; Path=/app; SameSite=None",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTg3NjU1LCJzY29wZSI6eyJkb21haW4iOiJtYWNoaW5hdC5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
+      "sociably_auth_token" => Object {
+        "directives": "Domain=sociably.io; Path=/app; SameSite=None",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTg3NjU1LCJzY29wZSI6eyJkb21haW4iOiJzb2NpYWJseS5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
       },
-      "machinat_auth_state" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
+      "sociably_auth_state" => Object {
+        "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
         "value": "",
       },
-      "machinat_auth_error" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
+      "sociably_auth_error" => Object {
+        "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
         "value": "",
       },
     }
@@ -343,7 +343,7 @@ test('.issueError(code, reason)', async () => {
     );
     const cookies = getCookies(res);
 
-    expect(cookies.get('machinat_auth_error').value).toBe(errEncoded);
+    expect(cookies.get('sociably_auth_error').value).toBe(errEncoded);
     const payload = jwt.verify(errEncoded, '__SECRET__');
     return [cookies, payload];
   }
@@ -357,19 +357,19 @@ test('.issueError(code, reason)', async () => {
   let [cookies, payload] = await testIssueError(operator);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "machinat_auth_error" => Object {
+      "sociably_auth_error" => Object {
         "directives": "Max-Age=300; Path=/; SameSite=Lax; Secure",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMH0.dCs_-sNRQZoWk1dOHoRcGKCs6LEgGCwky_lWqODov3A",
       },
-      "machinat_auth_state" => Object {
+      "sociably_auth_state" => Object {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/auth; SameSite=Lax; Secure",
         "value": "",
       },
-      "machinat_auth_signature" => Object {
+      "sociably_auth_signature" => Object {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
-      "machinat_auth_token" => Object {
+      "sociably_auth_token" => Object {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
@@ -396,7 +396,7 @@ test('.issueError(code, reason)', async () => {
       redirectRoot: '/app/pages',
       apiRoot: '/app/auth',
       dataCookieMaxAge: 999,
-      cookieDomain: 'machinat.io',
+      cookieDomain: 'sociably.io',
       cookiePath: '/app',
       cookieSameSite: 'none',
       secure: false,
@@ -404,20 +404,20 @@ test('.issueError(code, reason)', async () => {
   );
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "machinat_auth_error" => Object {
-        "directives": "Domain=machinat.io; Max-Age=999; Path=/app; SameSite=None",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6Im1hY2hpbmF0LmlvIiwicGF0aCI6Ii9hcHAifSwiaWF0IjoxNTcwMDAwMDAwfQ.Tmq9hADHYlUr4mvOg-V9MZrfW_o6TRqgRMDDn_zZkXI",
+      "sociably_auth_error" => Object {
+        "directives": "Domain=sociably.io; Max-Age=999; Path=/app; SameSite=None",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6InNvY2lhYmx5LmlvIiwicGF0aCI6Ii9hcHAifSwiaWF0IjoxNTcwMDAwMDAwfQ.9N6hirUtaF4MnDnbVyarUExMqq4PLXmvgfMCs0Mr-Tc",
       },
-      "machinat_auth_state" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
+      "sociably_auth_state" => Object {
+        "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
         "value": "",
       },
-      "machinat_auth_signature" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/app; SameSite=None",
+      "sociably_auth_signature" => Object {
+        "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/app; SameSite=None",
         "value": "",
       },
-      "machinat_auth_token" => Object {
-        "directives": "Domain=machinat.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
+      "sociably_auth_token" => Object {
+        "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
         "value": "",
       },
     }
@@ -431,7 +431,7 @@ test('.issueError(code, reason)', async () => {
           "iat": 1570000000,
           "platform": "foo",
           "scope": Object {
-            "domain": "machinat.io",
+            "domain": "sociably.io",
             "path": "/app",
           },
         }
@@ -458,7 +458,7 @@ test('.getState()', async () => {
 
   // ok
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_state=${stateEnceded}`,
+    cookie: `sociably_auth_state=${stateEnceded}`,
   }));
   await expect(operator.getState(req, 'foo')).resolves.toEqual({
     foo: 'state',
@@ -466,13 +466,13 @@ test('.getState()', async () => {
 
   // wrong signature
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_state=${stateEnceded}_WITH_WRONG_SIG`,
+    cookie: `sociably_auth_state=${stateEnceded}_WITH_WRONG_SIG`,
   }));
   await expect(operator.getState(req, 'foo')).resolves.toBe(null);
 
   // different platform
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_state=${jwt.sign(
+    cookie: `sociably_auth_state=${jwt.sign(
       { platform: 'bar', state, scope, iat: SEC_NOW - 10 },
       '__SECRET__'
     )}`,
@@ -481,7 +481,7 @@ test('.getState()', async () => {
 
   // outdated
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_state=${jwt.sign(
+    cookie: `sociably_auth_state=${jwt.sign(
       { platform, state, scope, iat: SEC_NOW - 21, exp: SEC_NOW - 1 },
       '__SECRET__'
     )}`,
@@ -521,25 +521,25 @@ test('.getAuth()', async () => {
 
   // no signature
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_token=${token}`,
+    cookie: `sociably_auth_token=${token}`,
   }));
   await expect(operator.getAuth(req, 'foo')).resolves.toBe(null);
 
   // no token
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_signature=${sig}`,
+    cookie: `sociably_auth_signature=${sig}`,
   }));
   await expect(operator.getAuth(req, 'foo')).resolves.toBe(null);
 
   // ok
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
+    cookie: `sociably_auth_token=${token};sociably_auth_signature=${sig};`,
   }));
   await expect(operator.getAuth(req, 'foo')).resolves.toEqual({ foo: 'data' });
 
   // wrong signature
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_token=${token};machinat_auth_signature=WRONG_SIG;`,
+    cookie: `sociably_auth_token=${token};sociably_auth_signature=WRONG_SIG;`,
   }));
   await expect(operator.getAuth(req, 'foo')).resolves.toBe(null);
 
@@ -553,7 +553,7 @@ test('.getAuth()', async () => {
     exp: SEC_NOW + 10,
   });
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
+    cookie: `sociably_auth_token=${token};sociably_auth_signature=${sig};`,
   }));
   await expect(operator.getAuth(req, 'foo')).resolves.toBe(null);
 
@@ -568,7 +568,7 @@ test('.getAuth()', async () => {
     refreshTill: SEC_NOW + 101,
   });
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
+    cookie: `sociably_auth_token=${token};sociably_auth_signature=${sig};`,
   }));
   await expect(operator.getAuth(req, 'foo')).resolves.toBe(null);
 
@@ -593,7 +593,7 @@ test('.getAuth()', async () => {
     exp: SEC_NOW - 99,
   });
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
+    cookie: `sociably_auth_token=${token};sociably_auth_signature=${sig};`,
   }));
   await expect(operatorWithRefreshLimit.getAuth(req, 'foo')).resolves.toBe(
     null
@@ -612,7 +612,7 @@ test('.getAuth()', async () => {
     exp: SEC_NOW - 199,
   });
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_token=${token};machinat_auth_signature=${sig};`,
+    cookie: `sociably_auth_token=${token};sociably_auth_signature=${sig};`,
   }));
   await expect(operatorWithRefreshLimit.getAuth(req, 'foo')).resolves.toBe(
     null
@@ -643,19 +643,19 @@ test('.getError()', async () => {
 
   // ok
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_error=${errEncoded}`,
+    cookie: `sociably_auth_error=${errEncoded}`,
   }));
   await expect(operator.getError(req, 'foo')).resolves.toEqual(error);
 
   // wrong signature
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_error=${`${errEncoded}_WITH_WRONG_SIG`}`,
+    cookie: `sociably_auth_error=${`${errEncoded}_WITH_WRONG_SIG`}`,
   }));
   await expect(operator.getError(req, 'foo')).resolves.toBe(null);
 
   // different platform
   req.mock.getter('headers').fake(() => ({
-    cookie: `machinat_auth_error=${jwt.sign(
+    cookie: `sociably_auth_error=${jwt.sign(
       { platform: 'bar', error, scope, iat: SEC_NOW - 10 },
       '__SECRET__'
     )}`,
@@ -677,23 +677,23 @@ test('.redirect(url, options)', () => {
   expect(res.end.mock).toHaveBeenCalledTimes(1);
   expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
   expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
-    Location: 'https://machinat.io/hello/world/',
+    Location: 'https://sociably.io/hello/world/',
   });
 
   expect(operator.redirect(res, 'foo?bar=baz')).toBe(true);
   expect(res.end.mock).toHaveBeenCalledTimes(2);
   expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
   expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
-    Location: 'https://machinat.io/hello/world/foo?bar=baz',
+    Location: 'https://sociably.io/hello/world/foo?bar=baz',
   });
 
-  expect(operator.redirect(res, 'http://api.machinat.com/foo?bar=baz')).toBe(
+  expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
     true
   );
   expect(res.end.mock).toHaveBeenCalledTimes(3);
   expect(res.writeHead.mock).toHaveBeenCalledTimes(3);
   expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
-    Location: 'http://api.machinat.com/foo?bar=baz',
+    Location: 'http://api.sociably.io/foo?bar=baz',
   });
 });
 
@@ -713,7 +713,7 @@ test('.redirect(url, options) with assertInternal set to true', () => {
   expect(res.end.mock).toHaveBeenCalledTimes(1);
   expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
   expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
-    Location: 'https://machinat.io/webview',
+    Location: 'https://sociably.io/webview',
   });
 
   expect(operator.redirect(res, 'foo?a=b', { assertInternal: true })).toBe(
@@ -722,7 +722,7 @@ test('.redirect(url, options) with assertInternal set to true', () => {
   expect(res.end.mock).toHaveBeenCalledTimes(2);
   expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
   expect(res.writeHead.mock).toHaveBeenNthCalledWith(2, 302, {
-    Location: 'https://machinat.io/webview/foo?a=b',
+    Location: 'https://sociably.io/webview/foo?a=b',
   });
 
   expect(operator.redirect(res, '/foo', { assertInternal: true })).toBe(false);
@@ -736,22 +736,22 @@ test('.redirect(url, options) with assertInternal set to true', () => {
   expect(res.end.mock).toHaveBeenCalledTimes(4);
   expect(res.writeHead.mock).toHaveBeenCalledTimes(4);
   expect(res.writeHead.mock).toHaveBeenNthCalledWith(4, 302, {
-    Location: 'https://machinat.io/webview/',
+    Location: 'https://sociably.io/webview/',
   });
 
   expect(
-    operator.redirect(res, 'https://machinat.io/webview', {
+    operator.redirect(res, 'https://sociably.io/webview', {
       assertInternal: true,
     })
   ).toBe(true);
   expect(res.end.mock).toHaveBeenCalledTimes(5);
   expect(res.writeHead.mock).toHaveBeenCalledTimes(5);
   expect(res.writeHead.mock).toHaveBeenNthCalledWith(5, 302, {
-    Location: 'https://machinat.io/webview',
+    Location: 'https://sociably.io/webview',
   });
 
   expect(
-    operator.redirect(res, 'http://machinat.com/webview', {
+    operator.redirect(res, 'http://sociably.io/webview', {
       assertInternal: true,
     })
   ).toBe(false);
@@ -763,12 +763,12 @@ test('.redirect(url, options) with assertInternal set to true', () => {
 test('.getAuthUrl(url, options)', () => {
   const operator = new HttpOperator({ secret, serverUrl, apiRoot: '/auth' });
 
-  expect(operator.getAuthUrl('test')).toBe('https://machinat.io/auth/test/');
+  expect(operator.getAuthUrl('test')).toBe('https://sociably.io/auth/test/');
   expect(operator.getAuthUrl('test', 'foo?bar=baz')).toBe(
-    'https://machinat.io/auth/test/foo?bar=baz'
+    'https://sociably.io/auth/test/foo?bar=baz'
   );
   expect(operator.getAuthUrl('test', 'foo/bar/baz')).toBe(
-    'https://machinat.io/auth/test/foo/bar/baz'
+    'https://sociably.io/auth/test/foo/bar/baz'
   );
 });
 
@@ -779,12 +779,12 @@ test('.getRedirectUrl(url, options)', () => {
     redirectRoot: '/webview',
   });
 
-  expect(operator.getRedirectUrl()).toBe('https://machinat.io/webview/');
+  expect(operator.getRedirectUrl()).toBe('https://sociably.io/webview/');
   expect(operator.getRedirectUrl('foo?bar=baz')).toBe(
-    'https://machinat.io/webview/foo?bar=baz'
+    'https://sociably.io/webview/foo?bar=baz'
   );
   expect(operator.getRedirectUrl('foo/bar/baz')).toBe(
-    'https://machinat.io/webview/foo/bar/baz'
+    'https://sociably.io/webview/foo/bar/baz'
   );
 });
 

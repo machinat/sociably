@@ -1,5 +1,5 @@
-import type { MachinatUser } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyUser } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant';
 
 type LineUserValue = {
@@ -8,7 +8,7 @@ type LineUserValue = {
 };
 
 export default class LineUser
-  implements MachinatUser, MarshallableInstance<LineUserValue>
+  implements SociablyUser, MarshallableInstance<LineUserValue>
 {
   static typeName = 'LineUser';
 

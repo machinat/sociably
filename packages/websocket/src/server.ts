@@ -4,10 +4,10 @@ import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type { Server as WsServer } from 'ws';
 import uniqid from 'uniqid';
-import type { MachinatUser } from '@machinat/core';
-import { makeClassProvider } from '@machinat/core/service';
-import Marshaler from '@machinat/core/base/Marshaler';
-import { HttpRequestInfo } from '@machinat/http';
+import type { SociablyUser } from '@sociably/core';
+import { makeClassProvider } from '@sociably/core/service';
+import Marshaler from '@sociably/core/base/Marshaler';
+import { HttpRequestInfo } from '@sociably/http';
 
 import {
   BrokerI,
@@ -37,7 +37,7 @@ import type {
 
 const DEFAULT_HEARTBEAT_INTERVAL = 60000; // 1 min
 
-type ConnectionInfo<User extends null | MachinatUser, Auth> = {
+type ConnectionInfo<User extends null | SociablyUser, Auth> = {
   connId: string;
   user: User;
   request: HttpRequestInfo;
@@ -45,7 +45,7 @@ type ConnectionInfo<User extends null | MachinatUser, Auth> = {
   expireAt: null | Date;
 };
 
-type ConnectionState<User extends null | MachinatUser, Auth> = {
+type ConnectionState<User extends null | SociablyUser, Auth> = {
   isConnected: boolean;
   socket: Socket;
   topics: Set<string>;
@@ -60,7 +60,7 @@ type SocketState = {
 
 const Emitter = EventEmitter as { new <T>(): TypedEmitter<T> };
 
-type ServerEvents<User extends null | MachinatUser, Auth> = {
+type ServerEvents<User extends null | SociablyUser, Auth> = {
   connect: (info: ConnectionInfo<User, Auth>) => void;
   events: (events: EventInput[], info: ConnectionInfo<User, Auth>) => void;
   disconnect: (
@@ -70,7 +70,7 @@ type ServerEvents<User extends null | MachinatUser, Auth> = {
   error: (err: Error) => void;
 };
 
-type ServerOptions<User extends null | MachinatUser, Auth> = {
+type ServerOptions<User extends null | SociablyUser, Auth> = {
   id: string | undefined;
   wsServer: WsServer;
   broker: BrokerI;
@@ -84,7 +84,7 @@ type ServerOptions<User extends null | MachinatUser, Auth> = {
  * @category Provider
  */
 export class WebSocketServer<
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   Auth
 > extends Emitter<ServerEvents<User, Auth>> {
   id: string;
@@ -287,7 +287,7 @@ export class WebSocketServer<
 
     this._deleteTopicMapping(conn.id, topics);
     if (user) {
-      this._deleteUserMapping(conn.id, user as MachinatUser);
+      this._deleteUserMapping(conn.id, user as SociablyUser);
     }
 
     this._connectionStates.delete(conn.id);
@@ -312,7 +312,7 @@ export class WebSocketServer<
     return count;
   }
 
-  private _deleteUserMapping(connId: string, user: MachinatUser): boolean {
+  private _deleteUserMapping(connId: string, user: SociablyUser): boolean {
     const connsOfUser = this._userMapping.get(user.uid);
     if (connsOfUser) {
       const isDeleted = connsOfUser.delete(connId);
@@ -563,7 +563,7 @@ export class WebSocketServer<
       this._deleteTopicMapping(connId, topics);
 
       if (info.user) {
-        this._deleteUserMapping(connId, info.user as MachinatUser);
+        this._deleteUserMapping(connId, info.user as SociablyUser);
       }
 
       this._connectionStates.delete(connId);
@@ -623,7 +623,7 @@ export const ServerP = makeClassProvider({
     }),
 })(WebSocketServer);
 
-export type ServerP<User extends null | MachinatUser, Auth> = WebSocketServer<
+export type ServerP<User extends null | SociablyUser, Auth> = WebSocketServer<
   User,
   Auth
 >;

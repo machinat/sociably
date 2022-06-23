@@ -1,20 +1,20 @@
 # Auth Module
 
 This package is the underlying auth module of webview platform. You might want
-to use [`@machinat/webview`](https://github.com/machinat/machinat/tree/master/packages/webview)
+to use [`@sociably/webview`](https://github.com/machinat/sociably/tree/master/packages/webview)
 unless you want to serve your own web service.
 
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/auth
+npm install @sociably/core @sociably/http @sociably/auth
 # or with yarn
-yarn add @machinat/core @machinat/http @machinat/auth
+yarn add @sociably/core @sociably/http @sociably/auth
 ```
 
 ## Docs
 
-Check the [package reference](https://machinat.com/api/modules/auth.html).
+Check the [package reference](https://sociably.js.org/api/modules/auth.html).
 
 ## Setup
 
@@ -23,13 +23,13 @@ Here is a simple example to protect your API with auth module:
 #### Back-end
 
 ```js
-import Machinat, { makeFactoryProvider } from '@machinat/core';
-import Http from '@machinat/http';
-import Auth from '@machinat/auth';
+import Sociably, { makeFactoryProvider } from '@sociably/core';
+import Http from '@sociably/http';
+import Auth from '@sociably/auth';
 // add the platforms and the authenticator you need
-import { LineServerAuthenticator } from '@machinat/line/auth';
+import { LineServerAuthenticator } from '@sociably/line/webview';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
     Auth.initModule({
@@ -68,8 +68,8 @@ app.start();
 #### Front-end
 
 ```js
-import AuthClient from '@machinat/auth/client';
-import LineClientAuthenticator from '@machinat/line/auth/client';
+import AuthClient from '@sociably/auth/client';
+import LineClientAuthenticator from '@sociably/line/webview/client';
 
 (async function main () {
   const authClient = new AuthClient({

@@ -1,7 +1,7 @@
-import type { MachinatUser } from '../types';
+import type { SociablyUser } from '../types';
 import { makeInterface, makeClassProvider } from '../service';
 
-export interface MachinatProfile {
+export interface SociablyProfile {
   readonly platform: string;
   readonly name: string;
   readonly avatarUrl: undefined | string;
@@ -12,26 +12,26 @@ export interface MachinatProfile {
   data: any;
 }
 
-export interface UserProfiler<User extends MachinatUser> {
-  getUserProfile(user: User): Promise<null | MachinatProfile>;
+export interface UserProfiler<User extends SociablyUser> {
+  getUserProfile(user: User): Promise<null | SociablyProfile>;
 }
 
 /**
  * @category Base
  */
-export class BasicProfiler implements UserProfiler<MachinatUser> {
-  static PlatformMap = makeInterface<UserProfiler<MachinatUser>>({
+export class BasicProfiler implements UserProfiler<SociablyUser> {
+  static PlatformMap = makeInterface<UserProfiler<SociablyUser>>({
     name: 'ProfilerPlatformMap',
     polymorphic: true,
   });
 
-  private _platformMapping: Map<string, UserProfiler<MachinatUser>>;
+  private _platformMapping: Map<string, UserProfiler<SociablyUser>>;
 
-  constructor(platformMapping: Map<string, UserProfiler<MachinatUser>>) {
+  constructor(platformMapping: Map<string, UserProfiler<SociablyUser>>) {
     this._platformMapping = platformMapping;
   }
 
-  async getUserProfile(user: MachinatUser): Promise<null | MachinatProfile> {
+  async getUserProfile(user: SociablyUser): Promise<null | SociablyProfile> {
     const profiler = this._platformMapping.get(user.platform);
     if (!profiler) {
       throw new TypeError(
@@ -48,6 +48,6 @@ const ProfilerP = makeClassProvider({
   deps: [BasicProfiler.PlatformMap],
 })(BasicProfiler);
 
-type ProfilerP = UserProfiler<MachinatUser>;
+type ProfilerP = UserProfiler<SociablyUser>;
 
 export default ProfilerP;

@@ -56,7 +56,7 @@ h1 {
 
 <div class=\\"flex center column container\\">
   <div class=\\"flex center icons\\">
-    <img alt=\\"Telegram\\" src=\\"https://machinat.com/img/icon/telegram.png\\" />
+    <img alt=\\"Telegram\\" src=\\"https://machinat.github.io/sociably/img/icon/telegram.png\\" />
   </div>
   <h1></h1>
   <div id=\\"loginButton\\">
@@ -65,7 +65,7 @@ h1 {
 
 <script>
 
-const authUrl = new URL(\\"https://machinat.io/MyApp/auth/telegram\\");
+const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram\\");
 const redirectQuery =
   new URL(window.location.href)
     .searchParams
@@ -149,9 +149,9 @@ h1 {
 
 <div class=\\"flex center column container\\">
   <div class=\\"flex center icons\\">
-    <img alt=\\"Telegram\\" src=\\"https://machinat.com/img/icon/telegram.png\\" />
+    <img alt=\\"Telegram\\" src=\\"https://machinat.github.io/sociably/img/icon/telegram.png\\" />
     <div class=\\"x\\"></div>
-    <img alt=\\"Mine Mine Mine App\\" src=\\"http://machinat.io/MyApp/icon.png\\" />
+    <img alt=\\"Mine Mine Mine App\\" src=\\"http://sociably.io/MyApp/icon.png\\" />
   </div>
   <h1>Mine Mine Mine App</h1>
   <div id=\\"loginButton\\">
@@ -160,7 +160,7 @@ h1 {
 
 <script>
 
-const authUrl = new URL(\\"https://machinat.io/MyApp/auth/telegram\\");
+const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram\\");
 const redirectQuery =
   new URL(window.location.href)
     .searchParams

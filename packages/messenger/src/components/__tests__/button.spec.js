@@ -1,6 +1,6 @@
-import Machinat from '@machinat/core';
-import Renderer from '@machinat/core/renderer';
-import { isNativeType } from '@machinat/core/utils';
+import Sociably from '@sociably/core';
+import Renderer from '@sociably/core/renderer';
+import { isNativeType } from '@sociably/core/utils';
 
 import {
   UrlButton,
@@ -38,13 +38,13 @@ test.each([
 describe('UrlButton', () => {
   it('match snapshot', async () => {
     await expect(
-      render(<UrlButton title="my button" url="http://machinat.com" />)
+      render(<UrlButton title="my button" url="http://sociably.js.org" />)
     ).resolves.toMatchInlineSnapshot(`
             Array [
               Object {
                 "node": <UrlButton
                   title="my button"
-                  url="http://machinat.com"
+                  url="http://sociably.js.org"
                 />,
                 "path": "$#container",
                 "type": "part",
@@ -53,7 +53,7 @@ describe('UrlButton', () => {
                   "messenger_extensions": undefined,
                   "title": "my button",
                   "type": "web_url",
-                  "url": "http://machinat.com",
+                  "url": "http://sociably.js.org",
                   "webview_height_ratio": undefined,
                   "webview_share_button": undefined,
                 },
@@ -65,7 +65,7 @@ describe('UrlButton', () => {
       render(
         <UrlButton
           title="my button"
-          url="http://machinat.com"
+          url="http://sociably.js.org"
           webviewHeightRatio="compact"
           messengerExtensions
           fallbackUrl="http://..."
@@ -80,7 +80,7 @@ describe('UrlButton', () => {
                   hideShareButton={true}
                   messengerExtensions={true}
                   title="my button"
-                  url="http://machinat.com"
+                  url="http://sociably.js.org"
                   webviewHeightRatio="compact"
                 />,
                 "path": "$#container",
@@ -90,7 +90,7 @@ describe('UrlButton', () => {
                   "messenger_extensions": true,
                   "title": "my button",
                   "type": "web_url",
-                  "url": "http://machinat.com",
+                  "url": "http://sociably.js.org",
                   "webview_height_ratio": "compact",
                   "webview_share_button": "hide",
                 },

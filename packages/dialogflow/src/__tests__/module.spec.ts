@@ -1,5 +1,5 @@
-import Machinat from '@machinat/core';
-import IntentRecognizerI from '@machinat/core/base/IntentRecognizer';
+import Sociably from '@sociably/core';
+import IntentRecognizerI from '@sociably/core/base/IntentRecognizer';
 import Dialogflow from '../module';
 import { DialogflowIntentRecognizer as Recognizer } from '../recognizer';
 
@@ -10,7 +10,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "DialogflowConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
@@ -27,7 +27,7 @@ describe('initModule()', () => {
   };
 
   it('provide services', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       modules: [Dialogflow.initModule(configs)],
     });
     await app.start();
@@ -42,7 +42,7 @@ describe('initModule()', () => {
   });
 
   it('provide BaseIntentRecognizerI', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       modules: [Dialogflow.initModule(configs)],
     });
     await app.start();

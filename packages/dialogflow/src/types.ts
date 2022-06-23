@@ -1,6 +1,6 @@
 import type { v2, protos } from '@google-cloud/dialogflow';
 import type { ClientOptions } from 'google-gax';
-import type { RecognitionData } from '@machinat/core/base/IntentRecognizer';
+import type { RecognitionData } from '@sociably/core/base/IntentRecognizer';
 
 export type { ClientOptions } from 'google-gax'; // eslint-disable-line import/no-extraneous-dependencies
 
@@ -12,11 +12,11 @@ export type DialogflowConfigs<
   projectId: string;
   /** The intents data for training. */
   recognitionData: RecognitionData<Language, Intent>;
-  /** The display name of the DialogFlow agent. Default to 'machinat-agent' */
+  /** The display name of the DialogFlow agent. Default to 'sociably-agent' */
   agentName?: string;
   /** The default time zone of the DialogFlow agent. Default to 'GMT' */
   agentTimeZone?: string;
-  /** The environment to be used by the module. Default to 'machinat-entry' */
+  /** The environment to be used by the module. Default to 'sociably-entry' */
   environment?: string;
   /** Set to true to prevent the package from editing DialogFlow data, i.e. you have to mangage the DialogFlow project on your own */
   manualMode?: boolean;

@@ -1,9 +1,9 @@
-import type { MachinatBot, MachinatChannel, MachinatNode } from '../types';
+import type { SociablyBot, SociablyChannel, SociablyNode } from '../types';
 import type { DispatchResponse } from '../engine/types';
 import { makeInterface, makeClassProvider } from '../service';
 
 const BotPlatformMapI = makeInterface<
-  MachinatBot<MachinatChannel, unknown, unknown>
+  SociablyBot<SociablyChannel, unknown, unknown>
 >({
   name: 'BotPlatformMap',
   polymorphic: true,
@@ -13,23 +13,23 @@ const BotPlatformMapI = makeInterface<
  * @category Base
  */
 export class BasicBot
-  implements MachinatBot<MachinatChannel, unknown, unknown>
+  implements SociablyBot<SociablyChannel, unknown, unknown>
 {
   static PlatformMap = BotPlatformMapI;
   private _platformMapping: Map<
     string,
-    MachinatBot<MachinatChannel, unknown, unknown>
+    SociablyBot<SociablyChannel, unknown, unknown>
   >;
 
   constructor(
-    platformMapping: Map<string, MachinatBot<MachinatChannel, unknown, unknown>>
+    platformMapping: Map<string, SociablyBot<SociablyChannel, unknown, unknown>>
   ) {
     this._platformMapping = platformMapping;
   }
 
   async render(
-    channel: MachinatChannel,
-    node: MachinatNode
+    channel: SociablyChannel,
+    node: SociablyNode
   ): Promise<null | DispatchResponse<unknown, unknown>> {
     const bot = this._platformMapping.get(channel.platform);
     if (!bot) {

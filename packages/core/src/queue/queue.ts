@@ -70,12 +70,12 @@ const addAcquireCountOfJobs = <Job>(boxes: JobBox<Job>[]) => {
   reduceRequestsOfBoxes(boxes, addAcquireCountReducer, undefined as void);
 };
 
-export default class MachinatQueue<Job, Result> {
+export default class SociablyQueue<Job, Result> {
   currentSeq: number;
 
   private _queuedJobs: Denque<JobBox<Job>>;
   private _waitingRequets: Set<BatchRequest<Job, Result>>;
-  private _jobListeners: ((queue: MachinatQueue<Job, Result>) => void)[];
+  private _jobListeners: ((queue: SociablyQueue<Job, Result>) => void)[];
 
   private _finishJobsReducerCallback: (
     jobResps: JobResponse<Job, Result>[],
@@ -103,12 +103,12 @@ export default class MachinatQueue<Job, Result> {
     this._failJobsReducerCallback = this._failJobsReducer.bind(this);
   }
 
-  onJobs(listener: (queue: MachinatQueue<Job, Result>) => void): void {
+  onJobs(listener: (queue: SociablyQueue<Job, Result>) => void): void {
     this._jobListeners.push(listener);
   }
 
   removeJobsListener(
-    listenerToRemove: (queue: MachinatQueue<Job, Result>) => void
+    listenerToRemove: (queue: SociablyQueue<Job, Result>) => void
   ): boolean {
     const listeners = this._jobListeners;
     for (let i = 0; i < listeners.length; i += 1) {

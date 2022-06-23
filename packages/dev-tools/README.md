@@ -5,28 +5,28 @@ This module consists services that is useful for development.
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/dev-tools
+npm install @sociably/core @sociably/dev-tools
 # or with yarn
-yarn add @machinat/core @machinat/dev-tools
+yarn add @sociably/core @sociably/dev-tools
 ```
 
 ## Docs
 
-Check the [package references](https://machinat.com/api/modules/dev_tools.html).
+Check the [package references](https://sociably.js.org/api/modules/dev_tools.html).
 
 ## Services
 
 ### In-Memory State
 
-An in-memory implementation of [`StateController`](https://machinat.com/api/modules/core_base_statecontroller.html). Check the [Using State](https://machinat.com/docs/using-states) document for usage guides.
+An in-memory implementation of [`StateController`](https://sociably.js.org/api/modules/core_base_statecontroller.html). Check the [Using State](https://sociably.js.org/docs/using-states) document for usage guides.
 
 #### Setup
 
 ```js
-import Machinat from '@machinat/core';
-import { InMemoryState } from '@machinat/dev-tools';
+import Sociably from '@sociably/core';
+import { InMemoryState } from '@sociably/dev-tools';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     InMemoryState.initModule(),
   ],
@@ -35,16 +35,16 @@ const app = Machinat.createApp({
 
 ### File State
 
-An implementation of [`StateController`](https://machinat.com/api/modules/core_base_statecontroller.html) that stores state data in a local file for easy debugging. Check the [Using State](https://machinat.com/docs/using-states) document for usage guides.
+An implementation of [`StateController`](https://sociably.js.org/api/modules/core_base_statecontroller.html) that stores state data in a local file for easy debugging. Check the [Using State](https://sociably.js.org/docs/using-states) document for usage guides.
 
 #### Setup
 
 ```js
-import Machinat from '@machinat/core';
-import { FileState } from '@machinat/dev-tools';
+import Sociably from '@sociably/core';
+import { FileState } from '@sociably/dev-tools';
 import YAML from 'yaml';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     FileState.initModule({
       path: './.state_storage.json',
@@ -59,17 +59,17 @@ const app = Machinat.createApp({
 
 ### RegExp Intent Recognition
 
-An simple [`IntentRecognizer`](https://machinat.com/api/modules/core_base_intentrecognizer.html)
+An simple [`IntentRecognizer`](https://sociably.js.org/api/modules/core_base_intentrecognizer.html)
 implementation using `RegExp`.
-Check the [Recognizing Intent](https://machinat.com/docs/recognizing-intent) document for usage guides.
+Check the [Recognizing Intent](https://sociably.js.org/docs/recognizing-intent) document for usage guides.
 
 #### Setup
 
 ```js
-import Machinat from '@machinat/core';
-import { RegexIntentRecognition } from '@machinat/dev-tools';
+import Sociably from '@sociably/core';
+import { RegexIntentRecognition } from '@sociably/dev-tools';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     RegexIntentRecognition.initModule({
       recognitionData: {

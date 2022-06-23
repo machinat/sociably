@@ -1,5 +1,5 @@
-import type { MachinatUser } from '@machinat/core';
-import { AnyMarshalType, BaseMarshaler } from '@machinat/core/base/Marshaler';
+import type { SociablyUser } from '@sociably/core';
+import { AnyMarshalType, BaseMarshaler } from '@sociably/core/base/Marshaler';
 import { WebSocketConnection } from '../channel';
 import createEvent from '../utils/createEvent';
 import Connector from './Connector';
@@ -13,21 +13,21 @@ import type {
   DisconnectEventValue,
 } from '../types';
 
-type ClientOptions<User extends null | MachinatUser, Credential> = {
+type ClientOptions<User extends null | SociablyUser, Credential> = {
   url?: string;
   login?: ClientLoginFn<User, Credential>;
   marshalTypes?: AnyMarshalType[];
 };
 
 type WebSocketClientContext<
-  User extends null | MachinatUser,
+  User extends null | SociablyUser,
   Value extends EventValue
 > = {
   event: WebSocketEvent<Value, User>;
 };
 
 class WebScoketClient<
-  User extends null | MachinatUser = null,
+  User extends null | SociablyUser = null,
   Value extends EventValue = EventValue,
   Credential = null
 > extends ClientEmitter<WebSocketClientContext<User, Value>> {

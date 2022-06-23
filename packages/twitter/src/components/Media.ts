@@ -1,5 +1,5 @@
-import { NativeElement } from '@machinat/core';
-import { makeUnitSegment, UnitSegment } from '@machinat/core/renderer';
+import { NativeElement } from '@sociably/core';
+import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent';
 import { TwitterSegmentValue, TwitterComponent, MediaType } from '../types';
 

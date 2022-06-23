@@ -79,7 +79,7 @@ Array [
     },
   },
   Object {
-    "node": <Machinat.Pause
+    "node": <Sociably.Pause
       time={2000}
     />,
     "path": "$#Expression.children:3",
@@ -103,7 +103,7 @@ Array [
     },
   },
   Object {
-    "node": <Machinat.Thunk
+    "node": <Sociably.Thunk
       effect={[Function]}
     />,
     "path": "$#Expression.children:5",

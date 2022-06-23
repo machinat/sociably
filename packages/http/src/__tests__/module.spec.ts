@@ -1,6 +1,6 @@
 import { createServer as _createServer } from 'http';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
+import Sociably from '@sociably/core';
 import { HttpConnector } from '../connector';
 import Http from '../module';
 
@@ -34,7 +34,7 @@ test('exported interfaces', () => {
       "$$multi": false,
       "$$name": "HttpServer",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 
@@ -43,7 +43,7 @@ test('exported interfaces', () => {
       "$$multi": true,
       "$$name": "HttpRequestRouteList",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(Http.UpgradeRouteList).toMatchInlineSnapshot(`
@@ -51,7 +51,7 @@ test('exported interfaces', () => {
       "$$multi": true,
       "$$name": "HttpUpgradeRouteList",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(Http.Configs).toMatchInlineSnapshot(`
@@ -59,13 +59,13 @@ test('exported interfaces', () => {
       "$$multi": false,
       "$$name": "HttpConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
 
 test('default provisions', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       Http.initModule({
         listenOptions: {
@@ -90,7 +90,7 @@ test('default provisions', async () => {
 
 test('startHook', async () => {
   const connector = moxy({ connect: async () => {} });
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       Http.initModule({ listenOptions: { host: 'localhost', port: 8888 } }),
     ],
@@ -108,7 +108,7 @@ test('startHook', async () => {
 });
 
 test('stopHook', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       Http.initModule({ listenOptions: { host: 'localhost', port: 8888 } }),
     ],
@@ -123,7 +123,7 @@ test('stopHook', async () => {
 
 test('noServer mode', async () => {
   const connector = moxy({ connect: async () => {} });
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       Http.initModule({
         noServer: true,
@@ -147,7 +147,7 @@ test('change http server', async () => {
     addListener: () => {},
   });
 
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     modules: [
       Http.initModule({
         listenOptions: {

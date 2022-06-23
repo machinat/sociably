@@ -6,22 +6,22 @@ messaging API.
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/line
+npm install @sociably/core @sociably/http @sociably/line
 # or with yarn
-yarn add @machinat/core @machinat/http @machinat/line
+yarn add @sociably/core @sociably/http @sociably/line
 ```
 
 ## Docs
 
-Check the [platform document](https://machinat.com/docs/line-platform) 
-and the [package reference](https://machinat.com/api/modules/line.html).
+Check the [platform document](https://sociably.js.org/docs/line-platform)
+and the [package reference](https://sociably.js.org/api/modules/line.html).
 
 ## Setup
 
 ```ts
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Line from '@machinat/line';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Line from '@sociably/line';
 
 const {
   LINE_PROVIDER_ID,
@@ -30,7 +30,7 @@ const {
   LINE_CHANNEL_SECRET,
 } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
   ],

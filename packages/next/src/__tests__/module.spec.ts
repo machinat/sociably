@@ -1,6 +1,6 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
 import _createNextApp from 'next';
 import { NextReceiver } from '../receiver';
 import Next from '../module';
@@ -14,7 +14,7 @@ it('exports interfaces', () => {
       "$$multi": false,
       "$$name": "NextConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(Next.Server).toMatchInlineSnapshot(`
@@ -22,7 +22,7 @@ it('exports interfaces', () => {
       "$$multi": false,
       "$$name": "NextServer",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
@@ -45,7 +45,7 @@ describe('initModule()', () => {
               "$$multi": false,
               "$$name": "NextConfigs",
               "$$polymorphic": false,
-              "$$typeof": Symbol(interface.service.machinat),
+              "$$typeof": Symbol(interface.service.sociably),
             },
             "withValue": Object {
               "entryPath": "/webview",
@@ -61,7 +61,7 @@ describe('initModule()', () => {
               "$$multi": false,
               "$$name": "NextServer",
               "$$polymorphic": false,
-              "$$typeof": Symbol(interface.service.machinat),
+              "$$typeof": Symbol(interface.service.sociably),
             },
             "withProvider": [Function],
           },
@@ -70,7 +70,7 @@ describe('initModule()', () => {
               "$$multi": true,
               "$$name": "HttpRequestRouteList",
               "$$polymorphic": false,
-              "$$typeof": Symbol(interface.service.machinat),
+              "$$typeof": Symbol(interface.service.sociably),
             },
             "withProvider": [Function],
           },
@@ -82,7 +82,7 @@ describe('initModule()', () => {
   });
 
   test('provisions', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       modules: [
         Next.initModule({
           entryPath: '/webview',
@@ -123,7 +123,7 @@ describe('initModule()', () => {
   });
 
   test('register hmr route when dev', async () => {
-    let app = Machinat.createApp({
+    let app = Sociably.createApp({
       modules: [
         Next.initModule({
           entryPath: '/webview',
@@ -145,7 +145,7 @@ describe('initModule()', () => {
       ]
     `);
 
-    app = Machinat.createApp({
+    app = Sociably.createApp({
       modules: [
         Next.initModule({
           entryPath: '/webview',
@@ -191,7 +191,7 @@ describe('initModule()', () => {
   });
 
   test('default entryPath to "/"', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       modules: [
         Next.initModule({ noPrepare: false, serverOptions: { dev: true } }),
       ],

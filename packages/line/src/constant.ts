@@ -1,7 +1,7 @@
 export const CHANNEL_REQUEST_GETTER = Symbol(
-  'channel_request_getter.line.machinat'
+  'channel_request_getter.line.sociably'
 );
-export const BULK_REQUEST_GETTER = Symbol('bulk_request_getter.line.machinat');
+export const BULK_REQUEST_GETTER = Symbol('bulk_request_getter.line.sociably');
 
 export const LINE = 'line' as const;
 

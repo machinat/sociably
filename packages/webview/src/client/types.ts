@@ -1,7 +1,7 @@
 import type {
   UserOfAuthenticator,
   ContextOfAuthenticator,
-} from '@machinat/auth';
+} from '@sociably/auth';
 import type {
   EventValue,
   WebviewEvent,

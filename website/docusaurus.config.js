@@ -1,16 +1,16 @@
 module.exports = {
-  title: 'Machinat | Sociable App Framework',
+  title: 'Sociably | Sociable App Framework',
   tagline: 'Build Sociable App on All Social Platforms',
-  url: 'https://machinat.com',
+  url: 'https://sociably.js.org',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'machinat',
-  projectName: 'machinat.github.io',
-  deploymentBranch: 'master',
+  projectName: 'sociably',
+  deploymentBranch: 'gh-page',
   themeConfig: {
-    image: 'img/machinat-logo.png',
+    image: 'img/sociably-og.png',
     navbar: {
       logo: {
         alt: 'My Site Logo',
@@ -41,7 +41,7 @@ module.exports = {
           position: 'right',
         },
         {
-          href: 'https://github.com/machinat/machinat',
+          href: 'https://github.com/machinat/sociably',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
@@ -56,11 +56,11 @@ module.exports = {
           items: [
             {
               label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/machinat',
+              href: 'https://stackoverflow.com/questions/tagged/sociably',
             },
             {
               label: 'Twitter',
-              href: 'https://twitter.com/machinatjs',
+              href: 'https://twitter.com/Sociablyjs',
             },
           ],
         },
@@ -73,7 +73,7 @@ module.exports = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/machinat/machinat',
+              href: 'https://github.com/machinat/sociably',
             },
           ],
         },
@@ -87,12 +87,12 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/machinat/machinat/edit/master/website/',
+          editUrl: 'https://github.com/machinat/sociably/edit/master/website/',
         },
         blog: {
           showReadingTime: true,
           editUrl:
-            'https://github.com/machinat/machinat/edit/master/website/blog/',
+            'https://github.com/machinat/sociably/edit/master/website/blog/',
           path: './blog',
         },
         theme: {

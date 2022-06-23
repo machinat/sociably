@@ -1,5 +1,5 @@
 export default (): string => `
-import { makeFactoryProvider, IntentRecognizer } from '@machinat/core';
+import { makeFactoryProvider, IntentRecognizer } from '@sociably/core';
 import { ChatEventContext } from '../types';
 
 const useIntent =

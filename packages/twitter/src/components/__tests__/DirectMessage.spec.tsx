@@ -1,6 +1,6 @@
-import Machinat from '@machinat/core';
-import { isNativeType } from '@machinat/core/utils';
-import Renderer from '@machinat/core/renderer';
+import Sociably from '@sociably/core';
+import { isNativeType } from '@sociably/core/utils';
+import Renderer from '@sociably/core/renderer';
 import TwitterChat from '../../Chat';
 import { Photo } from '../Media';
 import { UrlButton } from '../UrlButton';
@@ -114,9 +114,9 @@ test('rendering with buttons', async () => {
     <DirectMessage
       buttons={
         <>
-          <UrlButton label="foo" url="http://machinat.io/foo" />
-          <UrlButton label="bar" url="http://machinat.io/bar" />
-          <UrlButton label="baz" url="http://machinat.io/baz" />
+          <UrlButton label="foo" url="http://sociably.io/foo" />
+          <UrlButton label="bar" url="http://sociably.io/bar" />
+          <UrlButton label="baz" url="http://sociably.io/baz" />
         </>
       }
     >
@@ -139,17 +139,17 @@ test('rendering with buttons', async () => {
                 Object {
                   "label": "foo",
                   "type": "web_url",
-                  "url": "http://machinat.io/foo",
+                  "url": "http://sociably.io/foo",
                 },
                 Object {
                   "label": "bar",
                   "type": "web_url",
-                  "url": "http://machinat.io/bar",
+                  "url": "http://sociably.io/bar",
                 },
                 Object {
                   "label": "baz",
                   "type": "web_url",
-                  "url": "http://machinat.io/baz",
+                  "url": "http://sociably.io/baz",
                 },
               ],
               "text": "Guess one",
@@ -345,7 +345,7 @@ it('throw if invalid content received', async () => {
   await expect(
     render(
       <DirectMessage>
-        <Machinat.Pause />
+        <Sociably.Pause />
       </DirectMessage>
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -360,7 +360,7 @@ it('throw if invalid media received', async () => {
     `"\\"media\\" prop should contain only 1 \\"Photo\\", \\"Video\\" or \\"AnimatedGif\\""`
   );
   await expect(
-    render(<DirectMessage media={<Machinat.Pause />} />)
+    render(<DirectMessage media={<Sociably.Pause />} />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"\\"media\\" prop should contain only 1 \\"Photo\\", \\"Video\\" or \\"AnimatedGif\\""`
   );

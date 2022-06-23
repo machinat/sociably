@@ -1,5 +1,5 @@
-import type { MachinatChannel } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyChannel } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { MESSENGER, FACEBOOK } from './constant';
 import type { MessengerTarget } from './types';
 
@@ -9,7 +9,7 @@ type SendTargetValue = {
 };
 
 class FacebookSendTarget
-  implements MachinatChannel, MarshallableInstance<SendTargetValue>
+  implements SociablyChannel, MarshallableInstance<SendTargetValue>
 {
   static typeName = 'FacebookSendTarget';
   static fromJSONValue(value: SendTargetValue): FacebookSendTarget {

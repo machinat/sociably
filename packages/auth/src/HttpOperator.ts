@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@machinat/core';
+import { makeClassProvider } from '@sociably/core';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import { posix as posixPath } from 'path';

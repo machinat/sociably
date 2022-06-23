@@ -1,7 +1,7 @@
 /// <reference lib="DOM" />
 import invariant from 'invariant';
-import type { CheckDataResult } from '@machinat/auth';
-import type { WebviewClientAuthenticator } from '@machinat/webview';
+import type { CheckDataResult } from '@sociably/auth';
+import type { WebviewClientAuthenticator } from '@sociably/webview';
 import { LINE } from '../constant';
 import LineChat from '../Chat';
 import LineUser from '../User';

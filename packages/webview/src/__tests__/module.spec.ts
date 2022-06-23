@@ -1,14 +1,14 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import _createNextServer from 'next';
-import Machinat from '@machinat/core';
-import BaseBot from '@machinat/core/base/Bot';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
-import Auth from '@machinat/auth';
-import BasicAuthenticator from '@machinat/auth/basicAuth';
-import Http from '@machinat/http';
-import Next from '@machinat/next';
-import WebSocket from '@machinat/websocket';
-import { InMemoryState } from '@machinat/dev-tools';
+import Sociably from '@sociably/core';
+import BaseBot from '@sociably/core/base/Bot';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
+import Auth from '@sociably/auth';
+import BasicAuthenticator from '@sociably/auth/basicAuth';
+import Http from '@sociably/http';
+import Next from '@sociably/next';
+import WebSocket from '@sociably/websocket';
+import { InMemoryState } from '@sociably/dev-tools';
 import { WebviewReceiver } from '../receiver';
 import { WebviewBot } from '../bot';
 import {
@@ -31,7 +31,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "WebviewConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 
@@ -54,7 +54,7 @@ test('module object', () => {
   const dispatchMiddlewares = [moxy((ctx, next) => next(ctx))];
 
   const module = Webview.initModule({
-    webviewHost: 'machinat.io',
+    webviewHost: 'sociably.io',
     authSecret: '_SECRET_',
     authPlatforms: [NoneAuthenticator],
     eventMiddlewares,
@@ -67,7 +67,7 @@ test('module object', () => {
       "$$multi": false,
       "$$name": "WebviewPlatformUtilities",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
   expect(module.provisions).toBeInstanceOf(Array);
@@ -82,12 +82,12 @@ test('service provisions', async () => {
     webviewPath: '/myView',
     authApiPath: '/myAuth',
     webSocketPath: '/mySocket',
-    webviewHost: 'machinat.io',
+    webviewHost: 'sociably.io',
     authSecret: '_SECRET_',
     nextServerOptions: { dir: './webview', conf: { dist: '../../' } },
   };
 
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     platforms: [Webview.initModule(configsInput)],
   });
   await app.start();
@@ -149,13 +149,13 @@ test('service provisions', async () => {
 test('with basicAuth', async () => {
   const basicAuthOptions = {
     appName: 'Hello World',
-    appIconUrl: 'https://machinat.com/img/logo.png',
+    appIconUrl: 'https://sociably.io/img/logo.png',
   };
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'machinat.io',
+        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
         basicAuth: basicAuthOptions,
       }),
@@ -169,7 +169,7 @@ test('with basicAuth', async () => {
   expect(basicAuthenticator).toBeInstanceOf(BasicAuthenticator);
   expect(basicAuthenticator.appName).toBe('Hello World');
   expect(basicAuthenticator.appIconUrl).toBe(
-    'https://machinat.com/img/logo.png'
+    'https://sociably.io/img/logo.png'
   );
 });
 
@@ -179,11 +179,11 @@ test('with noNextServer option', async () => {
     webviewPath: '/myView',
     authApiPath: '/myAuth',
     webSocketPath: '/mySocket',
-    webviewHost: 'machinat.io',
+    webviewHost: 'sociably.io',
     authSecret: '_SECRET_',
     noNextServer: true,
   };
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     platforms: [Webview.initModule(configsInput)],
   });
   await app.start();
@@ -214,11 +214,11 @@ test('with noNextServer option', async () => {
 });
 
 test('default routing paths', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'machinat.io',
+        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
       }),
     ],
@@ -252,11 +252,11 @@ test('default routing paths', async () => {
 });
 
 test('provide base interfaces', async () => {
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'machinat.io',
+        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
       }),
     ],
@@ -280,11 +280,11 @@ test('provide base interfaces', async () => {
 });
 
 test('register hmr route when dev', async () => {
-  let app = Machinat.createApp({
+  let app = Sociably.createApp({
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'machinat.io',
+        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: true },
       }),
@@ -307,11 +307,11 @@ test('register hmr route when dev', async () => {
     ]
   `);
 
-  app = Machinat.createApp({
+  app = Sociably.createApp({
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'machinat.io',
+        webviewHost: 'sociably.io',
         webviewPath: '/webview',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: true },
@@ -335,11 +335,11 @@ test('register hmr route when dev', async () => {
     ]
   `);
 
-  app = Machinat.createApp({
+  app = Sociably.createApp({
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'machinat.io',
+        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: false },
       }),
@@ -354,11 +354,11 @@ test('register hmr route when dev', async () => {
 test('startHook & stopHook', async () => {
   const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
 
-  const app = Machinat.createApp({
+  const app = Sociably.createApp({
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'machinat.io',
+        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: true, conf: { dist: '../../' } },
       }),

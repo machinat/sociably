@@ -1,4 +1,4 @@
-import type { MachinatElement } from '@machinat/core';
+import type { SociablyElement } from '@sociably/core';
 import {
   isElement,
   isFragmentType,
@@ -6,20 +6,20 @@ import {
   isRawType,
   isThunkType,
   isPauseType,
-} from '@machinat/core/utils';
+} from '@sociably/core/utils';
 
-const machinatElementSerializer = {
-  print(element: MachinatElement<any, any>, serialize, indent) {
+const sociablyElementSerializer = {
+  print(element: SociablyElement<any, any>, serialize, indent) {
     const type = isFragmentType(element)
-      ? 'Machinat.Fragment'
+      ? 'Sociably.Fragment'
       : isProviderType(element)
-      ? 'Machinat.Provider'
+      ? 'Sociably.Provider'
       : isRawType(element)
-      ? 'Machinat.Raw'
+      ? 'Sociably.Raw'
       : isThunkType(element)
-      ? 'Machinat.Thunk'
+      ? 'Sociably.Thunk'
       : isPauseType(element)
-      ? 'Machinat.Pause'
+      ? 'Sociably.Pause'
       : element.type;
 
     return serialize(
@@ -37,4 +37,4 @@ const machinatElementSerializer = {
   },
 };
 
-module.exports = machinatElementSerializer;
+module.exports = sociablyElementSerializer;

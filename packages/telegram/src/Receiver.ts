@@ -1,10 +1,10 @@
 import { parse as parseUrl } from 'url';
 import { posix as posixPath } from 'path';
 import invariant from 'invariant';
-import type { PopEventWrapper } from '@machinat/core';
-import { WebhookReceiver } from '@machinat/http/webhook';
-import type { WebhookHandler } from '@machinat/http/webhook';
-import { makeClassProvider } from '@machinat/core/service';
+import type { PopEventWrapper } from '@sociably/core';
+import { WebhookReceiver } from '@sociably/http/webhook';
+import type { WebhookHandler } from '@sociably/http/webhook';
+import { makeClassProvider } from '@sociably/core/service';
 
 import eventFactory from './event/factory';
 import BotP from './Bot';

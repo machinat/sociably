@@ -1,4 +1,4 @@
-import { ServiceScope } from '@machinat/core/service';
+import { ServiceScope } from '@sociably/core/service';
 import Stream from '../stream';
 import { OperatorFunction } from '../types';
 

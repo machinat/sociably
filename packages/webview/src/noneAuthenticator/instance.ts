@@ -1,4 +1,4 @@
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 
 class NoneInstance {
   id: string;

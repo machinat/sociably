@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import type {
   AuthenticatorCredentialResult,
   CheckDataResult,
-} from '@machinat/auth';
+} from '@sociably/auth';
 import { NoneUser, NoneChannel } from './instance';
 import { WebviewClientAuthenticator } from '../types';
 import type { NoneAuthData, NoneAuthContext } from './types';

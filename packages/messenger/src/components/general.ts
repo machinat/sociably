@@ -1,10 +1,10 @@
 import invariant from 'invariant';
-import { formatNode } from '@machinat/core/utils';
+import { formatNode } from '@sociably/core/utils';
 import {
   makeTextSegment,
   makeUnitSegment,
   makeBreakSegment,
-} from '@machinat/core/renderer';
+} from '@sociably/core/renderer';
 
 const p = async (node, path, render) => {
   const childrenSegments = await render(node.props.children);

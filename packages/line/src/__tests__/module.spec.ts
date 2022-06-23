@@ -1,9 +1,9 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import BaseBot from '@machinat/core/base/Bot';
-import BaseProfiler from '@machinat/core/base/Profiler';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
-import Http from '@machinat/http';
+import Sociably from '@sociably/core';
+import BaseBot from '@sociably/core/base/Bot';
+import BaseProfiler from '@sociably/core/base/Profiler';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
+import Http from '@sociably/http';
 import Line from '../module';
 import { LineReceiver } from '../Receiver';
 import LineUserProfile from '../UserProfile';
@@ -22,7 +22,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "LineConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
@@ -46,7 +46,7 @@ describe('initModule(configs)', () => {
         "$$multi": false,
         "$$name": "LinePlatformUtilities",
         "$$polymorphic": false,
-        "$$typeof": Symbol(interface.service.machinat),
+        "$$typeof": Symbol(interface.service.sociably),
       }
     `);
     expect(module.provisions).toBeInstanceOf(Array);
@@ -65,7 +65,7 @@ describe('initModule(configs)', () => {
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [Line.initModule(configs)],
     });
     await app.start();
@@ -89,7 +89,7 @@ describe('initModule(configs)', () => {
   });
 
   test('provide base interfaces', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [
         Line.initModule({
           providerId: '_PROVIDER_ID_',
@@ -127,7 +127,7 @@ describe('initModule(configs)', () => {
       shouldVerifyRequest: false,
     };
 
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [Line.initModule(configs)],
     });
     await app.start();

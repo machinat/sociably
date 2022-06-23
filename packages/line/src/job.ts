@@ -1,4 +1,4 @@
-import type { DispatchableSegment } from '@machinat/core/engine';
+import type { DispatchableSegment } from '@sociably/core/engine';
 import type LineChat from './Chat';
 import type {
   LineSegmentValue,

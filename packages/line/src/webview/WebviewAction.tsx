@@ -1,4 +1,4 @@
-import Machinat, { makeContainer } from '@machinat/core';
+import Sociably, { makeContainer } from '@sociably/core';
 import { UriAction } from '../components';
 import ServerAuthenticator from './ServerAuthenticator';
 

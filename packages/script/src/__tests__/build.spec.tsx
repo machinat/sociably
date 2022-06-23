@@ -1,9 +1,9 @@
 import moxy from '@moxyjs/moxy';
-import Machinat, { RenderingChannel } from '@machinat/core';
-import { isContainerType } from '@machinat/core/utils/isX';
+import Sociably, { RenderingChannel } from '@sociably/core';
+import { isContainerType } from '@sociably/core/utils/isX';
 import ProcessorP from '../processor';
 import build from '../build';
-import { MACHINAT_SCRIPT_TYPE } from '../constant';
+import { SOCIABLY_SCRIPT_TYPE } from '../constant';
 import {
   IF,
   THEN,
@@ -75,7 +75,7 @@ const MyScript = build(
 
 test('Script object', () => {
   expect(MyScript.name).toBe('MyScript');
-  expect(MyScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
+  expect(MyScript.$$typeof).toBe(SOCIABLY_SCRIPT_TYPE);
 
   expect(MyScript.commands).toMatchSnapshot();
   expect(MyScript.initVars).toBe(initVars);
@@ -93,7 +93,7 @@ test('Script object', () => {
   `);
 
   expect(ChildScript.name).toBe('ChildScript');
-  expect(ChildScript.$$typeof).toBe(MACHINAT_SCRIPT_TYPE);
+  expect(ChildScript.$$typeof).toBe(SOCIABLY_SCRIPT_TYPE);
 
   expect(ChildScript.commands).toMatchSnapshot();
   expect(ChildScript.initVars).toBe(initVars);

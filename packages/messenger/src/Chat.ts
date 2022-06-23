@@ -1,5 +1,5 @@
-import type { MachinatChannel } from '@machinat/core';
-import type { MarshallableInstance } from '@machinat/core/base/Marshaler';
+import type { SociablyChannel } from '@sociably/core';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { MESSENGER, FACEBOOK } from './constant';
 import type MessengerUser from './User';
 import type { PSIDTarget } from './types';
@@ -10,7 +10,7 @@ type FacebookChatValue = {
 };
 
 class FacebookChat
-  implements MachinatChannel, MarshallableInstance<FacebookChatValue>
+  implements SociablyChannel, MarshallableInstance<FacebookChatValue>
 {
   static typeName = 'FacebookChat';
   static fromUser(user: MessengerUser): FacebookChat {

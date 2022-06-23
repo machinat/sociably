@@ -1,6 +1,6 @@
 import invariant from 'invariant';
-import type { MachinatNode, MachinatChannel } from '@machinat/core';
-import { maybeInjectContainer, ServiceScope } from '@machinat/core/service';
+import type { SociablyNode, SociablyChannel } from '@sociably/core';
+import { maybeInjectContainer, ServiceScope } from '@sociably/core/service';
 import type {
   ScriptLibrary,
   CallStatus,
@@ -30,7 +30,7 @@ type FinishedExecuteResult<Return, Yield> = {
   returnedValue: Return;
   yieldedValue: undefined | Yield;
   callStack: null;
-  contents: MachinatNode[];
+  contents: SociablyNode[];
 };
 
 type UnfinishedExecuteResult<Yield> = {
@@ -38,7 +38,7 @@ type UnfinishedExecuteResult<Yield> = {
   returnedValue: undefined;
   yieldedValue: undefined | Yield;
   callStack: CallStatus<unknown>[];
-  contents: MachinatNode[];
+  contents: SociablyNode[];
 };
 
 type ExecuteResult<Return, Yield> =
@@ -46,14 +46,14 @@ type ExecuteResult<Return, Yield> =
   | UnfinishedExecuteResult<Yield>;
 
 type ExecuteContext<Vars, Return, Yield> = {
-  channel: MachinatChannel;
+  channel: SociablyChannel;
   scope: ServiceScope;
   finished: boolean;
   returnedValue: undefined | Return;
   stopAt: undefined | string;
   yieldings: [unknown, EffectYielder<unknown, Yield>][];
   cursor: number;
-  contents: MachinatNode[];
+  contents: SociablyNode[];
   vars: Vars;
   callStack: CallStatus<unknown>[];
 };
@@ -247,7 +247,7 @@ const executeCommand = async <Vars, Return, Yield>(
 
 const executeScript = async <Vars, Return, Yield>(
   scope: ServiceScope,
-  channel: MachinatChannel,
+  channel: SociablyChannel,
   script: ScriptLibrary<Vars, unknown, unknown, Return, Yield>,
   begin: number,
   beginVars: Vars
@@ -296,7 +296,7 @@ const executeScript = async <Vars, Return, Yield>(
 };
 
 const resolveYieldValue = async <Yield>(
-  channel: MachinatChannel,
+  channel: SociablyChannel,
   scope: ServiceScope,
   yieldings: [unknown, EffectYielder<unknown, Yield>][]
 ): Promise<undefined | Yield> => {
@@ -317,13 +317,13 @@ const resolveYieldValue = async <Yield>(
 
 const execute = async <Input, Return, Yield>(
   scope: ServiceScope,
-  channel: MachinatChannel,
+  channel: SociablyChannel,
   beginningStack: CallStatus<unknown>[],
   isBeginning: boolean,
   input?: Input
 ): Promise<ExecuteResult<Return, Yield>> => {
   const callingDepth = beginningStack.length;
-  const contents: MachinatNode[] = [];
+  const contents: SociablyNode[] = [];
   const yieldings: [unknown, EffectYielder<unknown, Yield>][] = [];
 
   let returnValueSlot: undefined | unknown;

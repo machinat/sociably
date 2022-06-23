@@ -1,8 +1,8 @@
 import invariant from 'invariant';
 import { posix as posixPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@machinat/core/service';
-import Auth, { ServerAuthenticator, CheckDataResult } from '@machinat/auth';
+import { makeClassProvider } from '@sociably/core/service';
+import Auth, { ServerAuthenticator, CheckDataResult } from '@sociably/auth';
 import { ConfigsI } from '../interface';
 import BotP from '../Bot';
 import { LINE, LiffContextOs } from '../constant';

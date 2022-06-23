@@ -185,7 +185,7 @@ Array [
         "goto": "bar",
         "key": "call_1",
         "script": Object {
-          "$$typeof": Symbol(lib.script.machinat),
+          "$$typeof": Symbol(lib.script.sociably),
           "commands": Array [
             Object {
               "getContent": [Function],
@@ -284,7 +284,7 @@ Array [
     "goto": "foo",
     "key": "call_2",
     "script": Object {
-      "$$typeof": Symbol(lib.script.machinat),
+      "$$typeof": Symbol(lib.script.sociably),
       "commands": Array [
         Object {
           "getContent": [Function],

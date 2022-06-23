@@ -1,9 +1,9 @@
-import { MachinatApp } from '@machinat/core';
-import { makeContainer, ServiceScope } from '@machinat/core/service';
+import { SociablyApp } from '@sociably/core';
+import { makeContainer, ServiceScope } from '@sociably/core/service';
 import Stream from './stream';
 import { EventContextOfApp } from './types';
 
-const fromApp = <App extends MachinatApp<any>>(
+const fromApp = <App extends SociablyApp<any>>(
   app: App
 ): Stream<EventContextOfApp<App>> => {
   const subject = new Stream<EventContextOfApp<App>>();

@@ -2,22 +2,22 @@ import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
 export default ({ platforms }: CreateAppContext): string => `
-import Machinat, { MachinatNode } from '@machinat/core';${when(
+import Sociably, { SociablyNode } from '@sociably/core';${when(
   platforms.includes('messenger')
 )`
-import * as Messenger from '@machinat/messenger/components';`}${when(
+import * as Messenger from '@sociably/messenger/components';`}${when(
   platforms.includes('twitter')
 )`
-import * as Twitter from '@machinat/twitter/components';`}${when(
+import * as Twitter from '@sociably/twitter/components';`}${when(
   platforms.includes('telegram')
 )`
-import * as Telegram from '@machinat/telegram/components';`}${when(
+import * as Telegram from '@sociably/telegram/components';`}${when(
   platforms.includes('line')
 )`
-import * as Line from '@machinat/line/components';`}
+import * as Line from '@sociably/line/components';`}
 
 type WithYesNoRepliesProps = {
-  children: MachinatNode;
+  children: SociablyNode;
 };
 
 const WithYesNoReplies = (

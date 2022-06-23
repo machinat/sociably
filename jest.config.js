@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const inPackagesSourcePattern = `^@machinat/(${fs
+const inPackagesSourcePattern = `^@sociably/(${fs
   .readdirSync('./packages')
   .join('|')})(.*)$`;
 
@@ -11,5 +11,5 @@ module.exports = {
     [inPackagesSourcePattern]: '<rootDir>/packages/$1/src$2',
   },
   setupFiles: ['<rootDir>/node_modules/@moxyjs/moxy/lib/extends/jest.js'],
-  snapshotSerializers: ['@machinat/jest-snapshot-serializer'],
+  snapshotSerializers: ['@sociably/jest-snapshot-serializer'],
 };

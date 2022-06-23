@@ -1,5 +1,5 @@
-import type { ServiceModule } from '@machinat/core';
-import IntentRecognizerI from '@machinat/core/base/IntentRecognizer';
+import type { ServiceModule } from '@sociably/core';
+import IntentRecognizerI from '@sociably/core/base/IntentRecognizer';
 
 import RecognizerP from './recognizer';
 import { ConfigsI } from './interface';

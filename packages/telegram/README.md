@@ -5,22 +5,22 @@ Receive events and send messages through [Telegram](https://developers.facebook.
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/http @machinat/telegram
+npm install @sociably/core @sociably/http @sociably/telegram
 # or with yarn
-yarn add @machinat/core @machinat/http @machinat/telegram
+yarn add @sociably/core @sociably/http @sociably/telegram
 ```
 
 ## Docs
 
-Check the [platform document](https://machinat.com/docs/telegram-platform)
-and the [package reference](https://machinat.com/api/modules/telegram.html).
+Check the [platform document](https://sociably.js.org/docs/telegram-platform)
+and the [package reference](https://sociably.js.org/api/modules/telegram.html).
 
 ## Setup
 
 ```ts
-import Machinat from '@machinat/core';
-import Http from '@machinat/http';
-import Telegram from '@machinat/telegram';
+import Sociably from '@sociably/core';
+import Http from '@sociably/http';
+import Telegram from '@sociably/telegram';
 
 const {
   TELEGRAM_BOT_NAME,
@@ -28,7 +28,7 @@ const {
   TELEGRAM_SECRET_PATH,
 } = process.env;
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
   ],

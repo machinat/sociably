@@ -2,13 +2,13 @@ import { when } from '../../utils';
 import { CreateAppContext } from '../../types';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
-import ${when(platforms.includes('telegram'))`Machinat, `}{
+import ${when(platforms.includes('telegram'))`Sociably, `}{
     makeContainer,
-} from '@machinat/core';${when(platforms.includes('telegram'))`
-import { AnswerCallbackQuery } from '@machinat/telegram/components';`}
-import { Stream } from '@machinat/stream';
-import { filter } from '@machinat/stream/operators';
-import Script from '@machinat/script';
+} from '@sociably/core';${when(platforms.includes('telegram'))`
+import { AnswerCallbackQuery } from '@sociably/telegram/components';`}
+import { Stream } from '@sociably/stream';
+import { filter } from '@sociably/stream/operators';
+import Script from '@sociably/script';
 import handleChat from './handlers/handleChat';${when(withWebview)`
 import handleWebview from './handlers/handleWebview';`}
 import { AppEventContext, ChatEventContext } from './types';

@@ -1,10 +1,10 @@
-import Machinat from '@machinat/core';
-import StateControllerI from '@machinat/core/base/StateController';
+import Sociably from '@sociably/core';
+import StateControllerI from '@sociably/core/base/StateController';
 import InMemoryState from '../module';
 import { ControllerP as InMemoryStateController } from '../controller';
 
 test('provisions', async () => {
-  const app = Machinat.createApp({ modules: [InMemoryState.initModule()] });
+  const app = Sociably.createApp({ modules: [InMemoryState.initModule()] });
   await app.start();
 
   const [controller] = app.useServices([InMemoryStateController]);
@@ -13,7 +13,7 @@ test('provisions', async () => {
 });
 
 test('provide base state controller', async () => {
-  const app = Machinat.createApp({ modules: [InMemoryState.initModule()] });
+  const app = Sociably.createApp({ modules: [InMemoryState.initModule()] });
   await app.start();
 
   const [controller] = app.useServices([StateControllerI]);

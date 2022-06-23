@@ -39,10 +39,10 @@ describe('.init()', () => {
 
     location.mock
       .getter('href')
-      .fakeReturnValue('https://machinat.io/webview/foo?bar=baz');
+      .fakeReturnValue('https://sociably.io/webview/foo?bar=baz');
 
     const promise = authenticator.init(
-      'https://machinat.io/auth/telegram/',
+      'https://sociably.io/auth/telegram/',
       null,
       null
     );
@@ -54,7 +54,7 @@ describe('.init()', () => {
 
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
     expect(location.mock.setter('href').calls[0].args[0]).toMatchInlineSnapshot(
-      `"https://machinat.io/auth/telegram/login?redirectUrl=https%3A%2F%2Fmachinat.io%2Fwebview%2Ffoo%3Fbar%3Dbaz"`
+      `"https://sociably.io/auth/telegram/login?redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz"`
     );
 
     jest.useRealTimers();
@@ -63,14 +63,14 @@ describe('.init()', () => {
   it('do nothing if there is error or data from backend', async () => {
     await expect(
       authenticator.init(
-        'https://machinat.io/auth/telegram/',
+        'https://sociably.io/auth/telegram/',
         new Error('boom'),
         null
       )
     ).resolves.toBe(undefined);
 
     await expect(
-      authenticator.init('https://machinat.io/auth/telegram/', null, {
+      authenticator.init('https://sociably.io/auth/telegram/', null, {
         bot: 12345,
         chat: undefined,
         user: {

@@ -1,20 +1,20 @@
 # DialogFlow Module
 
-This module implement the [`IntentRecognizer`](https://machinat.com/api/modules/core_base_intentrecognizer.html)
+This module implement the [`IntentRecognizer`](https://sociably.js.org/api/modules/core_base_intentrecognizer.html)
 interface with [DialogFlow ES](https://cloud.google.com/dialogflow/es/docs) API.
 
 ## Install
 
 ```bash
-npm install @machinat/core @machinat/dialogflow
+npm install @sociably/core @sociably/dialogflow
 # or with yarn
-yarn add @machinat/core @machinat/dialogflow
+yarn add @sociably/core @sociably/dialogflow
 ```
 
 ## Docs
 
-Check the [Recognizing Intent](https://machinat.com/docs/recognizing-intent)
-document and the [API references](https://machinat.com/api/modules/dialogflow.html).
+Check the [Recognizing Intent](https://sociably.js.org/docs/recognizing-intent)
+document and the [API references](https://sociably.js.org/api/modules/dialogflow.html).
 
 ## Setup
 
@@ -26,13 +26,13 @@ In this mode, the DialogFlow project is managed by the package. You maintain the
 
 First you need to create a GCP project and a service account to access the API. Follow [this guide](https://cloud.google.com/dialogflow/es/docs/quick/setup) and set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable when running your app.
 
-Then add `@machinat/dialogflow` module like this:
+Then add `@sociably/dialogflow` module like this:
 
 ```js
-import Machinat from '@machinat/core';
-import DialogFlow from '@machinat/dialogflow';
+import Sociably from '@sociably/core';
+import DialogFlow from '@sociably/dialogflow';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     DialogFlow.initModule({
       projectId: '_YOUR_DIALOGFLOW_PROJECT_ID_',
@@ -56,10 +56,10 @@ Finally you have to call `DialogFlowRecognizer.train()` method every time you up
 
 ```js
 // cli/updateDialogFlow.js
-import Machinat from '@machinat/core';
-import DialogFlow from '@machinat/dialogflow';
+import Sociably from '@sociably/core';
+import DialogFlow from '@sociably/dialogflow';
 
-const app = Machinat.createApp({/* ... */});
+const app = Sociably.createApp({/* ... */});
 app
   .start()
   .then(() => {
@@ -78,13 +78,13 @@ First you have to prepare a ready-to-use DialogFlow agent. You can follow [this 
 
 Next follow [this section](https://cloud.google.com/dialogflow/es/docs/quick/setup#auth) to create a service account and set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
 
-Then add `@machinat/dialogflow` module like this:
+Then add `@sociably/dialogflow` module like this:
 
 ```js
-import Machinat from '@machinat/core';
-import DialogFlow from '@machinat/dialogflow';
+import Sociably from '@sociably/core';
+import DialogFlow from '@sociably/dialogflow';
 
-const app = Machinat.createApp({
+const app = Sociably.createApp({
   modules: [
     DialogFlow.initModule({
       projectId: '_YOUR_DIALOGFLOW_PROJECT_ID_',

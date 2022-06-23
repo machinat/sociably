@@ -50,10 +50,10 @@ You'll learn more useful JSX features in the lessons.
 
 :::info
 To use the JSX syntax in typescript, the file extension has to be `.tsx`.
-Also you need to import `Machinat` at the beginning of the file like:
+Also you need to import `Sociably` at the beginning of the file like:
 
 ```ts
-import Machinat from '@machinat/core';
+import Sociably from '@sociably/core';
 ```
 :::
 
@@ -168,13 +168,13 @@ several messages together and send them once. The result would look like:
 ### Adding a Pause
 
 When sending a series of messages, you might want to shortly break between them.
-We can use the `Machinat.Pause` tag to do that.
+We can use the `Sociably.Pause` tag to do that.
 
 ```tsx {4}} title="src/handlers/handleChat.tsx"
 // ...
       <>
         <p>Todo "<b>{todoName}</b>" is added!</p>
-        <Machinat.Pause time={1500} />
+        <Sociably.Pause time={1500} />
         <p>You have <b>{3}</b> todos now.</p>
       </>
 // ...

@@ -1,9 +1,9 @@
 import moxy from '@moxyjs/moxy';
-import Machinat from '@machinat/core';
-import BaseBot from '@machinat/core/base/Bot';
-import BaseProfiler from '@machinat/core/base/Profiler';
-import BaseMarshaler from '@machinat/core/base/Marshaler';
-import Http from '@machinat/http';
+import Sociably from '@sociably/core';
+import BaseBot from '@sociably/core/base/Bot';
+import BaseProfiler from '@sociably/core/base/Profiler';
+import BaseMarshaler from '@sociably/core/base/Marshaler';
+import Http from '@sociably/http';
 import Telegram from '../module';
 import TelegramChat from '../Chat';
 import TelegramChatSender from '../ChatSender';
@@ -23,7 +23,7 @@ it('export interfaces', () => {
       "$$multi": false,
       "$$name": "TelegramConfigs",
       "$$polymorphic": false,
-      "$$typeof": Symbol(interface.service.machinat),
+      "$$typeof": Symbol(interface.service.sociably),
     }
   `);
 });
@@ -49,7 +49,7 @@ describe('initModule(configs)', () => {
         "$$multi": false,
         "$$name": "TelegramPlatformUtilities",
         "$$polymorphic": false,
-        "$$typeof": Symbol(interface.service.machinat),
+        "$$typeof": Symbol(interface.service.sociably),
       }
     `);
     expect(module.provisions).toBeInstanceOf(Array);
@@ -69,7 +69,7 @@ describe('initModule(configs)', () => {
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [Telegram.initModule(configs)],
     });
     await app.start();
@@ -97,7 +97,7 @@ describe('initModule(configs)', () => {
   });
 
   test('provide base interface', async () => {
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [
         Telegram.initModule({
           botToken: '12345:_BOT_TOKEN_',
@@ -132,7 +132,7 @@ describe('initModule(configs)', () => {
       botName: 'FooBot',
     };
 
-    const app = Machinat.createApp({
+    const app = Sociably.createApp({
       platforms: [Telegram.initModule(configs)],
     });
     await app.start();

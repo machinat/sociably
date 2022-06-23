@@ -1,5 +1,5 @@
-import Machinat from '@machinat/core';
-import { MACHINAT_SCRIPT_TYPE } from '../constant';
+import Sociably from '@sociably/core';
+import { SOCIABLY_SCRIPT_TYPE } from '../constant';
 import {
   IF,
   THEN,
@@ -16,7 +16,7 @@ import parse from '../parse';
 import type { AnyScriptLibrary } from '../types';
 
 const AnotherScript: AnyScriptLibrary = {
-  $$typeof: MACHINAT_SCRIPT_TYPE,
+  $$typeof: SOCIABLY_SCRIPT_TYPE,
   name: 'AnotherScript',
   initVars: () => ({}),
   commands: [

@@ -1,4 +1,4 @@
-import { MaybeContainer, ServiceContainer } from '@machinat/core/service';
+import { MaybeContainer, ServiceContainer } from '@sociably/core/service';
 import injectMaybe from '../injectMaybe';
 import { OperatorFunction } from '../types';
 import doAsyncByKey from './doAsyncByKey';

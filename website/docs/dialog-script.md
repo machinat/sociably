@@ -6,7 +6,7 @@ A conversation is often composed of several questions and answers.
 Such the _Q & A_ process is the key to make advanced features (like making an order)
 and experiences (like asking for confirmation).
 
-In Machinat, you can use a familiar way to build the conversation flows:
+In Sociably, you can use a familiar way to build the conversation flows:
 writing a **script**.
 
 ## What's Dialog Script?
@@ -17,8 +17,8 @@ When it _runs_ up, the script processor takes over control and _process_ the dia
 
 ## Install
 
-You have to install the `@machinat/script` package to use dialog scripts.
-And make sure you have a state provider installed like [`RedisState`](https://machinat.com/api/modules/redis_state.html) or [`FileState`](https://machinat.com/api/modules/dev_tools.html#file-state).
+You have to install the `@sociably/script` package to use dialog scripts.
+And make sure you have a state provider installed like [`RedisState`](https://sociably.js.org/api/modules/redis_state.html) or [`FileState`](https://sociably.js.org/api/modules/dev_tools.html#file-state).
 
 
 ## Script Syntax
@@ -28,9 +28,9 @@ And make sure you have a state provider installed like [`RedisState`](https://ma
 Here is a dialog script for making an order:
 
 ```js
-import Machinat from '@machinat/core';
-import { build } from '@machinat/script';
-import * as $ from '@machinat/script/keywords';
+import Sociably from '@sociably/core';
+import { build } from '@sociably/script';
+import * as $ from '@sociably/script/keywords';
 import OrderSideDish from './OrderSideDish';
 
 export default build(
@@ -280,18 +280,18 @@ After a little setup, you can then use the scripts in your app.
 
 ### Register Scripts
 
-The built scripts have to be registered while initiating the `@machinat/script` module.
+The built scripts have to be registered while initiating the `@sociably/script` module.
 Like this:
 
 ```js
-import Machiant from '@machinat/core';
-import Script from '@machinat/script';
+import Sociably from '@sociably/core';
+import Script from '@sociably/script';
 // the built scripts
 import BeforeSunset from './scenes/BeforeSunset';
 import BeforeSunrise from './scenes/BeforeSunrise';
 import BeforeMidnight from './scenes/BeforeMidnight';
 
-const app = Machiant.createApp({
+const app = Sociably.createApp({
   modules: [
     Script.initModule({
       libs: [
@@ -314,8 +314,8 @@ The processor will continue the dialog from the stop point in the script.
 You can add these codes in the `app.onEvent` handler:
 
 ```js
-import { makeContainer } from '@machinat/core';
-import Script from '@machinat/script';
+import { makeContainer } from '@sociably/core';
+import Script from '@sociably/script';
 
 app.onEvent(
   makeContainer({ deps: [Script.Processor] })(
@@ -332,13 +332,13 @@ app.onEvent(
 );
 ```
 
-If you're using `@machinat/stream`, you can `filter` the stream like:
+If you're using `@sociably/stream`, you can `filter` the stream like:
 
 ```js
-import { makeContainer } from '@machinat/core';
-import Script from '@machinat/script';
-import { fromApp } from '@machinat/stream'
-import { filter } from '@machinat/stream/operators'
+import { makeContainer } from '@sociably/core';
+import Script from '@sociably/script';
+import { fromApp } from '@sociably/stream'
+import { filter } from '@sociably/stream/operators'
 
 const event$ = fromApp(app).pipe(
   filter(
@@ -422,7 +422,7 @@ for the function props.
 For example:
 
 ```js
-import Machinat, { makeContainer, IntentRecognizer } from '@machinat/core';
+import Sociably, { makeContainer, IntentRecognizer } from '@sociably/core';
 //...
 <>
   {() => <p>Would you like any side dish?</p>}
