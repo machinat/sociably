@@ -1,6 +1,6 @@
 {
   "name": "@sociably/webview",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -39,9 +39,9 @@
     "utf-8-validate": "^5.0.2"
   },
   "dependencies": {
-    "@sociably/auth": "^0.6.0",
-    "@sociably/next": "^0.6.0",
-    "@sociably/websocket": "^0.6.0",
+    "@sociably/auth": "^0.7.0",
+    "@sociably/next": "^0.7.0",
+    "@sociably/websocket": "^0.7.0",
     "nanoid": "^3.1.20"
   },
   "devDependencies": {
