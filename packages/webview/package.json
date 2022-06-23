@@ -28,8 +28,8 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@sociably/core": "^0.6.0",
-    "@sociably/http": "^0.6.0",
+    "@sociably/core": "^0.7.0",
+    "@sociably/http": "^0.7.0",
     "next": "^12.0.9",
     "react": "^17.0.2 || ^18.0.0-0",
     "react-dom": "^17.0.2 || ^18.0.0-0"

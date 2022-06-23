@@ -30,6 +30,6 @@
     "object-hash": "^2.2.0"
   },
   "peerDependencies": {
-    "@sociably/core": "^0.6.0"
+    "@sociably/core": "^0.7.0"
   }
 }
