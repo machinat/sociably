@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[6647],{6709:function(a){a.exports=JSON.parse('[{"label":"framework","permalink":"/blog/zh-tw/tags/framework","count":1},{"label":"sociable app","permalink":"/blog/zh-tw/tags/sociable-app","count":1}]')}}]);

@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[3609],{7423:function(a){a.exports=JSON.parse('{"label":"sociable app","permalink":"/blog/zh-tw/tags/sociable-app","allTagsPath":"/blog/zh-tw/tags","count":1}')}}]);

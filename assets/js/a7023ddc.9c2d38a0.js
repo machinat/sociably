@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[1713],{3457:function(a){a.exports=JSON.parse('[{"label":"framework","permalink":"/blog/tags/framework","count":1},{"label":"sociable app","permalink":"/blog/tags/sociable-app","count":1}]')}}]);

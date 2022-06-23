@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[2535],{5641:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"The Next-Gen App on Social Media","permalink":"/blog/sociable-app-next-gen-app-on-social-media"}]}')}}]);
