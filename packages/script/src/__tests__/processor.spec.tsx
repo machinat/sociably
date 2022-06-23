@@ -5,6 +5,7 @@ import { traverse as traverseMessage } from '@sociably/core/iterator';
 import { InMemoryStateController } from '@sociably/dev-tools/InMemoryState';
 import { ScriptProcessor } from '../processor';
 import build from '../build';
+import { SCRIPT_STATE_KEY } from '../constant';
 import {
   IF,
   THEN,
@@ -151,7 +152,7 @@ describe('#start(channel, Script)', () => {
 
     expect(runtime.requireSaving).toBe(false);
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -215,7 +216,7 @@ describe('#start(channel, Script)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -280,7 +281,7 @@ describe('#start(channel, Script)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -314,7 +315,7 @@ describe('#start(channel, Script)', () => {
 
   it('throw if there is already script processing in the channel', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$sociably:script', {
+    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -333,7 +334,7 @@ describe('#start(channel, Script)', () => {
 describe('#continue(channel, input)', () => {
   it('continue from prompt point', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$sociably:script', {
+    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -376,7 +377,7 @@ describe('#continue(channel, input)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -410,7 +411,7 @@ describe('#continue(channel, input)', () => {
 
   it('continue under subscript', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$sociably:script', {
+    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'call_1' },
@@ -456,7 +457,7 @@ describe('#continue(channel, input)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -497,7 +498,7 @@ describe('#continue(channel, input)', () => {
 
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$sociably:script', {
+    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
@@ -515,7 +516,7 @@ describe('#continue(channel, input)', () => {
 describe('#getRuntime(channel)', () => {
   test('manually call runtime.run()', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$sociably:script', {
+    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -595,7 +596,7 @@ describe('#getRuntime(channel)', () => {
 
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$sociably:script', {
+    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
@@ -613,7 +614,7 @@ describe('#getRuntime(channel)', () => {
 describe('Runtime#exit(channel)', () => {
   it('delete saved runtime state', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set('$sociably:script', {
+    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -625,7 +626,7 @@ describe('Runtime#exit(channel)', () => {
     await expect(runtime.exit()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 
@@ -637,7 +638,7 @@ describe('Runtime#exit(channel)', () => {
     await expect(runtime.exit()).resolves.toBe(false);
 
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 });
@@ -656,7 +657,7 @@ describe('Runtime#save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toEqual({
       callStack: [{ name: 'MyScript', stopAt: 'ask_2', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
@@ -671,7 +672,7 @@ describe('Runtime#save(runtime)', () => {
       AnotherScript,
     ]);
 
-    stateController.channelState(channel).set('$sociably:script', {
+    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       callStack: [{ name: 'MyScript', stopAt: 'ask_3', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
       version: '0',
@@ -682,7 +683,7 @@ describe('Runtime#save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toEqual({
       callStack: [
         { name: 'MyScript', stopAt: 'call_1', vars: { foo: 'bar' } },
@@ -710,7 +711,7 @@ describe('Runtime#save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(false);
 
     await expect(
-      stateController.channelState(channel).get('$sociably:script')
+      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 
@@ -725,7 +726,7 @@ describe('Runtime#save(runtime)', () => {
       goto: '#3',
     });
 
-    stateController.channelState(channel).set('$sociably:script', {
+    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
@@ -740,7 +741,7 @@ describe('Runtime#save(runtime)', () => {
 
   test('throw if continued runtime save while no runtime state existing', async () => {
     const stateController = new InMemoryStateController();
-    stateController.channelState(channel).set('$sociably:script', {
+    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -754,7 +755,7 @@ describe('Runtime#save(runtime)', () => {
     ]);
     const runtime = (await processor.getRuntime(channel))!;
 
-    stateController.channelState(channel).delete('$sociably:script');
+    stateController.channelState(channel).delete(SCRIPT_STATE_KEY);
     await runtime.run();
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
@@ -764,7 +765,7 @@ describe('Runtime#save(runtime)', () => {
 
   test('throw if saveTimestamp not match', async () => {
     const stateController = new InMemoryStateController();
-    stateController.channelState(channel).set('$sociably:script', {
+    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -778,7 +779,7 @@ describe('Runtime#save(runtime)', () => {
     ]);
     const runtime = (await processor.getRuntime(channel))!;
 
-    stateController.channelState(channel).set('$sociably:script', {
+    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
