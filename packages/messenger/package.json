@@ -1,6 +1,6 @@
 {
   "name": "@sociably/messenger",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Messenger platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
