@@ -66,7 +66,7 @@ Sociable App 能在社群平台上完成幾乎所有的工作：
 
 它不僅僅是一個聊天機器人、一個網頁應用程式、一個自動的社群帳號。而是把這些都整合進一個 app 裡，並提供 1+1+1>3 的使用者體驗。
 
-下面我會用一個[社群版的 Wordle](https://twitter.com/WordleMachina)，來說明 Social App 如何在社群平台上提供程式化的服務以及更好的體驗。
+下面我會用一個[社群版的 Wordle](https://twitter.com/SociablyWordle)，來說明 Social App 如何在社群平台上提供程式化的服務以及更好的體驗。
 
 ### 從社群媒體出發
 

@@ -80,7 +80,7 @@ A sociable app does these works seamlessly:
 So it's not only a chatbot, a web app or an automated social account.
 It combines them all in one app that provides even better user experiences.
 
-Below, I'll show you how it works with [a sociable Wordle game](https://twitter.com/WordleMachina).
+Below, I'll show you how it works with [a sociable Wordle game](https://twitter.com/SociablyWordle).
 
 ### Enter from Social Media
 

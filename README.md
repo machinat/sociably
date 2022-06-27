@@ -176,10 +176,10 @@ yarn create @sociably/app -- -p <platform> [-p ...] [--webview] my-project
 
 Here are some simple but production-ready sample apps:
 
-- [Note Example](https://github.com/machinat/sociably-note-example) - taking notes in chat.
-- [Todo Example](https://github.com/machinat/sociably-todo-example) - managing todos in chat.
-- [Pomodoro Example](https://github.com/machinat/sociably-pomodoro-example) - a pomodoro timer in chat.
-- [4digits Example](https://github.com/machinat/sociably-4digits-example) - playing guessing 4 digits game in chat.
+- [Note Example](https://github.com/machinat/sociably-note) - taking notes in chat.
+- [Todo Example](https://github.com/machinat/sociably-todo) - managing todos in chat.
+- [Pomodoro Example](https://github.com/machinat/sociably-pomodoro) - a pomodoro timer in chat.
+- [4digits Example](https://github.com/machinat/sociably-4digit-game) - playing guessing 4 digits game in chat.
 
 ## Comparison
 
