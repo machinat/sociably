@@ -39,8 +39,7 @@ export class MessengerServerAuthenticator
       platform: MESSENGER,
       platformName: 'Messenger',
       platformColor: '#4B69FF',
-      platformImageUrl:
-        'https://machinat.github.io/sociably/img/icon/messenger.png',
+      platformImageUrl: 'https://sociably.js.org/img/icon/messenger.png',
       checkAuthData: (data) => {
         const result = this.checkAuthData(data);
         if (!result.ok) {

@@ -67,7 +67,7 @@ h1 {
 
 <div class="flex center column container">
   <div class="flex center icons">
-    <img alt="Telegram" src="https://machinat.github.io/sociably/img/icon/telegram.png" />${
+    <img alt="Telegram" src="https://sociably.js.org/img/icon/telegram.png" />${
       appIconUrl
         ? `
     <div class="x"></div>

@@ -171,7 +171,7 @@ ${when(recognizer === 'dialogflow')`
         },
         basicAuth: {
           appName: APP_NAME,
-          appIconUrl: 'https://machinat.github.io/sociably/img/logo.jpg',
+          appIconUrl: 'https://sociably.js.org/img/logo.jpg',
         },
       }),`}
     ],

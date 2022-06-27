@@ -56,7 +56,7 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
       "getChatLink": [Function],
       "platform": "twitter",
       "platformColor": "#1D9BF0",
-      "platformImageUrl": "https://machinat.github.io/sociably/img/icon/twitter.png",
+      "platformImageUrl": "https://sociably.js.org/img/icon/twitter.png",
       "platformName": "Twitter",
     }
   `);

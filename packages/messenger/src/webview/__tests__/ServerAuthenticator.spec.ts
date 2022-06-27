@@ -56,7 +56,7 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
       "getChatLink": [Function],
       "platform": "messenger",
       "platformColor": "#4B69FF",
-      "platformImageUrl": "https://machinat.github.io/sociably/img/icon/messenger.png",
+      "platformImageUrl": "https://sociably.js.org/img/icon/messenger.png",
       "platformName": "Messenger",
     }
   `);
