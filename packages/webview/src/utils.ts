@@ -61,7 +61,11 @@ export const useAuthLogin =
     };
   };
 
-export const verifyOrigin = (origin: string, expectedHost: string): boolean => {
+export const verifyOrigin = (
+  secure: boolean,
+  origin: string,
+  expectedHost: string
+): boolean => {
   const [protocol, host] = origin.split('//', 2);
-  return protocol === 'https:' && host === expectedHost;
+  return (!secure || protocol === 'https:') && host === expectedHost;
 };

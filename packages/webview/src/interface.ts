@@ -109,7 +109,7 @@ export const SocketServerP = makeClassProvider({
     broker,
     authController,
     marshaler,
-    { webviewHost, heartbeatInterval }
+    { secure = true, webviewHost, heartbeatInterval }
   ) =>
     new WebviewSocketServer({
       id: serverId || undefined,
@@ -117,7 +117,7 @@ export const SocketServerP = makeClassProvider({
       broker,
       marshaler,
       verifyUpgrade: ({ headers }) =>
-        !!headers.origin && verifyOrigin(headers.origin, webviewHost),
+        !!headers.origin && verifyOrigin(secure, headers.origin, webviewHost),
       verifyLogin: useAuthLogin(authController),
       heartbeatInterval,
     }),
