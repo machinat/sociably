@@ -77,10 +77,14 @@ export class WebviewNextReceiver extends NextReceiver {}
 export const NextReceiverP = makeClassProvider({
   lifetime: 'singleton',
   deps: [Next.Server, ConfigsI],
-  factory: (server, { noPrepareNext, webviewPath = DEFAULT_NEXT_PATH }) =>
+  factory: (
+    server,
+    { noPrepareNext, nextRequestHandler, webviewPath = DEFAULT_NEXT_PATH }
+  ) =>
     new WebviewNextReceiver(server, {
       entryPath: webviewPath,
       noPrepare: noPrepareNext,
+      handleRequest: nextRequestHandler,
     }),
 })(WebviewNextReceiver);
 

@@ -18,7 +18,7 @@ import type {
   UserOfAuthenticator,
 } from '@sociably/auth';
 import type { CodeMessageComponent } from '@sociably/auth/basicAuth';
-import type { NextServerOptions } from '@sociably/next';
+import type { NextServerOptions, HandleNextRequestFn } from '@sociably/next';
 import type {
   EventInput,
   EventValue,
@@ -122,6 +122,7 @@ export type WebviewConfigs<
   noPrepareNext?: boolean;
   /** Options for nextjs server. */
   nextServerOptions?: NextServerOptions;
+  nextRequestHandler?: HandleNextRequestFn;
 
   /** Route path to the web socket server. Default to `"/websocket"` */
   webSocketPath?: string;
