@@ -179,9 +179,18 @@ export class NextReceiver {
         }
       } else {
         const { code, reason, headers } = response;
-        res.writeHead(code, headers);
+        res.statusCode = code;
+
+        if (headers) {
+          for (const [name, value] of Object.entries(headers)) {
+            if (value) {
+              res.setHeader(name, value);
+            }
+          }
+        }
+
         await this._next.renderError(
-          new Error(reason),
+          reason ? new Error(reason) : null,
           req,
           res,
           trimedRoute,

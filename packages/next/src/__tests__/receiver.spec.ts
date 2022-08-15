@@ -398,9 +398,10 @@ it('call next.renderError() with customized headers return by handleRequest', as
     { foo: 'bar' }
   );
 
-  expect(res.writeHead.mock).toHaveBeenCalledWith(418, {
-    'x-x-x': 't-e-a-p-o-t',
-  });
+  expect(res.mock.setter('statusCode')).toHaveBeenCalledTimes(1);
+  expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(418);
+  expect(res.setHeader.mock).toHaveBeenCalledTimes(1);
+  expect(res.setHeader.mock).toHaveBeenCalledWith('x-x-x', 't-e-a-p-o-t');
 });
 
 it('pass "_next" api calls to next directly', async () => {

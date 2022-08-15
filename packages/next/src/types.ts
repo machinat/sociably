@@ -42,9 +42,9 @@ type OkHandlerResponse = {
 
 type ErrorHandlerResponse = {
   ok: false;
-  headers?: OutgoingHttpHeaders;
   code: number;
-  reason: string;
+  reason?: string;
+  headers?: OutgoingHttpHeaders;
 };
 
 export type HandlerResponse = OkHandlerResponse | ErrorHandlerResponse;
