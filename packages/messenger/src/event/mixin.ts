@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { MESSENGER } from '../constant';
 import type { PSIDTarget, UserRefTarget } from '../types';
 
@@ -513,6 +512,7 @@ type ReferralSource =
   | 'SHORTLINK'
   | 'CUSTOMER_CHAT_PLUGIN';
 
+/* eslint-disable camelcase */
 type RawReferral = {
   source: ReferralSource;
   type: 'OPEN_THREAD';
@@ -521,6 +521,7 @@ type RawReferral = {
   referer_uri: undefined | string;
   is_guest_user: undefined | boolean;
 };
+/* eslint-enable camelcase */
 
 /**
  * @category Event Mixin

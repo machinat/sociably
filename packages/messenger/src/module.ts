@@ -5,7 +5,7 @@ import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
-
+import type { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { MESSENGER } from './constant';
 import BotP from './Bot';
@@ -18,9 +18,7 @@ import MessengerUser from './User';
 import type {
   MessengerConfigs,
   MessengerEventContext,
-  MessengerJob,
   MessengerDispatchFrame,
-  MessengerResult,
 } from './types';
 
 /** @interanl */
@@ -56,9 +54,9 @@ namespace Messenger {
   ): SociablyPlatform<
     MessengerEventContext,
     null,
-    MessengerJob,
+    MetaApiJob,
     MessengerDispatchFrame,
-    MessengerResult
+    MetaApiResult
   > => {
     return {
       name: MESSENGER,

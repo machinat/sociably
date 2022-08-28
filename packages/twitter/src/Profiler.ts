@@ -3,6 +3,7 @@ import type { UserProfiler } from '@sociably/core/base/Profiler';
 import type TwitterUser from './User';
 import TwitterUserProfile from './UserProfile';
 import BotP from './Bot';
+import { TWITTER } from './constant';
 import type { RawUser, RawSettings } from './types';
 
 type GetUserProfileOptions = {
@@ -16,6 +17,7 @@ type GetUserProfileOptions = {
  */
 export class TwitterProfiler implements UserProfiler<TwitterUser> {
   bot: BotP;
+  platform = TWITTER;
 
   constructor(bot: BotP) {
     this.bot = bot;

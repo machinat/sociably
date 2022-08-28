@@ -1,10 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import Renderer from '@sociably/core/renderer';
 import TwitterChat from '../../Chat';
 import { MarkRead } from '../MarkRead';
-
-const renderer = new Renderer('twitter', async () => null);
+import { renderUnitElement } from './utils';
 
 it('is a valid Component', () => {
   expect(typeof MarkRead).toBe('function');
@@ -13,11 +11,7 @@ it('is a valid Component', () => {
 });
 
 test('rendering', async () => {
-  const segments = await renderer.render(
-    <MarkRead messageId="12345" />,
-    null,
-    null
-  );
+  const segments = await renderUnitElement(<MarkRead messageId="12345" />);
   expect(segments).toMatchInlineSnapshot(`
     Array [
       Object {

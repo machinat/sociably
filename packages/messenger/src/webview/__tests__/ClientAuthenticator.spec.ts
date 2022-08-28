@@ -65,10 +65,10 @@ test('.checkAuthData(data)', () => {
 
   expect(authenticator.checkAuthData({ page: '54321', id: '67890' }))
     .toMatchInlineSnapshot(`
-          Object {
-            "code": 400,
-            "ok": false,
-            "reason": "agent not match",
-          }
-        `);
+    Object {
+      "code": 400,
+      "ok": false,
+      "reason": "page not match",
+    }
+  `);
 });

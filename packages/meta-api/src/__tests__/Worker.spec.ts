@@ -34,11 +34,14 @@ const jobs = [
   },
 ];
 
+const bodySpy = moxy(() => true);
+
 let graphApi;
 let queue;
 beforeEach(() => {
   graphApi = nock('https://graph.facebook.com');
   queue = new Queue();
+  bodySpy.mock.clear();
 });
 
 afterEach(() => {
@@ -48,8 +51,6 @@ afterEach(() => {
 it('call to graph api', async () => {
   const accessToken = '_access_token_';
   const worker = new MessengerWorker(accessToken, 0, 'v11.0', undefined);
-
-  const bodySpy = moxy(() => true);
 
   const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
@@ -111,8 +112,6 @@ it('attach appsecret_proof if appSecret is given', async () => {
 
   const worker = new MessengerWorker(accessToken, 0, 'v11.0', appSecret);
 
-  const bodySpy = moxy(() => true);
-
   const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
     JSON.stringify(
@@ -167,8 +166,6 @@ test('use different graph api version', async () => {
 
 it('upload files with form data if binary attached on job', async () => {
   const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
-
-  const bodySpy = moxy(() => true);
 
   const scope = graphApi
     .matchHeader('content-type', /multipart\/form-data.*/)
@@ -286,14 +283,14 @@ it('throw if connection error happen', async () => {
 
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
-    Object {
-      "batch": null,
-      "errors": Array [
-        [FetchError: request to https://graph.facebook.com/v11.0/ failed, reason: something wrong like connection error],
-      ],
-      "success": false,
-    }
-  `);
+              Object {
+                "batch": null,
+                "errors": Array [
+                  [FetchError: request to https://graph.facebook.com/v11.0/ failed, reason: something wrong like connection error],
+                ],
+                "success": false,
+              }
+          `);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -312,14 +309,14 @@ it('throw if api error happen', async () => {
 
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
-    Object {
-      "batch": null,
-      "errors": Array [
-        [GraphAPIError (OAuthException): The access token could not be decrypted],
-      ],
-      "success": false,
-    }
-  `);
+              Object {
+                "batch": null,
+                "errors": Array [
+                  [GraphAPIError (OAuthException): The access token could not be decrypted],
+                ],
+                "success": false,
+              }
+          `);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -368,7 +365,6 @@ it('throw if one single job fail', async () => {
 it('waits consumeInterval for jobs to execute if set', async () => {
   const worker = new MessengerWorker('_access_token_', 300, 'v11.0', undefined);
 
-  const bodySpy = moxy(() => true);
   const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
     JSON.stringify(
@@ -404,7 +400,6 @@ it('waits consumeInterval for jobs to execute if set', async () => {
 it('execute immediatly if consumeInterval is 0', async () => {
   const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
 
-  const bodySpy = moxy(() => true);
   const scope = graphApi
     .post('/v11.0/', bodySpy)
     .times(3)
@@ -438,11 +433,66 @@ it('execute immediatly if consumeInterval is 0', async () => {
   await promise3;
 });
 
-it('place params at query if DELETE job met', async () => {
+it('use querystring params for GET request', async () => {
   const accessToken = '_access_token_';
   const worker = new MessengerWorker(accessToken, 0, 'v11.0', undefined);
 
-  const bodySpy = moxy(() => true);
+  const scope = graphApi
+    .post('/v11.0/', bodySpy)
+    .reply(
+      200,
+      JSON.stringify([
+        { code: 200, body: JSON.stringify({ result: 'success' }) },
+      ])
+    );
+
+  worker.start(queue);
+
+  const job = {
+    key: undefined,
+    request: {
+      method: 'GET',
+      relative_url: '1234567890',
+      body: { fields: ['id', 'name', 'email'] },
+    },
+  };
+
+  await expect(queue.executeJobs([job])).resolves.toEqual({
+    success: true,
+    errors: null,
+    batch: [
+      {
+        success: true,
+        job,
+        result: { code: 200, body: { result: 'success' } },
+      },
+    ],
+  });
+
+  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+  const body = bodySpy.mock.calls[0].args[0];
+
+  expect(body.access_token).toBe(accessToken);
+  expect(body).toMatchSnapshot();
+
+  const [request] = JSON.parse(body.batch);
+
+  expect(request).toEqual({
+    method: 'GET',
+    relative_url: `1234567890?fields=${encodeURIComponent(
+      JSON.stringify(['id', 'name', 'email'])
+    )}`,
+    omit_response_on_success: false,
+    depends_on: undefined,
+    body: undefined,
+  });
+
+  expect(scope.isDone()).toBe(true);
+});
+
+it('use querystring params for DELETE request', async () => {
+  const accessToken = '_access_token_';
+  const worker = new MessengerWorker(accessToken, 0, 'v11.0', undefined);
 
   const scope = graphApi
     .post('/v11.0/', bodySpy)
@@ -460,9 +510,7 @@ it('place params at query if DELETE job met', async () => {
     request: {
       method: 'DELETE',
       relative_url: 'me/messenger_profile',
-      body: {
-        fields: ['whitelisted_domains'],
-      },
+      body: { fields: ['whitelisted_domains'] },
     },
   };
 
@@ -495,4 +543,217 @@ it('place params at query if DELETE job met', async () => {
   });
 
   expect(scope.isDone()).toBe(true);
+});
+
+describe('using API result in following request', () => {
+  const accomplishRequest = moxy((request, getValue) => ({
+    ...request,
+    body: { ...request.body, image: { id: getValue('$.id') } },
+  }));
+
+  const continuousJobs = [
+    {
+      key: 'foo_channel',
+      request: {
+        method: 'POST',
+        relative_url: '1234567890/media',
+        body: {
+          type: 'image/jpeg',
+          messaging_product: 'whatsapp',
+          file: '@/pretend/to/upload/a/file.jpg',
+        },
+      },
+      registerResult: 'upload_image',
+    },
+    {
+      key: 'foo_channel',
+      request: {
+        method: 'POST',
+        relative_url: '1234567890/messages',
+        body: {
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: '9876543210',
+          type: 'image',
+          image: { id: ':id' },
+        },
+      },
+      consumeResult: {
+        key: 'upload_image',
+        accomplishRequest,
+      },
+    },
+  ];
+
+  const continuousApiResults = [
+    { code: 201, body: JSON.stringify({ id: '1111111111' }) },
+    {
+      code: 200,
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        contacts: [{ input: '9876543210', wa_id: '9876543210' }],
+        messages: [{ id: 'wamid.Abc123...' }],
+      }),
+    },
+  ];
+
+  beforeEach(() => {
+    accomplishRequest.mock.clear();
+  });
+
+  const decodeBatchedRequest = (request) => ({
+    ...request,
+    body: decodeURIComponent(request.body),
+  });
+
+  test('registerResult & consumeResult in the same batch', async () => {
+    const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+
+    const apiCall = graphApi
+      .post('/v11.0/', bodySpy)
+      .reply(200, JSON.stringify(continuousApiResults));
+
+    worker.start(queue);
+    await expect(queue.executeJobs(continuousJobs)).resolves.toMatchSnapshot();
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+    expect(body).toMatchSnapshot();
+
+    expect(JSON.parse(body.batch).map(decodeBatchedRequest))
+      .toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "body": "type=image/jpeg&messaging_product=whatsapp&file=@/pretend/to/upload/a/file.jpg",
+          "method": "POST",
+          "name": "foo_channel-1",
+          "omit_response_on_success": false,
+          "relative_url": "1234567890/media",
+        },
+        Object {
+          "body": "messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image={\\"id\\":\\"{result=foo_channel-1:$.id}\\"}",
+          "depends_on": "foo_channel-1",
+          "method": "POST",
+          "name": "foo_channel-2",
+          "omit_response_on_success": false,
+          "relative_url": "1234567890/messages",
+        },
+      ]
+    `);
+
+    expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
+    expect(accomplishRequest.mock).toHaveBeenCalledWith(
+      continuousJobs[1].request,
+      expect.any(Function)
+    );
+
+    expect(apiCall.isDone()).toBe(true);
+  });
+
+  test('when job key is undeinfed', async () => {
+    const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+
+    const apiCall = graphApi
+      .post('/v11.0/', bodySpy)
+      .reply(200, JSON.stringify(continuousApiResults));
+
+    worker.start(queue);
+    await expect(
+      queue.executeJobs(
+        continuousJobs.map((job) => ({ ...job, key: undefined }))
+      )
+    ).resolves.toMatchSnapshot();
+
+    const body = bodySpy.mock.calls[0].args[0];
+    expect(JSON.parse(body.batch).map(decodeBatchedRequest))
+      .toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "body": "type=image/jpeg&messaging_product=whatsapp&file=@/pretend/to/upload/a/file.jpg",
+          "method": "POST",
+          "name": "#-0",
+          "omit_response_on_success": false,
+          "relative_url": "1234567890/media",
+        },
+        Object {
+          "body": "messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image={\\"id\\":\\"{result=#-0:$.id}\\"}",
+          "method": "POST",
+          "omit_response_on_success": false,
+          "relative_url": "1234567890/messages",
+        },
+      ]
+    `);
+
+    expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
+    expect(accomplishRequest.mock).toHaveBeenCalledWith(
+      continuousJobs[1].request,
+      expect.any(Function)
+    );
+
+    expect(apiCall.isDone()).toBe(true);
+  });
+
+  test('registerResult & consumeResult in different batches', async () => {
+    const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+
+    const apiCall1 = graphApi.post('/v11.0/', bodySpy).reply(
+      200,
+      JSON.stringify([
+        ...new Array(49).fill({
+          code: 200,
+          body: JSON.stringify({ result: 'ok' }),
+        }),
+        continuousApiResults[0],
+      ])
+    );
+    const apiCall2 = graphApi
+      .post('/v11.0/', bodySpy)
+      .reply(200, JSON.stringify([continuousApiResults[1]]));
+
+    worker.start(queue);
+    await expect(
+      queue.executeJobs([
+        ...new Array(49).fill({
+          request: { method: 'GET', relative_url: '1234567890' },
+        }),
+        ...continuousJobs,
+      ])
+    ).resolves.toMatchSnapshot();
+
+    expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+    const body1 = bodySpy.mock.calls[0].args[0];
+    const body2 = bodySpy.mock.calls[1].args[0];
+    expect(body1).toMatchSnapshot();
+    expect(body2).toMatchSnapshot();
+
+    expect(decodeBatchedRequest(JSON.parse(body1.batch)[49]))
+      .toMatchInlineSnapshot(`
+      Object {
+        "body": "type=image/jpeg&messaging_product=whatsapp&file=@/pretend/to/upload/a/file.jpg",
+        "method": "POST",
+        "name": "foo_channel-1",
+        "omit_response_on_success": false,
+        "relative_url": "1234567890/media",
+      }
+    `);
+    expect(decodeBatchedRequest(JSON.parse(body2.batch)[0]))
+      .toMatchInlineSnapshot(`
+      Object {
+        "body": "messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image={\\"id\\":\\"1111111111\\"}",
+        "method": "POST",
+        "name": "foo_channel-1",
+        "omit_response_on_success": false,
+        "relative_url": "1234567890/messages",
+      }
+    `);
+
+    expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
+    expect(accomplishRequest.mock).toHaveBeenCalledWith(
+      continuousJobs[1].request,
+      expect.any(Function)
+    );
+
+    expect(apiCall1.isDone()).toBe(true);
+    expect(apiCall2.isDone()).toBe(true);
+  });
 });

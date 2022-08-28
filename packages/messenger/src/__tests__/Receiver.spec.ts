@@ -51,162 +51,7 @@ beforeEach(() => {
   popEventWrapper.mock.clear();
 });
 
-it('throw if appSecret not given', () => {
-  expect(
-    () =>
-      new MessengerReceiver({
-        bot,
-        popEventWrapper,
-        shouldHandleChallenge: false,
-      })
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"appSecret should not be empty if shouldVerifyRequest set to true"`
-  );
-});
-
-it('throw if verifyToken not given', () => {
-  expect(
-    () =>
-      new MessengerReceiver({
-        bot,
-        popEventWrapper,
-        shouldVerifyRequest: false,
-      })
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"verifyToken should not be empty if shouldHandleChallenge set to true"`
-  );
-});
-
-describe('handling GET', () => {
-  it('respond 403 if shouldHandleChallenge set to false', async () => {
-    const receiver = new MessengerReceiver({
-      bot,
-      popEventWrapper,
-      shouldHandleChallenge: false,
-      appSecret: '_APP_SECRET_',
-    });
-
-    const req = createReq({ method: 'GET' });
-    const res = createRes();
-
-    await receiver.handleRequest(req, res);
-
-    expect(res.statusCode).toBe(403);
-    expect(res.finished).toBe(true);
-
-    expect(popEventMock).not.toHaveBeenCalled();
-  });
-
-  it.each(['', 'xxx', 'non_subscribe'])(
-    'respond 400 if hub.mode param is not "subscribe"',
-    async (mode) => {
-      const receiver = new MessengerReceiver({
-        bot,
-        popEventWrapper,
-        verifyToken: '_MY_TOKEN_',
-        shouldVerifyRequest: false,
-      });
-
-      const req = createReq({
-        method: 'GET',
-        url: `/?hub.mode=${encodeURIComponent(mode)}`,
-      });
-      const res = createRes();
-
-      await receiver.handleRequest(req, res);
-
-      expect(res.statusCode).toBe(400);
-      expect(res.finished).toBe(true);
-
-      expect(popEventMock).not.toHaveBeenCalled();
-    }
-  );
-
-  it('respond 400 if hub.verify_token param not matched', async () => {
-    const receiver = new MessengerReceiver({
-      bot,
-      popEventWrapper,
-      verifyToken: '_MY_TOKEN_',
-      shouldVerifyRequest: false,
-    });
-
-    const req = createReq({
-      method: 'GET',
-      url: '/?hub.mode=subscribe&hub.verify_token=_WRONG_TOKEN_',
-    });
-    const res = createRes();
-
-    await receiver.handleRequest(req, res);
-
-    expect(res.statusCode).toBe(400);
-    expect(res.finished).toBe(true);
-
-    expect(popEventMock).not.toHaveBeenCalled();
-  });
-
-  it('respond 200 and hub.challenge within body', async () => {
-    const receiver = new MessengerReceiver({
-      bot,
-      popEventWrapper,
-      verifyToken: '_MY_TOKEN_',
-      shouldVerifyRequest: false,
-    });
-
-    const req = createReq({
-      method: 'GET',
-      url: '/?hub.mode=subscribe&hub.verify_token=_MY_TOKEN_&hub.challenge=FooBarBazHub',
-    });
-    const res = createRes();
-
-    await receiver.handleRequest(req, res);
-
-    expect(res.statusCode).toBe(200);
-    expect(res.finished).toBe(true);
-    expect(res.end.mock.calls[0].args[0]).toBe('FooBarBazHub');
-
-    expect(popEventMock).not.toHaveBeenCalled();
-  });
-});
-
 describe('handling POST', () => {
-  it('respond 400 if body is empty', async () => {
-    const receiver = new MessengerReceiver({
-      bot,
-      popEventWrapper,
-      shouldHandleChallenge: false,
-      shouldVerifyRequest: false,
-    });
-
-    const req = createReq({ method: 'POST' });
-    const res = createRes();
-
-    await receiver.handleRequest(req, res);
-
-    expect(res.statusCode).toBe(400);
-    expect(res.finished).toBe(true);
-
-    expect(popEventMock).not.toHaveBeenCalled();
-  });
-
-  it('respond 400 if body is not in valid JSON format', async () => {
-    const receiver = new MessengerReceiver({
-      bot,
-      popEventWrapper,
-      shouldHandleChallenge: false,
-      shouldVerifyRequest: false,
-    });
-
-    const req = createReq({ method: 'POST', body: 'I am Jason' });
-    const res = createRes();
-
-    await receiver.handleRequest(req, res);
-
-    expect(res.statusCode).toBe(400);
-    expect(res.finished).toBe(true);
-
-    expect(popEventMock).not.toHaveBeenCalled();
-  });
-
   it('respond 404 if "object" field is not "page"', async () => {
     const receiver = new MessengerReceiver({
       bot,
@@ -215,7 +60,10 @@ describe('handling POST', () => {
       shouldVerifyRequest: false,
     });
 
-    const req = createReq({ method: 'POST', body: '{"object":"Pegg"}' });
+    const req = createReq({
+      method: 'POST',
+      body: '{"object":"Pegg","entry":[]}',
+    });
     const res = createRes();
 
     await receiver.handleRequest(req, res);
@@ -306,7 +154,7 @@ describe('handling POST', () => {
     expect(event2.payload).toEqual(body.entry[0].messaging[1]);
   });
 
-  it('create channel from optin.user_ref if sender not included', async () => {
+  it('create channel from optin.user_ref if no sender', async () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
@@ -374,7 +222,7 @@ describe('handling POST', () => {
     }
   });
 
-  test('reply(message) sugar', async () => {
+  test('context.reply(message)', async () => {
     const receiver = new MessengerReceiver({
       bot,
       popEventWrapper,
@@ -402,81 +250,5 @@ describe('handling POST', () => {
 
     expect(bot.render.mock).toHaveBeenCalledTimes(1);
     expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world');
-  });
-
-  test('passing signature validation', async () => {
-    const appSecret = '_MY_SECRET_';
-    const receiver = new MessengerReceiver({
-      bot,
-      popEventWrapper,
-      appSecret,
-      shouldHandleChallenge: false,
-    });
-
-    const body =
-      '{"object":"page","entry":[{"id":"12345","time":1458692752478,"messaging":[{"sender":{"id":"67890"},"recipient":{"id":"12345"},"message":{"mid":"xxx","text":"foo"}}]}]}';
-    const hmac = '96674bf6c7363f2582a3e18434e4b720fe4f8abc';
-
-    const req = createReq({
-      method: 'POST',
-      headers: { 'x-hub-signature': `sha1=${hmac}` },
-      body,
-    });
-    const res = createRes();
-
-    await receiver.handleRequest(req, res);
-
-    expect(res.statusCode).toBe(200);
-    expect(res.finished).toBe(true);
-
-    const { event } = popEventMock.calls[0].args[0];
-    expect(event.user).toEqual(new MessengerUser('12345', '67890'));
-    expect(event.channel).toEqual(new MessengerChat('12345', '67890'));
-
-    expect(event.platform).toBe('messenger');
-    expect(event.category).toBe('message');
-    expect(event.type).toBe('text');
-    expect(event.text).toBe('foo');
-  });
-
-  it('respond 401 if signature is invalid', async () => {
-    const appSecret = '_MY_SECRET_';
-    const receiver = new MessengerReceiver({
-      bot,
-      popEventWrapper,
-      appSecret,
-      shouldHandleChallenge: false,
-    });
-
-    const body = '{"some":"body"}';
-    const hmac = '_WRONG_SIGNATURE_';
-
-    const req = createReq({
-      method: 'POST',
-      headers: { 'x-hub-signature': `sha1=${hmac}` },
-      body,
-    });
-    const res = createRes();
-
-    await receiver.handleRequest(req, res);
-
-    expect(res.statusCode).toBe(401);
-    expect(res.finished).toBe(true);
-  });
-
-  it('respond 400 if body is empty', async () => {
-    const receiver = new MessengerReceiver({
-      bot,
-      popEventWrapper,
-      shouldHandleChallenge: false,
-      shouldVerifyRequest: false,
-    });
-    const req = createReq({ method: 'POST' });
-    const res = createRes();
-
-    await receiver.handleRequest(req, res);
-
-    expect(res.statusCode).toBe(400);
-    expect(res.finished).toBe(true);
   });
 });

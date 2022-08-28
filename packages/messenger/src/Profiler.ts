@@ -1,10 +1,11 @@
 import { makeClassProvider } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
+import { MetaApiError } from '@sociably/meta-api';
 import BotP from './Bot';
 import type MessengerUser from './User';
 import type { RawUserProfile } from './types';
+import { MESSENGER } from './constant';
 import { ConfigsI } from './interface';
-import GraphApiError from './Error';
 import MessengerUserProfile from './UserProfile';
 
 const DEFAULT_PROFILE_FIELDS = [
@@ -26,6 +27,7 @@ type ProfilerOptions = {
 export class MessengerProfiler implements UserProfiler<MessengerUser> {
   bot: BotP;
   profileFields: string;
+  platform = MESSENGER;
 
   constructor(bot: BotP, { optionalProfileFields = [] }: ProfilerOptions = {}) {
     this.bot = bot;
@@ -46,7 +48,7 @@ export class MessengerProfiler implements UserProfiler<MessengerUser> {
         `${user.id}?fields=${this.profileFields}`
       );
     } catch (err) {
-      if (err instanceof GraphApiError) {
+      if (err instanceof MetaApiError) {
         const errSubCode = err.info.error_subcode;
         if (errSubCode === 2018218) {
           // can't get porfile from user login with phone number

@@ -1,12 +1,36 @@
 import moxy from '@moxyjs/moxy';
 import saveReusableAttachments from '../saveReusableAttachments';
+import AssetsManager from '../AssetsManager';
 
-const registry = moxy({
+const manager = moxy<AssetsManager>({
   saveAttachment: async () => {},
-});
+} as never);
 
 beforeEach(() => {
-  registry.mock.clear();
+  manager.mock.clear();
+});
+
+it('do nothing when job has no assetTag', async () => {
+  const msgResult = { code: 200, headers: {}, body: {} };
+  const response = {
+    jobs: [
+      { request: { ...{} } },
+      { request: { ...{} } },
+      { request: { ...{} } },
+    ],
+    results: [msgResult, msgResult, msgResult],
+  };
+  const next = moxy(async () => response as never);
+  const context = { hello: 'droid' };
+
+  await expect(
+    saveReusableAttachments(manager)(context as any, next)
+  ).resolves.toEqual(response);
+
+  expect(next.mock).toHaveBeenCalledTimes(1);
+  expect(next.mock).toHaveBeenCalledWith(context);
+
+  expect(manager.saveAttachment.mock).not.toHaveBeenCalled();
 });
 
 it('register asset created within send api', async () => {
@@ -42,28 +66,28 @@ it('register asset created within send api', async () => {
       },
     ],
   };
-  const next = moxy(async () => response);
+  const next = moxy(async () => response as never);
   const context = { hello: 'droid' };
 
   await expect(
-    saveReusableAttachments(registry)(context as any, next)
+    saveReusableAttachments(manager)(context as any, next)
   ).resolves.toEqual(response);
 
   expect(next.mock).toHaveBeenCalledTimes(1);
   expect(next.mock).toHaveBeenCalledWith(context);
 
-  expect(registry.saveAttachment.mock).toHaveBeenCalledTimes(3);
-  expect(registry.saveAttachment.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveAttachment.mock).toHaveBeenCalledTimes(3);
+  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
     1,
     'foo',
     '_ATTACHMENT_1_'
   );
-  expect(registry.saveAttachment.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
     2,
     'bar',
     '_ATTACHMENT_2_'
   );
-  expect(registry.saveAttachment.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
     3,
     'baz',
     '_ATTACHMENT_3_'

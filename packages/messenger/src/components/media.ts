@@ -1,12 +1,13 @@
 import { makeUnitSegment } from '@sociably/core/renderer';
 import type { UnitSegment } from '@sociably/core/renderer';
+import type { FileInfo } from '@sociably/meta-api';
 import { makeMessengerComponent } from '../utils';
 import {
   ATTACHMENT_ASSET_TAG,
   ATTACHMENT_DATA,
   ATTACHMENT_INFO,
 } from '../constant';
-import type { MessageValue, MessengerComponent, FileInfo } from '../types';
+import type { MessageValue, MessengerComponent } from '../types';
 
 /**
  * @category Props
@@ -22,14 +23,13 @@ export type MediaProps = {
    * Defaults to false.
    */
   reusable?: boolean;
-  /**
-   * Set to true to make the saved asset sendable to other message recipients.
-   * Defaults to false.
-   */
+  /** Use an uploaded attachment id */
   attachmentId?: string;
-
+  /** The asset tag for saving the created attachment and reusing it */
   assetTag?: string;
+  /** Upload a media file */
   fileData?: string | Buffer | NodeJS.ReadableStream;
+  /** Uploading info */
   fileInfo?: FileInfo;
 };
 

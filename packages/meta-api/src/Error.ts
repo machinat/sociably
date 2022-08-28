@@ -1,14 +1,14 @@
-import type { GraphApiErrorInfo, GraphApiErrorBody } from './types';
+import type { MetaApiErrorInfo, GraphApiErrorBody } from './types';
 
-export default class GraphApiError extends Error {
+export default class MetaApiError extends Error {
   code: number;
-  info: GraphApiErrorInfo;
+  info: MetaApiErrorInfo;
 
   constructor({ error }: GraphApiErrorBody) {
     super(error.message);
 
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, GraphApiError);
+      Error.captureStackTrace(this, MetaApiError);
     }
 
     this.name = `GraphAPIError (${error.type})`;

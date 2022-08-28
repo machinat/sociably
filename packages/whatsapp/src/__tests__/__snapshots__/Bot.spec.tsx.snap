@@ -1,0 +1,142 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#render(channel, message, options) post to NUMBER/messages api 1`] = `
+Object {
+  "jobs": Array [
+    Object {
+      "consumeResult": undefined,
+      "key": "whatsapp.1234567890.9876543210",
+      "request": Object {
+        "body": Object {
+          "context": undefined,
+          "interactive": Object {
+            "actions": Object {
+              "buttons": Array [
+                Object {
+                  "id": "BAZ",
+                  "title": "BAR",
+                  "type": "reply",
+                },
+              ],
+            },
+            "body": Object {
+              "text": "Hello *World!*",
+            },
+            "footer": undefined,
+            "header": Object {
+              "image": Object {
+                "caption": undefined,
+                "filename": undefined,
+                "id": undefined,
+                "link": "http://sociably.com/foo.jpg",
+              },
+              "type": "image",
+            },
+            "type": "buttons",
+          },
+          "messaging_product": "whatsapp",
+          "to": "9876543210",
+          "type": "interactive",
+        },
+        "method": "POST",
+        "relative_url": "1234567890/messages",
+      },
+    },
+  ],
+  "results": Array [
+    Object {
+      "body": Object {
+        "contacts": Array [
+          Object {
+            "input": "9876543210",
+            "wa_id": "9876543210",
+          },
+        ],
+        "messages": Array [
+          Object {
+            "id": "wamid....",
+          },
+        ],
+        "messaging_product": "whatsapp",
+      },
+      "code": 200,
+    },
+  ],
+  "tasks": Array [
+    Object {
+      "payload": Array [
+        Object {
+          "consumeResult": undefined,
+          "key": "whatsapp.1234567890.9876543210",
+          "request": Object {
+            "body": Object {
+              "context": undefined,
+              "interactive": Object {
+                "actions": Object {
+                  "buttons": Array [
+                    Object {
+                      "id": "BAZ",
+                      "title": "BAR",
+                      "type": "reply",
+                    },
+                  ],
+                },
+                "body": Object {
+                  "text": "Hello *World!*",
+                },
+                "footer": undefined,
+                "header": Object {
+                  "image": Object {
+                    "caption": undefined,
+                    "filename": undefined,
+                    "id": undefined,
+                    "link": "http://sociably.com/foo.jpg",
+                  },
+                  "type": "image",
+                },
+                "type": "buttons",
+              },
+              "messaging_product": "whatsapp",
+              "to": "9876543210",
+              "type": "interactive",
+            },
+            "method": "POST",
+            "relative_url": "1234567890/messages",
+          },
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
+
+exports[`#render(channel, message, options) post to NUMBER/messages api 2`] = `
+Object {
+  "access_token": "_ACCESS_TOKEN_",
+  "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"type=interactive&interactive=%7B%22type%22%3A%22buttons%22%2C%22body%22%3A%7B%22text%22%3A%22Hello%20*World!*%22%7D%2C%22header%22%3A%7B%22type%22%3A%22image%22%2C%22image%22%3A%7B%22link%22%3A%22http%3A%2F%2Fsociably.com%2Ffoo.jpg%22%7D%7D%2C%22actions%22%3A%7B%22buttons%22%3A%5B%7B%22type%22%3A%22reply%22%2C%22title%22%3A%22BAR%22%2C%22id%22%3A%22BAZ%22%7D%5D%7D%7D&to=9876543210&messaging_product=whatsapp\\",\\"omit_response_on_success\\":false,\\"name\\":\\"whatsapp.1234567890.9876543210-1\\"}]",
+}
+`;
+
+exports[`#uploadMedia(message) post /media api 1`] = `
+"----------------------------SEPERATOR
+Content-Disposition: form-data; name=\\"file_0\\"
+Content-Type: image/png
+
+foo
+----------------------------SEPERATOR
+Content-Disposition: form-data; name=\\"access_token\\"
+
+_ACCESS_TOKEN_
+----------------------------SEPERATOR
+Content-Disposition: form-data; name=\\"appsecret_proof\\"
+
+932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f
+----------------------------SEPERATOR
+Content-Disposition: form-data; name=\\"batch\\"
+
+[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fpng&messaging_product=whatsapp\\",\\"omit_response_on_success\\":false,\\"attached_files\\":\\"file_0\\"}]
+----------------------------SEPERATOR--
+"
+`;

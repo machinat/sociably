@@ -1,0 +1,57 @@
+{
+  "name": "@sociably/instagram",
+  "version": "0.7.2",
+  "description": "Instagram platform of Sociably.js",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/sociably.git",
+    "directory": "packages/instagram"
+  },
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./components": "./lib/components/index.js",
+    "./asset": "./lib/asset/index.js",
+    "./webview": "./lib/webview/index.js",
+    "./webview/client": "./lib/webview/client.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md",
+    "polyfill-exports.js"
+  ],
+  "scripts": {
+    "postinstall": "node ./polyfill-exports.js",
+    "prepack": "make -f ../../package.mk prepack"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@sociably/meta-api": "^0.7.0",
+    "bowser": "^2.11.0",
+    "invariant": "^2.2.4",
+    "warning": "^4.0.2"
+  },
+  "peerDependencies": {
+    "@sociably/auth": "^0.7.0",
+    "@sociably/core": "^0.7.0",
+    "@sociably/http": "^0.7.0",
+    "@sociably/webview": "^0.7.0"
+  },
+  "peerDependenciesMeta": {
+    "@sociably/auth": {
+      "optional": true
+    },
+    "@sociably/webview": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "jsdom": "^16.6.0"
+  }
+}

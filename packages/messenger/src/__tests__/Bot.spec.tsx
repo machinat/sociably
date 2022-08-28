@@ -1,13 +1,12 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import moxy, { Moxy } from '@moxyjs/moxy';
+import querystring from 'querystring';
 import nock from 'nock';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
-import _Worker from '../Worker';
+import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
 import { MessengerBot } from '../Bot';
-import GraphApiError from '../Error';
 import { Image, Expression, TextReply } from '../components';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
@@ -28,9 +27,15 @@ jest.mock('@sociably/core/renderer', () =>
     .default(jest.requireActual('@sociably/core/renderer'))
 );
 
-jest.mock('../Worker', () =>
-  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../Worker'))
-);
+jest.mock('@sociably/meta-api', () => {
+  const module = jest.requireActual('@sociably/meta-api');
+  return {
+    ...module,
+    MetaApiWorker: jest
+      .requireActual('@moxyjs/moxy')
+      .default(module.MetaApiWorker),
+  };
+});
 
 const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
@@ -199,8 +204,20 @@ describe('#render(channel, message, options)', () => {
       expect(request.relative_url).toBe('me/messages');
     }
 
-    expect(body).toMatchSnapshot({ batch: expect.any(String) });
-    expect(JSON.parse(body.batch)).toMatchSnapshot();
+    expect(body).toMatchSnapshot();
+    expect(JSON.parse(body.batch).map((req) => querystring.decode(req.body)))
+      .toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "message": "{\\"text\\":\\"Hello World!\\"}",
+          "recipient": "{\\"id\\":\\"john\\"}",
+        },
+        Object {
+          "message": "{\\"attachment\\":{\\"type\\":\\"image\\",\\"payload\\":{\\"url\\":\\"https://sociably.io/greeting.png\\"}},\\"quick_replies\\":[{\\"content_type\\":\\"text\\",\\"title\\":\\"Hi!\\",\\"payload\\":\\"👋\\"}]}",
+          "recipient": "{\\"id\\":\\"john\\"}",
+        },
+      ]
+    `);
 
     expect(apiStatus.isDone()).toBe(true);
   });
@@ -224,8 +241,28 @@ describe('#render(channel, message, options)', () => {
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
 
-    expect(body).toMatchSnapshot({ batch: expect.any(String) });
-    expect(JSON.parse(body.batch)).toMatchSnapshot();
+    expect(body).toMatchSnapshot();
+    expect(JSON.parse(body.batch).map((req) => querystring.decode(req.body)))
+      .toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "message": "{\\"text\\":\\"Hello World!\\"}",
+          "messaging_type": "MESSAGE_TAG",
+          "notification_type": "SILENT_PUSH",
+          "persona_id": "billy17",
+          "recipient": "{\\"id\\":\\"john\\"}",
+          "tag": "TRANSPORTATION_UPDATE",
+        },
+        Object {
+          "message": "{\\"attachment\\":{\\"type\\":\\"image\\",\\"payload\\":{\\"url\\":\\"https://sociably.io/greeting.png\\"}},\\"quick_replies\\":[{\\"content_type\\":\\"text\\",\\"title\\":\\"Hi!\\",\\"payload\\":\\"👋\\"}]}",
+          "messaging_type": "MESSAGE_TAG",
+          "notification_type": "SILENT_PUSH",
+          "persona_id": "billy17",
+          "recipient": "{\\"id\\":\\"john\\"}",
+          "tag": "TRANSPORTATION_UPDATE",
+        },
+      ]
+    `);
 
     expect(apiStatus.isDone()).toBe(true);
   });
@@ -268,16 +305,14 @@ describe('#renderAttachment(message)', () => {
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
 
-    expect(body).toMatchSnapshot({ batch: expect.any(String) });
-    expect(JSON.parse(body.batch)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "body": "message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D",
-          "method": "POST",
-          "omit_response_on_success": false,
-          "relative_url": "me/message_attachments",
-        },
-      ]
+    expect(body).toMatchSnapshot();
+    const reqest = JSON.parse(body.batch)[0];
+    expect(reqest.method).toBe('POST');
+    expect(reqest.relative_url).toBe('me/message_attachments');
+    expect(querystring.decode(reqest.body)).toMatchInlineSnapshot(`
+      Object {
+        "message": "{\\"attachment\\":{\\"type\\":\\"image\\",\\"payload\\":{\\"url\\":\\"https://sociably.io/trollface.png\\"}}}",
+      }
     `);
 
     expect(apiStatus.isDone()).toBe(true);
@@ -300,7 +335,7 @@ describe('#makeApiCall()', () => {
     expect(apiCall.isDone()).toBe(true);
   });
 
-  it('throw LineApiError if api call fail', async () => {
+  it('throw MetaApiError if api call fail', async () => {
     const bot = new MessengerBot({ accessToken, pageId });
     bot.start();
 
@@ -323,7 +358,7 @@ describe('#makeApiCall()', () => {
       await bot.makeApiCall('POST', 'foo', { bar: 'baz' });
       expect('should not be here').toBeFalsy();
     } catch (err) {
-      expect(err).toBeInstanceOf(GraphApiError);
+      expect(err).toBeInstanceOf(MetaApiError);
       expect(err.code).toBe(444);
       expect(err.message).toBe('bad');
     }

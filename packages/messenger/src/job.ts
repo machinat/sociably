@@ -1,12 +1,11 @@
 import invariant from 'invariant';
 import { filterSymbolKeys, formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
+import type { MetaApiJob, FileInfo } from '@sociably/meta-api';
 import type {
   MessengerSegmentValue,
-  MessengerJob,
   MessengerSendOptions,
   MessengerChannel,
-  FileInfo,
 } from './types';
 import { isMessageEntry } from './utils';
 import {
@@ -27,8 +26,8 @@ export const createChatJobs = (options?: MessengerSendOptions) => {
   return (
     channel: MessengerChannel,
     segments: DispatchableSegment<MessengerSegmentValue>[]
-  ): MessengerJob[] => {
-    const jobs: MessengerJob[] = new Array(segments.length);
+  ): MetaApiJob[] => {
+    const jobs: MetaApiJob[] = new Array(segments.length);
 
     for (let i = 0; i < segments.length; i += 1) {
       const { value } = segments[i];
@@ -106,7 +105,7 @@ export const createChatJobs = (options?: MessengerSendOptions) => {
 export const createAttachmentJobs = (
   _target: null,
   segments: DispatchableSegment<MessengerSegmentValue>[]
-): MessengerJob[] => {
+): MetaApiJob[] => {
   invariant(segments.length === 1, 'more than 1 message received');
 
   const [{ value, node }] = segments;

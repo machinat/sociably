@@ -10,7 +10,13 @@ import type {
   InitScopeFn,
   DispatchWrapper,
 } from '@sociably/core';
-import MessengerWorker from './Worker';
+import {
+  MetaApiWorker,
+  MetaApiJob,
+  MetaApiResult,
+  MetaApiDispatchResponse,
+  MetaApiResponseBody,
+} from '@sociably/meta-api';
 import generalComponentDelegator from './components/general';
 import { MESSENGER } from './constant';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
@@ -21,21 +27,17 @@ import type {
   MessengerChannel,
   MessengerTarget,
   MessengerComponent,
-  MessengerJob,
-  MessengerResult,
   MessengerSegmentValue,
   MessengerDispatchFrame,
-  MessengerDispatchResponse,
   MessengerSendOptions,
-  FbGraphApiResult,
 } from './types';
 
 type MessengerBotOptions = {
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<
-    MessengerJob,
+    MetaApiJob,
     MessengerDispatchFrame,
-    MessengerResult
+    MetaApiResult
   >;
   pageId: string;
   accessToken: string;
@@ -49,16 +51,16 @@ type MessengerBotOptions = {
  * @category Provider
  */
 export class MessengerBot
-  implements SociablyBot<MessengerChannel, MessengerJob, MessengerResult>
+  implements SociablyBot<MessengerChannel, MetaApiJob, MetaApiResult>
 {
   pageId: string;
-  worker: MessengerWorker;
+  worker: MetaApiWorker;
   engine: Engine<
     MessengerChannel,
     MessengerSegmentValue,
     MessengerComponent<unknown>,
-    MessengerJob,
-    MessengerResult
+    MetaApiJob,
+    MetaApiResult
   >;
 
   platform = MESSENGER;
@@ -79,11 +81,11 @@ export class MessengerBot
 
     const renderer = new Renderer<
       MessengerSegmentValue,
-      MessengerComponent<any>
+      MessengerComponent<unknown>
     >(MESSENGER, generalComponentDelegator);
 
-    const queue = new Queue<MessengerJob, MessengerResult>();
-    const worker = new MessengerWorker(
+    const queue = new Queue<MetaApiJob, MetaApiResult>();
+    const worker = new MetaApiWorker(
       accessToken,
       apiBatchRequestInterval,
       graphApiVersion,
@@ -112,7 +114,7 @@ export class MessengerBot
     target: string | MessengerTarget | MessengerChannel,
     messages: SociablyNode,
     options?: MessengerSendOptions
-  ): Promise<null | MessengerDispatchResponse> {
+  ): Promise<null | MetaApiDispatchResponse> {
     const channel =
       typeof target === 'string'
         ? new MessengerChat(this.pageId, target)
@@ -125,14 +127,14 @@ export class MessengerBot
 
   async renderAttachment(
     node: SociablyNode
-  ): Promise<null | MessengerDispatchResponse> {
+  ): Promise<null | MetaApiDispatchResponse> {
     return this.engine.render(null, node, createAttachmentJobs);
   }
 
-  async makeApiCall<ResBody extends FbGraphApiResult>(
-    method: 'GET' | 'POST' | 'DELETE',
+  async makeApiCall<ResBody extends MetaApiResponseBody>(
+    method: 'GET' | 'PUT' | 'POST' | 'DELETE',
     relativeUrl: string,
-    body?: null | unknown
+    body: null | Record<string, unknown> = null
   ): Promise<ResBody> {
     try {
       const { results } = await this.engine.dispatchJobs(null, [

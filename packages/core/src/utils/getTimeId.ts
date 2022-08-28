@@ -8,7 +8,7 @@ const getTimeId = (): string => {
     lastTime = now;
     count = 0;
   }
-  return `${now}-${count}`;
+  return `${now.toString(36)}-${count.toString(36)}`;
 };
 
 export default getTimeId;

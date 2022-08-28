@@ -1,0 +1,1163 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`attach appsecret_proof if appSecret is given 1`] = `
+Object {
+  "access_token": "_fb_graph_api_access_token_",
+  "appsecret_proof": "c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"messenger:default:id:foo-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-1\\",\\"name\\":\\"messenger:default:id:foo-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-2\\",\\"name\\":\\"messenger:default:id:foo-3\\"}]",
+}
+`;
+
+exports[`call to graph api 1`] = `
+Object {
+  "access_token": "_access_token_",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"messenger:default:id:foo-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-1\\",\\"name\\":\\"messenger:default:id:foo-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-2\\",\\"name\\":\\"messenger:default:id:foo-3\\"}]",
+}
+`;
+
+exports[`throw if one single job fail 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "key": "messenger:default:id:foo",
+        "request": Object {
+          "body": Object {
+            "id": 1,
+            "recipient": Object {
+              "id": "foo",
+            },
+          },
+          "method": "POST",
+          "relative_url": "me/messages",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "message_id": "xxx",
+          "recipient_id": "xxx",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": [GraphAPIError (OAuthException): you should not passed!],
+      "job": Object {
+        "key": "messenger:default:id:foo",
+        "request": Object {
+          "body": Object {
+            "id": 2,
+            "recipient": Object {
+              "id": "foo",
+            },
+          },
+          "method": "POST",
+          "relative_url": "bar/baz",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "error": Object {
+            "code": 999,
+            "fbtrace_id": "DuNgzaHdmcb",
+            "message": "you should not passed!",
+            "type": "OAuthException",
+          },
+        },
+        "code": 400,
+      },
+      "success": false,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "key": "messenger:default:id:foo",
+        "request": Object {
+          "body": Object {
+            "id": 3,
+            "recipient": Object {
+              "id": "foo",
+            },
+          },
+          "method": "POST",
+          "relative_url": "me/messages",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "message_id": "xxx",
+          "recipient_id": "xxx",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+  ],
+  "errors": Array [
+    [GraphAPIError (OAuthException): you should not passed!],
+  ],
+  "success": false,
+}
+`;
+
+exports[`upload files with form data if binary attached on job 1`] = `
+"-----MULTIPART_SEPARATOR-----
+Content-Disposition: form-data; name=\\"file_0\\"
+
+_file0_
+-----MULTIPART_SEPARATOR-----
+Content-Disposition: form-data; name=\\"file_1\\"; filename=\\"YouDontSay.jpg\\"
+Content-Type: image/jpeg
+
+_file1_
+-----MULTIPART_SEPARATOR-----
+Content-Disposition: form-data; name=\\"access_token\\"
+
+_access_token_
+-----MULTIPART_SEPARATOR-----
+Content-Disposition: form-data; name=\\"batch\\"
+
+[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"messenger:default:id:foo-1\\",\\"attached_files\\":\\"file_0\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-1\\",\\"name\\":\\"messenger:default:id:foo-2\\",\\"attached_files\\":\\"file_1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-2\\",\\"name\\":\\"messenger:default:id:foo-3\\"}]
+-----MULTIPART_SEPARATOR-------
+"
+`;
+
+exports[`use querystring params for DELETE request 1`] = `
+Object {
+  "access_token": "_access_token_",
+  "batch": "[{\\"method\\":\\"DELETE\\",\\"relative_url\\":\\"me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D\\",\\"omit_response_on_success\\":false}]",
+}
+`;
+
+exports[`use querystring params for GET request 1`] = `
+Object {
+  "access_token": "_access_token_",
+  "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?fields=%5B%22id%22%2C%22name%22%2C%22email%22%5D\\",\\"omit_response_on_success\\":false}]",
+}
+`;
+
+exports[`using API result in following request registerResult & consumeResult in different batches 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "request": Object {
+          "method": "GET",
+          "relative_url": "1234567890",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "result": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "key": "foo_channel",
+        "registerResult": "upload_image",
+        "request": Object {
+          "body": Object {
+            "file": "@/pretend/to/upload/a/file.jpg",
+            "messaging_product": "whatsapp",
+            "type": "image/jpeg",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/media",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "id": "1111111111",
+        },
+        "code": 201,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "consumeResult": Object {
+          "accomplishRequest": [Function],
+          "key": "upload_image",
+        },
+        "key": "foo_channel",
+        "request": Object {
+          "body": Object {
+            "image": Object {
+              "id": ":id",
+            },
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": "9876543210",
+            "type": "image",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/messages",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "contacts": Array [
+            Object {
+              "input": "9876543210",
+              "wa_id": "9876543210",
+            },
+          ],
+          "messages": Array [
+            Object {
+              "id": "wamid.Abc123...",
+            },
+          ],
+          "messaging_product": "whatsapp",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+  ],
+  "errors": null,
+  "success": true,
+}
+`;
+
+exports[`using API result in following request registerResult & consumeResult in different batches 2`] = `
+Object {
+  "access_token": "_access_token_",
+  "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&messaging_product=whatsapp&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"}]",
+}
+`;
+
+exports[`using API result in following request registerResult & consumeResult in different batches 3`] = `
+Object {
+  "access_token": "_access_token_",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image=%7B%22id%22%3A%221111111111%22%7D\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"}]",
+}
+`;
+
+exports[`using API result in following request registerResult & consumeResult in the same batch 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "key": "foo_channel",
+        "registerResult": "upload_image",
+        "request": Object {
+          "body": Object {
+            "file": "@/pretend/to/upload/a/file.jpg",
+            "messaging_product": "whatsapp",
+            "type": "image/jpeg",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/media",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "id": "1111111111",
+        },
+        "code": 201,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "consumeResult": Object {
+          "accomplishRequest": [Function],
+          "key": "upload_image",
+        },
+        "key": "foo_channel",
+        "request": Object {
+          "body": Object {
+            "image": Object {
+              "id": ":id",
+            },
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": "9876543210",
+            "type": "image",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/messages",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "contacts": Array [
+            Object {
+              "input": "9876543210",
+              "wa_id": "9876543210",
+            },
+          ],
+          "messages": Array [
+            Object {
+              "id": "wamid.Abc123...",
+            },
+          ],
+          "messaging_product": "whatsapp",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+  ],
+  "errors": null,
+  "success": true,
+}
+`;
+
+exports[`using API result in following request registerResult & consumeResult in the same batch 2`] = `
+Object {
+  "access_token": "_access_token_",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&messaging_product=whatsapp&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image=%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-1%3A%24.id%7D%22%7D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-1\\",\\"name\\":\\"foo_channel-2\\"}]",
+}
+`;
+
+exports[`using API result in following request when job key is undeinfed 1`] = `
+Object {
+  "batch": Array [
+    Object {
+      "error": undefined,
+      "job": Object {
+        "key": undefined,
+        "registerResult": "upload_image",
+        "request": Object {
+          "body": Object {
+            "file": "@/pretend/to/upload/a/file.jpg",
+            "messaging_product": "whatsapp",
+            "type": "image/jpeg",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/media",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "id": "1111111111",
+        },
+        "code": 201,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
+        "consumeResult": Object {
+          "accomplishRequest": [Function],
+          "key": "upload_image",
+        },
+        "key": undefined,
+        "request": Object {
+          "body": Object {
+            "image": Object {
+              "id": ":id",
+            },
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": "9876543210",
+            "type": "image",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/messages",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "contacts": Array [
+            Object {
+              "input": "9876543210",
+              "wa_id": "9876543210",
+            },
+          ],
+          "messages": Array [
+            Object {
+              "id": "wamid.Abc123...",
+            },
+          ],
+          "messaging_product": "whatsapp",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+  ],
+  "errors": null,
+  "success": true,
+}
+`;

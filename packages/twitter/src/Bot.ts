@@ -9,7 +9,7 @@ import type {
 import Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import Engine, { DispatchError } from '@sociably/core/engine';
-import { formatNode } from '@sociably/core/utils';
+import { formatNode, getTimeId } from '@sociably/core/utils';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import { makeClassProvider } from '@sociably/core/service';
 import {
@@ -25,7 +25,6 @@ import TwitterUser from './User';
 import DirectMessageChat from './Chat';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TWITTER } from './constant';
-import getTimeId from './utils/getTimeId';
 import TwitterApiError from './Error';
 import type {
   TwitterChannel,

@@ -1,10 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import Renderer from '@sociably/core/renderer';
 import TweetTarget from '../../TweetTarget';
 import { Unblock } from '../Unblock';
-
-const renderer = new Renderer('twitter', async () => null);
+import { renderUnitElement } from './utils';
 
 it('is a valid Component', () => {
   expect(typeof Unblock).toBe('function');
@@ -13,11 +11,7 @@ it('is a valid Component', () => {
 });
 
 test('rendering', async () => {
-  const segments = await renderer.render(
-    <Unblock userId="12345" />,
-    null,
-    null
-  );
+  const segments = await renderUnitElement(<Unblock userId="12345" />);
   expect(segments).toMatchInlineSnapshot(`
     Array [
       Object {

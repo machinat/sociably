@@ -2,7 +2,8 @@ import type { SociablyNode } from '@sociably/core';
 import { makeClassProvider } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
-import { PATH_PERSONAS } from '../constant';
+import { PATH_PERSONAS, MESSENGER } from '../constant';
+
 import BotP from '../Bot';
 
 const ATTACHMENT = 'attachment';
@@ -25,7 +26,7 @@ export class MessengerAssetsManager {
   }
 
   private _makeResourceToken(resource: string): string {
-    return `messenger.assets.${this.pageId}.${resource}`;
+    return `${MESSENGER}.assets.${this.pageId}.${resource}`;
   }
 
   async getAssetId(

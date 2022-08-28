@@ -1,10 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import Renderer from '@sociably/core/renderer';
 import TwitterChat from '../../Chat';
 import { Typing } from '../Typing';
-
-const renderer = new Renderer('twitter', async () => null);
+import { renderUnitElement } from './utils';
 
 it('is a valid Component', () => {
   expect(typeof Typing).toBe('function');
@@ -13,7 +11,7 @@ it('is a valid Component', () => {
 });
 
 test('rendering', async () => {
-  const segments = await renderer.render(<Typing />, null, null);
+  const segments = await renderUnitElement(<Typing />);
   expect(segments).toMatchInlineSnapshot(`
     Array [
       Object {

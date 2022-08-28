@@ -46,7 +46,7 @@ export default class MessengerClientAuthenticator
     data: MessengerAuthData
   ): CheckDataResult<MessengerAuthContext> {
     if (data.page !== this.pageId) {
-      return { ok: false, code: 400, reason: 'agent not match' };
+      return { ok: false, code: 400, reason: 'page not match' };
     }
 
     return {

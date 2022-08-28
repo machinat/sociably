@@ -29,7 +29,6 @@
     "access": "public"
   },
   "dependencies": {
-    "base64url": "^3.0.1",
     "bowser": "^2.11.0",
     "cookie": "^0.4.1",
     "invariant": "^2.2.4",

@@ -32,11 +32,9 @@
     "access": "public"
   },
   "dependencies": {
-    "base64url": "^3.0.1",
+    "@sociably/meta-api": "^0.7.0",
     "bowser": "^2.11.0",
-    "form-data": "^3.0.0",
     "invariant": "^2.2.4",
-    "node-fetch": "^2.6.7",
     "warning": "^4.0.2"
   },
   "peerDependencies": {

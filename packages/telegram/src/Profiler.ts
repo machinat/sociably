@@ -6,6 +6,7 @@ import TelegramChatSender from './ChatSender';
 import TelegramChatProfile from './ChatProfile';
 import TelegramUserProfile from './UserProfile';
 import BotP from './Bot';
+import { TELEGRAM } from './constant';
 import type { RawPhotoSize, RawUser, RawChat } from './types';
 
 type PhotoResponse = {
@@ -36,6 +37,7 @@ type GetUserProfileOptions = {
  */
 export class TelegramProfiler implements UserProfiler<TelegramUser> {
   bot: BotP;
+  plaform = TELEGRAM;
 
   constructor(bot: BotP) {
     this.bot = bot;

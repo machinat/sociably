@@ -4,78 +4,25 @@ import FormData from 'form-data';
 import type { SociablyWorker } from '@sociably/core/engine';
 import SociablyQueue, { JobResponse } from '@sociably/core/queue';
 import GraphAPIError from './Error';
-import type { MessengerJob, MessengerResult, BatchApiRequest } from './types';
+import formatRequest from './utils/formatRequest';
+import appendFormFields from './utils/appendFormFields';
+import getObjectValueByPath from './utils/getObjectValueByPath';
+import type { MetaApiJob, MetaApiResult, MetaBatchRequest } from './types';
 
-type MessengerSendingResponse = JobResponse<MessengerJob, MessengerResult>;
-
-type MessengerQueue = SociablyQueue<MessengerJob, MessengerResult>;
+type MetaApiQueue = SociablyQueue<MetaApiJob, MetaApiResult>;
 
 const POST = 'POST';
 
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
-
-const appendField = (body: string, key: string, value: string) =>
-  `${body.length === 0 ? body : `${body}&`}${key}=${encodeURIComponent(value)}`;
-
-const encodeUriBody = (fields: { [key: string]: unknown }): string => {
-  let body = '';
-
-  for (const key of Object.keys(fields)) {
-    const fieldValue = fields[key];
-
-    if (fieldValue !== undefined) {
-      body = appendField(
-        body,
-        key,
-        typeof fieldValue === 'string' ? fieldValue : JSON.stringify(fieldValue)
-      );
-    }
-  }
-
-  return body;
-};
-
-const formatRequest = (request: BatchApiRequest) =>
-  request.method === 'DELETE'
-    ? {
-        ...request,
-        // NOTE: workaround because batch api do not support DELETE with body
-        relative_url: request.body
-          ? `${request.relative_url}?${encodeUriBody(request.body)}`
-          : request.relative_url,
-        body: undefined,
-      }
-    : {
-        ...request,
-        body: request.body && encodeUriBody(request.body),
-      };
 
 const makeRequestName = (channelId: string, count: number) =>
   `${channelId}-${count}`;
 
 const makeFileName = (num: number) => `file_${num}`;
 
-const appendFieldsToForm = (
-  form: FormData,
-  body: { [key: string]: string | null | undefined }
-) => {
-  const fields = Object.keys(body);
-
-  for (let k = 0; k < fields.length; k += 1) {
-    const field = fields[k];
-    const value = body[field];
-
-    if (value) form.append(field, value);
-  }
-
-  return form;
-};
-
 type TimeoutID = ReturnType<typeof setTimeout>;
 
-export default class MessengerWorker
-  implements SociablyWorker<MessengerJob, MessengerResult>
-{
+class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
   token: string;
   consumeInterval: number;
   private _graphApiEntry: string;
@@ -85,6 +32,8 @@ export default class MessengerWorker
   // @ts-expect-error: keep for later use
   private _isConsuming: boolean;
   private _consumptionTimeoutId: TimeoutID | null;
+
+  private _resultCache: Map<string, MetaApiResult>;
 
   constructor(
     accessToken: string,
@@ -103,13 +52,14 @@ export default class MessengerWorker
 
     this._started = false;
     this._consumptionTimeoutId = null;
+    this._resultCache = new Map();
   }
 
   get started(): boolean {
     return this._started;
   }
 
-  start(queue: MessengerQueue): boolean {
+  start(queue: MetaApiQueue): boolean {
     if (this._started) {
       return false;
     }
@@ -124,7 +74,7 @@ export default class MessengerWorker
     return true;
   }
 
-  stop(queue: MessengerQueue): boolean {
+  stop(queue: MetaApiQueue): boolean {
     if (!this._started) {
       return false;
     }
@@ -141,7 +91,7 @@ export default class MessengerWorker
 
   private _listenJobCallback = this._listenJob.bind(this);
 
-  private _listenJob(queue: MessengerQueue) {
+  private _listenJob(queue: MetaApiQueue) {
     if (this._started) {
       this._consume(queue);
     }
@@ -149,7 +99,7 @@ export default class MessengerWorker
 
   private _consumeCallback = this._consume.bind(this);
 
-  private async _consume(queue: MessengerQueue) {
+  private async _consume(queue: MetaApiQueue) {
     this._isConsuming = true;
     this._consumptionTimeoutId = null;
 
@@ -157,8 +107,8 @@ export default class MessengerWorker
       try {
         // eslint-disable-next-line no-await-in-loop
         await queue.acquire(50, this._executeJobsCallback);
-      } catch (e) {
-        // leave the error to request side of queue to handle
+      } catch {
+        // leave the error to request side of queue
       }
     }
 
@@ -174,33 +124,72 @@ export default class MessengerWorker
 
   private _executeJobsCallback = this._executeJobs.bind(this);
 
-  private async _executeJobs(jobs: MessengerJob[]) {
+  private async _executeJobs(jobs: MetaApiJob[]) {
     const sendingKeysCounts = new Map<string, number>();
+    const resultRegistry = new Map<string, [string, number]>();
     let fileCount = 0;
     let filesForm: undefined | FormData;
 
     const requests = new Array(jobs.length);
 
     for (let i = 0; i < jobs.length; i += 1) {
-      const { request, key, fileData, fileInfo } = jobs[i];
+      const {
+        request: requestInput,
+        key,
+        fileData,
+        fileInfo,
+        registerResult,
+        consumeResult,
+      } = jobs[i];
 
-      const requestWithMeta = {
-        ...request,
-        omit_response_on_success: false,
-      };
+      let request: MetaBatchRequest = { ...requestInput };
+
+      // if it requires a result before to accomplish the request
+      if (consumeResult) {
+        const { key: consummingKey, accomplishRequest } = consumeResult;
+        let registered: undefined | MetaApiResult | [string, number];
+
+        if ((registered = resultRegistry.get(consummingKey))) {
+          const requestName = registered[0];
+          request = accomplishRequest(
+            request,
+            (path) => `{result=${requestName}:${path}}`
+          );
+
+          resultRegistry.delete(consummingKey);
+        } else if ((registered = this._resultCache.get(consummingKey))) {
+          request = accomplishRequest(
+            request,
+            getObjectValueByPath.bind(null, registered.body)
+          );
+          this._resultCache.delete(consummingKey);
+        } else {
+          // NOTE: it's unlikely to happen so let it fail on API
+        }
+      }
+
+      request.omit_response_on_success = false;
 
       if (key) {
         // keep the order of requests per channel
         let count = sendingKeysCounts.get(key);
         if (count !== undefined) {
-          requestWithMeta.depends_on = makeRequestName(key, count);
+          request.depends_on = makeRequestName(key, count);
           count += 1;
         } else {
           count = 1;
         }
 
         sendingKeysCounts.set(key, count);
-        requestWithMeta.name = makeRequestName(key, count);
+        request.name = makeRequestName(key, count);
+      }
+
+      // register to use/cache the result
+      if (registerResult) {
+        if (!request.name) {
+          request.name = makeRequestName('#', i);
+        }
+        resultRegistry.set(registerResult, [request.name, i]);
       }
 
       // if binary data attached, use from-data and add the file field
@@ -213,10 +202,10 @@ export default class MessengerWorker
         fileCount += 1;
 
         filesForm.append(filename, fileData, fileInfo);
-        requestWithMeta.attached_files = filename;
+        request.attached_files = filename;
       }
 
-      requests[i] = formatRequest(requestWithMeta);
+      requests[i] = formatRequest(request);
     }
 
     const batchBody = {
@@ -228,22 +217,30 @@ export default class MessengerWorker
     // use formdata if files attached, otherwise json
     const body =
       filesForm !== undefined
-        ? appendFieldsToForm(filesForm, batchBody)
+        ? appendFormFields(filesForm, batchBody)
         : JSON.stringify(batchBody);
 
-    const apiResponse = await fetch(this._graphApiEntry, {
+    const apiRes = await fetch(this._graphApiEntry, {
       method: POST,
       headers: filesForm !== undefined ? undefined : REQEST_JSON_HEADERS,
       body,
     });
 
     // if batch respond with error, throw it
-    const apiBody = await apiResponse.json();
-    if (!apiResponse.ok) {
+    const apiBody = await apiRes.json();
+    if (!apiRes.ok) {
       throw new GraphAPIError(apiBody);
     }
 
-    const jobResponses: MessengerSendingResponse[] = new Array(apiBody.length);
+    // cache result if it's registered in this batch but not consumed
+    this._resultCache.clear();
+    for (const [consummingKey, [, idx]] of resultRegistry.entries()) {
+      this._resultCache.set(consummingKey, apiBody[idx]);
+    }
+
+    const jobResponses: JobResponse<MetaApiJob, MetaApiResult>[] = new Array(
+      apiBody.length
+    );
 
     for (let i = 0; i < jobResponses.length; i += 1) {
       const result = apiBody[i];
@@ -269,3 +266,5 @@ export default class MessengerWorker
     return jobResponses;
   }
 }
+
+export default MetaApiWorker;

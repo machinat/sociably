@@ -14,8 +14,3 @@ export type MessengerAuthContext = {
   user: MessengerUser;
   pageId: string;
 } & AuthContextBase;
-
-export type AuthenticatorRefinement = {
-  user: MessengerUser;
-  channel: MessengerChat;
-};

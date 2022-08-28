@@ -1,10 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import Renderer from '@sociably/core/renderer';
 import { Photo, Video, AnimatedGif } from '../Media';
-
-const renderer = new Renderer('twitter', async () => null);
-const render = (element) => renderer.render(element, null, null);
+import { renderUnitElement } from './utils';
 
 const mediaNameComponentPairs = [Photo, Video, AnimatedGif].map(
   (Media): [string, typeof Photo] => [Media.name, Media]
@@ -17,12 +14,14 @@ test.each(mediaNameComponentPairs)('%s is a valid Component', (_, Media) => {
 });
 
 test.each(mediaNameComponentPairs)('%s rendering', async (mediaName, Media) => {
-  await expect(render(<Media mediaId="12345" />)).resolves.toMatchSnapshot();
   await expect(
-    render(<Media url="http://foo.io/bar.mp4" shared />)
+    renderUnitElement(<Media mediaId="12345" />)
   ).resolves.toMatchSnapshot();
   await expect(
-    render(
+    renderUnitElement(<Media url="http://foo.io/bar.mp4" shared />)
+  ).resolves.toMatchSnapshot();
+  await expect(
+    renderUnitElement(
       <Media
         fileData={Buffer.from('foo')}
         fileSize={1234}
@@ -47,7 +46,7 @@ test.each(mediaNameComponentPairs)('%s rendering', async (mediaName, Media) => {
 test.each(mediaNameComponentPairs)(
   'throw if no media source is provided',
   async (_, Media) => {
-    await expect(render(<Media />)).rejects.toThrow(
+    await expect(renderUnitElement(<Media />)).rejects.toThrow(
       'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
   }
@@ -57,22 +56,24 @@ test.each(mediaNameComponentPairs)(
   'throw if multiple media source are provided',
   async (_, Media) => {
     await expect(
-      render(<Media mediaId="12345" url="http://..." />)
+      renderUnitElement(<Media mediaId="12345" url="http://..." />)
     ).rejects.toThrow(
       'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
     await expect(
-      render(<Media mediaId="12345" fileData={Buffer.from('foo')} />)
+      renderUnitElement(<Media mediaId="12345" fileData={Buffer.from('foo')} />)
     ).rejects.toThrow(
       'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
     await expect(
-      render(<Media url="http://..." fileData={Buffer.from('foo')} />)
+      renderUnitElement(
+        <Media url="http://..." fileData={Buffer.from('foo')} />
+      )
     ).rejects.toThrow(
       'there should be exactly one of "url", "mediaId" or "fileData" prop'
     );
     await expect(
-      render(
+      renderUnitElement(
         <Media mediaId="12345" url="http://..." fileData={Buffer.from('foo')} />
       )
     ).rejects.toThrow(

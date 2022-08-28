@@ -6,10 +6,16 @@ import type {
   PlatformUtilities,
   SociablyNode,
 } from '@sociably/core';
-import type { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
+import type { DispatchFrame } from '@sociably/core/engine';
 import type { MaybeContainer } from '@sociably/core/service';
 import type { IntermediateSegment } from '@sociably/core/renderer';
 import type { WebhookMetadata } from '@sociably/http/webhook';
+import type {
+  MetaApiJob,
+  MetaApiResult,
+  MetaApiDispatchResponse,
+  FileInfo,
+} from '@sociably/meta-api';
 import type { MessengerBot } from './Bot';
 import type MessengerChat from './Chat';
 import type SendTarget from './SendTarget';
@@ -45,13 +51,6 @@ type MessageTags =
   | 'ACCOUNT_UPDATE'
   | 'HUMAN_AGENT';
 
-export type FileInfo = {
-  filename?: string;
-  filepath?: string;
-  contentType?: string;
-  knownLength?: number;
-};
-
 export type MessageValue = {
   message: RawMessage;
   messaging_type?: MessagingType;
@@ -69,12 +68,12 @@ export type SenderActionValue = {
 export type PassThreadControlValue = {
   target_app_id: number; // eslint-disable-line camelcase
   metadata?: string;
-  [API_PATH]: any;
+  [API_PATH]: string;
 };
 
 export type RequestThreadControlValue = {
   metadata?: string;
-  [API_PATH]: any;
+  [API_PATH]: string;
 };
 
 export type TakeThreadControlValue = RequestThreadControlValue;
@@ -94,49 +93,6 @@ export type MessengerComponent<
   Segment extends IntermediateSegment<MessengerSegmentValue> = IntermediateSegment<MessengerSegmentValue>
 > = NativeComponent<Props, Segment>;
 
-export type BatchApiRequest = {
-  method: string;
-  relative_url: string;
-  body: null | any;
-  name?: string;
-  depends_on?: string;
-  attached_files?: string;
-  omit_response_on_success?: boolean;
-};
-
-export type MessengerJob = {
-  request: BatchApiRequest;
-  key?: string;
-  assetTag?: string;
-  fileData?: string | Buffer | NodeJS.ReadableStream;
-  fileInfo?: {
-    filename?: string;
-    filepath?: string;
-    contentType?: string;
-    knownLength?: number;
-  };
-};
-
-export type FbGraphApiResult = Record<string, any>;
-
-export type MessengerResult = {
-  code: number;
-  headers: Record<string, string>;
-  body: FbGraphApiResult;
-};
-
-export type GraphApiErrorInfo = {
-  message: string;
-  type: string;
-  code: number;
-  error_subcode: number;
-  fbtrace_id: string;
-};
-
-export type GraphApiErrorBody = {
-  error: GraphApiErrorInfo;
-};
-
 export type RawUserProfile = {
   id: string;
   name: string;
@@ -148,17 +104,12 @@ export type RawUserProfile = {
   gender?: string;
 };
 
-export type MessengerDispatchResponse = DispatchResponse<
-  MessengerJob,
-  MessengerResult
->;
-
 export type MessengerEventContext = {
   platform: 'messenger';
   event: MessengerEvent;
   metadata: WebhookMetadata;
   bot: MessengerBot;
-  reply(message: SociablyNode): Promise<null | MessengerDispatchResponse>;
+  reply(message: SociablyNode): Promise<null | MetaApiDispatchResponse>;
 };
 
 export type MessengerEventMiddleware = EventMiddleware<
@@ -168,13 +119,13 @@ export type MessengerEventMiddleware = EventMiddleware<
 
 export type MessengerDispatchFrame = DispatchFrame<
   MessengerChannel,
-  MessengerJob
+  MetaApiJob
 >;
 
 export type MessengerDispatchMiddleware = DispatchMiddleware<
-  MessengerJob,
+  MetaApiJob,
   MessengerDispatchFrame,
-  MessengerResult
+  MetaApiResult
 >;
 
 export type MessengerConfigs = {
@@ -212,7 +163,7 @@ export type MessengerSendOptions = {
 export type MessengerPlatformUtilities = PlatformUtilities<
   MessengerEventContext,
   null,
-  MessengerJob,
+  MetaApiJob,
   MessengerDispatchFrame,
-  MessengerResult
+  MetaApiResult
 >;

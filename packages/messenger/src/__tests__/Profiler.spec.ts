@@ -1,9 +1,9 @@
 import moxy from '@moxyjs/moxy';
+import { MetaApiError } from '@sociably/meta-api';
 import type { MessengerBot } from '../Bot';
 import FacebookUser from '../User';
 import FacebookUserProfile from '../UserProfile';
 import { MessengerProfiler } from '../Profiler';
-import GraphApiError from '../Error';
 
 const rawProfileData = {
   id: 'xxxxxxxxx',
@@ -117,7 +117,7 @@ it('return null if phone number user error met', async () => {
   const profiler = new MessengerProfiler(bot);
 
   bot.makeApiCall.mock.fake(async () => {
-    throw new GraphApiError({
+    throw new MetaApiError({
       error: {
         message: '(#100) No profile available for this user.',
         type: 'OAuthException',

@@ -20,6 +20,7 @@
       "@sociably/core/*": ["./packages/core/src/*"],
       "@sociably/http": ["./packages/http/src/index.js"],
       "@sociably/http/*": ["./packages/http/src/*"],
+      "@sociably/meta-api": ["./packages/meta-api/src/index.js"],
       "@sociably/next": ["./packages/next/src/index.js"],
       "@sociably/next/*": ["./packages/next/src/*"],
       "@sociably/dev-tools/*": ["./packages/dev-tools/src/*"],
