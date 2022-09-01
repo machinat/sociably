@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createChatJobs(options)(channel, segments) add attached file data and info if there are 1`] = `
+exports[`createChatJobs(options)(channel, segments) add attached file data and info 1`] = `
 Array [
   Object {
     "assetTag": undefined,
@@ -23,7 +23,7 @@ Array [
     },
   },
   Object {
-    "assetTag": undefined,
+    "assetTag": "BAR!",
     "fileData": "_BAR_",
     "fileInfo": Object {
       "contentType": "image/jpeg",

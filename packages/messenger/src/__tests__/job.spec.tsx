@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { UnitSegment, TextSegment } from '@sociably/core/renderer';
 import { createChatJobs, createAttachmentJobs } from '../job';
+import { PATH_MESSAGES, PATH_MESSAGE_ATTACHMENTS } from '../constant';
 import MessengerChat from '../Chat';
-import { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from '../constant';
 import { MessengerSegmentValue } from '../types';
 
 const Foo = () => null;
@@ -15,19 +15,28 @@ describe('createChatJobs(options)(channel, segments)', () => {
       type: 'unit' as const,
       path: '?',
       node: <Foo />,
-      value: { sender_action: 'typing_on' },
+      value: {
+        apiPath: PATH_MESSAGES,
+        params: { sender_action: 'typing_on' },
+      },
     },
     {
       type: 'unit' as const,
       path: '?',
       node: <Foo />,
-      value: { message: { id: 1 } },
+      value: {
+        apiPath: PATH_MESSAGES,
+        params: { message: { id: 1 } },
+      },
     },
     {
       type: 'unit' as const,
       path: '?',
       node: <Bar />,
-      value: { id: 2, [API_PATH]: 'bar/baz' } as never,
+      value: {
+        apiPath: 'bar/baz',
+        params: { id: 2 },
+      } as never,
     },
     { type: 'text' as const, path: '?', node: 'id:3', value: 'id:3' },
     { type: 'text' as const, path: '?', node: 4, value: '4' },
@@ -75,15 +84,15 @@ describe('createChatJobs(options)(channel, segments)', () => {
 
     jobs.forEach((job, i) => {
       if (i === 0) {
-        expect(job.request.body.messaging_type).toBe(undefined);
-        expect(job.request.body.tag).toBe(undefined);
-        expect(job.request.body.notification_type).toBe(undefined);
-        expect(job.request.body.persona_id).toBe('your-dearest-friend');
+        expect(job.request.body?.messaging_type).toBe(undefined);
+        expect(job.request.body?.tag).toBe(undefined);
+        expect(job.request.body?.notification_type).toBe(undefined);
+        expect(job.request.body?.persona_id).toBe('your-dearest-friend');
       } else if (i === 2) {
-        expect(job.request.body.messaging_type).toBe(undefined);
-        expect(job.request.body.tag).toBe(undefined);
-        expect(job.request.body.notification_type).toBe(undefined);
-        expect(job.request.body.persona_id).toBe(undefined);
+        expect(job.request.body?.messaging_type).toBe(undefined);
+        expect(job.request.body?.tag).toBe(undefined);
+        expect(job.request.body?.notification_type).toBe(undefined);
+        expect(job.request.body?.persona_id).toBe(undefined);
       } else {
         expect(job.request.body).toEqual(
           expect.objectContaining({
@@ -105,30 +114,42 @@ describe('createChatJobs(options)(channel, segments)', () => {
         type: 'unit',
         path: '?',
         node: <Foo />,
-        value: { message: { text: 'hello' } },
+        value: {
+          apiPath: PATH_MESSAGES,
+          params: { message: { text: 'hello' } },
+        },
       },
       {
         type: 'unit',
         path: '?',
         node: <Foo />,
-        value: { sender_action: 'typing_on' },
+        value: {
+          apiPath: PATH_MESSAGES,
+          params: { sender_action: 'typing_on' },
+        },
       },
       {
         type: 'unit',
         path: '?',
         node: <Foo />,
-        value: { sender_action: 'typing_off' },
+        value: {
+          apiPath: PATH_MESSAGES,
+          params: { sender_action: 'typing_off' },
+        },
       },
       {
         type: 'unit',
         path: '?',
         node: <Foo />,
-        value: { sender_action: 'mark_seen' },
+        value: {
+          apiPath: PATH_MESSAGES,
+          params: { sender_action: 'mark_seen' },
+        },
       },
     ]);
 
     jobs.forEach((job, i) => {
-      expect(job.request.body.persona_id).toBe(i !== 3 ? 'droid' : undefined);
+      expect(job.request.body?.persona_id).toBe(i !== 3 ? 'droid' : undefined);
     });
   });
 
@@ -146,9 +167,12 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
-          message: { text: 'bibiboo' },
-          messaging_type: 'MESSAGE_TAG',
-          tag: 'POST_PURCHASE_UPDATE',
+          apiPath: PATH_MESSAGES,
+          params: {
+            message: { text: 'bibiboo' },
+            messaging_type: 'MESSAGE_TAG',
+            tag: 'POST_PURCHASE_UPDATE',
+          },
         },
       },
       {
@@ -156,9 +180,12 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
-          message: { text: 'Oh! I apologize.' },
-          notification_type: 'REGULAR',
-          persona_id: 'protocol-droid',
+          apiPath: PATH_MESSAGES,
+          params: {
+            message: { text: 'Oh! I apologize.' },
+            notification_type: 'REGULAR',
+            persona_id: 'protocol-droid',
+          },
         },
       },
     ]);
@@ -197,8 +224,11 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
-          message: { text: 'bibibooboobibooboo' },
-          messaging_type: 'RESPONSE',
+          apiPath: PATH_MESSAGES,
+          params: {
+            message: { text: 'bibibooboobibooboo' },
+            messaging_type: 'RESPONSE',
+          },
         },
       },
     ]);
@@ -220,14 +250,17 @@ describe('createChatJobs(options)(channel, segments)', () => {
       type: 'unit' as const,
       path: '?',
       node: <Foo />,
-      value: { message: { text: 'hello' } },
+      value: {
+        apiPath: PATH_MESSAGES,
+        params: { message: { text: 'hello' } },
+      },
     };
 
     const jobs = createChatJobs({
       oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
     })(channel, [helloJob]);
 
-    expect(jobs[0].request.body.recipient).toEqual({
+    expect(jobs[0].request.body?.recipient).toEqual({
       one_time_notif_token: '__ONE_TIME_NOTIF_TOKEN__',
     });
 
@@ -240,7 +273,10 @@ describe('createChatJobs(options)(channel, segments)', () => {
           type: 'unit',
           path: '?',
           node: <Foo />,
-          value: { message: { text: 'world' } },
+          value: {
+            apiPath: PATH_MESSAGES,
+            params: { message: { text: 'world' } },
+          },
         },
       ])
     ).toThrowErrorMatchingInlineSnapshot(
@@ -248,7 +284,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
     );
   });
 
-  it('add attached file data and info if there are', () => {
+  it('add attached file data and info', () => {
     const channel = new MessengerChat('12345', '67890');
     const fileInfo = {
       filename: 'deathangel.jpg',
@@ -262,8 +298,13 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
-          message: { attachment: { type: 'image' } },
-          [ATTACHMENT_DATA]: '_FOO_',
+          apiPath: PATH_MESSAGES,
+          params: {
+            message: { attachment: { type: 'image' } },
+          },
+          attachFile: {
+            data: '_FOO_',
+          },
         },
       },
       {
@@ -271,10 +312,15 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Bar />,
         value: {
-          message: { attachment: { type: 'file' } },
-          [API_PATH]: 'bar/baz',
-          [ATTACHMENT_DATA]: '_BAR_',
-          [ATTACHMENT_INFO]: fileInfo,
+          apiPath: 'bar/baz' as never,
+          params: {
+            message: { attachment: { type: 'file' } },
+          },
+          attachFile: {
+            data: '_BAR_',
+            info: fileInfo,
+            assetTag: 'BAR!',
+          },
         },
       },
     ]);
@@ -298,11 +344,14 @@ describe('createAttachmentJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            message: {
-              attachment: {
-                type: 'image',
-                src: 'https://sociably.io/doge.jpg',
-                is_sharable: true,
+            apiPath: PATH_MESSAGE_ATTACHMENTS,
+            params: {
+              message: {
+                attachment: {
+                  type: 'image',
+                  src: 'https://sociably.io/doge.jpg',
+                  is_sharable: true,
+                },
               },
             },
           },
@@ -341,11 +390,17 @@ describe('createAttachmentJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            message: {
-              attachment: { type: 'image', is_sharable: true },
+            apiPath: PATH_MESSAGE_ATTACHMENTS,
+            params: {
+              message: {
+                attachment: { type: 'image', is_sharable: true },
+              },
             },
-            [ATTACHMENT_DATA]: '_FILE_CONTENT_DATA_',
-            [ATTACHMENT_INFO]: fileInfo,
+            attachFile: {
+              data: '_FILE_CONTENT_DATA_',
+              info: fileInfo,
+              assetTag: 'MY_ASSET',
+            },
           },
         },
       ])
@@ -372,11 +427,14 @@ describe('createAttachmentJobs()', () => {
       path: '?',
       node: <Foo />,
       value: {
-        message: {
-          attachment: {
-            type: 'image',
-            src: 'https://sociably.io/you_dont_say.jpg',
-            is_sharable: true,
+        apiPath: PATH_MESSAGE_ATTACHMENTS,
+        params: {
+          message: {
+            attachment: {
+              type: 'image',
+              src: 'https://sociably.io/you_dont_say.jpg',
+              is_sharable: true,
+            },
           },
         },
       },
@@ -395,7 +453,8 @@ describe('createAttachmentJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            message: { text: "I'm an attachment!" },
+            apiPath: PATH_MESSAGE_ATTACHMENTS,
+            params: { message: { text: "I'm an attachment!" } },
           },
         },
       ])
@@ -410,11 +469,14 @@ describe('createAttachmentJobs()', () => {
           path: '?',
           node: <Bar />,
           value: {
-            message: {
-              attachment: {
-                type: 'template',
-                payload: {
-                  /* ...... */
+            apiPath: PATH_MESSAGE_ATTACHMENTS,
+            params: {
+              message: {
+                attachment: {
+                  type: 'template',
+                  payload: {
+                    /* ...... */
+                  },
                 },
               },
             },

@@ -12,7 +12,6 @@ import type { WebhookMetadata } from '@sociably/http/webhook';
 import { LineBot } from './Bot';
 import type LineChat from './Chat';
 import type { LineEvent, LineRawEvent } from './event/types';
-import type { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from './constant';
 
 export * from './event/types';
 
@@ -67,36 +66,36 @@ export type QuickRepliable = {
   };
 };
 
-export type TextSegmentValue = {
+export type TextMessageParams = {
   type: 'text';
   text: string;
 } & QuickRepliable;
 
-export type StickerSegmentValue = {
+export type StickerMessageParams = {
   type: 'sticker';
   packageId: string;
   stickerId: string;
 } & QuickRepliable;
 
-export type ImageSegmentValue = {
+export type ImageMessageParams = {
   type: 'image';
   originalContentUrl: string;
   previewImageUrl: string;
 } & QuickRepliable;
 
-export type VideoSegmentValue = {
+export type VideoMessageParams = {
   type: 'video';
   originalContentUrl: string;
   previewImageUrl: string;
 } & QuickRepliable;
 
-export type AudioSegmentValue = {
+export type AudioMessageParams = {
   type: 'audio';
   originalContentUrl: string;
   duration: number;
 } & QuickRepliable;
 
-export type LocationSegmentValue = {
+export type LocationMessageParams = {
   type: 'location';
   title: string;
   address: string;
@@ -104,7 +103,7 @@ export type LocationSegmentValue = {
   longitude: number;
 } & QuickRepliable;
 
-export type ImagemapSegmentValue = {
+export type ImagemapMessageParams = {
   type: 'imagemap';
   altText: string;
   baseSize: {
@@ -126,43 +125,53 @@ export type ImagemapSegmentValue = {
   actions: any[]; // TODO: type the imagemap action object
 } & QuickRepliable;
 
-export type TemplateSegmentValue = {
+export type TemplateMessageParams = {
   type: 'template';
   altText: string;
   template: any; // TODO: type the template object
 } & QuickRepliable;
 
-export type FlexSegmentValue = {
+export type FlexMessageParams = {
   type: 'flex';
   altText: string;
   contents: any;
 } & QuickRepliable;
 
-export type ApiCallGettable = {
-  [BULK_REQUEST_GETTER]: (ids: string[]) => {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    path: string;
-    body: any;
-  };
-  [CHANNEL_REQUEST_GETTER]: (channel: LineChat) => {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    path: string;
-    body: any;
-  };
+export type MessageParams =
+  | TextMessageParams
+  | StickerMessageParams
+  | ImageMessageParams
+  | VideoMessageParams
+  | AudioMessageParams
+  | LocationMessageParams
+  | ImagemapMessageParams
+  | TemplateMessageParams
+  | FlexMessageParams;
+
+export type MessageSegmentValue = {
+  type: 'message';
+  params: MessageParams;
 };
 
-export type LineMessageSegmentValue =
-  | TextSegmentValue
-  | StickerSegmentValue
-  | ImageSegmentValue
-  | VideoSegmentValue
-  | AudioSegmentValue
-  | LocationSegmentValue
-  | ImagemapSegmentValue
-  | TemplateSegmentValue
-  | FlexSegmentValue;
+export type ChatActionSegmentValue = {
+  type: 'chat_action';
+  getChatRequest:
+    | null
+    | ((channel: LineChat) => {
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+        path: string;
+        body: null | Record<string, unknown>;
+      });
+  getBulkRequest:
+    | null
+    | ((ids: string[]) => {
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+        path: string;
+        body: null | Record<string, unknown>;
+      });
+};
 
-export type LineSegmentValue = LineMessageSegmentValue | ApiCallGettable;
+export type LineSegmentValue = MessageSegmentValue | ChatActionSegmentValue;
 
 export type LineComponent<
   Props,
@@ -171,17 +180,17 @@ export type LineComponent<
 
 type ReplyRequestBody = {
   replyToken: string;
-  messages: LineMessageSegmentValue[];
+  messages: MessageParams[];
 };
 
 type PushRequestBody = {
   to: string;
-  messages: LineMessageSegmentValue[];
+  messages: MessageParams[];
 };
 
 type MulticastRequestBody = {
   to: string[];
-  messages: LineMessageSegmentValue[];
+  messages: MessageParams[];
 };
 
 export type LineMessageRequestBody =

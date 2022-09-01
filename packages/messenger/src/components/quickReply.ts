@@ -1,5 +1,5 @@
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
-import { makeMessengerComponent } from '../utils';
+import makeFacebookComponent from '../utils/makeFacebookComponent';
 import { MessengerComponent } from '../types';
 
 /**
@@ -32,7 +32,7 @@ export type TextReplyProps = {
 export const TextReply: MessengerComponent<
   TextReplyProps,
   PartSegment<any>
-> = makeMessengerComponent(function TextReply(node, path) {
+> = makeFacebookComponent(function TextReply(node, path) {
   const { title, payload, imageUrl } = node.props;
   return [
     makePartSegment(node, path, {
@@ -56,7 +56,7 @@ const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 export const PhoneReply: MessengerComponent<
   {},
   PartSegment<any>
-> = makeMessengerComponent(function PhoneReply(node, path) {
+> = makeFacebookComponent(function PhoneReply(node, path) {
   return [makePartSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
 });
 
@@ -72,6 +72,6 @@ const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
 export const EmailReply: MessengerComponent<
   {},
   PartSegment<any>
-> = makeMessengerComponent(function EmailReply(node, path) {
+> = makeFacebookComponent(function EmailReply(node, path) {
   return [makePartSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
 });

@@ -1,6 +1,6 @@
 import { makePartSegment } from '@sociably/core/renderer';
 import type { PartSegment } from '@sociably/core/renderer';
-import { makeMessengerComponent } from '../utils';
+import makeFacebookComponent from '../utils/makeFacebookComponent';
 import type { MessengerComponent } from '../types';
 
 /**
@@ -39,7 +39,7 @@ export type UrlButtonProps = {
 export const UrlButton: MessengerComponent<
   UrlButtonProps,
   PartSegment<any>
-> = makeMessengerComponent(function UrlButton(node, path) {
+> = makeFacebookComponent(function UrlButton(node, path) {
   const {
     title,
     url,
@@ -85,7 +85,7 @@ export type PostbackButtonProps = {
 export const PostbackButton: MessengerComponent<
   PostbackButtonProps,
   PartSegment<any>
-> = makeMessengerComponent(function PostbackButton(node, path) {
+> = makeFacebookComponent(function PostbackButton(node, path) {
   const { title, payload } = node.props;
   return [
     makePartSegment(node, path, {
@@ -120,7 +120,7 @@ export type CallButtonProps = {
 export const CallButton: MessengerComponent<
   CallButtonProps,
   PartSegment<any>
-> = makeMessengerComponent(function CallButton(node, path) {
+> = makeFacebookComponent(function CallButton(node, path) {
   const { title, number } = node.props;
   return [
     makePartSegment(node, path, {
@@ -149,7 +149,7 @@ export type LoginButtonProps = {
 export const LoginButton: MessengerComponent<
   LoginButtonProps,
   PartSegment<any>
-> = makeMessengerComponent(function LoginButton(node, path) {
+> = makeFacebookComponent(function LoginButton(node, path) {
   const { url } = node.props;
   return [
     makePartSegment(node, path, {
@@ -169,7 +169,7 @@ export const LoginButton: MessengerComponent<
 export const LogoutButton: MessengerComponent<
   {},
   PartSegment<any>
-> = makeMessengerComponent(function LogoutButton(node, path) {
+> = makeFacebookComponent(function LogoutButton(node, path) {
   return [makePartSegment(node, path, { type: 'account_unlink' })];
 });
 
@@ -198,7 +198,7 @@ export type GamePlayButtonProps = {
 export const GamePlayButton: MessengerComponent<
   GamePlayButtonProps,
   PartSegment<any>
-> = makeMessengerComponent(function GamePlayButton(node, path) {
+> = makeFacebookComponent(function GamePlayButton(node, path) {
   const { title, payload, playerId, contextId } = node.props;
   return [
     makePartSegment(node, path, {

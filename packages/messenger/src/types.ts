@@ -20,7 +20,13 @@ import type { MessengerBot } from './Bot';
 import type MessengerChat from './Chat';
 import type SendTarget from './SendTarget';
 import type { MessengerEvent } from './event/types';
-import type { API_PATH, ATTACHMENT_DATA, ATTACHMENT_INFO } from './constant';
+import type {
+  PATH_MESSAGES,
+  PATH_MESSAGE_ATTACHMENTS,
+  PATH_PASS_THREAD_CONTROL,
+  PATH_TAKE_THREAD_CONTROL,
+  PATH_REQUEST_THREAD_CONTROL,
+} from './constant';
 
 export * from './event/types';
 
@@ -52,31 +58,65 @@ type MessageTags =
   | 'HUMAN_AGENT';
 
 export type MessageValue = {
-  message: RawMessage;
-  messaging_type?: MessagingType;
-  notification_type?: NotificationType;
-  tag?: MessageTags;
-  persona_id?: string;
-  [ATTACHMENT_DATA]?: string | Buffer | NodeJS.ReadableStream;
-  [ATTACHMENT_INFO]?: FileInfo;
+  apiPath: typeof PATH_MESSAGES;
+  params: {
+    message: RawMessage;
+    messaging_type?: MessagingType;
+    notification_type?: NotificationType;
+    tag?: MessageTags;
+    persona_id?: string;
+  };
+  attachFile?: {
+    data: string | Buffer | NodeJS.ReadableStream;
+    info?: FileInfo;
+    assetTag?: string;
+  };
+};
+
+export type MessageAttachmentValue = {
+  apiPath: typeof PATH_MESSAGE_ATTACHMENTS;
+  params: {
+    message: RawMessage;
+  };
+  attachFile?: {
+    data: string | Buffer | NodeJS.ReadableStream;
+    info?: FileInfo;
+    assetTag?: string;
+  };
 };
 
 export type SenderActionValue = {
-  sender_action: 'mark_seen' | 'typing_on' | 'typing_off'; // eslint-disable-line camelcase
+  apiPath: typeof PATH_MESSAGES;
+  params: {
+    sender_action: 'mark_seen' | 'typing_on' | 'typing_off';
+  };
+  attachFile?: undefined;
 };
 
 export type PassThreadControlValue = {
-  target_app_id: number; // eslint-disable-line camelcase
-  metadata?: string;
-  [API_PATH]: string;
+  apiPath: typeof PATH_PASS_THREAD_CONTROL;
+  params: {
+    target_app_id: number;
+    metadata?: string;
+  };
+  attachFile?: undefined;
 };
 
 export type RequestThreadControlValue = {
-  metadata?: string;
-  [API_PATH]: string;
+  apiPath: typeof PATH_REQUEST_THREAD_CONTROL;
+  params: {
+    metadata?: string;
+  };
+  attachFile?: undefined;
 };
 
-export type TakeThreadControlValue = RequestThreadControlValue;
+export type TakeThreadControlValue = {
+  apiPath: typeof PATH_TAKE_THREAD_CONTROL;
+  params: {
+    metadata?: string;
+  };
+  attachFile?: undefined;
+};
 
 export type HandoverProtocolValue =
   | PassThreadControlValue
@@ -85,6 +125,7 @@ export type HandoverProtocolValue =
 
 export type MessengerSegmentValue =
   | MessageValue
+  | MessageAttachmentValue
   | SenderActionValue
   | HandoverProtocolValue;
 

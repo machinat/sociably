@@ -1,12 +1,22 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import { makeMessengerComponent } from '../utils';
+import makeFacebookComponent from '../utils/makeFacebookComponent';
+import { PATH_MESSAGES } from '../constant';
 import type { MessengerComponent, SenderActionValue } from '../types';
 
-const MARK_SEEN_VALUE = { sender_action: 'mark_seen' as const };
+const MARK_SEEN_VALUE = {
+  apiPath: PATH_MESSAGES,
+  params: { sender_action: 'mark_seen' as const },
+};
 
-const TYPING_OFF_VALUE = { sender_action: 'typing_off' as const };
+const TYPING_OFF_VALUE = {
+  apiPath: PATH_MESSAGES,
+  params: { sender_action: 'typing_off' as const },
+};
 
-const TYPING_ON_VALUE = { sender_action: 'typing_on' as const };
+const TYPING_ON_VALUE = {
+  apiPath: PATH_MESSAGES,
+  params: { sender_action: 'typing_on' as const },
+};
 
 /**
  * Display the confirmation icon.
@@ -18,7 +28,7 @@ const TYPING_ON_VALUE = { sender_action: 'typing_on' as const };
 export const MarkSeen: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = makeMessengerComponent(function MarkSeen(node, path) {
+> = makeFacebookComponent(function MarkSeen(node, path) {
   return [makeUnitSegment(node, path, MARK_SEEN_VALUE)];
 });
 
@@ -32,7 +42,7 @@ export const MarkSeen: MessengerComponent<
 export const TypingOn: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = makeMessengerComponent(function TypingOn(node, path) {
+> = makeFacebookComponent(function TypingOn(node, path) {
   return [makeUnitSegment(node, path, TYPING_ON_VALUE)];
 });
 
@@ -46,6 +56,6 @@ export const TypingOn: MessengerComponent<
 export const TypingOff: MessengerComponent<
   {},
   UnitSegment<SenderActionValue>
-> = makeMessengerComponent(function TypingOff(node, path) {
+> = makeFacebookComponent(function TypingOff(node, path) {
   return [makeUnitSegment(node, path, TYPING_OFF_VALUE)];
 });

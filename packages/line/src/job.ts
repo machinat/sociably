@@ -1,22 +1,12 @@
+import { formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
 import type LineChat from './Chat';
-import type {
-  LineSegmentValue,
-  LineMessageSegmentValue,
-  LineJob,
-} from './types';
-import {
-  PATH_PUSH,
-  PATH_REPLY,
-  PATH_MULTICAST,
-  CHANNEL_REQUEST_GETTER,
-  BULK_REQUEST_GETTER,
-} from './constant';
-import { isMessageValue } from './utils';
+import { PATH_PUSH, PATH_REPLY, PATH_MULTICAST } from './constant';
+import type { LineSegmentValue, LineJob, MessageParams } from './types';
 
 const createMessageJob = (
   channel: LineChat,
-  messages: LineMessageSegmentValue[],
+  messages: MessageParams[],
   replyToken: undefined | string
 ): LineJob => ({
   method: 'POST',
@@ -35,16 +25,16 @@ export const createChatJobs = (replyToken: undefined | string) => {
     segments: DispatchableSegment<LineSegmentValue>[]
   ): LineJob[] => {
     const jobs: LineJob[] = [];
-    let messagesBuffer: LineMessageSegmentValue[] = [];
+    let messagesBuffer: MessageParams[] = [];
 
     for (let i = 0; i < segments.length; i += 1) {
-      const { value } = segments[i];
+      const { node, value } = segments[i];
 
-      if (isMessageValue(value)) {
+      if (typeof value === 'string' || value.type === 'message') {
         messagesBuffer.push(
           typeof value === 'string'
-            ? { type: 'text', text: value as string }
-            : value
+            ? { type: 'text', text: value }
+            : value.params
         );
 
         // flush messages buffer if accumlated to 5 or at the end of loop
@@ -73,8 +63,14 @@ export const createChatJobs = (replyToken: undefined | string) => {
           totalJobsCount += 1;
         }
 
+        if (!value.getChatRequest) {
+          throw new Error(
+            `${formatNode(node)} is not valid to be sent in a chat`
+          );
+        }
+
         // get dynamic api request
-        const { method, path, body } = value[CHANNEL_REQUEST_GETTER](channel);
+        const { method, path, body } = value.getChatRequest(channel);
         jobs.push({
           method,
           path,
@@ -88,22 +84,22 @@ export const createChatJobs = (replyToken: undefined | string) => {
   };
 };
 
-const MULITCAST_EXECUTION_KEY = '$$_multicast_$$';
+const MULITCAST_EXECUTION_KEY = 'line.multicast';
 
 export const createMulticastJobs =
   (targets: string[]) =>
   (_: null, segments: DispatchableSegment<LineSegmentValue>[]) => {
     const jobs: LineJob[] = [];
-    let messages: LineSegmentValue[] = [];
+    let messages: MessageParams[] = [];
 
     for (let i = 0; i < segments.length; i += 1) {
-      const { value } = segments[i];
+      const { node, value } = segments[i];
 
-      if (isMessageValue(value)) {
+      if (typeof value === 'string' || value.type === 'message') {
         messages.push(
           typeof value === 'string'
-            ? { type: 'text', text: value as string }
-            : value
+            ? { type: 'text', text: value }
+            : value.params
         );
 
         // flush messages buffer if accumlated to 5 or at the end of loop
@@ -128,8 +124,14 @@ export const createMulticastJobs =
           messages = [];
         }
 
+        if (!value.getBulkRequest) {
+          throw new Error(
+            `${formatNode(node)} is not valid to be sent by multicast`
+          );
+        }
+
         // get dynamic api request
-        const { method, path, body } = value[BULK_REQUEST_GETTER](targets);
+        const { method, path, body } = value.getBulkRequest(targets);
         jobs.push({
           method,
           path,

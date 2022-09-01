@@ -1,23 +1,11 @@
-import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import Renderer from '@sociably/core/renderer';
 import { isNativeType } from '@sociably/core/utils';
-import { API_PATH } from '../../constant';
+import { PATH_MESSAGES } from '../../constant';
 import { TextReply, EmailReply, PhoneReply } from '../quickReply';
 import { Expression } from '../expression';
+import { PassThreadControl } from '../handoverProtocol';
 import { TypingOn, TypingOff, MarkSeen } from '../senderAction';
-import type { MessageValue } from '../../types';
-
-const renderGeneralElement = moxy((node, path) =>
-  Promise.resolve([
-    node.type === 'br'
-      ? { type: 'break' as const, value: null, node, path }
-      : { type: 'text' as const, value: node.type, node, path },
-  ])
-);
-
-const renderer = new Renderer('messenger', renderGeneralElement);
-const render = (node) => renderer.render(node, null as never);
+import { renderUnitElement } from './utils';
 
 const quickReplies = (
   <>
@@ -29,15 +17,10 @@ const quickReplies = (
 
 const children = (
   <>
-    foo
-    <br />
-    <bar />
+    <p>foo</p>
+    bar
   </>
 );
-
-beforeEach(() => {
-  renderGeneralElement.mock.reset();
-});
 
 it('is valid component', () => {
   expect(typeof Expression).toBe('function');
@@ -88,8 +71,7 @@ it.each([
   [
     'Expression with break, pause and thunk in children',
     <Expression>
-      foo
-      <br />
+      <p>foo</p>
       bar
       <Sociably.Pause time={2000} />
       baz
@@ -97,26 +79,24 @@ it.each([
     </Expression>,
   ],
 ])('%s match snapshot', async (_, element) => {
-  await expect(
-    renderer.render(element, null as never)
-  ).resolves.toMatchSnapshot();
+  await expect(renderUnitElement(element)).resolves.toMatchSnapshot();
 });
 
 it('returns null if empty children received', async () => {
-  await expect(render(<Expression>{undefined}</Expression>)).resolves.toBe(
-    null
-  );
-  await expect(render(<Expression>{null}</Expression>)).resolves.toBe(null);
+  await expect(
+    renderUnitElement(<Expression>{undefined}</Expression>)
+  ).resolves.toBe(null);
+  await expect(
+    renderUnitElement(<Expression>{null}</Expression>)
+  ).resolves.toBe(null);
 });
 
 it('hoist text value into message object', async () => {
-  const segments = await render(
+  const segments = await renderUnitElement(
     <Expression>
       foo
-      <br />
-      <bar />
-      <br />
-      baz
+      <p>bar</p>
+      {'baz'}
     </Expression>
   );
 
@@ -127,43 +107,54 @@ it('hoist text value into message object', async () => {
         "path": "$#Expression.children:0",
         "type": "unit",
         "value": Object {
-          "message": Object {
-            "text": "foo",
+          "apiPath": "me/messages",
+          "params": Object {
+            "message": Object {
+              "text": "foo",
+            },
+            "messaging_type": undefined,
+            "notification_type": undefined,
+            "persona_id": undefined,
+            "tag": undefined,
           },
-          "messaging_type": undefined,
-          "notification_type": undefined,
-          "persona_id": undefined,
-          "tag": undefined,
         },
       },
       Object {
-        "node": <bar />,
-        "path": "$#Expression.children:2",
+        "node": <p>
+          bar
+        </p>,
+        "path": "$#Expression.children:1",
         "type": "unit",
         "value": Object {
-          "message": Object {
-            "text": "bar",
+          "apiPath": "me/messages",
+          "params": Object {
+            "message": Object {
+              "text": "bar",
+            },
+            "messaging_type": undefined,
+            "notification_type": undefined,
+            "persona_id": undefined,
+            "tag": undefined,
           },
-          "messaging_type": undefined,
-          "notification_type": undefined,
-          "persona_id": undefined,
-          "tag": undefined,
         },
       },
       Object {
         "node": "baz",
-        "path": "$#Expression.children:4",
+        "path": "$#Expression.children:2",
         "type": "unit",
         "value": Object {
-          "message": Object {
-            "metadata": undefined,
-            "quick_replies": undefined,
-            "text": "baz",
+          "apiPath": "me/messages",
+          "params": Object {
+            "message": Object {
+              "metadata": undefined,
+              "quick_replies": undefined,
+              "text": "baz",
+            },
+            "messaging_type": undefined,
+            "notification_type": undefined,
+            "persona_id": undefined,
+            "tag": undefined,
           },
-          "messaging_type": undefined,
-          "notification_type": undefined,
-          "persona_id": undefined,
-          "tag": undefined,
         },
       },
     ]
@@ -171,34 +162,37 @@ it('hoist text value into message object', async () => {
 });
 
 it('add attributes to message value', async () => {
-  const segments = await render(
+  const segments = await renderUnitElement(
     <Expression
       messagingType="MESSAGE_TAG"
       tag="HUMAN_AGENT"
       notificationType="SILENT_PUSH"
       personaId="_PERSONA_ID_"
     >
-      <foo />
-      <br />
-      <bar />
+      foo
+      <p>bar</p>
+      {'baz'}
     </Expression>
   );
 
   segments!.forEach((segment) => {
     expect(segment.value).toEqual({
-      messaging_type: 'MESSAGE_TAG',
-      tag: 'HUMAN_AGENT',
-      notification_type: 'SILENT_PUSH',
-      persona_id: '_PERSONA_ID_',
-      message: {
-        text: expect.any(String),
+      apiPath: PATH_MESSAGES,
+      params: {
+        messaging_type: 'MESSAGE_TAG',
+        tag: 'HUMAN_AGENT',
+        notification_type: 'SILENT_PUSH',
+        persona_id: '_PERSONA_ID_',
+        message: {
+          text: expect.any(String),
+        },
       },
     });
   });
 });
 
 it('add persona_id to typeing_on/typeing_off sender action', async () => {
-  const segments = (await render(
+  const segments = await renderUnitElement(
     <Expression
       messagingType="MESSAGE_TAG"
       tag="ACCOUNT_UPDATE"
@@ -210,38 +204,98 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
       <TypingOff />
       <MarkSeen />
     </Expression>
-  ))!;
+  );
 
-  expect(segments[1].value).toEqual({
-    sender_action: 'typing_on',
-    persona_id: '_PERSONA_ID_',
-  });
-  expect(segments[2].value).toEqual({
-    sender_action: 'typing_off',
-    persona_id: '_PERSONA_ID_',
-  });
-  expect(segments[3].value).toEqual({ sender_action: 'mark_seen' });
+  expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "apiPath": "me/messages",
+        "params": Object {
+          "message": Object {
+            "metadata": undefined,
+            "quick_replies": undefined,
+            "text": "foo",
+          },
+          "messaging_type": "MESSAGE_TAG",
+          "notification_type": "SILENT_PUSH",
+          "persona_id": "_PERSONA_ID_",
+          "tag": "ACCOUNT_UPDATE",
+        },
+      },
+      Object {
+        "apiPath": "me/messages",
+        "params": Object {
+          "persona_id": "_PERSONA_ID_",
+          "sender_action": "typing_on",
+        },
+      },
+      Object {
+        "apiPath": "me/messages",
+        "params": Object {
+          "persona_id": "_PERSONA_ID_",
+          "sender_action": "typing_off",
+        },
+      },
+      Object {
+        "apiPath": "me/messages",
+        "params": Object {
+          "sender_action": "mark_seen",
+        },
+      },
+    ]
+  `);
 });
 
 it('adds metadata to last message action', async () => {
-  const segments = (await render(
+  const segments = await renderUnitElement(
     <Expression metadata="_META_">
-      <foo />
-      <br />
-      bar
+      foo
+      <p>bar</p>
       <TypingOn />
     </Expression>
-  ))!;
+  );
 
-  expect(segments[0].value).toEqual({ message: { text: 'foo' } });
-  expect(segments[1].value).toEqual({
-    message: { text: 'bar', metadata: '_META_' },
-  });
-  expect(segments[2].value).toEqual({ sender_action: 'typing_on' });
+  expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "apiPath": "me/messages",
+        "params": Object {
+          "message": Object {
+            "text": "foo",
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "tag": undefined,
+        },
+      },
+      Object {
+        "apiPath": "me/messages",
+        "params": Object {
+          "message": Object {
+            "metadata": "_META_",
+            "quick_replies": undefined,
+            "text": "bar",
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "tag": undefined,
+        },
+      },
+      Object {
+        "apiPath": "me/messages",
+        "params": Object {
+          "persona_id": undefined,
+          "sender_action": "typing_on",
+        },
+      },
+    ]
+  `);
 });
 
 it('adds quickReplies to last message action', async () => {
-  const segments = (await render(
+  const segments = await renderUnitElement(
     <Expression
       quickReplies={
         <>
@@ -251,59 +305,66 @@ it('adds quickReplies to last message action', async () => {
         </>
       }
     >
-      <foo />
-      <br />
+      <p>foo</p>
       bar
       <TypingOn />
     </Expression>
-  ))!;
+  );
 
-  expect(segments[0].value).toEqual({ message: { text: 'foo' } });
-  expect(segments[1].value).toEqual({
-    message: {
-      text: 'bar',
-      quick_replies: expect.any(Array),
-    },
-  });
-  expect(segments[2].value).toEqual({ sender_action: 'typing_on' });
-  expect((segments[1].value as MessageValue).message.quick_replies)
-    .toMatchInlineSnapshot(`
+  expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
     Array [
       Object {
-        "content_type": "text",
-        "image_url": undefined,
-        "payload": "bar",
-        "title": "foo",
+        "apiPath": "me/messages",
+        "params": Object {
+          "message": Object {
+            "text": "foo",
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "tag": undefined,
+        },
       },
       Object {
-        "content_type": "user_phone_number",
+        "apiPath": "me/messages",
+        "params": Object {
+          "message": Object {
+            "metadata": undefined,
+            "quick_replies": Array [
+              Object {
+                "content_type": "text",
+                "image_url": undefined,
+                "payload": "bar",
+                "title": "foo",
+              },
+              Object {
+                "content_type": "user_phone_number",
+              },
+              Object {
+                "content_type": "user_email",
+              },
+            ],
+            "text": "bar",
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "tag": undefined,
+        },
       },
       Object {
-        "content_type": "user_email",
+        "apiPath": "me/messages",
+        "params": Object {
+          "persona_id": undefined,
+          "sender_action": "typing_on",
+        },
       },
     ]
   `);
 });
 
 it('do nothing to non-messgae value', async () => {
-  renderGeneralElement.mock.wrap(
-    (renderText) => (node, path) =>
-      node.type === 'nonMessage'
-        ? [
-            {
-              type: 'unit',
-              value: {
-                something: 'else',
-                [API_PATH]: 'some/other/api',
-              },
-              node,
-              path,
-            },
-          ]
-        : renderText(node, path)
-  );
-
-  const segments = (await render(
+  const segments = await renderUnitElement(
     <Expression
       messagingType="MESSAGE_TAG"
       tag="CONFIRMED_EVENT_UPDATE"
@@ -311,33 +372,41 @@ it('do nothing to non-messgae value', async () => {
       personaId="_PERSONA_ID_"
       quickReplies={<TextReply title="foo" payload="bar" />}
     >
-      <foo />
-      <nonMessage />
+      <PassThreadControl targetAppId={123} />
+      foo
     </Expression>
-  ))!;
+  );
 
-  expect(segments[1].value).toEqual({
-    something: 'else',
-    [API_PATH]: 'some/other/api',
-  });
-  expect(segments[0].value).toMatchInlineSnapshot(`
+  expect(segments?.[0].value).toMatchInlineSnapshot(`
     Object {
-      "message": Object {
+      "apiPath": "me/pass_thread_control",
+      "params": Object {
         "metadata": undefined,
-        "quick_replies": Array [
-          Object {
-            "content_type": "text",
-            "image_url": undefined,
-            "payload": "bar",
-            "title": "foo",
-          },
-        ],
-        "text": "foo",
+        "target_app_id": 123,
       },
-      "messaging_type": "MESSAGE_TAG",
-      "notification_type": "SILENT_PUSH",
-      "persona_id": "_PERSONA_ID_",
-      "tag": "CONFIRMED_EVENT_UPDATE",
+    }
+  `);
+  expect(segments?.[1].value).toMatchInlineSnapshot(`
+    Object {
+      "apiPath": "me/messages",
+      "params": Object {
+        "message": Object {
+          "metadata": undefined,
+          "quick_replies": Array [
+            Object {
+              "content_type": "text",
+              "image_url": undefined,
+              "payload": "bar",
+              "title": "foo",
+            },
+          ],
+          "text": "foo",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "_PERSONA_ID_",
+        "tag": "CONFIRMED_EVENT_UPDATE",
+      },
     }
   `);
 });

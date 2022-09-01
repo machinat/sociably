@@ -1,8 +1,7 @@
 import { makeUnitSegment } from '@sociably/core/renderer';
 import type { UnitSegment } from '@sociably/core/renderer';
-import { makeMessengerComponent } from '../utils';
+import makeFacebookComponent from '../utils/makeFacebookComponent';
 import {
-  API_PATH,
   PATH_PASS_THREAD_CONTROL,
   PATH_REQUEST_THREAD_CONTROL,
   PATH_TAKE_THREAD_CONTROL,
@@ -43,13 +42,12 @@ export type PassThreadControlProps = {
 export const PassThreadControl: MessengerComponent<
   PassThreadControlProps,
   UnitSegment<PassThreadControlValue>
-> = makeMessengerComponent(function PassThreadControl(node, path) {
+> = makeFacebookComponent(function PassThreadControl(node, path) {
   const { targetAppId, metadata } = node.props;
   return [
     makeUnitSegment(node, path, {
-      target_app_id: targetAppId,
-      metadata,
-      [API_PATH]: PATH_PASS_THREAD_CONTROL,
+      apiPath: PATH_PASS_THREAD_CONTROL,
+      params: { target_app_id: targetAppId, metadata },
     }),
   ];
 });
@@ -77,11 +75,11 @@ export type RequestThreadControlProps = {
 export const RequestThreadControl: MessengerComponent<
   RequestThreadControlProps,
   UnitSegment<RequestThreadControlValue>
-> = makeMessengerComponent(function RequestThreadControl(node, path) {
+> = makeFacebookComponent(function RequestThreadControl(node, path) {
   return [
     makeUnitSegment(node, path, {
-      metadata: node.props.metadata,
-      [API_PATH]: PATH_REQUEST_THREAD_CONTROL,
+      apiPath: PATH_REQUEST_THREAD_CONTROL,
+      params: { metadata: node.props.metadata },
     }),
   ];
 });
@@ -109,11 +107,11 @@ export type TakeThreadContorlProps = {
 export const TakeThreadContorl: MessengerComponent<
   TakeThreadContorlProps,
   UnitSegment<TakeThreadControlValue>
-> = makeMessengerComponent(function TakeThreadContorl(node, path) {
+> = makeFacebookComponent(function TakeThreadContorl(node, path) {
   return [
     makeUnitSegment(node, path, {
-      metadata: node.props.metadata,
-      [API_PATH]: PATH_TAKE_THREAD_CONTROL,
+      apiPath: PATH_TAKE_THREAD_CONTROL,
+      params: { metadata: node.props.metadata },
     }),
   ];
 });

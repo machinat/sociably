@@ -1,12 +1,8 @@
 import { makeUnitSegment } from '@sociably/core/renderer';
 import type { UnitSegment } from '@sociably/core/renderer';
 import type { FileInfo } from '@sociably/meta-api';
-import { makeMessengerComponent } from '../utils';
-import {
-  ATTACHMENT_ASSET_TAG,
-  ATTACHMENT_DATA,
-  ATTACHMENT_INFO,
-} from '../constant';
+import makeFacebookComponent from '../utils/makeFacebookComponent';
+import { PATH_MESSAGES } from '../constant';
 import type { MessageValue, MessengerComponent } from '../types';
 
 /**
@@ -17,7 +13,7 @@ export type MediaProps = {
    * URL of the file to upload. Max file size is 25MB (after encoding). A
    * Timeout is set to 75 sec for videos and 10 secs for every other file type.
    */
-  url: string;
+  url?: string;
   /**
    * Set to true to make the saved asset sendable to other message recipients.
    * Defaults to false.
@@ -44,25 +40,32 @@ const mediaFactory = (
 
       return [
         makeUnitSegment(node, path, {
-          message: {
-            attachment: {
-              type,
-              payload: {
-                url,
-                is_reusable: reusable,
-                attachment_id: attachmentId,
+          apiPath: PATH_MESSAGES,
+          params: {
+            message: {
+              attachment: {
+                type,
+                payload: {
+                  url,
+                  is_reusable: reusable,
+                  attachment_id: attachmentId,
+                },
               },
             },
           },
-          [ATTACHMENT_ASSET_TAG]: assetTag,
-          [ATTACHMENT_DATA]: fileData,
-          [ATTACHMENT_INFO]: fileInfo,
+          attachFile: fileData
+            ? {
+                data: fileData,
+                info: fileInfo,
+                assetTag,
+              }
+            : undefined,
         }),
       ];
     },
   };
 
-  return makeMessengerComponent(container[name]);
+  return makeFacebookComponent(container[name]);
 };
 
 /**

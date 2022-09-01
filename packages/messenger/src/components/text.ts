@@ -1,7 +1,7 @@
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { makeTextSegment, TextSegment } from '@sociably/core/renderer';
-import { makeMessengerComponent } from '../utils';
+import makeFacebookComponent from '../utils/makeFacebookComponent';
 import type { MessengerComponent } from '../types';
 
 /**
@@ -23,7 +23,7 @@ const LATEX_END = '\\)';
  * @guides Check [help page](https://www.facebook.com/help/147348452522644).
  */
 export const Latex: MessengerComponent<LatexProps, TextSegment> =
-  makeMessengerComponent(async function Latex(node, path, render) {
+  makeFacebookComponent(async function Latex(node, path, render) {
     const segments = await render(node.props.children, '.children');
     if (segments === null) {
       return null;

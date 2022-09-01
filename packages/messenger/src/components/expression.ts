@@ -1,13 +1,14 @@
 import { SociablyNode } from '@sociably/core';
 import type { UnitSegment, OutputSegment } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
+import makeFacebookComponent from '../utils/makeFacebookComponent';
+import { PATH_MESSAGES } from '../constant';
 import type {
   MessengerSegmentValue,
   MessengerComponent,
   MessageValue,
   SenderActionValue,
 } from '../types';
-import { makeMessengerComponent, isMessageEntry } from '../utils';
 
 /**
  * @category Props
@@ -59,7 +60,7 @@ export type ExpressionProps = {
 export const Expression: MessengerComponent<
   ExpressionProps,
   OutputSegment<MessengerSegmentValue>
-> = makeMessengerComponent(async function Expression(
+> = makeFacebookComponent(async function Expression(
   {
     props: {
       children,
@@ -102,42 +103,54 @@ export const Expression: MessengerComponent<
       segments.push({
         type: 'unit',
         value: {
-          message: { text: segment.value },
-          messaging_type: messagingType,
-          tag,
-          notification_type: notificationType,
-          persona_id: personaId,
+          apiPath: PATH_MESSAGES,
+          params: {
+            message: { text: segment.value },
+            messaging_type: messagingType,
+            tag,
+            notification_type: notificationType,
+            persona_id: personaId,
+          },
         },
         node: segment.node,
         path: segment.path,
       });
     } else if (
       (segment.type === 'unit' || segment.type === 'raw') &&
-      isMessageEntry(segment.value)
+      segment.value.apiPath === PATH_MESSAGES
     ) {
-      const { value } = segment as UnitSegment<MessengerSegmentValue>;
+      const {
+        value: { apiPath, params, attachFile },
+      } = segment;
 
-      if ('message' in value) {
+      if ('message' in params) {
         lastMessageIdx = segments.length;
 
         segments.push({
-          ...(segment as UnitSegment<MessageValue>),
+          ...segment,
           value: {
-            ...value,
-            messaging_type: messagingType,
-            tag,
-            notification_type: notificationType,
-            persona_id: personaId,
+            apiPath,
+            params: {
+              ...params,
+              messaging_type: messagingType,
+              tag,
+              notification_type: notificationType,
+              persona_id: personaId,
+            },
+            attachFile,
           },
         });
       } else if (
-        'sender_action' in value &&
-        (value.sender_action === 'typing_on' ||
-          value.sender_action === 'typing_off')
+        'sender_action' in params &&
+        (params.sender_action === 'typing_on' ||
+          params.sender_action === 'typing_off')
       ) {
         segments.push({
           ...(segment as UnitSegment<SenderActionValue>),
-          value: { ...value, persona_id: personaId },
+          value: {
+            apiPath,
+            params: { ...params, persona_id: personaId },
+          },
         });
       } else {
         segments.push(segment as UnitSegment<MessengerSegmentValue>);
@@ -151,7 +164,7 @@ export const Expression: MessengerComponent<
   if (lastMessageIdx !== -1) {
     const lastMessageSeg = segments[
       lastMessageIdx
-    ] as UnitSegment<MessengerSegmentValue>;
+    ] as UnitSegment<MessageValue>;
 
     const { value } = lastMessageSeg;
 
@@ -159,10 +172,13 @@ export const Expression: MessengerComponent<
       ...lastMessageSeg,
       value: {
         ...value,
-        message: {
-          ...(value as MessageValue).message,
-          metadata,
-          quick_replies: quickReplySegments?.map((segment) => segment.value),
+        params: {
+          ...value.params,
+          message: {
+            ...value.params.message,
+            metadata,
+            quick_replies: quickReplySegments?.map((segment) => segment.value),
+          },
         },
       },
     });

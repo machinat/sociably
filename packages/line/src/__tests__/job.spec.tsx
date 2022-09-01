@@ -1,55 +1,66 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import { CHANNEL_REQUEST_GETTER, BULK_REQUEST_GETTER } from '../constant';
 import LineChat from '../Chat';
 import { createChatJobs, createMulticastJobs } from '../job';
 
-const Foo = () => null;
-const Bar = () => null;
-const Baz = () => null;
+const segment = (type: 'text' | 'unit', node, value) => ({
+  type,
+  node,
+  value,
+  path: '?',
+});
 
-const apiCallGettable = moxy({
-  [CHANNEL_REQUEST_GETTER]: () => ({
+const chatActionValue = moxy({
+  type: 'chat_action',
+  getChatRequest: () => ({
     method: 'POST',
     path: 'some/channel/api',
     body: { do: 'something' },
   }),
-  [BULK_REQUEST_GETTER]: () => ({
+  getBulkRequest: () => ({
     method: 'POST',
     path: 'some/bulk/api',
     body: { bulk: 'do something' },
   }),
 });
 
-const unitSegment = (node, value) => ({
-  type: 'unit' as const,
-  node,
-  value,
-  path: '?',
-});
-
 const segments = [
-  unitSegment(<Foo />, { id: 0 }),
-  unitSegment(<Foo />, { id: 1 }),
-  unitSegment(<Foo />, { id: 2 }),
-  unitSegment(<Foo />, { id: 3 }),
-  unitSegment(<Foo />, { id: 4 }),
-  unitSegment(<Foo />, { id: 5 }),
-  unitSegment(<Foo />, { id: 6 }),
-  unitSegment(<Bar />, { id: 7, ...apiCallGettable }),
-  unitSegment(<Foo />, { id: 8 }),
-  unitSegment(<Baz />, { id: 9, ...apiCallGettable }),
+  segment('unit', <p />, {
+    type: 'message',
+    params: { type: 'text', text: '0' },
+  }),
+  segment('text', '1', '1'),
+  segment('unit', <p />, {
+    type: 'message',
+    params: { type: 'text', text: '2' },
+  }),
+  segment('text', '3', '3'),
+  segment('unit', <p />, {
+    type: 'message',
+    params: { type: 'text', text: '4' },
+  }),
+  segment('text', '5', '5'),
+  segment('unit', <p />, {
+    type: 'message',
+    params: { type: 'text', text: '6' },
+  }),
+  segment('unit', <foo />, chatActionValue),
+  segment('unit', <p />, {
+    type: 'message',
+    params: { type: 'text', text: '8' },
+  }),
+  segment('unit', <bar />, chatActionValue),
 ];
 
 beforeEach(() => {
-  apiCallGettable.mock.clear();
+  chatActionValue.mock.reset();
 });
 
 describe('createChatJobs()', () => {
   it('create api dispatch jobs', () => {
     const channel = new LineChat('_CHANNEL_ID_', 'user', 'john');
 
-    const jobs = createChatJobs()(channel, segments);
+    const jobs = createChatJobs(undefined)(channel, segments);
 
     expect(jobs).toMatchInlineSnapshot(`
       Array [
@@ -57,19 +68,24 @@ describe('createChatJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 0,
+                "text": "0",
+                "type": "text",
               },
               Object {
-                "id": 1,
+                "text": "1",
+                "type": "text",
               },
               Object {
-                "id": 2,
+                "text": "2",
+                "type": "text",
               },
               Object {
-                "id": 3,
+                "text": "3",
+                "type": "text",
               },
               Object {
-                "id": 4,
+                "text": "4",
+                "type": "text",
               },
             ],
             "to": "john",
@@ -82,10 +98,12 @@ describe('createChatJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 5,
+                "text": "5",
+                "type": "text",
               },
               Object {
-                "id": 6,
+                "text": "6",
+                "type": "text",
               },
             ],
             "to": "john",
@@ -106,7 +124,8 @@ describe('createChatJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 8,
+                "text": "8",
+                "type": "text",
               },
             ],
             "to": "john",
@@ -126,12 +145,8 @@ describe('createChatJobs()', () => {
       ]
     `);
 
-    expect(apiCallGettable[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledTimes(
-      2
-    );
-    expect(apiCallGettable[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledWith(
-      channel
-    );
+    expect(chatActionValue.getChatRequest.mock).toHaveBeenCalledTimes(2);
+    expect(chatActionValue.getChatRequest.mock).toHaveBeenCalledWith(channel);
   });
 
   test('send first job with reply API if replyToken given', () => {
@@ -144,19 +159,24 @@ describe('createChatJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 0,
+                "text": "0",
+                "type": "text",
               },
               Object {
-                "id": 1,
+                "text": "1",
+                "type": "text",
               },
               Object {
-                "id": 2,
+                "text": "2",
+                "type": "text",
               },
               Object {
-                "id": 3,
+                "text": "3",
+                "type": "text",
               },
               Object {
-                "id": 4,
+                "text": "4",
+                "type": "text",
               },
             ],
             "replyToken": "__REPLY_TOKEN__",
@@ -169,10 +189,12 @@ describe('createChatJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 5,
+                "text": "5",
+                "type": "text",
               },
               Object {
-                "id": 6,
+                "text": "6",
+                "type": "text",
               },
             ],
             "to": "john",
@@ -193,7 +215,8 @@ describe('createChatJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 8,
+                "text": "8",
+                "type": "text",
               },
             ],
             "to": "john",
@@ -213,11 +236,26 @@ describe('createChatJobs()', () => {
       ]
     `);
 
-    expect(apiCallGettable[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledTimes(
-      2
-    );
-    expect(apiCallGettable[CHANNEL_REQUEST_GETTER].mock).toHaveBeenCalledWith(
-      channel
+    expect(chatActionValue.getChatRequest.mock).toHaveBeenCalledTimes(2);
+    expect(chatActionValue.getChatRequest.mock).toHaveBeenCalledWith(channel);
+  });
+
+  it('throw if an invalid chat action received', () => {
+    const channel = new LineChat('_CHANNEL_ID_', 'user', 'john');
+
+    chatActionValue.mock.getter('getChatRequest').fakeReturnValue(null);
+
+    expect(() =>
+      createChatJobs(undefined)(channel, [
+        segment('text', '0', '0'),
+        segment('unit', <p />, {
+          type: 'message',
+          params: { type: 'text', text: '1' },
+        }),
+        segment('unit', <foo />, chatActionValue),
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<foo /> is not valid to be sent in a chat"`
     );
   });
 });
@@ -232,19 +270,24 @@ describe('createMulticastJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 0,
+                "text": "0",
+                "type": "text",
               },
               Object {
-                "id": 1,
+                "text": "1",
+                "type": "text",
               },
               Object {
-                "id": 2,
+                "text": "2",
+                "type": "text",
               },
               Object {
-                "id": 3,
+                "text": "3",
+                "type": "text",
               },
               Object {
-                "id": 4,
+                "text": "4",
+                "type": "text",
               },
             ],
             "to": Array [
@@ -253,7 +296,7 @@ describe('createMulticastJobs()', () => {
               "baz",
             ],
           },
-          "executionKey": "$$_multicast_$$",
+          "executionKey": "line.multicast",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
@@ -261,10 +304,12 @@ describe('createMulticastJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 5,
+                "text": "5",
+                "type": "text",
               },
               Object {
-                "id": 6,
+                "text": "6",
+                "type": "text",
               },
             ],
             "to": Array [
@@ -273,7 +318,7 @@ describe('createMulticastJobs()', () => {
               "baz",
             ],
           },
-          "executionKey": "$$_multicast_$$",
+          "executionKey": "line.multicast",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
@@ -281,7 +326,7 @@ describe('createMulticastJobs()', () => {
           "body": Object {
             "bulk": "do something",
           },
-          "executionKey": "$$_multicast_$$",
+          "executionKey": "line.multicast",
           "method": "POST",
           "path": "some/bulk/api",
         },
@@ -289,7 +334,8 @@ describe('createMulticastJobs()', () => {
           "body": Object {
             "messages": Array [
               Object {
-                "id": 8,
+                "text": "8",
+                "type": "text",
               },
             ],
             "to": Array [
@@ -298,7 +344,7 @@ describe('createMulticastJobs()', () => {
               "baz",
             ],
           },
-          "executionKey": "$$_multicast_$$",
+          "executionKey": "line.multicast",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
@@ -306,18 +352,35 @@ describe('createMulticastJobs()', () => {
           "body": Object {
             "bulk": "do something",
           },
-          "executionKey": "$$_multicast_$$",
+          "executionKey": "line.multicast",
           "method": "POST",
           "path": "some/bulk/api",
         },
       ]
     `);
 
-    expect(apiCallGettable[BULK_REQUEST_GETTER].mock).toHaveBeenCalledTimes(2);
-    expect(apiCallGettable[BULK_REQUEST_GETTER].mock).toHaveBeenCalledWith([
+    expect(chatActionValue.getBulkRequest.mock).toHaveBeenCalledTimes(2);
+    expect(chatActionValue.getBulkRequest.mock).toHaveBeenCalledWith([
       'foo',
       'bar',
       'baz',
     ]);
+  });
+
+  it('throw if an invalid chat action received', () => {
+    chatActionValue.mock.getter('getBulkRequest').fakeReturnValue(null);
+
+    expect(() =>
+      createMulticastJobs(['foo', 'bar', 'baz'])(null, [
+        segment('text', '0', '0'),
+        segment('unit', <p />, {
+          type: 'message',
+          params: { type: 'text', text: '1' },
+        }),
+        segment('unit', <foo />, chatActionValue),
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"<foo /> is not valid to be sent by multicast"`
+    );
   });
 });

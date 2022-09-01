@@ -1,18 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import Renderer from '@sociably/core/renderer';
 import { TextReply, PhoneReply, EmailReply } from '../quickReply';
-
-const render = async (node) => {
-  let rendered;
-  const renderer = new Renderer('messenger', (_, __, renderInner) => {
-    rendered = renderInner(node, null as never);
-    return Promise.resolve(null);
-  });
-
-  await renderer.render(<container />, null as never);
-  return rendered;
-};
+import { renderPartElement } from './utils';
 
 it.each([TextReply, PhoneReply, EmailReply])(
   '%p is valid Component',
@@ -24,8 +13,8 @@ it.each([TextReply, PhoneReply, EmailReply])(
 );
 
 test('TextReply match snpshot', async () => {
-  expect(render(<TextReply title="i want a pie" payload="🥧" />)).resolves
-    .toMatchInlineSnapshot(`
+  expect(renderPartElement(<TextReply title="i want a pie" payload="🥧" />))
+    .resolves.toMatchInlineSnapshot(`
     Array [
       Object {
         "node": <TextReply
@@ -44,7 +33,7 @@ test('TextReply match snpshot', async () => {
     ]
   `);
   expect(
-    render(
+    renderPartElement(
       <TextReply
         title="a piece of cake"
         payload="🍰"
@@ -73,7 +62,7 @@ test('TextReply match snpshot', async () => {
 });
 
 test('PhoneReply match snpshot', async () => {
-  expect(render(<PhoneReply />)).resolves.toMatchInlineSnapshot(`
+  expect(renderPartElement(<PhoneReply />)).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
         "node": <PhoneReply />,
@@ -88,7 +77,7 @@ test('PhoneReply match snpshot', async () => {
 });
 
 test('EmailReply match snpshot', async () => {
-  expect(render(<EmailReply />)).resolves.toMatchInlineSnapshot(`
+  expect(renderPartElement(<EmailReply />)).resolves.toMatchInlineSnapshot(`
     Array [
       Object {
         "node": <EmailReply />,

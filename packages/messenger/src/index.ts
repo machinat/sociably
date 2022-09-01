@@ -6,10 +6,4 @@ export { default as MessengerUserProfile } from './UserProfile';
 export { MessengerBot } from './Bot';
 export { MessengerReceiver } from './Receiver';
 export { MessengerProfiler } from './Profiler';
-export {
-  ATTACHMENT_DATA,
-  ATTACHMENT_INFO,
-  ATTACHMENT_ASSET_TAG,
-  API_PATH,
-} from './constant';
 export * from './types';

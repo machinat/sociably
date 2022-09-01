@@ -3,7 +3,8 @@ import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { makeUnitSegment, makePartSegment } from '@sociably/core/renderer';
 import type { UnitSegment, PartSegment } from '@sociably/core/renderer';
-import { makeMessengerComponent } from '../utils';
+import makeFacebookComponent from '../utils/makeFacebookComponent';
+import { PATH_MESSAGES } from '../constant';
 import type { MessageValue, MessengerComponent } from '../types';
 
 /**
@@ -39,7 +40,7 @@ export type GenericItemProps = {
 export const GenericItem: MessengerComponent<
   GenericItemProps,
   PartSegment<any>
-> = makeMessengerComponent(async function GenericItem(node, path, render) {
+> = makeFacebookComponent(async function GenericItem(node, path, render) {
   const {
     buttons,
     title,
@@ -104,21 +105,24 @@ export type GenericTemplateProps = {
 export const GenericTemplate: MessengerComponent<
   GenericTemplateProps,
   UnitSegment<MessageValue>
-> = makeMessengerComponent(async function GenericTemplate(node, path, render) {
+> = makeFacebookComponent(async function GenericTemplate(node, path, render) {
   const { children, sharable, imageAspectRatio } = node.props;
   const elementsSegments = await render(children, '.children');
   const elementValues = elementsSegments?.map((segment) => segment.value);
 
   return [
     makeUnitSegment(node, path, {
-      message: {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'generic',
-            sharable,
-            image_aspect_ratio: imageAspectRatio,
-            elements: elementValues,
+      apiPath: PATH_MESSAGES,
+      params: {
+        message: {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'generic',
+              sharable,
+              image_aspect_ratio: imageAspectRatio,
+              elements: elementValues,
+            },
           },
         },
       },
@@ -151,23 +155,21 @@ export type ButtonTemplateProps = {
 export const ButtonTemplate: MessengerComponent<
   ButtonTemplateProps,
   UnitSegment<MessageValue>
-> = makeMessengerComponent(async function ButtonTemplate(node, path, render) {
+> = makeFacebookComponent(async function ButtonTemplate(node, path, render) {
   const { children, buttons, sharable } = node.props;
   const textSegments = await render(children, '.children');
-  let text = '';
 
-  if (textSegments) {
-    for (const segment of textSegments) {
-      if (segment.type !== 'text') {
-        throw new TypeError(
-          `non-textual node ${formatNode(
-            segment.node
-          )} received, only textual nodes allowed`
-        );
-      }
+  if (!textSegments) {
+    throw new TypeError(`"children" prop should not be empty`);
+  }
+  for (const segment of textSegments) {
+    if (segment.type !== 'text') {
+      throw new TypeError(
+        `non-textual node ${formatNode(
+          segment.node
+        )} received, only textual nodes allowed`
+      );
     }
-
-    text = textSegments[0].value;
   }
 
   const buttonSegments = await render(buttons, '.buttons');
@@ -175,14 +177,17 @@ export const ButtonTemplate: MessengerComponent<
 
   return [
     makeUnitSegment(node, path, {
-      message: {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'button',
-            text,
-            sharable,
-            buttons: buttonValues,
+      apiPath: PATH_MESSAGES,
+      params: {
+        message: {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'button',
+              text: textSegments[0].value,
+              sharable,
+              buttons: buttonValues,
+            },
           },
         },
       },
@@ -220,27 +225,30 @@ export type MediaTemplateProps = {
 export const MediaTemplate: MessengerComponent<
   MediaTemplateProps,
   UnitSegment<MessageValue>
-> = makeMessengerComponent(async function MediaTemplate(node, path, render) {
+> = makeFacebookComponent(async function MediaTemplate(node, path, render) {
   const { buttons, mediaType, attachmentId, url, sharable } = node.props;
   const buttonSegments = await render(buttons, '.buttons');
   const buttonValues = buttonSegments?.map((segment) => segment.value);
 
   return [
     makeUnitSegment(node, path, {
-      message: {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'media',
-            sharable,
-            elements: [
-              {
-                media_type: mediaType,
-                url,
-                attachment_id: attachmentId,
-                buttons: buttonValues,
-              },
-            ],
+      apiPath: PATH_MESSAGES,
+      params: {
+        message: {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'media',
+              sharable,
+              elements: [
+                {
+                  media_type: mediaType,
+                  url,
+                  attachment_id: attachmentId,
+                  buttons: buttonValues,
+                },
+              ],
+            },
           },
         },
       },
@@ -276,7 +284,7 @@ export type ReceiptItemProps = {
 export const ReceiptItem: MessengerComponent<
   ReceiptItemProps,
   PartSegment<any>
-> = makeMessengerComponent(async function ReceiptItem(node, path) {
+> = makeFacebookComponent(async function ReceiptItem(node, path) {
   const { title, subtitle, quantity, price, currency, imageUrl } = node.props;
   return [
     makePartSegment(node, path, {
@@ -322,7 +330,20 @@ export type ReceiptTemplateProps = {
   /** Timestamp of the order in seconds. */
   timestamp?: string | Date;
   /** The shipping address of the order. */
-  address?: string;
+  address?: {
+    /** The street address, line 1. */
+    street_1: string;
+    /** Optional. The street address, line 2. */
+    street_2?: string;
+    /** The city name of the address. */
+    city: string;
+    /** The postal code of the address. */
+    postal_code: string;
+    /** The state abbreviation for U.S. addresses, or the region/province for non-U.S. addresses. */
+    state: string;
+    /** The two-letter country abbreviation of the address. */
+    country: string;
+  };
   summary: {
     /** Optional. The sub-total of the order. */
     subtotal?: number;
@@ -352,7 +373,7 @@ export type ReceiptTemplateProps = {
 export const ReceiptTemplate: MessengerComponent<
   ReceiptTemplateProps,
   UnitSegment<MessageValue>
-> = makeMessengerComponent(async function ReceiptTemplate(node, path, render) {
+> = makeFacebookComponent(async function ReceiptTemplate(node, path, render) {
   const {
     children,
     sharable,
@@ -373,26 +394,29 @@ export const ReceiptTemplate: MessengerComponent<
 
   return [
     makeUnitSegment(node, path, {
-      message: {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'receipt',
-            sharable,
-            recipient_name: recipientName,
-            merchant_name: merchantName,
-            order_number: orderNumber,
-            currency,
-            payment_method: paymentMethod,
-            order_url: orderUrl,
-            timestamp:
-              timestamp instanceof Date
-                ? `${Math.floor(timestamp.getTime() / 1000)}`
-                : timestamp,
-            address,
-            summary,
-            adjustments,
-            elements: elementValues,
+      apiPath: PATH_MESSAGES,
+      params: {
+        message: {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'receipt',
+              sharable,
+              recipient_name: recipientName,
+              merchant_name: merchantName,
+              order_number: orderNumber,
+              currency,
+              payment_method: paymentMethod,
+              order_url: orderUrl,
+              timestamp:
+                timestamp instanceof Date
+                  ? `${Math.floor(timestamp.getTime() / 1000)}`
+                  : timestamp,
+              address,
+              summary,
+              adjustments,
+              elements: elementValues,
+            },
           },
         },
       },
@@ -424,17 +448,20 @@ export type RequestOneTimeNotifProps = {
 export const RequestOneTimeNotif: MessengerComponent<
   RequestOneTimeNotifProps,
   UnitSegment<MessageValue>
-> = makeMessengerComponent(function RequestOneTimeNotif(node, path) {
+> = makeFacebookComponent(function RequestOneTimeNotif(node, path) {
   const { title, payload } = node.props;
   return [
     makeUnitSegment(node, path, {
-      message: {
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'one_time_notif_req',
-            title,
-            payload,
+      apiPath: PATH_MESSAGES,
+      params: {
+        message: {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'one_time_notif_req',
+              title,
+              payload,
+            },
           },
         },
       },
