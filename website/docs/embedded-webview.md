@@ -47,24 +47,24 @@ The chat platforms may provide some special components to open the webview in th
 For example:
 
 ```js
-import * as Messenger from '@sociably/messenger/components';
-import { WebviewButton as MessengerWebviewButton } from '@sociably/messenger/webview';
+import * as Facebook from '@sociably/facebook/components';
+import { WebviewButton as FacebookWebviewButton } from '@sociably/facebook/webview';
 
-<Messenger.ButtonTemplate
+<Facebook.ButtonTemplate
   buttons={
     // highlight-start
-    <MessengerWebviewButton title="Open Webview ↗️" />
+    <FacebookWebviewButton title="Open Webview ↗️" />
     // highlight-end
   }
 >
   Hello World!
-</Messenger.ButtonTemplate>
+</Facebook.ButtonTemplate>
 ```
 
-With the codes above, the webview will be opened in the Messenger app when the `WebviewButton` is tapped.
+With the codes above, the webview will be opened in the Facebook Messenger app when the `WebviewButton` is tapped.
 Check the document of each platform for the details.
 
-- [Messenger](./messenger-platform#open-the-webview)
+- [Facebook](./facebook-platform#open-the-webview)
 - [Twitter](./twitter-platform#open-the-webview)
 - [Telegram](./telegram-platform#open-the-webview)
 - [LINE](./line-platform#open-the-webview)
@@ -87,13 +87,13 @@ const client = new WebviewClient({
 2. The `platform` querystring param on the URL. Like:
 
 ```
-https://my.sociably.app/webview?platform=messenger
+https://my.sociably.app/webview?platform=facebook
 ```
 
 3. The platform that already logged in.
 
 Notice that some platforms only support opening webviews from the chatroom,
-like Messenger.
+like Facebook.
 
 ## Webview Client
 
@@ -102,10 +102,10 @@ It can be constructed like this:
 
 ```js
 import WebviewClient from '@sociably/webview/client';
-import MessengerAuth from '@sociably/messenger/webview/client';
+import FacebookAuth from '@sociably/facebook/webview/client';
 
 const client = new WebviewClient({
-  authPlatforms: [MessengerAuth],
+  authPlatforms: [FacebookAuth],
 });
 ```
 
@@ -120,11 +120,11 @@ Like this:
 
 ```jsx
 import { useClient } from '@sociably/webview/client';
-import MessengerAuth from '@sociably/messenger/webview/client';
+import FacebookAuth from '@sociably/facebook/webview/client';
 
 export default function MyApp() {
   const client = useClient({
-    authPlatforms: [MessengerAuth],
+    authPlatforms: [FacebookAuth],
   });
 
   const sayHello = () => {
@@ -527,13 +527,13 @@ you have to add the supported `authPlatforms` to log in users.
 Conventionally, the providers are available at `@sociably/<platform>/webview`.
 
 ```js
-import MessengerAuth from '@sociably/messenger/webview';
+import FacebookAuth from '@sociably/facebook/webview';
 import TelegramAuth from '@sociably/telegram/webview';
 import LineAuth from '@sociably/line/webview';
 // ...
   Webview.initModule({
     authPlatforms: [
-      MessengerAuth,
+      FacebookAuth,
       TelegramAuth,
       LineAuth,
     ],
@@ -576,7 +576,7 @@ You can check more client options [here](pathname:///api/modules/webview_client.
 The supported `authPlatforms` also need to be added at the client.
 Check the guide of each platform for the details.
 
-- [Messenger](./messenger-platform#auth-setup)
+- [Facebook](./facebook-platform#auth-setup)
 - [Twitter](./twitter-platform#auth-setup)
 - [Telegram](./telegram-platform#auth-setup)
 - [LINE](./line-platform#auth-setup)
@@ -588,7 +588,7 @@ use [`publicRuntimeConfig`](https://nextjs.org/docs/api-reference/next.config.js
 For example:
 
 ```js
-import MessengerAuth from '@sociably/messenger/webview/client';
+import FacebookAuth from '@sociably/facebook/webview/client';
 
 // to activate publicRuntimeConfig
 export const getServerSideProps = () => ({ props: {} });
@@ -597,8 +597,8 @@ const { publicRuntimeConfig } = getConfig();
 
 const client = new WebviewClient({
   authPlatforms: [
-    new MessengerAuth({
-      appId: publicRuntimeConfig.messengerAppId,
+    new FacebookAuth({
+      appId: publicRuntimeConfig.facebookAppId,
     }),
   ],
 });
@@ -609,7 +609,7 @@ Then add the setting in `next.config.js` like this:
 ```js
 module.exports = {
   publicRuntimeConfig: {
-    messengerAppId: process.env.MESSENGER_APP_ID,
+    facebookAppId: process.env.FACEBOOK_APP_ID,
   },
 };
 ```

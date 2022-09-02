@@ -4,11 +4,11 @@ import { when } from '../../utils';
 export default ({
   platforms,
   withWebview,
-}: CreateAppContext): string => `${when(platforms.includes('messenger'))`
-import type { MessengerEventContext } from '@sociably/messenger';${when(
+}: CreateAppContext): string => `${when(platforms.includes('facebook'))`
+import type { FacebookEventContext } from '@sociably/facebook';${when(
   withWebview
 )`
-import type MessengerAuth from '@sociably/messenger/webview';`}`}${when(
+import type FacebookAuth from '@sociably/facebook/webview';`}`}${when(
   platforms.includes('twitter')
 )`
 import type { TwitterEventContext } from '@sociably/twitter';${when(
@@ -27,17 +27,17 @@ import type { LineEventContext } from '@sociably/line';${when(withWebview)`
 import type LineAuth from '@sociably/line/webview';`}`}${when(withWebview)`
 import type { WebviewEventContext } from '@sociably/webview';`}
 
-export type ChatEventContext =${when(platforms.includes('messenger'))`
-  | MessengerEventContext`}${when(platforms.includes('twitter'))`
+export type ChatEventContext =${when(platforms.includes('facebook'))`
+  | FacebookEventContext`}${when(platforms.includes('twitter'))`
   | TwitterEventContext`}${when(platforms.includes('telegram'))`
   | TelegramEventContext`}${when(platforms.includes('line'))`
   | LineEventContext`};
 ${when(withWebview)`
 
 export type WebAppEventContext = WebviewEventContext<${when(
-  platforms.includes('messenger')
+  platforms.includes('facebook')
 )`
-    | MessengerAuth`}${when(platforms.includes('twitter'))`
+    | FacebookAuth`}${when(platforms.includes('twitter'))`
     | TwitterAuth`}${when(platforms.includes('telegram'))`
     | TelegramAuth`}${when(platforms.includes('line'))`
     | LineAuth`}

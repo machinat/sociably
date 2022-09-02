@@ -27,7 +27,7 @@ type CreateAppOptions = {
 const formatCode = (code: string, parser: PrettierOptions['parser']) =>
   prettierFormat(code, { parser, singleQuote: true });
 
-const supportedPlatforms = ['messenger', 'twitter', 'telegram', 'line'];
+const supportedPlatforms = ['facebook', 'twitter', 'telegram', 'line'];
 
 const createSociablyApp = async ({
   platforms,
@@ -145,16 +145,16 @@ const createSociablyApp = async ({
   const sociablyDeps = [
     '@sociably/core',
     '@sociably/http',
-    '@Sociably/dev-tools',
-    '@Sociably/redis-state',
-    '@Sociably/stream',
-    '@Sociably/script',
+    '@sociably/dev-tools',
+    '@sociably/redis-state',
+    '@sociably/stream',
+    '@sociably/script',
     withWebview ? '@sociably/webview' : undefined,
-    platforms.includes('messenger') ? '@Sociably/messenger' : undefined,
-    platforms.includes('twitter') ? '@Sociably/twitter' : undefined,
-    platforms.includes('telegram') ? '@Sociably/telegram' : undefined,
-    platforms.includes('line') ? '@Sociably/line' : undefined,
-    recognizer === 'dialogflow' ? '@Sociably/dialogflow' : undefined,
+    platforms.includes('facebook') ? '@sociably/facebook' : undefined,
+    platforms.includes('twitter') ? '@sociably/twitter' : undefined,
+    platforms.includes('telegram') ? '@sociably/telegram' : undefined,
+    platforms.includes('line') ? '@sociably/line' : undefined,
+    recognizer === 'dialogflow' ? '@sociably/dialogflow' : undefined,
   ]
     .filter((pkgName) => !!pkgName)
     .map((pkgName) => `${pkgName}@${npmTag}`);

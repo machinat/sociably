@@ -21,14 +21,14 @@ NODE_ENV=development
 DEV_TUNNEL_SUBDOMAIN=${localTunnelSubDomain}
 DOMAIN=${localTunnelSubDomain}.t.machinat.dev
 PORT=8080
-${when(platforms.includes('messenger'))`
-# Messenger
+${when(platforms.includes('facebook'))`
+# Facebook
 
-MESSENGER_PAGE_ID=
-MESSENGER_APP_ID=
-MESSENGER_APP_SECRET=
-MESSENGER_ACCESS_TOKEN=
-MESSENGER_VERIFY_TOKEN=${nanoid(16)}
+FACEBOOK_PAGE_ID=
+FACEBOOK_APP_ID=
+FACEBOOK_APP_SECRET=
+FACEBOOK_ACCESS_TOKEN=
+FACEBOOK_VERIFY_TOKEN=${nanoid(16)}
 `}${when(platforms.includes('twitter'))`
 # Twitter
 

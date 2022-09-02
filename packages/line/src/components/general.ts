@@ -75,7 +75,7 @@ const generalComponentDelegator = async (node, path, render) => {
 
   if (!objectHasOwnProperty(generalComponents, type)) {
     throw new Error(
-      `"${type}" is not valid general component tag on messenger`
+      `"${type}" is not a valid general component tag on LINE platform`
     );
   }
 

@@ -3,9 +3,9 @@ import { CreateAppContext } from '../../../types';
 
 export default ({ platforms }: CreateAppContext): string => `
 import Sociably, { SociablyNode } from '@sociably/core';${when(
-  platforms.includes('messenger')
+  platforms.includes('facebook')
 )`
-import * as Messenger from '@sociably/messenger/components';`}${when(
+import * as Facebook from '@sociably/facebook/components';`}${when(
   platforms.includes('twitter')
 )`
 import * as Twitter from '@sociably/twitter/components';`}${when(
@@ -28,21 +28,21 @@ const WithYesNoReplies = (
   const yesData = JSON.stringify({ action: 'yes' });
   const noWords = 'No';
   const noData = JSON.stringify({ action: 'no' });${when(
-    platforms.includes('messenger')
+    platforms.includes('facebook')
   )`
 
-  if (platform === 'messenger') {
+  if (platform === 'facebook') {
     return (
-      <Messenger.Expression
+      <Facebook.Expression
         quickReplies={
           <>
-            <Messenger.TextReply title={yesWords} payload={yesData} />
-            <Messenger.TextReply title={noWords} payload={noData} />
+            <Facebook.TextReply title={yesWords} payload={yesData} />
+            <Facebook.TextReply title={noWords} payload={noData} />
           </>
         }
       >
         {children}
-      </Messenger.Expression>
+      </Facebook.Expression>
     );
   }`}${when(platforms.includes('telegram'))`
 

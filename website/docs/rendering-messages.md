@@ -124,15 +124,15 @@ These platform-specific features are available as **Native Components**.
 You can require them from platform packages and use them like:
 
 ```js
-import * as Messenger from '@sociably/messenger/components'
+import * as Facebook from '@sociably/facebook/components'
 
 await bot.render(
   channel,
-  <Messenger.MediaTemplate
+  <Facebook.MediaTemplate
     type="video"
     url="http://..."
     buttons={
-      <Messenger.UrlButton title="Go" url="http://..."/>
+      <Facebook.UrlButton title="Go" url="http://..."/>
     }
   />
 );
@@ -148,8 +148,8 @@ app.onEvent(async ({ platform, reply }) => {
   await reply(
     <>
       Hi!
-      {platform === 'messenger'
-        ? <Messenger.Image url="..." />
+      {platform === 'facebook'
+        ? <Facebook.Image url="..." />
         : platform === 'telegram'
         ? <Telegram.Photo url="..." />
         : <img src="..." />}

@@ -76,13 +76,13 @@ await reply(
       <code>baz</code>
     </p>
 
-    <Messenger.GenericTemplate>
-      <Messenger.GenericItem
+    <Facebook.GenericTemplate>
+      <Facebook.GenericItem
         title="Hello"
         subtitile="world"
         imageUrl="http://..."
       />
-    </Messenger.GenericTemplate>
+    </Facebook.GenericTemplate>
   </>
 );
 ```
@@ -96,11 +96,11 @@ Like this:
 ```js
 await reply(
   <>
-    <Messenger.MarkSeen />
+    <Facebook.MarkSeen />
     <Sociably.Pause time={1000} />
 
     <p>Hakuna Matata!</p>
-    <Messenger.TypingOn />
+    <Facebook.TypingOn />
 
     <Sociably.Pause time={2000} />
     <p>It means no worry!</p>
@@ -121,8 +121,8 @@ await reply(
 
     <video src="http://..." />
 
-    {platform === 'messenger'
-      ? <Messenger.Video attachmentId="_UPLOADED_VIDEO_" />
+    {platform === 'facebook'
+      ? <Facebook.Video attachmentId="_UPLOADED_VIDEO_" />
       : null}
   
     <MyCrossPlatformVideo />

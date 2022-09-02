@@ -50,7 +50,7 @@
     "packages/jest-snapshot-serializer",
     "packages/line",
     "packages/dev-tools",
-    "packages/messenger",
+    "packages/facebook",
     "packages/meta-api",
     "packages/next",
     "packages/redis-state",

@@ -35,11 +35,11 @@ Assume you have the Next.js app directory at `./webview`, set up webview platfor
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
 import Webview from '@sociably/webview';
-import Messenger from '@sociably/messenger';
-import MessengerWebviewAuth from '@sociably/messenger/webview';
+import Facebook from '@sociably/facebook';
+import FacebookWebviewAuth from '@sociably/facebook/webview';
 import nextConfigs from '../webview/next.config.js';
 
-const { DOMAIN, WEBVIEW_AUTH_SECRET, NODE_ENV, MESSENGER_APP_ID } = process.env;
+const { DOMAIN, WEBVIEW_AUTH_SECRET, NODE_ENV, FACEBOOK_APP_ID } = process.env;
 const DEV = NODE_ENV !== 'production';
 
 const app = Sociably.createApp({
@@ -47,14 +47,14 @@ const app = Sociably.createApp({
     Http.initModule({/* ... */}),
   ],
   platforms: [
-    Messenger.initModule({/* ... */}),
+    Facebook.initModule({/* ... */}),
     Webview.intiModule({
       webviewHost: DOMAIN,
       webviewPath: '/webview', // have to match `basePath` in next.config.js
       authSecret: WEBVIEW_AUTH_SECRET,
       authPlatforms: [
         // auth providers from platforms
-        MessengerWebviewAuth,
+        FacebookWebviewAuth,
       ],
       nextServerOptions: {
         dev: DEV,              // use dev mode or not
@@ -89,7 +89,7 @@ module.exports = {
   basePath: '/webview',   // have to match `webviewPath` on back-end
   publicRuntimeConfig: {
     // export settings to front-end if needed
-    messengerAppId: process.env.MESSENGER_APP_ID,
+    facebookAppId: process.env.FACEBOOK_APP_ID,
   },
 };
 ```
@@ -101,7 +101,7 @@ Then you can use `WebviewClient` in the front-end pages like this:
 import { useEffect } from 'react';
 import getConfig from 'next/config';
 import WebviewClient from '@sociably/webview/client';
-import MessengerWebviewAuth from '@sociably/messenger/webview/client';
+import FacebookWebviewAuth from '@sociably/facebook/webview/client';
 
 // get settings if needed
 const { publicRuntimeConfig } = getConfig();
@@ -113,8 +113,8 @@ const client = new WebviewClient({
   mockupMode: typeof window === 'undefined',
   // auth providers from platforms
   authPlatforms: [
-    new MessengerWebviewAuth({
-      appId: publicRuntimeConfig.messengerAppId,
+    new FacebookWebviewAuth({
+      appId: publicRuntimeConfig.facebookAppId,
     }),
   ],
 });

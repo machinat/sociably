@@ -1,4 +1,4 @@
-export type PlatformType = 'messenger' | 'line' | 'telegram' | 'twitter';
+export type PlatformType = 'facebook' | 'line' | 'telegram' | 'twitter';
 
 export type CreateAppContext = {
   projectName: string;

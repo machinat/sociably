@@ -19,7 +19,7 @@ For example:
 ```js
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
-import Messenger from '@sociably/messenger';
+import Facebook from '@sociably/facebook';
 import Telegram from '@sociably/telegram';
 import { FileState } from '@sociably/dev-tools';
 import FooService from './services/Foo';
@@ -27,7 +27,7 @@ import BarService from './services/Bar';
 
 const app = Sociably.createApp({
   platforms: [
-    Messenger.initModule({/*...*/}),
+    Facebook.initModule({/*...*/}),
     Telegram.initModule({/*...*/}),
   ],
   modules: [
@@ -45,7 +45,7 @@ app.start();
 ### Register Modules
 
 The `platforms` and `modules` options add services for a particular platform or functionality.
-For example, `Messenger.Bot` service is added by the `Messenger` platform.
+For example, `Facebook.Bot` service is added by the `Facebook` platform.
 The bot instance is then created when `app.start()`.
 
 Sociably is made with _progressive framework_ paradigm.
@@ -59,14 +59,14 @@ After the app is started, we can require services and use them like:
 
 ```js
 import Sociably from '@sociably/core';
-import Messenger from '@sociably/messenger';
+import Facebook from '@sociably/facebook';
 import Telegram from '@sociably/telegram';
 
 const app = Sociably.createApp({/* ... */});
 
 app.start().then(() => {
-  const [messengerBot, telegramBot] = app.useServices([
-    Messenger.Bot,
+  const [facebookBot, telegramBot] = app.useServices([
+    Facebook.Bot,
     Telegram.Bot,
   ]);
   // use the bots ...
@@ -194,14 +194,14 @@ Here are the list of the standard services:
 We can also register individual service in the `services` option:
 
 ```js
-import MessengerAssetsManager from '@sociably/messenger/asset';
+import FacebookAssetsManager from '@sociably/facebook/asset';
 import FooService from './foo';
 
 Sociably.createApp({
   platforms: [/*...*/],
   modules: [/*...*/],
   services: [
-    MessengerAssetsManager,
+    FacebookAssetsManager,
     FooService,
   ],
 })
@@ -212,10 +212,10 @@ The services then can be required via `app.useServices()` or a container.
 ```js
 const [foo, assets] = app.useServices([
   FooService,
-  MessengerAssetsManager,
+  FacebookAssetsManager,
 ]);
 
-makeContainer({ deps: [FooService, MessengerAssetsManager] })(
+makeContainer({ deps: [FooService, FacebookAssetsManager] })(
   (foo, assetsManager) =>
   (ctx) => {
     // ...

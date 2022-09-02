@@ -4,14 +4,14 @@ exports[`attach appsecret_proof if appSecret is given 1`] = `
 Object {
   "access_token": "_fb_graph_api_access_token_",
   "appsecret_proof": "c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"messenger:default:id:foo-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-1\\",\\"name\\":\\"messenger:default:id:foo-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-2\\",\\"name\\":\\"messenger:default:id:foo-3\\"}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"facebook:id:foo-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook:id:foo-1\\",\\"name\\":\\"facebook:id:foo-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook:id:foo-2\\",\\"name\\":\\"facebook:id:foo-3\\"}]",
 }
 `;
 
 exports[`call to graph api 1`] = `
 Object {
   "access_token": "_access_token_",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"messenger:default:id:foo-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-1\\",\\"name\\":\\"messenger:default:id:foo-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-2\\",\\"name\\":\\"messenger:default:id:foo-3\\"}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"facebook:id:foo-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook:id:foo-1\\",\\"name\\":\\"facebook:id:foo-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook:id:foo-2\\",\\"name\\":\\"facebook:id:foo-3\\"}]",
 }
 `;
 
@@ -21,7 +21,7 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "key": "messenger:default:id:foo",
+        "key": "facebook:id:foo",
         "request": Object {
           "body": Object {
             "id": 1,
@@ -45,7 +45,7 @@ Object {
     Object {
       "error": [GraphAPIError (OAuthException): you should not passed!],
       "job": Object {
-        "key": "messenger:default:id:foo",
+        "key": "facebook:id:foo",
         "request": Object {
           "body": Object {
             "id": 2,
@@ -73,7 +73,7 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "key": "messenger:default:id:foo",
+        "key": "facebook:id:foo",
         "request": Object {
           "body": Object {
             "id": 3,
@@ -119,7 +119,7 @@ _access_token_
 -----MULTIPART_SEPARATOR-----
 Content-Disposition: form-data; name=\\"batch\\"
 
-[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"messenger:default:id:foo-1\\",\\"attached_files\\":\\"file_0\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-1\\",\\"name\\":\\"messenger:default:id:foo-2\\",\\"attached_files\\":\\"file_1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"messenger:default:id:foo-2\\",\\"name\\":\\"messenger:default:id:foo-3\\"}]
+[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=1\\",\\"omit_response_on_success\\":false,\\"name\\":\\"facebook:id:foo-1\\",\\"attached_files\\":\\"file_0\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"bar/baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=2\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook:id:foo-1\\",\\"name\\":\\"facebook:id:foo-2\\",\\"attached_files\\":\\"file_1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22foo%22%7D&id=3\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook:id:foo-2\\",\\"name\\":\\"facebook:id:foo-3\\"}]
 -----MULTIPART_SEPARATOR-------
 "
 `;
@@ -138,7 +138,9 @@ Object {
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in different batches 1`] = `
+exports[
+  `using API result in following request registerResult & consumeResult in different batches 1`
+] = `
 Object {
   "batch": Array [
     Object {
@@ -995,21 +997,27 @@ Object {
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in different batches 2`] = `
+exports[
+  `using API result in following request registerResult & consumeResult in different batches 2`
+] = `
 Object {
   "access_token": "_access_token_",
   "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&messaging_product=whatsapp&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"}]",
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in different batches 3`] = `
+exports[
+  `using API result in following request registerResult & consumeResult in different batches 3`
+] = `
 Object {
   "access_token": "_access_token_",
   "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image=%7B%22id%22%3A%221111111111%22%7D\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"}]",
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in the same batch 1`] = `
+exports[
+  `using API result in following request registerResult & consumeResult in the same batch 1`
+] = `
 Object {
   "batch": Array [
     Object {
@@ -1082,7 +1090,9 @@ Object {
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in the same batch 2`] = `
+exports[
+  `using API result in following request registerResult & consumeResult in the same batch 2`
+] = `
 Object {
   "access_token": "_access_token_",
   "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&messaging_product=whatsapp&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image=%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-1%3A%24.id%7D%22%7D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-1\\",\\"name\\":\\"foo_channel-2\\"}]",

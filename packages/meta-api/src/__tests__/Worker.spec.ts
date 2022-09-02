@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
-import MessengerWorker from '../Worker';
+import MetaApiWorker from '../Worker';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
@@ -9,7 +9,7 @@ nock.disableNetConnect();
 
 const jobs = [
   {
-    key: 'messenger:default:id:foo',
+    key: 'facebook:id:foo',
     request: {
       method: 'POST',
       relative_url: 'me/messages',
@@ -17,7 +17,7 @@ const jobs = [
     },
   },
   {
-    key: 'messenger:default:id:foo',
+    key: 'facebook:id:foo',
     request: {
       method: 'POST',
       relative_url: 'bar/baz',
@@ -25,7 +25,7 @@ const jobs = [
     },
   },
   {
-    key: 'messenger:default:id:foo',
+    key: 'facebook:id:foo',
     request: {
       method: 'POST',
       relative_url: 'me/messages',
@@ -50,7 +50,7 @@ afterEach(() => {
 
 it('call to graph api', async () => {
   const accessToken = '_access_token_';
-  const worker = new MessengerWorker(accessToken, 0, 'v11.0', undefined);
+  const worker = new MetaApiWorker(accessToken, 0, 'v11.0', undefined);
 
   const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
@@ -110,7 +110,7 @@ it('attach appsecret_proof if appSecret is given', async () => {
   const expectedProof =
     'c3d9a02ac88561d9721b3cb2ba338c933f0666b68ad29523393b830b3916cd91';
 
-  const worker = new MessengerWorker(accessToken, 0, 'v11.0', appSecret);
+  const worker = new MetaApiWorker(accessToken, 0, 'v11.0', appSecret);
 
   const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
@@ -148,7 +148,7 @@ it('attach appsecret_proof if appSecret is given', async () => {
 });
 
 test('use different graph api version', async () => {
-  const worker1 = new MessengerWorker('_access_token_', 0, 'v8.0', undefined);
+  const worker1 = new MetaApiWorker('_access_token_', 0, 'v8.0', undefined);
   const scope1 = graphApi.post('/v8.0/').reply(200, '[]');
 
   worker1.start(queue);
@@ -156,7 +156,7 @@ test('use different graph api version', async () => {
   expect(scope1.isDone()).toBe(true);
   worker1.stop(queue);
 
-  const worker2 = new MessengerWorker('_access_token_', 0, 'v10.0', undefined);
+  const worker2 = new MetaApiWorker('_access_token_', 0, 'v10.0', undefined);
   const scope2 = graphApi.post('/v10.0/').reply(200, '[]');
 
   worker2.start(queue);
@@ -165,7 +165,7 @@ test('use different graph api version', async () => {
 });
 
 it('upload files with form data if binary attached on job', async () => {
-  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+  const worker = new MetaApiWorker('_access_token_', 0, 'v11.0', undefined);
 
   const scope = graphApi
     .matchHeader('content-type', /multipart\/form-data.*/)
@@ -275,7 +275,7 @@ it('upload files with form data if binary attached on job', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+  const worker = new MetaApiWorker('_access_token_', 0, 'v11.0', undefined);
 
   const scope = graphApi
     .post('/v11.0/')
@@ -296,7 +296,7 @@ it('throw if connection error happen', async () => {
 });
 
 it('throw if api error happen', async () => {
-  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+  const worker = new MetaApiWorker('_access_token_', 0, 'v11.0', undefined);
 
   const scope = graphApi.post('/v11.0/').reply(400, {
     error: {
@@ -322,7 +322,7 @@ it('throw if api error happen', async () => {
 });
 
 it('throw if one single job fail', async () => {
-  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+  const worker = new MetaApiWorker('_access_token_', 0, 'v11.0', undefined);
 
   const scope = graphApi.post('/v11.0/').reply(
     200,
@@ -363,7 +363,7 @@ it('throw if one single job fail', async () => {
 });
 
 it('waits consumeInterval for jobs to execute if set', async () => {
-  const worker = new MessengerWorker('_access_token_', 300, 'v11.0', undefined);
+  const worker = new MetaApiWorker('_access_token_', 300, 'v11.0', undefined);
 
   const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
@@ -398,7 +398,7 @@ it('waits consumeInterval for jobs to execute if set', async () => {
 });
 
 it('execute immediatly if consumeInterval is 0', async () => {
-  const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+  const worker = new MetaApiWorker('_access_token_', 0, 'v11.0', undefined);
 
   const scope = graphApi
     .post('/v11.0/', bodySpy)
@@ -435,7 +435,7 @@ it('execute immediatly if consumeInterval is 0', async () => {
 
 it('use querystring params for GET request', async () => {
   const accessToken = '_access_token_';
-  const worker = new MessengerWorker(accessToken, 0, 'v11.0', undefined);
+  const worker = new MetaApiWorker(accessToken, 0, 'v11.0', undefined);
 
   const scope = graphApi
     .post('/v11.0/', bodySpy)
@@ -492,7 +492,7 @@ it('use querystring params for GET request', async () => {
 
 it('use querystring params for DELETE request', async () => {
   const accessToken = '_access_token_';
-  const worker = new MessengerWorker(accessToken, 0, 'v11.0', undefined);
+  const worker = new MetaApiWorker(accessToken, 0, 'v11.0', undefined);
 
   const scope = graphApi
     .post('/v11.0/', bodySpy)
@@ -607,7 +607,7 @@ describe('using API result in following request', () => {
   });
 
   test('registerResult & consumeResult in the same batch', async () => {
-    const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+    const worker = new MetaApiWorker('_access_token_', 0, 'v11.0', undefined);
 
     const apiCall = graphApi
       .post('/v11.0/', bodySpy)
@@ -651,7 +651,7 @@ describe('using API result in following request', () => {
   });
 
   test('when job key is undeinfed', async () => {
-    const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+    const worker = new MetaApiWorker('_access_token_', 0, 'v11.0', undefined);
 
     const apiCall = graphApi
       .post('/v11.0/', bodySpy)
@@ -694,7 +694,7 @@ describe('using API result in following request', () => {
   });
 
   test('registerResult & consumeResult in different batches', async () => {
-    const worker = new MessengerWorker('_access_token_', 0, 'v11.0', undefined);
+    const worker = new MetaApiWorker('_access_token_', 0, 'v11.0', undefined);
 
     const apiCall1 = graphApi.post('/v11.0/', bodySpy).reply(
       200,

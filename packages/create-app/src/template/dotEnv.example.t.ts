@@ -30,8 +30,8 @@ DOMAIN= your-special-subdomain.t.machinat.dev
 # local server port
 PORT=8080
 
-${when(platforms.includes('messenger'))`
-# Messenger Settings
+${when(platforms.includes('facebook'))`
+# Facebook Settings
 #   Create a Facebook app and a Facebook page for your bot:
 #   1. Visit https://developers.facebook.com/apps and create an app.
 #   2. Use Messenger in you app, go to:
@@ -43,19 +43,19 @@ ${when(platforms.includes('messenger'))`
 #   5. Press "Generate Token" at the connected page to get the token
 
 # page access token, available at: Messenger Setting Page > Access Tokens > Tokens
-MESSENGER_ACCESS_TOKEN= AaBbCcDdEe12345...
+FACEBOOK_ACCESS_TOKEN= AaBbCcDdEe12345...
 
 # page id, available at: Messenger Setting Page > Access Tokens > Pages
-MESSENGER_PAGE_ID= 1234567890
+FACEBOOK_PAGE_ID= 1234567890
 
 # app id, available at: App Dashboard > Settings > Basic > App ID
-MESSENGER_APP_ID= 1234567890
+FACEBOOK_APP_ID= 1234567890
 
 # app secret, available at: App Dashboard > Settings > Basic > App Secret
-MESSENGER_APP_SECRET= abcde12345...
+FACEBOOK_APP_SECRET= abcde12345...
 
 # random token for webhook verification
-MESSENGER_VERIFY_TOKEN= <random secret string>
+FACEBOOK_VERIFY_TOKEN= <random secret string>
 `}${when(platforms.includes('twitter'))`
 
 # Twitter Settings

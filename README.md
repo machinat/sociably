@@ -108,8 +108,8 @@ Sociably is designed to support ALL the social platforms. Here's the covering st
   <a href="https://twitter.com">
     <img width="50px" src="./website/static/img/icon/twitter.png" />
   </a>
-  <a href="https://messenger.com">
-    <img width="50px" src="./website/static/img/icon/messenger.png" />
+  <a href="https://facebook.com">
+    <img width="50px" src="./website/static/img/icon/facebook.png" />
   </a>
   <a href="https://telegram.org">
     <img width="50px" src="./website/static/img/icon/telegram.png" />
@@ -164,7 +164,7 @@ Or using yarn:
 yarn create @sociably/app -- -p <platform> [-p ...] [--webview] my-project
 ```
 
-> Supported platforms: `messenger`, `twitter`, `telegram`, `line`
+> Supported platforms: `facebook`, `twitter`, `telegram`, `line`
 
 ## Documents
 

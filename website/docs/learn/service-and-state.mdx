@@ -55,14 +55,14 @@ import TabItem from '@theme/TabItem';
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'}
   ]}>
-    <TabItem value="messenger">
-      <GetUserProfile platform="messenger" />
+    <TabItem value="facebook">
+      <GetUserProfile platform="facebook" />
     </TabItem>
     <TabItem value="telegram">
       <GetUserProfile platform="telegram" />
@@ -171,9 +171,9 @@ Check it and you should see the saved profile like:
 {
   "channelStates": {},
   "userStates": {
-    "messenger.12345.67890": {
+    "facebook.12345.67890": {
       "profile_cache": {
-        "$type": "MessengerUserProfile",
+        "$type": "FacebookUserProfile",
         "$value": {
           "id": "67890",
           "name": "John Doe",
@@ -363,15 +363,15 @@ const handleChat = makeContainer({
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'}
   ]}
 >
-  <TabItem value="messenger">
-    <UseTodoController platform="messenger" />
+  <TabItem value="facebook">
+    <UseTodoController platform="facebook" />
   </TabItem>
   <TabItem value="telegram">
     <UseTodoController platform="telegram" />
@@ -389,7 +389,7 @@ file. You should see the stored todo data like:
 {
   "userStates": {...},
   "channelStates": {
-    "messenger.12345.psid.67890": {
+    "facebook.12345.psid.67890": {
       "todo_data": {
         "currentId": 1,
         "todos": [

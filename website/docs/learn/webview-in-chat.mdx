@@ -31,43 +31,43 @@ import TabItem from '@theme/TabItem';
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'},
   ]}>
-<TabItem value="messenger">
+<TabItem value="facebook">
 
 
 Edit the `WithMenu` component like this:
 
 ```tsx title="src/components/WithMenu.tsx"
 // highlight-next-line
-import { WebviewButton as MessengerWebviewButton } from '@sociably/messenger/webview';
+import { WebviewButton as FacebookWebviewButton } from '@sociably/facebook/webview';
   //...
-  if (platform === 'messenger') {
+  if (platform === 'facebook') {
     return (
       <>
         {children}
-        <Messenger.ButtonTemplate
+        <Facebook.ButtonTemplate
             buttons={
               <>
-                <Messenger.PostbackButton
+                <Facebook.PostbackButton
                   title={listLabel}
                   payload={listData}
                 />
-                <Messenger.PostbackButton
+                <Facebook.PostbackButton
                   title={addLabel}
                   payload={addData}
                 />
                 {/* highlight-next-line */}
-                <MessengerWebviewButton title="Edit 📤" />
+                <FacebookWebviewButton title="Edit 📤" />
               </>
             }
         >
             {info}
-        </Messenger.ButtonTemplate>
+        </Facebook.ButtonTemplate>
       </>
     );
   }
@@ -175,20 +175,20 @@ Like:
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'},
   ]}>
-  <TabItem value="messenger">
+  <TabItem value="facebook">
 
 ```tsx title="webview/pages/index.tsx"
   // ...
   const client = useClient({
     mockupMode: typeof window === 'undefined',
     authPlatforms: [
-      new MessengerAuth({ pageId: MESSENGER_PAGE_ID }),
+      new FacebookAuth({ pageId: FACEBOOK_PAGE_ID }),
     ],
   });
   // ...

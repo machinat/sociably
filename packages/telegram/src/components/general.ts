@@ -96,7 +96,7 @@ const generalComponentDelegator = async (element, render, path) => {
   const { type } = element;
   invariant(
     hasOwnProperty.call(generalComponents, type),
-    `"${type}" is not valid general component tag on messenger`
+    `"${type}" is not a valid general component tag on Telegram platform`
   );
 
   const segments = await generalComponents[type](element, render, path);

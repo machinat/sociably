@@ -9,7 +9,7 @@ title: Create a Sociably App
 
 ## Chat Platform
 
-Sociably now supports three chat platforms: `messenger`, `telegram` and `line`.
+Sociably now supports three chat platforms: `facebook`, `telegram` and `line`.
 Pick one platform to use in the lessons and run this command in the terminal:
 
 ```bash
@@ -39,7 +39,7 @@ export const HackTabsChoices = () => {
     const groupId= 'chat-platforms';
     const platform = new URL(window.location.href).searchParams.get('p');
     if (platform !== tabGroupChoices[groupId] &&
-        ['messenger', 'telegram', 'line'].includes(platform)) {
+        ['facebook', 'telegram', 'line'].includes(platform)) {
       setTabGroupChoices(groupId, platform);
     }
   }, [])
@@ -50,13 +50,13 @@ export const HackTabsChoices = () => {
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'},
   ]}>
-  <TabItem value="messenger">
+  <TabItem value="facebook">
 
 
 #### Create a Facebook app
@@ -66,8 +66,8 @@ export const HackTabsChoices = () => {
      file in the project. Like:
 
 ```
-MESSENGER_APP_ID= 1234567890
-MESSENGER_APP_SECRET= abcdef123456...
+FACEBOOK_APP_ID= 1234567890
+FACEBOOK_APP_SECRET= abcdef123456...
 ```
 
 #### Use Messenger in you app
@@ -84,7 +84,7 @@ MESSENGER_APP_SECRET= abcdef123456...
   3. Copy the id of the page and paste it in the `.env` file, like:
 
 ```
-MESSENGER_PAGE_ID= 1234567890
+FACEBOOK_PAGE_ID= 1234567890
 ```
 
 ### Get page token
@@ -92,7 +92,7 @@ MESSENGER_PAGE_ID= 1234567890
   paste it in the `.env` file, like:
 
 ```
-MESSENGER_ACCESS_TOKEN= AaBbCcDdEeFf123456...
+FACEBOOK_ACCESS_TOKEN= AaBbCcDdEeFf123456...
 ```
 
 ## Start App
@@ -116,7 +116,7 @@ running, and execute this command in **another command line tab**:
 npm run migrate
 ```
 
-The command registers some necessary settings to the Messenger platform. Now try
+The command registers some necessary settings to the Facebook platform. Now try
 messaging your Facebook page, the app should work like this:
 
 

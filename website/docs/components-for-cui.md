@@ -133,20 +133,20 @@ it's common to have different presentations according to the platform.
 For example:
 
 ```js
-import * as Messenger from '@sociably/messenger/components';
+import * as Facebook from '@sociably/facebook/components';
 import * as Telegram from '@sociably/telegram/components';
 
 function AskForOrder(props, { platform }) {
-  if (platform === 'messenger') {
+  if (platform === 'facebook') {
     return (
-      <Messenger.ButtonTemplate
+      <Facebook.ButtonTemplate
         buttons={<>
-          <Messenger.PostbackButton title="🌭" payload="hotdog" />
-          <Messenger.PostbackButton title="🌮" payload="taco" />
+          <Facebook.PostbackButton title="🌭" payload="hotdog" />
+          <Facebook.PostbackButton title="🌮" payload="taco" />
         </>}
       >
         Which one would you like?
-      </Messenger.ButtonTemplate>
+      </Facebook.ButtonTemplate>
     );
   }
   if (platform === 'telegram') {

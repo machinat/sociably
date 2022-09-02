@@ -15,7 +15,7 @@ module.exports = {
       'embedded-webview',
       'reactive-programming',
     ],
-    Platforms: ['messenger-platform', 'telegram-platform', 'line-platform'],
+    Platforms: ['facebook-platform', 'telegram-platform', 'line-platform'],
     Tutorial: [
       'learn/introduction',
       'learn/create-app',

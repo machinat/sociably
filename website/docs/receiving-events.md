@@ -145,9 +145,9 @@ app.onEvent(async ({ event, reply }) => {
 
 ```js
 app.onEvent(async ({ platform, reply }) => {
-if (platform === 'messenger') {
-    // handle events from Messenger
-    await reply('Hello Messenger!');
+if (platform === 'facebook') {
+    // handle events from Facebook
+    await reply('Hello Facebook!');
   } else {
     // handle events from Telegram
     await reply('Hello Telegram!');
@@ -167,7 +167,7 @@ For example, `context.metadata` of a webhook event might look like:
   source: 'webhook',
   request: {
     method: 'POST',
-    url: 'https://sociably.io/webhook/messenger',
+    url: 'https://sociably.io/webhook/facebook',
     headers: {/*...*/},
     body: '{"some":"json"}'
   }

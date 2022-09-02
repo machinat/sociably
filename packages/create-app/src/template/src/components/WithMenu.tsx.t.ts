@@ -3,10 +3,10 @@ import { CreateAppContext } from '../../../types';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
 import Sociably, { SociablyNode } from '@sociably/core';${when(
-  platforms.includes('messenger')
+  platforms.includes('facebook')
 )`
-import * as Messenger from '@sociably/messenger/components';${when(withWebview)`
-import { WebviewButton as MessengerWebviewButton } from '@sociably/messenger/webview';`}`}${when(
+import * as Facebook from '@sociably/facebook/components';${when(withWebview)`
+import { WebviewButton as FacebookWebviewButton } from '@sociably/facebook/webview';`}`}${when(
   platforms.includes('twitter')
 )`
 import * as Twitter from '@sociably/twitter/components';${when(withWebview)`
@@ -31,21 +31,21 @@ const WithMenu = ({ children }: WithMenuProps, { platform }) => {${when(
   const aboutText = 'About ℹ';
   const aboutData = JSON.stringify({ action: 'about' });
 
-${when(platforms.includes('messenger'))`
-  if (platform === 'messenger') {
+${when(platforms.includes('facebook'))`
+  if (platform === 'facebook') {
     return (
-      <Messenger.ButtonTemplate
+      <Facebook.ButtonTemplate
         buttons={${`${when(withWebview)`
           <>`}
-            <Messenger.PostbackButton title={aboutText} payload={aboutData} />${when(
+            <Facebook.PostbackButton title={aboutText} payload={aboutData} />${when(
               withWebview
             )`
-            <MessengerWebviewButton title={webviewText} />
+            <FacebookWebviewButton title={webviewText} />
           </>`}
         `}}
       >
         {children}
-      </Messenger.ButtonTemplate>
+      </Facebook.ButtonTemplate>
     );
   }`}
 ${when(platforms.includes('twitter'))`

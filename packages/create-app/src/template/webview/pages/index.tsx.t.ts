@@ -8,9 +8,9 @@ import React from 'react';
 import Head from 'next/head';
 import getConfig from 'next/config';
 import { useClient, useEventReducer } from '@sociably/webview/client';${when(
-  platforms.includes('messenger')
+  platforms.includes('facebook')
 )`
-import MessengerAuth from '@sociably/messenger/webview/client';`}${when(
+import FacebookAuth from '@sociably/facebook/webview/client';`}${when(
   platforms.includes('twitter')
 )`
 import TwitterAuth from '@sociably/twitter/webview/client';`}${when(
@@ -22,8 +22,8 @@ import TelegramAuth from '@sociably/telegram/webview/client';`}${when(
 import LineAuth from '@sociably/line/webview/client';`}
 
 const {
-  publicRuntimeConfig: {${when(platforms.includes('messenger'))`
-    MESSENGER_PAGE_ID,`}${when(platforms.includes('twitter'))`
+  publicRuntimeConfig: {${when(platforms.includes('facebook'))`
+    FACEBOOK_PAGE_ID,`}${when(platforms.includes('twitter'))`
     TWITTER_AGENT_ID,`}${when(platforms.includes('telegram'))`
     TELEGRAM_BOT_NAME,`}${when(platforms.includes('line'))`
     LINE_LIFF_ID,`}
@@ -33,8 +33,8 @@ const {
 const WebAppHome = () => {
   const client = useClient({
     mockupMode: typeof window === 'undefined',
-    authPlatforms: [${when(platforms.includes('messenger'))`
-      new MessengerAuth({ pageId: MESSENGER_PAGE_ID }),`}${when(
+    authPlatforms: [${when(platforms.includes('facebook'))`
+      new FacebookAuth({ pageId: FACEBOOK_PAGE_ID }),`}${when(
   platforms.includes('twitter')
 )`
       new TwitterAuth({ agentId: TWITTER_AGENT_ID }),`}${when(

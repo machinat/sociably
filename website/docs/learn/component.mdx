@@ -30,18 +30,18 @@ import TabItem from '@theme/TabItem';
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'},
   ]}>
-  <TabItem value="messenger">
+  <TabItem value="facebook">
 
 
 ```tsx title="src/components/TodoList.tsx"
 import Sociably from '@sociably/core';
-import * as Messenger from '@sociably/messenger/components';
+import * as Facebook from '@sociably/facebook/components';
 import { Todo } from '../types';
 
 type TodoListProps = {
@@ -56,23 +56,23 @@ const TodoList = ({ todos }: TodoListProps, { platform }) => {
   const summary = <p>You have <b>{todos.length}</b> todos:</p>;
   const finishLabel = 'Done ✓';
 
-  if (platform === 'messenger') {
+  if (platform === 'facebook') {
     return (
       <>
         {summary}
-        <Messenger.GenericTemplate>
+        <Facebook.GenericTemplate>
           {todos.slice(0, 10).map((todo) => (
-            <Messenger.GenericItem
+            <Facebook.GenericItem
               title={todo.name}
               buttons={
-                <Messenger.PostbackButton
+                <Facebook.PostbackButton
                   title={finishLabel}
                   payload={JSON.stringify({ action: 'finish', id: todo.id })}
                 />
               }
             />
           ))}
-        </Messenger.GenericTemplate>
+        </Facebook.GenericTemplate>
       </>
     );
   }
@@ -276,9 +276,9 @@ Like:
 ```tsx
 const TodoList = ({ todos }: TodoListProps, { platform }) => {
   // ...
-  if (platform === 'messenger') {
+  if (platform === 'facebook') {
     return (
-      // messenger UI element
+      // facebook UI element
     );
   }
   // ...
@@ -309,13 +309,13 @@ Edit `src/components/WithMenu.tsx` component like this:
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'},
   ]}>
-<TabItem value="messenger">
+<TabItem value="facebook">
 
 
 ```tsx tsx title="src/components/WithMenu.tsx"
@@ -335,19 +335,19 @@ const WithMenu = ({ children, todoCount }: WithMenuProps, { platform }) => {
   const addData = JSON.stringify({ action: 'add' });
   // highlight-end
 
-  if (platform === 'messenger') {
+  if (platform === 'facebook') {
     return (
       // highlight-start
       <>
         {children}
-        <Messenger.ButtonTemplate
+        <Facebook.ButtonTemplate
           buttons={
             <>
-              <Messenger.PostbackButton
+              <Facebook.PostbackButton
                 title={listLabel}
                 payload={listData}
               />
-              <Messenger.PostbackButton
+              <Facebook.PostbackButton
                 title={addLabel}
                 payload={addData}
               />
@@ -355,7 +355,7 @@ const WithMenu = ({ children, todoCount }: WithMenuProps, { platform }) => {
           }
         >
           {info}
-        </Messenger.ButtonTemplate>
+        </Facebook.ButtonTemplate>
       </>
       // highlight-end
     );
@@ -549,11 +549,11 @@ below. Like:
   return (
     <>
       {children}
-      <Messenger.ButtonTemplate
+      <Facebook.ButtonTemplate
         buttons={<>...</>}
       >
         {info}
-      </Messenger.ButtonTemplate>
+      </Facebook.ButtonTemplate>
     </>
   );
 ```

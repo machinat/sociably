@@ -22,17 +22,17 @@ import TabItem from '@theme/TabItem';
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'}
   ]}>
-  <TabItem value="messenger">
+  <TabItem value="facebook">
 
 ```tsx {2,18-27} title="src/handlers/handleChat.tsx"
 import Sociably, { makeContainer } from '@sociably/core';
-import * as Messenger from '@sociably/messenger/components';
+import * as Facebook from '@sociably/facebook/components';
 // ...
     async (
       ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
@@ -48,16 +48,16 @@ import * as Messenger from '@sociably/messenger/components';
               <p>Todo "<b>{todoName}</b>" is added!</p>
               <Sociably.Pause time={1500} />
 
-              <Messenger.ButtonTemplate
+              <Facebook.ButtonTemplate
                 buttons={
-                  <Messenger.PostbackButton
+                  <Facebook.PostbackButton
                     title="Show Todos 📑"
                     payload={JSON.stringify({ action: 'list' })}
                   />
                 }
               >
                 You have <b>{3}</b> todos now.
-              </Messenger.ButtonTemplate>
+              </Facebook.ButtonTemplate>
             </>
           );
         }
@@ -65,13 +65,13 @@ import * as Messenger from '@sociably/messenger/components';
 // ...
 ```
 
-The tags like `Messenger.ButtonTemplate` are **Native Components**.
-They represent special features that belong to the Messenger platform only.
+The tags like `Facebook.ButtonTemplate` are **Native Components**.
+They represent special features that belong to the Facebook platform only.
 
-We use these Messenger native components above:
+We use these Facebook native components above:
 
-- `Messenger.ButtonTemplate` - sends a text message with buttons.
-- `Messenger.PostbackButton` - a button to post the `payload` back.
+- `Facebook.ButtonTemplate` - sends a text message with buttons.
+- `Facebook.PostbackButton` - a button to post the `payload` back.
 
 
   </TabItem>
@@ -188,8 +188,8 @@ If you are building a cross-platform app, reply according to the platform like:
       <Sociably.Pause time={1500} />
 
       {
-        event.platform === 'messenger' ? (
-          // messenger component
+        event.platform === 'facebook' ? (
+          // facebook component
         ) : event.platform === 'telegram' ? (
           // telegram component
         ) : (
@@ -212,16 +212,16 @@ The attributes we put on the JSX element are **Props**. For
 example:
 
 ```tsx {2,4-5}
-    <Messenger.ButtonTemplate
+    <Facebook.ButtonTemplate
       buttons={
-        <Messenger.PostbackButton
+        <Facebook.PostbackButton
           title="Show Todos 📑"
           payload={JSON.stringify({ action: 'list' })}
         />
       }
     >
       You have <b>{3}</b> todos now.
-    </Messenger.ButtonTemplate>
+    </Facebook.ButtonTemplate>
 ```
 
 Props are used to pass values to the component. The value can be text (like `title`),
@@ -268,19 +268,19 @@ check the `src/services/useIntent.ts` file and you'll see the following code:
 
 <Tabs
   groupId="chat-platforms"
-  defaultValue="messenger"
+  defaultValue="facebook"
   values={[
-    {label: 'Messenger', value: 'messenger'},
+    {label: 'Facebook', value: 'facebook'},
     {label: 'Telegram', value: 'telegram'},
     {label: 'LINE', value: 'line'},
   ]}>
-  <TabItem value="messenger">
+  <TabItem value="facebook">
 
 
 ```ts title="src/services/useIntent.ts"
 //...
 if (
-  event.platform === 'messenger' &&
+  event.platform === 'facebook' &&
     (event.type === 'quick_reply' || event.type === 'postback')
 ) {
   if (event.data) {

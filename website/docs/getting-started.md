@@ -31,7 +31,7 @@ yarn create @sociably/app -p <platform> [-p <platform> ...] <project-path>
 
 The following platforms are supported for now:
 
-- `messenger` - receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
+- `facebook` - receive/send messages as a Facebook page in [Facebook Messenger](https://www.messenger.com).
 - `telegram` - receive/send messages as a bot in [Telegram](https://telegram.org).
 - `line` - receive/send messages as a [LINE](https://line.me) official account.
 - `webview` - extend embedded webviews on the chat platforms.
@@ -92,23 +92,23 @@ A migration file might looks like this:
 
 ```js
 import { makeContainer } from '@sociably/core';
-import Messenger from '@sociably/messenger';
+import Facebook from '@sociably/facebook';
 
 export const up = makeContainer({
-  deps: [Messenger.Bot],
+  deps: [Facebook.Bot],
 })(
-  async (messengerBot) => {
+  async (facebookBot) => {
     // create resources...
-    messengerBot.makeApiCall(/* ... */);
+    facebookBot.makeApiCall(/* ... */);
   }
 );
 
 export const down = makeContainer({
-  deps: [Messenger.Bot],
+  deps: [Facebook.Bot],
 })(
-  async (messengerBot) => {
+  async (facebookBot) => {
     // remove resources...
-    messengerBot.makeApiCall(/* ... */);
+    facebookBot.makeApiCall(/* ... */);
   }
 );
 ```
@@ -126,7 +126,7 @@ You can add new operations in it before the app goes into production.
 After that, consider adding a new migration file so you can rollback if needed.
 
 :::info
-If your app supports Messenger platform,
+If your app supports Facebook platform,
 make sure the server is running while executing the initial migration.
 :::
 
@@ -166,7 +166,7 @@ A simple Sociably app may look like this:
 ```js
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
-import Messenger from '@sociably/messenger';
+import Facebook from '@sociably/facebook';
 
 const ENV = process.env;
 
@@ -175,12 +175,12 @@ Sociably.createApp({
     Http.initModule({ port: 8080 }),
   ],
   platforms: [
-    Messenger.initModule({
-      webhookPath: '/webhook/messenger',
-      pageId: ENV.MESSENGER_PAGE_ID,
-      accessToken: ENV.MESSENGER_ACCESS_TOKEN,
-      appSecret: ENV.MESSENGER_APP_SECRET,
-      verifyToken: ENV.MESSENGER_VERIFY_TOKEN,
+    Facebook.initModule({
+      webhookPath: '/webhook/facebook',
+      pageId: ENV.FACEBOOK_PAGE_ID,
+      accessToken: ENV.FACEBOOK_ACCESS_TOKEN,
+      appSecret: ENV.FACEBOOK_APP_SECRET,
+      verifyToken: ENV.FACEBOOK_VERIFY_TOKEN,
     }),
   ],
 })
@@ -200,14 +200,14 @@ That's how a _sociable app_ works.
 Install the platform packages that you like to communicate your users with:
 
 ```bash
-npm install @sociably/messenger @sociably/webview # ...
+npm install @sociably/facebook @sociably/webview # ...
 # or with yarn
-yarn add @sociably/messenger @sociably/webview # ...
+yarn add @sociably/facebook @sociably/webview # ...
 ```
 
 For now, Sociably supports the platforms below. Check the readme of the package for the usage guide.
 
-- [`@sociably/messenger`](https://github.com/machinat/sociably/tree/master/packages/messenger) - receive/send messages as a Facebook page in [Messenger](https://www.messenger.com).
+- [`@sociably/facebook`](https://github.com/machinat/sociably/tree/master/packages/facebook) - receive/send messages as a Facebook page in [Facebook Messenger](https://www.messenger.com).
 - [`@sociably/telegram`](https://github.com/machinat/sociably/tree/master/packages/telegram) - receive/send messages as a Telegram bot.
 - [`@sociably/line`](https://github.com/machinat/sociably/tree/master/packages/line) - receive/send messages as a [LINE](https://line.me) official account.
 - [`@sociably/webview`](https://github.com/machinat/sociably/tree/master/packages/webview) - extend embedded webviews on the chat platforms.
@@ -292,8 +292,8 @@ set the route path for each platform. Like:
 ```js
 Sociably.createApp({
   platforms: [
-    Messenger.initModule({
-      webhookPath: '/webhook/messenger',
+    Facebook.initModule({
+      webhookPath: '/webhook/facebook',
       //...
     }),
     Telegram.initModule({

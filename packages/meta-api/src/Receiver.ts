@@ -126,7 +126,7 @@ const handleWebhook = <Context extends MetaApiEventContext>({
 };
 
 /**
- * MetaWebhookReceiver receive and pop events from Messenger platform.
+ * MetaWebhookReceiver receive and pop events from Meta platforms.
  * @category Provider
  */
 class MetaWebhookReceiver<

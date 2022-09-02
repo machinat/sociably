@@ -7,9 +7,9 @@ export default ({
   withWebview,
 }: CreateAppContext): string => `
 import Sociably from '@sociably/core';
-import Http from '@sociably/http';${when(platforms.includes('messenger'))`
-import Messenger from '@sociably/messenger';${when(withWebview)`
-import MessengerAuth from '@sociably/messenger/webview';`}`}${when(
+import Http from '@sociably/http';${when(platforms.includes('facebook'))`
+import Facebook from '@sociably/facebook';${when(withWebview)`
+import FacebookAuth from '@sociably/facebook/webview';`}`}${when(
   platforms.includes('twitter')
 )`
 import Twitter from '@sociably/twitter';
@@ -44,12 +44,12 @@ const {
   PORT,${when(withWebview)`
   DOMAIN,
   // webview
-  WEBVIEW_AUTH_SECRET,`}${when(platforms.includes('messenger'))`
-  // messenger
-  MESSENGER_PAGE_ID,
-  MESSENGER_ACCESS_TOKEN,
-  MESSENGER_APP_SECRET,
-  MESSENGER_VERIFY_TOKEN,`}${when(platforms.includes('twitter'))`
+  WEBVIEW_AUTH_SECRET,`}${when(platforms.includes('facebook'))`
+  // facebook
+  FACEBOOK_PAGE_ID,
+  FACEBOOK_ACCESS_TOKEN,
+  FACEBOOK_APP_SECRET,
+  FACEBOOK_VERIFY_TOKEN,`}${when(platforms.includes('twitter'))`
   // twitter
   TWITTER_APP_ID,
   TWITTER_APP_KEY,
@@ -112,13 +112,13 @@ ${when(recognizer === 'dialogflow')`
       }),
     ],
 
-    platforms: [${when(platforms.includes('messenger'))`
-      Messenger.initModule({
-        webhookPath: '/webhook/messenger',
-        pageId: MESSENGER_PAGE_ID,
-        appSecret: MESSENGER_APP_SECRET,
-        accessToken: MESSENGER_ACCESS_TOKEN,
-        verifyToken: MESSENGER_VERIFY_TOKEN,
+    platforms: [${when(platforms.includes('facebook'))`
+      Facebook.initModule({
+        webhookPath: '/webhook/facebook',
+        pageId: FACEBOOK_PAGE_ID,
+        appSecret: FACEBOOK_APP_SECRET,
+        accessToken: FACEBOOK_ACCESS_TOKEN,
+        verifyToken: FACEBOOK_VERIFY_TOKEN,
       }),`}${when(platforms.includes('twitter'))`
 
       Twitter.initModule({
@@ -147,8 +147,8 @@ ${when(recognizer === 'dialogflow')`
         liffId: LINE_LIFF_ID,`}
       }),`}${when(withWebview)`
 
-      Webview.initModule<${when(platforms.includes('messenger'))`
-        | MessengerAuth`}${when(platforms.includes('twitter'))`
+      Webview.initModule<${when(platforms.includes('facebook'))`
+        | FacebookAuth`}${when(platforms.includes('twitter'))`
         | TwitterAuth`}${when(platforms.includes('telegram'))`
         | TelegramAuth`}${when(platforms.includes('line'))`
         | LineAuth`}
@@ -156,12 +156,12 @@ ${when(recognizer === 'dialogflow')`
         webviewHost: DOMAIN,
         webviewPath: '/webview',
         authSecret: WEBVIEW_AUTH_SECRET,
-        authPlatforms: [${when(platforms.includes('messenger'))`
-          MessengerAuth,`}${when(platforms.includes('twitter'))`
+        authPlatforms: [${when(platforms.includes('facebook'))`
+          FacebookAuth,`}${when(platforms.includes('twitter'))`
           TwitterAuth,`}${when(platforms.includes('telegram'))`
           TelegramAuth,`}${when(platforms.includes('line'))`
           LineAuth,`}
-        ],${when(platforms.includes('messenger'))`
+        ],${when(platforms.includes('facebook'))`
         cookieSameSite: 'none',`}
         noNextServer: options?.noServer,
         nextServerOptions: {

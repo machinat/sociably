@@ -2,7 +2,7 @@ import Sociably from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
 import generalComponentDelegator from '../general';
 
-const renderer = new Renderer('messenger', generalComponentDelegator);
+const renderer = new Renderer('telegram', generalComponentDelegator);
 
 test('render shallow elements match snapshot', async () => {
   const results = await Promise.all(
