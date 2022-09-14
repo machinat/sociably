@@ -23,6 +23,7 @@ it('MarkSeen match snapshot', async () => {
                 "params": Object {
                   "sender_action": "mark_seen",
                 },
+                "type": "message",
               },
             },
           ]
@@ -41,6 +42,7 @@ it('TypingOn match snapshot', async () => {
                 "params": Object {
                   "sender_action": "typing_on",
                 },
+                "type": "message",
               },
             },
           ]
@@ -60,6 +62,7 @@ it('TypingOff match snapshot', async () => {
                 "params": Object {
                   "sender_action": "typing_off",
                 },
+                "type": "message",
               },
             },
           ]

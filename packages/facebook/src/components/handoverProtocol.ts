@@ -46,6 +46,7 @@ export const PassThreadControl: FacebookComponent<
   const { targetAppId, metadata } = node.props;
   return [
     makeUnitSegment(node, path, {
+      type: 'message',
       apiPath: PATH_PASS_THREAD_CONTROL,
       params: { target_app_id: targetAppId, metadata },
     }),
@@ -78,6 +79,7 @@ export const RequestThreadControl: FacebookComponent<
 > = makeFacebookComponent(function RequestThreadControl(node, path) {
   return [
     makeUnitSegment(node, path, {
+      type: 'message',
       apiPath: PATH_REQUEST_THREAD_CONTROL,
       params: { metadata: node.props.metadata },
     }),
@@ -110,6 +112,7 @@ export const TakeThreadContorl: FacebookComponent<
 > = makeFacebookComponent(function TakeThreadContorl(node, path) {
   return [
     makeUnitSegment(node, path, {
+      type: 'message',
       apiPath: PATH_TAKE_THREAD_CONTROL,
       params: { metadata: node.props.metadata },
     }),

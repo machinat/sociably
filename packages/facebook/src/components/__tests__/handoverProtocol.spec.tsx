@@ -39,6 +39,7 @@ test('PassThreadControl', async () => {
                   "metadata": "you have my bow",
                   "target_app_id": "Legolas",
                 },
+                "type": "message",
               },
             },
           ]
@@ -61,6 +62,7 @@ test('RequestThreadControl', async () => {
                 "params": Object {
                   "metadata": "give me the ring",
                 },
+                "type": "message",
               },
             },
           ]
@@ -82,6 +84,7 @@ test('TakeThreadContorl', async () => {
                 "params": Object {
                   "metadata": "my precious",
                 },
+                "type": "message",
               },
             },
           ]

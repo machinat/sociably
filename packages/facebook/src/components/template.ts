@@ -39,7 +39,7 @@ export type GenericItemProps = {
  */
 export const GenericItem: FacebookComponent<
   GenericItemProps,
-  PartSegment<any>
+  PartSegment<{}>
 > = makeFacebookComponent(async function GenericItem(node, path, render) {
   const {
     buttons,
@@ -112,6 +112,7 @@ export const GenericTemplate: FacebookComponent<
 
   return [
     makeUnitSegment(node, path, {
+      type: 'message',
       apiPath: PATH_MESSAGES,
       params: {
         message: {
@@ -177,6 +178,7 @@ export const ButtonTemplate: FacebookComponent<
 
   return [
     makeUnitSegment(node, path, {
+      type: 'message',
       apiPath: PATH_MESSAGES,
       params: {
         message: {
@@ -232,6 +234,7 @@ export const MediaTemplate: FacebookComponent<
 
   return [
     makeUnitSegment(node, path, {
+      type: 'message',
       apiPath: PATH_MESSAGES,
       params: {
         message: {
@@ -283,7 +286,7 @@ export type ReceiptItemProps = {
  */
 export const ReceiptItem: FacebookComponent<
   ReceiptItemProps,
-  PartSegment<any>
+  PartSegment<{}>
 > = makeFacebookComponent(async function ReceiptItem(node, path) {
   const { title, subtitle, quantity, price, currency, imageUrl } = node.props;
   return [
@@ -394,6 +397,7 @@ export const ReceiptTemplate: FacebookComponent<
 
   return [
     makeUnitSegment(node, path, {
+      type: 'message',
       apiPath: PATH_MESSAGES,
       params: {
         message: {
@@ -452,6 +456,7 @@ export const RequestOneTimeNotif: FacebookComponent<
   const { title, payload } = node.props;
   return [
     makeUnitSegment(node, path, {
+      type: 'message',
       apiPath: PATH_MESSAGES,
       params: {
         message: {

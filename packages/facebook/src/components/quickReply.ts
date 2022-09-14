@@ -31,7 +31,7 @@ export type TextReplyProps = {
  */
 export const TextReply: FacebookComponent<
   TextReplyProps,
-  PartSegment<any>
+  PartSegment<{}>
 > = makeFacebookComponent(function TextReply(node, path) {
   const { title, payload, imageUrl } = node.props;
   return [
@@ -55,7 +55,7 @@ const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
  */
 export const PhoneReply: FacebookComponent<
   {},
-  PartSegment<any>
+  PartSegment<{}>
 > = makeFacebookComponent(function PhoneReply(node, path) {
   return [makePartSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
 });
@@ -71,7 +71,7 @@ const EMAIL_QUICK_REPLY_VALUES = { content_type: 'user_email' };
  */
 export const EmailReply: FacebookComponent<
   {},
-  PartSegment<any>
+  PartSegment<{}>
 > = makeFacebookComponent(function EmailReply(node, path) {
   return [makePartSegment(node, path, EMAIL_QUICK_REPLY_VALUES)];
 });

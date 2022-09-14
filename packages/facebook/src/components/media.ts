@@ -40,6 +40,7 @@ const mediaFactory = (
 
       return [
         makeUnitSegment(node, path, {
+          type: 'message' as const,
           apiPath: PATH_MESSAGES,
           params: {
             message: {

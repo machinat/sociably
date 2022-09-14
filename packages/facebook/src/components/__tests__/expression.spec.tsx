@@ -241,6 +241,7 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
         "params": Object {
           "sender_action": "mark_seen",
         },
+        "type": "message",
       },
     ]
   `);
@@ -384,6 +385,7 @@ it('do nothing to non-messgae value', async () => {
         "metadata": undefined,
         "target_app_id": 123,
       },
+      "type": "message",
     }
   `);
   expect(segments?.[1].value).toMatchInlineSnapshot(`

@@ -4,16 +4,19 @@ import { PATH_MESSAGES } from '../constant';
 import type { FacebookComponent, SenderActionValue } from '../types';
 
 const MARK_SEEN_VALUE = {
+  type: 'message' as const,
   apiPath: PATH_MESSAGES,
   params: { sender_action: 'mark_seen' as const },
 };
 
 const TYPING_OFF_VALUE = {
+  type: 'message' as const,
   apiPath: PATH_MESSAGES,
   params: { sender_action: 'typing_off' as const },
 };
 
 const TYPING_ON_VALUE = {
+  type: 'message' as const,
   apiPath: PATH_MESSAGES,
   params: { sender_action: 'typing_on' as const },
 };
