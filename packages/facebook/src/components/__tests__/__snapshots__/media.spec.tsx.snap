@@ -24,6 +24,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -47,6 +48,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -74,6 +76,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -98,6 +101,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -121,6 +125,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -155,6 +160,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -179,6 +185,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -202,6 +209,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -231,6 +239,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -255,6 +264,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -278,6 +288,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
   Object {
@@ -314,6 +325,7 @@ Array [
           },
         },
       },
+      "type": "message",
     },
   },
 ]

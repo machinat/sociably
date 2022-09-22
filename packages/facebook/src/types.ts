@@ -58,6 +58,7 @@ type MessageTags =
   | 'HUMAN_AGENT';
 
 export type MessageValue = {
+  type: 'message';
   apiPath: typeof PATH_MESSAGES;
   params: {
     message: RawMessage;
@@ -74,6 +75,7 @@ export type MessageValue = {
 };
 
 export type MessageAttachmentValue = {
+  type: 'message';
   apiPath: typeof PATH_MESSAGE_ATTACHMENTS;
   params: {
     message: RawMessage;
@@ -86,6 +88,7 @@ export type MessageAttachmentValue = {
 };
 
 export type SenderActionValue = {
+  type: 'message';
   apiPath: typeof PATH_MESSAGES;
   params: {
     sender_action: 'mark_seen' | 'typing_on' | 'typing_off';
@@ -94,6 +97,7 @@ export type SenderActionValue = {
 };
 
 export type PassThreadControlValue = {
+  type: 'message';
   apiPath: typeof PATH_PASS_THREAD_CONTROL;
   params: {
     target_app_id: number;
@@ -103,6 +107,7 @@ export type PassThreadControlValue = {
 };
 
 export type RequestThreadControlValue = {
+  type: 'message';
   apiPath: typeof PATH_REQUEST_THREAD_CONTROL;
   params: {
     metadata?: string;
@@ -111,6 +116,7 @@ export type RequestThreadControlValue = {
 };
 
 export type TakeThreadControlValue = {
+  type: 'message';
   apiPath: typeof PATH_TAKE_THREAD_CONTROL;
   params: {
     metadata?: string;
@@ -118,10 +124,32 @@ export type TakeThreadControlValue = {
   attachFile?: undefined;
 };
 
+export type CommentValue = {
+  type: 'comment';
+  params: {
+    text: string;
+  };
+  attachFile?: undefined;
+};
+
+export type PostValue = {
+  type: 'post';
+  params: {};
+  attachFile?: undefined;
+};
+
+export type PageMediaValue = {
+  type: 'page_media';
+  params: {};
+  attachFile?: undefined;
+};
+
 export type HandoverProtocolValue =
   | PassThreadControlValue
   | RequestThreadControlValue
-  | TakeThreadControlValue;
+  | TakeThreadControlValue
+  | PostValue
+  | CommentValue;
 
 export type FacebookSegmentValue =
   | MessageValue

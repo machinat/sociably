@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { renderUnitElement } from './utils';
-import { Image, Video, Audio, File } from '../media';
+import { Image, Video, Audio, File } from '../Media';
 
 describe('media Components', () => {
   test.each([Image, Video, Audio, File])('is valid root Component', (Media) => {
@@ -53,6 +53,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -69,6 +70,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -89,6 +91,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -105,6 +108,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -121,6 +125,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -143,6 +148,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -159,6 +165,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -175,6 +182,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -195,6 +203,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -211,6 +220,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -227,6 +237,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
         Object {
           "apiPath": "me/messages",
@@ -249,6 +260,7 @@ describe('media Components', () => {
               },
             },
           },
+          "type": "message",
         },
       ]
     `);

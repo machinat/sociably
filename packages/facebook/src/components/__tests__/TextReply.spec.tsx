@@ -1,18 +1,15 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { TextReply, PhoneReply, EmailReply } from '../quickReply';
+import { TextReply } from '../TextReply';
 import { renderPartElement } from './utils';
 
-it.each([TextReply, PhoneReply, EmailReply])(
-  '%p is valid Component',
-  (Reply: any) => {
-    expect(typeof Reply).toBe('function');
-    expect(isNativeType(<Reply />)).toBe(true);
-    expect(Reply.$$platform).toBe('facebook');
-  }
-);
+it('is valid Component', () => {
+  expect(typeof TextReply).toBe('function');
+  expect(isNativeType(<TextReply title="" payload="" />)).toBe(true);
+  expect(TextReply.$$platform).toBe('facebook');
+});
 
-test('TextReply match snpshot', async () => {
+it('match snpshot', async () => {
   expect(renderPartElement(<TextReply title="i want a pie" payload="🥧" />))
     .resolves.toMatchInlineSnapshot(`
     Array [
@@ -55,36 +52,6 @@ test('TextReply match snpshot', async () => {
           "image_url": "http://cake.it",
           "payload": "🍰",
           "title": "a piece of cake",
-        },
-      },
-    ]
-  `);
-});
-
-test('PhoneReply match snpshot', async () => {
-  expect(renderPartElement(<PhoneReply />)).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "node": <PhoneReply />,
-        "path": "$#container",
-        "type": "part",
-        "value": Object {
-          "content_type": "user_phone_number",
-        },
-      },
-    ]
-  `);
-});
-
-test('EmailReply match snpshot', async () => {
-  expect(renderPartElement(<EmailReply />)).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "node": <EmailReply />,
-        "path": "$#container",
-        "type": "part",
-        "value": Object {
-          "content_type": "user_email",
         },
       },
     ]

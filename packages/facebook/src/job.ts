@@ -4,6 +4,7 @@ import type { DispatchableSegment } from '@sociably/core/engine';
 import type { MetaApiJob, FileInfo } from '@sociably/meta-api';
 import type { FacebookSegmentValue, MessagingOptions } from './types';
 import type FacebookChat from './Chat';
+import type CommentTarget from './CommentTarget';
 import {
   PATH_MESSAGES,
   PATH_MESSAGE_ATTACHMENTS,
@@ -130,3 +131,13 @@ export const createAttachmentJobs = (
     },
   ];
 };
+
+export const createPostJobs = (
+  _target: null,
+  segments: DispatchableSegment<FacebookSegmentValue>[]
+): MetaApiJob[] => {};
+
+export const createCommentJobs = (
+  target: CommentTarget,
+  segments: DispatchableSegment<FacebookSegmentValue>[]
+): MetaApiJob[] => {};

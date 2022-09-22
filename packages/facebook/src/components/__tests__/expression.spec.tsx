@@ -1,10 +1,14 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { PATH_MESSAGES } from '../../constant';
-import { TextReply, EmailReply, PhoneReply } from '../quickReply';
-import { Expression } from '../expression';
-import { PassThreadControl } from '../handoverProtocol';
-import { TypingOn, TypingOff, MarkSeen } from '../senderAction';
+import { TextReply } from '../TextReply';
+import { PhoneReply } from '../PhoneReply';
+import { EmailReply } from '../EmailReply';
+import { Expression } from '../Expression';
+import { PassThreadControl } from '../PassThreadControl';
+import { TypingOff } from '../TypingOff';
+import { TypingOn } from '../TypingOn';
+import { MarkSeen } from '../MarkSeen';
 import { renderUnitElement } from './utils';
 
 const quickReplies = (
@@ -241,6 +245,7 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
         "params": Object {
           "sender_action": "mark_seen",
         },
+        "type": "message",
       },
     ]
   `);
@@ -384,6 +389,7 @@ it('do nothing to non-messgae value', async () => {
         "metadata": undefined,
         "target_app_id": 123,
       },
+      "type": "message",
     }
   `);
   expect(segments?.[1].value).toMatchInlineSnapshot(`
