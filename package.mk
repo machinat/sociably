@@ -1,4 +1,4 @@
-source_files := $(shell find $(CURDIR)/src -regex '.*\.\tsx?' -not -regex '.*/__[^/]*__/.*')
+source_files := $(shell find $(CURDIR)/src \( -name '*.ts' -o -name '*.tsx' \) -not -regex '.*/__[^/]*__/.*')
 lib_files := $(addsuffix .js, $(basename $(patsubst $(CURDIR)/src/%, lib/%, $(source_files))))
 tsc := $(CURDIR)/../../node_modules/.bin/tsc
 polyfill_exports := $(CURDIR)/../../node_modules/.bin/polyfill-exports
