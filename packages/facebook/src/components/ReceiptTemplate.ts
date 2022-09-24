@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+import snakeCaseKeys from 'snakecase-keys';
 import type { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, makePartSegment } from '@sociably/core/renderer';
 import type { UnitSegment, PartSegment } from '@sociably/core/renderer';
@@ -82,13 +82,13 @@ export type ReceiptTemplateProps = {
   /** The shipping address of the order. */
   address?: {
     /** The street address, line 1. */
-    street_1: string;
+    street1: string;
     /** Optional. The street address, line 2. */
-    street_2?: string;
+    street2?: string;
     /** The city name of the address. */
     city: string;
     /** The postal code of the address. */
-    postal_code: string;
+    postalCode: string;
     /** The state abbreviation for U.S. addresses, or the region/province for non-U.S. addresses. */
     state: string;
     /** The two-letter country abbreviation of the address. */
@@ -98,11 +98,11 @@ export type ReceiptTemplateProps = {
     /** Optional. The sub-total of the order. */
     subtotal?: number;
     /** Optional. The shipping cost of the order. */
-    shipping_cost?: number;
+    shippingCost?: number;
     /** Optional. The tax of the order. */
-    total_tax?: number;
+    totalTax?: number;
     /** The total cost of the order, including sub-total, shipping, and tax. */
-    total_cost: number;
+    totalCost: number;
   };
   adjustments?: {
     /** Name of the adjustment. */
@@ -163,8 +163,8 @@ export const ReceiptTemplate: FacebookComponent<
                 timestamp instanceof Date
                   ? `${Math.floor(timestamp.getTime() / 1000)}`
                   : timestamp,
-              address,
-              summary,
+              address: address ? snakeCaseKeys(address) : undefined,
+              summary: summary ? snakeCaseKeys(summary) : undefined,
               adjustments,
               elements: elementValues,
             },

@@ -34,7 +34,9 @@
   "dependencies": {
     "@sociably/meta-api": "^0.7.0",
     "bowser": "^2.11.0",
+    "camelcase-keys": "^8.0.2",
     "invariant": "^2.2.4",
+    "snakecase-keys": "^5.4.4",
     "warning": "^4.0.2"
   },
   "peerDependencies": {

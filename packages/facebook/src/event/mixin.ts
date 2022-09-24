@@ -1,3 +1,4 @@
+import camelcaseKeys from 'camelcase-keys';
 import { FACEBOOK } from '../constant';
 import type { PsidTarget, UserRefTarget } from '../types';
 
@@ -512,17 +513,6 @@ type ReferralSource =
   | 'SHORTLINK'
   | 'CUSTOMER_CHAT_PLUGIN';
 
-/* eslint-disable camelcase */
-type RawReferral = {
-  source: ReferralSource;
-  type: 'OPEN_THREAD';
-  ref: string;
-  ad_id: undefined | string;
-  referer_uri: undefined | string;
-  is_guest_user: undefined | boolean;
-};
-/* eslint-enable camelcase */
-
 /**
  * @category Event Mixin
  */
@@ -532,16 +522,32 @@ export interface Referral {
   /** The optional `ref` attribute set in the referrer. */
   readonly ref: string;
   /** Id of ad if `source` is `'ADS'` */
-  readonly adId: undefined | string;
+  readonly adId?: string;
   /**
    * The URI of the site where the message was sent in the Facebook chat plugin.
    */
-  readonly refererUri: undefined | string;
+  readonly refererUri?: string;
   /**
    * A flag indicating whether the user is a guest user from Facebook Chat
    * Plugin.
    */
-  readonly isGuestUser: boolean;
+  readonly isGuestUser?: boolean;
+  /**
+   * The data contaning information about the CTM ad, the user initiated the
+   * thread from.
+   */
+  adsContextData?: {
+    /** Title of the Ad. */
+    adTitle?: string;
+    /** Url of the image from the Ad the user is interested. */
+    photoUrl?: string;
+    /** Thumbnail url of the the video from the ad. */
+    videoUrl?: string;
+    /** ID of the post. */
+    postId?: string;
+    /** Product ID from the Ad the user is interested. */
+    productId?: string;
+  };
 }
 
 export const Referral: Referral = {
@@ -564,6 +570,11 @@ export const Referral: Referral = {
   get isGuestUser() {
     return !!this.payload.referral.is_guest_user;
   },
+
+  get adsContextData() {
+    const data = this.payload.referral.ads_context_data;
+    return data ? camelcaseKeys(data) : undefined;
+  },
 };
 
 /**
@@ -583,13 +594,13 @@ export interface Postback {
   readonly data: string;
 
   /** Referral information for how the user got into the thread. */
-  readonly referral: undefined | RawReferral;
+  readonly referral?: Referral;
   /** The source of the referral if referral exist. */
-  readonly referralSource: undefined | ReferralSource;
+  readonly referralSource?: ReferralSource;
   /** The optional `ref` attribute set in the referrer if referral exist. */
-  readonly referralRef: undefined | string;
+  readonly referralRef?: string;
   /** Id of ad if `referral.source` is `'ADS'`. */
-  readonly referralAdId: undefined | string;
+  readonly referralAdId?: string;
 }
 
 export const Postback: Postback = {
@@ -602,7 +613,8 @@ export const Postback: Postback = {
   },
 
   get referral() {
-    return this.payload.postback.referral;
+    const rawReferral = this.payload.postback.referral;
+    return rawReferral ? camelcaseKeys(rawReferral, { deep: true }) : undefined;
   },
 
   get referralSource() {

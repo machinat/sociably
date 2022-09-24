@@ -12,4 +12,7 @@ module.exports = {
   },
   setupFiles: ['<rootDir>/node_modules/@moxyjs/moxy/lib/extends/jest.js'],
   snapshotSerializers: ['@sociably/jest-snapshot-serializer'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!camelcase-keys|camelcase|quick-lru)',
+  ],
 };

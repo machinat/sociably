@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import type { AuthContextBase } from '@sociably/auth';
 import type { FACEBOOK } from '../constant';
 import type FacebookChat from '../Chat';
