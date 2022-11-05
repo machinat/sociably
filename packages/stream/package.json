@@ -1,6 +1,6 @@
 {
   "name": "@sociably/stream",
-  "version": "0.7.1",
+  "version": "0.8.0-alpha.0",
   "description": "Reactive programming library for Sociably.js",
   "main": "./lib/index.js",
   "exports": {
@@ -32,6 +32,6 @@
     "rxjs": "^6.5.5"
   },
   "peerDependencies": {
-    "@sociably/core": "^0.7.0"
+    "@sociably/core": "^0.8.0-alpha"
   }
 }

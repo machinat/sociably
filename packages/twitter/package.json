@@ -1,6 +1,6 @@
 {
   "name": "@sociably/twitter",
-  "version": "0.7.2",
+  "version": "0.8.0-alpha.0",
   "description": "Twitter platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -42,10 +42,10 @@
     "warning": "^4.0.2"
   },
   "peerDependencies": {
-    "@sociably/auth": "^0.7.0",
-    "@sociably/core": "^0.7.0",
-    "@sociably/http": "^0.7.0",
-    "@sociably/webview": "^0.7.0"
+    "@sociably/auth": "^0.8.0-alpha",
+    "@sociably/core": "^0.8.0-alpha",
+    "@sociably/http": "^0.8.0-alpha",
+    "@sociably/webview": "^0.8.0-alpha"
   },
   "peerDependenciesMeta": {
     "@sociably/auth": {

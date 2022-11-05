@@ -1,6 +1,6 @@
 {
   "name": "@sociably/next",
-  "version": "0.7.5",
+  "version": "0.8.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "@sociably/core": "^0.7.0",
-    "@sociably/http": "^0.7.0",
+    "@sociably/core": "^0.8.0-alpha",
+    "@sociably/http": "^0.8.0-alpha",
     "next": "^12.0.9",
     "react": "^17.0.2 || ^18.0.0-0",
     "react-dom": "^17.0.2 || ^18.0.0-0"
