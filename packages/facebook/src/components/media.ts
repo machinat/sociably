@@ -21,12 +21,12 @@ export type MediaProps = {
   reusable?: boolean;
   /** Use an uploaded attachment id */
   attachmentId?: string;
-  /** The asset tag for saving the created attachment and reusing it */
-  assetTag?: string;
   /** Upload a media file */
   fileData?: string | Buffer | NodeJS.ReadableStream;
-  /** Uploading info */
+  /** Uploading file info */
   fileInfo?: FileInfo;
+  /** The asset tag for saving the created attachment and reusing it */
+  assetTag?: string;
 };
 
 const mediaFactory = (

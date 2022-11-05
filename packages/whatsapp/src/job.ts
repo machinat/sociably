@@ -60,8 +60,8 @@ export const createChatJobs = (
         },
         consumeResult: mediaResultKey
           ? {
-              key: mediaResultKey,
-              accomplishRequest: (request, getValue) => {
+              keys: [mediaResultKey],
+              accomplishRequest: (request, [key], getValue) => {
                 const body = request.body as Record<string, any>;
                 return {
                   ...request,
@@ -69,7 +69,7 @@ export const createChatJobs = (
                     ...body,
                     [body.type]: {
                       ...body[body.type],
-                      id: getValue('$.id'),
+                      id: getValue(key, '$.id'),
                     },
                   },
                 };

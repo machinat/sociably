@@ -1,45 +1,75 @@
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { UnitSegment, TextSegment } from '@sociably/core/renderer';
-import { createChatJobs, createAttachmentJobs } from '../job';
-import { PATH_MESSAGES, PATH_MESSAGE_ATTACHMENTS } from '../constant';
+import {
+  createChatJobs,
+  createChatAttachmentJobs,
+  createPostJobs,
+  createInteractJobs,
+} from '../job';
+import { PATH_MESSAGES, PATH_FEED, PATH_PHOTOS } from '../constant';
 import FacebookChat from '../Chat';
-import { FacebookSegmentValue } from '../types';
+import PageFeed from '../PageFeed';
+import ObjectTarget from '../ObjectTarget';
+import { FacebookSegmentValue, PagePhotoValue, PagePostValue } from '../types';
+
+const _Date = Date;
+const timeNow = 1667114251924;
+function FakeDate(t = timeNow) {
+  return new _Date(t);
+}
+FakeDate.now = () => timeNow;
+
+beforeAll(() => {
+  global.Date = FakeDate as never;
+});
+afterAll(() => {
+  global.Date = _Date;
+});
 
 const Foo = () => null;
-
 const Bar = () => null;
+
+const getRegisteredResult = moxy(() => '');
+
+beforeEach(() => {
+  getRegisteredResult.mock.reset();
+});
 
 describe('createChatJobs(options)(channel, segments)', () => {
   const segments: (UnitSegment<FacebookSegmentValue> | TextSegment)[] = [
     {
-      type: 'unit' as const,
+      type: 'unit',
       path: '?',
       node: <Foo />,
       value: {
+        type: 'message',
         apiPath: PATH_MESSAGES,
         params: { sender_action: 'typing_on' },
       },
     },
     {
-      type: 'unit' as const,
+      type: 'unit',
       path: '?',
       node: <Foo />,
       value: {
+        type: 'message',
         apiPath: PATH_MESSAGES,
         params: { message: { id: 1 } },
       },
     },
     {
-      type: 'unit' as const,
+      type: 'unit',
       path: '?',
       node: <Bar />,
       value: {
+        type: 'message',
         apiPath: 'bar/baz',
         params: { id: 2 },
       } as never,
     },
-    { type: 'text' as const, path: '?', node: 'id:3', value: 'id:3' },
-    { type: 'text' as const, path: '?', node: 4, value: '4' },
+    { type: 'text', path: '?', node: 'id:3', value: 'id:3' },
+    { type: 'text', path: '?', node: 4, value: '4' },
   ];
 
   const expectedBodyFields = [
@@ -115,6 +145,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: { message: { text: 'hello' } },
         },
@@ -124,6 +155,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: { sender_action: 'typing_on' },
         },
@@ -133,6 +165,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: { sender_action: 'typing_off' },
         },
@@ -142,6 +175,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: { sender_action: 'mark_seen' },
         },
@@ -153,7 +187,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
     });
   });
 
-  it('respect options originally set in job value', () => {
+  it('respect options set in job value', () => {
     const channel = new FacebookChat('12345', { id: '67890' });
 
     const jobs = createChatJobs({
@@ -167,6 +201,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: {
             message: { text: 'bibiboo' },
@@ -180,6 +215,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: {
             message: { text: 'Oh! I apologize.' },
@@ -224,6 +260,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: {
             message: { text: 'bibibooboobibooboo' },
@@ -246,11 +283,12 @@ describe('createChatJobs(options)(channel, segments)', () => {
 
   test('use oneTimeNotifToken as recipient', () => {
     const channel = new FacebookChat('12345', { id: '67890' });
-    const helloJob = {
-      type: 'unit' as const,
+    const helloSegment: UnitSegment<FacebookSegmentValue> = {
+      type: 'unit',
       path: '?',
       node: <Foo />,
       value: {
+        type: 'message',
         apiPath: PATH_MESSAGES,
         params: { message: { text: 'hello' } },
       },
@@ -258,7 +296,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
 
     const jobs = createChatJobs({
       oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
-    })(channel, [helloJob]);
+    })(channel, [helloSegment]);
 
     expect(jobs[0].request.body?.recipient).toEqual({
       one_time_notif_token: '__ONE_TIME_NOTIF_TOKEN__',
@@ -268,12 +306,13 @@ describe('createChatJobs(options)(channel, segments)', () => {
       createChatJobs({
         oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
       })(channel, [
-        helloJob,
+        helloSegment,
         {
           type: 'unit',
           path: '?',
           node: <Foo />,
           value: {
+            type: 'message',
             apiPath: PATH_MESSAGES,
             params: { message: { text: 'world' } },
           },
@@ -298,6 +337,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Foo />,
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: {
             message: { attachment: { type: 'image' } },
@@ -312,6 +352,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
         path: '?',
         node: <Bar />,
         value: {
+          type: 'message',
           apiPath: 'bar/baz' as never,
           params: {
             message: { attachment: { type: 'file' } },
@@ -335,16 +376,19 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 });
 
-describe('createAttachmentJobs()', () => {
-  it('work with attachment url', () => {
+describe('createChatAttachmentJobs()', () => {
+  const page = new PageFeed('1234567890');
+
+  it('create upload job with url', () => {
     expect(
-      createAttachmentJobs(null, [
+      createChatAttachmentJobs(page, [
         {
           type: 'unit' as const,
           path: '?',
           node: <Foo />,
           value: {
-            apiPath: PATH_MESSAGE_ATTACHMENTS,
+            type: 'message',
+            apiPath: PATH_MESSAGES,
             params: {
               message: {
                 attachment: {
@@ -376,38 +420,42 @@ describe('createAttachmentJobs()', () => {
     ]);
   });
 
-  it('work with file data', () => {
+  it('create upload with file data', () => {
     const fileInfo = {
       filename: 'doge.jpg',
       contentType: 'image/jpeg',
       knownLength: 12345,
     };
+    const assetTag = 'MY_ASSET';
+    const fileData = '_FILE_CONTENT_DATA_';
 
     expect(
-      createAttachmentJobs(null, [
+      createChatAttachmentJobs(page, [
         {
           type: 'unit',
           path: '?',
           node: <Foo />,
           value: {
-            apiPath: PATH_MESSAGE_ATTACHMENTS,
+            type: 'message',
+            apiPath: PATH_MESSAGES,
             params: {
               message: {
                 attachment: { type: 'image', is_sharable: true },
               },
             },
             attachFile: {
-              data: '_FILE_CONTENT_DATA_',
+              data: fileData,
               info: fileInfo,
-              assetTag: 'MY_ASSET',
+              assetTag,
             },
           },
         },
       ])
     ).toEqual([
       {
-        fileData: '_FILE_CONTENT_DATA_',
+        fileData,
         fileInfo,
+        assetTag,
         request: {
           method: 'POST',
           relative_url: 'me/message_attachments',
@@ -421,13 +469,14 @@ describe('createAttachmentJobs()', () => {
     ]);
   });
 
-  it('throw if multiple messages passed', () => {
-    const segment = {
-      type: 'unit' as const,
+  it('throw if multiple messages received', () => {
+    const segment: UnitSegment<FacebookSegmentValue> = {
+      type: 'unit',
       path: '?',
       node: <Foo />,
       value: {
-        apiPath: PATH_MESSAGE_ATTACHMENTS,
+        type: 'message',
+        apiPath: PATH_MESSAGES,
         params: {
           message: {
             attachment: {
@@ -441,35 +490,37 @@ describe('createAttachmentJobs()', () => {
     };
 
     expect(() =>
-      createAttachmentJobs(null, [segment, segment])
+      createChatAttachmentJobs(page, [segment, segment])
     ).toThrowErrorMatchingInlineSnapshot(`"more than 1 message received"`);
   });
 
-  it('throw if non media message passed', () => {
+  it('throw if non media message received', () => {
     expect(() =>
-      createAttachmentJobs(null, [
+      createChatAttachmentJobs(page, [
         {
-          type: 'unit' as const,
+          type: 'unit',
           path: '?',
           node: <Foo />,
           value: {
-            apiPath: PATH_MESSAGE_ATTACHMENTS,
+            type: 'message',
+            apiPath: PATH_MESSAGES,
             params: { message: { text: "I'm an attachment!" } },
           },
         },
       ])
     ).toThrowErrorMatchingInlineSnapshot(
-      `"non attachment message <Foo /> received"`
+      `"<Foo /> is not valid attachment message"`
     );
 
     expect(() =>
-      createAttachmentJobs(null, [
+      createChatAttachmentJobs(page, [
         {
           type: 'unit',
           path: '?',
           node: <Bar />,
           value: {
-            apiPath: PATH_MESSAGE_ATTACHMENTS,
+            type: 'message',
+            apiPath: PATH_MESSAGES,
             params: {
               message: {
                 attachment: {
@@ -486,5 +537,760 @@ describe('createAttachmentJobs()', () => {
     ).toThrowErrorMatchingInlineSnapshot(
       `"invalid attachment type \\"template\\" to be uploaded"`
     );
+  });
+});
+
+describe('createPostJobs()', () => {
+  const page = new PageFeed('1234567890');
+
+  it('create page post from text', () => {
+    expect(
+      createPostJobs(page, [
+        {
+          type: 'text',
+          path: '?',
+          node: <Foo />,
+          value: 'hello facebook',
+        },
+      ])
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "request": Object {
+            "body": Object {
+              "message": "hello facebook",
+            },
+            "method": "POST",
+            "relative_url": "me/feed",
+          },
+        },
+      ]
+    `);
+  });
+
+  it('create page post from unit segment', () => {
+    expect(
+      createPostJobs(page, [
+        {
+          type: 'unit',
+          path: '?',
+          node: <Foo />,
+          value: {
+            type: 'page',
+            apiPath: PATH_FEED,
+            params: {
+              object_attachment: '1234567890',
+            },
+          },
+        },
+      ])
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "assetTag": undefined,
+          "fileData": undefined,
+          "fileInfo": undefined,
+          "request": Object {
+            "body": Object {
+              "object_attachment": "1234567890",
+            },
+            "method": "POST",
+            "relative_url": "me/feed",
+          },
+        },
+      ]
+    `);
+  });
+
+  it('create page post with link thumbnail file', () => {
+    expect(
+      createPostJobs(page, [
+        {
+          type: 'unit',
+          path: '?',
+          node: <Foo />,
+          value: {
+            type: 'page',
+            apiPath: PATH_FEED,
+            params: {
+              link: 'http://sociably.js.org',
+              name: 'Sociably',
+              description: 'The social media framework',
+            },
+            attachFile: {
+              data: Buffer.from('thumb'),
+            },
+          },
+        },
+      ])
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "assetTag": undefined,
+          "fileData": Object {
+            "data": Array [
+              116,
+              104,
+              117,
+              109,
+              98,
+            ],
+            "type": "Buffer",
+          },
+          "fileInfo": undefined,
+          "request": Object {
+            "body": Object {
+              "description": "The social media framework",
+              "link": "http://sociably.js.org",
+              "name": "Sociably",
+            },
+            "method": "POST",
+            "relative_url": "me/feed",
+          },
+        },
+      ]
+    `);
+  });
+
+  it('create page photo from a file', () => {
+    expect(
+      createPostJobs(page, [
+        {
+          type: 'unit' as const,
+          path: '?',
+          node: <Foo />,
+          value: {
+            type: 'page',
+            apiPath: PATH_PHOTOS,
+            params: {},
+            attachFile: {
+              data: Buffer.from('foo'),
+            },
+          },
+        },
+      ])
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "assetTag": undefined,
+          "fileData": Object {
+            "data": Array [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
+          "fileInfo": undefined,
+          "request": Object {
+            "body": Object {},
+            "method": "POST",
+            "relative_url": "me/photos",
+          },
+        },
+      ]
+    `);
+  });
+
+  it('craete photo on an album', () => {
+    const album = new ObjectTarget('1234567890', '9876543210', 'album');
+    expect(
+      createPostJobs(album, [
+        {
+          type: 'unit' as const,
+          path: '?',
+          node: <Foo />,
+          value: {
+            type: 'page',
+            apiPath: PATH_PHOTOS,
+            params: {
+              url: 'http://foo.bar/baz.jpg',
+            },
+          },
+        },
+      ])
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "assetTag": undefined,
+          "fileData": undefined,
+          "fileInfo": undefined,
+          "request": Object {
+            "body": Object {
+              "url": "http://foo.bar/baz.jpg",
+            },
+            "method": "POST",
+            "relative_url": "9876543210/photos",
+          },
+        },
+      ]
+    `);
+  });
+
+  it('create page post job with photos', () => {
+    const photos: PagePhotoValue[] = [
+      {
+        type: 'page',
+        apiPath: PATH_PHOTOS,
+        params: {
+          url: 'http://sociably.com/foo.jpg',
+        },
+      },
+      {
+        type: 'page',
+        apiPath: PATH_PHOTOS,
+        params: {},
+        attachFile: {
+          data: Buffer.from('bar'),
+        },
+      },
+    ];
+    const postSegmentValue: PagePostValue = {
+      type: 'page',
+      apiPath: PATH_FEED,
+      params: {
+        message: 'foo',
+      },
+      photos,
+    };
+    const jobs = createPostJobs(page, [
+      {
+        type: 'unit' as const,
+        path: '?',
+        node: <Foo />,
+        value: postSegmentValue,
+      },
+    ]);
+    expect(jobs).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "assetTag": undefined,
+          "fileData": undefined,
+          "fileInfo": undefined,
+          "registerResult": "l9v0s5g4-0",
+          "request": Object {
+            "body": Object {
+              "published": false,
+              "temporary": undefined,
+              "url": "http://sociably.com/foo.jpg",
+            },
+            "method": "POST",
+            "relative_url": "me/photos",
+          },
+        },
+        Object {
+          "assetTag": undefined,
+          "fileData": Object {
+            "data": Array [
+              98,
+              97,
+              114,
+            ],
+            "type": "Buffer",
+          },
+          "fileInfo": undefined,
+          "registerResult": "l9v0s5g4-1",
+          "request": Object {
+            "body": Object {
+              "published": false,
+              "temporary": undefined,
+            },
+            "method": "POST",
+            "relative_url": "me/photos",
+          },
+        },
+        Object {
+          "assetTag": undefined,
+          "consumeResult": Object {
+            "accomplishRequest": [Function],
+            "keys": Array [
+              "l9v0s5g4-0",
+              "l9v0s5g4-1",
+            ],
+          },
+          "fileData": undefined,
+          "fileInfo": undefined,
+          "request": Object {
+            "body": Object {
+              "message": "foo",
+            },
+            "method": "POST",
+            "relative_url": "me/feed",
+          },
+        },
+      ]
+    `);
+
+    getRegisteredResult.mock.fakeReturnValueOnce('_PHOTO_ID_1_');
+    getRegisteredResult.mock.fakeReturnValueOnce('_PHOTO_ID_2_');
+
+    const cunsumingPhotoResults = jobs[2].consumeResult;
+    expect(cunsumingPhotoResults?.keys).toContain(jobs[0].registerResult);
+    expect(cunsumingPhotoResults?.keys).toContain(jobs[1].registerResult);
+    expect(
+      cunsumingPhotoResults?.accomplishRequest(
+        jobs[2].request,
+        ['key1', 'key2'],
+        getRegisteredResult
+      )
+    ).toMatchInlineSnapshot(`
+      Object {
+        "body": Object {
+          "attached_media": Array [
+            Object {
+              "media_fbid": "_PHOTO_ID_1_",
+            },
+            Object {
+              "media_fbid": "_PHOTO_ID_2_",
+            },
+          ],
+          "message": "foo",
+        },
+        "method": "POST",
+        "relative_url": "me/feed",
+      }
+    `);
+
+    expect(getRegisteredResult.mock).toHaveBeenCalledTimes(2);
+    expect(getRegisteredResult.mock).toHaveBeenCalledWith('key1', '$.id');
+    expect(getRegisteredResult.mock).toHaveBeenCalledWith('key2', '$.id');
+  });
+
+  it('create scheduled page post job with photos', () => {
+    expect(
+      createPostJobs(page, [
+        {
+          type: 'unit' as const,
+          path: '?',
+          node: <Foo />,
+          value: {
+            type: 'page',
+            apiPath: PATH_FEED,
+            params: { message: 'foo', scheduled_publish_time: 1666666666 },
+            photos: [
+              {
+                type: 'page',
+                apiPath: PATH_PHOTOS,
+                params: { url: 'http://sociably.com/foo.jpg' },
+              },
+            ],
+          },
+        },
+      ])
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "assetTag": undefined,
+          "fileData": undefined,
+          "fileInfo": undefined,
+          "registerResult": "l9v0s5g4-2",
+          "request": Object {
+            "body": Object {
+              "published": false,
+              "temporary": true,
+              "url": "http://sociably.com/foo.jpg",
+            },
+            "method": "POST",
+            "relative_url": "me/photos",
+          },
+        },
+        Object {
+          "assetTag": undefined,
+          "consumeResult": Object {
+            "accomplishRequest": [Function],
+            "keys": Array [
+              "l9v0s5g4-2",
+            ],
+          },
+          "fileData": undefined,
+          "fileInfo": undefined,
+          "request": Object {
+            "body": Object {
+              "message": "foo",
+              "scheduled_publish_time": 1666666666,
+            },
+            "method": "POST",
+            "relative_url": "me/feed",
+          },
+        },
+      ]
+    `);
+  });
+
+  it('throw if non feed value received', () => {
+    expect(() =>
+      createPostJobs(page, [
+        {
+          type: 'unit',
+          path: '?',
+          node: <Foo />,
+          value: {
+            type: 'message',
+            apiPath: 'me/messages',
+            params: { message: { text: 'foo' } },
+          },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(`"invalid feed element <Foo />"`);
+    expect(() =>
+      createPostJobs(page, [
+        {
+          type: 'unit',
+          path: '?',
+          node: <Foo />,
+          value: {
+            type: 'comment',
+            params: { message: 'foo' },
+          },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(`"invalid feed element <Foo />"`);
+  });
+
+  it('throw if video value received, which is not supported yet', () => {
+    expect(() =>
+      createPostJobs(page, [
+        {
+          type: 'unit',
+          path: '?',
+          node: <Foo />,
+          value: {
+            type: 'page',
+            apiPath: 'me/videos',
+            params: { message: 'foo' },
+          },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(`"invalid feed element <Foo />"`);
+  });
+});
+
+describe('createInteractJobs()', () => {
+  const commentTarget = new ObjectTarget('_PAGE_ID_', '_OBJECT_ID_');
+
+  it('create comment job from text segment', () => {
+    expect(
+      createInteractJobs(commentTarget, [
+        {
+          type: 'text',
+          node: 'hello',
+          path: '?',
+          value: 'hello',
+        },
+      ])
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "consumeResult": undefined,
+          "registerResult": undefined,
+          "request": Object {
+            "body": Object {
+              "message": "hello",
+            },
+            "method": "POST",
+            "relative_url": "_OBJECT_ID_/comments",
+          },
+        },
+      ]
+    `);
+  });
+
+  it('create comment job from unit segment', () => {
+    expect(
+      createInteractJobs(commentTarget, [
+        {
+          type: 'unit',
+          node: <Foo />,
+          path: '?',
+          value: {
+            type: 'comment',
+            params: {
+              message: 'hello',
+              attachment_share_url: 'http://sociably.js/hello.jpg',
+            },
+          },
+        },
+      ])
+    ).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "consumeResult": undefined,
+          "registerResult": undefined,
+          "request": Object {
+            "body": Object {
+              "attachment_share_url": "http://sociably.js/hello.jpg",
+              "message": "hello",
+            },
+            "method": "POST",
+            "relative_url": "_OBJECT_ID_/comments",
+          },
+        },
+      ]
+    `);
+  });
+
+  it('create comment job with photo attachment', () => {
+    const jobs = createInteractJobs(commentTarget, [
+      {
+        type: 'unit',
+        node: <Foo />,
+        path: '?',
+        value: {
+          type: 'comment',
+          params: { message: 'hello' },
+          photo: {
+            type: 'page',
+            apiPath: 'me/photos',
+            params: {},
+            attachFile: {
+              data: Buffer.from('foo'),
+            },
+          },
+        },
+      },
+    ]);
+    expect(jobs).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "assetTag": undefined,
+          "fileData": Object {
+            "data": Array [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
+          "fileInfo": undefined,
+          "registerResult": "l9v0s5g4-3",
+          "request": Object {
+            "body": Object {},
+            "method": "POST",
+            "relative_url": "me/photos",
+          },
+        },
+        Object {
+          "consumeResult": Object {
+            "accomplishRequest": [Function],
+            "keys": Array [
+              "l9v0s5g4-3",
+            ],
+          },
+          "registerResult": undefined,
+          "request": Object {
+            "body": Object {
+              "message": "hello",
+            },
+            "method": "POST",
+            "relative_url": "_OBJECT_ID_/comments",
+          },
+        },
+      ]
+    `);
+    const consumePhotoResult = jobs[1].consumeResult;
+    expect(consumePhotoResult?.keys).toEqual([jobs[0].registerResult]);
+
+    getRegisteredResult.mock.fakeReturnValue('_PHOTO_ID_');
+    expect(
+      consumePhotoResult?.accomplishRequest(
+        jobs[1].request,
+        ['resultKey'],
+        getRegisteredResult
+      )
+    ).toMatchInlineSnapshot(`
+      Object {
+        "body": Object {
+          "attachment_id": "_PHOTO_ID_",
+          "message": "hello",
+        },
+        "method": "POST",
+        "relative_url": "_OBJECT_ID_/comments",
+      }
+    `);
+    expect(getRegisteredResult.mock).toHaveBeenCalledTimes(1);
+    expect(getRegisteredResult.mock).toHaveBeenCalledWith('resultKey', '$.id');
+  });
+
+  it('create chaining comment jobs', () => {
+    const jobs = createInteractJobs(commentTarget, [
+      {
+        type: 'unit',
+        node: <Foo />,
+        path: '?',
+        value: {
+          type: 'comment',
+          params: { message: 'foo' },
+        },
+      },
+      { type: 'text', node: <Foo />, path: '?', value: 'bar' },
+      {
+        type: 'unit',
+        node: <Foo />,
+        path: '?',
+        value: {
+          type: 'comment',
+          params: { message: 'baz' },
+          photo: {
+            type: 'page',
+            apiPath: 'me/photos',
+            params: {
+              url: 'http://sociably.js',
+            },
+          },
+        },
+      },
+    ]);
+    expect(jobs).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "consumeResult": undefined,
+          "registerResult": "l9v0s5g4-4",
+          "request": Object {
+            "body": Object {
+              "message": "foo",
+            },
+            "method": "POST",
+            "relative_url": "_OBJECT_ID_/comments",
+          },
+        },
+        Object {
+          "consumeResult": Object {
+            "accomplishRequest": [Function],
+            "keys": Array [
+              "l9v0s5g4-4",
+            ],
+          },
+          "registerResult": "l9v0s5g4-5",
+          "request": Object {
+            "body": Object {
+              "message": "bar",
+            },
+            "method": "POST",
+            "relative_url": "_OBJECT_ID_/comments",
+          },
+        },
+        Object {
+          "assetTag": undefined,
+          "fileData": undefined,
+          "fileInfo": undefined,
+          "registerResult": "l9v0s5g4-6",
+          "request": Object {
+            "body": Object {
+              "url": "http://sociably.js",
+            },
+            "method": "POST",
+            "relative_url": "me/photos",
+          },
+        },
+        Object {
+          "consumeResult": Object {
+            "accomplishRequest": [Function],
+            "keys": Array [
+              "l9v0s5g4-6",
+              "l9v0s5g4-5",
+            ],
+          },
+          "registerResult": undefined,
+          "request": Object {
+            "body": Object {
+              "message": "baz",
+            },
+            "method": "POST",
+            "relative_url": "_OBJECT_ID_/comments",
+          },
+        },
+      ]
+    `);
+
+    const consumeResult2 = jobs[1].consumeResult;
+    expect(consumeResult2?.keys).toEqual([jobs[0].registerResult]);
+
+    getRegisteredResult.mock.fakeReturnValue('_COMMENT_ID_1_');
+    expect(
+      consumeResult2?.accomplishRequest(
+        jobs[1].request,
+        ['commentResultKey'],
+        getRegisteredResult
+      )
+    ).toMatchInlineSnapshot(`
+      Object {
+        "body": Object {
+          "message": "bar",
+        },
+        "method": "POST",
+        "relative_url": "_COMMENT_ID_1_/comments",
+      }
+    `);
+    expect(getRegisteredResult.mock).toHaveBeenCalledTimes(1);
+    expect(getRegisteredResult.mock).toHaveBeenCalledWith(
+      'commentResultKey',
+      '$.id'
+    );
+
+    const consumeResult3 = jobs[3].consumeResult;
+    const comment2ResultKey = jobs[1].registerResult;
+    const photoResultKey = jobs[2].registerResult;
+    expect(consumeResult3?.keys).toContain(comment2ResultKey);
+    expect(consumeResult3?.keys).toContain(photoResultKey);
+
+    getRegisteredResult.mock.fake((key) =>
+      key === comment2ResultKey ? '_COMMENT_ID_2_' : '_PHOTO_ID_'
+    );
+    expect(
+      consumeResult3?.accomplishRequest(
+        jobs[1].request,
+        consumeResult3.keys,
+        getRegisteredResult
+      )
+    ).toMatchInlineSnapshot(`
+      Object {
+        "body": Object {
+          "attachment_id": "_PHOTO_ID_",
+          "message": "bar",
+        },
+        "method": "POST",
+        "relative_url": "_COMMENT_ID_2_/comments",
+      }
+    `);
+    expect(getRegisteredResult.mock).toHaveBeenCalledTimes(3);
+    expect(getRegisteredResult.mock).toHaveBeenCalledWith(
+      comment2ResultKey,
+      '$.id'
+    );
+    expect(getRegisteredResult.mock).toHaveBeenCalledWith(
+      photoResultKey,
+      '$.id'
+    );
+  });
+
+  it('throw if invalid comment segment received', () => {
+    expect(() =>
+      createInteractJobs(commentTarget, [
+        {
+          type: 'unit',
+          node: <Foo />,
+          path: '?',
+          value: {
+            type: 'message',
+            apiPath: PATH_MESSAGES,
+            params: { message: { text: 'foo' } },
+          },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(`"invalid comment content <Foo />"`);
+    expect(() =>
+      createInteractJobs(commentTarget, [
+        {
+          type: 'unit',
+          node: <Foo />,
+          path: '?',
+          value: {
+            type: 'page',
+            apiPath: PATH_FEED,
+            params: { message: 'foo' },
+          },
+        },
+      ])
+    ).toThrowErrorMatchingInlineSnapshot(`"invalid comment content <Foo />"`);
   });
 });

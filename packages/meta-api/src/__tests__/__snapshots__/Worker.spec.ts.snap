@@ -138,9 +138,7 @@ Object {
 }
 `;
 
-exports[
-  `using API result in following request registerResult & consumeResult in different batches 1`
-] = `
+exports[`using API result in following request registerResult & consumeResult in different batches 1`] = `
 Object {
   "batch": Array [
     Object {
@@ -931,11 +929,10 @@ Object {
       "error": undefined,
       "job": Object {
         "key": "foo_channel",
-        "registerResult": "upload_image",
+        "registerResult": "image_1",
         "request": Object {
           "body": Object {
             "file": "@/pretend/to/upload/a/file.jpg",
-            "messaging_product": "whatsapp",
             "type": "image/jpeg",
           },
           "method": "POST",
@@ -953,18 +950,39 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
+        "key": "foo_channel",
+        "registerResult": "image_2",
+        "request": Object {
+          "body": Object {
+            "file": "@/pretend/to/upload/b/file.jpg",
+            "type": "image/jpeg",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/media",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "id": "2222222222",
+        },
+        "code": 201,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
         "consumeResult": Object {
           "accomplishRequest": [Function],
-          "key": "upload_image",
+          "keys": Array [
+            "image_1",
+            "image_2",
+          ],
         },
         "key": "foo_channel",
         "request": Object {
           "body": Object {
-            "image": Object {
-              "id": ":id",
-            },
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
+            "images": Array [],
             "to": "9876543210",
             "type": "image",
           },
@@ -974,18 +992,11 @@ Object {
       },
       "result": Object {
         "body": Object {
-          "contacts": Array [
-            Object {
-              "input": "9876543210",
-              "wa_id": "9876543210",
-            },
-          ],
           "messages": Array [
             Object {
-              "id": "wamid.Abc123...",
+              "id": "123",
             },
           ],
-          "messaging_product": "whatsapp",
         },
         "code": 200,
       },
@@ -997,38 +1008,31 @@ Object {
 }
 `;
 
-exports[
-  `using API result in following request registerResult & consumeResult in different batches 2`
-] = `
+exports[`using API result in following request registerResult & consumeResult in different batches 2`] = `
 Object {
   "access_token": "_access_token_",
-  "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&messaging_product=whatsapp&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"}]",
+  "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"}]",
 }
 `;
 
-exports[
-  `using API result in following request registerResult & consumeResult in different batches 3`
-] = `
+exports[`using API result in following request registerResult & consumeResult in different batches 3`] = `
 Object {
   "access_token": "_access_token_",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image=%7B%22id%22%3A%221111111111%22%7D\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"to=9876543210&type=image&images=%5B%7B%22id%22%3A%221111111111%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-1%3A%24.id%7D%22%7D%5D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-1\\",\\"name\\":\\"foo_channel-2\\"}]",
 }
 `;
 
-exports[
-  `using API result in following request registerResult & consumeResult in the same batch 1`
-] = `
+exports[`using API result in following request registerResult & consumeResult in the same batch 1`] = `
 Object {
   "batch": Array [
     Object {
       "error": undefined,
       "job": Object {
         "key": "foo_channel",
-        "registerResult": "upload_image",
+        "registerResult": "image_1",
         "request": Object {
           "body": Object {
             "file": "@/pretend/to/upload/a/file.jpg",
-            "messaging_product": "whatsapp",
             "type": "image/jpeg",
           },
           "method": "POST",
@@ -1046,18 +1050,39 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
+        "key": "foo_channel",
+        "registerResult": "image_2",
+        "request": Object {
+          "body": Object {
+            "file": "@/pretend/to/upload/b/file.jpg",
+            "type": "image/jpeg",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/media",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "id": "2222222222",
+        },
+        "code": 201,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
         "consumeResult": Object {
           "accomplishRequest": [Function],
-          "key": "upload_image",
+          "keys": Array [
+            "image_1",
+            "image_2",
+          ],
         },
         "key": "foo_channel",
         "request": Object {
           "body": Object {
-            "image": Object {
-              "id": ":id",
-            },
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
+            "images": Array [],
             "to": "9876543210",
             "type": "image",
           },
@@ -1067,18 +1092,11 @@ Object {
       },
       "result": Object {
         "body": Object {
-          "contacts": Array [
-            Object {
-              "input": "9876543210",
-              "wa_id": "9876543210",
-            },
-          ],
           "messages": Array [
             Object {
-              "id": "wamid.Abc123...",
+              "id": "123",
             },
           ],
-          "messaging_product": "whatsapp",
         },
         "code": 200,
       },
@@ -1090,12 +1108,10 @@ Object {
 }
 `;
 
-exports[
-  `using API result in following request registerResult & consumeResult in the same batch 2`
-] = `
+exports[`using API result in following request registerResult & consumeResult in the same batch 2`] = `
 Object {
   "access_token": "_access_token_",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&messaging_product=whatsapp&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image=%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-1%3A%24.id%7D%22%7D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-1\\",\\"name\\":\\"foo_channel-2\\"}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-1\\",\\"name\\":\\"foo_channel-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"to=9876543210&type=image&images=%5B%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-1%3A%24.id%7D%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-2%3A%24.id%7D%22%7D%5D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-2\\",\\"name\\":\\"foo_channel-3\\"}]",
 }
 `;
 
@@ -1106,11 +1122,10 @@ Object {
       "error": undefined,
       "job": Object {
         "key": undefined,
-        "registerResult": "upload_image",
+        "registerResult": "image_1",
         "request": Object {
           "body": Object {
             "file": "@/pretend/to/upload/a/file.jpg",
-            "messaging_product": "whatsapp",
             "type": "image/jpeg",
           },
           "method": "POST",
@@ -1128,18 +1143,39 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
+        "key": undefined,
+        "registerResult": "image_2",
+        "request": Object {
+          "body": Object {
+            "file": "@/pretend/to/upload/b/file.jpg",
+            "type": "image/jpeg",
+          },
+          "method": "POST",
+          "relative_url": "1234567890/media",
+        },
+      },
+      "result": Object {
+        "body": Object {
+          "id": "2222222222",
+        },
+        "code": 201,
+      },
+      "success": true,
+    },
+    Object {
+      "error": undefined,
+      "job": Object {
         "consumeResult": Object {
           "accomplishRequest": [Function],
-          "key": "upload_image",
+          "keys": Array [
+            "image_1",
+            "image_2",
+          ],
         },
         "key": undefined,
         "request": Object {
           "body": Object {
-            "image": Object {
-              "id": ":id",
-            },
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
+            "images": Array [],
             "to": "9876543210",
             "type": "image",
           },
@@ -1149,18 +1185,11 @@ Object {
       },
       "result": Object {
         "body": Object {
-          "contacts": Array [
-            Object {
-              "input": "9876543210",
-              "wa_id": "9876543210",
-            },
-          ],
           "messages": Array [
             Object {
-              "id": "wamid.Abc123...",
+              "id": "123",
             },
           ],
-          "messaging_product": "whatsapp",
         },
         "code": 200,
       },

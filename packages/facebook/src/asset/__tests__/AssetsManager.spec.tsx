@@ -21,8 +21,8 @@ const stateController = moxy<StateControllerI>({
 
 const bot = moxy<FacebookBot>({
   pageId: '_PAGE_ID_',
-  renderAttachment() {
-    return { jobs: [{}], results: [{}] };
+  uploadChatAttachment() {
+    return {};
   },
   makeApiCall() {},
 } as never);
@@ -174,31 +174,30 @@ test('remove asset id', async () => {
   expect(state.delete.mock).toHaveBeenCalledTimes(6);
 });
 
-test('#renderAttachment()', async () => {
+test('.uploadChatAttachment()', async () => {
   const manager = new FacebookAssetsManager(stateController, bot);
-  bot.renderAttachment.mock.fake(async () => ({
-    jobs: [{ ...{} }],
-    results: [
-      {
-        code: 201,
-        headers: {},
-        body: { attachment_id: '1857777774821032' },
-      },
-    ],
+  bot.uploadChatAttachment.mock.fake(async () => ({
+    attachmentId: '1857777774821032',
   }));
 
   await expect(
-    manager.renderAttachment('my_avatar', <img src="http://foo.bar/avatar" />)
+    manager.uploadChatAttachment(
+      'my_avatar',
+      <img src="http://foo.bar/avatar" />
+    )
   ).resolves.toBe('1857777774821032');
 
-  expect(bot.renderAttachment.mock).toHaveBeenCalledTimes(1);
-  expect(bot.renderAttachment.mock).toHaveBeenCalledWith(
+  expect(bot.uploadChatAttachment.mock).toHaveBeenCalledTimes(1);
+  expect(bot.uploadChatAttachment.mock).toHaveBeenCalledWith(
     <img src="http://foo.bar/avatar" />
   );
 
   state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ATTACHMENT_');
   await expect(
-    manager.renderAttachment('my_avatar', <img src="http://foo.bar/avatar" />)
+    manager.uploadChatAttachment(
+      'my_avatar',
+      <img src="http://foo.bar/avatar" />
+    )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"attachment [ my_avatar ] already exist"`
   );
@@ -207,7 +206,7 @@ test('#renderAttachment()', async () => {
   expect(state.set.mock).toHaveBeenCalledWith('my_avatar', '1857777774821032');
 });
 
-test('#createPersona()', async () => {
+test('.createPersona()', async () => {
   const manager = new FacebookAssetsManager(stateController, bot);
   bot.makeApiCall.mock.fake(() => ({
     id: '_PERSONA_ID_',
@@ -240,7 +239,7 @@ test('#createPersona()', async () => {
   expect(state.set.mock).toHaveBeenCalledWith('cute_persona', '_PERSONA_ID_');
 });
 
-test('#deletePersona()', async () => {
+test('.deletePersona()', async () => {
   const manager = new FacebookAssetsManager(stateController, bot);
   bot.makeApiCall.mock.fake(() => ({
     id: '_PERSONA_ID_',

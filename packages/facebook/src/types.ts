@@ -18,19 +18,23 @@ import type {
 } from '@sociably/meta-api';
 import type { FacebookBot } from './Bot';
 import type FacebookChat from './Chat';
+import ObjectTarget from './ObjectTarget';
+import PageFeed from './PageFeed';
 import type { FacebookEvent } from './event/types';
 import type {
   FACEBOOK,
   PATH_MESSAGES,
-  PATH_MESSAGE_ATTACHMENTS,
   PATH_PASS_THREAD_CONTROL,
   PATH_TAKE_THREAD_CONTROL,
   PATH_REQUEST_THREAD_CONTROL,
+  PATH_FEED,
+  PATH_PHOTOS,
+  PATH_VIDEOS,
 } from './constant';
 
 export * from './event/types';
 
-export type FacebookChannel = FacebookChat;
+export type FacebookChannel = FacebookChat | ObjectTarget | PageFeed;
 
 export type PsidTarget = { id: string };
 export type UserRefTarget = { user_ref: string };
@@ -57,6 +61,12 @@ type MessageTags =
   | 'ACCOUNT_UPDATE'
   | 'HUMAN_AGENT';
 
+type AttachFileValue = {
+  data: string | Buffer | NodeJS.ReadableStream;
+  info?: FileInfo;
+  assetTag?: string;
+};
+
 export type MessageValue = {
   type: 'message';
   apiPath: typeof PATH_MESSAGES;
@@ -67,24 +77,7 @@ export type MessageValue = {
     tag?: MessageTags;
     persona_id?: string;
   };
-  attachFile?: {
-    data: string | Buffer | NodeJS.ReadableStream;
-    info?: FileInfo;
-    assetTag?: string;
-  };
-};
-
-export type MessageAttachmentValue = {
-  type: 'message';
-  apiPath: typeof PATH_MESSAGE_ATTACHMENTS;
-  params: {
-    message: RawMessage;
-  };
-  attachFile?: {
-    data: string | Buffer | NodeJS.ReadableStream;
-    info?: FileInfo;
-    assetTag?: string;
-  };
+  attachFile?: AttachFileValue;
 };
 
 export type SenderActionValue = {
@@ -92,6 +85,7 @@ export type SenderActionValue = {
   apiPath: typeof PATH_MESSAGES;
   params: {
     sender_action: 'mark_seen' | 'typing_on' | 'typing_off';
+    persona_id?: string;
   };
   attachFile?: undefined;
 };
@@ -126,36 +120,47 @@ export type TakeThreadControlValue = {
 
 export type CommentValue = {
   type: 'comment';
-  params: {
-    text: string;
-  };
+  params: Record<string, unknown>;
   attachFile?: undefined;
+  photo?: PagePhotoValue;
 };
 
-export type PostValue = {
-  type: 'post';
-  params: {};
-  attachFile?: undefined;
+export type PagePhotoValue = {
+  type: 'page';
+  apiPath: typeof PATH_PHOTOS;
+  params: Record<string, unknown>;
+  attachFile?: AttachFileValue;
 };
 
-export type PageMediaValue = {
-  type: 'page_media';
-  params: {};
-  attachFile?: undefined;
+export type PageVideoValue = {
+  type: 'page';
+  apiPath: typeof PATH_VIDEOS;
+  params: Record<string, unknown>;
+  attachFile?: AttachFileValue;
+  thumbnailFile?: AttachFileValue;
+};
+
+export type PagePostValue = {
+  type: 'page';
+  apiPath: typeof PATH_FEED;
+  params: Record<string, unknown>;
+  attachFile?: AttachFileValue;
+  photos?: PagePhotoValue[];
 };
 
 export type HandoverProtocolValue =
   | PassThreadControlValue
   | RequestThreadControlValue
-  | TakeThreadControlValue
-  | PostValue
-  | CommentValue;
+  | TakeThreadControlValue;
 
 export type FacebookSegmentValue =
   | MessageValue
-  | MessageAttachmentValue
   | SenderActionValue
-  | HandoverProtocolValue;
+  | HandoverProtocolValue
+  | PagePostValue
+  | PagePhotoValue
+  | PageVideoValue
+  | CommentValue;
 
 export type FacebookComponent<
   Props,

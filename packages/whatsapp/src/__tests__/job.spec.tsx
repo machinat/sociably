@@ -150,7 +150,7 @@ describe('createChatJobs', () => {
           },
         },
         consumeResult: {
-          key: expect.any(String),
+          keys: [expect.any(String)],
           accomplishRequest: expect.any(Function),
         },
       },
@@ -179,14 +179,14 @@ describe('createChatJobs', () => {
           },
         },
         consumeResult: {
-          key: expect.any(String),
+          keys: [expect.any(String)],
           accomplishRequest: expect.any(Function),
         },
       },
     ]);
 
-    expect(jobs[0].registerResult).toBe(jobs[1].consumeResult?.key);
-    expect(jobs[2].registerResult).toBe(jobs[3].consumeResult?.key);
+    expect(jobs[0].registerResult).toBe(jobs[1].consumeResult?.keys[0]);
+    expect(jobs[2].registerResult).toBe(jobs[3].consumeResult?.keys[0]);
     expect(jobs[0].registerResult).not.toBe(jobs[2].registerResult);
 
     const getResultValue = moxy();
@@ -194,7 +194,11 @@ describe('createChatJobs', () => {
     getResultValue.mock.fakeReturnValueOnce('2222222222');
 
     expect(
-      jobs[1].consumeResult?.accomplishRequest(jobs[1].request, getResultValue)
+      jobs[1].consumeResult?.accomplishRequest(
+        jobs[1].request,
+        [jobs[0].registerResult as string],
+        getResultValue
+      )
     ).toEqual({
       body: {
         to: '9876543210',
@@ -206,7 +210,11 @@ describe('createChatJobs', () => {
       relative_url: '1234567890/messages',
     });
     expect(
-      jobs[3].consumeResult?.accomplishRequest(jobs[3].request, getResultValue)
+      jobs[3].consumeResult?.accomplishRequest(
+        jobs[3].request,
+        [jobs[2].registerResult as string],
+        getResultValue
+      )
     ).toEqual({
       body: {
         to: '9876543210',
@@ -219,7 +227,16 @@ describe('createChatJobs', () => {
     });
 
     expect(getResultValue.mock).toHaveBeenCalledTimes(2);
-    expect(getResultValue.mock).toHaveBeenCalledWith('$.id');
+    expect(getResultValue.mock).toHaveBeenNthCalledWith(
+      1,
+      jobs[0].registerResult,
+      '$.id'
+    );
+    expect(getResultValue.mock).toHaveBeenNthCalledWith(
+      2,
+      jobs[2].registerResult,
+      '$.id'
+    );
   });
 });
 

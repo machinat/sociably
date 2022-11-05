@@ -8,6 +8,7 @@ import _Engine from '@sociably/core/engine';
 import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
 import { FacebookBot } from '../Bot';
 import { Image, Expression, TextReply } from '../components';
+import FacebookChat from '../Chat';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
@@ -66,7 +67,7 @@ afterEach(() => {
   nock.cleanAll();
 });
 
-describe('#constructor(options)', () => {
+describe('.constructor(options)', () => {
   it('throw if accessToken not given', () => {
     expect(
       () => new FacebookBot({ pageId, appSecret } as never)
@@ -141,7 +142,7 @@ describe('#constructor(options)', () => {
   });
 });
 
-test('#start() and #stop() start/stop engine', () => {
+test('.start() and .stop() start/stop engine', () => {
   const bot = new FacebookBot({
     initScope,
     dispatchWrapper,
@@ -159,7 +160,7 @@ test('#start() and #stop() start/stop engine', () => {
   expect((bot.engine as MockEngine).stop.mock).toHaveBeenCalledTimes(1);
 });
 
-describe('#render(channel, message, options)', () => {
+describe('.message(channel, message, options)', () => {
   const bot = new FacebookBot({ pageId, accessToken, appSecret });
 
   let apiStatus;
@@ -176,17 +177,19 @@ describe('#render(channel, message, options)', () => {
     bot.stop();
   });
 
+  const chat = new FacebookChat('1234567890', { id: '9876543210' });
+
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(bot.render('john', empty)).resolves.toBe(null);
+      await expect(bot.message(chat, empty)).resolves.toBe(null);
       expect(apiStatus.isDone()).toBe(false);
     }
   });
 
   it('send messages to me/messages api', async () => {
-    const response = await bot.render('john', message);
+    const response = await bot.message(chat, message);
     expect(response).toMatchSnapshot();
 
     for (const result of response!.results) {
@@ -210,11 +213,11 @@ describe('#render(channel, message, options)', () => {
       Array [
         Object {
           "message": "{\\"text\\":\\"Hello World!\\"}",
-          "recipient": "{\\"id\\":\\"john\\"}",
+          "recipient": "{\\"id\\":\\"9876543210\\"}",
         },
         Object {
           "message": "{\\"attachment\\":{\\"type\\":\\"image\\",\\"payload\\":{\\"url\\":\\"https://sociably.io/greeting.png\\"}},\\"quick_replies\\":[{\\"content_type\\":\\"text\\",\\"title\\":\\"Hi!\\",\\"payload\\":\\"👋\\"}]}",
-          "recipient": "{\\"id\\":\\"john\\"}",
+          "recipient": "{\\"id\\":\\"9876543210\\"}",
         },
       ]
     `);
@@ -222,8 +225,8 @@ describe('#render(channel, message, options)', () => {
     expect(apiStatus.isDone()).toBe(true);
   });
 
-  test('render options', async () => {
-    const response = await bot.render('john', message, {
+  test('message options', async () => {
+    const response = await bot.message(chat, message, {
       messagingType: 'MESSAGE_TAG',
       tag: 'TRANSPORTATION_UPDATE',
       notificationType: 'SILENT_PUSH',
@@ -250,7 +253,7 @@ describe('#render(channel, message, options)', () => {
           "messaging_type": "MESSAGE_TAG",
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
-          "recipient": "{\\"id\\":\\"john\\"}",
+          "recipient": "{\\"id\\":\\"9876543210\\"}",
           "tag": "TRANSPORTATION_UPDATE",
         },
         Object {
@@ -258,7 +261,7 @@ describe('#render(channel, message, options)', () => {
           "messaging_type": "MESSAGE_TAG",
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
-          "recipient": "{\\"id\\":\\"john\\"}",
+          "recipient": "{\\"id\\":\\"9876543210\\"}",
           "tag": "TRANSPORTATION_UPDATE",
         },
       ]
@@ -268,7 +271,7 @@ describe('#render(channel, message, options)', () => {
   });
 });
 
-describe('#renderAttachment(message)', () => {
+describe('.uploadChatAttachment(message)', () => {
   const bot = new FacebookBot({ pageId, accessToken, appSecret });
 
   beforeEach(() => {
@@ -282,7 +285,7 @@ describe('#renderAttachment(message)', () => {
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
-      await expect(bot.renderAttachment(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+      await expect(bot.uploadChatAttachment(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
     }
   });
 
@@ -291,16 +294,11 @@ describe('#renderAttachment(message)', () => {
       { code: 200, body: JSON.stringify({ attachment_id: 401759795 }) },
     ]);
 
-    const response = await bot.renderAttachment(
-      <Image url="https://sociably.io/trollface.png" />
-    );
-    expect(response).toMatchSnapshot();
-    expect(response!.results).toEqual([
-      {
-        code: 200,
-        body: { attachment_id: 401759795 },
-      },
-    ]);
+    await expect(
+      bot.uploadChatAttachment(
+        <Image url="https://sociably.io/trollface.png" />
+      )
+    ).resolves.toEqual({ attachmentId: 401759795 });
 
     expect(bodySpy.mock).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
@@ -319,7 +317,7 @@ describe('#renderAttachment(message)', () => {
   });
 });
 
-describe('#makeApiCall()', () => {
+describe('.makeApiCall()', () => {
   it('call facebook graph api', async () => {
     const bot = new FacebookBot({ accessToken, pageId });
     bot.start();

@@ -19,6 +19,7 @@ Array [
         "persona_id": "_PERSONA_ID_",
         "tag": "CONFIRMED_EVENT_UPDATE",
       },
+      "type": "message",
     },
   },
   Object {
@@ -51,6 +52,7 @@ Array [
         "persona_id": "_PERSONA_ID_",
         "tag": "CONFIRMED_EVENT_UPDATE",
       },
+      "type": "message",
     },
   },
 ]
@@ -75,6 +77,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
   Object {
@@ -92,6 +95,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
   Object {
@@ -119,6 +123,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
   Object {
@@ -151,6 +156,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
   Object {
@@ -170,6 +176,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
 ]
@@ -194,6 +201,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
   Object {
@@ -213,6 +221,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
 ]
@@ -237,6 +246,7 @@ Array [
         "persona_id": "_PERSONA_ID_",
         "tag": undefined,
       },
+      "type": "message",
     },
   },
   Object {
@@ -256,6 +266,7 @@ Array [
         "persona_id": "_PERSONA_ID_",
         "tag": undefined,
       },
+      "type": "message",
     },
   },
 ]
@@ -280,6 +291,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
   Object {
@@ -312,6 +324,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
 ]
@@ -336,6 +349,7 @@ Array [
         "persona_id": undefined,
         "tag": "ACCOUNT_UPDATE",
       },
+      "type": "message",
     },
   },
   Object {
@@ -355,6 +369,7 @@ Array [
         "persona_id": undefined,
         "tag": "ACCOUNT_UPDATE",
       },
+      "type": "message",
     },
   },
 ]
@@ -379,6 +394,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
   Object {
@@ -398,6 +414,7 @@ Array [
         "persona_id": undefined,
         "tag": undefined,
       },
+      "type": "message",
     },
   },
 ]

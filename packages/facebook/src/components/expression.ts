@@ -7,7 +7,6 @@ import type {
   FacebookSegmentValue,
   FacebookComponent,
   MessageValue,
-  SenderActionValue,
 } from '../types';
 
 /**
@@ -90,9 +89,7 @@ export const Expression: FacebookComponent<
   for (const segment of childrenSegments) {
     if (segment.type === 'part') {
       throw new TypeError(
-        `part component ${formatNode(
-          segment.node
-        )} should not be directly placed in <Expression/>`
+        `${formatNode(segment.node)} can not be placed in <Expression/>`
       );
     }
 
@@ -103,6 +100,7 @@ export const Expression: FacebookComponent<
       segments.push({
         type: 'unit',
         value: {
+          type: 'message',
           apiPath: PATH_MESSAGES,
           params: {
             message: { text: segment.value },
@@ -115,23 +113,26 @@ export const Expression: FacebookComponent<
         node: segment.node,
         path: segment.path,
       });
-    } else if (
-      (segment.type === 'unit' || segment.type === 'raw') &&
-      segment.value.apiPath === PATH_MESSAGES
-    ) {
-      const {
-        value: { apiPath, params, attachFile },
-      } = segment;
+    } else if (segment.type === 'unit' || segment.type === 'raw') {
+      const { value } = segment;
+      if (value.type === 'page' || value.type === 'comment') {
+        throw new TypeError(
+          `${formatNode(segment.node)} can not be placed in <Expression/>`
+        );
+      }
 
-      if ('message' in params) {
+      const { apiPath, params, attachFile } = value;
+
+      if (apiPath === PATH_MESSAGES && 'message' in value.params) {
         lastMessageIdx = segments.length;
 
         segments.push({
           ...segment,
           value: {
+            type: 'message',
             apiPath,
             params: {
-              ...params,
+              ...value.params,
               messaging_type: messagingType,
               tag,
               notification_type: notificationType,
@@ -141,15 +142,18 @@ export const Expression: FacebookComponent<
           },
         });
       } else if (
+        apiPath === PATH_MESSAGES &&
         'sender_action' in params &&
         (params.sender_action === 'typing_on' ||
           params.sender_action === 'typing_off')
       ) {
         segments.push({
-          ...(segment as UnitSegment<SenderActionValue>),
+          ...segment,
           value: {
+            type: 'message',
             apiPath,
             params: { ...params, persona_id: personaId },
+            attachFile: undefined,
           },
         });
       } else {

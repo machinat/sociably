@@ -126,7 +126,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
 
   private async _executeJobs(jobs: MetaApiJob[]) {
     const sendingKeysCounts = new Map<string, number>();
-    const resultRegistry = new Map<string, [string, number]>();
+    const resultRegistry = new Map<string, { name: string; idx: number }>();
     let fileCount = 0;
     let filesForm: undefined | FormData;
 
@@ -146,32 +146,29 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
 
       // if it requires a result before to accomplish the request
       if (consumeResult) {
-        const { key: consummingKey, accomplishRequest } = consumeResult;
-        let registered: undefined | MetaApiResult | [string, number];
+        const { keys: consummingKeys, accomplishRequest } = consumeResult;
 
-        if ((registered = resultRegistry.get(consummingKey))) {
-          const requestName = registered[0];
-          request = accomplishRequest(
-            request,
-            (path) => `{result=${requestName}:${path}}`
-          );
-
-          resultRegistry.delete(consummingKey);
-        } else if ((registered = this._resultCache.get(consummingKey))) {
-          request = accomplishRequest(
-            request,
-            getObjectValueByPath.bind(null, registered.body)
-          );
-          this._resultCache.delete(consummingKey);
-        } else {
-          // NOTE: it's unlikely to happen so let it fail on API
-        }
+        request = accomplishRequest(
+          request,
+          consummingKeys,
+          (requestKey, path) => {
+            const currentBatchRegistered = resultRegistry.get(requestKey);
+            if (currentBatchRegistered) {
+              return `{result=${currentBatchRegistered.name}:${path}}`;
+            }
+            const lastBatchRegistered = this._resultCache.get(requestKey);
+            if (lastBatchRegistered) {
+              return getObjectValueByPath(lastBatchRegistered.body, path);
+            }
+            return null;
+          }
+        );
       }
 
       request.omit_response_on_success = false;
 
+      // to keep the order of requests with the same key
       if (key) {
-        // keep the order of requests per channel
         let count = sendingKeysCounts.get(key);
         if (count !== undefined) {
           request.depends_on = makeRequestName(key, count);
@@ -187,9 +184,9 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
       // register to use/cache the result
       if (registerResult) {
         if (!request.name) {
-          request.name = makeRequestName('#', i);
+          request.name = makeRequestName('#request', i);
         }
-        resultRegistry.set(registerResult, [request.name, i]);
+        resultRegistry.set(registerResult, { name: request.name, idx: i });
       }
 
       // if binary data attached, use from-data and add the file field
@@ -234,10 +231,11 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
 
     // cache result if it's registered in this batch but not consumed
     this._resultCache.clear();
-    for (const [consummingKey, [, idx]] of resultRegistry.entries()) {
+    for (const [consummingKey, { idx }] of resultRegistry.entries()) {
       this._resultCache.set(consummingKey, apiBody[idx]);
     }
 
+    // collect batch results
     const jobResponses: JobResponse<MetaApiJob, MetaApiResult>[] = new Array(
       apiBody.length
     );
@@ -248,7 +246,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
 
       const success = result.code >= 200 && result.code < 300;
 
-      jobResponses[i] = success // NOTE: to help flow recognize which case it is
+      jobResponses[i] = success
         ? {
             success: true,
             result,
@@ -262,7 +260,6 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
             job: jobs[i],
           };
     }
-
     return jobResponses;
   }
 }

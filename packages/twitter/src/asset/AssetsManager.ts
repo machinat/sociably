@@ -10,6 +10,38 @@ const WEBHOOK = 'webhook';
 const WELCOME_MESSAGE = 'welcome_message';
 const CUSTOM_PROFILE = 'custom_profile';
 
+/* eslint-disable camelcase */
+type CreateCustomProfileResult = {
+  custom_profile: {
+    id: string;
+    created_timestamp: string;
+    name: string;
+    avatar: {
+      media: { url: string };
+    };
+  };
+};
+
+type GetWebhooksResult = {
+  environments: {
+    environment_name: string;
+    webhooks: {
+      id: string;
+      url: string;
+      valid: boolean;
+      created_at: string;
+    }[];
+  }[];
+};
+
+type CreateWebhookResult = {
+  id: string;
+  url: string;
+  valid: true;
+  created_at: string;
+};
+/* eslint-enable camelcase */
+
 /**
  * TwitterAssetsManager stores ids of assets created at Twitter platform.
  * @category Provider
@@ -125,11 +157,13 @@ export class TwitterAssetsManager {
       return savedId;
     }
 
-    const { environments } = await this.bot.makeApiCall(
+    const { environments } = await this.bot.makeApiCall<GetWebhooksResult>(
       'GET',
       `1.1/account_activity/all/webhooks.json`,
       undefined,
-      { asApplication: true }
+      {
+        asApplication: true,
+      }
     );
 
     const environment = environments.find(
@@ -144,11 +178,12 @@ export class TwitterAssetsManager {
       return existedWebhook.id;
     }
 
-    const { id: newWebhookId } = await this.bot.makeApiCall(
-      'POST',
-      `1.1/account_activity/all/${envName}/webhooks.json`,
-      { url }
-    );
+    const { id: newWebhookId } =
+      await this.bot.makeApiCall<CreateWebhookResult>(
+        'POST',
+        `1.1/account_activity/all/${envName}/webhooks.json`,
+        { url }
+      );
     await this.saveWebhook(tag, newWebhookId);
     return newWebhookId;
   }
@@ -246,12 +281,16 @@ export class TwitterAssetsManager {
 
     const {
       custom_profile: { id: customProfileId },
-    } = await this.bot.makeApiCall('POST', `1.1/custom_profiles/new.json`, {
-      custom_profile: {
-        name,
-        avatar: { media: { id: mediaId } },
-      },
-    });
+    } = await this.bot.makeApiCall<CreateCustomProfileResult>(
+      'POST',
+      `1.1/custom_profiles/new.json`,
+      {
+        custom_profile: {
+          name,
+          avatar: { media: { id: mediaId } },
+        },
+      }
+    );
 
     await this.saveCustomProfile(tag, customProfileId);
     return customProfileId;

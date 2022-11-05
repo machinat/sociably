@@ -80,20 +80,23 @@ export class FacebookAssetsManager {
     return this.unsaveAssetId(ATTACHMENT, name);
   }
 
-  async renderAttachment(name: string, node: SociablyNode): Promise<string> {
+  async uploadChatAttachment(
+    name: string,
+    node: SociablyNode
+  ): Promise<string> {
     const existed = await this.getAttachment(name);
     if (existed !== undefined) {
       throw new Error(`attachment [ ${name} ] already exist`);
     }
 
-    const response = await this.bot.renderAttachment(node);
-    if (response === null) {
+    const result = await this.bot.uploadChatAttachment(node);
+    if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
-    const id = response.results[0].body.attachment_id as string;
-    await this.saveAssetId(ATTACHMENT, name, id);
-    return id;
+    const { attachmentId } = result;
+    await this.saveAssetId(ATTACHMENT, name, attachmentId);
+    return attachmentId;
   }
 
   getPersona(name: string): Promise<undefined | string> {

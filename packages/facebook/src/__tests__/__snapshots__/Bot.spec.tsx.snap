@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#render(channel, message, options) render options 1`] = `
+exports[`.message(channel, message, options) message options 1`] = `
 Object {
   "jobs": Array [
     Object {
       "assetTag": undefined,
       "fileData": undefined,
       "fileInfo": undefined,
-      "key": "facebook.1234567890.john",
+      "key": "facebook.1234567890.9876543210",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -17,7 +17,7 @@ Object {
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
           "recipient": Object {
-            "id": "john",
+            "id": "9876543210",
           },
           "tag": "TRANSPORTATION_UPDATE",
         },
@@ -29,7 +29,7 @@ Object {
       "assetTag": undefined,
       "fileData": undefined,
       "fileInfo": undefined,
-      "key": "facebook.1234567890.john",
+      "key": "facebook.1234567890.9876543210",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -55,7 +55,7 @@ Object {
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
           "recipient": Object {
-            "id": "john",
+            "id": "9876543210",
           },
           "tag": "TRANSPORTATION_UPDATE",
         },
@@ -87,7 +87,7 @@ Object {
           "assetTag": undefined,
           "fileData": undefined,
           "fileInfo": undefined,
-          "key": "facebook.1234567890.john",
+          "key": "facebook.1234567890.9876543210",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -97,7 +97,7 @@ Object {
               "notification_type": "SILENT_PUSH",
               "persona_id": "billy17",
               "recipient": Object {
-                "id": "john",
+                "id": "9876543210",
               },
               "tag": "TRANSPORTATION_UPDATE",
             },
@@ -109,7 +109,7 @@ Object {
           "assetTag": undefined,
           "fileData": undefined,
           "fileInfo": undefined,
-          "key": "facebook.1234567890.john",
+          "key": "facebook.1234567890.9876543210",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -135,7 +135,7 @@ Object {
               "notification_type": "SILENT_PUSH",
               "persona_id": "billy17",
               "recipient": Object {
-                "id": "john",
+                "id": "9876543210",
               },
               "tag": "TRANSPORTATION_UPDATE",
             },
@@ -150,22 +150,22 @@ Object {
 }
 `;
 
-exports[`#render(channel, message, options) render options 2`] = `
+exports[`.message(channel, message, options) message options 2`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D\\",\\"omit_response_on_success\\":false,\\"name\\":\\"facebook.1234567890.john-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%22john%22%7D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook.1234567890.john-1\\",\\"name\\":\\"facebook.1234567890.john-2\\"}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D\\",\\"omit_response_on_success\\":false,\\"name\\":\\"facebook.1234567890.9876543210-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook.1234567890.9876543210-1\\",\\"name\\":\\"facebook.1234567890.9876543210-2\\"}]",
 }
 `;
 
-exports[`#render(channel, message, options) send messages to me/messages api 1`] = `
+exports[`.message(channel, message, options) send messages to me/messages api 1`] = `
 Object {
   "jobs": Array [
     Object {
       "assetTag": undefined,
       "fileData": undefined,
       "fileInfo": undefined,
-      "key": "facebook.1234567890.john",
+      "key": "facebook.1234567890.9876543210",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -175,7 +175,7 @@ Object {
           "notification_type": undefined,
           "persona_id": undefined,
           "recipient": Object {
-            "id": "john",
+            "id": "9876543210",
           },
           "tag": undefined,
         },
@@ -187,7 +187,7 @@ Object {
       "assetTag": undefined,
       "fileData": undefined,
       "fileInfo": undefined,
-      "key": "facebook.1234567890.john",
+      "key": "facebook.1234567890.9876543210",
       "request": Object {
         "body": Object {
           "message": Object {
@@ -213,7 +213,7 @@ Object {
           "notification_type": undefined,
           "persona_id": undefined,
           "recipient": Object {
-            "id": "john",
+            "id": "9876543210",
           },
           "tag": undefined,
         },
@@ -245,7 +245,7 @@ Object {
           "assetTag": undefined,
           "fileData": undefined,
           "fileInfo": undefined,
-          "key": "facebook.1234567890.john",
+          "key": "facebook.1234567890.9876543210",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -255,7 +255,7 @@ Object {
               "notification_type": undefined,
               "persona_id": undefined,
               "recipient": Object {
-                "id": "john",
+                "id": "9876543210",
               },
               "tag": undefined,
             },
@@ -267,7 +267,7 @@ Object {
           "assetTag": undefined,
           "fileData": undefined,
           "fileInfo": undefined,
-          "key": "facebook.1234567890.john",
+          "key": "facebook.1234567890.9876543210",
           "request": Object {
             "body": Object {
               "message": Object {
@@ -293,7 +293,7 @@ Object {
               "notification_type": undefined,
               "persona_id": undefined,
               "recipient": Object {
-                "id": "john",
+                "id": "9876543210",
               },
               "tag": undefined,
             },
@@ -308,77 +308,15 @@ Object {
 }
 `;
 
-exports[`#render(channel, message, options) send messages to me/messages api 2`] = `
+exports[`.message(channel, message, options) send messages to me/messages api 2`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%22john%22%7D\\",\\"omit_response_on_success\\":false,\\"name\\":\\"facebook.1234567890.john-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%22john%22%7D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook.1234567890.john-1\\",\\"name\\":\\"facebook.1234567890.john-2\\"}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%229876543210%22%7D\\",\\"omit_response_on_success\\":false,\\"name\\":\\"facebook.1234567890.9876543210-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages\\",\\"body\\":\\"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%229876543210%22%7D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"facebook.1234567890.9876543210-1\\",\\"name\\":\\"facebook.1234567890.9876543210-2\\"}]",
 }
 `;
 
-exports[`#renderAttachment(message) call message_attachments api 1`] = `
-Object {
-  "jobs": Array [
-    Object {
-      "fileData": undefined,
-      "fileInfo": undefined,
-      "request": Object {
-        "body": Object {
-          "message": Object {
-            "attachment": Object {
-              "payload": Object {
-                "attachment_id": undefined,
-                "is_reusable": undefined,
-                "url": "https://sociably.io/trollface.png",
-              },
-              "type": "image",
-            },
-          },
-        },
-        "method": "POST",
-        "relative_url": "me/message_attachments",
-      },
-    },
-  ],
-  "results": Array [
-    Object {
-      "body": Object {
-        "attachment_id": 401759795,
-      },
-      "code": 200,
-    },
-  ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
-          "fileData": undefined,
-          "fileInfo": undefined,
-          "request": Object {
-            "body": Object {
-              "message": Object {
-                "attachment": Object {
-                  "payload": Object {
-                    "attachment_id": undefined,
-                    "is_reusable": undefined,
-                    "url": "https://sociably.io/trollface.png",
-                  },
-                  "type": "image",
-                },
-              },
-            },
-            "method": "POST",
-            "relative_url": "me/message_attachments",
-          },
-        },
-      ],
-      "type": "dispatch",
-    },
-  ],
-}
-`;
-
-exports[`#renderAttachment(message) call message_attachments api 2`] = `
+exports[`.uploadChatAttachment(message) call message_attachments api 1`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",

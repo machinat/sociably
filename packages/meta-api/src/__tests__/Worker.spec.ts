@@ -546,9 +546,12 @@ it('use querystring params for DELETE request', async () => {
 });
 
 describe('using API result in following request', () => {
-  const accomplishRequest = moxy((request, getValue) => ({
+  const accomplishRequest = moxy((request, keys, getResult) => ({
     ...request,
-    body: { ...request.body, image: { id: getValue('$.id') } },
+    body: {
+      ...request.body,
+      images: keys.map((k) => ({ id: getResult(k, '$.id') })),
+    },
   }));
 
   const continuousJobs = [
@@ -559,11 +562,22 @@ describe('using API result in following request', () => {
         relative_url: '1234567890/media',
         body: {
           type: 'image/jpeg',
-          messaging_product: 'whatsapp',
           file: '@/pretend/to/upload/a/file.jpg',
         },
       },
-      registerResult: 'upload_image',
+      registerResult: 'image_1',
+    },
+    {
+      key: 'foo_channel',
+      request: {
+        method: 'POST',
+        relative_url: '1234567890/media',
+        body: {
+          type: 'image/jpeg',
+          file: '@/pretend/to/upload/b/file.jpg',
+        },
+      },
+      registerResult: 'image_2',
     },
     {
       key: 'foo_channel',
@@ -571,15 +585,13 @@ describe('using API result in following request', () => {
         method: 'POST',
         relative_url: '1234567890/messages',
         body: {
-          messaging_product: 'whatsapp',
-          recipient_type: 'individual',
           to: '9876543210',
           type: 'image',
-          image: { id: ':id' },
+          images: [],
         },
       },
       consumeResult: {
-        key: 'upload_image',
+        keys: ['image_1', 'image_2'],
         accomplishRequest,
       },
     },
@@ -587,12 +599,11 @@ describe('using API result in following request', () => {
 
   const continuousApiResults = [
     { code: 201, body: JSON.stringify({ id: '1111111111' }) },
+    { code: 201, body: JSON.stringify({ id: '2222222222' }) },
     {
       code: 200,
       body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        contacts: [{ input: '9876543210', wa_id: '9876543210' }],
-        messages: [{ id: 'wamid.Abc123...' }],
+        messages: [{ id: '123' }],
       }),
     },
   ];
@@ -624,17 +635,25 @@ describe('using API result in following request', () => {
       .toMatchInlineSnapshot(`
       Array [
         Object {
-          "body": "type=image/jpeg&messaging_product=whatsapp&file=@/pretend/to/upload/a/file.jpg",
+          "body": "type=image/jpeg&file=@/pretend/to/upload/a/file.jpg",
           "method": "POST",
           "name": "foo_channel-1",
           "omit_response_on_success": false,
           "relative_url": "1234567890/media",
         },
         Object {
-          "body": "messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image={\\"id\\":\\"{result=foo_channel-1:$.id}\\"}",
+          "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
           "depends_on": "foo_channel-1",
           "method": "POST",
           "name": "foo_channel-2",
+          "omit_response_on_success": false,
+          "relative_url": "1234567890/media",
+        },
+        Object {
+          "body": "to=9876543210&type=image&images=[{\\"id\\":\\"{result=foo_channel-1:$.id}\\"},{\\"id\\":\\"{result=foo_channel-2:$.id}\\"}]",
+          "depends_on": "foo_channel-2",
+          "method": "POST",
+          "name": "foo_channel-3",
           "omit_response_on_success": false,
           "relative_url": "1234567890/messages",
         },
@@ -643,7 +662,8 @@ describe('using API result in following request', () => {
 
     expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
     expect(accomplishRequest.mock).toHaveBeenCalledWith(
-      continuousJobs[1].request,
+      continuousJobs[2].request,
+      ['image_1', 'image_2'],
       expect.any(Function)
     );
 
@@ -669,14 +689,21 @@ describe('using API result in following request', () => {
       .toMatchInlineSnapshot(`
       Array [
         Object {
-          "body": "type=image/jpeg&messaging_product=whatsapp&file=@/pretend/to/upload/a/file.jpg",
+          "body": "type=image/jpeg&file=@/pretend/to/upload/a/file.jpg",
           "method": "POST",
-          "name": "#-0",
+          "name": "#request-0",
           "omit_response_on_success": false,
           "relative_url": "1234567890/media",
         },
         Object {
-          "body": "messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image={\\"id\\":\\"{result=#-0:$.id}\\"}",
+          "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
+          "method": "POST",
+          "name": "#request-1",
+          "omit_response_on_success": false,
+          "relative_url": "1234567890/media",
+        },
+        Object {
+          "body": "to=9876543210&type=image&images=[{\\"id\\":\\"{result=#request-0:$.id}\\"},{\\"id\\":\\"{result=#request-1:$.id}\\"}]",
           "method": "POST",
           "omit_response_on_success": false,
           "relative_url": "1234567890/messages",
@@ -686,7 +713,8 @@ describe('using API result in following request', () => {
 
     expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
     expect(accomplishRequest.mock).toHaveBeenCalledWith(
-      continuousJobs[1].request,
+      continuousJobs[2].request,
+      ['image_1', 'image_2'],
       expect.any(Function)
     );
 
@@ -708,7 +736,7 @@ describe('using API result in following request', () => {
     );
     const apiCall2 = graphApi
       .post('/v11.0/', bodySpy)
-      .reply(200, JSON.stringify([continuousApiResults[1]]));
+      .reply(200, JSON.stringify(continuousApiResults.slice(1)));
 
     worker.start(queue);
     await expect(
@@ -729,7 +757,7 @@ describe('using API result in following request', () => {
     expect(decodeBatchedRequest(JSON.parse(body1.batch)[49]))
       .toMatchInlineSnapshot(`
       Object {
-        "body": "type=image/jpeg&messaging_product=whatsapp&file=@/pretend/to/upload/a/file.jpg",
+        "body": "type=image/jpeg&file=@/pretend/to/upload/a/file.jpg",
         "method": "POST",
         "name": "foo_channel-1",
         "omit_response_on_success": false,
@@ -739,9 +767,20 @@ describe('using API result in following request', () => {
     expect(decodeBatchedRequest(JSON.parse(body2.batch)[0]))
       .toMatchInlineSnapshot(`
       Object {
-        "body": "messaging_product=whatsapp&recipient_type=individual&to=9876543210&type=image&image={\\"id\\":\\"1111111111\\"}",
+        "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
         "method": "POST",
         "name": "foo_channel-1",
+        "omit_response_on_success": false,
+        "relative_url": "1234567890/media",
+      }
+    `);
+    expect(decodeBatchedRequest(JSON.parse(body2.batch)[1]))
+      .toMatchInlineSnapshot(`
+      Object {
+        "body": "to=9876543210&type=image&images=[{\\"id\\":\\"1111111111\\"},{\\"id\\":\\"{result=foo_channel-1:$.id}\\"}]",
+        "depends_on": "foo_channel-1",
+        "method": "POST",
+        "name": "foo_channel-2",
         "omit_response_on_success": false,
         "relative_url": "1234567890/messages",
       }
@@ -749,7 +788,8 @@ describe('using API result in following request', () => {
 
     expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
     expect(accomplishRequest.mock).toHaveBeenCalledWith(
-      continuousJobs[1].request,
+      continuousJobs[2].request,
+      ['image_1', 'image_2'],
       expect.any(Function)
     );
 

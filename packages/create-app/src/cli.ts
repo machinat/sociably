@@ -10,9 +10,10 @@ Usage
   $ npm init @sociably/app -- -p <platform> [-p <platform> ...] <project-path>
 
 Options
-  -p, --platform   platforms to install; supported platforms: facebook, telegram, line, webview
+  -p, --platform   platform adaptors to install; supported: facebook, telegram, line, webview
   -n, --name,      the app name (default: project dir name)
   -r, --recognizer the intent recognition provider; regex or dialogflow (default: regex)
+  -w, --webview    install webview modules
   --npmTag         the npm tag to install the packages with (default: latest)
 
 Example

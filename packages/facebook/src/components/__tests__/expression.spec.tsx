@@ -121,6 +121,7 @@ it('hoist text value into message object', async () => {
             "persona_id": undefined,
             "tag": undefined,
           },
+          "type": "message",
         },
       },
       Object {
@@ -140,6 +141,7 @@ it('hoist text value into message object', async () => {
             "persona_id": undefined,
             "tag": undefined,
           },
+          "type": "message",
         },
       },
       Object {
@@ -159,6 +161,7 @@ it('hoist text value into message object', async () => {
             "persona_id": undefined,
             "tag": undefined,
           },
+          "type": "message",
         },
       },
     ]
@@ -181,6 +184,7 @@ it('add attributes to message value', async () => {
 
   segments!.forEach((segment) => {
     expect(segment.value).toEqual({
+      type: 'message',
       apiPath: PATH_MESSAGES,
       params: {
         messaging_type: 'MESSAGE_TAG',
@@ -225,20 +229,25 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
           "persona_id": "_PERSONA_ID_",
           "tag": "ACCOUNT_UPDATE",
         },
+        "type": "message",
       },
       Object {
         "apiPath": "me/messages",
+        "attachFile": undefined,
         "params": Object {
           "persona_id": "_PERSONA_ID_",
           "sender_action": "typing_on",
         },
+        "type": "message",
       },
       Object {
         "apiPath": "me/messages",
+        "attachFile": undefined,
         "params": Object {
           "persona_id": "_PERSONA_ID_",
           "sender_action": "typing_off",
         },
+        "type": "message",
       },
       Object {
         "apiPath": "me/messages",
@@ -273,6 +282,7 @@ it('adds metadata to last message action', async () => {
           "persona_id": undefined,
           "tag": undefined,
         },
+        "type": "message",
       },
       Object {
         "apiPath": "me/messages",
@@ -287,13 +297,16 @@ it('adds metadata to last message action', async () => {
           "persona_id": undefined,
           "tag": undefined,
         },
+        "type": "message",
       },
       Object {
         "apiPath": "me/messages",
+        "attachFile": undefined,
         "params": Object {
           "persona_id": undefined,
           "sender_action": "typing_on",
         },
+        "type": "message",
       },
     ]
   `);
@@ -329,6 +342,7 @@ it('adds quickReplies to last message action', async () => {
           "persona_id": undefined,
           "tag": undefined,
         },
+        "type": "message",
       },
       Object {
         "apiPath": "me/messages",
@@ -356,13 +370,16 @@ it('adds quickReplies to last message action', async () => {
           "persona_id": undefined,
           "tag": undefined,
         },
+        "type": "message",
       },
       Object {
         "apiPath": "me/messages",
+        "attachFile": undefined,
         "params": Object {
           "persona_id": undefined,
           "sender_action": "typing_on",
         },
+        "type": "message",
       },
     ]
   `);
@@ -413,6 +430,7 @@ it('do nothing to non-messgae value', async () => {
         "persona_id": "_PERSONA_ID_",
         "tag": "CONFIRMED_EVENT_UPDATE",
       },
+      "type": "message",
     }
   `);
 });

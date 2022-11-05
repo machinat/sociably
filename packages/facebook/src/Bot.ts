@@ -18,13 +18,19 @@ import {
   MetaApiResponseBody,
 } from '@sociably/meta-api';
 import generalComponentDelegator from './components/general';
-import { FACEBOOK } from './constant';
+import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import FacebookChat from './Chat';
-import { createChatJobs, createAttachmentJobs } from './job';
+import ObjectTarget from './ObjectTarget';
+import PageFeed from './PageFeed';
+import {
+  createChatJobs,
+  createChatAttachmentJobs,
+  createPostJobs,
+  createInteractJobs,
+} from './job';
 import type {
   FacebookChannel,
-  MessagingTarget,
   FacebookComponent,
   FacebookSegmentValue,
   FacebookDispatchFrame,
@@ -43,6 +49,24 @@ type FacebookBotOptions = {
   appSecret?: string;
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;
+};
+
+type UploadAttachmentResult = {
+  attachmentId: string;
+};
+
+type PagePhotoResult = {
+  photoId: string;
+};
+
+type PagePostResult = {
+  postId: string;
+  photos: PagePhotoResult[];
+};
+
+type CommentResult = {
+  commentId: string;
+  photo: null | PagePhotoResult;
 };
 
 /**
@@ -110,24 +134,100 @@ export class FacebookBot
   }
 
   async render(
-    target: string | MessagingTarget | FacebookChannel,
+    target: FacebookChannel,
+    node: SociablyNode
+  ): Promise<null | MetaApiDispatchResponse> {
+    if (target instanceof FacebookChat) {
+      return this.engine.render(target, node, createChatJobs());
+    }
+    if (target instanceof PageFeed) {
+      return this.engine.render(target, node, createPostJobs);
+    }
+    if (target instanceof ObjectTarget) {
+      return this.engine.render(target, node, createInteractJobs);
+    }
+    throw new TypeError('invalid rendering target');
+  }
+
+  /** Send messages or actions on a chat */
+  async message(
+    chat: FacebookChat,
     messages: SociablyNode,
     options?: MessagingOptions
   ): Promise<null | MetaApiDispatchResponse> {
-    const channel =
-      typeof target === 'string'
-        ? new FacebookChat(this.pageId, { id: target })
-        : target instanceof FacebookChat
-        ? target
-        : new FacebookChat(this.pageId, target);
-
-    return this.engine.render(channel, messages, createChatJobs(options));
+    return this.engine.render(chat, messages, createChatJobs(options));
   }
 
-  async renderAttachment(
+  /** Upload a media chat attachment for later use */
+  async uploadChatAttachment(
+    /** An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be uploaded */
     node: SociablyNode
-  ): Promise<null | MetaApiDispatchResponse> {
-    return this.engine.render(null, node, createAttachmentJobs);
+  ): Promise<null | UploadAttachmentResult> {
+    const response = await this.engine.render(
+      null,
+      node,
+      createChatAttachmentJobs
+    );
+    const result = response?.results[0].body;
+    return result ? { attachmentId: result.attachment_id } : null;
+  }
+
+  /** Create a post or photo on the page feed */
+  async post(
+    page: PageFeed,
+    /** Text, a {@link PagePost} or a {@link PagePhoto}  */
+    node: SociablyNode
+  ): Promise<null | PagePostResult> {
+    const response = await this.engine.render(null, node, createPostJobs);
+    if (!response) {
+      return null;
+    }
+
+    const photos: PagePhotoResult[] = [];
+    let postId: undefined | string;
+
+    for (const [i, { request }] of response.jobs.entries()) {
+      const result = response.results[i].body;
+
+      if (request.relative_url === PATH_FEED) {
+        postId = result.id;
+      } else if (request.relative_url === PATH_PHOTOS) {
+        if (result.post_id) {
+          postId = result.post_id;
+        }
+        photos.push({ photoId: result.id });
+      }
+    }
+    if (!postId) {
+      return null;
+    }
+    return { postId, photos };
+  }
+
+  async interact(
+    target: ObjectTarget,
+    node: SociablyNode
+  ): Promise<null | CommentResult[]> {
+    const response = await this.engine.render(target, node, createInteractJobs);
+    if (!response) {
+      return null;
+    }
+
+    const results: CommentResult[] = [];
+    let photo: null | PagePhotoResult = null;
+
+    for (const [i, { request }] of response.jobs.entries()) {
+      if (request.relative_url === PATH_PHOTOS) {
+        photo = { photoId: response.results[i].body.id };
+      } else if (request.relative_url === PATH_PHOTOS) {
+        results.push({
+          commentId: response.results[i].body.id,
+          photo,
+        });
+        photo = null;
+      }
+    }
+    return results;
   }
 
   async makeApiCall<ResBody extends MetaApiResponseBody>(

@@ -9,7 +9,8 @@ export type FileInfo = {
 
 type AccomplishRequestFn = (
   request: MetaBatchRequest,
-  getResultValue: (path: string) => string
+  keys: string[],
+  getResultValue: (key: string, path: string) => string | null
 ) => MetaBatchRequest;
 
 export type MetaApiJob = {
@@ -20,7 +21,7 @@ export type MetaApiJob = {
   fileInfo?: FileInfo;
   registerResult?: string;
   consumeResult?: {
-    key: string;
+    keys: string[];
     accomplishRequest: AccomplishRequestFn;
   };
 };
