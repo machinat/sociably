@@ -5,5 +5,6 @@ export { default as TwitterUser } from './User';
 export { default as TwitterUserProfile } from './UserProfile';
 export { TwitterBot } from './Bot';
 export { TwitterReceiver } from './Receiver';
-// export { TwitterProfiler } from './Profiler';
+export { TwitterProfiler } from './Profiler';
+export { default as TwitterAssetsManager, saveUploadedMedia } from './asset';
 export * from './types';

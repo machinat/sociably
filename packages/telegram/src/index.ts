@@ -6,4 +6,5 @@ export { default as TelegramUserProfile } from './UserProfile';
 export { TelegramBot } from './Bot';
 export { TelegramReceiver } from './Receiver';
 export { TelegramProfiler } from './Profiler';
+export { default as TelegramAssetsManager, saveUploadedFile } from './asset';
 export * from './types';
