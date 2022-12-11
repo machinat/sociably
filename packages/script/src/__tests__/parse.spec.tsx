@@ -2,7 +2,6 @@ import Sociably from '@sociably/core';
 import { SOCIABLY_SCRIPT_TYPE } from '../constant';
 import {
   IF,
-  THEN,
   ELSE_IF,
   ELSE,
   WHILE,
@@ -27,6 +26,8 @@ const AnotherScript: AnyScriptLibrary = {
     ['foo', 3],
     ['bar', 8],
   ]),
+  Start: (() => {}) as never,
+  meta: null,
 };
 
 it('parse content fn', () => {
@@ -49,11 +50,7 @@ it('parse content fn', () => {
 
 describe('parse <IF/>', () => {
   it('parse ok', () => {
-    const segments: any = parse(
-      <IF condition={() => true}>
-        <THEN>{() => 'foo'}</THEN>
-      </IF>
-    );
+    const segments: any = parse(<IF condition={() => true}>{() => 'foo'}</IF>);
     expect(segments).toEqual([
       {
         type: 'conditions',
@@ -72,10 +69,10 @@ describe('parse <IF/>', () => {
 
   it('parse with else', () => {
     const segments: any = parse(
-      <IF condition={() => true}>
-        <THEN>{() => 'foo'}</THEN>
+      <>
+        <IF condition={() => true}>{() => 'foo'}</IF>
         <ELSE>{() => 'bar'}</ELSE>
-      </IF>
+      </>
     );
     expect(segments).toEqual([
       {
@@ -94,12 +91,12 @@ describe('parse <IF/>', () => {
 
   it('parse with else if conditions', () => {
     const segments: any = parse(
-      <IF condition={() => true}>
-        <THEN>{() => 'foo'}</THEN>
+      <>
+        <IF condition={() => true}>{() => 'foo'}</IF>
         <ELSE_IF condition={() => false}>{() => 'bar'}</ELSE_IF>
         <ELSE_IF condition={() => true}>{() => 'baz'}</ELSE_IF>
         <ELSE>{() => 'boom boom pow'}</ELSE>
-      </IF>
+      </>
     );
     expect(segments).toEqual([
       {
@@ -123,38 +120,37 @@ describe('parse <IF/>', () => {
   it('parse nested <IF/>', () => {
     expect(
       parse(
-        <IF condition={() => true}>
-          <THEN>
+        <>
+          <IF condition={() => true}>
             {() => 'foo'}
-            <IF condition={() => true}>
-              <THEN>{() => 'fooo'}</THEN>
-            </IF>
+            <IF condition={() => true}>{() => 'fooo'}</IF>
             {() => 'foooo'}
-          </THEN>
+          </IF>
           <ELSE_IF condition={() => true}>
             {() => 'bar'}
-            <IF condition={() => true}>
-              <THEN>{() => 'baar'}</THEN>
-              <ELSE_IF condition={() => true}>{() => 'baaar'}</ELSE_IF>
-            </IF>
+            <IF condition={() => true}>{() => 'baar'}</IF>
+            <ELSE_IF condition={() => true}>{() => 'baaar'}</ELSE_IF>
             {() => 'baaaar'}
           </ELSE_IF>
           <ELSE>
             {() => 'baz'}
-            <IF condition={() => true}>
-              <THEN>{() => 'baaz'}</THEN>
-              <ELSE>{() => 'baaaz'}</ELSE>
-            </IF>
+            <IF condition={() => true}>{() => 'baaz'}</IF>
+            <ELSE>{() => 'baaaz'}</ELSE>
             {() => 'baaaaz'}
           </ELSE>
-        </IF>
+        </>
       )
     ).toMatchSnapshot();
   });
 
   it('parse ok if no children blocks', () => {
-    expect(parse(<IF condition={() => true}>{null as never}</IF>)).toEqual([
-      { type: 'conditions', branches: [], fallbackBody: null },
+    const conditionFn = () => true;
+    expect(parse(<IF condition={conditionFn}>{null as never}</IF>)).toEqual([
+      {
+        type: 'conditions',
+        branches: [{ condition: conditionFn, body: [] }],
+        fallbackBody: null,
+      },
     ]);
   });
 
@@ -166,92 +162,49 @@ describe('parse <IF/>', () => {
     );
   });
 
-  it('throw if non THEN, ELSE_IF, ELSE block node contained', () => {
+  it('throw if <ELSE/> is not behind <IF/> or <IF_ELSE/>', () => {
     expect(() =>
-      parse(<IF condition={() => true}>{'hello' as never}</IF>)
+      parse(<ELSE>{() => 'baz'}</ELSE>)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"only THEN, ELSE_IF, ELSE elements are afccepted within children of <IF/>, got: \\"hello\\""`
+      `"<ELSE/> should be placed right after <IF/> or <ELSE_IF> block"`
     );
-    expect(() =>
-      parse(
-        <IF condition={() => true}>
-          <PROMPT key="should-not-be-here" />
-        </IF>
-      )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"only THEN, ELSE_IF, ELSE elements are afccepted within children of <IF/>, got: <PROMPT />"`
-    );
-  });
-
-  it('throw if multiple <THEN/> received', () => {
-    expect(() =>
-      parse(
-        <IF condition={() => true}>
-          <THEN>{() => 'bar'}</THEN>
-          <THEN>{() => 'foo'}</THEN>
-        </IF>
-      )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"<THEN /> should be the first block wihtin <IF />"`
-    );
-  });
-
-  it('throw if no <THEN/> provided', () => {
-    expect(() =>
-      parse(
-        <IF condition={() => true}>
-          <ELSE>{() => 'baz'}</ELSE>
-        </IF>
-      )
-    ).toThrowErrorMatchingInlineSnapshot(`"no <THEN/> block before <ELSE/>"`);
   });
 
   it('throw if multiple <ELSE/> received', () => {
     expect(() =>
       parse(
-        <IF condition={() => true}>
-          <THEN>{() => 'foo'}</THEN>
+        <>
+          <IF condition={() => true}>{() => 'foo'}</IF>
           <ELSE>{() => 'bar'}</ELSE>
           <ELSE>{() => 'baz'}</ELSE>
-        </IF>
+        </>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"multiple <ELSE/> block received in <IF/>"`
+      `"<ELSE/> should be placed right after <IF/> or <ELSE_IF> block"`
     );
   });
 
   it('throw if <ELSE_IF/> not after <THEN/> and before <ELSE/>', () => {
     expect(() =>
       parse(
-        <IF condition={() => true}>
-          <THEN>{() => 'foo'}</THEN>
+        <>
+          <IF condition={() => true}>{() => 'foo'}</IF>
           <ELSE>{() => 'baz'}</ELSE>
           <ELSE_IF condition={() => true}>{() => 'bar'}</ELSE_IF>
-        </IF>
+        </>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<ELSE_IF /> should be placed between <THEN /> and <ELSE /> blocks"`
-    );
-    expect(() =>
-      parse(
-        <IF condition={() => true}>
-          <ELSE_IF condition={() => true}>{() => 'bar'}</ELSE_IF>
-          <THEN>{() => 'foo'}</THEN>
-          <ELSE>{() => 'baz'}</ELSE>
-        </IF>
-      )
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"<ELSE_IF /> should be placed between <THEN /> and <ELSE /> blocks"`
+      `"<ELSE_IF/> should be placed right after <IF/> or <ELSE_IF> block"`
     );
   });
 
   it('throw if condition of <ELSE_IF/> is not a function', () => {
     expect(() =>
       parse(
-        <IF condition={() => true}>
-          <THEN>{() => 'foo'}</THEN>
+        <>
+          <IF condition={() => true}>{() => 'foo'}</IF>
           <ELSE_IF condition={null as never}>{() => 'bar'}</ELSE_IF>
-        </IF>
+        </>
       )
     ).toThrowErrorMatchingInlineSnapshot(
       `"prop \\"condition\\" of <ELSE_IF/> should be a function"`
@@ -523,43 +476,39 @@ test('parse whole script', () => {
         {() => <b>Lorem</b>}
 
         <IF condition={() => false}>
-          <THEN>
-            <LABEL key="1st" />
+          <LABEL key="1st" />
 
-            <WHILE condition={() => true}>
-              {() => <i>ipsum</i>}
+          <WHILE condition={() => true}>
+            {() => <i>ipsum</i>}
 
-              <PROMPT
-                key="ask_1"
-                set={({ vars }, ctx) => ({ ...vars, a: ctx.a })}
-              />
-            </WHILE>
-          </THEN>
-          <ELSE_IF condition={() => true}>
-            {() => 'sed do'}
-            <IF condition={() => false}>
-              <THEN>
-                {() => <eiusmod />}
-
-                <PROMPT
-                  key="ask_2"
-                  set={({ vars }, ctx) => ({ ...vars, c: ctx.c })}
-                />
-              </THEN>
-              <ELSE>{() => 'tempor'}</ELSE>
-            </IF>
-          </ELSE_IF>
-          <ELSE>
-            {() => 'sit amet,'}
-            <CALL
-              key="call_1"
-              script={AnotherScript}
-              params={() => ({ x: 'xxxx' })}
-              set={() => ({ from: 'another script' })}
-              goto="bar"
+            <PROMPT
+              key="ask_1"
+              set={({ vars }, ctx) => ({ ...vars, a: ctx.a })}
             />
-          </ELSE>
+          </WHILE>
         </IF>
+        <ELSE_IF condition={() => true}>
+          {() => 'sed do'}
+          <IF condition={() => false}>
+            {() => <eiusmod />}
+
+            <PROMPT
+              key="ask_2"
+              set={({ vars }, ctx) => ({ ...vars, c: ctx.c })}
+            />
+          </IF>
+          <ELSE>{() => 'tempor'}</ELSE>
+        </ELSE_IF>
+        <ELSE>
+          {() => 'sit amet,'}
+          <CALL
+            key="call_1"
+            script={AnotherScript}
+            params={() => ({ x: 'xxxx' })}
+            set={() => ({ from: 'another script' })}
+            goto="bar"
+          />
+        </ELSE>
 
         <EFFECT set={({ vars }) => ({ ...vars, foo: 'bar' })} />
         <LABEL key="2nd" />
@@ -572,19 +521,17 @@ test('parse whole script', () => {
         <WHILE condition={() => false}>
           {() => 'ut labore et'}
           <IF condition={() => false}>
-            <THEN>
-              <LABEL key="4th" />
+            <LABEL key="4th" />
 
-              {() => <dolore />}
-              <PROMPT
-                key="ask_3"
-                set={({ vars }, ctx) => ({ ...vars, d: ctx.d })}
-              />
-            </THEN>
-            <ELSE>
-              <RETURN value={() => 'fooo'} />
-            </ELSE>
+            {() => <dolore />}
+            <PROMPT
+              key="ask_3"
+              set={({ vars }, ctx) => ({ ...vars, d: ctx.d })}
+            />
           </IF>
+          <ELSE>
+            <RETURN value={() => 'fooo'} />
+          </ELSE>
         </WHILE>
 
         {() => <a>Ut enim</a>}
@@ -620,9 +567,5 @@ it('throw if invalid syntax node received', () => {
   const Foo = () => <></>;
   expect(() => parse(<Foo />)).toThrowErrorMatchingInlineSnapshot(
     `"unknown keyword: <Foo />"`
-  );
-
-  expect(() => parse(<THEN>{[]}</THEN>)).toThrowErrorMatchingInlineSnapshot(
-    `"unknown keyword: <THEN />"`
   );
 });

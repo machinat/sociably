@@ -11,9 +11,8 @@ import type { MaybeContainer } from '@sociably/core/service';
 import { SOCIABLY_SCRIPT_TYPE } from './constant';
 import type {
   IF,
-  THEN,
-  ELSE_IF,
   ELSE,
+  ELSE_IF,
   WHILE,
   PROMPT,
   LABEL,
@@ -27,16 +26,17 @@ type StartScriptProps<Params> = {
   goto?: string;
 };
 
-export type ScriptLibrary<Vars, Input, Params, Return, Yield> = {
+export type ScriptLibrary<Vars, Input, Params, Return, Yield, Meta> = {
   $$typeof: typeof SOCIABLY_SCRIPT_TYPE;
   Start: ContainerComponent<StartScriptProps<Params>>;
   commands: ScriptCommand<Vars, Input, Return, Yield>[];
   initVars: (params: Params) => Vars;
   name: string;
   stopPointIndex: Map<string, number>;
+  meta: Meta;
 };
 
-export type AnyScriptLibrary = ScriptLibrary<any, any, any, any, any>;
+export type AnyScriptLibrary = ScriptLibrary<any, any, any, any, any, any>;
 
 export type ScriptCircs<Vars> = {
   platform: string;
@@ -56,19 +56,12 @@ export type ConditionMatchFn<Vars> = (
 
 export type ConditionMatcher<Vars> = MaybeContainer<ConditionMatchFn<Vars>>;
 
-type ConditionBlocks<Vars, Input, Return, Yield> =
-  | ThenElement<Vars, Input, Return, Yield>
-  | ElseElement<Vars, Input, Return, Yield>
-  | ElseIfElement<Vars, Input, Return, Yield>;
-
 /**
  * @category Keyword Props
  */
 export type IfProps<Vars, Input, Return, Yield> = {
   condition: ConditionMatcher<Vars>;
-  children:
-    | ConditionBlocks<Vars, Input, Return, Yield>
-    | ConditionBlocks<Vars, Input, Return, Yield>[];
+  children: ScriptNode<Vars, Input, Return, Yield>;
 };
 
 /**
@@ -89,32 +82,16 @@ export type BlockProps<Vars, Input, Return, Yield> = {
 /**
  * @category Keyword Element
  */
-export type ThenElement<Vars, Input, Return, Yield> = SociablyElement<
-  BlockProps<Vars, Input, Return, Yield>,
-  typeof THEN
->;
-
-/**
- * @category Keyword Element
- */
 export type ElseElement<Vars, Input, Return, Yield> = SociablyElement<
   BlockProps<Vars, Input, Return, Yield>,
   typeof ELSE
 >;
 
 /**
- * @category Keyword Props
- */
-export type ElseIfProps<Vars, Input, Return, Yield> = {
-  condition: ConditionMatcher<Vars>;
-  children: ScriptNode<Vars, Input, Return, Yield>;
-};
-
-/**
  * @category Keyword Element
  */
 export type ElseIfElement<Vars, Input, Return, Yield> = SociablyElement<
-  ElseIfProps<Vars, Input, Return, Yield>,
+  IfProps<Vars, Input, Return, Yield>,
   typeof ELSE_IF
 >;
 
@@ -197,6 +174,7 @@ export type CallProps<
   unknown,
   infer Params,
   infer Return,
+  unknown,
   unknown
 >
   ? {
@@ -319,10 +297,10 @@ export type PromptCommand<Vars, Input> = {
   setVars?: PromptSetter<Vars, Input>;
 };
 
-export type CallCommand<Vars, Params, Return, Yield> = {
+export type CallCommand<Vars, Params, Return, Yield, Meta> = {
   type: 'call';
   key: string;
-  script: ScriptLibrary<unknown, unknown, Params, Return, Yield>;
+  script: ScriptLibrary<unknown, unknown, Params, Return, Yield, Meta>;
   withParams?: CallParamsGetter<Vars, Params>;
   setVars?: CallReturnSetter<Vars, Return>;
   goto?: string;
@@ -356,7 +334,7 @@ export type ScriptSegment<Vars, Input, Return, Yield> =
   | ConditionsSegment<Vars>
   | WhileSegment<Vars>
   | PromptCommand<Vars, Input>
-  | CallCommand<Vars, unknown, unknown, Yield>
+  | CallCommand<Vars, unknown, unknown, Yield, unknown>
   | EffectCommand<Vars, Yield>
   | LabelSegment
   | ReturnCommand<Vars, Return>;
@@ -366,12 +344,12 @@ export type ScriptCommand<Vars, Input, Return, Yield> =
   | JumpCommand
   | JumpCondCommand<Vars>
   | PromptCommand<Vars, Input>
-  | CallCommand<Vars, unknown, unknown, Yield>
+  | CallCommand<Vars, unknown, unknown, Yield, unknown>
   | EffectCommand<Vars, Yield>
   | ReturnCommand<Vars, Return>;
 
 export type CallStatus<Vars> = {
-  script: ScriptLibrary<Vars, unknown, unknown, unknown, unknown>;
+  script: ScriptLibrary<Vars, unknown, unknown, unknown, unknown, unknown>;
   vars: Vars;
   stopAt: undefined | string;
 };
@@ -389,26 +367,61 @@ export type ScriptProcessState = {
 };
 
 export type ParamsOfScript<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<unknown, unknown, infer Params, unknown, unknown>
+  Script extends ScriptLibrary<
+    unknown,
+    unknown,
+    infer Params,
+    unknown,
+    unknown,
+    unknown
+  >
     ? Params
     : never;
 
 export type VarsOfScript<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<infer Vars, unknown, unknown, unknown, unknown>
+  Script extends ScriptLibrary<
+    infer Vars,
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    unknown
+  >
     ? Vars
     : never;
 
 export type InputOfScript<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<unknown, infer Input, unknown, unknown, unknown>
+  Script extends ScriptLibrary<
+    unknown,
+    infer Input,
+    unknown,
+    unknown,
+    unknown,
+    unknown
+  >
     ? Input
     : never;
 
 export type ReturnOfScript<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<unknown, unknown, unknown, infer Return, unknown>
+  Script extends ScriptLibrary<
+    unknown,
+    unknown,
+    unknown,
+    infer Return,
+    unknown,
+    unknown
+  >
     ? Return
     : never;
 
 export type YieldOfScript<Script extends AnyScriptLibrary> =
-  Script extends ScriptLibrary<unknown, unknown, unknown, unknown, infer Yield>
+  Script extends ScriptLibrary<
+    unknown,
+    unknown,
+    unknown,
+    unknown,
+    infer Yield,
+    unknown
+  >
     ? Yield
     : never;

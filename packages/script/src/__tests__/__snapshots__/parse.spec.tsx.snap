@@ -186,6 +186,7 @@ Array [
         "key": "call_1",
         "script": Object {
           "$$typeof": Symbol(lib.script.sociably),
+          "Start": [Function],
           "commands": Array [
             Object {
               "getContent": [Function],
@@ -198,6 +199,7 @@ Array [
             },
           ],
           "initVars": [Function],
+          "meta": null,
           "name": "AnotherScript",
           "stopPointIndex": Map {
             "foo" => 3,
@@ -285,6 +287,7 @@ Array [
     "key": "call_2",
     "script": Object {
       "$$typeof": Symbol(lib.script.sociably),
+      "Start": [Function],
       "commands": Array [
         Object {
           "getContent": [Function],
@@ -297,6 +300,7 @@ Array [
         },
       ],
       "initVars": [Function],
+      "meta": null,
       "name": "AnotherScript",
       "stopPointIndex": Map {
         "foo" => 3,

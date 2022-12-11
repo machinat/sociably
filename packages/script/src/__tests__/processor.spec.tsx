@@ -8,7 +8,6 @@ import build from '../build';
 import { SCRIPT_STATE_KEY } from '../constant';
 import {
   IF,
-  THEN,
   ELSE,
   WHILE,
   PROMPT,
@@ -51,24 +50,22 @@ const MyScript = moxy(
       <LABEL key="#1" />
       {() => 'ipsum '}
       <IF condition={({ vars: { foo } }) => !foo}>
-        <THEN>
-          <LABEL key="#2" />
-          {() => 'dolor '}
-          <EFFECT yield={effectYieldFn} />
+        <LABEL key="#2" />
+        {() => 'dolor '}
+        <EFFECT yield={effectYieldFn} />
 
-          <PROMPT key="ask_1" set={promptSetFn} />
-          {() => 'sit '}
-          <EFFECT yield={effectYieldFn} />
-        </THEN>
-        <ELSE>
-          <LABEL key="#3" />
-          {() => 'est '}
-
-          <PROMPT key="ask_2" set={promptSetFn} />
-          {() => 'laborum. '}
-          <RETURN value={({ vars: { foo } }) => ({ foo })} />
-        </ELSE>
+        <PROMPT key="ask_1" set={promptSetFn} />
+        {() => 'sit '}
+        <EFFECT yield={effectYieldFn} />
       </IF>
+      <ELSE>
+        <LABEL key="#3" />
+        {() => 'est '}
+
+        <PROMPT key="ask_2" set={promptSetFn} />
+        {() => 'laborum. '}
+        <RETURN value={({ vars: { foo } }) => ({ foo })} />
+      </ELSE>
       {() => 'amet, '}
 
       <PROMPT key="ask_3" set={promptSetFn} />

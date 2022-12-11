@@ -40,6 +40,7 @@ Array [
         },
       ],
       "initVars": [Function],
+      "meta": undefined,
       "name": "ChildScript",
       "stopPointIndex": Map {
         "childPrompt" => 1,

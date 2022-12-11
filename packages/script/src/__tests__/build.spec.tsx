@@ -6,7 +6,6 @@ import build from '../build';
 import { SOCIABLY_SCRIPT_TYPE } from '../constant';
 import {
   IF,
-  THEN,
   ELSE_IF,
   ELSE,
   WHILE,
@@ -36,36 +35,35 @@ const MyScript = build(
   {
     name: 'MyScript',
     initVars,
+    meta: { foo: 'bar' },
   },
   <>
     <LABEL key="start" />
     {() => <b>Lorem</b>}
 
     <IF condition={() => false}>
-      <THEN>
-        <WHILE condition={() => true}>
-          <LABEL key="first" />
-          {() => <i>ipsum</i>}
-          <PROMPT key="ask_1" set={(_, ctx) => ({ a: ctx.a })} />
-        </WHILE>
-      </THEN>
-      <ELSE_IF condition={() => true}>
-        <LABEL key="second" />
-        {() => <dolor />}
-        <PROMPT key="ask_2" set={(_, ctx) => ({ b: ctx.b })} />
-        <RETURN value={() => 'fooo'} />
-      </ELSE_IF>
-      <ELSE>
-        <LABEL key="third" />
-        {() => 'sit amet,'}
-        <CALL
-          script={ChildScript}
-          params={() => ({ foo: 'bar' })}
-          goto="childPrompt"
-          key="call_1"
-        />
-      </ELSE>
+      <WHILE condition={() => true}>
+        <LABEL key="first" />
+        {() => <i>ipsum</i>}
+        <PROMPT key="ask_1" set={(_, ctx) => ({ a: ctx.a })} />
+      </WHILE>
     </IF>
+    <ELSE_IF condition={() => true}>
+      <LABEL key="second" />
+      {() => <dolor />}
+      <PROMPT key="ask_2" set={(_, ctx) => ({ b: ctx.b })} />
+      <RETURN value={() => 'fooo'} />
+    </ELSE_IF>
+    <ELSE>
+      <LABEL key="third" />
+      {() => 'sit amet,'}
+      <CALL
+        script={ChildScript}
+        params={() => ({ foo: 'bar' })}
+        goto="childPrompt"
+        key="call_1"
+      />
+    </ELSE>
 
     <LABEL key="end" />
     <EFFECT set={() => ({ foo: 'bar' })} />
@@ -91,6 +89,7 @@ test('Script object', () => {
       "end" => 15,
     }
   `);
+  expect(MyScript.meta).toEqual({ foo: 'bar' });
 
   expect(ChildScript.name).toBe('ChildScript');
   expect(ChildScript.$$typeof).toBe(SOCIABLY_SCRIPT_TYPE);

@@ -2,7 +2,6 @@ import Sociably from '@sociably/core';
 import type {
   IfProps,
   BlockProps,
-  ElseIfProps,
   WhileProps,
   PromptProps,
   LabelProps,
@@ -12,7 +11,7 @@ import type {
   AnyScriptLibrary,
 } from './types';
 
-// HACK: add component type to an alia of Fragment
+// HACK: an alia of Fragment with script types
 /**
  * @category Keyword
  */
@@ -35,15 +34,8 @@ export const IF = <Vars = any, Input = any, Return = any, Yield = any>(
 /**
  * @category Keyword
  */
-export const THEN = <Vars = any, Input = any, Return = any, Yield = any>(
-  props: BlockProps<Vars, Input, Return, Yield>
-): null => null;
-
-/**
- * @category Keyword
- */
 export const ELSE_IF = <Vars = any, Input = any, Return = any, Yield = any>(
-  props: ElseIfProps<Vars, Input, Return, Yield>
+  props: IfProps<Vars, Input, Return, Yield>
 ): null => null;
 
 /**

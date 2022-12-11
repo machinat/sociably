@@ -10,37 +10,36 @@ import compile from './compile';
 import ProcessorP from './processor';
 import type { ScriptLibrary } from './types';
 
-type ScriptBuildOtions<Params, Vars> = {
+type ScriptBuildOtions<Params, Vars, Meta> = {
   name: string;
   initVars?: (params: Params) => Vars;
-};
+} & (Meta extends void ? { meta?: void } : { meta: Meta });
 
 const build = <
   Vars extends {},
   Input = AnyEventContext,
   Params = {},
   Return = void,
-  Yield = void
+  Yield = void,
+  Meta = void
 >(
-  options: ScriptBuildOtions<Params, Vars>,
+  { name: scriptName, initVars, meta }: ScriptBuildOtions<Params, Vars, Meta>,
   src: SociablyElement<unknown, unknown>
-): ScriptLibrary<Vars, Input, Params, Return, Yield> => {
-  const scriptName = options.name;
-  const { initVars } = options;
-
+): ScriptLibrary<Vars, Input, Params, Return, Yield, Meta> => {
   const segments = parseScript<Vars, Input, Return, Yield>(src);
   const { stopPointIndex, commands } = compile<Vars, Input, Return, Yield>(
     segments,
     { scriptName }
   );
 
-  const lib: ScriptLibrary<Vars, Input, Params, Return, Yield> = {
+  const lib: ScriptLibrary<Vars, Input, Params, Return, Yield, Meta> = {
     $$typeof: SOCIABLY_SCRIPT_TYPE,
     Start: null as never,
     name: scriptName,
     initVars: initVars || (() => ({} as Vars)),
     stopPointIndex,
     commands,
+    meta: meta as Meta,
   };
 
   lib.Start = makeContainer({
