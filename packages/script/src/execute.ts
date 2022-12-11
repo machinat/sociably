@@ -16,7 +16,7 @@ import type {
 } from './types';
 
 const getCursorIndexAssertedly = (
-  script: ScriptLibrary<unknown, unknown, unknown, unknown, unknown>,
+  script: ScriptLibrary<unknown, unknown, unknown, unknown, unknown, unknown>,
   key: string
 ): number => {
   const index = script.stopPointIndex.get(key);
@@ -248,7 +248,7 @@ const executeCommand = async <Vars, Return, Yield>(
 const executeScript = async <Vars, Return, Yield>(
   scope: ServiceScope,
   channel: SociablyChannel,
-  script: ScriptLibrary<Vars, unknown, unknown, Return, Yield>,
+  script: ScriptLibrary<Vars, unknown, unknown, Return, Yield, unknown>,
   begin: number,
   beginVars: Vars
 ): Promise<ExecuteContext<Vars, Return, Yield>> => {

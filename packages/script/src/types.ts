@@ -297,10 +297,10 @@ export type PromptCommand<Vars, Input> = {
   setVars?: PromptSetter<Vars, Input>;
 };
 
-export type CallCommand<Vars, Params, Return, Yield, Meta> = {
+export type CallCommand<Vars, Params, Return, Yield> = {
   type: 'call';
   key: string;
-  script: ScriptLibrary<unknown, unknown, Params, Return, Yield, Meta>;
+  script: ScriptLibrary<unknown, unknown, Params, Return, Yield, unknown>;
   withParams?: CallParamsGetter<Vars, Params>;
   setVars?: CallReturnSetter<Vars, Return>;
   goto?: string;
@@ -334,7 +334,7 @@ export type ScriptSegment<Vars, Input, Return, Yield> =
   | ConditionsSegment<Vars>
   | WhileSegment<Vars>
   | PromptCommand<Vars, Input>
-  | CallCommand<Vars, unknown, unknown, Yield, unknown>
+  | CallCommand<Vars, unknown, unknown, Yield>
   | EffectCommand<Vars, Yield>
   | LabelSegment
   | ReturnCommand<Vars, Return>;
@@ -344,7 +344,7 @@ export type ScriptCommand<Vars, Input, Return, Yield> =
   | JumpCommand
   | JumpCondCommand<Vars>
   | PromptCommand<Vars, Input>
-  | CallCommand<Vars, unknown, unknown, Yield, unknown>
+  | CallCommand<Vars, unknown, unknown, Yield>
   | EffectCommand<Vars, Yield>
   | ReturnCommand<Vars, Return>;
 

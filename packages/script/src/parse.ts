@@ -146,7 +146,6 @@ const resolveCall = ({
   unknown,
   unknown,
   unknown,
-  unknown,
   unknown
 > => {
   if (!isScript(script)) {
