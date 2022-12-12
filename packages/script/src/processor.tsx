@@ -28,6 +28,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   channel: SociablyChannel;
   callStack: null | CallStatus<unknown>[];
   saveTimestamp: undefined | number;
+  rootScript: Script;
 
   private _stateContoller: StateControllerI;
   private _serviceScope: ServiceScope;
@@ -48,6 +49,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     this.channel = channel;
     this.callStack = stack;
     this.saveTimestamp = promptTimestamp;
+    this.rootScript = stack[0].script as Script;
 
     this._stateContoller = stateContoller;
     this._serviceScope = scope;
@@ -227,7 +229,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
       );
     }
 
-    const runtime = new ScriptRuntime(
+    const runtime = new ScriptRuntime<StartingScript>(
       this._stateContoller,
       this._serviceScope,
       channel,

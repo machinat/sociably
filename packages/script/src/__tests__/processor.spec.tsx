@@ -101,7 +101,7 @@ beforeEach(() => {
   effectYieldFn.mock.reset();
 });
 
-describe('#start(channel, Script)', () => {
+describe('.start(channel, Script)', () => {
   test('start script from begin', async () => {
     const stateController = new InMemoryStateController();
     const processor = new ScriptProcessor(stateController, scope, [
@@ -117,6 +117,7 @@ describe('#start(channel, Script)', () => {
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual({ n: 2 });
+    expect(runtime.rootScript).toBe(MyScript);
     expect(effectYieldFn.mock).toHaveBeenCalledTimes(2);
 
     expect(runtime.callStack).toEqual([
@@ -185,6 +186,7 @@ describe('#start(channel, Script)', () => {
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual(undefined);
+    expect(runtime.rootScript).toBe(MyScript);
     expect(effectYieldFn.mock).not.toHaveBeenCalled();
 
     expect(runtime.callStack).toEqual([
@@ -248,6 +250,7 @@ describe('#start(channel, Script)', () => {
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual({ n: 1 });
+    expect(runtime.rootScript).toBe(MyScript);
     expect(effectYieldFn.mock).toHaveBeenCalledTimes(1);
 
     expect(runtime.callStack).toEqual([
@@ -328,7 +331,7 @@ describe('#start(channel, Script)', () => {
   });
 });
 
-describe('#continue(channel, input)', () => {
+describe('.continue(channel, input)', () => {
   it('continue from prompt point', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
@@ -352,6 +355,7 @@ describe('#continue(channel, input)', () => {
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual({ n: 2 });
+    expect(runtime.rootScript).toBe(MyScript);
     expect(effectYieldFn.mock).toHaveBeenCalledTimes(2);
 
     const message = runtime.output();
@@ -432,6 +436,7 @@ describe('#continue(channel, input)', () => {
     expect(runtime.requireSaving).toBe(true);
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual({ n: 3 });
+    expect(runtime.rootScript).toBe(MyScript);
     expect(effectYieldFn.mock).toHaveBeenCalledTimes(3);
 
     const message = runtime.output();
@@ -510,7 +515,7 @@ describe('#continue(channel, input)', () => {
   });
 });
 
-describe('#getRuntime(channel)', () => {
+describe('.getRuntime(channel)', () => {
   test('manually call runtime.run()', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
@@ -529,6 +534,7 @@ describe('#getRuntime(channel)', () => {
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(false);
+    expect(runtime.rootScript).toBe(MyScript);
 
     await expect(runtime.run({ hello: 'world' })).resolves.toEqual({
       finished: false,
@@ -608,7 +614,7 @@ describe('#getRuntime(channel)', () => {
   });
 });
 
-describe('Runtime#exit(channel)', () => {
+describe('Runtime.exit(channel)', () => {
   it('delete saved runtime state', async () => {
     const stateController = new InMemoryStateController();
     await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
@@ -640,7 +646,7 @@ describe('Runtime#exit(channel)', () => {
   });
 });
 
-describe('Runtime#save(runtime)', () => {
+describe('Runtime.save(runtime)', () => {
   test('save newly initiated runtime', async () => {
     const stateController = new InMemoryStateController();
     const processor = new ScriptProcessor(stateController, scope, [
