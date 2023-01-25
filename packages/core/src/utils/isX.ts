@@ -28,56 +28,56 @@ import {
 export const isEmpty = (node: unknown): node is SociablyEmpty =>
   typeof node === 'boolean' || node === null || node === undefined;
 
-export const isElement = (node: unknown): node is SociablyElement<any, any> =>
+export const isElement = (node: any): node is SociablyElement<unknown, any> =>
   typeof node === 'object' &&
   node !== null &&
-  (node as any).$$typeof === SOCIABLY_ELEMENT_TYPE;
+  node.$$typeof === SOCIABLY_ELEMENT_TYPE;
 
 export const isFragmentType = (
-  node: SociablyElement<any, any>
+  node: SociablyElement<unknown, unknown>
 ): node is FragmentElement => node.type === SOCIABLY_FRAGMENT_TYPE;
 
 export const isPauseType = (
-  node: SociablyElement<any, any>
+  node: SociablyElement<unknown, unknown>
 ): node is PauseElement => node.type === SOCIABLY_PAUSE_TYPE;
 
 export const isThunkType = (
-  node: SociablyElement<any, any>
+  node: SociablyElement<unknown, unknown>
 ): node is ThunkElement => node.type === SOCIABLY_THUNK_TYPE;
 
 export const isRawType = (
-  node: SociablyElement<any, any>
+  node: SociablyElement<unknown, unknown>
 ): node is RawElement => node.type === SOCIABLY_RAW_TYPE;
 
 export const isProviderType = (
-  node: SociablyElement<any, any>
-): node is ProviderElement => node.type === SOCIABLY_PROVIDER_TYPE;
+  node: SociablyElement<unknown, unknown>
+): node is ProviderElement<unknown> => node.type === SOCIABLY_PROVIDER_TYPE;
 
 export const isFunctionalType = (
-  node: SociablyElement<any, any>
-): node is FunctionalElement<any, FunctionalComponent<any>> =>
+  node: SociablyElement<unknown, any>
+): node is FunctionalElement<unknown, FunctionalComponent<unknown>> =>
   typeof node.type === 'function' &&
   node.type.$$typeof !== SOCIABLY_NATIVE_TYPE &&
   node.type.$$typeof !== SOCIABLY_SERVICE_CONTAINER;
 
 export const isContainerType = (
-  node: SociablyElement<any, any>
-): node is ContainerElement<any, ContainerComponent<any>> =>
+  node: SociablyElement<unknown, any>
+): node is ContainerElement<unknown, ContainerComponent<unknown>> =>
   typeof node.type === 'function' &&
   node.type.$$typeof === SOCIABLY_SERVICE_CONTAINER;
 
 export const isGeneralType = (
-  node: SociablyElement<any, any>
+  node: SociablyElement<unknown, unknown>
 ): node is GeneralElement => typeof node.type === 'string';
 
-export const isNativeType = <Component extends NativeComponent<any, any>>(
-  node: SociablyElement<any, any>
-): node is NativeElement<any, Component> =>
+export const isNativeType = <Component extends NativeComponent<unknown, any>>(
+  node: SociablyElement<unknown, any>
+): node is NativeElement<unknown, Component> =>
   typeof node.type === 'function' &&
   node.type.$$typeof === SOCIABLY_NATIVE_TYPE;
 
 export const isElementTypeValid = (
-  node: SociablyElement<any, any>
+  node: SociablyElement<unknown, unknown>
 ): boolean => {
   const { type } = node;
   return (

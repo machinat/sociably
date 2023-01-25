@@ -54,8 +54,8 @@ namespace Sociably {
     props: PauseProps
   ) => null;
 
-  export const Provider = SOCIABLY_PROVIDER_TYPE as unknown as (
-    props: ProviderProps
+  export const Provider = SOCIABLY_PROVIDER_TYPE as unknown as <T>(
+    props: ProviderProps<T>
   ) => null;
 
   export const Thunk = SOCIABLY_THUNK_TYPE as unknown as (

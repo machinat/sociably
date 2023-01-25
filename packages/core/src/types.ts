@@ -26,7 +26,7 @@ export type SociablyRenderable =
   | SociablyText
   | GeneralElement
   | PauseElement
-  | ProviderElement
+  | ProviderElement<unknown>
   | RawElement
   | ThunkElement
   | FunctionalElement<unknown, any>
@@ -116,14 +116,14 @@ export type FragmentElement = SociablyElement<
   typeof SOCIABLY_FRAGMENT_TYPE
 >;
 
-export type ProviderProps = {
-  provide: Interfaceable<unknown>;
-  value: unknown;
+export type ProviderProps<T> = {
+  provide: Interfaceable<T>;
+  value: T;
   children: SociablyNode;
 };
 
-export type ProviderElement = SociablyElement<
-  ProviderProps,
+export type ProviderElement<T> = SociablyElement<
+  ProviderProps<T>,
   typeof SOCIABLY_PROVIDER_TYPE
 >;
 

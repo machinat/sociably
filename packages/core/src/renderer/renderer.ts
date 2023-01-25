@@ -290,7 +290,7 @@ export default class SociablyRenderer<
       );
     } else if (isNativeType<Component>(node)) {
       // render native element of the platform
-      const { type: nativeComponent }: NativeElement<any, Component> = node;
+      const { type: nativeComponent }: NativeElement<unknown, Component> = node;
 
       invariant(
         this._checkNativeComponentPlatform(nativeComponent),
@@ -309,7 +309,10 @@ export default class SociablyRenderer<
 
       renderings.push(renderPromise);
     } else if (isContainerType(node)) {
-      const containerEle: ContainerElement<any, ContainerComponent<any>> = node;
+      const containerEle: ContainerElement<
+        unknown,
+        ContainerComponent<unknown>
+      > = node;
 
       renderings.push(
         this._renderContainerElement(
@@ -322,8 +325,8 @@ export default class SociablyRenderer<
     } else if (typeof node.type === 'function') {
       // handle element with custom functional component type
       const functionEle: FunctionalElement<
-        any,
-        FunctionalComponent<any>
+        unknown,
+        FunctionalComponent<unknown>
       > = node;
 
       renderings.push(
@@ -344,9 +347,9 @@ export default class SociablyRenderer<
   }
 
   private async _renderFunctionalElement(
-    node: FunctionalElement<any, FunctionalComponent<any>>,
+    node: FunctionalElement<unknown, FunctionalComponent<unknown>>,
     scope: ServiceScope,
-    servicesProvided: Map<Interfaceable<any>, any>,
+    servicesProvided: Map<Interfaceable<unknown>, unknown>,
     path: string
   ): Promise<null | IntermediateSegment<Value>[]> {
     const { type: component, props } = node;
@@ -364,9 +367,9 @@ export default class SociablyRenderer<
   }
 
   private async _renderContainerElement(
-    node: ContainerElement<any, ContainerComponent<any>>,
+    node: ContainerElement<unknown, ContainerComponent<unknown>>,
     scope: ServiceScope,
-    servicesProvided: Map<Interfaceable<any>, any>,
+    servicesProvided: Map<Interfaceable<unknown>, unknown>,
     path: string
   ): Promise<null | IntermediateSegment<Value>[]> {
     const { type: container, props } = node;
