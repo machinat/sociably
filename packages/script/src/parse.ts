@@ -38,10 +38,26 @@ import type {
   AnyScriptLibrary,
 } from './types';
 
+type UnknownScriptSegment = ScriptSegment<
+  unknown,
+  unknown,
+  unknown,
+  unknown,
+  unknown
+>;
+type UnknownIfProps = IfProps<unknown, unknown, unknown, unknown, unknown>;
+type UnknownBlockProps = BlockProps<
+  unknown,
+  unknown,
+  unknown,
+  unknown,
+  unknown
+>;
+
 const resolveIf = (
-  { condition, children }: IfProps<unknown, unknown, unknown, unknown>,
+  { condition, children }: UnknownIfProps,
   path: string
-): ConditionsSegment<unknown> => {
+): ConditionsSegment<unknown, unknown> => {
   if (typeof condition !== 'function') {
     throw new SyntaxError('prop "condition" of <IF/> should be a function');
   }
@@ -54,10 +70,10 @@ const resolveIf = (
 };
 
 const resolveElseIf = (
-  lastSegment: ConditionsSegment<unknown>,
-  { condition, children }: IfProps<unknown, unknown, unknown, unknown>,
+  lastSegment: ConditionsSegment<unknown, unknown>,
+  { condition, children }: UnknownIfProps,
   path: string
-): ConditionsSegment<unknown> => {
+): ConditionsSegment<unknown, unknown> => {
   if (lastSegment.fallbackBody) {
     throw new SyntaxError(
       '<ELSE_IF/> should be placed right after <IF/> or <ELSE_IF> block'
@@ -81,10 +97,10 @@ const resolveElseIf = (
 };
 
 const resolveElse = (
-  lastSegment: ConditionsSegment<unknown>,
-  { children }: BlockProps<unknown, unknown, unknown, unknown>,
+  lastSegment: ConditionsSegment<unknown, unknown>,
+  { children }: UnknownBlockProps,
   path: string
-): ConditionsSegment<unknown> => {
+): ConditionsSegment<unknown, unknown> => {
   if (lastSegment.fallbackBody) {
     throw new SyntaxError(
       '<ELSE/> should be placed right after <IF/> or <ELSE_IF> block'
@@ -97,9 +113,12 @@ const resolveElse = (
 };
 
 const resolveWhile = (
-  { condition, children }: WhileProps<unknown, unknown, unknown, unknown>,
+  {
+    condition,
+    children,
+  }: WhileProps<unknown, unknown, unknown, unknown, unknown>,
   path: string
-): WhileSegment<unknown> => {
+): WhileSegment<unknown, unknown> => {
   if (typeof condition !== 'function') {
     throw new SyntaxError('prop "condition" of <WHILE/> should be a function');
   }
@@ -125,7 +144,11 @@ const resolveLabel = ({ key }: LabelProps): LabelSegment => {
 const resolvePrompt = ({
   key,
   set: setVars,
-}: PromptProps<unknown, unknown>): PromptCommand<unknown, unknown> => {
+}: PromptProps<unknown, unknown, unknown>): PromptCommand<
+  unknown,
+  unknown,
+  unknown
+> => {
   if (!key) {
     throw new SyntaxError('prop "key" of <PROMPT/> should not be empty');
   }
@@ -143,6 +166,7 @@ const resolveCall = ({
   key,
   goto,
 }: CallProps<unknown, AnyScriptLibrary>): CallCommand<
+  unknown,
   unknown,
   unknown,
   unknown,
@@ -171,7 +195,11 @@ const resolveCall = ({
 const resolveEffect = ({
   set: setVars,
   yield: yieldValue,
-}: EffectProps<unknown, unknown>): EffectCommand<unknown, unknown> => {
+}: EffectProps<unknown, unknown, unknown>): EffectCommand<
+  unknown,
+  unknown,
+  unknown
+> => {
   return {
     type: 'effect',
     setVars,
@@ -181,15 +209,19 @@ const resolveEffect = ({
 
 const resolveReturn = ({
   value,
-}: ReturnProps<unknown, unknown>): ReturnCommand<unknown, unknown> => {
+}: ReturnProps<unknown, unknown, unknown>): ReturnCommand<
+  unknown,
+  unknown,
+  unknown
+> => {
   return { type: 'return', getValue: value };
 };
 
 const resolveElement = (
-  previousSegments: ScriptSegment<unknown, unknown, unknown, unknown>[],
-  element: ScriptElement<unknown, unknown, unknown, unknown>,
+  previousSegments: UnknownScriptSegment[],
+  element: ScriptElement<unknown, unknown, unknown, unknown, unknown>,
   path: string
-): ScriptSegment<unknown, unknown, unknown, unknown>[] => {
+): UnknownScriptSegment[] => {
   if (element.type === ELSE || element.type === ELSE_IF) {
     const lastSegment = previousSegments[previousSegments.length - 1];
     if (lastSegment?.type !== 'conditions') {
@@ -201,32 +233,23 @@ const resolveElement = (
     return [
       ...previousSegments.slice(0, -1),
       element.type === ELSE_IF
-        ? resolveElseIf(
-            lastSegment,
-            element.props as IfProps<unknown, unknown, unknown, unknown>,
-            path
-          )
-        : resolveElse(
-            lastSegment,
-            element.props as BlockProps<unknown, unknown, unknown, unknown>,
-            path
-          ),
+        ? resolveElseIf(lastSegment, element.props as UnknownIfProps, path)
+        : resolveElse(lastSegment, element.props as UnknownBlockProps, path),
     ];
   }
 
-  let segment: ScriptSegment<unknown, unknown, unknown, unknown>;
+  let segment: UnknownScriptSegment;
   if (element.type === IF) {
-    segment = resolveIf(
-      element.props as IfProps<unknown, unknown, unknown, unknown>,
-      path
-    );
+    segment = resolveIf(element.props as UnknownIfProps, path);
   } else if (element.type === WHILE) {
     segment = resolveWhile(
-      element.props as WhileProps<unknown, unknown, unknown, unknown>,
+      element.props as WhileProps<unknown, unknown, unknown, unknown, unknown>,
       path
     );
   } else if (element.type === PROMPT) {
-    segment = resolvePrompt(element.props as PromptProps<unknown, unknown>);
+    segment = resolvePrompt(
+      element.props as PromptProps<unknown, unknown, unknown>
+    );
   } else if (element.type === LABEL) {
     segment = resolveLabel(element.props as LabelProps);
   } else if (element.type === CALL) {
@@ -234,9 +257,13 @@ const resolveElement = (
       element.props as CallProps<unknown, AnyScriptLibrary>
     );
   } else if (element.type === EFFECT) {
-    segment = resolveEffect(element.props as EffectProps<unknown, unknown>);
+    segment = resolveEffect(
+      element.props as EffectProps<unknown, unknown, unknown>
+    );
   } else if (element.type === RETURN) {
-    segment = resolveReturn(element.props as ReturnProps<unknown, unknown>);
+    segment = resolveReturn(
+      element.props as ReturnProps<unknown, unknown, unknown>
+    );
   } else {
     throw new TypeError(`unknown keyword: ${formatNode(element)}`);
   }
@@ -244,10 +271,10 @@ const resolveElement = (
 };
 
 const blockReducer = (
-  segments: ScriptSegment<unknown, unknown, unknown, unknown>[],
+  segments: UnknownScriptSegment[],
   node:
-    | ScriptElement<unknown, unknown, unknown, unknown>
-    | ContentNode<unknown>,
+    | ScriptElement<unknown, unknown, unknown, unknown, unknown>
+    | ContentNode<unknown, unknown>,
   path: string
 ) => {
   if (isElement(node)) {
@@ -265,11 +292,11 @@ const blockReducer = (
   return segments;
 };
 
-const parseBlock = <Vars, Input, Return, Yield>(
-  node: ScriptNode<Vars, Input, Return, Yield>,
+const parseBlock = <Vars, Input, Return, Yield, Meta>(
+  node: ScriptNode<Vars, Input, Return, Yield, Meta>,
   path: string
-): ScriptSegment<Vars, Input, Return, Yield>[] => {
-  return reduce<ScriptSegment<Vars, Input, Return, Yield>[], void>(
+): ScriptSegment<Vars, Input, Return, Yield, Meta>[] => {
+  return reduce<ScriptSegment<Vars, Input, Return, Yield, Meta>[], void>(
     node as any,
     blockReducer as any,
     [],
@@ -278,11 +305,11 @@ const parseBlock = <Vars, Input, Return, Yield>(
   );
 };
 
-const parse = <Vars, Input, Return, Yield>(
+const parse = <Vars, Input, Return, Yield, Meta>(
   node: SociablyElement<unknown, unknown>
-): ScriptSegment<Vars, Input, Return, Yield>[] => {
-  return parseBlock<Vars, Input, Return, Yield>(
-    node as ScriptNode<Vars, Input, Return, Yield>,
+): ScriptSegment<Vars, Input, Return, Yield, Meta>[] => {
+  return parseBlock<Vars, Input, Return, Yield, Meta>(
+    node as ScriptNode<Vars, Input, Return, Yield, Meta>,
     '$'
   );
 };

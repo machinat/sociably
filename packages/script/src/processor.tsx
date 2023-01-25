@@ -15,6 +15,7 @@ import type {
   InputOfScript,
   ReturnOfScript,
   YieldOfScript,
+  MetaOfScript,
 } from './types';
 
 type RuntimeResult<Return, Yield> = {
@@ -93,7 +94,8 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
       await execute<
         InputOfScript<Script>,
         ReturnOfScript<Script>,
-        YieldOfScript<Script>
+        YieldOfScript<Script>,
+        MetaOfScript<Script>
       >(
         this._serviceScope,
         this.channel,

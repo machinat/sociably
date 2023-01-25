@@ -45,28 +45,35 @@ type ExecuteResult<Return, Yield> =
   | FinishedExecuteResult<Return, Yield>
   | UnfinishedExecuteResult<Yield>;
 
-type ExecuteContext<Vars, Return, Yield> = {
+type PendingYields<Yield, Meta> = {
+  vars: unknown;
+  meta: Meta;
+  yielder: EffectYielder<unknown, Yield, Meta>;
+};
+
+type ExecuteContext<Vars, Return, Yield, Meta> = {
   channel: SociablyChannel;
   scope: ServiceScope;
   finished: boolean;
   returnedValue: undefined | Return;
   stopAt: undefined | string;
-  yieldings: [unknown, EffectYielder<unknown, Yield>][];
+  yields: PendingYields<Yield, Meta>[];
   cursor: number;
   contents: SociablyNode[];
   vars: Vars;
+  meta: Meta;
   callStack: CallStatus<unknown>[];
 };
 
-const executeContentCommand = async <Vars, Return, Yield>(
-  { getContent }: ContentCommand<Vars>,
-  context: ExecuteContext<Vars, Return, Yield>
-): Promise<ExecuteContext<Vars, Return, Yield>> => {
-  const { cursor, contents, vars, channel, scope } = context;
+const executeContentCommand = async <Vars, Return, Yield, Meta>(
+  { getContent }: ContentCommand<Vars, Meta>,
+  context: ExecuteContext<Vars, Return, Yield, Meta>
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
+  const { cursor, contents, vars, meta, channel, scope } = context;
   const newContent = await maybeInjectContainer(
     scope,
     getContent
-  )({ platform: channel.platform, channel, vars });
+  )({ platform: channel.platform, channel, vars, meta });
 
   return {
     ...context,
@@ -75,22 +82,22 @@ const executeContentCommand = async <Vars, Return, Yield>(
   };
 };
 
-const executeJumpCommand = <Vars, Return, Yield>(
+const executeJumpCommand = <Vars, Return, Yield, Meta>(
   { offset }: JumpCommand,
-  context: ExecuteContext<Vars, Return, Yield>
-): ExecuteContext<Vars, Return, Yield> => {
+  context: ExecuteContext<Vars, Return, Yield, Meta>
+): ExecuteContext<Vars, Return, Yield, Meta> => {
   return { ...context, cursor: context.cursor + offset };
 };
 
-const executeJumpCondCommand = async <Vars, Return, Yield>(
-  { condition, isNot, offset }: JumpCondCommand<Vars>,
-  context: ExecuteContext<Vars, Return, Yield>
-): Promise<ExecuteContext<Vars, Return, Yield>> => {
-  const { cursor, scope, vars, channel } = context;
+const executeJumpCondCommand = async <Vars, Return, Yield, Meta>(
+  { condition, isNot, offset }: JumpCondCommand<Vars, Meta>,
+  context: ExecuteContext<Vars, Return, Yield, Meta>
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
+  const { cursor, scope, vars, meta, channel } = context;
   const isMatched = await maybeInjectContainer(
     scope,
     condition
-  )({ platform: channel.platform, channel, vars });
+  )({ platform: channel.platform, channel, vars, meta });
 
   return {
     ...context,
@@ -98,38 +105,38 @@ const executeJumpCondCommand = async <Vars, Return, Yield>(
   };
 };
 
-const executePromptCommand = async <Vars, Return, Yield>(
-  { key }: PromptCommand<Vars, unknown>,
-  context: ExecuteContext<Vars, Return, Yield>
-): Promise<ExecuteContext<Vars, Return, Yield>> => {
+const executePromptCommand = async <Vars, Return, Yield, Meta>(
+  { key }: PromptCommand<Vars, unknown, Meta>,
+  context: ExecuteContext<Vars, Return, Yield, Meta>
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   return {
     ...context,
     stopAt: key,
   };
 };
 
-const executeCallCommand = async <Vars, Return, Yield>(
+const executeCallCommand = async <Vars, Return, Yield, Meta>(
   {
     script,
     key,
     withParams,
     setVars,
     goto,
-  }: CallCommand<Vars, unknown, unknown, Yield>,
-  context: ExecuteContext<Vars, Return, Yield>
-): Promise<ExecuteContext<Vars, Return, Yield>> => {
-  const { vars, contents, scope, channel, cursor } = context;
+  }: CallCommand<Vars, unknown, unknown, Yield, Meta>,
+  context: ExecuteContext<Vars, Return, Yield, Meta>
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
+  const { vars, meta, contents, scope, channel, cursor } = context;
   const index = goto ? getCursorIndexAssertedly(script, goto) : 0;
 
   const params = withParams
     ? await maybeInjectContainer(
         scope,
         withParams
-      )({ platform: channel.platform, channel, vars })
+      )({ platform: channel.platform, channel, vars, meta })
     : {};
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  const subCtx = await executeScript<unknown, unknown, Yield>(
+  const subCtx = await executeScript<unknown, unknown, Yield, Meta>(
     scope,
     channel,
     script,
@@ -137,13 +144,13 @@ const executeCallCommand = async <Vars, Return, Yield>(
     script.initVars(params)
   );
   const concatedContent = [...contents, ...subCtx.contents];
-  const concatedYieldings = [...context.yieldings, ...subCtx.yieldings];
+  const concatedYields = [...context.yields, ...subCtx.yields];
 
   if (!subCtx.finished) {
     return {
       ...context,
       stopAt: key,
-      yieldings: concatedYieldings,
+      yields: concatedYields,
       contents: concatedContent,
       callStack: subCtx.callStack,
     };
@@ -152,7 +159,7 @@ const executeCallCommand = async <Vars, Return, Yield>(
   let updatedVars = vars;
   if (setVars) {
     updatedVars = await maybeInjectContainer(scope, setVars)(
-      { platform: channel.platform, channel, vars },
+      { platform: channel.platform, channel, vars, meta },
       subCtx.returnedValue
     );
   }
@@ -162,42 +169,45 @@ const executeCallCommand = async <Vars, Return, Yield>(
     vars: updatedVars,
     cursor: cursor + 1,
     contents: concatedContent,
-    yieldings: concatedYieldings,
+    yields: concatedYields,
   };
 };
 
-const executeEffectCommand = async <Vars, Return, Yield>(
-  { setVars, yieldValue }: EffectCommand<Vars, Yield>,
-  context: ExecuteContext<Vars, Return, Yield>
-): Promise<ExecuteContext<Vars, Return, Yield>> => {
-  const { cursor, scope, channel, vars, yieldings } = context;
+const executeEffectCommand = async <Vars, Return, Yield, Meta>(
+  { setVars, yieldValue }: EffectCommand<Vars, Yield, Meta>,
+  context: ExecuteContext<Vars, Return, Yield, Meta>
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
+  const { cursor, scope, channel, vars, meta, yields } = context;
 
   let newVars = vars;
   if (setVars) {
     newVars = await maybeInjectContainer(
       scope,
       setVars
-    )({ platform: channel.platform, channel, vars });
+    )({ platform: channel.platform, channel, vars, meta });
   }
 
-  let newYielding = yieldings;
+  let newYielding = yields;
   if (yieldValue) {
-    newYielding = [...yieldings, [{ ...newVars }, yieldValue]];
+    newYielding = [
+      ...yields,
+      { vars: { ...newVars }, meta, yielder: yieldValue },
+    ];
   }
 
   return {
     ...context,
     cursor: cursor + 1,
     vars: newVars,
-    yieldings: newYielding,
+    yields: newYielding,
   };
 };
 
-const executeReturnCommand = async <Vars, Return, Yield>(
-  { getValue }: ReturnCommand<Vars, Return>,
-  context: ExecuteContext<Vars, Return, Yield>
-): Promise<ExecuteContext<Vars, Return, Yield>> => {
-  const { scope, channel, vars } = context;
+const executeReturnCommand = async <Vars, Return, Yield, Meta>(
+  { getValue }: ReturnCommand<Vars, Return, Meta>,
+  context: ExecuteContext<Vars, Return, Yield, Meta>
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
+  const { scope, channel, vars, meta } = context;
   let returnedValue: undefined | Return;
 
   if (getValue) {
@@ -208,6 +218,7 @@ const executeReturnCommand = async <Vars, Return, Yield>(
     )({
       platform: channel.platform,
       vars,
+      meta,
       channel,
     });
   }
@@ -219,10 +230,10 @@ const executeReturnCommand = async <Vars, Return, Yield>(
   };
 };
 
-const executeCommand = async <Vars, Return, Yield>(
-  command: ScriptCommand<Vars, unknown, Return, Yield>,
-  context: ExecuteContext<Vars, Return, Yield>
-): Promise<ExecuteContext<Vars, Return, Yield>> => {
+const executeCommand = async <Vars, Return, Yield, Meta>(
+  command: ScriptCommand<Vars, unknown, Return, Yield, Meta>,
+  context: ExecuteContext<Vars, Return, Yield, Meta>
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   switch (command.type) {
     case 'content':
       return executeContentCommand(command, context);
@@ -245,23 +256,24 @@ const executeCommand = async <Vars, Return, Yield>(
   }
 };
 
-const executeScript = async <Vars, Return, Yield>(
+const executeScript = async <Vars, Return, Yield, Meta>(
   scope: ServiceScope,
   channel: SociablyChannel,
-  script: ScriptLibrary<Vars, unknown, unknown, Return, Yield, unknown>,
+  script: ScriptLibrary<Vars, unknown, unknown, Return, Yield, Meta>,
   begin: number,
   beginVars: Vars
-): Promise<ExecuteContext<Vars, Return, Yield>> => {
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   const { commands } = script;
 
-  let context: ExecuteContext<Vars, Return, Yield> = {
+  let context: ExecuteContext<Vars, Return, Yield, Meta> = {
     finished: false,
     returnedValue: undefined,
     stopAt: undefined,
-    yieldings: [],
+    yields: [],
     cursor: begin,
     contents: [],
     vars: beginVars,
+    meta: script.meta,
     callStack: [],
     scope,
     channel,
@@ -295,19 +307,19 @@ const executeScript = async <Vars, Return, Yield>(
   };
 };
 
-const resolveYieldValue = async <Yield>(
+const resolveYieldValue = async <Vars, Yield, Meta>(
   channel: SociablyChannel,
   scope: ServiceScope,
-  yieldings: [unknown, EffectYielder<unknown, Yield>][]
+  yields: PendingYields<Yield, Meta>[]
 ): Promise<undefined | Yield> => {
   let yieldValue: undefined | Yield;
 
-  for (let i = yieldings.length - 1; i >= 0; i -= 1) {
-    const [vars, yielder] = yieldings[i];
+  for (let i = yields.length - 1; i >= 0; i -= 1) {
+    const { vars, meta, yielder } = yields[i];
 
     // eslint-disable-next-line no-await-in-loop
     yieldValue = await maybeInjectContainer(scope, yielder)(
-      { platform: channel.platform, channel, vars },
+      { platform: channel.platform, channel, vars, meta },
       yieldValue
     );
   }
@@ -315,7 +327,7 @@ const resolveYieldValue = async <Yield>(
   return yieldValue;
 };
 
-const execute = async <Input, Return, Yield>(
+const execute = async <Input, Return, Yield, Meta>(
   scope: ServiceScope,
   channel: SociablyChannel,
   beginningStack: CallStatus<unknown>[],
@@ -324,27 +336,35 @@ const execute = async <Input, Return, Yield>(
 ): Promise<ExecuteResult<Return, Yield>> => {
   const callingDepth = beginningStack.length;
   const contents: SociablyNode[] = [];
-  const yieldings: [unknown, EffectYielder<unknown, Yield>][] = [];
+  const yields: PendingYields<Yield, Meta>[] = [];
 
   let returnValueSlot: undefined | unknown;
 
   for (let d = callingDepth - 1; d >= 0; d -= 1) {
     const { script, vars: beginningVars, stopAt } = beginningStack[d];
+    const currentScript = script as ScriptLibrary<
+      unknown,
+      Input,
+      unknown,
+      Return,
+      Yield,
+      Meta
+    >;
 
-    let index = stopAt ? getCursorIndexAssertedly(script, stopAt) : 0;
+    let index = stopAt ? getCursorIndexAssertedly(currentScript, stopAt) : 0;
     let vars: unknown = beginningVars;
 
     if (d === callingDepth - 1) {
       if (!isBeginning) {
         // begin from the PROMPT point
-        const awaitingPrompt = script.commands[index];
+        const awaitingPrompt = currentScript.commands[index];
 
         invariant(
           awaitingPrompt && awaitingPrompt.type === 'prompt',
           `stopped point "${
             stopAt || ''
           }" is not a <Prompt/>, the key mapping of ${
-            script.name
+            currentScript.name
           } might have been changed`
         );
 
@@ -353,24 +373,25 @@ const execute = async <Input, Return, Yield>(
           platform: channel.platform,
           channel,
           vars: beginningVars,
+          meta: currentScript.meta,
         };
 
         vars = setVars // eslint-disable-next-line no-await-in-loop
-          ? await maybeInjectContainer(scope, setVars)(circs, input)
+          ? await maybeInjectContainer(scope, setVars)(circs, input as Input)
           : vars;
 
         index += 1;
       }
     } else {
       // handle script CALL return
-      const awaitingCall = script.commands[index];
+      const awaitingCall = currentScript.commands[index];
 
       invariant(
         awaitingCall.type === 'call',
         `returned point "${
           stopAt || ''
         }" is not a <Call/>, the key mapping of ${
-          script.name
+          currentScript.name
         } might have been changed`
       );
 
@@ -378,7 +399,12 @@ const execute = async <Input, Return, Yield>(
       if (setVars) {
         // eslint-disable-next-line no-await-in-loop
         vars = await maybeInjectContainer(scope, setVars)(
-          { platform: channel.platform, vars, channel },
+          {
+            platform: channel.platform,
+            vars,
+            meta: currentScript.meta,
+            channel,
+          },
           returnValueSlot as Return
         );
       }
@@ -387,16 +413,20 @@ const execute = async <Input, Return, Yield>(
     }
 
     // eslint-disable-next-line no-await-in-loop
-    const context = await executeScript(scope, channel, script, index, vars);
-    contents.push(...context.contents);
-    yieldings.push(
-      ...(context.yieldings as [unknown, EffectYielder<unknown, Yield>][])
+    const context = await executeScript(
+      scope,
+      channel,
+      currentScript,
+      index,
+      vars
     );
+    contents.push(...context.contents);
+    yields.push(...context.yields);
 
     // a PROMPT is met, break the runtime
     if (!context.finished) {
       // eslint-disable-next-line no-await-in-loop
-      const yieldedValue = await resolveYieldValue(channel, scope, yieldings);
+      const yieldedValue = await resolveYieldValue(channel, scope, yields);
       return {
         finished: false,
         yieldedValue,
@@ -409,7 +439,7 @@ const execute = async <Input, Return, Yield>(
     returnValueSlot = context.returnedValue;
   }
 
-  const yieldedValue = await resolveYieldValue(channel, scope, yieldings);
+  const yieldedValue = await resolveYieldValue(channel, scope, yields);
   return {
     finished: true,
     returnedValue: returnValueSlot as Return,

@@ -27,8 +27,12 @@ const promptSetFn = moxy(({ vars }) => vars);
 const effectYieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
 
 const AnotherScript = moxy(
-  build<{}, {}, {}>(
-    { name: 'AnotherScript', initVars: (input) => input },
+  build<{}, {}, {}, void, void, { hello: string }>(
+    {
+      name: 'AnotherScript',
+      initVars: (input) => input,
+      meta: { hello: 'here' },
+    },
     <>
       <EFFECT yield={effectYieldFn} />
       {() => 'adipiscing '}
@@ -41,8 +45,8 @@ const AnotherScript = moxy(
 );
 
 const MyScript = moxy(
-  build<{}, {}, {}>(
-    { name: 'MyScript', initVars: (input) => input },
+  build<{}, {}, {}, void, void, { hello: string }>(
+    { name: 'MyScript', initVars: (input) => input, meta: { hello: 'there' } },
     <>
       {() => 'Lorem '}
       <EFFECT yield={effectYieldFn} />
@@ -405,7 +409,12 @@ describe('.continue(channel, input)', () => {
 
     expect(promptSetFn.mock).toHaveBeenCalledTimes(1);
     expect(promptSetFn.mock).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' } },
+      {
+        platform: 'test',
+        channel,
+        vars: { foo: 'bar' },
+        meta: { hello: 'there' },
+      },
       { hello: 'world' }
     );
   });
@@ -482,7 +491,12 @@ describe('.continue(channel, input)', () => {
 
     expect(promptSetFn.mock).toHaveBeenCalledTimes(1);
     expect(promptSetFn.mock).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'baz' } },
+      {
+        platform: 'test',
+        channel,
+        vars: { foo: 'baz' },
+        meta: { hello: 'here' },
+      },
       { hello: 'world' }
     );
   });
@@ -548,7 +562,12 @@ describe('.getRuntime(channel)', () => {
     expect(runtime.requireSaving).toBe(true);
     expect(promptSetFn.mock).toHaveBeenCalledTimes(1);
     expect(promptSetFn.mock).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' } },
+      {
+        platform: 'test',
+        channel,
+        vars: { foo: 'bar' },
+        meta: { hello: 'there' },
+      },
       { hello: 'world' }
     );
 
@@ -561,7 +580,12 @@ describe('.getRuntime(channel)', () => {
 
     expect(promptSetFn.mock).toHaveBeenCalledTimes(2);
     expect(promptSetFn.mock).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: {} },
+      {
+        platform: 'test',
+        channel,
+        vars: {},
+        meta: { hello: 'here' },
+      },
       { hello: 'again' }
     );
 
@@ -576,7 +600,12 @@ describe('.getRuntime(channel)', () => {
 
       expect(promptSetFn.mock).toHaveBeenCalledTimes(3 + i);
       expect(promptSetFn.mock).toHaveBeenCalledWith(
-        { platform: 'test', channel, vars: { foo: 'bar', i: 1 + i } },
+        {
+          platform: 'test',
+          channel,
+          vars: { foo: 'bar', i: 1 + i },
+          meta: { hello: 'there' },
+        },
         { hello: 'again' }
       );
     }
