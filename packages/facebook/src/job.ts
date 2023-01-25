@@ -43,7 +43,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
       } else if (typeof value === 'object' && value.type === 'message') {
         body = value.params;
         relativeUrl = value.apiPath;
-        assetTag = value.attachFile?.assetTag;
+        assetTag = value.assetTag; // eslint-disable-line prefer-destructuring
         fileData = value.attachFile?.data;
         fileInfo = value.attachFile?.info;
       } else {
@@ -141,7 +141,7 @@ export const createChatAttachmentJobs = (
     {
       fileData: value.attachFile?.data,
       fileInfo: value.attachFile?.info,
-      assetTag: value.attachFile?.assetTag,
+      assetTag: value.assetTag,
       request: {
         method: POST,
         relative_url: PATH_MESSAGE_ATTACHMENTS,
@@ -194,12 +194,12 @@ export const createPostJobs = (
         },
         fileData: value.attachFile?.data,
         fileInfo: value.attachFile?.info,
-        assetTag: value.attachFile?.assetTag,
+        assetTag: value.assetTag,
       },
     ];
   }
 
-  const { params, photos, attachFile } = value;
+  const { params, photos, attachFile, assetTag } = value;
   const postJob: MetaApiJob = {
     request: {
       method: 'POST',
@@ -208,7 +208,7 @@ export const createPostJobs = (
     },
     fileData: attachFile?.data,
     fileInfo: attachFile?.info,
-    assetTag: attachFile?.assetTag,
+    assetTag,
   };
 
   if (!photos) {
@@ -244,7 +244,7 @@ export const createPostJobs = (
     },
     fileData: photoValue.attachFile?.data,
     fileInfo: photoValue.attachFile?.info,
-    assetTag: photoValue.attachFile?.assetTag,
+    assetTag: photoValue.assetTag,
     registerResult: photoResultKeys[i],
   }));
   return [...photoJobs, postJob];
@@ -324,7 +324,7 @@ export const createInteractJobs = (
             },
             fileData: photo.attachFile?.data,
             fileInfo: photo.attachFile?.info,
-            assetTag: photo.attachFile?.assetTag,
+            assetTag: photo.assetTag,
             registerResult: getTimeId(),
           }
         : null;

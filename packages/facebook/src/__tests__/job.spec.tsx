@@ -360,8 +360,8 @@ describe('createChatJobs(options)(channel, segments)', () => {
           attachFile: {
             data: '_BAR_',
             info: fileInfo,
-            assetTag: 'BAR!',
           },
+          assetTag: 'BAR!',
         },
       },
     ]);
@@ -446,8 +446,8 @@ describe('createChatAttachmentJobs()', () => {
             attachFile: {
               data: fileData,
               info: fileInfo,
-              assetTag,
             },
+            assetTag,
           },
         },
       ])

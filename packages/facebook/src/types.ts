@@ -64,7 +64,6 @@ type MessageTags =
 type AttachFileValue = {
   data: string | Buffer | NodeJS.ReadableStream;
   info?: FileInfo;
-  assetTag?: string;
 };
 
 export type MessageValue = {
@@ -77,6 +76,7 @@ export type MessageValue = {
     tag?: MessageTags;
     persona_id?: string;
   };
+  assetTag?: string;
   attachFile?: AttachFileValue;
 };
 
@@ -87,6 +87,7 @@ export type SenderActionValue = {
     sender_action: 'mark_seen' | 'typing_on' | 'typing_off';
     persona_id?: string;
   };
+  assetTag?: undefined;
   attachFile?: undefined;
 };
 
@@ -97,6 +98,7 @@ export type PassThreadControlValue = {
     target_app_id: number;
     metadata?: string;
   };
+  assetTag?: undefined;
   attachFile?: undefined;
 };
 
@@ -106,6 +108,7 @@ export type RequestThreadControlValue = {
   params: {
     metadata?: string;
   };
+  assetTag?: undefined;
   attachFile?: undefined;
 };
 
@@ -115,12 +118,14 @@ export type TakeThreadControlValue = {
   params: {
     metadata?: string;
   };
+  assetTag?: undefined;
   attachFile?: undefined;
 };
 
 export type CommentValue = {
   type: 'comment';
   params: Record<string, unknown>;
+  assetTag?: undefined;
   attachFile?: undefined;
   photo?: PagePhotoValue;
 };
@@ -129,6 +134,7 @@ export type PagePhotoValue = {
   type: 'page';
   apiPath: typeof PATH_PHOTOS;
   params: Record<string, unknown>;
+  assetTag?: string;
   attachFile?: AttachFileValue;
 };
 
@@ -136,6 +142,7 @@ export type PageVideoValue = {
   type: 'page';
   apiPath: typeof PATH_VIDEOS;
   params: Record<string, unknown>;
+  assetTag?: string;
   attachFile?: AttachFileValue;
   thumbnailFile?: AttachFileValue;
 };
@@ -144,6 +151,7 @@ export type PagePostValue = {
   type: 'page';
   apiPath: typeof PATH_FEED;
   params: Record<string, unknown>;
+  assetTag?: string;
   attachFile?: AttachFileValue;
   photos?: PagePhotoValue[];
 };

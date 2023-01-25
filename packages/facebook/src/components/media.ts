@@ -54,11 +54,11 @@ const mediaFactory = (
               },
             },
           },
+          assetTag,
           attachFile: fileData
             ? {
                 data: fileData,
                 info: fileInfo,
-                assetTag,
               }
             : undefined,
         }),
