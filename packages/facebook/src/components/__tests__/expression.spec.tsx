@@ -233,7 +233,6 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
       },
       Object {
         "apiPath": "me/messages",
-        "attachFile": undefined,
         "params": Object {
           "persona_id": "_PERSONA_ID_",
           "sender_action": "typing_on",
@@ -242,7 +241,6 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
       },
       Object {
         "apiPath": "me/messages",
-        "attachFile": undefined,
         "params": Object {
           "persona_id": "_PERSONA_ID_",
           "sender_action": "typing_off",
@@ -301,7 +299,6 @@ it('adds metadata to last message action', async () => {
       },
       Object {
         "apiPath": "me/messages",
-        "attachFile": undefined,
         "params": Object {
           "persona_id": undefined,
           "sender_action": "typing_on",
@@ -374,7 +371,6 @@ it('adds quickReplies to last message action', async () => {
       },
       Object {
         "apiPath": "me/messages",
-        "attachFile": undefined,
         "params": Object {
           "persona_id": undefined,
           "sender_action": "typing_on",

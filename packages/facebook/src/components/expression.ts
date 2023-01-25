@@ -7,6 +7,7 @@ import type {
   FacebookSegmentValue,
   FacebookComponent,
   MessageValue,
+  SenderActionValue,
 } from '../types';
 
 /**
@@ -121,16 +122,13 @@ export const Expression: FacebookComponent<
         );
       }
 
-      const { apiPath, params, attachFile } = value;
-
-      if (apiPath === PATH_MESSAGES && 'message' in value.params) {
+      if (value.apiPath === PATH_MESSAGES && 'message' in value.params) {
         lastMessageIdx = segments.length;
 
         segments.push({
           ...segment,
           value: {
-            type: 'message',
-            apiPath,
+            ...value,
             params: {
               ...value.params,
               messaging_type: messagingType,
@@ -138,22 +136,19 @@ export const Expression: FacebookComponent<
               notification_type: notificationType,
               persona_id: personaId,
             },
-            attachFile,
           },
         });
       } else if (
-        apiPath === PATH_MESSAGES &&
-        'sender_action' in params &&
-        (params.sender_action === 'typing_on' ||
-          params.sender_action === 'typing_off')
+        value.apiPath === PATH_MESSAGES &&
+        'sender_action' in value.params &&
+        (value.params.sender_action === 'typing_on' ||
+          value.params.sender_action === 'typing_off')
       ) {
         segments.push({
           ...segment,
           value: {
-            type: 'message',
-            apiPath,
-            params: { ...params, persona_id: personaId },
-            attachFile: undefined,
+            ...(value as SenderActionValue),
+            params: { ...value.params, persona_id: personaId },
           },
         });
       } else {
