@@ -1,3 +1,4 @@
+import { DispatchError } from '@sociably/core/engine';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import type AssetsManagerP from '../AssetsManager';
 import saveUploadedFile from '../saveUploadedFile';
@@ -69,7 +70,7 @@ const makeMediaResult = (mediaType: string) => ({
 
 const manager: Moxy<AssetsManagerP> = moxy({
   async saveFile() {},
-} as any);
+} as never);
 
 const mediaMethodPairs = [
   ['animation', 'sendAnimation'],
@@ -80,6 +81,8 @@ const mediaMethodPairs = [
   ['voice', 'sendVoice'],
   ['sticker', 'sendSticker'],
 ];
+
+const fileData = Buffer.from('__BINARY_DATA__');
 
 beforeEach(() => {
   manager.mock.reset();
@@ -96,16 +99,16 @@ it('ignore noraml messages and media message without assetTag', async () => {
         method: 'sendPhoto',
         parameters: { chat_id: 12345 },
         uploadingFiles: [
-          { fieldName: 'photo', fileData: Buffer.from('__BINARY_DATA__') },
-          { fieldName: 'thumb', fileData: Buffer.from('__BINARY_DATA__') },
+          { fieldName: 'photo', fileData },
+          { fieldName: 'thumb', fileData },
         ],
       },
       ...mediaMethodPairs.map(([mediaType, method]) => ({
         method,
         parameters: { chat_id: 12345 },
         uploadingFiles: [
-          { fieldName: mediaType, fileData: Buffer.from('__BINARY_DATA__') },
-          { fieldName: 'thumb', fileData: Buffer.from('__BINARY_DATA__') },
+          { fieldName: mediaType, fileData },
+          { fieldName: 'thumb', fileData },
         ],
       })),
     ],
@@ -116,7 +119,7 @@ it('ignore noraml messages and media message without assetTag', async () => {
     ],
   };
 
-  const next = moxy(async () => response as any);
+  const next = moxy(async () => response as never);
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
   expect(manager.saveFile.mock).not.toHaveBeenCalled();
@@ -129,15 +132,8 @@ it('save files uploaded when sending media with assetTag', async () => {
     method: 'sendPhoto',
     parameters: { chat_id: 12345 },
     uploadingFiles: [
-      {
-        fieldName: 'photo',
-        fileData: Buffer.from('__BINARY_DATA__'),
-        assetTag: 'my_photo',
-      },
-      {
-        fieldName: 'thumb',
-        fileData: Buffer.from('__BINARY_DATA__'),
-      },
+      { fieldName: 'photo', assetTag: 'my_photo', fileData },
+      { fieldName: 'thumb', fileData },
     ],
   };
 
@@ -145,15 +141,8 @@ it('save files uploaded when sending media with assetTag', async () => {
     method,
     parameters: { chat_id: 12345 },
     uploadingFiles: [
-      {
-        fieldName: mediaType,
-        fileData: Buffer.from('__BINARY_DATA__'),
-        assetTag: `my_${mediaType}`,
-      },
-      {
-        fieldName: 'thumb',
-        fileData: Buffer.from('__BINARY_DATA__'),
-      },
+      { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
+      { fieldName: 'thumb', fileData },
     ],
   }));
 
@@ -167,9 +156,61 @@ it('save files uploaded when sending media with assetTag', async () => {
     ],
   };
 
-  const next: any = async () => response;
+  const next = async () => response as never;
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
+
+  expect(manager.saveFile.mock).toHaveBeenCalledTimes(
+    mediaMethodPairs.length + 1
+  );
+  expect(manager.saveFile.mock).toHaveBeenCalledWith(
+    'my_photo',
+    '_PHOTO_L_ID_'
+  );
+  mediaMethodPairs.forEach(([mediaType]) => {
+    expect(manager.saveFile.mock).toHaveBeenCalledWith(
+      `my_${mediaType}`,
+      `_${mediaType.toUpperCase()}_ID_`
+    );
+  });
+});
+
+it('save uploaded media when partial success', async () => {
+  const frame = moxy();
+  const error = new DispatchError(
+    [new Error('foo')],
+    [],
+    [
+      {
+        method: 'sendPhoto',
+        parameters: { chat_id: 12345 },
+        uploadingFiles: [
+          { fieldName: 'photo', assetTag: 'my_photo', fileData },
+        ],
+      },
+      ...mediaMethodPairs.map(([mediaType, method]) => ({
+        method,
+        parameters: { chat_id: 12345 },
+        uploadingFiles: [
+          { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
+        ],
+      })),
+      sendMessageJob,
+    ],
+    [
+      sendPhotoResult,
+      ...mediaMethodPairs.map(([mediaType]) => makeMediaResult(mediaType)),
+      undefined,
+    ]
+  );
+
+  const next = async () => {
+    throw error;
+  };
+
+  await expect(saveUploadedFile(manager)(frame, next)).rejects.toThrowError(
+    error
+  );
 
   expect(manager.saveFile.mock).toHaveBeenCalledTimes(
     mediaMethodPairs.length + 1
@@ -202,15 +243,8 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
       },
     },
     uploadingFiles: [
-      {
-        fieldName: 'photo',
-        fileData: Buffer.from('__BINARY_DATA__'),
-        assetTag: 'my_photo',
-      },
-      {
-        fieldName: 'thumb',
-        fileData: Buffer.from('__BINARY_DATA__'),
-      },
+      { fieldName: 'photo', assetTag: 'my_photo', fileData },
+      { fieldName: 'thumb', fileData },
     ],
   };
 
@@ -227,15 +261,8 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
       },
     },
     uploadingFiles: [
-      {
-        fieldName: mediaType,
-        fileData: Buffer.from('__BINARY_DATA__'),
-        assetTag: `my_${mediaType}`,
-      },
-      {
-        fieldName: 'thumb',
-        fileData: Buffer.from('__BINARY_DATA__'),
-      },
+      { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
+      { fieldName: 'thumb', fileData },
     ],
   }));
 
@@ -245,7 +272,7 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
     results: [sendPhotoResult, ...editableMedias.map(makeMediaResult)],
   };
 
-  const next: any = async () => response;
+  const next = async () => response as never;
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
 
@@ -287,24 +314,10 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
           ],
         },
         uploadingFiles: [
-          {
-            fieldName: 'file_0',
-            fileData: Buffer.from('__BINARY_DATA__'),
-            assetTag: 'my_photo',
-          },
-          {
-            fieldName: 'file_1',
-            fileData: Buffer.from('__BINARY_DATA__'),
-          },
-          {
-            fieldName: 'file_2',
-            fileData: Buffer.from('__BINARY_DATA__'),
-            assetTag: 'my_video',
-          },
-          {
-            fieldName: 'file_3',
-            fileData: Buffer.from('__BINARY_DATA__'),
-          },
+          { fieldName: 'file_0', assetTag: 'my_photo', fileData },
+          { fieldName: 'file_1', fileData },
+          { fieldName: 'file_2', assetTag: 'my_video', fileData },
+          { fieldName: 'file_3', fileData },
         ],
       },
     ],
@@ -317,7 +330,7 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
     ],
   };
 
-  const next: any = async () => response;
+  const next = async () => response as never;
 
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
 

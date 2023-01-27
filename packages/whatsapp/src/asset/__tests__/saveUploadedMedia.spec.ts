@@ -1,3 +1,4 @@
+import { DispatchError } from '@sociably/core/engine';
 import moxy from '@moxyjs/moxy';
 import saveUploadedMedia from '../saveUploadedMedia';
 import AssetsManager from '../AssetsManager';
@@ -33,7 +34,7 @@ it('do nothing when job has no assetTag', async () => {
   expect(manager.saveMedia.mock).not.toHaveBeenCalled();
 });
 
-it('save created asset', async () => {
+it('save created assets', async () => {
   const msgResult = { code: 200, headers: {}, body: {} };
   const response = {
     jobs: [
@@ -66,7 +67,7 @@ it('save created asset', async () => {
   const context = { hello: 'droid' };
 
   await expect(
-    saveUploadedMedia(manager)(context as any, next)
+    saveUploadedMedia(manager)(context as never, next)
   ).resolves.toEqual(response);
 
   expect(next.mock).toHaveBeenCalledTimes(1);
@@ -76,4 +77,50 @@ it('save created asset', async () => {
   expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(1, 'foo', '111111111');
   expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(2, 'bar', '222222222');
   expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(3, 'baz', '333333333');
+});
+
+it('save created assets when partial success', async () => {
+  const msgResult = { code: 200, headers: {}, body: {} };
+  const jobs = [
+    { assetTag: 'foo', request: { ...{} } },
+    { request: { ...{} } },
+    { assetTag: 'bar', request: { ...{} } },
+    { request: { ...{} } },
+    { assetTag: 'baz', request: { ...{} } },
+  ];
+  const results = [
+    {
+      ...msgResult,
+      body: { id: '111111111' },
+    },
+    msgResult,
+    {
+      ...msgResult,
+      body: { id: '222222222' },
+    },
+    undefined,
+    undefined,
+  ];
+  const error = new DispatchError(
+    [new Error('foo'), new Error('bar')],
+    [],
+    jobs,
+    results
+  );
+
+  const next = moxy(async () => {
+    throw error;
+  });
+  const context = { hello: 'droid' };
+
+  await expect(
+    saveUploadedMedia(manager)(context as never, next)
+  ).rejects.toThrowError(error);
+
+  expect(next.mock).toHaveBeenCalledTimes(1);
+  expect(next.mock).toHaveBeenCalledWith(context);
+
+  expect(manager.saveMedia.mock).toHaveBeenCalledTimes(2);
+  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(1, 'foo', '111111111');
+  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(2, 'bar', '222222222');
 });

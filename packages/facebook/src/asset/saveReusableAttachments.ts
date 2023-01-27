@@ -1,6 +1,31 @@
+import { DispatchError } from '@sociably/core/engine';
 import { makeContainer } from '@sociably/core/service';
+import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import type { FacebookDispatchMiddleware } from '../types';
 import AssetsManagerP from './AssetsManager';
+
+const updateAssetsFromSuccessfulJobs = async (
+  manager: AssetsManagerP,
+  jobs: MetaApiJob[],
+  results: (void | MetaApiResult)[]
+) => {
+  const updatingAssets: Promise<boolean>[] = [];
+
+  for (let i = 0; i < jobs.length; i += 1) {
+    const result = results[i];
+    if (result) {
+      const { assetTag } = jobs[i];
+      const { body } = result;
+
+      if (assetTag && body.attachment_id) {
+        updatingAssets.push(
+          manager.saveAttachment(assetTag, body.attachment_id)
+        );
+      }
+    }
+  }
+  await Promise.all(updatingAssets);
+};
 
 /**
  * saveReusableAttachments save the id of uploaded attachments with `assetTag`
@@ -10,24 +35,21 @@ import AssetsManagerP from './AssetsManager';
 const saveReusableAttachments =
   (manager: AssetsManagerP): FacebookDispatchMiddleware =>
   async (frame, next) => {
-    const response = await next(frame);
-    const { jobs, results } = response;
+    try {
+      const response = await next(frame);
+      const { jobs, results } = response;
 
-    const updatingAssets: Promise<boolean>[] = [];
-
-    for (let i = 0; i < jobs.length; i += 1) {
-      const { assetTag } = jobs[i];
-      const { body } = results[i];
-
-      if (assetTag && body.attachment_id) {
-        updatingAssets.push(
-          manager.saveAttachment(assetTag, body.attachment_id)
-        );
+      await updateAssetsFromSuccessfulJobs(manager, jobs, results);
+      return response;
+    } catch (error) {
+      if (error instanceof DispatchError) {
+        const { jobs, results }: DispatchError<MetaApiJob, MetaApiResult> =
+          error;
+        await updateAssetsFromSuccessfulJobs(manager, jobs, results);
       }
-    }
 
-    await Promise.all(updatingAssets);
-    return response;
+      throw error;
+    }
   };
 
 export default makeContainer({

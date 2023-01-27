@@ -1,4 +1,5 @@
 import moxy from '@moxyjs/moxy';
+import { DispatchError } from '@sociably/core/engine';
 import saveReusableAttachments from '../saveReusableAttachments';
 import AssetsManager from '../AssetsManager';
 
@@ -33,8 +34,8 @@ it('do nothing when job has no assetTag', async () => {
   expect(manager.saveAttachment.mock).not.toHaveBeenCalled();
 });
 
-it('register asset created within send api', async () => {
-  const _result = {
+it('save attachment id created with send api', async () => {
+  const apiResult = {
     code: 200,
     headers: {},
     body: { recepient_id: 'xxx', message_id: 'xxx' },
@@ -49,20 +50,20 @@ it('register asset created within send api', async () => {
       { assetTag: 'baz', request: {} },
     ],
     results: [
-      _result,
+      apiResult,
       {
-        ..._result,
-        body: { ..._result.body, attachment_id: '_ATTACHMENT_1_' },
+        ...apiResult,
+        body: { ...apiResult.body, attachment_id: '_ATTACHMENT_1_' },
       },
-      _result,
+      apiResult,
       {
-        ..._result,
-        body: { ..._result.body, attachment_id: '_ATTACHMENT_2_' },
+        ...apiResult,
+        body: { ...apiResult.body, attachment_id: '_ATTACHMENT_2_' },
       },
-      _result,
+      apiResult,
       {
-        ..._result,
-        body: { ..._result.body, attachment_id: '_ATTACHMENT_3_' },
+        ...apiResult,
+        body: { ...apiResult.body, attachment_id: '_ATTACHMENT_3_' },
       },
     ],
   };
@@ -70,7 +71,7 @@ it('register asset created within send api', async () => {
   const context = { hello: 'droid' };
 
   await expect(
-    saveReusableAttachments(manager)(context as any, next)
+    saveReusableAttachments(manager)(context as never, next)
   ).resolves.toEqual(response);
 
   expect(next.mock).toHaveBeenCalledTimes(1);
@@ -91,5 +92,61 @@ it('register asset created within send api', async () => {
     3,
     'baz',
     '_ATTACHMENT_3_'
+  );
+});
+
+it('save attachment id when partial success', async () => {
+  const apiResult = {
+    code: 200,
+    headers: {},
+    body: { recepient_id: 'xxx', message_id: 'xxx' },
+  };
+  const error = new DispatchError(
+    [new Error('foo'), new Error('bar')],
+    [],
+    [
+      { assetTag: 'foo', request: {} },
+      { request: {} },
+      { assetTag: 'bar', request: {} },
+      { request: {} },
+      { assetTag: 'baz', request: {} },
+    ],
+    [
+      {
+        ...apiResult,
+        body: { ...apiResult.body, attachment_id: '_ATTACHMENT_1_' },
+      },
+      apiResult,
+      {
+        ...apiResult,
+        body: { ...apiResult.body, attachment_id: '_ATTACHMENT_2_' },
+      },
+      undefined,
+      undefined,
+    ]
+  );
+
+  const next = moxy(async () => {
+    throw error;
+  });
+  const context = { hello: 'droid' };
+
+  await expect(
+    saveReusableAttachments(manager)(context as never, next)
+  ).rejects.toThrowError(error);
+
+  expect(next.mock).toHaveBeenCalledTimes(1);
+  expect(next.mock).toHaveBeenCalledWith(context);
+
+  expect(manager.saveAttachment.mock).toHaveBeenCalledTimes(2);
+  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
+    1,
+    'foo',
+    '_ATTACHMENT_1_'
+  );
+  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
+    2,
+    'bar',
+    '_ATTACHMENT_2_'
   );
 });

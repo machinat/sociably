@@ -1,16 +1,16 @@
 import type { SociablyTask } from './types';
 
 class DispatchError<Job, Result> extends Error {
-  errors: ReadonlyArray<Error>;
+  errors: Error[];
   tasks: SociablyTask<Job>[];
   jobs: Job[];
-  results: ReadonlyArray<void | Result>;
+  results: (void | Result)[];
 
   constructor(
-    errors: ReadonlyArray<Error>,
+    errors: Error[],
     tasks: SociablyTask<Job>[],
     jobs: Job[],
-    results: ReadonlyArray<void | Result>
+    results: (void | Result)[]
   ) {
     const message = errors
       ? errors.reduce(
