@@ -11,7 +11,7 @@ type UserProfileValue = {
 class WhatsAppUserProfile
   implements SociablyProfile, MarshallableInstance<UserProfileValue>
 {
-  static typeName = 'WhatsAppUserProfile';
+  static typeName = 'WaUserProfile';
 
   static fromJSONValue({ num, data }: UserProfileValue): WhatsAppUserProfile {
     return new WhatsAppUserProfile(num, data);

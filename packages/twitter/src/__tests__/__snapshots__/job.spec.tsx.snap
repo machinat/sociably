@@ -5,7 +5,7 @@ Array [
   Object {
     "accomplishRequest": [Function],
     "asApplication": false,
-    "key": "twitter.12345.67890",
+    "key": "twtr.12345.67890",
     "mediaSources": null,
     "refreshTarget": null,
     "request": Object {
@@ -35,7 +35,7 @@ Array [
   Object {
     "accomplishRequest": [Function],
     "asApplication": false,
-    "key": "twitter.12345.67890",
+    "key": "twtr.12345.67890",
     "mediaSources": Array [
       Object {
         "id": "11111",
@@ -75,7 +75,7 @@ Array [
   Object {
     "accomplishRequest": [Function],
     "asApplication": false,
-    "key": "twitter.12345.67890",
+    "key": "twtr.12345.67890",
     "mediaSources": Array [
       Object {
         "id": "22222",
@@ -115,7 +115,7 @@ Array [
   Object {
     "accomplishRequest": null,
     "asApplication": false,
-    "key": "twitter.12345.67890",
+    "key": "twtr.12345.67890",
     "mediaSources": null,
     "refreshTarget": null,
     "request": Object {

@@ -6,7 +6,7 @@ import { FACEBOOK } from './constant';
 class FacebookUserProfile
   implements SociablyProfile, MarshallableInstance<RawUserProfile>
 {
-  static typeName = 'FacebookUserProfile';
+  static typeName = 'FbUserProfile';
 
   static fromJSONValue(data: RawUserProfile): FacebookUserProfile {
     return new FacebookUserProfile(data);

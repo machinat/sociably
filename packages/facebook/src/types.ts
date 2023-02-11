@@ -18,8 +18,8 @@ import type {
 } from '@sociably/meta-api';
 import type { FacebookBot } from './Bot';
 import type FacebookChat from './Chat';
-import ObjectTarget from './ObjectTarget';
-import PageFeed from './PageFeed';
+import FacebookInteractTarget from './InteractTarget';
+import FacebookPage from './Page';
 import type { FacebookEvent } from './event/types';
 import type {
   FACEBOOK,
@@ -34,7 +34,10 @@ import type {
 
 export * from './event/types';
 
-export type FacebookChannel = FacebookChat | ObjectTarget | PageFeed;
+export type FacebookChannel =
+  | FacebookChat
+  | FacebookInteractTarget
+  | FacebookPage;
 
 export type PsidTarget = { id: string };
 export type UserRefTarget = { user_ref: string };

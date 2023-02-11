@@ -1,4 +1,4 @@
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant';
 import type LineUser from './User';
@@ -47,6 +47,14 @@ class LineChat implements SociablyChannel, MarshallableInstance<LineChatValue> {
     this.channelId = channelId;
     this.type = type;
     this.id = id;
+  }
+
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: LINE,
+      scopeId: this.channelId,
+      id: this.id,
+    };
   }
 
   get uid(): string {

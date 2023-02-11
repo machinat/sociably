@@ -12,7 +12,7 @@ type SerializedUserProfile = {
 export default class TwitterUserProfile
   implements SociablyProfile, MarshallableInstance<SerializedUserProfile>
 {
-  static typeName = 'TwitterUserProfile';
+  static typeName = 'TwtrUserProfile';
   static fromJSONValue({
     user,
     settings,

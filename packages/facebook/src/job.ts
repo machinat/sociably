@@ -7,8 +7,8 @@ import type {
 } from '@sociably/meta-api';
 import type { FacebookSegmentValue, MessagingOptions } from './types';
 import type FacebookChat from './Chat';
-import PageFeed from './PageFeed';
-import type ObjectTarget from './ObjectTarget';
+import FacebookPage from './Page';
+import type InteractTarget from './InteractTarget';
 import {
   PATH_MESSAGES,
   PATH_MESSAGE_ATTACHMENTS,
@@ -105,7 +105,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
 };
 
 export const createChatAttachmentJobs = (
-  page: PageFeed,
+  page: FacebookPage,
   segments: DispatchableSegment<FacebookSegmentValue>[]
 ): MetaApiJob[] => {
   if (segments.length !== 1) {
@@ -152,7 +152,7 @@ export const createChatAttachmentJobs = (
 };
 
 export const createPostJobs = (
-  feedOrAlbum: PageFeed | ObjectTarget,
+  feedOrAlbum: FacebookPage | InteractTarget,
   segments: DispatchableSegment<FacebookSegmentValue>[]
 ): MetaApiJob[] => {
   if (segments.length !== 1) {
@@ -187,7 +187,7 @@ export const createPostJobs = (
         request: {
           method: 'POST',
           relative_url:
-            feedOrAlbum instanceof PageFeed
+            feedOrAlbum instanceof FacebookPage
               ? PATH_PHOTOS
               : `${feedOrAlbum.id}/photos`,
           body: value.params,
@@ -233,7 +233,7 @@ export const createPostJobs = (
     request: {
       method: 'POST',
       relative_url:
-        feedOrAlbum instanceof PageFeed
+        feedOrAlbum instanceof FacebookPage
           ? PATH_PHOTOS
           : `${feedOrAlbum.id}/photos`,
       body: {
@@ -281,7 +281,7 @@ const accomplishPhotoCommentRequest = (
 };
 
 export const createInteractJobs = (
-  target: ObjectTarget,
+  target: InteractTarget,
   segments: DispatchableSegment<FacebookSegmentValue>[]
 ): MetaApiJob[] => {
   const initialCommentApiPath = `${target.id}/comments`;

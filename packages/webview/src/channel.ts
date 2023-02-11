@@ -1,4 +1,4 @@
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import type {
   ConnectionTarget,
@@ -18,7 +18,7 @@ export class WebviewConnection
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
-  static typeName = 'WebviewConnection';
+  static typeName = 'WebviewConn';
 
   static fromJSONValue({ id, server }: ConnectionValue): WebviewConnection {
     return new WebviewConnection(server, id);
@@ -33,6 +33,14 @@ export class WebviewConnection
   constructor(serverId: string, id: string) {
     this.serverId = serverId;
     this.id = id;
+  }
+
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: WEBVIEW,
+      scopeId: this.serverId,
+      id: this.id,
+    };
   }
 
   get uid(): string {
@@ -75,6 +83,14 @@ export class WebviewUserChannel
     this.userUid = userUid;
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: WEBVIEW,
+      scopeId: 'user',
+      id: this.userUid,
+    };
+  }
+
   get uid(): string {
     return `${WEBVIEW}.user.${this.userUid}`;
   }
@@ -108,6 +124,14 @@ export class WebviewTopicChannel
 
   constructor(name: string) {
     this.name = name;
+  }
+
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: WEBVIEW,
+      scopeId: 'topic',
+      id: this.name,
+    };
   }
 
   get uid(): string {

@@ -1,16 +1,18 @@
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { TWITTER } from './constant';
+import { TWITTER, TWTR } from './constant';
 
 type SerializedTweetTarget = {
   agent: string;
   tweet?: string;
 };
 
+const DEFAULT_FEED_SIGN = '-';
+
 export default class TwitterTweetTarget
   implements SociablyChannel, MarshallableInstance<SerializedTweetTarget>
 {
-  static typeName = 'TwitterTweetTarget';
+  static typeName = 'TwtrTweetTarget';
   static fromJSONValue(val: SerializedTweetTarget): TwitterTweetTarget {
     return new TwitterTweetTarget(val.agent, val.tweet);
   }
@@ -26,8 +28,16 @@ export default class TwitterTweetTarget
     this.tweetId = tweetId;
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: TWITTER,
+      scopeId: this.agentId,
+      id: this.tweetId || DEFAULT_FEED_SIGN,
+    };
+  }
+
   get uid(): string {
-    return `${TWITTER}.${this.agentId}.${this.tweetId || '-'}`;
+    return `${TWTR}.${this.agentId}.${this.tweetId || DEFAULT_FEED_SIGN}`;
   }
 
   // eslint-disable-next-line class-methods-use-this

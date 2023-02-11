@@ -46,7 +46,7 @@ test('with user data only', () => {
     'https://pbs.twimg.com/profile_images/942858479592554497/BbazLO9L_normal.jpg'
   );
 
-  expect(profile.typeName()).toBe('TwitterUserProfile');
+  expect(profile.typeName()).toBe('TwtrUserProfile');
   expect(profile.toJSONValue()).toEqual({ user: userData });
 });
 
@@ -72,7 +72,7 @@ test('with user data and settings data', () => {
     'https://pbs.twimg.com/profile_images/942858479592554497/BbazLO9L_normal.jpg'
   );
 
-  expect(profile.typeName()).toBe('TwitterUserProfile');
+  expect(profile.typeName()).toBe('TwtrUserProfile');
   expect(profile.toJSONValue()).toEqual({
     user: userData,
     settings: settingsData,
@@ -80,7 +80,7 @@ test('with user data and settings data', () => {
 });
 
 test('marshall type metadata', () => {
-  expect(TwitterUserProfile.typeName).toBe('TwitterUserProfile');
+  expect(TwitterUserProfile.typeName).toBe('TwtrUserProfile');
 
   expect(
     TwitterUserProfile.fromJSONValue({ user: userData, settings: undefined })

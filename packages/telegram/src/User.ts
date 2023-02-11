@@ -1,6 +1,6 @@
-import type { SociablyUser } from '@sociably/core';
+import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { TELEGRAM } from './constant';
+import { TELEGRAM, TG } from './constant';
 import UserProfile from './UserProfile';
 import type { RawUser } from './types';
 
@@ -11,7 +11,7 @@ type TelegramUserValue = {
 class TelegramUser
   implements SociablyUser, MarshallableInstance<TelegramUserValue>
 {
-  static typeName = 'TelegramUser';
+  static typeName = 'TgUser';
   static fromJSONValue({ id }: TelegramUserValue): TelegramUser {
     return new TelegramUser(id);
   }
@@ -30,9 +30,16 @@ class TelegramUser
     this.avatarUrl = avatarUrl;
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: TELEGRAM,
+      id: this.id,
+    };
+  }
+
   /** Unique id of the user */
   get uid(): string {
-    return `${TELEGRAM}.${this.id}`;
+    return `${TG}.${this.id}`;
   }
 
   /** Profile of the user */

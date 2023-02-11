@@ -144,13 +144,37 @@ export type ThunkElement = SociablyElement<
 export type RawProps = { value: unknown };
 export type RawElement = SociablyElement<RawProps, typeof SOCIABLY_RAW_TYPE>;
 
+export interface UniqueOmniIdentifier {
+  readonly platform: string;
+  readonly scopeId?: string | number;
+  readonly id: string | number;
+}
+
 export interface SociablyChannel {
   readonly platform: string;
+  /**
+   * A set of attributes to identify the channel. All the attributes
+   * together can be used as an unique key of the channel
+   */
+  readonly uniqueIdentifier: UniqueOmniIdentifier;
+  /**
+   * The unique string id of the channel. It's promised to be unique
+   * while using Sociably
+   */
   readonly uid: string;
 }
 
 export interface SociablyUser {
   readonly platform: string;
+  /**
+   * A set of attributes to identify the user. All the attributes
+   * together can be used as an unique key of the user
+   */
+  readonly uniqueIdentifier: UniqueOmniIdentifier;
+  /**
+   * The unique string id of the user. It's promised to be unique
+   * while using Sociably
+   */
   readonly uid: string;
 }
 

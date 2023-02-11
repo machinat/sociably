@@ -1,4 +1,5 @@
 export const FACEBOOK = 'facebook' as const;
+export const FB = 'fb' as const;
 
 export const MESSENGER_MESSAGING_TYPE_RESPONSE = 'RESPONSE';
 

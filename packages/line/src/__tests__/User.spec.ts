@@ -7,6 +7,14 @@ test('preperties', () => {
   expect(user.providerId).toBe('_PROVIDER_ID_');
   expect(user.id).toBe('_USER_ID_');
   expect(user.uid).toMatchInlineSnapshot(`"line._PROVIDER_ID_._USER_ID_"`);
+
+  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
+    Object {
+      "id": "_USER_ID_",
+      "platform": "line",
+      "scopeId": "_PROVIDER_ID_",
+    }
+  `);
 });
 
 test('marshallable', () => {

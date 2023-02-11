@@ -1,3 +1,4 @@
+import type { UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 
 class NoneInstance {
@@ -23,6 +24,13 @@ export class NoneUser
 {
   static typeName = 'NoneUser';
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: 'none',
+      id: this.id,
+    };
+  }
+
   static fromJSONValue({ id }: { id: string }): NoneUser {
     return new NoneUser(id);
   }
@@ -38,6 +46,13 @@ export class NoneChannel
   implements MarshallableInstance<{ id: string }>
 {
   static typeName = 'NoneChannel';
+
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: 'none',
+      id: this.id,
+    };
+  }
 
   static fromJSONValue({ id }: { id: string }): NoneChannel {
     return new NoneChannel(id);

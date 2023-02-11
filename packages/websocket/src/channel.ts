@@ -1,4 +1,4 @@
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { WEBSOCKET } from './constant';
 import type { ConnectionTarget, UserTarget, TopicTarget } from './types';
@@ -14,7 +14,7 @@ export class WebSocketConnection
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
-  static typeName = 'WebSocketConnection';
+  static typeName = 'WebSocketConn';
 
   static fromJSONValue({ id, server }: ConnectionValue): WebSocketConnection {
     return new WebSocketConnection(server, id);
@@ -29,6 +29,14 @@ export class WebSocketConnection
   constructor(serverId: string, id: string) {
     this.serverId = serverId;
     this.id = id;
+  }
+
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: WEBSOCKET,
+      scopeId: this.serverId,
+      id: this.id,
+    };
   }
 
   get uid(): string {
@@ -71,6 +79,14 @@ export class WebSocketUserChannel
     this.userUid = userUid;
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: WEBSOCKET,
+      scopeId: 'user',
+      id: this.userUid,
+    };
+  }
+
   get uid(): string {
     return `${WEBSOCKET}.user.${this.userUid}`;
   }
@@ -104,6 +120,14 @@ export class WebSocketTopicChannel
 
   constructor(name: string) {
     this.name = name;
+  }
+
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: WEBSOCKET,
+      scopeId: 'topic',
+      id: this.name,
+    };
   }
 
   get uid(): string {

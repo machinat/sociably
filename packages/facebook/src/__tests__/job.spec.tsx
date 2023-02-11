@@ -9,8 +9,8 @@ import {
 } from '../job';
 import { PATH_MESSAGES, PATH_FEED, PATH_PHOTOS } from '../constant';
 import FacebookChat from '../Chat';
-import PageFeed from '../PageFeed';
-import ObjectTarget from '../ObjectTarget';
+import FacebookPage from '../Page';
+import FacebookInteractTarget from '../InteractTarget';
 import { FacebookSegmentValue, PagePhotoValue, PagePostValue } from '../types';
 
 const _Date = Date;
@@ -87,7 +87,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
-        key: 'facebook.12345.67890',
+        key: 'fb.12345.67890',
         request: {
           method: 'POST',
           relative_url: i === 2 ? 'bar/baz' : 'me/messages',
@@ -377,7 +377,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
 });
 
 describe('createChatAttachmentJobs()', () => {
-  const page = new PageFeed('1234567890');
+  const page = new FacebookPage('1234567890');
 
   it('create upload job with url', () => {
     expect(
@@ -541,7 +541,7 @@ describe('createChatAttachmentJobs()', () => {
 });
 
 describe('createPostJobs()', () => {
-  const page = new PageFeed('1234567890');
+  const page = new FacebookPage('1234567890');
 
   it('create page post from text', () => {
     expect(
@@ -693,7 +693,11 @@ describe('createPostJobs()', () => {
   });
 
   it('craete photo on an album', () => {
-    const album = new ObjectTarget('1234567890', '9876543210', 'album');
+    const album = new FacebookInteractTarget(
+      '1234567890',
+      '9876543210',
+      'album'
+    );
     expect(
       createPostJobs(album, [
         {
@@ -966,7 +970,7 @@ describe('createPostJobs()', () => {
 });
 
 describe('createInteractJobs()', () => {
-  const commentTarget = new ObjectTarget('_PAGE_ID_', '_OBJECT_ID_');
+  const commentTarget = new FacebookInteractTarget('_PAGE_ID_', '_OBJECT_ID_');
 
   it('create comment job from text segment', () => {
     expect(

@@ -1,6 +1,6 @@
-import type { SociablyUser } from '@sociably/core';
+import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { TELEGRAM } from './constant';
+import { TELEGRAM, TG } from './constant';
 import ChatProfile from './ChatProfile';
 import type { TelegramChatType, RawChat } from './types';
 
@@ -12,7 +12,7 @@ type TelegramChatSenderValue = {
 class TelegramChatSender
   implements SociablyUser, MarshallableInstance<TelegramChatSenderValue>
 {
-  static typeName = 'TelegramChatSender';
+  static typeName = 'TgChatSender';
   static fromJSONValue(value: TelegramChatSenderValue): TelegramChatSender {
     const { type, id } = value;
     return new TelegramChatSender({ id, type });
@@ -35,9 +35,16 @@ class TelegramChatSender
     return this.data.type as 'supergroup' | 'channel';
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: TELEGRAM,
+      id: this.id,
+    };
+  }
+
   /** Unique id of the chat sender user */
   get uid(): string {
-    return `${TELEGRAM}.${this.id}`;
+    return `${TG}.${this.id}`;
   }
 
   /** Profile of the chat */

@@ -11,7 +11,13 @@ test('with profile', () => {
   expect(user.profile).toStrictEqual(
     new UserProfile('1234567890', { name: 'Jojo' })
   );
-  expect(user.uid).toMatchInlineSnapshot(`"whatsapp.1234567890"`);
+  expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
+  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
+    Object {
+      "id": "1234567890",
+      "platform": "whatsapp",
+    }
+  `);
 });
 
 test('with no profile', () => {
@@ -21,13 +27,19 @@ test('with no profile', () => {
   expect(user.number).toBe('1234567890');
   expect(user.profileData).toBe(undefined);
   expect(user.profile).toBe(null);
-  expect(user.uid).toMatchInlineSnapshot(`"whatsapp.1234567890"`);
+  expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
+  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
+    Object {
+      "id": "1234567890",
+      "platform": "whatsapp",
+    }
+  `);
 });
 
 test('marshallable', () => {
   const user = new WhatsAppUser('1234567890', { name: 'Dio' });
 
-  expect(user.typeName()).toBe('WhatsAppUser');
+  expect(user.typeName()).toBe('WaUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "num": "1234567890",

@@ -1,4 +1,4 @@
-import type { SociablyUser } from '@sociably/core';
+import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant';
 
@@ -23,6 +23,14 @@ export default class LineUser
   constructor(providerId: string, id: string) {
     this.providerId = providerId;
     this.id = id;
+  }
+
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: LINE,
+      scopeId: this.providerId,
+      id: this.id,
+    };
   }
 
   get uid(): string {

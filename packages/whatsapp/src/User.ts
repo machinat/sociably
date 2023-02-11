@@ -1,6 +1,6 @@
-import type { SociablyUser } from '@sociably/core';
+import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { WHATSAPP } from './constant';
+import { WHATSAPP, WA } from './constant';
 import type WhatsAppChat from './Chat';
 import UserProfile from './UserProfile';
 import { UserProfileData } from './types';
@@ -12,7 +12,7 @@ type WhatsAppUserValue = {
 class WhatsAppUser
   implements SociablyUser, MarshallableInstance<WhatsAppUserValue>
 {
-  static typeName = 'WhatsAppUser';
+  static typeName = 'WaUser';
   static fromChat(chat: WhatsAppChat): WhatsAppUser {
     return new WhatsAppUser(chat.customerNumber);
   }
@@ -36,8 +36,15 @@ class WhatsAppUser
       : null;
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: WHATSAPP,
+      id: this.number,
+    };
+  }
+
   get uid(): string {
-    return `${WHATSAPP}.${this.number}`;
+    return `${WA}.${this.number}`;
   }
 
   toJSONValue(): WhatsAppUserValue {

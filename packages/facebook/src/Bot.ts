@@ -21,8 +21,8 @@ import generalComponentDelegator from './components/general';
 import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import FacebookChat from './Chat';
-import ObjectTarget from './ObjectTarget';
-import PageFeed from './PageFeed';
+import InteractTarget from './InteractTarget';
+import FacebookPage from './Page';
 import {
   createChatJobs,
   createChatAttachmentJobs,
@@ -140,10 +140,10 @@ export class FacebookBot
     if (target instanceof FacebookChat) {
       return this.engine.render(target, node, createChatJobs());
     }
-    if (target instanceof PageFeed) {
+    if (target instanceof FacebookPage) {
       return this.engine.render(target, node, createPostJobs);
     }
-    if (target instanceof ObjectTarget) {
+    if (target instanceof InteractTarget) {
       return this.engine.render(target, node, createInteractJobs);
     }
     throw new TypeError('invalid rendering target');
@@ -172,10 +172,11 @@ export class FacebookBot
     return result ? { attachmentId: result.attachment_id } : null;
   }
 
-  /** Create a post or photo on the page feed */
+  /** Create a post or a photo on the page feed */
   async post(
-    page: PageFeed,
-    /** Text, a {@link PagePost} or a {@link PagePhoto}  */
+    /** The {@link FacebookPage} channel to post */
+    page: FacebookPage,
+    /** Text, a {@link PagePost} or a {@link PagePhoto} to post */
     node: SociablyNode
   ): Promise<null | PagePostResult> {
     const response = await this.engine.render(null, node, createPostJobs);
@@ -204,8 +205,11 @@ export class FacebookBot
     return { postId, photos };
   }
 
+  /** Comment or make reactions to a Facebook post or comment */
   async interact(
-    target: ObjectTarget,
+    /** The target channel to interact with */
+    target: InteractTarget,
+    /** {@link Comment} or {@link Reaction} */
     node: SociablyNode
   ): Promise<null | CommentResult[]> {
     const response = await this.engine.render(target, node, createInteractJobs);

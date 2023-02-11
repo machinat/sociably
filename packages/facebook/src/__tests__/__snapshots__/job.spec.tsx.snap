@@ -6,7 +6,7 @@ Array [
     "assetTag": undefined,
     "fileData": "_FOO_",
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -30,7 +30,7 @@ Array [
       "filename": "deathangel.jpg",
       "knownLength": 66666,
     },
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -55,7 +55,7 @@ Array [
     "assetTag": undefined,
     "fileData": undefined,
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -77,7 +77,7 @@ Array [
     "assetTag": undefined,
     "fileData": undefined,
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -104,7 +104,7 @@ Array [
     "assetTag": undefined,
     "fileData": undefined,
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -130,7 +130,7 @@ Array [
     "assetTag": undefined,
     "fileData": undefined,
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "persona_id": "your-dearest-friend",
@@ -147,7 +147,7 @@ Array [
     "assetTag": undefined,
     "fileData": undefined,
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -169,7 +169,7 @@ Array [
     "assetTag": undefined,
     "fileData": undefined,
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "id": 2,
@@ -185,7 +185,7 @@ Array [
     "assetTag": undefined,
     "fileData": undefined,
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "message": Object {
@@ -207,7 +207,7 @@ Array [
     "assetTag": undefined,
     "fileData": undefined,
     "fileInfo": undefined,
-    "key": "facebook.12345.67890",
+    "key": "fb.12345.67890",
     "request": Object {
       "body": Object {
         "message": Object {

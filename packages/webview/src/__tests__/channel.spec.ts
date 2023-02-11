@@ -11,9 +11,17 @@ test('WebviewConnection(serverId, connId)', () => {
   expect(channel.type).toBe('connection');
   expect(channel.serverId).toBe('#server');
   expect(channel.id).toBe('#conn');
-  expect(channel.uid).toMatchInlineSnapshot(`"webview.conn.#server.#conn"`);
 
-  expect(channel.typeName()).toBe('WebviewConnection');
+  expect(channel.uid).toMatchInlineSnapshot(`"webview.conn.#server.#conn"`);
+  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+    Object {
+      "id": "#conn",
+      "platform": "webview",
+      "scopeId": "#server",
+    }
+  `);
+
+  expect(channel.typeName()).toBe('WebviewConn');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": "#conn",
@@ -30,7 +38,15 @@ test('WebviewTopicChannel(name, id)', () => {
   expect(channel.platform).toBe('webview');
   expect(channel.type).toBe('topic');
   expect(channel.name).toBe('foo');
+
   expect(channel.uid).toMatchInlineSnapshot(`"webview.topic.foo"`);
+  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+    Object {
+      "id": "foo",
+      "platform": "webview",
+      "scopeId": "topic",
+    }
+  `);
 
   expect(channel.typeName()).toBe('WebviewTopicCh');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`
@@ -49,7 +65,15 @@ test('WebviewUserChannel(user)', () => {
   expect(channel.platform).toBe('webview');
   expect(channel.type).toBe('user');
   expect(channel.userUid).toBe('jojo_doe');
+
   expect(channel.uid).toMatchInlineSnapshot(`"webview.user.jojo_doe"`);
+  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+    Object {
+      "id": "jojo_doe",
+      "platform": "webview",
+      "scopeId": "user",
+    }
+  `);
 
   expect(channel.typeName()).toBe('WebviewUserCh');
   expect(channel.toJSONValue()).toMatchInlineSnapshot(`

@@ -1,7 +1,7 @@
-import type { SociablyUser } from '@sociably/core';
+import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import UserProfile from './UserProfile';
-import { TWITTER } from './constant';
+import { TWITTER, TWTR } from './constant';
 import type { RawUser } from './types';
 
 type SerializedUser = {
@@ -11,7 +11,7 @@ type SerializedUser = {
 export default class TwitterUser
   implements SociablyUser, MarshallableInstance<SerializedUser>
 {
-  static typeName = 'TwitterUser';
+  static typeName = 'TwtrUser';
   static fromJSONValue({ id }: SerializedUser): TwitterUser {
     return new TwitterUser(id);
   }
@@ -25,8 +25,15 @@ export default class TwitterUser
     this.data = rawData || null;
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: TWITTER,
+      id: this.id,
+    };
+  }
+
   get uid(): string {
-    return `${TWITTER}.${this.id}`;
+    return `${TWTR}.${this.id}`;
   }
 
   get profile(): null | UserProfile {

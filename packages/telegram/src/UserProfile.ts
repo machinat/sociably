@@ -11,7 +11,7 @@ type TelegramUserProfileValue = {
 class TelegramUserProfile
   implements SociablyProfile, MarshallableInstance<TelegramUserProfileValue>
 {
-  static typeName = 'TelegramUserProfile';
+  static typeName = 'TgUserProfile';
   static fromJSONValue(value: TelegramUserProfileValue): TelegramUserProfile {
     return new TelegramUserProfile(value.data, value.avatar);
   }

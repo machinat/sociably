@@ -1,6 +1,6 @@
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { FACEBOOK } from './constant';
+import { FACEBOOK, FB } from './constant';
 import type { MessagingTarget } from './types';
 
 type ChatValue = {
@@ -13,7 +13,7 @@ type ChatType = 'user' | 'user_ref' | 'comment' | 'post';
 class FacebookChat<Type extends ChatType = ChatType>
   implements SociablyChannel, MarshallableInstance<ChatValue>
 {
-  static typeName = 'FacebookChat';
+  static typeName = 'FbChat';
   static fromJSONValue<Type extends ChatType = ChatType>(
     value: ChatValue
   ): FacebookChat<Type> {
@@ -53,8 +53,16 @@ class FacebookChat<Type extends ChatType = ChatType>
     );
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: FACEBOOK,
+      scopeId: this.pageId,
+      id: this.id,
+    };
+  }
+
   get uid(): string {
-    return `${FACEBOOK}.${this.pageId}.${this.id}`;
+    return `${FB}.${this.pageId}.${this.id}`;
   }
 
   toJSONValue(): ChatValue {

@@ -1,6 +1,6 @@
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { TWITTER } from './constant';
+import { TWITTER, TWTR } from './constant';
 
 type SerializedDmChat = {
   agent: string;
@@ -10,7 +10,7 @@ type SerializedDmChat = {
 export default class TwitterChat
   implements SociablyChannel, MarshallableInstance<SerializedDmChat>
 {
-  static typeName = 'TwitterChat';
+  static typeName = 'TwtrChat';
   static fromJSONValue({ id, agent }: SerializedDmChat): TwitterChat {
     return new TwitterChat(agent, id);
   }
@@ -25,9 +25,17 @@ export default class TwitterChat
     this.id = userId;
   }
 
+  get uniqueIdentifier(): UniqueOmniIdentifier {
+    return {
+      platform: TWITTER,
+      scopeId: this.agentId,
+      id: this.id,
+    };
+  }
+
   /** The unique id of the direct message channel */
   get uid(): string {
-    return `${TWITTER}.${this.agentId}.${this.id}`;
+    return `${TWTR}.${this.agentId}.${this.id}`;
   }
 
   // eslint-disable-next-line class-methods-use-this
