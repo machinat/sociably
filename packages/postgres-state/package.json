@@ -1,0 +1,37 @@
+{
+  "name": "@sociably/postgres-state",
+  "version": "0.8.0-alpha.1",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/sociably.git",
+    "directory": "packages/session"
+  },
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepack": "make -f ../../package.mk prepack"
+  },
+  "peerDependencies": {
+    "@sociably/core": "^0.8.0-alpha"
+  },
+  "dependencies": {
+    "pg": "^8.9.0"
+  },
+  "devDependencies": {
+    "@databases/pg-test": "^3.1.2",
+    "@types/pg": "^8.6.6"
+  }
+}
