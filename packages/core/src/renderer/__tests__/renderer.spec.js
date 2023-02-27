@@ -193,20 +193,20 @@ describe('.render()', () => {
       },
     ]);
 
-    expect(Custom.mock).toHaveBeenCalledTimes(1);
-    expect(Custom.mock).toHaveBeenCalledWith(
+    expect(Custom).toHaveBeenCalledTimes(1);
+    expect(Custom).toHaveBeenCalledWith(
       { a: 'A', b: 2 },
       { platform: 'test', path: '$::7' }
     );
 
-    expect(generalElementDelegate.mock).toHaveBeenCalledTimes(2);
-    expect(generalElementDelegate.mock).toHaveBeenNthCalledWith(
+    expect(generalElementDelegate).toHaveBeenCalledTimes(2);
+    expect(generalElementDelegate).toHaveBeenNthCalledWith(
       1,
       <a>AAA</a>,
       '$::3',
       expect.any(Function)
     );
-    expect(generalElementDelegate.mock).toHaveBeenNthCalledWith(
+    expect(generalElementDelegate).toHaveBeenNthCalledWith(
       2,
       <b>BBB</b>,
       '$::4',
@@ -223,14 +223,14 @@ describe('.render()', () => {
       { type: 'text', node: 'foo', value: 'foo', path: `$::4#b.children:0` },
     ]);
 
-    expect(NativeUnit1.mock).toHaveBeenCalledTimes(2);
-    expect(NativeUnit1.mock).toHaveBeenNthCalledWith(
+    expect(NativeUnit1).toHaveBeenCalledTimes(2);
+    expect(NativeUnit1).toHaveBeenNthCalledWith(
       1,
       <NativeUnit1 x="true" y={false} />,
       '$::6',
       expect.any(Function)
     );
-    expect(NativeUnit1.mock).toHaveBeenNthCalledWith(
+    expect(NativeUnit1).toHaveBeenNthCalledWith(
       2,
       <NativeUnit1 a="A" b={2} />,
       '$::7#Custom::1',
@@ -256,8 +256,8 @@ describe('.render()', () => {
       },
     ]);
 
-    expect(NativeUnit2.mock).toHaveBeenCalledTimes(1);
-    expect(NativeUnit2.mock).toHaveBeenCalledWith(
+    expect(NativeUnit2).toHaveBeenCalledTimes(1);
+    expect(NativeUnit2).toHaveBeenCalledWith(
       <NativeUnit2>somthing wrapped</NativeUnit2>,
       '$::9',
       expect.any(Function)
@@ -632,13 +632,13 @@ describe('.render()', () => {
             ]
           `);
 
-    expect(scope.injectContainer.mock).toHaveBeenCalledTimes(10);
-    expect(scope.injectContainer.mock).toHaveBeenCalledWith(
+    expect(scope.injectContainer).toHaveBeenCalledTimes(10);
+    expect(scope.injectContainer).toHaveBeenCalledWith(
       Container,
       expect.any(Map)
     );
 
-    expect(Container.$$factory.mock).toHaveBeenCalledTimes(10);
+    expect(Container.$$factory).toHaveBeenCalledTimes(10);
     expect(componentMock).toHaveBeenCalledTimes(10);
     expect(componentMock).toHaveBeenCalledWith(
       { n: expect.any(Number) },
@@ -680,8 +680,8 @@ describe('.render()', () => {
             ]
           `);
 
-    expect(Container.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(Container.$$factory.mock).toHaveBeenCalledWith(1, 2, null);
+    expect(Container.$$factory).toHaveBeenCalledTimes(1);
+    expect(Container.$$factory).toHaveBeenCalledWith(1, 2, null);
   });
 
   it('reject when functional component fail', async () => {
@@ -801,21 +801,21 @@ describe('.render()', () => {
     // time prop only
     segments[2].value().then(spy);
     await new Promise(process.nextTick);
-    expect(spy.mock).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
 
     jest.advanceTimersByTime(1000);
     await new Promise(process.nextTick);
-    expect(spy.mock).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
 
     // time + delay prop only
     segments[3].value().then(spy);
-    expect(delayFn.mock).toHaveBeenCalledTimes(1);
+    expect(delayFn).toHaveBeenCalledTimes(1);
     await new Promise(process.nextTick);
-    expect(spy.mock).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
 
     jest.advanceTimersByTime(1000);
     await new Promise(process.nextTick);
-    expect(spy.mock).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(2);
 
     jest.useRealTimers();
   });

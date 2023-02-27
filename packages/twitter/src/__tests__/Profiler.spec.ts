@@ -46,7 +46,7 @@ describe('.getUserProfile(user)', () => {
     expect(profile instanceof TwitterUserProfile).toBe(true);
     expect(profile.id).toBe('6253282');
 
-    expect(bot.makeApiCall.mock).not.toHaveBeenCalled();
+    expect(bot.makeApiCall).not.toHaveBeenCalled();
   });
 
   it("get data from API if it's not attached with the user", async () => {
@@ -59,12 +59,11 @@ describe('.getUserProfile(user)', () => {
     expect(profile instanceof TwitterUserProfile).toBe(true);
     expect(profile.id).toBe('6253282');
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
-      'GET',
-      '1.1/users/show.json',
-      { user_id: '6253282', include_entities: false }
-    );
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('GET', '1.1/users/show.json', {
+      user_id: '6253282',
+      include_entities: false,
+    });
   });
 
   it('use data from API if fromApi option is true', async () => {
@@ -79,12 +78,11 @@ describe('.getUserProfile(user)', () => {
 
     expect(profile.description).toBe('This time it is from API');
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
-      'GET',
-      '1.1/users/show.json',
-      { user_id: '6253282', include_entities: false }
-    );
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('GET', '1.1/users/show.json', {
+      user_id: '6253282',
+      include_entities: false,
+    });
   });
 
   it('get settings data if withSettings option is true', async () => {
@@ -98,8 +96,8 @@ describe('.getUserProfile(user)', () => {
     expect(profile.timeZone).toBe(-8);
     expect(profile.languageCode).toBe('en');
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith(
       'GET',
       '1.1/account/settings.json'
     );
@@ -115,11 +113,10 @@ describe('.getUserProfile(user)', () => {
     expect(profile instanceof TwitterUserProfile).toBe(true);
     expect(profile.id).toBe('6253282');
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
-      'GET',
-      '1.1/users/show.json',
-      { user_id: '6253282', include_entities: true }
-    );
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('GET', '1.1/users/show.json', {
+      user_id: '6253282',
+      include_entities: true,
+    });
   });
 });

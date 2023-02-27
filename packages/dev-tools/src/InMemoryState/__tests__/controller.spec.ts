@@ -25,12 +25,12 @@ test.each([
 
   updator.mock.fakeReturnValue('bar');
   await expect(fooState.update('key1', updator)).resolves.toBe('bar');
-  expect(updator.mock).toHaveBeenNthCalledWith(1, 'foo');
+  expect(updator).toHaveBeenNthCalledWith(1, 'foo');
   await expect(fooState.get('key1')).resolves.toBe('bar');
 
   updator.mock.fakeReturnValue('baz');
   await expect(fooState.update('key2', updator)).resolves.toBe('baz');
-  expect(updator.mock).toHaveBeenNthCalledWith(2, undefined);
+  expect(updator).toHaveBeenNthCalledWith(2, undefined);
   await expect(fooState.get('key2')).resolves.toBe('baz');
   await expect(fooState.keys()).resolves.toEqual(['key1', 'key2']);
   await expect(fooState.getAll()).resolves.toMatchInlineSnapshot(`
@@ -72,7 +72,7 @@ test.each([
 
   updator.mock.fakeReturnValue(undefined);
   await expect(fooState.update('key1', updator)).resolves.toBe(undefined);
-  expect(updator.mock).toHaveBeenCalledWith('bar');
+  expect(updator).toHaveBeenCalledWith('bar');
   await expect(fooState.keys()).resolves.toEqual([]);
   await expect(fooState.getAll()).resolves.toEqual(new Map());
 

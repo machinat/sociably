@@ -51,12 +51,9 @@ test('rendering to UrlButton', () => {
     />
   `);
 
-  expect(authenticator.getAuthUrl.mock).toHaveBeenCalledTimes(3);
-  expect(authenticator.getAuthUrl.mock).toHaveBeenCalledWith(
-    '67890',
-    undefined
-  );
-  expect(authenticator.getAuthUrl.mock).toHaveBeenNthCalledWith(
+  expect(authenticator.getAuthUrl).toHaveBeenCalledTimes(3);
+  expect(authenticator.getAuthUrl).toHaveBeenCalledWith('67890', undefined);
+  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     3,
     '67890',
     'foo?bar=baz'
@@ -74,5 +71,5 @@ test('rendering to null if channel is not a FacebookChat', () => {
     })
   ).toBe(null);
 
-  expect(authenticator.getAuthUrl.mock).not.toHaveBeenCalled();
+  expect(authenticator.getAuthUrl).not.toHaveBeenCalled();
 });

@@ -137,7 +137,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       let req = prepareReq('GET', 'https://auth.sociably.io', {}, '');
       await controller.delegateAuthRequest(req, res);
       expect(res.statusCode).toBe(403);
-      expect(res.end.mock).toHaveBeenCalled();
+      expect(res.end).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
         Object {
           "error": Object {
@@ -151,7 +151,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       req = prepareReq('GET', 'https://sociably.io/someWhereElse', {}, '');
       await controller.delegateAuthRequest(req, res);
       expect(res.statusCode).toBe(403);
-      expect(res.end.mock).toHaveBeenCalled();
+      expect(res.end).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
         Object {
           "error": Object {
@@ -172,7 +172,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(403);
-      expect(res.end.mock).toHaveBeenCalled();
+      expect(res.end).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
         Object {
           "error": Object {
@@ -193,10 +193,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       let req = prepareReq('GET', 'https://auth.sociably.io/foo', {}, '');
       await controller.delegateAuthRequest(req, res);
 
-      expect(fooAuthenticator.delegateAuthRequest.mock).toHaveBeenCalledTimes(
-        1
-      );
-      expect(fooAuthenticator.delegateAuthRequest.mock).toHaveBeenCalledWith(
+      expect(fooAuthenticator.delegateAuthRequest).toHaveBeenCalledTimes(1);
+      expect(fooAuthenticator.delegateAuthRequest).toHaveBeenCalledWith(
         req,
         res,
         { originalPath: '/foo', matchedPath: '/foo', trailingPath: '' }
@@ -205,16 +203,14 @@ describe('#delegateAuthRequest(req, res)', () => {
       req = prepareReq('GET', 'https://auth.sociably.io/bar/baz', {}, '');
       await controller.delegateAuthRequest(req, res);
 
-      expect(barAuthenticator.delegateAuthRequest.mock).toHaveBeenCalledTimes(
-        1
-      );
-      expect(barAuthenticator.delegateAuthRequest.mock).toHaveBeenCalledWith(
+      expect(barAuthenticator.delegateAuthRequest).toHaveBeenCalledTimes(1);
+      expect(barAuthenticator.delegateAuthRequest).toHaveBeenCalledWith(
         req,
         res,
         { originalPath: '/bar/baz', matchedPath: '/bar', trailingPath: 'baz' }
       );
 
-      expect(res.end.mock).not.toHaveBeenCalled();
+      expect(res.end).not.toHaveBeenCalled();
     });
 
     it('respond 501 if res not closed by provider', async () => {
@@ -226,12 +222,10 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.delegateAuthRequest(req, res);
 
-      expect(fooAuthenticator.delegateAuthRequest.mock).toHaveBeenCalledTimes(
-        1
-      );
+      expect(fooAuthenticator.delegateAuthRequest).toHaveBeenCalledTimes(1);
 
       expect(res.statusCode).toBe(501);
-      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.end).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
         Object {
           "error": Object {
@@ -252,11 +246,11 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.delegateAuthRequest(req, res);
 
-      expect(fooAuthenticator.mock).not.toHaveBeenCalled();
-      expect(barAuthenticator.mock).not.toHaveBeenCalled();
+      expect(fooAuthenticator.delegateAuthRequest).not.toHaveBeenCalled();
+      expect(barAuthenticator.delegateAuthRequest).not.toHaveBeenCalled();
 
       expect(res.statusCode).toBe(404);
-      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.end).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
         Object {
           "error": Object {
@@ -276,11 +270,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       await controller.delegateAuthRequest(req, res);
 
-      expect(fooAuthenticator.mock).not.toHaveBeenCalled();
-      expect(barAuthenticator.mock).not.toHaveBeenCalled();
+      expect(fooAuthenticator.delegateAuthRequest).not.toHaveBeenCalled();
+      expect(barAuthenticator.delegateAuthRequest).not.toHaveBeenCalled();
 
       expect(res.statusCode).toBe(404);
-      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.end).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
         Object {
           "error": Object {
@@ -312,13 +306,13 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       await controller.delegateAuthRequest(req, res);
 
-      expect(fooAuthenticator.verifyCredential.mock).toHaveBeenCalledTimes(1);
-      expect(fooAuthenticator.verifyCredential.mock).toHaveBeenCalledWith({
+      expect(fooAuthenticator.verifyCredential).toHaveBeenCalledTimes(1);
+      expect(fooAuthenticator.verifyCredential).toHaveBeenCalledWith({
         foo: 'data',
       });
 
       expect(res.statusCode).toBe(200);
-      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.end).toHaveBeenCalledTimes(1);
 
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toEqual({
@@ -393,8 +387,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.delegateAuthRequest(req, res);
 
-      expect(fooAuthenticator.verifyCredential.mock).toHaveBeenCalledTimes(1);
-      expect(fooAuthenticator.verifyCredential.mock).toHaveBeenCalledWith({
+      expect(fooAuthenticator.verifyCredential).toHaveBeenCalledTimes(1);
+      expect(fooAuthenticator.verifyCredential).toHaveBeenCalledWith({
         foo: 'data',
       });
 
@@ -457,9 +451,9 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       await controller.delegateAuthRequest(req, res);
 
-      expect(fooAuthenticator.verifyCredential.mock).not.toHaveBeenCalled();
+      expect(fooAuthenticator.verifyCredential).not.toHaveBeenCalled();
       expect(res.statusCode).toBe(404);
-      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.end).toHaveBeenCalledTimes(1);
 
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toMatchInlineSnapshot(`
@@ -488,7 +482,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(418);
-      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.end).toHaveBeenCalledTimes(1);
 
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toMatchInlineSnapshot(`
@@ -626,7 +620,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       await controller.delegateAuthRequest(req, res);
 
       expect(res.statusCode).toBe(200);
-      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.end).toHaveBeenCalledTimes(1);
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toEqual({
         platform: 'foo',
@@ -1262,8 +1256,8 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -1304,8 +1298,8 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -1336,7 +1330,7 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthenticator.checkAuthData.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
 
   it('throw 401 if no signature in cookies', async () => {
@@ -1362,7 +1356,7 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthenticator.checkAuthData.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
 
   it('throw 401 if no token provided', async () => {
@@ -1388,7 +1382,7 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthenticator.checkAuthData.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
 
   it('throw 400 if no invalid authorization format received', async () => {
@@ -1417,7 +1411,7 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthenticator.checkAuthData.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
 
   it('throw 404 if platform not found', async () => {
@@ -1455,7 +1449,7 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthenticator.checkAuthData.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
 
   it('throw 400 if provider.checkAuthData() fail', async () => {
@@ -1492,6 +1486,6 @@ describe('#verifyAuth(req)', () => {
             }
           `);
 
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
   });
 });

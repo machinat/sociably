@@ -43,7 +43,7 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe('en');
     expect(profile.data).toEqual(userProfileData);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
         "GET",
@@ -96,7 +96,7 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe(undefined);
     expect(profile.data).toEqual(groupMemberData);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
         "GET",
@@ -128,7 +128,7 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe(undefined);
     expect(profile.data).toEqual(roomMemberData);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
         "GET",
@@ -165,7 +165,7 @@ describe('#getGroupProfile(user)', () => {
     );
     expect(profile.data).toEqual(groupSummary);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
     expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
         "GET",

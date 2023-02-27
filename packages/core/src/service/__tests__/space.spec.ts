@@ -67,8 +67,8 @@ it('provide services bound in bindings', () => {
   ]);
   space.bootstrap();
 
-  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
+  expect(Foo.$$factory).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory).not.toHaveBeenCalled();
 
   const scope = space.createScope();
   expect(scope).toBeInstanceOf(ServiceScope);
@@ -81,17 +81,17 @@ it('provide services bound in bindings', () => {
   expect(bar).toBeInstanceOf(BarImpl);
   expect(baz).toBeInstanceOf(Baz);
 
-  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(Foo.$$factory.mock).toHaveBeenCalledWith(greeter);
+  expect(Foo.$$factory).toHaveBeenCalledTimes(1);
+  expect(Foo.$$factory).toHaveBeenCalledWith(greeter);
 
-  expect(BarImpl.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.$$factory.mock).toHaveBeenCalledWith(foo);
+  expect(BarImpl.$$factory).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory).toHaveBeenCalledWith(foo);
 
-  expect(bazProvider.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(bazProvider.$$factory.mock).toHaveBeenCalledWith(foo, bar);
+  expect(bazProvider.$$factory).toHaveBeenCalledTimes(2);
+  expect(bazProvider.$$factory).toHaveBeenCalledWith(foo, bar);
 
-  expect(myContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(myContainer.$$factory.mock).toHaveBeenCalledWith(
+  expect(myContainer.$$factory).toHaveBeenCalledTimes(1);
+  expect(myContainer.$$factory).toHaveBeenCalledWith(
     greeter,
     foo,
     bar,
@@ -141,18 +141,18 @@ test('new bindings are prioritized to the bindings from base space', () => {
   expect(bar).toBeInstanceOf(AnotherBar);
   expect(baz).toBe(fakeBaz);
 
-  expect(MyFoo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(MyFoo.$$factory.mock).toHaveBeenCalledWith(bar, baz);
-  expect(Foo.$$factory.mock).not.toHaveBeenCalled();
+  expect(MyFoo.$$factory).toHaveBeenCalledTimes(1);
+  expect(MyFoo.$$factory).toHaveBeenCalledWith(bar, baz);
+  expect(Foo.$$factory).not.toHaveBeenCalled();
 
-  expect(AnotherBar.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(AnotherBar.$$factory.mock).toHaveBeenCalledWith(baz);
-  expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
+  expect(AnotherBar.$$factory).toHaveBeenCalledTimes(1);
+  expect(AnotherBar.$$factory).toHaveBeenCalledWith(baz);
+  expect(BarImpl.$$factory).not.toHaveBeenCalled();
 
-  expect(bazProvider.$$factory.mock).not.toHaveBeenCalled();
+  expect(bazProvider.$$factory).not.toHaveBeenCalled();
 
-  expect(myContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(myContainer.$$factory.mock).toHaveBeenCalledWith(
+  expect(myContainer.$$factory).toHaveBeenCalledTimes(1);
+  expect(myContainer.$$factory).toHaveBeenCalledWith(
     staticGreeter,
     foo,
     bar,
@@ -418,7 +418,7 @@ it('use the same instance of the same provider on different interface', () => {
   expect(jazzBar).toBe(bar);
   expect(musicalBar).toBe(bar);
 
-  expect(BarImpl.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory).toHaveBeenCalledTimes(1);
 });
 
 test('lifecycle of services of different lifetime', () => {
@@ -430,9 +430,9 @@ test('lifecycle of services of different lifetime', () => {
   ]);
   space.bootstrap();
 
-  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
-  expect(bazProvider.$$factory.mock).not.toHaveBeenCalled();
+  expect(Foo.$$factory).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory).not.toHaveBeenCalled();
+  expect(bazProvider.$$factory).not.toHaveBeenCalled();
 
   const bootstrapedFoo = Foo.$$factory.mock.calls[0].result;
   const services = [HELLO, Foo, Bar, BAZ];
@@ -461,9 +461,9 @@ test('lifecycle of services of different lifetime', () => {
   expect(baz3).not.toBe(baz1);
   expect(baz3).not.toBe(baz2);
 
-  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(bazProvider.$$factory.mock).toHaveBeenCalledTimes(3);
+  expect(Foo.$$factory).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory).toHaveBeenCalledTimes(2);
+  expect(bazProvider.$$factory).toHaveBeenCalledTimes(3);
 });
 
 test('provide multi interface as an array of bound value', () => {
@@ -520,9 +520,9 @@ test('provide multi interface as an array of bound value', () => {
   ]);
   space.bootstrap();
 
-  expect(meatFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(bistroFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(bistroFactory.$$factory.mock).toHaveBeenLastCalledWith([
+  expect(meatFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(bistroFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(bistroFactory.$$factory).toHaveBeenLastCalledWith([
     '🍔',
     '🍕',
     '🌮',
@@ -533,26 +533,26 @@ test('provide multi interface as an array of bound value', () => {
     '🥙',
   ]);
 
-  expect(burgerFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(burgerFactory.$$factory.mock).toHaveBeenCalledWith('🥩');
+  expect(burgerFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(burgerFactory.$$factory).toHaveBeenCalledWith('🥩');
 
-  expect(hotdogFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(hotdogFactory.$$factory.mock).toHaveBeenCalledWith('🥩');
+  expect(hotdogFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(hotdogFactory.$$factory).toHaveBeenCalledWith('🥩');
 
-  expect(tacoFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(pizzaFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(ramenFactory.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(tacoFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(pizzaFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(ramenFactory.$$factory).toHaveBeenCalledTimes(1);
 
   const scope = space.createScope();
   expect(scope.useServices([MULTI_FOOD])).toEqual([
     ['🍔', '🍕', '🌮', '🍝', '🍕', '🌭', '🍜', '🥙'],
   ]);
 
-  expect(burgerFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(pizzaFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(hotdogFactory.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(tacoFactory.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(ramenFactory.$$factory.mock).toHaveBeenCalledTimes(2);
+  expect(burgerFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(pizzaFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(hotdogFactory.$$factory).toHaveBeenCalledTimes(2);
+  expect(tacoFactory.$$factory).toHaveBeenCalledTimes(2);
+  expect(ramenFactory.$$factory).toHaveBeenCalledTimes(2);
 });
 
 test('provide multi interface as an empty array if no value bound', () => {
@@ -571,8 +571,8 @@ test('provide multi interface as an empty array if no value bound', () => {
   ]);
   space.bootstrap();
 
-  expect(needFooFactory.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(needFooFactory.$$factory.mock).toHaveBeenCalledWith([]);
+  expect(needFooFactory.$$factory).toHaveBeenCalledTimes(1);
+  expect(needFooFactory.$$factory).toHaveBeenCalledWith([]);
 
   const scope = space.createScope();
   expect(scope.useServices([MULTI_FOO])).toEqual([[]]);
@@ -616,9 +616,9 @@ test('inject time provision', () => {
     )
   ).toEqual([greeter, foo, bar, baz]);
 
-  expect(Foo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BarImpl.$$factory.mock).not.toHaveBeenCalled();
-  expect(bazProvider.$$factory.mock).not.toHaveBeenCalled();
+  expect(Foo.$$factory).toHaveBeenCalledTimes(1);
+  expect(BarImpl.$$factory).not.toHaveBeenCalled();
+  expect(bazProvider.$$factory).not.toHaveBeenCalled();
 });
 
 test('boostrap time provision', () => {
@@ -637,8 +637,8 @@ test('boostrap time provision', () => {
   ]);
   space.bootstrap(new Map([[BOOTSTRAP_TIME_INTERFACE, 'boooo~']]));
 
-  expect(BooConsumer.mock).toHaveBeenCalledTimes(1);
-  expect(BooConsumer.mock).toHaveBeenCalledWith('boooo~');
+  expect(BooConsumer).toHaveBeenCalledTimes(1);
+  expect(BooConsumer).toHaveBeenCalledWith('boooo~');
 
   expect(() =>
     space.createScope().useServices([BOOTSTRAP_TIME_INTERFACE])
@@ -664,7 +664,7 @@ test('require underlying ServiceScope', () => {
   const scope = space.bootstrap();
 
   expect(scope).toBeInstanceOf(ServiceScope);
-  expect(singletonService.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(singletonService.$$factory).toHaveBeenCalledTimes(1);
   expect(singletonService.$$factory.mock.calls[0].args[0]).toBe(scope);
 
   const consumerContainer = moxy(
@@ -673,9 +673,9 @@ test('require underlying ServiceScope', () => {
 
   scope.injectContainer(consumerContainer);
 
-  expect(consumerContainer.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(consumerContainer.$$factory).toHaveBeenCalledTimes(1);
   expect(consumerContainer.$$factory.mock.calls[0].args[0]).toBe(scope);
-  expect(scopedService.$$factory.mock).toHaveBeenCalledTimes(1);
+  expect(scopedService.$$factory).toHaveBeenCalledTimes(1);
   expect(scopedService.$$factory.mock.calls[0].args[0]).toBe(scope);
 
   const [requiredScope] = scope.useServices([ServiceScope]);

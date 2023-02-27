@@ -85,8 +85,8 @@ describe('.getUserProfile(user)', () => {
     expect(profile.lastName).toBe(undefined);
     expect(profile.avatarUrl).toBe(undefined);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChatMember', {
       chat_id: 12345,
       user_id: 12345,
     });
@@ -110,8 +110,8 @@ describe('.getUserProfile(user)', () => {
     expect(profile.lastName).toBe(undefined);
     expect(profile.avatarUrl).toBe(undefined);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChatMember', {
       user_id: 12345,
       chat_id: 67890,
     });
@@ -144,8 +144,8 @@ describe('.getUserProfile(user)', () => {
     expect(profile.username).toBe('jojodoe');
     expect(profile.avatarUrl).toBe(undefined);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChatMember', {
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChatMember', {
       chat_id: 12345,
       user_id: 12345,
     });
@@ -270,8 +270,8 @@ describe('.getChatProfile(user)', () => {
     expect(profile.title).toBe(undefined);
     expect(profile.avatarUrl).toBe(undefined);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChat', {
       chat_id: 67890,
     });
 
@@ -282,7 +282,7 @@ describe('.getChatProfile(user)', () => {
       profile
     );
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(3);
+    expect(bot.makeApiCall).toHaveReturnedTimes(3);
 
     bot.makeApiCall.mock.fake(() => ({
       id: 99999,
@@ -329,8 +329,8 @@ describe('.getChatProfile(user)', () => {
     expect(profile.username).toBe('jojodoe');
     expect(profile.avatarUrl).toBe(undefined);
 
-    expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall).toHaveReturnedTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChat', {
       chat_id: 67890,
     });
   });
@@ -409,12 +409,12 @@ describe('.fetchUserPhoto(user)', () => {
     const { content, contentType, contentLength, width, height }: any =
       await profiler.fetchUserPhoto(user);
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getUserProfilePhotos', {
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getUserProfilePhotos', {
       user_id: 12345,
     });
-    expect(bot.fetchFile.mock).toHaveBeenCalledTimes(1);
-    expect(bot.fetchFile.mock).toHaveBeenCalledWith('_FILE_S_');
+    expect(bot.fetchFile).toHaveBeenCalledTimes(1);
+    expect(bot.fetchFile).toHaveBeenCalledWith('_FILE_S_');
 
     expect(content).toBeInstanceOf(Readable);
     expect(content.read(100)).toBe('__BINARY_DATA__');
@@ -461,11 +461,11 @@ describe('.fetchUserPhoto(user)', () => {
       height: 600,
     });
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(3);
-    expect(bot.fetchFile.mock).toHaveBeenCalledTimes(3);
-    expect(bot.fetchFile.mock).toHaveBeenNthCalledWith(1, '_FILE_S_');
-    expect(bot.fetchFile.mock).toHaveBeenNthCalledWith(2, '_FILE_M_');
-    expect(bot.fetchFile.mock).toHaveBeenNthCalledWith(3, '_FILE_L_');
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(3);
+    expect(bot.fetchFile).toHaveBeenCalledTimes(3);
+    expect(bot.fetchFile).toHaveBeenNthCalledWith(1, '_FILE_S_');
+    expect(bot.fetchFile).toHaveBeenNthCalledWith(2, '_FILE_M_');
+    expect(bot.fetchFile).toHaveBeenNthCalledWith(3, '_FILE_L_');
   });
 
   it('return null if user has no profile photo', async () => {
@@ -506,12 +506,12 @@ describe('.fetchChatPhoto(user)', () => {
     const { content, contentType, contentLength, width, height }: any =
       await profiler.fetchChatPhoto(12345);
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChat', {
       chat_id: 12345,
     });
-    expect(bot.fetchFile.mock).toHaveBeenCalledTimes(1);
-    expect(bot.fetchFile.mock).toHaveBeenCalledWith('_BIG_FILE_ID_');
+    expect(bot.fetchFile).toHaveBeenCalledTimes(1);
+    expect(bot.fetchFile).toHaveBeenCalledWith('_BIG_FILE_ID_');
 
     expect(content).toBeInstanceOf(Readable);
     expect(content.read(100)).toBe('__BINARY_DATA__');
@@ -536,12 +536,12 @@ describe('.fetchChatPhoto(user)', () => {
       height: 160,
     });
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChat', {
       chat_id: 12345,
     });
-    expect(bot.fetchFile.mock).toHaveBeenCalledTimes(1);
-    expect(bot.fetchFile.mock).toHaveBeenCalledWith('_SMALL_FILE_ID_');
+    expect(bot.fetchFile).toHaveBeenCalledTimes(1);
+    expect(bot.fetchFile).toHaveBeenCalledWith('_SMALL_FILE_ID_');
   });
 
   it('fetch with chat object', async () => {
@@ -563,14 +563,14 @@ describe('.fetchChatPhoto(user)', () => {
       expectedResponse
     );
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChat', {
       chat_id: 67890,
     });
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith('getChat', {
+    expect(bot.makeApiCall).toHaveBeenCalledWith('getChat', {
       chat_id: '@foo_channel',
     });
-    expect(bot.fetchFile.mock).toHaveBeenCalledTimes(2);
+    expect(bot.fetchFile).toHaveBeenCalledTimes(2);
   });
 
   it('return null if chat has no photo', async () => {

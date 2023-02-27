@@ -167,6 +167,6 @@ test('altText as function', async () => {
   const templateValue = messageSegValue.params as TemplateMessageParams;
 
   expect(templateValue.altText).toBe('ALT_TEXT_FOO');
-  expect(altTextGetter.mock).toHaveBeenCalledTimes(1);
-  expect(altTextGetter.mock).toHaveBeenCalledWith(templateValue.template);
+  expect(altTextGetter).toHaveBeenCalledTimes(1);
+  expect(altTextGetter).toHaveBeenCalledWith(templateValue.template);
 });

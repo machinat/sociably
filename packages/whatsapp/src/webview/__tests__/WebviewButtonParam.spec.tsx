@@ -46,12 +46,12 @@ test('rendering to UrlButtonParam', () => {
     />
   `);
 
-  expect(authenticator.getAuthUrlSuffix.mock).toHaveBeenCalledTimes(3);
-  expect(authenticator.getAuthUrlSuffix.mock).toHaveBeenCalledWith(
+  expect(authenticator.getAuthUrlSuffix).toHaveBeenCalledTimes(3);
+  expect(authenticator.getAuthUrlSuffix).toHaveBeenCalledWith(
     '9876543210',
     undefined
   );
-  expect(authenticator.getAuthUrlSuffix.mock).toHaveBeenNthCalledWith(
+  expect(authenticator.getAuthUrlSuffix).toHaveBeenNthCalledWith(
     2,
     '9876543210',
     'foo?bar=baz'
@@ -65,5 +65,5 @@ test('rendering to null if channel is not a WhatsAppChat', () => {
     WebviewButtonParam(authenticator, { platform: 'test', uid: 'test.foo' })({})
   ).toBe(null);
 
-  expect(authenticator.getAuthUrlSuffix.mock).not.toHaveBeenCalled();
+  expect(authenticator.getAuthUrlSuffix).not.toHaveBeenCalled();
 });

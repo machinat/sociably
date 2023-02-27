@@ -104,19 +104,19 @@ it('sequently excute jobs within the same identical chat', async () => {
   const executePromise = queue.executeJobs(jobs);
 
   await delay(100);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(3);
+  expect(bodySpy).toHaveBeenCalledTimes(3);
   expect(bodySpy.mock.calls[0].args[0]).toEqual({ n: 1 });
   expect(bodySpy.mock.calls[1].args[0]).toEqual({ n: 3 });
   expect(bodySpy.mock.calls[2].args[0]).toEqual({ n: 5 });
 
   await delay(100);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(6);
+  expect(bodySpy).toHaveBeenCalledTimes(6);
   expect(bodySpy.mock.calls[3].args[0]).toEqual({ n: 2 });
   expect(bodySpy.mock.calls[4].args[0]).toEqual({ n: 4 });
   expect(bodySpy.mock.calls[5].args[0]).toEqual({ n: 6 });
 
   await delay(100);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(9);
+  expect(bodySpy).toHaveBeenCalledTimes(9);
   expect(bodySpy.mock.calls[6].args[0]).toEqual({ n: 7 });
   expect(bodySpy.mock.calls[7].args[0]).toEqual({ n: 8 });
   expect(bodySpy.mock.calls[8].args[0]).toEqual({ n: 9 });
@@ -162,27 +162,27 @@ it('open requests up to maxConnections', async () => {
   const executePromise = queue.executeJobs(jobs);
 
   await delay(100);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+  expect(bodySpy).toHaveBeenCalledTimes(2);
   expect(bodySpy.mock.calls[0].args[0]).toEqual({ n: 1 });
   expect(bodySpy.mock.calls[1].args[0]).toEqual({ n: 3 });
 
   await delay(100);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(4);
+  expect(bodySpy).toHaveBeenCalledTimes(4);
   expect(bodySpy.mock.calls[2].args[0]).toEqual({ n: 2 });
   expect(bodySpy.mock.calls[3].args[0]).toEqual({ n: 4 });
 
   await delay(100);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(6);
+  expect(bodySpy).toHaveBeenCalledTimes(6);
   expect(bodySpy.mock.calls[4].args[0]).toEqual({ n: 5 });
   expect(bodySpy.mock.calls[5].args[0]).toEqual({ n: 7 });
 
   await delay(100);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(8);
+  expect(bodySpy).toHaveBeenCalledTimes(8);
   expect(bodySpy.mock.calls[6].args[0]).toEqual({ n: 6 });
   expect(bodySpy.mock.calls[7].args[0]).toEqual({ n: 8 });
 
   await delay(100);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(9);
+  expect(bodySpy).toHaveBeenCalledTimes(9);
   expect(bodySpy.mock.calls[8].args[0]).toEqual({ n: 9 });
 
   expect(msgScope.isDone()).toBe(true);
@@ -351,7 +351,7 @@ test('with uploadingFiles', async () => {
     errors: null,
   });
 
-  expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+  expect(bodySpy).toHaveBeenCalledTimes(2);
   expect(
     bodySpy.mock.calls.map(({ args }) =>
       args[0].replace(/-{10}[0-9]+/g, 'BOUNDARY-PLACEHOLDER')

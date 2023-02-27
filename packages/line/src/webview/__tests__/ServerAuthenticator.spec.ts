@@ -82,7 +82,7 @@ test('.delegateAuthRequest() respond 403', async () => {
   );
 
   expect(res.statusCode).toBe(403);
-  expect(res.end.mock).toHaveBeenCalled();
+  expect(res.end).toHaveBeenCalled();
 });
 
 describe('.verifyCredential(credential)', () => {
@@ -118,7 +118,7 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+    expect(bot.makeApiCall).toHaveBeenCalledWith(
       'GET',
       `oauth2/v2.1/verify?access_token=${credential.accessToken}`
     );
@@ -158,13 +158,13 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(
       1,
       'GET',
       `oauth2/v2.1/verify?access_token=${credential.accessToken}`
     );
 
-    expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(
       2,
       'GET',
       'v2/bot/group/_GROUP_ID_/member/_USER_ID_'
@@ -205,12 +205,12 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(
       1,
       'GET',
       `oauth2/v2.1/verify?access_token=${credential.accessToken}`
     );
-    expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(
       2,
       'GET',
       'v2/bot/room/_ROOM_ID_/member/_USER_ID_'

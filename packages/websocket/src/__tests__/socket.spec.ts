@@ -92,8 +92,8 @@ it('propagate "open" event', () => {
   socket.on('open', openSpy);
 
   ws.emit('open');
-  expect(openSpy.mock).toHaveBeenCalledTimes(1);
-  expect(openSpy.mock).toHaveBeenCalledWith(socket);
+  expect(openSpy).toHaveBeenCalledTimes(1);
+  expect(openSpy).toHaveBeenCalledWith(socket);
 });
 
 it('propagate "error" event', () => {
@@ -106,8 +106,8 @@ it('propagate "error" event', () => {
   const err = new Error('bad!');
   ws.emit('error', err);
 
-  expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-  expect(errorSpy.mock).toHaveBeenCalledWith(err, socket);
+  expect(errorSpy).toHaveBeenCalledTimes(1);
+  expect(errorSpy).toHaveBeenCalledWith(err, socket);
 });
 
 describe('login', () => {
@@ -119,15 +119,15 @@ describe('login', () => {
 
     await delay(50);
 
-    expect(singInSpy.mock).toHaveBeenCalledTimes(1);
-    expect(singInSpy.mock).toHaveBeenCalledWith(
+    expect(singInSpy).toHaveBeenCalledTimes(1);
+    expect(singInSpy).toHaveBeenCalledWith(
       { credential: '***' },
       expect.any(Number),
       serverSocket
     );
 
     const seq = singInSpy.mock.calls[0].args[1];
-    expect(clientWs.send.mock).toHaveBeenCalledWith(
+    expect(clientWs.send).toHaveBeenCalledWith(
       JSON.stringify(['login', seq, { credential: '***' }]),
       expect.any(Function)
     );
@@ -153,7 +153,7 @@ describe('login', () => {
 
     await delay(50);
 
-    expect(clientWs.send.mock).toHaveBeenCalledTimes(1);
+    expect(clientWs.send).toHaveBeenCalledTimes(1);
 
     const [frame, , body] = JSON.parse(clientWs.send.mock.calls[0].args[0]);
     expect(frame).toBe('reject');
@@ -195,34 +195,34 @@ describe('connecting handshake', () => {
     expect(serverSocket.isConnected(connId)).toBe(true);
     expect(serverSocket.isConnecting(connId)).toBe(false);
 
-    expect(serverConnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverConnectSpy.mock).toHaveBeenCalledWith(
+    expect(serverConnectSpy).toHaveBeenCalledTimes(1);
+    expect(serverConnectSpy).toHaveBeenCalledWith(
       { seq, connId },
       expect.any(Number),
       serverSocket
     );
 
-    expect(clientConnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientConnectSpy.mock).toHaveBeenCalledWith(
+    expect(clientConnectSpy).toHaveBeenCalledTimes(1);
+    expect(clientConnectSpy).toHaveBeenCalledWith(
       { connId, seq: 1 },
       expect.any(Number),
       clientSocket
     );
 
-    expect(serverWs.send.mock).toHaveBeenCalledTimes(1);
+    expect(serverWs.send).toHaveBeenCalledTimes(1);
     const serverPacket = JSON.parse(serverWs.send.mock.calls[0].args[0]);
     expect(serverPacket[0]).toBe('connect');
     expect(typeof serverPacket[1]).toBe('number');
     expect(serverPacket[2]).toEqual({ connId, seq: 1 });
 
-    expect(clientWs.send.mock).toHaveBeenCalledTimes(1);
+    expect(clientWs.send).toHaveBeenCalledTimes(1);
     const clientPacket = JSON.parse(clientWs.send.mock.calls[0].args[0]);
     expect(clientPacket[0]).toBe('connect');
     expect(typeof clientPacket[1]).toBe('number');
     expect(clientPacket[2]).toEqual({ seq, connId });
 
-    expect(serverFailSpy.mock).not.toHaveBeenCalled();
-    expect(clientFailSpy.mock).not.toHaveBeenCalled();
+    expect(serverFailSpy).not.toHaveBeenCalled();
+    expect(clientFailSpy).not.toHaveBeenCalled();
   });
 
   test('server respond disconnect if connect initiated by client', async () => {
@@ -234,8 +234,8 @@ describe('connecting handshake', () => {
     expect(serverSocket.isConnected(connId)).toBe(false);
     expect(serverSocket.isConnecting(connId)).toBe(false);
 
-    expect(clientFailSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientFailSpy.mock).toHaveBeenCalledWith(
+    expect(clientFailSpy).toHaveBeenCalledTimes(1);
+    expect(clientFailSpy).toHaveBeenCalledWith(
       { connId, seq, reason: expect.any(String) },
       expect.any(Number),
       clientSocket
@@ -244,9 +244,9 @@ describe('connecting handshake', () => {
       `"initiate connect handshake from client is not allowed"`
     );
 
-    expect(serverFailSpy.mock).not.toHaveBeenCalled();
-    expect(serverConnectSpy.mock).not.toHaveBeenCalled();
-    expect(clientConnectSpy.mock).not.toHaveBeenCalled();
+    expect(serverFailSpy).not.toHaveBeenCalled();
+    expect(serverConnectSpy).not.toHaveBeenCalled();
+    expect(clientConnectSpy).not.toHaveBeenCalled();
   });
 
   test('connect then disconnect immediatly', async () => {
@@ -269,24 +269,24 @@ describe('connecting handshake', () => {
     expect(serverSocket.isConnected(connId)).toBe(false);
     expect(serverSocket.isConnecting(connId)).toBe(false);
 
-    expect(serverConnectSpy.mock).not.toHaveBeenCalled();
-    expect(serverFailSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverFailSpy.mock).toHaveBeenCalledWith(
+    expect(serverConnectSpy).not.toHaveBeenCalled();
+    expect(serverFailSpy).toHaveBeenCalledTimes(1);
+    expect(serverFailSpy).toHaveBeenCalledWith(
       { connId, reason: 'echo', seq: disconnectReq },
       expect.any(Number),
       serverSocket
     );
 
-    expect(clientFailSpy.mock).not.toHaveBeenCalled();
-    expect(clientConnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientConnectSpy.mock).toHaveBeenCalledWith(
+    expect(clientFailSpy).not.toHaveBeenCalled();
+    expect(clientConnectSpy).toHaveBeenCalledTimes(1);
+    expect(clientConnectSpy).toHaveBeenCalledWith(
       { connId, seq: 1 },
       connectReq,
       clientSocket
     );
 
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(clientDisconnectSpy).toHaveBeenCalledTimes(1);
+    expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId, reason: 'sorry! wrong number' },
       disconnectReq,
       clientSocket
@@ -332,14 +332,14 @@ describe('disconnect handshake', () => {
     const seq = await serverSocket.disconnect({ connId, reason: 'bye!' });
     await delay(50);
 
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(clientDisconnectSpy).toHaveBeenCalledTimes(1);
+    expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId, reason: 'bye!' },
       seq,
       clientSocket
     );
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(serverDisconnectSpy).toHaveBeenCalledTimes(1);
+    expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { seq, connId, reason: 'echo' },
       expect.any(Number),
       serverSocket
@@ -356,14 +356,14 @@ describe('disconnect handshake', () => {
     const seq = await clientSocket.disconnect({ connId, reason: 'bye!' });
     await delay(50);
 
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(serverDisconnectSpy).toHaveBeenCalledTimes(1);
+    expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { connId, reason: 'bye!' },
       seq,
       serverSocket
     );
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(clientDisconnectSpy).toHaveBeenCalledTimes(1);
+    expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { seq, connId, reason: 'echo' },
       expect.any(Number),
       clientSocket
@@ -391,14 +391,14 @@ describe('disconnect handshake', () => {
     ).resolves.toBe(undefined);
     await delay(50);
 
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(clientDisconnectSpy).toHaveBeenCalledTimes(1);
+    expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId, reason: 'bye' },
       seq,
       clientSocket
     );
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(serverDisconnectSpy).toHaveBeenCalledTimes(1);
+    expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { seq, connId, reason: 'echo' },
       expect.any(Number),
       serverSocket
@@ -431,16 +431,16 @@ describe('dispatch events', () => {
     const seq = await clientSocket.dispatch(eventsBody);
     await delay(50);
 
-    expect(serverDispatchSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverDispatchSpy.mock).toHaveBeenCalledWith(
+    expect(serverDispatchSpy).toHaveBeenCalledTimes(1);
+    expect(serverDispatchSpy).toHaveBeenCalledWith(
       eventsBody,
       seq,
       serverSocket
     );
 
-    expect(clientDispatchSpy.mock).not.toHaveBeenCalled();
+    expect(clientDispatchSpy).not.toHaveBeenCalled();
 
-    expect(clientWs.send.mock).toHaveBeenCalledTimes(2); // connect & event
+    expect(clientWs.send).toHaveBeenCalledTimes(2); // connect & event
     const packet = JSON.parse(clientWs.send.mock.calls[1].args[0]);
 
     expect(packet[0]).toBe('events');
@@ -455,16 +455,16 @@ describe('dispatch events', () => {
     const seq = await serverSocket.dispatch(eventsBody);
     await delay(50);
 
-    expect(clientDispatchSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientDispatchSpy.mock).toHaveBeenCalledWith(
+    expect(clientDispatchSpy).toHaveBeenCalledTimes(1);
+    expect(clientDispatchSpy).toHaveBeenCalledWith(
       eventsBody,
       seq,
       clientSocket
     );
 
-    expect(serverDispatchSpy.mock).not.toHaveBeenCalled();
+    expect(serverDispatchSpy).not.toHaveBeenCalled();
 
-    expect(serverWs.send.mock).toHaveBeenCalledTimes(2); // connect & event
+    expect(serverWs.send).toHaveBeenCalledTimes(2); // connect & event
     const packet = JSON.parse(serverWs.send.mock.calls[1].args[0]);
 
     expect(packet[0]).toBe('events');
@@ -527,15 +527,15 @@ describe('reject', () => {
 
     await delay(50);
 
-    expect(clientRejectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientRejectSpy.mock).toHaveBeenCalledWith(
+    expect(clientRejectSpy).toHaveBeenCalledTimes(1);
+    expect(clientRejectSpy).toHaveBeenCalledWith(
       { seq: 2, reason: 'foo' },
       seq1,
       clientSocket
     );
 
-    expect(serverRejectSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverRejectSpy.mock).toHaveBeenCalledWith(
+    expect(serverRejectSpy).toHaveBeenCalledTimes(1);
+    expect(serverRejectSpy).toHaveBeenCalledWith(
       { seq: 3, reason: 'bar' },
       seq2,
       serverSocket
@@ -558,20 +558,20 @@ describe('closing', () => {
     expect(serverSocket.close(888, 'Bye!')).toBe(undefined);
     await delay(50);
 
-    expect(serverCloseSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', serverSocket);
-    expect(clientCloseSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', clientSocket);
+    expect(serverCloseSpy).toHaveBeenCalledTimes(1);
+    expect(serverCloseSpy).toHaveBeenCalledWith(888, 'Bye!', serverSocket);
+    expect(clientCloseSpy).toHaveBeenCalledTimes(1);
+    expect(clientCloseSpy).toHaveBeenCalledWith(888, 'Bye!', clientSocket);
   });
 
   test('close from client', async () => {
     expect(clientSocket.close(888, 'Bye!')).toBe(undefined);
     await delay(50);
 
-    expect(serverCloseSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', serverSocket);
-    expect(clientCloseSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', clientSocket);
+    expect(serverCloseSpy).toHaveBeenCalledTimes(1);
+    expect(serverCloseSpy).toHaveBeenCalledWith(888, 'Bye!', serverSocket);
+    expect(clientCloseSpy).toHaveBeenCalledTimes(1);
+    expect(clientCloseSpy).toHaveBeenCalledWith(888, 'Bye!', clientSocket);
   });
 
   it('emit disconnect of connected channel', async () => {
@@ -587,29 +587,29 @@ describe('closing', () => {
     expect(clientSocket.close(888, 'Bye!')).toBe(undefined);
     await delay(50);
 
-    expect(serverCloseSpy.mock).toHaveBeenCalledTimes(1);
-    expect(serverCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', serverSocket);
-    expect(clientCloseSpy.mock).toHaveBeenCalledTimes(1);
-    expect(clientCloseSpy.mock).toHaveBeenCalledWith(888, 'Bye!', clientSocket);
+    expect(serverCloseSpy).toHaveBeenCalledTimes(1);
+    expect(serverCloseSpy).toHaveBeenCalledWith(888, 'Bye!', serverSocket);
+    expect(clientCloseSpy).toHaveBeenCalledTimes(1);
+    expect(clientCloseSpy).toHaveBeenCalledWith(888, 'Bye!', clientSocket);
 
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledTimes(2);
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(clientDisconnectSpy).toHaveBeenCalledTimes(2);
+    expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId: 'conn#1', reason: 'Bye!' },
       undefined,
       clientSocket
     );
-    expect(clientDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId: 'conn#2', reason: 'Bye!' },
       undefined,
       clientSocket
     );
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledTimes(2);
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(serverDisconnectSpy).toHaveBeenCalledTimes(2);
+    expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { connId: 'conn#1', reason: 'Bye!' },
       undefined,
       serverSocket
     );
-    expect(serverDisconnectSpy.mock).toHaveBeenCalledWith(
+    expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { connId: 'conn#2', reason: 'Bye!' },
       undefined,
       serverSocket

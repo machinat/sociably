@@ -55,27 +55,27 @@ it('respond 503 if request received before prepared', async () => {
   await nextTick();
 
   expect(res.statusCode).toBe(503);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
 
-  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
-  expect(handleRequest.mock).not.toHaveBeenCalled();
+  expect(nextApp.renderError).not.toHaveBeenCalled();
+  expect(handleRequest).not.toHaveBeenCalled();
 });
 
 describe('.prepare()', () => {
   test('call nextServer.prepare()', async () => {
     const receiver = new NextReceiver(nextApp);
-    expect(nextApp.prepare.mock).not.toHaveBeenCalled();
+    expect(nextApp.prepare).not.toHaveBeenCalled();
 
     await receiver.prepare();
 
-    expect(nextApp.prepare.mock).toHaveBeenCalledTimes(1);
+    expect(nextApp.prepare).toHaveBeenCalledTimes(1);
   });
 
   test('make no call if noPrepare is true', async () => {
     const receiver = new NextReceiver(nextApp, { noPrepare: true });
     await receiver.prepare();
 
-    expect(nextApp.prepare.mock).not.toHaveBeenCalled();
+    expect(nextApp.prepare).not.toHaveBeenCalled();
   });
 });
 
@@ -83,7 +83,7 @@ test('.close() call nextServer.close()', async () => {
   const receiver = new NextReceiver(nextApp);
   await receiver.close();
 
-  expect(nextApp.close.mock).toHaveBeenCalledTimes(1);
+  expect(nextApp.close).toHaveBeenCalledTimes(1);
 });
 
 test('handle http request', async () => {
@@ -99,15 +99,11 @@ test('handle http request', async () => {
 
   expect(res.statusCode).toBe(200);
 
-  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
-  expect(nextApp.render.mock).not.toHaveBeenCalled();
+  expect(nextApp.renderError).not.toHaveBeenCalled();
+  expect(nextApp.render).not.toHaveBeenCalled();
 
-  expect(nextDefaultHandler.mock).toHaveBeenCalledTimes(1);
-  expect(nextDefaultHandler.mock).toHaveBeenCalledWith(
-    req,
-    res,
-    expect.any(Object)
-  );
+  expect(nextDefaultHandler).toHaveBeenCalledTimes(1);
+  expect(nextDefaultHandler).toHaveBeenCalledWith(req, res, expect.any(Object));
   expect(nextDefaultHandler.mock.calls[0].args[2]).toMatchInlineSnapshot(`
     Url {
       "auth": null,
@@ -127,8 +123,8 @@ test('handle http request', async () => {
     }
   `);
 
-  expect(handleRequest.mock).toHaveBeenCalledTimes(1);
-  expect(handleRequest.mock).toHaveBeenCalledWith({
+  expect(handleRequest).toHaveBeenCalledTimes(1);
+  expect(handleRequest).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello?foo=bar',
     route: '/hello',
@@ -149,18 +145,18 @@ test('with entryPath', async () => {
   receiver.handleRequest(req, res);
   await nextTick();
 
-  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
-  expect(nextApp.render.mock).not.toHaveBeenCalled();
+  expect(nextApp.renderError).not.toHaveBeenCalled();
+  expect(nextApp.render).not.toHaveBeenCalled();
 
-  expect(nextDefaultHandler.mock).toHaveBeenCalledTimes(1);
-  expect(nextDefaultHandler.mock).toHaveBeenCalledWith(
+  expect(nextDefaultHandler).toHaveBeenCalledTimes(1);
+  expect(nextDefaultHandler).toHaveBeenCalledWith(
     req,
     res,
     parseUrl('http://sociably.io/hello/world', true)
   );
 
-  expect(handleRequest.mock).toHaveBeenCalledTimes(1);
-  expect(handleRequest.mock).toHaveBeenCalledWith({
+  expect(handleRequest).toHaveBeenCalledTimes(1);
+  expect(handleRequest).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello/world',
     route: '/world',
@@ -182,13 +178,13 @@ it('respond 404 if entryPath not match', async () => {
   receiver.handleRequest(req, res);
   await nextTick();
 
-  expect(handleRequest.mock).not.toHaveBeenCalled();
-  expect(nextApp.render.mock).not.toHaveBeenCalled();
-  expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
+  expect(handleRequest).not.toHaveBeenCalled();
+  expect(nextApp.render).not.toHaveBeenCalled();
+  expect(nextDefaultHandler).not.toHaveBeenCalled();
 
-  expect(nextApp.render.mock).not.toHaveBeenCalled();
-  expect(nextApp.renderError.mock).toHaveBeenCalledTimes(1);
-  expect(nextApp.renderError.mock).toHaveBeenCalledWith(
+  expect(nextApp.render).not.toHaveBeenCalled();
+  expect(nextApp.renderError).toHaveBeenCalledTimes(1);
+  expect(nextApp.renderError).toHaveBeenCalledWith(
     null,
     req,
     res,
@@ -216,8 +212,8 @@ test('customized headers returned by handleRequest', async () => {
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(handleRequest.mock).toHaveBeenCalledTimes(1);
-  expect(handleRequest.mock).toHaveBeenCalledWith({
+  expect(handleRequest).toHaveBeenCalledTimes(1);
+  expect(handleRequest).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello?foo=bar',
     route: '/hello',
@@ -246,14 +242,14 @@ it('call next.render() with page/query returned by handleRequest', async () => {
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(handleRequest.mock).toHaveReturnedTimes(1);
+  expect(handleRequest).toHaveReturnedTimes(1);
   expect(handleRequest.mock.calls[0].args[0]).toMatchSnapshot();
 
-  expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
-  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
+  expect(nextDefaultHandler).not.toHaveBeenCalled();
+  expect(nextApp.renderError).not.toHaveBeenCalled();
 
-  expect(nextApp.render.mock).toHaveBeenCalledTimes(1);
-  expect(nextApp.render.mock).toHaveBeenCalledWith(
+  expect(nextApp.render).toHaveBeenCalledTimes(1);
+  expect(nextApp.render).toHaveBeenCalledWith(
     req,
     res,
     '/hello/world',
@@ -280,8 +276,8 @@ it('call next.render() with page/query returned by handleRequest', async () => {
     }
   `);
 
-  expect(handleRequest.mock).toHaveBeenCalledTimes(1);
-  expect(handleRequest.mock).toHaveBeenCalledWith({
+  expect(handleRequest).toHaveBeenCalledTimes(1);
+  expect(handleRequest).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello?foo=bar',
     route: '/hello',
@@ -307,17 +303,17 @@ test('use service container for handleRequest', async () => {
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(initScope.mock).toHaveBeenCalledTimes(1);
-  expect(useRequestHandler.mock).toHaveReturnedTimes(1);
-  expect(useRequestHandler.mock).toHaveBeenCalledWith(
+  expect(initScope).toHaveBeenCalledTimes(1);
+  expect(useRequestHandler).toHaveReturnedTimes(1);
+  expect(useRequestHandler).toHaveBeenCalledWith(
     initScope.mock.calls[0].result
   );
 
-  expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
-  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
+  expect(nextDefaultHandler).not.toHaveBeenCalled();
+  expect(nextApp.renderError).not.toHaveBeenCalled();
 
-  expect(nextApp.render.mock).toHaveBeenCalledTimes(1);
-  expect(nextApp.render.mock).toHaveBeenCalledWith(
+  expect(nextApp.render).toHaveBeenCalledTimes(1);
+  expect(nextApp.render).toHaveBeenCalledWith(
     req,
     res,
     '/foo',
@@ -325,8 +321,8 @@ test('use service container for handleRequest', async () => {
     expect.any(Object)
   );
 
-  expect(handleRequestFn.mock).toHaveBeenCalledTimes(1);
-  expect(handleRequestFn.mock).toHaveBeenCalledWith({
+  expect(handleRequestFn).toHaveBeenCalledTimes(1);
+  expect(handleRequestFn).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello?foo=bar',
     route: '/hello',
@@ -353,14 +349,14 @@ it('call next.renderError() handleRequest return not ok', async () => {
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(handleRequest.mock).toHaveBeenCalledTimes(1);
+  expect(handleRequest).toHaveBeenCalledTimes(1);
   expect(handleRequest.mock.calls[0].args[0]).toMatchSnapshot();
 
-  expect(nextApp.render.mock).not.toHaveBeenCalled();
-  expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
+  expect(nextApp.render).not.toHaveBeenCalled();
+  expect(nextDefaultHandler).not.toHaveBeenCalled();
 
-  expect(nextApp.renderError.mock).toHaveBeenCalledTimes(1);
-  expect(nextApp.renderError.mock).toHaveBeenCalledWith(
+  expect(nextApp.renderError).toHaveBeenCalledTimes(1);
+  expect(nextApp.renderError).toHaveBeenCalledWith(
     new Error("I'm a teapot"),
     req,
     res,
@@ -369,7 +365,7 @@ it('call next.renderError() handleRequest return not ok', async () => {
   );
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(418);
-  expect(popError.mock).not.toHaveBeenCalled();
+  expect(popError).not.toHaveBeenCalled();
 });
 
 it('call next.renderError() with customized headers return by handleRequest', async () => {
@@ -390,7 +386,7 @@ it('call next.renderError() with customized headers return by handleRequest', as
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(nextApp.renderError.mock).toHaveBeenCalledWith(
+  expect(nextApp.renderError).toHaveBeenCalledWith(
     new Error("I'm a teapot"),
     req,
     res,
@@ -400,8 +396,8 @@ it('call next.renderError() with customized headers return by handleRequest', as
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledTimes(1);
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(418);
-  expect(res.setHeader.mock).toHaveBeenCalledTimes(1);
-  expect(res.setHeader.mock).toHaveBeenCalledWith('x-x-x', 't-e-a-p-o-t');
+  expect(res.setHeader).toHaveBeenCalledTimes(1);
+  expect(res.setHeader).toHaveBeenCalledWith('x-x-x', 't-e-a-p-o-t');
 });
 
 it('pass "_next" api calls to next directly', async () => {
@@ -418,16 +414,12 @@ it('pass "_next" api calls to next directly', async () => {
   receiver.handleRequest(req, res);
   await nextTick();
 
-  expect(handleRequest.mock).not.toHaveBeenCalled();
-  expect(nextApp.render.mock).not.toHaveBeenCalled();
-  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
+  expect(handleRequest).not.toHaveBeenCalled();
+  expect(nextApp.render).not.toHaveBeenCalled();
+  expect(nextApp.renderError).not.toHaveBeenCalled();
 
-  expect(nextDefaultHandler.mock).toHaveBeenCalledTimes(1);
-  expect(nextDefaultHandler.mock).toHaveBeenCalledWith(
-    req,
-    res,
-    expect.any(Object)
-  );
+  expect(nextDefaultHandler).toHaveBeenCalledTimes(1);
+  expect(nextDefaultHandler).toHaveBeenCalledWith(req, res, expect.any(Object));
   const parsedUrl = nextDefaultHandler.mock.calls[0].args[2];
   expect(parsedUrl.path).toBe('/hello/_next/xxx');
   expect(parsedUrl.pathname).toBe('/hello/_next/xxx');
@@ -451,8 +443,8 @@ test('entryPath does not affect page params from middlewares', async () => {
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(nextApp.render.mock).toHaveBeenCalledTimes(1);
-  expect(nextApp.render.mock).toHaveBeenCalledWith(
+  expect(nextApp.render).toHaveBeenCalledTimes(1);
+  expect(nextApp.render).toHaveBeenCalledWith(
     req,
     res,
     '/hello/world',
@@ -476,13 +468,13 @@ it('call next.renderError() if middlewares reject', async () => {
   expect(receiver.handleRequest(req, res)).toBe(undefined);
   await nextTick();
 
-  expect(handleRequest.mock).toHaveBeenCalledTimes(1);
+  expect(handleRequest).toHaveBeenCalledTimes(1);
 
-  expect(nextApp.render.mock).not.toHaveBeenCalled();
-  expect(nextDefaultHandler.mock).not.toHaveBeenCalled();
+  expect(nextApp.render).not.toHaveBeenCalled();
+  expect(nextDefaultHandler).not.toHaveBeenCalled();
 
-  expect(nextApp.renderError.mock).toHaveBeenCalledTimes(1);
-  expect(nextApp.renderError.mock).toHaveBeenCalledWith(
+  expect(nextApp.renderError).toHaveBeenCalledTimes(1);
+  expect(nextApp.renderError).toHaveBeenCalledWith(
     new Error("I'm a teapot"),
     req,
     res,
@@ -492,8 +484,8 @@ it('call next.renderError() if middlewares reject', async () => {
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(500);
 
-  expect(popError.mock).toHaveBeenCalledTimes(1);
-  expect(popError.mock).toHaveBeenCalledWith(new Error("I'm a teapot"));
+  expect(popError).toHaveBeenCalledTimes(1);
+  expect(popError).toHaveBeenCalledWith(new Error("I'm a teapot"));
 });
 
 it('pass hmr upgrade request to next server', async () => {
@@ -514,12 +506,12 @@ it('pass hmr upgrade request to next server', async () => {
   });
   await nextTick();
 
-  expect(nextDefaultHandler.mock).toHaveBeenCalledWith(
+  expect(nextDefaultHandler).toHaveBeenCalledWith(
     req,
     expect.any(ServerResponse)
   );
-  expect(socket.write.mock).not.toHaveBeenCalled();
-  expect(socket.destroy.mock).not.toHaveBeenCalled();
+  expect(socket.write).not.toHaveBeenCalled();
+  expect(socket.destroy).not.toHaveBeenCalled();
 
   receiver.handleHmrUpgrade(req, socket as never, Buffer.from(''), {
     originalPath: '/hello/_next/wrong-path',
@@ -528,8 +520,8 @@ it('pass hmr upgrade request to next server', async () => {
   });
   await nextTick();
 
-  expect(socket.destroy.mock).toHaveBeenCalledTimes(1);
-  expect(socket.write.mock).toHaveBeenCalledTimes(1);
+  expect(socket.destroy).toHaveBeenCalledTimes(1);
+  expect(socket.write).toHaveBeenCalledTimes(1);
   expect(socket.write.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     "HTTP/1.1 404 Not Found
     Connection: close
@@ -539,8 +531,8 @@ it('pass hmr upgrade request to next server', async () => {
     Not Found"
   `);
 
-  expect(nextDefaultHandler.mock).toHaveBeenCalledTimes(1);
-  expect(handleRequest.mock).not.toHaveBeenCalled();
-  expect(nextApp.render.mock).not.toHaveBeenCalled();
-  expect(nextApp.renderError.mock).not.toHaveBeenCalled();
+  expect(nextDefaultHandler).toHaveBeenCalledTimes(1);
+  expect(handleRequest).not.toHaveBeenCalled();
+  expect(nextApp.render).not.toHaveBeenCalled();
+  expect(nextApp.renderError).not.toHaveBeenCalled();
 });

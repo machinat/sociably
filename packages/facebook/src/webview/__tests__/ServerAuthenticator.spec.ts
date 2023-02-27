@@ -40,10 +40,10 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
     authenticator.delegateAuthRequest(req, res, routing)
   ).resolves.toBe(undefined);
 
-  expect(requestDelegator.mock).toHaveReturnedTimes(1);
-  expect(requestDelegator.mock).toHaveBeenCalledWith(req, res, routing);
+  expect(requestDelegator).toHaveReturnedTimes(1);
+  expect(requestDelegator).toHaveBeenCalledWith(req, res, routing);
 
-  expect(basicAuthenticator.createRequestDelegator.mock).toHaveReturnedTimes(1);
+  expect(basicAuthenticator.createRequestDelegator).toHaveReturnedTimes(1);
 
   const delegatorOptions =
     basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
@@ -87,14 +87,14 @@ test('.getAuthUrl(id, path)', () => {
   expect(authenticator.getAuthUrl('67890')).toBe(loginUrl);
   expect(authenticator.getAuthUrl('67890', '/foo?bar=baz')).toBe(loginUrl);
 
-  expect(basicAuthenticator.getAuthUrl.mock).toHaveBeenCalledTimes(2);
-  expect(basicAuthenticator.getAuthUrl.mock).toHaveBeenNthCalledWith(
+  expect(basicAuthenticator.getAuthUrl).toHaveBeenCalledTimes(2);
+  expect(basicAuthenticator.getAuthUrl).toHaveBeenNthCalledWith(
     1,
     'facebook',
     { page: '12345', id: '67890' },
     undefined
   );
-  expect(basicAuthenticator.getAuthUrl.mock).toHaveBeenNthCalledWith(
+  expect(basicAuthenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
     'facebook',
     { page: '12345', id: '67890' },

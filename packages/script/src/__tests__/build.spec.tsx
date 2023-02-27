@@ -119,8 +119,8 @@ test('Script.Start', () => {
   expect((MyScript.Start as any)(mockProcessor, channel)({})).resolves.toBe(
     'Hello Script'
   );
-  expect(mockProcessor.start.mock).toHaveBeenCalledTimes(1);
-  expect(mockProcessor.start.mock).toHaveBeenCalledWith(channel, MyScript, {});
+  expect(mockProcessor.start).toHaveBeenCalledTimes(1);
+  expect(mockProcessor.start).toHaveBeenCalledWith(channel, MyScript, {});
 
   expect(typeof ChildScript.Start).toBe('function');
   expect(isContainerType(<ChildScript.Start />)).toBe(true);
@@ -135,8 +135,8 @@ test('Script.Start', () => {
       goto: 'bar',
     })
   ).resolves.toBe('Hello Script');
-  expect(mockProcessor.start.mock).toHaveBeenCalledTimes(2);
-  expect(mockProcessor.start.mock).toHaveBeenCalledWith(channel, ChildScript, {
+  expect(mockProcessor.start).toHaveBeenCalledTimes(2);
+  expect(mockProcessor.start).toHaveBeenCalledWith(channel, ChildScript, {
     params: { foo: 'baz' },
     goto: 'bar',
   });

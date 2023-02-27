@@ -128,15 +128,15 @@ async function openConnection(server, existedSocket?: Socket) {
 it('handle sockets and connections lifecycle', async () => {
   await testServer.handleUpgrade(req, netSocket, head);
 
-  expect(verifyUpgrade.mock).toHaveBeenCalledTimes(1);
-  expect(verifyUpgrade.mock).toHaveBeenCalledWith(expectedReqInfo);
+  expect(verifyUpgrade).toHaveBeenCalledTimes(1);
+  expect(verifyUpgrade).toHaveBeenCalledWith(expectedReqInfo);
 
-  expect(wsServer.handleUpgrade.mock).toHaveBeenCalledTimes(1);
+  expect(wsServer.handleUpgrade).toHaveBeenCalledTimes(1);
   expect(wsServer.handleUpgrade.mock) //
     .toHaveBeenCalledWith(req, netSocket, head, expect.any(Function));
 
-  expect(Socket.mock).toHaveBeenCalledTimes(1);
-  expect(Socket.mock).toHaveBeenCalledWith(ws, {
+  expect(Socket).toHaveBeenCalledTimes(1);
+  expect(Socket).toHaveBeenCalledWith(ws, {
     method: 'GET',
     url: '/hello',
     headers: { foo: 'bar' },
@@ -155,16 +155,16 @@ it('handle sockets and connections lifecycle', async () => {
   socket.emit('login', { credential }, 0, socket);
   await nextTick();
 
-  expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
-  expect(verifyLogin.mock).toHaveBeenCalledWith(expectedReqInfo, credential);
+  expect(verifyLogin).toHaveBeenCalledTimes(1);
+  expect(verifyLogin).toHaveBeenCalledWith(expectedReqInfo, credential);
 
-  expect(socket.connect.mock).toHaveBeenCalledTimes(1);
-  expect(socket.connect.mock).toHaveBeenCalledWith({
+  expect(socket.connect).toHaveBeenCalledTimes(1);
+  expect(socket.connect).toHaveBeenCalledWith({
     connId: expect.any(String),
     seq: 0,
   });
 
-  expect(connectSpy.mock).not.toHaveBeenCalled();
+  expect(connectSpy).not.toHaveBeenCalled();
 
   const { connId } = socket.connect.mock.calls[0].args[0];
   socket.emit('connect', { connId }, 2, socket);
@@ -178,16 +178,16 @@ it('handle sockets and connections lifecycle', async () => {
     expireAt: null,
   };
 
-  expect(connectSpy.mock).toHaveBeenCalledTimes(1);
-  expect(connectSpy.mock).toHaveBeenCalledWith(expectedConnInfo);
+  expect(connectSpy).toHaveBeenCalledTimes(1);
+  expect(connectSpy).toHaveBeenCalledWith(expectedConnInfo);
 
   let eventValues = [
     { type: 'greeting', category: 'french', payload: 'bonjour' },
   ];
   socket.emit('events', { connId, values: eventValues }, 4, socket);
 
-  expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventsSpy.mock).toHaveBeenCalledWith(eventValues, expectedConnInfo);
+  expect(eventsSpy).toHaveBeenCalledTimes(1);
+  expect(eventsSpy).toHaveBeenCalledWith(eventValues, expectedConnInfo);
 
   eventValues = [
     { category: 'any', type: 'foo', payload: 'hello' },
@@ -195,14 +195,14 @@ it('handle sockets and connections lifecycle', async () => {
   ];
   socket.emit('events', { connId, values: eventValues }, 5, socket);
 
-  expect(eventsSpy.mock).toHaveBeenCalledTimes(2);
-  expect(eventsSpy.mock).toHaveBeenCalledWith(eventValues, expectedConnInfo);
+  expect(eventsSpy).toHaveBeenCalledTimes(2);
+  expect(eventsSpy).toHaveBeenCalledWith(eventValues, expectedConnInfo);
 
   socket.emit('disconnect', { connId, reason: 'bye' }, 7, socket);
   await nextTick();
 
-  expect(disconnectSpy.mock).toHaveBeenCalledTimes(1);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(
+  expect(disconnectSpy).toHaveBeenCalledTimes(1);
+  expect(disconnectSpy).toHaveBeenCalledWith(
     { reason: 'bye' },
     expectedConnInfo
   );
@@ -215,20 +215,20 @@ test('multi sockets and connections', async () => {
   await testServer.handleUpgrade(req, netSocket, head);
   await testServer.handleUpgrade(req, netSocket, head);
 
-  expect(wsServer.handleUpgrade.mock).toHaveBeenCalledTimes(2);
-  expect(verifyUpgrade.mock).toHaveBeenCalledTimes(2);
-  expect(verifyUpgrade.mock).toHaveBeenCalledWith(expectedReqInfo);
+  expect(wsServer.handleUpgrade).toHaveBeenCalledTimes(2);
+  expect(verifyUpgrade).toHaveBeenCalledTimes(2);
+  expect(verifyUpgrade).toHaveBeenCalledWith(expectedReqInfo);
 
-  expect(Socket.mock).toHaveBeenCalledTimes(2);
+  expect(Socket).toHaveBeenCalledTimes(2);
   const socket1 = Socket.mock.calls[0].instance;
   const socket2 = Socket.mock.calls[1].instance;
   socket1.connect.mock.fake(async () => 1);
   socket2.connect.mock.fake(async () => 1);
 
-  expect(verifyLogin.mock).not.toHaveBeenCalled();
+  expect(verifyLogin).not.toHaveBeenCalled();
   socket1.emit('login', { credential: { hi: 1 } }, 0, socket1);
 
-  expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
+  expect(verifyLogin).toHaveBeenCalledTimes(1);
   verifyLogin.mock.fake(async () => ({
     ok: true,
     user: { john: 'doe' },
@@ -238,7 +238,7 @@ test('multi sockets and connections', async () => {
   socket1.emit('login', { credential: { hi: 2 } }, 2, socket1);
   await nextTick();
 
-  expect(verifyLogin.mock).toHaveBeenCalledTimes(2);
+  expect(verifyLogin).toHaveBeenCalledTimes(2);
   verifyLogin.mock.fake(async () => ({
     ok: true,
     user: { jojo: 'doe' },
@@ -248,17 +248,17 @@ test('multi sockets and connections', async () => {
   socket2.emit('login', { credential: { hi: 3 } }, 2, socket2);
   await nextTick();
 
-  expect(verifyLogin.mock).toHaveBeenCalledTimes(3);
+  expect(verifyLogin).toHaveBeenCalledTimes(3);
   for (let i = 1; i <= 3; i += 1) {
-    expect(verifyLogin.mock).toHaveBeenNthCalledWith(i, expectedReqInfo, {
+    expect(verifyLogin).toHaveBeenNthCalledWith(i, expectedReqInfo, {
       hi: i,
     });
   }
 
-  expect(eventsSpy.mock).not.toHaveBeenCalled();
+  expect(eventsSpy).not.toHaveBeenCalled();
 
-  expect(socket1.connect.mock).toHaveBeenCalledTimes(2);
-  expect(socket2.connect.mock).toHaveBeenCalledTimes(1);
+  expect(socket1.connect).toHaveBeenCalledTimes(2);
+  expect(socket2.connect).toHaveBeenCalledTimes(1);
 
   const anoymousConn = {
     type: 'connection',
@@ -304,10 +304,10 @@ test('multi sockets and connections', async () => {
   socket2.emit('connect', { connId: jojoConn.id }, 3, socket2);
   await nextTick();
 
-  expect(connectSpy.mock).toHaveBeenCalledTimes(3);
-  expect(connectSpy.mock).toHaveBeenNthCalledWith(1, anoymousConnInfo);
-  expect(connectSpy.mock).toHaveBeenNthCalledWith(2, johnConnInfo);
-  expect(connectSpy.mock).toHaveBeenNthCalledWith(3, jojoConnInfo);
+  expect(connectSpy).toHaveBeenCalledTimes(3);
+  expect(connectSpy).toHaveBeenNthCalledWith(1, anoymousConnInfo);
+  expect(connectSpy).toHaveBeenNthCalledWith(2, johnConnInfo);
+  expect(connectSpy).toHaveBeenNthCalledWith(3, jojoConnInfo);
 
   socket1.emit(
     'events',
@@ -343,13 +343,13 @@ test('multi sockets and connections', async () => {
     socket2
   );
 
-  expect(eventsSpy.mock).toHaveBeenCalledTimes(3);
-  expect(eventsSpy.mock).toHaveBeenNthCalledWith(
+  expect(eventsSpy).toHaveBeenCalledTimes(3);
+  expect(eventsSpy).toHaveBeenNthCalledWith(
     1,
     [{ type: 'a', payload: 0 }],
     anoymousConnInfo
   );
-  expect(eventsSpy.mock).toHaveBeenNthCalledWith(
+  expect(eventsSpy).toHaveBeenNthCalledWith(
     2,
     [
       { type: 'b', payload: 1 },
@@ -357,7 +357,7 @@ test('multi sockets and connections', async () => {
     ],
     johnConnInfo
   );
-  expect(eventsSpy.mock).toHaveBeenNthCalledWith(
+  expect(eventsSpy).toHaveBeenNthCalledWith(
     3,
     [
       { type: 'd', payload: 3 },
@@ -386,18 +386,18 @@ test('multi sockets and connections', async () => {
   );
   await nextTick();
 
-  expect(disconnectSpy.mock).toHaveBeenCalledTimes(3);
-  expect(disconnectSpy.mock).toHaveBeenNthCalledWith(
+  expect(disconnectSpy).toHaveBeenCalledTimes(3);
+  expect(disconnectSpy).toHaveBeenNthCalledWith(
     1,
     { reason: 'bye0' },
     anoymousConnInfo
   );
-  expect(disconnectSpy.mock).toHaveBeenNthCalledWith(
+  expect(disconnectSpy).toHaveBeenNthCalledWith(
     2,
     { reason: 'bye1' },
     johnConnInfo
   );
-  expect(disconnectSpy.mock).toHaveBeenNthCalledWith(
+  expect(disconnectSpy).toHaveBeenNthCalledWith(
     3,
     { reason: 'bye2' },
     jojoConnInfo
@@ -426,8 +426,8 @@ test('unmarshal payload', async () => {
     socket
   );
 
-  expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventsSpy.mock).toHaveBeenCalledWith(
+  expect(eventsSpy).toHaveBeenCalledTimes(1);
+  expect(eventsSpy).toHaveBeenCalledWith(
     [
       { type: 'any', payload: { foo: 'bar', unmarshaled: true } },
       { type: 'any', payload: { foo: 'baz', unmarshaled: true } },
@@ -441,9 +441,9 @@ test('unmarshal payload', async () => {
     }
   );
 
-  expect(marshaler.unmarshal.mock).toHaveBeenCalledTimes(2);
-  expect(marshaler.unmarshal.mock).toHaveBeenNthCalledWith(1, { foo: 'bar' });
-  expect(marshaler.unmarshal.mock).toHaveBeenNthCalledWith(2, { foo: 'baz' });
+  expect(marshaler.unmarshal).toHaveBeenCalledTimes(2);
+  expect(marshaler.unmarshal).toHaveBeenNthCalledWith(1, { foo: 'bar' });
+  expect(marshaler.unmarshal).toHaveBeenNthCalledWith(2, { foo: 'baz' });
 });
 
 it('generate uniq connection id', async () => {
@@ -457,7 +457,7 @@ it('generate uniq connection id', async () => {
     socket.emit('login', { credential: { hello: 'socket' } }, 1, socket);
     await nextTick(); // eslint-disable-line no-await-in-loop
 
-    expect(socket.connect.mock).toHaveBeenCalledTimes(i + 1);
+    expect(socket.connect).toHaveBeenCalledTimes(i + 1);
     const { connId } = socket.connect.mock.calls[i].args[0];
 
     expect(ids.has(connId)).toBe(false);
@@ -471,13 +471,13 @@ it('respond 404 if verifyUpgrade fn return false', async () => {
   verifyUpgrade.mock.fakeReturnValue(false);
   await testServer.handleUpgrade(req, netSocket, head);
 
-  expect(verifyUpgrade.mock).toHaveBeenCalledTimes(1);
-  expect(verifyUpgrade.mock).toHaveBeenCalledWith(expectedReqInfo);
+  expect(verifyUpgrade).toHaveBeenCalledTimes(1);
+  expect(verifyUpgrade).toHaveBeenCalledWith(expectedReqInfo);
 
-  expect(wsServer.handleUpgrade.mock).not.toHaveBeenCalled();
-  expect(Socket.mock).not.toHaveBeenCalled();
+  expect(wsServer.handleUpgrade).not.toHaveBeenCalled();
+  expect(Socket).not.toHaveBeenCalled();
 
-  expect(netSocket.write.mock).toHaveBeenCalledTimes(1);
+  expect(netSocket.write).toHaveBeenCalledTimes(1);
   expect(netSocket.write.mock.calls[0].args[0]).toMatchInlineSnapshot(`
                 "HTTP/1.1 400 Bad Request
                 Connection: close
@@ -487,7 +487,7 @@ it('respond 404 if verifyUpgrade fn return false', async () => {
                 Bad Request"
         `);
 
-  expect(netSocket.destroy.mock).toHaveBeenCalledTimes(1);
+  expect(netSocket.destroy).toHaveBeenCalledTimes(1);
 });
 
 it('reject sign in if verifyLogin resolve not ok', async () => {
@@ -505,10 +505,10 @@ it('reject sign in if verifyLogin resolve not ok', async () => {
   socket.emit('login', { credential: { hello: 'login' } }, 11, socket);
   await nextTick();
 
-  expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
-  expect(socket.connect.mock).not.toHaveBeenCalled();
-  expect(socket.reject.mock).toHaveBeenCalledTimes(1);
-  expect(socket.reject.mock).toHaveBeenCalledWith({
+  expect(verifyLogin).toHaveBeenCalledTimes(1);
+  expect(socket.connect).not.toHaveBeenCalled();
+  expect(socket.reject).toHaveBeenCalledTimes(1);
+  expect(socket.reject).toHaveBeenCalledWith({
     seq: 11,
     reason: 'no no no',
   });
@@ -526,10 +526,10 @@ it('reject sign in if verifyLogin thrown', async () => {
   socket.emit('login', { credential: { hello: 'login' } }, 11, socket);
   await nextTick();
 
-  expect(verifyLogin.mock).toHaveBeenCalledTimes(1);
-  expect(socket.connect.mock).not.toHaveBeenCalled();
-  expect(socket.reject.mock).toHaveBeenCalledTimes(1);
-  expect(socket.reject.mock).toHaveBeenCalledWith({
+  expect(verifyLogin).toHaveBeenCalledTimes(1);
+  expect(socket.connect).not.toHaveBeenCalled();
+  expect(socket.reject).toHaveBeenCalledTimes(1);
+  expect(socket.reject).toHaveBeenCalledWith({
     seq: 11,
     reason: 'noooooo',
   });
@@ -541,8 +541,8 @@ it('emit socket error', async () => {
   const socket = Socket.mock.calls[0].instance;
   socket.emit('error', new Error("It's Bat Man!"));
 
-  expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-  expect(errorSpy.mock).toHaveBeenCalledWith(new Error("It's Bat Man!"));
+  expect(errorSpy).toHaveBeenCalledTimes(1);
+  expect(errorSpy).toHaveBeenCalledWith(new Error("It's Bat Man!"));
 });
 
 test('ping socket per heartbeatInterval', async () => {
@@ -570,18 +570,18 @@ test('ping socket per heartbeatInterval', async () => {
 
   jest.advanceTimersByTime(100);
 
-  expect(socket1.ping.mock).toHaveBeenCalledTimes(1);
-  expect(socket2.ping.mock).toHaveBeenCalledTimes(1);
+  expect(socket1.ping).toHaveBeenCalledTimes(1);
+  expect(socket2.ping).toHaveBeenCalledTimes(1);
 
   jest.advanceTimersByTime(100);
 
-  expect(socket1.ping.mock).toHaveBeenCalledTimes(2);
-  expect(socket2.ping.mock).toHaveBeenCalledTimes(2);
+  expect(socket1.ping).toHaveBeenCalledTimes(2);
+  expect(socket2.ping).toHaveBeenCalledTimes(2);
 
   jest.advanceTimersByTime(100);
 
-  expect(socket1.ping.mock).toHaveBeenCalledTimes(3);
-  expect(socket2.ping.mock).toHaveBeenCalledTimes(3);
+  expect(socket1.ping).toHaveBeenCalledTimes(3);
+  expect(socket2.ping).toHaveBeenCalledTimes(3);
 
   jest.useRealTimers();
 });
@@ -610,25 +610,25 @@ describe('subscribeTopic() and unsubscribeTopic()', () => {
     await expect(testServer.subscribeTopic(remoteConn, 'foo')).resolves.toBe(
       true
     );
-    expect(broker.subscribeTopicRemote.mock).toHaveBeenCalledTimes(1);
+    expect(broker.subscribeTopicRemote).toHaveBeenCalledTimes(1);
 
     broker.subscribeTopicRemote.mock.fake(async () => false);
     await expect(testServer.subscribeTopic(remoteConn, 'foo')).resolves.toBe(
       false
     );
-    expect(broker.subscribeTopicRemote.mock).toHaveBeenCalledTimes(2);
+    expect(broker.subscribeTopicRemote).toHaveBeenCalledTimes(2);
 
     broker.unsubscribeTopicRemote.mock.fake(async () => true);
     await expect(testServer.unsubscribeTopic(remoteConn, 'foo')).resolves.toBe(
       true
     );
-    expect(broker.unsubscribeTopicRemote.mock).toHaveBeenCalledTimes(1);
+    expect(broker.unsubscribeTopicRemote).toHaveBeenCalledTimes(1);
 
     broker.unsubscribeTopicRemote.mock.fake(async () => false);
     await expect(testServer.unsubscribeTopic(remoteConn, 'foo')).resolves.toBe(
       false
     );
-    expect(broker.unsubscribeTopicRemote.mock).toHaveBeenCalledTimes(2);
+    expect(broker.unsubscribeTopicRemote).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -653,8 +653,8 @@ describe('disconnect()', () => {
     broker.disconnectRemote.mock.fake(async () => true);
     await expect(testServer.disconnect(remoteConn, 'bye')).resolves.toBe(true);
 
-    expect(broker.disconnectRemote.mock).toHaveBeenCalledTimes(2);
-    expect(broker.disconnectRemote.mock).toHaveBeenCalledWith(remoteConn);
+    expect(broker.disconnectRemote).toHaveBeenCalledTimes(2);
+    expect(broker.disconnectRemote).toHaveBeenCalledWith(remoteConn);
   });
 });
 
@@ -681,12 +681,12 @@ describe('dispatch()', () => {
       })
     ).resolves.toEqual([{ serverId, id: conn2.id }]);
 
-    expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
-    expect(socket.dispatch.mock).toHaveBeenNthCalledWith(1, {
+    expect(socket.dispatch).toHaveBeenCalledTimes(2);
+    expect(socket.dispatch).toHaveBeenNthCalledWith(1, {
       connId: conn1.id,
       values: [{ type: 'foo', category: 'bar', payload: 1 }],
     });
-    expect(socket.dispatch.mock).toHaveBeenNthCalledWith(2, {
+    expect(socket.dispatch).toHaveBeenNthCalledWith(2, {
       connId: conn2.id,
       values: [
         { type: 'foo', category: 'bar', payload: 2 },
@@ -721,12 +721,12 @@ describe('dispatch()', () => {
       testServer.dispatch({ target: remoteTarget, values: eventValues })
     ).resolves.toEqual([{ serverId: '_REMOTE_SERVER_', id: '_CONN_ID_' }]);
 
-    expect(broker.dispatchRemote.mock).toHaveBeenCalledTimes(2);
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(1, {
+    expect(broker.dispatchRemote).toHaveBeenCalledTimes(2);
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(1, {
       target: remoteTarget,
       values: eventValues,
     });
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(2, {
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(2, {
       target: remoteTarget,
       values: eventValues,
     });
@@ -746,8 +746,8 @@ describe('dispatch()', () => {
       ],
     });
 
-    expect(socket.dispatch.mock).toHaveBeenCalledTimes(1);
-    expect(socket.dispatch.mock).toHaveBeenCalledWith({
+    expect(socket.dispatch).toHaveBeenCalledTimes(1);
+    expect(socket.dispatch).toHaveBeenCalledWith({
       connId: conn.id,
       values: [
         { type: 'any', payload: { foo: 'bar', marshaled: true } },
@@ -755,9 +755,9 @@ describe('dispatch()', () => {
       ],
     });
 
-    expect(marshaler.marshal.mock).toHaveBeenCalledTimes(2);
-    expect(marshaler.marshal.mock).toHaveBeenNthCalledWith(1, { foo: 'bar' });
-    expect(marshaler.marshal.mock).toHaveBeenNthCalledWith(2, { foo: 'baz' });
+    expect(marshaler.marshal).toHaveBeenCalledTimes(2);
+    expect(marshaler.marshal).toHaveBeenNthCalledWith(1, { foo: 'bar' });
+    expect(marshaler.marshal).toHaveBeenNthCalledWith(2, { foo: 'baz' });
 
     const remoteTarget = {
       type: 'connection' as const,
@@ -770,8 +770,8 @@ describe('dispatch()', () => {
       values: [{ type: 'any', payload: { bar: 'baz' } }],
     });
 
-    expect(broker.dispatchRemote.mock).toHaveBeenCalledTimes(1);
-    expect(broker.dispatchRemote.mock).toHaveBeenCalledWith({
+    expect(broker.dispatchRemote).toHaveBeenCalledTimes(1);
+    expect(broker.dispatchRemote).toHaveBeenCalledWith({
       target: remoteTarget,
       values: [
         {
@@ -781,8 +781,8 @@ describe('dispatch()', () => {
       ],
     });
 
-    expect(marshaler.marshal.mock).toHaveBeenCalledTimes(3);
-    expect(marshaler.marshal.mock).toHaveBeenNthCalledWith(3, { bar: 'baz' });
+    expect(marshaler.marshal).toHaveBeenCalledTimes(3);
+    expect(marshaler.marshal).toHaveBeenNthCalledWith(3, { bar: 'baz' });
   });
 
   it('broadcast to topic', async () => {
@@ -827,30 +827,30 @@ describe('dispatch()', () => {
       })
     ).resolves.toEqual([{ serverId, id: conn1.id }, remoteConn1, remoteConn2]);
 
-    expect(socket.dispatch.mock).toHaveBeenCalledTimes(3);
-    expect(socket.dispatch.mock).toHaveBeenNthCalledWith(1, {
+    expect(socket.dispatch).toHaveBeenCalledTimes(3);
+    expect(socket.dispatch).toHaveBeenNthCalledWith(1, {
       connId: conn1.id,
       values: [{ type: 'greet', payload: 'good morning' }],
     });
-    expect(socket.dispatch.mock).toHaveBeenNthCalledWith(2, {
+    expect(socket.dispatch).toHaveBeenNthCalledWith(2, {
       connId: conn2.id,
       values: [{ type: 'greet', payload: 'good afternoon' }],
     });
-    expect(socket.dispatch.mock).toHaveBeenNthCalledWith(3, {
+    expect(socket.dispatch).toHaveBeenNthCalledWith(3, {
       connId: conn1.id,
       values: [{ type: 'greet', payload: 'good evening' }],
     });
 
-    expect(broker.dispatchRemote.mock).toHaveBeenCalledTimes(3);
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(1, {
+    expect(broker.dispatchRemote).toHaveBeenCalledTimes(3);
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(1, {
       target: { type: 'topic', name: 'foo' },
       values: [{ type: 'greet', payload: 'good morning' }],
     });
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(2, {
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(2, {
       target: { type: 'topic', name: 'bar' },
       values: [{ type: 'greet', payload: 'good afternoon' }],
     });
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(3, {
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(3, {
       target: { type: 'topic', name: 'baz' },
       values: [{ type: 'greet', payload: 'good evening' }],
     });
@@ -909,30 +909,30 @@ describe('dispatch()', () => {
       })
     ).resolves.toEqual([remoteConn]);
 
-    expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
-    expect(socket.dispatch.mock).toHaveBeenNthCalledWith(1, {
+    expect(socket.dispatch).toHaveBeenCalledTimes(2);
+    expect(socket.dispatch).toHaveBeenNthCalledWith(1, {
       connId: conn1.id,
       values: [event],
     });
-    expect(socket.dispatch.mock).toHaveBeenNthCalledWith(2, {
+    expect(socket.dispatch).toHaveBeenNthCalledWith(2, {
       connId: conn2.id,
       values: [event],
     });
 
-    expect(broker.dispatchRemote.mock).toHaveBeenCalledTimes(4);
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(1, {
+    expect(broker.dispatchRemote).toHaveBeenCalledTimes(4);
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(1, {
       target: { type: 'user', userUid: 'john_doe' },
       values: [event],
     });
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(2, {
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(2, {
       target: { type: 'user', userUid: 'jojo_doe' },
       values: [event],
     });
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(3, {
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(3, {
       target: { type: 'user', userUid: 'jane_doe' },
       values: [event],
     });
-    expect(broker.dispatchRemote.mock).toHaveBeenNthCalledWith(4, {
+    expect(broker.dispatchRemote).toHaveBeenNthCalledWith(4, {
       target: { type: 'user', userUid: 'jojo_doe' },
       values: [event],
     });
@@ -956,7 +956,7 @@ describe('dispatch()', () => {
       })
     ).resolves.toEqual([{ serverId, id: conn2.id }]);
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
 
     socket.dispatch.mock.fake(() => Promise.reject(new Error('Wasted!')));
     await expect(
@@ -965,14 +965,14 @@ describe('dispatch()', () => {
         values: [event],
       })
     ).resolves.toEqual([]);
-    expect(errorSpy.mock).toHaveBeenCalledTimes(3);
+    expect(errorSpy).toHaveBeenCalledTimes(3);
 
     errorSpy.mock.calls.forEach((call) => {
       expect(call.args[0]).toEqual(new Error('Wasted!'));
     });
 
-    expect(broker.dispatchRemote.mock).toHaveBeenCalledTimes(2);
-    expect(socket.dispatch.mock).toHaveBeenCalledTimes(4);
+    expect(broker.dispatchRemote).toHaveBeenCalledTimes(2);
+    expect(socket.dispatch).toHaveBeenCalledTimes(4);
   });
 });
 
@@ -994,7 +994,7 @@ test('handle remote dispatch', async () => {
   const [socket, conn] = await openConnection(server);
   server.subscribeTopic(conn, 'foo');
 
-  expect(broker.onRemoteEvent.mock).toHaveBeenCalledTimes(1);
+  expect(broker.onRemoteEvent).toHaveBeenCalledTimes(1);
   const remoteEventHandler = broker.onRemoteEvent.mock.calls[0].args[0];
 
   socket.dispatch.mock.fake(async () => 5);
@@ -1008,8 +1008,8 @@ test('handle remote dispatch', async () => {
     values: [{ type: 'greet', payload: 'Hi' }],
   });
 
-  expect(socket.dispatch.mock).toHaveBeenCalledTimes(1);
-  expect(socket.dispatch.mock).toHaveBeenCalledWith({
+  expect(socket.dispatch).toHaveBeenCalledTimes(1);
+  expect(socket.dispatch).toHaveBeenCalledWith({
     connId: conn.id,
     values: [{ type: 'greet', payload: 'Hi' }],
   });
@@ -1019,8 +1019,8 @@ test('handle remote dispatch', async () => {
     values: [{ type: 'greet', payload: 'Hi Hi' }],
   });
 
-  expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
-  expect(socket.dispatch.mock).toHaveBeenCalledWith({
+  expect(socket.dispatch).toHaveBeenCalledTimes(2);
+  expect(socket.dispatch).toHaveBeenCalledWith({
     connId: conn.id,
     values: [{ type: 'greet', payload: 'Hi Hi' }],
   });
@@ -1030,8 +1030,8 @@ test('handle remote dispatch', async () => {
     values: [{ type: 'greet', payload: 'Hi Hi Hi' }],
   });
 
-  expect(socket.dispatch.mock).toHaveBeenCalledTimes(3);
-  expect(socket.dispatch.mock).toHaveBeenNthCalledWith(3, {
+  expect(socket.dispatch).toHaveBeenCalledTimes(3);
+  expect(socket.dispatch).toHaveBeenNthCalledWith(3, {
     connId: conn.id,
     values: [{ type: 'greet', payload: 'Hi Hi Hi' }],
   });

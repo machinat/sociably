@@ -40,7 +40,7 @@ test('fetch profile from api', async () => {
   expect(profile.gender).toBe(undefined);
   expect(profile.data).toEqual(rawProfileData);
 
-  expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+  expect(bot.makeApiCall).toHaveReturnedTimes(1);
   expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       "GET",
@@ -87,7 +87,7 @@ it('query additional optionalProfileFields if given', async () => {
   expect(profile.gender).toBe('male');
   expect(profile.data).toEqual(profileWithMoreFields);
 
-  expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+  expect(bot.makeApiCall).toHaveReturnedTimes(1);
   expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       "GET",
@@ -129,5 +129,5 @@ it('return null if phone number user error met', async () => {
   });
 
   expect(profiler.getUserProfile(user)).resolves.toBe(null);
-  expect(bot.makeApiCall.mock).toHaveReturnedTimes(1);
+  expect(bot.makeApiCall).toHaveReturnedTimes(1);
 });

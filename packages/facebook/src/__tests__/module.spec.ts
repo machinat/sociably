@@ -154,7 +154,7 @@ describe('initModule(configs)', () => {
     });
 
     await expect((module.startHook as any)(bot)).resolves.toBe(undefined);
-    expect(bot.start.mock).toHaveBeenCalledTimes(1);
+    expect(bot.start).toHaveBeenCalledTimes(1);
   });
 
   test('#stopHook() stop bot', async () => {
@@ -165,6 +165,6 @@ describe('initModule(configs)', () => {
     });
 
     await expect((module.stopHook as any)(bot)).resolves.toBe(undefined);
-    expect(bot.stop.mock).toHaveBeenCalledTimes(1);
+    expect(bot.stop).toHaveBeenCalledTimes(1);
   });
 });

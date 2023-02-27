@@ -40,7 +40,7 @@ test('get asset id', async () => {
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe(undefined);
   await expect(manager.getMedia('my_media')).resolves.toBe(undefined);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
+  expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -49,9 +49,9 @@ test('get asset id', async () => {
     ]
   `);
 
-  expect(state.get.mock).toHaveBeenCalledTimes(2);
-  expect(state.get.mock).toHaveBeenNthCalledWith(1, 'bar');
-  expect(state.get.mock).toHaveBeenNthCalledWith(2, 'my_media');
+  expect(state.get).toHaveBeenCalledTimes(2);
+  expect(state.get).toHaveBeenNthCalledWith(1, 'bar');
+  expect(state.get).toHaveBeenNthCalledWith(2, 'my_media');
 
   state.get.mock.fakeReturnValue('baz');
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe('baz');
@@ -59,8 +59,8 @@ test('get asset id', async () => {
   state.get.mock.fakeReturnValue('_MEDIA_ID_');
   await expect(manager.getMedia('my_media')).resolves.toBe('_MEDIA_ID_');
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(4);
-  expect(state.get.mock).toHaveBeenCalledTimes(4);
+  expect(stateController.globalState).toHaveBeenCalledTimes(4);
+  expect(state.get).toHaveBeenCalledTimes(4);
 });
 
 test('set asset id', async () => {
@@ -71,7 +71,7 @@ test('set asset id', async () => {
     false
   );
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
+  expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -80,14 +80,14 @@ test('set asset id', async () => {
     ]
   `);
 
-  expect(state.set.mock).toHaveBeenCalledTimes(2);
-  expect(state.set.mock).toHaveBeenNthCalledWith(1, 'bar', 'baz');
-  expect(state.set.mock).toHaveBeenNthCalledWith(2, 'my_media', '_MEDIA_ID_');
+  expect(state.set).toHaveBeenCalledTimes(2);
+  expect(state.set).toHaveBeenNthCalledWith(1, 'bar', 'baz');
+  expect(state.set).toHaveBeenNthCalledWith(2, 'my_media', '_MEDIA_ID_');
 
   state.set.mock.fake(async () => true);
   await expect(manager.saveAssetId('foo', 'bar', 'baz')).resolves.toBe(true);
   await expect(manager.saveMedia('my_media', '_MEDIA_ID_')).resolves.toBe(true);
-  expect(state.set.mock).toHaveBeenCalledTimes(4);
+  expect(state.set).toHaveBeenCalledTimes(4);
 });
 
 test('get all assets', async () => {
@@ -96,7 +96,7 @@ test('get all assets', async () => {
   await expect(manager.getAllAssets('foo')).resolves.toBe(null);
   await expect(manager.getAllMedias()).resolves.toBe(null);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
+  expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -105,7 +105,7 @@ test('get all assets', async () => {
     ]
   `);
 
-  expect(state.getAll.mock).toHaveBeenCalledTimes(2);
+  expect(state.getAll).toHaveBeenCalledTimes(2);
 
   const resources = new Map([
     ['bar', '1'],
@@ -123,7 +123,7 @@ test('remove asset id', async () => {
   await expect(manager.unsaveAssetId('foo', 'bar')).resolves.toBe(true);
   await expect(manager.unsaveMedia('my_media')).resolves.toBe(true);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(2);
+  expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -132,14 +132,14 @@ test('remove asset id', async () => {
     ]
   `);
 
-  expect(state.delete.mock).toHaveBeenCalledTimes(2);
-  expect(state.delete.mock).toHaveBeenNthCalledWith(1, 'bar');
-  expect(state.delete.mock).toHaveBeenNthCalledWith(2, 'my_media');
+  expect(state.delete).toHaveBeenCalledTimes(2);
+  expect(state.delete).toHaveBeenNthCalledWith(1, 'bar');
+  expect(state.delete).toHaveBeenNthCalledWith(2, 'my_media');
 
   state.delete.mock.fake(async () => false);
   await expect(manager.unsaveAssetId('foo', 'bar')).resolves.toBe(false);
   await expect(manager.unsaveMedia('my_media')).resolves.toBe(false);
-  expect(state.delete.mock).toHaveBeenCalledTimes(4);
+  expect(state.delete).toHaveBeenCalledTimes(4);
 });
 
 test('#uploadMedia()', async () => {
@@ -150,8 +150,8 @@ test('#uploadMedia()', async () => {
     manager.uploadMedia('my_avatar', <Image fileData={Buffer.from('')} />)
   ).resolves.toBe('1857777774821032');
 
-  expect(bot.uploadMedia.mock).toHaveBeenCalledTimes(1);
-  expect(bot.uploadMedia.mock).toHaveBeenCalledWith(
+  expect(bot.uploadMedia).toHaveBeenCalledTimes(1);
+  expect(bot.uploadMedia).toHaveBeenCalledWith(
     <Image fileData={Buffer.from('')} />
   );
 
@@ -162,6 +162,6 @@ test('#uploadMedia()', async () => {
     `"attachment [ my_avatar ] already exist"`
   );
 
-  expect(state.set.mock).toHaveBeenCalledTimes(1);
-  expect(state.set.mock).toHaveBeenCalledWith('my_avatar', '1857777774821032');
+  expect(state.set).toHaveBeenCalledTimes(1);
+  expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');
 });

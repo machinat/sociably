@@ -28,10 +28,10 @@ it('do nothing when job has no assetTag', async () => {
     saveReusableAttachments(manager)(context as any, next)
   ).resolves.toEqual(response);
 
-  expect(next.mock).toHaveBeenCalledTimes(1);
-  expect(next.mock).toHaveBeenCalledWith(context);
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith(context);
 
-  expect(manager.saveAttachment.mock).not.toHaveBeenCalled();
+  expect(manager.saveAttachment).not.toHaveBeenCalled();
 });
 
 it('save attachment id created with send api', async () => {
@@ -74,21 +74,21 @@ it('save attachment id created with send api', async () => {
     saveReusableAttachments(manager)(context as never, next)
   ).resolves.toEqual(response);
 
-  expect(next.mock).toHaveBeenCalledTimes(1);
-  expect(next.mock).toHaveBeenCalledWith(context);
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith(context);
 
-  expect(manager.saveAttachment.mock).toHaveBeenCalledTimes(3);
-  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveAttachment).toHaveBeenCalledTimes(3);
+  expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     1,
     'foo',
     '_ATTACHMENT_1_'
   );
-  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     2,
     'bar',
     '_ATTACHMENT_2_'
   );
-  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     3,
     'baz',
     '_ATTACHMENT_3_'
@@ -135,16 +135,16 @@ it('save attachment id when partial success', async () => {
     saveReusableAttachments(manager)(context as never, next)
   ).rejects.toThrowError(error);
 
-  expect(next.mock).toHaveBeenCalledTimes(1);
-  expect(next.mock).toHaveBeenCalledWith(context);
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith(context);
 
-  expect(manager.saveAttachment.mock).toHaveBeenCalledTimes(2);
-  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveAttachment).toHaveBeenCalledTimes(2);
+  expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     1,
     'foo',
     '_ATTACHMENT_1_'
   );
-  expect(manager.saveAttachment.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     2,
     'bar',
     '_ATTACHMENT_2_'

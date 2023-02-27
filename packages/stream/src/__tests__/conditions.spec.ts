@@ -38,10 +38,10 @@ it('split source stream and transmit by the first condtion the value match', asy
   });
   await nextTick();
 
-  expect(eventContainerFoo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerFoo.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-  expect(eventListenerFoo.mock).toHaveBeenCalledTimes(1);
-  expect(eventListenerFoo.mock).toHaveBeenCalledWith('foo');
+  expect(eventContainerFoo.$$factory).toHaveBeenCalledTimes(1);
+  expect(eventContainerFoo.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(eventListenerFoo).toHaveBeenCalledTimes(1);
+  expect(eventListenerFoo).toHaveBeenCalledWith('foo');
 
   source.next({
     value: 'bar',
@@ -50,10 +50,10 @@ it('split source stream and transmit by the first condtion the value match', asy
   });
   await nextTick();
 
-  expect(eventContainerBar.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerBar.$$factory.mock).toHaveBeenCalledWith('bar.channel');
-  expect(eventListenerBar.mock).toHaveBeenCalledTimes(1);
-  expect(eventListenerBar.mock).toHaveBeenCalledWith('bar');
+  expect(eventContainerBar.$$factory).toHaveBeenCalledTimes(1);
+  expect(eventContainerBar.$$factory).toHaveBeenCalledWith('bar.channel');
+  expect(eventListenerBar).toHaveBeenCalledTimes(1);
+  expect(eventListenerBar).toHaveBeenCalledWith('bar');
 
   source.next({
     value: 'baz',
@@ -62,10 +62,10 @@ it('split source stream and transmit by the first condtion the value match', asy
   });
   await nextTick();
 
-  expect(eventContainerBaz.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerBaz.$$factory.mock).toHaveBeenCalledWith('baz.channel');
-  expect(eventListenerBaz.mock).toHaveBeenCalledTimes(1);
-  expect(eventListenerBaz.mock).toHaveBeenCalledWith('baz');
+  expect(eventContainerBaz.$$factory).toHaveBeenCalledTimes(1);
+  expect(eventContainerBaz.$$factory).toHaveBeenCalledWith('baz.channel');
+  expect(eventListenerBaz).toHaveBeenCalledTimes(1);
+  expect(eventListenerBaz).toHaveBeenCalledWith('baz');
 
   source.next({
     key: 'poor.boy',
@@ -74,12 +74,12 @@ it('split source stream and transmit by the first condtion the value match', asy
   });
   await nextTick();
 
-  expect(eventContainerFoo.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerBar.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(eventContainerBaz.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(eventListenerFoo.mock).toHaveBeenCalledTimes(1);
-  expect(eventListenerBar.mock).toHaveBeenCalledTimes(1);
-  expect(eventListenerBaz.mock).toHaveBeenCalledTimes(1);
+  expect(eventContainerFoo.$$factory).toHaveBeenCalledTimes(1);
+  expect(eventContainerBar.$$factory).toHaveBeenCalledTimes(1);
+  expect(eventContainerBaz.$$factory).toHaveBeenCalledTimes(1);
+  expect(eventListenerFoo).toHaveBeenCalledTimes(1);
+  expect(eventListenerBar).toHaveBeenCalledTimes(1);
+  expect(eventListenerBaz).toHaveBeenCalledTimes(1);
 });
 
 const errorListenerA = moxy();
@@ -125,16 +125,16 @@ it('transmit error thrown in condition predocator to the corresponded destinatio
   });
   await nextTick();
 
-  expect(errorContainerA.$$factory.mock).not.toHaveBeenCalled();
-  expect(errorListenerA.mock).not.toHaveBeenCalled();
+  expect(errorContainerA.$$factory).not.toHaveBeenCalled();
+  expect(errorListenerA).not.toHaveBeenCalled();
 
-  expect(errorContainerB.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerB.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-  expect(errorListenerB.mock).toHaveBeenCalledTimes(1);
-  expect(errorListenerB.mock).toHaveBeenCalledWith(new Error('boo'));
+  expect(errorContainerB.$$factory).toHaveBeenCalledTimes(1);
+  expect(errorContainerB.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorListenerB).toHaveBeenCalledTimes(1);
+  expect(errorListenerB).toHaveBeenCalledWith(new Error('boo'));
 
-  expect(errorContainerC.$$factory.mock).not.toHaveBeenCalled();
-  expect(errorListenerC.mock).not.toHaveBeenCalled();
+  expect(errorContainerC.$$factory).not.toHaveBeenCalled();
+  expect(errorListenerC).not.toHaveBeenCalled();
 });
 
 it('transmit error from source to all branches', () => {
@@ -155,18 +155,18 @@ it('transmit error from source to all branches', () => {
     scope: createEmptyScope(),
   });
 
-  expect(errorContainerA.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerA.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-  expect(errorListenerA.mock).toHaveBeenCalledTimes(1);
-  expect(errorListenerA.mock).toHaveBeenCalledWith(new Error('boo'));
+  expect(errorContainerA.$$factory).toHaveBeenCalledTimes(1);
+  expect(errorContainerA.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorListenerA).toHaveBeenCalledTimes(1);
+  expect(errorListenerA).toHaveBeenCalledWith(new Error('boo'));
 
-  expect(errorContainerB.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerB.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-  expect(errorListenerB.mock).toHaveBeenCalledTimes(1);
-  expect(errorListenerB.mock).toHaveBeenCalledWith(new Error('boo'));
+  expect(errorContainerB.$$factory).toHaveBeenCalledTimes(1);
+  expect(errorContainerB.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorListenerB).toHaveBeenCalledTimes(1);
+  expect(errorListenerB).toHaveBeenCalledWith(new Error('boo'));
 
-  expect(errorContainerC.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainerC.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-  expect(errorListenerC.mock).toHaveBeenCalledTimes(1);
-  expect(errorListenerC.mock).toHaveBeenCalledWith(new Error('boo'));
+  expect(errorContainerC.$$factory).toHaveBeenCalledTimes(1);
+  expect(errorContainerC.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorListenerC).toHaveBeenCalledTimes(1);
+  expect(errorListenerC).toHaveBeenCalledWith(new Error('boo'));
 });

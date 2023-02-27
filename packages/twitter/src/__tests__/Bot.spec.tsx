@@ -134,11 +134,11 @@ describe('new TwitterBot(options)', () => {
 
     expect(bot.engine).toBeInstanceOf(Engine);
 
-    expect(Renderer.mock).toHaveBeenCalledTimes(1);
-    expect(Renderer.mock).toHaveBeenCalledWith('twitter', expect.any(Function));
+    expect(Renderer).toHaveBeenCalledTimes(1);
+    expect(Renderer).toHaveBeenCalledWith('twitter', expect.any(Function));
 
-    expect(Engine.mock).toHaveBeenCalledTimes(1);
-    expect(Engine.mock).toHaveBeenCalledWith(
+    expect(Engine).toHaveBeenCalledTimes(1);
+    expect(Engine).toHaveBeenCalledWith(
       'twitter',
       expect.any(Renderer),
       expect.any(Queue),
@@ -147,8 +147,8 @@ describe('new TwitterBot(options)', () => {
       dispatchWrapper
     );
 
-    expect(Worker.mock).toHaveBeenCalledTimes(1);
-    expect(Worker.mock).toHaveBeenCalledWith({
+    expect(Worker).toHaveBeenCalledTimes(1);
+    expect(Worker).toHaveBeenCalledWith({
       appKey,
       appSecret,
       bearerToken,
@@ -161,7 +161,7 @@ describe('new TwitterBot(options)', () => {
   test('default maxConnections', () => {
     expect(new TwitterBot(authOptions));
 
-    expect(Worker.mock).toHaveBeenCalledTimes(1);
+    expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "accessSecret": "__ACCESS_SECRET__",
@@ -181,10 +181,10 @@ test('.start() and .stop() start/stop the engine', () => {
   type MockEngine = Moxy<TwitterBot['engine']>;
 
   bot.start();
-  expect((bot.engine as MockEngine).start.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).start).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect((bot.engine as MockEngine).stop.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
 });
 
 describe('.render(channel, content)', () => {
@@ -209,10 +209,10 @@ describe('.render(channel, content)', () => {
       response?.jobs.map((job) => ({ ...job, key: '---' }))
     ).toMatchSnapshot();
 
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(1, {
+    expect(bodySpy).toHaveBeenNthCalledWith(1, {
       text: 'Hello World',
     });
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(2, {
+    expect(bodySpy).toHaveBeenNthCalledWith(2, {
       text: 'Foo Bar Baz',
       reply: { in_reply_to_tweet_id: '1234567890' },
     });
@@ -241,11 +241,11 @@ describe('.render(channel, content)', () => {
       response?.jobs.map((job) => ({ ...job, key: '---' }))
     ).toMatchSnapshot();
 
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(1, {
+    expect(bodySpy).toHaveBeenNthCalledWith(1, {
       text: 'Hello World',
       reply: { in_reply_to_tweet_id: '1111111111111' },
     });
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(2, {
+    expect(bodySpy).toHaveBeenNthCalledWith(2, {
       text: 'Foo Bar Baz',
       reply: { in_reply_to_tweet_id: '2222222222222' },
     });
@@ -271,7 +271,7 @@ describe('.render(channel, content)', () => {
     );
     expect(response).toMatchSnapshot();
 
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(1, {
+    expect(bodySpy).toHaveBeenNthCalledWith(1, {
       event: {
         type: 'message_create',
         message_create: {
@@ -280,7 +280,7 @@ describe('.render(channel, content)', () => {
         },
       },
     });
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(2, {
+    expect(bodySpy).toHaveBeenNthCalledWith(2, {
       event: {
         type: 'message_create',
         message_create: {
@@ -308,15 +308,15 @@ describe('.render(channel, content)', () => {
       bot.render(replyToTweet, <p>Baz 3</p>),
     ]);
 
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(1, {
+    expect(bodySpy).toHaveBeenNthCalledWith(1, {
       text: 'Foo 1',
       reply: { in_reply_to_tweet_id: '1111111111111' },
     });
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(2, {
+    expect(bodySpy).toHaveBeenNthCalledWith(2, {
       text: 'Baz 3',
       reply: { in_reply_to_tweet_id: '1111111111111' },
     });
-    expect(bodySpy.mock).toHaveBeenNthCalledWith(3, {
+    expect(bodySpy).toHaveBeenNthCalledWith(3, {
       text: 'Bar 2',
       reply: { in_reply_to_tweet_id: '2222222222222' },
     });
@@ -343,7 +343,7 @@ describe('.render(channel, content)', () => {
     ]);
 
     ['Foo 1', 'Bar 2', 'Baz 3'].forEach((text, i) => {
-      expect(bodySpy.mock).toHaveBeenNthCalledWith(i + 1, {
+      expect(bodySpy).toHaveBeenNthCalledWith(i + 1, {
         event: {
           type: 'message_create',
           message_create: {
@@ -560,8 +560,8 @@ describe('.renderWelcomeMessage(name, message)', () => {
             }
           `);
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
-    expect(bodySpy.mock).toHaveBeenCalledWith({
+    expect(bodySpy).toHaveBeenCalledTimes(1);
+    expect(bodySpy).toHaveBeenCalledWith({
       welcome_message: {
         name: 'foo_welcome',
         message_data: { text: 'Foo!' },
@@ -611,7 +611,7 @@ test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
     });
   });
 
-  expect(authSpy.mock).toHaveBeenCalledTimes(1);
+  expect(authSpy).toHaveBeenCalledTimes(1);
   expect(
     authSpy.mock.calls[0].args[0]
       .replace(/oauth_nonce="[^"]+"/, 'oauth_nonce="_NONCE_"')

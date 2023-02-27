@@ -113,13 +113,13 @@ describe('.init()', () => {
     expect(liffScriptEle.getAttribute('src')).toBe(
       'https://static.line-scdn.net/liff/edge/2/sdk.js'
     );
-    expect(liff.init.mock).not.toHaveBeenCalled();
+    expect(liff.init).not.toHaveBeenCalled();
 
     liffScriptEle.onload();
 
     await expect(promise).resolves.toBe(undefined);
-    expect(liff.init.mock).toHaveBeenCalledTimes(1);
-    expect(liff.login.mock).not.toHaveBeenCalled();
+    expect(liff.init).toHaveBeenCalledTimes(1);
+    expect(liff.login).not.toHaveBeenCalled();
   });
 
   it('skip adding sdk if options.shouldLoadSDK set to false', async () => {
@@ -131,7 +131,7 @@ describe('.init()', () => {
     await expect(authenticator.init()).resolves.toBe(undefined);
 
     expect(document.getElementById('LIFF')).toBe(null);
-    expect(liff.init.mock).toHaveBeenCalledTimes(1);
+    expect(liff.init).toHaveBeenCalledTimes(1);
   });
 
   it('wait for redirect while in LIFF primary redirecting', async () => {
@@ -154,7 +154,7 @@ describe('.init()', () => {
     );
 
     expect(document.getElementById('LIFF')).toBe(null);
-    expect(liff.init.mock).toHaveBeenCalledTimes(1);
+    expect(liff.init).toHaveBeenCalledTimes(1);
 
     jest.useRealTimers();
   });
@@ -178,7 +178,7 @@ describe('.fetchCredential()', () => {
       },
     });
 
-    expect(liff.login.mock).not.toHaveBeenCalled();
+    expect(liff.login).not.toHaveBeenCalled();
   });
 
   test('credential in group chat', async () => {
@@ -206,7 +206,7 @@ describe('.fetchCredential()', () => {
       },
     });
 
-    expect(liff.login.mock).not.toHaveBeenCalled();
+    expect(liff.login).not.toHaveBeenCalled();
   });
 
   test('credential in room chat', async () => {
@@ -234,7 +234,7 @@ describe('.fetchCredential()', () => {
       },
     });
 
-    expect(liff.login.mock).not.toHaveBeenCalled();
+    expect(liff.login).not.toHaveBeenCalled();
   });
 
   it('call liff.login() if liff.isLoggedIn() is false', async () => {
@@ -247,15 +247,15 @@ describe('.fetchCredential()', () => {
       shouldLoadSDK: false,
     });
 
-    expect(liff.login.mock).not.toHaveBeenCalled();
+    expect(liff.login).not.toHaveBeenCalled();
 
     await authenticator.init();
     const promise = authenticator.fetchCredential();
     setImmediate(jest.runAllTimers);
 
-    expect(liff.isLoggedIn.mock).toHaveBeenCalledTimes(1);
-    expect(liff.login.mock).toHaveBeenCalledTimes(1);
-    expect(liff.login.mock).toHaveBeenCalledWith({
+    expect(liff.isLoggedIn).toHaveBeenCalledTimes(1);
+    expect(liff.login).toHaveBeenCalledTimes(1);
+    expect(liff.login).toHaveBeenCalledWith({
       redirectUri: 'https://sociably.io/foo?bar=baz',
     });
 
@@ -417,5 +417,5 @@ test('.closeWebview', async () => {
   await authenticator.init();
 
   expect(authenticator.closeWebview()).toBe(true);
-  expect(liff.closeWindow.mock).toHaveBeenCalledTimes(1);
+  expect(liff.closeWindow).toHaveBeenCalledTimes(1);
 });

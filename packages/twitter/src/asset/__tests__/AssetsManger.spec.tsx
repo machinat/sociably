@@ -48,7 +48,7 @@ test('get asset id', async () => {
     ])
   ).resolves.toEqual([undefined, undefined, undefined, undefined, undefined]);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(5);
+  expect(stateController.globalState).toHaveBeenCalledTimes(5);
   expect(stateController.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -59,7 +59,7 @@ test('get asset id', async () => {
       "twitter.assets.__APP_ID__.welcome_message",
     ]
   `);
-  expect(state.get.mock).toHaveBeenCalledTimes(5);
+  expect(state.get).toHaveBeenCalledTimes(5);
   expect(state.get.mock.calls.map(({ args }) => args[0])).toEqual([
     'bar',
     'my_media',
@@ -90,8 +90,8 @@ test('get asset id', async () => {
     '_WELCOME_MESSAGE_ID_',
   ]);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(10);
-  expect(state.get.mock).toHaveBeenCalledTimes(10);
+  expect(stateController.globalState).toHaveBeenCalledTimes(10);
+  expect(state.get).toHaveBeenCalledTimes(10);
 });
 
 test('save asset id', async () => {
@@ -107,7 +107,7 @@ test('save asset id', async () => {
     ])
   ).resolves.toEqual([false, false, false, false, false]);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(5);
+  expect(stateController.globalState).toHaveBeenCalledTimes(5);
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -119,7 +119,7 @@ test('save asset id', async () => {
     ]
   `);
 
-  expect(state.set.mock).toHaveBeenCalledTimes(5);
+  expect(state.set).toHaveBeenCalledTimes(5);
   expect(state.set.mock.calls.map(({ args }) => args)).toEqual([
     ['bar', 'baz'],
     ['my_media', '_MEDIA_ID_'],
@@ -139,8 +139,8 @@ test('save asset id', async () => {
     ])
   ).resolves.toEqual([true, true, true, true, true]);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(10);
-  expect(state.set.mock).toHaveBeenCalledTimes(10);
+  expect(stateController.globalState).toHaveBeenCalledTimes(10);
+  expect(state.set).toHaveBeenCalledTimes(10);
 });
 
 test('get all assets', async () => {
@@ -156,7 +156,7 @@ test('get all assets', async () => {
     ])
   ).resolves.toEqual([null, null, null, null, null]);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(5);
+  expect(stateController.globalState).toHaveBeenCalledTimes(5);
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -167,7 +167,7 @@ test('get all assets', async () => {
       "twitter.assets.__APP_ID__.welcome_message",
     ]
   `);
-  expect(state.getAll.mock).toHaveBeenCalledTimes(5);
+  expect(state.getAll).toHaveBeenCalledTimes(5);
 
   const assetsMap = new Map([
     ['bar', '1'],
@@ -185,8 +185,8 @@ test('get all assets', async () => {
     ])
   ).resolves.toEqual([assetsMap, assetsMap, assetsMap, assetsMap, assetsMap]);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(10);
-  expect(state.getAll.mock).toHaveBeenCalledTimes(10);
+  expect(stateController.globalState).toHaveBeenCalledTimes(10);
+  expect(state.getAll).toHaveBeenCalledTimes(10);
 });
 
 test('unsave asset id', async () => {
@@ -202,7 +202,7 @@ test('unsave asset id', async () => {
     ])
   ).resolves.toEqual([true, true, true, true, true]);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(5);
+  expect(stateController.globalState).toHaveBeenCalledTimes(5);
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -213,7 +213,7 @@ test('unsave asset id', async () => {
       "twitter.assets.__APP_ID__.welcome_message",
     ]
   `);
-  expect(state.delete.mock).toHaveBeenCalledTimes(5);
+  expect(state.delete).toHaveBeenCalledTimes(5);
   expect(state.delete.mock.calls.map(({ args }) => args[0])).toEqual([
     'bar',
     'my_media',
@@ -233,8 +233,8 @@ test('unsave asset id', async () => {
     ])
   ).resolves.toEqual([false, false, false, false, false]);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(10);
-  expect(state.delete.mock).toHaveBeenCalledTimes(10);
+  expect(stateController.globalState).toHaveBeenCalledTimes(10);
+  expect(state.delete).toHaveBeenCalledTimes(10);
 });
 
 describe('.renderMedia(tag, media)', () => {
@@ -260,15 +260,15 @@ describe('.renderMedia(tag, media)', () => {
       uploadResponse
     );
 
-    expect(bot.renderMedia.mock).toHaveBeenCalledTimes(1);
-    expect(bot.renderMedia.mock).toHaveBeenCalledWith(photo);
+    expect(bot.renderMedia).toHaveBeenCalledTimes(1);
+    expect(bot.renderMedia).toHaveBeenCalledWith(photo);
 
     expect(
       stateController.globalState.mock.calls[0].args[0]
     ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.media"`);
 
-    expect(state.set.mock).toHaveBeenCalledTimes(1);
-    expect(state.set.mock).toHaveBeenCalledWith('foo', '111111111111111111');
+    expect(state.set).toHaveBeenCalledTimes(1);
+    expect(state.set).toHaveBeenCalledWith('foo', '111111111111111111');
   });
 
   it('throw if media is empty', async () => {
@@ -278,7 +278,7 @@ describe('.renderMedia(tag, media)', () => {
       manager.renderMedia('foo', null)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"media content is empty"`);
 
-    expect(state.set.mock).not.toHaveBeenCalled();
+    expect(state.set).not.toHaveBeenCalled();
   });
 
   it('throw if media already exist', async () => {
@@ -291,8 +291,8 @@ describe('.renderMedia(tag, media)', () => {
       `"welcome message [my_welcome_message] already exists"`
     );
 
-    expect(state.set.mock).not.toHaveBeenCalled();
-    expect(bot.renderMedia.mock).not.toHaveBeenCalled();
+    expect(state.set).not.toHaveBeenCalled();
+    expect(bot.renderMedia).not.toHaveBeenCalled();
   });
 });
 
@@ -309,8 +309,8 @@ describe('.setUpWebhook(tag, env, url)', () => {
       '1234567890'
     );
 
-    expect(bot.makeApiCall.mock).not.toHaveBeenCalled();
-    expect(state.set.mock).not.toHaveBeenCalled();
+    expect(bot.makeApiCall).not.toHaveBeenCalled();
+    expect(state.set).not.toHaveBeenCalled();
   });
 
   test('save existed webhook if the url is matched', async () => {
@@ -334,7 +334,7 @@ describe('.setUpWebhook(tag, env, url)', () => {
       '1234567890'
     );
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+    expect(bot.makeApiCall).toHaveBeenCalledWith(
       'GET',
       '1.1/account_activity/all/webhooks.json',
       undefined,
@@ -344,10 +344,10 @@ describe('.setUpWebhook(tag, env, url)', () => {
     expect(
       stateController.globalState.mock.calls[0].args[0]
     ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.webhook"`);
-    expect(state.set.mock).toHaveBeenCalledWith(tagName, '1234567890');
+    expect(state.set).toHaveBeenCalledWith(tagName, '1234567890');
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-    expect(state.set.mock).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(state.set).toHaveBeenCalledTimes(1);
   });
 
   test('create a new webhook if no existed one', async () => {
@@ -370,7 +370,7 @@ describe('.setUpWebhook(tag, env, url)', () => {
       '1234567890'
     );
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+    expect(bot.makeApiCall).toHaveBeenCalledWith(
       'POST',
       '1.1/account_activity/all/production/webhooks.json',
       { url }
@@ -379,10 +379,10 @@ describe('.setUpWebhook(tag, env, url)', () => {
     expect(
       stateController.globalState.mock.calls[0].args[0]
     ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.webhook"`);
-    expect(state.set.mock).toHaveBeenCalledWith(tagName, '1234567890');
+    expect(state.set).toHaveBeenCalledWith(tagName, '1234567890');
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
-    expect(state.set.mock).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
+    expect(state.set).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -396,7 +396,7 @@ test('.deleteWebhook(tag, env)', async () => {
     manager.deleteWebhook('my_app_webhook', 'production')
   ).resolves.toBe('1234567890');
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+  expect(bot.makeApiCall).toHaveBeenCalledWith(
     'DELETE',
     '1.1/account_activity/all/production/webhooks/1234567890.json'
   );
@@ -404,7 +404,7 @@ test('.deleteWebhook(tag, env)', async () => {
   expect(
     stateController.globalState.mock.calls[0].args[0]
   ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.webhook"`);
-  expect(state.delete.mock).toHaveBeenCalledWith('my_app_webhook');
+  expect(state.delete).toHaveBeenCalledWith('my_app_webhook');
 
   state.get.mock.fake(async () => undefined);
   await expect(
@@ -413,8 +413,8 @@ test('.deleteWebhook(tag, env)', async () => {
     `"webhook \\"my_app_webhook\\" doesn't exist"`
   );
 
-  expect(state.delete.mock).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+  expect(state.delete).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
 });
 
 test('.renderWelcomeMessage(name, message)', async () => {
@@ -433,7 +433,7 @@ test('.renderWelcomeMessage(name, message)', async () => {
     manager.renderWelcomeMessage('my_welcome_message', <p>Hello World!</p>)
   ).resolves.toBe('844385345234');
 
-  expect(bot.renderWelcomeMessage.mock).toHaveBeenCalledWith(
+  expect(bot.renderWelcomeMessage).toHaveBeenCalledWith(
     'my_welcome_message',
     <p>Hello World!</p>
   );
@@ -441,10 +441,7 @@ test('.renderWelcomeMessage(name, message)', async () => {
   expect(
     stateController.globalState.mock.calls[0].args[0]
   ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.welcome_message"`);
-  expect(state.set.mock).toHaveBeenCalledWith(
-    'my_welcome_message',
-    '844385345234'
-  );
+  expect(state.set).toHaveBeenCalledWith('my_welcome_message', '844385345234');
 
   bot.renderWelcomeMessage.mock.fake(async () => null);
   await expect(
@@ -458,8 +455,8 @@ test('.renderWelcomeMessage(name, message)', async () => {
     `"welcome message [my_welcome_message] already exists"`
   );
 
-  expect(state.set.mock).toHaveBeenCalledTimes(1);
-  expect(bot.renderWelcomeMessage.mock).toHaveBeenCalledTimes(2);
+  expect(state.set).toHaveBeenCalledTimes(1);
+  expect(bot.renderWelcomeMessage).toHaveBeenCalledTimes(2);
 });
 
 test('.deleteWelcomeMessage(name)', async () => {
@@ -472,7 +469,7 @@ test('.deleteWelcomeMessage(name)', async () => {
     manager.deleteWelcomeMessage('my_welcome_message')
   ).resolves.toBe('1234567890');
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+  expect(bot.makeApiCall).toHaveBeenCalledWith(
     'DELETE',
     '1.1/direct_messages/welcome_messages/destroy.json?id=1234567890'
   );
@@ -480,7 +477,7 @@ test('.deleteWelcomeMessage(name)', async () => {
   expect(
     stateController.globalState.mock.calls[0].args[0]
   ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.welcome_message"`);
-  expect(state.delete.mock).toHaveBeenCalledWith('my_welcome_message');
+  expect(state.delete).toHaveBeenCalledWith('my_welcome_message');
 
   state.get.mock.fake(async () => undefined);
   await expect(
@@ -489,8 +486,8 @@ test('.deleteWelcomeMessage(name)', async () => {
     `"custom profile [my_welcome_message] doesn't exist"`
   );
 
-  expect(state.delete.mock).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+  expect(state.delete).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
 });
 
 test('.createCustomProfile(tag, name, img)', async () => {
@@ -517,7 +514,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
     )
   ).resolves.toBe('1234567890');
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+  expect(bot.makeApiCall).toHaveBeenCalledWith(
     'POST',
     '1.1/custom_profiles/new.json',
     {
@@ -531,10 +528,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
   expect(
     stateController.globalState.mock.calls[0].args[0]
   ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.custom_profile"`);
-  expect(state.set.mock).toHaveBeenCalledWith(
-    'my_custom_profile',
-    '1234567890'
-  );
+  expect(state.set).toHaveBeenCalledWith('my_custom_profile', '1234567890');
 
   state.get.mock.fake(async () => '1234567890');
   await expect(
@@ -547,8 +541,8 @@ test('.createCustomProfile(tag, name, img)', async () => {
     `"custom profile [my_custom_profile] already exists"`
   );
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-  expect(state.set.mock).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+  expect(state.set).toHaveBeenCalledTimes(1);
 });
 
 test('.deleteCustomProfile(name)', async () => {
@@ -561,7 +555,7 @@ test('.deleteCustomProfile(name)', async () => {
     '1234567890'
   );
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledWith(
+  expect(bot.makeApiCall).toHaveBeenCalledWith(
     'DELETE',
     '1.1/custom_profiles/destroy.json?id=1234567890'
   );
@@ -569,7 +563,7 @@ test('.deleteCustomProfile(name)', async () => {
   expect(
     stateController.globalState.mock.calls[0].args[0]
   ).toMatchInlineSnapshot(`"twitter.assets.__APP_ID__.custom_profile"`);
-  expect(state.delete.mock).toHaveBeenCalledWith('my_custom_profile');
+  expect(state.delete).toHaveBeenCalledWith('my_custom_profile');
 
   state.get.mock.fake(async () => undefined);
   await expect(
@@ -578,6 +572,6 @@ test('.deleteCustomProfile(name)', async () => {
     `"custom profile [my_custom_profile] doesn't exist"`
   );
 
-  expect(state.delete.mock).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+  expect(state.delete).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
 });

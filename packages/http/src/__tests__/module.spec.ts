@@ -99,9 +99,9 @@ test('startHook', async () => {
 
   await app.start();
 
-  expect(createServer.mock).toHaveBeenCalledTimes(1);
-  expect(connector.connect.mock).toHaveBeenCalledTimes(1);
-  expect(connector.connect.mock).toHaveBeenCalledWith(mockServer, {
+  expect(createServer).toHaveBeenCalledTimes(1);
+  expect(connector.connect).toHaveBeenCalledTimes(1);
+  expect(connector.connect).toHaveBeenCalledWith(mockServer, {
     host: 'localhost',
     port: 8888,
   });
@@ -115,10 +115,10 @@ test('stopHook', async () => {
   });
 
   await app.start();
-  expect(mockServer.close.mock).not.toHaveBeenCalled();
+  expect(mockServer.close).not.toHaveBeenCalled();
 
   await app.stop();
-  expect(mockServer.close.mock).toHaveBeenCalledTimes(1);
+  expect(mockServer.close).toHaveBeenCalledTimes(1);
 });
 
 test('noServer mode', async () => {
@@ -134,11 +134,11 @@ test('noServer mode', async () => {
   });
 
   await app.start();
-  expect(createServer.mock).not.toHaveBeenCalled();
-  expect(connector.connect.mock).not.toHaveBeenCalled();
+  expect(createServer).not.toHaveBeenCalled();
+  expect(connector.connect).not.toHaveBeenCalled();
 
   await app.stop();
-  expect(mockServer.close.mock).not.toHaveBeenCalled();
+  expect(mockServer.close).not.toHaveBeenCalled();
 });
 
 test('change http server', async () => {
@@ -161,11 +161,11 @@ test('change http server', async () => {
 
   await app.start();
 
-  expect(createServer.mock).not.toHaveBeenCalled();
-  expect(myServer.listen.mock).toHaveBeenCalledTimes(1);
-  expect(myServer.listen.mock).toHaveBeenCalledWith(
+  expect(createServer).not.toHaveBeenCalled();
+  expect(myServer.listen).toHaveBeenCalledTimes(1);
+  expect(myServer.listen).toHaveBeenCalledWith(
     { host: 'localhost', port: 8888 },
     expect.any(Function)
   );
-  expect(myServer.addListener.mock).toHaveBeenCalled();
+  expect(myServer.addListener).toHaveBeenCalled();
 });

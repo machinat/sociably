@@ -38,13 +38,13 @@ test('rendering to UrlButton', () => {
     />
   `);
 
-  expect(authenticator.getAuthUrl.mock).toHaveBeenCalledTimes(2);
-  expect(authenticator.getAuthUrl.mock).toHaveBeenNthCalledWith(
+  expect(authenticator.getAuthUrl).toHaveBeenCalledTimes(2);
+  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     1,
     '67890',
     undefined
   );
-  expect(authenticator.getAuthUrl.mock).toHaveBeenNthCalledWith(
+  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
     '67890',
     'foo?bar=baz'
@@ -60,5 +60,5 @@ test('rendering to null if channel is not a TwitterChat', () => {
     WebviewButton(authenticator, new TweetTarget('12345'))({ label: 'Foo' })
   ).toBe(null);
 
-  expect(authenticator.getAuthUrl.mock).not.toHaveBeenCalled();
+  expect(authenticator.getAuthUrl).not.toHaveBeenCalled();
 });

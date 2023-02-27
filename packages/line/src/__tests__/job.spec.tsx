@@ -145,8 +145,8 @@ describe('createChatJobs()', () => {
       ]
     `);
 
-    expect(chatActionValue.getChatRequest.mock).toHaveBeenCalledTimes(2);
-    expect(chatActionValue.getChatRequest.mock).toHaveBeenCalledWith(channel);
+    expect(chatActionValue.getChatRequest).toHaveBeenCalledTimes(2);
+    expect(chatActionValue.getChatRequest).toHaveBeenCalledWith(channel);
   });
 
   test('send first job with reply API if replyToken given', () => {
@@ -236,8 +236,8 @@ describe('createChatJobs()', () => {
       ]
     `);
 
-    expect(chatActionValue.getChatRequest.mock).toHaveBeenCalledTimes(2);
-    expect(chatActionValue.getChatRequest.mock).toHaveBeenCalledWith(channel);
+    expect(chatActionValue.getChatRequest).toHaveBeenCalledTimes(2);
+    expect(chatActionValue.getChatRequest).toHaveBeenCalledWith(channel);
   });
 
   it('throw if an invalid chat action received', () => {
@@ -359,8 +359,8 @@ describe('createMulticastJobs()', () => {
       ]
     `);
 
-    expect(chatActionValue.getBulkRequest.mock).toHaveBeenCalledTimes(2);
-    expect(chatActionValue.getBulkRequest.mock).toHaveBeenCalledWith([
+    expect(chatActionValue.getBulkRequest).toHaveBeenCalledTimes(2);
+    expect(chatActionValue.getBulkRequest).toHaveBeenCalledWith([
       'foo',
       'bar',
       'baz',

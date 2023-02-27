@@ -39,37 +39,37 @@ test('execute each asyncronized filterFn one by one', async () => {
   stream.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 4, key: 'foo' });
 
-  expect(nextListener.mock).not.toHaveBeenCalled();
-  expect(filterFn.mock).toHaveBeenCalledTimes(1);
+  expect(nextListener).not.toHaveBeenCalled();
+  expect(filterFn).toHaveBeenCalledTimes(1);
   jest.advanceTimersByTime(100);
 
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(filterFn.mock).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(filterFn).toHaveBeenCalledTimes(2);
   jest.advanceTimersByTime(100);
 
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(filterFn.mock).toHaveBeenCalledTimes(3);
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(filterFn).toHaveBeenCalledTimes(3);
   jest.advanceTimersByTime(100);
 
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
-  expect(filterFn.mock).toHaveBeenCalledTimes(4);
+  expect(nextListener).toHaveBeenCalledTimes(2);
+  expect(filterFn).toHaveBeenCalledTimes(4);
   jest.advanceTimersByTime(100);
 
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledTimes(2);
 
   for (let i = 1; i <= 4; i += 1) {
-    expect(filterFn.mock).toHaveBeenNthCalledWith(i, i);
+    expect(filterFn).toHaveBeenNthCalledWith(i, i);
   }
-  expect(nextListener.mock).toHaveBeenNthCalledWith(1, 1);
-  expect(nextListener.mock).toHaveBeenNthCalledWith(2, 3);
+  expect(nextListener).toHaveBeenNthCalledWith(1, 1);
+  expect(nextListener).toHaveBeenNthCalledWith(2, 3);
 
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('foo');
-  expect(errorListener.mock).not.toHaveBeenCalled();
+  expect(nextContainer.$$factory).toHaveBeenCalledTimes(2);
+  expect(nextContainer.$$factory).toHaveBeenCalledWith('foo');
+  expect(errorListener).not.toHaveBeenCalled();
 });
 
 test('filter frames with different keys parallelly', async () => {
@@ -87,42 +87,42 @@ test('filter frames with different keys parallelly', async () => {
   stream.next({ scope: createEmptyScope(), value: 4, key: 'bar' });
   stream.next({ scope: createEmptyScope(), value: 5, key: 'foo' });
 
-  expect(nextListener.mock).not.toHaveBeenCalled();
+  expect(nextListener).not.toHaveBeenCalled();
 
-  expect(filterFn.mock).toHaveBeenCalledTimes(2);
-  expect(filterFn.mock).toHaveBeenNthCalledWith(1, 1);
-  expect(filterFn.mock).toHaveBeenNthCalledWith(2, 3);
+  expect(filterFn).toHaveBeenCalledTimes(2);
+  expect(filterFn).toHaveBeenNthCalledWith(1, 1);
+  expect(filterFn).toHaveBeenNthCalledWith(2, 3);
 
   jest.advanceTimersByTime(100);
   await nextTick();
 
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(1, 'foo');
-  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(2, 'bar');
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
-  expect(nextListener.mock).toHaveBeenNthCalledWith(1, 1);
-  expect(nextListener.mock).toHaveBeenNthCalledWith(2, 3);
+  expect(nextContainer.$$factory).toHaveBeenCalledTimes(2);
+  expect(nextContainer.$$factory).toHaveBeenNthCalledWith(1, 'foo');
+  expect(nextContainer.$$factory).toHaveBeenNthCalledWith(2, 'bar');
+  expect(nextListener).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenNthCalledWith(1, 1);
+  expect(nextListener).toHaveBeenNthCalledWith(2, 3);
 
-  expect(filterFn.mock).toHaveBeenCalledTimes(4);
-  expect(filterFn.mock).toHaveBeenNthCalledWith(3, 2);
-  expect(filterFn.mock).toHaveBeenNthCalledWith(4, 4);
+  expect(filterFn).toHaveBeenCalledTimes(4);
+  expect(filterFn).toHaveBeenNthCalledWith(3, 2);
+  expect(filterFn).toHaveBeenNthCalledWith(4, 4);
   jest.advanceTimersByTime(100);
   await nextTick();
 
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledTimes(2);
 
-  expect(filterFn.mock).toHaveBeenCalledTimes(5);
+  expect(filterFn).toHaveBeenCalledTimes(5);
   jest.advanceTimersByTime(100);
   await nextTick();
 
-  expect(filterFn.mock).toHaveBeenCalledWith(5);
+  expect(filterFn).toHaveBeenCalledWith(5);
 
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(3);
-  expect(nextContainer.$$factory.mock).toHaveBeenNthCalledWith(3, 'foo');
-  expect(nextListener.mock).toHaveBeenCalledTimes(3);
-  expect(nextListener.mock).toHaveBeenNthCalledWith(3, 5);
+  expect(nextContainer.$$factory).toHaveBeenCalledTimes(3);
+  expect(nextContainer.$$factory).toHaveBeenNthCalledWith(3, 'foo');
+  expect(nextListener).toHaveBeenCalledTimes(3);
+  expect(nextListener).toHaveBeenNthCalledWith(3, 5);
 
-  expect(errorListener.mock).not.toHaveBeenCalled();
+  expect(errorListener).not.toHaveBeenCalled();
 });
 
 it('emit error if thrown in filterFn', async () => {
@@ -141,28 +141,28 @@ it('emit error if thrown in filterFn', async () => {
   stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
 
-  expect(nextListener.mock).not.toHaveBeenCalled();
+  expect(nextListener).not.toHaveBeenCalled();
 
   jest.advanceTimersByTime(100);
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith(1);
-  expect(errorListener.mock).not.toHaveBeenCalled();
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith(1);
+  expect(errorListener).not.toHaveBeenCalled();
 
   jest.advanceTimersByTime(100);
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(errorListener.mock).toHaveBeenCalledWith(new Error('no'));
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(errorListener).toHaveBeenCalledWith(new Error('no'));
 
   jest.advanceTimersByTime(100);
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
-  expect(nextListener.mock).toHaveBeenCalledWith(3);
+  expect(nextListener).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledWith(3);
 
-  expect(filterFn.mock).toHaveBeenCalledTimes(3);
-  expect(errorContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainer.$$factory.mock).toHaveBeenCalledWith('foo');
-  expect(errorListener.mock).toHaveBeenCalledTimes(1);
+  expect(filterFn).toHaveBeenCalledTimes(3);
+  expect(errorContainer.$$factory).toHaveBeenCalledTimes(1);
+  expect(errorContainer.$$factory).toHaveBeenCalledWith('foo');
+  expect(errorListener).toHaveBeenCalledTimes(1);
 });
 
 test('use service container as filterer', async () => {
@@ -184,33 +184,33 @@ test('use service container as filterer', async () => {
   stream.next({ scope: createEmptyScope(), value: 2, key: 'foo' });
   stream.next({ scope: createEmptyScope(), value: 3, key: 'foo' });
 
-  expect(nextListener.mock).not.toHaveBeenCalled();
-  expect(filterFn.mock).toHaveBeenCalledTimes(1);
+  expect(nextListener).not.toHaveBeenCalled();
+  expect(filterFn).toHaveBeenCalledTimes(1);
   jest.advanceTimersByTime(100);
 
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(filterFn.mock).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(filterFn).toHaveBeenCalledTimes(2);
   jest.advanceTimersByTime(100);
 
   await nextTick();
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith(1);
-  expect(filterFn.mock).toHaveBeenCalledTimes(3);
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith(1);
+  expect(filterFn).toHaveBeenCalledTimes(3);
   jest.advanceTimersByTime(100);
 
   await nextTick();
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('foo');
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
-  expect(nextListener.mock).toHaveBeenCalledWith(3);
+  expect(nextContainer.$$factory).toHaveBeenCalledTimes(2);
+  expect(nextContainer.$$factory).toHaveBeenCalledWith('foo');
+  expect(nextListener).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledWith(3);
 
-  expect(filterContainer.$$factory.mock).toHaveBeenCalledTimes(3);
-  expect(filterContainer.$$factory.mock).toHaveBeenCalledWith('foo');
+  expect(filterContainer.$$factory).toHaveBeenCalledTimes(3);
+  expect(filterContainer.$$factory).toHaveBeenCalledWith('foo');
 
-  expect(filterFn.mock).toHaveBeenNthCalledWith(1, 1);
-  expect(filterFn.mock).toHaveBeenNthCalledWith(2, 2);
-  expect(filterFn.mock).toHaveBeenNthCalledWith(3, 3);
+  expect(filterFn).toHaveBeenNthCalledWith(1, 1);
+  expect(filterFn).toHaveBeenNthCalledWith(2, 2);
+  expect(filterFn).toHaveBeenNthCalledWith(3, 3);
 
-  expect(errorListener.mock).not.toHaveBeenCalled();
+  expect(errorListener).not.toHaveBeenCalled();
 });

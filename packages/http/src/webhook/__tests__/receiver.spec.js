@@ -45,7 +45,7 @@ test('handle GET request', async () => {
   const receiver = new WebhookReceiver(webhookHandler);
   await receiver.handleRequest(req, res);
 
-  expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+  expect(webhookHandler).toHaveBeenCalledTimes(1);
   expect(webhookHandler.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "request": Object {
@@ -61,7 +61,7 @@ test('handle GET request', async () => {
     `);
 
   expect(res.statusCode).toBe(200);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
 });
 
 test('handle POST request with body', async () => {
@@ -76,7 +76,7 @@ test('handle POST request with body', async () => {
   const receiver = new WebhookReceiver(webhookHandler);
   await receiver.handleRequest(req, res);
 
-  expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+  expect(webhookHandler).toHaveBeenCalledTimes(1);
   expect(webhookHandler.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "request": Object {
@@ -92,7 +92,7 @@ test('handle POST request with body', async () => {
     `);
 
   expect(res.statusCode).toBe(200);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
 });
 
 it('respond according to the response obj what webhookHandler return', async () => {
@@ -108,11 +108,11 @@ it('respond according to the response obj what webhookHandler return', async () 
   const receiver = new WebhookReceiver(webhookHandler);
   await receiver.handleRequest(req, res);
 
-  expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+  expect(webhookHandler).toHaveBeenCalledTimes(1);
 
   expect(res.statusCode).toBe(400);
   expect(res.headers).toEqual({ foo: 'bad' });
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toBe('Bad bad bad request');
 });
 
@@ -128,10 +128,10 @@ it("respond JSON of the body if it's an object", async () => {
   const receiver = new WebhookReceiver(webhookHandler);
   await receiver.handleRequest(req, res);
 
-  expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+  expect(webhookHandler).toHaveBeenCalledTimes(1);
 
   expect(res.statusCode).toBe(408);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(
     `"{\\"hello\\":\\"teapot\\"}"`
   );
@@ -148,8 +148,8 @@ it('pass routing info down to the handler if received', async () => {
     trailingPath: 'bar/baz',
   });
 
-  expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
-  expect(webhookHandler.mock).toHaveBeenCalledWith(
+  expect(webhookHandler).toHaveBeenCalledTimes(1);
+  expect(webhookHandler).toHaveBeenCalledWith(
     {
       request: {
         body: undefined,
@@ -167,7 +167,7 @@ it('pass routing info down to the handler if received', async () => {
   );
 
   expect(res.statusCode).toBe(200);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
 });
 
 it('ends res with 500 if error thrown in webhookHandler', async () => {
@@ -181,10 +181,10 @@ it('ends res with 500 if error thrown in webhookHandler', async () => {
   const receiver = new WebhookReceiver(webhookHandler);
   await receiver.handleRequest(req, res);
 
-  expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+  expect(webhookHandler).toHaveBeenCalledTimes(1);
 
   expect(res.statusCode).toBe(500);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(
     `"{\\"code\\":500,\\"message\\":\\"very interal error\\"}"`
   );
@@ -205,7 +205,7 @@ test('#handleRequestCallback() work', async () => {
 
   await new Promise(process.nextTick);
 
-  expect(webhookHandler.mock).toHaveBeenCalledTimes(1);
+  expect(webhookHandler).toHaveBeenCalledTimes(1);
   expect(webhookHandler.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "request": Object {
@@ -221,5 +221,5 @@ test('#handleRequestCallback() work', async () => {
     `);
 
   expect(res.statusCode).toBe(200);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
 });

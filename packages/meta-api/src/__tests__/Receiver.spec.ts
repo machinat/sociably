@@ -368,10 +368,10 @@ describe('handling POST', () => {
       });
     });
 
-    expect(makeEventsFromUpdate.mock).toHaveBeenCalledTimes(3);
-    expect(makeEventsFromUpdate.mock).toHaveBeenNthCalledWith(1, { id: '123' });
-    expect(makeEventsFromUpdate.mock).toHaveBeenNthCalledWith(2, { id: '456' });
-    expect(makeEventsFromUpdate.mock).toHaveBeenNthCalledWith(3, { id: '789' });
+    expect(makeEventsFromUpdate).toHaveBeenCalledTimes(3);
+    expect(makeEventsFromUpdate).toHaveBeenNthCalledWith(1, { id: '123' });
+    expect(makeEventsFromUpdate).toHaveBeenNthCalledWith(2, { id: '456' });
+    expect(makeEventsFromUpdate).toHaveBeenNthCalledWith(3, { id: '789' });
   });
 
   test('passing signature validation', async () => {
@@ -463,14 +463,11 @@ describe('handling POST', () => {
               }
             `);
 
-      expect(bot.render.mock).toHaveBeenCalledTimes(1);
-      expect(bot.render.mock).toHaveBeenCalledWith(
-        event.channel,
-        'hello world'
-      );
+      expect(bot.render).toHaveBeenCalledTimes(1);
+      expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
 
-      expect(makeEventsFromUpdate.mock).toHaveBeenCalledTimes(1);
-      expect(makeEventsFromUpdate.mock).toHaveBeenCalledWith({
+      expect(makeEventsFromUpdate).toHaveBeenCalledTimes(1);
+      expect(makeEventsFromUpdate).toHaveBeenCalledWith({
         id: 1234567890,
       });
     });
@@ -503,6 +500,6 @@ describe('handling POST', () => {
     const { reply } = popEventMock.calls[0].args[0];
 
     await expect(reply('hello world')).resolves.toBe(null);
-    expect(bot.render.mock).not.toHaveBeenCalled();
+    expect(bot.render).not.toHaveBeenCalled();
   });
 });

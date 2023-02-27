@@ -24,11 +24,11 @@ it('pipe the function from right to left', () => {
 
   expect(compose(fn1, fn2, fn3, fn4, fn5)('👉')).toBe('👉54321');
 
-  expect(fn1.mock).toHaveBeenCalledWith('👉5432');
-  expect(fn2.mock).toHaveBeenCalledWith('👉543');
-  expect(fn3.mock).toHaveBeenCalledWith('👉54');
-  expect(fn4.mock).toHaveBeenCalledWith('👉5');
-  expect(fn5.mock).toHaveBeenCalledWith('👉');
+  expect(fn1).toHaveBeenCalledWith('👉5432');
+  expect(fn2).toHaveBeenCalledWith('👉543');
+  expect(fn3).toHaveBeenCalledWith('👉54');
+  expect(fn4).toHaveBeenCalledWith('👉5');
+  expect(fn5).toHaveBeenCalledWith('👉');
 });
 
 it('pass last function with full args but rest with the result of next', () => {
@@ -38,7 +38,7 @@ it('pass last function with full args but rest with the result of next', () => {
 
   expect(compose(fn1, fn2, fn3)('a', 'b', 'c')).toBe('abc321');
 
-  expect(fn1.mock).toHaveBeenCalledWith('abc32');
-  expect(fn2.mock).toHaveBeenCalledWith('abc3');
-  expect(fn3.mock).toHaveBeenCalledWith('a', 'b', 'c');
+  expect(fn1).toHaveBeenCalledWith('abc32');
+  expect(fn2).toHaveBeenCalledWith('abc3');
+  expect(fn3).toHaveBeenCalledWith('a', 'b', 'c');
 });

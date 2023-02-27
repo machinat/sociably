@@ -108,8 +108,8 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    expect(ControllerSpy.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(ControllerSpy.$$factory.mock).toHaveBeenCalledWith(
+    expect(ControllerSpy.$$factory).toHaveBeenCalledTimes(1);
+    expect(ControllerSpy.$$factory).toHaveBeenCalledWith(
       expect.any(HttpOperatorP),
       expect.arrayContaining([fooAuthenticator, barAuthenticator])
     );
@@ -138,11 +138,11 @@ describe('initModule()', () => {
       trailingPath: 'foo',
     });
 
-    expect(fakeController.delegateAuthRequest.mock).toHaveBeenCalledTimes(1);
-    expect(fakeController.delegateAuthRequest.mock).toHaveBeenCalledWith(
-      req,
-      res,
-      { originalPath: '/auth/foo', matchedPath: '/auth', trailingPath: 'foo' }
-    );
+    expect(fakeController.delegateAuthRequest).toHaveBeenCalledTimes(1);
+    expect(fakeController.delegateAuthRequest).toHaveBeenCalledWith(req, res, {
+      originalPath: '/auth/foo',
+      matchedPath: '/auth',
+      trailingPath: 'foo',
+    });
   });
 });

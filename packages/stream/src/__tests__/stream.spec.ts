@@ -15,16 +15,16 @@ describe('#subscribe()', () => {
       value: 'foo',
       key: 'foo.channel',
     });
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).toHaveBeenCalledWith('foo');
+    expect(eventListener).toHaveBeenCalledTimes(1);
+    expect(eventListener).toHaveBeenCalledWith('foo');
 
     stream.next({
       scope: createEmptyScope(),
       value: 'bar',
       key: 'bar.channel',
     });
-    expect(eventListener.mock).toHaveBeenCalledTimes(2);
-    expect(eventListener.mock).toHaveBeenCalledWith('bar');
+    expect(eventListener).toHaveBeenCalledTimes(2);
+    expect(eventListener).toHaveBeenCalledWith('bar');
   });
 
   test('subscribe with container', () => {
@@ -41,20 +41,20 @@ describe('#subscribe()', () => {
       value: 'foo',
       key: 'foo.channel',
     });
-    expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).toHaveBeenCalledWith('foo');
+    expect(nextContainer.$$factory).toHaveBeenCalledTimes(1);
+    expect(nextContainer.$$factory).toHaveBeenCalledWith('foo.channel');
+    expect(eventListener).toHaveBeenCalledTimes(1);
+    expect(eventListener).toHaveBeenCalledWith('foo');
 
     stream.next({
       scope: createEmptyScope(),
       value: 'bar',
       key: 'bar.channel',
     });
-    expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(2);
-    expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('bar.channel');
-    expect(eventListener.mock).toHaveBeenCalledTimes(2);
-    expect(eventListener.mock).toHaveBeenCalledWith('bar');
+    expect(nextContainer.$$factory).toHaveBeenCalledTimes(2);
+    expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.channel');
+    expect(eventListener).toHaveBeenCalledTimes(2);
+    expect(eventListener).toHaveBeenCalledWith('bar');
   });
 
   it('catch error from subscriber', () => {
@@ -73,10 +73,10 @@ describe('#subscribe()', () => {
       key: 'foo.channel',
     });
 
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(new Error('boom'));
-    expect(defaultCatcher.mock).not.toHaveBeenCalled();
+    expect(eventListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledWith(new Error('boom'));
+    expect(defaultCatcher).not.toHaveBeenCalled();
   });
 });
 
@@ -92,9 +92,9 @@ test('#pipe()', () => {
   const destination = source.pipe(...operators);
   expect(destination).toBeInstanceOf(Stream);
 
-  expect(operators[0].mock).toHaveBeenCalledTimes(1);
-  expect(operators[1].mock).toHaveBeenCalledTimes(1);
-  expect(operators[2].mock).toHaveBeenCalledTimes(1);
+  expect(operators[0]).toHaveBeenCalledTimes(1);
+  expect(operators[1]).toHaveBeenCalledTimes(1);
+  expect(operators[2]).toHaveBeenCalledTimes(1);
 
   expect(operators[0].mock.calls[0].result).toBe(
     operators[1].mock.calls[0].args[0]
@@ -123,8 +123,8 @@ describe('#catch()', () => {
       value: new Error('boo'),
       key: undefined,
     });
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
+    expect(errorListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledWith(new Error('boo'));
   });
 
   it('emit error from subscriber', () => {
@@ -142,9 +142,9 @@ describe('#catch()', () => {
       key: 'foo.channel',
     });
 
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(new Error('boom'));
+    expect(eventListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledWith(new Error('boom'));
   });
 
   test('with container', () => {
@@ -167,10 +167,10 @@ describe('#catch()', () => {
       value: new Error('boo'),
       key: undefined,
     });
-    expect(errorContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(errorContainer.$$factory.mock).toHaveBeenCalledWith(undefined);
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
+    expect(errorContainer.$$factory).toHaveBeenCalledTimes(1);
+    expect(errorContainer.$$factory).toHaveBeenCalledWith(undefined);
+    expect(errorListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledWith(new Error('boo'));
   });
 
   test('throw if no error subscriber exists', () => {

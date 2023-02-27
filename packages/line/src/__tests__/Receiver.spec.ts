@@ -289,8 +289,8 @@ test('reply(message) sugar', async () => {
           }
         `);
 
-  expect(bot.render.mock).toHaveBeenCalledTimes(1);
-  expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world', {
+  expect(bot.render).toHaveBeenCalledTimes(1);
+  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world', {
     replyToken: event.replyToken,
   });
 });

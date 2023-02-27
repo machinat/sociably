@@ -81,14 +81,11 @@ describe('.constructor(options)', () => {
 
     expect(bot.engine).toBeInstanceOf(Engine);
 
-    expect(Renderer.mock).toHaveBeenCalledTimes(1);
-    expect(Renderer.mock).toHaveBeenCalledWith(
-      'telegram',
-      expect.any(Function)
-    );
+    expect(Renderer).toHaveBeenCalledTimes(1);
+    expect(Renderer).toHaveBeenCalledWith('telegram', expect.any(Function));
 
-    expect(Engine.mock).toHaveBeenCalledTimes(1);
-    expect(Engine.mock).toHaveBeenCalledWith(
+    expect(Engine).toHaveBeenCalledTimes(1);
+    expect(Engine).toHaveBeenCalledWith(
       'telegram',
       expect.any(Renderer),
       expect.any(Queue),
@@ -97,8 +94,8 @@ describe('.constructor(options)', () => {
       dispatchWrapper
     );
 
-    expect(Worker.mock).toHaveBeenCalledTimes(1);
-    expect(Worker.mock).toHaveBeenCalledWith('12345:_BOT_TOKEN_', 999);
+    expect(Worker).toHaveBeenCalledTimes(1);
+    expect(Worker).toHaveBeenCalledWith('12345:_BOT_TOKEN_', 999);
   });
 
   test('default maxRequestConnections', () => {
@@ -110,7 +107,7 @@ describe('.constructor(options)', () => {
       })
     );
 
-    expect(Worker.mock).toHaveBeenCalledTimes(1);
+    expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
         "12345:_BOT_TOKEN_",
@@ -126,10 +123,10 @@ test('.start() and .stop() start/stop engine', () => {
   type MockEngine = Moxy<TelegramBot['engine']>;
 
   bot.start();
-  expect((bot.engine as MockEngine).start.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).start).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect((bot.engine as MockEngine).stop.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
 });
 
 describe('.render(channel, message, options)', () => {
@@ -167,7 +164,7 @@ describe('.render(channel, message, options)', () => {
       { ok: true, result: { id: 2 } },
     ]);
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+    expect(bodySpy).toHaveBeenCalledTimes(2);
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "chat_id": 67890,
@@ -215,7 +212,7 @@ describe('.render(channel, message, options)', () => {
       { ok: true, result: { id: '2' } },
     ]);
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+    expect(bodySpy).toHaveBeenCalledTimes(2);
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "inline_message_id": "1",
@@ -262,8 +259,8 @@ describe('.makeApiCall()', () => {
       foo: 'bar',
     });
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
-    expect(bodySpy.mock).toHaveBeenCalledWith({ bar: 'baz' });
+    expect(bodySpy).toHaveBeenCalledTimes(1);
+    expect(bodySpy).toHaveBeenCalledWith({ bar: 'baz' });
 
     expect(fooCall.isDone()).toBe(true);
   });
@@ -290,8 +287,8 @@ describe('.makeApiCall()', () => {
       expect(error.body).toEqual(failBody);
     }
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
-    expect(bodySpy.mock).toHaveBeenCalledWith({ bar: 'baz' });
+    expect(bodySpy).toHaveBeenCalledTimes(1);
+    expect(bodySpy).toHaveBeenCalledWith({ bar: 'baz' });
 
     expect(fooCall.isDone()).toBe(true);
   });
@@ -323,8 +320,8 @@ test('.fetchFile()', async () => {
 
   const response = await bot.fetchFile(fileId);
 
-  expect(bodySpy.mock).toHaveBeenCalledTimes(2);
-  expect(bodySpy.mock).toHaveBeenNthCalledWith(1, { file_id: fileId });
+  expect(bodySpy).toHaveBeenCalledTimes(2);
+  expect(bodySpy).toHaveBeenNthCalledWith(1, { file_id: fileId });
 
   expect(response!.content).toBeInstanceOf(Readable);
   expect(response!.contentType).toBe('image/png');

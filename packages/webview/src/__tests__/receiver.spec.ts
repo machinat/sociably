@@ -59,8 +59,8 @@ beforeEach(() => {
 it('pop events', () => {
   (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
 
-  expect(popEventWrapper.mock).toHaveBeenCalledTimes(1);
-  expect(popEventWrapper.mock).toHaveBeenCalledWith(expect.any(Function));
+  expect(popEventWrapper).toHaveBeenCalledTimes(1);
+  expect(popEventWrapper).toHaveBeenCalledWith(expect.any(Function));
 
   const connectionInfo = {
     connId: '_CONN_ID_',
@@ -145,7 +145,7 @@ it('pop events', () => {
     reply: expect.any(Function),
   });
 
-  expect(popError.mock).not.toHaveBeenCalled();
+  expect(popError).not.toHaveBeenCalled();
 });
 
 test('reply(message) sugar', async () => {
@@ -169,8 +169,8 @@ test('reply(message) sugar', async () => {
           }
         `);
 
-  expect(bot.render.mock).toHaveBeenCalledTimes(1);
-  expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world');
+  expect(bot.render).toHaveBeenCalledTimes(1);
+  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
 });
 
 it('pop error', () => {
@@ -178,6 +178,6 @@ it('pop error', () => {
 
   server.emit('error', new Error('BOO!'));
 
-  expect(popError.mock).toHaveBeenCalledTimes(1);
-  expect(popError.mock).toHaveBeenCalledWith(new Error('BOO!'));
+  expect(popError).toHaveBeenCalledTimes(1);
+  expect(popError).toHaveBeenCalledWith(new Error('BOO!'));
 });

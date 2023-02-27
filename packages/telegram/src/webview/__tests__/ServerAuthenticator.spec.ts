@@ -77,14 +77,14 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(httpOperator.redirect.mock).toHaveBeenCalledTimes(1);
-    expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+    expect(httpOperator.redirect).toHaveBeenCalledTimes(1);
+    expect(httpOperator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
-    expect(httpOperator.issueError.mock).not.toHaveBeenCalled();
-    expect(httpOperator.issueAuth.mock).toHaveBeenCalledTimes(1);
-    expect(httpOperator.issueAuth.mock).toHaveBeenCalledWith(res, 'telegram', {
+    expect(httpOperator.issueError).not.toHaveBeenCalled();
+    expect(httpOperator.issueAuth).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueAuth).toHaveBeenCalledWith(res, 'telegram', {
       bot: 12345,
       chat: undefined,
       user: {
@@ -130,17 +130,17 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(2);
-    expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(1, 'getChatMember', {
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(1, 'getChatMember', {
       user_id: 12345,
       chat_id: 23456,
     });
-    expect(bot.makeApiCall.mock).toHaveBeenNthCalledWith(2, 'getChat', {
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(2, 'getChat', {
       chat_id: 23456,
     });
 
-    expect(httpOperator.issueAuth.mock).toHaveBeenCalledTimes(1);
-    expect(httpOperator.issueAuth.mock).toHaveBeenCalledWith(res, 'telegram', {
+    expect(httpOperator.issueAuth).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueAuth).toHaveBeenCalledWith(res, 'telegram', {
       bot: 12345,
       chat: {
         type: 'group',
@@ -180,10 +180,10 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
 
-    expect(httpOperator.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(httpOperator.issueError.mock).toHaveBeenCalledWith(
+    expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError).toHaveBeenCalledWith(
       res,
       'telegram',
       400,
@@ -207,14 +207,14 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(httpOperator.redirect.mock).toHaveBeenCalledWith(
+    expect(httpOperator.redirect).toHaveBeenCalledWith(
       res,
       '/webview/hello_world.html',
       { assertInternal: true }
     );
 
-    expect(httpOperator.issueError.mock).not.toHaveBeenCalled();
-    expect(httpOperator.issueAuth.mock).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError).not.toHaveBeenCalled();
+    expect(httpOperator.issueAuth).toHaveBeenCalledTimes(1);
   });
 
   it('issue error if auth_date expired (20 second)', async () => {
@@ -231,13 +231,13 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+    expect(httpOperator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
-    expect(httpOperator.issueAuth.mock).not.toHaveBeenCalled();
-    expect(httpOperator.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(httpOperator.issueError.mock).toHaveBeenCalledWith(
+    expect(httpOperator.issueAuth).not.toHaveBeenCalled();
+    expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError).toHaveBeenCalledWith(
       res,
       'telegram',
       401,
@@ -263,13 +263,13 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(httpOperator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+    expect(httpOperator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
-    expect(httpOperator.issueAuth.mock).not.toHaveBeenCalled();
-    expect(httpOperator.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(httpOperator.issueError.mock).toHaveBeenCalledWith(
+    expect(httpOperator.issueAuth).not.toHaveBeenCalled();
+    expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError).toHaveBeenCalledWith(
       res,
       'telegram',
       401,
@@ -291,7 +291,7 @@ test('.delegateAuthRequest() on login route', async () => {
 
   await authenticator.delegateAuthRequest(req, res, loginRoute);
 
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
+  expect(res.writeHead).toHaveBeenCalledTimes(1);
   expect(res.writeHead.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       200,
@@ -300,7 +300,7 @@ test('.delegateAuthRequest() on login route', async () => {
       },
     ]
   `);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toMatchSnapshot();
 
   const authenticatorWithAppDetails = new TelegramServerAuthenticator(
@@ -314,8 +314,8 @@ test('.delegateAuthRequest() on login route', async () => {
   );
   await authenticatorWithAppDetails.delegateAuthRequest(req, res, loginRoute);
 
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
-  expect(res.end.mock).toHaveBeenCalledTimes(2);
+  expect(res.writeHead).toHaveBeenCalledTimes(2);
+  expect(res.end).toHaveBeenCalledTimes(2);
   expect(res.end.mock.calls[1].args[0]).toMatchSnapshot();
 });
 
@@ -327,13 +327,13 @@ test('.delegateAuthRequest() on unknown route', async () => {
     trailingPath: 'unknown',
   });
 
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
+  expect(res.writeHead).toHaveBeenCalledTimes(1);
   expect(res.writeHead.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       404,
     ]
   `);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(`undefined`);
 });
 
@@ -345,8 +345,8 @@ test('.getAuthUrl()', () => {
     `"https://sociably.io/MyApp/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz"`
   );
 
-  expect(httpOperator.getAuthUrl.mock).toHaveBeenCalledTimes(2);
-  expect(httpOperator.getAuthUrl.mock).toHaveBeenCalledWith('telegram');
+  expect(httpOperator.getAuthUrl).toHaveBeenCalledTimes(2);
+  expect(httpOperator.getAuthUrl).toHaveBeenCalledWith('telegram');
 });
 
 test('.verifyCredential() simply return not ok', async () => {

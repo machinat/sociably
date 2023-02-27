@@ -118,7 +118,7 @@ describe('.detectText()', () => {
       payload: detectTextResponse.queryResult,
     });
 
-    expect(client.detectIntent.mock).toHaveBeenCalledTimes(1);
+    expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "queryInput": Object {
@@ -152,7 +152,7 @@ describe('.detectText()', () => {
       payload: detectTextResponse.queryResult,
     });
 
-    expect(client.detectIntent.mock).toHaveBeenCalledTimes(1);
+    expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "queryInput": Object {
@@ -201,7 +201,7 @@ describe('.detectText()', () => {
       payload: detectTextResponse.queryResult,
     });
 
-    expect(client.detectIntent.mock).toHaveBeenCalledTimes(1);
+    expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "queryInput": Object {
@@ -243,7 +243,7 @@ describe('.detectText()', () => {
       payload: detectTextResponse.queryResult,
     });
 
-    expect(client.detectIntent.mock).toHaveBeenCalledTimes(1);
+    expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "queryInput": Object {
@@ -281,7 +281,7 @@ describe('.detectText()', () => {
       payload: detectTextResponse.queryResult,
     });
 
-    expect(client.detectIntent.mock).toHaveBeenCalledTimes(1);
+    expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "queryInput": Object {
@@ -450,7 +450,7 @@ describe('.train()', () => {
     const recognizer = new Recognizer(recognizerOptions);
     await recognizer.train();
 
-    expect(agentsClient.setAgent.mock).toHaveBeenCalledTimes(1);
+    expect(agentsClient.setAgent).toHaveBeenCalledTimes(1);
     expect(agentsClient.setAgent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "agent": Object {
@@ -467,7 +467,7 @@ describe('.train()', () => {
       }
     `);
 
-    expect(intentsClient.batchDeleteIntents.mock).toHaveBeenCalledTimes(1);
+    expect(intentsClient.batchDeleteIntents).toHaveBeenCalledTimes(1);
     expect(intentsClient.batchDeleteIntents.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
       Object {
@@ -483,7 +483,7 @@ describe('.train()', () => {
       }
     `);
 
-    expect(intentsClient.batchUpdateIntents.mock).toHaveBeenCalledTimes(2);
+    expect(intentsClient.batchUpdateIntents).toHaveBeenCalledTimes(2);
     expect(
       intentsClient.batchUpdateIntents.mock.calls[0].args
     ).toMatchSnapshot();
@@ -491,7 +491,7 @@ describe('.train()', () => {
       intentsClient.batchUpdateIntents.mock.calls[1].args
     ).toMatchSnapshot();
 
-    expect(versionsClient.createVersion.mock).toHaveBeenCalledTimes(1);
+    expect(versionsClient.createVersion).toHaveBeenCalledTimes(1);
     expect(versionsClient.createVersion.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
       Object {
@@ -502,7 +502,7 @@ describe('.train()', () => {
       }
     `);
 
-    expect(environmentsClient.createEnvironment.mock).toHaveBeenCalledTimes(1);
+    expect(environmentsClient.createEnvironment).toHaveBeenCalledTimes(1);
     expect(environmentsClient.createEnvironment.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
       Object {
@@ -523,9 +523,9 @@ describe('.train()', () => {
     const recognizer = new Recognizer(recognizerOptions);
     await recognizer.train();
 
-    expect(agentsClient.setAgent.mock).not.toHaveBeenCalled();
+    expect(agentsClient.setAgent).not.toHaveBeenCalled();
 
-    expect(intentsClient.batchDeleteIntents.mock).toHaveBeenCalledTimes(1);
+    expect(intentsClient.batchDeleteIntents).toHaveBeenCalledTimes(1);
     expect(intentsClient.batchDeleteIntents.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
       Object {
@@ -541,7 +541,7 @@ describe('.train()', () => {
       }
     `);
 
-    expect(intentsClient.batchUpdateIntents.mock).toHaveBeenCalledTimes(2);
+    expect(intentsClient.batchUpdateIntents).toHaveBeenCalledTimes(2);
     expect(
       intentsClient.batchUpdateIntents.mock.calls[0].args
     ).toMatchSnapshot();
@@ -549,7 +549,7 @@ describe('.train()', () => {
       intentsClient.batchUpdateIntents.mock.calls[1].args
     ).toMatchSnapshot();
 
-    expect(versionsClient.createVersion.mock).toHaveBeenCalledTimes(1);
+    expect(versionsClient.createVersion).toHaveBeenCalledTimes(1);
     expect(versionsClient.createVersion.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
         Object {
@@ -560,10 +560,8 @@ describe('.train()', () => {
         }
       `);
 
-    expect(environmentsClient.createEnvironment.mock).not.toHaveBeenCalled();
-    expect((environmentsClient.auth.request as any).mock).toHaveBeenCalledTimes(
-      1
-    );
+    expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
+    expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
     expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
       Object {
@@ -597,11 +595,11 @@ describe('.train()', () => {
     const recognizer = new Recognizer(recognizerOptions);
     await recognizer.train();
 
-    expect(agentsClient.setAgent.mock).not.toHaveBeenCalled();
-    expect(intentsClient.batchDeleteIntents.mock).not.toHaveBeenCalled();
-    expect(intentsClient.batchUpdateIntents.mock).not.toHaveBeenCalled();
-    expect(versionsClient.createVersion.mock).not.toHaveBeenCalled();
-    expect(environmentsClient.createEnvironment.mock).not.toHaveBeenCalled();
+    expect(agentsClient.setAgent).not.toHaveBeenCalled();
+    expect(intentsClient.batchDeleteIntents).not.toHaveBeenCalled();
+    expect(intentsClient.batchUpdateIntents).not.toHaveBeenCalled();
+    expect(versionsClient.createVersion).not.toHaveBeenCalled();
+    expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
     expect(
       (environmentsClient.auth.request as any).mock
     ).not.toHaveBeenCalled();
@@ -624,15 +622,13 @@ describe('.train()', () => {
     const recognizer = new Recognizer(recognizerOptions);
     await recognizer.train();
 
-    expect(agentsClient.setAgent.mock).not.toHaveBeenCalled();
-    expect(intentsClient.batchDeleteIntents.mock).not.toHaveBeenCalled();
-    expect(intentsClient.batchUpdateIntents.mock).not.toHaveBeenCalled();
-    expect(versionsClient.createVersion.mock).not.toHaveBeenCalled();
-    expect(environmentsClient.createEnvironment.mock).not.toHaveBeenCalled();
+    expect(agentsClient.setAgent).not.toHaveBeenCalled();
+    expect(intentsClient.batchDeleteIntents).not.toHaveBeenCalled();
+    expect(intentsClient.batchUpdateIntents).not.toHaveBeenCalled();
+    expect(versionsClient.createVersion).not.toHaveBeenCalled();
+    expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
 
-    expect((environmentsClient.auth.request as any).mock).toHaveBeenCalledTimes(
-      1
-    );
+    expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
     expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
       Object {
@@ -669,7 +665,7 @@ describe('.train()', () => {
     });
     await recognizer.train();
 
-    expect(agentsClient.setAgent.mock).toHaveBeenCalledTimes(1);
+    expect(agentsClient.setAgent).toHaveBeenCalledTimes(1);
     expect(agentsClient.setAgent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "agent": Object {
@@ -684,7 +680,7 @@ describe('.train()', () => {
       }
     `);
 
-    expect(environmentsClient.createEnvironment.mock).toHaveBeenCalledTimes(1);
+    expect(environmentsClient.createEnvironment).toHaveBeenCalledTimes(1);
     expect(environmentsClient.createEnvironment.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
       Object {
@@ -705,12 +701,12 @@ describe('.train()', () => {
     });
     await recognizer.train();
 
-    expect(agentsClient.setAgent.mock).not.toHaveBeenCalled();
+    expect(agentsClient.setAgent).not.toHaveBeenCalled();
 
-    expect(intentsClient.batchDeleteIntents.mock).not.toHaveBeenCalled();
-    expect(intentsClient.batchUpdateIntents.mock).not.toHaveBeenCalled();
+    expect(intentsClient.batchDeleteIntents).not.toHaveBeenCalled();
+    expect(intentsClient.batchUpdateIntents).not.toHaveBeenCalled();
 
-    expect(versionsClient.createVersion.mock).toHaveBeenCalledTimes(1);
+    expect(versionsClient.createVersion).toHaveBeenCalledTimes(1);
     expect(versionsClient.createVersion.mock.calls[0].args[0]).toEqual({
       parent: 'projects/test/agent',
       version: {
@@ -720,10 +716,8 @@ describe('.train()', () => {
       },
     });
 
-    expect(environmentsClient.createEnvironment.mock).not.toHaveBeenCalled();
-    expect((environmentsClient.auth.request as any).mock).toHaveBeenCalledTimes(
-      1
-    );
+    expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
+    expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
     expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
       Object {

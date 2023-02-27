@@ -39,7 +39,7 @@ Array [
           "type": "prompt",
         },
       ],
-      "initVars": [Function],
+      "initVars": [MockFunction moxy],
       "meta": undefined,
       "name": "ChildScript",
       "stopPointIndex": Map {

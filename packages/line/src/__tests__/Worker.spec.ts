@@ -224,17 +224,17 @@ it('sequently excute jobs within the same identical channel', async () => {
     await delay(100); // eslint-disable-line no-await-in-loop
 
     if (i === 1) {
-      expect(bodySpy.mock).toHaveBeenCalledTimes(3);
+      expect(bodySpy).toHaveBeenCalledTimes(3);
       expect(bodySpy.mock.calls[0].args[0]).toEqual({ id: 1 });
       expect(bodySpy.mock.calls[1].args[0]).toEqual({ id: 3 });
       expect(bodySpy.mock.calls[2].args[0]).toEqual({ id: 5 });
     } else if (i === 2) {
-      expect(bodySpy.mock).toHaveBeenCalledTimes(6);
+      expect(bodySpy).toHaveBeenCalledTimes(6);
       expect(bodySpy.mock.calls[3].args[0]).toEqual({ id: 2 });
       expect(bodySpy.mock.calls[4].args[0]).toEqual({ id: 4 });
       expect(bodySpy.mock.calls[5].args[0]).toEqual({ id: 6 });
     } else if (i === 3) {
-      expect(bodySpy.mock).toHaveBeenCalledTimes(9);
+      expect(bodySpy).toHaveBeenCalledTimes(9);
       expect(bodySpy.mock.calls[6].args[0]).toEqual({ id: 7 });
       expect(bodySpy.mock.calls[7].args[0]).toEqual({ id: 8 });
       expect(bodySpy.mock.calls[8].args[0]).toEqual({ id: 9 });
@@ -318,23 +318,23 @@ it('open requests up to maxConnections', async () => {
     await delay(100); // eslint-disable-line no-await-in-loop
 
     if (i === 1) {
-      expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+      expect(bodySpy).toHaveBeenCalledTimes(2);
       expect(bodySpy.mock.calls[0].args[0]).toEqual({ id: 1 });
       expect(bodySpy.mock.calls[1].args[0]).toEqual({ id: 3 });
     } else if (i === 2) {
-      expect(bodySpy.mock).toHaveBeenCalledTimes(4);
+      expect(bodySpy).toHaveBeenCalledTimes(4);
       expect(bodySpy.mock.calls[2].args[0]).toEqual({ id: 2 });
       expect(bodySpy.mock.calls[3].args[0]).toEqual({ id: 4 });
     } else if (i === 3) {
-      expect(bodySpy.mock).toHaveBeenCalledTimes(6);
+      expect(bodySpy).toHaveBeenCalledTimes(6);
       expect(bodySpy.mock.calls[4].args[0]).toEqual({ id: 5 });
       expect(bodySpy.mock.calls[5].args[0]).toEqual({ id: 7 });
     } else if (i === 4) {
-      expect(bodySpy.mock).toHaveBeenCalledTimes(8);
+      expect(bodySpy).toHaveBeenCalledTimes(8);
       expect(bodySpy.mock.calls[6].args[0]).toEqual({ id: 6 });
       expect(bodySpy.mock.calls[7].args[0]).toEqual({ id: 8 });
     } else if (i === 5) {
-      expect(bodySpy.mock).toHaveBeenCalledTimes(9);
+      expect(bodySpy).toHaveBeenCalledTimes(9);
       expect(bodySpy.mock.calls[8].args[0]).toEqual({ id: 9 });
     }
   }

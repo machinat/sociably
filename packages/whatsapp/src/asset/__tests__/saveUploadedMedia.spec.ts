@@ -28,10 +28,10 @@ it('do nothing when job has no assetTag', async () => {
     saveUploadedMedia(manager)(context as any, next)
   ).resolves.toEqual(response);
 
-  expect(next.mock).toHaveBeenCalledTimes(1);
-  expect(next.mock).toHaveBeenCalledWith(context);
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith(context);
 
-  expect(manager.saveMedia.mock).not.toHaveBeenCalled();
+  expect(manager.saveMedia).not.toHaveBeenCalled();
 });
 
 it('save created assets', async () => {
@@ -70,13 +70,13 @@ it('save created assets', async () => {
     saveUploadedMedia(manager)(context as never, next)
   ).resolves.toEqual(response);
 
-  expect(next.mock).toHaveBeenCalledTimes(1);
-  expect(next.mock).toHaveBeenCalledWith(context);
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith(context);
 
-  expect(manager.saveMedia.mock).toHaveBeenCalledTimes(3);
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(1, 'foo', '111111111');
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(2, 'bar', '222222222');
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(3, 'baz', '333333333');
+  expect(manager.saveMedia).toHaveBeenCalledTimes(3);
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(1, 'foo', '111111111');
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(2, 'bar', '222222222');
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(3, 'baz', '333333333');
 });
 
 it('save created assets when partial success', async () => {
@@ -117,10 +117,10 @@ it('save created assets when partial success', async () => {
     saveUploadedMedia(manager)(context as never, next)
   ).rejects.toThrowError(error);
 
-  expect(next.mock).toHaveBeenCalledTimes(1);
-  expect(next.mock).toHaveBeenCalledWith(context);
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith(context);
 
-  expect(manager.saveMedia.mock).toHaveBeenCalledTimes(2);
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(1, 'foo', '111111111');
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(2, 'bar', '222222222');
+  expect(manager.saveMedia).toHaveBeenCalledTimes(2);
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(1, 'foo', '111111111');
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(2, 'bar', '222222222');
 });

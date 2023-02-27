@@ -33,20 +33,20 @@ test('map with new value, key and scope', async () => {
   stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
   await nextTick();
 
-  expect(mapper.mock).toHaveBeenCalledTimes(1);
-  expect(mapper.mock).toHaveBeenCalledWith({
+  expect(mapper).toHaveBeenCalledTimes(1);
+  expect(mapper).toHaveBeenCalledWith({
     value: 'foo',
     key: 'foo.channel',
     scope: oldScope,
   });
 
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('bar.channel');
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith('bar');
+  expect(nextContainer.$$factory).toHaveBeenCalledTimes(1);
+  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.channel');
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith('bar');
 
-  expect(oldScope.injectContainer.mock).not.toHaveBeenCalled();
-  expect(newScope.injectContainer.mock).toHaveBeenCalledTimes(1);
+  expect(oldScope.injectContainer).not.toHaveBeenCalled();
+  expect(newScope.injectContainer).toHaveBeenCalledTimes(1);
 });
 
 test('with async mapper function', async () => {
@@ -61,20 +61,20 @@ test('with async mapper function', async () => {
   stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
   await nextTick();
 
-  expect(mapper.mock).toHaveBeenCalledTimes(1);
-  expect(mapper.mock).toHaveBeenCalledWith({
+  expect(mapper).toHaveBeenCalledTimes(1);
+  expect(mapper).toHaveBeenCalledWith({
     value: 'foo',
     key: 'foo.channel',
     scope: oldScope,
   });
 
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('bar.channel');
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith('bar');
+  expect(nextContainer.$$factory).toHaveBeenCalledTimes(1);
+  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.channel');
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith('bar');
 
-  expect(oldScope.injectContainer.mock).not.toHaveBeenCalled();
-  expect(newScope.injectContainer.mock).toHaveBeenCalledTimes(1);
+  expect(oldScope.injectContainer).not.toHaveBeenCalled();
+  expect(newScope.injectContainer).toHaveBeenCalledTimes(1);
 });
 
 test('with async mapper container', async () => {
@@ -93,22 +93,22 @@ test('with async mapper container', async () => {
   stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
   await nextTick();
 
-  expect(mapContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(mapContainer.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-  expect(mapFn.mock).toHaveBeenCalledTimes(1);
-  expect(mapFn.mock).toHaveBeenCalledWith({
+  expect(mapContainer.$$factory).toHaveBeenCalledTimes(1);
+  expect(mapContainer.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(mapFn).toHaveBeenCalledTimes(1);
+  expect(mapFn).toHaveBeenCalledWith({
     scope: oldScope,
     value: 'foo',
     key: 'foo.channel',
   });
 
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(nextContainer.$$factory.mock).toHaveBeenCalledWith('bar.channel');
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith('bar');
+  expect(nextContainer.$$factory).toHaveBeenCalledTimes(1);
+  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.channel');
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith('bar');
 
-  expect(oldScope.injectContainer.mock).toHaveBeenCalledTimes(1);
-  expect(newScope.injectContainer.mock).toHaveBeenCalledTimes(1);
+  expect(oldScope.injectContainer).toHaveBeenCalledTimes(1);
+  expect(newScope.injectContainer).toHaveBeenCalledTimes(1);
 });
 
 it('transmit error down', () => {
@@ -134,8 +134,8 @@ it('transmit error down', () => {
     key: 'foo.channel',
   });
 
-  expect(errorContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainer.$$factory.mock).toHaveBeenCalledWith('foo.channel');
-  expect(errorListener.mock).toHaveBeenCalledTimes(1);
-  expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
+  expect(errorContainer.$$factory).toHaveBeenCalledTimes(1);
+  expect(errorContainer.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorListener).toHaveBeenCalledTimes(1);
+  expect(errorListener).toHaveBeenCalledWith(new Error('boo'));
 });

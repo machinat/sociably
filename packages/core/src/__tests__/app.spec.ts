@@ -1,4 +1,4 @@
-import { factory as moxyFactory, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import {
   makeContainer,
   makeClassProvider,
@@ -11,11 +11,6 @@ import BaseMarshalerP from '../base/Marshaler';
 import ModuleUtilitiesI from '../base/ModuleUtilities';
 import ServiceScope from '../service/scope';
 import App from '../app';
-
-const moxy = moxyFactory({
-  includeProperties: ['*'],
-  excludeProperties: ['$$deps', 'provisions', 'utilitiesInterface'],
-});
 
 const useModuleUtils = moxy(() => ({}));
 
@@ -64,33 +59,36 @@ const FooService = moxy(
 const TestPlatformUtilsI = makeInterface({ name: 'TestPlatformUtils' });
 const useTestPlatformUtils = moxy(() => ({}));
 
-const FooPlatform = moxy({
-  name: 'foo',
-  provisions: [
-    FooService,
-    makeFactoryProvider({
-      lifetime: 'singleton',
-      deps: [TestPlatformUtilsI, ModuleUtilitiesI],
-    })(useTestPlatformUtils),
-  ],
-  utilitiesInterface: TestPlatformUtilsI,
-  startHook: makeContainer({
-    deps: [TestService, AnotherService, FooService],
-  })(async () => {}),
-  stopHook: makeContainer({
-    deps: [TestService, AnotherService, FooService],
-  })(async () => {}),
-  eventMiddlewares: [
-    (ctx, next) => next(ctx),
-    (ctx, next) => next(ctx),
-    (ctx, next) => next(ctx),
-  ],
-  dispatchMiddlewares: [
-    (frame, next) => next(frame),
-    (frame, next) => next(frame),
-    (frame, next) => next(frame),
-  ],
-} as any);
+const FooPlatform = moxy(
+  {
+    name: 'foo',
+    provisions: [
+      FooService,
+      makeFactoryProvider({
+        lifetime: 'singleton',
+        deps: [TestPlatformUtilsI, ModuleUtilitiesI],
+      })(useTestPlatformUtils),
+    ],
+    utilitiesInterface: TestPlatformUtilsI,
+    startHook: makeContainer({
+      deps: [TestService, AnotherService, FooService],
+    })(async () => {}),
+    stopHook: makeContainer({
+      deps: [TestService, AnotherService, FooService],
+    })(async () => {}),
+    eventMiddlewares: [
+      (ctx, next) => next(ctx),
+      (ctx, next) => next(ctx),
+      (ctx, next) => next(ctx),
+    ],
+    dispatchMiddlewares: [
+      (frame, next) => next(frame),
+      (frame, next) => next(frame),
+      (frame, next) => next(frame),
+    ],
+  } as never,
+  { includeProperties: ['eventMiddlewares', 'dispatchMiddlewares'] }
+);
 
 const BarService = moxy(
   makeClassProvider({
@@ -161,8 +159,8 @@ it('start modules', async () => {
   await app.start();
 
   // trasient service created when boostrap and each time module startHook injected
-  expect(TestService.$$factory.mock).toHaveBeenCalledTimes(5);
-  expect(TestService.$$factory.mock).toHaveBeenCalledWith(/* empty */);
+  expect(TestService.$$factory).toHaveBeenCalledTimes(5);
+  expect(TestService.$$factory).toHaveBeenCalledWith(/* empty */);
   expect(
     (TestModule.startHook.$$factory as Moxy<() => unknown>).mock
   ).toHaveBeenCalledTimes(1);
@@ -170,8 +168,8 @@ it('start modules', async () => {
     (TestModule.startHook.$$factory as Moxy<() => unknown>).mock
   ).toHaveBeenCalledWith(expect.any(TestService));
 
-  expect(AnotherService.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(AnotherService.$$factory.mock).toHaveBeenCalledWith(
+  expect(AnotherService.$$factory).toHaveBeenCalledTimes(1);
+  expect(AnotherService.$$factory).toHaveBeenCalledWith(
     expect.any(TestService)
   );
   expect(
@@ -181,20 +179,20 @@ it('start modules', async () => {
     (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock
   ).toHaveBeenCalledWith(expect.any(TestService), expect.any(AnotherService));
 
-  expect(FooService.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(FooService.$$factory.mock).toHaveBeenCalledWith(
+  expect(FooService.$$factory).toHaveBeenCalledTimes(1);
+  expect(FooService.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService)
   );
-  expect(FooPlatform.startHook.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(FooPlatform.startHook.$$factory.mock).toHaveBeenCalledWith(
+  expect(FooPlatform.startHook.$$factory).toHaveBeenCalledTimes(1);
+  expect(FooPlatform.startHook.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
     expect.any(FooService)
   );
 
-  expect(BarService.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(BarService.$$factory.mock).toHaveBeenCalledWith(
+  expect(BarService.$$factory).toHaveBeenCalledTimes(1);
+  expect(BarService.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService)
   );
@@ -209,8 +207,8 @@ it('start modules', async () => {
     expect.any(BarService)
   );
 
-  expect(MyService.$$factory.mock).not.toHaveBeenCalled();
-  expect(YourService.$$factory.mock).not.toHaveBeenCalled();
+  expect(MyService.$$factory).not.toHaveBeenCalled();
+  expect(YourService.$$factory).not.toHaveBeenCalled();
 });
 
 it('provide platform utilities bound to utilitiesInterface', async () => {
@@ -222,8 +220,8 @@ it('provide platform utilities bound to utilitiesInterface', async () => {
 
   await app.start();
 
-  expect(useTestPlatformUtils.mock).toHaveBeenCalledTimes(1);
-  expect(useTestPlatformUtils.mock).toHaveBeenCalledWith(
+  expect(useTestPlatformUtils).toHaveBeenCalledTimes(1);
+  expect(useTestPlatformUtils).toHaveBeenCalledWith(
     {
       popEventWrapper: expect.any(Function),
       dispatchWrapper: expect.any(Function),
@@ -233,8 +231,8 @@ it('provide platform utilities bound to utilitiesInterface', async () => {
       popError: expect.any(Function),
     }
   );
-  expect(useAnotherPlatformUtils.mock).toHaveBeenCalledTimes(1);
-  expect(useAnotherPlatformUtils.mock).toHaveBeenCalledWith({
+  expect(useAnotherPlatformUtils).toHaveBeenCalledTimes(1);
+  expect(useAnotherPlatformUtils).toHaveBeenCalledWith({
     popEventWrapper: expect.any(Function),
     dispatchWrapper: expect.any(Function),
   });
@@ -255,7 +253,7 @@ test('#stop() calls stopHook of platfroms & modules', async () => {
   expect(
     (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock
   ).not.toHaveBeenCalled();
-  expect(FooPlatform.stopHook.$$factory.mock).not.toHaveBeenCalled();
+  expect(FooPlatform.stopHook.$$factory).not.toHaveBeenCalled();
   expect(
     (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock
   ).not.toHaveBeenCalled();
@@ -276,8 +274,8 @@ test('#stop() calls stopHook of platfroms & modules', async () => {
     (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock
   ).toHaveBeenCalledWith(expect.any(TestService), expect.any(AnotherService));
 
-  expect(FooPlatform.stopHook.$$factory.mock).toHaveBeenCalledTimes(1);
-  expect(FooPlatform.stopHook.$$factory.mock).toHaveBeenCalledWith(
+  expect(FooPlatform.stopHook.$$factory).toHaveBeenCalledTimes(1);
+  expect(FooPlatform.stopHook.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
     expect.any(FooService)
@@ -350,11 +348,9 @@ describe('module utilities', () => {
     const { popError } = useModuleUtils.mock.calls[0].args[0];
     expect(popError(new Error("Don't call again!"))).toBe(undefined);
 
-    expect(eventListener.mock).not.toHaveBeenCalled();
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(
-      new Error("Don't call again!")
-    );
+    expect(eventListener).not.toHaveBeenCalled();
+    expect(errorListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledWith(new Error("Don't call again!"));
   });
 
   test('listen error using DI container', async () => {
@@ -385,8 +381,8 @@ describe('module utilities', () => {
     const { popError } = useModuleUtils.mock.calls[0].args[0];
     popError(new Error('hello container'));
 
-    expect(errorListnerContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(errorListnerContainer.$$factory.mock).toHaveBeenCalledWith(
+    expect(errorListnerContainer.$$factory).toHaveBeenCalledTimes(1);
+    expect(errorListnerContainer.$$factory).toHaveBeenCalledWith(
       expect.any(FooService),
       expect.any(BarService),
       expect.any(TestService),
@@ -395,8 +391,8 @@ describe('module utilities', () => {
       expect.any(YourService)
     );
 
-    expect(containedListener.mock).toHaveBeenCalledTimes(1);
-    expect(containedListener.mock).toHaveBeenCalledWith(
+    expect(containedListener).toHaveBeenCalledTimes(1);
+    expect(containedListener).toHaveBeenCalledWith(
       new Error('hello container')
     );
   });
@@ -438,16 +434,16 @@ describe('popEventWrapper', () => {
       only: 49.99,
     });
 
-    expect(finalHandler.mock).toHaveBeenCalledTimes(1);
-    expect(finalHandler.mock).toHaveBeenCalledWith(eventContext);
+    expect(finalHandler).toHaveBeenCalledTimes(1);
+    expect(finalHandler).toHaveBeenCalledWith(eventContext);
 
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).toHaveBeenCalledWith(eventContext);
-    expect(errorListener.mock).not.toHaveBeenCalled();
+    expect(eventListener).toHaveBeenCalledTimes(1);
+    expect(eventListener).toHaveBeenCalledWith(eventContext);
+    expect(errorListener).not.toHaveBeenCalled();
 
     for (const middleware of FooPlatform.eventMiddlewares) {
-      expect(middleware.mock).toHaveBeenCalledTimes(1);
-      expect(middleware.mock).toHaveBeenCalledWith(
+      expect(middleware).toHaveBeenCalledTimes(1);
+      expect(middleware).toHaveBeenCalledWith(
         eventContext,
         expect.any(Function)
       );
@@ -489,12 +485,12 @@ describe('popEventWrapper', () => {
 
     const modifiedContext = { ...eventContext, ping: 0, ding: 1, ling: 2 };
 
-    expect(finalHandler.mock).toHaveBeenCalledTimes(1);
-    expect(finalHandler.mock).toHaveBeenCalledWith(modifiedContext);
+    expect(finalHandler).toHaveBeenCalledTimes(1);
+    expect(finalHandler).toHaveBeenCalledWith(modifiedContext);
 
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).toHaveBeenCalledWith(modifiedContext);
-    expect(errorListener.mock).not.toHaveBeenCalled();
+    expect(eventListener).toHaveBeenCalledTimes(1);
+    expect(eventListener).toHaveBeenCalledWith(modifiedContext);
+    expect(errorListener).not.toHaveBeenCalled();
   });
 
   test('bypass the finalHandler within middleware', async () => {
@@ -518,12 +514,12 @@ describe('popEventWrapper', () => {
       hello: 'and bye!',
     });
 
-    expect(FooPlatform.eventMiddlewares[0].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.eventMiddlewares[1].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.eventMiddlewares[2].mock).not.toHaveBeenCalled();
-    expect(finalHandler.mock).not.toHaveBeenCalled();
-    expect(eventListener.mock).not.toHaveBeenCalled();
-    expect(errorListener.mock).not.toHaveBeenCalled();
+    expect(FooPlatform.eventMiddlewares[0]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.eventMiddlewares[1]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.eventMiddlewares[2]).not.toHaveBeenCalled();
+    expect(finalHandler).not.toHaveBeenCalled();
+    expect(eventListener).not.toHaveBeenCalled();
+    expect(errorListener).not.toHaveBeenCalled();
   });
 
   test('error thrown within middleware', async () => {
@@ -547,15 +543,13 @@ describe('popEventWrapper', () => {
       "I'll call police!"
     );
 
-    expect(FooPlatform.eventMiddlewares[0].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.eventMiddlewares[1].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.eventMiddlewares[2].mock).not.toHaveBeenCalled();
-    expect(finalHandler.mock).not.toHaveBeenCalled();
-    expect(eventListener.mock).not.toHaveBeenCalled();
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(
-      new Error("I'll call police!")
-    );
+    expect(FooPlatform.eventMiddlewares[0]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.eventMiddlewares[1]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.eventMiddlewares[2]).not.toHaveBeenCalled();
+    expect(finalHandler).not.toHaveBeenCalled();
+    expect(eventListener).not.toHaveBeenCalled();
+    expect(errorListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledWith(new Error("I'll call police!"));
   });
 
   test('error thrown within finalHandler', async () => {
@@ -579,14 +573,12 @@ describe('popEventWrapper', () => {
       'DO~DOO~DOOOO~DO~'
     );
 
-    expect(FooPlatform.eventMiddlewares[0].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.eventMiddlewares[1].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.eventMiddlewares[2].mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).not.toHaveBeenCalled();
-    expect(errorListener.mock).toHaveBeenCalledTimes(1);
-    expect(errorListener.mock).toHaveBeenCalledWith(
-      new Error('DO~DOO~DOOOO~DO~')
-    );
+    expect(FooPlatform.eventMiddlewares[0]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.eventMiddlewares[1]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.eventMiddlewares[2]).toHaveBeenCalledTimes(1);
+    expect(eventListener).not.toHaveBeenCalled();
+    expect(errorListener).toHaveBeenCalledTimes(1);
+    expect(errorListener).toHaveBeenCalledWith(new Error('DO~DOO~DOOOO~DO~'));
   });
 
   test('catch error within middleware', async () => {
@@ -619,12 +611,12 @@ describe('popEventWrapper', () => {
       hello: 'DO~DOO~DOOOO~DO~',
     });
 
-    expect(FooPlatform.eventMiddlewares[0].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.eventMiddlewares[1].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.eventMiddlewares[2].mock).toHaveBeenCalledTimes(1);
-    expect(finalHandler.mock).toHaveBeenCalledTimes(1);
-    expect(eventListener.mock).not.toHaveBeenCalled();
-    expect(errorListener.mock).not.toHaveBeenCalled();
+    expect(FooPlatform.eventMiddlewares[0]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.eventMiddlewares[1]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.eventMiddlewares[2]).toHaveBeenCalledTimes(1);
+    expect(finalHandler).toHaveBeenCalledTimes(1);
+    expect(eventListener).not.toHaveBeenCalled();
+    expect(errorListener).not.toHaveBeenCalled();
   });
 
   test('use service container for event listener', async () => {
@@ -655,8 +647,8 @@ describe('popEventWrapper', () => {
 
     await popEventWrapper(finalHandler)(eventContext);
 
-    expect(eventListenerContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(eventListenerContainer.$$factory.mock).toHaveBeenCalledWith(
+    expect(eventListenerContainer.$$factory).toHaveBeenCalledTimes(1);
+    expect(eventListenerContainer.$$factory).toHaveBeenCalledWith(
       expect.any(FooService),
       expect.any(BarService),
       expect.any(TestService),
@@ -665,8 +657,8 @@ describe('popEventWrapper', () => {
       expect.any(YourService)
     );
 
-    expect(containedListener.mock).toHaveBeenCalledTimes(1);
-    expect(containedListener.mock).toHaveBeenCalledWith(eventContext);
+    expect(containedListener).toHaveBeenCalledTimes(1);
+    expect(containedListener).toHaveBeenCalledWith(eventContext);
   });
 
   test('use service container for middleware', async () => {
@@ -704,10 +696,10 @@ describe('popEventWrapper', () => {
       only: 49.99,
     });
 
-    expect(eventListener.mock).toHaveBeenCalledTimes(1);
+    expect(eventListener).toHaveBeenCalledTimes(1);
 
-    expect(middlewareContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(middlewareContainer.$$factory.mock).toHaveBeenCalledWith(
+    expect(middlewareContainer.$$factory).toHaveBeenCalledTimes(1);
+    expect(middlewareContainer.$$factory).toHaveBeenCalledWith(
       expect.any(FooService),
       expect.any(BarService),
       expect.any(TestService),
@@ -716,8 +708,8 @@ describe('popEventWrapper', () => {
       expect.any(YourService)
     );
 
-    expect(containedMiddleware.mock).toHaveBeenCalledTimes(1);
-    expect(containedMiddleware.mock).toHaveBeenCalledWith(
+    expect(containedMiddleware).toHaveBeenCalledTimes(1);
+    expect(containedMiddleware).toHaveBeenCalledWith(
       eventContext,
       expect.any(Function)
     );
@@ -758,12 +750,12 @@ describe('dispatchWrapper', () => {
       dispatchResponse
     );
 
-    expect(dispatcher.mock).toHaveBeenCalledTimes(1);
-    expect(dispatcher.mock).toHaveBeenCalledWith(dispatchFrame);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
+    expect(dispatcher).toHaveBeenCalledWith(dispatchFrame);
 
     for (const middleware of FooPlatform.dispatchMiddlewares) {
-      expect(middleware.mock).toHaveBeenCalledTimes(1);
-      expect(middleware.mock).toHaveBeenCalledWith(
+      expect(middleware).toHaveBeenCalledTimes(1);
+      expect(middleware).toHaveBeenCalledWith(
         dispatchFrame,
         expect.any(Function)
       );
@@ -800,8 +792,8 @@ describe('dispatchWrapper', () => {
       long: 2,
     });
 
-    expect(dispatcher.mock).toHaveBeenCalledTimes(1);
-    expect(dispatcher.mock).toHaveBeenCalledWith({
+    expect(dispatcher).toHaveBeenCalledTimes(1);
+    expect(dispatcher).toHaveBeenCalledWith({
       ...dispatchFrame,
       ping: 0,
       ding: 1,
@@ -827,10 +819,10 @@ describe('dispatchWrapper', () => {
       captured: 'by empire',
     });
 
-    expect(FooPlatform.dispatchMiddlewares[0].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.dispatchMiddlewares[1].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.dispatchMiddlewares[2].mock).not.toHaveBeenCalled();
-    expect(dispatcher.mock).not.toHaveBeenCalled();
+    expect(FooPlatform.dispatchMiddlewares[0]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.dispatchMiddlewares[1]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.dispatchMiddlewares[2]).not.toHaveBeenCalled();
+    expect(dispatcher).not.toHaveBeenCalled();
   });
 
   test('wrappedHandler throw if middleware throw', async () => {
@@ -851,10 +843,10 @@ describe('dispatchWrapper', () => {
       'Obi-Wan vanished'
     );
 
-    expect(FooPlatform.dispatchMiddlewares[0].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.dispatchMiddlewares[1].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.dispatchMiddlewares[2].mock).not.toHaveBeenCalled();
-    expect(dispatcher.mock).not.toHaveBeenCalled();
+    expect(FooPlatform.dispatchMiddlewares[0]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.dispatchMiddlewares[1]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.dispatchMiddlewares[2]).not.toHaveBeenCalled();
+    expect(dispatcher).not.toHaveBeenCalled();
   });
 
   test('middleware can catch error', async () => {
@@ -890,10 +882,10 @@ describe('dispatchWrapper', () => {
       newResponse
     );
 
-    expect(FooPlatform.dispatchMiddlewares[0].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.dispatchMiddlewares[1].mock).toHaveBeenCalledTimes(1);
-    expect(FooPlatform.dispatchMiddlewares[2].mock).toHaveBeenCalledTimes(1);
-    expect(dispatcher.mock).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.dispatchMiddlewares[0]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.dispatchMiddlewares[1]).toHaveBeenCalledTimes(1);
+    expect(FooPlatform.dispatchMiddlewares[2]).toHaveBeenCalledTimes(1);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
   });
 
   test('DI within dispatch middleware', async () => {
@@ -928,8 +920,8 @@ describe('dispatchWrapper', () => {
       dispatchResponse
     );
 
-    expect(middlewareContainer.$$factory.mock).toHaveBeenCalledTimes(1);
-    expect(middlewareContainer.$$factory.mock).toHaveBeenCalledWith(
+    expect(middlewareContainer.$$factory).toHaveBeenCalledTimes(1);
+    expect(middlewareContainer.$$factory).toHaveBeenCalledWith(
       expect.any(FooService),
       expect.any(BarService),
       expect.any(TestService),
@@ -938,14 +930,14 @@ describe('dispatchWrapper', () => {
       expect.any(YourService)
     );
 
-    expect(containedMiddleware.mock).toHaveBeenCalledTimes(1);
-    expect(containedMiddleware.mock).toHaveBeenCalledWith(
+    expect(containedMiddleware).toHaveBeenCalledTimes(1);
+    expect(containedMiddleware).toHaveBeenCalledWith(
       dispatchFrame,
       expect.any(Function)
     );
 
-    expect(dispatcher.mock).toHaveBeenCalledTimes(1);
-    expect(dispatcher.mock).toHaveBeenCalledWith(dispatchFrame);
+    expect(dispatcher).toHaveBeenCalledTimes(1);
+    expect(dispatcher).toHaveBeenCalledWith(dispatchFrame);
   });
 });
 

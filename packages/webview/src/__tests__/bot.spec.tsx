@@ -60,7 +60,7 @@ describe('#constructor(options)', () => {
   it('pass server to worker', () => {
     (() => new WebviewBot(server, initScope, dispatchWrapper))();
 
-    expect(Worker.mock).toHaveBeenCalledWith(server);
+    expect(Worker).toHaveBeenCalledWith(server);
   });
 
   it('assemble core modules', () => {
@@ -68,11 +68,11 @@ describe('#constructor(options)', () => {
 
     expect(bot.engine).toBeInstanceOf(Engine);
 
-    expect(Renderer.mock).toHaveBeenCalledTimes(1);
-    expect(Renderer.mock).toHaveBeenCalledWith('webview', expect.any(Function));
+    expect(Renderer).toHaveBeenCalledTimes(1);
+    expect(Renderer).toHaveBeenCalledWith('webview', expect.any(Function));
 
-    expect(Engine.mock).toHaveBeenCalledTimes(1);
-    expect(Engine.mock).toHaveBeenCalledWith(
+    expect(Engine).toHaveBeenCalledTimes(1);
+    expect(Engine).toHaveBeenCalledWith(
       'webview',
       expect.any(Renderer),
       expect.any(Queue),
@@ -87,20 +87,20 @@ test('#start() start engine and server', async () => {
   const bot = new WebviewBot(server);
   await bot.start();
 
-  expect(server.start.mock).toHaveBeenCalledTimes(1);
+  expect(server.start).toHaveBeenCalledTimes(1);
 
   const engine = Engine.mock.calls[0].instance;
-  expect(engine.start.mock).toHaveBeenCalledTimes(1);
+  expect(engine.start).toHaveBeenCalledTimes(1);
 });
 
 test('#stop() stop engine and server', async () => {
   const bot = new WebviewBot(server);
   await bot.stop();
 
-  expect(server.stop.mock).toHaveBeenCalledTimes(1);
+  expect(server.stop).toHaveBeenCalledTimes(1);
 
   const engine = Engine.mock.calls[0].instance;
-  expect(engine.stop.mock).toHaveBeenCalledTimes(1);
+  expect(engine.stop).toHaveBeenCalledTimes(1);
 });
 
 describe('#render(channel, message)', () => {
@@ -138,8 +138,8 @@ describe('#render(channel, message)', () => {
       tasks: [{ type: 'dispatch', payload: [expectedJob] }],
     });
 
-    expect(server.dispatch.mock).toHaveBeenCalledTimes(1);
-    expect(server.dispatch.mock).toHaveBeenCalledWith(expectedJob);
+    expect(server.dispatch).toHaveBeenCalledTimes(1);
+    expect(server.dispatch).toHaveBeenCalledWith(expectedJob);
   });
 
   it('send to user channel', async () => {
@@ -165,8 +165,8 @@ describe('#render(channel, message)', () => {
       tasks: [{ type: 'dispatch', payload: [expectedJob] }],
     });
 
-    expect(server.dispatch.mock).toHaveBeenCalledTimes(1);
-    expect(server.dispatch.mock).toHaveBeenCalledWith(expectedJob);
+    expect(server.dispatch).toHaveBeenCalledTimes(1);
+    expect(server.dispatch).toHaveBeenCalledWith(expectedJob);
   });
 
   it('send to topic channel', async () => {
@@ -207,8 +207,8 @@ describe('#render(channel, message)', () => {
       tasks: [{ type: 'dispatch', payload: [expectedJob] }],
     });
 
-    expect(server.dispatch.mock).toHaveBeenCalledTimes(1);
-    expect(server.dispatch.mock).toHaveBeenCalledWith(expectedJob);
+    expect(server.dispatch).toHaveBeenCalledTimes(1);
+    expect(server.dispatch).toHaveBeenCalledWith(expectedJob);
   });
 });
 
@@ -232,12 +232,12 @@ test('#send()', async () => {
     connections: [connection],
   });
 
-  expect(server.dispatch.mock).toHaveBeenCalledTimes(2);
-  expect(server.dispatch.mock).toHaveBeenNthCalledWith(1, {
+  expect(server.dispatch).toHaveBeenCalledTimes(2);
+  expect(server.dispatch).toHaveBeenNthCalledWith(1, {
     target: connection,
     values: [{ type: 'foo' }],
   });
-  expect(server.dispatch.mock).toHaveBeenNthCalledWith(2, {
+  expect(server.dispatch).toHaveBeenNthCalledWith(2, {
     target: connection,
     values: eventValues,
   });
@@ -268,12 +268,12 @@ test('#sendUser()', async () => {
     connections,
   });
 
-  expect(server.dispatch.mock).toHaveBeenCalledTimes(2);
-  expect(server.dispatch.mock).toHaveBeenNthCalledWith(1, {
+  expect(server.dispatch).toHaveBeenCalledTimes(2);
+  expect(server.dispatch).toHaveBeenNthCalledWith(1, {
     target: new WebviewUserChannel(user.uid),
     values: [{ type: 'foo' }],
   });
-  expect(server.dispatch.mock).toHaveBeenNthCalledWith(2, {
+  expect(server.dispatch).toHaveBeenNthCalledWith(2, {
     target: new WebviewUserChannel(user.uid),
     values: eventValues,
   });
@@ -304,12 +304,12 @@ test('#sendTopic()', async () => {
     connections,
   });
 
-  expect(server.dispatch.mock).toHaveBeenCalledTimes(2);
-  expect(server.dispatch.mock).toHaveBeenNthCalledWith(1, {
+  expect(server.dispatch).toHaveBeenCalledTimes(2);
+  expect(server.dispatch).toHaveBeenNthCalledWith(1, {
     target: new WebviewTopicChannel(topic),
     values: [{ type: 'foo' }],
   });
-  expect(server.dispatch.mock).toHaveBeenNthCalledWith(2, {
+  expect(server.dispatch).toHaveBeenNthCalledWith(2, {
     target: new WebviewTopicChannel(topic),
     values: eventValues,
   });
@@ -326,8 +326,8 @@ test('#disconnect(channel, socketId, reason)', async () => {
   server.disconnect.mock.fake(async () => true);
   await expect(bot.disconnect(connection, 'bye')).resolves.toBe(true);
 
-  expect(server.disconnect.mock).toHaveBeenCalledTimes(2);
-  expect(server.disconnect.mock).toHaveBeenCalledWith(connection, 'bye');
+  expect(server.disconnect).toHaveBeenCalledTimes(2);
+  expect(server.disconnect).toHaveBeenCalledWith(connection, 'bye');
 });
 
 test('#subscribeTopic(channel, socketId, reason)', async () => {
@@ -341,8 +341,8 @@ test('#subscribeTopic(channel, socketId, reason)', async () => {
   server.subscribeTopic.mock.fake(async () => true);
   await expect(bot.subscribeTopic(connection, 'foo')).resolves.toBe(true);
 
-  expect(server.subscribeTopic.mock).toHaveBeenCalledTimes(2);
-  expect(server.subscribeTopic.mock).toHaveBeenCalledWith(connection, 'foo');
+  expect(server.subscribeTopic).toHaveBeenCalledTimes(2);
+  expect(server.subscribeTopic).toHaveBeenCalledWith(connection, 'foo');
 });
 
 test('#unsubscribeTopic(channel, socketId, reason)', async () => {
@@ -356,6 +356,6 @@ test('#unsubscribeTopic(channel, socketId, reason)', async () => {
   server.unsubscribeTopic.mock.fake(async () => true);
   await expect(bot.unsubscribeTopic(connection, 'foo')).resolves.toBe(true);
 
-  expect(server.unsubscribeTopic.mock).toHaveBeenCalledTimes(2);
-  expect(server.unsubscribeTopic.mock).toHaveBeenCalledWith(connection, 'foo');
+  expect(server.unsubscribeTopic).toHaveBeenCalledTimes(2);
+  expect(server.unsubscribeTopic).toHaveBeenCalledWith(connection, 'foo');
 });

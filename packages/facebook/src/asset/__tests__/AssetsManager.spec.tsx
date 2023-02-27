@@ -40,7 +40,7 @@ test('get asset id', async () => {
   await expect(manager.getAttachment('my_attachment')).resolves.toBe(undefined);
   await expect(manager.getPersona('my_persona')).resolves.toBe(undefined);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState).toHaveBeenCalledTimes(3);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -50,10 +50,10 @@ test('get asset id', async () => {
     ]
   `);
 
-  expect(state.get.mock).toHaveBeenCalledTimes(3);
-  expect(state.get.mock).toHaveBeenNthCalledWith(1, 'bar');
-  expect(state.get.mock).toHaveBeenNthCalledWith(2, 'my_attachment');
-  expect(state.get.mock).toHaveBeenNthCalledWith(3, 'my_persona');
+  expect(state.get).toHaveBeenCalledTimes(3);
+  expect(state.get).toHaveBeenNthCalledWith(1, 'bar');
+  expect(state.get).toHaveBeenNthCalledWith(2, 'my_attachment');
+  expect(state.get).toHaveBeenNthCalledWith(3, 'my_persona');
 
   state.get.mock.fakeReturnValue('baz');
   await expect(manager.getAssetId('foo', 'bar')).resolves.toBe('baz');
@@ -66,8 +66,8 @@ test('get asset id', async () => {
   state.get.mock.fakeReturnValue('_PERSONA_ID_');
   await expect(manager.getPersona('my_persona')).resolves.toBe('_PERSONA_ID_');
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(6);
-  expect(state.get.mock).toHaveBeenCalledTimes(6);
+  expect(stateController.globalState).toHaveBeenCalledTimes(6);
+  expect(state.get).toHaveBeenCalledTimes(6);
 });
 
 test('set asset id', async () => {
@@ -81,7 +81,7 @@ test('set asset id', async () => {
     false
   );
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState).toHaveBeenCalledTimes(3);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -91,18 +91,14 @@ test('set asset id', async () => {
     ]
   `);
 
-  expect(state.set.mock).toHaveBeenCalledTimes(3);
-  expect(state.set.mock).toHaveBeenNthCalledWith(1, 'bar', 'baz');
-  expect(state.set.mock).toHaveBeenNthCalledWith(
+  expect(state.set).toHaveBeenCalledTimes(3);
+  expect(state.set).toHaveBeenNthCalledWith(1, 'bar', 'baz');
+  expect(state.set).toHaveBeenNthCalledWith(
     2,
     'my_attachment',
     '_ATTACHMENT_ID_'
   );
-  expect(state.set.mock).toHaveBeenNthCalledWith(
-    3,
-    'my_persona',
-    '_PERSONA_ID_'
-  );
+  expect(state.set).toHaveBeenNthCalledWith(3, 'my_persona', '_PERSONA_ID_');
 
   state.set.mock.fake(async () => true);
   await expect(manager.saveAssetId('foo', 'bar', 'baz')).resolves.toBe(true);
@@ -112,7 +108,7 @@ test('set asset id', async () => {
   await expect(manager.savePersona('my_persona', '_PERSONA_ID_')).resolves.toBe(
     true
   );
-  expect(state.set.mock).toHaveBeenCalledTimes(6);
+  expect(state.set).toHaveBeenCalledTimes(6);
 });
 
 test('get all assets', async () => {
@@ -122,7 +118,7 @@ test('get all assets', async () => {
   await expect(manager.getAllAttachments()).resolves.toBe(null);
   await expect(manager.getAllPersonas()).resolves.toBe(null);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState).toHaveBeenCalledTimes(3);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -132,7 +128,7 @@ test('get all assets', async () => {
     ]
   `);
 
-  expect(state.getAll.mock).toHaveBeenCalledTimes(3);
+  expect(state.getAll).toHaveBeenCalledTimes(3);
 
   const resources = new Map([
     ['bar', '1'],
@@ -152,7 +148,7 @@ test('remove asset id', async () => {
   await expect(manager.unsaveAttachment('my_attachment')).resolves.toBe(true);
   await expect(manager.unsavePersona('my_persona')).resolves.toBe(true);
 
-  expect(stateController.globalState.mock).toHaveBeenCalledTimes(3);
+  expect(stateController.globalState).toHaveBeenCalledTimes(3);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
@@ -162,16 +158,16 @@ test('remove asset id', async () => {
     ]
   `);
 
-  expect(state.delete.mock).toHaveBeenCalledTimes(3);
-  expect(state.delete.mock).toHaveBeenNthCalledWith(1, 'bar');
-  expect(state.delete.mock).toHaveBeenNthCalledWith(2, 'my_attachment');
-  expect(state.delete.mock).toHaveBeenNthCalledWith(3, 'my_persona');
+  expect(state.delete).toHaveBeenCalledTimes(3);
+  expect(state.delete).toHaveBeenNthCalledWith(1, 'bar');
+  expect(state.delete).toHaveBeenNthCalledWith(2, 'my_attachment');
+  expect(state.delete).toHaveBeenNthCalledWith(3, 'my_persona');
 
   state.delete.mock.fake(async () => false);
   await expect(manager.unsaveAssetId('foo', 'bar')).resolves.toBe(false);
   await expect(manager.unsaveAttachment('my_attachment')).resolves.toBe(false);
   await expect(manager.unsavePersona('my_persona')).resolves.toBe(false);
-  expect(state.delete.mock).toHaveBeenCalledTimes(6);
+  expect(state.delete).toHaveBeenCalledTimes(6);
 });
 
 test('.uploadChatAttachment()', async () => {
@@ -187,8 +183,8 @@ test('.uploadChatAttachment()', async () => {
     )
   ).resolves.toBe('1857777774821032');
 
-  expect(bot.uploadChatAttachment.mock).toHaveBeenCalledTimes(1);
-  expect(bot.uploadChatAttachment.mock).toHaveBeenCalledWith(
+  expect(bot.uploadChatAttachment).toHaveBeenCalledTimes(1);
+  expect(bot.uploadChatAttachment).toHaveBeenCalledWith(
     <img src="http://foo.bar/avatar" />
   );
 
@@ -202,8 +198,8 @@ test('.uploadChatAttachment()', async () => {
     `"attachment [ my_avatar ] already exist"`
   );
 
-  expect(state.set.mock).toHaveBeenCalledTimes(1);
-  expect(state.set.mock).toHaveBeenCalledWith('my_avatar', '1857777774821032');
+  expect(state.set).toHaveBeenCalledTimes(1);
+  expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');
 });
 
 test('.createPersona()', async () => {
@@ -219,8 +215,8 @@ test('.createPersona()', async () => {
     })
   ).resolves.toBe('_PERSONA_ID_');
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall.mock).toHaveBeenCalledWith('POST', 'me/personas', {
+  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall).toHaveBeenCalledWith('POST', 'me/personas', {
     name: 'Baby Yoda',
     profile_picture_url: '_URL_',
   });
@@ -235,8 +231,8 @@ test('.createPersona()', async () => {
     `"persona [ cute_persona ] already exist"`
   );
 
-  expect(state.set.mock).toHaveBeenCalledTimes(1);
-  expect(state.set.mock).toHaveBeenCalledWith('cute_persona', '_PERSONA_ID_');
+  expect(state.set).toHaveBeenCalledTimes(1);
+  expect(state.set).toHaveBeenCalledWith('cute_persona', '_PERSONA_ID_');
 });
 
 test('.deletePersona()', async () => {
@@ -246,13 +242,13 @@ test('.deletePersona()', async () => {
   }));
 
   await expect(manager.deletePersona('my_persona')).resolves.toBe(false);
-  expect(bot.makeApiCall.mock).not.toHaveBeenCalled();
+  expect(bot.makeApiCall).not.toHaveBeenCalled();
 
   state.get.mock.fake(async () => '_PERSONA_ID_');
   await expect(manager.deletePersona('my_persona')).resolves.toBe(true);
 
-  expect(bot.makeApiCall.mock).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall.mock).toHaveBeenCalledWith('DELETE', '_PERSONA_ID_');
-  expect(state.delete.mock).toHaveBeenCalledTimes(1);
-  expect(state.delete.mock).toHaveBeenCalledWith('my_persona');
+  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+  expect(bot.makeApiCall).toHaveBeenCalledWith('DELETE', '_PERSONA_ID_');
+  expect(state.delete).toHaveBeenCalledTimes(1);
+  expect(state.delete).toHaveBeenCalledWith('my_persona');
 });

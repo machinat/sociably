@@ -210,8 +210,8 @@ test('reply(message) sugar', async () => {
           }
         `);
 
-  expect(bot.render.mock).toHaveBeenCalledTimes(1);
-  expect(bot.render.mock).toHaveBeenCalledWith(event.channel, 'hello world');
+  expect(bot.render).toHaveBeenCalledTimes(1);
+  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
 
   await receiver.handleRequest(
     createReq({
@@ -232,8 +232,8 @@ test('reply(message) sugar', async () => {
   [{ reply, event }] = popEventMock.calls[1].args;
 
   await reply('hello world');
-  expect(bot.render.mock).toHaveBeenCalledTimes(2);
-  expect(bot.render.mock).toHaveBeenNthCalledWith(2, null, 'hello world');
+  expect(bot.render).toHaveBeenCalledTimes(2);
+  expect(bot.render).toHaveBeenNthCalledWith(2, null, 'hello world');
 });
 
 it('verify request with appSecret', async () => {

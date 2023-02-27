@@ -95,14 +95,11 @@ describe('#constructor(options)', () => {
 
     expect(bot.engine).toBeInstanceOf(Engine);
 
-    expect(Renderer.mock).toHaveBeenCalledTimes(1);
-    expect(Renderer.mock).toHaveBeenCalledWith(
-      'whatsapp',
-      expect.any(Function)
-    );
+    expect(Renderer).toHaveBeenCalledTimes(1);
+    expect(Renderer).toHaveBeenCalledWith('whatsapp', expect.any(Function));
 
-    expect(Engine.mock).toHaveBeenCalledTimes(1);
-    expect(Engine.mock).toHaveBeenCalledWith(
+    expect(Engine).toHaveBeenCalledTimes(1);
+    expect(Engine).toHaveBeenCalledWith(
       'whatsapp',
       expect.any(Renderer),
       expect.any(Queue),
@@ -111,8 +108,8 @@ describe('#constructor(options)', () => {
       dispatchWrapper
     );
 
-    expect(Worker.mock).toHaveBeenCalledTimes(1);
-    expect(Worker.mock).toHaveBeenCalledWith(
+    expect(Worker).toHaveBeenCalledTimes(1);
+    expect(Worker).toHaveBeenCalledWith(
       '_ACCESS_TOKEN_',
       500,
       'v11.0',
@@ -133,8 +130,8 @@ describe('#constructor(options)', () => {
       })
     );
 
-    expect(Worker.mock).toHaveBeenCalledTimes(1);
-    expect(Worker.mock).toHaveBeenCalledWith(
+    expect(Worker).toHaveBeenCalledTimes(1);
+    expect(Worker).toHaveBeenCalledWith(
       '_ACCESS_TOKEN_',
       0,
       'v8.0',
@@ -155,10 +152,10 @@ test('#start() and #stop() start/stop engine', () => {
   type MockEngine = Moxy<WhatsAppBot['engine']>;
 
   bot.start();
-  expect((bot.engine as MockEngine).start.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).start).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect((bot.engine as MockEngine).stop.mock).toHaveBeenCalledTimes(1);
+  expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
 });
 
 describe('#render(channel, message, options)', () => {
@@ -203,7 +200,7 @@ describe('#render(channel, message, options)', () => {
       });
     }
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    expect(bodySpy).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
 
     for (const request of JSON.parse(body.batch)) {
@@ -254,7 +251,7 @@ describe('#uploadMedia(message)', () => {
     );
     expect(result).toEqual({ id: 401759795 });
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    expect(bodySpy).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
 
     expect(body.replace(/-----\d+/g, '-----SEPERATOR')).toMatchSnapshot();

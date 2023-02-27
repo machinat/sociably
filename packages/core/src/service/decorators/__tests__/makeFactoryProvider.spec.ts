@@ -46,8 +46,8 @@ describe('makeFactoryProvider({ deps, lifetime })(factory)', () => {
     expect(factoryProvider.$$lifetime).toBe('transient');
 
     expect(factoryProvider(0, 1, 2)).toEqual({ foo: 0, bar: 1, baz: 2 });
-    expect(factoryFn.mock).toHaveBeenCalledTimes(1);
-    expect(factoryFn.mock).toHaveBeenCalledWith(0, 1, 2);
+    expect(factoryFn).toHaveBeenCalledTimes(1);
+    expect(factoryFn).toHaveBeenCalledWith(0, 1, 2);
   });
 
   test('default properties', () => {

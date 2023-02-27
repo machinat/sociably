@@ -226,13 +226,13 @@ describe('createChatJobs', () => {
       relative_url: '1234567890/messages',
     });
 
-    expect(getResultValue.mock).toHaveBeenCalledTimes(2);
-    expect(getResultValue.mock).toHaveBeenNthCalledWith(
+    expect(getResultValue).toHaveBeenCalledTimes(2);
+    expect(getResultValue).toHaveBeenNthCalledWith(
       1,
       jobs[0].registerResult,
       '$.id'
     );
-    expect(getResultValue.mock).toHaveBeenNthCalledWith(
+    expect(getResultValue).toHaveBeenNthCalledWith(
       2,
       jobs[2].registerResult,
       '$.id'

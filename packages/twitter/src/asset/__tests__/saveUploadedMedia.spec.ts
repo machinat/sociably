@@ -129,18 +129,18 @@ it('save uploaded media with assetTag', async () => {
   const next = moxy(async () => response as never);
   await expect(saveUploadedMedia(manager)(frame, next)).resolves.toBe(response);
 
-  expect(manager.saveMedia.mock).toHaveBeenCalledTimes(3);
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveMedia).toHaveBeenCalledTimes(3);
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
     1,
     'media_1',
     '2222222222222222'
   );
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
     2,
     'media_2',
     '4444444444444444'
   );
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
     3,
     'media_3',
     '5555555555555555'
@@ -164,7 +164,7 @@ it('do nothing if no assetTag labeled', async () => {
   const next = moxy(async () => response as never);
   await expect(saveUploadedMedia(manager)(frame, next)).resolves.toBe(response);
 
-  expect(manager.saveMedia.mock).not.toHaveBeenCalled();
+  expect(manager.saveMedia).not.toHaveBeenCalled();
 });
 
 it('pop error up', async () => {
@@ -192,18 +192,18 @@ it('save uploaded media when partial success', async () => {
     error
   );
 
-  expect(manager.saveMedia.mock).toHaveBeenCalledTimes(3);
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveMedia).toHaveBeenCalledTimes(3);
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
     1,
     'media_1',
     '2222222222222222'
   );
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
     2,
     'media_2',
     '4444444444444444'
   );
-  expect(manager.saveMedia.mock).toHaveBeenNthCalledWith(
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
     3,
     'media_3',
     '5555555555555555'

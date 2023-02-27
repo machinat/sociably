@@ -114,7 +114,7 @@ describe('.start(channel, Script)', () => {
     ]);
     const runtime = await processor.start(channel, MyScript);
 
-    expect(promptSetFn.mock).not.toHaveBeenCalled();
+    expect(promptSetFn).not.toHaveBeenCalled();
     expect(runtime.channel).toEqual(channel);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.isBeginning).toBe(false);
@@ -122,14 +122,14 @@ describe('.start(channel, Script)', () => {
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual({ n: 2 });
     expect(runtime.rootScript).toBe(MyScript);
-    expect(effectYieldFn.mock).toHaveBeenCalledTimes(2);
+    expect(effectYieldFn).toHaveBeenCalledTimes(2);
 
     expect(runtime.callStack).toEqual([
       { script: MyScript, stopAt: 'ask_1', vars: {} },
     ]);
 
-    expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
-    expect(MyScript.initVars.mock).toHaveBeenCalledWith({});
+    expect(MyScript.initVars).toHaveBeenCalledTimes(1);
+    expect(MyScript.initVars).toHaveBeenCalledWith({});
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
@@ -172,7 +172,7 @@ describe('.start(channel, Script)', () => {
           `
     );
 
-    expect(promptSetFn.mock).not.toHaveBeenCalled();
+    expect(promptSetFn).not.toHaveBeenCalled();
   });
 
   test('start script at label', async () => {
@@ -191,14 +191,14 @@ describe('.start(channel, Script)', () => {
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual(undefined);
     expect(runtime.rootScript).toBe(MyScript);
-    expect(effectYieldFn.mock).not.toHaveBeenCalled();
+    expect(effectYieldFn).not.toHaveBeenCalled();
 
     expect(runtime.callStack).toEqual([
       { script: MyScript, stopAt: 'ask_2', vars: {} },
     ]);
 
-    expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
-    expect(MyScript.initVars.mock).toHaveBeenCalledWith({});
+    expect(MyScript.initVars).toHaveBeenCalledTimes(1);
+    expect(MyScript.initVars).toHaveBeenCalledWith({});
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
@@ -255,14 +255,14 @@ describe('.start(channel, Script)', () => {
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual({ n: 1 });
     expect(runtime.rootScript).toBe(MyScript);
-    expect(effectYieldFn.mock).toHaveBeenCalledTimes(1);
+    expect(effectYieldFn).toHaveBeenCalledTimes(1);
 
     expect(runtime.callStack).toEqual([
       { script: MyScript, stopAt: 'ask_2', vars: { foo: 'bar' } },
     ]);
 
-    expect(MyScript.initVars.mock).toHaveBeenCalledTimes(1);
-    expect(MyScript.initVars.mock).toHaveBeenCalledWith({ foo: 'bar' });
+    expect(MyScript.initVars).toHaveBeenCalledTimes(1);
+    expect(MyScript.initVars).toHaveBeenCalledWith({ foo: 'bar' });
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
@@ -350,8 +350,8 @@ describe('.continue(channel, input)', () => {
     ]);
     const runtime = (await processor.continue(channel, { hello: 'world' }))!;
 
-    expect(MyScript.initVars.mock).not.toHaveBeenCalled();
-    expect(AnotherScript.initVars.mock).toHaveBeenCalledTimes(1);
+    expect(MyScript.initVars).not.toHaveBeenCalled();
+    expect(AnotherScript.initVars).toHaveBeenCalledTimes(1);
 
     expect(runtime.channel).toEqual(channel);
     expect(runtime.isBeginning).toBe(false);
@@ -360,7 +360,7 @@ describe('.continue(channel, input)', () => {
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual({ n: 2 });
     expect(runtime.rootScript).toBe(MyScript);
-    expect(effectYieldFn.mock).toHaveBeenCalledTimes(2);
+    expect(effectYieldFn).toHaveBeenCalledTimes(2);
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
@@ -407,8 +407,8 @@ describe('.continue(channel, input)', () => {
           `
     );
 
-    expect(promptSetFn.mock).toHaveBeenCalledTimes(1);
-    expect(promptSetFn.mock).toHaveBeenCalledWith(
+    expect(promptSetFn).toHaveBeenCalledTimes(1);
+    expect(promptSetFn).toHaveBeenCalledWith(
       {
         platform: 'test',
         channel,
@@ -436,8 +436,8 @@ describe('.continue(channel, input)', () => {
     ]);
     const runtime = (await processor.continue(channel, { hello: 'world' }))!;
 
-    expect(MyScript.initVars.mock).not.toHaveBeenCalled();
-    expect(AnotherScript.initVars.mock).not.toHaveBeenCalled();
+    expect(MyScript.initVars).not.toHaveBeenCalled();
+    expect(AnotherScript.initVars).not.toHaveBeenCalled();
 
     expect(runtime.channel).toEqual(channel);
     expect(runtime.isBeginning).toBe(false);
@@ -446,7 +446,7 @@ describe('.continue(channel, input)', () => {
     expect(runtime.returnValue).toBe(undefined);
     expect(runtime.yieldValue).toEqual({ n: 3 });
     expect(runtime.rootScript).toBe(MyScript);
-    expect(effectYieldFn.mock).toHaveBeenCalledTimes(3);
+    expect(effectYieldFn).toHaveBeenCalledTimes(3);
 
     const message = runtime.output();
     expect(message).toMatchInlineSnapshot(`
@@ -489,8 +489,8 @@ describe('.continue(channel, input)', () => {
           `
     );
 
-    expect(promptSetFn.mock).toHaveBeenCalledTimes(1);
-    expect(promptSetFn.mock).toHaveBeenCalledWith(
+    expect(promptSetFn).toHaveBeenCalledTimes(1);
+    expect(promptSetFn).toHaveBeenCalledWith(
       {
         platform: 'test',
         channel,
@@ -560,8 +560,8 @@ describe('.getRuntime(channel)', () => {
     expect(runtime.isFinished).toBe(false);
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
-    expect(promptSetFn.mock).toHaveBeenCalledTimes(1);
-    expect(promptSetFn.mock).toHaveBeenCalledWith(
+    expect(promptSetFn).toHaveBeenCalledTimes(1);
+    expect(promptSetFn).toHaveBeenCalledWith(
       {
         platform: 'test',
         channel,
@@ -578,8 +578,8 @@ describe('.getRuntime(channel)', () => {
       yieldValue: { n: 3 },
     });
 
-    expect(promptSetFn.mock).toHaveBeenCalledTimes(2);
-    expect(promptSetFn.mock).toHaveBeenCalledWith(
+    expect(promptSetFn).toHaveBeenCalledTimes(2);
+    expect(promptSetFn).toHaveBeenCalledWith(
       {
         platform: 'test',
         channel,
@@ -598,8 +598,8 @@ describe('.getRuntime(channel)', () => {
         yieldValue: { n: 1 },
       });
 
-      expect(promptSetFn.mock).toHaveBeenCalledTimes(3 + i);
-      expect(promptSetFn.mock).toHaveBeenCalledWith(
+      expect(promptSetFn).toHaveBeenCalledTimes(3 + i);
+      expect(promptSetFn).toHaveBeenCalledWith(
         {
           platform: 'test',
           channel,

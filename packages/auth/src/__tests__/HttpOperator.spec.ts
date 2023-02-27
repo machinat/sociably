@@ -674,25 +674,25 @@ test('.redirect(url, options)', () => {
   res.end.mock.fake(() => {});
 
   expect(operator.redirect(res)).toBe(true);
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
-  expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
+  expect(res.end).toHaveBeenCalledTimes(1);
+  expect(res.writeHead).toHaveBeenCalledTimes(1);
+  expect(res.writeHead).toHaveBeenCalledWith(302, {
     Location: 'https://sociably.io/hello/world/',
   });
 
   expect(operator.redirect(res, 'foo?bar=baz')).toBe(true);
-  expect(res.end.mock).toHaveBeenCalledTimes(2);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
-  expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
+  expect(res.end).toHaveBeenCalledTimes(2);
+  expect(res.writeHead).toHaveBeenCalledTimes(2);
+  expect(res.writeHead).toHaveBeenCalledWith(302, {
     Location: 'https://sociably.io/hello/world/foo?bar=baz',
   });
 
   expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
     true
   );
-  expect(res.end.mock).toHaveBeenCalledTimes(3);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(3);
-  expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
+  expect(res.end).toHaveBeenCalledTimes(3);
+  expect(res.writeHead).toHaveBeenCalledTimes(3);
+  expect(res.writeHead).toHaveBeenCalledWith(302, {
     Location: 'http://api.sociably.io/foo?bar=baz',
   });
 });
@@ -710,32 +710,32 @@ test('.redirect(url, options) with assertInternal set to true', () => {
   expect(operator.redirect(res, '/webview', { assertInternal: true })).toBe(
     true
   );
-  expect(res.end.mock).toHaveBeenCalledTimes(1);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(1);
-  expect(res.writeHead.mock).toHaveBeenCalledWith(302, {
+  expect(res.end).toHaveBeenCalledTimes(1);
+  expect(res.writeHead).toHaveBeenCalledTimes(1);
+  expect(res.writeHead).toHaveBeenCalledWith(302, {
     Location: 'https://sociably.io/webview',
   });
 
   expect(operator.redirect(res, 'foo?a=b', { assertInternal: true })).toBe(
     true
   );
-  expect(res.end.mock).toHaveBeenCalledTimes(2);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(2);
-  expect(res.writeHead.mock).toHaveBeenNthCalledWith(2, 302, {
+  expect(res.end).toHaveBeenCalledTimes(2);
+  expect(res.writeHead).toHaveBeenCalledTimes(2);
+  expect(res.writeHead).toHaveBeenNthCalledWith(2, 302, {
     Location: 'https://sociably.io/webview/foo?a=b',
   });
 
   expect(operator.redirect(res, '/foo', { assertInternal: true })).toBe(false);
-  expect(res.end.mock).toHaveBeenCalledTimes(3);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(3);
-  expect(res.writeHead.mock).toHaveBeenNthCalledWith(3, 400);
+  expect(res.end).toHaveBeenCalledTimes(3);
+  expect(res.writeHead).toHaveBeenCalledTimes(3);
+  expect(res.writeHead).toHaveBeenNthCalledWith(3, 400);
 
   expect(operator.redirect(res, undefined, { assertInternal: true })).toBe(
     true
   );
-  expect(res.end.mock).toHaveBeenCalledTimes(4);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(4);
-  expect(res.writeHead.mock).toHaveBeenNthCalledWith(4, 302, {
+  expect(res.end).toHaveBeenCalledTimes(4);
+  expect(res.writeHead).toHaveBeenCalledTimes(4);
+  expect(res.writeHead).toHaveBeenNthCalledWith(4, 302, {
     Location: 'https://sociably.io/webview/',
   });
 
@@ -744,9 +744,9 @@ test('.redirect(url, options) with assertInternal set to true', () => {
       assertInternal: true,
     })
   ).toBe(true);
-  expect(res.end.mock).toHaveBeenCalledTimes(5);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(5);
-  expect(res.writeHead.mock).toHaveBeenNthCalledWith(5, 302, {
+  expect(res.end).toHaveBeenCalledTimes(5);
+  expect(res.writeHead).toHaveBeenCalledTimes(5);
+  expect(res.writeHead).toHaveBeenNthCalledWith(5, 302, {
     Location: 'https://sociably.io/webview',
   });
 
@@ -755,9 +755,9 @@ test('.redirect(url, options) with assertInternal set to true', () => {
       assertInternal: true,
     })
   ).toBe(false);
-  expect(res.end.mock).toHaveBeenCalledTimes(6);
-  expect(res.writeHead.mock).toHaveBeenCalledTimes(6);
-  expect(res.writeHead.mock).toHaveBeenNthCalledWith(6, 400);
+  expect(res.end).toHaveBeenCalledTimes(6);
+  expect(res.writeHead).toHaveBeenCalledTimes(6);
+  expect(res.writeHead).toHaveBeenNthCalledWith(6, 400);
 });
 
 test('.getAuthUrl(url, options)', () => {

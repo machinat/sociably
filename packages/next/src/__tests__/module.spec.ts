@@ -107,8 +107,8 @@ describe('initModule()', () => {
       serverOptions: { dev: true },
     });
 
-    expect(createNextApp.mock).toHaveBeenCalledTimes(1);
-    expect(createNextApp.mock).toHaveBeenCalledWith({ dev: true });
+    expect(createNextApp).toHaveBeenCalledTimes(1);
+    expect(createNextApp).toHaveBeenCalledWith({ dev: true });
     expect(nextApp).toBe(createNextApp.mock.calls[0].result);
 
     expect(routings).toMatchInlineSnapshot(`
@@ -171,8 +171,8 @@ describe('initModule()', () => {
 
     await expect(startHook!.$$factory(receiver)).resolves.toBe(undefined);
 
-    expect(receiver.prepare.mock).toHaveBeenCalledTimes(1);
-    expect(receiver.prepare.mock).toHaveBeenCalledWith();
+    expect(receiver.prepare).toHaveBeenCalledTimes(1);
+    expect(receiver.prepare).toHaveBeenCalledWith();
   });
 
   test('stopHook() call receiver.close()', async () => {
@@ -186,8 +186,8 @@ describe('initModule()', () => {
 
     await expect(stopHook!.$$factory(receiver)).resolves.toBe(undefined);
 
-    expect(receiver.close.mock).toHaveBeenCalledTimes(1);
-    expect(receiver.close.mock).toHaveBeenCalledWith();
+    expect(receiver.close).toHaveBeenCalledTimes(1);
+    expect(receiver.close).toHaveBeenCalledWith();
   });
 
   test('default entryPath to "/"', async () => {

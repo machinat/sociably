@@ -141,7 +141,7 @@ test('api request', async () => {
     })),
   });
 
-  expect(authorizationSpy.mock).toHaveBeenCalledTimes(8);
+  expect(authorizationSpy).toHaveBeenCalledTimes(8);
   expect(
     authorizationSpy.mock.calls.map(({ args }) => args[0])
   ).toMatchSnapshot();
@@ -199,19 +199,19 @@ it('sequently excute jobs with the same key', async () => {
   const executePromise = queue.executeJobs(jobs);
 
   await delay(50);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(3);
+  expect(bodySpy).toHaveBeenCalledTimes(3);
   expect(bodySpy.mock.calls[0].args[0]).toEqual({ n: 1 });
   expect(bodySpy.mock.calls[1].args[0]).toEqual({ n: 3 });
   expect(bodySpy.mock.calls[2].args[0]).toEqual({ n: 5 });
 
   await delay(50);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(6);
+  expect(bodySpy).toHaveBeenCalledTimes(6);
   expect(bodySpy.mock.calls[3].args[0]).toEqual({ n: 2 });
   expect(bodySpy.mock.calls[4].args[0]).toEqual({ n: 4 });
   expect(bodySpy.mock.calls[5].args[0]).toEqual({ n: 6 });
 
   await delay(50);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(9);
+  expect(bodySpy).toHaveBeenCalledTimes(9);
   expect(bodySpy.mock.calls[6].args[0]).toEqual({ n: 7 });
   expect(bodySpy.mock.calls[7].args[0]).toEqual({ n: 8 });
   expect(bodySpy.mock.calls[8].args[0]).toEqual({ n: 9 });
@@ -291,27 +291,27 @@ it('open requests up to maxConnections', async () => {
   const executePromise = queue.executeJobs(jobs);
 
   await delay(50);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+  expect(bodySpy).toHaveBeenCalledTimes(2);
   expect(bodySpy.mock.calls[0].args[0]).toEqual({ n: 1 });
   expect(bodySpy.mock.calls[1].args[0]).toEqual({ n: 3 });
 
   await delay(50);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(4);
+  expect(bodySpy).toHaveBeenCalledTimes(4);
   expect(bodySpy.mock.calls[2].args[0]).toEqual({ n: 2 });
   expect(bodySpy.mock.calls[3].args[0]).toEqual({ n: 4 });
 
   await delay(50);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(6);
+  expect(bodySpy).toHaveBeenCalledTimes(6);
   expect(bodySpy.mock.calls[4].args[0]).toEqual({ n: 5 });
   expect(bodySpy.mock.calls[5].args[0]).toEqual({ n: 7 });
 
   await delay(50);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(8);
+  expect(bodySpy).toHaveBeenCalledTimes(8);
   expect(bodySpy.mock.calls[6].args[0]).toEqual({ n: 6 });
   expect(bodySpy.mock.calls[7].args[0]).toEqual({ n: 8 });
 
   await delay(50);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(9);
+  expect(bodySpy).toHaveBeenCalledTimes(9);
   expect(bodySpy.mock.calls[8].args[0]).toEqual({ n: 9 });
 
   expect(msgScope.isDone()).toBe(true);
@@ -469,7 +469,7 @@ test('with target & accomplishRequest', async () => {
     errors: null,
   });
 
-  expect(accomplishRequest.mock).toHaveBeenCalledTimes(3);
+  expect(accomplishRequest).toHaveBeenCalledTimes(3);
   expect(accomplishRequest.mock.calls.map(({ args }) => args)).toEqual([
     [channel1, jobs[0].request, null],
     [channel2, jobs[2].request, null],
@@ -538,24 +538,16 @@ test('with target & refreshTarget & accomplishRequest', async () => {
     errors: null,
   });
 
-  expect(refreshTarget.mock).toHaveBeenCalledTimes(4);
-  expect(accomplishRequest.mock).toHaveBeenCalledTimes(4);
-  expect(refreshTarget.mock).toHaveBeenNthCalledWith(
-    1,
-    { id: 1 },
-    { id: 2, n: 1 }
-  );
-  expect(refreshTarget.mock).toHaveBeenNthCalledWith(
+  expect(refreshTarget).toHaveBeenCalledTimes(4);
+  expect(accomplishRequest).toHaveBeenCalledTimes(4);
+  expect(refreshTarget).toHaveBeenNthCalledWith(1, { id: 1 }, { id: 2, n: 1 });
+  expect(refreshTarget).toHaveBeenNthCalledWith(
     2,
     { id: 10 },
     { id: 11, n: 3 }
   );
-  expect(refreshTarget.mock).toHaveBeenNthCalledWith(
-    3,
-    { id: 2 },
-    { id: 3, n: 2 }
-  );
-  expect(refreshTarget.mock).toHaveBeenNthCalledWith(
+  expect(refreshTarget).toHaveBeenNthCalledWith(3, { id: 2 }, { id: 3, n: 2 });
+  expect(refreshTarget).toHaveBeenNthCalledWith(
     4,
     { id: 11 },
     { id: 12, n: 4 }
@@ -739,17 +731,15 @@ test('with mediaSources & accomplishRequest', async () => {
     errors: null,
   });
 
-  expect(accomplishRequest.mock).toHaveBeenCalledTimes(2);
-  expect(accomplishRequest.mock).toHaveBeenCalledWith(
-    { id: 1 },
-    jobs[0].request,
-    ['111111111111111111', '222222222222222222', '333333333333333333']
-  );
-  expect(accomplishRequest.mock).toHaveBeenCalledWith(
-    { id: 2 },
-    jobs[1].request,
-    ['444444444444444444']
-  );
+  expect(accomplishRequest).toHaveBeenCalledTimes(2);
+  expect(accomplishRequest).toHaveBeenCalledWith({ id: 1 }, jobs[0].request, [
+    '111111111111111111',
+    '222222222222222222',
+    '333333333333333333',
+  ]);
+  expect(accomplishRequest).toHaveBeenCalledWith({ id: 2 }, jobs[1].request, [
+    '444444444444444444',
+  ]);
 
   expect(
     uploadBodySpy.mock.calls.map(({ args }) =>
@@ -757,7 +747,7 @@ test('with mediaSources & accomplishRequest', async () => {
     )
   ).toMatchSnapshot();
 
-  expect(authorizationSpy.mock).toHaveBeenCalledTimes(11);
+  expect(authorizationSpy).toHaveBeenCalledTimes(11);
   expect(
     authorizationSpy.mock.calls.map(({ args }) => args[0])
   ).toMatchSnapshot();

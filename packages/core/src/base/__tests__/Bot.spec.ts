@@ -22,14 +22,14 @@ it('proxy #render() call to the bot corresponded to the channel platform', async
     bot.render({ platform: 'bar', uid: 'bar1' }, 'hello world')
   ).resolves.toBe('BAR');
 
-  expect(fooBot.render.mock).toHaveBeenCalledTimes(1);
-  expect(fooBot.render.mock).toHaveBeenCalledWith(
+  expect(fooBot.render).toHaveBeenCalledTimes(1);
+  expect(fooBot.render).toHaveBeenCalledWith(
     { platform: 'foo', uid: 'foo1' },
     'hello world'
   );
 
-  expect(barBot.render.mock).toHaveBeenCalledTimes(1);
-  expect(barBot.render.mock).toHaveBeenCalledWith(
+  expect(barBot.render).toHaveBeenCalledTimes(1);
+  expect(barBot.render).toHaveBeenCalledWith(
     { platform: 'bar', uid: 'bar1' },
     'hello world'
   );
@@ -38,8 +38,8 @@ it('proxy #render() call to the bot corresponded to the channel platform', async
     bot.render({ platform: 'foo', uid: 'foo2' }, 'hello world')
   ).resolves.toBe('FOO');
 
-  expect(fooBot.render.mock).toHaveBeenCalledTimes(2);
-  expect(fooBot.render.mock).toHaveBeenCalledWith(
+  expect(fooBot.render).toHaveBeenCalledTimes(2);
+  expect(fooBot.render).toHaveBeenCalledWith(
     { platform: 'foo', uid: 'foo2' },
     'hello world'
   );

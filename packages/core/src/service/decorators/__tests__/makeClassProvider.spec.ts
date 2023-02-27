@@ -61,7 +61,7 @@ describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
     expect(MyProvider.$$factory('foo', 'bar', 'baz')).toBeInstanceOf(
       ServiceKlazz
     );
-    expect(ServiceKlazz.mock).toHaveBeenCalledWith('foo', 'bar', 'baz');
+    expect(ServiceKlazz).toHaveBeenCalledWith('foo', 'bar', 'baz');
   });
 
   it('throw if invalid deps received', () => {

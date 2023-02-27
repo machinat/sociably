@@ -973,7 +973,50 @@ Object {
       "error": undefined,
       "job": Object {
         "consumeResult": Object {
-          "accomplishRequest": [Function],
+          "accomplishRequest": [MockFunction moxy] {
+            "calls": Array [
+              Array [
+                Object {
+                  "body": Object {
+                    "images": Array [],
+                    "to": "9876543210",
+                    "type": "image",
+                  },
+                  "method": "POST",
+                  "relative_url": "1234567890/messages",
+                },
+                Array [
+                  "image_1",
+                  "image_2",
+                ],
+                [Function],
+              ],
+            ],
+            "results": Array [
+              Object {
+                "type": "return",
+                "value": Object {
+                  "body": Object {
+                    "images": Array [
+                      Object {
+                        "id": "1111111111",
+                      },
+                      Object {
+                        "id": "{result=foo_channel-1:$.id}",
+                      },
+                    ],
+                    "to": "9876543210",
+                    "type": "image",
+                  },
+                  "depends_on": "foo_channel-1",
+                  "method": "POST",
+                  "name": "foo_channel-2",
+                  "omit_response_on_success": false,
+                  "relative_url": "1234567890/messages",
+                },
+              },
+            ],
+          },
           "keys": Array [
             "image_1",
             "image_2",
@@ -1073,7 +1116,50 @@ Object {
       "error": undefined,
       "job": Object {
         "consumeResult": Object {
-          "accomplishRequest": [Function],
+          "accomplishRequest": [MockFunction moxy] {
+            "calls": Array [
+              Array [
+                Object {
+                  "body": Object {
+                    "images": Array [],
+                    "to": "9876543210",
+                    "type": "image",
+                  },
+                  "method": "POST",
+                  "relative_url": "1234567890/messages",
+                },
+                Array [
+                  "image_1",
+                  "image_2",
+                ],
+                [Function],
+              ],
+            ],
+            "results": Array [
+              Object {
+                "type": "return",
+                "value": Object {
+                  "body": Object {
+                    "images": Array [
+                      Object {
+                        "id": "{result=foo_channel-1:$.id}",
+                      },
+                      Object {
+                        "id": "{result=foo_channel-2:$.id}",
+                      },
+                    ],
+                    "to": "9876543210",
+                    "type": "image",
+                  },
+                  "depends_on": "foo_channel-2",
+                  "method": "POST",
+                  "name": "foo_channel-3",
+                  "omit_response_on_success": false,
+                  "relative_url": "1234567890/messages",
+                },
+              },
+            ],
+          },
           "keys": Array [
             "image_1",
             "image_2",
@@ -1166,7 +1252,48 @@ Object {
       "error": undefined,
       "job": Object {
         "consumeResult": Object {
-          "accomplishRequest": [Function],
+          "accomplishRequest": [MockFunction moxy] {
+            "calls": Array [
+              Array [
+                Object {
+                  "body": Object {
+                    "images": Array [],
+                    "to": "9876543210",
+                    "type": "image",
+                  },
+                  "method": "POST",
+                  "relative_url": "1234567890/messages",
+                },
+                Array [
+                  "image_1",
+                  "image_2",
+                ],
+                [Function],
+              ],
+            ],
+            "results": Array [
+              Object {
+                "type": "return",
+                "value": Object {
+                  "body": Object {
+                    "images": Array [
+                      Object {
+                        "id": "{result=#request-0:$.id}",
+                      },
+                      Object {
+                        "id": "{result=#request-1:$.id}",
+                      },
+                    ],
+                    "to": "9876543210",
+                    "type": "image",
+                  },
+                  "method": "POST",
+                  "omit_response_on_success": false,
+                  "relative_url": "1234567890/messages",
+                },
+              },
+            ],
+          },
           "keys": Array [
             "image_1",
             "image_2",

@@ -48,9 +48,6 @@ test('rendering to UrlButton', () => {
     />
   `);
 
-  expect(authenticator.getAuthUrl.mock).toHaveBeenCalledTimes(3);
-  expect(authenticator.getAuthUrl.mock).toHaveBeenNthCalledWith(
-    3,
-    'foo?bar=baz'
-  );
+  expect(authenticator.getAuthUrl).toHaveBeenCalledTimes(3);
+  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(3, 'foo?bar=baz');
 });

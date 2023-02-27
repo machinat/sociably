@@ -223,8 +223,8 @@ describe('bootstraping phase', () => {
       );
 
       if (expectedPlatform === 'foo') {
-        expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
-        expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
+        expect(fooAuthenticator.init).toHaveBeenCalledTimes(1);
+        expect(fooAuthenticator.init).toHaveBeenCalledWith(
           'https://sociably.io/auth/foo/',
           cookieError === 'foo'
             ? new AuthError('foo', 418, "I'm a teapot")
@@ -232,8 +232,8 @@ describe('bootstraping phase', () => {
           cookieAuth === 'foo' ? { foo: '__DATA__' } : null
         );
       } else if (expectedPlatform === 'bar') {
-        expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
-        expect(barAuthenticator.init.mock).toHaveBeenCalledWith(
+        expect(barAuthenticator.init).toHaveBeenCalledTimes(1);
+        expect(barAuthenticator.init).toHaveBeenCalledWith(
           'https://sociably.io/auth/bar/',
           cookieError === 'bar'
             ? new AuthError('bar', 418, "I'm a teapot")
@@ -262,8 +262,8 @@ describe('bootstraping phase', () => {
     expect(client.isAuthorizing).toBe(false);
     expect(client.isAuthorized).toBe(true);
 
-    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
+    expect(fooAuthenticator.init).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init).toHaveBeenCalledWith(
       'https://sociably.io/auth/foo/',
       null,
       {
@@ -271,7 +271,7 @@ describe('bootstraping phase', () => {
       }
     );
 
-    expect(barAuthenticator.init.mock).not.toHaveBeenCalled();
+    expect(barAuthenticator.init).not.toHaveBeenCalled();
   });
 
   it('emit error if authenticator.init() reject', async () => {
@@ -287,8 +287,8 @@ describe('bootstraping phase', () => {
       'Boom!'
     );
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock).toHaveBeenCalledWith(new Error('Boom!'), null);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith(new Error('Boom!'), null);
   });
 
   it('throw if no platform specified or paltform is unknown', async () => {
@@ -302,8 +302,8 @@ describe('bootstraping phase', () => {
       `"no platform specified"`
     );
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock).toHaveBeenCalledWith(
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith(
       new Error('no platform specified'),
       null
     );
@@ -316,8 +316,8 @@ describe('bootstraping phase', () => {
 
     expect(client.platform).toBe(undefined);
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(2);
-    expect(errorSpy.mock).toHaveBeenNthCalledWith(
+    expect(errorSpy).toHaveBeenCalledTimes(2);
+    expect(errorSpy).toHaveBeenNthCalledWith(
       2,
       new Error('unknown platform "baz"'),
       null
@@ -334,7 +334,7 @@ describe('bootstraping phase', () => {
     const client = new AuthClient({ authenticators, serverUrl });
 
     await expect(client.signIn()).rejects.toThrow("I'm a teapot");
-    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init).toHaveBeenCalledTimes(1);
 
     document.mock.getter('cookie').fakeReturnValue('');
     // prevent further signing request
@@ -345,7 +345,7 @@ describe('bootstraping phase', () => {
     await expect(client.signIn({ platform: 'foo' })).rejects.toThrow();
 
     expect(client.platform).toBe('foo');
-    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init).toHaveBeenCalledTimes(1);
   });
 
   test('init different platforms', async () => {
@@ -362,8 +362,8 @@ describe('bootstraping phase', () => {
     await expect(client.signIn()).rejects.toThrow();
     expect(client.platform).toBe('foo');
 
-    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.init.mock).toHaveBeenCalledWith(
+    expect(fooAuthenticator.init).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init).toHaveBeenCalledWith(
       'https://sociably.io/auth/foo/',
       null,
       null
@@ -372,8 +372,8 @@ describe('bootstraping phase', () => {
     await expect(client.signIn({ platform: 'bar' })).rejects.toThrow();
     expect(client.platform).toBe('bar');
 
-    expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
-    expect(barAuthenticator.init.mock).toHaveBeenCalledWith(
+    expect(barAuthenticator.init).toHaveBeenCalledTimes(1);
+    expect(barAuthenticator.init).toHaveBeenCalledWith(
       'https://sociably.io/auth/bar/',
       null,
       null
@@ -385,8 +385,8 @@ describe('bootstraping phase', () => {
     await expect(client.signIn({ platform: 'foo' })).rejects.toThrow();
     expect(client.platform).toBe('foo');
 
-    expect(fooAuthenticator.init.mock).toHaveBeenCalledTimes(1);
-    expect(barAuthenticator.init.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.init).toHaveBeenCalledTimes(1);
+    expect(barAuthenticator.init).toHaveBeenCalledTimes(1);
   });
 
   test('change platform after signed in', async () => {
@@ -453,8 +453,8 @@ describe('.signIn()', () => {
     expect(client.isAuthorized).toBe(true);
     expect(client.isAuthorizing).toBe(false);
 
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -498,12 +498,12 @@ describe('.signIn()', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(true);
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledWith(
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledWith(
       'https://sociably.io/auth/foo'
     );
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -530,8 +530,8 @@ describe('.signIn()', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(true);
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
   });
 
   test('refresh expird auth token', async () => {
@@ -558,8 +558,8 @@ describe('.signIn()', () => {
     expect(client.isAuthorized).toBe(true);
     expect(client.isAuthorizing).toBe(false);
 
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
     expect(refreshCall.isDone()).toBe(true);
@@ -598,12 +598,12 @@ describe('.signIn()', () => {
     expect(client.isAuthorized).toBe(true);
     expect(client.isAuthorizing).toBe(false);
 
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledWith(
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledWith(
       'https://sociably.io/auth/foo'
     );
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
     expect(refreshingCall.isDone()).toBe(true);
@@ -626,8 +626,8 @@ describe('.signIn()', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(false);
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
 
   it('throw if authenticator.checkAuthData() fail', async () => {
@@ -655,9 +655,9 @@ describe('.signIn()', () => {
 
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(false);
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(fooAuthenticator.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
   });
@@ -740,7 +740,7 @@ describe('refresh flow', () => {
 
       expect(refreshingCall.isDone()).toBe(true);
       expect(client.isAuthorized).toBe(true);
-      expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
+      expect(refreshSpy).toHaveBeenCalledTimes(i);
 
       // eslint-disable-next-line no-await-in-loop
       await expect(client.signIn()).resolves.toEqual({
@@ -756,8 +756,8 @@ describe('refresh flow', () => {
       });
     }
 
-    expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
-    expect(expireSpy.mock).not.toHaveBeenCalled();
+    expect(fooAuthenticator.fetchCredential).not.toHaveBeenCalled();
+    expect(expireSpy).not.toHaveBeenCalled();
   });
 
   it('resign if refersh call fail', async () => {
@@ -811,8 +811,8 @@ describe('refresh flow', () => {
       expect(refreshingCall.isDone()).toBe(true);
       expect(resigningCall.isDone()).toBe(true);
       expect(client.isAuthorized).toBe(true);
-      expect(refreshSpy.mock).toHaveBeenCalledTimes(i);
-      expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(i);
+      expect(refreshSpy).toHaveBeenCalledTimes(i);
+      expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(i);
 
       // eslint-disable-next-line
       await expect(client.signIn()).resolves.toEqual({
@@ -828,8 +828,8 @@ describe('refresh flow', () => {
       });
     }
 
-    expect(expireSpy.mock).not.toHaveBeenCalled();
-    expect(errorSpy.mock).not.toHaveBeenCalled();
+    expect(expireSpy).not.toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
   });
 
   it('emit error if authenticator.fetchCredential() fail', async () => {
@@ -869,14 +869,14 @@ describe('refresh flow', () => {
 
     expect(client.isAuthorized).toBe(true);
     expect(refreshingCall.isDone()).toBe(true);
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock).toHaveBeenCalledWith(
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith(
       new Error("You don't see me"),
       context
     );
-    expect(expireSpy.mock).not.toHaveBeenCalled();
+    expect(expireSpy).not.toHaveBeenCalled();
 
     await expect(client.signIn()).resolves.toEqual({
       token,
@@ -886,9 +886,9 @@ describe('refresh flow', () => {
     jest.advanceTimersToNextTimer(1);
     await delayLoops();
 
-    expect(expireSpy.mock).toHaveBeenCalledTimes(1);
-    expect(expireSpy.mock).toHaveBeenCalledWith(context);
-    expect(refreshSpy.mock).not.toHaveBeenCalled();
+    expect(expireSpy).toHaveBeenCalledTimes(1);
+    expect(expireSpy).toHaveBeenCalledWith(context);
+    expect(refreshSpy).not.toHaveBeenCalled();
   });
 
   it('emit error if _sign api respond error', async () => {
@@ -930,14 +930,14 @@ describe('refresh flow', () => {
     expect(refreshingCall.isDone()).toBe(true);
     expect(signingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(true);
-    expect(fooAuthenticator.fetchCredential.mock).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(1);
-    expect(errorSpy.mock).toHaveBeenCalledWith(
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith(
       new Error("I'm a teapot too"),
       context
     );
-    expect(expireSpy.mock).not.toHaveBeenCalled();
+    expect(expireSpy).not.toHaveBeenCalled();
 
     await expect(client.signIn()).resolves.toEqual({
       token,
@@ -947,9 +947,9 @@ describe('refresh flow', () => {
     jest.advanceTimersToNextTimer(1);
     await delayLoops();
 
-    expect(expireSpy.mock).toHaveBeenCalledTimes(1);
-    expect(expireSpy.mock).toHaveBeenCalledWith(context);
-    expect(refreshSpy.mock).not.toHaveBeenCalled();
+    expect(expireSpy).toHaveBeenCalledTimes(1);
+    expect(expireSpy).toHaveBeenCalledWith(context);
+    expect(refreshSpy).not.toHaveBeenCalled();
   });
 
   it('not update auth if signOut() during refreshment', async () => {
@@ -996,15 +996,15 @@ describe('refresh flow', () => {
 
     expect(refreshingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(false);
-    expect(expireSpy.mock).not.toHaveBeenCalled();
+    expect(expireSpy).not.toHaveBeenCalled();
 
     jest.runAllTimers();
     await delayLoops(5);
 
-    expect(errorSpy.mock).not.toHaveBeenCalled();
-    expect(refreshSpy.mock).not.toHaveBeenCalled();
-    expect(expireSpy.mock).not.toHaveBeenCalled();
-    expect(fooAuthenticator.fetchCredential.mock).not.toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(refreshSpy).not.toHaveBeenCalled();
+    expect(expireSpy).not.toHaveBeenCalled();
+    expect(fooAuthenticator.fetchCredential).not.toHaveBeenCalled();
   });
 });
 
@@ -1030,6 +1030,6 @@ test('#signOut()', async () => {
   expect(client.signOut()).toBe(undefined);
 
   expect(client.isAuthorized).toBe(false);
-  expect(expireSpy.mock).not.toHaveBeenCalled();
-  expect(errorSpy.mock).not.toHaveBeenCalled();
+  expect(expireSpy).not.toHaveBeenCalled();
+  expect(errorSpy).not.toHaveBeenCalled();
 });

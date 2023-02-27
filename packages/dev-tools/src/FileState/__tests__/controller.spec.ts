@@ -444,18 +444,18 @@ test('custom marshaler', async () => {
   const fooState = controller.channelState(fooChannel);
 
   await expect(fooState.get('key1')).resolves.toBe(123);
-  expect(marshaler.unmarshal.mock).toHaveBeenCalledWith({
+  expect(marshaler.unmarshal).toHaveBeenCalledWith({
     hello: 'world',
     value: 123,
   });
 
   await fooState.set('key2', 456);
   await delay(20);
-  expect(marshaler.marshal.mock).toHaveBeenCalledWith(456);
+  expect(marshaler.marshal).toHaveBeenCalledWith(456);
 
   await expect(fooState.update('key1', (v: any) => v + 666)).resolves.toBe(789);
   await delay(20);
-  expect(marshaler.marshal.mock).toHaveBeenCalledWith(789);
+  expect(marshaler.marshal).toHaveBeenCalledWith(789);
 
   await expect(fooState.getAll()).resolves.toEqual(
     new Map([
@@ -508,9 +508,7 @@ test('custom serializer', async () => {
 
   const fooChannelState = controller.channelState(fooChannel);
   await expect(fooChannelState.get('from')).resolves.toBe('MAGIC');
-  expect(serializer.parse.mock).toHaveBeenCalledWith(
-    '_MAGICALLY_ENCODED_DATA_'
-  );
+  expect(serializer.parse).toHaveBeenCalledWith('_MAGICALLY_ENCODED_DATA_');
 
   await expect(fooChannelState.set('is', 'magical')).resolves.toBe(false);
   await expect(fooChannelState.get('is')).resolves.toBe('magical');
@@ -519,7 +517,7 @@ test('custom serializer', async () => {
   expect(fs.readFileSync(tmpPath, 'utf8')).toBe(
     '_UPDATED_MAGICALLY_ENCODED_DATA_'
   );
-  expect(serializer.stringify.mock).toHaveBeenCalledWith({
+  expect(serializer.stringify).toHaveBeenCalledWith({
     channelStates: {
       foo: { from: 'MAGIC', is: 'magical' },
     },

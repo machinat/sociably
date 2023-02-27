@@ -58,21 +58,17 @@ it('start connector', async () => {
   expect(client.user).toBe(null);
   expect(client.channel).toBe(null);
 
-  expect(Connector.mock).toHaveBeenCalledTimes(1);
-  expect(Connector.mock).toHaveBeenCalledWith(
-    '/',
-    login,
-    expect.any(BaseMarshaler)
-  );
+  expect(Connector).toHaveBeenCalledTimes(1);
+  expect(Connector).toHaveBeenCalledWith('/', login, expect.any(BaseMarshaler));
 
   const connector = Connector.mock.calls[0].instance;
-  expect(connector.connect.mock).toHaveBeenCalledTimes(1);
+  expect(connector.connect).toHaveBeenCalledTimes(1);
 
   connector.emit('connect', { connId: '#conn', user });
   connector.isConnected.mock.fake(() => true);
 
-  expect(eventSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventSpy.mock).toHaveBeenCalledWith({
+  expect(eventSpy).toHaveBeenCalledTimes(1);
+  expect(eventSpy).toHaveBeenCalledWith({
     event: {
       category: 'connection',
       type: 'connect',
@@ -90,8 +86,8 @@ it('start connector', async () => {
 test('specify url', async () => {
   (() => new Client({ url: 'ws://sociably.io/websocket', login }))();
 
-  expect(Connector.mock).toHaveBeenCalledTimes(1);
-  expect(Connector.mock).toHaveBeenCalledWith(
+  expect(Connector).toHaveBeenCalledTimes(1);
+  expect(Connector).toHaveBeenCalledWith(
     'ws://sociably.io/websocket',
     login,
     expect.any(BaseMarshaler)
@@ -99,8 +95,8 @@ test('specify url', async () => {
 
   (() => new Client({ url: '/foo/websocket/server', login }))();
 
-  expect(Connector.mock).toHaveBeenCalledTimes(2);
-  expect(Connector.mock).toHaveBeenCalledWith(
+  expect(Connector).toHaveBeenCalledTimes(2);
+  expect(Connector).toHaveBeenCalledWith(
     '/foo/websocket/server',
     login,
     expect.any(BaseMarshaler)
@@ -136,8 +132,8 @@ it('use options.marshalTypes to initiate marshaler', () => {
   };
   (() => new Client({ marshalTypes: [FooType, BarType] }))();
 
-  expect(BaseMarshaler.mock).toHaveBeenCalledTimes(1);
-  expect(BaseMarshaler.mock).toHaveBeenCalledWith([FooType, BarType]);
+  expect(BaseMarshaler).toHaveBeenCalledTimes(1);
+  expect(BaseMarshaler).toHaveBeenCalledWith([FooType, BarType]);
 
   expect(Connector.mock.calls[0].args[2]).toBe(
     BaseMarshaler.mock.calls[0].instance
@@ -164,9 +160,9 @@ it('emit "event" when dispatched events received', async () => {
     { connId: '#conn', user }
   );
 
-  expect(eventSpy.mock).toHaveBeenCalledTimes(3);
+  expect(eventSpy).toHaveBeenCalledTimes(3);
   // 'connect' event is the first call
-  expect(eventSpy.mock).toHaveBeenNthCalledWith(2, {
+  expect(eventSpy).toHaveBeenNthCalledWith(2, {
     event: {
       category: 'default',
       type: 'start',
@@ -175,7 +171,7 @@ it('emit "event" when dispatched events received', async () => {
       channel: new WebSocketConnection('*', '#conn'),
     },
   });
-  expect(eventSpy.mock).toHaveBeenNthCalledWith(3, {
+  expect(eventSpy).toHaveBeenNthCalledWith(3, {
     event: {
       category: 'reaction',
       type: 'wasted',
@@ -191,8 +187,8 @@ it('emit "event" when dispatched events received', async () => {
     { connId: '#conn', user }
   );
 
-  expect(eventSpy.mock).toHaveBeenCalledTimes(4);
-  expect(eventSpy.mock).toHaveBeenCalledWith({
+  expect(eventSpy).toHaveBeenCalledTimes(4);
+  expect(eventSpy).toHaveBeenCalledWith({
     event: {
       category: 'default',
       type: 'resurrect',
@@ -215,8 +211,8 @@ it('send events', async () => {
     ])
   ).resolves.toBe(undefined);
 
-  expect(connector.send.mock).toHaveBeenCalledTimes(1);
-  expect(connector.send.mock).toHaveBeenCalledWith([
+  expect(connector.send).toHaveBeenCalledTimes(1);
+  expect(connector.send).toHaveBeenCalledWith([
     { type: 'foo', payload: 1 },
     { type: 'bar', category: 'beer', payload: 2 },
   ]);
@@ -224,10 +220,8 @@ it('send events', async () => {
   await expect(client.send({ type: 'baz', payload: 3 })).resolves.toBe(
     undefined
   );
-  expect(connector.send.mock).toHaveBeenCalledTimes(2);
-  expect(connector.send.mock).toHaveBeenCalledWith([
-    { type: 'baz', payload: 3 },
-  ]);
+  expect(connector.send).toHaveBeenCalledTimes(2);
+  expect(connector.send).toHaveBeenCalledWith([{ type: 'baz', payload: 3 }]);
 });
 
 test('disconnected by server', async () => {
@@ -246,7 +240,7 @@ test('disconnected by server', async () => {
     { connId: '#conn', user }
   );
 
-  expect(eventSpy.mock).toHaveBeenLastCalledWith({
+  expect(eventSpy).toHaveBeenLastCalledWith({
     event: {
       category: 'connection',
       type: 'disconnect',
@@ -272,11 +266,11 @@ test('.close()', async () => {
 
   expect(client.close(4567, 'Bye!')).toBe(undefined);
 
-  expect(connector.close.mock).toHaveBeenCalledTimes(1);
-  expect(connector.close.mock).toHaveBeenCalledWith(4567, 'Bye!');
+  expect(connector.close).toHaveBeenCalledTimes(1);
+  expect(connector.close).toHaveBeenCalledWith(4567, 'Bye!');
 
   connector.emit('disconnect', { reason: 'Bye!' }, { connId: '#conn', user });
-  expect(eventSpy.mock).toHaveBeenLastCalledWith({
+  expect(eventSpy).toHaveBeenLastCalledWith({
     event: {
       category: 'connection',
       type: 'disconnect',

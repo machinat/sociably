@@ -21,23 +21,23 @@ it('buffer frames by a debouncing time', () => {
   source$.next({ scope: createEmptyScope(), value: 'C', key: 'foo' });
 
   jest.advanceTimersByTime(1000);
-  expect(nextListener.mock).not.toHaveBeenCalled();
+  expect(nextListener).not.toHaveBeenCalled();
 
   jest.advanceTimersByTime(2000);
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith(['A', 'B', 'C']);
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith(['A', 'B', 'C']);
 
   jest.advanceTimersByTime(1000);
   source$.next({ scope: createEmptyScope(), value: 'D', key: 'foo' });
 
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledTimes(1);
 
   jest.advanceTimersByTime(2000);
 
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
-  expect(nextListener.mock).toHaveBeenCalledWith(['D']);
+  expect(nextListener).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledWith(['D']);
 
-  expect(errorListener.mock).not.toHaveBeenCalled();
+  expect(errorListener).not.toHaveBeenCalled();
 });
 
 it('buffer frames with different keys separately', () => {
@@ -57,22 +57,22 @@ it('buffer frames with different keys separately', () => {
   jest.advanceTimersByTime(1000);
   source$.next({ scope: createEmptyScope(), value: 'D', key: 'bar' });
 
-  expect(nextListener.mock).not.toHaveBeenCalled();
+  expect(nextListener).not.toHaveBeenCalled();
 
   jest.advanceTimersByTime(2000);
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith(['A', 'C']);
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith(['A', 'C']);
 
   source$.next({ scope: createEmptyScope(), value: 'E', key: 'foo' });
 
   jest.advanceTimersByTime(1000);
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
-  expect(nextListener.mock).toHaveBeenCalledWith(['B', 'D']);
+  expect(nextListener).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledWith(['B', 'D']);
 
   jest.advanceTimersByTime(2000);
 
-  expect(nextListener.mock).toHaveBeenCalledTimes(3);
-  expect(nextListener.mock).toHaveBeenCalledWith(['E']);
+  expect(nextListener).toHaveBeenCalledTimes(3);
+  expect(nextListener).toHaveBeenCalledWith(['E']);
 });
 
 it('transmit error from source', () => {
@@ -90,7 +90,7 @@ it('transmit error from source', () => {
     key: undefined,
   });
 
-  expect(errorListener.mock).toHaveBeenCalledTimes(1);
-  expect(errorListener.mock).toHaveBeenCalledWith(new Error('boo'));
-  expect(nextListener.mock).not.toHaveBeenCalled();
+  expect(errorListener).toHaveBeenCalledTimes(1);
+  expect(errorListener).toHaveBeenCalledWith(new Error('boo'));
+  expect(nextListener).not.toHaveBeenCalled();
 });

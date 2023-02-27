@@ -89,7 +89,7 @@ test('.getAuthUrl()', () => {
   ).toMatchInlineSnapshot(
     `"https://sociably.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__"`
   );
-  expect(operator.signToken.mock).toHaveBeenCalledWith('test', {
+  expect(operator.signToken).toHaveBeenCalledWith('test', {
     data: { foo: 'bar' },
   });
 
@@ -98,11 +98,11 @@ test('.getAuthUrl()', () => {
   ).toMatchInlineSnapshot(
     `"https://sociably.io/myApp/auth/test/?login=__SIGNED_LOGIN_TOKEN__"`
   );
-  expect(operator.signToken.mock).toHaveBeenCalledWith('test', {
+  expect(operator.signToken).toHaveBeenCalledWith('test', {
     data: { hello: 'world' },
     redirectUrl: '/foo?bar=baz',
   });
-  expect(operator.signToken.mock).toHaveBeenCalledTimes(2);
+  expect(operator.signToken).toHaveBeenCalledTimes(2);
 });
 
 describe('root page', () => {
@@ -122,19 +122,19 @@ describe('root page', () => {
   test('redirect to login page with state', async () => {
     await delegateRequest(req, res, routing);
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledWith({
       foo: 'bar',
     });
 
-    expect(operator.issueState.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueState.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.issueState).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
       status: 'login',
       ch: 'test.foo.bar',
       data: { foo: 'bar' },
     });
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(1);
+    expect(operator.redirect).toHaveBeenCalledTimes(1);
 
     operator.verifyToken.mock.fakeReturnValue({
       data: { foo: 'baz' },
@@ -148,40 +148,40 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenNthCalledWith(2, {
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(2);
+    expect(delegateOptions.checkAuthData).toHaveBeenNthCalledWith(2, {
       foo: 'baz',
     });
 
-    expect(operator.issueState.mock).toHaveBeenCalledTimes(2);
-    expect(operator.issueState.mock).toHaveBeenNthCalledWith(2, res, 'test', {
+    expect(operator.issueState).toHaveBeenCalledTimes(2);
+    expect(operator.issueState).toHaveBeenNthCalledWith(2, res, 'test', {
       status: 'login',
       ch: 'test.foo.baz',
       data: { foo: 'baz' },
       redirect: '/foo/bar/baz',
     });
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
-    expect(operator.redirect.mock).toHaveBeenCalledWith(
+    expect(operator.redirect).toHaveBeenCalledTimes(2);
+    expect(operator.redirect).toHaveBeenCalledWith(
       res,
       'https://sociably.io/myApp/auth/test/login'
     );
-    expect(operator.verifyToken.mock).toHaveBeenCalledTimes(2);
-    expect(operator.verifyToken.mock).toHaveBeenCalledWith(
+    expect(operator.verifyToken).toHaveBeenCalledTimes(2);
+    expect(operator.verifyToken).toHaveBeenCalledWith(
       'test',
       '__SIGNED_LOGIN_TOKEN__'
     );
-    expect(operator.getAuth.mock).toHaveBeenCalledTimes(2);
-    expect(operator.getAuth.mock).toHaveBeenCalledWith(req, 'test', {
+    expect(operator.getAuth).toHaveBeenCalledTimes(2);
+    expect(operator.getAuth).toHaveBeenCalledWith(req, 'test', {
       acceptRefreshable: true,
     });
-    expect(operator.getState.mock).toHaveBeenCalledTimes(2);
-    expect(operator.getState.mock).toHaveBeenCalledWith(req, 'test');
+    expect(operator.getState).toHaveBeenCalledTimes(2);
+    expect(operator.getState).toHaveBeenCalledWith(req, 'test');
 
-    expect(res.setHeader.mock).toHaveBeenCalledWith('X-Robots-Tag', 'none');
+    expect(res.setHeader).toHaveBeenCalledWith('X-Robots-Tag', 'none');
 
-    expect(operator.issueError.mock).not.toHaveBeenCalled();
-    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
+    expect(operator.issueError).not.toHaveBeenCalled();
+    expect(operator.issueAuth).not.toHaveBeenCalled();
   });
 
   test('redirect to webview if alredy logged in', async () => {
@@ -189,8 +189,8 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(1);
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+    expect(operator.redirect).toHaveBeenCalledTimes(1);
+    expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
@@ -201,18 +201,15 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
-    expect(operator.redirect.mock).toHaveBeenNthCalledWith(
-      2,
-      res,
-      '/foo?bar=baz',
-      { assertInternal: true }
-    );
+    expect(operator.redirect).toHaveBeenCalledTimes(2);
+    expect(operator.redirect).toHaveBeenNthCalledWith(2, res, '/foo?bar=baz', {
+      assertInternal: true,
+    });
 
-    expect(delegateOptions.checkAuthData.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
-    expect(operator.issueError.mock).not.toHaveBeenCalled();
-    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
+    expect(delegateOptions.checkAuthData).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
+    expect(operator.issueError).not.toHaveBeenCalled();
+    expect(operator.issueAuth).not.toHaveBeenCalled();
   });
 
   test("redirect to login page if it's alredy in later phase", async () => {
@@ -236,16 +233,16 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
-    expect(operator.redirect.mock).toHaveBeenCalledWith(
+    expect(operator.redirect).toHaveBeenCalledTimes(2);
+    expect(operator.redirect).toHaveBeenCalledWith(
       res,
       'https://sociably.io/myApp/auth/test/login'
     );
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
-    expect(operator.issueError.mock).not.toHaveBeenCalled();
-    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(2);
+    expect(operator.issueState).not.toHaveBeenCalled();
+    expect(operator.issueError).not.toHaveBeenCalled();
+    expect(operator.issueAuth).not.toHaveBeenCalled();
   });
 
   test('reset state if channel has changed', async () => {
@@ -257,8 +254,8 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.issueState.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueState.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.issueState).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
       status: 'login',
       ch: 'test.foo.bar',
       data: { foo: 'bar' },
@@ -274,22 +271,22 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.issueState.mock).toHaveBeenCalledTimes(2);
-    expect(operator.issueState.mock).toHaveBeenNthCalledWith(2, res, 'test', {
+    expect(operator.issueState).toHaveBeenCalledTimes(2);
+    expect(operator.issueState).toHaveBeenNthCalledWith(2, res, 'test', {
       status: 'login',
       ch: 'test.foo.bar',
       data: { foo: 'bar' },
     });
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
-    expect(operator.redirect.mock).toHaveBeenCalledWith(
+    expect(operator.redirect).toHaveBeenCalledTimes(2);
+    expect(operator.redirect).toHaveBeenCalledWith(
       res,
       'https://sociably.io/myApp/auth/test/login'
     );
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
-    expect(operator.issueError.mock).not.toHaveBeenCalled();
-    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(2);
+    expect(operator.issueError).not.toHaveBeenCalled();
+    expect(operator.issueAuth).not.toHaveBeenCalled();
   });
 
   test('redirect directly in loose mode', async () => {
@@ -305,13 +302,13 @@ describe('root page', () => {
       routing
     );
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledWith({
       foo: 'bar',
     });
-    expect(operator.issueAuth.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.issueAuth).toHaveBeenCalledWith(res, 'test', {
       foo: 'bar',
     });
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+    expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
@@ -324,24 +321,21 @@ describe('root page', () => {
       res,
       routing
     );
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledWith({
       hello: 'world',
     });
-    expect(operator.issueAuth.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.issueAuth).toHaveBeenCalledWith(res, 'test', {
       hello: 'world',
     });
-    expect(operator.redirect.mock).toHaveBeenNthCalledWith(
-      2,
-      res,
-      '/foo?bar=baz',
-      { assertInternal: true }
-    );
+    expect(operator.redirect).toHaveBeenNthCalledWith(2, res, '/foo?bar=baz', {
+      assertInternal: true,
+    });
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
-    expect(operator.issueAuth.mock).toHaveBeenCalledTimes(2);
-    expect(operator.issueError.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(2);
+    expect(operator.redirect).toHaveBeenCalledTimes(2);
+    expect(operator.issueAuth).toHaveBeenCalledTimes(2);
+    expect(operator.issueError).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
   });
 
   test('checkAuthData fail in loose mode', async () => {
@@ -362,16 +356,16 @@ describe('root page', () => {
       routing
     );
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledWith({
       foo: 'bar',
     });
-    expect(operator.issueError.mock).toHaveBeenCalledWith(
+    expect(operator.issueError).toHaveBeenCalledWith(
       res,
       'test',
       418,
       "I'm a Teapot"
     );
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+    expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
 
@@ -384,25 +378,22 @@ describe('root page', () => {
       res,
       routing
     );
-    expect(operator.redirect.mock).toHaveBeenNthCalledWith(
-      2,
-      res,
-      '/foo?bar=baz',
-      { assertInternal: true }
-    );
+    expect(operator.redirect).toHaveBeenNthCalledWith(2, res, '/foo?bar=baz', {
+      assertInternal: true,
+    });
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(2);
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(2);
-    expect(operator.issueError.mock).toHaveBeenCalledTimes(2);
-    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(2);
+    expect(operator.redirect).toHaveBeenCalledTimes(2);
+    expect(operator.issueError).toHaveBeenCalledTimes(2);
+    expect(operator.issueAuth).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
   });
 
   it('respond 400 if no login query param', async () => {
     const invalidReq = createReq('https://sociably.io/myApp/auth/test/');
     await delegateRequest(invalidReq, res, routing);
 
-    expect(operator.issueError.mock).toHaveBeenCalledWith(
+    expect(operator.issueError).toHaveBeenCalledWith(
       res,
       'test',
       400,
@@ -411,7 +402,7 @@ describe('root page', () => {
     expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
       `"invald login param"`
     );
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res);
+    expect(operator.redirect).toHaveBeenCalledWith(res);
   });
 
   it('respond 400 if login query is invalid', async () => {
@@ -422,13 +413,13 @@ describe('root page', () => {
     operator.verifyToken.mock.fakeReturnValue(null);
     await delegateRequest(invalidReq, res, routing);
 
-    expect(operator.verifyToken.mock).toHaveBeenCalledTimes(1);
-    expect(operator.verifyToken.mock).toHaveBeenCalledWith(
+    expect(operator.verifyToken).toHaveBeenCalledTimes(1);
+    expect(operator.verifyToken).toHaveBeenCalledWith(
       'test',
       '__INVALID_LOGIN_TOKEN__'
     );
 
-    expect(operator.issueError.mock).toHaveBeenCalledWith(
+    expect(operator.issueError).toHaveBeenCalledWith(
       res,
       'test',
       400,
@@ -437,7 +428,7 @@ describe('root page', () => {
     expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
       `"invald login param"`
     );
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res);
+    expect(operator.redirect).toHaveBeenCalledWith(res);
   });
 
   it('respond error from checkAuthData', async () => {
@@ -449,13 +440,13 @@ describe('root page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.issueError.mock).toHaveBeenCalledWith(
+    expect(operator.issueError).toHaveBeenCalledWith(
       res,
       'test',
       418,
       "I'm a Teapot"
     );
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res, undefined, {
+    expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
     });
   });
@@ -487,8 +478,8 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(bot.render.mock).toHaveBeenCalledTimes(1);
-    expect(bot.render.mock).toHaveBeenCalledWith(channel, expect.any(Object));
+    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(bot.render).toHaveBeenCalledWith(channel, expect.any(Object));
 
     expect(bot.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
       { props: { code: expect.stringMatching(/^[0-9]{6}$/) } },
@@ -514,20 +505,20 @@ describe('login page', () => {
       </p>
     `);
 
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledTimes(1);
-    expect(delegateOptions.checkAuthData.mock).toHaveBeenCalledWith({
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledWith({
       foo: 'bar',
     });
 
-    expect(operator.signToken.mock).toHaveBeenCalledTimes(1);
-    expect(operator.signToken.mock).toHaveBeenCalledWith(
+    expect(operator.signToken).toHaveBeenCalledTimes(1);
+    expect(operator.signToken).toHaveBeenCalledWith(
       'test',
       expect.stringMatching(/^test.foo.bar:1647870481457:[0-9]{6}$/),
       { noTimestamp: true }
     );
 
-    expect(operator.issueState.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueState.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.issueState).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
       status: 'verify',
       ch: 'test.foo.bar',
       data: { foo: 'bar' },
@@ -535,17 +526,17 @@ describe('login page', () => {
       hash: '__TOKEN_SIGNATURE__',
     });
 
-    expect(res.writeHead.mock).toHaveBeenCalledWith(200, {
+    expect(res.writeHead).toHaveBeenCalledWith(200, {
       'Content-Type': 'text/html',
     });
     expect(res.end.mock.calls[0].args[0]).toMatchSnapshot();
 
-    expect(operator.getState.mock).toHaveBeenCalledTimes(1);
-    expect(operator.getState.mock).toHaveBeenCalledWith(req, 'test');
-    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
-    expect(operator.issueError.mock).not.toHaveBeenCalled();
+    expect(operator.getState).toHaveBeenCalledTimes(1);
+    expect(operator.getState).toHaveBeenCalledWith(req, 'test');
+    expect(operator.issueAuth).not.toHaveBeenCalled();
+    expect(operator.issueError).not.toHaveBeenCalled();
 
-    expect(state.update.mock).not.toHaveBeenCalled();
+    expect(state.update).not.toHaveBeenCalled();
   });
 
   test('with customized options', async () => {
@@ -568,8 +559,8 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(bot.render.mock).toHaveBeenCalledTimes(1);
-    expect(bot.render.mock).toHaveBeenCalledWith(channel, expect.any(Object));
+    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(bot.render).toHaveBeenCalledWith(channel, expect.any(Object));
 
     expect(bot.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
       { props: { code: expect.stringMatching(/^[0-9]{20}$/) } },
@@ -586,8 +577,8 @@ describe('login page', () => {
     `
     );
 
-    expect(operator.issueState.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueState.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.issueState).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
       status: 'verify',
       ch: 'test.foo.bar',
       data: { foo: 'bar' },
@@ -595,7 +586,7 @@ describe('login page', () => {
       hash: '__TOKEN_SIGNATURE__',
     });
 
-    expect(res.writeHead.mock).toHaveBeenCalledWith(200, {
+    expect(res.writeHead).toHaveBeenCalledWith(200, {
       'Content-Type': 'text/html',
     });
     expect(res.end.mock.calls[0].args[0]).toMatchSnapshot();
@@ -617,11 +608,11 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.signToken.mock).not.toHaveBeenCalled();
-    expect(bot.render.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
+    expect(operator.signToken).not.toHaveBeenCalled();
+    expect(bot.render).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
 
-    expect(res.end.mock).toHaveBeenCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
   });
 
   test('reissue state if login session expired', async () => {
@@ -642,10 +633,10 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.signToken.mock).toHaveBeenCalledTimes(1);
-    expect(bot.render.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueState.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueState.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.signToken).toHaveBeenCalledTimes(1);
+    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
       status: 'verify',
       ch: 'test.foo.bar',
       data: { foo: 'bar' },
@@ -653,7 +644,7 @@ describe('login page', () => {
       hash: '__TOKEN_SIGNATURE__',
     });
 
-    expect(res.end.mock).toHaveBeenCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
   });
 
   test('reissue state if login attempt reach limitation', async () => {
@@ -676,10 +667,10 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.signToken.mock).toHaveBeenCalledTimes(1);
-    expect(bot.render.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueState.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueState.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.signToken).toHaveBeenCalledTimes(1);
+    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
       status: 'verify',
       ch: 'test.foo.bar',
       data: { foo: 'bar' },
@@ -687,9 +678,9 @@ describe('login page', () => {
       hash: '__TOKEN_SIGNATURE__',
     });
 
-    expect(res.end.mock).toHaveBeenCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
 
-    expect(state.update.mock).toHaveBeenCalledTimes(1);
+    expect(state.update).toHaveBeenCalledTimes(1);
     expect(state.update.mock.calls[0].args[0]).toMatchInlineSnapshot(
       `"test.foo.bar:1647870381457"`
     );
@@ -709,13 +700,13 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.signToken.mock).not.toHaveBeenCalled();
-    expect(bot.render.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
-    expect(res.end.mock).not.toHaveBeenCalled();
+    expect(operator.signToken).not.toHaveBeenCalled();
+    expect(bot.render).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
+    expect(res.end).not.toHaveBeenCalled();
 
-    expect(operator.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueError.mock).toHaveBeenCalledWith(
+    expect(operator.issueError).toHaveBeenCalledTimes(1);
+    expect(operator.issueError).toHaveBeenCalledWith(
       res,
       'test',
       401,
@@ -725,8 +716,8 @@ describe('login page', () => {
       `"login session expired"`
     );
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(1);
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res);
+    expect(operator.redirect).toHaveBeenCalledTimes(1);
+    expect(operator.redirect).toHaveBeenCalledWith(res);
   });
 
   it('redirect with error if checkAuthData fail', async () => {
@@ -749,21 +740,21 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(operator.signToken.mock).not.toHaveBeenCalled();
-    expect(bot.render.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
-    expect(res.end.mock).not.toHaveBeenCalled();
+    expect(operator.signToken).not.toHaveBeenCalled();
+    expect(bot.render).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
+    expect(res.end).not.toHaveBeenCalled();
 
-    expect(operator.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueError.mock).toHaveBeenCalledWith(
+    expect(operator.issueError).toHaveBeenCalledTimes(1);
+    expect(operator.issueError).toHaveBeenCalledWith(
       res,
       'test',
       418,
       "I'm a Teapot"
     );
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(1);
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res, '/foo/bar');
+    expect(operator.redirect).toHaveBeenCalledTimes(1);
+    expect(operator.redirect).toHaveBeenCalledWith(res, '/foo/bar');
   });
 
   it('redirect with error if fail to send code message', async () => {
@@ -784,13 +775,13 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(bot.render.mock).toHaveBeenCalledTimes(1);
-    expect(operator.signToken.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
-    expect(res.end.mock).not.toHaveBeenCalled();
+    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(operator.signToken).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
+    expect(res.end).not.toHaveBeenCalled();
 
-    expect(operator.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueError.mock).toHaveBeenCalledWith(
+    expect(operator.issueError).toHaveBeenCalledTimes(1);
+    expect(operator.issueError).toHaveBeenCalledWith(
       res,
       'test',
       510,
@@ -800,8 +791,8 @@ describe('login page', () => {
       `"fail to send login code"`
     );
 
-    expect(operator.redirect.mock).toHaveBeenCalledTimes(1);
-    expect(operator.redirect.mock).toHaveBeenCalledWith(res, '/foo/bar');
+    expect(operator.redirect).toHaveBeenCalledTimes(1);
+    expect(operator.redirect).toHaveBeenCalledWith(res, '/foo/bar');
   });
 });
 
@@ -846,10 +837,10 @@ describe('verify code api', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(res.writeHead.mock).toHaveBeenCalledWith(200, {
+    expect(res.writeHead).toHaveBeenCalledWith(200, {
       'Content-Type': 'application/json',
     });
-    expect(res.end.mock).toHaveBeenCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "ok": true,
@@ -858,13 +849,13 @@ describe('verify code api', () => {
       }
     `);
 
-    expect(operator.issueAuth.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueAuth.mock).toHaveBeenCalledWith(res, 'test', {
+    expect(operator.issueAuth).toHaveBeenCalledTimes(1);
+    expect(operator.issueAuth).toHaveBeenCalledWith(res, 'test', {
       foo: 'bar',
     });
 
-    expect(operator.signToken.mock).toHaveBeenCalledTimes(1);
-    expect(operator.signToken.mock).toHaveBeenCalledWith(
+    expect(operator.signToken).toHaveBeenCalledTimes(1);
+    expect(operator.signToken).toHaveBeenCalledWith(
       'test',
       expect.any(String),
       { noTimestamp: true }
@@ -873,7 +864,7 @@ describe('verify code api', () => {
       `"test.foo.bar:1647870471457:123456"`
     );
 
-    expect(state.update.mock).toHaveBeenCalledTimes(1);
+    expect(state.update).toHaveBeenCalledTimes(1);
     expect(state.update.mock.calls[0].args[0]).toMatchInlineSnapshot(
       `"test.foo.bar:1647870471457"`
     );
@@ -882,8 +873,8 @@ describe('verify code api', () => {
       stateController.globalState.mock.calls[0].args[0]
     ).toMatchInlineSnapshot(`"basic_auth_verify_records"`);
 
-    expect(operator.issueError.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
+    expect(operator.issueError).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
   });
 
   test('verify wrong login code', async () => {
@@ -914,10 +905,10 @@ describe('verify code api', () => {
       const res = moxy<ServerResponse>(new ServerResponse(req));
       await delegateRequest(req, res, routing); // eslint-disable-line no-await-in-loop
 
-      expect(res.writeHead.mock).toHaveBeenCalledWith(200, {
+      expect(res.writeHead).toHaveBeenCalledWith(200, {
         'Content-Type': 'application/json',
       });
-      expect(res.end.mock).toHaveBeenCalledTimes(1);
+      expect(res.end).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toEqual({
         ok: false,
         redirectTo: 'https://sociably.io/myApp/webview/foo/bar',
@@ -925,10 +916,10 @@ describe('verify code api', () => {
       });
 
       if (i < 5) {
-        expect(operator.issueError.mock).not.toHaveBeenCalled();
+        expect(operator.issueError).not.toHaveBeenCalled();
       } else {
-        expect(operator.issueError.mock).toHaveBeenCalledTimes(i - 5 + 1);
-        expect(operator.issueError.mock).toHaveBeenCalledWith(
+        expect(operator.issueError).toHaveBeenCalledTimes(i - 5 + 1);
+        expect(operator.issueError).toHaveBeenCalledWith(
           res,
           'test',
           401,
@@ -940,8 +931,8 @@ describe('verify code api', () => {
       }
     }
 
-    expect(operator.signToken.mock).toHaveBeenCalledTimes(6);
-    expect(operator.signToken.mock).toHaveBeenCalledWith(
+    expect(operator.signToken).toHaveBeenCalledTimes(6);
+    expect(operator.signToken).toHaveBeenCalledWith(
       'test',
       expect.any(String),
       { noTimestamp: true }
@@ -958,7 +949,7 @@ describe('verify code api', () => {
       ]
     `);
 
-    expect(state.update.mock).toHaveBeenCalledTimes(7);
+    expect(state.update).toHaveBeenCalledTimes(7);
     expect(state.update.mock.calls.map(({ args }) => args[0]))
       .toMatchInlineSnapshot(`
       Array [
@@ -1013,10 +1004,10 @@ describe('verify code api', () => {
     const res1 = moxy<ServerResponse>(new ServerResponse(req1));
     await delegateRequest(req1, res1, routing);
 
-    expect(res1.writeHead.mock).toHaveBeenCalledWith(400, {
+    expect(res1.writeHead).toHaveBeenCalledWith(400, {
       'Content-Type': 'application/json',
     });
-    expect(res1.end.mock).toHaveBeenCalledTimes(1);
+    expect(res1.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res1.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "error": Object {
@@ -1031,10 +1022,10 @@ describe('verify code api', () => {
     const res2 = moxy<ServerResponse>(new ServerResponse(req2));
     await delegateRequest(req2, res2, routing);
 
-    expect(res2.writeHead.mock).toHaveBeenCalledWith(400, {
+    expect(res2.writeHead).toHaveBeenCalledWith(400, {
       'Content-Type': 'application/json',
     });
-    expect(res2.end.mock).toHaveBeenCalledTimes(1);
+    expect(res2.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res2.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "error": Object {
@@ -1045,11 +1036,11 @@ describe('verify code api', () => {
       }
     `);
 
-    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
-    expect(operator.signToken.mock).not.toHaveBeenCalled();
-    expect(state.update.mock).not.toHaveBeenCalled();
-    expect(operator.issueError.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
+    expect(operator.issueAuth).not.toHaveBeenCalled();
+    expect(operator.signToken).not.toHaveBeenCalled();
+    expect(state.update).not.toHaveBeenCalled();
+    expect(operator.issueError).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
   });
 
   test('verify with invalid state', async () => {
@@ -1061,10 +1052,10 @@ describe('verify code api', () => {
     const res1 = moxy<ServerResponse>(new ServerResponse(req1));
     await delegateRequest(req1, res1, routing);
 
-    expect(res1.writeHead.mock).toHaveBeenCalledWith(200, {
+    expect(res1.writeHead).toHaveBeenCalledWith(200, {
       'Content-Type': 'application/json',
     });
-    expect(res1.end.mock).toHaveBeenCalledTimes(1);
+    expect(res1.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res1.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "ok": false,
@@ -1073,8 +1064,8 @@ describe('verify code api', () => {
       }
     `);
 
-    expect(operator.issueError.mock).toHaveBeenCalledTimes(1);
-    expect(operator.issueError.mock).toHaveBeenCalledWith(
+    expect(operator.issueError).toHaveBeenCalledTimes(1);
+    expect(operator.issueError).toHaveBeenCalledWith(
       res1,
       'test',
       401,
@@ -1095,10 +1086,10 @@ describe('verify code api', () => {
     const res2 = moxy<ServerResponse>(new ServerResponse(req2));
     await delegateRequest(req2, res2, routing);
 
-    expect(res2.writeHead.mock).toHaveBeenCalledWith(200, {
+    expect(res2.writeHead).toHaveBeenCalledWith(200, {
       'Content-Type': 'application/json',
     });
-    expect(res2.end.mock).toHaveBeenCalledTimes(1);
+    expect(res2.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res2.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "ok": false,
@@ -1106,7 +1097,7 @@ describe('verify code api', () => {
         "retryChances": 0,
       }
     `);
-    expect(operator.issueError.mock).toHaveBeenCalledTimes(2);
+    expect(operator.issueError).toHaveBeenCalledTimes(2);
     expect(operator.issueError.mock.calls[1].args[3]).toMatchInlineSnapshot(
       `"login session expired"`
     );
@@ -1124,10 +1115,10 @@ describe('verify code api', () => {
     const res3 = moxy<ServerResponse>(new ServerResponse(req3));
     await delegateRequest(req3, res3, routing);
 
-    expect(res3.writeHead.mock).toHaveBeenCalledWith(200, {
+    expect(res3.writeHead).toHaveBeenCalledWith(200, {
       'Content-Type': 'application/json',
     });
-    expect(res3.end.mock).toHaveBeenCalledTimes(1);
+    expect(res3.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res3.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
       Object {
         "ok": false,
@@ -1135,15 +1126,15 @@ describe('verify code api', () => {
         "retryChances": 0,
       }
     `);
-    expect(operator.issueError.mock).toHaveBeenCalledTimes(3);
+    expect(operator.issueError).toHaveBeenCalledTimes(3);
     expect(operator.issueError.mock.calls[2].args[3]).toMatchInlineSnapshot(
       `"login session expired"`
     );
 
-    expect(operator.issueAuth.mock).not.toHaveBeenCalled();
-    expect(operator.signToken.mock).not.toHaveBeenCalled();
-    expect(state.update.mock).not.toHaveBeenCalled();
-    expect(operator.issueState.mock).not.toHaveBeenCalled();
+    expect(operator.issueAuth).not.toHaveBeenCalled();
+    expect(operator.signToken).not.toHaveBeenCalled();
+    expect(state.update).not.toHaveBeenCalled();
+    expect(operator.issueState).not.toHaveBeenCalled();
   });
 
   test('menaging the records', async () => {
@@ -1180,12 +1171,12 @@ describe('verify code api', () => {
     const res1 = moxy<ServerResponse>(new ServerResponse(req1));
     await delegateRequest(req1, res1, routing);
 
-    expect(state.update.mock).toHaveBeenCalledTimes(1);
+    expect(state.update).toHaveBeenCalledTimes(1);
     expect(state.update.mock.calls[0].args[0]).toMatchInlineSnapshot(
       `"test.foo.bar:1647870471457"`
     );
     await expect(state.update.mock.calls[0].result).resolves.toBe(undefined);
-    expect(state.delete.mock).not.toHaveBeenCalled();
+    expect(state.delete).not.toHaveBeenCalled();
 
     operator.getState.mock.fake(async () => ({
       status: 'verify',
@@ -1200,7 +1191,7 @@ describe('verify code api', () => {
     const res2 = moxy<ServerResponse>(new ServerResponse(req2));
     await delegateRequest(req2, res2, routing);
 
-    expect(state.update.mock).toHaveBeenCalledTimes(3);
+    expect(state.update).toHaveBeenCalledTimes(3);
     expect(state.update.mock.calls[1].args[0]).toMatchInlineSnapshot(
       `"test.foo.bar:1647870471457"`
     );
@@ -1227,7 +1218,7 @@ describe('verify code api', () => {
             ]
           `);
 
-    expect(state.delete.mock).toHaveBeenCalledTimes(3);
+    expect(state.delete).toHaveBeenCalledTimes(3);
     expect(state.delete.mock.calls.map(({ args }) => args[0]))
       .toMatchInlineSnapshot(`
       Array [

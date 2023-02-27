@@ -163,7 +163,7 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    expect(fakeBot.start.mock).toHaveBeenCalledTimes(1);
+    expect(fakeBot.start).toHaveBeenCalledTimes(1);
   });
 
   test('stopHook() calls bot.stop()', async () => {
@@ -174,9 +174,9 @@ describe('initModule()', () => {
       services: [{ provide: WebSocket.Bot, withValue: fakeBot }],
     });
     await app.start();
-    expect(fakeBot.stop.mock).not.toHaveBeenCalled();
+    expect(fakeBot.stop).not.toHaveBeenCalled();
 
     await app.stop();
-    expect(fakeBot.stop.mock).toHaveBeenCalledTimes(1);
+    expect(fakeBot.stop).toHaveBeenCalledTimes(1);
   });
 });

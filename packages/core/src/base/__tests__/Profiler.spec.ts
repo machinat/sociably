@@ -41,14 +41,14 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
     avatarUrl: 'http://bar...',
   });
 
-  expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledTimes(1);
-  expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledWith({
+  expect(fooProfiler.getUserProfile).toHaveBeenCalledTimes(1);
+  expect(fooProfiler.getUserProfile).toHaveBeenCalledWith({
     platform: 'foo',
     uid: 'foo1',
   });
 
-  expect(barProfiler.getUserProfile.mock).toHaveBeenCalledTimes(1);
-  expect(barProfiler.getUserProfile.mock).toHaveBeenCalledWith({
+  expect(barProfiler.getUserProfile).toHaveBeenCalledTimes(1);
+  expect(barProfiler.getUserProfile).toHaveBeenCalledWith({
     platform: 'bar',
     uid: 'bar1',
   });
@@ -61,8 +61,8 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
     avatarUrl: 'http://foo...',
   });
 
-  expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledTimes(2);
-  expect(fooProfiler.getUserProfile.mock).toHaveBeenCalledWith({
+  expect(fooProfiler.getUserProfile).toHaveBeenCalledTimes(2);
+  expect(fooProfiler.getUserProfile).toHaveBeenCalledWith({
     platform: 'foo',
     uid: 'foo2',
   });

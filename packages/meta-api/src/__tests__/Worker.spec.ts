@@ -78,7 +78,7 @@ it('call to graph api', async () => {
     ],
   });
 
-  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+  expect(bodySpy).toHaveBeenCalledTimes(1);
   const body = bodySpy.mock.calls[0].args[0];
 
   expect(body.access_token).toBe(accessToken);
@@ -225,7 +225,7 @@ it('upload files with form data if binary attached on job', async () => {
     ],
   });
 
-  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+  expect(bodySpy).toHaveBeenCalledTimes(1);
   const body = bodySpy.mock.calls[0].args[0];
 
   expect(
@@ -378,18 +378,18 @@ it('waits consumeInterval for jobs to execute if set', async () => {
   worker.start(queue);
 
   const promise1 = queue.executeJobs(jobs);
-  expect(bodySpy.mock).not.toHaveBeenCalled();
+  expect(bodySpy).not.toHaveBeenCalled();
   await delay(110);
 
   const promise2 = queue.executeJobs(jobs);
-  expect(bodySpy.mock).not.toHaveBeenCalled();
+  expect(bodySpy).not.toHaveBeenCalled();
   await delay(110);
 
   const promise3 = queue.executeJobs(jobs);
-  expect(bodySpy.mock).not.toHaveBeenCalled();
+  expect(bodySpy).not.toHaveBeenCalled();
   await delay(210);
 
-  expect(bodySpy.mock).toHaveBeenCalled();
+  expect(bodySpy).toHaveBeenCalled();
   expect(scope.isDone()).toBe(true);
 
   await Promise.all([promise1, promise2, promise3]);
@@ -417,15 +417,15 @@ it('execute immediatly if consumeInterval is 0', async () => {
   worker.start(queue);
 
   const promise1 = queue.executeJobs(jobs);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+  expect(bodySpy).toHaveBeenCalledTimes(1);
 
   await delay(100);
   const promise2 = queue.executeJobs(jobs);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+  expect(bodySpy).toHaveBeenCalledTimes(2);
 
   await delay(100);
   const promise3 = queue.executeJobs(jobs);
-  expect(bodySpy.mock).toHaveBeenCalledTimes(3);
+  expect(bodySpy).toHaveBeenCalledTimes(3);
 
   expect(scope.isDone()).toBe(true);
   await promise1;
@@ -469,7 +469,7 @@ it('use querystring params for GET request', async () => {
     ],
   });
 
-  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+  expect(bodySpy).toHaveBeenCalledTimes(1);
   const body = bodySpy.mock.calls[0].args[0];
 
   expect(body.access_token).toBe(accessToken);
@@ -526,7 +526,7 @@ it('use querystring params for DELETE request', async () => {
     ],
   });
 
-  expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+  expect(bodySpy).toHaveBeenCalledTimes(1);
   const body = bodySpy.mock.calls[0].args[0];
 
   expect(body.access_token).toBe(accessToken);
@@ -627,7 +627,7 @@ describe('using API result in following request', () => {
     worker.start(queue);
     await expect(queue.executeJobs(continuousJobs)).resolves.toMatchSnapshot();
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(1);
+    expect(bodySpy).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
     expect(body).toMatchSnapshot();
 
@@ -660,8 +660,8 @@ describe('using API result in following request', () => {
       ]
     `);
 
-    expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
-    expect(accomplishRequest.mock).toHaveBeenCalledWith(
+    expect(accomplishRequest).toHaveBeenCalledTimes(1);
+    expect(accomplishRequest).toHaveBeenCalledWith(
       continuousJobs[2].request,
       ['image_1', 'image_2'],
       expect.any(Function)
@@ -711,8 +711,8 @@ describe('using API result in following request', () => {
       ]
     `);
 
-    expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
-    expect(accomplishRequest.mock).toHaveBeenCalledWith(
+    expect(accomplishRequest).toHaveBeenCalledTimes(1);
+    expect(accomplishRequest).toHaveBeenCalledWith(
       continuousJobs[2].request,
       ['image_1', 'image_2'],
       expect.any(Function)
@@ -748,7 +748,7 @@ describe('using API result in following request', () => {
       ])
     ).resolves.toMatchSnapshot();
 
-    expect(bodySpy.mock).toHaveBeenCalledTimes(2);
+    expect(bodySpy).toHaveBeenCalledTimes(2);
     const body1 = bodySpy.mock.calls[0].args[0];
     const body2 = bodySpy.mock.calls[1].args[0];
     expect(body1).toMatchSnapshot();
@@ -786,8 +786,8 @@ describe('using API result in following request', () => {
       }
     `);
 
-    expect(accomplishRequest.mock).toHaveBeenCalledTimes(1);
-    expect(accomplishRequest.mock).toHaveBeenCalledWith(
+    expect(accomplishRequest).toHaveBeenCalledTimes(1);
+    expect(accomplishRequest).toHaveBeenCalledWith(
       continuousJobs[2].request,
       ['image_1', 'image_2'],
       expect.any(Function)

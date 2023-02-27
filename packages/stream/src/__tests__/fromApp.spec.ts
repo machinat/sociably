@@ -34,8 +34,8 @@ it('emit events from app.onEvent()', () => {
 
   event$.subscribe(nextListener);
 
-  expect(app.onEvent.mock).toHaveBeenCalledTimes(1);
-  expect(app.onEvent.mock).toHaveBeenCalledWith(expect.any(Function));
+  expect(app.onEvent).toHaveBeenCalledTimes(1);
+  expect(app.onEvent).toHaveBeenCalledWith(expect.any(Function));
 
   const handlerEventContainer = app.onEvent.mock.calls[0].args[0];
   expect(isServiceContainer(handlerEventContainer)).toBe(true);
@@ -55,8 +55,8 @@ it('emit events from app.onEvent()', () => {
 
   handlerEventContainer(scope)(eventCtx1);
 
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith(eventCtx1);
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith(eventCtx1);
 
   const eventCtx2 = {
     platform: 'test',
@@ -70,8 +70,8 @@ it('emit events from app.onEvent()', () => {
 
   handlerEventContainer(scope)(eventCtx2);
 
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
-  expect(nextListener.mock).toHaveBeenCalledWith(eventCtx2);
+  expect(nextListener).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledWith(eventCtx2);
 });
 
 test('transmit scope and use channel.uid as the key', () => {
@@ -97,11 +97,11 @@ test('transmit scope and use channel.uid as the key', () => {
 
   handlerEventContainer(scope)(eventCtx1);
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(1);
-  expect(nextContainer.mock).toHaveBeenCalledWith('foo.channel');
-  expect(nextListener.mock).toHaveBeenCalledTimes(1);
-  expect(nextListener.mock).toHaveBeenCalledWith(eventCtx1);
-  expect(scope.injectContainer.mock).toHaveBeenCalledTimes(1);
+  expect(nextContainer).toHaveBeenCalledTimes(1);
+  expect(nextContainer).toHaveBeenCalledWith('foo.channel');
+  expect(nextListener).toHaveBeenCalledTimes(1);
+  expect(nextListener).toHaveBeenCalledWith(eventCtx1);
+  expect(scope.injectContainer).toHaveBeenCalledTimes(1);
 
   const eventCtx2 = {
     platform: 'test',
@@ -115,11 +115,11 @@ test('transmit scope and use channel.uid as the key', () => {
 
   handlerEventContainer(scope)(eventCtx2);
 
-  expect(nextContainer.mock).toHaveBeenCalledTimes(2);
-  expect(nextContainer.mock).toHaveBeenCalledWith('baz.channel');
-  expect(nextListener.mock).toHaveBeenCalledTimes(2);
-  expect(nextListener.mock).toHaveBeenCalledWith(eventCtx2);
-  expect(scope.injectContainer.mock).toHaveBeenCalledTimes(2);
+  expect(nextContainer).toHaveBeenCalledTimes(2);
+  expect(nextContainer).toHaveBeenCalledWith('baz.channel');
+  expect(nextListener).toHaveBeenCalledTimes(2);
+  expect(nextListener).toHaveBeenCalledWith(eventCtx2);
+  expect(scope.injectContainer).toHaveBeenCalledTimes(2);
 });
 
 it('emit error from app.onError()', () => {
@@ -128,8 +128,8 @@ it('emit error from app.onError()', () => {
 
   event$.catch(errorListener);
 
-  expect(app.onError.mock).toHaveBeenCalledTimes(1);
-  expect(app.onError.mock).toHaveBeenCalledWith(expect.any(Function));
+  expect(app.onError).toHaveBeenCalledTimes(1);
+  expect(app.onError).toHaveBeenCalledWith(expect.any(Function));
 
   const handlerEventContainer = app.onError.mock.calls[0].args[0];
   expect(isServiceContainer(handlerEventContainer)).toBe(true);
@@ -140,14 +140,14 @@ it('emit error from app.onError()', () => {
   const error = new Error('boo');
   handlerEventContainer(scope)(error);
 
-  expect(errorListener.mock).toHaveBeenCalledTimes(1);
-  expect(errorListener.mock).toHaveBeenCalledWith(error);
+  expect(errorListener).toHaveBeenCalledTimes(1);
+  expect(errorListener).toHaveBeenCalledWith(error);
 
   const error2 = new Error('BOOO');
   handlerEventContainer(scope)(error2);
 
-  expect(errorListener.mock).toHaveBeenCalledTimes(2);
-  expect(errorListener.mock).toHaveBeenCalledWith(error2);
+  expect(errorListener).toHaveBeenCalledTimes(2);
+  expect(errorListener).toHaveBeenCalledWith(error2);
 });
 
 test('transmit scope and empty key', () => {
@@ -164,18 +164,18 @@ test('transmit scope and empty key', () => {
   const error1 = new Error('It is a mistake');
   handlerEventContainer(scope)(error1);
 
-  expect(errorContainer.mock).toHaveBeenCalledTimes(1);
-  expect(errorContainer.mock).toHaveBeenCalledWith(undefined);
-  expect(errorListener.mock).toHaveBeenCalledTimes(1);
-  expect(errorListener.mock).toHaveBeenCalledWith(error1);
-  expect(scope.injectContainer.mock).toHaveBeenCalledTimes(1);
+  expect(errorContainer).toHaveBeenCalledTimes(1);
+  expect(errorContainer).toHaveBeenCalledWith(undefined);
+  expect(errorListener).toHaveBeenCalledTimes(1);
+  expect(errorListener).toHaveBeenCalledWith(error1);
+  expect(scope.injectContainer).toHaveBeenCalledTimes(1);
 
   const error2 = new Error('It is another mistake');
   handlerEventContainer(scope)(error2);
 
-  expect(errorContainer.mock).toHaveBeenCalledTimes(2);
-  expect(errorContainer.mock).toHaveBeenCalledWith(undefined);
-  expect(errorListener.mock).toHaveBeenCalledTimes(2);
-  expect(errorListener.mock).toHaveBeenCalledWith(error2);
-  expect(scope.injectContainer.mock).toHaveBeenCalledTimes(2);
+  expect(errorContainer).toHaveBeenCalledTimes(2);
+  expect(errorContainer).toHaveBeenCalledWith(undefined);
+  expect(errorListener).toHaveBeenCalledTimes(2);
+  expect(errorListener).toHaveBeenCalledWith(error2);
+  expect(scope.injectContainer).toHaveBeenCalledTimes(2);
 });

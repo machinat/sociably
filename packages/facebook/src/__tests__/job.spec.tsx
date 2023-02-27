@@ -855,9 +855,9 @@ describe('createPostJobs()', () => {
       }
     `);
 
-    expect(getRegisteredResult.mock).toHaveBeenCalledTimes(2);
-    expect(getRegisteredResult.mock).toHaveBeenCalledWith('key1', '$.id');
-    expect(getRegisteredResult.mock).toHaveBeenCalledWith('key2', '$.id');
+    expect(getRegisteredResult).toHaveBeenCalledTimes(2);
+    expect(getRegisteredResult).toHaveBeenCalledWith('key1', '$.id');
+    expect(getRegisteredResult).toHaveBeenCalledWith('key2', '$.id');
   });
 
   it('create scheduled page post job with photos', () => {
@@ -1111,8 +1111,8 @@ describe('createInteractJobs()', () => {
         "relative_url": "_OBJECT_ID_/comments",
       }
     `);
-    expect(getRegisteredResult.mock).toHaveBeenCalledTimes(1);
-    expect(getRegisteredResult.mock).toHaveBeenCalledWith('resultKey', '$.id');
+    expect(getRegisteredResult).toHaveBeenCalledTimes(1);
+    expect(getRegisteredResult).toHaveBeenCalledWith('resultKey', '$.id');
   });
 
   it('create chaining comment jobs', () => {
@@ -1225,8 +1225,8 @@ describe('createInteractJobs()', () => {
         "relative_url": "_COMMENT_ID_1_/comments",
       }
     `);
-    expect(getRegisteredResult.mock).toHaveBeenCalledTimes(1);
-    expect(getRegisteredResult.mock).toHaveBeenCalledWith(
+    expect(getRegisteredResult).toHaveBeenCalledTimes(1);
+    expect(getRegisteredResult).toHaveBeenCalledWith(
       'commentResultKey',
       '$.id'
     );
@@ -1256,15 +1256,9 @@ describe('createInteractJobs()', () => {
         "relative_url": "_COMMENT_ID_2_/comments",
       }
     `);
-    expect(getRegisteredResult.mock).toHaveBeenCalledTimes(3);
-    expect(getRegisteredResult.mock).toHaveBeenCalledWith(
-      comment2ResultKey,
-      '$.id'
-    );
-    expect(getRegisteredResult.mock).toHaveBeenCalledWith(
-      photoResultKey,
-      '$.id'
-    );
+    expect(getRegisteredResult).toHaveBeenCalledTimes(3);
+    expect(getRegisteredResult).toHaveBeenCalledWith(comment2ResultKey, '$.id');
+    expect(getRegisteredResult).toHaveBeenCalledWith(photoResultKey, '$.id');
   });
 
   it('throw if invalid comment segment received', () => {

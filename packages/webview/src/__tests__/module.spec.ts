@@ -127,10 +127,8 @@ test('service provisions', async () => {
   expect(authenticators).toEqual([expect.any(NoneAuthenticator)]);
 
   expect(nextReceiver).toBeInstanceOf(Next.Receiver);
-  expect(createNextServer.mock).toHaveBeenCalledTimes(1);
-  expect(createNextServer.mock).toHaveBeenCalledWith(
-    configsInput.nextServerOptions
-  );
+  expect(createNextServer).toHaveBeenCalledTimes(1);
+  expect(createNextServer).toHaveBeenCalledWith(configsInput.nextServerOptions);
   expect(nextServer).toBe(createNextServer.mock.calls[0].result);
 
   expect(requestRoutes).toEqual(
@@ -205,7 +203,7 @@ test('with noNextServer option', async () => {
 
   expect(nextReceiver).toBe(null);
   expect(nextServer).toBe(null);
-  expect(createNextServer.mock).not.toHaveBeenCalled();
+  expect(createNextServer).not.toHaveBeenCalled();
 
   expect(requestRoutes).toEqual([
     { name: 'auth', path: '/myAuth', handler: expect.any(Function) },
@@ -369,14 +367,14 @@ test('startHook & stopHook', async () => {
     ],
   });
   await app.start();
-  expect(fakeBot.start.mock).toHaveBeenCalledTimes(1);
-  expect(fakeBot.stop.mock).not.toHaveBeenCalled();
+  expect(fakeBot.start).toHaveBeenCalledTimes(1);
+  expect(fakeBot.stop).not.toHaveBeenCalled();
 
   const nextServer = createNextServer.mock.calls[0].result;
-  expect(nextServer.close.mock).not.toHaveBeenCalled();
-  expect(nextServer.prepare.mock).toHaveBeenCalledTimes(1);
+  expect(nextServer.close).not.toHaveBeenCalled();
+  expect(nextServer.prepare).toHaveBeenCalledTimes(1);
 
   await app.stop();
-  expect(fakeBot.stop.mock).toHaveBeenCalledTimes(1);
-  expect(nextServer.close.mock).toHaveBeenCalledTimes(1);
+  expect(fakeBot.stop).toHaveBeenCalledTimes(1);
+  expect(nextServer.close).toHaveBeenCalledTimes(1);
 });

@@ -29,9 +29,6 @@ test('rendering to UrlButton', () => {
     />
   `);
 
-  expect(authenticator.getLiffUrl.mock).toHaveBeenCalledTimes(2);
-  expect(authenticator.getLiffUrl.mock).toHaveBeenNthCalledWith(
-    2,
-    '/foo?bar=baz'
-  );
+  expect(authenticator.getLiffUrl).toHaveBeenCalledTimes(2);
+  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(2, '/foo?bar=baz');
 });

@@ -65,14 +65,14 @@ test('.connect()', async () => {
   connector.connect();
   await nextTick();
 
-  expect(Ws.mock).toHaveBeenCalledTimes(1);
-  expect(Ws.mock).toHaveBeenCalledWith(
+  expect(Ws).toHaveBeenCalledTimes(1);
+  expect(Ws).toHaveBeenCalledWith(
     'wss://sociably.io/websocket',
     'sociably-websocket-v0'
   );
 
-  expect(Socket.mock).toHaveBeenCalledTimes(1);
-  expect(Socket.mock).toHaveBeenCalledWith(Ws.mock.calls[0].instance);
+  expect(Socket).toHaveBeenCalledTimes(1);
+  expect(Socket).toHaveBeenCalledWith(Ws.mock.calls[0].instance);
 });
 
 test('use ws: protocol', async () => {
@@ -84,14 +84,14 @@ test('use ws: protocol', async () => {
   connector.connect();
   await nextTick();
 
-  expect(Ws.mock).toHaveBeenCalledTimes(1);
-  expect(Ws.mock).toHaveBeenCalledWith(
+  expect(Ws).toHaveBeenCalledTimes(1);
+  expect(Ws).toHaveBeenCalledWith(
     'ws://sociably.io/websocket',
     'sociably-websocket-v0'
   );
 
-  expect(Socket.mock).toHaveBeenCalledTimes(1);
-  expect(Socket.mock).toHaveBeenCalledWith(Ws.mock.calls[0].instance);
+  expect(Socket).toHaveBeenCalledTimes(1);
+  expect(Socket).toHaveBeenCalledWith(Ws.mock.calls[0].instance);
 });
 
 it('login with credential from login fn', async () => {
@@ -100,24 +100,24 @@ it('login with credential from login fn', async () => {
   connector.connect();
   await nextTick();
 
-  expect(login.mock).toHaveBeenCalledTimes(1);
-  expect(login.mock).toHaveBeenCalledWith(/* empty */);
+  expect(login).toHaveBeenCalledTimes(1);
+  expect(login).toHaveBeenCalledWith(/* empty */);
 
   const socket = Socket.mock.calls[0].instance;
-  expect(socket.login.mock).not.toHaveBeenCalled();
+  expect(socket.login).not.toHaveBeenCalled();
   socket.emit('open', socket);
   await nextTick();
 
-  expect(socket.login.mock).toHaveBeenCalledTimes(1);
-  expect(socket.login.mock).toHaveBeenCalledWith({
+  expect(socket.login).toHaveBeenCalledTimes(1);
+  expect(socket.login).toHaveBeenCalledWith({
     credential: { foo: 'bar' },
   });
 
   socket.emit('connect', { connId, seq: 1 }, 2, socket);
   await nextTick();
 
-  expect(connectSpy.mock).toHaveBeenCalledTimes(1);
-  expect(connectSpy.mock).toHaveBeenCalledWith({ connId, user });
+  expect(connectSpy).toHaveBeenCalledTimes(1);
+  expect(connectSpy).toHaveBeenCalledWith({ connId, user });
 });
 
 it('emit "error" if login rejected', async () => {
@@ -132,12 +132,12 @@ it('emit "error" if login rejected', async () => {
   socket.emit('open', socket);
   await nextTick();
 
-  expect(socket.login.mock).toHaveBeenCalledTimes(1);
+  expect(socket.login).toHaveBeenCalledTimes(1);
   await nextTick();
 
   socket.emit('reject', { seq: 1, reason: 'you shall not pass' }, 2);
 
-  expect(errorSpy.mock).toHaveBeenCalledTimes(1);
+  expect(errorSpy).toHaveBeenCalledTimes(1);
   expect(errorSpy.mock.calls[0].args[0]).toMatchInlineSnapshot(
     `[SocketError: you shall not pass]`
   );
@@ -158,8 +158,8 @@ it('pop events from server', async () => {
   connector.on('events', eventsSpy);
   socket.emit('events', { connId, values: eventValues }, 3, socket);
 
-  expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventsSpy.mock).toHaveBeenCalledWith(eventValues, {
+  expect(eventsSpy).toHaveBeenCalledTimes(1);
+  expect(eventsSpy).toHaveBeenCalledWith(eventValues, {
     connId,
     user,
   });
@@ -183,8 +183,8 @@ it('unmarshal payload', async () => {
     socket
   );
 
-  expect(eventsSpy.mock).toHaveBeenCalledTimes(1);
-  expect(eventsSpy.mock).toHaveBeenCalledWith(
+  expect(eventsSpy).toHaveBeenCalledTimes(1);
+  expect(eventsSpy).toHaveBeenCalledWith(
     [
       { type: 'any', payload: { foo: 'bar', unmarshaled: true } },
       { type: 'any', payload: { foo: 'baz', unmarshaled: true } },
@@ -192,9 +192,9 @@ it('unmarshal payload', async () => {
     { connId, user }
   );
 
-  expect(marshaler.unmarshal.mock).toHaveBeenCalledTimes(2);
-  expect(marshaler.unmarshal.mock).toHaveBeenCalledWith({ foo: 'bar' });
-  expect(marshaler.unmarshal.mock).toHaveBeenCalledWith({ foo: 'baz' });
+  expect(marshaler.unmarshal).toHaveBeenCalledTimes(2);
+  expect(marshaler.unmarshal).toHaveBeenCalledWith({ foo: 'bar' });
+  expect(marshaler.unmarshal).toHaveBeenCalledWith({ foo: 'baz' });
 });
 
 it('send events after connected', async () => {
@@ -207,8 +207,8 @@ it('send events after connected', async () => {
     ])
   ).resolves.toBe(undefined);
 
-  expect(socket.dispatch.mock).toHaveBeenCalledTimes(1);
-  expect(socket.dispatch.mock).toHaveBeenCalledWith({
+  expect(socket.dispatch).toHaveBeenCalledTimes(1);
+  expect(socket.dispatch).toHaveBeenCalledWith({
     connId,
     values: [
       { type: 'foo', payload: 1 },
@@ -219,8 +219,8 @@ it('send events after connected', async () => {
   await expect(connector.send([{ type: 'baz', payload: 3 }])).resolves.toBe(
     undefined
   );
-  expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
-  expect(socket.dispatch.mock).toHaveBeenCalledWith({
+  expect(socket.dispatch).toHaveBeenCalledTimes(2);
+  expect(socket.dispatch).toHaveBeenCalledWith({
     connId,
     values: [{ type: 'baz', payload: 3 }],
   });
@@ -244,27 +244,27 @@ it('queue events and dispatch them after connected', async () => {
     .then(done);
 
   await nextTick();
-  expect(done.mock).not.toHaveBeenCalled();
-  expect(socket.dispatch.mock).not.toHaveBeenCalled();
+  expect(done).not.toHaveBeenCalled();
+  expect(socket.dispatch).not.toHaveBeenCalled();
 
   socket.emit('open', socket);
   await nextTick();
 
   socket.emit('connect', { connId, seq: 1 }, 2, socket);
 
-  expect(socket.dispatch.mock).toHaveBeenCalledTimes(2);
-  expect(socket.dispatch.mock).toHaveBeenCalledWith({
+  expect(socket.dispatch).toHaveBeenCalledTimes(2);
+  expect(socket.dispatch).toHaveBeenCalledWith({
     connId,
     values: [{ type: 'greeting', payload: 'hi' }],
   });
-  expect(socket.dispatch.mock).toHaveBeenCalledWith({
+  expect(socket.dispatch).toHaveBeenCalledWith({
     connId,
     values: [{ type: 'greeting', payload: 'how are you' }],
   });
 
   await promise1;
   await promise2;
-  expect(done.mock).toHaveBeenCalledTimes(2);
+  expect(done).toHaveBeenCalledTimes(2);
 });
 
 it('marshal payload', async () => {
@@ -276,8 +276,8 @@ it('marshal payload', async () => {
     { type: 'any', payload: { foo: 'baz' } },
   ]);
 
-  expect(socket.dispatch.mock).toHaveBeenCalledTimes(1);
-  expect(socket.dispatch.mock).toHaveBeenCalledWith({
+  expect(socket.dispatch).toHaveBeenCalledTimes(1);
+  expect(socket.dispatch).toHaveBeenCalledWith({
     connId,
     values: [
       { type: 'any', payload: { foo: 'bar', marshaled: true } },
@@ -285,9 +285,9 @@ it('marshal payload', async () => {
     ],
   });
 
-  expect(marshaler.marshal.mock).toHaveBeenCalledTimes(2);
-  expect(marshaler.marshal.mock).toHaveBeenCalledWith({ foo: 'bar' });
-  expect(marshaler.marshal.mock).toHaveBeenCalledWith({ foo: 'baz' });
+  expect(marshaler.marshal).toHaveBeenCalledTimes(2);
+  expect(marshaler.marshal).toHaveBeenCalledWith({ foo: 'bar' });
+  expect(marshaler.marshal).toHaveBeenCalledWith({ foo: 'baz' });
 });
 
 test('disconnect by server', async () => {
@@ -298,7 +298,7 @@ test('disconnect by server', async () => {
   socket.emit('disconnect', { connId, reason: 'See ya!' }, 3, socket);
 
   expect(connector.isConnected()).toBe(false);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(
+  expect(disconnectSpy).toHaveBeenCalledWith(
     { reason: 'See ya!' },
     { connId, user }
   );
@@ -312,13 +312,13 @@ test('.close()', async () => {
   expect(connector.close(4567, 'Bye!')).toBe(undefined);
   expect(connector.isClosed).toBe(true);
 
-  expect(socket.close.mock).toHaveBeenCalledTimes(1);
-  expect(socket.close.mock).toHaveBeenCalledWith(4567, 'Bye!');
+  expect(socket.close).toHaveBeenCalledTimes(1);
+  expect(socket.close).toHaveBeenCalledWith(4567, 'Bye!');
 
   expect(connector.isConnected()).toBe(false);
 
   socket.emit('disconnect', { connId, reason: 'Bye!' }, 4, socket);
-  expect(disconnectSpy.mock).toHaveBeenCalledWith(
+  expect(disconnectSpy).toHaveBeenCalledWith(
     { reason: 'Bye!' },
     { connId, user }
   );
@@ -334,7 +334,7 @@ test('throw when sending event after closed', async () => {
     connector.send([{ type: 'foo', payload: 'bar' }])
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"socket is already closed"`);
 
-  expect(socket.dispatch.mock).not.toHaveBeenCalled();
+  expect(socket.dispatch).not.toHaveBeenCalled();
 });
 
 test('reconnect behavior at initial connect', async () => {
@@ -348,19 +348,19 @@ test('reconnect behavior at initial connect', async () => {
 
   for (let i = 0; i < 20; i += 1) {
     await nextTick(); // eslint-disable-line no-await-in-loop
-    expect(login.mock).toHaveBeenCalledTimes(i + 1);
+    expect(login).toHaveBeenCalledTimes(i + 1);
 
     const socket = Socket.mock.calls[i].instance;
     socket.emit('error', new Error('boom'), socket);
     await nextTick(); // eslint-disable-line no-await-in-loop
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(i + 1);
+    expect(errorSpy).toHaveBeenCalledTimes(i + 1);
     jest.advanceTimersByTime(i * 5000);
   }
 
   connector.close();
   jest.advanceTimersByTime(999999);
-  expect(Socket.mock).toHaveBeenCalledTimes(20);
+  expect(Socket).toHaveBeenCalledTimes(20);
 
   jest.useRealTimers();
 });
@@ -372,24 +372,24 @@ test('reconnect behavior after being close', async () => {
   const errorSpy = moxy();
   connector.on('error', errorSpy);
 
-  expect(login.mock).toHaveBeenCalledTimes(1);
+  expect(login).toHaveBeenCalledTimes(1);
   initialSocket.emit('close');
 
   for (let i = 0; i < 20; i += 1) {
     await nextTick(); // eslint-disable-line no-await-in-loop
-    expect(login.mock).toHaveBeenCalledTimes(i + 2);
+    expect(login).toHaveBeenCalledTimes(i + 2);
 
     const socket = Socket.mock.calls[i + 1].instance;
     socket.emit('error', new Error('boom'), socket);
     await nextTick(); // eslint-disable-line no-await-in-loop
 
-    expect(errorSpy.mock).toHaveBeenCalledTimes(i + 1);
+    expect(errorSpy).toHaveBeenCalledTimes(i + 1);
     jest.advanceTimersByTime(i * 5000);
   }
 
   connector.close();
   jest.advanceTimersByTime(999999);
-  expect(Socket.mock).toHaveBeenCalledTimes(21);
+  expect(Socket).toHaveBeenCalledTimes(21);
 
   jest.useRealTimers();
 });

@@ -62,8 +62,8 @@ describe('#onJobs(cb)', () => {
     queue.executeJobs(jobs);
     queue.executeJobs(jobs);
 
-    expect(cb1.mock).toHaveBeenCalledTimes(2);
-    expect(cb2.mock).toHaveBeenCalledTimes(2);
+    expect(cb1).toHaveBeenCalledTimes(2);
+    expect(cb2).toHaveBeenCalledTimes(2);
 
     expect(cb1.mock.calls[0].args[0]).toBe(queue);
     expect(cb1.mock.calls[1].args[0]).toBe(queue);
@@ -81,20 +81,20 @@ describe('#removeJobsListener(cb)', () => {
     queue.onJobs(cb2);
     queue.executeJobs(jobs);
 
-    expect(cb1.mock).toHaveBeenCalledTimes(1);
-    expect(cb2.mock).toHaveBeenCalledTimes(1);
+    expect(cb1).toHaveBeenCalledTimes(1);
+    expect(cb2).toHaveBeenCalledTimes(1);
 
     queue.removeJobsListener(cb1);
     queue.executeJobs(jobs);
 
-    expect(cb1.mock).toHaveBeenCalledTimes(1);
-    expect(cb2.mock).toHaveBeenCalledTimes(2);
+    expect(cb1).toHaveBeenCalledTimes(1);
+    expect(cb2).toHaveBeenCalledTimes(2);
 
     queue.removeJobsListener(cb2);
     queue.executeJobs(jobs);
 
-    expect(cb1.mock).toHaveBeenCalledTimes(1);
-    expect(cb2.mock).toHaveBeenCalledTimes(2);
+    expect(cb1).toHaveBeenCalledTimes(1);
+    expect(cb2).toHaveBeenCalledTimes(2);
   });
 });
 

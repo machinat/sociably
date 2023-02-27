@@ -110,12 +110,12 @@ describe('#constructor(options)', () => {
       dispatchWrapper,
     });
 
-    expect(Renderer.mock).toHaveBeenCalledTimes(1);
-    expect(Renderer.mock).toHaveBeenCalledWith('line', expect.any(Function));
+    expect(Renderer).toHaveBeenCalledTimes(1);
+    expect(Renderer).toHaveBeenCalledWith('line', expect.any(Function));
 
     expect(bot.engine).toBeInstanceOf(Engine);
-    expect(Engine.mock).toHaveBeenCalledTimes(1);
-    expect(Engine.mock).toHaveBeenCalledWith(
+    expect(Engine).toHaveBeenCalledTimes(1);
+    expect(Engine).toHaveBeenCalledWith(
       'line',
       expect.any(Renderer),
       expect.any(Queue),

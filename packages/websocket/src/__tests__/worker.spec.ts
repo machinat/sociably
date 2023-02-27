@@ -63,9 +63,9 @@ it('work', async () => {
 
   await expect(queue.executeJobs(jobs)).resolves.toMatchSnapshot();
 
-  expect(server.dispatch.mock).toHaveBeenCalledTimes(3);
+  expect(server.dispatch).toHaveBeenCalledTimes(3);
   for (const [i, { target, values }] of jobs.entries()) {
-    expect(server.dispatch.mock).toHaveBeenNthCalledWith(i + 1, {
+    expect(server.dispatch).toHaveBeenNthCalledWith(i + 1, {
       target,
       values,
     });
