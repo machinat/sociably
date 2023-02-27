@@ -25,7 +25,7 @@ import RedisState from '@sociably/redis-state';
 const app = Sociably.createApp({
   modules: [
     RedisState.initModule({
-      clientOptions: {
+      connectOptions: {
         host: 'localhost',
         port: 6379,
       },

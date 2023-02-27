@@ -9,7 +9,7 @@ import { ConfigsI, ClientI } from './interface';
 const createRedisClient = makeFactoryProvider({
   lifetime: 'singleton',
   deps: [ConfigsI],
-})(({ clientOptions }) => redis.createClient(clientOptions));
+})(({ connectOptions }) => redis.createClient(connectOptions));
 
 /**
  * @category Root

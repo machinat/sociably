@@ -15,8 +15,7 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "polyfill-exports.js"
+    "README.md"
   ],
   "license": "MIT",
   "publishConfig": {

@@ -36,7 +36,7 @@ test('provisions', async () => {
   const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
-        clientOptions: { host: 'my.redis.com', port: 23456 },
+        connectOptions: { host: 'my.redis.com', port: 23456 },
       }),
     ],
   });
@@ -51,10 +51,10 @@ test('provisions', async () => {
   expect(controller).toBeInstanceOf(RedisStateController);
   expect(client).toBe((redis as any).createClient.mock.calls[0].result);
   expect(configs).toEqual({
-    clientOptions: { host: 'my.redis.com', port: 23456 },
+    connectOptions: { host: 'my.redis.com', port: 23456 },
   });
 
-  expect((redis as any).createClient.mock).toHaveBeenCalledWith({
+  expect((redis as any).createClient).toHaveBeenCalledWith({
     host: 'my.redis.com',
     port: 23456,
   });
@@ -64,7 +64,7 @@ test('provide base state controller', async () => {
   const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
-        clientOptions: { host: 'my.redis.com', port: 23456 },
+        connectOptions: { host: 'my.redis.com', port: 23456 },
       }),
     ],
   });
@@ -78,7 +78,7 @@ test('startHook wait for client connected', async () => {
   const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
-        clientOptions: { host: 'my.redis.com', port: 23456 },
+        connectOptions: { host: 'my.redis.com', port: 23456 },
       }),
     ],
   });
@@ -89,7 +89,7 @@ test('startHook wait for client connected', async () => {
   (redis as Moxy<typeof redis>).createClient.mock.fakeReturnValue(client);
   const startPromise = app.start();
 
-  expect(client.once.mock).toHaveBeenCalledTimes(2);
+  expect(client.once).toHaveBeenCalledTimes(2);
   expect(app.isStarted).toBe(false);
 
   client.emit('connect');
@@ -103,7 +103,7 @@ test('startHook throw if error happen when connect', async () => {
   const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
-        clientOptions: { host: 'my.redis.com', port: 23456 },
+        connectOptions: { host: 'my.redis.com', port: 23456 },
       }),
     ],
   });
@@ -124,7 +124,7 @@ test('stopHook quit client', async () => {
   const app = Sociably.createApp({
     modules: [
       RedisState.initModule({
-        clientOptions: { host: 'my.redis.com', port: 23456 },
+        connectOptions: { host: 'my.redis.com', port: 23456 },
       }),
     ],
   });
@@ -133,8 +133,8 @@ test('stopHook quit client', async () => {
   (redis as Moxy<typeof redis>).createClient.mock.fakeReturnValue(client);
 
   await app.start();
-  expect(client.quit.mock).not.toHaveBeenCalled();
+  expect(client.quit).not.toHaveBeenCalled();
 
   await app.stop();
-  expect(client.quit.mock).toHaveBeenCalledTimes(1);
+  expect(client.quit).toHaveBeenCalledTimes(1);
 });
