@@ -33,7 +33,7 @@
     "husky": "^6.0.0",
     "jest": "^26.4.1",
     "jest-junit": "^13.0.0",
-    "lerna": "^6.0.3",
+    "lerna": "^6.5.1",
     "nock": "^12.0.0",
     "polyfill-exports": "^0.4.0-beta.2",
     "prettier": "^2.3.1",
