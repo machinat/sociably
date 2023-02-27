@@ -1,6 +1,6 @@
 {
   "name": "@sociably/facebook",
-  "version": "0.8.0-alpha.7",
+  "version": "0.8.0-alpha.8",
   "description": "Facebook platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -31,7 +31,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@sociably/meta-api": "^0.8.0-alpha.1",
+    "@sociably/meta-api": "^0.8.0-alpha.8",
     "bowser": "^2.11.0",
     "camelcase-keys": "7",
     "invariant": "^2.2.4",
