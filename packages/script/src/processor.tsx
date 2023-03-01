@@ -35,6 +35,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   private _serviceScope: ServiceScope;
 
   private _requireSaving: boolean;
+  private _isPrompting: boolean;
   private _queuedMessages: SociablyNode[];
 
   private _returnValue: undefined | ReturnOfScript<Script>;
@@ -45,11 +46,13 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     scope: ServiceScope,
     channel: SociablyChannel,
     stack: CallStatus<unknown>[],
-    promptTimestamp?: number
+    promptTimestamp: undefined | number,
+    isPrompting: boolean
   ) {
     this.channel = channel;
     this.callStack = stack;
     this.saveTimestamp = promptTimestamp;
+    this._isPrompting = isPrompting;
     this.rootScript = stack[0].script as Script;
 
     this._stateContoller = stateContoller;
@@ -71,7 +74,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   }
 
   get isBeginning(): boolean {
-    return !(this.callStack && (this.saveTimestamp || this._requireSaving));
+    return !this.saveTimestamp && !this._requireSaving;
   }
 
   get requireSaving(): boolean {
@@ -100,7 +103,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
         this._serviceScope,
         this.channel,
         this.callStack,
-        this.isBeginning,
+        this._isPrompting,
         input
       );
 
@@ -109,6 +112,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     this._yieldValue = yieldedValue;
     this._queuedMessages.push(contents);
     this._requireSaving = true;
+    this._isPrompting = !!callStack;
 
     return {
       finished,
@@ -116,6 +120,15 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
       returnValue: returnedValue,
       yieldValue: yieldedValue,
     };
+  }
+
+  resetCallStack(
+    callStack: CallStatus<unknown>[],
+    { isPrompting = false }: { isPrompting?: boolean } = {}
+  ): void {
+    this.callStack = callStack;
+    this._isPrompting = isPrompting;
+    this._requireSaving = true;
   }
 
   output(): SociablyNode {
@@ -182,6 +195,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
 type StartRuntimeOptions<Params> = {
   params?: Params;
   goto?: string;
+  isPrompting?: boolean;
 };
 
 export class ScriptProcessor<Script extends AnyScriptLibrary> {
@@ -212,10 +226,12 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
   async start<StartingScript extends Script>(
     channel: SociablyChannel,
     script: StartingScript,
-    options: StartRuntimeOptions<ParamsOfScript<StartingScript>> = {} as any
+    {
+      goto,
+      params = {} as ParamsOfScript<StartingScript>,
+      isPrompting = false,
+    }: StartRuntimeOptions<ParamsOfScript<StartingScript>> = {}
   ): Promise<ScriptRuntime<Script>> {
-    const { params = {} as ParamsOfScript<Script>, goto } = options;
-
     if (this._libs.get(script.name) !== script) {
       throw new Error(`script ${script.name} is not registered as libs`);
     }
@@ -241,7 +257,9 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
           vars: script.initVars(params),
           stopAt: goto,
         } as CallStatus<StartingScript>,
-      ]
+      ],
+      undefined,
+      isPrompting
     );
 
     await runtime.run();
@@ -277,7 +295,8 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
       this._serviceScope,
       channel,
       stack,
-      state.timestamp
+      state.timestamp,
+      true
     );
   }
 

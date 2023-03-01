@@ -331,7 +331,7 @@ const execute = async <Input, Return, Yield, Meta>(
   scope: ServiceScope,
   channel: SociablyChannel,
   beginningStack: CallStatus<unknown>[],
-  isBeginning: boolean,
+  isPrompting: boolean,
   input?: Input
 ): Promise<ExecuteResult<Return, Yield>> => {
   const callingDepth = beginningStack.length;
@@ -355,7 +355,7 @@ const execute = async <Input, Return, Yield, Meta>(
     let vars: unknown = beginningVars;
 
     if (d === callingDepth - 1) {
-      if (!isBeginning) {
+      if (isPrompting) {
         // begin from the PROMPT point
         const awaitingPrompt = currentScript.commands[index];
 
