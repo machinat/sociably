@@ -9,6 +9,8 @@ import {
   FIELD_STATE_SCOPE_ID,
   FIELD_STATE_ID,
   FIELD_STATE_DATA,
+  FIELD_CREATED_AT,
+  FIELD_UPDATED_AT,
 } from '../constants';
 import { PostgresStateController, PostgresStateAccessor } from '../controller';
 
@@ -281,6 +283,8 @@ describe.each([
             ...identifierFields,
             [FIELD_STATE_KEY]: key,
             [FIELD_STATE_DATA]: { value: newValue },
+            [FIELD_CREATED_AT]: expect.any(Date),
+            [FIELD_UPDATED_AT]: expect.any(Date),
           }))
         );
       });
@@ -342,6 +346,8 @@ describe.each([
             ...identifierFields,
             [FIELD_STATE_KEY]: key,
             [FIELD_STATE_DATA]: { value },
+            [FIELD_CREATED_AT]: expect.any(Date),
+            [FIELD_UPDATED_AT]: expect.any(Date),
           }))
         );
       });
@@ -420,6 +426,8 @@ describe.each([
         ...identifierFields,
         [FIELD_STATE_KEY]: 'key1',
         [FIELD_STATE_DATA]: { value: { hello: 'foo' } },
+        [FIELD_CREATED_AT]: expect.any(Date),
+        [FIELD_UPDATED_AT]: expect.any(Date),
       });
 
       const updater = moxy(() => ({ bar: 'baz' }));
@@ -432,6 +440,8 @@ describe.each([
         ...identifierFields,
         [FIELD_STATE_KEY]: 'key1',
         [FIELD_STATE_DATA]: { value: { hello: { bar: 'baz' } } },
+        [FIELD_CREATED_AT]: expect.any(Date),
+        [FIELD_UPDATED_AT]: expect.any(Date),
       });
     });
   });

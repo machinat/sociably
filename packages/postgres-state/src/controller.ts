@@ -14,6 +14,8 @@ import {
   FIELD_STATE_DATA,
   FIELD_STATE_KEY,
   FIELD_STATE_ID,
+  FIELD_CREATED_AT,
+  FIELD_UPDATED_AT,
 } from './constants';
 import { ConnectionPoolI, ConfigsI } from './interface';
 import { SociablyStateType, StateEntity } from './types';
@@ -208,7 +210,9 @@ export class PostgresStateAccessor implements StateAccessor {
           ${keyFieldPairs.map((_, i) => `$${i + 2}`).join(', ')}
         )
         ON CONFLICT (${keyFieldNamesStr}) DO UPDATE
-        SET "${FIELD_STATE_DATA}" = EXCLUDED."${FIELD_STATE_DATA}"
+        SET
+          "${FIELD_STATE_DATA}" = EXCLUDED."${FIELD_STATE_DATA}",
+          "${FIELD_UPDATED_AT}" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       `,
       values: [{ value }, ...keyFieldPairs.map(([_, v]) => v)],
@@ -311,6 +315,8 @@ export class PostgresStateController implements BaseStateController {
         "${FIELD_STATE_ID}" varchar(255),
         "${FIELD_STATE_KEY}" varchar(255),
         "${FIELD_STATE_DATA}" jsonb,
+        "${FIELD_CREATED_AT}" timestamp DEFAULT current_timestamp,
+        "${FIELD_UPDATED_AT}" timestamp DEFAULT current_timestamp,
         PRIMARY KEY (
           "${FIELD_STATE_TYPE}",
           "${FIELD_STATE_PLATFORM}",

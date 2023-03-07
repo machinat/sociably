@@ -173,7 +173,9 @@ exports[`default table channel state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -351,7 +353,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -644,7 +648,9 @@ exports[`default table channel state with scope id .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -822,7 +828,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -1115,7 +1123,9 @@ exports[`default table global state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -1293,7 +1303,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -1586,7 +1598,9 @@ exports[`default table user state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -1764,7 +1778,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -2057,7 +2073,9 @@ exports[`default table user state with scope id .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -2235,7 +2253,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -2528,7 +2548,9 @@ exports[`specified schema & table channel state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -2706,7 +2728,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -2999,7 +3023,9 @@ exports[`specified schema & table channel state with scope id .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -3177,7 +3203,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -3470,7 +3498,9 @@ exports[`specified schema & table global state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -3648,7 +3678,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -3941,7 +3973,9 @@ exports[`specified schema & table user state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -4119,7 +4153,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -4412,7 +4448,9 @@ exports[`specified schema & table user state with scope id .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -4590,7 +4628,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -4883,7 +4923,9 @@ exports[`specified table channel state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -5061,7 +5103,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -5354,7 +5398,9 @@ exports[`specified table channel state with scope id .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -5532,7 +5578,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -5825,7 +5873,9 @@ exports[`specified table global state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -6003,7 +6053,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -6296,7 +6348,9 @@ exports[`specified table user state .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -6474,7 +6528,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
@@ -6767,7 +6823,9 @@ exports[`specified table user state with scope id .set() 1`] = `
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       "
 `;
@@ -6945,7 +7003,9 @@ Array [
           $2, $3, $4, $5, $6
         )
         ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET \\"data\\" = EXCLUDED.\\"data\\"
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       ",
   "COMMIT",
