@@ -31,6 +31,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@line/liff": "^2.21.4",
     "invariant": "^2.2.4",
     "node-fetch": "^2.6.7",
     "warning": "^4.0.2"
@@ -48,8 +49,5 @@
     "@sociably/webview": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "jsdom": "^16.6.0"
   }
 }

@@ -1,7 +1,9 @@
 /// <reference lib="DOM" />
+/* eslint-disable class-methods-use-this */
 import invariant from 'invariant';
 import type { CheckDataResult } from '@sociably/auth';
 import type { WebviewClientAuthenticator } from '@sociably/webview';
+import liff from '@line/liff';
 import { LINE } from '../constant';
 import LineChat from '../Chat';
 import LineUser from '../User';
@@ -12,13 +14,13 @@ import type {
   LineAuthCredential,
   LineAuthData,
   LineAuthContext,
-  LiffContext,
-  AuthenticatorCredentialResult,
+  LineCredentialResult,
+  ClientOs,
+  ClientReferer,
 } from './types';
 
 type ClientAuthenticatorOptions = {
   liffId: string;
-  shouldLoadSDK?: boolean;
 };
 
 const waitingForRedirecting = (): Promise<never> =>
@@ -36,71 +38,56 @@ class LineClientAuthenticator
       LineAuthContext
     >
 {
-  liff: any;
-  liffId: string;
-  shouldLoadSDK: boolean;
-
   platform = LINE;
+  liffId: string;
   marshalTypes = [LineChat, LineUser, LineUserProfile, LineGroupProfile];
 
   constructor(options: ClientAuthenticatorOptions) {
     invariant(options?.liffId, 'options.liffId must not be empty');
-    const { liffId, shouldLoadSDK = true } = options;
+    const { liffId } = options;
 
     this.liffId = liffId;
-    this.shouldLoadSDK = shouldLoadSDK;
   }
 
   async init(): Promise<void> {
-    const { liffId, shouldLoadSDK } = this;
-
-    if (shouldLoadSDK) {
-      const SCRIPT = 'script';
-      const js = document.createElement(SCRIPT);
-      js.id = 'LIFF';
-      js.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
-      const loadingSDK = new Promise((resolve) => {
-        js.onload = resolve;
-      });
-
-      const fjs: any = document.getElementsByTagName(SCRIPT)[0];
-      fjs.parentNode.insertBefore(js, fjs);
-
-      await loadingSDK;
-    }
-
-    this.liff = (window as any).liff;
-    await this.liff.init({ liffId });
+    await liff.init({ liffId: this.liffId });
 
     const searchParams = new URLSearchParams(window.location.search);
     if (typeof searchParams.get('liff.state') === 'string') {
-      // wait for secondary redirecting during primary redirecting from LIFF
+      // wait for secondary redirecting during primary redirecting of LIFF
       await waitingForRedirecting();
     }
   }
 
-  async fetchCredential(): Promise<AuthenticatorCredentialResult> {
-    const { liff } = this;
+  async fetchCredential(): Promise<LineCredentialResult> {
     if (!liff.isLoggedIn()) {
       liff.login({ redirectUri: window.location.href });
       return waitingForRedirecting();
     }
 
-    const { userId, groupId, roomId }: LiffContext = liff.getContext();
+    const context = liff.getContext();
+    const accessToken = liff.getAccessToken();
+    if (!accessToken || !context || !context.userId) {
+      return {
+        ok: false,
+        code: 401,
+        reason: 'no auth info from auth',
+      };
+    }
+
+    const { type: refererType, userId } = context;
     return {
       ok: true,
       credential: {
-        accessToken: liff.getAccessToken(),
-        os: liff.getOS(),
-        language: liff.getLanguage(),
+        accessToken,
         userId,
-        groupId,
-        roomId,
+        refererType: refererType as ClientReferer,
+        os: liff.getOS() as ClientOs,
+        language: liff.getLanguage(),
       },
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   checkAuthData(data: LineAuthData): CheckDataResult<LineAuthContext> {
     return {
       ok: true,
@@ -109,7 +96,7 @@ class LineClientAuthenticator
   }
 
   closeWebview(): boolean {
-    this.liff.closeWindow();
+    liff.closeWindow();
     return true;
   }
 }

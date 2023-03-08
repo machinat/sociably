@@ -5,10 +5,9 @@ import { makeClassProvider } from '@sociably/core/service';
 import Auth, { ServerAuthenticator, CheckDataResult } from '@sociably/auth';
 import { ConfigsI } from '../interface';
 import BotP from '../Bot';
-import { LINE, LiffContextOs } from '../constant';
+import { LINE, LiffOs, LiffReferer } from '../constant';
 import { getAuthContextDetails } from './utils';
 import LineApiError from '../error';
-import type { LineRawUserProfile } from '../types';
 import {
   LineAuthCredential,
   LineAuthData,
@@ -72,7 +71,7 @@ export class LineServerAuthenticator
   async verifyCredential(
     credential: LineAuthCredential
   ): Promise<LineVerifyAuthResult> {
-    const { accessToken, userId, groupId, roomId, os, language } = credential;
+    const { accessToken, userId, refererType, os, language } = credential;
 
     if (!accessToken) {
       return {
@@ -107,28 +106,6 @@ export class LineServerAuthenticator
       };
     }
 
-    let profileData: undefined | LineRawUserProfile;
-
-    if (groupId || roomId) {
-      try {
-        profileData = await this.bot.makeApiCall<LineRawUserProfile>(
-          'GET',
-          groupId
-            ? `v2/bot/group/${groupId}/member/${userId}`
-            : `v2/bot/room/${roomId}/member/${userId}`
-        );
-      } catch (err) {
-        if (err instanceof LineApiError) {
-          return {
-            ok: false,
-            code: err.code,
-            reason: err.message,
-          };
-        }
-        throw err;
-      }
-    }
-
     return {
       ok: true,
       data: {
@@ -136,17 +113,23 @@ export class LineServerAuthenticator
         provider: this.bot.providerId,
         client: verifyBody.client_id,
         user: userId,
-        group: groupId,
-        room: roomId,
+        ref:
+          refererType === 'utou'
+            ? LiffReferer.Utou
+            : refererType === 'group'
+            ? LiffReferer.Group
+            : refererType === 'room'
+            ? LiffReferer.Room
+            : refererType === 'external'
+            ? LiffReferer.External
+            : LiffReferer.None,
         os:
           os === 'ios'
-            ? LiffContextOs.Ios
+            ? LiffOs.Ios
             : os === 'android'
-            ? LiffContextOs.Android
-            : LiffContextOs.Web,
+            ? LiffOs.Android
+            : LiffOs.Web,
         lang: language,
-        name: profileData?.displayName,
-        pic: profileData?.pictureUrl,
       },
     };
   }

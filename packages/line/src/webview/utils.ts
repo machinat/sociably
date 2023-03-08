@@ -2,43 +2,33 @@
 import type { ContextDetails } from '@sociably/auth';
 import LineUser from '../User';
 import LineChat from '../Chat';
-import LineUserProfile from '../UserProfile';
-import { LiffContextOs } from '../constant';
+import { LiffOs, LiffReferer } from '../constant';
 import type { LineAuthContext, LineAuthData } from './types';
 
 export const getAuthContextDetails = ({
   user: userId,
-  group: groupId,
-  room: roomId,
   client: clientId,
   channel: channelId,
   provider: providerId,
   lang: language,
   os,
-  name: displayName,
-  pic: pictureUrl,
+  ref,
 }: LineAuthData): ContextDetails<LineAuthContext> => ({
   user: new LineUser(providerId, userId),
-  channel: groupId
-    ? new LineChat(channelId, 'group', groupId)
-    : roomId
-    ? new LineChat(channelId, 'room', roomId)
-    : new LineChat(channelId, 'user', userId),
+  channel:
+    ref === LiffReferer.Utou ? new LineChat(channelId, 'user', userId) : null,
   clientId,
-  channelId,
   providerId,
   language,
-  os:
-    os === LiffContextOs.Ios
-      ? 'ios'
-      : os === LiffContextOs.Android
-      ? 'android'
-      : 'web',
-  profile: displayName
-    ? new LineUserProfile({
-        userId,
-        displayName,
-        pictureUrl,
-      })
-    : null,
+  refererType:
+    ref === LiffReferer.Utou
+      ? 'utou'
+      : ref === LiffReferer.Group
+      ? 'group'
+      : ref === LiffReferer.Room
+      ? 'room'
+      : ref === LiffReferer.External
+      ? 'external'
+      : 'none',
+  os: os === LiffOs.Ios ? 'ios' : os === LiffOs.Android ? 'android' : 'web',
 });

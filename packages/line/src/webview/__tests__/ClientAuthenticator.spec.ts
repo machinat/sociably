@@ -1,11 +1,36 @@
 import url from 'url';
-import { JSDOM } from 'jsdom';
+import _liff from '@line/liff';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import ClientAuthenticator from '../ClientAuthenticator';
 import LineChat from '../../Chat';
 import LineUser from '../../User';
-import { LiffContextOs } from '../../constant';
+import { LiffOs, LiffReferer } from '../../constant';
 import LineUserProfile from '../../UserProfile';
+
+jest.mock('@line/liff', () => {
+  const actualMoxy = jest.requireActual('@moxyjs/moxy').default;
+  return actualMoxy({
+    init: () => Promise.resolve(),
+    getOS: () => 'ios',
+    getLanguage: () => 'en-US',
+    getVersion: () => 'v2.1',
+    isInClient: () => true,
+    isLoggedIn: () => true,
+    login: () => {},
+    getAccessToken: () => '_ACCESS_TOKEN_',
+    getContext: () => ({}),
+    getProfile: () =>
+      Promise.resolve({
+        userId: '_USER_ID_',
+        displayName: 'John',
+        pictureUrl: 'https://example.com/abcdefghijklmn',
+        statusMessage: 'Hello, LINE!',
+      }),
+    closeWindow: () => {},
+  });
+});
+
+const liff = _liff as Moxy<typeof _liff>;
 
 const liffContext = {
   type: 'utou',
@@ -21,31 +46,8 @@ const liffContext = {
   },
 };
 
-const liff = moxy({
-  init: () => Promise.resolve(),
-  getOS: () => 'ios',
-  getLanguage: () => 'en-US',
-  getVersion: () => 'v2.1',
-  isInClient: () => true,
-  isLoggedIn: () => true,
-  login: () => {},
-  getAccessToken: () => '_ACCESS_TOKEN_',
-  getContext: () => liffContext,
-  getProfile: () =>
-    Promise.resolve({
-      userId: '_USER_ID_',
-      displayName: 'John',
-      pictureUrl: 'https://example.com/abcdefghijklmn',
-      statusMessage: 'Hello, LINE!',
-    }),
-  closeWindow: () => {},
-});
-
-const { document } = new JSDOM('').window;
 const window = moxy(
   {
-    document,
-    liff,
     location: url.parse(
       'https://sociably.io/foo?bar=baz'
     ) as unknown as Moxy<Location>,
@@ -55,33 +57,19 @@ const window = moxy(
 
 beforeAll(() => {
   (global as any).window = window;
-  (global as any).document = document;
 });
 
 beforeEach(() => {
   liff.mock.reset();
   window.mock.reset();
-  window.document.body.innerHTML = `
-    <html>
-      <head>
-        <script src="..."/>
-      </head>
-      <body>
-        <dev id="app"/>
-      </body>
-    </html>
-  `;
 });
 
 describe('.constructor()', () => {
   test('properties', () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     expect(authenticator.platform).toBe('line');
     expect(authenticator.liffId).toBe('_LIFF_ID_');
-    expect(authenticator.shouldLoadSDK).toBe(true);
     expect(authenticator.marshalTypes.map((t) => t.name))
       .toMatchInlineSnapshot(`
       Array [
@@ -102,36 +90,11 @@ describe('.constructor()', () => {
 
 describe('.init()', () => {
   it('add liff sdk and call init() after loaded', async () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-    });
-
-    const promise = authenticator.init();
-
-    const liffScriptEle: any = window.document.getElementById('LIFF');
-    expect(liffScriptEle.tagName).toBe('SCRIPT');
-    expect(liffScriptEle.getAttribute('src')).toBe(
-      'https://static.line-scdn.net/liff/edge/2/sdk.js'
-    );
-    expect(liff.init).not.toHaveBeenCalled();
-
-    liffScriptEle.onload();
-
-    await expect(promise).resolves.toBe(undefined);
-    expect(liff.init).toHaveBeenCalledTimes(1);
-    expect(liff.login).not.toHaveBeenCalled();
-  });
-
-  it('skip adding sdk if options.shouldLoadSDK set to false', async () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     await expect(authenticator.init()).resolves.toBe(undefined);
-
-    expect(document.getElementById('LIFF')).toBe(null);
     expect(liff.init).toHaveBeenCalledTimes(1);
+    expect(liff.login).not.toHaveBeenCalled();
   });
 
   it('wait for redirect while in LIFF primary redirecting', async () => {
@@ -141,10 +104,7 @@ describe('.init()', () => {
       .getter('search')
       .fakeReturnValue('?liff.state=__DATA_FROM_LIFF__');
 
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     const promise = authenticator.init();
     setImmediate(jest.runAllTimers);
@@ -152,8 +112,6 @@ describe('.init()', () => {
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
       `"redirect timeout"`
     );
-
-    expect(document.getElementById('LIFF')).toBe(null);
     expect(liff.init).toHaveBeenCalledTimes(1);
 
     jest.useRealTimers();
@@ -162,17 +120,17 @@ describe('.init()', () => {
 
 describe('.fetchCredential()', () => {
   it('resolve credential containing liff infos and access token', async () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    liff.getContext.mock.fakeReturnValue(liffContext);
 
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
     await authenticator.init();
+
     await expect(authenticator.fetchCredential()).resolves.toEqual({
       ok: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         os: 'ios',
+        refererType: 'utou',
         language: 'en-US',
         userId: '_USER_ID_',
       },
@@ -182,16 +140,11 @@ describe('.fetchCredential()', () => {
   });
 
   test('credential in group chat', async () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     liff.getContext.mock.fakeReturnValue({
       ...liffContext,
       type: 'group',
-      groupId: '_GROUP_ID_',
-      utouId: undefined,
     });
 
     await authenticator.init();
@@ -199,10 +152,10 @@ describe('.fetchCredential()', () => {
       ok: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
+        refererType: 'group',
         os: 'ios',
         language: 'en-US',
         userId: '_USER_ID_',
-        groupId: '_GROUP_ID_',
       },
     });
 
@@ -210,16 +163,11 @@ describe('.fetchCredential()', () => {
   });
 
   test('credential in room chat', async () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     liff.getContext.mock.fakeReturnValue({
       ...liffContext,
       type: 'room',
-      roomId: '_ROOM_ID_',
-      utouId: undefined,
     });
 
     await authenticator.init();
@@ -227,10 +175,10 @@ describe('.fetchCredential()', () => {
       ok: true,
       credential: {
         accessToken: '_ACCESS_TOKEN_',
+        refererType: 'room',
         os: 'ios',
         language: 'en-US',
         userId: '_USER_ID_',
-        roomId: '_ROOM_ID_',
       },
     });
 
@@ -239,13 +187,9 @@ describe('.fetchCredential()', () => {
 
   it('call liff.login() if liff.isLoggedIn() is false', async () => {
     jest.useFakeTimers();
-
     liff.isLoggedIn.mock.fakeReturnValue(false);
 
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     expect(liff.login).not.toHaveBeenCalled();
 
@@ -269,33 +213,26 @@ describe('.fetchCredential()', () => {
 
 describe('.checkAuthData(data)', () => {
   it('resolve utou chat', () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     expect(
       authenticator.checkAuthData({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
-        os: LiffContextOs.Web,
+        ref: LiffReferer.Utou,
+        os: LiffOs.Web,
         lang: 'en-US',
         user: '_USER_ID_',
-        group: undefined,
-        room: undefined,
-        name: undefined,
-        pic: undefined,
       })
     ).toEqual({
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'),
-        profile: null,
+        refererType: 'utou',
         os: 'web',
         language: 'en-US',
       },
@@ -303,33 +240,26 @@ describe('.checkAuthData(data)', () => {
   });
 
   it('resolve group chat', () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     expect(
       authenticator.checkAuthData({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
-        os: LiffContextOs.Ios,
+        ref: LiffReferer.Group,
+        os: LiffOs.Ios,
         lang: 'zh-TW',
-        group: '_GROUP_ID_',
         user: '_USER_ID_',
-        room: undefined,
-        name: undefined,
-        pic: undefined,
       })
     ).toEqual({
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        channel: new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'),
-        profile: null,
+        channel: null,
+        refererType: 'group',
         os: 'ios',
         language: 'zh-TW',
       },
@@ -337,83 +267,35 @@ describe('.checkAuthData(data)', () => {
   });
 
   it('resolve room chat', () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     expect(
       authenticator.checkAuthData({
         provider: '_PROVIDER_ID_',
         channel: '_BOT_CHANNEL_ID_',
         client: '_CLIENT_ID_',
-        os: LiffContextOs.Android,
+        ref: LiffReferer.Room,
+        os: LiffOs.Android,
         lang: 'jp',
-        room: '_ROOM_ID_',
         user: '_USER_ID_',
-        group: undefined,
-        name: undefined,
-        pic: undefined,
       })
     ).toEqual({
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
         clientId: '_CLIENT_ID_',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        channel: new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_'),
-        profile: null,
+        channel: null,
+        refererType: 'room',
         os: 'android',
         language: 'jp',
-      },
-    });
-  });
-
-  it('resolve profile if profile data proivded', () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-      shouldLoadSDK: false,
-    });
-
-    expect(
-      authenticator.checkAuthData({
-        provider: '_PROVIDER_ID_',
-        channel: '_BOT_CHANNEL_ID_',
-        client: '_CLIENT_ID_',
-        os: LiffContextOs.Ios,
-        lang: 'zh-TW',
-        user: '_USER_ID_',
-        group: '_GROUP_ID_',
-        room: undefined,
-        name: 'Jojo Doe',
-        pic: 'http://advanture.com/Egypt.jpg',
-      })
-    ).toEqual({
-      ok: true,
-      contextDetails: {
-        providerId: '_PROVIDER_ID_',
-        channelId: '_BOT_CHANNEL_ID_',
-        clientId: '_CLIENT_ID_',
-        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        channel: new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'),
-        profile: new LineUserProfile({
-          userId: '_USER_ID_',
-          displayName: 'Jojo Doe',
-          pictureUrl: 'http://advanture.com/Egypt.jpg',
-        }),
-        os: 'ios',
-        language: 'zh-TW',
       },
     });
   });
 });
 
 test('.closeWebview', async () => {
-  const authenticator = new ClientAuthenticator({
-    liffId: '_LIFF_ID_',
-    shouldLoadSDK: false,
-  });
+  const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
   await authenticator.init();
 
   expect(authenticator.closeWebview()).toBe(true);

@@ -4,10 +4,9 @@ import moxy from '@moxyjs/moxy';
 import type { LineBot } from '../../Bot';
 import LineChat from '../../Chat';
 import LineUser from '../../User';
-import LineUserProfile from '../../UserProfile';
 import LineApiError from '../../error';
 import ServerAuthenticator from '../ServerAuthenticator';
-import { LiffContextOs } from '../../constant';
+import { LiffOs, LiffReferer } from '../../constant';
 
 const request = {
   url: '/my_app/auth/line',
@@ -88,11 +87,10 @@ test('.delegateAuthRequest() respond 403', async () => {
 describe('.verifyCredential(credential)', () => {
   const credential = {
     accessToken: '_ACCESS_TOKEN_',
+    refererType: 'utou' as const,
     os: 'ios' as const,
     language: 'zh-TW',
     userId: '_USER_ID_',
-    groupId: undefined,
-    roomId: undefined,
   };
 
   it('calls line social api to verify access token', async () => {
@@ -112,7 +110,8 @@ describe('.verifyCredential(credential)', () => {
         provider: '_PROVIDER_ID_',
         channel: '_CHANNEL_ID_',
         client: '1234567890',
-        os: LiffContextOs.Ios,
+        ref: LiffReferer.Utou,
+        os: LiffOs.Ios,
         lang: 'zh-TW',
         user: '_USER_ID_',
       },
@@ -121,99 +120,6 @@ describe('.verifyCredential(credential)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledWith(
       'GET',
       `oauth2/v2.1/verify?access_token=${credential.accessToken}`
-    );
-  });
-
-  test('verify user is group member if groupId given', async () => {
-    const authenticator = new ServerAuthenticator(bot, httpOperator, {
-      liffId,
-    });
-
-    bot.makeApiCall.mock.fakeOnce(async () => ({
-      scope: 'profile',
-      client_id: '1234567890',
-      expires_in: 2591659,
-    }));
-
-    bot.makeApiCall.mock.fakeOnce(async () => ({
-      userId: '_USER_ID_',
-      displayName: 'Jojo Deo',
-      pictureUrl: 'http://adventure.com/iran.jpg',
-    }));
-
-    await expect(
-      authenticator.verifyCredential({ ...credential, groupId: '_GROUP_ID_' })
-    ).resolves.toEqual({
-      ok: true,
-      data: {
-        provider: '_PROVIDER_ID_',
-        channel: '_CHANNEL_ID_',
-        client: '1234567890',
-        os: LiffContextOs.Ios,
-        lang: 'zh-TW',
-        user: '_USER_ID_',
-        group: '_GROUP_ID_',
-        name: 'Jojo Deo',
-        pic: 'http://adventure.com/iran.jpg',
-      },
-    });
-
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(
-      1,
-      'GET',
-      `oauth2/v2.1/verify?access_token=${credential.accessToken}`
-    );
-
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(
-      2,
-      'GET',
-      'v2/bot/group/_GROUP_ID_/member/_USER_ID_'
-    );
-  });
-
-  test('verify user is room member if roomId given', async () => {
-    const authenticator = new ServerAuthenticator(bot, httpOperator, {
-      liffId,
-    });
-
-    bot.makeApiCall.mock.fakeOnce(async () => ({
-      scope: 'profile',
-      client_id: '1234567890',
-      expires_in: 2591659,
-    }));
-
-    bot.makeApiCall.mock.fakeOnce(async () => ({
-      userId: '_USER_ID_',
-      displayName: 'Jojo Deo',
-      pictureUrl: 'http://adventure.com/india.jpg',
-    }));
-
-    await expect(
-      authenticator.verifyCredential({ ...credential, roomId: '_ROOM_ID_' })
-    ).resolves.toEqual({
-      ok: true,
-      data: {
-        provider: '_PROVIDER_ID_',
-        channel: '_CHANNEL_ID_',
-        client: '1234567890',
-        os: LiffContextOs.Ios,
-        lang: 'zh-TW',
-        user: '_USER_ID_',
-        room: '_ROOM_ID_',
-        name: 'Jojo Deo',
-        pic: 'http://adventure.com/india.jpg',
-      },
-    });
-
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(
-      1,
-      'GET',
-      `oauth2/v2.1/verify?access_token=${credential.accessToken}`
-    );
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(
-      2,
-      'GET',
-      'v2/bot/room/_ROOM_ID_/member/_USER_ID_'
     );
   });
 
@@ -298,13 +204,10 @@ describe('.verifyRefreshment()', () => {
     provider: '_PROVIDER_ID_',
     channel: '_CHANNEL_ID_',
     client: '1234567890',
-    os: LiffContextOs.Ios,
+    ref: LiffReferer.Utou,
+    os: LiffOs.Ios,
     lang: 'zh-TW',
     user: '_USER_ID_',
-    group: undefined,
-    room: undefined,
-    name: undefined,
-    pic: undefined,
   };
 
   it('return ok and original data', async () => {
@@ -381,13 +284,10 @@ describe('.checkAuthData(data)', () => {
     provider: '_PROVIDER_ID_',
     channel: '_CHANNEL_ID_',
     client: '1234567890',
-    os: LiffContextOs.Web,
+    ref: LiffReferer.Utou,
+    os: LiffOs.Web,
     lang: 'en-US',
     user: '_USER_ID_',
-    group: undefined,
-    room: undefined,
-    name: undefined,
-    pic: undefined,
   };
 
   it('resolve private chat', () => {
@@ -399,11 +299,10 @@ describe('.checkAuthData(data)', () => {
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
         clientId: '1234567890',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         channel: new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'),
-        profile: null,
+        refererType: 'utou',
         os: 'web',
         language: 'en-US',
       },
@@ -418,19 +317,18 @@ describe('.checkAuthData(data)', () => {
     expect(
       authenticator.checkAuthData({
         ...authData,
-        os: LiffContextOs.Ios,
+        ref: LiffReferer.Group,
+        os: LiffOs.Ios,
         lang: 'zh-TW',
-        group: '_GROUP_ID_',
       })
     ).toEqual({
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
         clientId: '1234567890',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
-        profile: null,
+        channel: null,
+        refererType: 'group',
         os: 'ios',
         language: 'zh-TW',
       },
@@ -445,54 +343,20 @@ describe('.checkAuthData(data)', () => {
     expect(
       authenticator.checkAuthData({
         ...authData,
-        os: LiffContextOs.Android,
+        ref: LiffReferer.Room,
+        os: LiffOs.Android,
         lang: 'jp',
-        room: '_ROOM_ID_',
       })
     ).toEqual({
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
         clientId: '1234567890',
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        channel: new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'),
-        profile: null,
+        channel: null,
+        refererType: 'room',
         os: 'android',
         language: 'jp',
-      },
-    });
-  });
-
-  it('resolve profile if profile data proivded', () => {
-    const authenticator = new ServerAuthenticator(bot, httpOperator, {
-      liffId,
-    });
-
-    expect(
-      authenticator.checkAuthData({
-        ...authData,
-        os: LiffContextOs.Ios,
-        user: '_USER_ID_',
-        group: '_GROUP_ID_',
-        name: 'Jojo Doe',
-        pic: 'http://advanture.com/Egypt.jpg',
-      })
-    ).toEqual({
-      ok: true,
-      contextDetails: {
-        providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
-        clientId: '1234567890',
-        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        channel: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
-        profile: new LineUserProfile({
-          userId: '_USER_ID_',
-          displayName: 'Jojo Doe',
-          pictureUrl: 'http://advanture.com/Egypt.jpg',
-        }),
-        os: 'ios',
-        language: 'en-US',
       },
     });
   });

@@ -1,55 +1,41 @@
-import type { AuthContextBase } from '@sociably/auth';
-import type LineUserProfile from '../UserProfile';
+import type {
+  AuthContextBase,
+  AuthenticatorCredentialResult,
+} from '@sociably/auth';
 import type LineUser from '../User';
 import type LineChat from '../Chat';
-import { LiffContextOs } from '../constant';
+import { LiffOs, LiffReferer } from '../constant';
 
-export type LiffContext = {
-  type: 'utou' | 'group' | 'room' | 'external' | 'none';
-  viewType: 'compact' | 'tall' | 'full';
-  userId: string;
-  utouId?: string;
-  groupId?: string;
-  roomId?: string;
-  availability: {
-    shareTargetPicker: {
-      permission: boolean;
-      minVer: string;
-    };
-  };
-};
+export type ClientOs = 'ios' | 'android' | 'web';
+
+export type ClientReferer = 'utou' | 'group' | 'room' | 'external' | 'none';
 
 export type LineAuthCredential = {
   accessToken: string;
-  os: 'ios' | 'android' | 'web';
+  refererType: ClientReferer;
+  os: ClientOs;
   language: string;
   userId: string;
-  groupId: undefined | string;
-  roomId: undefined | string;
 };
 
 export type LineAuthData = {
   provider: string;
   channel: string;
   client: string;
-  os: LiffContextOs;
+  ref: LiffReferer;
+  os: LiffOs;
   lang: string;
   user: string;
-  group: undefined | string;
-  room: undefined | string;
-  name: undefined | string;
-  pic: undefined | string;
 };
 
 export type LineAuthContext = {
   platform: 'line';
   providerId: string;
-  channelId: string;
   clientId: string;
-  channel: LineChat;
+  channel: null | LineChat;
   user: LineUser;
-  profile: null | LineUserProfile;
-  os: 'ios' | 'android' | 'web';
+  os: ClientOs;
+  refererType: ClientReferer;
   language: string;
 } & AuthContextBase;
 
@@ -57,7 +43,5 @@ export type LineVerifyAuthResult =
   | { ok: true; data: LineAuthData }
   | { ok: false; code: number; reason: string };
 
-export type AuthenticatorCredentialResult = {
-  ok: true;
-  credential: LineAuthCredential;
-};
+export type LineCredentialResult =
+  AuthenticatorCredentialResult<LineAuthCredential>;

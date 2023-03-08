@@ -50,7 +50,7 @@ export type AuthContext<
 > = {
   platform: string;
   user: User;
-  channel: Channel;
+  channel: null | Channel;
 } & AuthContextBase;
 
 export type AnyAuthContext = AuthContext<SociablyUser, SociablyChannel>;
