@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import invariant from 'invariant';
+import { SociablyNode } from '@sociably/core';
 import { makeClassProvider } from '@sociably/core/service';
 import type { PopEventWrapper } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
@@ -8,7 +9,11 @@ import eventFactory from './event/factory';
 import BotP from './Bot';
 import { LINE } from './constant';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
-import type { LineWebhookRequestBody, LineEventContext } from './types';
+import type {
+  LineWebhookRequestBody,
+  LineEventContext,
+  LineEvent,
+} from './types';
 
 type LineReceiverOptions = {
   providerId: string;
@@ -17,6 +22,18 @@ type LineReceiverOptions = {
   channelSecret?: string;
   bot: BotP;
   popEventWrapper: PopEventWrapper<LineEventContext, null>;
+};
+
+const replyClosure = (bot: BotP, event: LineEvent) => {
+  let isReplyTokenUsed = false;
+  return (message: SociablyNode) => {
+    const shouldUseReplyToken = 'replyToken' in event && !isReplyTokenUsed;
+    isReplyTokenUsed = true;
+
+    return bot.render(event.channel, message, {
+      replyToken: shouldUseReplyToken ? event.replyToken : undefined,
+    });
+  };
 };
 
 const handleWebhook = ({
@@ -75,10 +92,7 @@ const handleWebhook = ({
           bot,
           event,
           metadata,
-          reply: (message) =>
-            bot.render(event.channel, message, {
-              replyToken: 'replyToken' in event ? event.replyToken : undefined,
-            }),
+          reply: replyClosure(bot, event),
         })
       );
     }

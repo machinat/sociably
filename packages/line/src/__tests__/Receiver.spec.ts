@@ -262,7 +262,7 @@ it('respond 200 and pop events received', async () => {
   expect(event2.payload).toEqual(body.events[1]);
 });
 
-test('reply(message) sugar', async () => {
+test('reply(message)', async () => {
   const receiver = new LineReceiver({
     bot,
     popEventWrapper,
@@ -279,20 +279,22 @@ test('reply(message) sugar', async () => {
     createRes()
   );
 
-  expect(popEventMock).toHaveBeenCalledTimes(1);
   const { reply, event } = popEventMock.calls[0].args[0];
-  await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
-          Object {
-            "jobs": Array [],
-            "results": Array [],
-            "tasks": Array [],
-          }
-        `);
+
+  await expect(reply('hello world')).resolves.toEqual({
+    jobs: [],
+    results: [],
+    tasks: [],
+  });
 
   expect(bot.render).toHaveBeenCalledTimes(1);
   expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world', {
     replyToken: event.replyToken,
   });
+
+  await reply('hello world');
+  expect(bot.render).toHaveBeenCalledTimes(2);
+  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world', {});
 });
 
 it('validate request', async () => {
