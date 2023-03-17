@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import type { SociablyNode, SociablyChannel } from '@sociably/core';
+import type { SociablyNode, SociablyThread } from '@sociably/core';
 import { maybeInjectContainer, ServiceScope } from '@sociably/core/service';
 import type {
   ScriptLibrary,
@@ -52,7 +52,7 @@ type PendingYields<Yield, Meta> = {
 };
 
 type ExecuteContext<Vars, Return, Yield, Meta> = {
-  channel: SociablyChannel;
+  thread: SociablyThread;
   scope: ServiceScope;
   finished: boolean;
   returnedValue: undefined | Return;
@@ -69,11 +69,11 @@ const executeContentCommand = async <Vars, Return, Yield, Meta>(
   { getContent }: ContentCommand<Vars, Meta>,
   context: ExecuteContext<Vars, Return, Yield, Meta>
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
-  const { cursor, contents, vars, meta, channel, scope } = context;
+  const { cursor, contents, vars, meta, thread, scope } = context;
   const newContent = await maybeInjectContainer(
     scope,
     getContent
-  )({ platform: channel.platform, channel, vars, meta });
+  )({ platform: thread.platform, thread, vars, meta });
 
   return {
     ...context,
@@ -93,11 +93,11 @@ const executeJumpCondCommand = async <Vars, Return, Yield, Meta>(
   { condition, isNot, offset }: JumpCondCommand<Vars, Meta>,
   context: ExecuteContext<Vars, Return, Yield, Meta>
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
-  const { cursor, scope, vars, meta, channel } = context;
+  const { cursor, scope, vars, meta, thread } = context;
   const isMatched = await maybeInjectContainer(
     scope,
     condition
-  )({ platform: channel.platform, channel, vars, meta });
+  )({ platform: thread.platform, thread, vars, meta });
 
   return {
     ...context,
@@ -125,20 +125,20 @@ const executeCallCommand = async <Vars, Return, Yield, Meta>(
   }: CallCommand<Vars, unknown, unknown, Yield, Meta>,
   context: ExecuteContext<Vars, Return, Yield, Meta>
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
-  const { vars, meta, contents, scope, channel, cursor } = context;
+  const { vars, meta, contents, scope, thread, cursor } = context;
   const index = goto ? getCursorIndexAssertedly(script, goto) : 0;
 
   const params = withParams
     ? await maybeInjectContainer(
         scope,
         withParams
-      )({ platform: channel.platform, channel, vars, meta })
+      )({ platform: thread.platform, thread, vars, meta })
     : {};
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   const subCtx = await executeScript<unknown, unknown, Yield, Meta>(
     scope,
-    channel,
+    thread,
     script,
     index,
     script.initVars(params)
@@ -159,7 +159,7 @@ const executeCallCommand = async <Vars, Return, Yield, Meta>(
   let updatedVars = vars;
   if (setVars) {
     updatedVars = await maybeInjectContainer(scope, setVars)(
-      { platform: channel.platform, channel, vars, meta },
+      { platform: thread.platform, thread, vars, meta },
       subCtx.returnedValue
     );
   }
@@ -177,14 +177,14 @@ const executeEffectCommand = async <Vars, Return, Yield, Meta>(
   { setVars, yieldValue }: EffectCommand<Vars, Yield, Meta>,
   context: ExecuteContext<Vars, Return, Yield, Meta>
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
-  const { cursor, scope, channel, vars, meta, yields } = context;
+  const { cursor, scope, thread, vars, meta, yields } = context;
 
   let newVars = vars;
   if (setVars) {
     newVars = await maybeInjectContainer(
       scope,
       setVars
-    )({ platform: channel.platform, channel, vars, meta });
+    )({ platform: thread.platform, thread, vars, meta });
   }
 
   let newYielding = yields;
@@ -207,7 +207,7 @@ const executeReturnCommand = async <Vars, Return, Yield, Meta>(
   { getValue }: ReturnCommand<Vars, Return, Meta>,
   context: ExecuteContext<Vars, Return, Yield, Meta>
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
-  const { scope, channel, vars, meta } = context;
+  const { scope, thread, vars, meta } = context;
   let returnedValue: undefined | Return;
 
   if (getValue) {
@@ -216,10 +216,10 @@ const executeReturnCommand = async <Vars, Return, Yield, Meta>(
       scope,
       getValue
     )({
-      platform: channel.platform,
+      platform: thread.platform,
       vars,
       meta,
-      channel,
+      thread,
     });
   }
 
@@ -258,7 +258,7 @@ const executeCommand = async <Vars, Return, Yield, Meta>(
 
 const executeScript = async <Vars, Return, Yield, Meta>(
   scope: ServiceScope,
-  channel: SociablyChannel,
+  thread: SociablyThread,
   script: ScriptLibrary<Vars, unknown, unknown, Return, Yield, Meta>,
   begin: number,
   beginVars: Vars
@@ -276,7 +276,7 @@ const executeScript = async <Vars, Return, Yield, Meta>(
     meta: script.meta,
     callStack: [],
     scope,
-    channel,
+    thread,
   };
 
   while (context.cursor < commands.length) {
@@ -308,7 +308,7 @@ const executeScript = async <Vars, Return, Yield, Meta>(
 };
 
 const resolveYieldValue = async <Vars, Yield, Meta>(
-  channel: SociablyChannel,
+  thread: SociablyThread,
   scope: ServiceScope,
   yields: PendingYields<Yield, Meta>[]
 ): Promise<undefined | Yield> => {
@@ -319,7 +319,7 @@ const resolveYieldValue = async <Vars, Yield, Meta>(
 
     // eslint-disable-next-line no-await-in-loop
     yieldValue = await maybeInjectContainer(scope, yielder)(
-      { platform: channel.platform, channel, vars, meta },
+      { platform: thread.platform, thread, vars, meta },
       yieldValue
     );
   }
@@ -329,7 +329,7 @@ const resolveYieldValue = async <Vars, Yield, Meta>(
 
 const execute = async <Input, Return, Yield, Meta>(
   scope: ServiceScope,
-  channel: SociablyChannel,
+  thread: SociablyThread,
   beginningStack: CallStatus<unknown>[],
   isPrompting: boolean,
   input?: Input
@@ -370,8 +370,8 @@ const execute = async <Input, Return, Yield, Meta>(
 
         const { setVars } = awaitingPrompt;
         const circs = {
-          platform: channel.platform,
-          channel,
+          platform: thread.platform,
+          thread,
           vars: beginningVars,
           meta: currentScript.meta,
         };
@@ -400,10 +400,10 @@ const execute = async <Input, Return, Yield, Meta>(
         // eslint-disable-next-line no-await-in-loop
         vars = await maybeInjectContainer(scope, setVars)(
           {
-            platform: channel.platform,
+            platform: thread.platform,
             vars,
             meta: currentScript.meta,
-            channel,
+            thread,
           },
           returnValueSlot as Return
         );
@@ -415,7 +415,7 @@ const execute = async <Input, Return, Yield, Meta>(
     // eslint-disable-next-line no-await-in-loop
     const context = await executeScript(
       scope,
-      channel,
+      thread,
       currentScript,
       index,
       vars
@@ -426,7 +426,7 @@ const execute = async <Input, Return, Yield, Meta>(
     // a PROMPT is met, break the runtime
     if (!context.finished) {
       // eslint-disable-next-line no-await-in-loop
-      const yieldedValue = await resolveYieldValue(channel, scope, yields);
+      const yieldedValue = await resolveYieldValue(thread, scope, yields);
       return {
         finished: false,
         yieldedValue,
@@ -439,7 +439,7 @@ const execute = async <Input, Return, Yield, Meta>(
     returnValueSlot = context.returnedValue;
   }
 
-  const yieldedValue = await resolveYieldValue(channel, scope, yields);
+  const yieldedValue = await resolveYieldValue(thread, scope, yields);
   return {
     finished: true,
     returnedValue: returnValueSlot as Return,

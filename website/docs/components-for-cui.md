@@ -19,7 +19,7 @@ function Hello() {
 }
 
 bot.render(
-  channel,
+  thread,
   <>
     <Hello />
     <p>I'm a bot.</p>
@@ -31,7 +31,7 @@ The code above works the same as:
 
 ```js
 bot.render(
-  channel,
+  thread,
   <>
     <p>Hello World!</p>
     <p>I'm a bot.</p>
@@ -54,7 +54,7 @@ function Hello(props) {
 }
 
 bot.render(
-  channel,
+  thread,
   <>
     <Hello name="John Doe" />
     <p>I'm a bot.</p>
@@ -82,7 +82,7 @@ function Hello(props) {
 }
 
 bot.render(
-  channel,
+  thread,
   <Hello name="John Doe">
     <p>I'm a bot.</p>
   </Hello>
@@ -119,7 +119,7 @@ function Welcome({ name }) {
   );
 }
 
-bot.render(channel, <Welcome name="Jojo" />);
+bot.render(thread, <Welcome name="Jojo" />);
 ```
 
 We can use components to modularize chat UI at many levels,

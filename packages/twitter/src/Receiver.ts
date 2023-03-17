@@ -102,7 +102,7 @@ const handleWebhook = ({
           event,
           metadata,
           reply: async (message: SociablyNode) =>
-            bot.render(event.channel, message),
+            bot.render(event.thread, message),
         })
       );
     }

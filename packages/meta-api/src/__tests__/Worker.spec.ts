@@ -556,7 +556,7 @@ describe('using API result in following request', () => {
 
   const continuousJobs = [
     {
-      key: 'foo_channel',
+      key: 'foo_thread',
       request: {
         method: 'POST',
         relative_url: '1234567890/media',
@@ -568,7 +568,7 @@ describe('using API result in following request', () => {
       registerResult: 'image_1',
     },
     {
-      key: 'foo_channel',
+      key: 'foo_thread',
       request: {
         method: 'POST',
         relative_url: '1234567890/media',
@@ -580,7 +580,7 @@ describe('using API result in following request', () => {
       registerResult: 'image_2',
     },
     {
-      key: 'foo_channel',
+      key: 'foo_thread',
       request: {
         method: 'POST',
         relative_url: '1234567890/messages',
@@ -637,23 +637,23 @@ describe('using API result in following request', () => {
         Object {
           "body": "type=image/jpeg&file=@/pretend/to/upload/a/file.jpg",
           "method": "POST",
-          "name": "foo_channel-1",
+          "name": "foo_thread-1",
           "omit_response_on_success": false,
           "relative_url": "1234567890/media",
         },
         Object {
           "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
-          "depends_on": "foo_channel-1",
+          "depends_on": "foo_thread-1",
           "method": "POST",
-          "name": "foo_channel-2",
+          "name": "foo_thread-2",
           "omit_response_on_success": false,
           "relative_url": "1234567890/media",
         },
         Object {
-          "body": "to=9876543210&type=image&images=[{\\"id\\":\\"{result=foo_channel-1:$.id}\\"},{\\"id\\":\\"{result=foo_channel-2:$.id}\\"}]",
-          "depends_on": "foo_channel-2",
+          "body": "to=9876543210&type=image&images=[{\\"id\\":\\"{result=foo_thread-1:$.id}\\"},{\\"id\\":\\"{result=foo_thread-2:$.id}\\"}]",
+          "depends_on": "foo_thread-2",
           "method": "POST",
-          "name": "foo_channel-3",
+          "name": "foo_thread-3",
           "omit_response_on_success": false,
           "relative_url": "1234567890/messages",
         },
@@ -759,7 +759,7 @@ describe('using API result in following request', () => {
       Object {
         "body": "type=image/jpeg&file=@/pretend/to/upload/a/file.jpg",
         "method": "POST",
-        "name": "foo_channel-1",
+        "name": "foo_thread-1",
         "omit_response_on_success": false,
         "relative_url": "1234567890/media",
       }
@@ -769,7 +769,7 @@ describe('using API result in following request', () => {
       Object {
         "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
         "method": "POST",
-        "name": "foo_channel-1",
+        "name": "foo_thread-1",
         "omit_response_on_success": false,
         "relative_url": "1234567890/media",
       }
@@ -777,10 +777,10 @@ describe('using API result in following request', () => {
     expect(decodeBatchedRequest(JSON.parse(body2.batch)[1]))
       .toMatchInlineSnapshot(`
       Object {
-        "body": "to=9876543210&type=image&images=[{\\"id\\":\\"1111111111\\"},{\\"id\\":\\"{result=foo_channel-1:$.id}\\"}]",
-        "depends_on": "foo_channel-1",
+        "body": "to=9876543210&type=image&images=[{\\"id\\":\\"1111111111\\"},{\\"id\\":\\"{result=foo_thread-1:$.id}\\"}]",
+        "depends_on": "foo_thread-1",
         "method": "POST",
-        "name": "foo_channel-2",
+        "name": "foo_thread-2",
         "omit_response_on_success": false,
         "relative_url": "1234567890/messages",
       }

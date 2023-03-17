@@ -1,6 +1,6 @@
 import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
-import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import type { SociablyUser, SociablyThread } from '@sociably/core';
 import { makeClassProvider } from '@sociably/core/service';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import type {
@@ -118,13 +118,13 @@ export class RedisStateController implements BaseStateController {
     };
   }
 
-  channelState(channel: string | SociablyChannel): RedisStateAccessor {
-    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+  threadState(thread: string | SociablyThread): RedisStateAccessor {
+    const threadUid = typeof thread === 'string' ? thread : thread.uid;
 
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `C:${channelUid}`
+      `T:${threadUid}`
     );
   }
 

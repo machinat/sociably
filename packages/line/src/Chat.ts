@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant';
 import type LineUser from './User';
@@ -12,7 +12,7 @@ type LineChatValue = {
   id: string;
 };
 
-class LineChat implements SociablyChannel, MarshallableInstance<LineChatValue> {
+class LineChat implements SociablyThread, MarshallableInstance<LineChatValue> {
   static typeName = 'LineChat';
 
   static fromUser(channelId: string, user: LineUser): LineChat {

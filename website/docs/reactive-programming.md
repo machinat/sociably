@@ -125,7 +125,7 @@ const eventWithIntent$ = event$.pipe(
         let intent = null;
 
         if (event.type === 'text') {
-          intent = await recognizer.detectText(event.channel, event.text);
+          intent = await recognizer.detectText(event.thread, event.text);
         }
         
         return { ...context, intent };
@@ -153,7 +153,7 @@ event$.pipe(
       (stateController) =>
       async ({ event, reply }) => {
         const count = stateController
-          .channelState(event.channel)
+          .threadState(event.thread)
           .update((curCount = 0) => curCount + 1);
 
         await reply(<p>Hello #{count}!</p>);

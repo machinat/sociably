@@ -27,17 +27,17 @@ import type {
 } from './mixin';
 import type FacebookChat from '../Chat';
 import type FacebookUser from '../User';
-import type { FacebookChannel, FacebookRawEvent } from '../types';
+import type { FacebookThread, FacebookRawEvent } from '../types';
 
 interface EventObject<
   Category extends string,
   Type extends string,
-  Channel extends null | FacebookChannel = FacebookChat,
+  Thread extends null | FacebookThread = FacebookChat,
   User extends null | FacebookUser = FacebookUser
 > {
   category: Category;
   type: Type;
-  channel: Channel;
+  thread: Thread;
   user: User;
   payload: FacebookRawEvent;
 }
@@ -263,7 +263,9 @@ export interface QuickReplyEvent
  * PostbackEvent occur when a [postback button](https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button),
  * [Get Started button](https://developers.facebook.com/docs/messenger-platform/messenger-profile/get-started-button),
  * or [persistent menu item](https://developers.facebook.com/docs/messenger-platform/messenger-profile/persistent-menu)
- * is tapped.
+ * is tapped. Note that if the event is standby it will not include the postback data.
+ * Only the app that originally sent the postback button will receive the normal webhook
+ * event that includes the postback data.
  * @category Event
  * @subscription `messaging_postbacks`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_postbacks).

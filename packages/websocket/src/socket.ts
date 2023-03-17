@@ -425,7 +425,7 @@ class Socket extends EventEmitter {
     ) {
       this._emitEvent(body, seq);
     } else {
-      await this.reject({ seq, reason: 'channel not connected' });
+      await this.reject({ seq, reason: 'connection is not connected' });
     }
   }
 
@@ -479,7 +479,7 @@ class Socket extends EventEmitter {
       // reject if not even start connecting
       await this.reject({
         seq,
-        reason: 'channel not connected or connecting',
+        reason: 'connection is not connected',
       });
     } else if (state & FLAG_DISCONNECT_SENT || state & MASK_CONNECTING) {
       // DISCONNECT confirmed, remove state

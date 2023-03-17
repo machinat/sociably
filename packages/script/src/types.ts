@@ -2,7 +2,7 @@ import Sociably, {
   SociablyNode,
   SociablyEmpty,
   SociablyElement,
-  SociablyChannel,
+  SociablyThread,
   ContainerComponent,
 } from '@sociably/core';
 
@@ -40,7 +40,7 @@ export type AnyScriptLibrary = ScriptLibrary<any, any, any, any, any, any>;
 
 export type ScriptCircs<Vars, Meta> = {
   platform: string;
-  channel: SociablyChannel;
+  thread: SociablyThread;
   vars: Vars;
   meta: Meta;
 };

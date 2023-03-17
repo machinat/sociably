@@ -235,7 +235,7 @@ it('respond 200 and pop events received', async () => {
     const { metadata, event } = ctx;
 
     expect(event.platform).toBe('line');
-    expect(event.channel).toEqual(
+    expect(event.thread).toEqual(
       new LineChat('_BOT_CHANNEL_ID_', 'user', 'U4af4980629')
     );
     expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'U4af4980629'));
@@ -288,13 +288,13 @@ test('reply(message)', async () => {
   });
 
   expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world', {
+  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world', {
     replyToken: event.replyToken,
   });
 
   await reply('hello world');
   expect(bot.render).toHaveBeenCalledTimes(2);
-  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world', {});
+  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world', {});
 });
 
 it('validate request', async () => {
@@ -326,9 +326,7 @@ it('validate request', async () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
   const { event } = popEventMock.calls[0].args[0];
 
-  expect(event.channel).toEqual(
-    new LineChat('_BOT_CHANNEL_ID_', 'user', 'xxx')
-  );
+  expect(event.thread).toEqual(new LineChat('_BOT_CHANNEL_ID_', 'user', 'xxx'));
   expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'xxx'));
 
   expect(event.category).toBe('message');

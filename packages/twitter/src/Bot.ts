@@ -27,7 +27,7 @@ import { ConfigsI, PlatformUtilitiesI } from './interface';
 import { TWITTER } from './constant';
 import TwitterApiError from './Error';
 import type {
-  TwitterChannel,
+  TwitterThread,
   TwitterSegmentValue,
   TwitterJob,
   TwitterApiResult,
@@ -57,12 +57,12 @@ type TwitterBotOptions = {
  * @category Provider
  */
 export class TwitterBot
-  implements SociablyBot<TwitterChannel, TwitterJob, TwitterApiResult>
+  implements SociablyBot<TwitterThread, TwitterJob, TwitterApiResult>
 {
   client: TwitterWorker;
   agentId: string;
   engine: Engine<
-    TwitterChannel,
+    TwitterThread,
     TwitterSegmentValue,
     TwitterComponent<unknown>,
     TwitterJob,
@@ -121,15 +121,15 @@ export class TwitterBot
   }
 
   render(
-    channel: null | TweetTarget | DirectMessageChat,
+    thread: null | TweetTarget | DirectMessageChat,
     message: SociablyNode
   ): Promise<null | TwitterDispatchResponse> {
-    if (channel instanceof DirectMessageChat) {
-      return this.engine.render(channel, message, createDirectMessageJobs);
+    if (thread instanceof DirectMessageChat) {
+      return this.engine.render(thread, message, createDirectMessageJobs);
     }
 
     return this.engine.render(
-      channel || new TweetTarget(this.agentId),
+      thread || new TweetTarget(this.agentId),
       message,
       createTweetJobs({ key: getTimeId() })
     );
@@ -139,7 +139,7 @@ export class TwitterBot
     target: null | string | Tweet | TweetTarget,
     message: SociablyNode
   ): Promise<null | TwitterDispatchResponse> {
-    const channel =
+    const thread =
       typeof target === 'string'
         ? new TweetTarget(this.agentId, target)
         : target instanceof Tweet
@@ -148,21 +148,21 @@ export class TwitterBot
         ? new TweetTarget(this.agentId)
         : target;
 
-    return this.render(channel, message);
+    return this.render(thread, message);
   }
 
   async renderDirectMeaasge(
     target: string | TwitterUser | DirectMessageChat,
     message: SociablyNode
   ): Promise<null | TwitterDispatchResponse> {
-    const channel =
+    const thread =
       typeof target === 'string'
         ? new DirectMessageChat(this.agentId, target)
         : target instanceof TwitterUser
         ? new DirectMessageChat(this.agentId, target.id)
         : target;
 
-    return this.render(channel, message);
+    return this.render(thread, message);
   }
 
   async makeApiCall<Result>(

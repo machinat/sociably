@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import type {
   ConnectionTarget,
@@ -14,7 +14,7 @@ type ConnectionValue = {
 
 export class WebviewConnection
   implements
-    SociablyChannel,
+    SociablyThread,
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
@@ -58,20 +58,17 @@ export class WebviewConnection
   }
 }
 
-type UserChannelValue = {
+type UserThreadValue = {
   user: string;
 };
 
-export class WebviewUserChannel
-  implements
-    SociablyChannel,
-    UserTarget,
-    MarshallableInstance<UserChannelValue>
+export class WebviewUserThread
+  implements SociablyThread, UserTarget, MarshallableInstance<UserThreadValue>
 {
   static typeName = 'WebviewUserCh';
 
-  static fromJSONValue({ user }: UserChannelValue): WebviewUserChannel {
-    return new WebviewUserChannel(user);
+  static fromJSONValue({ user }: UserThreadValue): WebviewUserThread {
+    return new WebviewUserThread(user);
   }
 
   platform = WEBVIEW;
@@ -95,13 +92,13 @@ export class WebviewUserChannel
     return `${WEBVIEW}.user.${this.userUid}`;
   }
 
-  toJSONValue(): UserChannelValue {
+  toJSONValue(): UserThreadValue {
     return { user: this.userUid };
   }
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return WebviewUserChannel.typeName;
+    return WebviewUserThread.typeName;
   }
 }
 
@@ -109,13 +106,13 @@ type TopicValue = {
   name: string;
 };
 
-export class WebviewTopicChannel
-  implements SociablyChannel, TopicTarget, MarshallableInstance<TopicValue>
+export class WebviewTopicThread
+  implements SociablyThread, TopicTarget, MarshallableInstance<TopicValue>
 {
   static typeName = 'WebviewTopicCh';
 
-  static fromJSONValue({ name }: TopicValue): WebviewTopicChannel {
-    return new WebviewTopicChannel(name);
+  static fromJSONValue({ name }: TopicValue): WebviewTopicThread {
+    return new WebviewTopicThread(name);
   }
 
   platform = WEBVIEW;
@@ -144,6 +141,6 @@ export class WebviewTopicChannel
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return WebviewTopicChannel.typeName;
+    return WebviewTopicThread.typeName;
   }
 }

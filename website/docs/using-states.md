@@ -57,7 +57,7 @@ app.onEvent(
   makeContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply }) => {
       const bookmarks = await stateController
-        .channelState(event.channel)
+        .threadState(event.thread)
         .get('bookmarks');
 
       if (bookmarks) {
@@ -70,7 +70,7 @@ app.onEvent(
 );
 ```
 
-`controller.channelState(channel)` method returns an accessor to the chat state.
+`controller.threadState(thread)` method returns an accessor to the chat state.
 The state data is stored in key-value pairs, like a JavaScript `Map`.
 
 `accessor.get(key)` resolves the value saved on a key.
@@ -92,7 +92,7 @@ app.onEvent(
           const newBookmark = matchAdding[1];
   
           const bookmarks = await stateController
-            .channelState(event.channel)
+            .threadState(event.thread)
             .update(
               'bookmarks',
               (currentBookmarks = []) =>
@@ -133,7 +133,7 @@ For example, this updating call is NOT going to work:
 
 ```js
 await stateController
-  .channelState(event.channel)
+  .threadState(event.thread)
   .update('my_data', (data) => {
     data.foo = 'bar';
     return data; // the value is the same object
@@ -178,7 +178,7 @@ app.onEvent(
 );
 ```
 
-The state accessor usage is exactly the same with channel state.
+The state accessor usage is exactly the same with thread state.
 
 ### Global State
 

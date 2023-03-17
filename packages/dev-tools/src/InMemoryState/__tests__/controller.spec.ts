@@ -5,9 +5,9 @@ const controller = new InMemoryStateController();
 
 test.each([
   [
-    'channel',
-    controller.channelState({ platform: 'test', uid: 'foo' }),
-    controller.channelState('bar'),
+    'thread',
+    controller.threadState({ platform: 'test', uid: 'foo' }),
+    controller.threadState('bar'),
   ],
   [
     'user',

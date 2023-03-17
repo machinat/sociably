@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`.message(channel, message, options) message options 1`] = `
+exports[`.message(thread, message, options) message options 1`] = `
 Object {
   "jobs": Array [
     Object {
@@ -150,7 +150,7 @@ Object {
 }
 `;
 
-exports[`.message(channel, message, options) message options 2`] = `
+exports[`.message(thread, message, options) message options 2`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
@@ -158,7 +158,7 @@ Object {
 }
 `;
 
-exports[`.message(channel, message, options) send messages to me/messages api 1`] = `
+exports[`.message(thread, message, options) send messages to me/messages api 1`] = `
 Object {
   "jobs": Array [
     Object {
@@ -308,7 +308,7 @@ Object {
 }
 `;
 
-exports[`.message(channel, message, options) send messages to me/messages api 2`] = `
+exports[`.message(thread, message, options) send messages to me/messages api 2`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",

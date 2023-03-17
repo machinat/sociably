@@ -34,16 +34,16 @@ const controller = new RedisStateController(client, marshaler);
 
 describe.each([
   [
-    'channel state',
-    'C',
-    controller.channelState({ platform: 'test', uid: 'foo' }),
-    controller.channelState({ platform: 'test', uid: 'bar' }),
+    'thread state',
+    'T',
+    controller.threadState({ platform: 'test', uid: 'foo' }),
+    controller.threadState({ platform: 'test', uid: 'bar' }),
   ],
   [
-    'channel state using uid',
-    'C',
-    controller.channelState('foo'),
-    controller.channelState('bar'),
+    'thread state using uid',
+    'T',
+    controller.threadState('foo'),
+    controller.threadState('bar'),
   ],
   [
     'user state',

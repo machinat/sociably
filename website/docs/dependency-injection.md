@@ -163,17 +163,17 @@ app.onEvent(
     (recognizer, profiler, stateController) =>
     async (context) => {
       const { bot, event } = context;
-      const { channel, user } = event;
+      const { thread, user } = event;
 
       if (event.type === 'text') {
-        const intent = await recognizer.detectText(channel, event.text);
+        const intent = await recognizer.detectText(thread, event.text);
 
         if (intent.type === 'hello') {
           const profile = await profiler.getUserProfile(user);
-          await bot.render(channel, `Hello ${profile?.name || 'there'}!`);
+          await bot.render(thread, `Hello ${profile?.name || 'there'}!`);
 
           await stateController
-            .channelState(channel)
+            .threadState(thread)
             .update('hello_count', (count = 0) => count + 1);
         }
       }
@@ -184,9 +184,9 @@ app.onEvent(
 
 Here are the list of the standard services:
 
-- [`BasicBot`](pathname:///api/modules/core_base_bot): Render messages on a platform-agnostic channel.
+- [`BasicBot`](pathname:///api/modules/core_base_bot): Render messages on a platform-agnostic thread.
 - [`BasicProfiler`](pathname:///api/modules/core_base_profiler): Fetch profile of a platform-agnostic user.
-- [`StateController`](pathname:///api/modules/core_base_statecontroller): Save and load channel/user/global state from the storage. We'll introduce it in the [Using State](using-states.md) doc.
+- [`StateController`](pathname:///api/modules/core_base_statecontroller): Save and load thread/user/global state from the storage. We'll introduce it in the [Using State](using-states.md) doc.
 - [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): Recognize the intent of a message. We'll introduce it in the [Recognizing Intent](recognizing-intent.md) doc.
 
 ### Register Services

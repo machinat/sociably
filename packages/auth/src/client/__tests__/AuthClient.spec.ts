@@ -24,7 +24,7 @@ const makeToken = (payload) =>
   jsonwebtoken.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
 
 const fooUser = { platform: 'foo', uid: 'john_doe' };
-const fooChannel = { platform: 'foo', uid: 'foo.channel' };
+const fooThread = { platform: 'foo', uid: 'foo.thread' };
 const fooData = 'foo.data';
 
 const fooAuthenticator = moxy<AnyClientAuthenticator>({
@@ -43,7 +43,7 @@ const fooAuthenticator = moxy<AnyClientAuthenticator>({
       ok: true,
       contextDetails: {
         user: fooUser,
-        channel: fooChannel,
+        thread: fooThread,
         foo: fooData,
       },
     };
@@ -67,7 +67,7 @@ const barAuthenticator = moxy<AnyClientAuthenticator>({
       ok: true,
       contextDetails: {
         user: { platform: 'bar', uid: 'jojo_doe' },
-        channel: { platform: 'bar', uid: 'bar.channel' },
+        thread: { platform: 'bar', uid: 'bar.thread' },
         bar: 'bar.data',
       },
     };
@@ -430,7 +430,7 @@ describe('.signIn()', () => {
   const expectedContext = {
     platform: 'foo',
     user: fooUser,
-    channel: fooChannel,
+    thread: fooThread,
     foo: fooData,
     loginAt: new Date(authPayload.iat * 1000),
     expireAt: new Date(authPayload.exp * 1000),
@@ -748,7 +748,7 @@ describe('refresh flow', () => {
         context: {
           platform: 'foo',
           user: fooUser,
-          channel: fooChannel,
+          thread: fooThread,
           foo: fooData,
           loginAt: new Date(newPayload.iat * 1000),
           expireAt: new Date(newPayload.exp * 1000),
@@ -820,7 +820,7 @@ describe('refresh flow', () => {
         context: {
           platform: 'foo',
           user: fooUser,
-          channel: fooChannel,
+          thread: fooThread,
           foo: fooData,
           loginAt: new Date(newPayload.iat * 1000),
           expireAt: new Date(newPayload.exp * 1000),

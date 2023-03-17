@@ -48,7 +48,7 @@ export class TwitterServerAuthenticator
         return {
           ok: true,
           data,
-          channel: result.contextDetails.channel,
+          thread: result.contextDetails.thread,
         };
       },
       getChatLink: () =>

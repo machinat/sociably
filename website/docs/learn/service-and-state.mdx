@@ -30,7 +30,7 @@ const handleChat = makeContainer({
       const { event, reply } = ctx;
       const intent = await getIntent(event);${platform === 'telegram' ? `
       // highlight-start
-      if (!event.channel) {
+      if (!event.thread) {
         return;
       }
       // highlight-end` : ''}
@@ -169,7 +169,7 @@ Check it and you should see the saved profile like:
 
 ```json {5-14} title=".state_data.json"
 {
-  "channelStates": {},
+  "threadStates": {},
   "userStates": {
     "facebook.12345.67890": {
       "profile_cache": {
@@ -236,18 +236,18 @@ The `makeClassProvider` works just like `makeFactoryProvider`,
 except that the provider is a class.
 It also requires `StateController` to save/load todos data.
 
-### Channel State
+### Thread State
 
-In the `TodoController` we store the todos data with `channelState`.
+In the `TodoController` we store the todos data with `threadState`.
 It works the same as `userState`, but it saves the data of a chat instead.
 
 ```ts {6} title="src/services/TodoController.ts"
 //...
 async getTodos(
-  channel: SociablyChannel
+  thread: SociablyThread
 ): Promise<{ todo: null; data: TodoState }> {
   const data = await this.stateController
-    .channelState(channel)
+    .threadState(thread)
     .get<TodoState>('todo_data');
 
   return {
@@ -304,19 +304,19 @@ const handleChat = makeContainer({
   ) => {
       const { event, reply } = ctx;
       const intent = await getIntent(event);${ platform === 'telegram' ? `
-      if (!event.channel) {
+      if (!event.thread) {
         return;
       }` : ''}\n
       if (intent.type === 'list') {
         // highlight-start
-        const { data } = await todoController.getTodos(event.channel);
+        const { data } = await todoController.getTodos(event.thread);
         return reply(<TodoList todos={data.todos} />);
         // highlight-end
       }
       // highlight-start
       if (intent.type === 'finish') {
         const { todo, data } = await todoController.finishTodo(
-          event.channel,
+          event.thread,
           intent.payload.id
         );
         return reply(
@@ -335,7 +335,7 @@ const handleChat = makeContainer({
         if (matchingAddTodo) {
           const todoName = matchingAddTodo[2].trim();\n
           // highlight-next-line
-          const { data } = await todoController.addTodo(event.channel, todoName);
+          const { data } = await todoController.addTodo(event.thread, todoName);
           return reply(
             // highlight-next-line
             <WithMenu todoCount={data.todos.length}>
@@ -346,7 +346,7 @@ const handleChat = makeContainer({
       }\n
       const profile = await profiler.getUserProfile(event.user);
       // highlight-next-line
-      const { data } = await todoController.getTodos(event.channel);
+      const { data } = await todoController.getTodos(event.thread);
       return reply(
         // highlight-next-line
         <WithMenu todoCount={data.todos.length}>
@@ -388,7 +388,7 @@ file. You should see the stored todo data like:
 ```json {5-13} title=".state_data.json"
 {
   "userStates": {...},
-  "channelStates": {
+  "threadStates": {
     "facebook.12345.psid.67890": {
       "todo_data": {
         "currentId": 1,

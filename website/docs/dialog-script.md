@@ -131,7 +131,7 @@ Like:
 The runtime environments object contains the following info:
 
 - `platform` - `string`, the platform where the dialog happens.
-- `channel` - `object`, the channel where the dialog happens.
+- `thread` - `object`, the chat thread where the dialog happens.
 - `vars` - `object`, a state object for storing data. 
 
 ### `vars`
@@ -321,7 +321,7 @@ app.onEvent(
   makeContainer({ deps: [Script.Processor] })(
     (processor) => async (context) => {
       const { event, reply } = context;
-      const runtime = await processor.continue(event.channel, context);
+      const runtime = await processor.continue(event.thread, context);
       if (runtime) {
         return reply(runtime.output());
       }
@@ -344,7 +344,7 @@ const event$ = fromApp(app).pipe(
   filter(
     makeContainer({ deps: [Script.Processor] })(
       (processor) => async (ctx) => {
-        const runtime = await processor.continue(ctx.event.channel, ctx);
+        const runtime = await processor.continue(ctx.event.thread, ctx);
         if (runtime) {
           await ctx.reply(runtime.output());
         }
@@ -388,7 +388,7 @@ Like:
 
 ```js
   if (event.category === 'message' && event.category === 'postback') {
-    const runtime = await processor.continue(event.channel, context);
+    const runtime = await processor.continue(event.thread, context);
     if (runtime) {
       return reply(runtime.output());
     }
@@ -402,7 +402,7 @@ it's available at `runtime.returnValue`.
 You can handle it like this:
 
 ```js
-  const runtime = await processor.continue(event.channel, context);
+  const runtime = await processor.continue(event.thread, context);
   if (runtime) {
     await reply(runtime.output());
 
@@ -431,9 +431,9 @@ import Sociably, { makeContainer, IntentRecognizer } from '@sociably/core';
     set={
       makeContainer({ deps: [IntentRecognizer] })(
         (recognizer) =>
-        async ({ vars, channel }, { event }) => {
+        async ({ vars, thread }, { event }) => {
           const intent = await recognizer.detectText(
-            channel,
+            thread,
             event.text
           );
           return {
@@ -550,9 +550,9 @@ Like:
 ```js
   <$.EFFECT
     set={makeContainer({ deps: [StateController] })(
-      (stateController) => async ({ vars, channel }) => {
+      (stateController) => async ({ vars, thread }) => {
         const visitCount = await stateController
-          .channelState(channel)
+          .threadState(thread)
           .set('visit_count', (count=0) => count + 1);
 
         return { ...vars, visitCount };
@@ -578,7 +578,7 @@ For example:
     value={({ vars: { mainDishChoice } }) => ({ mainDishChoice })}
   />
 // at the handler
-  const runtime = await processor.continue(event.channel, context);
+  const runtime = await processor.continue(event.thread, context);
   if (runtime?.returnValue) {
     await cook(runtime.returnValue.mainDishChoice);
   }
@@ -609,7 +609,7 @@ For example:
   <$.PROMPT key="ask" />
 </>
 // handler
-  const runtime = await processor.continue(event.channel, context);
+  const runtime = await processor.continue(event.thread, context);
   if (runtime.yieldValue) {
     console.log(runtime.yieldValue); // { a: 0, b: 0, c: 1 }
   }

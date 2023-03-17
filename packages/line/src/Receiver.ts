@@ -30,7 +30,7 @@ const replyClosure = (bot: BotP, event: LineEvent) => {
     const shouldUseReplyToken = 'replyToken' in event && !isReplyTokenUsed;
     isReplyTokenUsed = true;
 
-    return bot.render(event.channel, message, {
+    return bot.render(event.thread, message, {
       replyToken: shouldUseReplyToken ? event.replyToken : undefined,
     });
   };

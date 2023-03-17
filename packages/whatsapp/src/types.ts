@@ -21,8 +21,6 @@ import type { WhatsAppEvent } from './event/types';
 
 export * from './event/types';
 
-export type WhatsAppChannel = WhatsAppChat;
-
 export type WhatsAppSegmentValue = {
   message: Omit<CreateMessageData, 'to' | 'messaging_product'>;
   mediaFile?: {
@@ -51,7 +49,7 @@ export type WhatsAppEventMiddleware = EventMiddleware<
   null
 >;
 
-export type WhatsAppDispatchFrame = DispatchFrame<WhatsAppChannel, MetaApiJob>;
+export type WhatsAppDispatchFrame = DispatchFrame<WhatsAppChat, MetaApiJob>;
 
 export type WhatsAppDispatchMiddleware = DispatchMiddleware<
   MetaApiJob,

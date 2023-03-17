@@ -4,7 +4,7 @@ import { parse as parseAgent } from 'bowser';
 import { getClientIp } from 'request-ip';
 import Sociably, {
   makeClassProvider,
-  SociablyChannel,
+  SociablyThread,
   StateController,
 } from '@sociably/core';
 import type { RoutingInfo } from '@sociably/http';
@@ -78,8 +78,8 @@ export class BasicAuthenticator {
     this.loginDurationTime = loginDuration * 1000;
   }
 
-  createRequestDelegator<Data, Channel extends SociablyChannel>(
-    options: AuthDelegatorOptions<Data, Channel>
+  createRequestDelegator<Data, Thread extends SociablyThread>(
+    options: AuthDelegatorOptions<Data, Thread>
   ) {
     return async (
       req: IncomingMessage,
@@ -107,10 +107,10 @@ export class BasicAuthenticator {
     return authRoot.href;
   }
 
-  private async _handleStart<Data, Channel extends SociablyChannel>(
+  private async _handleStart<Data, Thread extends SociablyThread>(
     req: IncomingMessage,
     res: ServerResponse,
-    { platform, checkAuthData }: AuthDelegatorOptions<Data, Channel>
+    { platform, checkAuthData }: AuthDelegatorOptions<Data, Thread>
   ) {
     const {
       query: { [LOGIN_QUERY]: loginToken },
@@ -164,7 +164,7 @@ export class BasicAuthenticator {
       this.operator.redirect(res, redirectUrl, { assertInternal: true });
       return;
     }
-    const { data: checkedData, channel } = checkResult;
+    const { data: checkedData, thread } = checkResult;
 
     // redirect to login page if it's during the login process
     const loginUrl = this.operator.getAuthUrl(platform, 'login');
@@ -172,14 +172,14 @@ export class BasicAuthenticator {
       req,
       platform
     );
-    if (currentState && currentState.ch === channel.uid) {
+    if (currentState && currentState.ch === thread.uid) {
       this.operator.redirect(res, loginUrl);
       return;
     }
 
     await this.operator.issueState<BasicAuthLoginState<Data>>(res, platform, {
       status: 'login',
-      ch: channel.uid,
+      ch: thread.uid,
       data: checkedData,
       redirect: redirectUrl,
     });
@@ -188,7 +188,7 @@ export class BasicAuthenticator {
     this.operator.redirect(res, loginUrl);
   }
 
-  private async _handleLogin<Data, Channel extends SociablyChannel>(
+  private async _handleLogin<Data, Thread extends SociablyThread>(
     req: IncomingMessage,
     res: ServerResponse,
     {
@@ -199,7 +199,7 @@ export class BasicAuthenticator {
       platformImageUrl,
       checkAuthData,
       getChatLink,
-    }: AuthDelegatorOptions<Data, Channel>
+    }: AuthDelegatorOptions<Data, Thread>
   ) {
     const now = Date.now();
     const state = await this.operator.getState<BasicAuthState<Data>>(
@@ -224,7 +224,7 @@ export class BasicAuthenticator {
       this.operator.redirect(res, state.redirect);
       return;
     }
-    const { data: checkedData, channel } = checkResult;
+    const { data: checkedData, thread } = checkResult;
 
     let shouldIssueCode = true;
     if (state.status === 'verify' && now - state.ts < this.loginDurationTime) {
@@ -250,7 +250,7 @@ export class BasicAuthenticator {
         .hostname;
       try {
         await bot.render(
-          channel,
+          thread,
           <CodeMessage
             code={code}
             domain={domain}
@@ -275,7 +275,7 @@ export class BasicAuthenticator {
       // save data and encrypted code in state
       const hashedCode = this._signCodeSignature(
         platform,
-        channel.uid,
+        thread.uid,
         now,
         code
       );
@@ -284,7 +284,7 @@ export class BasicAuthenticator {
         platform,
         {
           status: 'verify',
-          ch: channel.uid,
+          ch: thread.uid,
           ts: now,
           data: checkedData,
           hash: hashedCode,
@@ -302,15 +302,15 @@ export class BasicAuthenticator {
         platformName,
         platformColor,
         platformImageUrl,
-        chatLinkUrl: getChatLink(checkResult.channel),
+        chatLinkUrl: getChatLink(checkResult.thread),
       })
     );
   }
 
-  private async _handleVerify<Data, Channel extends SociablyChannel>(
+  private async _handleVerify<Data, Thread extends SociablyThread>(
     req: IncomingMessage,
     res: ServerResponse,
-    { platform }: AuthDelegatorOptions<Data, Channel>
+    { platform }: AuthDelegatorOptions<Data, Thread>
   ) {
     const body: VerifyCodeRequestBody = await parseJsonBody(req);
     if (!body || !body.code) {
@@ -382,7 +382,7 @@ export class BasicAuthenticator {
   }
 
   private async _checkVerifyCount(
-    channelUid: string,
+    threadUid: string,
     timestamp: number,
     incremental: boolean
   ): Promise<number> {
@@ -390,7 +390,7 @@ export class BasicAuthenticator {
     const recordsState = this.stateController.globalState(VERIFY_RECORDS_SPACE);
 
     const verifyCount = await recordsState.update<number>(
-      `${channelUid}:${timestamp}`,
+      `${threadUid}:${timestamp}`,
       (count) => {
         if (incremental && (!count || count < this.maxLoginAttempt)) {
           return (count || 0) + 1;
@@ -403,7 +403,7 @@ export class BasicAuthenticator {
     let recordsToClear: { ch: string; ts: number }[] = [];
 
     if (incremental && verifyCount === 1) {
-      const record = { ts: timestamp, ch: channelUid };
+      const record = { ts: timestamp, ch: threadUid };
 
       await recordsState.update<{ ch: string; ts: number }[]>(
         RECORDS_TIME_INDEX,

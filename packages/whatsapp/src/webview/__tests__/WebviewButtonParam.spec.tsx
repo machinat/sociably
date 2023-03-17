@@ -58,7 +58,7 @@ test('rendering to UrlButtonParam', () => {
   );
 });
 
-test('rendering to null if channel is not a WhatsAppChat', () => {
+test('rendering to null if thread is not a WhatsAppChat', () => {
   expect(WebviewButtonParam(authenticator, null)({})).toBe(null);
   expect(WebviewButtonParam(authenticator, null)({ page: '/foo' })).toBe(null);
   expect(

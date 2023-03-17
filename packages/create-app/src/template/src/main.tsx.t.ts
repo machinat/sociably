@@ -25,10 +25,10 @@ const main = (event$: Stream<AppEventContext>): void => {
       filter(
         makeContainer({ deps: [Script.Processor] })(
           (processor) => async (ctx: ChatEventContext) => {
-            if (!ctx.event.channel) {
+            if (!ctx.event.thread) {
               return true;
             }
-            const runtime = await processor.continue(ctx.event.channel, ctx);
+            const runtime = await processor.continue(ctx.event.thread, ctx);
             if (runtime) {
               await ctx.reply(runtime.output());
             }

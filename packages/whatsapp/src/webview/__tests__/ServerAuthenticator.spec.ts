@@ -72,7 +72,7 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
     })
   ).toEqual({
     ok: true,
-    channel: new WhatsAppChat('1234567890', '9876543210'),
+    thread: new WhatsAppChat('1234567890', '9876543210'),
     data: { business: '1234567890', customer: '9876543210' },
   });
   expect(delegatorOptions.checkAuthData({ agent: '54321', id: '67890' }))
@@ -157,7 +157,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       businessNumber: '1234567890',
-      channel: new WhatsAppChat('1234567890', '9876543210'),
+      thread: new WhatsAppChat('1234567890', '9876543210'),
       user: new WhatsAppUser('9876543210'),
     },
   });

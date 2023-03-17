@@ -1,4 +1,4 @@
-import type { SociablyChannel } from '../types';
+import type { SociablyThread } from '../types';
 import { makeInterface } from '../service';
 
 export type RecognitionData<
@@ -43,7 +43,7 @@ export interface IntentRecognizer<
   Payload = unknown
 > {
   detectText(
-    channel: SociablyChannel,
+    thread: SociablyThread,
     text: string,
     options?: DetectTextOptions
   ): Promise<DetectIntentResult<Recognition, Payload>>;

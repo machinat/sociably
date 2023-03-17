@@ -42,7 +42,7 @@ const EventBaseProto: EventBaseMixin = {
 
 const MessageProto: MessageMixin = mixin(EventBaseProto, {
   userProfile: null as never,
-  get channel() {
+  get thread() {
     return new WhatsAppChat(this.businessNumber, this.userNumber);
   },
   get user() {
@@ -287,7 +287,7 @@ export const UnsupportedProto: UnsupportedEvent = mixin(MessageProto, {
 });
 
 const StatusProto: StatusMixin = mixin(EventBaseProto, {
-  get channel() {
+  get thread() {
     return new WhatsAppChat(this.businessNumber, this.userNumber);
   },
   get user() {
@@ -337,7 +337,7 @@ export const FailedProto: FailedEvent = mixin(StatusProto, {
 export const ErrorProto: ErrorEvent = mixin(EventBaseProto, {
   category: 'system' as const,
   type: 'error' as const,
-  channel: null,
+  thread: null,
   user: null,
   get code() {
     return this.payload.code;
@@ -350,6 +350,6 @@ export const ErrorProto: ErrorEvent = mixin(EventBaseProto, {
 export const UnknownProto: UnknownEvent = mixin(EventBaseProto, {
   category: 'message' as const,
   type: 'unknown' as const,
-  channel: null,
+  thread: null,
   user: null,
 });

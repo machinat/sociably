@@ -30,9 +30,9 @@ import type {
 import type { BotP } from './bot';
 import type {
   WebviewConnection,
-  WebviewTopicChannel,
-  WebviewUserChannel,
-} from './channel';
+  WebviewTopicThread,
+  WebviewUserThread,
+} from './thread';
 
 export type {
   EventValue,
@@ -52,7 +52,7 @@ export type WebviewEvent<
   User extends null | SociablyUser
 > = Value & {
   platform: 'webview';
-  channel: WebviewConnection;
+  thread: WebviewConnection;
   user: User;
 };
 
@@ -92,13 +92,13 @@ export type WebviewEventMiddleware<
   Value extends EventValue = EventValue
 > = EventMiddleware<WebviewEventContext<Authenticator, Value>, null>;
 
-export type WebviewDispatchChannel =
-  | WebviewTopicChannel
-  | WebviewUserChannel
+export type WebviewDispatchThread =
+  | WebviewTopicThread
+  | WebviewUserThread
   | WebviewConnection;
 
 export type WebviewDispatchFrame = DispatchFrame<
-  WebviewDispatchChannel,
+  WebviewDispatchThread,
   WebSocketJob
 >;
 

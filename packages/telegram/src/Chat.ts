@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TELEGRAM, TG } from './constant';
 import ChatProfile from './ChatProfile';
@@ -10,7 +10,7 @@ type TelegramChatValue = {
 };
 
 class TelegramChat
-  implements SociablyChannel, MarshallableInstance<TelegramChatValue>
+  implements SociablyThread, MarshallableInstance<TelegramChatValue>
 {
   static typeName = 'TgChat';
 
@@ -53,7 +53,7 @@ class TelegramChat
     };
   }
 
-  /** Unique id of the chat channel */
+  /** Unique id of the chat thread */
   get uid(): string {
     return `${TG}.${this.botId}.${this.id}`;
   }

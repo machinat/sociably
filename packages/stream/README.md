@@ -34,8 +34,8 @@ const textMsg$ = events$.pipe(
     makeContainer({ deps: [IntentRecognizer] })(
       (recognizer) =>
         async (context) => {
-          const { channel, text } = context.event;
-          const intent = await recognizer.detectText(channel, text);
+          const { thread, text } = context.event;
+          const intent = await recognizer.detectText(thread, text);
           return { ...context, intent };
         }
     )

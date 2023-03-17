@@ -10,7 +10,7 @@ export const getAuthContextDetails = ({
 }: TwitterAuthData): ContextDetails<TwitterAuthContext> => {
   return {
     user: new TwitterUser(id),
-    channel: new TwitterChat(agent, id),
+    thread: new TwitterChat(agent, id),
     agentId: agent,
   };
 };

@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import Sociably, { RenderingChannel } from '@sociably/core';
+import Sociably, { RenderingThread } from '@sociably/core';
 import { isContainerType } from '@sociably/core/utils/isX';
 import ProcessorP from '../processor';
 import build from '../build';
@@ -18,7 +18,7 @@ import {
 
 const initVars = moxy(() => ({}));
 
-const channel = { platform: 'test', uid: 'foo.channel' };
+const thread = { platform: 'test', uid: 'foo.thread' };
 
 const ChildScript = build(
   {
@@ -113,14 +113,14 @@ test('Script.Start', () => {
   expect(MyScript.Start.$$name).toBe('MyScript');
   expect(MyScript.Start.$$deps).toEqual([
     { require: ProcessorP, optional: false },
-    { require: RenderingChannel, optional: false },
+    { require: RenderingThread, optional: false },
   ]);
 
-  expect((MyScript.Start as any)(mockProcessor, channel)({})).resolves.toBe(
+  expect((MyScript.Start as any)(mockProcessor, thread)({})).resolves.toBe(
     'Hello Script'
   );
   expect(mockProcessor.start).toHaveBeenCalledTimes(1);
-  expect(mockProcessor.start).toHaveBeenCalledWith(channel, MyScript, {});
+  expect(mockProcessor.start).toHaveBeenCalledWith(thread, MyScript, {});
 
   expect(typeof ChildScript.Start).toBe('function');
   expect(isContainerType(<ChildScript.Start />)).toBe(true);
@@ -129,14 +129,14 @@ test('Script.Start', () => {
   expect(
     (ChildScript.Start as any)(
       mockProcessor,
-      channel
+      thread
     )({
       params: { foo: 'baz' },
       goto: 'bar',
     })
   ).resolves.toBe('Hello Script');
   expect(mockProcessor.start).toHaveBeenCalledTimes(2);
-  expect(mockProcessor.start).toHaveBeenCalledWith(channel, ChildScript, {
+  expect(mockProcessor.start).toHaveBeenCalledWith(thread, ChildScript, {
     params: { foo: 'baz' },
     goto: 'bar',
   });

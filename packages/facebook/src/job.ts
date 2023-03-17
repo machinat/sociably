@@ -23,7 +23,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
   let isOneTimeTokenUsed = false;
 
   return (
-    channel: FacebookChat,
+    thread: FacebookChat,
     segments: DispatchableSegment<FacebookSegmentValue>[]
   ): MetaApiJob[] => {
     const jobs: MetaApiJob[] = new Array(segments.length);
@@ -52,7 +52,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
         );
       }
 
-      body.recipient = channel.target;
+      body.recipient = thread.target;
 
       if (options && relativeUrl === PATH_MESSAGES) {
         if (body.message) {
@@ -93,7 +93,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
           relative_url: relativeUrl,
           body,
         },
-        key: channel.uid,
+        key: thread.uid,
         assetTag,
         fileData,
         fileInfo,

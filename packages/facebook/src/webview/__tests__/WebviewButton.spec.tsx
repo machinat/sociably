@@ -60,7 +60,7 @@ test('rendering to UrlButton', () => {
   );
 });
 
-test('rendering to null if channel is not a FacebookChat', () => {
+test('rendering to null if thread is not a FacebookChat', () => {
   expect(WebviewButton(authenticator, null)({ title: 'Foo' })).toBe(null);
   expect(
     WebviewButton(authenticator, null)({ title: 'Foo', page: '/foo' })

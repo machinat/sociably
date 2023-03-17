@@ -4,7 +4,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import Sociably, {
   StateController,
   SociablyBot,
-  SociablyChannel,
+  SociablyThread,
 } from '@sociably/core';
 import HttpOperator from '../../HttpOperator';
 import { BasicAuthenticator } from '../BasicAuthenticator';
@@ -34,11 +34,11 @@ const operator = moxy<HttpOperator>({
     `https://sociably.io/myApp/webview/${subpath}`,
 } as never);
 
-const bot = moxy<SociablyBot<SociablyChannel, unknown, unknown>>({
+const bot = moxy<SociablyBot<SociablyThread, unknown, unknown>>({
   render: async () => null,
 } as never);
 
-const channel = { platform: 'test', uid: 'test.foo.bar' };
+const thread = { platform: 'test', uid: 'test.foo.bar' };
 
 const delegateOptions = moxy({
   bot,
@@ -49,7 +49,7 @@ const delegateOptions = moxy({
   checkAuthData: (data) => ({
     ok: true as const,
     data,
-    channel,
+    thread,
   }),
   getChatLink: () => 'https://test.platform.com/foo.bar',
 });
@@ -142,7 +142,7 @@ describe('root page', () => {
     });
     delegateOptions.checkAuthData.mock.fakeReturnValue({
       ok: true,
-      channel: { platform: 'test', uid: 'test.foo.baz' },
+      thread: { platform: 'test', uid: 'test.foo.baz' },
       data: { foo: 'baz' },
     });
 
@@ -245,7 +245,7 @@ describe('root page', () => {
     expect(operator.issueAuth).not.toHaveBeenCalled();
   });
 
-  test('reset state if channel has changed', async () => {
+  test('reset state if thread has changed', async () => {
     operator.getState.mock.fake(async () => ({
       status: 'login',
       ch: 'test.foo.baz',
@@ -479,7 +479,7 @@ describe('login page', () => {
     await delegateRequest(req, res, routing);
 
     expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(channel, expect.any(Object));
+    expect(bot.render).toHaveBeenCalledWith(thread, expect.any(Object));
 
     expect(bot.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
       { props: { code: expect.stringMatching(/^[0-9]{6}$/) } },
@@ -560,7 +560,7 @@ describe('login page', () => {
     await delegateRequest(req, res, routing);
 
     expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(channel, expect.any(Object));
+    expect(bot.render).toHaveBeenCalledWith(thread, expect.any(Object));
 
     expect(bot.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
       { props: { code: expect.stringMatching(/^[0-9]{20}$/) } },

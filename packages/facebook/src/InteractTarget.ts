@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { FACEBOOK, FB } from './constant';
 
@@ -9,7 +9,7 @@ type InteractTargetValue = {
 };
 
 class FacebookInteractTarget
-  implements SociablyChannel, MarshallableInstance<InteractTargetValue>
+  implements SociablyThread, MarshallableInstance<InteractTargetValue>
 {
   static typeName = 'FbInteractTarget';
   static fromJSONValue(val: InteractTargetValue): FacebookInteractTarget {

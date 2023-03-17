@@ -10,7 +10,7 @@ export const getAuthContextDetails = (
   const { page: pageId, id } = data;
   return {
     user: new FacebookUser(pageId, id),
-    channel: new FacebookChat(pageId, { id }),
+    thread: new FacebookChat(pageId, { id }),
     pageId,
   };
 };

@@ -220,7 +220,7 @@ export interface ErrorEvent extends EventBaseMixin {
   readonly type: 'error';
   readonly code: number;
   readonly title: string;
-  readonly channel: null;
+  readonly thread: null;
   readonly user: null;
 }
 
@@ -230,7 +230,7 @@ export interface ErrorEvent extends EventBaseMixin {
 export interface UnknownEvent extends EventBaseMixin {
   readonly category: 'message';
   readonly type: 'unknown';
-  readonly channel: null;
+  readonly thread: null;
   readonly user: null;
 }
 

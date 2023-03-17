@@ -1,4 +1,4 @@
-import Sociably, { makeContainer, RenderingChannel } from '@sociably/core';
+import Sociably, { makeContainer, RenderingThread } from '@sociably/core';
 import { posix as posixPath } from 'path';
 import FacebookChat from '../Chat';
 import { UrlButton } from '../components';
@@ -16,19 +16,19 @@ type WebviewButtonProps = {
 };
 
 const WebviewButton =
-  (authenticator: ServerAuthenticator, channel: RenderingChannel) =>
+  (authenticator: ServerAuthenticator, thread: RenderingThread) =>
   ({
     title,
     page,
     webviewHeightRatio,
     hideShareButton,
   }: WebviewButtonProps) => {
-    if (!channel || !(channel instanceof FacebookChat) || !channel.target) {
+    if (!thread || !(thread instanceof FacebookChat) || !thread.target) {
       return null;
     }
 
     const url = authenticator.getAuthUrl(
-      channel.id,
+      thread.id,
       page ? posixPath.join('.', page) : undefined
     );
     return (
@@ -42,5 +42,5 @@ const WebviewButton =
   };
 
 export default makeContainer({
-  deps: [ServerAuthenticator, RenderingChannel],
+  deps: [ServerAuthenticator, RenderingThread],
 })(WebviewButton);

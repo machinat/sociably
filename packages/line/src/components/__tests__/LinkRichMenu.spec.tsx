@@ -43,7 +43,7 @@ test('getChatRequest', async () => {
   });
 });
 
-test('getChatRequest throw if type of channel is not user', async () => {
+test('getChatRequest throw if type of thread is not user', async () => {
   const segments = await renderUnitElement(
     <LinkRichMenu id="_RICH_MENU_ID_" />
   );

@@ -42,7 +42,7 @@ interface EventObject<Category extends string, Type extends string> {
   type: Type;
   payload: LineRawEvent;
   user: LineUser;
-  channel: LineChat;
+  thread: LineChat;
 }
 
 /**

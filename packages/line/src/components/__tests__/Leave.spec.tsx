@@ -27,7 +27,7 @@ it('render ok with entry getter', async () => {
   ]);
 });
 
-test('channel api call getter', async () => {
+test('api request getter', async () => {
   const segemnts = await renderUnitElement(<Leave />);
   const { getChatRequest } = segemnts?.[0].value as ChatActionSegmentValue;
 
@@ -48,13 +48,13 @@ test('channel api call getter', async () => {
   });
 });
 
-test('getChatRequest throw if type of channel is user', async () => {
+test('getChatRequest throw if type of thread is user', async () => {
   const segemnts = await renderUnitElement(<Leave />);
   const { getChatRequest } = segemnts?.[0].value as ChatActionSegmentValue;
 
   expect(() =>
     getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'))
   ).toThrowErrorMatchingInlineSnapshot(
-    `"<Leave /> cannot be used within an user channel"`
+    `"<Leave /> cannot be used within an user thread"`
   );
 });

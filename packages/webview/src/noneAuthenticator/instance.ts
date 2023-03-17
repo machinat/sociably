@@ -41,11 +41,11 @@ export class NoneUser
   }
 }
 
-export class NoneChannel
+export class NoneThread
   extends NoneInstance
   implements MarshallableInstance<{ id: string }>
 {
-  static typeName = 'NoneChannel';
+  static typeName = 'NoneThread';
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
@@ -54,12 +54,12 @@ export class NoneChannel
     };
   }
 
-  static fromJSONValue({ id }: { id: string }): NoneChannel {
-    return new NoneChannel(id);
+  static fromJSONValue({ id }: { id: string }): NoneThread {
+    return new NoneThread(id);
   }
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return NoneChannel.typeName;
+    return NoneThread.typeName;
   }
 }

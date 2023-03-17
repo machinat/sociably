@@ -928,7 +928,7 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "key": "foo_channel",
+        "key": "foo_thread",
         "registerResult": "image_1",
         "request": Object {
           "body": Object {
@@ -950,7 +950,7 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "key": "foo_channel",
+        "key": "foo_thread",
         "registerResult": "image_2",
         "request": Object {
           "body": Object {
@@ -1002,15 +1002,15 @@ Object {
                         "id": "1111111111",
                       },
                       Object {
-                        "id": "{result=foo_channel-1:$.id}",
+                        "id": "{result=foo_thread-1:$.id}",
                       },
                     ],
                     "to": "9876543210",
                     "type": "image",
                   },
-                  "depends_on": "foo_channel-1",
+                  "depends_on": "foo_thread-1",
                   "method": "POST",
-                  "name": "foo_channel-2",
+                  "name": "foo_thread-2",
                   "omit_response_on_success": false,
                   "relative_url": "1234567890/messages",
                 },
@@ -1022,7 +1022,7 @@ Object {
             "image_2",
           ],
         },
-        "key": "foo_channel",
+        "key": "foo_thread",
         "request": Object {
           "body": Object {
             "images": Array [],
@@ -1054,14 +1054,14 @@ Object {
 exports[`using API result in following request registerResult & consumeResult in different batches 2`] = `
 Object {
   "access_token": "_access_token_",
-  "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"}]",
+  "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_thread-1\\"}]",
 }
 `;
 
 exports[`using API result in following request registerResult & consumeResult in different batches 3`] = `
 Object {
   "access_token": "_access_token_",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"to=9876543210&type=image&images=%5B%7B%22id%22%3A%221111111111%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-1%3A%24.id%7D%22%7D%5D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-1\\",\\"name\\":\\"foo_channel-2\\"}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_thread-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"to=9876543210&type=image&images=%5B%7B%22id%22%3A%221111111111%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-1%3A%24.id%7D%22%7D%5D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_thread-1\\",\\"name\\":\\"foo_thread-2\\"}]",
 }
 `;
 
@@ -1071,7 +1071,7 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "key": "foo_channel",
+        "key": "foo_thread",
         "registerResult": "image_1",
         "request": Object {
           "body": Object {
@@ -1093,7 +1093,7 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "key": "foo_channel",
+        "key": "foo_thread",
         "registerResult": "image_2",
         "request": Object {
           "body": Object {
@@ -1142,18 +1142,18 @@ Object {
                   "body": Object {
                     "images": Array [
                       Object {
-                        "id": "{result=foo_channel-1:$.id}",
+                        "id": "{result=foo_thread-1:$.id}",
                       },
                       Object {
-                        "id": "{result=foo_channel-2:$.id}",
+                        "id": "{result=foo_thread-2:$.id}",
                       },
                     ],
                     "to": "9876543210",
                     "type": "image",
                   },
-                  "depends_on": "foo_channel-2",
+                  "depends_on": "foo_thread-2",
                   "method": "POST",
-                  "name": "foo_channel-3",
+                  "name": "foo_thread-3",
                   "omit_response_on_success": false,
                   "relative_url": "1234567890/messages",
                 },
@@ -1165,7 +1165,7 @@ Object {
             "image_2",
           ],
         },
-        "key": "foo_channel",
+        "key": "foo_thread",
         "request": Object {
           "body": Object {
             "images": Array [],
@@ -1197,7 +1197,7 @@ Object {
 exports[`using API result in following request registerResult & consumeResult in the same batch 2`] = `
 Object {
   "access_token": "_access_token_",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_channel-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-1\\",\\"name\\":\\"foo_channel-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"to=9876543210&type=image&images=%5B%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-1%3A%24.id%7D%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_channel-2%3A%24.id%7D%22%7D%5D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_channel-2\\",\\"name\\":\\"foo_channel-3\\"}]",
+  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"name\\":\\"foo_thread-1\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_thread-1\\",\\"name\\":\\"foo_thread-2\\"},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages\\",\\"body\\":\\"to=9876543210&type=image&images=%5B%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-1%3A%24.id%7D%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-2%3A%24.id%7D%22%7D%5D\\",\\"omit_response_on_success\\":false,\\"depends_on\\":\\"foo_thread-2\\",\\"name\\":\\"foo_thread-3\\"}]",
 }
 `;
 

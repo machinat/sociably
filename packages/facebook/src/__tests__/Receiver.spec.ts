@@ -132,7 +132,7 @@ describe('handling POST', () => {
       expect(context.bot).toBe(bot);
 
       expect(context.event.user).toEqual(new FacebookUser('12345', '67890'));
-      expect(context.event.channel).toEqual(
+      expect(context.event.thread).toEqual(
         new FacebookChat('12345', { id: '67890' })
       );
 
@@ -153,7 +153,7 @@ describe('handling POST', () => {
     expect(event2.payload).toEqual(body.entry[0].messaging[1]);
   });
 
-  it('create channel from optin.user_ref if no sender', async () => {
+  it('create thread from optin.user_ref if no sender', async () => {
     const receiver = new FacebookReceiver({
       bot,
       popEventWrapper,
@@ -200,13 +200,13 @@ describe('handling POST', () => {
 
     const ctx1 = popEventMock.calls[0].args[0];
     expect(ctx1.event.user).toEqual(new FacebookUser('12345', '67890'));
-    expect(ctx1.event.channel).toEqual(
+    expect(ctx1.event.thread).toEqual(
       new FacebookChat('12345', { id: '67890' })
     );
 
     const ctx2 = popEventMock.calls[1].args[0];
     expect(ctx2.event.user).toBe(null);
-    expect(ctx2.event.channel).toEqual(
+    expect(ctx2.event.thread).toEqual(
       new FacebookChat('12345', { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' })
     );
 
@@ -250,6 +250,6 @@ describe('handling POST', () => {
           `);
 
     expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
+    expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
   });
 });

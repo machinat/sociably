@@ -187,7 +187,7 @@ test('.start() and .stop() start/stop the engine', () => {
   expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
 });
 
-describe('.render(channel, content)', () => {
+describe('.render(thread, content)', () => {
   test('post a tweet', async () => {
     const bot = new TwitterBot(authOptions);
     bot.start();

@@ -11,7 +11,7 @@ Typically there are two ways to render the messages: `reply` and `bot.render`.
 app.onEvent(async ({ event, bot, reply }) => {
   await reply(<p>Hello World</p>);
   // is the same as
-  await bot.render(event.channel, <p>Hello World</p>);
+  await bot.render(event.thread, <p>Hello World</p>);
 });
 ```
 
@@ -20,7 +20,7 @@ app.onEvent(async ({ event, bot, reply }) => {
 Rendering a string is the easiest way to send a message:
 
 ```js
-await bot.render(channel, 'hello world');
+await bot.render(thread, 'hello world');
 ```
 
 This is supported by all the platforms.
@@ -89,7 +89,7 @@ like `<p></p>`:
 
 ```js
 await bot.render(
-  channel,
+  thread,
   <p>foo <b>bar</b> <i>baz</i></p>
 );
 ```
@@ -101,7 +101,7 @@ To do this, wrap the messages in a `<>...</>` element, like:
 
 ```js
 await bot.render(
-  channel,
+  thread,
   <>
     <p>Look at the kitten!</p>
     <img src="http://..." />
@@ -127,7 +127,7 @@ You can require them from platform packages and use them like:
 import * as Facebook from '@sociably/facebook/components'
 
 await bot.render(
-  channel,
+  thread,
   <Facebook.MediaTemplate
     type="video"
     url="http://..."
@@ -164,7 +164,7 @@ app.onEvent(async ({ platform, reply }) => {
 For example, `<Sociably.Pause time={1000}/>` element delays all the messages after it by 1000 ms.
 
 ```js
-await bot.render(channel,
+await bot.render(thread,
   <>
     1
     <Sociably.Pause time={1000} />
@@ -186,7 +186,7 @@ async function waitForSomething() {
   await doSomething();
 }
 
-bot.render(channel,
+bot.render(thread,
   <>
     hello
     <Sociably.Pause delay={waitForSomething} />

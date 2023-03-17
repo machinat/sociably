@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import type { SociablyUser, SociablyThread } from '@sociably/core';
 import { makeClassProvider } from '@sociably/core/service';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import type {
@@ -257,15 +257,15 @@ export class PostgresStateController implements BaseStateController {
     };
   }
 
-  channelState(channel: SociablyChannel): PostgresStateAccessor {
-    const identifier = channel.uniqueIdentifier;
+  threadState(thread: SociablyThread): PostgresStateAccessor {
+    const identifier = thread.uniqueIdentifier;
 
     return new PostgresStateAccessor(
       this._pool,
       this._marshaler,
       this.schemaName,
       this.tableName,
-      'channel',
+      'thread',
       identifier.platform,
       identifier.scopeId?.toString() || null,
       identifier.id.toString()
@@ -307,7 +307,7 @@ export class PostgresStateController implements BaseStateController {
           ? `CREATE SCHEMA IF NOT EXISTS "${this.schemaName}";`
           : ''
       }
-      CREATE TYPE "state_type" AS ENUM('channel', 'user', 'global');
+      CREATE TYPE "state_type" AS ENUM('thread', 'user', 'global');
       CREATE TABLE IF NOT EXISTS ${this._tableId()} (
         "${FIELD_STATE_TYPE}" state_type,
         "${FIELD_STATE_PLATFORM}" varchar(30),

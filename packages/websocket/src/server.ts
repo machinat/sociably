@@ -341,7 +341,7 @@ export class WebSocketServer<
     values: EventInput[]
   ): Promise<ConnIdentifier[]> {
     const promises: Promise<number | null>[] = [];
-    const sentChannels: ConnIdentifier[] = [];
+    const sentThreads: ConnIdentifier[] = [];
 
     for (const {
       socket,
@@ -363,11 +363,11 @@ export class WebSocketServer<
           })
       );
 
-      sentChannels.push({ serverId: this.id, id: connId });
+      sentThreads.push({ serverId: this.id, id: connId });
     }
 
     const results = await Promise.all(promises);
-    const finishedConns = sentChannels.filter((_, i) => results[i] !== null);
+    const finishedConns = sentThreads.filter((_, i) => results[i] !== null);
 
     return finishedConns;
   }

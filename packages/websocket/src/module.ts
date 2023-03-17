@@ -21,9 +21,9 @@ import { ReceiverP } from './receiver';
 import LocalOnlyBrokerP from './broker/LocalOnlyBroker';
 import {
   WebSocketConnection,
-  WebSocketUserChannel,
-  WebSocketTopicChannel,
-} from './channel';
+  WebSocketUserThread,
+  WebSocketTopicThread,
+} from './thread';
 import createWsServer from './utils/createWsServer';
 import type {
   WebSocketEventContext,
@@ -120,8 +120,8 @@ namespace WebSocket {
         },
 
         { provide: BaseMarshaler.TypeList, withValue: WebSocketConnection },
-        { provide: BaseMarshaler.TypeList, withValue: WebSocketUserChannel },
-        { provide: BaseMarshaler.TypeList, withValue: WebSocketTopicChannel },
+        { provide: BaseMarshaler.TypeList, withValue: WebSocketUserThread },
+        { provide: BaseMarshaler.TypeList, withValue: WebSocketTopicThread },
       ],
 
       startHook: makeContainer({ deps: [BotP] })(async (bot) => {

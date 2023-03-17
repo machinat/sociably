@@ -15,7 +15,7 @@ export const getAuthContextDetails = ({
   ref,
 }: LineAuthData): ContextDetails<LineAuthContext> => ({
   user: new LineUser(providerId, userId),
-  channel:
+  thread:
     ref === LiffReferer.Utou ? new LineChat(channelId, 'user', userId) : null,
   clientId,
   providerId,

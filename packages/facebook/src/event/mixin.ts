@@ -7,7 +7,7 @@ import type { PsidTarget, UserRefTarget } from '../types';
  */
 export interface EventBase {
   readonly platform: typeof FACEBOOK;
-  /** Indicate whether the event is sent to a standby channel. */
+  /** Indicate whether the event is sent to a standby thread. */
   readonly isStandby: boolean;
   /** Indicate whether the event is an echo. */
   readonly isEcho: boolean;
@@ -297,7 +297,7 @@ export const Echo: Echo = {
  * @category Event Mixin
  */
 export interface Standby {
-  /** Indicate whether the event is sent to a standby channel. */
+  /** Indicate whether the event is sent to a standby thread. */
   readonly isStandby: boolean;
 }
 
@@ -583,8 +583,7 @@ export const Referral: Referral = {
 export interface Postback {
   /**
    * Title for the CTA that was clicked on. This is sent to all apps subscribed
-   * to the page. For apps other than the original CTA sender, the postback
-   * event will be delivered via the standby channel.
+   * to the page.
    */
   readonly title: string;
   /**

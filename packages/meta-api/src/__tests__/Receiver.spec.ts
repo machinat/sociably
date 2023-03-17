@@ -11,7 +11,7 @@ const defaultEvent = {
   platform: 'test',
   category: 'foo',
   type: 'baz',
-  channel: { platform: 'test', uid: 'foo:123' },
+  thread: { platform: 'test', uid: 'foo:123' },
   user: { platform: 'test', uid: 'foo:123' },
   payload: { id: '1234567890' },
 };
@@ -331,7 +331,7 @@ describe('handling POST', () => {
       platform: 'test',
       category: 'foo',
       type: 'bar',
-      channel: { platform: 'test', uid: 'foo:123' },
+      thread: { platform: 'test', uid: 'foo:123' },
       user: { platform: 'test', uid: 'foo:123' },
       payload: { id: i + 1 },
     }));
@@ -359,7 +359,7 @@ describe('handling POST', () => {
           platform: 'test',
           category: 'foo',
           type: 'bar',
-          channel: { platform: 'test', uid: 'foo:123' },
+          thread: { platform: 'test', uid: 'foo:123' },
           user: { platform: 'test', uid: 'foo:123' },
           payload: { id: i + 1 },
         },
@@ -434,7 +434,7 @@ describe('handling POST', () => {
   });
 
   describe('context.reply(message)', () => {
-    test('call bot.render(event.channel, message)', async () => {
+    test('call bot.render(event.thread, message)', async () => {
       const receiver = new MetaWebhookReceiver({
         bot,
         platform: 'test',
@@ -464,7 +464,7 @@ describe('handling POST', () => {
             `);
 
       expect(bot.render).toHaveBeenCalledTimes(1);
-      expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
+      expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
 
       expect(makeEventsFromUpdate).toHaveBeenCalledTimes(1);
       expect(makeEventsFromUpdate).toHaveBeenCalledWith({
@@ -473,7 +473,7 @@ describe('handling POST', () => {
     });
   });
 
-  test('do nothing when event.channel is null', async () => {
+  test('do nothing when event.thread is null', async () => {
     const receiver = new MetaWebhookReceiver({
       bot,
       platform: 'test',
@@ -485,7 +485,7 @@ describe('handling POST', () => {
     });
 
     makeEventsFromUpdate.mock.fakeReturnValue([
-      { ...defaultEvent, channel: null },
+      { ...defaultEvent, thread: null },
     ]);
 
     await receiver.handleRequest(

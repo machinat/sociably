@@ -7,8 +7,8 @@ import { LineComponent, ChatActionSegmentValue } from '../types';
 const UNLINK_RICHMENU_VALUE = {
   type: 'chat_action' as const,
 
-  getChatRequest(channel: LineChat) {
-    if (channel.type !== 'user') {
+  getChatRequest(thread: LineChat) {
+    if (thread.type !== 'user') {
       throw new TypeError(
         '<UnlinkRichMenu /> can only be sent to an user chat'
       );
@@ -16,7 +16,7 @@ const UNLINK_RICHMENU_VALUE = {
 
     return {
       method: 'DELETE' as const,
-      path: `v2/bot/user/${channel.id}/richmenu`,
+      path: `v2/bot/user/${thread.id}/richmenu`,
       body: null,
     };
   },

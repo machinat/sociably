@@ -11,7 +11,7 @@ import type {
   EventValue,
 } from '@sociably/websocket';
 import { WEBVIEW } from './constant';
-import { WebviewConnection } from './channel';
+import { WebviewConnection } from './thread';
 import type { WebviewEvent } from './types';
 
 const WebEventProto = { platform: WEBVIEW };
@@ -21,7 +21,7 @@ export const createEvent = <
   Value extends EventValue
 >(
   value: EventInput,
-  channel: WebviewConnection,
+  thread: WebviewConnection,
   user: User
 ): WebviewEvent<Value, User> => {
   const event: WebviewEvent<Value, User> = Object.create(WebEventProto);
@@ -30,7 +30,7 @@ export const createEvent = <
   event.category = category || 'default';
   event.type = type;
   event.payload = payload;
-  event.channel = channel;
+  event.thread = thread;
   event.user = user;
 
   return event;

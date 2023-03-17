@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#render(channel, message, options) post to NUMBER/messages api 1`] = `
+exports[`#render(thread, message, options) post to NUMBER/messages api 1`] = `
 Object {
   "jobs": Array [
     Object {
@@ -111,7 +111,7 @@ Object {
 }
 `;
 
-exports[`#render(channel, message, options) post to NUMBER/messages api 2`] = `
+exports[`#render(thread, message, options) post to NUMBER/messages api 2`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",

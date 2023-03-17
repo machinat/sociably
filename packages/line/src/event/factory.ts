@@ -29,18 +29,18 @@ export const makeEvent = <
   Proto extends object // eslint-disable-line @typescript-eslint/ban-types
 >(
   payload: LineRawEvent,
-  channel: LineChat,
+  thread: LineChat,
   user: LineUser,
   proto: Proto
 ): {
   payload: LineRawEvent;
   user: LineUser;
-  channel: LineChat;
+  thread: LineChat;
 } & Proto => {
   const event = Object.create(proto);
 
   event.payload = payload;
-  event.channel = channel;
+  event.thread = thread;
   event.user = user;
 
   return event;
@@ -173,69 +173,69 @@ const eventFactory = (
   payload: LineRawEvent
 ): LineEvent => {
   const { type: eventType, source } = payload;
-  const channel = LineChat.fromMessagingSource(channelId, source);
+  const thread = LineChat.fromMessagingSource(channelId, source);
   const user = new LineUser(providerId, source.userId);
 
   if (eventType === 'message') {
     const { type: messageType } = payload.message;
     return messageType === 'text'
-      ? makeEvent(payload, channel, user, TextProto)
+      ? makeEvent(payload, thread, user, TextProto)
       : messageType === 'image'
-      ? makeEvent(payload, channel, user, ImageProto)
+      ? makeEvent(payload, thread, user, ImageProto)
       : messageType === 'video'
-      ? makeEvent(payload, channel, user, AudioProto)
+      ? makeEvent(payload, thread, user, AudioProto)
       : messageType === 'audio'
-      ? makeEvent(payload, channel, user, VedioProto)
+      ? makeEvent(payload, thread, user, VedioProto)
       : messageType === 'file'
-      ? makeEvent(payload, channel, user, FileProto)
+      ? makeEvent(payload, thread, user, FileProto)
       : messageType === 'location'
-      ? makeEvent(payload, channel, user, LocationProto)
+      ? makeEvent(payload, thread, user, LocationProto)
       : messageType === 'sticker'
-      ? makeEvent(payload, channel, user, StickerProto)
-      : makeEvent(payload, channel, user, UnknownProto);
+      ? makeEvent(payload, thread, user, StickerProto)
+      : makeEvent(payload, thread, user, UnknownProto);
   }
 
   if (eventType === 'postback') {
     const { params } = payload.postback;
 
     return params === undefined
-      ? makeEvent(payload, channel, user, PostbackProto)
+      ? makeEvent(payload, thread, user, PostbackProto)
       : params.date !== undefined
-      ? makeEvent(payload, channel, user, PostbackDateProto)
+      ? makeEvent(payload, thread, user, PostbackDateProto)
       : params.time !== undefined
-      ? makeEvent(payload, channel, user, PostbackTimeProto)
+      ? makeEvent(payload, thread, user, PostbackTimeProto)
       : params.datetime !== undefined
-      ? makeEvent(payload, channel, user, PostbackDatetimeProto)
-      : makeEvent(payload, channel, user, UnknownProto);
+      ? makeEvent(payload, thread, user, PostbackDatetimeProto)
+      : makeEvent(payload, thread, user, UnknownProto);
   }
 
   return eventType === 'unsend'
-    ? makeEvent(payload, channel, user, UnsendProto)
+    ? makeEvent(payload, thread, user, UnsendProto)
     : eventType === 'follow'
-    ? makeEvent(payload, channel, user, FollowProto)
+    ? makeEvent(payload, thread, user, FollowProto)
     : eventType === 'unfollow'
-    ? makeEvent(payload, channel, user, UnfollowProto)
+    ? makeEvent(payload, thread, user, UnfollowProto)
     : eventType === 'join'
-    ? makeEvent(payload, channel, user, JoinProto)
+    ? makeEvent(payload, thread, user, JoinProto)
     : eventType === 'leave'
-    ? makeEvent(payload, channel, user, LeaveProto)
+    ? makeEvent(payload, thread, user, LeaveProto)
     : eventType === 'memberJoined'
-    ? makeEvent(payload, channel, user, MemberJoinProto)
+    ? makeEvent(payload, thread, user, MemberJoinProto)
     : eventType === 'memberLeft'
-    ? makeEvent(payload, channel, user, MemberLeaveProto)
+    ? makeEvent(payload, thread, user, MemberLeaveProto)
     : eventType === 'beacon'
-    ? makeEvent(payload, channel, user, BeaconProto)
+    ? makeEvent(payload, thread, user, BeaconProto)
     : eventType === 'accountLink'
-    ? makeEvent(payload, channel, user, AccountLinkProto)
+    ? makeEvent(payload, thread, user, AccountLinkProto)
     : eventType === 'things'
     ? payload.things.type === 'link'
-      ? makeEvent(payload, channel, user, DeviceLinkProto)
+      ? makeEvent(payload, thread, user, DeviceLinkProto)
       : payload.things.type === 'unlink'
-      ? makeEvent(payload, channel, user, DeviceUnlinkProto)
+      ? makeEvent(payload, thread, user, DeviceUnlinkProto)
       : payload.things.type === 'scenarioResult'
-      ? makeEvent(payload, channel, user, ScenarioExecutionProto)
-      : makeEvent(payload, channel, user, UnknownProto)
-    : makeEvent(payload, channel, user, UnknownProto);
+      ? makeEvent(payload, thread, user, ScenarioExecutionProto)
+      : makeEvent(payload, thread, user, UnknownProto)
+    : makeEvent(payload, thread, user, UnknownProto);
 };
 
 export default eventFactory;

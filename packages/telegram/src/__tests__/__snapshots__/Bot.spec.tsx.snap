@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`.render(channel, message, options) render global actions without a chat target 1`] = `
+exports[`.render(thread, message, options) render global actions without a chat target 1`] = `
 Object {
   "jobs": Array [
     Object {
@@ -86,7 +86,7 @@ Object {
 }
 `;
 
-exports[`.render(channel, message, options) send rendered messages to telegram api 1`] = `
+exports[`.render(thread, message, options) send rendered messages to telegram api 1`] = `
 Object {
   "jobs": Array [
     Object {

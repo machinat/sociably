@@ -401,7 +401,7 @@ describe('module utilities', () => {
 describe('popEventWrapper', () => {
   const eventContext = {
     platform: 'test',
-    channel: { phone: 'call' },
+    thread: { phone: 'call' },
     event: { text: 'Is Champ there?' },
     user: { name: 'Johnnnnn Ceeeena!' },
     metadata: { wwe: 'super slam' },
@@ -719,7 +719,7 @@ describe('popEventWrapper', () => {
 describe('dispatchWrapper', () => {
   const dispatchFrame = {
     platform: 'test',
-    channel: { a: 'new hope' },
+    thread: { a: 'new hope' },
     bot: { droid: 'r2d2' },
     tasks: [{ type: 'dispatch', payload: [{ find: 'Obi-Wan Kenobi' }] }],
   };

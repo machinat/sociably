@@ -1,5 +1,5 @@
 import { mixin } from '@sociably/core/utils';
-import type { FacebookRawEvent, FacebookChannel } from '../types';
+import type { FacebookRawEvent, FacebookThread } from '../types';
 import FacebookChat from '../Chat';
 import FacebookUser from '../User';
 import {
@@ -34,22 +34,22 @@ import type { FacebookEvent } from './types';
 
 const makeEvent = <
   Proto extends {},
-  Channel extends null | FacebookChannel,
+  Thread extends null | FacebookThread,
   User extends null | FacebookUser
 >(
   payload: FacebookRawEvent,
-  channel: Channel,
+  thread: Thread,
   user: User,
   proto: Proto
 ): {
-  channel: Channel;
+  thread: Thread;
   user: User;
   payload: FacebookRawEvent;
 } & Proto => {
   const event = Object.create(proto);
 
   event.payload = payload;
-  event.channel = channel;
+  event.thread = thread;
   event.user = user;
 
   return event;
@@ -276,7 +276,7 @@ const createEvent = (
   if (hasOwnProperty(payload, 'message')) {
     const { message, sender, recepient } = payload;
 
-    const channel = message.is_echo
+    const thread = message.is_echo
       ? new FacebookChat(pageId, recepient)
       : new FacebookChat(pageId, sender);
     const user = message.is_echo
@@ -286,62 +286,62 @@ const createEvent = (
     if (hasOwnProperty(message, 'text')) {
       if (hasOwnProperty(message, 'quick_reply')) {
         return isStandby
-          ? makeEvent(payload, channel, user, StandbyQuickReplyProto)
-          : makeEvent(payload, channel, user, QuickReplyProto);
+          ? makeEvent(payload, thread, user, StandbyQuickReplyProto)
+          : makeEvent(payload, thread, user, QuickReplyProto);
       }
 
       return message.is_echo
-        ? makeEvent(payload, channel, user, EchoTextProto)
+        ? makeEvent(payload, thread, user, EchoTextProto)
         : isStandby
-        ? makeEvent(payload, channel, user, StandbyTextProto)
-        : makeEvent(payload, channel, user, TextProto);
+        ? makeEvent(payload, thread, user, StandbyTextProto)
+        : makeEvent(payload, thread, user, TextProto);
     }
 
     switch (message.attachments[0].type) {
       case 'image':
         return message.is_echo
-          ? makeEvent(payload, channel, user, EchoImageProto)
+          ? makeEvent(payload, thread, user, EchoImageProto)
           : isStandby
-          ? makeEvent(payload, channel, user, StandbyImageProto)
-          : makeEvent(payload, channel, user, ImageProto);
+          ? makeEvent(payload, thread, user, StandbyImageProto)
+          : makeEvent(payload, thread, user, ImageProto);
       case 'video':
         return message.is_echo
-          ? makeEvent(payload, channel, user, EchoVideoProto)
+          ? makeEvent(payload, thread, user, EchoVideoProto)
           : isStandby
-          ? makeEvent(payload, channel, user, StandbyVideoProto)
-          : makeEvent(payload, channel, user, VideoProto);
+          ? makeEvent(payload, thread, user, StandbyVideoProto)
+          : makeEvent(payload, thread, user, VideoProto);
       case 'audio':
         return message.is_echo
-          ? makeEvent(payload, channel, user, EchoAudioProto)
+          ? makeEvent(payload, thread, user, EchoAudioProto)
           : isStandby
-          ? makeEvent(payload, channel, user, StandbyAudioProto)
-          : makeEvent(payload, channel, user, AudioProto);
+          ? makeEvent(payload, thread, user, StandbyAudioProto)
+          : makeEvent(payload, thread, user, AudioProto);
       case 'file':
         return message.is_echo
-          ? makeEvent(payload, channel, user, EchoFileProto)
+          ? makeEvent(payload, thread, user, EchoFileProto)
           : isStandby
-          ? makeEvent(payload, channel, user, StandbyFileProto)
-          : makeEvent(payload, channel, user, FileProto);
+          ? makeEvent(payload, thread, user, StandbyFileProto)
+          : makeEvent(payload, thread, user, FileProto);
       case 'location':
         return isStandby
-          ? makeEvent(payload, channel, user, StandbyLocationProto)
-          : makeEvent(payload, channel, user, LocationProto);
+          ? makeEvent(payload, thread, user, StandbyLocationProto)
+          : makeEvent(payload, thread, user, LocationProto);
       case 'template':
         return message.is_echo
-          ? makeEvent(payload, channel, user, EchoTemplateProto)
+          ? makeEvent(payload, thread, user, EchoTemplateProto)
           : hasOwnProperty(message.attachments[0].payload, 'product')
           ? isStandby
-            ? makeEvent(payload, channel, user, StandbyProductTemplateProto)
-            : makeEvent(payload, channel, user, ProductTemplateProto)
-          : makeEvent(payload, channel, user, UnknownProto);
+            ? makeEvent(payload, thread, user, StandbyProductTemplateProto)
+            : makeEvent(payload, thread, user, ProductTemplateProto)
+          : makeEvent(payload, thread, user, UnknownProto);
       case 'fallback':
         return message.is_echo
-          ? makeEvent(payload, channel, user, EchoFallbackProto)
+          ? makeEvent(payload, thread, user, EchoFallbackProto)
           : isStandby
-          ? makeEvent(payload, channel, user, StandbyFallbackProto)
-          : makeEvent(payload, channel, user, FallbackProto);
+          ? makeEvent(payload, thread, user, StandbyFallbackProto)
+          : makeEvent(payload, thread, user, FallbackProto);
       default:
-        return makeEvent(payload, channel, user, UnknownProto);
+        return makeEvent(payload, thread, user, UnknownProto);
     }
   }
 
@@ -361,59 +361,59 @@ const createEvent = (
       );
     }
 
-    const channel = !sender
+    const thread = !sender
       ? new FacebookChat<'user_ref'>(pageId, { user_ref: optin.user_ref })
       : new FacebookChat<'user'>(pageId, sender);
 
     const user =
       sender !== undefined ? new FacebookUser(pageId, sender.id) : null;
 
-    return makeEvent(payload, channel, user, OptinProto);
+    return makeEvent(payload, thread, user, OptinProto);
   }
 
   if (hasOwnProperty(payload, 'referral')) {
     const { sender } = payload;
-    const channel = new FacebookChat<'user' | 'user_ref'>(pageId, sender);
+    const thread = new FacebookChat<'user' | 'user_ref'>(pageId, sender);
     const user = sender.id ? new FacebookUser(pageId, sender.id) : null;
-    return makeEvent(payload, channel, user, ReferralProto);
+    return makeEvent(payload, thread, user, ReferralProto);
   }
 
   if (hasOwnProperty(payload, 'postback')) {
     const { sender } = payload;
-    const channel = new FacebookChat<'user' | 'user_ref'>(pageId, sender);
+    const thread = new FacebookChat<'user' | 'user_ref'>(pageId, sender);
     const user = sender.id ? new FacebookUser(pageId, sender.id) : null;
     return isStandby
-      ? makeEvent(payload, channel, user, StandbyPostbackProto)
-      : makeEvent(payload, channel, user, PostbackProto);
+      ? makeEvent(payload, thread, user, StandbyPostbackProto)
+      : makeEvent(payload, thread, user, PostbackProto);
   }
 
   const { sender } = payload;
-  const channel = new FacebookChat(pageId, sender);
+  const thread = new FacebookChat(pageId, sender);
   const user = new FacebookUser(pageId, sender.id);
 
   return hasOwnProperty(payload, 'reaction')
-    ? makeEvent(payload, channel, user, ReactionProto)
+    ? makeEvent(payload, thread, user, ReactionProto)
     : hasOwnProperty(payload, 'read')
     ? isStandby
-      ? makeEvent(payload, channel, user, StandbyReadProto)
-      : makeEvent(payload, channel, user, ReadProto)
+      ? makeEvent(payload, thread, user, StandbyReadProto)
+      : makeEvent(payload, thread, user, ReadProto)
     : hasOwnProperty(payload, 'delivery')
     ? isStandby
-      ? makeEvent(payload, channel, user, StandbyDeliveryProto)
-      : makeEvent(payload, channel, user, DeliveryProto)
+      ? makeEvent(payload, thread, user, StandbyDeliveryProto)
+      : makeEvent(payload, thread, user, DeliveryProto)
     : hasOwnProperty(payload, 'account_linking')
-    ? makeEvent(payload, channel, user, AccountLinkingProto)
+    ? makeEvent(payload, thread, user, AccountLinkingProto)
     : hasOwnProperty(payload, 'game_play')
-    ? makeEvent(payload, channel, user, GamePlayProto)
+    ? makeEvent(payload, thread, user, GamePlayProto)
     : hasOwnProperty(payload, 'take_thread_control')
-    ? makeEvent(payload, channel, user, TakeThreadControlProto)
+    ? makeEvent(payload, thread, user, TakeThreadControlProto)
     : hasOwnProperty(payload, 'pass_thread_control')
-    ? makeEvent(payload, channel, user, PassThreadControlProto)
+    ? makeEvent(payload, thread, user, PassThreadControlProto)
     : hasOwnProperty(payload, 'request_thread_control')
-    ? makeEvent(payload, channel, user, RequestThreadControlProto)
+    ? makeEvent(payload, thread, user, RequestThreadControlProto)
     : hasOwnProperty(payload, 'app_roles')
-    ? makeEvent(payload, channel, user, AppRolesProto)
-    : makeEvent(payload, channel, user, UnknownProto);
+    ? makeEvent(payload, thread, user, AppRolesProto)
+    : makeEvent(payload, thread, user, UnknownProto);
 };
 
 export default createEvent;

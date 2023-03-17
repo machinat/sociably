@@ -1,4 +1,4 @@
-import RenderingChannelI from '../base/RenderingChannel';
+import RenderingThreadI from '../base/RenderingThread';
 import SociablyQueue, { JobBatchResponse } from '../queue';
 import { createEmptyScope, ServiceScope } from '../service';
 import type SociablyRenderer from '../renderer';
@@ -8,7 +8,7 @@ import type {
   InitScopeFn,
   DispatchWrapper,
   ThunkEffectFn,
-  SociablyChannel,
+  SociablyThread,
 } from '../types';
 import DispatchError from './error';
 import {
@@ -25,7 +25,7 @@ import {
  * results poped through middlewares.
  */
 export default class SociablyEngine<
-  Channel extends SociablyChannel,
+  Thread extends SociablyThread,
   SegmentValue,
   Component extends NativeComponent<unknown, any>,
   Job,
@@ -38,7 +38,7 @@ export default class SociablyEngine<
 
   private _initScope: InitScopeFn;
   private _dispatcher: (
-    frame: DispatchFrame<Channel, Job>,
+    frame: DispatchFrame<Thread, Job>,
     scope: ServiceScope
   ) => Promise<DispatchResponse<Job, Result>>;
 
@@ -50,7 +50,7 @@ export default class SociablyEngine<
     initScope: InitScopeFn = () => createEmptyScope(),
     dispatchWrapper: DispatchWrapper<
       Job,
-      DispatchFrame<Channel, Job>,
+      DispatchFrame<Thread, Job>,
       Result
     > = (dispatch) => dispatch
   ) {
@@ -79,7 +79,7 @@ export default class SociablyEngine<
    * function registered by service which will be excuted after all jobs
    * dispatched.
    */
-  async render<Target extends null | Channel>(
+  async render<Target extends null | Thread>(
     target: Target,
     node: SociablyNode,
     createJobs: (
@@ -89,7 +89,7 @@ export default class SociablyEngine<
   ): Promise<null | DispatchResponse<Job, Result>> {
     const scope = this._initScope();
     const segments = await this.renderer.render(node, scope, [
-      [RenderingChannelI, target],
+      [RenderingThreadI, target],
     ]);
     if (segments === null) {
       return null;
@@ -139,9 +139,9 @@ export default class SociablyEngine<
       tasks.push({ type: 'thunk', payload: thunkFn });
     }
 
-    const frame: DispatchFrame<Channel, Job> = {
+    const frame: DispatchFrame<Thread, Job> = {
       platform: this.platform,
-      channel: target,
+      thread: target,
       tasks,
       node,
     };
@@ -156,12 +156,12 @@ export default class SociablyEngine<
    * chain of the middlewares.
    */
   async dispatchJobs(
-    channel: null | Channel,
+    thread: null | Thread,
     jobs: Job[]
   ): Promise<DispatchResponse<Job, Result>> {
-    const frame: DispatchFrame<Channel, Job> = {
+    const frame: DispatchFrame<Thread, Job> = {
       platform: this.platform,
-      channel,
+      thread,
       tasks: [{ type: 'dispatch', payload: jobs }],
       node: null,
     };
@@ -170,7 +170,7 @@ export default class SociablyEngine<
   }
 
   async _execute(
-    frame: DispatchFrame<Channel, Job>
+    frame: DispatchFrame<Thread, Job>
   ): Promise<DispatchResponse<Job, Result>> {
     const { tasks } = frame;
     const results: Result[] = [];

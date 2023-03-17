@@ -13,7 +13,7 @@ describe('#subscribe()', () => {
     stream.next({
       scope: createEmptyScope(),
       value: 'foo',
-      key: 'foo.channel',
+      key: 'foo.thread',
     });
     expect(eventListener).toHaveBeenCalledTimes(1);
     expect(eventListener).toHaveBeenCalledWith('foo');
@@ -21,7 +21,7 @@ describe('#subscribe()', () => {
     stream.next({
       scope: createEmptyScope(),
       value: 'bar',
-      key: 'bar.channel',
+      key: 'bar.thread',
     });
     expect(eventListener).toHaveBeenCalledTimes(2);
     expect(eventListener).toHaveBeenCalledWith('bar');
@@ -39,20 +39,20 @@ describe('#subscribe()', () => {
     stream.next({
       scope: createEmptyScope(),
       value: 'foo',
-      key: 'foo.channel',
+      key: 'foo.thread',
     });
     expect(nextContainer.$$factory).toHaveBeenCalledTimes(1);
-    expect(nextContainer.$$factory).toHaveBeenCalledWith('foo.channel');
+    expect(nextContainer.$$factory).toHaveBeenCalledWith('foo.thread');
     expect(eventListener).toHaveBeenCalledTimes(1);
     expect(eventListener).toHaveBeenCalledWith('foo');
 
     stream.next({
       scope: createEmptyScope(),
       value: 'bar',
-      key: 'bar.channel',
+      key: 'bar.thread',
     });
     expect(nextContainer.$$factory).toHaveBeenCalledTimes(2);
-    expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.channel');
+    expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.thread');
     expect(eventListener).toHaveBeenCalledTimes(2);
     expect(eventListener).toHaveBeenCalledWith('bar');
   });
@@ -70,7 +70,7 @@ describe('#subscribe()', () => {
     stream.next({
       scope: createEmptyScope(),
       value: 'foo',
-      key: 'foo.channel',
+      key: 'foo.thread',
     });
 
     expect(eventListener).toHaveBeenCalledTimes(1);
@@ -115,7 +115,7 @@ describe('#catch()', () => {
     stream.next({
       scope: createEmptyScope(),
       value: 'foo',
-      key: 'foo.channel',
+      key: 'foo.thread',
     });
 
     stream.error({
@@ -139,7 +139,7 @@ describe('#catch()', () => {
     stream.next({
       scope: createEmptyScope(),
       value: 'foo',
-      key: 'foo.channel',
+      key: 'foo.thread',
     });
 
     expect(eventListener).toHaveBeenCalledTimes(1);
@@ -159,7 +159,7 @@ describe('#catch()', () => {
     stream.next({
       scope: createEmptyScope(),
       value: 'foo',
-      key: 'foo.channel',
+      key: 'foo.thread',
     });
 
     stream.error({

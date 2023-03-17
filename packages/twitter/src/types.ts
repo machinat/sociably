@@ -15,7 +15,7 @@ import type TweetTarget from './TweetTarget';
 import type { TwitterBot } from './Bot';
 import type TwitterUser from './User';
 
-export type TwitterChannel = TweetTarget | TwitterChat;
+export type TwitterThread = TweetTarget | TwitterChat;
 
 export type TwitterPlatformConfigs = {
   /** The id of Twitter app */
@@ -75,7 +75,7 @@ export type TwitterApiRequest = {
 };
 
 type AccomplishRequestFn = (
-  target: TwitterChannel,
+  target: TwitterThread,
   request: TwitterApiRequest,
   uploadedMedia: null | string[]
 ) => TwitterApiRequest;
@@ -83,14 +83,11 @@ type AccomplishRequestFn = (
 export type TwitterJob = {
   key: undefined | string;
   request: TwitterApiRequest;
-  target: TwitterChannel;
+  target: TwitterThread;
   asApplication: boolean;
   refreshTarget:
     | null
-    | ((
-        currentTarget: TwitterChannel,
-        result: unknown
-      ) => null | TwitterChannel);
+    | ((currentTarget: TwitterThread, result: unknown) => null | TwitterThread);
   accomplishRequest: null | AccomplishRequestFn;
   mediaSources: null | MediaSource[];
 };
@@ -159,7 +156,7 @@ export type TwitterEventContext = {
 
 export type TwitterEventMiddleware = EventMiddleware<TwitterEventContext, null>;
 
-export type TwitterDispatchFrame = DispatchFrame<TwitterChannel, TwitterJob>;
+export type TwitterDispatchFrame = DispatchFrame<TwitterThread, TwitterJob>;
 
 export type TwitterDispatchMiddleware = DispatchMiddleware<
   TwitterJob,

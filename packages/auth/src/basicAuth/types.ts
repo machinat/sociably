@@ -1,5 +1,5 @@
 import {
-  SociablyChannel,
+  SociablyThread,
   FunctionalComponent,
   ContainerComponent,
   SociablyBot,
@@ -29,10 +29,10 @@ export type CodeMessageComponent =
   | FunctionalComponent<CodeMessageComponentProps>
   | ContainerComponent<CodeMessageComponentProps>;
 
-export type CheckAuthDataFn<Data, Channel extends SociablyChannel> = (
+export type CheckAuthDataFn<Data, Thread extends SociablyThread> = (
   data: Data
 ) =>
-  | { ok: true; channel: Channel; data: Data }
+  | { ok: true; thread: Thread; data: Data }
   | { ok: false; code: number; reason: string };
 
 export type BasicAuthOptions = {
@@ -65,12 +65,12 @@ export type BasicAuthState<Data> =
   | BasicAuthLoginState<Data>
   | BasicAuthVerifyState<Data>;
 
-export type AuthDelegatorOptions<Data, Channel extends SociablyChannel> = {
+export type AuthDelegatorOptions<Data, Thread extends SociablyThread> = {
   platform: string;
-  bot: SociablyBot<Channel, unknown, unknown>;
+  bot: SociablyBot<Thread, unknown, unknown>;
   platformName: string;
   platformImageUrl: string;
   platformColor: string;
-  checkAuthData: CheckAuthDataFn<Data, Channel>;
-  getChatLink: (channel: Channel) => string;
+  checkAuthData: CheckAuthDataFn<Data, Thread>;
+  getChatLink: (thread: Thread) => string;
 };

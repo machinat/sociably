@@ -15,7 +15,7 @@ const handleWebview = makeContainer({ deps: [BasicBot] })(
       
       if (event.type === 'connect') {
         // send hello when webview connection connect
-        await webviewBot.send(event.channel, {
+        await webviewBot.send(event.thread, {
           category: 'greeting',
           type: 'hello',
           payload: \`Hello, user from \${auth.platform}!\`,
@@ -23,7 +23,7 @@ const handleWebview = makeContainer({ deps: [BasicBot] })(
       } else if (event.type === 'hello') {
         // reflect hello to chatroom
         await baseBot.render(
-          auth.channel,
+          auth.thread,
           <WithMenu>Hello {event.payload}!</WithMenu>
         );
       }

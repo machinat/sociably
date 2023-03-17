@@ -6,7 +6,7 @@ const useIntent =
   (recognizer: IntentRecognizer) =>
   async (event: ChatEventContext['event']) => {
     if (event.type === 'text') {
-      const intent = await recognizer.detectText(event.channel, event.text);
+      const intent = await recognizer.detectText(event.thread, event.text);
       return intent;
     }
 

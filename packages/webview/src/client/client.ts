@@ -7,7 +7,7 @@ import type {
 } from '@sociably/auth';
 import { Connector, ClientEmitter } from '@sociably/websocket/client';
 import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
-import { WebviewConnection } from '../channel';
+import { WebviewConnection } from '../thread';
 import { createEvent } from '../utils';
 import type {
   EventInput,
@@ -32,7 +32,7 @@ class WebviewClient<
   private _platformInput: string | undefined;
 
   private _user: null | UserOfAuthenticator<Authenticator>;
-  private _channel: null | WebviewConnection;
+  private _thread: null | WebviewConnection;
 
   isMockupMode: boolean;
 
@@ -48,8 +48,8 @@ class WebviewClient<
     return this._user;
   }
 
-  get channel(): null | WebviewConnection {
-    return this._channel;
+  get thread(): null | WebviewConnection {
+    return this._thread;
   }
 
   get authContext(): null | ContextOfAuthenticator<Authenticator> {
@@ -70,7 +70,7 @@ class WebviewClient<
     super();
 
     this._user = null;
-    this._channel = null;
+    this._thread = null;
     this.isMockupMode = mockupMode;
     this._platformInput = platform;
 
@@ -142,7 +142,7 @@ class WebviewClient<
     user: UserOfAuthenticator<Authenticator>;
   }) {
     this._user = user;
-    this._channel = new WebviewConnection('*', connId);
+    this._thread = new WebviewConnection('*', connId);
 
     this._emitEvent({
       event: createEvent(
@@ -151,7 +151,7 @@ class WebviewClient<
           type: 'connect',
           payload: null,
         },
-        this._channel,
+        this._thread,
         user
       ),
       auth: this.authContext as ContextOfAuthenticator<Authenticator>,
@@ -164,7 +164,7 @@ class WebviewClient<
       this._emitEvent({
         event: createEvent(
           value,
-          this._channel as WebviewConnection,
+          this._thread as WebviewConnection,
           this._user as UserOfAuthenticator<Authenticator>
         ),
         auth: this.authContext as ContextOfAuthenticator<Authenticator>,
@@ -174,8 +174,8 @@ class WebviewClient<
   }
 
   private _handleDisconnect({ reason }: { reason: string }) {
-    const channel = this._channel;
-    this._channel = null;
+    const thread = this._thread;
+    this._thread = null;
 
     this._emitEvent({
       event: createEvent(
@@ -184,7 +184,7 @@ class WebviewClient<
           type: 'disconnect',
           payload: { reason },
         },
-        channel as WebviewConnection,
+        thread as WebviewConnection,
         this._user as UserOfAuthenticator<Authenticator>
       ),
       auth: this.authContext as ContextOfAuthenticator<Authenticator>,

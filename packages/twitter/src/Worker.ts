@@ -8,7 +8,7 @@ import type { SociablyWorker } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import TwitterApiError from './Error';
 import type {
-  TwitterChannel,
+  TwitterThread,
   TwitterJob,
   TwitterApiResult,
   MediaUploadResult,
@@ -62,7 +62,7 @@ export default class TwitterWorker
 
   private _started: boolean;
   private _lockedKeys: Set<string>;
-  private _targetCache: Map<string, TwitterChannel>;
+  private _targetCache: Map<string, TwitterThread>;
 
   constructor(options: TwitterWorkerOptions) {
     this.options = options;

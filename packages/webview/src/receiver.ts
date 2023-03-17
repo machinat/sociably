@@ -16,7 +16,7 @@ import WebSocket, {
 import { WEBVIEW } from './constant';
 import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
 import { BotP } from './bot';
-import { WebviewConnection } from './channel';
+import { WebviewConnection } from './thread';
 import { createEvent } from './utils';
 import type { WebviewEventContext } from './types';
 
@@ -93,18 +93,18 @@ export class WebviewReceiver<
     request: HttpRequestInfo,
     authContext: ContextOfAuthenticator<Authenticator>
   ) {
-    const channel = new WebviewConnection(this._server.id, connId);
+    const thread = new WebviewConnection(this._server.id, connId);
     this._popEvent({
       platform: WEBVIEW,
       bot: this._bot,
-      event: createEvent(value, channel, user),
+      event: createEvent(value, thread, user),
       metadata: {
         source: 'websocket',
         request,
-        connection: channel,
+        connection: thread,
         auth: authContext,
       },
-      reply: (message) => this._bot.render(channel, message),
+      reply: (message) => this._bot.render(thread, message),
     }).catch(this._popError);
   }
 }

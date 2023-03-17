@@ -63,7 +63,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       businessNumber: '1234567890',
-      channel: new WhatsAppChat('1234567890', '9876543210'),
+      thread: new WhatsAppChat('1234567890', '9876543210'),
       user: new WhatsAppUser('9876543210'),
     },
   });

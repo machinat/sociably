@@ -16,9 +16,9 @@ import { PlatformUtilitiesI } from './interface';
 import { ServerP } from './server';
 import {
   WebSocketConnection,
-  WebSocketTopicChannel,
-  WebSocketUserChannel,
-} from './channel';
+  WebSocketTopicThread,
+  WebSocketUserThread,
+} from './thread';
 import createJobs from './utils/createJobs';
 import WebSocketWorker from './worker';
 import type {
@@ -28,7 +28,7 @@ import type {
   WebSocketComponent,
   WebSocketDispatchFrame,
   ConnIdentifier,
-  WebSocketDispatchChannel,
+  WebSocketDispatchThread,
   WebSocketDispatchResponse,
 } from './types';
 
@@ -44,11 +44,11 @@ const toConnection = ({ serverId, id }: ConnIdentifier) =>
  */
 export class WebSocketBot
   implements
-    SociablyBot<WebSocketDispatchChannel, WebSocketJob, WebSocketResult>
+    SociablyBot<WebSocketDispatchThread, WebSocketJob, WebSocketResult>
 {
   private _server: ServerP<any, unknown>;
   engine: Engine<
-    WebSocketDispatchChannel,
+    WebSocketDispatchThread,
     EventInput,
     WebSocketComponent,
     WebSocketJob,
@@ -101,25 +101,25 @@ export class WebSocketBot
   }
 
   render(
-    channel: WebSocketDispatchChannel,
+    thread: WebSocketDispatchThread,
     message: SociablyNode
   ): Promise<null | WebSocketDispatchResponse> {
-    return this.engine.render<WebSocketDispatchChannel>(
-      channel,
+    return this.engine.render<WebSocketDispatchThread>(
+      thread,
       message,
       createJobs
     );
   }
 
   async send(
-    channel: WebSocketConnection,
+    thread: WebSocketConnection,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
     const {
       results: [{ connections }],
-    } = await this.engine.dispatchJobs(channel, [
+    } = await this.engine.dispatchJobs(thread, [
       {
-        target: channel,
+        target: thread,
         values: Array.isArray(content) ? content : [content],
       },
     ]);
@@ -131,12 +131,12 @@ export class WebSocketBot
     user: SociablyUser,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
-    const channel = new WebSocketUserChannel(user.uid);
+    const thread = new WebSocketUserThread(user.uid);
     const {
       results: [{ connections }],
-    } = await this.engine.dispatchJobs(channel, [
+    } = await this.engine.dispatchJobs(thread, [
       {
-        target: channel,
+        target: thread,
         values: Array.isArray(content) ? content : [content],
       },
     ]);
@@ -148,12 +148,12 @@ export class WebSocketBot
     topic: string,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
-    const channel = new WebSocketTopicChannel(topic);
+    const thread = new WebSocketTopicThread(topic);
     const {
       results: [{ connections }],
-    } = await this.engine.dispatchJobs(channel, [
+    } = await this.engine.dispatchJobs(thread, [
       {
-        target: channel,
+        target: thread,
         values: Array.isArray(content) ? content : [content],
       },
     ]);

@@ -162,7 +162,7 @@ Object {
 }
 `;
 
-exports[`sequently excute jobs within the same identical channel 1`] = `
+exports[`sequently excute jobs within an identical thread 1`] = `
 Object {
   "batch": Array [
     Object {

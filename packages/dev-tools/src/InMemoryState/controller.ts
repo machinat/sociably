@@ -1,4 +1,4 @@
-import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import type { SociablyUser, SociablyThread } from '@sociably/core';
 import type {
   BaseStateController,
   StateAccessor,
@@ -63,26 +63,26 @@ export class InMemoryStateAccessor implements StateAccessor {
  * @category Provider
  */
 export class InMemoryStateController implements BaseStateController {
-  private _channelStates: Map<string, Map<string, unknown>>;
+  private _threadStates: Map<string, Map<string, unknown>>;
   private _userStates: Map<string, Map<string, unknown>>;
   private _globalStates: Map<string, Map<string, unknown>>;
 
   constructor() {
-    this._channelStates = new Map();
+    this._threadStates = new Map();
     this._userStates = new Map();
     this._globalStates = new Map();
   }
 
-  channelState(channel: string | SociablyChannel): InMemoryStateAccessor {
-    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+  threadState(thread: string | SociablyThread): InMemoryStateAccessor {
+    const threadUid = typeof thread === 'string' ? thread : thread.uid;
 
-    const data = this._channelStates.get(channelUid);
+    const data = this._threadStates.get(threadUid);
     if (data) {
       return new InMemoryStateAccessor(data);
     }
 
     const newStateData = new Map();
-    this._channelStates.set(channelUid, newStateData);
+    this._threadStates.set(threadUid, newStateData);
 
     return new InMemoryStateAccessor(newStateData);
   }

@@ -7,5 +7,5 @@ export * from './types';
 export {
   default as NoneAuthenticator,
   NoneUser,
-  NoneChannel,
+  NoneThread,
 } from './noneAuthenticator';

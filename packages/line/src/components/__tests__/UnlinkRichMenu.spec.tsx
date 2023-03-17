@@ -40,7 +40,7 @@ describe('<UnlinkRichMenu/>', () => {
     });
   });
 
-  test('getChatRequest throw if type of channel is not user', async () => {
+  test('getChatRequest throw if type of thread is not user', async () => {
     const segments = await renderUnitElement(<UnlinkRichMenu />);
     const { getChatRequest } = segments?.[0].value as ChatActionSegmentValue;
 

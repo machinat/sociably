@@ -33,37 +33,37 @@ it('split source stream and transmit by the first condtion the value match', asy
 
   source.next({
     value: 'foo',
-    key: 'foo.channel',
+    key: 'foo.thread',
     scope: createEmptyScope(),
   });
   await nextTick();
 
   expect(eventContainerFoo.$$factory).toHaveBeenCalledTimes(1);
-  expect(eventContainerFoo.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(eventContainerFoo.$$factory).toHaveBeenCalledWith('foo.thread');
   expect(eventListenerFoo).toHaveBeenCalledTimes(1);
   expect(eventListenerFoo).toHaveBeenCalledWith('foo');
 
   source.next({
     value: 'bar',
-    key: 'bar.channel',
+    key: 'bar.thread',
     scope: createEmptyScope(),
   });
   await nextTick();
 
   expect(eventContainerBar.$$factory).toHaveBeenCalledTimes(1);
-  expect(eventContainerBar.$$factory).toHaveBeenCalledWith('bar.channel');
+  expect(eventContainerBar.$$factory).toHaveBeenCalledWith('bar.thread');
   expect(eventListenerBar).toHaveBeenCalledTimes(1);
   expect(eventListenerBar).toHaveBeenCalledWith('bar');
 
   source.next({
     value: 'baz',
-    key: 'baz.channel',
+    key: 'baz.thread',
     scope: createEmptyScope(),
   });
   await nextTick();
 
   expect(eventContainerBaz.$$factory).toHaveBeenCalledTimes(1);
-  expect(eventContainerBaz.$$factory).toHaveBeenCalledWith('baz.channel');
+  expect(eventContainerBaz.$$factory).toHaveBeenCalledWith('baz.thread');
   expect(eventListenerBaz).toHaveBeenCalledTimes(1);
   expect(eventListenerBaz).toHaveBeenCalledWith('baz');
 
@@ -120,7 +120,7 @@ it('transmit error thrown in condition predocator to the corresponded destinatio
 
   source.next({
     value: 'bar',
-    key: 'foo.channel',
+    key: 'foo.thread',
     scope: createEmptyScope(),
   });
   await nextTick();
@@ -129,7 +129,7 @@ it('transmit error thrown in condition predocator to the corresponded destinatio
   expect(errorListenerA).not.toHaveBeenCalled();
 
   expect(errorContainerB.$$factory).toHaveBeenCalledTimes(1);
-  expect(errorContainerB.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerB.$$factory).toHaveBeenCalledWith('foo.thread');
   expect(errorListenerB).toHaveBeenCalledTimes(1);
   expect(errorListenerB).toHaveBeenCalledWith(new Error('boo'));
 
@@ -151,22 +151,22 @@ it('transmit error from source to all branches', () => {
 
   source.error({
     value: new Error('boo'),
-    key: 'foo.channel',
+    key: 'foo.thread',
     scope: createEmptyScope(),
   });
 
   expect(errorContainerA.$$factory).toHaveBeenCalledTimes(1);
-  expect(errorContainerA.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerA.$$factory).toHaveBeenCalledWith('foo.thread');
   expect(errorListenerA).toHaveBeenCalledTimes(1);
   expect(errorListenerA).toHaveBeenCalledWith(new Error('boo'));
 
   expect(errorContainerB.$$factory).toHaveBeenCalledTimes(1);
-  expect(errorContainerB.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerB.$$factory).toHaveBeenCalledWith('foo.thread');
   expect(errorListenerB).toHaveBeenCalledTimes(1);
   expect(errorListenerB).toHaveBeenCalledWith(new Error('boo'));
 
   expect(errorContainerC.$$factory).toHaveBeenCalledTimes(1);
-  expect(errorContainerC.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainerC.$$factory).toHaveBeenCalledWith('foo.thread');
   expect(errorListenerC).toHaveBeenCalledTimes(1);
   expect(errorListenerC).toHaveBeenCalledWith(new Error('boo'));
 });

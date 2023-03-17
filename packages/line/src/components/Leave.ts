@@ -8,7 +8,7 @@ const LEAVE_REQUESTER = {
   type: 'chat_action' as const,
   getChatRequest({ type, id }: LineChat) {
     if (type !== 'group' && type !== 'room') {
-      throw new TypeError('<Leave /> cannot be used within an user channel');
+      throw new TypeError('<Leave /> cannot be used within an user thread');
     }
 
     return {

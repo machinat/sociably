@@ -13,9 +13,9 @@ import { WebviewReceiver } from '../receiver';
 import { WebviewBot } from '../bot';
 import {
   WebviewConnection,
-  WebviewUserChannel,
-  WebviewTopicChannel,
-} from '../channel';
+  WebviewUserThread,
+  WebviewTopicThread,
+} from '../thread';
 import NoneAuthenticator from '../noneAuthenticator';
 import Webview from '../module';
 
@@ -270,8 +270,8 @@ test('provide base interfaces', async () => {
   expect(marshalTypes).toEqual(
     expect.arrayContaining([
       WebviewConnection,
-      WebviewUserChannel,
-      WebviewTopicChannel,
+      WebviewUserThread,
+      WebviewTopicThread,
     ])
   );
   await app.stop();

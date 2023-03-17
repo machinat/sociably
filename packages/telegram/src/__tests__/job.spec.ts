@@ -1,7 +1,7 @@
 import TelegramChat from '../Chat';
 import { createChatJob, createNonChatJobs } from '../job';
 
-describe('createChatJob(channel, segments)', () => {
+describe('createChatJob(thread, segments)', () => {
   const chat = new TelegramChat(12345, 67890);
 
   it('create jobs from segments', () => {

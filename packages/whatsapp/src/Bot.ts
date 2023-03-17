@@ -23,7 +23,6 @@ import { ConfigsI, PlatformUtilitiesI } from './interface';
 import WhatsAppChat from './Chat';
 import { createChatJobs, createUploadingMediaJobs } from './job';
 import type {
-  WhatsAppChannel,
   WhatsAppComponent,
   WhatsAppSegmentValue,
   WhatsAppDispatchFrame,
@@ -48,12 +47,12 @@ type WhatsAppBotOptions = {
  * @category Provider
  */
 export class WhatsAppBot
-  implements SociablyBot<WhatsAppChannel, MetaApiJob, MetaApiResult>
+  implements SociablyBot<WhatsAppChat, MetaApiJob, MetaApiResult>
 {
   businessNumber: string;
   worker: MetaApiWorker;
   engine: Engine<
-    WhatsAppChannel,
+    WhatsAppChat,
     WhatsAppSegmentValue,
     WhatsAppComponent<unknown>,
     MetaApiJob,
@@ -108,15 +107,15 @@ export class WhatsAppBot
   }
 
   async render(
-    target: string | WhatsAppChannel,
+    target: string | WhatsAppChat,
     messages: SociablyNode
   ): Promise<null | MetaApiDispatchResponse> {
-    const channel =
+    const thread =
       typeof target === 'string'
         ? new WhatsAppChat(this.businessNumber, target)
         : target;
 
-    return this.engine.render(channel, messages, createChatJobs);
+    return this.engine.render(thread, messages, createChatJobs);
   }
 
   async uploadMedia(node: SociablyNode): Promise<null | { id: string }> {

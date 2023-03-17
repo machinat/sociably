@@ -30,7 +30,7 @@ import {
   createInteractJobs,
 } from './job';
 import type {
-  FacebookChannel,
+  FacebookThread,
   FacebookComponent,
   FacebookSegmentValue,
   FacebookDispatchFrame,
@@ -74,12 +74,12 @@ type CommentResult = {
  * @category Provider
  */
 export class FacebookBot
-  implements SociablyBot<FacebookChannel, MetaApiJob, MetaApiResult>
+  implements SociablyBot<FacebookThread, MetaApiJob, MetaApiResult>
 {
   pageId: string;
   worker: MetaApiWorker;
   engine: Engine<
-    FacebookChannel,
+    FacebookThread,
     FacebookSegmentValue,
     FacebookComponent<unknown>,
     MetaApiJob,
@@ -134,7 +134,7 @@ export class FacebookBot
   }
 
   async render(
-    target: FacebookChannel,
+    target: FacebookThread,
     node: SociablyNode
   ): Promise<null | MetaApiDispatchResponse> {
     if (target instanceof FacebookChat) {
@@ -174,7 +174,7 @@ export class FacebookBot
 
   /** Create a post or a photo on the page feed */
   async post(
-    /** The {@link FacebookPage} channel to post */
+    /** The {@link FacebookPage} thread to post */
     page: FacebookPage,
     /** Text, a {@link PagePost} or a {@link PagePhoto} to post */
     node: SociablyNode
@@ -207,7 +207,7 @@ export class FacebookBot
 
   /** Comment or make reactions to a Facebook post or comment */
   async interact(
-    /** The target channel to interact with */
+    /** The target thread to interact with */
     target: InteractTarget,
     /** {@link Comment} or {@link Reaction} */
     node: SociablyNode

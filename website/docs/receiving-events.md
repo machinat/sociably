@@ -39,9 +39,9 @@ It's a plain object with the following properties:
 
   - `payload`: `object`, the raw event data from the platform.
 
-  - `channel`: `object`, the location where the event happened. Check the [details here](#the-channel).
-    - `platform`: `string`, platform of the channel.
-    - `uid`: `string`, unique id of the channel.
+  - `thread`: `object`, the chat thread where the event happened. Check the [details here](#thread).
+    - `platform`: `string`, platform of the thread.
+    - `uid`: `string`, unique id of the thread.
 
 
   - `user`: `null | object`, the user who triggered the event.
@@ -54,25 +54,25 @@ It's a plain object with the following properties:
 
 - `bot`: `null | object`, the `Bot` instance for making reactions. Check [_Rendering Messages Doc_](rendering-messages.md) for more details.
   - `platform`: `string`, platform of the bot.
-  - `render(channel, message)`: `function`, send messages to a channel.
-    - `channel`: `object`, the channel object.
+  - `render(thread, message)`: `function`, send messages to a thread.
+    - `thread`: `object`, the thread object.
     - `message`: `string|element`, the messages to be sent.
 
-- `reply(message)`: `function`, a sugar to reply messages to the current channel. It works the same as `bot.render(event.channel, messages)`.
+- `reply(message)`: `function`, a sugar to reply messages to the current thread. It works the same as `bot.render(event.thread, messages)`.
   - `message`: `string|element`, the messages to be replied.
 
-### The Channel
+### Thread
 
-_Channel_ is a special abstraction that refers to the location where events happen.
+_Thread_ is a special abstraction that refers to the location where events happen.
 It could be a chat thread, a WebSocket connection or any place depending on the platform.
 
-`channel.uid` is the identifier string of the channel.
+`thread.uid` is the identifier string of the thread.
 It's unique across all the platforms,
 so you can use it as the key to store data like the chat state.
 
-Many services require the channel to work.
+Many services require the thread to work.
 The most common one is sending reactions back,
-like `bot.render(event.channel, <Hello />)`.
+like `bot.render(event.thread, <Hello />)`.
 
 ### Identify Event
 

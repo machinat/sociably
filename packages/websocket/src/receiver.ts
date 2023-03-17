@@ -8,7 +8,7 @@ import { makeClassProvider } from '@sociably/core/service';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import type { HttpRequestInfo } from '@sociably/http';
 
-import { WebSocketConnection } from './channel';
+import { WebSocketConnection } from './thread';
 import { BotP } from './bot';
 import { ServerP } from './server';
 import createEvent from './utils/createEvent';
@@ -91,18 +91,18 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
     request: HttpRequestInfo,
     auth: Auth
   ) {
-    const channel = new WebSocketConnection(this._server.id, connId);
+    const thread = new WebSocketConnection(this._server.id, connId);
     await this._popEvent({
       platform: WEBSOCKET,
       bot: this._bot,
-      event: createEvent(value, channel, user),
+      event: createEvent(value, thread, user),
       metadata: {
         source: WEBSOCKET,
         request,
-        connection: channel,
+        connection: thread,
         auth,
       },
-      reply: (message) => this._bot.render(channel, message),
+      reply: (message) => this._bot.render(thread, message),
     });
   }
 }

@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { FACEBOOK, FB } from './constant';
 
@@ -6,7 +6,7 @@ type PageValue = {
   page: string;
 };
 
-class FacebookPage implements SociablyChannel, MarshallableInstance<PageValue> {
+class FacebookPage implements SociablyThread, MarshallableInstance<PageValue> {
   static typeName = 'FbPage';
   static fromJSONValue(value: PageValue): FacebookPage {
     const { page } = value;

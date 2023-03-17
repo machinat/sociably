@@ -4,7 +4,7 @@ import {
   watch,
   FSWatcher,
 } from 'fs';
-import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import type { SociablyUser, SociablyThread } from '@sociably/core';
 import { makeClassProvider } from '@sociably/core/service';
 import {
   BaseStateController,
@@ -104,7 +104,7 @@ type StorageObj = {
 };
 
 type StorageData = {
-  channelStates: StorageObj;
+  threadStates: StorageObj;
   userStates: StorageObj;
   globalStates: StorageObj;
 };
@@ -139,12 +139,12 @@ export class FileStateController implements BaseStateController {
     this._writingJob = Promise.resolve();
   }
 
-  channelState(channel: string | SociablyChannel): FileStateAccessor {
-    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+  threadState(thread: string | SociablyThread): FileStateAccessor {
+    const threadUid = typeof thread === 'string' ? thread : thread.uid;
     return new FileStateAccessor(
       this.marshaler,
-      this._getDataCallback('channelStates', channelUid),
-      this._updateDataCallback('channelStates', channelUid)
+      this._getDataCallback('threadStates', threadUid),
+      this._updateDataCallback('threadStates', threadUid)
     );
   }
 
@@ -206,7 +206,7 @@ export class FileStateController implements BaseStateController {
     const content = await this._fileHandle.readFile('utf8');
     if (content === '') {
       this._storages = {
-        channelStates: {},
+        threadStates: {},
         userStates: {},
         globalStates: {},
       };

@@ -3,7 +3,7 @@ import moxy, { Mock } from '@moxyjs/moxy';
 import { ServerAuthenticator } from '@sociably/auth';
 import type { WebviewSocketServer } from '../interface';
 import { WebviewReceiver } from '../receiver';
-import { WebviewConnection } from '../channel';
+import { WebviewConnection } from '../thread';
 import { WebviewBot } from '../bot';
 
 const bot = moxy<WebviewBot<any>>({
@@ -18,7 +18,7 @@ const server = moxy<
       {
         platform: 'test';
         user: { platform: 'test'; uid: string };
-        channel: { platform: 'test'; uid: string };
+        thread: { platform: 'test'; uid: string };
         loginAt: Date;
         expireAt: Date;
       }
@@ -39,7 +39,7 @@ const user = { platform: 'test' as const, uid: 'john_doe' };
 const authContext = {
   platform: 'test' as const,
   user,
-  channel: { platform: 'test' as const, uid: 'doe_family' },
+  thread: { platform: 'test' as const, uid: 'doe_family' },
   loginAt: new Date(Date.now() - 1000),
   expireAt: new Date(Date.now() + 9999),
 };
@@ -89,7 +89,7 @@ it('pop events', () => {
       type: 'connect',
       payload: null,
       user,
-      channel: connection,
+      thread: connection,
     },
     metadata: expectedMetadata,
     reply: expect.any(Function),
@@ -110,7 +110,7 @@ it('pop events', () => {
       type: 'hello',
       payload: 'world',
       user,
-      channel: connection,
+      thread: connection,
     },
     metadata: expectedMetadata,
     reply: expect.any(Function),
@@ -123,7 +123,7 @@ it('pop events', () => {
       type: 'hug',
       payload: undefined,
       user,
-      channel: connection,
+      thread: connection,
     },
     metadata: expectedMetadata,
     reply: expect.any(Function),
@@ -139,7 +139,7 @@ it('pop events', () => {
       type: 'disconnect',
       payload: { reason: 'bye' },
       user,
-      channel: connection,
+      thread: connection,
     },
     metadata: expectedMetadata,
     reply: expect.any(Function),
@@ -170,7 +170,7 @@ test('reply(message) sugar', async () => {
         `);
 
   expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
+  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
 });
 
 it('pop error', () => {

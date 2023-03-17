@@ -162,12 +162,12 @@ The listener receive an event context object with following info:
   - `category` - `string`, event category.
   - `type` - `string`, event type.
   - `user` - `object`, the logged-in user
-  - `channel` - `object`, the connection to the server.
+  - `thread` - `object`, the connection to the server.
 
 - `auth` - `object`, auth info.
   - `platform` - `string`, authenticating platform.
   - `user` - `object`, the logged-in user.
-  - `channel` - `object`, the chat where the user comes from.
+  - `thread` - `object`, the chat where the user comes from.
   - `loginAt` - `Date`, the logged-in time.
   - `expireAt` - `Date`, the time when authorization expires.
   - `data` - `any`, raw auth data from chat platform.
@@ -303,7 +303,7 @@ app.onEvent(async ({ platform, event, bot }) => {
     if (event.type === 'connect') {
       const { color } = await getUserState(event.user);
 
-      return bot.send(event.channel, {
+      return bot.send(event.thread, {
         type: 'app_data',
         payload : { color, content: 'Hello Webview' },
       });
@@ -312,7 +312,7 @@ app.onEvent(async ({ platform, event, bot }) => {
     if (event.type === 'update_color') {
       await updateUserState(event.user, event.payload.color);
 
-      return bot.send(event.channel, {
+      return bot.send(event.thread, {
         type: 'color_updated',
         payload: { color: event.payload },
       });
@@ -332,16 +332,16 @@ The webview event context contains the following info:
   - `category` - `string`, event category.
   - `type` - `string`, event type.
   - `user` - `object`, the logged-in user.
-  - `channel` - `object`, the connection to the client.
+  - `thread` - `object`, the connection to the client.
 
 - `metadata` - `object`, meta info about the connection.
   - `source` - `'websocket'`.
   - `request` - `object`, http upgrade request info.
-  - `connection` - `object`, identical to `event.channel`.
+  - `connection` - `object`, identical to `event.thread`.
   - `auth` - `object`, auth info, identical to `context.auth` in client-side.
     - `platform` - `string`, authenticating platform.
     - `user` - `object`, the logged-in user.
-    - `channel` - `object`, the chat where the user comes from.
+    - `thread` - `object`, the chat where the user comes from.
     - `loginAt` - `Date`, the logged-in time.
     - `expireAt` - `Date`, the time when authorization expires.
     - `data` - `any`, raw auth data from chat platform.
@@ -354,7 +354,7 @@ The `'connect'` and `'disconnect'` events are emitted on server-side too when th
 It takes the same event object as `client.send(eventObj)`.
 
 ```js
-await bot.send(event.channel, {
+await bot.send(event.thread, {
   category: 'event_category',
   type: 'event_type',
   payload: { some: 'serializable content' }
@@ -365,7 +365,7 @@ Note that the sending promise sometimes resolves even if the delivery fails (e.g
 You can tell whether it succeed like this:
 
 ```js
-const result = await bot.send(event.channel, {
+const result = await bot.send(event.thread, {
   type: 'foo',
   payload: 'bar',
 });
@@ -383,7 +383,7 @@ A connection can subscribe to a topic with `bot.subscribeTopic`.
 Like:
 
 ```js
-await bot.subscribeTopic(event.channel, 'topicName');
+await bot.subscribeTopic(event.thread, 'topicName');
 ```
 
 Then you can send events to all the connections that subscribe to a topic with `bot.sendTopic`.
@@ -401,7 +401,7 @@ To put them together, this example let users say hello on a global topic:
 ```js
 app.onEvent(async ({ event, bot }) => {  
   if (event.type === 'connect') {
-    return bot.subscribeTopic(event.channel, 'world');
+    return bot.subscribeTopic(event.thread, 'world');
   }
   
   if (event.type === 'hello') {
@@ -418,12 +418,12 @@ app.onEvent(async ({ event, bot }) => {
 To unsubscribe a topic, use `bot.unsubscribeTopic` like:
 
 ```js
-await bot.unsubscribeTopic(event.channel, 'topicName');
+await bot.unsubscribeTopic(event.thread, 'topicName');
 ```
 
 ### Interact With Chat
 
-`metadata.auth.channel` refers to the chatroom where the user comes from.
+`metadata.auth.thread` refers to the chatroom where the user comes from.
 You can use it to provide features that extend the chatting experience.
 
 With webviews, the bot can ship any features you can do in a web app.
@@ -444,7 +444,7 @@ app.onEvent(
     async ({ platform, metadata, event }) => {
       if (platform === 'webview' && event.type === 'connect') {
         await basicBot.render(
-          metadata.auth.channel,
+          metadata.auth.thread,
           <p>I see you on the webview!</p>
         );
       }

@@ -1,19 +1,19 @@
 import {
   WebSocketConnection,
-  WebSocketUserChannel,
-  WebSocketTopicChannel,
-} from '../channel';
+  WebSocketUserThread,
+  WebSocketTopicThread,
+} from '../thread';
 
 test('WebSocketConnection(serverId, connId)', () => {
-  const channel = new WebSocketConnection('#server', '#conn');
+  const thread = new WebSocketConnection('#server', '#conn');
 
-  expect(channel.platform).toBe('websocket');
-  expect(channel.type).toBe('connection');
-  expect(channel.serverId).toBe('#server');
-  expect(channel.id).toBe('#conn');
+  expect(thread.platform).toBe('websocket');
+  expect(thread.type).toBe('connection');
+  expect(thread.serverId).toBe('#server');
+  expect(thread.id).toBe('#conn');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"websocket.conn.#server.#conn"`);
-  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+  expect(thread.uid).toMatchInlineSnapshot(`"websocket.conn.#server.#conn"`);
+  expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
       "id": "#conn",
       "platform": "websocket",
@@ -21,26 +21,26 @@ test('WebSocketConnection(serverId, connId)', () => {
     }
   `);
 
-  expect(channel.typeName()).toBe('WebSocketConn');
-  expect(channel.toJSONValue()).toMatchInlineSnapshot(`
+  expect(thread.typeName()).toBe('WebSocketConn');
+  expect(thread.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": "#conn",
       "server": "#server",
     }
   `);
-  expect(
-    WebSocketConnection.fromJSONValue(channel.toJSONValue())
-  ).toStrictEqual(channel);
+  expect(WebSocketConnection.fromJSONValue(thread.toJSONValue())).toStrictEqual(
+    thread
+  );
 });
 
-test('WebSocketTopicChannel(name, id)', () => {
-  const channel = new WebSocketTopicChannel('foo');
-  expect(channel.platform).toBe('websocket');
-  expect(channel.type).toBe('topic');
-  expect(channel.name).toBe('foo');
+test('WebSocketTopicThread(name, id)', () => {
+  const thread = new WebSocketTopicThread('foo');
+  expect(thread.platform).toBe('websocket');
+  expect(thread.type).toBe('topic');
+  expect(thread.name).toBe('foo');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"websocket.topic.foo"`);
-  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+  expect(thread.uid).toMatchInlineSnapshot(`"websocket.topic.foo"`);
+  expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
       "id": "foo",
       "platform": "websocket",
@@ -48,26 +48,26 @@ test('WebSocketTopicChannel(name, id)', () => {
     }
   `);
 
-  expect(channel.typeName()).toBe('WebSocketTopicCh');
-  expect(channel.toJSONValue()).toMatchInlineSnapshot(`
+  expect(thread.typeName()).toBe('WebSocketTopicCh');
+  expect(thread.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "name": "foo",
     }
   `);
   expect(
-    WebSocketTopicChannel.fromJSONValue(channel.toJSONValue())
-  ).toStrictEqual(channel);
+    WebSocketTopicThread.fromJSONValue(thread.toJSONValue())
+  ).toStrictEqual(thread);
 });
 
-test('WebSocketUserChannel(user)', () => {
-  const channel = new WebSocketUserChannel('jojo_doe');
+test('WebSocketUserThread(user)', () => {
+  const thread = new WebSocketUserThread('jojo_doe');
 
-  expect(channel.platform).toBe('websocket');
-  expect(channel.type).toBe('user');
-  expect(channel.userUid).toBe('jojo_doe');
+  expect(thread.platform).toBe('websocket');
+  expect(thread.type).toBe('user');
+  expect(thread.userUid).toBe('jojo_doe');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"websocket.user.jojo_doe"`);
-  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+  expect(thread.uid).toMatchInlineSnapshot(`"websocket.user.jojo_doe"`);
+  expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
       "id": "jojo_doe",
       "platform": "websocket",
@@ -75,13 +75,13 @@ test('WebSocketUserChannel(user)', () => {
     }
   `);
 
-  expect(channel.typeName()).toBe('WebSocketUserCh');
-  expect(channel.toJSONValue()).toMatchInlineSnapshot(`
+  expect(thread.typeName()).toBe('WebSocketUserCh');
+  expect(thread.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "user": "jojo_doe",
     }
   `);
-  expect(
-    WebSocketUserChannel.fromJSONValue(channel.toJSONValue())
-  ).toStrictEqual(channel);
+  expect(WebSocketUserThread.fromJSONValue(thread.toJSONValue())).toStrictEqual(
+    thread
+  );
 });

@@ -153,7 +153,7 @@ it('respond 200 and pop events received', async () => {
   expect(context.event.platform).toBe('telegram');
   expect(context.event.category).toBe('message');
   expect(context.event.type).toBe('text');
-  expect(context.event.channel).toEqual(
+  expect(context.event.thread).toEqual(
     new TelegramChat(12345, 67890, updateBody.message.chat as never)
   );
   expect(context.event.user).toEqual(
@@ -181,7 +181,7 @@ test('reply(message) sugar', async () => {
         `);
 
   expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
+  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
 
   await receiver.handleRequest(
     createReq({

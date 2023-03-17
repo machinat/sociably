@@ -435,7 +435,7 @@ test('.checkAuthData()', () => {
     contextDetails: {
       botId: 12345,
       user: expectedUser,
-      channel: new TelegramChat(12345, 67890, {
+      thread: new TelegramChat(12345, 67890, {
         type: 'private',
         id: 67890,
         first_name: 'Jojo',
@@ -456,7 +456,7 @@ test('.checkAuthData()', () => {
     contextDetails: {
       botId: 12345,
       user: expectedUser,
-      channel: new TelegramChat(12345, 98765, { type: 'group', id: 98765 }),
+      thread: new TelegramChat(12345, 98765, { type: 'group', id: 98765 }),
       photoUrl: 'http://crazy.dm/stand.png',
     },
   });

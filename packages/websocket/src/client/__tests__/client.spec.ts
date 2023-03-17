@@ -2,7 +2,7 @@ import { parse as parseUrl } from 'url';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
 import _Connector from '../Connector';
-import { WebSocketConnection } from '../../channel';
+import { WebSocketConnection } from '../../thread';
 import Client from '../client';
 
 const Connector = _Connector as Moxy<typeof _Connector>;
@@ -56,7 +56,7 @@ it('start connector', async () => {
 
   expect(client.isConnected).toBe(false);
   expect(client.user).toBe(null);
-  expect(client.channel).toBe(null);
+  expect(client.thread).toBe(null);
 
   expect(Connector).toHaveBeenCalledTimes(1);
   expect(Connector).toHaveBeenCalledWith('/', login, expect.any(BaseMarshaler));
@@ -74,13 +74,13 @@ it('start connector', async () => {
       type: 'connect',
       payload: null,
       user,
-      channel: new WebSocketConnection('*', '#conn'),
+      thread: new WebSocketConnection('*', '#conn'),
     },
   });
 
   expect(client.isConnected).toBe(true);
   expect(client.user).toEqual(user);
-  expect(client.channel).toEqual(new WebSocketConnection('*', '#conn'));
+  expect(client.thread).toEqual(new WebSocketConnection('*', '#conn'));
 });
 
 test('specify url', async () => {
@@ -168,7 +168,7 @@ it('emit "event" when dispatched events received', async () => {
       type: 'start',
       payload: 'Welcome to Hyrule',
       user,
-      channel: new WebSocketConnection('*', '#conn'),
+      thread: new WebSocketConnection('*', '#conn'),
     },
   });
   expect(eventSpy).toHaveBeenNthCalledWith(3, {
@@ -177,7 +177,7 @@ it('emit "event" when dispatched events received', async () => {
       type: 'wasted',
       payload: 'Link is down! Legend over.',
       user,
-      channel: new WebSocketConnection('*', '#conn'),
+      thread: new WebSocketConnection('*', '#conn'),
     },
   });
 
@@ -194,7 +194,7 @@ it('emit "event" when dispatched events received', async () => {
       type: 'resurrect',
       payload: 'Hero never die!',
       user,
-      channel: new WebSocketConnection('*', '#conn'),
+      thread: new WebSocketConnection('*', '#conn'),
     },
   });
 });
@@ -232,7 +232,7 @@ test('disconnected by server', async () => {
   client.onEvent(eventSpy);
 
   expect(client.user).toEqual(user);
-  expect(client.channel).toEqual(new WebSocketConnection('*', '#conn'));
+  expect(client.thread).toEqual(new WebSocketConnection('*', '#conn'));
 
   connector.emit(
     'disconnect',
@@ -246,12 +246,12 @@ test('disconnected by server', async () => {
       type: 'disconnect',
       payload: { reason: 'See ya!' },
       user,
-      channel: new WebSocketConnection('*', '#conn'),
+      thread: new WebSocketConnection('*', '#conn'),
     },
   });
 
   expect(client.user).toEqual(user);
-  expect(client.channel).toBe(null);
+  expect(client.thread).toBe(null);
 });
 
 test('.close()', async () => {
@@ -262,7 +262,7 @@ test('.close()', async () => {
   client.onEvent(eventSpy);
 
   expect(client.user).toEqual(user);
-  expect(client.channel).toEqual(new WebSocketConnection('*', '#conn'));
+  expect(client.thread).toEqual(new WebSocketConnection('*', '#conn'));
 
   expect(client.close(4567, 'Bye!')).toBe(undefined);
 
@@ -276,10 +276,10 @@ test('.close()', async () => {
       type: 'disconnect',
       payload: { reason: 'Bye!' },
       user,
-      channel: new WebSocketConnection('*', '#conn'),
+      thread: new WebSocketConnection('*', '#conn'),
     },
   });
 
   expect(client.user).toEqual(user);
-  expect(client.channel).toBe(null);
+  expect(client.thread).toBe(null);
 });

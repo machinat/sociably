@@ -323,9 +323,9 @@ const handleWebview = makeContainer({
       const { event, bot, metadata: { auth } } = ctx;
 
       if (event.type === 'connect') {
-        const { data } = await todoController.getTodos(auth.channel);
+        const { data } = await todoController.getTodos(auth.thread);
 
-        return bot.send(event.channel, {
+        return bot.send(event.thread, {
           type: 'app_data',
           payload: { data },
         });
@@ -336,11 +336,11 @@ const handleWebview = makeContainer({
 export default handleWebview;
 ```
 
-The `bot.send(channel, eventObj)` method sends an event to the webview.
+The `bot.send(thread, eventObj)` method sends an event to the webview.
 Here we emit an `'app_data'` event every time a webview `'connect'`.
 
 The `metadata.auth` object contains the authorization infos.
-The `auth.channel` refers to the original chatroom,
+The `auth.thread` refers to the original chatroom,
 so we can use `TodoController` to get todos data.
 
 Now the webview should display the todos like this:
@@ -426,11 +426,11 @@ We can then handle it at server side like this:
   // ...
   if (event.type === 'delete_todo') {
     const { todo, data } = await todoController.deleteTodo(
-      auth.channel,
+      auth.thread,
       event.payload.id
     );
 
-    return bot.send(event.channel, {
+    return bot.send(event.thread, {
       type: 'app_data',
       payload: { data },
     });

@@ -5,9 +5,9 @@ import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import {
   WebSocketConnection,
-  WebSocketUserChannel,
-  WebSocketTopicChannel,
-} from '../channel';
+  WebSocketUserThread,
+  WebSocketTopicThread,
+} from '../thread';
 import { WebSocketServer } from '../server';
 import { WebSocketReceiver } from '../receiver';
 import { WebSocketBot } from '../bot';
@@ -148,8 +148,8 @@ describe('initModule()', () => {
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
         WebSocketConnection,
-        WebSocketUserChannel,
-        WebSocketTopicChannel,
+        WebSocketUserThread,
+        WebSocketTopicThread,
       ])
     );
   });

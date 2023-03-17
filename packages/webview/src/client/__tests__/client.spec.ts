@@ -3,7 +3,7 @@ import moxy, { Moxy } from '@moxyjs/moxy';
 import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
 import _Connector from '@sociably/websocket/client/Connector';
 import _AuthClient from '@sociably/auth/client';
-import { WebviewConnection } from '../../channel';
+import { WebviewConnection } from '../../thread';
 import { AnyClientAuthenticator } from '../../types';
 import Client from '../client';
 
@@ -69,7 +69,7 @@ const user = { platform: 'test', uid: 'jane_doe' };
 const authContext = {
   platform: 'test',
   user,
-  channel: { platform: 'test', uid: 'doe_family' },
+  thread: { platform: 'test', uid: 'doe_family' },
   loginAt: new Date(),
   expireAt: new Date(Date.now() + 9999),
 };
@@ -97,7 +97,7 @@ it('start connector and auth client', async () => {
   expect(client.isConnected).toBe(false);
   expect(client.isMockupMode).toBe(false);
   expect(client.user).toBe(null);
-  expect(client.channel).toBe(null);
+  expect(client.thread).toBe(null);
 
   expect(Connector).toHaveBeenCalledTimes(1);
   expect(Connector).toHaveBeenCalledWith(
@@ -133,7 +133,7 @@ it('start connector and auth client', async () => {
       type: 'connect',
       payload: null,
       user,
-      channel: new WebviewConnection('*', '#conn'),
+      thread: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
     authenticator: testAuthenticator,
@@ -141,7 +141,7 @@ it('start connector and auth client', async () => {
 
   expect(client.isConnected).toBe(true);
   expect(client.user).toEqual(user);
-  expect(client.channel).toEqual(new WebviewConnection('*', '#conn'));
+  expect(client.thread).toEqual(new WebviewConnection('*', '#conn'));
 });
 
 test('mockupMode', async () => {
@@ -157,7 +157,7 @@ test('mockupMode', async () => {
   expect(client.isMockupMode).toBe(true);
   expect(client.isConnected).toBe(false);
   expect(client.user).toBe(null);
-  expect(client.channel).toBe(null);
+  expect(client.thread).toBe(null);
 
   const connector = Connector.mock.calls[0].instance;
   expect(connector.connect).not.toHaveBeenCalled();
@@ -275,7 +275,7 @@ it('emit "event" when dispatched events received', async () => {
       type: 'start',
       payload: 'Welcome to Hyrule',
       user,
-      channel: new WebviewConnection('*', '#conn'),
+      thread: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
     authenticator: testAuthenticator,
@@ -286,7 +286,7 @@ it('emit "event" when dispatched events received', async () => {
       type: 'wasted',
       payload: 'Link is down! Legend over.',
       user,
-      channel: new WebviewConnection('*', '#conn'),
+      thread: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
     authenticator: testAuthenticator,
@@ -305,7 +305,7 @@ it('emit "event" when dispatched events received', async () => {
       type: 'resurrect',
       payload: 'Hero never die!',
       user,
-      channel: new WebviewConnection('*', '#conn'),
+      thread: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
     authenticator: testAuthenticator,
@@ -348,7 +348,7 @@ test('disconnected by server', async () => {
   connector.emit('connect', { connId: '#conn', user });
 
   expect(client.user).toEqual(user);
-  expect(client.channel).toEqual(new WebviewConnection('*', '#conn'));
+  expect(client.thread).toEqual(new WebviewConnection('*', '#conn'));
 
   connector.emit(
     'disconnect',
@@ -362,14 +362,14 @@ test('disconnected by server', async () => {
       type: 'disconnect',
       payload: { reason: 'See ya!' },
       user,
-      channel: new WebviewConnection('*', '#conn'),
+      thread: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
     authenticator: testAuthenticator,
   });
 
   expect(client.user).toEqual(user);
-  expect(client.channel).toBe(null);
+  expect(client.thread).toBe(null);
 });
 
 test('.close()', async () => {
@@ -383,7 +383,7 @@ test('.close()', async () => {
   connector.emit('connect', { connId: '#conn', user });
 
   expect(client.user).toEqual(user);
-  expect(client.channel).toEqual(new WebviewConnection('*', '#conn'));
+  expect(client.thread).toEqual(new WebviewConnection('*', '#conn'));
 
   expect(client.close(4567, 'Bye!')).toBe(undefined);
 
@@ -397,14 +397,14 @@ test('.close()', async () => {
       type: 'disconnect',
       payload: { reason: 'Bye!' },
       user,
-      channel: new WebviewConnection('*', '#conn'),
+      thread: new WebviewConnection('*', '#conn'),
     },
     auth: authContext,
     authenticator: testAuthenticator,
   });
 
   expect(client.user).toEqual(user);
-  expect(client.channel).toBe(null);
+  expect(client.thread).toBe(null);
 });
 
 test('.closeWebview()', async () => {

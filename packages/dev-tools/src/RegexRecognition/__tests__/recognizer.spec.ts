@@ -1,6 +1,6 @@
 import { RegexIntentRecognizer } from '../recognizer';
 
-const channel = {
+const thread = {
   platform: 'test',
   uid: 'john_doe',
 };
@@ -40,7 +40,7 @@ describe('.detectText()', () => {
     ['富-爸+霸子', 'fooBarBaz', 'zh-TW'],
   ])('match intent', async (text, expectedType, language) => {
     await expect(
-      rocognizer.detectText(channel, text, { language })
+      rocognizer.detectText(thread, text, { language })
     ).resolves.toEqual({
       type: expectedType,
       language: language || 'en',
@@ -50,7 +50,7 @@ describe('.detectText()', () => {
   });
 
   test('unmatched intent', async () => {
-    await expect(rocognizer.detectText(channel, 'boooo')).resolves.toEqual({
+    await expect(rocognizer.detectText(thread, 'boooo')).resolves.toEqual({
       type: undefined,
       language: 'en',
       confidence: 0,

@@ -1,19 +1,19 @@
 import {
   WebviewConnection,
-  WebviewUserChannel,
-  WebviewTopicChannel,
-} from '../channel';
+  WebviewUserThread,
+  WebviewTopicThread,
+} from '../thread';
 
 test('WebviewConnection(serverId, connId)', () => {
-  const channel = new WebviewConnection('#server', '#conn');
+  const thread = new WebviewConnection('#server', '#conn');
 
-  expect(channel.platform).toBe('webview');
-  expect(channel.type).toBe('connection');
-  expect(channel.serverId).toBe('#server');
-  expect(channel.id).toBe('#conn');
+  expect(thread.platform).toBe('webview');
+  expect(thread.type).toBe('connection');
+  expect(thread.serverId).toBe('#server');
+  expect(thread.id).toBe('#conn');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"webview.conn.#server.#conn"`);
-  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+  expect(thread.uid).toMatchInlineSnapshot(`"webview.conn.#server.#conn"`);
+  expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
       "id": "#conn",
       "platform": "webview",
@@ -21,26 +21,26 @@ test('WebviewConnection(serverId, connId)', () => {
     }
   `);
 
-  expect(channel.typeName()).toBe('WebviewConn');
-  expect(channel.toJSONValue()).toMatchInlineSnapshot(`
+  expect(thread.typeName()).toBe('WebviewConn');
+  expect(thread.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": "#conn",
       "server": "#server",
     }
   `);
-  expect(WebviewConnection.fromJSONValue(channel.toJSONValue())).toStrictEqual(
-    channel
+  expect(WebviewConnection.fromJSONValue(thread.toJSONValue())).toStrictEqual(
+    thread
   );
 });
 
-test('WebviewTopicChannel(name, id)', () => {
-  const channel = new WebviewTopicChannel('foo');
-  expect(channel.platform).toBe('webview');
-  expect(channel.type).toBe('topic');
-  expect(channel.name).toBe('foo');
+test('WebviewTopicThread(name, id)', () => {
+  const thread = new WebviewTopicThread('foo');
+  expect(thread.platform).toBe('webview');
+  expect(thread.type).toBe('topic');
+  expect(thread.name).toBe('foo');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"webview.topic.foo"`);
-  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+  expect(thread.uid).toMatchInlineSnapshot(`"webview.topic.foo"`);
+  expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
       "id": "foo",
       "platform": "webview",
@@ -48,26 +48,26 @@ test('WebviewTopicChannel(name, id)', () => {
     }
   `);
 
-  expect(channel.typeName()).toBe('WebviewTopicCh');
-  expect(channel.toJSONValue()).toMatchInlineSnapshot(`
+  expect(thread.typeName()).toBe('WebviewTopicCh');
+  expect(thread.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "name": "foo",
     }
   `);
-  expect(
-    WebviewTopicChannel.fromJSONValue(channel.toJSONValue())
-  ).toStrictEqual(channel);
+  expect(WebviewTopicThread.fromJSONValue(thread.toJSONValue())).toStrictEqual(
+    thread
+  );
 });
 
-test('WebviewUserChannel(user)', () => {
-  const channel = new WebviewUserChannel('jojo_doe');
+test('WebviewUserThread(user)', () => {
+  const thread = new WebviewUserThread('jojo_doe');
 
-  expect(channel.platform).toBe('webview');
-  expect(channel.type).toBe('user');
-  expect(channel.userUid).toBe('jojo_doe');
+  expect(thread.platform).toBe('webview');
+  expect(thread.type).toBe('user');
+  expect(thread.userUid).toBe('jojo_doe');
 
-  expect(channel.uid).toMatchInlineSnapshot(`"webview.user.jojo_doe"`);
-  expect(channel.uniqueIdentifier).toMatchInlineSnapshot(`
+  expect(thread.uid).toMatchInlineSnapshot(`"webview.user.jojo_doe"`);
+  expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
       "id": "jojo_doe",
       "platform": "webview",
@@ -75,13 +75,13 @@ test('WebviewUserChannel(user)', () => {
     }
   `);
 
-  expect(channel.typeName()).toBe('WebviewUserCh');
-  expect(channel.toJSONValue()).toMatchInlineSnapshot(`
+  expect(thread.typeName()).toBe('WebviewUserCh');
+  expect(thread.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "user": "jojo_doe",
     }
   `);
-  expect(WebviewUserChannel.fromJSONValue(channel.toJSONValue())).toStrictEqual(
-    channel
+  expect(WebviewUserThread.fromJSONValue(thread.toJSONValue())).toStrictEqual(
+    thread
   );
 });

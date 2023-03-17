@@ -10,7 +10,7 @@ export const getAuthContextDetails = (
   const { business: businessNumber, customer: customerNumber } = data;
   return {
     user: new WhatsAppUser(customerNumber),
-    channel: new WhatsAppChat(businessNumber, customerNumber),
+    thread: new WhatsAppChat(businessNumber, customerNumber),
     businessNumber,
   };
 };

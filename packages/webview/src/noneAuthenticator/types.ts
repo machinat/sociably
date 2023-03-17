@@ -1,14 +1,14 @@
-import type { NoneUser, NoneChannel } from './instance';
+import type { NoneUser, NoneThread } from './instance';
 
 export type NoneAuthData = {
   user: string;
-  channel: string;
+  thread: string;
 };
 
 export type NoneAuthContext = {
   platform: 'none';
   user: NoneUser;
-  channel: NoneChannel;
+  thread: NoneThread;
   loginAt: Date;
   expireAt: Date;
 };

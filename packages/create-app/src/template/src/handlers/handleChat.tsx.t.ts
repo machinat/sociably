@@ -17,7 +17,7 @@ const handleChat = makeContainer({
       ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
     ) => {
       const { event, reply } = ctx;${when(platforms.includes('telegram'))`
-      if (!event.channel) {
+      if (!event.thread) {
         return
       }`}
       const intent = await getIntent(event);

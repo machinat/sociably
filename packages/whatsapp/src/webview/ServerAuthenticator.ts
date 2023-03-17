@@ -48,7 +48,7 @@ export class WhatsAppServerAuthenticator
         return {
           ok: true,
           data,
-          channel: result.contextDetails.channel,
+          thread: result.contextDetails.thread,
         };
       },
       getChatLink: () => `https://wa.me/${this.bot.businessNumber}`,

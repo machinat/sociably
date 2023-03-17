@@ -3,7 +3,7 @@ import type {
   ServerResponse,
   IncomingHttpHeaders,
 } from 'http';
-import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import type { SociablyUser, SociablyThread } from '@sociably/core';
 import type { RoutingInfo } from '@sociably/http';
 import type { CodeMessageComponent } from './basicAuth';
 import type AuthError from './error';
@@ -46,14 +46,14 @@ export type AuthContextBase = {
 
 export type AuthContext<
   User extends SociablyUser,
-  Channel extends SociablyChannel
+  Thread extends SociablyThread
 > = {
   platform: string;
   user: User;
-  channel: null | Channel;
+  thread: null | Thread;
 } & AuthContextBase;
 
-export type AnyAuthContext = AuthContext<SociablyUser, SociablyChannel>;
+export type AnyAuthContext = AuthContext<SociablyUser, SociablyThread>;
 
 export type ContextDetails<Context extends AnyAuthContext> = Omit<
   Context,

@@ -2,12 +2,12 @@ import type { DispatchableSegment } from '@sociably/core/engine';
 import { DispatchTarget, EventInput, WebSocketJob } from '../types';
 
 const createJobs = (
-  channel: DispatchTarget,
+  thread: DispatchTarget,
   segments: DispatchableSegment<EventInput>[]
 ): WebSocketJob[] => {
   return [
     {
-      target: channel,
+      target: thread,
       values: segments.map((seg) =>
         seg.type === 'text'
           ? {

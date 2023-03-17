@@ -15,8 +15,7 @@ const POST = 'POST';
 
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
 
-const makeRequestName = (channelId: string, count: number) =>
-  `${channelId}-${count}`;
+const makeRequestName = (key: string, count: number) => `${key}-${count}`;
 
 const makeFileName = (num: number) => `file_${num}`;
 

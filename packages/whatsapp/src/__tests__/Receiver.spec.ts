@@ -144,7 +144,7 @@ describe('handling POST', () => {
       expect(context.event.user).toEqual(
         new WhatsAppUser('9876543210', { name: 'John' })
       );
-      expect(context.event.channel).toEqual(
+      expect(context.event.thread).toEqual(
         new WhatsAppChat('1234567890', '9876543210')
       );
 
@@ -192,6 +192,6 @@ describe('handling POST', () => {
           `);
 
     expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
+    expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
   });
 });

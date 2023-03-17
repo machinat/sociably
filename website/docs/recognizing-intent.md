@@ -82,8 +82,8 @@ app.onEvent(
     (recognizer) =>
       async ({ reply, event }) => {
         if (event.category === 'message' && event.type === 'text') {
-          const { channel, text } = event;
-          const intent = await recognizer.detectText(channel, text);
+          const { thread, text } = event;
+          const intent = await recognizer.detectText(thread, text);
 
           if (intent.type === 'marry_me') {
             if (intent.confidence > 0.5) {
@@ -100,7 +100,7 @@ app.onEvent(
 );
 ```
 
-`detectText(channel, text)` method detects the intent of a text message.
+`detectText(thread, text)` method detects the intent of a text message.
 It returns the result with following info:
 
 - `type` - `undefined | string`, the intent name. If no intent is matched, the value is `undefined`.
@@ -139,7 +139,7 @@ const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
           return { type: 'foo', confidence: 1, payload: matchFooCommand[1] };
         }
 
-        const intent = await recognizer.detectText(event.channel, text);
+        const intent = await recognizer.detectText(event.thread, text);
         return intent;
       }
 
@@ -178,8 +178,8 @@ import DialogFlow from '@sociably/dialogflow';
 makeContainer({ deps: [DialogFlow.Recognizer] })(
   (recognizer) =>
   async (context) => {
-    const { channel, text } = context.event;
-    const intent = await recognizer.detectText(channel, text, {
+    const { thread, text } = context.event;
+    const intent = await recognizer.detectText(thread, text, {
       contexts: ['greeting'],
     });
 

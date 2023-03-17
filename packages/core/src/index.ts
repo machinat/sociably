@@ -31,7 +31,7 @@ export { default as BasicProfiler } from './base/Profiler';
 export { default as StateController } from './base/StateController';
 export { default as IntentRecognizer } from './base/IntentRecognizer';
 export { default as Marshaler } from './base/Marshaler';
-export { default as RenderingChannel } from './base/RenderingChannel';
+export { default as RenderingThread } from './base/RenderingThread';
 export * from './types';
 
 /**

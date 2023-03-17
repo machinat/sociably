@@ -48,7 +48,7 @@ it('emit events from app.onEvent()', () => {
     event: {
       category: 'bar',
       type: 'open',
-      channel: { uid: 'foo.channel' },
+      thread: { uid: 'foo.thread' },
       user: { uid: 'john_doe' },
     },
   };
@@ -63,7 +63,7 @@ it('emit events from app.onEvent()', () => {
     event: {
       category: 'bar',
       type: 'close',
-      channel: { uid: 'foo.channel' },
+      thread: { uid: 'foo.thread' },
       user: { uid: 'john_doe' },
     },
   };
@@ -74,7 +74,7 @@ it('emit events from app.onEvent()', () => {
   expect(nextListener).toHaveBeenCalledWith(eventCtx2);
 });
 
-test('transmit scope and use channel.uid as the key', () => {
+test('transmit scope and use thread.uid as the key', () => {
   const event$ = fromApp(app);
   const nextListener = moxy();
   const nextContainer = moxy(
@@ -90,7 +90,7 @@ test('transmit scope and use channel.uid as the key', () => {
     event: {
       category: 'bar',
       type: 'open',
-      channel: { uid: 'foo.channel' },
+      thread: { uid: 'foo.thread' },
       user: { uid: 'john_doe' },
     },
   };
@@ -98,7 +98,7 @@ test('transmit scope and use channel.uid as the key', () => {
   handlerEventContainer(scope)(eventCtx1);
 
   expect(nextContainer).toHaveBeenCalledTimes(1);
-  expect(nextContainer).toHaveBeenCalledWith('foo.channel');
+  expect(nextContainer).toHaveBeenCalledWith('foo.thread');
   expect(nextListener).toHaveBeenCalledTimes(1);
   expect(nextListener).toHaveBeenCalledWith(eventCtx1);
   expect(scope.injectContainer).toHaveBeenCalledTimes(1);
@@ -108,7 +108,7 @@ test('transmit scope and use channel.uid as the key', () => {
     event: {
       category: 'bar',
       type: 'close',
-      channel: { uid: 'baz.channel' },
+      thread: { uid: 'baz.thread' },
       user: { uid: 'john_doe' },
     },
   };
@@ -116,7 +116,7 @@ test('transmit scope and use channel.uid as the key', () => {
   handlerEventContainer(scope)(eventCtx2);
 
   expect(nextContainer).toHaveBeenCalledTimes(2);
-  expect(nextContainer).toHaveBeenCalledWith('baz.channel');
+  expect(nextContainer).toHaveBeenCalledWith('baz.thread');
   expect(nextListener).toHaveBeenCalledTimes(2);
   expect(nextListener).toHaveBeenCalledWith(eventCtx2);
   expect(scope.injectContainer).toHaveBeenCalledTimes(2);

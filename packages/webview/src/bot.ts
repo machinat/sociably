@@ -24,13 +24,13 @@ import { WEBVIEW } from './constant';
 import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
 import {
   WebviewConnection,
-  WebviewTopicChannel,
-  WebviewUserChannel,
-} from './channel';
+  WebviewTopicThread,
+  WebviewUserThread,
+} from './thread';
 import type {
   WebviewDispatchFrame,
   WebviewComponent,
-  WebviewDispatchChannel,
+  WebviewDispatchThread,
 } from './types';
 
 type WebSocketDispatchResponse = DispatchResponse<
@@ -49,11 +49,11 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
  * @category Provider
  */
 export class WebviewBot
-  implements SociablyBot<WebviewDispatchChannel, WebSocketJob, WebSocketResult>
+  implements SociablyBot<WebviewDispatchThread, WebSocketJob, WebSocketResult>
 {
   private _server: WebviewSocketServer<AnyServerAuthenticator>;
   engine: Engine<
-    WebviewDispatchChannel,
+    WebviewDispatchThread,
     EventInput,
     WebviewComponent,
     WebSocketJob,
@@ -103,22 +103,22 @@ export class WebviewBot
   }
 
   render(
-    channel: WebviewDispatchChannel,
+    thread: WebviewDispatchThread,
     message: SociablyNode
   ): Promise<null | WebSocketDispatchResponse> {
-    return this.engine.render<WebviewDispatchChannel>(
-      channel,
+    return this.engine.render<WebviewDispatchThread>(
+      thread,
       message,
       createJobs
     );
   }
 
   async send(
-    channel: WebviewConnection,
+    thread: WebviewConnection,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
-    const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, values: Array.isArray(content) ? content : [content] },
+    const response = await this.engine.dispatchJobs(thread, [
+      { target: thread, values: Array.isArray(content) ? content : [content] },
     ]);
 
     return {
@@ -130,9 +130,9 @@ export class WebviewBot
     user: SociablyUser,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
-    const channel = new WebviewUserChannel(user.uid);
-    const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, values: Array.isArray(content) ? content : [content] },
+    const thread = new WebviewUserThread(user.uid);
+    const response = await this.engine.dispatchJobs(thread, [
+      { target: thread, values: Array.isArray(content) ? content : [content] },
     ]);
 
     return {
@@ -144,9 +144,9 @@ export class WebviewBot
     topic: string,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
-    const channel = new WebviewTopicChannel(topic);
-    const response = await this.engine.dispatchJobs(channel, [
-      { target: channel, values: Array.isArray(content) ? content : [content] },
+    const thread = new WebviewTopicThread(topic);
+    const response = await this.engine.dispatchJobs(thread, [
+      { target: thread, values: Array.isArray(content) ? content : [content] },
     ]);
 
     return {

@@ -51,7 +51,7 @@ test('rendering to UrlButton', () => {
   );
 });
 
-test('rendering to null if channel is not a TwitterChat', () => {
+test('rendering to null if thread is not a TwitterChat', () => {
   expect(WebviewButton(authenticator, null)({ label: 'Foo' })).toBe(null);
   expect(
     WebviewButton(authenticator, null)({ label: 'Foo', page: '/foo' })

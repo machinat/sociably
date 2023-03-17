@@ -4,4 +4,4 @@ export { default as useClient } from './useClient';
 export * from './types';
 
 export { default as NoneClientAuthenticator } from '../noneAuthenticator/client';
-export { NoneUser, NoneChannel } from '../noneAuthenticator/instance';
+export { NoneUser, NoneThread } from '../noneAuthenticator/instance';

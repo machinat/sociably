@@ -110,12 +110,12 @@ export class TelegramBot
       return this.engine.render(null, message, createNonChatJobs);
     }
 
-    const channel =
+    const thread =
       typeof target === 'number' || typeof target === 'string'
         ? new TelegramChat(this.id, target)
         : target;
 
-    return this.engine.render(channel, message, createChatJob);
+    return this.engine.render(thread, message, createChatJob);
   }
 
   async fetchFile(fileId: string): Promise<null | {

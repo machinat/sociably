@@ -113,8 +113,8 @@ const handleWebhook = <Context extends MetaApiEventContext>({
           event,
           metadata,
           reply: async (message) =>
-            event.channel
-              ? bot.render(event.channel, message)
+            event.thread
+              ? bot.render(event.thread, message)
               : Promise.resolve(null),
         } as Context)
       );

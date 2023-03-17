@@ -27,8 +27,8 @@ export const LinkRichMenu: LineComponent<
     makeUnitSegment(node, path, {
       type: 'chat_action',
 
-      getChatRequest: (channel: LineChat) => {
-        if (channel.type !== 'user') {
+      getChatRequest: (thread: LineChat) => {
+        if (thread.type !== 'user') {
           throw new TypeError(
             '<LinkRichMenu /> can only be sent to an user chat'
           );
@@ -36,7 +36,7 @@ export const LinkRichMenu: LineComponent<
 
         return {
           method: 'POST',
-          path: `v2/bot/user/${channel.id}/richmenu/${id}`,
+          path: `v2/bot/user/${thread.id}/richmenu/${id}`,
           body: null,
         };
       },

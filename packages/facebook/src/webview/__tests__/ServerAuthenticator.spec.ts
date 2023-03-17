@@ -69,7 +69,7 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
     delegatorOptions.checkAuthData({ page: '12345', id: '67890' })
   ).toEqual({
     ok: true,
-    channel: new FacebookChat('12345', { id: '67890' }),
+    thread: new FacebookChat('12345', { id: '67890' }),
     data: { page: '12345', id: '67890' },
   });
   expect(delegatorOptions.checkAuthData({ agent: '54321', id: '67890' }))
@@ -139,7 +139,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       pageId: '12345',
-      channel: new FacebookChat('12345', { id: '67890' }),
+      thread: new FacebookChat('12345', { id: '67890' }),
       user: new FacebookUser('12345', '67890'),
     },
   });

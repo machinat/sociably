@@ -17,7 +17,7 @@ export type PostgresStateConfigs = {
   connectOptions: PoolConfig;
 };
 
-export type SociablyStateType = 'global' | 'channel' | 'user';
+export type SociablyStateType = 'global' | 'thread' | 'user';
 
 /**
  * The entity value stored in the DB. `platform` & `scopeId` use `''`
@@ -28,7 +28,7 @@ export type StateEntity = {
   [FIELD_STATE_TYPE]: SociablyStateType;
   // '' on global state
   [FIELD_STATE_PLATFORM]: string;
-  // '' on global state or when scopeId of a channel/user is null
+  // '' on global state or when scopeId of a thread/user is null
   [FIELD_STATE_SCOPE_ID]: string;
   [FIELD_STATE_ID]: string;
   [FIELD_STATE_KEY]: string;

@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import moxy, { Mock } from '@moxyjs/moxy';
 import type { WebSocketServer } from '../server';
 import { WebSocketReceiver } from '../receiver';
-import { WebSocketConnection } from '../channel';
+import { WebSocketConnection } from '../thread';
 import type { WebSocketBot } from '../bot';
 
 const bot = moxy<WebSocketBot>({
@@ -66,7 +66,7 @@ it('pop events', () => {
       type: 'connect',
       payload: null,
       user,
-      channel: connection,
+      thread: connection,
     },
     metadata: expectedMetadata,
     reply: expect.any(Function),
@@ -87,7 +87,7 @@ it('pop events', () => {
       type: 'hello',
       payload: 'world',
       user,
-      channel: connection,
+      thread: connection,
     },
     metadata: expectedMetadata,
     reply: expect.any(Function),
@@ -100,7 +100,7 @@ it('pop events', () => {
       type: 'hug',
       payload: undefined,
       user,
-      channel: connection,
+      thread: connection,
     },
     metadata: expectedMetadata,
     reply: expect.any(Function),
@@ -116,7 +116,7 @@ it('pop events', () => {
       type: 'disconnect',
       payload: { reason: 'bye' },
       user,
-      channel: connection,
+      thread: connection,
     },
     metadata: expectedMetadata,
     reply: expect.any(Function),
@@ -147,7 +147,7 @@ test('reply(message) sugar', async () => {
         `);
 
   expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.channel, 'hello world');
+  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
 });
 
 it('pop error', () => {

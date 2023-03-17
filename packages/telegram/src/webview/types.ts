@@ -12,7 +12,7 @@ export type TelegramAuthData = {
 
 export type TelegramAuthContext = {
   platform: 'telegram';
-  channel: TelegramChat;
+  thread: TelegramChat;
   user: TelegramUser;
   botId: number;
   photoUrl: undefined | string;

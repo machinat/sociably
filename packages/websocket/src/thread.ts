@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { WEBSOCKET } from './constant';
 import type { ConnectionTarget, UserTarget, TopicTarget } from './types';
@@ -10,7 +10,7 @@ type ConnectionValue = {
 
 export class WebSocketConnection
   implements
-    SociablyChannel,
+    SociablyThread,
     ConnectionTarget,
     MarshallableInstance<ConnectionValue>
 {
@@ -54,20 +54,17 @@ export class WebSocketConnection
   }
 }
 
-type UserChannelValue = {
+type UserThreadValue = {
   user: string;
 };
 
-export class WebSocketUserChannel
-  implements
-    SociablyChannel,
-    UserTarget,
-    MarshallableInstance<UserChannelValue>
+export class WebSocketUserThread
+  implements SociablyThread, UserTarget, MarshallableInstance<UserThreadValue>
 {
   static typeName = 'WebSocketUserCh';
 
-  static fromJSONValue({ user }: UserChannelValue): WebSocketUserChannel {
-    return new WebSocketUserChannel(user);
+  static fromJSONValue({ user }: UserThreadValue): WebSocketUserThread {
+    return new WebSocketUserThread(user);
   }
 
   platform = WEBSOCKET;
@@ -91,13 +88,13 @@ export class WebSocketUserChannel
     return `${WEBSOCKET}.user.${this.userUid}`;
   }
 
-  toJSONValue(): UserChannelValue {
+  toJSONValue(): UserThreadValue {
     return { user: this.userUid };
   }
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return WebSocketUserChannel.typeName;
+    return WebSocketUserThread.typeName;
   }
 }
 
@@ -105,13 +102,13 @@ type TopicValue = {
   name: string;
 };
 
-export class WebSocketTopicChannel
-  implements SociablyChannel, TopicTarget, MarshallableInstance<TopicValue>
+export class WebSocketTopicThread
+  implements SociablyThread, TopicTarget, MarshallableInstance<TopicValue>
 {
   static typeName = 'WebSocketTopicCh';
 
-  static fromJSONValue({ name }: TopicValue): WebSocketTopicChannel {
-    return new WebSocketTopicChannel(name);
+  static fromJSONValue({ name }: TopicValue): WebSocketTopicThread {
+    return new WebSocketTopicThread(name);
   }
 
   platform = WEBSOCKET;
@@ -140,6 +137,6 @@ export class WebSocketTopicChannel
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return WebSocketTopicChannel.typeName;
+    return WebSocketTopicThread.typeName;
   }
 }

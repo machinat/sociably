@@ -96,7 +96,7 @@ const MyScript = moxy(
   )
 );
 
-const channel = { platform: 'test', uid: '#channel' };
+const thread = { platform: 'test', uid: '#thread' };
 
 beforeEach(() => {
   MyScript.mock.clear();
@@ -105,17 +105,17 @@ beforeEach(() => {
   effectYieldFn.mock.reset();
 });
 
-describe('.start(channel, Script)', () => {
+describe('.start(thread, Script)', () => {
   test('start script from begin', async () => {
     const stateController = new InMemoryStateController();
     const processor = new ScriptProcessor(stateController, scope, [
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.start(channel, MyScript);
+    const runtime = await processor.start(thread, MyScript);
 
     expect(promptSetFn).not.toHaveBeenCalled();
-    expect(runtime.channel).toEqual(channel);
+    expect(runtime.thread).toEqual(thread);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
@@ -154,7 +154,7 @@ describe('.start(channel, Script)', () => {
 
     expect(runtime.requireSaving).toBe(false);
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -181,7 +181,7 @@ describe('.start(channel, Script)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.start(channel, MyScript, {
+    const runtime = await processor.start(thread, MyScript, {
       goto: '#3',
     });
 
@@ -219,7 +219,7 @@ describe('.start(channel, Script)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -244,11 +244,11 @@ describe('.start(channel, Script)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.start(channel, MyScript, {
+    const runtime = await processor.start(thread, MyScript, {
       params: { foo: 'bar' },
     });
 
-    expect(runtime.channel).toEqual(channel);
+    expect(runtime.thread).toEqual(thread);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.requireSaving).toBe(true);
@@ -285,7 +285,7 @@ describe('.start(channel, Script)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -311,15 +311,15 @@ describe('.start(channel, Script)', () => {
     const processor = new ScriptProcessor(stateController, scope, [MyScript]);
 
     await expect(
-      processor.start(channel, AnotherScript)
+      processor.start(thread, AnotherScript)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"script AnotherScript is not registered as libs"`
     );
   });
 
-  it('throw if there is already script processing in the channel', async () => {
+  it('throw if there is already script processing in the thread', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -328,17 +328,17 @@ describe('.start(channel, Script)', () => {
     const processor = new ScriptProcessor(stateController, scope, [MyScript]);
 
     await expect(
-      processor.start(channel, MyScript)
+      processor.start(thread, MyScript)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"script [MyScript] is already running on channel [#channel], exit the current runtime before start new one"`
+      `"script [MyScript] is already running on thread [#thread], exit the current runtime before start new one"`
     );
   });
 });
 
-describe('.continue(channel, input)', () => {
+describe('.continue(thread, input)', () => {
   it('continue from prompt point', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -348,12 +348,12 @@ describe('.continue(channel, input)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = (await processor.continue(channel, { hello: 'world' }))!;
+    const runtime = (await processor.continue(thread, { hello: 'world' }))!;
 
     expect(MyScript.initVars).not.toHaveBeenCalled();
     expect(AnotherScript.initVars).toHaveBeenCalledTimes(1);
 
-    expect(runtime.channel).toEqual(channel);
+    expect(runtime.thread).toEqual(thread);
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(true);
@@ -382,7 +382,7 @@ describe('.continue(channel, input)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -411,7 +411,7 @@ describe('.continue(channel, input)', () => {
     expect(promptSetFn).toHaveBeenCalledWith(
       {
         platform: 'test',
-        channel,
+        thread,
         vars: { foo: 'bar' },
         meta: { hello: 'there' },
       },
@@ -421,7 +421,7 @@ describe('.continue(channel, input)', () => {
 
   it('continue under subscript', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'call_1' },
@@ -434,12 +434,12 @@ describe('.continue(channel, input)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = (await processor.continue(channel, { hello: 'world' }))!;
+    const runtime = (await processor.continue(thread, { hello: 'world' }))!;
 
     expect(MyScript.initVars).not.toHaveBeenCalled();
     expect(AnotherScript.initVars).not.toHaveBeenCalled();
 
-    expect(runtime.channel).toEqual(channel);
+    expect(runtime.thread).toEqual(thread);
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(true);
@@ -468,7 +468,7 @@ describe('.continue(channel, input)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -493,7 +493,7 @@ describe('.continue(channel, input)', () => {
     expect(promptSetFn).toHaveBeenCalledWith(
       {
         platform: 'test',
-        channel,
+        thread,
         vars: { foo: 'baz' },
         meta: { hello: 'here' },
       },
@@ -507,14 +507,14 @@ describe('.continue(channel, input)', () => {
       MyScript,
       AnotherScript,
     ]);
-    await expect(processor.continue(channel, { hello: 'world' })).resolves.toBe(
+    await expect(processor.continue(thread, { hello: 'world' })).resolves.toBe(
       null
     );
   });
 
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
@@ -522,17 +522,17 @@ describe('.continue(channel, input)', () => {
 
     const processor = new ScriptProcessor(stateController, scope, [MyScript]);
     await expect(
-      processor.continue(channel, { hello: 'world' })
+      processor.continue(thread, { hello: 'world' })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"script UnknownScript is not registered, the linked libs might have been changed"`
     );
   });
 });
 
-describe('.getRuntime(channel)', () => {
+describe('.getRuntime(thread)', () => {
   test('manually call runtime.run()', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -542,9 +542,9 @@ describe('.getRuntime(channel)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = (await processor.getRuntime(channel))!;
+    const runtime = (await processor.getRuntime(thread))!;
 
-    expect(runtime.channel).toEqual(channel);
+    expect(runtime.thread).toEqual(thread);
     expect(runtime.isBeginning).toBe(false);
     expect(runtime.isFinished).toBe(false);
     expect(runtime.requireSaving).toBe(false);
@@ -564,7 +564,7 @@ describe('.getRuntime(channel)', () => {
     expect(promptSetFn).toHaveBeenCalledWith(
       {
         platform: 'test',
-        channel,
+        thread,
         vars: { foo: 'bar' },
         meta: { hello: 'there' },
       },
@@ -582,7 +582,7 @@ describe('.getRuntime(channel)', () => {
     expect(promptSetFn).toHaveBeenCalledWith(
       {
         platform: 'test',
-        channel,
+        thread,
         vars: {},
         meta: { hello: 'here' },
       },
@@ -602,7 +602,7 @@ describe('.getRuntime(channel)', () => {
       expect(promptSetFn).toHaveBeenCalledWith(
         {
           platform: 'test',
-          channel,
+          thread,
           vars: { foo: 'bar', i: 1 + i },
           meta: { hello: 'there' },
         },
@@ -623,12 +623,12 @@ describe('.getRuntime(channel)', () => {
       MyScript,
       AnotherScript,
     ]);
-    await expect(processor.getRuntime(channel)).resolves.toBe(null);
+    await expect(processor.getRuntime(thread)).resolves.toBe(null);
   });
 
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
@@ -636,29 +636,29 @@ describe('.getRuntime(channel)', () => {
 
     const processor = new ScriptProcessor(stateController, scope, [MyScript]);
     await expect(
-      processor.getRuntime(channel)
+      processor.getRuntime(thread)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"script UnknownScript is not registered, the linked libs might have been changed"`
     );
   });
 });
 
-describe('Runtime.exit(channel)', () => {
+describe('Runtime.exit(thread)', () => {
   it('delete saved runtime state', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
 
     const processor = new ScriptProcessor(stateController, scope, [MyScript]);
-    const runtime = (await processor.getRuntime(channel))!;
+    const runtime = (await processor.getRuntime(thread))!;
 
     await expect(runtime.exit()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 
@@ -666,11 +666,11 @@ describe('Runtime.exit(channel)', () => {
     const stateController = new InMemoryStateController();
     const processor = new ScriptProcessor(stateController, scope, [MyScript]);
 
-    const runtime = await processor.start(channel, MyScript);
+    const runtime = await processor.start(thread, MyScript);
     await expect(runtime.exit()).resolves.toBe(false);
 
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 });
@@ -683,13 +683,13 @@ describe('Runtime.save(runtime)', () => {
       AnotherScript,
     ]);
 
-    const runtime = await processor.start(channel, MyScript, {
+    const runtime = await processor.start(thread, MyScript, {
       params: { foo: 'bar' },
     });
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toEqual({
       callStack: [{ name: 'MyScript', stopAt: 'ask_2', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
@@ -704,18 +704,18 @@ describe('Runtime.save(runtime)', () => {
       AnotherScript,
     ]);
 
-    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       callStack: [{ name: 'MyScript', stopAt: 'ask_3', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
       version: '0',
     });
 
-    const runtime = (await processor.getRuntime(channel))!;
+    const runtime = (await processor.getRuntime(thread))!;
     await runtime.run({ hello: 'world' });
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toEqual({
       callStack: [
         { name: 'MyScript', stopAt: 'call_1', vars: { foo: 'bar' } },
@@ -732,7 +732,7 @@ describe('Runtime.save(runtime)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = await processor.start(channel, MyScript, {
+    const runtime = await processor.start(thread, MyScript, {
       goto: '#3',
     });
 
@@ -743,7 +743,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(false);
 
     await expect(
-      stateController.channelState(channel).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 
@@ -754,11 +754,11 @@ describe('Runtime.save(runtime)', () => {
       AnotherScript,
     ]);
 
-    const runtime = await processor.start(channel, MyScript, {
+    const runtime = await processor.start(thread, MyScript, {
       goto: '#3',
     });
 
-    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
@@ -767,13 +767,13 @@ describe('Runtime.save(runtime)', () => {
     });
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
-      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same channel executing at the same time]`
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`
     );
   });
 
   test('throw if continued runtime save while no runtime state existing', async () => {
     const stateController = new InMemoryStateController();
-    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -785,19 +785,19 @@ describe('Runtime.save(runtime)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = (await processor.getRuntime(channel))!;
+    const runtime = (await processor.getRuntime(thread))!;
 
-    stateController.channelState(channel).delete(SCRIPT_STATE_KEY);
+    stateController.threadState(thread).delete(SCRIPT_STATE_KEY);
     await runtime.run();
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
-      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same channel executing at the same time]`
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`
     );
   });
 
   test('throw if saveTimestamp not match', async () => {
     const stateController = new InMemoryStateController();
-    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -809,9 +809,9 @@ describe('Runtime.save(runtime)', () => {
       MyScript,
       AnotherScript,
     ]);
-    const runtime = (await processor.getRuntime(channel))!;
+    const runtime = (await processor.getRuntime(thread))!;
 
-    stateController.channelState(channel).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
@@ -821,7 +821,7 @@ describe('Runtime.save(runtime)', () => {
     await runtime.run({ hello: 'script' });
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
-      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same channel executing at the same time]`
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`
     );
   });
 });

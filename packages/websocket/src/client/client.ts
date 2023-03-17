@@ -1,6 +1,6 @@
 import type { SociablyUser } from '@sociably/core';
 import { AnyMarshalType, BaseMarshaler } from '@sociably/core/base/Marshaler';
-import { WebSocketConnection } from '../channel';
+import { WebSocketConnection } from '../thread';
 import createEvent from '../utils/createEvent';
 import Connector from './Connector';
 import ClientEmitter from './ClientEmitter';
@@ -34,7 +34,7 @@ class WebScoketClient<
   private _connector: Connector<User>;
 
   private _user: null | User;
-  private _channel: null | WebSocketConnection;
+  private _thread: null | WebSocketConnection;
 
   constructor({
     url,
@@ -44,7 +44,7 @@ class WebScoketClient<
     super();
 
     this._user = null;
-    this._channel = null;
+    this._thread = null;
 
     this._connector = this._initConnector(
       url || '/',
@@ -72,8 +72,8 @@ class WebScoketClient<
     return this._user;
   }
 
-  get channel(): null | WebSocketConnection {
-    return this._channel;
+  get thread(): null | WebSocketConnection {
+    return this._thread;
   }
 
   async send(content: EventInput | EventInput[]): Promise<void> {
@@ -92,7 +92,7 @@ class WebScoketClient<
     return new Connector<User>(sockerUrl, login, marshaler)
       .on('connect', ({ connId, user }) => {
         this._user = user;
-        this._channel = new WebSocketConnection('*', connId);
+        this._thread = new WebSocketConnection('*', connId);
 
         const connectEvent: ConnectEventValue = {
           category: 'connection',
@@ -100,7 +100,7 @@ class WebScoketClient<
           payload: null,
         };
         this._emitEvent({
-          event: createEvent(connectEvent, this._channel, this._user),
+          event: createEvent(connectEvent, this._thread, this._user),
         });
       })
       .on('events', (values) => {
@@ -108,15 +108,15 @@ class WebScoketClient<
           this._emitEvent({
             event: createEvent(
               value,
-              this._channel as WebSocketConnection,
+              this._thread as WebSocketConnection,
               this._user as User
             ),
           });
         }
       })
       .on('disconnect', ({ reason }) => {
-        const channel = this._channel;
-        this._channel = null;
+        const thread = this._thread;
+        this._thread = null;
 
         const disconnectValue: DisconnectEventValue = {
           category: 'connection',
@@ -126,7 +126,7 @@ class WebScoketClient<
         this._emitEvent({
           event: createEvent(
             disconnectValue,
-            channel as WebSocketConnection,
+            thread as WebSocketConnection,
             this._user as User
           ),
         });

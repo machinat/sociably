@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
-import type { SociablyChannel, SociablyNode } from '@sociably/core';
+import type { SociablyThread, SociablyNode } from '@sociably/core';
 import { ServiceScope, makeClassProvider } from '@sociably/core/service';
 import execute from './execute';
 import { SCRIPT_STATE_KEY } from './constant';
@@ -26,7 +26,7 @@ type RuntimeResult<Return, Yield> = {
 };
 
 export class ScriptRuntime<Script extends AnyScriptLibrary> {
-  channel: SociablyChannel;
+  thread: SociablyThread;
   callStack: null | CallStatus<unknown>[];
   saveTimestamp: undefined | number;
   rootScript: Script;
@@ -44,12 +44,12 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   constructor(
     stateContoller: StateControllerI,
     scope: ServiceScope,
-    channel: SociablyChannel,
+    thread: SociablyThread,
     stack: CallStatus<unknown>[],
     promptTimestamp: undefined | number,
     isPrompting: boolean
   ) {
-    this.channel = channel;
+    this.thread = thread;
     this.callStack = stack;
     this.saveTimestamp = promptTimestamp;
     this._isPrompting = isPrompting;
@@ -101,7 +101,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
         MetaOfScript<Script>
       >(
         this._serviceScope,
-        this.channel,
+        this.thread,
         this.callStack,
         this._isPrompting,
         input
@@ -156,7 +156,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
 
     const timestamp = Date.now();
     await this._stateContoller
-      .channelState(this.channel)
+      .threadState(this.thread)
       .update<ScriptProcessState>(SCRIPT_STATE_KEY, (lastState) => {
         if (
           saveTimestamp
@@ -165,7 +165,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
         ) {
           throw new Error(
             'runtime state have changed while execution, there are maybe ' +
-              'mutiple runtimes of the same channel executing at the same time'
+              'mutiple runtimes of the same thread executing at the same time'
           );
         }
 
@@ -186,7 +186,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
 
   async exit(): Promise<boolean> {
     const isDeleted = await this._stateContoller
-      .channelState(this.channel)
+      .threadState(this.thread)
       .delete(SCRIPT_STATE_KEY);
     return isDeleted;
   }
@@ -224,7 +224,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
   }
 
   async start<StartingScript extends Script>(
-    channel: SociablyChannel,
+    thread: SociablyThread,
     script: StartingScript,
     {
       goto,
@@ -237,20 +237,20 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
     }
 
     const state = await this._stateContoller
-      .channelState(channel)
+      .threadState(thread)
       .get<ScriptProcessState>(SCRIPT_STATE_KEY);
 
     if (state) {
       const scriptName = state.callStack[0].name;
       throw new Error(
-        `script [${scriptName}] is already running on channel [${channel.uid}], exit the current runtime before start new one`
+        `script [${scriptName}] is already running on thread [${thread.uid}], exit the current runtime before start new one`
       );
     }
 
     const runtime = new ScriptRuntime<StartingScript>(
       this._stateContoller,
       this._serviceScope,
-      channel,
+      thread,
       [
         {
           script,
@@ -267,10 +267,10 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
   }
 
   async getRuntime(
-    channel: SociablyChannel
+    thread: SociablyThread
   ): Promise<null | ScriptRuntime<Script>> {
     const state = await this._stateContoller
-      .channelState(channel)
+      .threadState(thread)
       .get<ScriptProcessState>(SCRIPT_STATE_KEY);
 
     if (!state) {
@@ -293,7 +293,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
     return new ScriptRuntime(
       this._stateContoller,
       this._serviceScope,
-      channel,
+      thread,
       stack,
       state.timestamp,
       true
@@ -301,10 +301,10 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
   }
 
   async continue(
-    channel: SociablyChannel,
+    thread: SociablyThread,
     input: InputOfScript<Script>
   ): Promise<null | ScriptRuntime<Script>> {
-    const runtime = await this.getRuntime(channel);
+    const runtime = await this.getRuntime(thread);
     if (!runtime) {
       return null;
     }

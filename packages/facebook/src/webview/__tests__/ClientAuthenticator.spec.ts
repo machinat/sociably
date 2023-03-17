@@ -58,7 +58,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       pageId: '12345',
-      channel: new FacebookChat('12345', { id: '67890' }),
+      thread: new FacebookChat('12345', { id: '67890' }),
       user: new FacebookUser('12345', '67890'),
     },
   });

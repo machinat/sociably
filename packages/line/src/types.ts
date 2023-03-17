@@ -157,7 +157,7 @@ export type ChatActionSegmentValue = {
   type: 'chat_action';
   getChatRequest:
     | null
-    | ((channel: LineChat) => {
+    | ((thread: LineChat) => {
         method: 'GET' | 'POST' | 'PUT' | 'DELETE';
         path: string;
         body: null | Record<string, unknown>;

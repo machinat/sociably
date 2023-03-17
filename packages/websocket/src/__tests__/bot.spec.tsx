@@ -6,9 +6,9 @@ import _Renderer from '@sociably/core/renderer';
 import _Worker from '../worker';
 import {
   WebSocketConnection,
-  WebSocketUserChannel,
-  WebSocketTopicChannel,
-} from '../channel';
+  WebSocketUserThread,
+  WebSocketTopicThread,
+} from '../thread';
 import { Event } from '../component';
 import { WebSocketBot } from '../bot';
 import type { WebSocketServer } from '../server';
@@ -100,7 +100,7 @@ test('#stop() stop engine and server', async () => {
   expect(engine.stop).toHaveBeenCalledTimes(1);
 });
 
-describe('#render(channel, message)', () => {
+describe('#render(thread, message)', () => {
   const message = (
     <>
       foo
@@ -117,21 +117,21 @@ describe('#render(channel, message)', () => {
     { type: 'baz', category: 'zaq' },
   ];
 
-  it('send to connection channel', async () => {
+  it('send to connection thread', async () => {
     const bot = new WebSocketBot(server);
     await bot.start();
 
-    const channel = new WebSocketConnection('#server', `#conn`);
-    server.dispatch.mock.fakeReturnValue([channel]);
+    const thread = new WebSocketConnection('#server', `#conn`);
+    server.dispatch.mock.fakeReturnValue([thread]);
 
     const expectedJob = {
-      target: channel,
+      target: thread,
       values: expectedEventValues,
     };
 
-    await expect(bot.render(channel, message)).resolves.toEqual({
+    await expect(bot.render(thread, message)).resolves.toEqual({
       jobs: [expectedJob],
-      results: [{ connections: [channel] }],
+      results: [{ connections: [thread] }],
       tasks: [{ type: 'dispatch', payload: [expectedJob] }],
     });
 
@@ -139,7 +139,7 @@ describe('#render(channel, message)', () => {
     expect(server.dispatch).toHaveBeenCalledWith(expectedJob);
   });
 
-  it('send to user channel', async () => {
+  it('send to user thread', async () => {
     const bot = new WebSocketBot(server);
     await bot.start();
 
@@ -149,14 +149,14 @@ describe('#render(channel, message)', () => {
 
     server.dispatch.mock.fake(async () => connections);
 
-    const channel = new WebSocketUserChannel('jojo.doe');
+    const thread = new WebSocketUserThread('jojo.doe');
 
     const expectedJob = {
-      target: channel,
+      target: thread,
       values: expectedEventValues,
     };
 
-    await expect(bot.render(channel, message)).resolves.toEqual({
+    await expect(bot.render(thread, message)).resolves.toEqual({
       jobs: [expectedJob],
       results: [{ connections }],
       tasks: [{ type: 'dispatch', payload: [expectedJob] }],
@@ -166,7 +166,7 @@ describe('#render(channel, message)', () => {
     expect(server.dispatch).toHaveBeenCalledWith(expectedJob);
   });
 
-  it('send to topic channel', async () => {
+  it('send to topic thread', async () => {
     const bot = new WebSocketBot(server);
     await bot.start();
 
@@ -176,10 +176,10 @@ describe('#render(channel, message)', () => {
 
     server.dispatch.mock.fake(async () => connections);
 
-    const channel = new WebSocketTopicChannel('foo');
+    const thread = new WebSocketTopicThread('foo');
 
     const expectedJob = {
-      target: channel,
+      target: thread,
       values: [
         { type: 'foo' },
         { type: 'text', category: 'message', payload: 'foo' },
@@ -190,7 +190,7 @@ describe('#render(channel, message)', () => {
 
     await expect(
       bot.render(
-        channel,
+        thread,
         <>
           <Event type="foo" />
           foo
@@ -267,11 +267,11 @@ test('#sendUser()', async () => {
 
   expect(server.dispatch).toHaveBeenCalledTimes(2);
   expect(server.dispatch).toHaveBeenNthCalledWith(1, {
-    target: new WebSocketUserChannel(user.uid),
+    target: new WebSocketUserThread(user.uid),
     values: [{ type: 'foo' }],
   });
   expect(server.dispatch).toHaveBeenNthCalledWith(2, {
-    target: new WebSocketUserChannel(user.uid),
+    target: new WebSocketUserThread(user.uid),
     values: eventValues,
   });
 });
@@ -303,16 +303,16 @@ test('#sendTopic()', async () => {
 
   expect(server.dispatch).toHaveBeenCalledTimes(2);
   expect(server.dispatch).toHaveBeenNthCalledWith(1, {
-    target: new WebSocketTopicChannel(topic),
+    target: new WebSocketTopicThread(topic),
     values: [{ type: 'foo' }],
   });
   expect(server.dispatch).toHaveBeenNthCalledWith(2, {
-    target: new WebSocketTopicChannel(topic),
+    target: new WebSocketTopicThread(topic),
     values: eventValues,
   });
 });
 
-test('#disconnect(channel, socketId, reason)', async () => {
+test('#disconnect(thread, socketId, reason)', async () => {
   const bot = new WebSocketBot(server);
   const connection = new WebSocketConnection('#server', '#conn');
 
@@ -327,7 +327,7 @@ test('#disconnect(channel, socketId, reason)', async () => {
   expect(server.disconnect).toHaveBeenCalledWith(connection, 'bye');
 });
 
-test('#subscribeTopic(channel, socketId, reason)', async () => {
+test('#subscribeTopic(thread, socketId, reason)', async () => {
   const bot = new WebSocketBot(server);
   const connection = new WebSocketConnection('#server', '#conn');
 
@@ -342,7 +342,7 @@ test('#subscribeTopic(channel, socketId, reason)', async () => {
   expect(server.subscribeTopic).toHaveBeenCalledWith(connection, 'foo');
 });
 
-test('#unsubscribeTopic(channel, socketId, reason)', async () => {
+test('#unsubscribeTopic(thread, socketId, reason)', async () => {
   const bot = new WebSocketBot(server);
   const connection = new WebSocketConnection('#server', '#conn');
 

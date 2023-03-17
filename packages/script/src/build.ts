@@ -1,6 +1,6 @@
 import {
   makeContainer,
-  RenderingChannel,
+  RenderingThread,
   SociablyElement,
   AnyEventContext,
 } from '@sociably/core';
@@ -42,14 +42,14 @@ const build = <
   };
 
   lib.Start = makeContainer({
-    deps: [ProcessorP, RenderingChannel],
+    deps: [ProcessorP, RenderingThread],
     name: scriptName,
-  })((processor, channel) => async ({ params, goto }) => {
-    if (!channel) {
+  })((processor, thread) => async ({ params, goto }) => {
+    if (!thread) {
       return null;
     }
 
-    const runtime = await processor.start(channel, lib, { params, goto });
+    const runtime = await processor.start(thread, lib, { params, goto });
     return runtime.output();
   });
 

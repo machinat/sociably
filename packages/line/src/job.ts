@@ -5,23 +5,23 @@ import { PATH_PUSH, PATH_REPLY, PATH_MULTICAST } from './constant';
 import type { LineSegmentValue, LineJob, MessageParams } from './types';
 
 const createMessageJob = (
-  channel: LineChat,
+  thread: LineChat,
   messages: MessageParams[],
   replyToken: undefined | string
 ): LineJob => ({
   method: 'POST',
   path: replyToken ? PATH_REPLY : PATH_PUSH,
-  executionKey: channel.uid,
+  executionKey: thread.uid,
   body: replyToken
     ? { replyToken: replyToken as string, messages }
-    : { to: channel.id, messages },
+    : { to: thread.id, messages },
 });
 
 export const createChatJobs = (replyToken: undefined | string) => {
   let totalJobsCount = 0;
 
   return (
-    channel: LineChat,
+    thread: LineChat,
     segments: DispatchableSegment<LineSegmentValue>[]
   ): LineJob[] => {
     const jobs: LineJob[] = [];
@@ -41,7 +41,7 @@ export const createChatJobs = (replyToken: undefined | string) => {
         if (messagesBuffer.length === 5 || i === segments.length - 1) {
           jobs.push(
             createMessageJob(
-              channel,
+              thread,
               messagesBuffer,
               totalJobsCount === 0 ? replyToken : undefined
             )
@@ -54,7 +54,7 @@ export const createChatJobs = (replyToken: undefined | string) => {
         if (messagesBuffer.length > 0) {
           jobs.push(
             createMessageJob(
-              channel,
+              thread,
               messagesBuffer,
               totalJobsCount === 0 ? replyToken : undefined
             )
@@ -70,11 +70,11 @@ export const createChatJobs = (replyToken: undefined | string) => {
         }
 
         // get dynamic api request
-        const { method, path, body } = value.getChatRequest(channel);
+        const { method, path, body } = value.getChatRequest(thread);
         jobs.push({
           method,
           path,
-          executionKey: channel.uid,
+          executionKey: thread.uid,
           body,
         });
       }

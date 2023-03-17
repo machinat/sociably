@@ -106,7 +106,7 @@ export const EditedChannelPost: ChannelPost = {
 };
 
 export interface MessageDetail {
-  channel: TelegramChat;
+  thread: TelegramChat;
   /**	Unique message identifier inside this chat */
   messageId: number;
   /** Raw user object represent the sender, empty for messages sent to channels */
@@ -146,7 +146,7 @@ export interface MessageDetail {
 }
 
 export const MessageDetail: MessageDetail = {
-  get channel() {
+  get thread() {
     const rawChat = this.message.chat;
     return new TelegramChat(this.botId, rawChat.id, rawChat);
   },
@@ -841,8 +841,8 @@ export const SuccessfulPayment: SuccessfulPayment = {
 };
 
 export interface InlineQuery {
-  /** The chat channel */
-  channel: null;
+  /** The chat thread */
+  thread: null;
   /** Sender */
   user: TelegramUser;
   /** Inline query object. */
@@ -858,7 +858,7 @@ export interface InlineQuery {
 }
 
 export const InlineQuery: InlineQuery = {
-  channel: null,
+  thread: null,
   get user() {
     return new TelegramUser(this.payload.inline_query.from);
   },
@@ -880,7 +880,7 @@ export const InlineQuery: InlineQuery = {
 };
 
 export interface ChosenInlineResult {
-  channel: null;
+  thread: null;
   /**	The user that chose the result */
   user: TelegramUser;
   /** Inline result object. */
@@ -896,7 +896,7 @@ export interface ChosenInlineResult {
 }
 
 export const ChosenInlineResult: ChosenInlineResult = {
-  channel: null,
+  thread: null,
   get user() {
     return new TelegramUser(this.payload.chosen_inline_result.from);
   },
@@ -918,8 +918,8 @@ export const ChosenInlineResult: ChosenInlineResult = {
 };
 
 export interface CallbackBase {
-  /** The chat channel. It's null if the callback is triggered by an inline message */
-  channel: null | TelegramChat;
+  /** The chat thread. It's null if the callback is triggered by an inline message */
+  thread: null | TelegramChat;
   /** Sender */
   user: TelegramUser;
   /** Callback query object. */
@@ -935,7 +935,7 @@ export interface CallbackBase {
 }
 
 export const CallbackBase: CallbackBase = {
-  get channel() {
+  get thread() {
     const { message } = this.payload.callback_query;
     return message
       ? new TelegramChat(this.botId, message.chat.id, message.chat)
@@ -984,8 +984,8 @@ export const CallbackGame: CallbackGame = {
 };
 
 export interface ShippingQuery {
-  /** The chat channel */
-  channel: TelegramChat;
+  /** The chat thread */
+  thread: TelegramChat;
   /** User who sent the query */
   user: TelegramUser;
   /** Shipping query object. */
@@ -999,7 +999,7 @@ export interface ShippingQuery {
 }
 
 export const ShippingQuery: ShippingQuery = {
-  get channel() {
+  get thread() {
     return TelegramChat.fromUser(this.botId, this.payload.shipping_query.from);
   },
   get user() {
@@ -1020,8 +1020,8 @@ export const ShippingQuery: ShippingQuery = {
 };
 
 export interface PreCheckoutQuery {
-  /** The chat channel */
-  channel: TelegramChat;
+  /** The chat thread */
+  thread: TelegramChat;
   /** User who sent the query */
   user: TelegramUser;
   /** Pre-checkout query object. */
@@ -1041,7 +1041,7 @@ export interface PreCheckoutQuery {
 }
 
 export const PreCheckoutQuery: PreCheckoutQuery = {
-  get channel() {
+  get thread() {
     return TelegramChat.fromUser(
       this.botId,
       this.payload.pre_checkout_query.from
@@ -1074,7 +1074,7 @@ export const PreCheckoutQuery: PreCheckoutQuery = {
 };
 
 export interface PollChange {
-  channel: null;
+  thread: null;
   user: null;
   /** Poll object. */
   poll: RawPoll;
@@ -1082,15 +1082,15 @@ export interface PollChange {
 
 export const PollChange: PollChange = {
   user: null,
-  channel: null,
+  thread: null,
   get poll() {
     return this.payload.poll;
   },
 };
 
 export interface PollAnswer {
-  /** The chat channel */
-  channel: null;
+  /** The chat thread */
+  thread: null;
   /** The user, who changed the answer to the poll */
   user: TelegramUser;
   /** Poll answer object. */
@@ -1102,7 +1102,7 @@ export interface PollAnswer {
 }
 
 export const PollAnswer: PollAnswer = {
-  channel: null,
+  thread: null,
   get user() {
     return new TelegramUser(this.payload.poll_answer.user);
   },
@@ -1142,7 +1142,7 @@ type MemberStatus =
   | 'kicked';
 
 export type ChatMemberUpdated = {
-  channel: TelegramChat;
+  thread: TelegramChat;
   user: TelegramUser;
   /** Date the change was done */
   date: Date;
@@ -1153,7 +1153,7 @@ export type ChatMemberUpdated = {
 };
 
 export const ChatMemberUpdated: ChatMemberUpdated = {
-  get channel() {
+  get thread() {
     const rawChat = this.chatMember.chat;
     return new TelegramChat(this.botId, rawChat.id, rawChat);
   },
@@ -1178,10 +1178,10 @@ export const ChatMemberUpdated: ChatMemberUpdated = {
 
 export interface Unknown {
   user: null;
-  channel: null;
+  thread: null;
 }
 
 export const Unknown = {
   user: null,
-  channel: null,
+  thread: null,
 };

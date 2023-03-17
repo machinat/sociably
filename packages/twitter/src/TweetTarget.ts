@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TWITTER, TWTR } from './constant';
 
@@ -10,7 +10,7 @@ type SerializedTweetTarget = {
 const DEFAULT_FEED_SIGN = '-';
 
 export default class TwitterTweetTarget
-  implements SociablyChannel, MarshallableInstance<SerializedTweetTarget>
+  implements SociablyThread, MarshallableInstance<SerializedTweetTarget>
 {
   static typeName = 'TwtrTweetTarget';
   static fromJSONValue(val: SerializedTweetTarget): TwitterTweetTarget {

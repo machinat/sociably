@@ -48,7 +48,7 @@ export class FacebookServerAuthenticator
         return {
           ok: true,
           data,
-          channel: result.contextDetails.channel,
+          thread: result.contextDetails.thread,
         };
       },
       getChatLink: () => `https://m.me/${this.bot.pageId}`,

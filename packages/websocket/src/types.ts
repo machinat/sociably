@@ -12,10 +12,10 @@ import type { UnitSegment } from '@sociably/core/renderer';
 import type { HttpRequestInfo } from '@sociably/http';
 import type { WebSocketBot } from './bot';
 import type {
-  WebSocketTopicChannel,
-  WebSocketUserChannel,
+  WebSocketTopicThread,
+  WebSocketUserThread,
   WebSocketConnection,
-} from './channel';
+} from './thread';
 
 export type { Server as WsServer } from 'ws';
 export type { HttpRequestInfo } from '@sociably/http';
@@ -52,7 +52,7 @@ export type WebSocketEvent<
   User extends null | SociablyUser
 > = Value & {
   platform: 'websokcet';
-  channel: WebSocketConnection;
+  thread: WebSocketConnection;
   user: User;
 };
 
@@ -89,13 +89,13 @@ export type WebSocketResult = {
   connections: ConnIdentifier[];
 };
 
-export type WebSocketDispatchChannel =
+export type WebSocketDispatchThread =
   | WebSocketConnection
-  | WebSocketUserChannel
-  | WebSocketTopicChannel;
+  | WebSocketUserThread
+  | WebSocketTopicThread;
 
 export type WebSocketDispatchFrame = DispatchFrame<
-  WebSocketDispatchChannel,
+  WebSocketDispatchThread,
   WebSocketJob
 >;
 

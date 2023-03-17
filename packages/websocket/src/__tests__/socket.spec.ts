@@ -574,7 +574,7 @@ describe('closing', () => {
     expect(clientCloseSpy).toHaveBeenCalledWith(888, 'Bye!', clientSocket);
   });
 
-  it('emit disconnect of connected channel', async () => {
+  it('emit disconnect of connected thread', async () => {
     const serverDisconnectSpy = moxy();
     const clientDisconnectSpy = moxy();
     serverSocket.on('disconnect', serverDisconnectSpy);

@@ -14,7 +14,7 @@ const fromApp = <App extends SociablyApp<any>>(
         subject.next({
           scope,
           value: context,
-          key: context.event.channel?.uid,
+          key: context.event.thread?.uid,
         });
       }
     )

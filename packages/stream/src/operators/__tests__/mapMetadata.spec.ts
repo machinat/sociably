@@ -24,24 +24,24 @@ beforeEach(() => {
 test('map with new value, key and scope', async () => {
   const mapper = moxy(() => ({
     value: 'bar',
-    key: 'bar.channel',
+    key: 'bar.thread',
     scope: newScope,
   }));
   const stream = new Stream();
   stream.pipe(mapMetadata(mapper)).subscribe(nextContainer);
 
-  stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
+  stream.next({ scope: oldScope, value: 'foo', key: 'foo.thread' });
   await nextTick();
 
   expect(mapper).toHaveBeenCalledTimes(1);
   expect(mapper).toHaveBeenCalledWith({
     value: 'foo',
-    key: 'foo.channel',
+    key: 'foo.thread',
     scope: oldScope,
   });
 
   expect(nextContainer.$$factory).toHaveBeenCalledTimes(1);
-  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.channel');
+  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.thread');
   expect(nextListener).toHaveBeenCalledTimes(1);
   expect(nextListener).toHaveBeenCalledWith('bar');
 
@@ -52,24 +52,24 @@ test('map with new value, key and scope', async () => {
 test('with async mapper function', async () => {
   const mapper = moxy(async () => ({
     value: 'bar',
-    key: 'bar.channel',
+    key: 'bar.thread',
     scope: newScope,
   }));
   const stream = new Stream();
   stream.pipe(mapMetadata(mapper)).subscribe(nextContainer);
 
-  stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
+  stream.next({ scope: oldScope, value: 'foo', key: 'foo.thread' });
   await nextTick();
 
   expect(mapper).toHaveBeenCalledTimes(1);
   expect(mapper).toHaveBeenCalledWith({
     value: 'foo',
-    key: 'foo.channel',
+    key: 'foo.thread',
     scope: oldScope,
   });
 
   expect(nextContainer.$$factory).toHaveBeenCalledTimes(1);
-  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.channel');
+  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.thread');
   expect(nextListener).toHaveBeenCalledTimes(1);
   expect(nextListener).toHaveBeenCalledWith('bar');
 
@@ -80,7 +80,7 @@ test('with async mapper function', async () => {
 test('with async mapper container', async () => {
   const mapFn = moxy(async () => ({
     value: 'bar',
-    key: 'bar.channel',
+    key: 'bar.thread',
     scope: newScope,
   }));
   const mapContainer = moxy(
@@ -90,20 +90,20 @@ test('with async mapper container', async () => {
   const stream = new Stream();
   stream.pipe(mapMetadata(mapContainer)).subscribe(nextContainer);
 
-  stream.next({ scope: oldScope, value: 'foo', key: 'foo.channel' });
+  stream.next({ scope: oldScope, value: 'foo', key: 'foo.thread' });
   await nextTick();
 
   expect(mapContainer.$$factory).toHaveBeenCalledTimes(1);
-  expect(mapContainer.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(mapContainer.$$factory).toHaveBeenCalledWith('foo.thread');
   expect(mapFn).toHaveBeenCalledTimes(1);
   expect(mapFn).toHaveBeenCalledWith({
     scope: oldScope,
     value: 'foo',
-    key: 'foo.channel',
+    key: 'foo.thread',
   });
 
   expect(nextContainer.$$factory).toHaveBeenCalledTimes(1);
-  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.channel');
+  expect(nextContainer.$$factory).toHaveBeenCalledWith('bar.thread');
   expect(nextListener).toHaveBeenCalledTimes(1);
   expect(nextListener).toHaveBeenCalledWith('bar');
 
@@ -122,7 +122,7 @@ it('transmit error down', () => {
     .pipe(
       mapMetadata(() => ({
         value: 'bar',
-        key: 'bar.channel',
+        key: 'bar.thread',
         scope: createEmptyScope(),
       }))
     )
@@ -131,11 +131,11 @@ it('transmit error down', () => {
   source$.error({
     value: new Error('boo'),
     scope: createEmptyScope(),
-    key: 'foo.channel',
+    key: 'foo.thread',
   });
 
   expect(errorContainer.$$factory).toHaveBeenCalledTimes(1);
-  expect(errorContainer.$$factory).toHaveBeenCalledWith('foo.channel');
+  expect(errorContainer.$$factory).toHaveBeenCalledWith('foo.thread');
   expect(errorListener).toHaveBeenCalledTimes(1);
   expect(errorListener).toHaveBeenCalledWith(new Error('boo'));
 });

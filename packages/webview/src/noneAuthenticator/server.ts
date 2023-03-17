@@ -6,7 +6,7 @@ import type {
   VerifyResult,
   CheckDataResult,
 } from '@sociably/auth';
-import { NoneUser, NoneChannel } from './instance';
+import { NoneUser, NoneThread } from './instance';
 import type { NoneAuthData, NoneAuthContext } from './types';
 
 export class NoneServerAuthenticator
@@ -42,13 +42,13 @@ export class NoneServerAuthenticator
 
   checkAuthData({
     user: userId,
-    channel: channelId,
+    thread: threadId,
   }: NoneAuthData): CheckDataResult<NoneAuthContext> {
     return {
       ok: true,
       contextDetails: {
         user: new NoneUser(userId),
-        channel: new NoneChannel(channelId),
+        thread: new NoneThread(threadId),
       },
     };
   }

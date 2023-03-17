@@ -5,7 +5,7 @@ const doAsyncByKey = <T, R>(
   effect: (frame: StreamingFrame<T>, observer: Stream<R>) => Promise<void>
 ): OperatorFunction<T, R> => {
   return (input: Stream<T>) => {
-    const buffersByChannel = new Map<string, StreamingFrame<T>[]>();
+    const buffersByThread = new Map<string, StreamingFrame<T>[]>();
     const destination = new Stream<R>();
 
     const execute = async (frame: StreamingFrame<T>) => {
@@ -17,12 +17,12 @@ const doAsyncByKey = <T, R>(
         destination.error({ key, scope, value: err });
       } finally {
         let queued;
-        if (key && (queued = buffersByChannel.get(key))) {
+        if (key && (queued = buffersByThread.get(key))) {
           if (queued.length > 0) {
             const nextFrame = queued.shift();
             execute(nextFrame);
           } else {
-            buffersByChannel.delete(key);
+            buffersByThread.delete(key);
           }
         }
       }
@@ -36,11 +36,11 @@ const doAsyncByKey = <T, R>(
           return;
         }
 
-        const buffer = buffersByChannel.get(key);
+        const buffer = buffersByThread.get(key);
         if (buffer) {
           buffer.push(frame);
         } else {
-          buffersByChannel.set(key, []);
+          buffersByThread.set(key, []);
           execute(frame);
         }
       },

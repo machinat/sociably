@@ -150,15 +150,15 @@ export interface UniqueOmniIdentifier {
   readonly id: string | number;
 }
 
-export interface SociablyChannel {
+export interface SociablyThread {
   readonly platform: string;
   /**
-   * A set of attributes to identify the channel. All the attributes
-   * together can be used as an unique key of the channel
+   * A set of attributes to identify the thread. All the attributes
+   * together can be used as an unique key of the thread
    */
   readonly uniqueIdentifier: UniqueOmniIdentifier;
   /**
-   * The unique string id of the channel. It's promised to be unique
+   * The unique string id of the thread. It's promised to be unique
    * while using Sociably
    */
   readonly uid: string;
@@ -183,7 +183,7 @@ export interface SociablyEvent<Payload> {
   readonly category: string;
   readonly type: string;
   readonly payload: Payload;
-  readonly channel: null | SociablyChannel;
+  readonly thread: null | SociablyThread;
   readonly user: null | SociablyUser;
 }
 
@@ -216,9 +216,9 @@ export interface SociablyMetadata {
   source: string;
 }
 
-export interface SociablyBot<Channel extends SociablyChannel, Job, Result> {
+export interface SociablyBot<Thread extends SociablyThread, Job, Result> {
   render(
-    channel: Channel,
+    thread: Thread,
     message: SociablyNode
   ): Promise<null | DispatchResponse<Job, Result>>;
 }
@@ -226,7 +226,7 @@ export interface SociablyBot<Channel extends SociablyChannel, Job, Result> {
 export type EventContext<
   Event extends SociablyEvent<unknown>,
   Metadata extends SociablyMetadata,
-  Bot extends SociablyBot<SociablyChannel, unknown, unknown>
+  Bot extends SociablyBot<SociablyThread, unknown, unknown>
 > = {
   platform: string;
   event: Event;
@@ -249,7 +249,7 @@ export type EventMiddleware<
 
 export type DispatchMiddleware<
   Job,
-  Frame extends DispatchFrame<SociablyChannel, Job>,
+  Frame extends DispatchFrame<SociablyThread, Job>,
   Result
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
@@ -263,7 +263,7 @@ export type SociablyPlatform<
   Context extends AnyEventContext,
   EventResp,
   Job,
-  Frame extends DispatchFrame<SociablyChannel, Job>,
+  Frame extends DispatchFrame<SociablyThread, Job>,
   Result
 > = {
   name: string;
@@ -319,7 +319,7 @@ export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
 
 export type DispatchFn<
   Job,
-  Frame extends DispatchFrame<SociablyChannel, Job>,
+  Frame extends DispatchFrame<SociablyThread, Job>,
   Result
 > = (
   frame: Frame,
@@ -328,7 +328,7 @@ export type DispatchFn<
 
 export type DispatchWrapper<
   Job,
-  Frame extends DispatchFrame<SociablyChannel, Job>,
+  Frame extends DispatchFrame<SociablyThread, Job>,
   Result
 > = (
   dispatch: (frame: Frame) => Promise<DispatchResponse<Job, Result>>
@@ -343,7 +343,7 @@ export type PlatformUtilities<
   Context extends AnyEventContext,
   EventResponse,
   Job,
-  Frame extends DispatchFrame<SociablyChannel, Job>,
+  Frame extends DispatchFrame<SociablyThread, Job>,
   Result
 > = {
   popEventWrapper: PopEventWrapper<Context, EventResponse>;

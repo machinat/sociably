@@ -67,7 +67,7 @@ const app = Sociably.createApp({
 
 app.onEvent(async ({ event, bot }) => {
   if (event.platform === 'webview' && event.type === 'connect') {
-    await bot.send(event.channel, {
+    await bot.send(event.thread, {
       type: 'hello',
       payload: 'hello from server',
     });

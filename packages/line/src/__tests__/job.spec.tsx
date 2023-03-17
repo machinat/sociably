@@ -58,9 +58,9 @@ beforeEach(() => {
 
 describe('createChatJobs()', () => {
   it('create api dispatch jobs', () => {
-    const channel = new LineChat('_CHANNEL_ID_', 'user', 'john');
+    const thread = new LineChat('_CHANNEL_ID_', 'user', 'john');
 
-    const jobs = createChatJobs(undefined)(channel, segments);
+    const jobs = createChatJobs(undefined)(thread, segments);
 
     expect(jobs).toMatchInlineSnapshot(`
       Array [
@@ -146,12 +146,12 @@ describe('createChatJobs()', () => {
     `);
 
     expect(chatActionValue.getChatRequest).toHaveBeenCalledTimes(2);
-    expect(chatActionValue.getChatRequest).toHaveBeenCalledWith(channel);
+    expect(chatActionValue.getChatRequest).toHaveBeenCalledWith(thread);
   });
 
   test('send first job with reply API if replyToken given', () => {
-    const channel = new LineChat('_CHANNEL_ID_', 'user', 'john');
-    const jobs = createChatJobs('__REPLY_TOKEN__')(channel, segments);
+    const thread = new LineChat('_CHANNEL_ID_', 'user', 'john');
+    const jobs = createChatJobs('__REPLY_TOKEN__')(thread, segments);
 
     expect(jobs).toMatchInlineSnapshot(`
       Array [
@@ -237,16 +237,16 @@ describe('createChatJobs()', () => {
     `);
 
     expect(chatActionValue.getChatRequest).toHaveBeenCalledTimes(2);
-    expect(chatActionValue.getChatRequest).toHaveBeenCalledWith(channel);
+    expect(chatActionValue.getChatRequest).toHaveBeenCalledWith(thread);
   });
 
   it('throw if an invalid chat action received', () => {
-    const channel = new LineChat('_CHANNEL_ID_', 'user', 'john');
+    const thread = new LineChat('_CHANNEL_ID_', 'user', 'john');
 
     chatActionValue.mock.getter('getChatRequest').fakeReturnValue(null);
 
     expect(() =>
-      createChatJobs(undefined)(channel, [
+      createChatJobs(undefined)(thread, [
         segment('text', '0', '0'),
         segment('unit', <p />, {
           type: 'message',

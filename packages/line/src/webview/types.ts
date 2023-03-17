@@ -32,7 +32,7 @@ export type LineAuthContext = {
   platform: 'line';
   providerId: string;
   clientId: string;
-  channel: null | LineChat;
+  thread: null | LineChat;
   user: LineUser;
   os: ClientOs;
   refererType: ClientReferer;

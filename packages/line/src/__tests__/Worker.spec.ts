@@ -151,7 +151,7 @@ it('throw if api error happen', async () => {
   expect(scope2.isDone()).toBe(true);
 });
 
-it('sequently excute jobs within the same identical channel', async () => {
+it('sequently excute jobs within an identical thread', async () => {
   const client = new LineWorker(accessToken, 10);
 
   const bodySpy = moxy(() => true);

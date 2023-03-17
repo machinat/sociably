@@ -45,8 +45,8 @@ export interface TweetBase {
   payload: RawTweet;
   /** The user who posted this Tweet */
   user: TwitterUser;
-  /** The channel object to interact with the tweet */
-  channel: TweetTarget;
+  /** The thread object to interact with the tweet */
+  thread: TweetTarget;
   /** Represent if the subscribing user is metioned in the tweet */
   isMentioned: boolean;
   /** Represent if the tweet is created by the subscribing user  */
@@ -67,7 +67,7 @@ export const TweetBase: TweetBase = {
     const rawUser = (this.payload as RawTweet).user;
     return new TwitterUser(rawUser.id_str, rawUser);
   },
-  get channel() {
+  get thread() {
     return new TweetTarget(
       (this as EventBase).forUserId,
       (this.payload as RawTweet).id_str
@@ -108,8 +108,8 @@ export interface Favorite {
   payload: RawFavorite;
   /** The user who tap favorite */
   user: TwitterUser;
-  /** The channel object to interact with the tweet */
-  channel: TweetTarget;
+  /** The thread object to interact with the tweet */
+  thread: TweetTarget;
   /** The Tweet being favorite */
   tweet: Tweet;
   /** Like id */
@@ -132,7 +132,7 @@ export const Favorite: Favorite = {
     const rawUser = (this.payload as RawFavorite).user;
     return new TwitterUser(rawUser.id_str, rawUser);
   },
-  get channel() {
+  get thread() {
     return new TweetTarget(
       (this as EventBase).forUserId,
       (this.payload as RawFavorite).favorited_status.id_str
@@ -151,7 +151,7 @@ export const Favorite: Favorite = {
 
 export interface UserToUserAction {
   payload: RawActionInfo;
-  channel: DirectMessageChat;
+  thread: DirectMessageChat;
   /** The user who trigger the action */
   user: TwitterUser;
   /** The target user */
@@ -170,7 +170,7 @@ export const UserToUserAction: UserToUserAction = {
       (this as EventBase).forUserId
     );
   },
-  get channel() {
+  get thread() {
     const action = this.payload as RawActionInfo;
     return new DirectMessageChat(
       (this as EventBase).forUserId,
@@ -194,7 +194,7 @@ export const UserToUserAction: UserToUserAction = {
 
 export interface UserRevoke {
   payload: RawUserRevokeEvent;
-  channel: null;
+  thread: null;
   user: TwitterUser;
   appId: string;
   time: Date;
@@ -202,7 +202,7 @@ export interface UserRevoke {
 
 export const UserRevoke: UserRevoke = {
   payload: null as never,
-  channel: null,
+  thread: null,
   get user() {
     return new TwitterUser(
       (this.payload as RawUserRevokeEvent).user_event.revoke.source.user_id
@@ -222,8 +222,8 @@ export interface DirectMessageCreate {
   payload: RawDirectMessage;
   /** Represent if the message is sent by the subscribing user  */
   isEcho: boolean;
-  /** The channel object to reply messages back */
-  channel: DirectMessageChat;
+  /** The thread object to reply messages back */
+  thread: DirectMessageChat;
   /** The user who sent the message */
   user: TwitterUser;
   /** The user who receive the message */
@@ -261,7 +261,7 @@ export const DirectMessageCreate: DirectMessageCreate = {
       (this as EventBase).forUserId
     );
   },
-  get channel() {
+  get thread() {
     const rawMessage = (this.payload as RawDirectMessage).message_create;
     return new DirectMessageChat(
       (this as EventBase).forUserId,
@@ -389,7 +389,7 @@ export const QuickReply: QuickReply = {
 };
 
 export interface DirectMessageAction {
-  channel: DirectMessageChat;
+  thread: DirectMessageChat;
   user: TwitterUser;
   recipient: TwitterUser;
   time: Date;
@@ -398,7 +398,7 @@ export interface DirectMessageAction {
 
 export const DirectMessageAction: DirectMessageAction = {
   usersMapping: null as never,
-  get channel() {
+  get thread() {
     return new DirectMessageChat(
       (this as EventBase).forUserId,
       (this.payload as RawDirectMessageAction).sender_id
@@ -445,7 +445,7 @@ export const DirectMessageMarkRead: DirectMessageMarkRead = {
 
 export interface DeleteTweet {
   payload: RawTweetDelete;
-  channel: null;
+  thread: null;
   user: TwitterUser;
   statusId: string;
   time: Date;
@@ -453,7 +453,7 @@ export interface DeleteTweet {
 
 export const DeleteTweet: DeleteTweet = {
   payload: null as never,
-  channel: null,
+  thread: null,
   get user() {
     return new TwitterUser((this.payload as RawTweetDelete).status.user_id);
   },
@@ -467,11 +467,11 @@ export const DeleteTweet: DeleteTweet = {
 
 export interface Unknown {
   payload: any;
-  channel: null;
+  thread: null;
   user: null;
 }
 export const Unknown: Unknown = {
   payload: null,
-  channel: null,
+  thread: null,
   user: null,
 };

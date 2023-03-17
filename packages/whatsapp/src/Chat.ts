@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { WHATSAPP, WA } from './constant';
 import type WhatsAppUser from './User';
@@ -9,7 +9,7 @@ type WhatsAppChatValue = {
 };
 
 class WhatsAppChat
-  implements SociablyChannel, MarshallableInstance<WhatsAppChatValue>
+  implements SociablyThread, MarshallableInstance<WhatsAppChatValue>
 {
   static typeName = 'WaChat';
   static fromUser(accountId: string, user: WhatsAppUser): WhatsAppChat {

@@ -36,7 +36,7 @@ beforeEach(() => {
   getRegisteredResult.mock.reset();
 });
 
-describe('createChatJobs(options)(channel, segments)', () => {
+describe('createChatJobs(options)(thread, segments)', () => {
   const segments: (UnitSegment<FacebookSegmentValue> | TextSegment)[] = [
     {
       type: 'unit',
@@ -81,9 +81,9 @@ describe('createChatJobs(options)(channel, segments)', () => {
   ];
 
   it('create jobs to be sent', () => {
-    const channel = new FacebookChat('12345', { id: '67890' });
+    const thread = new FacebookChat('12345', { id: '67890' });
 
-    const jobs = createChatJobs()(channel, segments);
+    const jobs = createChatJobs()(thread, segments);
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
@@ -101,14 +101,14 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   test('with message metadata', () => {
-    const channel = new FacebookChat('12345', { id: '67890' });
+    const thread = new FacebookChat('12345', { id: '67890' });
 
     const jobs = createChatJobs({
       messagingType: 'MESSAGE_TAG',
       tag: 'PAYMENT_UPDATE',
       notificationType: 'SILENT_PUSH',
       personaId: 'your-dearest-friend',
-    })(channel, segments);
+    })(thread, segments);
 
     expect(jobs).toMatchSnapshot();
 
@@ -137,9 +137,9 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('set persona_id message and typing_on/typeing_off action', () => {
-    const channel = new FacebookChat('12345', { id: '67890' });
+    const thread = new FacebookChat('12345', { id: '67890' });
 
-    const jobs = createChatJobs({ personaId: 'droid' })(channel, [
+    const jobs = createChatJobs({ personaId: 'droid' })(thread, [
       {
         type: 'unit',
         path: '?',
@@ -188,14 +188,14 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('respect options set in job value', () => {
-    const channel = new FacebookChat('12345', { id: '67890' });
+    const thread = new FacebookChat('12345', { id: '67890' });
 
     const jobs = createChatJobs({
       messagingType: 'UPDATE',
       tag: undefined,
       notificationType: 'SILENT_PUSH',
       personaId: 'astromech-droid',
-    })(channel, [
+    })(thread, [
       {
         type: 'unit',
         path: '?',
@@ -247,14 +247,14 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('respect the empty tag if messaging_type has already been set', () => {
-    const channel = new FacebookChat('12345', { id: '67890' });
+    const thread = new FacebookChat('12345', { id: '67890' });
 
     const jobs = createChatJobs({
       messagingType: 'MESSAGE_TAG',
       tag: 'FEATURE_FUNCTIONALITY_UPDATE',
       notificationType: 'SILENT_PUSH',
       personaId: 'astromech-droid',
-    })(channel, [
+    })(thread, [
       {
         type: 'unit',
         path: '?',
@@ -282,7 +282,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   test('use oneTimeNotifToken as recipient', () => {
-    const channel = new FacebookChat('12345', { id: '67890' });
+    const thread = new FacebookChat('12345', { id: '67890' });
     const helloSegment: UnitSegment<FacebookSegmentValue> = {
       type: 'unit',
       path: '?',
@@ -296,7 +296,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
 
     const jobs = createChatJobs({
       oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
-    })(channel, [helloSegment]);
+    })(thread, [helloSegment]);
 
     expect(jobs[0].request.body?.recipient).toEqual({
       one_time_notif_token: '__ONE_TIME_NOTIF_TOKEN__',
@@ -305,7 +305,7 @@ describe('createChatJobs(options)(channel, segments)', () => {
     expect(() =>
       createChatJobs({
         oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
-      })(channel, [
+      })(thread, [
         helloSegment,
         {
           type: 'unit',
@@ -324,14 +324,14 @@ describe('createChatJobs(options)(channel, segments)', () => {
   });
 
   it('add attached file data and info', () => {
-    const channel = new FacebookChat('12345', { id: '67890' });
+    const thread = new FacebookChat('12345', { id: '67890' });
     const fileInfo = {
       filename: 'deathangel.jpg',
       contentType: 'image/jpeg',
       knownLength: 66666,
     };
 
-    const jobs = createChatJobs()(channel, [
+    const jobs = createChatJobs()(thread, [
       {
         type: 'unit',
         path: '?',

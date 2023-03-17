@@ -7,7 +7,7 @@ import {
   IntentsClient,
   EnvironmentsClient,
 } from '@google-cloud/dialogflow';
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import { makeClassProvider } from '@sociably/core/service';
 import type {
   DetectIntentResult,
@@ -86,7 +86,7 @@ export class DialogflowIntentRecognizer<
   }
 
   async detectText(
-    channel: SociablyChannel,
+    thread: SociablyThread,
     text: string,
     options?: DetectIntentOptions
   ): Promise<DetectIntentResult<Recognition, DetactIntentPayload>> {
@@ -94,12 +94,12 @@ export class DialogflowIntentRecognizer<
 
     const language = options?.language || this._recognitionData.defaultLanguage;
     const sessionPath = this.useDefaultAgent
-      ? client.projectAgentSessionPath(this.projectId, channel.uid)
+      ? client.projectAgentSessionPath(this.projectId, thread.uid)
       : client.projectAgentEnvironmentUserSessionPath(
           this.projectId,
           this.environment,
           '-',
-          channel.uid
+          thread.uid
         );
 
     const [{ responseId, webhookStatus, queryResult }] =
@@ -117,14 +117,14 @@ export class DialogflowIntentRecognizer<
                 name: this.useDefaultAgent
                   ? client.projectAgentSessionContextPath(
                       this.projectId,
-                      channel.uid,
+                      thread.uid,
                       contextName
                     )
                   : client.projectAgentEnvironmentUserSessionContextPath(
                       this.projectId,
                       this.environment,
                       '-',
-                      channel.uid,
+                      thread.uid,
                       contextName
                     ),
               })),

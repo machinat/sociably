@@ -10,7 +10,7 @@ const scope: ServiceScope = moxy<ServiceScope>({
   },
 } as never);
 
-const channel = { platform: 'test', uid: '_MY_CHANNEL_' };
+const thread = { platform: 'test', uid: '_MY_THREAD_' };
 
 const mockScript = (
   commands,
@@ -39,7 +39,7 @@ describe('execute content command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [
           {
             script: mockScript([contentCommand]),
@@ -58,7 +58,7 @@ describe('execute content command', () => {
     expect(contentCommand.getContent).toHaveBeenCalledTimes(1);
     expect(contentCommand.getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -74,7 +74,7 @@ describe('execute content command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [
           {
             script: mockScript([contentCommand1, contentCommand2]),
@@ -93,14 +93,14 @@ describe('execute content command', () => {
     expect(contentCommand1.getContent).toHaveBeenCalledTimes(1);
     expect(contentCommand1.getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'baz' },
       meta: null,
     });
     expect(contentCommand2.getContent).toHaveBeenCalledTimes(1);
     expect(contentCommand2.getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'baz' },
       meta: null,
     });
@@ -126,7 +126,7 @@ describe('execute content command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [
           {
             script: mockScript(commands),
@@ -146,7 +146,7 @@ describe('execute content command', () => {
       expect(getContent).toHaveBeenCalledTimes(1);
       expect(getContent).toHaveBeenCalledWith({
         platform: 'test',
-        channel,
+        thread,
         vars: { foo: 'bar' },
         meta: null,
       });
@@ -162,7 +162,7 @@ describe('execute content command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [
           {
             script: mockScript([
@@ -185,7 +185,7 @@ describe('execute content command', () => {
     expect(getContent).toHaveBeenCalledTimes(1);
     expect(getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -219,7 +219,7 @@ describe('execute prompt command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -237,7 +237,7 @@ describe('execute prompt command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
         { answer: 'yes' }
@@ -251,12 +251,12 @@ describe('execute prompt command', () => {
 
     expect(promptCommand.setVars).toHaveBeenCalledTimes(1);
     expect(promptCommand.setVars).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' }, meta: null },
+      { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
       { answer: 'yes' }
     );
     expect(script.commands[2].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar', answer: 'yes' },
       meta: null,
     });
@@ -271,7 +271,7 @@ describe('execute prompt command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
         { answer: 'no' }
@@ -285,12 +285,12 @@ describe('execute prompt command', () => {
 
     expect(promptCommand.setVars).toHaveBeenCalledTimes(1);
     expect(promptCommand.setVars).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' }, meta: null },
+      { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
       { answer: 'no' }
     );
     expect(script.commands[2].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar', answer: 'no' },
       meta: null,
     });
@@ -304,7 +304,7 @@ describe('execute prompt command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
         { answer: 'maybe' }
@@ -321,12 +321,12 @@ describe('execute prompt command', () => {
 
     expect(setVars).toHaveBeenCalledTimes(1);
     expect(setVars).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' }, meta: null },
+      { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
       { answer: 'maybe' }
     );
     expect(script.commands[2].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar', answer: 'maybe' },
       meta: null,
     });
@@ -348,7 +348,7 @@ describe('execute call command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -361,14 +361,14 @@ describe('execute call command', () => {
     expect(subScript.commands[0].getContent).toHaveBeenCalledTimes(1);
     expect(subScript.commands[0].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: {},
       meta: null,
     });
     expect(script.commands[1].getContent).toHaveBeenCalledTimes(1);
     expect(script.commands[1].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -404,7 +404,7 @@ describe('execute call command', () => {
       await expect(
         execute(
           scope,
-          channel,
+          thread,
           [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
           false
         )
@@ -417,26 +417,26 @@ describe('execute call command', () => {
       expect(subScript.commands[1].getValue).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].getValue).toHaveBeenCalledWith({
         platform: 'test',
-        channel,
+        thread,
         vars: { hello: 'from top' },
         meta: null,
       });
       expect(script.commands[0].withParams).toHaveBeenCalledTimes(1);
       expect(script.commands[0].withParams).toHaveBeenCalledWith({
         platform: 'test',
-        channel,
+        thread,
         vars: { foo: 'bar' },
         meta: null,
       });
       expect(script.commands[0].setVars).toHaveBeenCalledTimes(1);
       expect(script.commands[0].setVars).toHaveBeenCalledWith(
-        { platform: 'test', channel, vars: { foo: 'bar' }, meta: null },
+        { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
         { hello: 'from bottom' }
       );
       expect(script.commands[1].getContent).toHaveBeenCalledTimes(1);
       expect(script.commands[1].getContent).toHaveBeenCalledWith({
         platform: 'test',
-        channel,
+        thread,
         vars: { foo: 'bar', hello: 'from bottom' },
         meta: null,
       });
@@ -454,7 +454,7 @@ describe('execute call command', () => {
       await expect(
         execute(
           scope,
-          channel,
+          thread,
           [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
           false
         )
@@ -467,20 +467,20 @@ describe('execute call command', () => {
       expect(subScript.commands[1].getValue).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].getValue).toHaveBeenCalledWith({
         platform: 'test',
-        channel,
+        thread,
         vars: { hello: 'async from top' },
         meta: null,
       });
       expect(script.commands[0].withParams).toHaveBeenCalledTimes(1);
       expect(script.commands[0].withParams).toHaveBeenCalledWith({
         platform: 'test',
-        channel,
+        thread,
         vars: { foo: 'bar' },
         meta: null,
       });
       expect(script.commands[0].setVars).toHaveBeenCalledTimes(1);
       expect(script.commands[0].setVars).toHaveBeenCalledWith(
-        { platform: 'test', channel, vars: { foo: 'bar' }, meta: null },
+        { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
         { hello: 'from bottom' }
       );
     });
@@ -504,7 +504,7 @@ describe('execute call command', () => {
       await expect(
         execute(
           scope,
-          channel,
+          thread,
           [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
           false
         )
@@ -517,7 +517,7 @@ describe('execute call command', () => {
       expect(subScript.commands[1].getValue).toHaveBeenCalledTimes(1);
       expect(subScript.commands[1].getValue).toHaveBeenCalledWith({
         platform: 'test',
-        channel,
+        thread,
         vars: { hello: 'from top container' },
         meta: null,
       });
@@ -526,7 +526,7 @@ describe('execute call command', () => {
       expect(withParamsFn).toHaveBeenCalledTimes(1);
       expect(withParamsFn).toHaveBeenCalledWith({
         platform: 'test',
-        channel,
+        thread,
         vars: { foo: 'bar' },
         meta: null,
       });
@@ -534,7 +534,7 @@ describe('execute call command', () => {
       expect(setVarsContainer).toHaveBeenCalledWith('FOO_SERVICE');
       expect(setVarsFn).toHaveBeenCalledTimes(1);
       expect(setVarsFn).toHaveBeenCalledWith(
-        { platform: 'test', channel, vars: { foo: 'bar' }, meta: null },
+        { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
         { hello: 'from bottom' }
       );
     });
@@ -562,7 +562,7 @@ describe('execute call command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -578,7 +578,7 @@ describe('execute call command', () => {
     expect(subScript.commands[0].getContent).toHaveBeenCalledTimes(1);
     expect(subScript.commands[0].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'baz' },
       meta: null,
     });
@@ -598,7 +598,7 @@ describe('execute call command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [
           {
             script: mockScript([
@@ -620,7 +620,7 @@ describe('execute call command', () => {
     expect(subScript.commands[1].getContent).toHaveBeenCalledTimes(1);
     expect(subScript.commands[1].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: {},
       meta: null,
     });
@@ -636,7 +636,7 @@ describe('execute jump command', () => {
       { type: 'content', getContent: () => 'baz' },
     ]);
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -653,7 +653,7 @@ describe('execute jump command', () => {
       { type: 'content', getContent: () => 'bar' },
     ]);
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -685,7 +685,7 @@ describe('execute jump_condition command', () => {
 
   test('with sync condition function', async () => {
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -696,7 +696,7 @@ describe('execute jump_condition command', () => {
 
     jumpCondCommand.condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -709,7 +709,7 @@ describe('execute jump_condition command', () => {
   test('with async condition function', async () => {
     jumpCondCommand.condition.mock.fake(async () => true);
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -719,7 +719,7 @@ describe('execute jump_condition command', () => {
 
     jumpCondCommand.condition.mock.fake(async () => false);
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -736,7 +736,7 @@ describe('execute jump_condition command', () => {
 
     jumpCondCommand.mock.getter('condition').fake(() => conditionContainer);
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -746,7 +746,7 @@ describe('execute jump_condition command', () => {
 
     conditionFn.mock.fake(async () => false);
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -759,7 +759,7 @@ describe('execute jump_condition command', () => {
     jumpCondCommand.mock.getter('isNot').fakeReturnValue(true);
 
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -770,7 +770,7 @@ describe('execute jump_condition command', () => {
 
     script.commands[1].condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, channel, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -791,7 +791,7 @@ describe('execute return command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -823,7 +823,7 @@ describe('execute return command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -837,7 +837,7 @@ describe('execute return command', () => {
     expect(returnCommand.getValue).toHaveBeenCalledTimes(1);
     expect(returnCommand.getValue).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -848,7 +848,7 @@ describe('execute return command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -861,7 +861,7 @@ describe('execute return command', () => {
     expect(returnCommand.getValue).toHaveBeenCalledTimes(1);
     expect(returnCommand.getValue).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -875,7 +875,7 @@ describe('execute return command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -892,7 +892,7 @@ describe('execute return command', () => {
     expect(valueFn).toHaveBeenCalledTimes(1);
     expect(valueFn).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -914,7 +914,7 @@ describe('execute effect command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -928,7 +928,7 @@ describe('execute effect command', () => {
     expect(effectCommand.setVars).toHaveBeenCalledTimes(1);
     expect(effectCommand.setVars).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -947,7 +947,7 @@ describe('execute effect command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -964,7 +964,7 @@ describe('execute effect command', () => {
     expect(setVarsFn).toHaveBeenCalledTimes(1);
     expect(setVarsFn).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -983,7 +983,7 @@ describe('execute effect command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
         false
       )
@@ -998,17 +998,17 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenCalledTimes(3);
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
-      { platform: 'test', channel, vars: { foo: 2 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 2 }, meta: null },
       undefined
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
-      { platform: 'test', channel, vars: { foo: 1 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 1 }, meta: null },
       { n: 1 }
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       3,
-      { platform: 'test', channel, vars: { foo: 0 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 0 }, meta: null },
       { n: 2 }
     );
   });
@@ -1029,7 +1029,7 @@ describe('execute effect command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
         false
       )
@@ -1047,12 +1047,12 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenCalledTimes(2);
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
-      { platform: 'test', channel, vars: { foo: 1 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 1 }, meta: null },
       undefined
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
-      { platform: 'test', channel, vars: { foo: 0 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 0 }, meta: null },
       { n: 1 }
     );
   });
@@ -1074,7 +1074,7 @@ describe('execute effect command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
         false
       )
@@ -1089,19 +1089,19 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenCalledTimes(2);
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
-      { platform: 'test', channel, vars: { foo: 1 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 1 }, meta: null },
       undefined
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
-      { platform: 'test', channel, vars: { foo: 0 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 0 }, meta: null },
       { n: 1 }
     );
 
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 1 }, stopAt: 'ask' }],
         true,
         null
@@ -1117,7 +1117,7 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenCalledTimes(3);
     expect(yieldFn).toHaveBeenNthCalledWith(
       3,
-      { platform: 'test', channel, vars: { foo: 1 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 1 }, meta: null },
       undefined
     );
   });
@@ -1150,7 +1150,7 @@ describe('execute effect command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
         false
       )
@@ -1168,19 +1168,19 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenCalledTimes(2);
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
-      { platform: 'test', channel, vars: { bar: 0 }, meta: null },
+      { platform: 'test', thread, vars: { bar: 0 }, meta: null },
       undefined
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
-      { platform: 'test', channel, vars: { foo: 0 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 0 }, meta: null },
       { n: 1 }
     );
 
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [
           { script, stopAt: 'child', vars: { foo: 0 } },
           { script: subscript, stopAt: 'ask', vars: { bar: 0 } },
@@ -1199,12 +1199,12 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenCalledTimes(4);
     expect(yieldFn).toHaveBeenNthCalledWith(
       3,
-      { platform: 'test', channel, vars: { foo: 1 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 1 }, meta: null },
       undefined
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       4,
-      { platform: 'test', channel, vars: { bar: 1 }, meta: null },
+      { platform: 'test', thread, vars: { bar: 1 }, meta: null },
       { n: 1 }
     );
   });
@@ -1234,7 +1234,7 @@ describe('execute effect command', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
         false
       )
@@ -1249,17 +1249,17 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenCalledTimes(3);
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
-      { platform: 'test', channel, vars: { foo: 1 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 1 }, meta: null },
       undefined
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
-      { platform: 'test', channel, vars: { bar: 0 }, meta: null },
+      { platform: 'test', thread, vars: { bar: 0 }, meta: null },
       { n: 1 }
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       3,
-      { platform: 'test', channel, vars: { foo: 0 }, meta: null },
+      { platform: 'test', thread, vars: { foo: 0 }, meta: null },
       { n: 2 }
     );
   });
@@ -1324,7 +1324,7 @@ describe('run whole script', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script: MockScript, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -1346,7 +1346,7 @@ describe('run whole script', () => {
     expect(commands[1].getContent).toHaveBeenCalledTimes(1);
     expect(commands[1].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -1354,14 +1354,14 @@ describe('run whole script', () => {
     expect(commands[5].condition).toHaveBeenCalledTimes(1);
     expect(commands[5].condition).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
     expect(commands[6].setVars).toHaveBeenCalledTimes(1);
     expect(commands[6].setVars).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -1376,7 +1376,7 @@ describe('run whole script', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script: MockScript, vars: { foo: 'bar' }, stopAt: undefined }],
         false
       )
@@ -1393,7 +1393,7 @@ describe('run whole script', () => {
     expect(commands[3].getContent).toHaveBeenCalledTimes(1);
     expect(commands[3].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'bar' },
       meta: null,
     });
@@ -1411,7 +1411,7 @@ describe('run whole script', () => {
     const descriptions = ['fun', 'beautyful', 'wonderful'];
     for (const [idx, word] of descriptions.entries()) {
       // eslint-disable-next-line no-await-in-loop
-      const result = await execute(scope, channel, callStack, true, {
+      const result = await execute(scope, thread, callStack, true, {
         desc: word,
       });
 
@@ -1432,7 +1432,7 @@ describe('run whole script', () => {
 
     MockScript.commands[5].condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, channel, callStack, true, { desc: 'fascinating' })
+      execute(scope, thread, callStack, true, { desc: 'fascinating' })
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'bar', t: 3, desc: 'fascinating' },
@@ -1463,7 +1463,7 @@ describe('run whole script', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [{ script: MockScript, vars: { foo: 'bar' }, stopAt: 'PROMPT' }],
         true,
         { desc: 'fabulous' }
@@ -1498,14 +1498,14 @@ describe('run whole script', () => {
     expect(ChildScript.commands[0].getContent).toHaveBeenCalledTimes(1);
     expect(ChildScript.commands[0].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { desc: 'fabulous' },
       meta: null,
     });
     expect(ChildScript.commands[1].condition).toHaveBeenCalledTimes(1);
     expect(ChildScript.commands[1].condition).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { desc: 'fabulous' },
       meta: null,
     });
@@ -1519,7 +1519,7 @@ describe('run whole script', () => {
     await expect(
       execute(
         scope,
-        channel,
+        thread,
         [
           {
             script: MockScript,
@@ -1551,7 +1551,7 @@ describe('run whole script', () => {
     expect(commands[5].condition).toHaveBeenCalledTimes(1);
     expect(commands[5].condition).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'baz', hello: 'subscript' },
       meta: null,
     });
@@ -1559,13 +1559,13 @@ describe('run whole script', () => {
     expect(commands[8].withParams).not.toHaveBeenCalled();
     expect(commands[8].setVars).toHaveBeenCalledTimes(1);
     expect(commands[8].setVars).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'bar' }, meta: null },
+      { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
       { foo: 'baz', hello: 'subscript' }
     );
     expect(commands[10].getContent).toHaveBeenCalledTimes(1);
     expect(commands[10].getContent).toHaveBeenCalledWith({
       platform: 'test',
-      channel,
+      thread,
       vars: { foo: 'baz', hello: 'subscript' },
       meta: null,
     });
@@ -1575,7 +1575,7 @@ describe('run whole script', () => {
     expect(commands[1].condition).not.toHaveBeenCalled();
     expect(commands[2].setVars).toHaveBeenCalledTimes(1);
     expect(commands[2].setVars).toHaveBeenCalledWith(
-      { platform: 'test', channel, vars: { foo: 'baz' }, meta: null },
+      { platform: 'test', thread, vars: { foo: 'baz' }, meta: null },
       { hello: 'subscript' }
     );
 
@@ -1587,7 +1587,7 @@ describe('run whole script', () => {
 it('throw if stopped point key not found', async () => {
   const script = mockScript([{}, {}], { foo: 0, bar: 1 }, 'MyScript');
   await expect(() =>
-    execute(scope, channel, [{ script, vars: {}, stopAt: 'UNKNOWN' }], true, {})
+    execute(scope, thread, [{ script, vars: {}, stopAt: 'UNKNOWN' }], true, {})
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"key \\"UNKNOWN\\" not found in MyScript"`
   );
@@ -1603,7 +1603,7 @@ it('throw if stopped point is not <Prompt/>', async () => {
     'MyScript'
   );
   await expect(() =>
-    execute(scope, channel, [{ script, vars: {}, stopAt: 'ask' }], true, {
+    execute(scope, thread, [{ script, vars: {}, stopAt: 'ask' }], true, {
       event: { text: 'yes' },
     })
   ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -1631,7 +1631,7 @@ it('throw if returned point is not <Call/>', async () => {
   await expect(() =>
     execute(
       scope,
-      channel,
+      thread,
       [
         { script, vars: {}, stopAt: 'greet' },
         { script: subScript, vars: {}, stopAt: 'prompt#0' },

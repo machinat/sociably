@@ -157,7 +157,7 @@ test('.start() and .stop() start/stop engine', () => {
   expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
 });
 
-describe('.message(channel, message, options)', () => {
+describe('.message(thread, message, options)', () => {
   const bot = new FacebookBot({ pageId, accessToken, appSecret });
 
   let apiStatus;

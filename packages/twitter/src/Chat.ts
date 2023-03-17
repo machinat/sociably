@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TWITTER, TWTR } from './constant';
 
@@ -8,7 +8,7 @@ type SerializedDmChat = {
 };
 
 export default class TwitterChat
-  implements SociablyChannel, MarshallableInstance<SerializedDmChat>
+  implements SociablyThread, MarshallableInstance<SerializedDmChat>
 {
   static typeName = 'TwtrChat';
   static fromJSONValue({ id, agent }: SerializedDmChat): TwitterChat {
@@ -33,7 +33,7 @@ export default class TwitterChat
     };
   }
 
-  /** The unique id of the direct message channel */
+  /** The unique id of the direct message thread */
   get uid(): string {
     return `${TWTR}.${this.agentId}.${this.id}`;
   }

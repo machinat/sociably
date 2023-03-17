@@ -1,7 +1,7 @@
 import type { TextSegment, UnitSegment, RawSegment } from '../renderer/types';
 import type {
   SociablyNode,
-  SociablyChannel,
+  SociablyThread,
   PauseDelayFn,
   ThunkEffectFn,
 } from '../types';
@@ -18,9 +18,9 @@ type ThunkTask = { type: 'thunk'; payload: ThunkEffectFn };
 
 export type SociablyTask<Job> = DispatchTask<Job> | PauseTask | ThunkTask;
 
-export type DispatchFrame<Channel extends SociablyChannel, Job> = {
+export type DispatchFrame<Thread extends SociablyThread, Job> = {
   platform: string;
-  channel: null | Channel;
+  thread: null | Thread;
   tasks: SociablyTask<Job>[];
   node: null | SociablyNode;
 };

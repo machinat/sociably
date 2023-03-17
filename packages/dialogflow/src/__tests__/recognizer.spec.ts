@@ -109,9 +109,9 @@ describe('.detectText()', () => {
       projectId: 'test',
       recognitionData,
     });
-    const channel = { platform: 'test', uid: 'foo.chat' };
+    const thread = { platform: 'test', uid: 'foo.chat' };
 
-    await expect(recognizer.detectText(channel, 'hello bot')).resolves.toEqual({
+    await expect(recognizer.detectText(thread, 'hello bot')).resolves.toEqual({
       type: 'Default Welcome Intent',
       language: 'en',
       confidence: 0.46481857,
@@ -135,10 +135,10 @@ describe('.detectText()', () => {
 
   test('detect with options', async () => {
     const recognizer = new Recognizer({ projectId: 'test', recognitionData });
-    const channel = { platform: 'test', uid: 'foo.chat' };
+    const thread = { platform: 'test', uid: 'foo.chat' };
 
     await expect(
-      recognizer.detectText(channel, 'hello bot', {
+      recognizer.detectText(thread, 'hello bot', {
         language: 'zh-TW',
         timeZone: 'Asia/Taipei',
         location: { latitude: 25.0456, longitude: 121.5196 },
@@ -188,10 +188,10 @@ describe('.detectText()', () => {
       environment: 'Pleasantville',
       recognitionData,
     });
-    const channel = { platform: 'test', uid: 'maguire.chat' };
+    const thread = { platform: 'test', uid: 'maguire.chat' };
 
     await expect(
-      recognizer.detectText(channel, 'Hello, Tobey!', {
+      recognizer.detectText(thread, 'Hello, Tobey!', {
         contexts: ['bar', 'baz'],
       })
     ).resolves.toEqual({
@@ -234,9 +234,9 @@ describe('.detectText()', () => {
       useDefaultAgent: true,
       recognitionData,
     });
-    const channel = { platform: 'test', uid: 'foo.chat' };
+    const thread = { platform: 'test', uid: 'foo.chat' };
 
-    await expect(recognizer.detectText(channel, 'hello bot')).resolves.toEqual({
+    await expect(recognizer.detectText(thread, 'hello bot')).resolves.toEqual({
       type: 'Default Welcome Intent',
       language: 'en',
       confidence: 0.46481857,
@@ -264,10 +264,10 @@ describe('.detectText()', () => {
       useDefaultAgent: true,
       recognitionData,
     });
-    const channel = { platform: 'test', uid: 'foo.chat' };
+    const thread = { platform: 'test', uid: 'foo.chat' };
 
     await expect(
-      recognizer.detectText(channel, 'hello bot', {
+      recognizer.detectText(thread, 'hello bot', {
         language: 'zh-TW',
         timeZone: 'Asia/Taipei',
         location: { latitude: 25.0456, longitude: 121.5196 },

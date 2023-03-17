@@ -129,7 +129,7 @@ test('.start() and .stop() start/stop engine', () => {
   expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
 });
 
-describe('.render(channel, message, options)', () => {
+describe('.render(thread, message, options)', () => {
   const bot = new TelegramBot({ token });
 
   beforeAll(() => {

@@ -74,7 +74,7 @@ const handleChat = makeContainer({
   ) => {
       const { event, reply } = ctx;
       const intent = await getIntent(event);${platform === 'telegram' ? `
-      if (!event.channel) {
+      if (!event.thread) {
         return;
       }` : ''}\n
       if (intent.type === 'add') {
@@ -204,9 +204,9 @@ export default build<AddingTodoVars>(
     <$.EFFECT<AddingTodoVars>
       set={makeContainer({ deps: [TodoController] })(
         (todoController) =>
-          async ({ vars, channel }) => {
+          async ({ vars, thread }) => {
             const { data } = await todoController.addTodo(
-              channel,
+              thread,
               vars.todoName
             );
             return { ...vars, todosCount: data.todos.length };
@@ -356,7 +356,7 @@ Then we can use it in `handleChat` when a user doesn't have any todo:
 import AskingFirstTodo from '../scenes/AskingFirstTodo';
 // ...
     const profile = await profiler.getUserProfile(event.user);
-    const { data } = await todoController.getTodos(event.channel);
+    const { data } = await todoController.getTodos(event.thread);
     const hello = (
       <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
     );

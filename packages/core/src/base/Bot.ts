@@ -1,9 +1,9 @@
-import type { SociablyBot, SociablyChannel, SociablyNode } from '../types';
+import type { SociablyBot, SociablyThread, SociablyNode } from '../types';
 import type { DispatchResponse } from '../engine/types';
 import { makeInterface, makeClassProvider } from '../service';
 
 const BotPlatformMapI = makeInterface<
-  SociablyBot<SociablyChannel, unknown, unknown>
+  SociablyBot<SociablyThread, unknown, unknown>
 >({
   name: 'BotPlatformMap',
   polymorphic: true,
@@ -12,33 +12,31 @@ const BotPlatformMapI = makeInterface<
 /**
  * @category Base
  */
-export class BasicBot
-  implements SociablyBot<SociablyChannel, unknown, unknown>
-{
+export class BasicBot implements SociablyBot<SociablyThread, unknown, unknown> {
   static PlatformMap = BotPlatformMapI;
   private _platformMapping: Map<
     string,
-    SociablyBot<SociablyChannel, unknown, unknown>
+    SociablyBot<SociablyThread, unknown, unknown>
   >;
 
   constructor(
-    platformMapping: Map<string, SociablyBot<SociablyChannel, unknown, unknown>>
+    platformMapping: Map<string, SociablyBot<SociablyThread, unknown, unknown>>
   ) {
     this._platformMapping = platformMapping;
   }
 
   async render(
-    channel: SociablyChannel,
+    thread: SociablyThread,
     node: SociablyNode
   ): Promise<null | DispatchResponse<unknown, unknown>> {
-    const bot = this._platformMapping.get(channel.platform);
+    const bot = this._platformMapping.get(thread.platform);
     if (!bot) {
       throw new TypeError(
-        `channel of platform '${channel.platform}' is not supported`
+        `thread of platform '${thread.platform}' is not supported`
       );
     }
 
-    return bot.render(channel, node);
+    return bot.render(thread, node);
   }
 
   async start(): Promise<void> {} // eslint-disable-line class-methods-use-this

@@ -46,10 +46,10 @@ import { BotP } from './bot';
 import { ReceiverP } from './receiver';
 import {
   WebviewConnection,
-  WebviewUserChannel,
-  WebviewTopicChannel,
-} from './channel';
-import { NoneUser, NoneChannel } from './noneAuthenticator';
+  WebviewUserThread,
+  WebviewTopicThread,
+} from './thread';
+import { NoneUser, NoneThread } from './noneAuthenticator';
 import type {
   WebviewEventContext,
   WebviewDispatchFrame,
@@ -210,10 +210,10 @@ namespace Webview {
       },
 
       { provide: BaseMarshaler.TypeList, withValue: WebviewConnection },
-      { provide: BaseMarshaler.TypeList, withValue: WebviewUserChannel },
-      { provide: BaseMarshaler.TypeList, withValue: WebviewTopicChannel },
+      { provide: BaseMarshaler.TypeList, withValue: WebviewUserThread },
+      { provide: BaseMarshaler.TypeList, withValue: WebviewTopicThread },
       { provide: BaseMarshaler.TypeList, withValue: NoneUser },
-      { provide: BaseMarshaler.TypeList, withValue: NoneChannel },
+      { provide: BaseMarshaler.TypeList, withValue: NoneThread },
 
       { provide: Auth.HttpOperator, withProvider: AuthHttpOperatorP },
       { provide: Auth.Controller, withProvider: AuthControllerP },

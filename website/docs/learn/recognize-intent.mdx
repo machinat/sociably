@@ -25,7 +25,7 @@ export const DiffAddTodoCodes = ({platform}) => (
 {`  // ...
       const { event, reply } = ctx;
       const intent = await getIntent(event);${platform === 'telegram' ? `
-      if (!event.channel) {
+      if (!event.thread) {
         return;
       }` : ''}\n
 +     if (intent.type === 'add') {
@@ -37,7 +37,7 @@ export const DiffAddTodoCodes = ({platform}) => (
 -       if (matchingAddTodo) {
 -         const todoName = matchingAddTodo[2].trim();
 -
--         const { data } = await todoController.addTodo(event.channel, todoName);
+-         const { data } = await todoController.addTodo(event.thread, todoName);
 -         return reply(
 -           <WithMenu todoCount={data.todos.length}>
 -             <p>Todo "<b>{todoName}</b>" is added!</p>
@@ -121,7 +121,7 @@ const useIntent =
   (recognizer: IntentRecognizer) =>
   async (event: ChatEventContext['event']) => {
     if (event.type === 'text') {
-      const intent = await recognizer.detectText(event.channel, event.text);
+      const intent = await recognizer.detectText(event.thread, event.text);
       return intent;
     }
     //...
@@ -133,7 +133,7 @@ export default makeFactoryProvider({
 ```
 
 The intent is detected by the `IntentRecognizer` service. The
-`recognizer.detectText(channel, text)` method returns result like this:
+`recognizer.detectText(thread, text)` method returns result like this:
 
 ```ts
 {

@@ -5,19 +5,19 @@ import type {
   AuthenticatorCredentialResult,
   CheckDataResult,
 } from '@sociably/auth';
-import { NoneUser, NoneChannel } from './instance';
+import { NoneUser, NoneThread } from './instance';
 import { WebviewClientAuthenticator } from '../types';
 import type { NoneAuthData, NoneAuthContext } from './types';
 
 const USER_KEY = 'none_user';
-const CHANNEL_KEY = 'none_channel';
+const THREAD_KEY = 'none_thread';
 
 class NoneClientAuthenticator
   implements
     WebviewClientAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>
 {
   platform = 'none';
-  marshalTypes = [NoneUser, NoneChannel];
+  marshalTypes = [NoneUser, NoneThread];
 
   async init(): Promise<void> {}
 
@@ -25,7 +25,7 @@ class NoneClientAuthenticator
     AuthenticatorCredentialResult<NoneAuthData>
   > {
     const existedUserId = window.localStorage.getItem(USER_KEY);
-    const existedChannelId = window.sessionStorage.getItem(CHANNEL_KEY);
+    const existedThreadId = window.sessionStorage.getItem(THREAD_KEY);
 
     let userId: string;
     if (existedUserId) {
@@ -35,32 +35,32 @@ class NoneClientAuthenticator
       window.localStorage.setItem(USER_KEY, userId);
     }
 
-    let channelId: string;
-    if (existedChannelId) {
-      channelId = existedChannelId;
+    let threadId: string;
+    if (existedThreadId) {
+      threadId = existedThreadId;
     } else {
-      channelId = nanoid();
-      window.sessionStorage.setItem(CHANNEL_KEY, channelId);
+      threadId = nanoid();
+      window.sessionStorage.setItem(THREAD_KEY, threadId);
     }
 
     return {
       ok: true as const,
       credential: {
         user: userId,
-        channel: channelId,
+        thread: threadId,
       },
     };
   }
 
   checkAuthData({
     user: userId,
-    channel: channelId,
+    thread: threadId,
   }: NoneAuthData): CheckDataResult<NoneAuthContext> {
     return {
       ok: true,
       contextDetails: {
         user: new NoneUser(userId),
-        channel: new NoneChannel(channelId),
+        thread: new NoneThread(threadId),
       },
     };
   }

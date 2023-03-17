@@ -71,7 +71,7 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
     delegatorOptions.checkAuthData({ agent: '12345', id: '67890' })
   ).toEqual({
     ok: true,
-    channel: new TwitterChat('12345', '67890'),
+    thread: new TwitterChat('12345', '67890'),
     data: { agent: '12345', id: '67890' },
   });
   expect(delegatorOptions.checkAuthData({ agent: '54321', id: '67890' }))
@@ -138,7 +138,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       agentId: '12345',
-      channel: new TwitterChat('12345', '67890'),
+      thread: new TwitterChat('12345', '67890'),
       user: new TwitterUser('67890'),
     },
   });

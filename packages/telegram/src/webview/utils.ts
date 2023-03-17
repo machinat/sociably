@@ -17,7 +17,7 @@ export const getAuthContextDetails = ({
       { ...userData, is_bot: false },
       photoUrl
     ),
-    channel: chatData
+    thread: chatData
       ? new TelegramChat(botId, chatData.id, chatData)
       : TelegramChat.fromUser(botId, userData as RawUser),
     botId,

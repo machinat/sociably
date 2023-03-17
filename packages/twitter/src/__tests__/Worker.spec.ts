@@ -433,25 +433,25 @@ test('with target & accomplishRequest', async () => {
     .times(3)
     .delay(50)
     .reply(200, (_, body) => body);
-  const channel1 = { id: '12345' };
-  const channel2 = { id: '67890' };
+  const thread1 = { id: '12345' };
+  const thread2 = { id: '67890' };
 
   const jobs = [
     {
       key: 'alpha',
-      target: channel1,
+      target: thread1,
       request: { method: 'POST', href: '2/foo', parameters: { n: 1 } },
       accomplishRequest,
     },
     {
       key: 'alpha',
-      target: channel1,
+      target: thread1,
       request: { method: 'POST', href: '2/foo', parameters: { n: 2 } },
       accomplishRequest,
     },
     {
       key: 'beta',
-      target: channel2,
+      target: thread2,
       request: { method: 'POST', href: '2/foo', parameters: { n: 3 } },
       accomplishRequest,
     },
@@ -471,9 +471,9 @@ test('with target & accomplishRequest', async () => {
 
   expect(accomplishRequest).toHaveBeenCalledTimes(3);
   expect(accomplishRequest.mock.calls.map(({ args }) => args)).toEqual([
-    [channel1, jobs[0].request, null],
-    [channel2, jobs[2].request, null],
-    [channel1, jobs[1].request, null],
+    [thread1, jobs[0].request, null],
+    [thread2, jobs[2].request, null],
+    [thread1, jobs[1].request, null],
   ]);
 
   expect(scope.isDone()).toBe(true);

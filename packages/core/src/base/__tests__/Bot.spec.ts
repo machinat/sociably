@@ -1,13 +1,13 @@
 import moxy from '@moxyjs/moxy';
-import { SociablyBot, SociablyChannel } from '../../types';
+import { SociablyBot, SociablyThread } from '../../types';
 import { BasicBot } from '../Bot';
 
-type UnknownBot = SociablyBot<SociablyChannel, unknown, unknown>;
+type UnknownBot = SociablyBot<SociablyThread, unknown, unknown>;
 
 const fooBot = moxy<UnknownBot>({ render: async () => 'FOO' } as never);
 const barBot = moxy<UnknownBot>({ render: async () => 'BAR' } as never);
 
-it('proxy #render() call to the bot corresponded to the channel platform', async () => {
+it('proxy #render() call to the bot corresponded to the thread platform', async () => {
   const bot = new BasicBot(
     new Map([
       ['foo', fooBot],
@@ -45,7 +45,7 @@ it('proxy #render() call to the bot corresponded to the channel platform', async
   );
 });
 
-it('throw if channel from unsupported platform received', async () => {
+it('throw if thread from unsupported platform received', async () => {
   const bot = new BasicBot(
     new Map([
       ['foo', fooBot],
@@ -56,6 +56,6 @@ it('throw if channel from unsupported platform received', async () => {
   await expect(
     bot.render({ platform: 'baz', uid: 'baz1' }, 'hello world')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"channel of platform 'baz' is not supported"`
+    `"thread of platform 'baz' is not supported"`
   );
 });

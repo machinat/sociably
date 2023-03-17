@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`.render(channel, content) post a tweet 1`] = `
+exports[`.render(thread, content) post a tweet 1`] = `
 Array [
   Object {
     "body": Object {
@@ -25,7 +25,7 @@ Array [
 ]
 `;
 
-exports[`.render(channel, content) post a tweet 2`] = `
+exports[`.render(thread, content) post a tweet 2`] = `
 Array [
   Object {
     "accomplishRequest": [Function],
@@ -68,7 +68,7 @@ Array [
 ]
 `;
 
-exports[`.render(channel, content) reply to a tweet 1`] = `
+exports[`.render(thread, content) reply to a tweet 1`] = `
 Array [
   Object {
     "body": Object {
@@ -93,7 +93,7 @@ Array [
 ]
 `;
 
-exports[`.render(channel, content) reply to a tweet 2`] = `
+exports[`.render(thread, content) reply to a tweet 2`] = `
 Array [
   Object {
     "accomplishRequest": [Function],
@@ -136,7 +136,7 @@ Array [
 ]
 `;
 
-exports[`.render(channel, content) send direct message 1`] = `
+exports[`.render(thread, content) send direct message 1`] = `
 Object {
   "jobs": Array [
     Object {

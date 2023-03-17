@@ -34,7 +34,7 @@ import type {
 
 export * from './event/types';
 
-export type FacebookChannel =
+export type FacebookThread =
   | FacebookChat
   | FacebookInteractTarget
   | FacebookPage;
@@ -202,7 +202,7 @@ export type FacebookEventMiddleware = EventMiddleware<
   null
 >;
 
-export type FacebookDispatchFrame = DispatchFrame<FacebookChannel, MetaApiJob>;
+export type FacebookDispatchFrame = DispatchFrame<FacebookThread, MetaApiJob>;
 
 export type FacebookDispatchMiddleware = DispatchMiddleware<
   MetaApiJob,

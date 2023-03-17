@@ -100,7 +100,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
     message: SociablyNode,
     options?: { replyToken?: string }
   ): Promise<null | LineDispatchResponse> {
-    const channel =
+    const thread =
       source instanceof LineChat
         ? source
         : typeof source === 'string'
@@ -108,7 +108,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
         : LineChat.fromMessagingSource(this.channelId, source);
 
     return this.engine.render(
-      channel,
+      thread,
       message,
       createChatJobs(options && options.replyToken)
     );

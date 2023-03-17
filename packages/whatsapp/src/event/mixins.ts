@@ -22,7 +22,7 @@ export interface MessageMixin extends EventBaseMixin {
   /** The customer's phone number who sent the message to the business. */
   readonly userNumber: string;
   /** The chat instance to reply the message with. */
-  readonly channel: WhatsAppChat;
+  readonly thread: WhatsAppChat;
   /** The user who send the message */
   readonly user: WhatsAppUser;
   /** The time when the customer sent the message to the business. */
@@ -105,7 +105,7 @@ export interface StatusMixin extends EventBaseMixin {
    */
   readonly conversationExpireTime?: Date;
   /** The chat instance that the message is sent to. */
-  readonly channel: WhatsAppChat;
+  readonly thread: WhatsAppChat;
   /** The customer user */
   readonly user: WhatsAppUser;
 }

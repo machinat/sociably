@@ -9,7 +9,7 @@ export type TwitterAuthData = {
 
 export type TwitterAuthContext = {
   platform: 'twitter';
-  channel: TwitterChat;
+  thread: TwitterChat;
   user: TwitterUser;
   agentId: string;
 } & AuthContextBase;

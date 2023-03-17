@@ -48,7 +48,7 @@ const fooAuthenticator: Moxy<AnyServerAuthenticator> = moxy({
       ok: true,
       contextDetails: {
         user: { platform: 'foo', uid: 'john_doe' },
-        channel: { platform: 'foo', uid: 'foo.channel' },
+        thread: { platform: 'foo', uid: 'foo.thread' },
         foo: 'foo.data',
       },
     };
@@ -69,7 +69,7 @@ const barAuthenticator: Moxy<AnyServerAuthenticator> = moxy({
       ok: true,
       contextDetails: {
         user: { platform: 'bar', uid: 'jojo_doe' },
-        channel: { platform: 'bar', uid: 'bar.channel' },
+        thread: { platform: 'bar', uid: 'bar.thread' },
         bar: 'bar.data',
       },
     };
@@ -1238,14 +1238,14 @@ describe('#verifyAuth(req)', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "context": Object {
-                "channel": Object {
-                  "platform": "foo",
-                  "uid": "foo.channel",
-                },
                 "expireAt": 2019-10-02T09:53:19.000Z,
                 "foo": "foo.data",
                 "loginAt": 2019-10-02T06:50:01.000Z,
                 "platform": "foo",
+                "thread": Object {
+                  "platform": "foo",
+                  "uid": "foo.thread",
+                },
                 "user": Object {
                   "platform": "foo",
                   "uid": "john_doe",
@@ -1280,14 +1280,14 @@ describe('#verifyAuth(req)', () => {
     ).resolves.toMatchInlineSnapshot(`
             Object {
               "context": Object {
-                "channel": Object {
-                  "platform": "foo",
-                  "uid": "foo.channel",
-                },
                 "expireAt": 2019-10-02T09:53:19.000Z,
                 "foo": "foo.data",
                 "loginAt": 2019-10-02T06:50:01.000Z,
                 "platform": "foo",
+                "thread": Object {
+                  "platform": "foo",
+                  "uid": "foo.thread",
+                },
                 "user": Object {
                   "platform": "foo",
                   "uid": "john_doe",

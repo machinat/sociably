@@ -12,6 +12,6 @@ export type WhatsAppAuthData = {
 export type WhatsAppAuthContext = {
   platform: typeof WHATSAPP;
   businessNumber: string;
-  channel: WhatsAppChat;
+  thread: WhatsAppChat;
   user: WhatsAppUser;
 } & AuthContextBase;
