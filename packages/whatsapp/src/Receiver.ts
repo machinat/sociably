@@ -10,10 +10,10 @@ import type { WhatsAppEventContext } from './types';
 type WhatsAppReceiverOptions = {
   bot: BotP;
   popEventWrapper: PopEventWrapper<WhatsAppEventContext, null>;
-  appSecret?: string;
+  appSecret: string;
+  verifyToken: string;
   shouldVerifyRequest?: boolean;
   shouldHandleChallenge?: boolean;
-  verifyToken?: string;
 };
 
 /**

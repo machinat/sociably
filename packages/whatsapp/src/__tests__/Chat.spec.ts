@@ -16,13 +16,13 @@ test('constructing', () => {
     }
   `);
 
-  expect(chat.businessNumber).toBe('1234567890');
-  expect(chat.customerNumber).toBe('9876543210');
+  expect(chat.agentNumberId).toBe('1234567890');
+  expect(chat.userNumberId).toBe('9876543210');
 
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     Object {
-      "business": "1234567890",
-      "customer": "9876543210",
+      "agent": "1234567890",
+      "user": "9876543210",
     }
   `);
   expect(WhatsAppChat.fromJSONValue(chat.toJSONValue())).toStrictEqual(chat);

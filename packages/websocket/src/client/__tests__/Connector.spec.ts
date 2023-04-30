@@ -1,7 +1,7 @@
 import url from 'url';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import _Ws from 'ws';
-import _Socket from '../../socket';
+import _Socket from '../../Socket';
 import Connector from '../Connector';
 
 const Socket = _Socket as Moxy<typeof _Socket>;

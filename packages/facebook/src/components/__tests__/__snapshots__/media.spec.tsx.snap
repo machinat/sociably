@@ -11,7 +11,6 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": undefined,
       "params": Object {
         "message": Object {
@@ -36,7 +35,6 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": undefined,
       "params": Object {
         "message": Object {
@@ -61,8 +59,8 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": Object {
+        "assetTag": undefined,
         "data": "_IMAGE_BINARY_DATA_",
         "info": undefined,
       },
@@ -90,7 +88,6 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": undefined,
       "params": Object {
         "message": Object {
@@ -115,7 +112,6 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": undefined,
       "params": Object {
         "message": Object {
@@ -145,8 +141,8 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": Object {
+        "assetTag": undefined,
         "data": "_VIDEO_BINARY_DATA_",
         "info": Object {
           "filename": "foo.mp4",
@@ -176,7 +172,6 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": undefined,
       "params": Object {
         "message": Object {
@@ -201,7 +196,6 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": undefined,
       "params": Object {
         "message": Object {
@@ -228,8 +222,8 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": "foo_audio",
       "attachFile": Object {
+        "assetTag": "foo_audio",
         "data": "_AUDIO_BINARY_DATA_",
         "info": undefined,
       },
@@ -257,7 +251,6 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": undefined,
       "params": Object {
         "message": Object {
@@ -282,7 +275,6 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": undefined,
       "attachFile": undefined,
       "params": Object {
         "message": Object {
@@ -314,8 +306,8 @@ Array [
     "type": "unit",
     "value": Object {
       "apiPath": "me/messages",
-      "assetTag": "foo_file",
       "attachFile": Object {
+        "assetTag": "foo_file",
         "data": "_FILE_BINARY_DATA_",
         "info": Object {
           "filename": "foo.pdf",

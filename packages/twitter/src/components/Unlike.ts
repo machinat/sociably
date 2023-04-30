@@ -26,7 +26,7 @@ export const Unlike: TwitterComponent<
       request: {
         method: 'DELETE',
         href: '2/users/:id/likes/:tweet_id',
-        parameters: null,
+        params: {},
       },
       accomplishRequest: (target, request) => ({
         ...request,

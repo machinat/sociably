@@ -1,4 +1,4 @@
-import RenderingThreadI from '../base/RenderingThread';
+import RenderingTargetI from '../base/RenderingTarget';
 import SociablyQueue, { JobBatchResponse } from '../queue';
 import { createEmptyScope, ServiceScope } from '../service';
 import type SociablyRenderer from '../renderer';
@@ -8,7 +8,7 @@ import type {
   InitScopeFn,
   DispatchWrapper,
   ThunkEffectFn,
-  SociablyThread,
+  DispatchTarget,
 } from '../types';
 import DispatchError from './error';
 import {
@@ -25,7 +25,7 @@ import {
  * results poped through middlewares.
  */
 export default class SociablyEngine<
-  Thread extends SociablyThread,
+  Target extends DispatchTarget,
   SegmentValue,
   Component extends NativeComponent<unknown, any>,
   Job,
@@ -38,7 +38,7 @@ export default class SociablyEngine<
 
   private _initScope: InitScopeFn;
   private _dispatcher: (
-    frame: DispatchFrame<Thread, Job>,
+    frame: DispatchFrame<Target, Job>,
     scope: ServiceScope
   ) => Promise<DispatchResponse<Job, Result>>;
 
@@ -50,7 +50,7 @@ export default class SociablyEngine<
     initScope: InitScopeFn = () => createEmptyScope(),
     dispatchWrapper: DispatchWrapper<
       Job,
-      DispatchFrame<Thread, Job>,
+      DispatchFrame<Target, Job>,
       Result
     > = (dispatch) => dispatch
   ) {
@@ -72,24 +72,24 @@ export default class SociablyEngine<
   }
 
   /**
-   * render renders sociably element tree into task to be executed. There are
+   * renders sociably element tree into tasks to be executed. There are
    * three kinds of task: "dispatch" contains the jobs to be executed on the
    * certain platform, "pause" represent the interval made by <Pause />
    * element which should be waited between "dispatch" tasks, "thunk" holds a
    * function registered by service which will be excuted after all jobs
    * dispatched.
    */
-  async render<Target extends null | Thread>(
-    target: Target,
+  async render<T extends Target>(
+    target: T,
     node: SociablyNode,
     createJobs: (
-      target: Target,
+      target: T,
       segments: DispatchableSegment<SegmentValue>[]
     ) => Job[]
   ): Promise<null | DispatchResponse<Job, Result>> {
     const scope = this._initScope();
     const segments = await this.renderer.render(node, scope, [
-      [RenderingThreadI, target],
+      [RenderingTargetI, target],
     ]);
     if (segments === null) {
       return null;
@@ -139,9 +139,9 @@ export default class SociablyEngine<
       tasks.push({ type: 'thunk', payload: thunkFn });
     }
 
-    const frame: DispatchFrame<Thread, Job> = {
+    const frame: DispatchFrame<T, Job> = {
       platform: this.platform,
-      thread: target,
+      target,
       tasks,
       node,
     };
@@ -150,18 +150,15 @@ export default class SociablyEngine<
   }
 
   /**
-   * dispatch construct the dispatch frame containing the tasks along with other
-   * info throught dispatch middleware. At the end of the stack of middlewares,
-   * all the tasks is executed and the response poped up along the retruning
-   * chain of the middlewares.
+   * dispatch jobs directly without rendering procedures.
    */
   async dispatchJobs(
-    thread: null | Thread,
+    target: Target,
     jobs: Job[]
   ): Promise<DispatchResponse<Job, Result>> {
-    const frame: DispatchFrame<Thread, Job> = {
+    const frame: DispatchFrame<Target, Job> = {
       platform: this.platform,
-      thread,
+      target,
       tasks: [{ type: 'dispatch', payload: jobs }],
       node: null,
     };
@@ -170,7 +167,7 @@ export default class SociablyEngine<
   }
 
   async _execute(
-    frame: DispatchFrame<Thread, Job>
+    frame: DispatchFrame<Target, Job>
   ): Promise<DispatchResponse<Job, Result>> {
     const { tasks } = frame;
     const results: Result[] = [];

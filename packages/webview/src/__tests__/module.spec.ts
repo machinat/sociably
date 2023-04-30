@@ -9,14 +9,11 @@ import Http from '@sociably/http';
 import Next from '@sociably/next';
 import WebSocket from '@sociably/websocket';
 import { InMemoryState } from '@sociably/dev-tools';
-import { WebviewReceiver } from '../receiver';
-import { WebviewBot } from '../bot';
-import {
-  WebviewConnection,
-  WebviewUserThread,
-  WebviewTopicThread,
-} from '../thread';
-import NoneAuthenticator from '../noneAuthenticator';
+import { WebviewReceiver } from '../Receiver';
+import { WebviewBot } from '../Bot';
+import WebviewConnection from '../Connection';
+import NoneAuthenticator from '../authenticators/none';
+import { MemoizedThread, MemoizedUser } from '../authenticators/memoized';
 import Webview from '../module';
 
 const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
@@ -268,11 +265,7 @@ test('provide base interfaces', async () => {
 
   expect(bots.get('webview')).toBeInstanceOf(WebviewBot);
   expect(marshalTypes).toEqual(
-    expect.arrayContaining([
-      WebviewConnection,
-      WebviewUserThread,
-      WebviewTopicThread,
-    ])
+    expect.arrayContaining([WebviewConnection, MemoizedThread, MemoizedUser])
   );
   await app.stop();
 });

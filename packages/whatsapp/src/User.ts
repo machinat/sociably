@@ -1,54 +1,50 @@
 import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { WHATSAPP, WA } from './constant';
-import type WhatsAppChat from './Chat';
 import UserProfile from './UserProfile';
+import { WHATSAPP, WA } from './constant';
 import { UserProfileData } from './types';
 
 type WhatsAppUserValue = {
-  num: string;
+  id: string;
 };
 
 class WhatsAppUser
   implements SociablyUser, MarshallableInstance<WhatsAppUserValue>
 {
   static typeName = 'WaUser';
-  static fromChat(chat: WhatsAppChat): WhatsAppUser {
-    return new WhatsAppUser(chat.customerNumber);
-  }
 
-  static fromJSONValue({ num }: WhatsAppUserValue): WhatsAppUser {
-    return new WhatsAppUser(num);
+  static fromJSONValue({ id }: WhatsAppUserValue): WhatsAppUser {
+    return new WhatsAppUser(id);
   }
 
   platform = WHATSAPP;
-  number: string;
+  numberId: string;
   profileData?: UserProfileData;
 
-  constructor(number: string, profileData?: UserProfileData) {
-    this.number = number;
+  constructor(numberId: string, profileData?: UserProfileData) {
+    this.numberId = numberId;
     this.profileData = profileData;
   }
 
   get profile(): null | UserProfile {
     return this.profileData
-      ? new UserProfile(this.number, this.profileData)
+      ? new UserProfile(this.numberId, this.profileData)
       : null;
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
       platform: WHATSAPP,
-      id: this.number,
+      id: this.numberId,
     };
   }
 
   get uid(): string {
-    return `${WA}.${this.number}`;
+    return `${WA}.${this.numberId}`;
   }
 
   toJSONValue(): WhatsAppUserValue {
-    return { num: this.number };
+    return { id: this.numberId };
   }
 
   // eslint-disable-next-line class-methods-use-this

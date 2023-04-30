@@ -1,15 +1,17 @@
 import invariant from 'invariant';
+import type {
+  SociablyNode,
+  SociablyBot,
+  SociablyChannel,
+  InitScopeFn,
+  DispatchWrapper,
+  ChannelSettingsAccessor,
+} from '@sociably/core';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import Renderer from '@sociably/core/renderer';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import { makeClassProvider } from '@sociably/core/service';
-import type {
-  SociablyNode,
-  SociablyBot,
-  InitScopeFn,
-  DispatchWrapper,
-} from '@sociably/core';
 import {
   MetaApiWorker,
   MetaApiJob,
@@ -21,6 +23,7 @@ import generalComponentDelegator from './components/general';
 import { WHATSAPP } from './constant';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
 import WhatsAppChat from './Chat';
+import WhatsAppAgent from './Agent';
 import { createChatJobs, createUploadingMediaJobs } from './job';
 import type {
   WhatsAppComponent,
@@ -29,7 +32,6 @@ import type {
 } from './types';
 
 type WhatsAppBotOptions = {
-  businessNumber: string;
   accessToken: string;
   appSecret?: string;
   graphApiVersion?: string;
@@ -42,6 +44,30 @@ type WhatsAppBotOptions = {
   >;
 };
 
+const DUMMY_API_CALL_CHANNEL: SociablyChannel = {
+  platform: WHATSAPP,
+  uid: 'whatsapp:dummy_api_call_channel',
+  uniqueIdentifier: {
+    platform: WHATSAPP,
+    id: 'dummy_api_call_channel',
+  },
+};
+
+const createStaticSettingsAccessor = (
+  accessToken: string
+): ChannelSettingsAccessor<WhatsAppAgent, { accessToken: string }> => ({
+  getChannelSettings: async () => ({ accessToken }),
+  getChannelSettingsBatch: async (channels) =>
+    channels.map(() => ({ accessToken })),
+  listAllChannelSettings: async () => [{ accessToken }],
+});
+
+type ApiCallOptions = {
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  path: string;
+  params?: Record<string, unknown>;
+};
+
 /**
  * WhatsAppBot render messages and make API call to WhatsApp platform.
  * @category Provider
@@ -49,10 +75,9 @@ type WhatsAppBotOptions = {
 export class WhatsAppBot
   implements SociablyBot<WhatsAppChat, MetaApiJob, MetaApiResult>
 {
-  businessNumber: string;
   worker: MetaApiWorker;
   engine: Engine<
-    WhatsAppChat,
+    null | WhatsAppChat | WhatsAppAgent,
     WhatsAppSegmentValue,
     WhatsAppComponent<unknown>,
     MetaApiJob,
@@ -62,7 +87,6 @@ export class WhatsAppBot
   platform = WHATSAPP;
 
   constructor({
-    businessNumber,
     accessToken,
     appSecret,
     graphApiVersion = 'v11.0',
@@ -71,9 +95,6 @@ export class WhatsAppBot
     dispatchWrapper,
   }: WhatsAppBotOptions) {
     invariant(accessToken, 'options.accessToken should not be empty');
-    invariant(businessNumber, 'options.businessNumber should not be empty');
-
-    this.businessNumber = businessNumber;
 
     const renderer = new Renderer<
       WhatsAppSegmentValue,
@@ -82,10 +103,10 @@ export class WhatsAppBot
 
     const queue = new Queue<MetaApiJob, MetaApiResult>();
     const worker = new MetaApiWorker(
-      accessToken,
-      apiBatchRequestInterval,
+      createStaticSettingsAccessor(accessToken),
+      appSecret,
       graphApiVersion,
-      appSecret
+      apiBatchRequestInterval
     );
 
     this.engine = new Engine(
@@ -107,22 +128,20 @@ export class WhatsAppBot
   }
 
   async render(
-    target: string | WhatsAppChat,
+    thread: WhatsAppChat,
     messages: SociablyNode
   ): Promise<null | MetaApiDispatchResponse> {
-    const thread =
-      typeof target === 'string'
-        ? new WhatsAppChat(this.businessNumber, target)
-        : target;
-
     return this.engine.render(thread, messages, createChatJobs);
   }
 
-  async uploadMedia(node: SociablyNode): Promise<null | { id: string }> {
+  async uploadMedia(
+    agent: WhatsAppAgent,
+    node: SociablyNode
+  ): Promise<null | { id: string }> {
     const response = await this.engine.render(
-      null,
+      agent,
       node,
-      createUploadingMediaJobs(this.businessNumber)
+      createUploadingMediaJobs
     );
 
     if (!response) {
@@ -131,18 +150,19 @@ export class WhatsAppBot
     return response.results[0].body as { id: string };
   }
 
-  async makeApiCall<ResBody extends MetaApiResponseBody>(
-    method: 'GET' | 'PUT' | 'POST' | 'DELETE',
-    relativeUrl: string,
-    body: null | Record<string, unknown> = null
-  ): Promise<ResBody> {
+  async makeApiCall<ResBody extends MetaApiResponseBody>({
+    method,
+    path,
+    params,
+  }: ApiCallOptions): Promise<ResBody> {
     try {
       const { results } = await this.engine.dispatchJobs(null, [
         {
+          channel: DUMMY_API_CALL_CHANNEL,
           request: {
             method,
-            relative_url: relativeUrl,
-            body,
+            relativeUrl: path,
+            params,
           },
         },
       ]);
@@ -165,12 +185,11 @@ const BotP = makeClassProvider({
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { businessNumber, accessToken, appSecret, apiBatchRequestInterval },
+    { accessToken, appSecret, apiBatchRequestInterval },
     moduleUitils,
     platformUtils
   ) =>
     new WhatsAppBot({
-      businessNumber,
       accessToken,
       appSecret,
       apiBatchRequestInterval,

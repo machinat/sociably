@@ -7,9 +7,15 @@ import {
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import BotP from '../Bot';
 import { WHATSAPP } from '../constant';
+import { AgentSettingsAccessorI } from '../interface';
 import WhatsAppChat from '../Chat';
-import { getAuthContextDetails } from './utils';
-import type { WhatsAppAuthContext, WhatsAppAuthData } from './types';
+import WhatsAppAgent from '../Agent';
+import { getAuthContextDetails, trimWaUrlNumber } from './utils';
+import type {
+  WhatsAppAuthContext,
+  WhatsAppAuthData,
+  WhatsAppAuthCrendential,
+} from './types';
 
 /**
  * @category Provider
@@ -19,6 +25,8 @@ export class WhatsAppServerAuthenticator
 {
   bot: BotP;
   basicAuthenticator: BasicAuthenticator;
+  numberSettingsAccessor: AgentSettingsAccessorI;
+
   delegateAuthRequest: ServerAuthenticator<
     never,
     WhatsAppAuthData,
@@ -27,10 +35,16 @@ export class WhatsAppServerAuthenticator
 
   platform = WHATSAPP;
 
-  constructor(bot: BotP, basicAuthenticator: BasicAuthenticator) {
+  constructor(
+    bot: BotP,
+    basicAuthenticator: BasicAuthenticator,
+    numberSettingsAccessor: AgentSettingsAccessorI
+  ) {
     this.bot = bot;
     this.basicAuthenticator = basicAuthenticator;
+    this.numberSettingsAccessor = numberSettingsAccessor;
     this.delegateAuthRequest = this.basicAuthenticator.createRequestDelegator<
+      WhatsAppAuthCrendential,
       WhatsAppAuthData,
       WhatsAppChat
     >({
@@ -39,27 +53,53 @@ export class WhatsAppServerAuthenticator
       platformName: 'WhatsApp',
       platformColor: '#31BA45',
       platformImageUrl: 'https://sociably.js.org/img/icon/whatsapp.png',
+      verifyCredential: async ({
+        agent: agentNumberId,
+        user: userNumberId,
+      }) => {
+        const settings = await this.numberSettingsAccessor.getChannelSettings(
+          new WhatsAppAgent(agentNumberId)
+        );
+        if (!settings) {
+          return {
+            ok: false,
+            code: 404,
+            reason: `agent number "${agentNumberId}" not registered`,
+          };
+        }
+        return {
+          ok: true,
+          data: {
+            account: settings.accountId,
+            agent: { id: agentNumberId, num: settings.phoneNumber },
+            user: userNumberId,
+          },
+        };
+      },
       checkAuthData: (data) => {
         const result = this.checkAuthData(data);
         if (!result.ok) {
           return result;
         }
-
         return {
           ok: true,
           data,
           thread: result.contextDetails.thread,
         };
       },
-      getChatLink: () => `https://wa.me/${this.bot.businessNumber}`,
+      getChatLink: (chat, data) =>
+        `https://wa.me/${trimWaUrlNumber(data.agent.num)}`,
     });
   }
 
-  getAuthUrlSuffix(customerNumber: string, redirectUrl?: string): string {
+  getAuthUrlPostfix(chat: WhatsAppChat, redirectUrl?: string): string {
     const url = new URL(
-      this.basicAuthenticator.getAuthUrl<WhatsAppAuthData>(
+      this.basicAuthenticator.getAuthUrl<WhatsAppAuthCrendential>(
         WHATSAPP,
-        { customer: customerNumber, business: this.bot.businessNumber },
+        {
+          agent: chat.agentNumberId,
+          user: chat.userNumberId,
+        },
         redirectUrl
       )
     );
@@ -78,17 +118,23 @@ export class WhatsAppServerAuthenticator
   async verifyRefreshment(
     data: WhatsAppAuthData
   ): Promise<VerifyResult<WhatsAppAuthData>> {
-    if (data.business !== this.bot.businessNumber) {
-      return { ok: false, code: 400, reason: 'business number not match' };
+    const agent = new WhatsAppAgent(data.agent.id);
+    const numberSettings = await this.numberSettingsAccessor.getChannelSettings(
+      agent
+    );
+
+    if (!numberSettings) {
+      return {
+        ok: false as const,
+        code: 404,
+        reason: `agent number "${data.agent.id}" not registered`,
+      };
     }
     return { ok: true, data };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   checkAuthData(data: WhatsAppAuthData): CheckDataResult<WhatsAppAuthContext> {
-    if (data.business !== this.bot.businessNumber) {
-      return { ok: false, code: 400, reason: 'business number not match' };
-    }
-
     return {
       ok: true,
       contextDetails: getAuthContextDetails(data),
@@ -98,7 +144,7 @@ export class WhatsAppServerAuthenticator
 
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, BasicAuthenticator],
+  deps: [BotP, BasicAuthenticator, AgentSettingsAccessorI],
 })(WhatsAppServerAuthenticator);
 
 type ServerAuthenticatorP = WhatsAppServerAuthenticator;

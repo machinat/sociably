@@ -7,8 +7,8 @@ import type {
 } from '@sociably/auth';
 import { Connector, ClientEmitter } from '@sociably/websocket/client';
 import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
-import { WebviewConnection } from '../thread';
-import { createEvent } from '../utils';
+import WebviewConnection from '../Connection';
+import createEvent from '../utils/createEvent';
 import type {
   EventInput,
   EventValue,
@@ -118,7 +118,7 @@ class WebviewClient<
       return false;
     }
 
-    return authenticator.closeWebview();
+    return authenticator.closeWebview(this._authClient.getAuthContext());
   }
 
   private async _getLoginAuth(): Promise<{

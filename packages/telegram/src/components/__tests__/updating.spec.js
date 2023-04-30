@@ -52,7 +52,7 @@ test('EditText match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageText",
-                "parameters": Object {
+                "params": Object {
                   "disable_web_page_preview": undefined,
                   "inline_message_id": undefined,
                   "message_id": 123,
@@ -84,7 +84,7 @@ test('EditText match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageText",
-                "parameters": Object {
+                "params": Object {
                   "disable_web_page_preview": undefined,
                   "inline_message_id": undefined,
                   "message_id": 123,
@@ -134,7 +134,7 @@ test('EditText match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageText",
-                "parameters": Object {
+                "params": Object {
                   "disable_web_page_preview": true,
                   "inline_message_id": "123456",
                   "message_id": undefined,
@@ -179,7 +179,7 @@ test('EditCaption match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageCaption",
-                "parameters": Object {
+                "params": Object {
                   "caption": "<b>foo</b>",
                   "inline_message_id": undefined,
                   "message_id": 123,
@@ -210,7 +210,7 @@ test('EditCaption match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageCaption",
-                "parameters": Object {
+                "params": Object {
                   "caption": "foo",
                   "inline_message_id": undefined,
                   "message_id": 123,
@@ -257,7 +257,7 @@ test('EditCaption match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageCaption",
-                "parameters": Object {
+                "params": Object {
                   "caption": "*foo*",
                   "inline_message_id": "123456",
                   "message_id": undefined,
@@ -304,7 +304,7 @@ test('EditMedia match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageMedia",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": undefined,
                   "media": Object {
                     "caption": undefined,
@@ -320,7 +320,7 @@ test('EditMedia match snapshot', async () => {
                   "reply_markup": undefined,
                 },
                 "toNonChatTarget": false,
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -357,7 +357,7 @@ test('EditMedia match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageMedia",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": undefined,
                   "media": Object {
                     "caption": "Plain Text Caption",
@@ -373,7 +373,7 @@ test('EditMedia match snapshot', async () => {
                   "reply_markup": undefined,
                 },
                 "toNonChatTarget": false,
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -414,7 +414,7 @@ test('EditMedia match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageMedia",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": undefined,
                   "media": Object {
                     "caption": "<b>Important Document</b>",
@@ -427,7 +427,7 @@ test('EditMedia match snapshot', async () => {
                   "reply_markup": undefined,
                 },
                 "toNonChatTarget": false,
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_doc",
                     "fieldName": "document",
@@ -491,7 +491,7 @@ test('EditMedia match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageMedia",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": undefined,
                   "media": Object {
                     "caption": "__MyVideo__",
@@ -508,7 +508,7 @@ test('EditMedia match snapshot', async () => {
                   "reply_markup": undefined,
                 },
                 "toNonChatTarget": false,
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_video",
                     "fieldName": "video",
@@ -575,7 +575,7 @@ test('EditMedia match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageMedia",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": "123456",
                   "media": Object {
                     "caption": undefined,
@@ -596,7 +596,7 @@ test('EditMedia match snapshot', async () => {
                   },
                 },
                 "toNonChatTarget": true,
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_photo",
                     "fieldName": "photo",
@@ -624,7 +624,7 @@ test('StopPoll match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "stopPoll",
-                "parameters": Object {
+                "params": Object {
                   "message_id": 123,
                   "reply_markup": undefined,
                 },
@@ -661,7 +661,7 @@ test('StopPoll match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "stopPoll",
-                "parameters": Object {
+                "params": Object {
                   "message_id": 123,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
@@ -692,7 +692,7 @@ test('DeleteMessage match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "deleteMessage",
-                "parameters": Object {
+                "params": Object {
                   "message_id": 123,
                 },
               },

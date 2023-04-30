@@ -2,21 +2,21 @@ import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
 import TwitterWorker from '../Worker';
+import TwitterChat from '../Chat';
+import TweetTarget from '../TweetTarget';
 
 nock.disableNetConnect();
 jest.mock('nanoid', () => ({ nanoid: () => '__UNIQUE_NONCE__' }));
 const mockDateNow = moxy(() => 1646626057392);
 const realDateNow = Date.now;
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 
 const appKey = '__APP_KEY__';
 const appSecret = '__APP_SECRET__';
 const bearerToken = '__BEARER_TOKEN__';
-const accessToken = '__ACCESS_TOKEN__';
-const accessSecret = '__ACCESS_SECRET__';
 
-const authorizationSpy = moxy(() => true);
+const authorizationSpy = moxy((x) => true);
 const twitterApi = nock(`https://api.twitter.com`, {
   reqheaders: {
     'content-type': 'application/json',
@@ -35,17 +35,41 @@ afterAll(() => {
   Date.now = realDateNow;
 });
 
+const chatThread = new TwitterChat('1111111111', '9876543210');
+const chatThread2 = new TwitterChat('2222222222', '3333333333');
+const tweetTargetThread = new TweetTarget('1111111111', '9999999999');
+
+const agentSettings = {
+  userId: '1111111111',
+  accessToken: '__ACCESS_TOKEN__',
+  tokenSecret: '__ACCESS_SECRET__',
+};
+
+const agentSettings2 = {
+  userId: '2222222222',
+  accessToken: '__ACCESS_TOKEN_2__',
+  tokenSecret: '__ACCESS_SECRET_2__',
+};
+
+const agentSettingsAccessor = moxy({
+  getChannelSettings: async (agent) =>
+    agent.id === '1111111111' ? agentSettings : agentSettings2,
+  getChannelSettingsBatch: async (agents) =>
+    agents.map((agent) =>
+      agent.id === '1111111111' ? agentSettings : agentSettings2
+    ),
+  listAllChannelSettings: async () => [agentSettings, agentSettings2],
+});
+
 beforeEach(() => {
   nock.cleanAll();
   authorizationSpy.mock.clear();
 
   queue = new Queue();
-  worker = new TwitterWorker({
+  worker = new TwitterWorker(agentSettingsAccessor, {
     appKey,
     appSecret,
     bearerToken,
-    accessToken,
-    accessSecret,
     maxConnections: 99,
   });
 });
@@ -53,25 +77,27 @@ beforeEach(() => {
 test('api request', async () => {
   const jobsAndScopes = [
     [
-      { request: { method: 'GET', href: '1.1/foo' } },
+      { target: chatThread, request: { method: 'GET', href: '1.1/foo' } },
       twitterApi.get(`/1.1/foo`).delay(50).reply(200, { data: 1 }),
     ] as const,
     [
       {
+        target: chatThread,
         request: {
           method: 'GET',
           href: '2/foo/bar',
-          parameters: { a: 1, b: 2 },
+          params: { a: 1, b: 2 },
         },
       },
       twitterApi.get(`/2/foo/bar?a=1&b=2`).delay(50).reply(200, { data: 2 }),
     ] as const,
     [
       {
+        target: tweetTargetThread,
         request: {
           method: 'GET',
           href: '1.1/bar/baz?f=oo',
-          parameters: { s: 'hello world' },
+          params: { s: 'hello world' },
         },
       },
       twitterApi
@@ -81,7 +107,8 @@ test('api request', async () => {
     ] as const,
     [
       {
-        request: { method: 'DELETE', href: '2/bar?z=0', parameters: { a: 1 } },
+        target: tweetTargetThread,
+        request: { method: 'DELETE', href: '2/bar?z=0', params: { a: 1 } },
       },
       twitterApi
         .delete(`/2/bar?z=0`, { a: 1 })
@@ -89,15 +116,19 @@ test('api request', async () => {
         .reply(200, { data: 4 }),
     ] as const,
     [
-      { request: { method: 'POST', href: '2/baz', parameters: { a: 1 } } },
+      {
+        target: chatThread2,
+        request: { method: 'POST', href: '2/baz', params: { a: 1 } },
+      },
       twitterApi.post(`/2/baz`, { a: 1 }).delay(50).reply(200, { data: 5 }),
     ] as const,
     [
       {
+        target: chatThread2,
         request: {
           method: 'POST',
           href: '2/foo/bar/baz',
-          parameters: { s: 'hello world' },
+          params: { s: 'hello world' },
         },
       },
       twitterApi
@@ -107,14 +138,16 @@ test('api request', async () => {
     ] as const,
     [
       {
-        request: { method: 'GET', href: '2/foo', parameters: { a: 1 } },
+        target: chatThread,
+        request: { method: 'GET', href: '2/foo', params: { a: 1 } },
         asApplication: true,
       },
       twitterApi.get(`/2/foo?a=1`).delay(50).reply(200, { data: 7 }),
     ] as const,
     [
       {
-        request: { method: 'POST', href: '2/bar', parameters: { a: 1 } },
+        target: chatThread,
+        request: { method: 'POST', href: '2/bar', params: { a: 1 } },
         asApplication: true,
       },
       twitterApi.post(`/2/bar`, { a: 1 }).delay(50).reply(200, { data: 8 }),
@@ -141,9 +174,11 @@ test('api request', async () => {
     })),
   });
 
-  expect(authorizationSpy).toHaveBeenCalledTimes(8);
+  expect(authorizationSpy).toBeCalledWith('Bearer __BEARER_TOKEN__');
   expect(
-    authorizationSpy.mock.calls.map(({ args }) => args[0])
+    authorizationSpy.mock.calls
+      .map(({ args }) => args[0])
+      .filter((header) => header.startsWith('OAuth'))
   ).toMatchSnapshot();
 });
 
@@ -160,39 +195,48 @@ it('sequently excute jobs with the same key', async () => {
   const jobs = [
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/foo', parameters: { n: 1 } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
     },
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/bar', parameters: { n: 2 } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/bar', params: { n: 2 } },
     },
     {
       key: 'beta',
-      request: { method: 'POST', href: '2/foo', parameters: { n: 3 } },
+      target: tweetTargetThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 3 } },
     },
     {
       key: 'beta',
-      request: { method: 'POST', href: '2/bar', parameters: { n: 4 } },
+      target: tweetTargetThread,
+      request: { method: 'POST', href: '2/bar', params: { n: 4 } },
     },
     {
       key: 'gamma',
-      request: { method: 'POST', href: '2/foo', parameters: { n: 5 } },
+      target: chatThread2,
+      request: { method: 'POST', href: '2/foo', params: { n: 5 } },
     },
     {
       key: 'gamma',
-      request: { method: 'POST', href: '2/bar', parameters: { n: 6 } },
+      target: chatThread2,
+      request: { method: 'POST', href: '2/bar', params: { n: 6 } },
     },
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/foo', parameters: { n: 7 } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 7 } },
     },
     {
       key: 'beta',
-      request: { method: 'POST', href: '2/baz', parameters: { n: 8 } },
+      target: tweetTargetThread,
+      request: { method: 'POST', href: '2/baz', params: { n: 8 } },
     },
     {
       key: 'gamma',
-      request: { method: 'POST', href: '2/baz', parameters: { n: 9 } },
+      target: chatThread2,
+      request: { method: 'POST', href: '2/baz', params: { n: 9 } },
     },
   ];
 
@@ -228,15 +272,17 @@ it('sequently excute jobs with the same key', async () => {
       job,
     }))
   );
+
+  expect(
+    authorizationSpy.mock.calls.map(({ args }) => args[0])
+  ).toMatchSnapshot();
 });
 
 it('open requests up to maxConnections', async () => {
-  const poorWorker = new TwitterWorker({
+  const poorWorker = new TwitterWorker(agentSettingsAccessor, {
     appKey,
     appSecret,
     bearerToken,
-    accessToken,
-    accessSecret,
     maxConnections: 2,
   });
 
@@ -252,39 +298,48 @@ it('open requests up to maxConnections', async () => {
   const jobs = [
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/foo', parameters: { n: 1 } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
     },
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/bar', parameters: { n: 2 } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/bar', params: { n: 2 } },
     },
     {
       key: 'beta',
-      request: { method: 'POST', href: '2/foo', parameters: { n: 3 } },
+      target: tweetTargetThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 3 } },
     },
     {
       key: 'beta',
-      request: { method: 'POST', href: '2/bar', parameters: { n: 4 } },
+      target: tweetTargetThread,
+      request: { method: 'POST', href: '2/bar', params: { n: 4 } },
     },
     {
       key: 'gamma',
-      request: { method: 'POST', href: '2/foo', parameters: { n: 5 } },
+      target: chatThread2,
+      request: { method: 'POST', href: '2/foo', params: { n: 5 } },
     },
     {
       key: 'gamma',
-      request: { method: 'POST', href: '2/bar', parameters: { n: 6 } },
+      target: chatThread2,
+      request: { method: 'POST', href: '2/bar', params: { n: 6 } },
     },
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/foo', parameters: { n: 7 } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 7 } },
     },
     {
       key: 'beta',
-      request: { method: 'POST', href: '2/baz', parameters: { n: 8 } },
+      target: tweetTargetThread,
+      request: { method: 'POST', href: '2/baz', params: { n: 8 } },
     },
     {
       key: 'gamma',
-      request: { method: 'POST', href: '2/baz', parameters: { n: 9 } },
+      target: chatThread2,
+      request: { method: 'POST', href: '2/baz', params: { n: 9 } },
     },
   ];
 
@@ -326,6 +381,57 @@ it('open requests up to maxConnections', async () => {
       job,
     }))
   );
+
+  expect(
+    authorizationSpy.mock.calls.map(({ args }) => args[0])
+  ).toMatchSnapshot();
+});
+
+it('throw if agent settings not found', async () => {
+  agentSettingsAccessor.getChannelSettings.mock.wrap(
+    (impl) => (channel) =>
+      channel.id === chatThread2.agentId ? null : impl(channel)
+  );
+  const apiCall = twitterApi.post('/2/foo').reply(200, { data: { n: 1 } });
+
+  worker.start(queue);
+
+  const jobs = [
+    {
+      key: 'alpha',
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { text: 'hi' } },
+    },
+    {
+      key: 'beta',
+      target: chatThread2,
+      request: { method: 'POST', href: '2/bar', params: { text: 'good' } },
+    },
+    {
+      key: 'alpha',
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { text: 'bye' } },
+    },
+  ];
+
+  const result = await queue.executeJobs(jobs);
+  expect(result.success).toBe(false);
+  expect(result.errors).toMatchInlineSnapshot(`
+    Array [
+      [Error: agent user "2222222222" not registered],
+    ]
+  `);
+  expect(result.batch).toEqual([
+    {
+      success: true,
+      result: { code: 200, body: { data: { n: 1 } }, uploadedMedia: null },
+      job: jobs[0],
+    },
+    undefined,
+    undefined,
+  ]);
+
+  expect(apiCall.isDone()).toBe(true);
 });
 
 it('throw if connection error happen', async () => {
@@ -339,15 +445,18 @@ it('throw if connection error happen', async () => {
   const jobs = [
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/foo', parameters: { text: 'hi' } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { text: 'hi' } },
     },
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/bar', parameters: { text: 'good' } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/bar', params: { text: 'good' } },
     },
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/foo', parameters: { text: 'bye' } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { text: 'bye' } },
     },
   ];
 
@@ -386,15 +495,18 @@ it('throw if api error happen', async () => {
   const jobs = [
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/foo', parameters: { text: 'hi' } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { text: 'hi' } },
     },
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/bar', parameters: { text: 'good' } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/bar', params: { text: 'good' } },
     },
     {
       key: 'alpha',
-      request: { method: 'POST', href: '2/foo', parameters: { text: 'bye' } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { text: 'bye' } },
     },
   ];
 
@@ -424,7 +536,7 @@ it('throw if api error happen', async () => {
 test('with target & accomplishRequest', async () => {
   const accomplishRequest = moxy((target, request) => ({
     ...request,
-    parameters: { ...request.parameters, ...target },
+    params: { ...request.params, target: target.uid },
   }));
 
   const bodySpy = moxy(() => true);
@@ -433,26 +545,24 @@ test('with target & accomplishRequest', async () => {
     .times(3)
     .delay(50)
     .reply(200, (_, body) => body);
-  const thread1 = { id: '12345' };
-  const thread2 = { id: '67890' };
 
   const jobs = [
     {
       key: 'alpha',
-      target: thread1,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 1 } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
       accomplishRequest,
     },
     {
       key: 'alpha',
-      target: thread1,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 2 } },
+      target: chatThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 2 } },
       accomplishRequest,
     },
     {
       key: 'beta',
-      target: thread2,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 3 } },
+      target: tweetTargetThread,
+      request: { method: 'POST', href: '2/foo', params: { n: 3 } },
       accomplishRequest,
     },
   ];
@@ -460,20 +570,43 @@ test('with target & accomplishRequest', async () => {
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
     success: true,
-    batch: ['12345', '12345', '67890'].map((id, i) => ({
-      success: true,
-      result: { code: 200, body: { n: i + 1, id }, uploadedMedia: null },
-      job: jobs[i],
-    })),
-
+    batch: [
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 1, target: chatThread.uid },
+          uploadedMedia: null,
+        },
+        job: jobs[0],
+      },
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 2, target: chatThread.uid },
+          uploadedMedia: null,
+        },
+        job: jobs[1],
+      },
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 3, target: tweetTargetThread.uid },
+          uploadedMedia: null,
+        },
+        job: jobs[2],
+      },
+    ],
     errors: null,
   });
 
   expect(accomplishRequest).toHaveBeenCalledTimes(3);
   expect(accomplishRequest.mock.calls.map(({ args }) => args)).toEqual([
-    [thread1, jobs[0].request, null],
-    [thread2, jobs[2].request, null],
-    [thread1, jobs[1].request, null],
+    [chatThread, jobs[0].request, null],
+    [tweetTargetThread, jobs[2].request, null],
+    [chatThread, jobs[1].request, null],
   ]);
 
   expect(scope.isDone()).toBe(true);
@@ -482,9 +615,11 @@ test('with target & accomplishRequest', async () => {
 test('with target & refreshTarget & accomplishRequest', async () => {
   const accomplishRequest = moxy((target, request) => ({
     ...request,
-    parameters: { ...request.parameters, id: target.id },
+    params: { ...request.params, id: target.tweetId },
   }));
-  const refreshTarget = moxy((target, body) => ({ id: body.id }));
+  const refreshTarget = moxy(
+    (target, body) => new TweetTarget(target.agentId, body.id)
+  );
 
   const bodySpy = moxy(() => true);
   const scope = twitterApi
@@ -493,70 +628,112 @@ test('with target & refreshTarget & accomplishRequest', async () => {
     .delay(50)
     .reply(200, (_, body: Record<string, number>) => ({
       n: body.n,
-      id: body.id + 1,
+      id: `${Number(body.id) + 1}`,
     }));
+
+  const initialThread1 = new TweetTarget('123456790', '1000000000');
+  const initialThread2 = new TweetTarget('123456790', '2000000000');
 
   const jobs = [
     {
       key: 'alpha',
-      target: { id: 1 },
+      target: initialThread1,
       refreshTarget,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 1 } },
+      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
     },
     {
       key: 'alpha',
-      target: { id: 1 },
+      target: initialThread1,
       refreshTarget,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 2 } },
+      request: { method: 'POST', href: '2/foo', params: { n: 2 } },
     },
     {
       key: 'beta',
-      target: { id: 10 },
+      target: initialThread2,
       refreshTarget,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 3 } },
+      request: { method: 'POST', href: '2/foo', params: { n: 3 } },
     },
     {
       key: 'beta',
-      target: { id: 10 },
+      target: initialThread2,
       refreshTarget,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 4 } },
+      request: { method: 'POST', href: '2/foo', params: { n: 4 } },
     },
   ];
 
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
     success: true,
-    batch: [2, 3, 11, 12].map((id, i) => ({
-      success: true,
-      result: { code: 200, body: { n: i + 1, id }, uploadedMedia: null },
-      job: jobs[i],
-    })),
+    batch: [
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 1, id: '1000000001' },
+          uploadedMedia: null,
+        },
+        job: jobs[0],
+      },
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 2, id: '1000000002' },
+          uploadedMedia: null,
+        },
+        job: jobs[1],
+      },
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 3, id: '2000000001' },
+          uploadedMedia: null,
+        },
+        job: jobs[2],
+      },
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 4, id: '2000000002' },
+          uploadedMedia: null,
+        },
+        job: jobs[3],
+      },
+    ],
     errors: null,
   });
 
   expect(refreshTarget).toHaveBeenCalledTimes(4);
   expect(accomplishRequest).toHaveBeenCalledTimes(4);
-  expect(refreshTarget).toHaveBeenNthCalledWith(1, { id: 1 }, { id: 2, n: 1 });
+  expect(refreshTarget).toHaveBeenNthCalledWith(1, initialThread1, {
+    id: '1000000001',
+    n: 1,
+  });
+  expect(refreshTarget).toHaveBeenNthCalledWith(2, initialThread2, {
+    id: '2000000001',
+    n: 3,
+  });
   expect(refreshTarget).toHaveBeenNthCalledWith(
-    2,
-    { id: 10 },
-    { id: 11, n: 3 }
+    3,
+    new TweetTarget('123456790', '1000000001'),
+    { id: '1000000002', n: 2 }
   );
-  expect(refreshTarget).toHaveBeenNthCalledWith(3, { id: 2 }, { id: 3, n: 2 });
   expect(refreshTarget).toHaveBeenNthCalledWith(
     4,
-    { id: 11 },
-    { id: 12, n: 4 }
+    new TweetTarget('123456790', '2000000001'),
+    { id: '2000000002', n: 4 }
   );
   expect(accomplishRequest.mock.calls.map(({ args }) => args[0])).toEqual([
-    { id: 1 },
-    { id: 10 },
-    { id: 2 },
-    { id: 11 },
+    initialThread1,
+    initialThread2,
+    new TweetTarget('123456790', '1000000001'),
+    new TweetTarget('123456790', '2000000001'),
   ]);
 
   // reset target if refreshTarget return null
@@ -564,22 +741,60 @@ test('with target & refreshTarget & accomplishRequest', async () => {
 
   await expect(queue.executeJobs(jobs)).resolves.toEqual({
     success: true,
-    batch: [4, 2, 13, 11].map((id, i) => ({
-      success: true,
-      result: { code: 200, body: { n: i + 1, id }, uploadedMedia: null },
-      job: jobs[i],
-    })),
+    batch: [
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 1, id: '1000000003' },
+          uploadedMedia: null,
+        },
+        job: jobs[0],
+      },
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 2, id: '1000000001' },
+          uploadedMedia: null,
+        },
+        job: jobs[1],
+      },
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 3, id: '2000000003' },
+          uploadedMedia: null,
+        },
+        job: jobs[2],
+      },
+      {
+        success: true,
+        result: {
+          code: 200,
+          body: { n: 4, id: '2000000001' },
+          uploadedMedia: null,
+        },
+        job: jobs[3],
+      },
+    ],
     errors: null,
   });
   expect(refreshTarget.mock.calls.slice(4).map(({ args }) => args)).toEqual([
-    [{ id: 3 }, { n: 1, id: 4 }],
-    [{ id: 12 }, { n: 3, id: 13 }],
-    [{ id: 1 }, { n: 2, id: 2 }],
-    [{ id: 10 }, { n: 4, id: 11 }],
+    [new TweetTarget('123456790', '1000000002'), { n: 1, id: '1000000003' }],
+    [new TweetTarget('123456790', '2000000002'), { n: 3, id: '2000000003' }],
+    [initialThread1, { n: 2, id: '1000000001' }],
+    [initialThread2, { n: 4, id: '2000000001' }],
   ]);
   expect(
     accomplishRequest.mock.calls.slice(4).map(({ args }) => args[0])
-  ).toEqual([{ id: 3 }, { id: 12 }, { id: 1 }, { id: 10 }]);
+  ).toEqual([
+    new TweetTarget('123456790', '1000000002'),
+    new TweetTarget('123456790', '2000000002'),
+    initialThread1,
+    initialThread2,
+  ]);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -626,27 +841,27 @@ test('with mediaSources & accomplishRequest', async () => {
 
   const accomplishRequest = moxy((_, request, mediaIds) => ({
     ...request,
-    parameters: { ...request.parameters, media: mediaIds },
+    params: { ...request.params, media: mediaIds },
   }));
 
   const jobs = [
     {
       key: 'alpha',
-      target: { id: 1 },
+      target: chatThread,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 1 } },
+      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
       mediaSources: [
         { type: 'id', id: '111111111111111111' },
         {
           type: 'file',
-          parameters: { total_bytes: 11, media_type: 'image/png' },
+          params: { total_bytes: 11, media_type: 'image/png' },
           fileData: Buffer.from('hello media'),
           fileInfo: { contentType: 'image/png', knownLength: 11 },
           assetTag: 'foo',
         },
         {
           type: 'url',
-          parameters: {},
+          params: {},
           url: 'https://cat.io/cute',
           assetTag: 'bar',
         },
@@ -654,13 +869,13 @@ test('with mediaSources & accomplishRequest', async () => {
     },
     {
       key: 'beta',
-      target: { id: 2 },
+      target: tweetTargetThread,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', parameters: { n: 2 } },
+      request: { method: 'POST', href: '2/foo', params: { n: 2 } },
       mediaSources: [
         {
           type: 'url',
-          parameters: {
+          params: {
             total_bytes: 66,
             media_type: 'video/mp4',
             media_category: 'dm_video',
@@ -732,14 +947,16 @@ test('with mediaSources & accomplishRequest', async () => {
   });
 
   expect(accomplishRequest).toHaveBeenCalledTimes(2);
-  expect(accomplishRequest).toHaveBeenCalledWith({ id: 1 }, jobs[0].request, [
+  expect(accomplishRequest).toHaveBeenCalledWith(chatThread, jobs[0].request, [
     '111111111111111111',
     '222222222222222222',
     '333333333333333333',
   ]);
-  expect(accomplishRequest).toHaveBeenCalledWith({ id: 2 }, jobs[1].request, [
-    '444444444444444444',
-  ]);
+  expect(accomplishRequest).toHaveBeenCalledWith(
+    tweetTargetThread,
+    jobs[1].request,
+    ['444444444444444444']
+  );
 
   expect(
     uploadBodySpy.mock.calls.map(({ args }) =>

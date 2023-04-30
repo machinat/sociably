@@ -20,9 +20,11 @@ class LineApiError extends Error {
       const messagingResult = body as FailMessagingApiResult;
 
       super(
-        `${messagingResult.message}: ${messagingResult.details
-          ?.map((d, i) => `${i + 1}) ${d.message}, at ${d.property}.`)
-          .join(' ')}`
+        messagingResult.details
+          ? `${messagingResult.message}: ${messagingResult.details
+              .map((d, i) => `${i + 1}) ${d.message}, at ${d.property}.`)
+              .join(' ')}`
+          : messagingResult.message
       );
       this.info = messagingResult;
     } else {

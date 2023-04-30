@@ -15,15 +15,11 @@ import {
   LoginVerifierI,
   ConfigsI,
 } from './interface';
-import { BotP } from './bot';
-import { ServerP } from './server';
-import { ReceiverP } from './receiver';
+import { BotP } from './Bot';
+import { ServerP } from './Server';
+import { ReceiverP } from './Receiver';
 import LocalOnlyBrokerP from './broker/LocalOnlyBroker';
-import {
-  WebSocketConnection,
-  WebSocketUserThread,
-  WebSocketTopicThread,
-} from './thread';
+import WebSocketConnection from './Connection';
 import createWsServer from './utils/createWsServer';
 import type {
   WebSocketEventContext,
@@ -120,8 +116,6 @@ namespace WebSocket {
         },
 
         { provide: BaseMarshaler.TypeList, withValue: WebSocketConnection },
-        { provide: BaseMarshaler.TypeList, withValue: WebSocketUserThread },
-        { provide: BaseMarshaler.TypeList, withValue: WebSocketTopicThread },
       ],
 
       startHook: makeContainer({ deps: [BotP] })(async (bot) => {

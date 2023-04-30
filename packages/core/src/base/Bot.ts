@@ -2,9 +2,9 @@ import type { SociablyBot, SociablyThread, SociablyNode } from '../types';
 import type { DispatchResponse } from '../engine/types';
 import { makeInterface, makeClassProvider } from '../service';
 
-const BotPlatformMapI = makeInterface<
-  SociablyBot<SociablyThread, unknown, unknown>
->({
+type BaseBotI = SociablyBot<SociablyThread, unknown, unknown>;
+
+const BotPlatformMapI = makeInterface<BaseBotI>({
   name: 'BotPlatformMap',
   polymorphic: true,
 });
@@ -12,16 +12,12 @@ const BotPlatformMapI = makeInterface<
 /**
  * @category Base
  */
-export class BasicBot implements SociablyBot<SociablyThread, unknown, unknown> {
+export class BaseBot implements BaseBotI {
   static PlatformMap = BotPlatformMapI;
-  private _platformMapping: Map<
-    string,
-    SociablyBot<SociablyThread, unknown, unknown>
-  >;
 
-  constructor(
-    platformMapping: Map<string, SociablyBot<SociablyThread, unknown, unknown>>
-  ) {
+  private _platformMapping: Map<string, BaseBotI>;
+
+  constructor(platformMapping: Map<string, BaseBotI>) {
     this._platformMapping = platformMapping;
   }
 
@@ -46,8 +42,8 @@ export class BasicBot implements SociablyBot<SociablyThread, unknown, unknown> {
 const BotP = makeClassProvider({
   lifetime: 'transient',
   deps: [BotPlatformMapI],
-})(BasicBot);
+})(BaseBot);
 
-type BotP = BasicBot;
+type BotP = BaseBot;
 
 export default BotP;

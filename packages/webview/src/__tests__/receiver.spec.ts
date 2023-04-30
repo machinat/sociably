@@ -2,13 +2,32 @@ import { EventEmitter } from 'events';
 import moxy, { Mock } from '@moxyjs/moxy';
 import { ServerAuthenticator } from '@sociably/auth';
 import type { WebviewSocketServer } from '../interface';
-import { WebviewReceiver } from '../receiver';
-import { WebviewConnection } from '../thread';
-import { WebviewBot } from '../bot';
+import { WebviewReceiver } from '../Receiver';
+import WebviewConnection from '../Connection';
+import { WebviewBot } from '../Bot';
 
-const bot = moxy<WebviewBot<any>>({
+const bot = moxy<WebviewBot>({
   render: async () => ({ jobs: [], results: [], tasks: [] }),
 } as never);
+
+const authUser = {
+  platform: 'test' as const,
+  uid: 'test.john_doe',
+  uniqueIdentifier: { platform: 'test', id: 'john_doe' },
+};
+const authThread = {
+  platform: 'test' as const,
+  uid: 'test.me.john_doe',
+  uniqueIdentifier: { platform: 'test', scopeId: 'me', id: 'john_doe' },
+};
+const authContext = {
+  platform: 'test' as const,
+  channel: null,
+  user: authUser,
+  thread: authThread,
+  loginAt: new Date(Date.now() - 1000),
+  expireAt: new Date(Date.now() + 9999),
+};
 
 const server = moxy<
   WebviewSocketServer<
@@ -17,14 +36,19 @@ const server = moxy<
       never,
       {
         platform: 'test';
-        user: { platform: 'test'; uid: string };
-        thread: { platform: 'test'; uid: string };
+        channel: null;
+        user: null | typeof authUser;
+        thread: null | typeof authThread;
         loginAt: Date;
         expireAt: Date;
       }
     >
   >
->(new EventEmitter() as never);
+>(
+  Object.assign(new EventEmitter(), {
+    subscribeTopic: async () => true,
+  }) as never
+);
 
 server.id = '_SERVER_ID_';
 server.handleUpgrade = (async () => {}) as never;
@@ -35,14 +59,6 @@ const popEventWrapper = moxy((finalHandler) =>
 );
 const popError = moxy();
 
-const user = { platform: 'test' as const, uid: 'john_doe' };
-const authContext = {
-  platform: 'test' as const,
-  user,
-  thread: { platform: 'test' as const, uid: 'doe_family' },
-  loginAt: new Date(Date.now() - 1000),
-  expireAt: new Date(Date.now() + 9999),
-};
 const request = {
   method: 'GET',
   url: '/hello',
@@ -51,6 +67,7 @@ const request = {
 
 beforeEach(() => {
   server.removeAllListeners();
+  server.mock.reset();
   popEventMock.reset();
   popEventWrapper.mock.reset();
   popError.mock.reset();
@@ -64,7 +81,7 @@ it('pop events', () => {
 
   const connectionInfo = {
     connId: '_CONN_ID_',
-    user,
+    user: authUser,
     request,
     authContext,
     expireAt: authContext.expireAt,
@@ -88,7 +105,8 @@ it('pop events', () => {
       category: 'connection',
       type: 'connect',
       payload: null,
-      user,
+      channel: null,
+      user: authUser,
       thread: connection,
     },
     metadata: expectedMetadata,
@@ -109,7 +127,8 @@ it('pop events', () => {
       category: 'greet',
       type: 'hello',
       payload: 'world',
-      user,
+      channel: null,
+      user: authUser,
       thread: connection,
     },
     metadata: expectedMetadata,
@@ -122,7 +141,8 @@ it('pop events', () => {
       category: 'default',
       type: 'hug',
       payload: undefined,
-      user,
+      channel: null,
+      user: authUser,
       thread: connection,
     },
     metadata: expectedMetadata,
@@ -138,7 +158,8 @@ it('pop events', () => {
       category: 'connection',
       type: 'disconnect',
       payload: { reason: 'bye' },
-      user,
+      channel: null,
+      user: authUser,
       thread: connection,
     },
     metadata: expectedMetadata,
@@ -148,12 +169,76 @@ it('pop events', () => {
   expect(popError).not.toHaveBeenCalled();
 });
 
+it('register auth user topic if authContext.user is present', () => {
+  (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
+
+  server.emit('connect', {
+    connId: '_CONN_ID_',
+    user: authUser,
+    request,
+    authContext: {
+      platform: 'test',
+      channel: null,
+      user: authUser,
+      thread: null,
+      loginAt: new Date(Date.now() - 1000),
+      expireAt: new Date(Date.now() + 9999),
+    },
+    expireAt: authContext.expireAt,
+  });
+
+  expect(server.subscribeTopic).toHaveBeenCalledTimes(1);
+  expect(server.subscribeTopic.mock.calls[0].args).toMatchInlineSnapshot(`
+    Array [
+      WebviewConnection {
+        "id": "_CONN_ID_",
+        "platform": "webview",
+        "serverId": "_SERVER_ID_",
+        "type": "connection",
+      },
+      "$user:test.john_doe",
+    ]
+  `);
+});
+
+it('register auth thread topic if authContext.thread is present', () => {
+  (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
+
+  server.emit('connect', {
+    connId: '_CONN_ID_',
+    user: authUser,
+    request,
+    authContext: {
+      platform: 'test',
+      channel: null,
+      user: null,
+      thread: authThread,
+      loginAt: new Date(Date.now() - 1000),
+      expireAt: new Date(Date.now() + 9999),
+    },
+    expireAt: authContext.expireAt,
+  });
+
+  expect(server.subscribeTopic).toHaveBeenCalledTimes(1);
+  expect(server.subscribeTopic.mock.calls[0].args).toMatchInlineSnapshot(`
+    Array [
+      WebviewConnection {
+        "id": "_CONN_ID_",
+        "platform": "webview",
+        "serverId": "_SERVER_ID_",
+        "type": "connection",
+      },
+      "$thread:test.me.john_doe",
+    ]
+  `);
+});
+
 test('reply(message) sugar', async () => {
   (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
 
   server.emit('connect', {
     connId: '_CONN_ID_',
-    user,
+    user: authUser,
     request,
     authContext,
     expireAt: authContext.expireAt,

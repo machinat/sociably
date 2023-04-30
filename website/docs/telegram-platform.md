@@ -36,7 +36,7 @@ import Telegram from '@sociably/telegram';
 const {
   TELEGRAM_BOT_NAME,
   TELEGRAM_BOT_TOKEN,
-  TELEGRAM_SECRET_PATH,
+  TELEGRAM_TOKEN_SECRET,
 } = process.env;
 
 const app = Sociably.createApp({
@@ -46,9 +46,11 @@ const app = Sociably.createApp({
   platforms: [
     Telegram.intiModule({
       webhookPath: '/webhook/telegram', // webhook path
-      botName: TELEGRAM_BOT_NAME,       // bot name
-      botToken: TELEGRAM_BOT_TOKEN,     // bot token
-      secretPath: TELEGRAM_SECRET_PATH, // secret path for webhook
+      botSettings: {
+        botName: TELEGRAM_BOT_NAME,       // bot name
+        botToken: TELEGRAM_BOT_TOKEN,     // bot token
+        tokenSecret: TELEGRAM_TOKEN_SECRET, // secret path for webhook
+      },
     }),
   ],
 });
@@ -131,34 +133,15 @@ const app = Sociably.createApp({
 });
 ```
 
-3. Expose your bot name in `next.config.js`:
-
-```js
-// highlight-next-line
-const { TELEGRAM_BOT_NAME } = process.env;
-
-module.exports = {
-  publicRuntimeConfig: {
-    // highlight-next-line
-    TELEGRAM_BOT_NAME,
-  },
-};
-```
-
-4. Set up the `WebviewClient` in the webview:
+3. Set up the `WebviewClient` in the webview:
 
 ```ts
-import getConfig from 'next/config';
 import WebviewClient from '@sociably/webview/client';
 import TelegramAuth from '@sociably/telegram/webview/client';
 
-const {
-  publicRuntimeConfig: { TELEGRAM_BOT_NAME },
-} = getConfig();
-
 const client =  new WebviewClient({
   authPlatforms: [
-    new TelegramAuth({ botName: TELEGRAM_BOT_NAME }),
+    new TelegramAuth(),
   ],
 });
 ```

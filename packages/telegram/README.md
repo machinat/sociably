@@ -25,7 +25,7 @@ import Telegram from '@sociably/telegram';
 const {
   TELEGRAM_BOT_NAME,
   TELEGRAM_BOT_TOKEN,
-  TELEGRAM_SECRET_PATH,
+  TELEGRAM_SECRET_TOKEN,
 } = process.env;
 
 const app = Sociably.createApp({
@@ -35,9 +35,11 @@ const app = Sociably.createApp({
   platforms: [
     Telegram.intiModule({
       webhookPath: '/webhook/telegram',
-      botName: TELEGRAM_BOT_NAME,
-      botToken: TELEGRAM_BOT_TOKEN,
-      secretPath: TELEGRAM_SECRET_PATH,
+      botSettings: {
+        botName: TELEGRAM_BOT_NAME,
+        botToken: TELEGRAM_BOT_TOKEN,
+        secretToken: TELEGRAM_SECRET_TOKEN,
+      },
     }),
   ],
 });

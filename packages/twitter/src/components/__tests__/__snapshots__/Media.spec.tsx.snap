@@ -12,7 +12,7 @@ Array [
       "attachment": Object {
         "source": Object {
           "id": "12345",
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
@@ -39,7 +39,7 @@ Array [
     "value": Object {
       "attachment": Object {
         "source": Object {
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": "true",
@@ -94,7 +94,7 @@ Array [
             ],
             "type": "Buffer",
           },
-          "parameters": Object {
+          "params": Object {
             "additional_owners": "12345",
             "media_category": "dm_gif",
             "media_type": "image/gif",
@@ -123,7 +123,7 @@ Array [
       "attachment": Object {
         "source": Object {
           "id": "12345",
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
@@ -150,7 +150,7 @@ Array [
     "value": Object {
       "attachment": Object {
         "source": Object {
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": "true",
@@ -205,7 +205,7 @@ Array [
             ],
             "type": "Buffer",
           },
-          "parameters": Object {
+          "params": Object {
             "additional_owners": "12345",
             "media_category": "dm_image",
             "media_type": "image/jpeg",
@@ -234,7 +234,7 @@ Array [
       "attachment": Object {
         "source": Object {
           "id": "12345",
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
@@ -261,7 +261,7 @@ Array [
     "value": Object {
       "attachment": Object {
         "source": Object {
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": "true",
@@ -316,7 +316,7 @@ Array [
             ],
             "type": "Buffer",
           },
-          "parameters": Object {
+          "params": Object {
             "additional_owners": "12345",
             "media_category": "dm_video",
             "media_type": "video/mp4",

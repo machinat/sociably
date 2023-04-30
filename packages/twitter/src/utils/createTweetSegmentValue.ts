@@ -3,7 +3,7 @@ import type { MediaAttachment, TweetSegmentValue } from '../types';
 import annotateTweetMedia from './annotateTweetMedia';
 
 const createTweetSegmentValue = (
-  parameters: Record<string, any>,
+  params: Record<string, any>,
   media?: null | MediaAttachment[],
   dmLink?:
     | boolean
@@ -14,27 +14,27 @@ const createTweetSegmentValue = (
   request: {
     method: 'POST',
     href: '2/tweets',
-    parameters,
+    params,
   },
   mediaSources: media
     ? media.map(({ source, type }) => annotateTweetMedia(type, source))
     : null,
   accomplishRequest: (target: TweetTarget, request, mediaIds) => {
-    const params = request.parameters;
     return {
       ...request,
-      parameters: {
-        ...request.parameters,
+      params: {
+        ...request.params,
         reply: target.tweetId
           ? {
               in_reply_to_tweet_id: target.tweetId,
-              exclude_reply_user_ids: params.reply?.exclude_reply_user_ids,
+              exclude_reply_user_ids:
+                request.params.reply?.exclude_reply_user_ids,
             }
           : undefined,
         media: mediaIds
           ? {
               media_ids: mediaIds,
-              tagged_user_ids: params.media?.tagged_user_ids,
+              tagged_user_ids: request.params.media?.tagged_user_ids,
             }
           : undefined,
         direct_message_deep_link:

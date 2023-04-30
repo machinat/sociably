@@ -88,10 +88,11 @@ describe('createChatJobs(options)(thread, segments)', () => {
     jobs.forEach((job, i) => {
       expect(job).toEqual({
         key: 'fb.12345.67890',
+        channel: new FacebookPage('12345'),
         request: {
           method: 'POST',
-          relative_url: i === 2 ? 'bar/baz' : 'me/messages',
-          body: {
+          relativeUrl: i === 2 ? 'bar/baz' : 'me/messages',
+          params: {
             recipient: { id: '67890' },
             ...expectedBodyFields[i],
           },
@@ -114,17 +115,17 @@ describe('createChatJobs(options)(thread, segments)', () => {
 
     jobs.forEach((job, i) => {
       if (i === 0) {
-        expect(job.request.body?.messaging_type).toBe(undefined);
-        expect(job.request.body?.tag).toBe(undefined);
-        expect(job.request.body?.notification_type).toBe(undefined);
-        expect(job.request.body?.persona_id).toBe('your-dearest-friend');
+        expect(job.request.params?.messaging_type).toBe(undefined);
+        expect(job.request.params?.tag).toBe(undefined);
+        expect(job.request.params?.notification_type).toBe(undefined);
+        expect(job.request.params?.persona_id).toBe('your-dearest-friend');
       } else if (i === 2) {
-        expect(job.request.body?.messaging_type).toBe(undefined);
-        expect(job.request.body?.tag).toBe(undefined);
-        expect(job.request.body?.notification_type).toBe(undefined);
-        expect(job.request.body?.persona_id).toBe(undefined);
+        expect(job.request.params?.messaging_type).toBe(undefined);
+        expect(job.request.params?.tag).toBe(undefined);
+        expect(job.request.params?.notification_type).toBe(undefined);
+        expect(job.request.params?.persona_id).toBe(undefined);
       } else {
-        expect(job.request.body).toEqual(
+        expect(job.request.params).toEqual(
           expect.objectContaining({
             messaging_type: 'MESSAGE_TAG',
             tag: 'PAYMENT_UPDATE',
@@ -183,7 +184,9 @@ describe('createChatJobs(options)(thread, segments)', () => {
     ]);
 
     jobs.forEach((job, i) => {
-      expect(job.request.body?.persona_id).toBe(i !== 3 ? 'droid' : undefined);
+      expect(job.request.params?.persona_id).toBe(
+        i !== 3 ? 'droid' : undefined
+      );
     });
   });
 
@@ -228,7 +231,7 @@ describe('createChatJobs(options)(thread, segments)', () => {
 
     expect(jobs).toMatchSnapshot();
 
-    expect(jobs[0].request.body).toEqual({
+    expect(jobs[0].request.params).toEqual({
       recipient: { id: '67890' },
       message: { text: 'bibiboo' },
       messaging_type: 'MESSAGE_TAG',
@@ -237,7 +240,7 @@ describe('createChatJobs(options)(thread, segments)', () => {
       persona_id: 'astromech-droid',
     });
 
-    expect(jobs[1].request.body).toEqual({
+    expect(jobs[1].request.params).toEqual({
       recipient: { id: '67890' },
       message: { text: 'Oh! I apologize.' },
       messaging_type: 'UPDATE',
@@ -272,7 +275,7 @@ describe('createChatJobs(options)(thread, segments)', () => {
 
     expect(jobs).toMatchSnapshot();
 
-    expect(jobs[0].request.body).toEqual({
+    expect(jobs[0].request.params).toEqual({
       recipient: { id: '67890' },
       message: { text: 'bibibooboobibooboo' },
       messaging_type: 'RESPONSE',
@@ -298,7 +301,7 @@ describe('createChatJobs(options)(thread, segments)', () => {
       oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
     })(thread, [helloSegment]);
 
-    expect(jobs[0].request.body?.recipient).toEqual({
+    expect(jobs[0].request.params?.recipient).toEqual({
       one_time_notif_token: '__ONE_TIME_NOTIF_TOKEN__',
     });
 
@@ -360,8 +363,8 @@ describe('createChatJobs(options)(thread, segments)', () => {
           attachFile: {
             data: '_BAR_',
             info: fileInfo,
+            assetTag: 'BAR!',
           },
-          assetTag: 'BAR!',
         },
       },
     ]);
@@ -369,9 +372,11 @@ describe('createChatJobs(options)(thread, segments)', () => {
     expect(jobs).toMatchSnapshot();
 
     jobs.forEach((job, i) => {
-      expect(job.fileData).toBe(i === 0 ? '_FOO_' : '_BAR_');
-
-      expect(job.fileInfo).toEqual(i === 0 ? undefined : fileInfo);
+      expect(job.file).toEqual(
+        i === 0
+          ? { data: '_FOO_' }
+          : { data: '_BAR_', info: fileInfo, assetTag: 'BAR!' }
+      );
     });
   });
 });
@@ -403,10 +408,11 @@ describe('createChatAttachmentJobs()', () => {
       ])
     ).toEqual([
       {
+        channel: new FacebookPage('1234567890'),
         request: {
           method: 'POST',
-          relative_url: 'me/message_attachments',
-          body: {
+          relativeUrl: 'me/message_attachments',
+          params: {
             message: {
               attachment: {
                 type: 'image',
@@ -446,20 +452,23 @@ describe('createChatAttachmentJobs()', () => {
             attachFile: {
               data: fileData,
               info: fileInfo,
+              assetTag,
             },
-            assetTag,
           },
         },
       ])
     ).toEqual([
       {
-        fileData,
-        fileInfo,
-        assetTag,
+        channel: new FacebookPage('1234567890'),
+        file: {
+          data: fileData,
+          info: fileInfo,
+          assetTag,
+        },
         request: {
           method: 'POST',
-          relative_url: 'me/message_attachments',
-          body: {
+          relativeUrl: 'me/message_attachments',
+          params: {
             message: {
               attachment: { type: 'image', is_sharable: true },
             },
@@ -556,12 +565,16 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
+          },
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "message": "hello facebook",
             },
-            "method": "POST",
-            "relative_url": "me/feed",
+            "relativeUrl": "me/feed",
           },
         },
       ]
@@ -587,15 +600,17 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "assetTag": undefined,
-          "fileData": undefined,
-          "fileInfo": undefined,
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
+          },
+          "file": undefined,
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "object_attachment": "1234567890",
             },
-            "method": "POST",
-            "relative_url": "me/feed",
+            "relativeUrl": "me/feed",
           },
         },
       ]
@@ -626,26 +641,30 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "assetTag": undefined,
-          "fileData": Object {
-            "data": Array [
-              116,
-              104,
-              117,
-              109,
-              98,
-            ],
-            "type": "Buffer",
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
           },
-          "fileInfo": undefined,
+          "file": Object {
+            "data": Object {
+              "data": Array [
+                116,
+                104,
+                117,
+                109,
+                98,
+              ],
+              "type": "Buffer",
+            },
+          },
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "description": "The social media framework",
               "link": "http://sociably.js.org",
               "name": "Sociably",
             },
-            "method": "POST",
-            "relative_url": "me/feed",
+            "relativeUrl": "me/feed",
           },
         },
       ]
@@ -672,20 +691,24 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "assetTag": undefined,
-          "fileData": Object {
-            "data": Array [
-              102,
-              111,
-              111,
-            ],
-            "type": "Buffer",
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
           },
-          "fileInfo": undefined,
+          "file": Object {
+            "data": Object {
+              "data": Array [
+                102,
+                111,
+                111,
+              ],
+              "type": "Buffer",
+            },
+          },
           "request": Object {
-            "body": Object {},
             "method": "POST",
-            "relative_url": "me/photos",
+            "params": Object {},
+            "relativeUrl": "me/photos",
           },
         },
       ]
@@ -716,15 +739,17 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "assetTag": undefined,
-          "fileData": undefined,
-          "fileInfo": undefined,
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
+          },
+          "file": undefined,
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "url": "http://foo.bar/baz.jpg",
             },
-            "method": "POST",
-            "relative_url": "9876543210/photos",
+            "relativeUrl": "9876543210/photos",
           },
         },
       ]
@@ -768,43 +793,52 @@ describe('createPostJobs()', () => {
     expect(jobs).toMatchInlineSnapshot(`
       Array [
         Object {
-          "assetTag": undefined,
-          "fileData": undefined,
-          "fileInfo": undefined,
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
+          },
+          "file": undefined,
           "registerResult": "l9v0s5g4-0",
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "published": false,
               "temporary": undefined,
               "url": "http://sociably.com/foo.jpg",
             },
-            "method": "POST",
-            "relative_url": "me/photos",
+            "relativeUrl": "me/photos",
           },
         },
         Object {
-          "assetTag": undefined,
-          "fileData": Object {
-            "data": Array [
-              98,
-              97,
-              114,
-            ],
-            "type": "Buffer",
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
           },
-          "fileInfo": undefined,
+          "file": Object {
+            "data": Object {
+              "data": Array [
+                98,
+                97,
+                114,
+              ],
+              "type": "Buffer",
+            },
+          },
           "registerResult": "l9v0s5g4-1",
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "published": false,
               "temporary": undefined,
             },
-            "method": "POST",
-            "relative_url": "me/photos",
+            "relativeUrl": "me/photos",
           },
         },
         Object {
-          "assetTag": undefined,
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
+          },
           "consumeResult": Object {
             "accomplishRequest": [Function],
             "keys": Array [
@@ -812,14 +846,13 @@ describe('createPostJobs()', () => {
               "l9v0s5g4-1",
             ],
           },
-          "fileData": undefined,
-          "fileInfo": undefined,
+          "file": undefined,
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "message": "foo",
             },
-            "method": "POST",
-            "relative_url": "me/feed",
+            "relativeUrl": "me/feed",
           },
         },
       ]
@@ -839,7 +872,8 @@ describe('createPostJobs()', () => {
       )
     ).toMatchInlineSnapshot(`
       Object {
-        "body": Object {
+        "method": "POST",
+        "params": Object {
           "attached_media": Array [
             Object {
               "media_fbid": "_PHOTO_ID_1_",
@@ -850,8 +884,7 @@ describe('createPostJobs()', () => {
           ],
           "message": "foo",
         },
-        "method": "POST",
-        "relative_url": "me/feed",
+        "relativeUrl": "me/feed",
       }
     `);
 
@@ -884,37 +917,41 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "assetTag": undefined,
-          "fileData": undefined,
-          "fileInfo": undefined,
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
+          },
+          "file": undefined,
           "registerResult": "l9v0s5g4-2",
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "published": false,
               "temporary": true,
               "url": "http://sociably.com/foo.jpg",
             },
-            "method": "POST",
-            "relative_url": "me/photos",
+            "relativeUrl": "me/photos",
           },
         },
         Object {
-          "assetTag": undefined,
+          "channel": FacebookPage {
+            "id": "1234567890",
+            "platform": "facebook",
+          },
           "consumeResult": Object {
             "accomplishRequest": [Function],
             "keys": Array [
               "l9v0s5g4-2",
             ],
           },
-          "fileData": undefined,
-          "fileInfo": undefined,
+          "file": undefined,
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "message": "foo",
               "scheduled_publish_time": 1666666666,
             },
-            "method": "POST",
-            "relative_url": "me/feed",
+            "relativeUrl": "me/feed",
           },
         },
       ]
@@ -985,14 +1022,18 @@ describe('createInteractJobs()', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
+          "channel": FacebookPage {
+            "id": "_PAGE_ID_",
+            "platform": "facebook",
+          },
           "consumeResult": undefined,
           "registerResult": undefined,
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "message": "hello",
             },
-            "method": "POST",
-            "relative_url": "_OBJECT_ID_/comments",
+            "relativeUrl": "_OBJECT_ID_/comments",
           },
         },
       ]
@@ -1018,15 +1059,19 @@ describe('createInteractJobs()', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
+          "channel": FacebookPage {
+            "id": "_PAGE_ID_",
+            "platform": "facebook",
+          },
           "consumeResult": undefined,
           "registerResult": undefined,
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "attachment_share_url": "http://sociably.js/hello.jpg",
               "message": "hello",
             },
-            "method": "POST",
-            "relative_url": "_OBJECT_ID_/comments",
+            "relativeUrl": "_OBJECT_ID_/comments",
           },
         },
       ]
@@ -1056,24 +1101,32 @@ describe('createInteractJobs()', () => {
     expect(jobs).toMatchInlineSnapshot(`
       Array [
         Object {
-          "assetTag": undefined,
-          "fileData": Object {
-            "data": Array [
-              102,
-              111,
-              111,
-            ],
-            "type": "Buffer",
+          "channel": FacebookPage {
+            "id": "_PAGE_ID_",
+            "platform": "facebook",
           },
-          "fileInfo": undefined,
+          "file": Object {
+            "data": Object {
+              "data": Array [
+                102,
+                111,
+                111,
+              ],
+              "type": "Buffer",
+            },
+          },
           "registerResult": "l9v0s5g4-3",
           "request": Object {
-            "body": Object {},
             "method": "POST",
-            "relative_url": "me/photos",
+            "params": Object {},
+            "relativeUrl": "me/photos",
           },
         },
         Object {
+          "channel": FacebookPage {
+            "id": "_PAGE_ID_",
+            "platform": "facebook",
+          },
           "consumeResult": Object {
             "accomplishRequest": [Function],
             "keys": Array [
@@ -1082,11 +1135,11 @@ describe('createInteractJobs()', () => {
           },
           "registerResult": undefined,
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "message": "hello",
             },
-            "method": "POST",
-            "relative_url": "_OBJECT_ID_/comments",
+            "relativeUrl": "_OBJECT_ID_/comments",
           },
         },
       ]
@@ -1103,12 +1156,12 @@ describe('createInteractJobs()', () => {
       )
     ).toMatchInlineSnapshot(`
       Object {
-        "body": Object {
+        "method": "POST",
+        "params": Object {
           "attachment_id": "_PHOTO_ID_",
           "message": "hello",
         },
-        "method": "POST",
-        "relative_url": "_OBJECT_ID_/comments",
+        "relativeUrl": "_OBJECT_ID_/comments",
       }
     `);
     expect(getRegisteredResult).toHaveBeenCalledTimes(1);
@@ -1147,17 +1200,25 @@ describe('createInteractJobs()', () => {
     expect(jobs).toMatchInlineSnapshot(`
       Array [
         Object {
+          "channel": FacebookPage {
+            "id": "_PAGE_ID_",
+            "platform": "facebook",
+          },
           "consumeResult": undefined,
           "registerResult": "l9v0s5g4-4",
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "message": "foo",
             },
-            "method": "POST",
-            "relative_url": "_OBJECT_ID_/comments",
+            "relativeUrl": "_OBJECT_ID_/comments",
           },
         },
         Object {
+          "channel": FacebookPage {
+            "id": "_PAGE_ID_",
+            "platform": "facebook",
+          },
           "consumeResult": Object {
             "accomplishRequest": [Function],
             "keys": Array [
@@ -1166,27 +1227,33 @@ describe('createInteractJobs()', () => {
           },
           "registerResult": "l9v0s5g4-5",
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "message": "bar",
             },
-            "method": "POST",
-            "relative_url": "_OBJECT_ID_/comments",
+            "relativeUrl": "_OBJECT_ID_/comments",
           },
         },
         Object {
-          "assetTag": undefined,
-          "fileData": undefined,
-          "fileInfo": undefined,
+          "channel": FacebookPage {
+            "id": "_PAGE_ID_",
+            "platform": "facebook",
+          },
+          "file": undefined,
           "registerResult": "l9v0s5g4-6",
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "url": "http://sociably.js",
             },
-            "method": "POST",
-            "relative_url": "me/photos",
+            "relativeUrl": "me/photos",
           },
         },
         Object {
+          "channel": FacebookPage {
+            "id": "_PAGE_ID_",
+            "platform": "facebook",
+          },
           "consumeResult": Object {
             "accomplishRequest": [Function],
             "keys": Array [
@@ -1196,11 +1263,11 @@ describe('createInteractJobs()', () => {
           },
           "registerResult": undefined,
           "request": Object {
-            "body": Object {
+            "method": "POST",
+            "params": Object {
               "message": "baz",
             },
-            "method": "POST",
-            "relative_url": "_OBJECT_ID_/comments",
+            "relativeUrl": "_OBJECT_ID_/comments",
           },
         },
       ]
@@ -1218,11 +1285,11 @@ describe('createInteractJobs()', () => {
       )
     ).toMatchInlineSnapshot(`
       Object {
-        "body": Object {
+        "method": "POST",
+        "params": Object {
           "message": "bar",
         },
-        "method": "POST",
-        "relative_url": "_COMMENT_ID_1_/comments",
+        "relativeUrl": "_COMMENT_ID_1_/comments",
       }
     `);
     expect(getRegisteredResult).toHaveBeenCalledTimes(1);
@@ -1248,12 +1315,12 @@ describe('createInteractJobs()', () => {
       )
     ).toMatchInlineSnapshot(`
       Object {
-        "body": Object {
+        "method": "POST",
+        "params": Object {
           "attachment_id": "_PHOTO_ID_",
           "message": "bar",
         },
-        "method": "POST",
-        "relative_url": "_COMMENT_ID_2_/comments",
+        "relativeUrl": "_COMMENT_ID_2_/comments",
       }
     `);
     expect(getRegisteredResult).toHaveBeenCalledTimes(3);

@@ -59,10 +59,10 @@ It can also take a service container as the listener.
 Like:
 
 ```js
-import Sociably, { BasicProfiler } from '@sociably/core';
+import Sociably, { BaseProfiler } from '@sociably/core';
 
 event$.subscribe(
-  makeContainer({ deps: [BasicProfiler] })(
+  makeContainer({ deps: [BaseProfiler] })(
     (profiler) =>
     async ({ event, reply }) => {
       const profile = await profiler.getUserProfile(event.user);

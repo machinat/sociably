@@ -6,7 +6,7 @@ import type {
   SociablyNode,
 } from '@sociably/core';
 import type { DispatchFrame } from '@sociably/core/engine';
-import type { MaybeContainer } from '@sociably/core/service';
+import type { MaybeContainer, Interfaceable } from '@sociably/core/service';
 import type { IntermediateSegment } from '@sociably/core/renderer';
 import type { WebhookMetadata } from '@sociably/http/webhook';
 import type {
@@ -17,6 +17,7 @@ import type {
 } from '@sociably/meta-api';
 import type { WhatsAppBot } from './Bot';
 import type WhatsAppChat from './Chat';
+import type { AgentSettingsAccessorI } from './interface';
 import type { WhatsAppEvent } from './event/types';
 
 export * from './event/types';
@@ -57,21 +58,43 @@ export type WhatsAppDispatchMiddleware = DispatchMiddleware<
   MetaApiResult
 >;
 
+export type WhatsAppAgentSettings = {
+  /** Complete phone number in E.164 format */
+  phoneNumber: string;
+  /** Phone number ID */
+  numberId: string;
+  /** Business account ID that the number belongs to */
+  accountId: string;
+};
+
+export type WhatsAppBusinessAccountSettings = {
+  /** Business account ID that the numbers belongs to */
+  accountId: string;
+  numbers: {
+    /** Phone number ID */
+    numberId: string;
+    /** Complete phone number. It must include the country code with "+" prefix */
+    phoneNumber: string;
+  }[];
+};
+
 export type WhatsAppConfigs = {
-  /** WhatsApp business account id */
-  businessId: string;
-  /** Business phone number for the bot */
-  businessNumber: string;
+  /** Agent number settings in single agent mode */
+  agentSettings?: WhatsAppAgentSettings;
+  /** Agent number settings in multi agent mode */
+  multiAgentSettings?: WhatsAppBusinessAccountSettings[];
+  /** Host number integration settings by your own service */
+  agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;
   /** The access token for the app */
   accessToken: string;
   /** The Facebook app secret */
-  appSecret?: string;
+  appSecret: string;
   /** To verify the webhook request by the signature or not. Default to `true` */
   shouldVerifyRequest?: boolean;
   /** To handle the webhook challenge request or not. Default to `true` */
   shouldHandleChallenge?: boolean;
   /** The secret string to verify the webhook challenge request */
-  verifyToken?: string;
+  verifyToken: string;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
   /** The graph API version to make API calls */

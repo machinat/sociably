@@ -5,14 +5,10 @@ import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
 import type { AnyServerAuthenticator } from '@sociably/auth';
 import { WebSocketWorker } from '@sociably/websocket';
-import {
-  WebviewConnection,
-  WebviewUserThread,
-  WebviewTopicThread,
-} from '../thread';
+import WebviewConnection from '../Connection';
 import { Event } from '../component';
-import { WebviewBot } from '../bot';
-import { SocketServerP } from '../interface';
+import { WebviewBot } from '../Bot';
+import { WebviewSocketServer } from '../interface';
 
 const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
@@ -36,7 +32,7 @@ jest.mock('@sociably/websocket', () =>
     .default(jest.requireActual('@sociably/websocket'))
 );
 
-const server = moxy<SocketServerP<AnyServerAuthenticator>>({
+const server = moxy<WebviewSocketServer<AnyServerAuthenticator>>({
   id: '_SERVER_ID_',
   start: async () => {},
   stop: async () => {},
@@ -141,75 +137,6 @@ describe('#render(thread, message)', () => {
     expect(server.dispatch).toHaveBeenCalledTimes(1);
     expect(server.dispatch).toHaveBeenCalledWith(expectedJob);
   });
-
-  it('send to user thread', async () => {
-    const bot = new WebviewBot(server);
-    await bot.start();
-
-    const connections = new Array(3)
-      .fill(0)
-      .map((_, i) => new WebviewConnection('#server', `#conn${i}`));
-
-    server.dispatch.mock.fake(async () => connections);
-
-    const thread = new WebviewUserThread('jojo.doe');
-
-    const expectedJob = {
-      target: thread,
-      values: expectedEventValues,
-    };
-
-    await expect(bot.render(thread, message)).resolves.toEqual({
-      jobs: [expectedJob],
-      results: [{ connections }],
-      tasks: [{ type: 'dispatch', payload: [expectedJob] }],
-    });
-
-    expect(server.dispatch).toHaveBeenCalledTimes(1);
-    expect(server.dispatch).toHaveBeenCalledWith(expectedJob);
-  });
-
-  it('send to topic thread', async () => {
-    const bot = new WebviewBot(server);
-    await bot.start();
-
-    const connections = new Array(3)
-      .fill(0)
-      .map((_, i) => new WebviewConnection('#server', `#conn${i}`));
-
-    server.dispatch.mock.fake(async () => connections);
-
-    const thread = new WebviewTopicThread('foo');
-
-    const expectedJob = {
-      target: thread,
-      values: [
-        { type: 'foo' },
-        { type: 'text', category: 'message', payload: 'foo' },
-        { type: 'bar', payload: 'beer' },
-        { type: 'baz', category: 'zaq' },
-      ],
-    };
-
-    await expect(
-      bot.render(
-        thread,
-        <>
-          <Event type="foo" />
-          foo
-          <Event type="bar" payload="beer" />
-          <Event type="baz" category="zaq" />
-        </>
-      )
-    ).resolves.toEqual({
-      jobs: [expectedJob],
-      results: [{ connections }],
-      tasks: [{ type: 'dispatch', payload: [expectedJob] }],
-    });
-
-    expect(server.dispatch).toHaveBeenCalledTimes(1);
-    expect(server.dispatch).toHaveBeenCalledWith(expectedJob);
-  });
 });
 
 test('#send()', async () => {
@@ -253,7 +180,14 @@ test('#sendUser()', async () => {
   ];
   server.dispatch.mock.fake(async () => connections);
 
-  const user = { platform: 'test', uid: 'jojo.doe' };
+  const user = {
+    platform: 'test',
+    uid: 'test.jojo_doe',
+    uniqueIdentifier: {
+      platform: 'test',
+      id: 'jojo_doe',
+    },
+  };
 
   await expect(bot.sendUser(user, { type: 'foo' })).resolves.toEqual({
     connections,
@@ -269,14 +203,105 @@ test('#sendUser()', async () => {
   });
 
   expect(server.dispatch).toHaveBeenCalledTimes(2);
-  expect(server.dispatch).toHaveBeenNthCalledWith(1, {
-    target: new WebviewUserThread(user.uid),
-    values: [{ type: 'foo' }],
+  expect(server.dispatch.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    Object {
+      "target": Object {
+        "key": "$user:test.jojo_doe",
+        "type": "topic",
+      },
+      "values": Array [
+        Object {
+          "type": "foo",
+        },
+      ],
+    }
+  `);
+  expect(server.dispatch.mock.calls[1].args[0]).toMatchInlineSnapshot(`
+    Object {
+      "target": Object {
+        "key": "$user:test.jojo_doe",
+        "type": "topic",
+      },
+      "values": Array [
+        Object {
+          "category": "light",
+          "payload": "🍺",
+          "type": "bar",
+        },
+        Object {
+          "payload": "🍻",
+          "type": "baz",
+        },
+      ],
+    }
+  `);
+});
+
+test('#sendThread()', async () => {
+  const bot = new WebviewBot(server);
+  await bot.start();
+
+  const connections = [
+    new WebviewConnection('#server1', '#conn2'),
+    new WebviewConnection('#server3', '#conn4'),
+  ];
+  server.dispatch.mock.fake(async () => connections);
+
+  const thread = {
+    platform: 'test',
+    uid: 'test.me.jojo_doe',
+    uniqueIdentifier: {
+      platform: 'test',
+      id: 'me.jojo_doe',
+    },
+  };
+
+  await expect(bot.sendThread(thread, { type: 'foo' })).resolves.toEqual({
+    connections,
   });
-  expect(server.dispatch).toHaveBeenNthCalledWith(2, {
-    target: new WebviewUserThread(user.uid),
-    values: eventValues,
+
+  const eventValues = [
+    { type: 'bar', category: 'light', payload: '🍺' },
+    { type: 'baz', payload: '🍻' },
+  ];
+
+  await expect(bot.sendThread(thread, eventValues)).resolves.toEqual({
+    connections,
   });
+
+  expect(server.dispatch).toHaveBeenCalledTimes(2);
+  expect(server.dispatch.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    Object {
+      "target": Object {
+        "key": "$thread:test.me.jojo_doe",
+        "type": "topic",
+      },
+      "values": Array [
+        Object {
+          "type": "foo",
+        },
+      ],
+    }
+  `);
+  expect(server.dispatch.mock.calls[1].args[0]).toMatchInlineSnapshot(`
+    Object {
+      "target": Object {
+        "key": "$thread:test.me.jojo_doe",
+        "type": "topic",
+      },
+      "values": Array [
+        Object {
+          "category": "light",
+          "payload": "🍺",
+          "type": "bar",
+        },
+        Object {
+          "payload": "🍻",
+          "type": "baz",
+        },
+      ],
+    }
+  `);
 });
 
 test('#sendTopic()', async () => {
@@ -289,9 +314,9 @@ test('#sendTopic()', async () => {
   ];
   server.dispatch.mock.fake(async () => connections);
 
-  const topic = 'hello_world';
+  const topicKey = 'hello_world';
 
-  await expect(bot.sendTopic(topic, { type: 'foo' })).resolves.toEqual({
+  await expect(bot.sendTopic(topicKey, { type: 'foo' })).resolves.toEqual({
     connections,
   });
 
@@ -300,17 +325,17 @@ test('#sendTopic()', async () => {
     { type: 'baz', payload: '🍻' },
   ];
 
-  await expect(bot.sendTopic(topic, eventValues)).resolves.toEqual({
+  await expect(bot.sendTopic(topicKey, eventValues)).resolves.toEqual({
     connections,
   });
 
   expect(server.dispatch).toHaveBeenCalledTimes(2);
   expect(server.dispatch).toHaveBeenNthCalledWith(1, {
-    target: new WebviewTopicThread(topic),
+    target: { type: 'topic', key: topicKey },
     values: [{ type: 'foo' }],
   });
   expect(server.dispatch).toHaveBeenNthCalledWith(2, {
-    target: new WebviewTopicThread(topic),
+    target: { type: 'topic', key: topicKey },
     values: eventValues,
   });
 });

@@ -8,9 +8,9 @@ import { makeClassProvider } from '@sociably/core/service';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import type { HttpRequestInfo } from '@sociably/http';
 
-import { WebSocketConnection } from './thread';
-import { BotP } from './bot';
-import { ServerP } from './server';
+import WebSocketConnection from './Connection';
+import { BotP } from './Bot';
+import { ServerP } from './Server';
 import createEvent from './utils/createEvent';
 import { WEBSOCKET } from './constant';
 import { PlatformUtilitiesI } from './interface';

@@ -1,5 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
+import { makeFactoryProvider } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
@@ -9,7 +10,9 @@ import { LineReceiver } from '../Receiver';
 import LineUserProfile from '../UserProfile';
 import LineGroupProfile from '../GroupProfile';
 import { LineProfiler } from '../Profiler';
+import { ChannelSettingsAccessorI } from '../interface';
 import { LineBot } from '../Bot';
+import LineChannel from '../Channel';
 import LineUser from '../User';
 import LineChat from '../Chat';
 
@@ -33,9 +36,12 @@ describe('initModule(configs)', () => {
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
 
     const module = Line.initModule({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      accessToken: '_ACCESS_TOKEN_',
+      channelSettings: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        channelSecret: '_CHANNEL_SECRET_',
+        accessToken: '_ACCESS_TOKEN_',
+      },
       eventMiddlewares,
       dispatchMiddlewares,
     });
@@ -57,10 +63,12 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      accessToken: '_ACCESS_TOKEN_',
-      channelSecret: '_CHANNEL_SECRET_',
+      channelSettings: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        channelSecret: '_CHANNEL_SECRET_',
+        accessToken: '_ACCESS_TOKEN_',
+      },
       webhookPath: '/webhook/line',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
@@ -88,14 +96,236 @@ describe('initModule(configs)', () => {
     ]);
   });
 
+  test('with options.channelSettings', async () => {
+    const configs = {
+      channelSettings: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        channelSecret: '_CHANNEL_SECRET_',
+        accessToken: '_ACCESS_TOKEN_',
+        liff: { default: '_LOGIN_CHANNEL_ID_-_LIFF_SHORT_ID_' },
+      },
+    };
+
+    const app = Sociably.createApp({
+      platforms: [Line.initModule(configs)],
+    });
+    await app.start();
+
+    const [settingsAccessor] = app.useServices([ChannelSettingsAccessorI]);
+
+    await expect(
+      settingsAccessor.getChannelSettings(new LineChannel('_CHANNEL_ID_'))
+    ).resolves.toEqual(configs.channelSettings);
+    await expect(
+      settingsAccessor.getChannelSettings(new LineChannel('_WRONG_CHANNEL_'))
+    ).resolves.toBe(null);
+
+    await expect(
+      settingsAccessor.getChannelSettingsBatch([
+        new LineChannel('_CHANNEL_ID_'),
+        new LineChannel('_WRONG_CHANNEL_'),
+      ])
+    ).resolves.toEqual([configs.channelSettings, null]);
+
+    await expect(
+      settingsAccessor.listAllChannelSettings('line')
+    ).resolves.toEqual([configs.channelSettings]);
+
+    await expect(
+      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_')
+    ).resolves.toEqual(configs.channelSettings);
+
+    await expect(
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_')
+    ).resolves.toEqual({
+      providerId: '_PROVIDER_ID_',
+      channelId: '_LOGIN_CHANNEL_ID_',
+      liffIds: ['_LOGIN_CHANNEL_ID_-_LIFF_SHORT_ID_'],
+      refChatChannelIds: ['_CHANNEL_ID_'],
+    });
+    await expect(
+      settingsAccessor.getLineLoginChannelSettings('_WRONG_CHANNEL_')
+    ).resolves.toBe(null);
+  });
+
+  test('with options.multiChannelSettings', async () => {
+    const app = Sociably.createApp({
+      platforms: [
+        Line.initModule({
+          multiChannelSettings: [
+            {
+              providerId: '_PROVIDER_ID_1_',
+              channels: [
+                {
+                  botUserId: '_BOT_ID_1_',
+                  channelId: '_CHANNEL_ID_1_',
+                  channelSecret: '_CHANNEL_SECRET_1_',
+                  accessToken: '_ACCESS_TOKEN_1_',
+                  liff: { default: '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_1_' },
+                },
+                {
+                  botUserId: '_BOT_ID_2_',
+                  channelId: '_CHANNEL_ID_2_',
+                  channelSecret: '_CHANNEL_SECRET_2_',
+                  accessToken: '_ACCESS_TOKEN_2_',
+                  liff: { default: '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_2_' },
+                },
+              ],
+            },
+            {
+              providerId: '_PROVIDER_ID_2_',
+              channels: [
+                {
+                  botUserId: '_BOT_ID_3_',
+                  channelId: '_CHANNEL_ID_3_',
+                  channelSecret: '_CHANNEL_SECRET_3_',
+                  accessToken: '_ACCESS_TOKEN_3_',
+                  liff: { default: '_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_' },
+                },
+              ],
+            },
+          ],
+        }),
+      ],
+    });
+    await app.start();
+
+    const [settingsAccessor] = app.useServices([ChannelSettingsAccessorI]);
+
+    const expectedChannel1Settings = {
+      botUserId: '_BOT_ID_1_',
+      providerId: '_PROVIDER_ID_1_',
+      channelId: '_CHANNEL_ID_1_',
+      channelSecret: '_CHANNEL_SECRET_1_',
+      accessToken: '_ACCESS_TOKEN_1_',
+      liff: { default: '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_1_' },
+    };
+    const expectedChannel2Settings = {
+      botUserId: '_BOT_ID_2_',
+      providerId: '_PROVIDER_ID_1_',
+      channelId: '_CHANNEL_ID_2_',
+      channelSecret: '_CHANNEL_SECRET_2_',
+      accessToken: '_ACCESS_TOKEN_2_',
+      liff: { default: '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_2_' },
+    };
+    const expectedChannel3Settings = {
+      botUserId: '_BOT_ID_3_',
+      providerId: '_PROVIDER_ID_2_',
+      channelId: '_CHANNEL_ID_3_',
+      channelSecret: '_CHANNEL_SECRET_3_',
+      accessToken: '_ACCESS_TOKEN_3_',
+      liff: { default: '_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_' },
+    };
+
+    await expect(
+      settingsAccessor.getChannelSettings(new LineChannel('_CHANNEL_ID_1_'))
+    ).resolves.toEqual(expectedChannel1Settings);
+    await expect(
+      settingsAccessor.getChannelSettings(new LineChannel('_CHANNEL_ID_2_'))
+    ).resolves.toEqual(expectedChannel2Settings);
+    await expect(
+      settingsAccessor.getChannelSettings(new LineChannel('_CHANNEL_ID_3_'))
+    ).resolves.toEqual(expectedChannel3Settings);
+    await expect(
+      settingsAccessor.getChannelSettings(new LineChannel('_WRONG_CHANNEL_'))
+    ).resolves.toBe(null);
+
+    await expect(
+      settingsAccessor.getChannelSettingsBatch([
+        new LineChannel('_CHANNEL_ID_2_'),
+        new LineChannel('_CHANNEL_ID_3_'),
+        new LineChannel('_WRONG_CHANNEL_'),
+      ])
+    ).resolves.toEqual([
+      expectedChannel2Settings,
+      expectedChannel3Settings,
+      null,
+    ]);
+
+    await expect(
+      settingsAccessor.listAllChannelSettings('line')
+    ).resolves.toEqual([
+      expectedChannel1Settings,
+      expectedChannel2Settings,
+      expectedChannel3Settings,
+    ]);
+
+    await expect(
+      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_1_')
+    ).resolves.toEqual(expectedChannel1Settings);
+    await expect(
+      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_2_')
+    ).resolves.toEqual(expectedChannel2Settings);
+    await expect(
+      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_3_')
+    ).resolves.toEqual(expectedChannel3Settings);
+
+    await expect(
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_1_')
+    ).resolves.toEqual({
+      providerId: '_PROVIDER_ID_1_',
+      channelId: '_LOGIN_CHANNEL_ID_1_',
+      liffIds: [
+        '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_1_',
+        '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_2_',
+      ],
+      refChatChannelIds: ['_CHANNEL_ID_1_', '_CHANNEL_ID_2_'],
+    });
+    await expect(
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_2_')
+    ).resolves.toEqual({
+      providerId: '_PROVIDER_ID_2_',
+      channelId: '_LOGIN_CHANNEL_ID_2_',
+      liffIds: ['_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_'],
+      refChatChannelIds: ['_CHANNEL_ID_3_'],
+    });
+    await expect(
+      settingsAccessor.getLineLoginChannelSettings('_WRONG_CHANNEL_')
+    ).resolves.toBe(null);
+  });
+
+  test('with options.channelSettings', async () => {
+    const channelSettingsAccessor = {
+      getChannelSettings: async () => null,
+      getChannelSettingsBatch: async () => [],
+      listAllChannelSettings: async () => [],
+      getLineChatChannelSettingsByBotUserId: async () => null,
+      getLineLoginChannelSettings: async () => null,
+    };
+    const channelSettingsService = makeFactoryProvider({})(
+      () => channelSettingsAccessor
+    );
+
+    const app = Sociably.createApp({
+      platforms: [Line.initModule({ channelSettingsService })],
+      services: [channelSettingsService],
+    });
+    await app.start();
+
+    const [acquiredChannelSettingsAccessor] = app.useServices([
+      ChannelSettingsAccessorI,
+    ]);
+
+    expect(acquiredChannelSettingsAccessor).toBe(channelSettingsAccessor);
+  });
+
+  it('throws if no channel settings source provided', async () => {
+    expect(() => Line.initModule({})).toThrowErrorMatchingInlineSnapshot(
+      `"Line platform requires one of \`channelSettings\`, \`multiChannelSettings\` or \`channelSettingsService\` option"`
+    );
+  });
+
   test('provide base interfaces', async () => {
     const app = Sociably.createApp({
       platforms: [
         Line.initModule({
-          providerId: '_PROVIDER_ID_',
-          channelId: '_BOT_CHANNEL_ID_',
-          accessToken: '_ACCESS_TOKEN_',
-          channelSecret: '_CHANNEL_SECRET_',
+          channelSettings: {
+            providerId: '_PROVIDER_ID_',
+            channelId: '_CHANNEL_ID_',
+            channelSecret: '_CHANNEL_SECRET_',
+            accessToken: '_ACCESS_TOKEN_',
+          },
         }),
       ],
     });
@@ -111,6 +341,7 @@ describe('initModule(configs)', () => {
     expect(profilers.get('line')).toBeInstanceOf(LineProfiler);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
+        LineChannel,
         LineChat,
         LineUser,
         LineUserProfile,
@@ -121,9 +352,12 @@ describe('initModule(configs)', () => {
 
   test('default webhookPath to "/"', async () => {
     const configs = {
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      accessToken: '_ACCESS_TOKEN_',
+      channelSettings: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        channelSecret: '_CHANNEL_SECRET_',
+        accessToken: '_ACCESS_TOKEN_',
+      },
       shouldVerifyRequest: false,
     };
 
@@ -141,26 +375,32 @@ describe('initModule(configs)', () => {
   test('#startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Line.initModule({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      accessToken: '_ACCESS_TOKEN_',
+      channelSettings: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        channelSecret: '_CHANNEL_SECRET_',
+        accessToken: '_ACCESS_TOKEN_',
+      },
       shouldVerifyRequest: false,
     });
 
-    await expect((module.startHook as any)(bot)).resolves.toBe(undefined);
+    await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
     expect(bot.start).toHaveBeenCalledTimes(1);
   });
 
   test('#stopHook() stop bot', async () => {
     const bot = moxy({ stop: async () => {} });
     const module = Line.initModule({
-      providerId: '_PROVIDER_ID_',
-      channelId: '_BOT_CHANNEL_ID_',
-      accessToken: '_ACCESS_TOKEN_',
+      channelSettings: {
+        providerId: '_PROVIDER_ID_',
+        channelId: '_CHANNEL_ID_',
+        channelSecret: '_CHANNEL_SECRET_',
+        accessToken: '_ACCESS_TOKEN_',
+      },
       shouldVerifyRequest: false,
     });
 
-    await expect((module.stopHook as any)(bot)).resolves.toBe(undefined);
+    await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);
     expect(bot.stop).toHaveBeenCalledTimes(1);
   });
 });

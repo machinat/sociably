@@ -44,7 +44,7 @@ test('Text match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendMessage",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "disable_web_page_preview": undefined,
                   "parse_mode": "HTML",
@@ -69,7 +69,7 @@ test('Text match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendMessage",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "disable_web_page_preview": undefined,
                   "parse_mode": undefined,
@@ -120,7 +120,7 @@ test('Text match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendMessage",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "disable_web_page_preview": true,
                   "parse_mode": "MarkdownV2",
@@ -157,7 +157,7 @@ test('Contact match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendContact",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "first_name": "John",
                   "last_name": undefined,
@@ -209,7 +209,7 @@ test('Contact match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendContact",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "first_name": "John",
                   "last_name": "Doe",
@@ -262,7 +262,7 @@ test('Poll match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendPoll",
-                "parameters": Object {
+                "params": Object {
                   "allows_multiple_answers": undefined,
                   "close_date": undefined,
                   "correct_option_id": undefined,
@@ -322,7 +322,7 @@ test('Poll match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendPoll",
-                "parameters": Object {
+                "params": Object {
                   "allows_multiple_answers": undefined,
                   "close_date": 160078593,
                   "correct_option_id": 2,
@@ -403,7 +403,7 @@ test('Poll match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendPoll",
-                "parameters": Object {
+                "params": Object {
                   "allows_multiple_answers": true,
                   "close_date": 160078593,
                   "correct_option_id": 2,
@@ -447,7 +447,7 @@ test('Dice match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendDice",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "emoji": undefined,
                   "reply_markup": undefined,
@@ -490,7 +490,7 @@ test('Dice match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendDice",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "emoji": "🎯",
                   "reply_markup": Object {
@@ -554,7 +554,7 @@ test('Invoice match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendInvoice",
-                "parameters": Object {
+                "params": Object {
                   "currency": "USD",
                   "description": "You will pay for this!",
                   "disable_notification": undefined,
@@ -674,7 +674,7 @@ test('Invoice match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendInvoice",
-                "parameters": Object {
+                "params": Object {
                   "currency": "USD",
                   "description": "You will pay for this!",
                   "disable_notification": true,
@@ -734,7 +734,7 @@ test('Game match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendGame",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "game_short_name": "Saw",
                   "reply_markup": undefined,
@@ -777,7 +777,7 @@ test('Game match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendGame",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "game_short_name": "Saw",
                   "reply_markup": Object {

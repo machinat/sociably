@@ -1,18 +1,22 @@
 import { DispatchError } from '@sociably/core/engine';
 import moxy, { Moxy } from '@moxyjs/moxy';
+import TwitterChat from '../../Chat';
 import type AssetsManagerP from '../AssetsManager';
 import saveUploadedMedia from '../saveUploadedMedia';
 
 const manager: Moxy<AssetsManagerP> = moxy({
   async saveMedia() {},
-} as any);
+} as never);
 
 beforeEach(() => {
   manager.mock.reset();
 });
 
+const chat = new TwitterChat('1234567890', '9876543210');
+
 const jobs = [
   {
+    target: chat,
     request: {
       method: 'POST',
       href: '2/tweets',
@@ -40,6 +44,7 @@ const jobs = [
     ],
   },
   {
+    target: chat,
     request: {
       method: 'POST',
       href: '2/tweets',
@@ -55,6 +60,7 @@ const jobs = [
     ],
   },
   {
+    target: chat,
     request: {
       method: 'POST',
       href: '2/tweets',
@@ -132,22 +138,45 @@ it('save uploaded media with assetTag', async () => {
   expect(manager.saveMedia).toHaveBeenCalledTimes(3);
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     1,
+    chat.agent,
     'media_1',
     '2222222222222222'
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     2,
+    chat.agent,
     'media_2',
     '4444444444444444'
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     3,
+    chat.agent,
     'media_3',
     '5555555555555555'
   );
 });
 
 it('do nothing if no assetTag labeled', async () => {
+  const frame = moxy();
+  const response = {
+    tasks: [],
+    jobs,
+    results: results.map((result) => ({
+      ...result,
+      uploadedMedia: result.uploadedMedia?.map((media) => ({
+        ...media,
+        assetTag: undefined,
+      })),
+    })),
+  };
+
+  const next = moxy(async () => response as never);
+  await expect(saveUploadedMedia(manager)(frame, next)).resolves.toBe(response);
+
+  expect(manager.saveMedia).not.toHaveBeenCalled();
+});
+
+it('do nothing if job target is null', async () => {
   const frame = moxy();
   const response = {
     tasks: [],
@@ -195,16 +224,19 @@ it('save uploaded media when partial success', async () => {
   expect(manager.saveMedia).toHaveBeenCalledTimes(3);
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     1,
+    chat.agent,
     'media_1',
     '2222222222222222'
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     2,
+    chat.agent,
     'media_2',
     '4444444444444444'
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     3,
+    chat.agent,
     'media_3',
     '5555555555555555'
   );

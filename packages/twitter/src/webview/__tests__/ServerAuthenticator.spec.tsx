@@ -3,10 +3,25 @@ import BasicAuthenticator from '@sociably/auth/basicAuth';
 import TwitterUser from '../../User';
 import TwitterChat from '../../Chat';
 import TwitterBot from '../../Bot';
+import TwitterProfiler from '../../Profiler';
+import UserProfile from '../../UserProfile';
+import TwitterApiError from '../../Error';
 import ServerAuthenticator from '../ServerAuthenticator';
+import { RawUser } from '../../types';
 
 const bot = moxy<TwitterBot>({
-  agentId: '12345',
+  makeApiCall() {},
+} as never);
+
+const rawUserData = {
+  id: 9876543210,
+  id_str: '9876543210',
+  name: 'John Doe',
+  screen_name: 'johndoe',
+} as RawUser;
+
+const profiler = moxy<TwitterProfiler>({
+  getUserProfile: async () => new UserProfile(rawUserData),
 } as never);
 
 const requestDelegator = moxy(async () => {});
@@ -22,35 +37,45 @@ const basicAuthenticator = moxy<BasicAuthenticator>({
 } as never);
 
 beforeEach(() => {
+  profiler.mock.reset();
   requestDelegator.mock.reset();
   basicAuthenticator.mock.reset();
 });
 
-test('.delegateAuthRequest(req, res, routing)', async () => {
-  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
-  const req = moxy();
-  const res = moxy();
-  const routing = {
-    originalPath: '/auth/twitter/login',
-    matchedPath: '/auth/twitter',
-    trailingPath: 'login',
-  };
+describe('.delegateAuthRequest(req, res, routing)', () => {
+  test('pass to handler created by BasicAuthenticator', async () => {
+    const authenticator = new ServerAuthenticator(
+      bot,
+      profiler,
+      basicAuthenticator
+    );
+    const req = moxy();
+    const res = moxy();
+    const routing = {
+      originalPath: '/auth/twitter/login',
+      matchedPath: '/auth/twitter',
+      trailingPath: 'login',
+    };
 
-  await expect(
-    authenticator.delegateAuthRequest(req, res, routing)
-  ).resolves.toBe(undefined);
+    await expect(
+      authenticator.delegateAuthRequest(req, res, routing)
+    ).resolves.toBe(undefined);
 
-  expect(requestDelegator).toHaveReturnedTimes(1);
-  expect(requestDelegator).toHaveBeenCalledWith(req, res, routing);
+    expect(requestDelegator).toHaveReturnedTimes(1);
+    expect(requestDelegator).toHaveBeenCalledWith(req, res, routing);
+  });
 
-  expect(basicAuthenticator.createRequestDelegator).toHaveReturnedTimes(1);
+  test('BasicAuthenticator.createRequestDelegator() options', async () => {
+    (() => new ServerAuthenticator(bot, profiler, basicAuthenticator))();
 
-  const delegatorOptions =
-    basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
-  expect(delegatorOptions).toMatchInlineSnapshot(`
+    expect(basicAuthenticator.createRequestDelegator).toHaveReturnedTimes(1);
+
+    const delegatorOptions =
+      basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
+    expect(delegatorOptions).toMatchInlineSnapshot(`
     Object {
       "bot": Object {
-        "agentId": "12345",
+        "makeApiCall": [MockFunction moxy(makeApiCall)],
       },
       "checkAuthData": [Function],
       "getChatLink": [Function],
@@ -58,54 +83,107 @@ test('.delegateAuthRequest(req, res, routing)', async () => {
       "platformColor": "#1D9BF0",
       "platformImageUrl": "https://sociably.js.org/img/icon/twitter.png",
       "platformName": "Twitter",
+      "verifyCredential": [Function],
     }
   `);
 
-  expect(
-    delegatorOptions.getChatLink(new TwitterChat('12345', '67890'))
-  ).toMatchInlineSnapshot(
-    `"https://twitter.com/messages/compose?recipient_id=12345"`
-  );
+    expect(
+      delegatorOptions.getChatLink(new TwitterChat('1234567890', '9876543210'))
+    ).toMatchInlineSnapshot(
+      `"https://twitter.com/messages/compose?recipient_id=1234567890"`
+    );
 
-  expect(
-    delegatorOptions.checkAuthData({ agent: '12345', id: '67890' })
-  ).toEqual({
-    ok: true,
-    thread: new TwitterChat('12345', '67890'),
-    data: { agent: '12345', id: '67890' },
+    expect(
+      delegatorOptions.checkAuthData({
+        agent: '1234567890',
+        user: { id: '9876543210', data: rawUserData },
+      })
+    ).toEqual({
+      ok: true,
+      thread: new TwitterChat('1234567890', '9876543210'),
+      data: {
+        agent: '1234567890',
+        user: { id: '9876543210', data: rawUserData },
+      },
+    });
   });
-  expect(delegatorOptions.checkAuthData({ agent: '54321', id: '67890' }))
-    .toMatchInlineSnapshot(`
-    Object {
-      "code": 400,
-      "ok": false,
-      "reason": "agent not match",
-    }
-  `);
+
+  test('options.verifyCredential() verify user by profiler.getUserProfiler()', async () => {
+    (() => new ServerAuthenticator(bot, profiler, basicAuthenticator))();
+
+    const { verifyCredential } =
+      basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
+
+    await expect(
+      verifyCredential({
+        agent: '1234567890',
+        user: '9876543210',
+      })
+    ).resolves.toEqual({
+      ok: true,
+      data: {
+        agent: '1234567890',
+        user: { id: '9876543210', data: rawUserData },
+      },
+    });
+
+    expect(profiler.getUserProfile).toHaveBeenCalledTimes(1);
+    expect(profiler.getUserProfile).toHaveBeenCalledWith(
+      new TwitterUser('1234567890'),
+      new TwitterUser('9876543210')
+    );
+
+    profiler.getUserProfile.mock.fakeRejectedValue(
+      new TwitterApiError(418, { detail: "I'm a teapot" } as never)
+    );
+
+    await expect(
+      verifyCredential({
+        agent: '1234567890',
+        user: '9876543210',
+      })
+    ).resolves.toMatchInlineSnapshot(`
+                        Object {
+                          "code": 418,
+                          "ok": false,
+                          "reason": "I'm a teapot",
+                        }
+                    `);
+  });
 });
 
 test('.getAuthUrl(id, path)', () => {
-  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
-  expect(authenticator.getAuthUrl('67890')).toBe(loginUrl);
-  expect(authenticator.getAuthUrl('67890', '/foo?bar=baz')).toBe(loginUrl);
+  const authenticator = new ServerAuthenticator(
+    bot,
+    profiler,
+    basicAuthenticator
+  );
+  expect(authenticator.getAuthUrl('1234567890', '9876543210')).toBe(loginUrl);
+  expect(
+    authenticator.getAuthUrl('1234567890', '9876543210', '/foo?bar=baz')
+  ).toBe(loginUrl);
 
   expect(basicAuthenticator.getAuthUrl).toHaveBeenCalledTimes(2);
   expect(basicAuthenticator.getAuthUrl).toHaveBeenNthCalledWith(
     1,
     'twitter',
-    { agent: '12345', id: '67890' },
+    { agent: '1234567890', user: '9876543210' },
     undefined
   );
   expect(basicAuthenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
     'twitter',
-    { agent: '12345', id: '67890' },
+    { agent: '1234567890', user: '9876543210' },
     '/foo?bar=baz'
   );
 });
 
 test('.verifyCredential() fails anyway', async () => {
-  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
+  const authenticator = new ServerAuthenticator(
+    bot,
+    profiler,
+    basicAuthenticator
+  );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
           Object {
@@ -116,39 +194,73 @@ test('.verifyCredential() fails anyway', async () => {
         `);
 });
 
-test('.verifyRefreshment(data)', async () => {
-  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
-  await expect(
-    authenticator.verifyRefreshment({ agent: '12345', id: '67890' })
-  ).resolves.toEqual({ ok: true, data: { agent: '12345', id: '67890' } });
+describe('.verifyRefreshment(data)', () => {
+  const authenticator = new ServerAuthenticator(
+    bot,
+    profiler,
+    basicAuthenticator
+  );
 
-  await expect(authenticator.verifyRefreshment({ agent: '54321', id: '67890' }))
-    .resolves.toMatchInlineSnapshot(`
-          Object {
-            "code": 400,
-            "ok": false,
-            "reason": "agent not match",
-          }
-        `);
+  test('verify auth through profiler.getUserProfiler() API', async () => {
+    await expect(
+      authenticator.verifyRefreshment({
+        agent: '1234567890',
+        user: { id: '9876543210', data: rawUserData },
+      })
+    ).resolves.toEqual({
+      ok: true,
+      data: {
+        agent: '1234567890',
+        user: { id: '9876543210', data: rawUserData },
+      },
+    });
+
+    expect(profiler.getUserProfile).toHaveBeenCalledTimes(1);
+    expect(profiler.getUserProfile).toHaveBeenCalledWith(
+      new TwitterUser('1234567890'),
+      new TwitterUser('9876543210')
+    );
+  });
+
+  it('fails if profiler.getUserProfiler() throw', async () => {
+    profiler.getUserProfile.mock.fakeRejectedValue(
+      new TwitterApiError(418, { detail: "I'm a teapot" } as never)
+    );
+
+    await expect(
+      authenticator.verifyRefreshment({
+        agent: '1234567890',
+        user: { id: '9876543210', data: rawUserData },
+      })
+    ).resolves.toMatchInlineSnapshot(`
+                      Object {
+                        "code": 418,
+                        "ok": false,
+                        "reason": "I'm a teapot",
+                      }
+                  `);
+  });
 });
 
 test('.checkAuthData(data)', () => {
-  const authenticator = new ServerAuthenticator(bot, basicAuthenticator);
-  expect(authenticator.checkAuthData({ agent: '12345', id: '67890' })).toEqual({
+  const authenticator = new ServerAuthenticator(
+    bot,
+    profiler,
+    basicAuthenticator
+  );
+  expect(
+    authenticator.checkAuthData({
+      agent: '1234567890',
+      user: { id: '9876543210', data: rawUserData },
+    })
+  ).toEqual({
     ok: true,
     contextDetails: {
-      agentId: '12345',
-      thread: new TwitterChat('12345', '67890'),
-      user: new TwitterUser('67890'),
+      agentId: '1234567890',
+      channel: new TwitterUser('1234567890'),
+      thread: new TwitterChat('1234567890', '9876543210'),
+      user: new TwitterUser('9876543210', rawUserData),
+      userProfile: new UserProfile(rawUserData),
     },
   });
-
-  expect(authenticator.checkAuthData({ agent: '54321', id: '67890' }))
-    .toMatchInlineSnapshot(`
-          Object {
-            "code": 400,
-            "ok": false,
-            "reason": "agent not match",
-          }
-        `);
 });

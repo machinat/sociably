@@ -104,10 +104,10 @@ The `app.onEvent` and `app.onError` methods can accept a container of the handle
 For example:
 
 ```js
-import { makeContainer, BasicProfiler } from '@sociably/core';
+import { makeContainer, BaseProfiler } from '@sociably/core';
 
 app.onEvent(
-  makeContainer({ deps: [BasicProfiler] })(
+  makeContainer({ deps: [BaseProfiler] })(
     (profiler) =>
     async ({ event, reply } ) => {
       const profile = await profiler.getUserProfile(event.user);
@@ -117,7 +117,7 @@ app.onEvent(
 );
 ```
 
-The container receives a `BasicProfiler` instance and returns an ordinary handler function.
+The container receives a `BaseProfiler` instance and returns an ordinary handler function.
 When an event is popped, the _contained_ handler receives event context as usual.
 Then it can use the required `profiler` for replying.
 
@@ -152,13 +152,13 @@ Here is an example to put them together:
 import {
   makeContainer,
   IntentRecognizer,
-  BasicProfiler,
+  BaseProfiler,
   StateController,
 } from '@sociably/core';
 
 app.onEvent(
   makeContainer({
-    deps: [IntentRecognizer, BasicProfiler, StateController],
+    deps: [IntentRecognizer, BaseProfiler, StateController],
   })(
     (recognizer, profiler, stateController) =>
     async (context) => {
@@ -184,8 +184,8 @@ app.onEvent(
 
 Here are the list of the standard services:
 
-- [`BasicBot`](pathname:///api/modules/core_base_bot): Render messages on a platform-agnostic thread.
-- [`BasicProfiler`](pathname:///api/modules/core_base_profiler): Fetch profile of a platform-agnostic user.
+- [`BaseBot`](pathname:///api/modules/core_base_bot): Render messages on a platform-agnostic thread.
+- [`BaseProfiler`](pathname:///api/modules/core_base_profiler): Fetch profile of a platform-agnostic user.
 - [`StateController`](pathname:///api/modules/core_base_statecontroller): Save and load thread/user/global state from the storage. We'll introduce it in the [Using State](using-states.md) doc.
 - [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): Recognize the intent of a message. We'll introduce it in the [Recognizing Intent](recognizing-intent.md) doc.
 

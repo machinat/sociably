@@ -8,10 +8,10 @@ const annotateTweetMedia = (
     ? source
     : {
         ...source,
-        parameters: {
-          ...source.parameters,
+        params: {
+          ...source.params,
           media_category:
-            source.parameters.media_category ||
+            source.params.media_category ||
             (mediaType === 'photo'
               ? 'tweet_image'
               : mediaType === 'video'

@@ -3,6 +3,7 @@ import { DispatchError } from '@sociably/core/engine';
 import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import type { WhatsAppDispatchMiddleware } from '../types';
 import AssetsManagerP from './AssetsManager';
+import WhatsAppAgent from '../Agent';
 
 const updateAssetsFromSuccessfulJobs = async (
   manager: AssetsManagerP,
@@ -14,11 +15,13 @@ const updateAssetsFromSuccessfulJobs = async (
   for (let i = 0; i < jobs.length; i += 1) {
     const result = results[i];
     if (result) {
-      const { assetTag } = jobs[i];
+      const { channel, file } = jobs[i];
       const { body } = result;
 
-      if (assetTag && body.id) {
-        updatingAssets.push(manager.saveMedia(assetTag, body.id));
+      if (file?.assetTag && body.id) {
+        updatingAssets.push(
+          manager.saveMedia(channel as WhatsAppAgent, file.assetTag, body.id)
+        );
       }
     }
   }

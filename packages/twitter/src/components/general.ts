@@ -61,7 +61,7 @@ const img = (node, path) => [
       source: {
         type: 'url',
         url: node.props.src,
-        parameters: {},
+        params: {},
       },
     },
   }),
@@ -75,7 +75,7 @@ const video = (node, path) => [
       source: {
         type: 'url',
         url: node.props.src,
-        parameters: {},
+        params: {},
       },
     },
   }),

@@ -1,5 +1,7 @@
-import Sociably, { makeContainer } from '@sociably/core';
+import Sociably, { makeContainer, RenderingTarget } from '@sociably/core';
 import { UriAction } from '../components';
+import LineChannel from '../Channel';
+import LineChat from '../Chat';
 import ServerAuthenticator from './ServerAuthenticator';
 
 type WebviewActionProps = {
@@ -10,12 +12,20 @@ type WebviewActionProps = {
 };
 
 const WebviewAction =
-  (authenticator: ServerAuthenticator) =>
-  ({ label, page }: WebviewActionProps) => {
-    const url = authenticator.getLiffUrl(page);
+  (authenticator: ServerAuthenticator, target: RenderingTarget) =>
+  async ({ label, page }: WebviewActionProps) => {
+    if (!target || !(target instanceof LineChat)) {
+      throw new Error('WebviewAction can only be used in a LineChat');
+    }
+
+    const url = await authenticator.getLiffUrl(
+      new LineChannel(target.channelId),
+      page,
+      target
+    );
     return <UriAction label={label} uri={url} />;
   };
 
 export default makeContainer({
-  deps: [ServerAuthenticator],
+  deps: [ServerAuthenticator, RenderingTarget],
 })(WebviewAction);

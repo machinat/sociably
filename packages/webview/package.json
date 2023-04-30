@@ -12,7 +12,9 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./client": "./lib/client/index.js"
+    "./client": "./lib/client/index.js",
+    "./authenticators/memoized": "./lib/authenticators/memoized/index.js",
+    "./authenticators/none": "./lib/authenticators/none/index.js"
   },
   "files": [
     "lib/*",

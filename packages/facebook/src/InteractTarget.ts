@@ -1,5 +1,6 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import FacebookPage from './Page';
 import { FACEBOOK, FB } from './constant';
 
 type InteractTargetValue = {
@@ -26,6 +27,10 @@ class FacebookInteractTarget
     this.pageId = pageId;
     this.type = objectType;
     this.id = id;
+  }
+
+  get channel(): FacebookPage {
+    return new FacebookPage(this.pageId);
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {

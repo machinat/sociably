@@ -1,6 +1,7 @@
 import { posix as posixPath } from 'path';
-import Sociably, { makeContainer } from '@sociably/core';
+import Sociably, { makeContainer, RenderingTarget } from '@sociably/core';
 import { UrlButton } from '../components';
+import TelegramChat from '../Chat';
 import ServerAuthenticator from './ServerAuthenticator';
 
 type WebviewButtonProps = {
@@ -17,7 +18,7 @@ type WebviewButtonProps = {
 };
 
 const WebviewButton =
-  (authenticator: ServerAuthenticator) =>
+  (authenticator: ServerAuthenticator, renderingTarget: RenderingTarget) =>
   ({
     text,
     page,
@@ -25,7 +26,18 @@ const WebviewButton =
     botUserName,
     requestWriteAccess,
   }: WebviewButtonProps) => {
+    let botId: number;
+    let chatId: undefined | string | number;
+    if (renderingTarget instanceof TelegramChat) {
+      ({ botId } = renderingTarget);
+      chatId = renderingTarget.id;
+    } else {
+      throw new Error('WebviewButton can only be used in TelegramChat');
+    }
+
     const url = authenticator.getAuthUrl(
+      botId,
+      chatId,
       page ? posixPath.join('.', page) : undefined
     );
     return (
@@ -41,5 +53,5 @@ const WebviewButton =
   };
 
 export default makeContainer({
-  deps: [ServerAuthenticator],
+  deps: [ServerAuthenticator, RenderingTarget],
 })(WebviewButton);

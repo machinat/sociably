@@ -1,5 +1,7 @@
 import { DispatchError } from '@sociably/core/engine';
 import moxy from '@moxyjs/moxy';
+import WhatsAppAgent from '../../Agent';
+import WhatsAppChat from '../../Chat';
 import saveUploadedMedia from '../saveUploadedMedia';
 import AssetsManager from '../AssetsManager';
 
@@ -11,22 +13,30 @@ beforeEach(() => {
   manager.mock.clear();
 });
 
-it('do nothing when job has no assetTag', async () => {
-  const msgResult = { code: 200, headers: {}, body: {} };
-  const response = {
-    jobs: [
-      { request: { ...{} } },
-      { request: { ...{} } },
-      { request: { ...{} } },
-    ],
-    results: [msgResult, msgResult, msgResult],
-  };
-  const next = moxy(async () => response as never);
-  const context = { hello: 'droid' };
+const msgResult = { code: 200, headers: {}, body: {} };
+const chat = new WhatsAppChat('9876543210', '1234567890');
+const agent = new WhatsAppAgent('9876543210');
+const plainJob = {
+  request: { method: 'POST', relativeUrl: 'foo' },
+  channel: agent,
+};
 
-  await expect(
-    saveUploadedMedia(manager)(context as any, next)
-  ).resolves.toEqual(response);
+it('do nothing when job has no assetTag', async () => {
+  const jobs = [plainJob, plainJob, plainJob];
+  const tasks = [{ type: 'dispatch' as const, payload: jobs }];
+  const response = { jobs, tasks, results: [msgResult, msgResult, msgResult] };
+  const next = moxy(async () => response);
+  const context = {
+    platform: 'whatsapp',
+    jobs,
+    tasks,
+    node: null,
+    target: chat,
+  };
+
+  await expect(saveUploadedMedia(manager)(context, next)).resolves.toEqual(
+    response
+  );
 
   expect(next).toHaveBeenCalledTimes(1);
   expect(next).toHaveBeenCalledWith(context);
@@ -35,16 +45,24 @@ it('do nothing when job has no assetTag', async () => {
 });
 
 it('save created assets', async () => {
-  const msgResult = { code: 200, headers: {}, body: {} };
+  const jobs = [
+    {
+      ...plainJob,
+      file: { data: 'FOO', assetTag: 'foo' },
+    },
+    { ...plainJob },
+    {
+      ...plainJob,
+      file: { data: 'BAR', assetTag: 'bar' },
+    },
+    { ...plainJob, file: { data: 'XXX' } },
+    {
+      ...plainJob,
+      file: { data: 'BAZ', assetTag: 'baz' },
+    },
+  ];
   const response = {
-    jobs: [
-      { assetTag: 'foo', request: { ...{} } },
-      { request: { ...{} } },
-      { assetTag: 'bar', request: { ...{} } },
-      { request: { ...{} } },
-      { assetTag: 'baz', request: { ...{} } },
-      { request: { ...{} } },
-    ],
+    jobs,
     results: [
       {
         ...msgResult,
@@ -55,12 +73,14 @@ it('save created assets', async () => {
         ...msgResult,
         body: { id: '222222222' },
       },
-      msgResult,
       {
         ...msgResult,
         body: { id: '333333333' },
       },
-      msgResult,
+      {
+        ...msgResult,
+        body: { id: '444444444' },
+      },
     ],
   };
   const next = moxy(async () => response as never);
@@ -74,19 +94,42 @@ it('save created assets', async () => {
   expect(next).toHaveBeenCalledWith(context);
 
   expect(manager.saveMedia).toHaveBeenCalledTimes(3);
-  expect(manager.saveMedia).toHaveBeenNthCalledWith(1, 'foo', '111111111');
-  expect(manager.saveMedia).toHaveBeenNthCalledWith(2, 'bar', '222222222');
-  expect(manager.saveMedia).toHaveBeenNthCalledWith(3, 'baz', '333333333');
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
+    1,
+    agent,
+    'foo',
+    '111111111'
+  );
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
+    2,
+    agent,
+    'bar',
+    '222222222'
+  );
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
+    3,
+    agent,
+    'baz',
+    '444444444'
+  );
 });
 
 it('save created assets when partial success', async () => {
-  const msgResult = { code: 200, headers: {}, body: {} };
   const jobs = [
-    { assetTag: 'foo', request: { ...{} } },
-    { request: { ...{} } },
-    { assetTag: 'bar', request: { ...{} } },
-    { request: { ...{} } },
-    { assetTag: 'baz', request: { ...{} } },
+    {
+      ...plainJob,
+      file: { data: 'FOO', assetTag: 'foo' },
+    },
+    { ...plainJob },
+    {
+      ...plainJob,
+      file: { data: 'BAR', assetTag: 'bar' },
+    },
+    { ...plainJob, file: { data: 'XXX' } },
+    {
+      ...plainJob,
+      file: { data: 'BAZ', assetTag: 'baz' },
+    },
   ];
   const results = [
     {
@@ -98,7 +141,10 @@ it('save created assets when partial success', async () => {
       ...msgResult,
       body: { id: '222222222' },
     },
-    undefined,
+    {
+      ...msgResult,
+      body: { id: '333333333' },
+    },
     undefined,
   ];
   const error = new DispatchError(
@@ -121,6 +167,16 @@ it('save created assets when partial success', async () => {
   expect(next).toHaveBeenCalledWith(context);
 
   expect(manager.saveMedia).toHaveBeenCalledTimes(2);
-  expect(manager.saveMedia).toHaveBeenNthCalledWith(1, 'foo', '111111111');
-  expect(manager.saveMedia).toHaveBeenNthCalledWith(2, 'bar', '222222222');
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
+    1,
+    agent,
+    'foo',
+    '111111111'
+  );
+  expect(manager.saveMedia).toHaveBeenNthCalledWith(
+    2,
+    agent,
+    'bar',
+    '222222222'
+  );
 });

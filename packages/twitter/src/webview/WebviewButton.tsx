@@ -1,5 +1,5 @@
 import { posix as posixPath } from 'path';
-import Sociably, { makeContainer, RenderingThread } from '@sociably/core';
+import Sociably, { makeContainer, RenderingTarget } from '@sociably/core';
 import TwitterChat from '../Chat';
 import { UrlButton } from '../components';
 import ServerAuthenticator from './ServerAuthenticator';
@@ -12,19 +12,20 @@ type WebviewButtonProps = {
 };
 
 const WebviewButton =
-  (authenticator: ServerAuthenticator, thread: RenderingThread) =>
+  (authenticator: ServerAuthenticator, thread: RenderingTarget) =>
   ({ label, page }: WebviewButtonProps) => {
     if (!thread || !(thread instanceof TwitterChat)) {
       return null;
     }
 
     const url = authenticator.getAuthUrl(
-      thread.id,
+      thread.agentId,
+      thread.userId,
       page ? posixPath.join('.', page) : undefined
     );
     return <UrlButton label={label} url={url} />;
   };
 
 export default makeContainer({
-  deps: [ServerAuthenticator, RenderingThread],
+  deps: [ServerAuthenticator, RenderingTarget],
 })(WebviewButton);

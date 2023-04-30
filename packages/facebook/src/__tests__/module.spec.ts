@@ -1,15 +1,17 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
+import { makeFactoryProvider } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import Facebook from '../module';
+import { PageSettingsAccessorI } from '../interface';
+import FacebookPage from '../Page';
 import FacebookChat from '../Chat';
 import FacebookUser from '../User';
 import FacebookUserProfile from '../UserProfile';
 import { FacebookProfiler } from '../Profiler';
-
 import { FacebookReceiver } from '../Receiver';
 import { FacebookBot } from '../Bot';
 
@@ -33,8 +35,10 @@ describe('initModule(configs)', () => {
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
 
     const module = Facebook.initModule({
-      pageId: '1234567890',
-      accessToken: '_ACCESS_TOKEN_',
+      pageSettings: {
+        pageId: '1234567890',
+        accessToken: '_ACCESS_TOKEN_',
+      },
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
       eventMiddlewares,
@@ -58,8 +62,10 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
-      pageId: '1234567890',
-      accessToken: '_ACCESS_TOKEN_',
+      pageSettings: {
+        pageId: '1234567890',
+        accessToken: '_ACCESS_TOKEN_',
+      },
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
       webhookPath: '/webhook/facebook',
@@ -71,14 +77,21 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, receiver, profiler, configsProvided, routings] =
-      app.useServices([
-        Facebook.Bot,
-        Facebook.Receiver,
-        Facebook.Profiler,
-        Facebook.Configs,
-        Http.RequestRouteList,
-      ]);
+    const [
+      bot,
+      receiver,
+      profiler,
+      configsProvided,
+      routings,
+      pageSettingsAccessor,
+    ] = app.useServices([
+      Facebook.Bot,
+      Facebook.Receiver,
+      Facebook.Profiler,
+      Facebook.Configs,
+      Http.RequestRouteList,
+      PageSettingsAccessorI,
+    ]);
 
     expect(bot).toBeInstanceOf(FacebookBot);
     expect(receiver).toBeInstanceOf(FacebookReceiver);
@@ -91,6 +104,11 @@ describe('initModule(configs)', () => {
         handler: expect.any(Function),
       },
     ]);
+    expect(pageSettingsAccessor).toEqual({
+      getChannelSettings: expect.any(Function),
+      getChannelSettingsBatch: expect.any(Function),
+      listAllChannelSettings: expect.any(Function),
+    });
 
     bot.stop();
   });
@@ -99,8 +117,10 @@ describe('initModule(configs)', () => {
     const app = Sociably.createApp({
       platforms: [
         Facebook.initModule({
-          pageId: '1234567890',
-          accessToken: '_ACCESS_TOKEN_',
+          pageSettings: {
+            pageId: '1234567890',
+            accessToken: '_ACCESS_TOKEN_',
+          },
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -119,7 +139,12 @@ describe('initModule(configs)', () => {
     expect(bots.get('facebook')).toBe(bot);
     expect(profilers.get('facebook')).toBeInstanceOf(FacebookProfiler);
     expect(marshalTypes).toEqual(
-      expect.arrayContaining([FacebookChat, FacebookUser, FacebookUserProfile])
+      expect.arrayContaining([
+        FacebookPage,
+        FacebookChat,
+        FacebookUser,
+        FacebookUserProfile,
+      ])
     );
 
     bot.stop();
@@ -129,8 +154,12 @@ describe('initModule(configs)', () => {
     const app = Sociably.createApp({
       platforms: [
         Facebook.initModule({
-          pageId: '1234567890',
-          accessToken: '_ACCESS_TOKEN_',
+          pageSettings: {
+            pageId: '1234567890',
+            accessToken: '_ACCESS_TOKEN_',
+          },
+          appSecret: '...',
+          verifyToken: '...',
           shouldHandleChallenge: false,
           shouldVerifyRequest: false,
         }),
@@ -146,25 +175,173 @@ describe('initModule(configs)', () => {
     app.useServices([Facebook.Bot])[0].stop();
   });
 
+  test('with configs.pageSettings', async () => {
+    const pageSettings = {
+      pageId: '1234567890',
+      accessToken: '_ACCESS_TOKEN_',
+    };
+    const app = Sociably.createApp({
+      platforms: [
+        Facebook.initModule({
+          pageSettings,
+          appSecret: '_APP_SECRET_',
+          verifyToken: '_VERIFY_TOKEN_',
+        }),
+      ],
+    });
+    await app.start();
+    const [pageSettingsAccessor] = app.useServices([PageSettingsAccessorI]);
+
+    await expect(
+      pageSettingsAccessor.getChannelSettings(new FacebookPage('1234567890'))
+    ).resolves.toEqual(pageSettings);
+    await expect(
+      pageSettingsAccessor.getChannelSettings(new FacebookPage('9876543210'))
+    ).resolves.toEqual(null);
+
+    await expect(
+      pageSettingsAccessor.getChannelSettingsBatch([
+        new FacebookPage('1234567890'),
+        new FacebookPage('9876543210'),
+      ])
+    ).resolves.toEqual([pageSettings, null]);
+
+    await expect(
+      pageSettingsAccessor.listAllChannelSettings('facebook')
+    ).resolves.toEqual([pageSettings]);
+
+    await app.stop();
+  });
+
+  test('with configs.multiPageSettings', async () => {
+    const app = Sociably.createApp({
+      platforms: [
+        Facebook.initModule({
+          multiPageSettings: [
+            {
+              pageId: '1234567890',
+              accessToken: '_ACCESS_TOKEN_1_',
+            },
+            {
+              pageId: '9876543210',
+              accessToken: '_ACCESS_TOKEN_2_',
+            },
+          ],
+          appSecret: '_APP_SECRET_',
+          verifyToken: '_VERIFY_TOKEN_',
+        }),
+      ],
+    });
+    await app.start();
+    const [pageSettingsAccessor] = app.useServices([PageSettingsAccessorI]);
+
+    await expect(
+      pageSettingsAccessor.getChannelSettings(new FacebookPage('1234567890'))
+    ).resolves.toEqual({
+      pageId: '1234567890',
+      accessToken: '_ACCESS_TOKEN_1_',
+    });
+    await expect(
+      pageSettingsAccessor.getChannelSettings(new FacebookPage('9876543210'))
+    ).resolves.toEqual({
+      pageId: '9876543210',
+      accessToken: '_ACCESS_TOKEN_2_',
+    });
+    await expect(
+      pageSettingsAccessor.getChannelSettings(new FacebookPage('8888888888'))
+    ).resolves.toBe(null);
+
+    await expect(
+      pageSettingsAccessor.getChannelSettingsBatch([
+        new FacebookPage('9876543210'),
+        new FacebookPage('1234567890'),
+        new FacebookPage('8888888888'),
+      ])
+    ).resolves.toEqual([
+      { pageId: '9876543210', accessToken: '_ACCESS_TOKEN_2_' },
+      { pageId: '1234567890', accessToken: '_ACCESS_TOKEN_1_' },
+      null,
+    ]);
+
+    await expect(
+      pageSettingsAccessor.listAllChannelSettings('facebook')
+    ).resolves.toEqual([
+      { pageId: '1234567890', accessToken: '_ACCESS_TOKEN_1_' },
+      { pageId: '9876543210', accessToken: '_ACCESS_TOKEN_2_' },
+    ]);
+
+    await app.stop();
+  });
+
+  test('with configs.pageSettingsService', async () => {
+    const pageSettings = {
+      pageId: '1234567890',
+      accessToken: '_ACCESS_TOKEN_',
+    };
+    const settingsAccessor = {
+      getChannelSettings: async () => pageSettings,
+      getChannelSettingsBatch: async () => [pageSettings, pageSettings],
+      listAllChannelSettings: async () => [pageSettings, pageSettings],
+    };
+    const myPageSettingsService = makeFactoryProvider({})(
+      () => settingsAccessor
+    );
+
+    const app = Sociably.createApp({
+      platforms: [
+        Facebook.initModule({
+          pageSettingsService: myPageSettingsService,
+          appSecret: '_APP_SECRET_',
+          verifyToken: '_VERIFY_TOKEN_',
+        }),
+      ],
+      services: [myPageSettingsService],
+    });
+    await app.start();
+    const [pageSettingsAccessor] = app.useServices([PageSettingsAccessorI]);
+
+    expect(pageSettingsAccessor).toBe(settingsAccessor);
+    await app.stop();
+  });
+
+  it('throw if no page settings source provided', () => {
+    expect(() =>
+      Facebook.initModule({
+        appSecret: '_APP_SECRET_',
+        verifyToken: '_VERIFY_TOKEN_',
+      })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Facebook platform requires one of \`pageSettings\`, \`multiPageSettings\` or \`pageSettingsService\` option"`
+    );
+  });
+
   test('#startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Facebook.initModule({
-      pageId: '1234567890',
-      accessToken: '_ACCESS_TOKEN_',
+      pageSettings: {
+        pageId: '1234567890',
+        accessToken: '_ACCESS_TOKEN_',
+      },
+      appSecret: '...',
+      verifyToken: '...',
     });
 
-    await expect((module.startHook as any)(bot)).resolves.toBe(undefined);
+    await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
     expect(bot.start).toHaveBeenCalledTimes(1);
   });
 
   test('#stopHook() stop bot', async () => {
-    const bot = moxy({ stop: async () => {} });
+    const bot = moxy<FacebookBot>({ stop: async () => {} } as never);
     const module = Facebook.initModule({
-      pageId: '1234567890',
-      accessToken: '_ACCESS_TOKEN_',
+      pageSettings: {
+        pageId: '1234567890',
+        accessToken: '_ACCESS_TOKEN_',
+      },
+      appSecret: '...',
+      verifyToken: '...',
     });
 
-    await expect((module.stopHook as any)(bot)).resolves.toBe(undefined);
+    await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);
     expect(bot.stop).toHaveBeenCalledTimes(1);
   });
 });

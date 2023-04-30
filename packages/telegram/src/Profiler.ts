@@ -35,7 +35,9 @@ type GetUserProfileOptions = {
 /**
  * @category Provider
  */
-export class TelegramProfiler implements UserProfiler<TelegramUser> {
+export class TelegramProfiler
+  implements UserProfiler<TelegramUser, TelegramUser>
+{
   bot: BotP;
   plaform = TELEGRAM;
 
@@ -49,21 +51,24 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
    * called to fetch user data.
    */
   async getUserProfile(
+    bot: TelegramUser,
     user: TelegramUser,
     options?: GetUserProfileOptions
   ): Promise<TelegramUserProfile>;
 
   async getUserProfile(
+    bot: TelegramUser,
     user: TelegramChatSender,
     options?: GetUserProfileOptions
   ): Promise<TelegramChatProfile>;
 
   async getUserProfile(
+    bot: TelegramUser,
     user: TelegramUser | TelegramChatSender,
     options: GetUserProfileOptions = {}
   ): Promise<TelegramUserProfile | TelegramChatProfile> {
     if (user.type !== 'user') {
-      return this.getChatProfile(user);
+      return this.getChatProfile(bot, user);
     }
 
     const { inChat, avatarUrl, fromApi } = options;
@@ -72,11 +77,15 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
     if (user.data && !fromApi) {
       userData = user.data;
     } else {
-      const chatMember = await this.bot.makeApiCall('getChatMember', {
-        chat_id: inChat?.id || user.id,
-        user_id: user.id,
+      const chatMember = await this.bot.makeApiCall({
+        bot,
+        method: 'getChatMember',
+        params: {
+          chat_id: inChat?.id || user.id,
+          user_id: user.id,
+        },
       });
-      userData = chatMember.user;
+      userData = chatMember.user as RawUser;
     }
 
     return new TelegramUserProfile(userData, avatarUrl || user.avatarUrl);
@@ -88,6 +97,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
    * to fetch chat data.
    */
   async getChatProfile(
+    bot: TelegramUser,
     chat: string | number | TelegramChat | TelegramChatSender,
     options: {
       /**
@@ -113,8 +123,10 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
       chatId = id;
     }
 
-    const chatData: RawChat = await this.bot.makeApiCall('getChat', {
-      chat_id: chatId,
+    const chatData: RawChat = await this.bot.makeApiCall({
+      bot,
+      method: 'getChat',
+      params: { chat_id: chatId },
     });
 
     return new TelegramChatProfile(chatData, avatarUrl);
@@ -122,14 +134,17 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
 
   /** Fetch the photo file of a user */
   async fetchUserPhoto(
+    bot: TelegramUser,
     user: TelegramUser,
     options?: {
       /** If set, the minimum size above the value is chosen. Otherwise the smallest one */
       minWidth?: number;
     }
   ): Promise<null | PhotoResponse> {
-    const { photos } = await this.bot.makeApiCall('getUserProfilePhotos', {
-      user_id: user.id,
+    const { photos } = await this.bot.makeApiCall<{ photos: RawPhotoSize[] }>({
+      bot,
+      method: 'getUserProfilePhotos',
+      params: { user_id: user.id },
     });
 
     if (photos.length === 0) {
@@ -141,7 +156,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
     const photoSize =
       sizes.find(({ width }) => width > minWidth) || sizes[sizes.length - 1];
 
-    const fileResponse = await this.bot.fetchFile(photoSize.file_id);
+    const fileResponse = await this.bot.fetchFile(bot, photoSize.file_id);
     if (!fileResponse) {
       return null;
     }
@@ -158,12 +173,17 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
 
   /** Fetch the photo file of a chat */
   async fetchChatPhoto(
+    bot: TelegramUser,
     chat: number | string | TelegramChat | TelegramChatSender,
     options?: { size?: 'big' | 'small' }
   ): Promise<null | PhotoResponse> {
-    const { photo } = await this.bot.makeApiCall('getChat', {
-      chat_id:
-        typeof chat === 'string' || typeof chat === 'number' ? chat : chat.id,
+    const { photo } = await this.bot.makeApiCall<{ photo: RawPhotoSize }>({
+      bot,
+      method: 'getChat',
+      params: {
+        chat_id:
+          typeof chat === 'string' || typeof chat === 'number' ? chat : chat.id,
+      },
     });
 
     if (!photo) {
@@ -171,6 +191,7 @@ export class TelegramProfiler implements UserProfiler<TelegramUser> {
     }
 
     const fileResponse = await this.bot.fetchFile(
+      bot,
       options?.size === 'small' ? photo.small_file_id : photo.big_file_id
     );
     if (!fileResponse) {

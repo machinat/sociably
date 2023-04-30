@@ -1,5 +1,5 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import { makeTelegramComponent } from '../utils';
+import makeTelegramComponent from '../utils/makeTelegramComponent';
 import {
   TelegramSegmentValue,
   UploadingFileInfo,
@@ -33,7 +33,7 @@ export const ForwardMessage: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'forwardMessage',
-      parameters: {
+      params: {
         from_chat_id: fromChatId,
         message_id: messageId,
         disable_notification: disableNotification,
@@ -75,7 +75,7 @@ export const ChatAction: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendChatAction',
-      parameters: { action },
+      params: { action },
     }),
   ];
 });
@@ -105,7 +105,7 @@ export const KickChatMember: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'kickChatMember',
-      parameters: {
+      params: {
         user_id: userId,
         until_date:
           untilDate instanceof Date
@@ -139,7 +139,7 @@ export const UnbanChatMember: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'unbanChatMember',
-      parameters: {
+      params: {
         user_id: userId,
       },
     }),
@@ -204,7 +204,7 @@ export const RestrictChatMember: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'restrictChatMember',
-      parameters: {
+      params: {
         user_id: userId,
         permisions: {
           can_send_messages: canSendMessages,
@@ -250,7 +250,7 @@ export interface PromoteChatMemberProps {
 }
 
 /**
- * Promote or demote a user in a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Pass False for all boolean parameters to demote a user.
+ * Promote or demote a user in a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Pass False for all boolean params to demote a user.
  * @category Component
  * @props {@link PromoteChatMemberProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#promotechatmember).
@@ -274,7 +274,7 @@ export const PromoteChatMember: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'promoteChatMember',
-      parameters: {
+      params: {
         user_id: userId,
         can_post_messages: canPostMessages,
         can_edit_messages: canEditMessages,
@@ -314,7 +314,7 @@ export const SetChatAdministratorCustomTitle: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'setChatAdministratorCustomTitle',
-      parameters: {
+      params: {
         user_id: userId,
         custom_title: customTitle,
       },
@@ -346,7 +346,7 @@ export const SetChatPermissions: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'setChatPermissions',
-      parameters: {
+      params: {
         permisions: {
           can_send_messages: canSendMessages,
           can_send_media_messages: canSendMediaMessages,
@@ -387,7 +387,7 @@ export const SetChatPhoto: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'setChatPhoto',
-      parameters: {
+      params: {
         photo: undefined,
       },
       uploadingFiles: [
@@ -410,7 +410,7 @@ export const DeleteChatPhoto: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'deleteChatPhoto',
-      parameters: {},
+      params: {},
     }),
   ];
 });
@@ -438,7 +438,7 @@ export const SetChatTitle: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'setChatTitle',
-      parameters: { title },
+      params: { title },
     }),
   ];
 });
@@ -466,7 +466,7 @@ export const SetChatDescription: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'setChatDescription',
-      parameters: { description },
+      params: { description },
     }),
   ];
 });
@@ -496,7 +496,7 @@ export const PinChatMessage: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'pinChatMessage',
-      parameters: {
+      params: {
         message_id: messageId,
         disable_notification: disableNotification,
       },
@@ -517,7 +517,7 @@ export const UnpinChatMessage: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'unpinChatMessage',
-      parameters: {},
+      params: {},
     }),
   ];
 });
@@ -535,7 +535,7 @@ export const LeaveChat: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'leaveChat',
-      parameters: {},
+      params: {},
     }),
   ];
 });
@@ -563,7 +563,7 @@ export const SetChatStickerSet: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'setChatStickerSet',
-      parameters: { sticker_set_name: stickerSetName },
+      params: { sticker_set_name: stickerSetName },
     }),
   ];
 });
@@ -581,7 +581,7 @@ export const DeleteChatStickerSet: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'deleteChatStickerSet',
-      parameters: {},
+      params: {},
     }),
   ];
 });

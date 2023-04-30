@@ -1,16 +1,17 @@
 import { WHATSAPP } from '../constant';
 import type WhatsAppChat from '../Chat';
 import type WhatsAppUser from '../User';
+import type WhatsAppAgent from '../Agent';
 import type UserProfile from '../UserProfile';
 
 export interface EventBaseMixin {
   readonly platform: typeof WHATSAPP;
   /** The WhatsApp Business Account ID for the business that is subscribed to the webhook. */
-  businessId: string;
-  /** ID for the phone number. A business can respond to a message using this ID. */
-  businessNumber: string;
+  businessAccountId: string;
+  /** Unique ID for the receiving agent phone number. */
+  agentNumberId: string;
   /** The phone number that is displayed for a business. */
-  businessNumberDisplay: string;
+  agentNumberDisplay: string;
   payload: any;
   readonly [Symbol.toStringTag]: 'WhatsAppEvent';
 }
@@ -20,11 +21,13 @@ export interface MessageMixin extends EventBaseMixin {
   /** The ID for the message that was received by the business. */
   readonly messageId: string;
   /** The customer's phone number who sent the message to the business. */
-  readonly userNumber: string;
+  readonly userNumberId: string;
   /** The chat instance to reply the message with. */
   readonly thread: WhatsAppChat;
   /** The user who send the message */
   readonly user: WhatsAppUser;
+  /** The agent that user communicates with */
+  readonly channel: WhatsAppAgent;
   /** The time when the customer sent the message to the business. */
   readonly time: Date;
   /**
@@ -88,7 +91,7 @@ export interface StatusMixin extends EventBaseMixin {
   /** Date for the status change. */
   readonly time: Date;
   /** The WhatsApp ID for the customer that the message is sent to */
-  readonly userNumber: string;
+  readonly userNumberId: string;
   /** The ID of the conversation the given status notification belongs to. */
   readonly conversationId: string;
   /**
@@ -108,4 +111,6 @@ export interface StatusMixin extends EventBaseMixin {
   readonly thread: WhatsAppChat;
   /** The customer user */
   readonly user: WhatsAppUser;
+  /** The agent that user communicates with */
+  readonly channel: WhatsAppAgent;
 }

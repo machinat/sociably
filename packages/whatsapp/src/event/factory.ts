@@ -25,9 +25,9 @@ import { WhatsAppEvent, MessageEvent } from './types';
 
 const makeMessageEvent = (
   messageData,
-  businessId: string,
-  businessNumber: string,
-  businessNumberDisplay: string,
+  businessAccountId: string,
+  agentNumberId: string,
+  agentNumberDisplay: string,
   contacts: ContactData[]
 ): MessageEvent => {
   const messageType = messageData.type;
@@ -67,9 +67,9 @@ const makeMessageEvent = (
   const event: MessageEvent = Object.create(messageProto);
 
   event.payload = messageData;
-  event.businessId = businessId;
-  event.businessNumber = businessNumber;
-  event.businessNumberDisplay = businessNumberDisplay;
+  event.businessAccountId = businessAccountId;
+  event.agentNumberId = agentNumberId;
+  event.agentNumberDisplay = agentNumberDisplay;
 
   const userNumber = messageData.from;
   const contact = contacts.find(
@@ -84,9 +84,9 @@ const makeMessageEvent = (
 
 const makeStatusEvent = (
   statusData,
-  businessId: string,
-  businessNumber: string,
-  businessNumberDisplay: string
+  businessAccountId: string,
+  agentNumberId: string,
+  agentNumberDisplay: string
 ): MessageEvent => {
   const statusType = statusData.type;
   const statusProto =
@@ -103,48 +103,48 @@ const makeStatusEvent = (
   const event: MessageEvent = Object.create(statusProto);
 
   event.payload = statusData;
-  event.businessId = businessId;
-  event.businessNumber = businessNumber;
-  event.businessNumberDisplay = businessNumberDisplay;
+  event.businessAccountId = businessAccountId;
+  event.agentNumberId = agentNumberId;
+  event.agentNumberDisplay = agentNumberDisplay;
 
   return event;
 };
 
 const makeErrorEvent = (
   errorData,
-  businessId: string,
-  businessNumber: string,
-  businessNumberDisplay: string
+  businessAccountId: string,
+  agentNumberId: string,
+  agentNumberDisplay: string
 ): MessageEvent => {
   const event: MessageEvent = Object.create(ErrorProto);
 
   event.payload = errorData;
-  event.businessId = businessId;
-  event.businessNumber = businessNumber;
-  event.businessNumberDisplay = businessNumberDisplay;
+  event.businessAccountId = businessAccountId;
+  event.agentNumberId = agentNumberId;
+  event.agentNumberDisplay = agentNumberDisplay;
 
   return event;
 };
 
 const eventFactory = (updataData): WhatsAppEvent[] => {
-  const { id: businessId, changes } = updataData;
+  const { id: businessAccountId, changes } = updataData;
   const events: WhatsAppEvent[] = [];
 
   for (const change of changes) {
     const {
       value: { metadata, contacts, messages, statuses, errors },
     } = change;
-    const businessNumber = metadata.phone_number_id;
-    const businessNumberDisplay = metadata.display_phone_number;
+    const agentNumber = metadata.phone_number_id;
+    const agentNumberDisplay = metadata.display_phone_number;
 
     if (messages) {
       for (const message of messages) {
         events.push(
           makeMessageEvent(
             message,
-            businessId,
-            businessNumber,
-            businessNumberDisplay,
+            businessAccountId,
+            agentNumber,
+            agentNumberDisplay,
             contacts
           )
         );
@@ -156,9 +156,9 @@ const eventFactory = (updataData): WhatsAppEvent[] => {
         events.push(
           makeStatusEvent(
             status,
-            businessId,
-            businessNumber,
-            businessNumberDisplay
+            businessAccountId,
+            agentNumber,
+            agentNumberDisplay
           )
         );
       }
@@ -169,9 +169,9 @@ const eventFactory = (updataData): WhatsAppEvent[] => {
         events.push(
           makeErrorEvent(
             error,
-            businessId,
-            businessNumber,
-            businessNumberDisplay
+            businessAccountId,
+            agentNumber,
+            agentNumberDisplay
           )
         );
       }

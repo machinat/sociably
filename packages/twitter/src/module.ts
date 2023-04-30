@@ -1,12 +1,19 @@
 import type { SociablyPlatform } from '@sociably/core';
-import { makeContainer, makeFactoryProvider } from '@sociably/core/service';
+import {
+  makeContainer,
+  makeFactoryProvider,
+  ServiceProvision,
+} from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
-
-import { ConfigsI, PlatformUtilitiesI } from './interface';
+import {
+  ConfigsI,
+  PlatformUtilitiesI,
+  AgentSettingsAccessorI,
+} from './interface';
 import { TWITTER } from './constant';
 import BotP from './Bot';
 import ReceiverP from './Receiver';
@@ -15,6 +22,7 @@ import TwitterUserProfile from './UserProfile';
 import TwitterChat from './Chat';
 import TweetTarget from './TweetTarget';
 import TwitterUser from './User';
+import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor';
 import type {
   TwitterEventContext,
   TwitterJob,
@@ -50,6 +58,9 @@ namespace Twitter {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
+  export const AgentSettingsAccessor = AgentSettingsAccessorI;
+  export type AgentSettingsAccessor = AgentSettingsAccessorI;
+
   export const initModule = (
     configs: ConfigsI
   ): SociablyPlatform<
@@ -59,40 +70,71 @@ namespace Twitter {
     TwitterDispatchFrame,
     TwitterApiResult
   > => {
+    const provisions: ServiceProvision<unknown>[] = [
+      { provide: ConfigsI, withValue: configs },
+      BotP,
+      {
+        provide: BaseBot.PlatformMap,
+        withProvider: BotP,
+        platform: TWITTER,
+      },
+
+      ReceiverP,
+      { provide: Http.RequestRouteList, withProvider: webhookRouteFactory },
+
+      ProfilerP,
+      {
+        provide: BaseProfiler.PlatformMap,
+        withProvider: ProfilerP,
+        platform: TWITTER,
+      },
+
+      { provide: BaseMarshaler.TypeList, withValue: TwitterChat },
+      { provide: BaseMarshaler.TypeList, withValue: TweetTarget },
+      { provide: BaseMarshaler.TypeList, withValue: TwitterUser },
+      { provide: BaseMarshaler.TypeList, withValue: TwitterUserProfile },
+    ];
+
+    if (configs.agentSettingsService) {
+      provisions.push({
+        provide: AgentSettingsAccessorI,
+        withProvider: makeFactoryProvider({
+          deps: [configs.agentSettingsService],
+        })((accessor) => accessor),
+      });
+    } else if (configs.agentSettings) {
+      provisions.push({
+        provide: AgentSettingsAccessorI,
+        withValue: createStaticAgentSettingsAccessor([configs.agentSettings]),
+      });
+    } else if (configs.multiAgentSettings) {
+      if (configs.multiAgentSettings.length === 0) {
+        throw new Error(
+          'configs.multiAgentSettings must have at least one page settings'
+        );
+      }
+
+      provisions.push({
+        provide: AgentSettingsAccessorI,
+        withValue: createStaticAgentSettingsAccessor([
+          ...configs.multiAgentSettings,
+        ]),
+      });
+    } else {
+      throw new Error(
+        'Twitter platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
+      );
+    }
+
     return {
       name: TWITTER,
+      provisions,
       utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
       startHook: makeContainer({ deps: [BotP] })((bot: BotP) => bot.start()),
       stopHook: makeContainer({ deps: [BotP] })((bot: BotP) => bot.stop()),
-
-      provisions: [
-        { provide: ConfigsI, withValue: configs },
-        BotP,
-        {
-          provide: BaseBot.PlatformMap,
-          withProvider: BotP,
-          platform: TWITTER,
-        },
-
-        ReceiverP,
-        { provide: Http.RequestRouteList, withProvider: webhookRouteFactory },
-
-        ProfilerP,
-        {
-          provide: BaseProfiler.PlatformMap,
-          withProvider: ProfilerP,
-          platform: TWITTER,
-        },
-
-        { provide: BaseMarshaler.TypeList, withValue: TwitterChat },
-        { provide: BaseMarshaler.TypeList, withValue: TweetTarget },
-
-        { provide: BaseMarshaler.TypeList, withValue: TwitterUser },
-        { provide: BaseMarshaler.TypeList, withValue: TwitterUserProfile },
-      ],
     };
   };
 }

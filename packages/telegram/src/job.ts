@@ -2,6 +2,7 @@ import { formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
 import type { TelegramSegmentValue, TelegramJob } from './types';
 import type TelegramChat from './Chat';
+import type TelegramUser from './User';
 
 export const createChatJob = (
   chat: TelegramChat,
@@ -12,27 +13,28 @@ export const createChatJob = (
   segments.forEach((segment) => {
     if (segment.type === 'text') {
       jobs.push({
+        botId: chat.botId,
         method: 'sendMessage',
-        parameters: {
+        params: {
           chat_id: chat.id,
           text: segment.value,
           parse_mode: 'HTML',
         },
         key: chat.uid,
-        uploadingFiles: null,
+        uploadFiles: null,
       });
     } else {
-      const { method, toNonChatTarget, parameters, uploadingFiles } =
-        segment.value;
+      const { method, toNonChatTarget, params, uploadFiles } = segment.value;
 
       jobs.push({
+        botId: chat.botId,
         method,
-        parameters: {
-          ...parameters,
+        params: {
+          ...params,
           chat_id: toNonChatTarget ? undefined : chat.id,
         },
         key: chat?.uid,
-        uploadingFiles: uploadingFiles || null,
+        uploadFiles: uploadFiles || null,
       });
     }
   });
@@ -40,8 +42,8 @@ export const createChatJob = (
   return jobs;
 };
 
-export const createNonChatJobs = (
-  _: null,
+export const createBotScopeJobs = (
+  botUser: TelegramUser,
   segments: DispatchableSegment<TelegramSegmentValue>[]
 ): TelegramJob[] => {
   const jobs: TelegramJob[] = [];
@@ -50,8 +52,7 @@ export const createNonChatJobs = (
     if (segment.type === 'text') {
       throw new TypeError('text is invalid to be rendered without target chat');
     } else {
-      const { method, toNonChatTarget, parameters, uploadingFiles } =
-        segment.value;
+      const { method, toNonChatTarget, params, uploadFiles } = segment.value;
 
       if (!toNonChatTarget) {
         throw new TypeError(
@@ -64,10 +65,11 @@ export const createNonChatJobs = (
       }
 
       jobs.push({
+        botId: botUser.id,
         method,
-        parameters,
+        params,
         key: undefined,
-        uploadingFiles: uploadingFiles || null,
+        uploadFiles: uploadFiles || null,
       });
     }
   });

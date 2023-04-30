@@ -2,7 +2,7 @@ import { parse as parseUrl } from 'url';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
 import _Connector from '../Connector';
-import { WebSocketConnection } from '../../thread';
+import WebSocketConnection from '../../Connection';
 import Client from '../client';
 
 const Connector = _Connector as Moxy<typeof _Connector>;
@@ -35,7 +35,11 @@ jest.mock('../Connector', () => {
 const location = moxy(parseUrl('https://sociably.io/hello'));
 (global as any).window = { location } as never;
 
-const user = { platform: 'test', uid: 'john_doe' };
+const user = {
+  platform: 'test',
+  uid: 'test.john_doe',
+  uniqueIdentifier: { platform: 'test', id: 'john_doe' },
+};
 const login = moxy(async () => ({
   user,
   credential: { foo: 'bar' },
@@ -73,6 +77,7 @@ it('start connector', async () => {
       category: 'connection',
       type: 'connect',
       payload: null,
+      channel: null,
       user,
       thread: new WebSocketConnection('*', '#conn'),
     },
@@ -167,6 +172,7 @@ it('emit "event" when dispatched events received', async () => {
       category: 'default',
       type: 'start',
       payload: 'Welcome to Hyrule',
+      channel: null,
       user,
       thread: new WebSocketConnection('*', '#conn'),
     },
@@ -176,6 +182,7 @@ it('emit "event" when dispatched events received', async () => {
       category: 'reaction',
       type: 'wasted',
       payload: 'Link is down! Legend over.',
+      channel: null,
       user,
       thread: new WebSocketConnection('*', '#conn'),
     },
@@ -193,6 +200,7 @@ it('emit "event" when dispatched events received', async () => {
       category: 'default',
       type: 'resurrect',
       payload: 'Hero never die!',
+      channel: null,
       user,
       thread: new WebSocketConnection('*', '#conn'),
     },
@@ -245,6 +253,7 @@ test('disconnected by server', async () => {
       category: 'connection',
       type: 'disconnect',
       payload: { reason: 'See ya!' },
+      channel: null,
       user,
       thread: new WebSocketConnection('*', '#conn'),
     },
@@ -275,6 +284,7 @@ test('.close()', async () => {
       category: 'connection',
       type: 'disconnect',
       payload: { reason: 'Bye!' },
+      channel: null,
       user,
       thread: new WebSocketConnection('*', '#conn'),
     },

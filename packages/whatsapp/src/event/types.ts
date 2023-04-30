@@ -222,6 +222,7 @@ export interface ErrorEvent extends EventBaseMixin {
   readonly title: string;
   readonly thread: null;
   readonly user: null;
+  readonly channel: null;
 }
 
 /**
@@ -232,6 +233,7 @@ export interface UnknownEvent extends EventBaseMixin {
   readonly type: 'unknown';
   readonly thread: null;
   readonly user: null;
+  readonly channel: null;
 }
 
 export type MessageEvent =

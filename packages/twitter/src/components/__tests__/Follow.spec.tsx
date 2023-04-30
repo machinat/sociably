@@ -26,7 +26,7 @@ test('rendering', async () => {
           "request": Object {
             "href": "2/users/:id/following",
             "method": "POST",
-            "parameters": Object {
+            "params": Object {
               "target_user_id": "12345",
             },
           },
@@ -41,7 +41,7 @@ test('rendering', async () => {
     Object {
       "href": "2/users/67890/following",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "target_user_id": "12345",
       },
     }

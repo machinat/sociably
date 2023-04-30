@@ -1,7 +1,7 @@
 export default (): string => `
 import {
   makeFactoryProvider,
-  BasicProfiler,
+  BaseProfiler,
   StateController,
   SociablyUser,
   SociablyProfile
@@ -12,7 +12,7 @@ type ProfileCache = {
 }
 
 const useUserProfile =
-  (profiler: BasicProfiler, stateController: StateController) =>
+  (profiler: BaseProfiler, stateController: StateController) =>
   async (user: SociablyUser | null) => {
     if (!user) {
       return null;
@@ -35,6 +35,6 @@ const useUserProfile =
   };
 
 export default makeFactoryProvider({
-  deps: [BasicProfiler, StateController],
+  deps: [BaseProfiler, StateController],
 })(useUserProfile);
 `;

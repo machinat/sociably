@@ -1,6 +1,6 @@
 import type { SociablyUser } from '@sociably/core';
 import { AnyMarshalType, BaseMarshaler } from '@sociably/core/base/Marshaler';
-import { WebSocketConnection } from '../thread';
+import WebSocketConnection from '../Connection';
 import createEvent from '../utils/createEvent';
 import Connector from './Connector';
 import ClientEmitter from './ClientEmitter';

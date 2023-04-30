@@ -1,4 +1,4 @@
-import invariant from 'invariant';
+import { ChannelSettingsAccessor } from '@sociably/core';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import Renderer from '@sociably/core/renderer';
@@ -19,10 +19,14 @@ import {
 } from '@sociably/meta-api';
 import generalComponentDelegator from './components/general';
 import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant';
-import { ConfigsI, PlatformUtilitiesI } from './interface';
+import {
+  ConfigsI,
+  PlatformUtilitiesI,
+  PageSettingsAccessorI,
+} from './interface';
+import FacebookPage from './Page';
 import FacebookChat from './Chat';
 import InteractTarget from './InteractTarget';
-import FacebookPage from './Page';
 import {
   createChatJobs,
   createChatAttachmentJobs,
@@ -35,20 +39,25 @@ import type {
   FacebookSegmentValue,
   FacebookDispatchFrame,
   MessagingOptions,
+  FacebookPageSettings,
 } from './types';
 
+type FacebookDispatchTarget = FacebookThread | FacebookPage;
+
 type FacebookBotOptions = {
+  appSecret?: string;
+  graphApiVersion?: string;
+  apiBatchRequestInterval?: number;
+  pageSettingsAccessor: ChannelSettingsAccessor<
+    FacebookPage,
+    FacebookPageSettings
+  >;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<
     MetaApiJob,
     FacebookDispatchFrame,
     MetaApiResult
   >;
-  pageId: string;
-  accessToken: string;
-  appSecret?: string;
-  graphApiVersion?: string;
-  apiBatchRequestInterval?: number;
 };
 
 type UploadAttachmentResult = {
@@ -69,6 +78,13 @@ type CommentResult = {
   photo: null | PagePhotoResult;
 };
 
+type ApiCallOptions = {
+  page: FacebookPage;
+  method?: string;
+  path: string;
+  params?: Record<string, unknown>;
+};
+
 /**
  * FacebookBot render messages and make API call to Facebook platform.
  * @category Provider
@@ -76,10 +92,9 @@ type CommentResult = {
 export class FacebookBot
   implements SociablyBot<FacebookThread, MetaApiJob, MetaApiResult>
 {
-  pageId: string;
   worker: MetaApiWorker;
   engine: Engine<
-    FacebookThread,
+    FacebookDispatchTarget,
     FacebookSegmentValue,
     FacebookComponent<unknown>,
     MetaApiJob,
@@ -89,19 +104,13 @@ export class FacebookBot
   platform = FACEBOOK;
 
   constructor({
-    pageId,
-    accessToken,
     appSecret,
     graphApiVersion = 'v11.0',
     apiBatchRequestInterval = 500,
+    pageSettingsAccessor,
     initScope,
     dispatchWrapper,
   }: FacebookBotOptions) {
-    invariant(pageId, 'options.pageId should not be empty');
-    this.pageId = pageId;
-
-    invariant(accessToken, 'options.accessToken should not be empty');
-
     const renderer = new Renderer<
       FacebookSegmentValue,
       FacebookComponent<unknown>
@@ -109,10 +118,10 @@ export class FacebookBot
 
     const queue = new Queue<MetaApiJob, MetaApiResult>();
     const worker = new MetaApiWorker(
-      accessToken,
-      apiBatchRequestInterval,
+      pageSettingsAccessor,
+      appSecret,
       graphApiVersion,
-      appSecret
+      apiBatchRequestInterval
     );
 
     this.engine = new Engine(
@@ -134,7 +143,7 @@ export class FacebookBot
   }
 
   async render(
-    target: FacebookThread,
+    target: FacebookDispatchTarget,
     node: SociablyNode
   ): Promise<null | MetaApiDispatchResponse> {
     if (target instanceof FacebookChat) {
@@ -160,11 +169,12 @@ export class FacebookBot
 
   /** Upload a media chat attachment for later use */
   async uploadChatAttachment(
-    /** An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be uploaded */
-    node: SociablyNode
+    /** The {@link FacebookPage} thread to post */
+    page: FacebookPage,
+    /** An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be uploaded */ node: SociablyNode
   ): Promise<null | UploadAttachmentResult> {
     const response = await this.engine.render(
-      null,
+      page,
       node,
       createChatAttachmentJobs
     );
@@ -179,7 +189,7 @@ export class FacebookBot
     /** Text, a {@link PagePost} or a {@link PagePhoto} to post */
     node: SociablyNode
   ): Promise<null | PagePostResult> {
-    const response = await this.engine.render(null, node, createPostJobs);
+    const response = await this.engine.render(page, node, createPostJobs);
     if (!response) {
       return null;
     }
@@ -187,16 +197,17 @@ export class FacebookBot
     const photos: PagePhotoResult[] = [];
     let postId: undefined | string;
 
-    for (const [i, { request }] of response.jobs.entries()) {
-      const result = response.results[i].body;
+    const { jobs, results } = response;
+    for (const [i, { request }] of jobs.entries()) {
+      const resultBody = results[i].body;
 
-      if (request.relative_url === PATH_FEED) {
-        postId = result.id;
-      } else if (request.relative_url === PATH_PHOTOS) {
-        if (result.post_id) {
-          postId = result.post_id;
+      if (request.relativeUrl === PATH_FEED) {
+        postId = resultBody.id;
+      } else if (request.relativeUrl === PATH_PHOTOS) {
+        if (resultBody.post_id) {
+          postId = resultBody.post_id;
         }
-        photos.push({ photoId: result.id });
+        photos.push({ photoId: resultBody.id });
       }
     }
     if (!postId) {
@@ -221,9 +232,9 @@ export class FacebookBot
     let photo: null | PagePhotoResult = null;
 
     for (const [i, { request }] of response.jobs.entries()) {
-      if (request.relative_url === PATH_PHOTOS) {
+      if (request.relativeUrl === PATH_PHOTOS) {
         photo = { photoId: response.results[i].body.id };
-      } else if (request.relative_url === PATH_PHOTOS) {
+      } else if (request.relativeUrl === PATH_PHOTOS) {
         results.push({
           commentId: response.results[i].body.id,
           photo,
@@ -234,18 +245,20 @@ export class FacebookBot
     return results;
   }
 
-  async makeApiCall<ResBody extends MetaApiResponseBody>(
-    method: 'GET' | 'PUT' | 'POST' | 'DELETE',
-    relativeUrl: string,
-    body: null | Record<string, unknown> = null
-  ): Promise<ResBody> {
+  async makeApiCall<ResBody extends MetaApiResponseBody>({
+    page,
+    method = 'GET',
+    path,
+    params,
+  }: ApiCallOptions): Promise<ResBody> {
     try {
-      const { results } = await this.engine.dispatchJobs(null, [
+      const { results } = await this.engine.dispatchJobs(page, [
         {
+          channel: page,
           request: {
             method,
-            relative_url: relativeUrl,
-            body,
+            relativeUrl: path,
+            params,
           },
         },
       ]);
@@ -264,17 +277,18 @@ const BotP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
+    PageSettingsAccessorI,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { pageId, accessToken, appSecret, apiBatchRequestInterval },
+    { appSecret, apiBatchRequestInterval },
+    pageSettingsAccessor,
     moduleUitils,
     platformUtils
   ) =>
     new FacebookBot({
-      pageId,
-      accessToken,
+      pageSettingsAccessor,
       appSecret,
       apiBatchRequestInterval,
       initScope: moduleUitils?.initScope,

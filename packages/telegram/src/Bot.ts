@@ -1,4 +1,3 @@
-import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type {
   SociablyNode,
@@ -11,12 +10,16 @@ import Queue from '@sociably/core/queue';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import { makeClassProvider } from '@sociably/core/service';
-
-import { createChatJob, createNonChatJobs } from './job';
+import { createChatJob, createBotScopeJobs } from './job';
 import generalElementDelegate from './components/general';
 import TelegramWorker from './Worker';
 import TelegramChat from './Chat';
-import { ConfigsI, PlatformUtilitiesI } from './interface';
+import TelegramUser from './User';
+import {
+  ConfigsI,
+  PlatformUtilitiesI,
+  BotSettingsAccessorI,
+} from './interface';
 import { TELEGRAM } from './constant';
 import TelegramApiError from './Error';
 import type {
@@ -31,7 +34,7 @@ import type {
 } from './types';
 
 type TelegramBotOptions = {
-  token: string;
+  botSettingsAccessor: BotSettingsAccessorI;
   maxRequestConnections?: number;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<
@@ -41,16 +44,22 @@ type TelegramBotOptions = {
   >;
 };
 
+type ApiCallOptions = {
+  bot: TelegramUser;
+  method: string;
+  params?: Record<string, unknown>;
+  uploadFiles?: UploadingFile[];
+};
+
 /**
  * @category Provider
  */
 export class TelegramBot
   implements SociablyBot<TelegramChat, TelegramJob, TelegramResult>
 {
-  token: string;
-  id: number;
+  botSettingsAccessor: BotSettingsAccessorI;
   engine: Engine<
-    TelegramChat,
+    TelegramUser | TelegramChat,
     TelegramSegmentValue,
     TelegramComponent<unknown>,
     TelegramJob,
@@ -60,23 +69,22 @@ export class TelegramBot
   platform = TELEGRAM;
 
   constructor({
-    token,
+    botSettingsAccessor,
     maxRequestConnections = 100,
     initScope,
     dispatchWrapper,
   }: TelegramBotOptions) {
-    invariant(token, 'options.token should not be empty');
-
-    this.token = token;
-    this.id = Number(token.split(':', 1)[0]);
-
     const queue = new Queue<TelegramJob, TelegramResult>();
-    const worker = new TelegramWorker(token, maxRequestConnections);
+    const worker = new TelegramWorker(
+      botSettingsAccessor,
+      maxRequestConnections
+    );
     const renderer = new Renderer<
       TelegramSegmentValue,
       TelegramComponent<unknown>
     >(TELEGRAM, generalElementDelegate);
 
+    this.botSettingsAccessor = botSettingsAccessor;
     this.engine = new Engine(
       TELEGRAM,
       renderer,
@@ -96,35 +104,40 @@ export class TelegramBot
   }
 
   /**
-   * Render UI on a Telegram chat. If chat target is `null`, only allow
+   * Render UI on a Telegram chat. If chat target is `null`, only accept
    * {@link AnswerCallbackQuery}, {@link AnswerInlineQuery},
    * {@link AnswerShippingQuery}, {@link AnswerPreCheckoutQuery} and editing
    * inline mode messages (using {@link EditText}, {@link EditCaption} and
    * {@link EditMedia} with inlineMessageId prop).
    */
   render(
-    target: null | number | string | TelegramChat,
+    target: TelegramUser | TelegramChat,
     message: SociablyNode
   ): Promise<null | TelegramDispatchResponse> {
-    if (!target) {
-      return this.engine.render(null, message, createNonChatJobs);
+    if (target instanceof TelegramUser) {
+      return this.engine.render(target, message, createBotScopeJobs);
     }
 
-    const thread =
-      typeof target === 'number' || typeof target === 'string'
-        ? new TelegramChat(this.id, target)
-        : target;
-
-    return this.engine.render(thread, message, createChatJob);
+    return this.engine.render(target, message, createChatJob);
   }
 
-  async fetchFile(fileId: string): Promise<null | {
+  async fetchFile(
+    bot: TelegramUser,
+    fileId: string
+  ): Promise<null | {
     content: NodeJS.ReadableStream;
     contentType?: string;
     contentLength?: number;
   }> {
-    const { file_path: filePath } = await this.makeApiCall('getFile', {
-      file_id: fileId,
+    const botSettings = await this.botSettingsAccessor.getChannelSettings(bot);
+    if (!botSettings) {
+      throw new Error(`Bot ${bot.id} not found`);
+    }
+
+    const { file_path: filePath } = await this.makeApiCall({
+      bot,
+      method: 'getFile',
+      params: { file_id: fileId },
     });
 
     if (!filePath) {
@@ -132,7 +145,7 @@ export class TelegramBot
     }
 
     const fetchResponse = await fetch(
-      `https://api.telegram.org/file/bot${this.token}/${filePath}`
+      `https://api.telegram.org/file/bot${botSettings.botToken}/${filePath}`
     );
 
     if (!fetchResponse.ok) {
@@ -151,18 +164,20 @@ export class TelegramBot
     };
   }
 
-  async makeApiCall<Result extends BotApiResult>(
-    method: string,
-    parameters: Record<string, unknown> = {},
-    uploadingFiles?: UploadingFile[]
-  ): Promise<Result> {
+  async makeApiCall<Result extends BotApiResult>({
+    bot,
+    method,
+    params = {},
+    uploadFiles,
+  }: ApiCallOptions): Promise<Result> {
     try {
-      const response = await this.engine.dispatchJobs(null, [
+      const response = await this.engine.dispatchJobs(bot, [
         {
+          botId: bot.id,
           method,
-          parameters,
+          params,
           key: undefined,
-          uploadingFiles: uploadingFiles || null,
+          uploadFiles: uploadFiles || null,
         },
       ]);
 
@@ -180,18 +195,18 @@ const BotP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
+    BotSettingsAccessorI,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { botToken, maxRequestConnections },
+    { maxRequestConnections },
+    botSettingsAccessor,
     moduleUtils,
     platformUtils
   ) => {
-    invariant(botToken, 'configs.botToken should not be empty');
-
     return new TelegramBot({
-      token: botToken,
+      botSettingsAccessor,
       maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,

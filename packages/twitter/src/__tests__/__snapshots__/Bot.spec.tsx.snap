@@ -36,7 +36,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "Hello World",
       },
     },
@@ -55,7 +55,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "Foo Bar Baz",
       },
     },
@@ -104,7 +104,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "Hello World",
       },
     },
@@ -123,7 +123,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "Foo Bar Baz",
       },
     },
@@ -148,7 +148,7 @@ Object {
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
@@ -165,8 +165,8 @@ Object {
       },
       "target": TwitterChat {
         "agentId": "1234567890",
-        "id": "9876543210",
         "platform": "twitter",
+        "userId": "9876543210",
       },
     },
     Object {
@@ -178,7 +178,7 @@ Object {
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
@@ -195,8 +195,8 @@ Object {
       },
       "target": TwitterChat {
         "agentId": "1234567890",
-        "id": "9876543210",
         "platform": "twitter",
+        "userId": "9876543210",
       },
     },
   ],
@@ -228,7 +228,7 @@ Object {
           "request": Object {
             "href": "1.1/direct_messages/events/new.json",
             "method": "POST",
-            "parameters": Object {
+            "params": Object {
               "event": Object {
                 "message_create": Object {
                   "message_data": Object {
@@ -245,8 +245,8 @@ Object {
           },
           "target": TwitterChat {
             "agentId": "1234567890",
-            "id": "9876543210",
             "platform": "twitter",
+            "userId": "9876543210",
           },
         },
         Object {
@@ -258,7 +258,7 @@ Object {
           "request": Object {
             "href": "1.1/direct_messages/events/new.json",
             "method": "POST",
-            "parameters": Object {
+            "params": Object {
               "event": Object {
                 "message_create": Object {
                   "message_data": Object {
@@ -275,8 +275,8 @@ Object {
           },
           "target": TwitterChat {
             "agentId": "1234567890",
-            "id": "9876543210",
             "platform": "twitter",
+            "userId": "9876543210",
           },
         },
       ],

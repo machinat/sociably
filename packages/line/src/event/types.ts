@@ -1,4 +1,5 @@
 import type { LineSource } from '../types';
+import type LineChannel from '../Channel';
 import type LineUser from '../User';
 import type LineChat from '../Chat';
 import {
@@ -43,6 +44,7 @@ interface EventObject<Category extends string, Type extends string> {
   payload: LineRawEvent;
   user: LineUser;
   thread: LineChat;
+  channel: LineChannel;
 }
 
 /**

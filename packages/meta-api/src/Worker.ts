@@ -1,31 +1,38 @@
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
+import type { ChannelSettingsAccessor, SociablyChannel } from '@sociably/core';
 import type { SociablyWorker } from '@sociably/core/engine';
 import SociablyQueue, { JobResponse } from '@sociably/core/queue';
 import GraphAPIError from './Error';
-import formatRequest from './utils/formatRequest';
+import formatBatchRequest from './utils/formatBatchRequest';
 import appendFormFields from './utils/appendFormFields';
 import getObjectValueByPath from './utils/getObjectValueByPath';
 import type { MetaApiJob, MetaApiResult, MetaBatchRequest } from './types';
 
+type MetaSendingSettings = {
+  accessToken: string;
+};
+type MetaSettingsAccessor = ChannelSettingsAccessor<
+  SociablyChannel,
+  MetaSendingSettings
+>;
+
 type MetaApiQueue = SociablyQueue<MetaApiJob, MetaApiResult>;
+type TimeoutID = ReturnType<typeof setTimeout>;
 
 const POST = 'POST';
-
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 const makeRequestName = (key: string, count: number) => `${key}-${count}`;
 
 const makeFileName = (num: number) => `file_${num}`;
 
-type TimeoutID = ReturnType<typeof setTimeout>;
-
 class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
-  token: string;
   consumeInterval: number;
+  private _settingsAccessor: MetaSettingsAccessor;
+  private _appSecret: undefined | string;
   private _graphApiEntry: string;
-  private _appSecretProof: string | undefined;
 
   private _started: boolean;
   // @ts-expect-error: keep for later use
@@ -35,19 +42,16 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
   private _resultCache: Map<string, MetaApiResult>;
 
   constructor(
-    accessToken: string,
-    consumeInterval: number,
+    settingsAccessor: MetaSettingsAccessor,
+    appSecret: undefined | string,
     graphApiVersion: string,
-    appSecret: undefined | string
+    consumeInterval: number
   ) {
-    this.token = accessToken;
+    this._settingsAccessor = settingsAccessor;
     this.consumeInterval = consumeInterval;
 
+    this._appSecret = appSecret;
     this._graphApiEntry = `https://graph.facebook.com/${graphApiVersion}/`;
-
-    this._appSecretProof = appSecret
-      ? crypto.createHmac('sha256', appSecret).update(accessToken).digest('hex')
-      : undefined;
 
     this._started = false;
     this._consumptionTimeoutId = null;
@@ -88,8 +92,14 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     return true;
   }
 
-  private _listenJobCallback = this._listenJob.bind(this);
+  private _createAppSecretProof(accessToken: string) {
+    const appSecret = this._appSecret;
+    return appSecret
+      ? crypto.createHmac('sha256', appSecret).update(accessToken).digest('hex')
+      : undefined;
+  }
 
+  private _listenJobCallback = this._listenJob.bind(this);
   private _listenJob(queue: MetaApiQueue) {
     if (this._started) {
       this._consume(queue);
@@ -97,7 +107,6 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
   }
 
   private _consumeCallback = this._consume.bind(this);
-
   private async _consume(queue: MetaApiQueue) {
     this._isConsuming = true;
     this._consumptionTimeoutId = null;
@@ -121,36 +130,67 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     }
   }
 
-  private _executeJobsCallback = this._executeJobs.bind(this);
+  private async _getAccessTokensOfChannels(
+    channels: SociablyChannel[]
+  ): Promise<Map<string, string>> {
+    const uniqChannelsMap = new Map(channels.map((chan) => [chan.uid, chan]));
+    const uniqChannels = [...uniqChannelsMap.values()];
 
+    const settings = await this._settingsAccessor.getChannelSettingsBatch(
+      uniqChannels
+    );
+    return new Map(
+      uniqChannels
+        .map((chan, i) => [chan.uid, settings[i]?.accessToken])
+        .filter((tokenPair): tokenPair is [string, string] => !!tokenPair[1])
+    );
+  }
+
+  private _executeJobsCallback = this._executeJobs.bind(this);
   private async _executeJobs(jobs: MetaApiJob[]) {
     const sendingKeysCounts = new Map<string, number>();
     const resultRegistry = new Map<string, { name: string; idx: number }>();
     let fileCount = 0;
     let filesForm: undefined | FormData;
 
-    const requests = new Array(jobs.length);
+    const jobResponses: JobResponse<MetaApiJob, MetaApiResult>[] = new Array(
+      jobs.length
+    );
+    const batchRequests: MetaBatchRequest[] = [];
+
+    const channelTokenMap = await this._getAccessTokensOfChannels(
+      jobs.map((job) => job.channel)
+    );
 
     for (let i = 0; i < jobs.length; i += 1) {
+      const job = jobs[i];
       const {
         request: requestInput,
         key,
-        fileData,
-        fileInfo,
+        file,
         registerResult,
         consumeResult,
-      } = jobs[i];
+        channel,
+      } = job;
 
-      let request: MetaBatchRequest = { ...requestInput };
+      const accessToken = channelTokenMap.get(channel.uid);
+      if (!accessToken) {
+        jobResponses[i] = {
+          success: false,
+          job,
+          result: { code: 0, headers: {}, body: {} },
+          error: new Error(
+            `No access token available for channel ${channel.uid}`
+          ),
+        };
+      } else {
+        let request = requestInput;
 
-      // if it requires a result before to accomplish the request
-      if (consumeResult) {
-        const { keys: consummingKeys, accomplishRequest } = consumeResult;
+        // if it requires previous results to accomplish the request
+        if (consumeResult) {
+          const { keys: consummingKeys, accomplishRequest } = consumeResult;
 
-        request = accomplishRequest(
-          request,
-          consummingKeys,
-          (requestKey, path) => {
+          const getPreviousResult = (requestKey, path) => {
             const currentBatchRegistered = resultRegistry.get(requestKey);
             if (currentBatchRegistered) {
               return `{result=${currentBatchRegistered.name}:${path}}`;
@@ -160,57 +200,67 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
               return getObjectValueByPath(lastBatchRegistered.body, path);
             }
             return null;
+          };
+          request = accomplishRequest(
+            requestInput,
+            consummingKeys,
+            getPreviousResult
+          );
+        }
+
+        const batchRequest = formatBatchRequest(request, accessToken);
+
+        // to keep the order of requests with the same key
+        if (key) {
+          let count = sendingKeysCounts.get(key);
+          if (count !== undefined) {
+            batchRequest.depends_on = makeRequestName(key, count);
+            count += 1;
+          } else {
+            count = 1;
           }
-        );
-      }
 
-      request.omit_response_on_success = false;
-
-      // to keep the order of requests with the same key
-      if (key) {
-        let count = sendingKeysCounts.get(key);
-        if (count !== undefined) {
-          request.depends_on = makeRequestName(key, count);
-          count += 1;
-        } else {
-          count = 1;
+          sendingKeysCounts.set(key, count);
+          batchRequest.name = makeRequestName(key, count);
         }
 
-        sendingKeysCounts.set(key, count);
-        request.name = makeRequestName(key, count);
-      }
-
-      // register to use/cache the result
-      if (registerResult) {
-        if (!request.name) {
-          request.name = makeRequestName('#request', i);
-        }
-        resultRegistry.set(registerResult, { name: request.name, idx: i });
-      }
-
-      // if binary data attached, use from-data and add the file field
-      if (fileData !== undefined) {
-        if (filesForm === undefined) {
-          filesForm = new FormData();
+        // register to use/cache the result
+        if (registerResult) {
+          if (!batchRequest.name) {
+            batchRequest.name = makeRequestName('#request', i);
+          }
+          resultRegistry.set(registerResult, {
+            name: batchRequest.name,
+            idx: i,
+          });
         }
 
-        const filename = makeFileName(fileCount);
-        fileCount += 1;
+        // if binary data attached, use from-data and add the file field
+        if (file) {
+          if (filesForm === undefined) {
+            filesForm = new FormData();
+          }
 
-        filesForm.append(filename, fileData, fileInfo);
-        request.attached_files = filename;
+          const filename = makeFileName(fileCount);
+          fileCount += 1;
+
+          filesForm.append(filename, file.data, file.info);
+          batchRequest.attached_files = filename;
+        }
+
+        batchRequest.omit_response_on_success = false;
+        batchRequests.push(batchRequest);
       }
-
-      requests[i] = formatRequest(request);
     }
 
+    const fallbackToken = channelTokenMap.values().next().value as string;
     const batchBody = {
-      access_token: this.token,
-      appsecret_proof: this._appSecretProof || undefined,
-      batch: JSON.stringify(requests),
+      access_token: fallbackToken,
+      appsecret_proof: this._createAppSecretProof(fallbackToken),
+      batch: JSON.stringify(batchRequests),
     };
 
-    // use formdata if files attached, otherwise json
+    // use formdata if files attached, otherwise JSON
     const body =
       filesForm !== undefined
         ? appendFormFields(filesForm, batchBody)
@@ -222,7 +272,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
       body,
     });
 
-    // if batch respond with error, throw it
+    // unexpected batch API error, throw it
     const apiBody = await apiRes.json();
     if (!apiRes.ok) {
       throw new GraphAPIError(apiBody);
@@ -235,29 +285,27 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     }
 
     // collect batch results
-    const jobResponses: JobResponse<MetaApiJob, MetaApiResult>[] = new Array(
-      apiBody.length
-    );
-
+    const results = [...apiBody];
     for (let i = 0; i < jobResponses.length; i += 1) {
-      const result = apiBody[i];
-      result.body = JSON.parse(result.body);
+      if (!jobResponses[i]) {
+        const result = results.shift();
+        result.body = JSON.parse(result.body);
 
-      const success = result.code >= 200 && result.code < 300;
-
-      jobResponses[i] = success
-        ? {
-            success: true,
-            result,
-            error: undefined,
-            job: jobs[i],
-          }
-        : {
-            success: false,
-            result,
-            error: new GraphAPIError(result.body),
-            job: jobs[i],
-          };
+        jobResponses[i] =
+          result.code >= 200 && result.code < 300
+            ? {
+                success: true,
+                result,
+                error: undefined,
+                job: jobs[i],
+              }
+            : {
+                success: false,
+                result,
+                error: new GraphAPIError(result.body),
+                job: jobs[i],
+              };
+      }
     }
     return jobResponses;
   }

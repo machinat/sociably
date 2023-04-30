@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import { SociablyBot, SociablyThread } from '../../types';
-import { BasicBot } from '../Bot';
+import { BaseBot } from '../Bot';
 
 type UnknownBot = SociablyBot<SociablyThread, unknown, unknown>;
 
@@ -8,7 +8,7 @@ const fooBot = moxy<UnknownBot>({ render: async () => 'FOO' } as never);
 const barBot = moxy<UnknownBot>({ render: async () => 'BAR' } as never);
 
 it('proxy #render() call to the bot corresponded to the thread platform', async () => {
-  const bot = new BasicBot(
+  const bot = new BaseBot(
     new Map([
       ['foo', fooBot],
       ['bar', barBot],
@@ -46,7 +46,7 @@ it('proxy #render() call to the bot corresponded to the thread platform', async 
 });
 
 it('throw if thread from unsupported platform received', async () => {
-  const bot = new BasicBot(
+  const bot = new BaseBot(
     new Map([
       ['foo', fooBot],
       ['bar', barBot],

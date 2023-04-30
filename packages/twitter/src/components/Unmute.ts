@@ -26,7 +26,7 @@ export const Unmute: TwitterComponent<
       request: {
         method: 'DELETE',
         href: '2/users/:source_user_id/muting/:target_user_id',
-        parameters: null,
+        params: {},
       },
       accomplishRequest: (target, request) => ({
         ...request,

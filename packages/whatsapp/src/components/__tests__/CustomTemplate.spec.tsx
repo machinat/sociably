@@ -60,7 +60,7 @@ test('rendering value', async () => {
             <CurrencyParam code="TWD" amount1000={999000} fallbackValue="$_$" />
           </>
         }
-        buttonParams={<UrlButtonParam index={1} urlSuffix="/baz" />}
+        buttonParams={<UrlButtonParam index={1} urlPostfix="/baz" />}
       />
     )
   ).resolves.toMatchInlineSnapshot(`
@@ -82,7 +82,7 @@ test('rendering value', async () => {
                 buttonParams={
                   <UrlButtonParam
                     index={1}
-                    urlSuffix="/baz"
+                    urlPostfix="/baz"
                   />
                 }
                 headerParams={

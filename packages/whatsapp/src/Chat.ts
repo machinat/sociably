@@ -1,50 +1,59 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { WHATSAPP, WA } from './constant';
-import type WhatsAppUser from './User';
+import WhatsAppAgent from './Agent';
+import WhatsAppUser from './User';
 
 type WhatsAppChatValue = {
-  business: string;
-  customer: string;
+  agent: string;
+  user: string;
 };
 
 class WhatsAppChat
   implements SociablyThread, MarshallableInstance<WhatsAppChatValue>
 {
   static typeName = 'WaChat';
-  static fromUser(accountId: string, user: WhatsAppUser): WhatsAppChat {
-    return new WhatsAppChat(accountId, user.number);
+  static fromUser(agentNumberId: string, contact: WhatsAppUser): WhatsAppChat {
+    return new WhatsAppChat(agentNumberId, contact.numberId);
   }
 
   static fromJSONValue(value: WhatsAppChatValue): WhatsAppChat {
-    const { business, customer } = value;
-    return new WhatsAppChat(business, customer);
+    const { agent, user } = value;
+    return new WhatsAppChat(agent, user);
   }
 
-  businessNumber: string;
-  customerNumber: string;
+  agentNumberId: string;
+  userNumberId: string;
   platform = WHATSAPP;
 
-  constructor(businessNumber: string, customerNumber: string) {
-    this.businessNumber = businessNumber;
-    this.customerNumber = customerNumber;
+  constructor(agentNumberId: string, userNumberId: string) {
+    this.agentNumberId = agentNumberId;
+    this.userNumberId = userNumberId;
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
       platform: WHATSAPP,
-      scopeId: this.businessNumber,
-      id: this.customerNumber,
+      scopeId: this.agentNumberId,
+      id: this.userNumberId,
     };
   }
 
   get uid(): string {
-    return `${WA}.${this.businessNumber}.${this.customerNumber}`;
+    return `${WA}.${this.agentNumberId}.${this.userNumberId}`;
+  }
+
+  get agent(): WhatsAppAgent {
+    return new WhatsAppAgent(this.agentNumberId);
+  }
+
+  get user(): WhatsAppUser {
+    return new WhatsAppUser(this.userNumberId);
   }
 
   toJSONValue(): WhatsAppChatValue {
-    const { businessNumber, customerNumber } = this;
-    return { business: businessNumber, customer: customerNumber };
+    const { agentNumberId, userNumberId } = this;
+    return { agent: agentNumberId, user: userNumberId };
   }
 
   // eslint-disable-next-line class-methods-use-this

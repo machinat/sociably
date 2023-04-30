@@ -4,6 +4,7 @@ exports[`#render(token, node, options) make api calls 1`] = `
 Object {
   "jobs": Array [
     Object {
+      "accessToken": undefined,
       "body": Object {
         "messages": Array [
           Object {
@@ -31,13 +32,16 @@ Object {
         ],
         "to": "john_doe",
       },
-      "executionKey": "line._CHANNEL_ID_.john_doe",
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line._CHANNEL_ID_.john_doe",
       "method": "POST",
       "path": "v2/bot/message/push",
     },
     Object {
+      "accessToken": undefined,
       "body": null,
-      "executionKey": "line._CHANNEL_ID_.john_doe",
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line._CHANNEL_ID_.john_doe",
       "method": "POST",
       "path": "v2/bot/user/john_doe/richmenu/newbie",
     },
@@ -58,6 +62,7 @@ Object {
     Object {
       "payload": Array [
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -85,13 +90,16 @@ Object {
             ],
             "to": "john_doe",
           },
-          "executionKey": "line._CHANNEL_ID_.john_doe",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john_doe",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
         Object {
+          "accessToken": undefined,
           "body": null,
-          "executionKey": "line._CHANNEL_ID_.john_doe",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john_doe",
           "method": "POST",
           "path": "v2/bot/user/john_doe/richmenu/newbie",
         },
@@ -106,6 +114,7 @@ exports[`#render(token, node, options) works with replyToken 1`] = `
 Object {
   "jobs": Array [
     Object {
+      "accessToken": undefined,
       "body": Object {
         "messages": Array [
           Object {
@@ -133,13 +142,16 @@ Object {
         ],
         "replyToken": "__REPLY_TOKEN__",
       },
-      "executionKey": "line._CHANNEL_ID_.john_doe",
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line._CHANNEL_ID_.john_doe",
       "method": "POST",
       "path": "v2/bot/message/reply",
     },
     Object {
+      "accessToken": undefined,
       "body": null,
-      "executionKey": "line._CHANNEL_ID_.john_doe",
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line._CHANNEL_ID_.john_doe",
       "method": "POST",
       "path": "v2/bot/user/john_doe/richmenu/newbie",
     },
@@ -160,6 +172,7 @@ Object {
     Object {
       "payload": Array [
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -187,13 +200,16 @@ Object {
             ],
             "replyToken": "__REPLY_TOKEN__",
           },
-          "executionKey": "line._CHANNEL_ID_.john_doe",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john_doe",
           "method": "POST",
           "path": "v2/bot/message/reply",
         },
         Object {
+          "accessToken": undefined,
           "body": null,
-          "executionKey": "line._CHANNEL_ID_.john_doe",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john_doe",
           "method": "POST",
           "path": "v2/bot/user/john_doe/richmenu/newbie",
         },
@@ -208,6 +224,7 @@ exports[`#renderMulticast(targets, node) make api call to message/mulitcast 1`] 
 Object {
   "jobs": Array [
     Object {
+      "accessToken": undefined,
       "body": Object {
         "messages": Array [
           Object {
@@ -239,11 +256,13 @@ Object {
           "dog",
         ],
       },
-      "executionKey": "line.multicast",
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line.multicast",
       "method": "POST",
       "path": "v2/bot/message/multicast",
     },
     Object {
+      "accessToken": undefined,
       "body": Object {
         "richMenuId": "newbie",
         "userIds": Array [
@@ -252,7 +271,8 @@ Object {
           "dog",
         ],
       },
-      "executionKey": "line.multicast",
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line.multicast",
       "method": "POST",
       "path": "v2/bot/richmenu/bulk/link",
     },
@@ -273,6 +293,7 @@ Object {
     Object {
       "payload": Array [
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -304,11 +325,13 @@ Object {
               "dog",
             ],
           },
-          "executionKey": "line.multicast",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line.multicast",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "richMenuId": "newbie",
             "userIds": Array [
@@ -317,7 +340,8 @@ Object {
               "dog",
             ],
           },
-          "executionKey": "line.multicast",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line.multicast",
           "method": "POST",
           "path": "v2/bot/richmenu/bulk/link",
         },

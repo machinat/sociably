@@ -3,7 +3,7 @@ import moxy, { Moxy } from '@moxyjs/moxy';
 import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
 import _Connector from '@sociably/websocket/client/Connector';
 import _AuthClient from '@sociably/auth/client';
-import { WebviewConnection } from '../../thread';
+import WebviewConnection from '../../Connection';
 import { AnyClientAuthenticator } from '../../types';
 import Client from '../client';
 
@@ -68,6 +68,7 @@ const anotherAuthenticator = moxy<AnyClientAuthenticator>({
 const user = { platform: 'test', uid: 'jane_doe' };
 const authContext = {
   platform: 'test',
+  channel: null,
   user,
   thread: { platform: 'test', uid: 'doe_family' },
   loginAt: new Date(),
@@ -132,6 +133,7 @@ it('start connector and auth client', async () => {
       category: 'connection',
       type: 'connect',
       payload: null,
+      channel: null,
       user,
       thread: new WebviewConnection('*', '#conn'),
     },
@@ -274,6 +276,7 @@ it('emit "event" when dispatched events received', async () => {
       category: 'default',
       type: 'start',
       payload: 'Welcome to Hyrule',
+      channel: null,
       user,
       thread: new WebviewConnection('*', '#conn'),
     },
@@ -285,6 +288,7 @@ it('emit "event" when dispatched events received', async () => {
       category: 'reaction',
       type: 'wasted',
       payload: 'Link is down! Legend over.',
+      channel: null,
       user,
       thread: new WebviewConnection('*', '#conn'),
     },
@@ -304,6 +308,7 @@ it('emit "event" when dispatched events received', async () => {
       category: 'default',
       type: 'resurrect',
       payload: 'Hero never die!',
+      channel: null,
       user,
       thread: new WebviewConnection('*', '#conn'),
     },
@@ -361,6 +366,7 @@ test('disconnected by server', async () => {
       category: 'connection',
       type: 'disconnect',
       payload: { reason: 'See ya!' },
+      channel: null,
       user,
       thread: new WebviewConnection('*', '#conn'),
     },
@@ -396,6 +402,7 @@ test('.close()', async () => {
       category: 'connection',
       type: 'disconnect',
       payload: { reason: 'Bye!' },
+      channel: null,
       user,
       thread: new WebviewConnection('*', '#conn'),
     },

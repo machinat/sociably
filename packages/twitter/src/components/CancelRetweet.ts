@@ -26,7 +26,7 @@ export const CancelRetweet: TwitterComponent<
       request: {
         method: 'DELETE',
         href: '2/users/:id/retweets/:source_tweet_id',
-        parameters: null,
+        params: {},
       },
       accomplishRequest: (target, request) => ({
         ...request,

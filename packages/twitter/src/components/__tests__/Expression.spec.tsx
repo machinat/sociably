@@ -36,7 +36,7 @@ test('rendering', async () => {
       Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": "11111",
@@ -55,7 +55,7 @@ test('rendering', async () => {
       Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": "11111",
@@ -100,7 +100,7 @@ test('rendering with quick replies', async () => {
       Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": undefined,
@@ -119,7 +119,7 @@ test('rendering with quick replies', async () => {
       Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": undefined,
@@ -178,7 +178,7 @@ test('rendering with media content', async () => {
       Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": undefined,
@@ -197,7 +197,7 @@ test('rendering with media content', async () => {
       Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": undefined,

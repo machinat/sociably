@@ -1,4 +1,4 @@
-import Sociably, { RenderingThread } from '../..';
+import Sociably, { RenderingTarget } from '../..';
 import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
 import { makeInterface, makeContainer } from '../../service';
 import {
@@ -23,7 +23,7 @@ Native.$$platform = test;
 const fooInterface = makeInterface({ name: 'Foo' });
 
 const MyComponent = () => <foo />;
-const MyContainer = makeContainer({ deps: [RenderingThread] })(() => () => (
+const MyContainer = makeContainer({ deps: [RenderingTarget] })(() => () => (
   <bar />
 ));
 

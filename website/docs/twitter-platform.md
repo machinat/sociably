@@ -27,12 +27,12 @@ import Http from '@sociably/http';
 import Twitter from '@sociably/twitter';
 
 const {
-  TWITTER_APP_ID,
+  TWITTER_AGENT_ID,
   TWITTER_APP_KEY,
   TWITTER_APP_SECRET,
   TWITTER_BEARER_TOKEN,
   TWITTER_ACCESS_TOKEN,
-  TWITTER_ACCESS_SECRET,
+  TWITTER_TOKEN_SECRET,
 } = process.env;
 
 const app = Sociably.createApp({
@@ -42,12 +42,14 @@ const app = Sociably.createApp({
   platforms: [
     Twitter.intiModule({
       webhookPath: '/webhook/twitter',
-      appId: TWITTER_APP_ID,               // id of Twitter app
+      agentSettings: {
+        userId: TWITTER_AGENT_ID,            // id of agent user
+        accessToken: TWITTER_ACCESS_TOKEN,   // access token of agent user
+        tokenSecret: TWITTER_TOKEN_SECRET, // token secret of agent user
+      },
       appKey: TWITTER_APP_KEY,             // key of Twitter app
       appSecret: TWITTER_APP_SECRET,       // secret of Twitter app
       bearerToken: TWITTER_BEARER_TOKEN,   // bearer token of Twitter app
-      accessToken: TWITTER_ACCESS_TOKEN,   // access token of agent user
-      accessSecret: TWITTER_ACCESS_SECRET, // token secret of agent user
     }),
   ],
 });
@@ -120,35 +122,15 @@ const app = Sociably.createApp({
 });
 ```
 
-2. Expose your Twitter agent user id in `next.config.js`:
-
-```js
-// highlight-next-line
-const { TWITTER_ACCESS_TOKEN } = process.env;
-
-module.exports = {
-  publicRuntimeConfig: {
-    // highlight-next-line
-    TWITTER_AGENT_ID: TWITTER_ACCESS_TOKEN.split('-', 1)[0],
-  },
-  // ...
-};
-```
-
-3. Set up the `WebviewClient` in the webview:
+2. Set up the `WebviewClient` in the webview:
 
 ```ts
-import getConfig from 'next/config';
 import WebviewClient from '@sociably/webview/client';
 import TwitterAuth from '@sociably/twitter/webview/client';
 
-const {
-  publicRuntimeConfig: { TWITTER_AGENT_ID },
-} = getConfig();
-
 const client =  new WebviewClient({
   authPlatforms: [
-    new TwitterAuth({ agentId: TWITTER_AGENT_ID }),
+    new TwitterAuth(),
   ],
 });
 ```

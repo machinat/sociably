@@ -12,23 +12,13 @@ import FacebookUserProfile from '../UserProfile';
 import { getAuthContextDetails } from './utils';
 import type { FacebookAuthContext, FacebookAuthData } from './types';
 
-type FacebookClientOptions = {
-  /** The Facebook page id */
-  pageId: string;
-};
-
 /* eslint-disable class-methods-use-this */
 export default class FacebookClientAuthenticator
   implements
     WebviewClientAuthenticator<void, FacebookAuthData, FacebookAuthContext>
 {
   platform = FACEBOOK;
-  pageId: string;
   marshalTypes = [FacebookChat, FacebookUser, FacebookUserProfile];
-
-  constructor({ pageId }: FacebookClientOptions) {
-    this.pageId = pageId;
-  }
 
   async init(): Promise<void> {
     // do nothing
@@ -43,22 +33,21 @@ export default class FacebookClientAuthenticator
   }
 
   checkAuthData(data: FacebookAuthData): CheckDataResult<FacebookAuthContext> {
-    if (data.page !== this.pageId) {
-      return { ok: false, code: 400, reason: 'page not match' };
-    }
-
     return {
       ok: true,
       contextDetails: getAuthContextDetails(data),
     };
   }
 
-  closeWebview(): boolean {
-    if (parseBrowser(window.navigator.userAgent).platform.type === 'desktop') {
+  closeWebview(ctx: null | FacebookAuthContext): boolean {
+    if (
+      !ctx ||
+      parseBrowser(window.navigator.userAgent).platform.type === 'desktop'
+    ) {
       return false;
     }
 
-    window.location.href = `https://m.me/${this.pageId}`;
+    window.location.href = `https://m.me/${ctx.thread.pageId}`;
     return true;
   }
 }

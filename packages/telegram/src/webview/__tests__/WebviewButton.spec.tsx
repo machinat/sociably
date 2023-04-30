@@ -1,5 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import ServerAuthenticator from '../ServerAuthenticator';
+import TelegramChat from '../../Chat';
+import TelegramUser from '../../User';
 import WebviewButton from '../WebviewButton';
 
 const authenticator = moxy<ServerAuthenticator>({
@@ -10,8 +12,13 @@ beforeEach(() => {
   authenticator.mock.reset();
 });
 
-test('rendering to UrlButton', () => {
-  expect(WebviewButton(authenticator)({ text: 'Foo' })).toMatchInlineSnapshot(`
+it('render to UrlButton', () => {
+  expect(
+    WebviewButton(
+      authenticator,
+      new TelegramChat(12345, 67890)
+    )({ text: 'Foo' })
+  ).toMatchInlineSnapshot(`
     <UrlButton
       login={true}
       text="Foo"
@@ -19,7 +26,10 @@ test('rendering to UrlButton', () => {
     />
   `);
   expect(
-    WebviewButton(authenticator)({
+    WebviewButton(
+      authenticator,
+      new TelegramChat(12345, 67890)
+    )({
       text: 'Foo',
       botUserName: 'FooBot',
       forwardText: 'Hello World',
@@ -39,8 +49,12 @@ test('rendering to UrlButton', () => {
   authenticator.getAuthUrl.mock.fakeReturnValue(
     'https://sociably.io/foo/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz'
   );
-  expect(WebviewButton(authenticator)({ text: 'Foo', page: '/foo?bar=baz' }))
-    .toMatchInlineSnapshot(`
+  expect(
+    WebviewButton(
+      authenticator,
+      new TelegramChat(12345, 67890)
+    )({ text: 'Foo', page: '/foo?bar=baz' })
+  ).toMatchInlineSnapshot(`
     <UrlButton
       login={true}
       text="Foo"
@@ -49,5 +63,29 @@ test('rendering to UrlButton', () => {
   `);
 
   expect(authenticator.getAuthUrl).toHaveBeenCalledTimes(3);
-  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(3, 'foo?bar=baz');
+  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
+    1,
+    12345,
+    67890,
+    undefined
+  );
+  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
+    3,
+    12345,
+    67890,
+    'foo?bar=baz'
+  );
+});
+
+it('throw error if RenderingTarget is not TelegramChat', () => {
+  expect(() =>
+    WebviewButton(authenticator, null)({ text: 'Foo' })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"WebviewButton can only be used in TelegramChat"`
+  );
+  expect(() =>
+    WebviewButton(authenticator, new TelegramUser(12345, true))({ text: 'Foo' })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"WebviewButton can only be used in TelegramChat"`
+  );
 });

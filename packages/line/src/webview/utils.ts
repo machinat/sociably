@@ -1,34 +1,47 @@
 /* eslint-disable import/prefer-default-export  */
 import type { ContextDetails } from '@sociably/auth';
+import LineChannel from '../Channel';
 import LineUser from '../User';
 import LineChat from '../Chat';
-import { LiffOs, LiffReferer } from '../constant';
-import type { LineAuthContext, LineAuthData } from './types';
+import { LiffOs, RefChatType } from './constant';
+import type { LineAuthContext, LineAuthData, LiffRefChatType } from './types';
+
+export const transformRefChatTypeEnumToName = (
+  referer: RefChatType
+): LiffRefChatType =>
+  referer === RefChatType.Utou
+    ? 'utou'
+    : referer === RefChatType.Group
+    ? 'group'
+    : referer === RefChatType.Room
+    ? 'room'
+    : referer === RefChatType.External
+    ? 'external'
+    : 'none';
 
 export const getAuthContextDetails = ({
   user: userId,
   client: clientId,
-  channel: channelId,
+  chan: channelId,
+  group: groupId,
+  room: roomId,
   provider: providerId,
   lang: language,
   os,
   ref,
 }: LineAuthData): ContextDetails<LineAuthContext> => ({
   user: new LineUser(providerId, userId),
-  thread:
-    ref === LiffReferer.Utou ? new LineChat(channelId, 'user', userId) : null,
+  channel: channelId ? new LineChannel(channelId) : null,
+  thread: !channelId
+    ? null
+    : groupId
+    ? new LineChat(channelId, 'group', groupId)
+    : roomId
+    ? new LineChat(channelId, 'room', roomId)
+    : new LineChat(channelId, 'user', userId),
   clientId,
   providerId,
   language,
-  refererType:
-    ref === LiffReferer.Utou
-      ? 'utou'
-      : ref === LiffReferer.Group
-      ? 'group'
-      : ref === LiffReferer.Room
-      ? 'room'
-      : ref === LiffReferer.External
-      ? 'external'
-      : 'none',
+  refChatType: transformRefChatTypeEnumToName(ref),
   os: os === LiffOs.Ios ? 'ios' : os === LiffOs.Android ? 'android' : 'web',
 });

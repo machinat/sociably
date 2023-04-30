@@ -12,12 +12,14 @@ import TelegramChatProfile from '../ChatProfile';
 import TelegramUser from '../User';
 import TelegramUserProfile from '../UserProfile';
 import { getAuthContextDetails } from './utils';
-import { REDIRECT_QUERY } from './constant';
+import { REDIRECT_QUERY, BOT_ID_QUERY, CHAT_ID_QUERY } from './constant';
 import type { TelegramAuthContext, TelegramAuthData } from './types';
 
 type TelegramClientOptions = {
-  /** The `username` of the bot. Needed to make `.closeWebview()` work */
-  botName: string;
+  /** The ID of the bot to login with. Default to `botId` query param */
+  botId?: number;
+  /** The chat room ID that refer to the page. Default to `chatId` query param */
+  chatId?: number;
 };
 
 /* eslint-disable class-methods-use-this */
@@ -26,7 +28,8 @@ export default class TelegramClientAuthenticator
     WebviewClientAuthenticator<void, TelegramAuthData, TelegramAuthContext>
 {
   platform = TELEGRAM;
-  botName: string;
+  botId: number;
+  chatId?: number;
   marshalTypes = [
     TelegramChat,
     TelegramUser,
@@ -35,8 +38,10 @@ export default class TelegramClientAuthenticator
     TelegramChatProfile,
   ];
 
-  constructor({ botName }: TelegramClientOptions) {
-    this.botName = botName;
+  constructor(options?: TelegramClientOptions) {
+    // NOTE: postpone `botId` check to init() for SSR
+    this.botId = options?.botId ?? 0;
+    this.chatId = options?.chatId;
   }
 
   async init(
@@ -44,11 +49,41 @@ export default class TelegramClientAuthenticator
     errorFromServer: null | Error,
     dataFromServer: null | TelegramAuthData
   ): Promise<void> {
-    if (!errorFromServer && !dataFromServer) {
-      const url = new URL('login', authEntry);
-      url.searchParams.set(REDIRECT_QUERY, window.location.href);
+    const searchParams = new URLSearchParams(window.location.search);
+    if (!this.botId) {
+      const botIdQuery = searchParams.get(BOT_ID_QUERY);
 
-      window.location.href = url.href;
+      if (botIdQuery) {
+        this.botId = parseInt(botIdQuery, 10);
+      } else if (dataFromServer) {
+        this.botId = dataFromServer.botId;
+      }
+    }
+    if (!this.botId || Number.isNaN(this.botId)) {
+      throw new Error(
+        'Telegram bot ID is required on either `options.botId` or `botId` querystring'
+      );
+    }
+
+    if (!this.chatId) {
+      const chatIdQuery = searchParams.get(CHAT_ID_QUERY);
+      if (chatIdQuery) {
+        this.chatId = parseInt(chatIdQuery, 10);
+      }
+    }
+
+    if (
+      (!errorFromServer && !dataFromServer) ||
+      (dataFromServer && dataFromServer.botId !== this.botId)
+    ) {
+      const authUrl = new URL('login', authEntry);
+      authUrl.searchParams.set(BOT_ID_QUERY, this.botId.toString());
+      authUrl.searchParams.set(REDIRECT_QUERY, window.location.href);
+      if (this.chatId) {
+        authUrl.searchParams.set(CHAT_ID_QUERY, this.chatId.toString());
+      }
+
+      window.location.href = authUrl.href;
       await new Promise((_, reject) =>
         setTimeout(() => reject(new Error('redirect timeout')), 5000)
       );
@@ -71,12 +106,15 @@ export default class TelegramClientAuthenticator
     };
   }
 
-  closeWebview(): boolean {
-    if (parseBrowser(window.navigator.userAgent).platform.type === 'desktop') {
+  closeWebview(context: null | TelegramAuthContext): boolean {
+    if (
+      !context ||
+      parseBrowser(window.navigator.userAgent).platform.type === 'desktop'
+    ) {
       return false;
     }
 
-    window.location.href = `https://telegram.me/${this.botName}`;
+    window.location.href = `https://telegram.me/${context.botName}`;
     return true;
   }
 }

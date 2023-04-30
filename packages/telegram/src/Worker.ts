@@ -2,69 +2,74 @@ import fetch, { Response } from 'node-fetch';
 import FormData from 'form-data';
 import type { SociablyWorker } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
+import TelegramUser from './User';
+import { BotSettingsAccessorI } from './interface';
 import type { TelegramJob, TelegramResult, UploadingFile } from './types';
 import TelegramApiError from './Error';
 
+type TelegramJobQueue = Queue<TelegramJob, TelegramResult>;
+
 const API_HOST = 'https://api.telegram.org';
 
-type TelegramJobQueue = Queue<TelegramJob, TelegramResult>;
+const makeBotApiEntry = (botToken: string) => `${API_HOST}/bot${botToken}`;
+
+const requestBotApi = async (
+  botToken: string,
+  method: string,
+  parameters: { [k: string]: unknown },
+  uploadFiles: null | UploadingFile[]
+): Promise<TelegramResult> => {
+  const botApiEntry = makeBotApiEntry(botToken);
+  let response: Response;
+
+  if (uploadFiles) {
+    const form = new FormData();
+    Object.entries(parameters).forEach(([key, value]) => {
+      form.append(key, JSON.stringify(value));
+    });
+
+    uploadFiles.forEach(({ fieldName, fileData, fileInfo }) => {
+      form.append(fieldName, fileData, fileInfo);
+    });
+
+    response = await fetch(`${botApiEntry}/${method}`, {
+      method: 'POST',
+      body: form,
+      headers: form.getHeaders(),
+    });
+  } else {
+    response = await fetch(`${botApiEntry}/${method}`, {
+      method: 'POST',
+      body: JSON.stringify(parameters),
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new TelegramApiError(result);
+  }
+
+  return result;
+};
 
 export default class TelegramWorker
   implements SociablyWorker<TelegramJob, TelegramResult>
 {
+  private _settingsAccessor: BotSettingsAccessorI;
   private _started: boolean;
   private _lockedKeys: Set<string>;
 
   connectionCount: number;
   maxConnections: number;
-  apiEntry: string;
 
-  constructor(botToken: string, maxConnections: number) {
+  constructor(settingsAccessor: BotSettingsAccessorI, maxConnections: number) {
+    this._settingsAccessor = settingsAccessor;
     this.connectionCount = 0;
     this.maxConnections = maxConnections;
-    this.apiEntry = `${API_HOST}/bot${botToken}`;
-
     this._lockedKeys = new Set();
     this._started = false;
-  }
-
-  async _request(
-    method: string,
-    parameters: { [k: string]: any },
-    uploadingFiles: null | UploadingFile[]
-  ): Promise<TelegramResult> {
-    let response: Response;
-
-    if (uploadingFiles) {
-      const form = new FormData();
-      Object.entries(parameters).forEach(([key, value]) => {
-        form.append(key, JSON.stringify(value));
-      });
-
-      uploadingFiles.forEach(({ fieldName, fileData, fileInfo }) => {
-        form.append(fieldName, fileData, fileInfo);
-      });
-
-      response = await fetch(`${this.apiEntry}/${method}`, {
-        method: 'POST',
-        body: form,
-        headers: form.getHeaders(),
-      });
-    } else {
-      response = await fetch(`${this.apiEntry}/${method}`, {
-        method: 'POST',
-        body: JSON.stringify(parameters),
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    const result = await response.json();
-
-    if (!result.ok) {
-      throw new TelegramApiError(result);
-    }
-
-    return result;
   }
 
   get started(): boolean {
@@ -125,7 +130,7 @@ export default class TelegramWorker
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);
-    } catch (e) {
+    } catch {
       // NOTE: leave the error to the request side
     } finally {
       this.connectionCount -= 1;
@@ -140,12 +145,25 @@ export default class TelegramWorker
     }
   }
 
-  private _executeJobCallback = this._executeJob.bind(this);
+  private _executeJobCallback: typeof this._executeJob =
+    this._executeJob.bind(this);
 
   private async _executeJob([job]: TelegramJob[]) {
-    const { method, parameters, uploadingFiles } = job;
-    const result = await this._request(method, parameters, uploadingFiles);
+    const { method, params, uploadFiles, botId } = job;
+    const botSettings = await this._settingsAccessor.getChannelSettings(
+      new TelegramUser(botId, true)
+    );
+    if (!botSettings) {
+      throw new Error(`Bot ${botId} not found`);
+    }
 
-    return [{ success: true, result, job, error: undefined }];
+    const result = await requestBotApi(
+      botSettings.botToken,
+      method,
+      params,
+      uploadFiles
+    );
+
+    return [{ success: true as const, result, job, error: undefined }];
   }
 }

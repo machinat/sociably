@@ -5,18 +5,18 @@ import { renderPartElement } from './utils';
 
 it('is a valid Component', () => {
   expect(typeof UrlButtonParam).toBe('function');
-  expect(isNativeType(<UrlButtonParam urlSuffix="" />)).toBe(true);
+  expect(isNativeType(<UrlButtonParam urlPostfix="" />)).toBe(true);
   expect(UrlButtonParam.$$platform).toBe('whatsapp');
 });
 
 test('rendering value', async () => {
   await expect(
-    renderPartElement(<UrlButtonParam urlSuffix="/foo#bar?baz=true" />)
+    renderPartElement(<UrlButtonParam urlPostfix="/foo#bar?baz=true" />)
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <UrlButtonParam
-                urlSuffix="/foo#bar?baz=true"
+                urlPostfix="/foo#bar?baz=true"
               />,
               "path": "$#p",
               "type": "part",
@@ -31,13 +31,14 @@ test('rendering value', async () => {
             },
           ]
         `);
-  await expect(renderPartElement(<UrlButtonParam urlSuffix="/boo" index={2} />))
-    .resolves.toMatchInlineSnapshot(`
+  await expect(
+    renderPartElement(<UrlButtonParam urlPostfix="/boo" index={2} />)
+  ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <UrlButtonParam
                 index={2}
-                urlSuffix="/boo"
+                urlPostfix="/boo"
               />,
               "path": "$#p",
               "type": "part",

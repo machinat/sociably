@@ -359,7 +359,7 @@ export default class SociablyRenderer<
       scope,
       servicesProvided,
       path,
-      rendered,
+      rendered as SociablyNode,
       COMPONENT_SEPARATOR + component.name
     );
 

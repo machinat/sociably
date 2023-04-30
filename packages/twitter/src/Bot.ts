@@ -19,11 +19,14 @@ import {
 } from './job';
 import generalElementDelegate from './components/general';
 import TwitterWorker from './Worker';
-import Tweet from './Tweet';
 import TweetTarget from './TweetTarget';
 import TwitterUser from './User';
 import DirectMessageChat from './Chat';
-import { ConfigsI, PlatformUtilitiesI } from './interface';
+import {
+  ConfigsI,
+  PlatformUtilitiesI,
+  AgentSettingsAccessorI,
+} from './interface';
 import { TWITTER } from './constant';
 import TwitterApiError from './Error';
 import type {
@@ -42,8 +45,6 @@ type TwitterBotOptions = {
   appKey: string;
   appSecret: string;
   bearerToken: string;
-  accessToken: string;
-  accessSecret: string;
   maxRequestConnections?: number;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<
@@ -53,16 +54,24 @@ type TwitterBotOptions = {
   >;
 };
 
+type ApiCallOptions = {
+  agent?: TwitterUser;
+  method: string;
+  path: string;
+  params?: Record<string, unknown>;
+  asApplication?: boolean;
+};
+
 /**
  * @category Provider
  */
 export class TwitterBot
   implements SociablyBot<TwitterThread, TwitterJob, TwitterApiResult>
 {
+  agentSettingsAccessor: AgentSettingsAccessorI;
   client: TwitterWorker;
-  agentId: string;
   engine: Engine<
-    TwitterThread,
+    null | TwitterThread,
     TwitterSegmentValue,
     TwitterComponent<unknown>,
     TwitterJob,
@@ -71,30 +80,27 @@ export class TwitterBot
 
   platform = TWITTER;
 
-  constructor({
-    appKey,
-    appSecret,
-    bearerToken,
-    accessToken,
-    accessSecret,
-    maxRequestConnections = 100,
-    initScope,
-    dispatchWrapper,
-  }: TwitterBotOptions) {
-    invariant(appKey, 'options.appKey should not be empty');
-    invariant(appSecret, 'options.appSecret should not be empty');
-    invariant(bearerToken, 'options.bearerToken should not be empty');
-    invariant(accessToken, 'options.accessToken should not be empty');
-    invariant(accessSecret, 'options.accessSecret should not be empty');
-    this.agentId = accessToken.split('-', 1)[0];
-
-    const queue = new Queue<TwitterJob, TwitterApiResult>();
-    this.client = new TwitterWorker({
+  constructor(
+    agentSettingsAccessor: AgentSettingsAccessorI,
+    {
       appKey,
       appSecret,
       bearerToken,
-      accessToken,
-      accessSecret,
+      maxRequestConnections = 100,
+      initScope,
+      dispatchWrapper,
+    }: TwitterBotOptions
+  ) {
+    invariant(appKey, 'options.appKey should not be empty');
+    invariant(appSecret, 'options.appSecret should not be empty');
+    invariant(bearerToken, 'options.bearerToken should not be empty');
+
+    const queue = new Queue<TwitterJob, TwitterApiResult>();
+    this.agentSettingsAccessor = agentSettingsAccessor;
+    this.client = new TwitterWorker(agentSettingsAccessor, {
+      appKey,
+      appSecret,
+      bearerToken,
       maxConnections: maxRequestConnections,
     });
     const renderer = new Renderer<
@@ -121,7 +127,7 @@ export class TwitterBot
   }
 
   render(
-    thread: null | TweetTarget | DirectMessageChat,
+    thread: TweetTarget | DirectMessageChat,
     message: SociablyNode
   ): Promise<null | TwitterDispatchResponse> {
     if (thread instanceof DirectMessageChat) {
@@ -129,56 +135,28 @@ export class TwitterBot
     }
 
     return this.engine.render(
-      thread || new TweetTarget(this.agentId),
+      thread,
       message,
       createTweetJobs({ key: getTimeId() })
     );
   }
 
-  async renderTweet(
-    target: null | string | Tweet | TweetTarget,
-    message: SociablyNode
-  ): Promise<null | TwitterDispatchResponse> {
-    const thread =
-      typeof target === 'string'
-        ? new TweetTarget(this.agentId, target)
-        : target instanceof Tweet
-        ? new TweetTarget(this.agentId, target.id)
-        : !target
-        ? new TweetTarget(this.agentId)
-        : target;
-
-    return this.render(thread, message);
-  }
-
-  async renderDirectMeaasge(
-    target: string | TwitterUser | DirectMessageChat,
-    message: SociablyNode
-  ): Promise<null | TwitterDispatchResponse> {
-    const thread =
-      typeof target === 'string'
-        ? new DirectMessageChat(this.agentId, target)
-        : target instanceof TwitterUser
-        ? new DirectMessageChat(this.agentId, target.id)
-        : target;
-
-    return this.render(thread, message);
-  }
-
-  async makeApiCall<Result>(
-    method: string,
-    href: string,
-    parameters?: Record<string, unknown>,
-    options?: { asApplication?: boolean }
-  ): Promise<Result> {
+  async makeApiCall<Result>({
+    agent,
+    method,
+    path,
+    params = {},
+    asApplication = false,
+  }: ApiCallOptions): Promise<Result> {
+    const target = agent ? new TweetTarget(agent.id) : null;
     try {
-      const response = await this.engine.dispatchJobs(null, [
+      const response = await this.engine.dispatchJobs(target, [
         {
-          request: { method, href, parameters },
-          target: new TweetTarget(this.agentId),
+          request: { method, href: path, params },
+          target,
           refreshTarget: null,
           key: undefined,
-          asApplication: !!options?.asApplication,
+          asApplication,
           accomplishRequest: null,
           mediaSources: null,
         },
@@ -194,6 +172,7 @@ export class TwitterBot
   }
 
   async renderMedia(
+    agent: TwitterUser,
     media: SociablyNode
   ): Promise<null | RenderMediaResponse[]> {
     const segments = await this.engine.renderer.render(media, null, null);
@@ -215,6 +194,7 @@ export class TwitterBot
     }
 
     const { uploadedMedia } = await this.client.uploadMediaSources(
+      agent,
       attachments.map(({ source }) => source)
     );
     if (!uploadedMedia) {
@@ -230,6 +210,7 @@ export class TwitterBot
   }
 
   async renderWelcomeMessage(
+    agent: TwitterUser,
     name: undefined | string,
     message: SociablyNode
   ): Promise<null | {
@@ -243,21 +224,25 @@ export class TwitterBot
     name: string;
   }> {
     const response = await this.engine.render(
-      null,
+      new TweetTarget(agent.id),
       message,
-      createWelcomeMessageJobs({ name })
+      createWelcomeMessageJobs(name)
     );
     return (response?.results[0].body as any) || null;
   }
 
-  async fetchMediaFile(url: string): Promise<{
+  async fetchMediaFile(
+    agent: TwitterUser,
+    url: string
+  ): Promise<{
     content: NodeJS.ReadableStream;
     contentType?: string;
     contentLength?: number;
   }> {
+    const authHeader = await this.client.getUserOauthHeader(agent, 'GET', url);
     const response = await fetch(url, {
       headers: {
-        Authorization: this.client.getAuthHeader('GET', url),
+        Authorization: authHeader,
       },
     });
 
@@ -278,29 +263,22 @@ const BotP = makeClassProvider({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
+    AgentSettingsAccessorI,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    {
-      appKey,
-      appSecret,
-      bearerToken,
-      accessToken,
-      accessSecret,
-      maxRequestConnections,
-    },
+    { appKey, appSecret, bearerToken, maxRequestConnections },
+    settingsAccessor,
     moduleUtils,
     platformUtils
   ) => {
     invariant(appKey, 'configs.appKey should not be empty');
 
-    return new TwitterBot({
+    return new TwitterBot(settingsAccessor, {
       appKey,
       appSecret,
       bearerToken,
-      accessToken,
-      accessSecret,
       maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,

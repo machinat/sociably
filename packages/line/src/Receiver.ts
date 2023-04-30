@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import invariant from 'invariant';
 import { SociablyNode } from '@sociably/core';
 import { makeClassProvider } from '@sociably/core/service';
 import type { PopEventWrapper } from '@sociably/core';
@@ -8,7 +7,11 @@ import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
 import eventFactory from './event/factory';
 import BotP from './Bot';
 import { LINE } from './constant';
-import { ConfigsI, PlatformUtilitiesI } from './interface';
+import {
+  ConfigsI,
+  PlatformUtilitiesI,
+  ChannelSettingsAccessorI,
+} from './interface';
 import type {
   LineWebhookRequestBody,
   LineEventContext,
@@ -16,11 +19,9 @@ import type {
 } from './types';
 
 type LineReceiverOptions = {
-  providerId: string;
-  channelId: string;
-  shouldVerifyRequest?: boolean;
-  channelSecret?: string;
   bot: BotP;
+  channelSettingsAccessor: ChannelSettingsAccessorI;
+  shouldVerifyRequest?: boolean;
   popEventWrapper: PopEventWrapper<LineEventContext, null>;
 };
 
@@ -38,11 +39,9 @@ const replyClosure = (bot: BotP, event: LineEvent) => {
 
 const handleWebhook = ({
   bot,
+  channelSettingsAccessor,
   popEventWrapper,
-  providerId,
-  channelId,
   shouldVerifyRequest,
-  channelSecret,
 }: LineReceiverOptions): WebhookHandler => {
   const popEvent = popEventWrapper(() => Promise.resolve(null));
 
@@ -58,7 +57,28 @@ const handleWebhook = ({
       return { code: 400 };
     }
 
-    if (shouldVerifyRequest && channelSecret !== undefined) {
+    let parsedBody: LineWebhookRequestBody;
+    try {
+      parsedBody = JSON.parse(body);
+    } catch (e) {
+      return { code: 400 };
+    }
+
+    const { destination, events } = parsedBody;
+    if (!events) {
+      return { code: 400 };
+    }
+
+    const settings =
+      await channelSettingsAccessor.getLineChatChannelSettingsByBotUserId(
+        destination
+      );
+    if (!settings) {
+      return { code: 404 };
+    }
+    const { providerId, channelId, channelSecret } = settings;
+
+    if (shouldVerifyRequest) {
       const signature = crypto
         .createHmac('SHA256', channelSecret)
         .update(body)
@@ -67,18 +87,6 @@ const handleWebhook = ({
       if (headers['x-line-signature'] !== signature) {
         return { code: 401 };
       }
-    }
-
-    let parsedBody: LineWebhookRequestBody;
-    try {
-      parsedBody = JSON.parse(body);
-    } catch (e) {
-      return { code: 400 };
-    }
-
-    const { events } = parsedBody;
-    if (!events) {
-      return { code: 400 };
     }
 
     const issuingEvents: Promise<null>[] = [];
@@ -108,26 +116,16 @@ const handleWebhook = ({
 export class LineReceiver extends WebhookReceiver {
   constructor({
     bot,
+    channelSettingsAccessor,
     popEventWrapper,
-    providerId,
-    channelId,
     shouldVerifyRequest = true,
-    channelSecret,
   }: LineReceiverOptions) {
-    invariant(providerId, 'configs.providerId should not be empty');
-    invariant(channelId, 'configs.channelId should not be empty');
-    invariant(
-      !shouldVerifyRequest || channelSecret,
-      'should provide configs.channelSecret when shouldVerifyRequest set to true'
-    );
     super(
       handleWebhook({
         bot,
+        channelSettingsAccessor,
         popEventWrapper,
-        providerId,
-        channelId,
         shouldVerifyRequest,
-        channelSecret,
       })
     );
   }
@@ -135,19 +133,18 @@ export class LineReceiver extends WebhookReceiver {
 
 const ReceiverP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformUtilitiesI],
+  deps: [ConfigsI, BotP, ChannelSettingsAccessorI, PlatformUtilitiesI],
   factory: (
-    { providerId, channelId, shouldVerifyRequest, channelSecret },
+    { shouldVerifyRequest },
     bot,
+    channelSettingsAccessor,
     { popEventWrapper }
   ) =>
     new LineReceiver({
       bot,
+      channelSettingsAccessor,
       popEventWrapper,
-      providerId,
-      channelId,
       shouldVerifyRequest,
-      channelSecret,
     }),
 })(LineReceiver);
 

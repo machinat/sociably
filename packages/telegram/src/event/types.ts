@@ -42,9 +42,11 @@ import type {
   ChatMemberUpdated,
   Unknown,
 } from './mixins';
+import type TelegramUser from '../User';
 import type { TelegramRawEvent } from '../types';
 
 interface EventObject<Category extends string, Type extends string> {
+  channel: TelegramUser;
   category: Category;
   type: Type;
   botId: number;

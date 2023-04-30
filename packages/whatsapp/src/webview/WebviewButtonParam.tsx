@@ -1,6 +1,7 @@
-import Sociably, { makeContainer, RenderingThread } from '@sociably/core';
+import Sociably, { makeContainer, RenderingTarget } from '@sociably/core';
 import { posix as posixPath } from 'path';
 import WhatsAppChat from '../Chat';
+import UserProfile from '../UserProfile';
 import { UrlButtonParam } from '../components';
 import ServerAuthenticator from './ServerAuthenticator';
 
@@ -12,22 +13,24 @@ type WebviewButtonParamProps = {
    * decided by the order of params.
    */
   index?: number;
+  /** Pass `user.profile` on the auth context while login */
+  userProfile?: UserProfile;
 };
 
 const WebviewButtonParam =
-  (authenticator: ServerAuthenticator, thread: RenderingThread) =>
+  (authenticator: ServerAuthenticator, thread: RenderingTarget) =>
   ({ page, index }: WebviewButtonParamProps) => {
     if (!thread || !(thread instanceof WhatsAppChat)) {
-      return null;
+      throw new Error('WebviewButtonParam can only be used in WhatsAppChat');
     }
 
-    const urlSuffix = authenticator.getAuthUrlSuffix(
-      thread.customerNumber,
+    const urlPostfix = authenticator.getAuthUrlPostfix(
+      thread,
       page ? posixPath.join('.', page) : undefined
     );
-    return <UrlButtonParam urlSuffix={urlSuffix} index={index} />;
+    return <UrlButtonParam urlPostfix={urlPostfix} index={index} />;
   };
 
 export default makeContainer({
-  deps: [ServerAuthenticator, RenderingThread],
+  deps: [ServerAuthenticator, RenderingTarget],
 })(WebviewButtonParam);

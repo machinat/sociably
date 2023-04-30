@@ -8,8 +8,10 @@ import type {
 } from '@sociably/core';
 import { IntermediateSegment, UnitSegment } from '@sociably/core/renderer';
 import { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
+import { Interfaceable } from '@sociably/core/service';
 import type { WebhookMetadata } from '@sociably/http/webhook';
 import type { TelegramEvent } from './event/types';
+import { BotSettingsAccessorI } from './interface';
 import type TelegramChat from './Chat';
 import type { TelegramBot } from './Bot';
 
@@ -119,9 +121,9 @@ export type UploadingFile = {
 
 export type TelegramSegmentValue = {
   method: string;
-  parameters: { [k: string]: any };
+  params: { [k: string]: unknown };
   toNonChatTarget?: boolean;
-  uploadingFiles?: UploadingFile[];
+  uploadFiles?: UploadingFile[];
 };
 
 export type TelegramComponent<
@@ -130,10 +132,11 @@ export type TelegramComponent<
 > = NativeComponent<Props, Segment>;
 
 export type TelegramJob = {
+  botId: number;
   method: string;
-  parameters: { [k: string]: any };
+  params: { [k: string]: any };
   key: undefined | string;
-  uploadingFiles: null | UploadingFile[];
+  uploadFiles: null | UploadingFile[];
 };
 
 export type TelegramEventContext = {
@@ -163,7 +166,7 @@ export type FailApiResult = {
   ok: false;
   description?: string;
   error_code: number;
-  parameters?: {
+  params?: {
     migrate_to_chat_id?: number;
     retry_after?: number;
   };
@@ -188,17 +191,28 @@ export type TelegramPlatformUtilities = PlatformUtilities<
   TelegramResult
 >;
 
-export type TelegramConfigs = {
+export type TelegramBotSettings = {
   /** The access token of the bot. Like: `1234567890:AaBbCc_321-DdEeFf` */
   botToken: string;
   /** The username of the bot without the prefixing `@`. Like `MyBot` */
   botName: string;
+  /** Secret token to be verified on `X-Telegram-Bot-Api-Secret-Token` header */
+  secretToken: string;
+};
+
+export type TelegramConfigs = {
+  botSettings?: TelegramBotSettings;
+  multiBotSettings?: TelegramBotSettings[];
+  botSettingsService?: Interfaceable<BotSettingsAccessorI>;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
-  /** A secret string suffixed after the `webhookPath`. This helps to filter out requests not from Telegram platform */
-  secretPath?: string;
   /** The max API request connections at the same time */
   maxRequestConnections?: number;
+  /**
+   * Whether to verify `X-Telegram-Bot-Api-Secret-Token` header on webhook
+   * request. Default to `true`
+   */
+  shouldVerifySecretToken?: boolean;
   eventMiddlewares?: TelegramEventMiddleware[];
   dispatchMiddlewares?: TelegramDispatchMiddleware[];
 };

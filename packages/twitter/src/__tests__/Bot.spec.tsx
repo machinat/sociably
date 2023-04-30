@@ -5,7 +5,8 @@ import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
 import _Worker from '../Worker';
-import DirectMessageChat from '../Chat';
+import TwitterUser from '../User';
+import TiwtterChat from '../Chat';
 import TweetTarget from '../TweetTarget';
 import TwitterBot from '../Bot';
 import { DirectMessage } from '../components/DirectMessage';
@@ -40,15 +41,19 @@ const dispatchWrapper = moxy((x) => x);
 
 const appKey = '__APP_KEY__';
 const appSecret = '__APP_SECRET__';
-const accessToken = '1234567890-__ACCESS_TOKEN__';
-const accessSecret = '__ACCESS_SECRET__';
 const bearerToken = '__BEARER_TOKEN__';
-const authOptions = {
-  appKey,
-  appSecret,
-  bearerToken,
-  accessToken,
-  accessSecret,
+const basicOptions = { appKey, appSecret, bearerToken };
+
+const agent = new TwitterUser('1234567890');
+const agentSettings = {
+  userId: '1234567890',
+  accessToken: '1234567890-__ACCESS_TOKEN__',
+  tokenSecret: '__ACCESS_SECRET__',
+};
+const agentSettingsAccessor = {
+  getChannelSettings: async () => agentSettings,
+  getChannelSettingsBatch: async () => [agentSettings],
+  listAllChannelSettings: async () => [agentSettings],
 };
 
 const twitterApi = nock('https://api.twitter.com');
@@ -62,15 +67,13 @@ beforeEach(() => {
   Worker.mock.clear();
 });
 
-describe('new TwitterBot(options)', () => {
+describe('new TwitterBot(agentSettingsAccessor,options)', () => {
   it('throw if options.appKey is empty', () => {
     expect(
       () =>
-        new TwitterBot({
+        new TwitterBot(agentSettingsAccessor, {
           appSecret,
           bearerToken,
-          accessToken,
-          accessSecret,
         } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.appKey should not be empty"`
@@ -79,11 +82,9 @@ describe('new TwitterBot(options)', () => {
   it('throw if options.appSecret is empty', () => {
     expect(
       () =>
-        new TwitterBot({
+        new TwitterBot(agentSettingsAccessor, {
           appKey,
           bearerToken,
-          accessToken,
-          accessSecret,
         } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.appSecret should not be empty"`
@@ -92,41 +93,20 @@ describe('new TwitterBot(options)', () => {
   it('throw if options.bearerToken is empty', () => {
     expect(
       () =>
-        new TwitterBot({
+        new TwitterBot(agentSettingsAccessor, {
           appKey,
           appSecret,
-          accessToken,
-          accessSecret,
         } as never)
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.bearerToken should not be empty"`
     );
   });
-  it('throw if options.accessToken is empty', () => {
-    expect(
-      () =>
-        new TwitterBot({
-          appKey,
-          appSecret,
-          bearerToken,
-          accessSecret,
-        } as never)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.accessToken should not be empty"`
-    );
-  });
-  it('throw if options.accessSecret is empty', () => {
-    expect(
-      () =>
-        new TwitterBot({ appKey, appSecret, bearerToken, accessToken } as never)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.accessSecret should not be empty"`
-    );
-  });
 
   it('construct engine', () => {
-    const bot = new TwitterBot({
-      ...authOptions,
+    const bot = new TwitterBot(agentSettingsAccessor, {
+      appKey,
+      appSecret,
+      bearerToken,
       initScope,
       dispatchWrapper,
       maxRequestConnections: 999,
@@ -148,24 +128,20 @@ describe('new TwitterBot(options)', () => {
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
-    expect(Worker).toHaveBeenCalledWith({
+    expect(Worker).toHaveBeenCalledWith(agentSettingsAccessor, {
       appKey,
       appSecret,
       bearerToken,
-      accessToken,
-      accessSecret,
       maxConnections: 999,
     });
   });
 
   test('default maxConnections', () => {
-    expect(new TwitterBot(authOptions));
+    expect(new TwitterBot(agentSettingsAccessor, basicOptions));
 
     expect(Worker).toHaveBeenCalledTimes(1);
-    expect(Worker.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(Worker.mock.calls[0].args[1]).toMatchInlineSnapshot(`
       Object {
-        "accessSecret": "__ACCESS_SECRET__",
-        "accessToken": "1234567890-__ACCESS_TOKEN__",
         "appKey": "__APP_KEY__",
         "appSecret": "__APP_SECRET__",
         "bearerToken": "__BEARER_TOKEN__",
@@ -176,7 +152,7 @@ describe('new TwitterBot(options)', () => {
 });
 
 test('.start() and .stop() start/stop the engine', () => {
-  const bot = new TwitterBot(authOptions);
+  const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
   type MockEngine = Moxy<TwitterBot['engine']>;
 
@@ -189,7 +165,7 @@ test('.start() and .stop() start/stop the engine', () => {
 
 describe('.render(thread, content)', () => {
   test('post a tweet', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const createTweetCall = twitterApi
@@ -198,7 +174,7 @@ describe('.render(thread, content)', () => {
       .reply(200, { data: { id: '1234567890', text: 'Hello World' } });
 
     const response = await bot.render(
-      null,
+      new TweetTarget('1234567890'),
       <>
         <p>Hello World</p>
         <p>Foo Bar Baz</p>
@@ -221,7 +197,7 @@ describe('.render(thread, content)', () => {
   });
 
   test('reply to a tweet', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const createTweetCall = twitterApi
@@ -254,7 +230,7 @@ describe('.render(thread, content)', () => {
   });
 
   test('send direct message', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const createTweetCall = twitterApi
@@ -263,7 +239,7 @@ describe('.render(thread, content)', () => {
       .reply(200, { event: {} });
 
     const response = await bot.render(
-      new DirectMessageChat('1234567890', '9876543210'),
+      new TiwtterChat('1234567890', '9876543210'),
       <>
         <p>Hello World</p>
         <p>Foo Bar Baz</p>
@@ -294,7 +270,7 @@ describe('.render(thread, content)', () => {
   });
 
   test('tweet thread behavior', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const createTweetCall = twitterApi
@@ -328,7 +304,7 @@ describe('.render(thread, content)', () => {
   });
 
   test('chat thread behavior', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const createTweetCall = twitterApi
@@ -336,7 +312,7 @@ describe('.render(thread, content)', () => {
       .times(3)
       .reply(200, { event: {} });
 
-    const chat = new DirectMessageChat('1234567890', '9876543210');
+    const chat = new TiwtterChat('1234567890', '9876543210');
     const [response1, response2] = await Promise.all([
       bot.render(chat, [<p>Foo 1</p>, <p>Bar 2</p>]),
       bot.render(chat, <p>Baz 3</p>),
@@ -363,7 +339,7 @@ describe('.render(thread, content)', () => {
 
 describe('.makeApiCall(method, uri, params)', () => {
   test('GET request', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const apiCall = twitterApi
@@ -371,14 +347,19 @@ describe('.makeApiCall(method, uri, params)', () => {
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.makeApiCall('GET', '2/foo', { a: 0, b: 1 })
+      bot.makeApiCall({
+        agent,
+        method: 'GET',
+        path: '2/foo',
+        params: { a: 0, b: 1 },
+      })
     ).resolves.toEqual({ data: { id: '11111' } });
 
     expect(apiCall.isDone()).toBe(true);
   });
 
   test('POST request', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const apiCall = twitterApi
@@ -386,14 +367,19 @@ describe('.makeApiCall(method, uri, params)', () => {
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.makeApiCall('POST', '2/foo', { a: 0, b: 1 })
+      bot.makeApiCall({
+        agent,
+        method: 'POST',
+        path: '2/foo',
+        params: { a: 0, b: 1 },
+      })
     ).resolves.toEqual({ data: { id: '11111' } });
 
     expect(apiCall.isDone()).toBe(true);
   });
 
   test('with asApplication option', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const apiCall = twitterApi
@@ -405,7 +391,13 @@ describe('.makeApiCall(method, uri, params)', () => {
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.makeApiCall('POST', '2/foo', { a: 0, b: 1 }, { asApplication: true })
+      bot.makeApiCall({
+        agent,
+        method: 'POST',
+        path: '2/foo',
+        params: { a: 0, b: 1 },
+        asApplication: true,
+      })
     ).resolves.toEqual({ data: { id: '11111' } });
 
     expect(apiCall.isDone()).toBe(true);
@@ -437,10 +429,11 @@ describe('.renderMedia(media)', () => {
         'content-length': '34',
       });
 
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
     await expect(
       bot.renderMedia(
+        agent,
         <>
           <Photo shared url="https://sociably.io/img/foo.jpg" />
           <Photo
@@ -459,7 +452,7 @@ describe('.renderMedia(media)', () => {
                   "media_id_string": "222222222222222222",
                 },
                 "source": Object {
-                  "parameters": Object {
+                  "params": Object {
                     "additional_owners": undefined,
                     "media_category": undefined,
                     "shared": "true",
@@ -485,7 +478,7 @@ describe('.renderMedia(media)', () => {
                     ],
                     "type": "Buffer",
                   },
-                  "parameters": Object {
+                  "params": Object {
                     "additional_owners": undefined,
                     "media_category": undefined,
                     "media_type": "image/jpg",
@@ -504,31 +497,31 @@ describe('.renderMedia(media)', () => {
   });
 
   it('throw if the non media content received', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
     await expect(
-      bot.renderMedia('foo')
+      bot.renderMedia(agent, 'foo')
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"\\"foo\\" is not media"`);
     await expect(
-      bot.renderMedia(<Sociably.Pause />)
+      bot.renderMedia(agent, <Sociably.Pause />)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<Pause /> is not media"`);
     await expect(
-      bot.renderMedia(<DirectMessage>foo</DirectMessage>)
+      bot.renderMedia(agent, <DirectMessage>foo</DirectMessage>)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"<DirectMessage /> is not media"`
     );
   });
 
   it('return null if the node is empty', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
-    await expect(bot.renderMedia(<>{null}</>)).resolves.toBe(null);
+    await expect(bot.renderMedia(agent, <>{null}</>)).resolves.toBe(null);
   });
 });
 
 describe('.renderWelcomeMessage(name, message)', () => {
   test('create welcome message', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
     const createWelcomeCall = twitterApi
@@ -544,6 +537,7 @@ describe('.renderWelcomeMessage(name, message)', () => {
 
     await expect(
       bot.renderWelcomeMessage(
+        agent,
         'foo_welcome',
         <DirectMessage>Foo!</DirectMessage>
       )
@@ -571,12 +565,12 @@ describe('.renderWelcomeMessage(name, message)', () => {
   });
 
   test('return null if content is empty', async () => {
-    const bot = new TwitterBot(authOptions);
+    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
 
-    await expect(bot.renderWelcomeMessage('foo_welcome', null)).resolves.toBe(
-      null
-    );
+    await expect(
+      bot.renderWelcomeMessage(agent, 'foo_welcome', null)
+    ).resolves.toBe(null);
   });
 });
 
@@ -594,9 +588,10 @@ test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
       'content-length': '17',
     });
 
-  const bot = new TwitterBot(authOptions);
+  const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
   const response = await bot.fetchMediaFile(
+    agent,
     'https://ton.twitter.com/1.1/ton/data/dm/1034828552951160836/1034828533812486145/oP5p359h.jpg'
   );
 

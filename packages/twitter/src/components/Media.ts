@@ -62,7 +62,7 @@ const makeMediaComponent = (name: string, mediaType: MediaType) =>
           );
         }
 
-        const parameters = {
+        const params = {
           shared: shared ? 'true' : undefined,
           media_category: mediaCategory,
           additional_owners: additionalOwners
@@ -76,20 +76,20 @@ const makeMediaComponent = (name: string, mediaType: MediaType) =>
             attachment: mediaId
               ? {
                   type: mediaType,
-                  source: { type: 'id', id: mediaId, parameters },
+                  source: { type: 'id', id: mediaId, params },
                 }
               : url
               ? {
                   type: mediaType,
-                  source: { type: 'url', url, parameters },
+                  source: { type: 'url', url, params },
                 }
               : fileData
               ? {
                   type: mediaType,
                   source: {
                     type: 'file',
-                    parameters: {
-                      ...parameters,
+                    params: {
+                      ...params,
                       total_bytes: fileSize,
                       media_type: fileType,
                     },

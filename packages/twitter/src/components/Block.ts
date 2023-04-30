@@ -26,7 +26,7 @@ export const Block: TwitterComponent<
       request: {
         method: 'POST',
         href: '2/users/:id/blocking',
-        parameters: { target_user_id: node.props.userId },
+        params: { target_user_id: node.props.userId },
       },
       accomplishRequest: (target, request) => ({
         ...request,

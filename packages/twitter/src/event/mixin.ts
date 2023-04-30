@@ -31,6 +31,7 @@ export interface EventBase {
   platform: typeof TWITTER;
   forUserId: string;
   userHasBlocked?: boolean;
+  channel: TwitterUser;
   [Symbol.toStringTag]: string;
 }
 
@@ -38,6 +39,9 @@ export const EventBase: EventBase = {
   platform: TWITTER,
   forUserId: '',
   userHasBlocked: undefined,
+  get channel() {
+    return new TwitterUser(this.forUserId);
+  },
   [Symbol.toStringTag]: 'TwitterEvent',
 };
 

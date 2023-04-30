@@ -98,7 +98,7 @@ export const DirectMessage: TwitterComponent<
   );
 
   const messageCreateParams =
-    dmSegmentValue.request.parameters.event.message_create;
+    dmSegmentValue.request.params.event.message_create;
   if (placeId) {
     messageCreateParams.message_data.attachment = {
       type: 'location',

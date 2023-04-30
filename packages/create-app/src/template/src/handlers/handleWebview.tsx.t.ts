@@ -4,11 +4,11 @@ import { when } from '../../../utils';
 export default ({ platforms, withWebview }: CreateAppContext): string => when(
   withWebview
 )`
-import Sociably, { makeContainer, BasicBot } from '@sociably/core';
+import Sociably, { makeContainer, BaseBot } from '@sociably/core';
 import WithMenu from '../components/WithMenu';
 import { WebAppEventContext } from '../types';
 
-const handleWebview = makeContainer({ deps: [BasicBot] })(
+const handleWebview = makeContainer({ deps: [BaseBot] })(
   (baseBot) =>
     async (ctx: WebAppEventContext) => {
       const { event, bot: webviewBot, metadata: { auth } } = ctx;

@@ -4,6 +4,7 @@ import type {
   SociablyUser,
   InitScopeFn,
   DispatchWrapper,
+  SociablyThread,
 } from '@sociably/core';
 import Engine from '@sociably/core/engine';
 import Renderer from '@sociably/core/renderer';
@@ -22,16 +23,9 @@ import type {
 } from '@sociably/websocket';
 import { WEBVIEW } from './constant';
 import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
-import {
-  WebviewConnection,
-  WebviewTopicThread,
-  WebviewUserThread,
-} from './thread';
-import type {
-  WebviewDispatchFrame,
-  WebviewComponent,
-  WebviewDispatchThread,
-} from './types';
+import WebviewConnection from './Connection';
+import { createThreadTopicKey, createUserTopicKey } from './utils/topicKey';
+import type { WebviewDispatchFrame, WebviewComponent } from './types';
 
 type WebSocketDispatchResponse = DispatchResponse<
   WebSocketJob,
@@ -49,11 +43,11 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
  * @category Provider
  */
 export class WebviewBot
-  implements SociablyBot<WebviewDispatchThread, WebSocketJob, WebSocketResult>
+  implements SociablyBot<WebviewConnection, WebSocketJob, WebSocketResult>
 {
   private _server: WebviewSocketServer<AnyServerAuthenticator>;
   engine: Engine<
-    WebviewDispatchThread,
+    null | WebviewConnection,
     EventInput,
     WebviewComponent,
     WebSocketJob,
@@ -103,14 +97,10 @@ export class WebviewBot
   }
 
   render(
-    thread: WebviewDispatchThread,
+    thread: WebviewConnection,
     message: SociablyNode
   ): Promise<null | WebSocketDispatchResponse> {
-    return this.engine.render<WebviewDispatchThread>(
-      thread,
-      message,
-      createJobs
-    );
+    return this.engine.render<WebviewConnection>(thread, message, createJobs);
   }
 
   async send(
@@ -126,13 +116,15 @@ export class WebviewBot
     };
   }
 
-  async sendUser(
-    user: SociablyUser,
+  async sendTopic(
+    topicKey: string,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
-    const thread = new WebviewUserThread(user.uid);
-    const response = await this.engine.dispatchJobs(thread, [
-      { target: thread, values: Array.isArray(content) ? content : [content] },
+    const response = await this.engine.dispatchJobs(null, [
+      {
+        target: { type: 'topic', key: topicKey },
+        values: Array.isArray(content) ? content : [content],
+      },
     ]);
 
     return {
@@ -140,18 +132,18 @@ export class WebviewBot
     };
   }
 
-  async sendTopic(
-    topic: string,
+  async sendUser(
+    user: SociablyUser,
     content: EventInput | EventInput[]
   ): Promise<SendResult> {
-    const thread = new WebviewTopicThread(topic);
-    const response = await this.engine.dispatchJobs(thread, [
-      { target: thread, values: Array.isArray(content) ? content : [content] },
-    ]);
+    return this.sendTopic(createUserTopicKey(user), content);
+  }
 
-    return {
-      connections: response.results[0].connections.map(toConnection),
-    };
+  async sendThread(
+    thread: SociablyThread,
+    content: EventInput | EventInput[]
+  ): Promise<SendResult> {
+    return this.sendTopic(createThreadTopicKey(thread), content);
   }
 
   disconnect(connection: WebviewConnection, reason?: string): Promise<boolean> {

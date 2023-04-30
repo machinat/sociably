@@ -10,10 +10,10 @@ import type { FacebookEventContext } from './types';
 type FacebookReceiverOptions = {
   bot: BotP;
   popEventWrapper: PopEventWrapper<FacebookEventContext, null>;
-  appSecret?: string;
+  appSecret: string;
+  verifyToken: string;
   shouldVerifyRequest?: boolean;
   shouldHandleChallenge?: boolean;
-  verifyToken?: string;
 };
 
 /**

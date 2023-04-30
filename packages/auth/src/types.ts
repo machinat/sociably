@@ -3,7 +3,11 @@ import type {
   ServerResponse,
   IncomingHttpHeaders,
 } from 'http';
-import type { SociablyUser, SociablyThread } from '@sociably/core';
+import type {
+  SociablyUser,
+  SociablyThread,
+  SociablyChannel,
+} from '@sociably/core';
 import type { RoutingInfo } from '@sociably/http';
 import type { CodeMessageComponent } from './basicAuth';
 import type AuthError from './error';
@@ -45,15 +49,21 @@ export type AuthContextBase = {
 };
 
 export type AuthContext<
-  User extends SociablyUser,
-  Thread extends SociablyThread
+  User extends null | SociablyUser,
+  Thread extends null | SociablyThread,
+  Channel extends null | SociablyChannel
 > = {
   platform: string;
   user: User;
-  thread: null | Thread;
+  thread: Thread;
+  channel: Channel;
 } & AuthContextBase;
 
-export type AnyAuthContext = AuthContext<SociablyUser, SociablyThread>;
+export type AnyAuthContext = AuthContext<
+  null | SociablyUser,
+  null | SociablyThread,
+  null | SociablyChannel
+>;
 
 export type ContextDetails<Context extends AnyAuthContext> = Omit<
   Context,
@@ -108,7 +118,7 @@ export interface ServerAuthenticator<
 
   /**
    * Called before the authorization finish, you can make some simple non-async
-   * final checks. Return the auth context supplement if success.
+   * final checks. Return the auth context details if success.
    */
   checkAuthData(data: Data): CheckDataResult<Context>;
 }
@@ -152,7 +162,7 @@ export interface ClientAuthenticator<
 
   /**
    * Called before the authorization finish, you can make some simple non-async
-   * final checks. Return the auth context supplement if success.
+   * final checks. Return the auth context details if success.
    */
   checkAuthData(data: Data): CheckDataResult<Context>;
 }
@@ -241,7 +251,7 @@ export type ContextOfAuthenticator<
   : never;
 
 type UserOfContext<Context extends AnyAuthContext> =
-  Context extends AuthContext<infer User, any> ? User : never;
+  Context extends AuthContext<infer User, any, any> ? User : never;
 
 export type UserOfAuthenticator<
   Authenticator extends AnyServerAuthenticator | AnyClientAuthenticator

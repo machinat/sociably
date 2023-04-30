@@ -1,5 +1,11 @@
 import { makeInterface } from '@sociably/core/service';
-import type { TelegramPlatformUtilities, TelegramConfigs } from './types';
+import { ChannelSettingsAccessor } from '@sociably/core';
+import TelegramUser from './User';
+import type {
+  TelegramPlatformUtilities,
+  TelegramConfigs,
+  TelegramBotSettings,
+} from './types';
 
 /**
  * @category Interface
@@ -15,4 +21,16 @@ export type ConfigsI = TelegramConfigs;
  */
 export const PlatformUtilitiesI = makeInterface<TelegramPlatformUtilities>({
   name: 'TelegramPlatformUtilities',
+});
+
+export type BotSettingsAccessorI = ChannelSettingsAccessor<
+  TelegramUser,
+  TelegramBotSettings
+>;
+
+/**
+ * @category Interface
+ */
+export const BotSettingsAccessorI = makeInterface<BotSettingsAccessorI>({
+  name: 'TelegramBotSettingsAccessor',
 });

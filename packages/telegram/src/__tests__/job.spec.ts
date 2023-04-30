@@ -1,5 +1,6 @@
 import TelegramChat from '../Chat';
-import { createChatJob, createNonChatJobs } from '../job';
+import TelegramUser from '../User';
+import { createChatJob, createBotScopeJobs } from '../job';
 
 describe('createChatJob(thread, segments)', () => {
   const chat = new TelegramChat(12345, 67890);
@@ -9,21 +10,21 @@ describe('createChatJob(thread, segments)', () => {
       createChatJob(chat, [
         {
           type: 'unit',
-          node: {} as any,
+          node: null,
           path: '$',
           value: {
             method: 'sendMesage',
-            parameters: { text: 'foo' },
+            params: { text: 'foo' },
           },
         },
         {
           type: 'unit',
-          node: {} as any,
+          node: null,
           path: '$',
           value: {
             method: 'sendPhoto',
-            parameters: { caption: 'bar', photo: undefined },
-            uploadingFiles: [
+            params: { caption: 'bar', photo: undefined },
+            uploadFiles: [
               {
                 fieldName: 'photo',
                 fileData: Buffer.from('BAR'),
@@ -43,23 +44,25 @@ describe('createChatJob(thread, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
+          "botId": 12345,
           "key": "tg.12345.67890",
           "method": "sendMesage",
-          "parameters": Object {
+          "params": Object {
             "chat_id": 67890,
             "text": "foo",
           },
-          "uploadingFiles": null,
+          "uploadFiles": null,
         },
         Object {
+          "botId": 12345,
           "key": "tg.12345.67890",
           "method": "sendPhoto",
-          "parameters": Object {
+          "params": Object {
             "caption": "bar",
             "chat_id": 67890,
             "photo": undefined,
           },
-          "uploadingFiles": Array [
+          "uploadFiles": Array [
             Object {
               "assetTag": "MyBar",
               "fieldName": "photo",
@@ -78,44 +81,45 @@ describe('createChatJob(thread, segments)', () => {
           ],
         },
         Object {
+          "botId": 12345,
           "key": "tg.12345.67890",
           "method": "sendMessage",
-          "parameters": Object {
+          "params": Object {
             "chat_id": 67890,
             "parse_mode": "HTML",
             "text": "baz",
           },
-          "uploadingFiles": null,
+          "uploadFiles": null,
         },
       ]
     `);
   });
 });
 
-describe('createNonChatJobs(segments)', () => {
+describe('createBotScopeJobs(action, segments)', () => {
   it('create jobs from segments', () => {
     expect(
-      createNonChatJobs(null, [
+      createBotScopeJobs(new TelegramUser(12345, true), [
         {
           type: 'unit',
-          node: {} as any,
+          node: null,
           path: '$',
           value: {
             method: 'answerCallbackQuery',
             toNonChatTarget: true,
-            parameters: {
-              callback_query_id: '123456',
+            params: {
+              callback_query_id: '_CALLBACK_QUERY_ID_',
             },
           },
         },
         {
           type: 'unit',
-          node: {} as any,
+          node: null,
           path: '$',
           value: {
             method: 'editMessageText',
             toNonChatTarget: true,
-            parameters: {
+            params: {
               text: 'foo',
               inline_message_id: 123,
             },
@@ -123,19 +127,19 @@ describe('createNonChatJobs(segments)', () => {
         },
         {
           type: 'unit',
-          node: {} as any,
+          node: null,
           path: '$',
           value: {
             method: 'editMessageMedia',
             toNonChatTarget: true,
-            parameters: {
+            params: {
               inline_message_id: 123,
               media: {
                 type: 'photo',
                 media: 'attach://photo',
               },
             },
-            uploadingFiles: [
+            uploadFiles: [
               {
                 fieldName: 'photo',
                 fileData: Buffer.from('BAR'),
@@ -149,33 +153,36 @@ describe('createNonChatJobs(segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
+          "botId": 12345,
           "key": undefined,
           "method": "answerCallbackQuery",
-          "parameters": Object {
-            "callback_query_id": "123456",
+          "params": Object {
+            "callback_query_id": "_CALLBACK_QUERY_ID_",
           },
-          "uploadingFiles": null,
+          "uploadFiles": null,
         },
         Object {
+          "botId": 12345,
           "key": undefined,
           "method": "editMessageText",
-          "parameters": Object {
+          "params": Object {
             "inline_message_id": 123,
             "text": "foo",
           },
-          "uploadingFiles": null,
+          "uploadFiles": null,
         },
         Object {
+          "botId": 12345,
           "key": undefined,
           "method": "editMessageMedia",
-          "parameters": Object {
+          "params": Object {
             "inline_message_id": 123,
             "media": Object {
               "media": "attach://photo",
               "type": "photo",
             },
           },
-          "uploadingFiles": Array [
+          "uploadFiles": Array [
             Object {
               "assetTag": "MyBar",
               "fieldName": "photo",
@@ -199,7 +206,7 @@ describe('createNonChatJobs(segments)', () => {
 
   it('throw if text segment received', () => {
     expect(() =>
-      createNonChatJobs(null, [
+      createBotScopeJobs(new TelegramUser(12345, true), [
         {
           type: 'text',
           node: 'foo',
@@ -214,14 +221,14 @@ describe('createNonChatJobs(segments)', () => {
 
   it('throw if inline_message_id missing when editing inline message', () => {
     expect(() =>
-      createNonChatJobs(null, [
+      createBotScopeJobs(new TelegramUser(12345, true), [
         {
           type: 'unit',
           node: '__ELEMENT__',
           path: '$',
           value: {
             method: 'editMessageText',
-            parameters: {
+            params: {
               text: 'foo',
             },
           },
@@ -234,14 +241,14 @@ describe('createNonChatJobs(segments)', () => {
 
   it('throw if the content is not to be rendered without target chat', () => {
     expect(() =>
-      createNonChatJobs(null, [
+      createBotScopeJobs(new TelegramUser(12345, true), [
         {
           type: 'unit',
           node: '__ELEMENT__',
           path: '$',
           value: {
             method: 'sendMessage',
-            parameters: {
+            params: {
               text: 'foo',
             },
           },

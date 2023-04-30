@@ -453,7 +453,7 @@ including content nodes.
 
 ```js
 <>
-  {makeContainer({ deps:[BasicProfiler] })(
+  {makeContainer({ deps:[BaseProfiler] })(
     (profiler) => async ({ vars: { user, mainDishChoice } }) => {
       const profile = await profiler.getUserProfile(user);
       return <p>Hi, {profile.name}! Here's your {mainDishChoice}</p>;

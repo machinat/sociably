@@ -71,7 +71,7 @@ h1 {
       appIconUrl
         ? `
     <div class="x"></div>
-    <img alt="${appName}" src="${appIconUrl}" />`
+    <img alt="${appName || ''}" src="${appIconUrl}" />`
         : ''
     }
   </div>
@@ -82,7 +82,7 @@ h1 {
 
 <script>
 
-const authUrl = new URL("${encodeURI(callbackUrl)}");
+const authUrl = new URL("${callbackUrl}");
 const redirectQuery =
   new URL(window.location.href)
     .searchParams

@@ -89,8 +89,8 @@ export const createTweetJobs =
         const { type: mediaType, source } = segment.value.attachment;
         if (
           !lastOpenTweet ||
-          lastOpenTweet.request.parameters.poll ||
-          lastOpenTweet.request.parameters.quote_tweet_id ||
+          lastOpenTweet.request.params.poll ||
+          lastOpenTweet.request.params.quote_tweet_id ||
           (lastOpenTweet.mediaSources &&
             (mediaType !== 'photo' ||
               lastTweetMediaType !== 'photo' ||
@@ -177,11 +177,11 @@ export const createDirectMessageJobs = (
   return jobs;
 };
 
-export const createWelcomeMessageJobs = ({ name }: { name?: string }) => {
+export const createWelcomeMessageJobs = (name?: string) => {
   let isCreated = false;
 
   return (
-    _targe: null,
+    _targe: TweetTarget,
     segments: DispatchableSegment<TwitterSegmentValue>[]
   ): TwitterJob[] => {
     if (isCreated || segments.length > 1) {
@@ -219,11 +219,11 @@ export const createWelcomeMessageJobs = ({ name }: { name?: string }) => {
           return {
             method: 'POST',
             href: '1.1/direct_messages/welcome_messages/new.json',
-            parameters: {
+            params: {
               welcome_message: {
                 name,
                 message_data:
-                  dmRequest.parameters.event.message_create.message_data,
+                  dmRequest.params.event.message_create.message_data,
               },
             },
           };

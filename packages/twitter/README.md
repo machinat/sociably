@@ -23,6 +23,12 @@ import Http from '@sociably/http';
 import Twitter from '@sociably/twitter';
 
 const {
+  TWITTER_USER_ID,
+  TWITTER_ACCESS_TOKEN,
+  TWITTER_TOKEN_SECRET,
+  TWITTER_APP_KEY,
+  TWITTER_APP_SECRET,
+  TWITTER_BEARER_TOKEN,
 } = process.env;
 
 const app = Sociably.createApp({
@@ -30,8 +36,16 @@ const app = Sociably.createApp({
     Http.initModule({ /* ... */ }),
   ],
   platforms: [
-    Twitter.intiModule({
+    Twitter.initModule({
       entryPath: '/webhook/twitter',
+      agentSettings: {
+        userId: TWITTER_USER_ID,
+        accessToken: TWITTER_ACCESS_TOKEN,
+        tokenSecret: TWITTER_TOKEN_SECRET,
+      },
+      appKey: TWITTER_APP_KEY,
+      appSecret: TWITTER_APP_SECRET,
+      bearerToken: TWITTER_BEARER_TOKEN,
     }),
   ],
 });

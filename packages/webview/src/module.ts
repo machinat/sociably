@@ -42,14 +42,10 @@ import {
   PlatformUtilitiesI,
   ConfigsI,
 } from './interface';
-import { BotP } from './bot';
-import { ReceiverP } from './receiver';
-import {
-  WebviewConnection,
-  WebviewUserThread,
-  WebviewTopicThread,
-} from './thread';
-import { NoneUser, NoneThread } from './noneAuthenticator';
+import { BotP } from './Bot';
+import { ReceiverP } from './Receiver';
+import WebviewConnection from './Connection';
+import { MemoizedUser, MemoizedThread } from './authenticators/memoized';
 import type {
   WebviewEventContext,
   WebviewDispatchFrame,
@@ -210,10 +206,8 @@ namespace Webview {
       },
 
       { provide: BaseMarshaler.TypeList, withValue: WebviewConnection },
-      { provide: BaseMarshaler.TypeList, withValue: WebviewUserThread },
-      { provide: BaseMarshaler.TypeList, withValue: WebviewTopicThread },
-      { provide: BaseMarshaler.TypeList, withValue: NoneUser },
-      { provide: BaseMarshaler.TypeList, withValue: NoneThread },
+      { provide: BaseMarshaler.TypeList, withValue: MemoizedUser },
+      { provide: BaseMarshaler.TypeList, withValue: MemoizedThread },
 
       { provide: Auth.HttpOperator, withProvider: AuthHttpOperatorP },
       { provide: Auth.Controller, withProvider: AuthControllerP },

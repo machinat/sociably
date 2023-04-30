@@ -10,7 +10,7 @@ import {
   MaybeContainer,
   Interfaceable,
 } from './service';
-import type { DispatchFrame } from './engine/types';
+import type { AnyDispatchFrame } from './engine/types';
 import BaseBotP from './base/Bot';
 import BaseProfilerP from './base/Profiler';
 import BaseMarshalerP from './base/Marshaler';
@@ -33,10 +33,10 @@ type EventListenable<Context> = MaybeContainer<(ctx: Context) => void>;
 type ErrorListenable = MaybeContainer<(err: Error) => void>;
 
 type AnyPlatformUtilities = PlatformUtilities<
-  any,
+  AnyEventContext,
   unknown,
   unknown,
-  any,
+  AnyDispatchFrame,
   unknown
 >;
 
@@ -228,9 +228,11 @@ export default class SociablyApp<
   }
 
   private _createPlatformUtilities(
-    eventMiddlewares: MaybeContainer<EventMiddleware<Context, unknown>>[],
+    eventMiddlewares: MaybeContainer<
+      EventMiddleware<AnyEventContext, unknown>
+    >[],
     dispatchMiddlewares: MaybeContainer<
-      DispatchMiddleware<unknown, any, unknown>
+      DispatchMiddleware<unknown, AnyDispatchFrame, unknown>
     >[]
   ): AnyPlatformUtilities {
     return {
@@ -240,8 +242,8 @@ export default class SociablyApp<
   }
 
   private _createPopEventWrapper(
-    middlewares: MaybeContainer<EventMiddleware<Context, any>>[]
-  ): PopEventWrapper<Context, any> {
+    middlewares: MaybeContainer<EventMiddleware<AnyEventContext, unknown>>[]
+  ): PopEventWrapper<AnyEventContext, unknown> {
     return (makeResponse) => {
       const handlePopping = async (ctx: Context, scope?: ServiceScope) => {
         const response = await makeResponse(ctx);
@@ -285,8 +287,10 @@ export default class SociablyApp<
   }
 
   private _createDispatchWrapper(
-    middlewares: MaybeContainer<DispatchMiddleware<unknown, any, unknown>>[]
-  ): DispatchWrapper<unknown, any, unknown> {
+    middlewares: MaybeContainer<
+      DispatchMiddleware<unknown, AnyDispatchFrame, unknown>
+    >[]
+  ): DispatchWrapper<unknown, AnyDispatchFrame, unknown> {
     return (dispatch) => {
       if (middlewares.length === 0) {
         return dispatch;
@@ -304,7 +308,7 @@ export default class SociablyApp<
         );
       };
 
-      return (frame: DispatchFrame<any, unknown>, scope?: ServiceScope) =>
+      return (frame: AnyDispatchFrame, scope?: ServiceScope) =>
         execute(0, scope || this.serviceSpace.createScope())(frame);
     };
   }

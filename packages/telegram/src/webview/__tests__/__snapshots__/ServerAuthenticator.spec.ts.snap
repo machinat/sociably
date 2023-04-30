@@ -1,99 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`.delegateAuthRequest() on login route 2`] = `
-"
-<!DOCTYPE html>
-<html>
-<head>
-<title>Telegram Webview Login</title>
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1, user-scalable=no\\">
-<meta charset=\\"UTF-8\\">
-<style>
-body {
-  margin:0;
-  font-family: sans-serif;
-}
-.flex { display: flex }
-.center {
-  justify-content: center;
-  align-items: center;
-}
-.column { flex-direction: column }
-.container {
-  width: 100vw;
-  height: 100vh;
-  gap: 1rem;
-}
-.icons { gap: 1.5rem }
-img {
-  width: 5.5rem;
-  height: 5.5rem;
-  object-fit: cover;
-  border-radius: 0.5rem;
-}
-h1 {
-  text-align: center;
-}
-.x {
-  position: relative;
-  margin-top: 1rem;
-  height: 1rem;
-  width: 1rem;
-}
-.x:before,
-.x:after {
-  position: absolute;
-  content: '';
-  width: 100%;
-  height: 1.5px;
-  background-color: black;
-}
-.x:before { transform: rotate(45deg) }
-.x:after { transform: rotate(-45deg) }
-</style>
-</head>
-<body>
-
-<div class=\\"flex center column container\\">
-  <div class=\\"flex center icons\\">
-    <img alt=\\"Telegram\\" src=\\"https://sociably.js.org/img/icon/telegram.png\\" />
-  </div>
-  <h1></h1>
-  <div id=\\"loginButton\\">
-  </div>
-</div>
-
-<script>
-
-const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram\\");
-const redirectQuery =
-  new URL(window.location.href)
-    .searchParams
-    .get('redirectUrl');
-
-if (redirectQuery) {
-  authUrl.searchParams.set('redirectUrl', redirectQuery);
-}
-
-const loginScript = document.createElement('script');
-loginScript.src = 'https://telegram.org/js/telegram-widget.js?18';
-loginScript.setAttribute('async', '');
-loginScript.setAttribute('data-telegram-login', 'MyBot');
-loginScript.setAttribute('data-size', 'large');
-loginScript.setAttribute('data-radius', '20');
-loginScript.setAttribute('data-auth-url', authUrl.href);
-loginScript.setAttribute('data-request-access', 'write');
-
-const button = document.getElementById('loginButton');
-button.append(loginScript);
-
-</script>
-</body>
-</html>
-"
-`;
-
-exports[`.delegateAuthRequest() on login route 3`] = `
+exports[`.delegateAuthRequest() on login route login page with specified \`appName\` & \`appIconUrl\` 1`] = `
 "
 <!DOCTYPE html>
 <html>
@@ -160,7 +67,193 @@ h1 {
 
 <script>
 
-const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram\\");
+const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram?botId=12345\\");
+const redirectQuery =
+  new URL(window.location.href)
+    .searchParams
+    .get('redirectUrl');
+
+if (redirectQuery) {
+  authUrl.searchParams.set('redirectUrl', redirectQuery);
+}
+
+const loginScript = document.createElement('script');
+loginScript.src = 'https://telegram.org/js/telegram-widget.js?18';
+loginScript.setAttribute('async', '');
+loginScript.setAttribute('data-telegram-login', 'MyBot');
+loginScript.setAttribute('data-size', 'large');
+loginScript.setAttribute('data-radius', '20');
+loginScript.setAttribute('data-auth-url', authUrl.href);
+loginScript.setAttribute('data-request-access', 'write');
+
+const button = document.getElementById('loginButton');
+button.append(loginScript);
+
+</script>
+</body>
+</html>
+"
+`;
+
+exports[`.delegateAuthRequest() on login route render login page with Telegarm login button 1`] = `
+"
+<!DOCTYPE html>
+<html>
+<head>
+<title>Telegram Webview Login</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1, user-scalable=no\\">
+<meta charset=\\"UTF-8\\">
+<style>
+body {
+  margin:0;
+  font-family: sans-serif;
+}
+.flex { display: flex }
+.center {
+  justify-content: center;
+  align-items: center;
+}
+.column { flex-direction: column }
+.container {
+  width: 100vw;
+  height: 100vh;
+  gap: 1rem;
+}
+.icons { gap: 1.5rem }
+img {
+  width: 5.5rem;
+  height: 5.5rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+h1 {
+  text-align: center;
+}
+.x {
+  position: relative;
+  margin-top: 1rem;
+  height: 1rem;
+  width: 1rem;
+}
+.x:before,
+.x:after {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 1.5px;
+  background-color: black;
+}
+.x:before { transform: rotate(45deg) }
+.x:after { transform: rotate(-45deg) }
+</style>
+</head>
+<body>
+
+<div class=\\"flex center column container\\">
+  <div class=\\"flex center icons\\">
+    <img alt=\\"Telegram\\" src=\\"https://sociably.js.org/img/icon/telegram.png\\" />
+  </div>
+  <h1></h1>
+  <div id=\\"loginButton\\">
+  </div>
+</div>
+
+<script>
+
+const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram?botId=12345\\");
+const redirectQuery =
+  new URL(window.location.href)
+    .searchParams
+    .get('redirectUrl');
+
+if (redirectQuery) {
+  authUrl.searchParams.set('redirectUrl', redirectQuery);
+}
+
+const loginScript = document.createElement('script');
+loginScript.src = 'https://telegram.org/js/telegram-widget.js?18';
+loginScript.setAttribute('async', '');
+loginScript.setAttribute('data-telegram-login', 'MyBot');
+loginScript.setAttribute('data-size', 'large');
+loginScript.setAttribute('data-radius', '20');
+loginScript.setAttribute('data-auth-url', authUrl.href);
+loginScript.setAttribute('data-request-access', 'write');
+
+const button = document.getElementById('loginButton');
+button.append(loginScript);
+
+</script>
+</body>
+</html>
+"
+`;
+
+exports[`.delegateAuthRequest() on login route with \`chatId\` & \`redirectUrl\` specified 1`] = `
+"
+<!DOCTYPE html>
+<html>
+<head>
+<title>Telegram Webview Login</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1, user-scalable=no\\">
+<meta charset=\\"UTF-8\\">
+<style>
+body {
+  margin:0;
+  font-family: sans-serif;
+}
+.flex { display: flex }
+.center {
+  justify-content: center;
+  align-items: center;
+}
+.column { flex-direction: column }
+.container {
+  width: 100vw;
+  height: 100vh;
+  gap: 1rem;
+}
+.icons { gap: 1.5rem }
+img {
+  width: 5.5rem;
+  height: 5.5rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+h1 {
+  text-align: center;
+}
+.x {
+  position: relative;
+  margin-top: 1rem;
+  height: 1rem;
+  width: 1rem;
+}
+.x:before,
+.x:after {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 1.5px;
+  background-color: black;
+}
+.x:before { transform: rotate(45deg) }
+.x:after { transform: rotate(-45deg) }
+</style>
+</head>
+<body>
+
+<div class=\\"flex center column container\\">
+  <div class=\\"flex center icons\\">
+    <img alt=\\"Telegram\\" src=\\"https://sociably.js.org/img/icon/telegram.png\\" />
+  </div>
+  <h1></h1>
+  <div id=\\"loginButton\\">
+  </div>
+</div>
+
+<script>
+
+const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=%2Fwebview%2Fhello_world\\");
 const redirectQuery =
   new URL(window.location.href)
     .searchParams

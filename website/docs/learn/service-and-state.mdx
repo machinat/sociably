@@ -106,32 +106,32 @@ Check the `src/services/useUserProfile.ts` file, you should codes like:
 ```ts {2-4,10,16-18} title="src/services/useUserProfile.ts"
 import {
   makeFactoryProvider,
-  BasicProfiler,
+  BaseProfiler,
   StateController,
   SociablyUser,
   SociablyProfile,
 } from '@sociably/core';
 // ...
 const useUserProfile =
-  (profiler: BasicProfiler, stateController: StateController) =>
+  (profiler: BaseProfiler, stateController: StateController) =>
   async (user: SociablyUser) => {
     // ...
     return profile;
   };
 
 export default makeFactoryProvider({
-  deps: [BasicProfiler, StateController],
+  deps: [BaseProfiler, StateController],
 })(useUserProfile);
 ```
 
 `useUserProfile` is a service provider that requires its `deps` just like a container.
 The difference is a provider can be required as `deps` so we can use it in the handler.
 
-`useUserProfile` uses two built-in services: `BasicProfiler` and `StateController`.
+`useUserProfile` uses two built-in services: `BaseProfiler` and `StateController`.
 
 ### Get User Profile
 
-`BasicProfiler` fetches a user’s profile from the chat platform.
+`BaseProfiler` fetches a user’s profile from the chat platform.
 Like:
 
 ```ts title="src/services/useUserProfile.ts"

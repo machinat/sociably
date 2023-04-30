@@ -20,8 +20,8 @@ type MetaWebhookReceiverOptions<Context extends MetaApiEventContext> = {
   platform: Context['platform'];
   makeEventsFromUpdate: (raw) => Context['event'][];
   objectType: string;
-  appSecret?: string;
-  verifyToken?: string;
+  appSecret: string;
+  verifyToken: string;
   shouldVerifyRequest?: boolean;
   shouldHandleChallenge?: boolean;
   popEventWrapper: PopEventWrapper<Context, null>;
@@ -70,7 +70,7 @@ const handleWebhook = <Context extends MetaApiEventContext>({
     }
 
     // validate request signature
-    if (shouldVerifyRequest && appSecret !== undefined) {
+    if (shouldVerifyRequest) {
       const hmac = crypto.createHmac('sha1', appSecret);
 
       hmac.update(rawBody, 'utf8');

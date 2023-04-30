@@ -1,4 +1,4 @@
-import type { SociablyUser } from '../types';
+import type { SociablyUser, SociablyChannel } from '../types';
 import { makeInterface, makeClassProvider } from '../service';
 
 export interface SociablyProfile {
@@ -12,42 +12,55 @@ export interface SociablyProfile {
   data: any;
 }
 
-export interface UserProfiler<User extends SociablyUser> {
-  getUserProfile(user: User): Promise<null | SociablyProfile>;
+export interface UserProfiler<
+  Channel extends SociablyChannel,
+  User extends SociablyUser
+> {
+  getUserProfile(channel: Channel, user: User): Promise<null | SociablyProfile>;
 }
+
+type AnyUserProfiler = UserProfiler<SociablyChannel, SociablyUser>;
 
 /**
  * @category Base
  */
-export class BasicProfiler implements UserProfiler<SociablyUser> {
-  static PlatformMap = makeInterface<UserProfiler<SociablyUser>>({
+export class BaseProfiler implements AnyUserProfiler {
+  static PlatformMap = makeInterface<AnyUserProfiler>({
     name: 'ProfilerPlatformMap',
     polymorphic: true,
   });
 
-  private _platformMapping: Map<string, UserProfiler<SociablyUser>>;
+  private _platformMapping: Map<string, AnyUserProfiler>;
 
-  constructor(platformMapping: Map<string, UserProfiler<SociablyUser>>) {
+  constructor(platformMapping: Map<string, AnyUserProfiler>) {
     this._platformMapping = platformMapping;
   }
 
-  async getUserProfile(user: SociablyUser): Promise<null | SociablyProfile> {
+  async getUserProfile(
+    channel: SociablyChannel,
+    user: SociablyUser
+  ): Promise<null | SociablyProfile> {
+    if (channel.platform !== user.platform) {
+      throw new TypeError(
+        `channel (${channel.platform}) and user (${user.platform}) platforms mismatch`
+      );
+    }
     const profiler = this._platformMapping.get(user.platform);
     if (!profiler) {
       throw new TypeError(
-        `user of platform '${user.platform}' is not supported`
+        `getting profile on "${user.platform}" platform is not supported`
       );
     }
 
-    return profiler.getUserProfile(user);
+    return profiler.getUserProfile(channel, user);
   }
 }
 
 const ProfilerP = makeClassProvider({
   lifetime: 'transient',
-  deps: [BasicProfiler.PlatformMap],
-})(BasicProfiler);
+  deps: [BaseProfiler.PlatformMap],
+})(BaseProfiler);
 
-type ProfilerP = UserProfiler<SociablyUser>;
+type ProfilerP = AnyUserProfiler;
 
 export default ProfilerP;

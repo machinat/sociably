@@ -31,7 +31,7 @@ Array [
       "request": Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": undefined,
           "geo": Object {
@@ -81,7 +81,7 @@ Array [
       "request": Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": true,
           "geo": undefined,
@@ -141,7 +141,7 @@ Array [
       "mediaSources": Array [
         Object {
           "id": "123",
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
@@ -149,7 +149,7 @@ Array [
           "type": "id",
         },
         Object {
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": "tweet_image",
             "shared": undefined,
@@ -167,7 +167,7 @@ Array [
             ],
             "type": "Buffer",
           },
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": "tweet_image",
             "media_type": "image/jpeg",
@@ -180,7 +180,7 @@ Array [
       "request": Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": true,
           "geo": undefined,
@@ -222,7 +222,7 @@ Array [
       "request": Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": true,
           "geo": Object {
@@ -256,7 +256,7 @@ Array [
       "request": Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "text": "國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國",
         },
       },
@@ -280,7 +280,7 @@ Array [
       "request": Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國",
         },
       },

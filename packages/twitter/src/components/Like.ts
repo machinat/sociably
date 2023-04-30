@@ -26,7 +26,7 @@ export const Like: TwitterComponent<
       request: {
         method: 'POST',
         href: '2/users/:id/likes',
-        parameters: { tweet_id: node.props.tweetId },
+        params: { tweet_id: node.props.tweetId },
       },
       accomplishRequest: (target, request) => ({
         ...request,

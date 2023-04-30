@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
+import WhatsAppAgent from '../Agent';
 import WhatsAppChat from '../Chat';
 import WhatsAppUser from '../User';
 import { WhatsAppReceiver } from '../Receiver';
@@ -56,7 +57,9 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
+      verifyToken: '',
       shouldVerifyRequest: false,
+      appSecret: '',
     });
 
     const req = createReq({
@@ -78,7 +81,9 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
+      verifyToken: '',
       shouldVerifyRequest: false,
+      appSecret: '',
     });
 
     const body = {
@@ -141,6 +146,7 @@ describe('handling POST', () => {
       expect(context.platform).toBe('whatsapp');
       expect(context.bot).toBe(bot);
 
+      expect(context.event.channel).toEqual(new WhatsAppAgent('1234567890'));
       expect(context.event.user).toEqual(
         new WhatsAppUser('9876543210', { name: 'John' })
       );
@@ -170,7 +176,9 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
+      verifyToken: '',
       shouldVerifyRequest: false,
+      appSecret: '',
     });
 
     await receiver.handleRequest(

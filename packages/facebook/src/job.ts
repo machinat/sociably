@@ -1,11 +1,11 @@
 import { formatNode, getTimeId } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
+import type { MetaApiJob, MetaApiJobRequest } from '@sociably/meta-api';
 import type {
-  MetaApiJob,
-  MetaBatchRequest,
-  FileInfo,
-} from '@sociably/meta-api';
-import type { FacebookSegmentValue, MessagingOptions } from './types';
+  FacebookSegmentValue,
+  MessagingOptions,
+  AttachFileValue,
+} from './types';
 import type FacebookChat from './Chat';
 import FacebookPage from './Page';
 import type InteractTarget from './InteractTarget';
@@ -23,7 +23,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
   let isOneTimeTokenUsed = false;
 
   return (
-    thread: FacebookChat,
+    chat: FacebookChat,
     segments: DispatchableSegment<FacebookSegmentValue>[]
   ): MetaApiJob[] => {
     const jobs: MetaApiJob[] = new Array(segments.length);
@@ -31,41 +31,37 @@ export const createChatJobs = (options?: MessagingOptions) => {
     for (let i = 0; i < segments.length; i += 1) {
       const { node, value } = segments[i];
 
-      let body: { [k: string]: unknown };
+      let params: { [k: string]: unknown };
       let relativeUrl: string;
-      let assetTag: undefined | string;
-      let fileData: undefined | string | Buffer | NodeJS.ReadableStream;
-      let fileInfo: undefined | FileInfo;
+      let file: undefined | AttachFileValue;
 
       if (typeof value === 'string') {
         relativeUrl = PATH_MESSAGES;
-        body = { message: { text: value } };
+        params = { message: { text: value } };
       } else if (typeof value === 'object' && value.type === 'message') {
-        body = value.params;
+        ({ params } = value);
         relativeUrl = value.apiPath;
-        assetTag = value.assetTag; // eslint-disable-line prefer-destructuring
-        fileData = value.attachFile?.data;
-        fileInfo = value.attachFile?.info;
+        file = value.attachFile;
       } else {
         throw new TypeError(
           `${formatNode(node)} is invalid to be sent in a chat`
         );
       }
 
-      body.recipient = thread.target;
+      params.recipient = chat.target;
 
       if (options && relativeUrl === PATH_MESSAGES) {
-        if (body.message) {
-          if (body.messaging_type === undefined) {
-            body.messaging_type =
+        if (params.message) {
+          if (params.messaging_type === undefined) {
+            params.messaging_type =
               options.messagingType || MESSENGER_MESSAGING_TYPE_RESPONSE;
-            body.tag = options.tag;
+            params.tag = options.tag;
           }
 
-          body.notification_type =
-            body.notification_type || options.notificationType;
+          params.notification_type =
+            params.notification_type || options.notificationType;
 
-          body.persona_id = body.persona_id || options.personaId;
+          params.persona_id = params.persona_id || options.personaId;
 
           if (options.oneTimeNotifToken) {
             if (isOneTimeTokenUsed) {
@@ -75,28 +71,27 @@ export const createChatJobs = (options?: MessagingOptions) => {
             }
 
             isOneTimeTokenUsed = true;
-            body.recipient = {
+            params.recipient = {
               one_time_notif_token: options.oneTimeNotifToken,
             };
           }
         } else if (
-          body.sender_action === 'typing_on' ||
-          body.sender_action === 'typing_off'
+          params.sender_action === 'typing_on' ||
+          params.sender_action === 'typing_off'
         ) {
-          body.persona_id = body.persona_id || options.personaId;
+          params.persona_id = params.persona_id || options.personaId;
         }
       }
 
       jobs[i] = {
         request: {
           method: POST,
-          relative_url: relativeUrl,
-          body,
+          relativeUrl,
+          params,
         },
-        key: thread.uid,
-        assetTag,
-        fileData,
-        fileInfo,
+        key: chat.uid,
+        channel: chat.page,
+        file,
       };
     }
 
@@ -139,13 +134,12 @@ export const createChatAttachmentJobs = (
 
   return [
     {
-      fileData: value.attachFile?.data,
-      fileInfo: value.attachFile?.info,
-      assetTag: value.assetTag,
+      channel: page,
+      file: value.attachFile,
       request: {
         method: POST,
-        relative_url: PATH_MESSAGE_ATTACHMENTS,
-        body: value.params,
+        relativeUrl: PATH_MESSAGE_ATTACHMENTS,
+        params: value.params,
       },
     },
   ];
@@ -159,16 +153,20 @@ export const createPostJobs = (
     throw new TypeError('more than 1 element received');
   }
 
+  const channel =
+    feedOrAlbum instanceof FacebookPage ? feedOrAlbum : feedOrAlbum.channel;
+
   const [segment] = segments;
   const { type: segType, value, node } = segment;
 
   if (segType === 'text') {
     return [
       {
+        channel,
         request: {
           method: 'POST',
-          relative_url: PATH_FEED,
-          body: { message: value },
+          relativeUrl: PATH_FEED,
+          params: { message: value },
         },
       },
     ];
@@ -184,31 +182,29 @@ export const createPostJobs = (
   if (value.apiPath === PATH_PHOTOS) {
     return [
       {
+        channel,
         request: {
           method: 'POST',
-          relative_url:
+          relativeUrl:
             feedOrAlbum instanceof FacebookPage
               ? PATH_PHOTOS
               : `${feedOrAlbum.id}/photos`,
-          body: value.params,
+          params: value.params,
         },
-        fileData: value.attachFile?.data,
-        fileInfo: value.attachFile?.info,
-        assetTag: value.assetTag,
+        file: value.attachFile,
       },
     ];
   }
 
-  const { params, photos, attachFile, assetTag } = value;
+  const { params, photos, attachFile } = value;
   const postJob: MetaApiJob = {
+    channel,
     request: {
       method: 'POST',
-      relative_url: PATH_FEED,
-      body: params,
+      relativeUrl: PATH_FEED,
+      params,
     },
-    fileData: attachFile?.data,
-    fileInfo: attachFile?.info,
-    assetTag,
+    file: attachFile,
   };
 
   if (!photos) {
@@ -220,8 +216,8 @@ export const createPostJobs = (
     keys: photoResultKeys,
     accomplishRequest: (request, keys, getResult) => ({
       ...request,
-      body: {
-        ...request.body,
+      params: {
+        ...request.params,
         attached_media: keys.map((key) => ({
           media_fbid: getResult(key, '$.id'),
         })),
@@ -230,44 +226,43 @@ export const createPostJobs = (
   };
 
   const photoJobs = photos.map((photoValue, i) => ({
+    channel,
     request: {
       method: 'POST',
-      relative_url:
+      relativeUrl:
         feedOrAlbum instanceof FacebookPage
           ? PATH_PHOTOS
           : `${feedOrAlbum.id}/photos`,
-      body: {
+      params: {
         ...photoValue.params,
         published: false,
         temporary: value.params.scheduled_publish_time ? true : undefined,
       },
     },
-    fileData: photoValue.attachFile?.data,
-    fileInfo: photoValue.attachFile?.info,
-    assetTag: photoValue.assetTag,
+    file: photoValue.attachFile,
     registerResult: photoResultKeys[i],
   }));
   return [...photoJobs, postJob];
 };
 
 const accomplishContiuousCommentRequest = (
-  request: MetaBatchRequest,
+  request: MetaApiJobRequest,
   [lastCommentKey]: [string],
   getResult: (key: string, path: string) => string
 ) => ({
   ...request,
-  relative_url: `${getResult(lastCommentKey, '$.id')}/comments`,
+  relativeUrl: `${getResult(lastCommentKey, '$.id')}/comments`,
 });
 
 const accomplishPhotoCommentRequest = (
-  request: MetaBatchRequest,
+  request: MetaApiJobRequest,
   [photoKey, lastCommentKey]: [string] | [string, string],
   getResult: (key: string, path: string) => string
 ) => {
   const requestWithPhotoId = {
     ...request,
-    body: {
-      ...request.body,
+    params: {
+      ...request.params,
       attachment_id: getResult(photoKey, '$.id'),
     },
   };
@@ -304,10 +299,11 @@ export const createInteractJobs = (
 
     if (segType === 'text') {
       jobs.push({
+        channel: target.channel,
         request: {
           method: 'POST',
-          relative_url: initialCommentApiPath,
-          body: { message: segValue },
+          relativeUrl: initialCommentApiPath,
+          params: { message: segValue },
         },
         registerResult: registerResultKey,
         consumeResult: consumeLastResult,
@@ -317,23 +313,23 @@ export const createInteractJobs = (
 
       const photoJob = photo
         ? {
+            channel: target.channel,
             request: {
               method: 'POST',
-              relative_url: PATH_PHOTOS,
-              body: photo.params,
+              relativeUrl: PATH_PHOTOS,
+              params: photo.params,
             },
-            fileData: photo.attachFile?.data,
-            fileInfo: photo.attachFile?.info,
-            assetTag: photo.assetTag,
+            file: photo.attachFile,
             registerResult: getTimeId(),
           }
         : null;
 
       const commentJob = {
+        channel: target.channel,
         request: {
           method: 'POST',
-          relative_url: initialCommentApiPath,
-          body: { ...params },
+          relativeUrl: initialCommentApiPath,
+          params: { ...params },
         },
         registerResult: registerResultKey,
         consumeResult: photoJob

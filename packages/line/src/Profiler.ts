@@ -1,6 +1,7 @@
 import { makeClassProvider } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import BotP from './Bot';
+import type LineChnnel from './Channel';
 import type LineChat from './Chat';
 import type LineUser from './User';
 import LineUserProfile from './UserProfile';
@@ -15,7 +16,7 @@ type GetUserProfileOptions = {
 /**
  * @category Provider
  */
-export class LineProfiler implements UserProfiler<LineUser> {
+export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
   bot: BotP;
   platform = LINE;
 
@@ -24,6 +25,7 @@ export class LineProfiler implements UserProfiler<LineUser> {
   }
 
   async getUserProfile(
+    channel: LineChnnel,
     user: LineUser,
     { inChat }: GetUserProfileOptions = {}
   ): Promise<LineUserProfile> {
@@ -35,10 +37,11 @@ export class LineProfiler implements UserProfiler<LineUser> {
       ? `v2/bot/room/${inChat.id}/member/${user.id}`
       : `v2/bot/profile/${user.id}`;
 
-    const profileData: LineRawUserProfile = await this.bot.makeApiCall(
-      'GET',
-      requestApi
-    );
+    const profileData: LineRawUserProfile = await this.bot.makeApiCall({
+      channel,
+      method: 'GET',
+      path: requestApi,
+    });
 
     return new LineUserProfile(profileData);
   }
@@ -46,15 +49,19 @@ export class LineProfiler implements UserProfiler<LineUser> {
   /**
    * Get profile object of a group chat. Throws if a user/room chat is received.
    */
-  async getGroupProfile(chat: LineChat): Promise<LineGroupProfile> {
+  async getGroupProfile(
+    channel: LineChnnel,
+    chat: LineChat
+  ): Promise<LineGroupProfile> {
     if (chat.type !== 'group') {
       throw new Error(`expect a group chat, got ${chat.type}`);
     }
 
-    const groupSummary: LineGroupData = await this.bot.makeApiCall(
-      'GET',
-      `v2/bot/group/${chat.id}/summary`
-    );
+    const groupSummary: LineGroupData = await this.bot.makeApiCall({
+      channel,
+      method: 'GET',
+      path: `v2/bot/group/${chat.id}/summary`,
+    });
 
     return new LineGroupProfile(groupSummary);
   }

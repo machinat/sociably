@@ -1,5 +1,6 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import FacebookPage from './Page';
 import { FACEBOOK, FB } from './constant';
 import type { MessagingTarget } from './types';
 
@@ -51,6 +52,10 @@ class FacebookChat<Type extends ChatType = ChatType>
     return (
       target.id || target.user_ref || target.post_id || target.comment_id || '-'
     );
+  }
+
+  get page(): FacebookPage {
+    return new FacebookPage(this.pageId);
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {

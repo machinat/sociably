@@ -15,15 +15,21 @@ const updateAssetsFromSuccessfulJobs = async (
   const updatingPromises: Promise<boolean>[] = [];
 
   for (let i = 0; i < results.length; i += 1) {
+    const { target } = jobs[i];
     const result = results[i];
-    if (result) {
+
+    if (result && target) {
       const { uploadedMedia } = result;
 
       if (uploadedMedia) {
         for (const { assetTag, result: mediaResult } of uploadedMedia) {
           if (assetTag) {
             updatingPromises.push(
-              manager.saveMedia(assetTag, mediaResult.media_id_string)
+              manager.saveMedia(
+                target.agent,
+                assetTag,
+                mediaResult.media_id_string
+              )
             );
           }
         }

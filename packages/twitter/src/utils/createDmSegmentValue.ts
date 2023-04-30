@@ -10,7 +10,7 @@ const createDmSegmentValue = (
   request: {
     method: 'POST',
     href: '1.1/direct_messages/events/new.json',
-    parameters: {
+    params: {
       event: {
         type: 'message_create',
         message_create: {
@@ -30,11 +30,11 @@ const createDmSegmentValue = (
   },
   accomplishRequest: (target: TwitterChat, request, mediaResults) => {
     // eslint-disable-next-line no-param-reassign
-    request.parameters.event.message_create.target.recipient_id = target.id;
+    request.params.event.message_create.target.recipient_id = target.userId;
 
     if (mediaResults) {
       // eslint-disable-next-line no-param-reassign
-      request.parameters.event.message_create.message_data.attachment.media.id =
+      request.params.event.message_create.message_data.attachment.media.id =
         mediaResults[0];
     }
     return request;

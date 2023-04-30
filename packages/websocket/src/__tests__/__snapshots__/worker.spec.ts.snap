@@ -7,7 +7,7 @@ Object {
       "error": undefined,
       "job": Object {
         "target": Object {
-          "id": "#conn",
+          "id": "#conn1",
           "serverId": "#server",
           "type": "connection",
         },
@@ -32,7 +32,7 @@ Object {
       "error": undefined,
       "job": Object {
         "target": Object {
-          "name": "somthing",
+          "key": "somthing",
           "type": "topic",
         },
         "values": Array [
@@ -61,8 +61,9 @@ Object {
       "error": undefined,
       "job": Object {
         "target": Object {
-          "type": "user",
-          "userUid": "jojo_doe",
+          "id": "#conn2",
+          "serverId": "#server",
+          "type": "connection",
         },
         "values": Array [
           Object {

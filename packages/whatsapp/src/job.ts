@@ -2,6 +2,7 @@ import type { DispatchableSegment } from '@sociably/core/engine';
 import { getTimeId, formatNode } from '@sociably/core/utils';
 import type { MetaApiJob } from '@sociably/meta-api';
 import type WhatsAppChat from './Chat';
+import type WhatsAppAgent from './Agent';
 import { WhatsAppSegmentValue } from './types';
 
 export const createChatJobs = (
@@ -14,13 +15,14 @@ export const createChatJobs = (
     if (segment.type === 'text') {
       jobs.push({
         key: chat.uid,
+        channel: chat.agent,
         request: {
           method: 'POST',
-          relative_url: `${chat.businessNumber}/messages`,
-          body: {
+          relativeUrl: `${chat.agentNumberId}/messages`,
+          params: {
             type: 'text',
             text: segment.value,
-            to: chat.customerNumber,
+            to: chat.userNumberId,
             messaging_product: 'whatsapp',
           },
         },
@@ -30,31 +32,35 @@ export const createChatJobs = (
       const mediaResultKey = mediaFile ? getTimeId() : undefined;
 
       if (mediaFile) {
+        const {
+          type: fileType,
+          data: fileData,
+          info: fileInfo,
+          assetTag,
+        } = mediaFile;
+
         jobs.push({
           key: chat.uid,
+          channel: chat.agent,
           request: {
             method: 'POST',
-            relative_url: `${chat.businessNumber}/media`,
-            body: {
-              type: mediaFile.type,
-              messaging_product: 'whatsapp',
-            },
+            relativeUrl: `${chat.agentNumberId}/media`,
+            params: { type: fileType, messaging_product: 'whatsapp' },
           },
-          fileData: mediaFile.data,
-          fileInfo: mediaFile.info,
-          assetTag: mediaFile.assetTag,
+          file: { data: fileData, info: fileInfo, assetTag },
           registerResult: mediaResultKey,
         });
       }
 
       jobs.push({
         key: chat.uid,
+        channel: chat.agent,
         request: {
           method: 'POST',
-          relative_url: `${chat.businessNumber}/messages`,
-          body: {
+          relativeUrl: `${chat.agentNumberId}/messages`,
+          params: {
             ...message,
-            to: chat.customerNumber,
+            to: chat.userNumberId,
             messaging_product: 'whatsapp',
           },
         },
@@ -62,13 +68,13 @@ export const createChatJobs = (
           ? {
               keys: [mediaResultKey],
               accomplishRequest: (request, [key], getValue) => {
-                const body = request.body as Record<string, any>;
+                const params = request.params as Record<string, any>;
                 return {
                   ...request,
-                  body: {
-                    ...body,
-                    [body.type]: {
-                      ...body[body.type],
+                  params: {
+                    ...params,
+                    [params.type]: {
+                      ...params[params.type],
                       id: getValue(key, '$.id'),
                     },
                   },
@@ -83,36 +89,32 @@ export const createChatJobs = (
   return jobs;
 };
 
-export const createUploadingMediaJobs =
-  (businessNumber: string) =>
-  (
-    _: null,
-    segments: DispatchableSegment<WhatsAppSegmentValue>[]
-  ): MetaApiJob[] => {
-    if (segments.length !== 1) {
-      throw new TypeError('there should be only one media to be uploaded');
-    }
-    if (segments[0].type === 'text' || !segments[0].value.mediaFile) {
-      throw new TypeError(
-        `${formatNode(segments[0].node, true)} is not a media with file data`
-      );
-    }
+export const createUploadingMediaJobs = (
+  agent: WhatsAppAgent,
+  segments: DispatchableSegment<WhatsAppSegmentValue>[]
+): MetaApiJob[] => {
+  if (segments.length !== 1) {
+    throw new TypeError('there should be only one media to be uploaded');
+  }
+  if (segments[0].type === 'text' || !segments[0].value.mediaFile) {
+    throw new TypeError(
+      `${formatNode(segments[0].node, true)} is not a media with file data`
+    );
+  }
 
-    const { mediaFile } = segments[0].value;
-    return [
-      {
-        key: undefined,
-        request: {
-          method: 'POST',
-          relative_url: `${businessNumber}/media`,
-          body: {
-            type: mediaFile.type,
-            messaging_product: 'whatsapp',
-          },
-        },
-        fileData: mediaFile.data,
-        fileInfo: mediaFile.info,
-        assetTag: mediaFile.assetTag,
+  const {
+    mediaFile: { type: fileType, data: fileData, info: fileInfo, assetTag },
+  } = segments[0].value;
+  return [
+    {
+      key: undefined,
+      channel: agent,
+      request: {
+        method: 'POST',
+        relativeUrl: `${agent.numberId}/media`,
+        params: { type: fileType, messaging_product: 'whatsapp' },
       },
-    ];
-  };
+      file: { data: fileData, info: fileInfo, assetTag },
+    },
+  ];
+};

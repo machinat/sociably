@@ -1,10 +1,11 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant';
+import LineChannel from './Channel';
 import type LineUser from './User';
 import type { LineSource } from './types';
 
-type LineChatType = 'room' | 'group' | 'user';
+export type LineChatType = 'room' | 'group' | 'user';
 
 type LineChatValue = {
   channel: string;
@@ -59,6 +60,10 @@ class LineChat implements SociablyThread, MarshallableInstance<LineChatValue> {
 
   get uid(): string {
     return `line.${this.channelId}.${this.id}`;
+  }
+
+  get channel(): LineChannel {
+    return new LineChannel(this.channelId);
   }
 
   toJSONValue(): LineChatValue {

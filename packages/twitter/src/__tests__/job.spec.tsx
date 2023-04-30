@@ -54,7 +54,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:6',
         value: {
           type: 'action',
-          request: { method: 'POST', href: '1.1/foo', parameters: null },
+          request: { method: 'POST', href: '1.1/foo', params: {} },
           accomplishRequest: null,
           mediaSources: null,
         },
@@ -95,7 +95,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -111,7 +111,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": undefined,
             "reply": Object {
@@ -124,7 +124,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -142,7 +142,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -160,7 +160,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "1.1/foo",
           "method": "POST",
-          "parameters": null,
+          "params": Object {},
         },
       ]
     `);
@@ -276,7 +276,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -291,7 +291,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -309,7 +309,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -327,7 +327,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -348,7 +348,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -403,7 +403,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": undefined,
             "reply": Object {
@@ -416,7 +416,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -519,7 +519,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": undefined,
             "poll": Object {
@@ -536,7 +536,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -554,7 +554,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": undefined,
             "quote_tweet_id": "98765",
@@ -568,7 +568,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -586,7 +586,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -604,7 +604,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         Object {
           "href": "2/tweets",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "direct_message_deep_link": undefined,
             "media": Object {
               "media_ids": Array [
@@ -636,7 +636,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             request: {
               method: 'POST',
               href: '1.1/direct_messages/foo',
-              parameters: {},
+              params: {},
             },
             mediaSources: null,
             accomplishRequest: null,
@@ -678,7 +678,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
         path: '$:4',
         value: {
           type: 'action',
-          request: { method: 'POST', href: '1.1/foo', parameters: null },
+          request: { method: 'POST', href: '1.1/foo', params: {} },
           accomplishRequest: null,
           mediaSources: null,
         },
@@ -701,7 +701,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
         Object {
           "href": "1.1/direct_messages/events/new.json",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "event": Object {
               "message_create": Object {
                 "message_data": Object {
@@ -719,7 +719,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
         Object {
           "href": "1.1/direct_messages/events/new.json",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "event": Object {
               "message_create": Object {
                 "message_data": Object {
@@ -742,7 +742,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
         Object {
           "href": "1.1/direct_messages/events/new.json",
           "method": "POST",
-          "parameters": Object {
+          "params": Object {
             "event": Object {
               "message_create": Object {
                 "message_data": Object {
@@ -765,7 +765,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
         Object {
           "href": "1.1/foo",
           "method": "POST",
-          "parameters": null,
+          "params": Object {},
         },
       ]
     `);
@@ -784,7 +784,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
             request: {
               method: 'POST',
               href: '2/tweet',
-              parameters: {},
+              params: {},
             },
             mediaSources: null,
             accomplishRequest: null,
@@ -799,18 +799,19 @@ describe('createDmSegmentValue(chat, segment)', () => {
 
 describe('createWelcomeMessageJobs', () => {
   test('with text segment', async () => {
-    const jobs = createWelcomeMessageJobs({ name: 'foo' })(null, [
-      { type: 'text', node: 'Foo!', value: 'Foo!', path: '$' },
-    ]);
+    const jobs = createWelcomeMessageJobs('foo')(
+      new TweetTarget('1234567890'),
+      [{ type: 'text', node: 'Foo!', value: 'Foo!', path: '$' }]
+    );
     expect(jobs).toMatchSnapshot();
 
     const [job] = jobs;
-    expect(job.accomplishRequest!(job.target, job.request, null))
+    expect(job.accomplishRequest!(job.target!, job.request, null))
       .toMatchInlineSnapshot(`
       Object {
         "href": "1.1/direct_messages/welcome_messages/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "welcome_message": Object {
             "message_data": Object {
               "attachment": undefined,
@@ -824,29 +825,32 @@ describe('createWelcomeMessageJobs', () => {
   });
 
   test('with media segment', async () => {
-    const jobs = createWelcomeMessageJobs({ name: 'foo' })(null, [
-      {
-        type: 'unit',
-        node: <img src="http://..." />,
-        value: {
-          type: 'media',
-          attachment: {
-            type: 'photo',
-            source: { type: 'url', url: 'http://...', parameters: {} },
+    const jobs = createWelcomeMessageJobs('foo')(
+      new TweetTarget('1234567890'),
+      [
+        {
+          type: 'unit',
+          node: <img src="http://..." />,
+          value: {
+            type: 'media',
+            attachment: {
+              type: 'photo',
+              source: { type: 'url', url: 'http://...', params: {} },
+            },
           },
+          path: '$',
         },
-        path: '$',
-      },
-    ]);
+      ]
+    );
     expect(jobs).toMatchSnapshot();
 
     const [job] = jobs;
-    expect(job.accomplishRequest!(job.target, job.request, ['1234567890']))
+    expect(job.accomplishRequest!(job.target!, job.request, ['1234567890']))
       .toMatchInlineSnapshot(`
       Object {
         "href": "1.1/direct_messages/welcome_messages/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "welcome_message": Object {
             "message_data": Object {
               "attachment": Object {
@@ -865,26 +869,29 @@ describe('createWelcomeMessageJobs', () => {
   });
 
   test('with dm segment', async () => {
-    const jobs = createWelcomeMessageJobs({ name: 'foo' })(null, [
-      {
-        type: 'unit',
-        node: <p />,
-        value: createDmSegmentValue('Foo!', {
-          type: 'photo',
-          source: { type: 'id', id: '1234567890' },
-        }),
-        path: '$',
-      },
-    ]);
+    const jobs = createWelcomeMessageJobs('foo')(
+      new TweetTarget('1234567890'),
+      [
+        {
+          type: 'unit',
+          node: <p />,
+          value: createDmSegmentValue('Foo!', {
+            type: 'photo',
+            source: { type: 'id', id: '1234567890' },
+          }),
+          path: '$',
+        },
+      ]
+    );
     expect(jobs).toMatchSnapshot();
 
     const [job] = jobs;
-    expect(job.accomplishRequest!(job.target, job.request, ['1234567890']))
+    expect(job.accomplishRequest!(job.target!, job.request, ['1234567890']))
       .toMatchInlineSnapshot(`
       Object {
         "href": "1.1/direct_messages/welcome_messages/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "welcome_message": Object {
             "message_data": Object {
               "attachment": Object {
@@ -904,7 +911,7 @@ describe('createWelcomeMessageJobs', () => {
 
   test('throw if invalid message received', () => {
     expect(() =>
-      createWelcomeMessageJobs({ name: 'foo' })(null, [
+      createWelcomeMessageJobs('foo')(new TweetTarget('1234567890'), [
         {
           type: 'unit',
           node: <foo />,
@@ -913,7 +920,7 @@ describe('createWelcomeMessageJobs', () => {
             request: {
               method: 'POST',
               href: '2/tweets',
-              parameters: { text: 'Foo!' },
+              params: { text: 'Foo!' },
             },
             mediaSources: null,
             accomplishRequest: null,
@@ -926,7 +933,7 @@ describe('createWelcomeMessageJobs', () => {
     );
 
     expect(() =>
-      createWelcomeMessageJobs({ name: 'foo' })(null, [
+      createWelcomeMessageJobs('foo')(new TweetTarget('1234567890'), [
         {
           type: 'unit',
           node: <foo />,
@@ -935,7 +942,7 @@ describe('createWelcomeMessageJobs', () => {
             request: {
               method: 'POST',
               href: '2/foo',
-              parameters: { bar: 'baz' },
+              params: { bar: 'baz' },
             },
             mediaSources: null,
             accomplishRequest: null,
@@ -950,7 +957,7 @@ describe('createWelcomeMessageJobs', () => {
 
   test('throw if multiple messages received', () => {
     expect(() =>
-      createWelcomeMessageJobs({ name: 'foo' })(null, [
+      createWelcomeMessageJobs('foo')(new TweetTarget('1234567890'), [
         { type: 'text', node: 'Bar!', value: 'Bar!', path: '$:1' },
         { type: 'text', node: 'Baz!', value: 'Baz!', path: '$:1' },
       ])
@@ -958,11 +965,13 @@ describe('createWelcomeMessageJobs', () => {
       `"welcome message should contain only one direct message"`
     );
 
-    const creator = createWelcomeMessageJobs({ name: 'foo' });
-    creator(null, [{ type: 'text', node: 'Bar!', value: 'Bar!', path: '$:0' }]);
+    const creator = createWelcomeMessageJobs('foo');
+    creator(new TweetTarget('1234567890'), [
+      { type: 'text', node: 'Bar!', value: 'Bar!', path: '$:0' },
+    ]);
 
     expect(() =>
-      creator(null, [
+      creator(new TweetTarget('1234567890'), [
         { type: 'text', node: 'Baz!', value: 'Baz!', path: '$:2' },
       ])
     ).toThrowErrorMatchingInlineSnapshot(

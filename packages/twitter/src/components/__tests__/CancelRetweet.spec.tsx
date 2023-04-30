@@ -26,7 +26,7 @@ test('rendering', async () => {
           "request": Object {
             "href": "2/users/:id/retweets/:source_tweet_id",
             "method": "DELETE",
-            "parameters": null,
+            "params": Object {},
           },
           "type": "action",
         },
@@ -39,7 +39,7 @@ test('rendering', async () => {
     Object {
       "href": "2/users/67890/retweets/12345",
       "method": "DELETE",
-      "parameters": null,
+      "params": Object {},
     }
   `);
 });

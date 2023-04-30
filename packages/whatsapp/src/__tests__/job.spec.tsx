@@ -1,7 +1,10 @@
 import Sociably from '@sociably/core';
 import moxy from '@moxyjs/moxy';
 import { createChatJobs, createUploadingMediaJobs } from '../job';
+import WhatsAppAgent from '../Agent';
 import WhatsAppChat from '../Chat';
+
+const agent = new WhatsAppAgent('1234567890');
 
 describe('createChatJobs', () => {
   test('create jobs from text segments', () => {
@@ -15,11 +18,12 @@ describe('createChatJobs', () => {
       ])
     ).toEqual(
       ['FOO', 'BAR', 'BAZ'].map((text) => ({
+        channel: agent,
         key: chat.uid,
         request: {
           method: 'POST',
-          relative_url: '1234567890/messages',
-          body: {
+          relativeUrl: '1234567890/messages',
+          params: {
             type: 'text',
             text,
             to: '9876543210',
@@ -56,11 +60,12 @@ describe('createChatJobs', () => {
       ])
     ).toEqual([
       {
+        channel: agent,
         key: chat.uid,
         request: {
           method: 'POST',
-          relative_url: '1234567890/messages',
-          body: {
+          relativeUrl: '1234567890/messages',
+          params: {
             type: 'text',
             text: 'FOO',
             to: '9876543210',
@@ -69,11 +74,12 @@ describe('createChatJobs', () => {
         },
       },
       {
+        channel: agent,
         key: chat.uid,
         request: {
           method: 'POST',
-          relative_url: '1234567890/messages',
-          body: {
+          relativeUrl: '1234567890/messages',
+          params: {
             type: 'text',
             text: 'BAR',
             to: '9876543210',
@@ -82,11 +88,12 @@ describe('createChatJobs', () => {
         },
       },
       {
+        channel: agent,
         key: chat.uid,
         request: {
           method: 'POST',
-          relative_url: '1234567890/messages',
-          body: {
+          relativeUrl: '1234567890/messages',
+          params: {
             type: 'image',
             image: { caption: 'BAZ', link: 'http://foo.bar/baz.jpg' },
             to: '9876543210',
@@ -128,21 +135,23 @@ describe('createChatJobs', () => {
 
     expect(jobs).toEqual([
       {
+        channel: agent,
         key: chat.uid,
         request: {
           method: 'POST',
-          relative_url: '1234567890/media',
-          body: { type: 'image/jpeg', messaging_product: 'whatsapp' },
+          relativeUrl: '1234567890/media',
+          params: { type: 'image/jpeg', messaging_product: 'whatsapp' },
         },
-        fileData: '_IMAGE_BLOB_DATA_',
+        file: { data: '_IMAGE_BLOB_DATA_' },
         registerResult: expect.any(String),
       },
       {
+        channel: agent,
         key: chat.uid,
         request: {
           method: 'POST',
-          relative_url: '1234567890/messages',
-          body: {
+          relativeUrl: '1234567890/messages',
+          params: {
             type: 'image',
             image: { caption: 'FOO' },
             to: '9876543210',
@@ -155,23 +164,27 @@ describe('createChatJobs', () => {
         },
       },
       {
+        channel: agent,
         key: chat.uid,
         request: {
           method: 'POST',
-          relative_url: '1234567890/media',
-          body: { type: 'audio/mp3', messaging_product: 'whatsapp' },
+          relativeUrl: '1234567890/media',
+          params: { type: 'audio/mp3', messaging_product: 'whatsapp' },
         },
-        fileData: '_AUDIO_BLOB_DATA_',
-        fileInfo: { filename: 'meow.mp3' },
+        file: {
+          data: '_AUDIO_BLOB_DATA_',
+          info: { filename: 'meow.mp3' },
+          assetTag: 'foo_mp3',
+        },
         registerResult: expect.any(String),
-        assetTag: 'foo_mp3',
       },
       {
+        channel: agent,
         key: chat.uid,
         request: {
           method: 'POST',
-          relative_url: '1234567890/messages',
-          body: {
+          relativeUrl: '1234567890/messages',
+          params: {
             type: 'audio',
             audio: { caption: 'BAR' },
             to: '9876543210',
@@ -200,14 +213,14 @@ describe('createChatJobs', () => {
         getResultValue
       )
     ).toEqual({
-      body: {
+      params: {
         to: '9876543210',
         type: 'image',
         image: { id: '1111111111', caption: 'FOO' },
         messaging_product: 'whatsapp',
       },
       method: 'POST',
-      relative_url: '1234567890/messages',
+      relativeUrl: '1234567890/messages',
     });
     expect(
       jobs[3].consumeResult?.accomplishRequest(
@@ -216,14 +229,14 @@ describe('createChatJobs', () => {
         getResultValue
       )
     ).toEqual({
-      body: {
+      params: {
         to: '9876543210',
         type: 'audio',
         audio: { id: '2222222222', caption: 'BAR' },
         messaging_product: 'whatsapp',
       },
       method: 'POST',
-      relative_url: '1234567890/messages',
+      relativeUrl: '1234567890/messages',
     });
 
     expect(getResultValue).toHaveBeenCalledTimes(2);
@@ -243,7 +256,7 @@ describe('createChatJobs', () => {
 describe('createUploadingMediaJobs', () => {
   it('create an upload job', () => {
     expect(
-      createUploadingMediaJobs('1234567890')(null, [
+      createUploadingMediaJobs(agent, [
         {
           type: 'unit',
           value: {
@@ -256,16 +269,17 @@ describe('createUploadingMediaJobs', () => {
       ])
     ).toEqual([
       {
+        channel: agent,
         request: {
           method: 'POST',
-          relative_url: '1234567890/media',
-          body: { type: 'image/jpeg', messaging_product: 'whatsapp' },
+          relativeUrl: '1234567890/media',
+          params: { type: 'image/jpeg', messaging_product: 'whatsapp' },
         },
-        fileData: '_IMAGE_BLOB_DATA_',
+        file: { data: '_IMAGE_BLOB_DATA_' },
       },
     ]);
     expect(
-      createUploadingMediaJobs('1234567890')(null, [
+      createUploadingMediaJobs(agent, [
         {
           type: 'unit',
           value: {
@@ -283,21 +297,24 @@ describe('createUploadingMediaJobs', () => {
       ])
     ).toEqual([
       {
+        channel: agent,
         request: {
           method: 'POST',
-          relative_url: '1234567890/media',
-          body: { type: 'audio/mp3', messaging_product: 'whatsapp' },
+          relativeUrl: '1234567890/media',
+          params: { type: 'audio/mp3', messaging_product: 'whatsapp' },
         },
-        fileData: '_AUDIO_BLOB_DATA_',
-        fileInfo: { filename: 'foo.mp3' },
-        assetTag: 'foo_mp3',
+        file: {
+          data: '_AUDIO_BLOB_DATA_',
+          info: { filename: 'foo.mp3' },
+          assetTag: 'foo_mp3',
+        },
       },
     ]);
   });
 
   it('throw if more than one segment received', () => {
     expect(() =>
-      createUploadingMediaJobs('1234567890')(null, [
+      createUploadingMediaJobs(agent, [
         {
           type: 'unit',
           value: {
@@ -332,7 +349,7 @@ describe('createUploadingMediaJobs', () => {
 
   it('throw if non media segment received', () => {
     expect(() =>
-      createUploadingMediaJobs('1234567890')(null, [
+      createUploadingMediaJobs(agent, [
         { type: 'text', value: 'FOO', node: 'FOO', path: '$:0' },
       ])
     ).toThrowErrorMatchingInlineSnapshot(
@@ -340,7 +357,7 @@ describe('createUploadingMediaJobs', () => {
     );
 
     expect(() =>
-      createUploadingMediaJobs('1234567890')(null, [
+      createUploadingMediaJobs(agent, [
         {
           type: 'unit',
           value: { message: { type: 'text', text: 'BAR' } },
@@ -355,7 +372,7 @@ describe('createUploadingMediaJobs', () => {
 
   it('throw if media type is id or link', () => {
     expect(() =>
-      createUploadingMediaJobs('1234567890')(null, [
+      createUploadingMediaJobs(agent, [
         {
           type: 'unit',
           value: { message: { type: 'image', image: { id: '1111111111' } } },
@@ -368,7 +385,7 @@ describe('createUploadingMediaJobs', () => {
     );
 
     expect(() =>
-      createUploadingMediaJobs('1234567890')(null, [
+      createUploadingMediaJobs(agent, [
         {
           type: 'unit',
           value: {

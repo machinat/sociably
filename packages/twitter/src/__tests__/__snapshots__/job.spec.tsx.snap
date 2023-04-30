@@ -11,7 +11,7 @@ Array [
     "request": Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -28,8 +28,8 @@ Array [
     },
     "target": TwitterChat {
       "agentId": "12345",
-      "id": "67890",
       "platform": "twitter",
+      "userId": "67890",
     },
   },
   Object {
@@ -46,7 +46,7 @@ Array [
     "request": Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -68,8 +68,8 @@ Array [
     },
     "target": TwitterChat {
       "agentId": "12345",
-      "id": "67890",
       "platform": "twitter",
+      "userId": "67890",
     },
   },
   Object {
@@ -86,7 +86,7 @@ Array [
     "request": Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -108,8 +108,8 @@ Array [
     },
     "target": TwitterChat {
       "agentId": "12345",
-      "id": "67890",
       "platform": "twitter",
+      "userId": "67890",
     },
   },
   Object {
@@ -121,12 +121,12 @@ Array [
     "request": Object {
       "href": "1.1/foo",
       "method": "POST",
-      "parameters": null,
+      "params": Object {},
     },
     "target": TwitterChat {
       "agentId": "12345",
-      "id": "67890",
       "platform": "twitter",
+      "userId": "67890",
     },
   },
 ]
@@ -148,7 +148,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "Hello",
       },
     },
@@ -172,7 +172,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": undefined,
       },
     },
@@ -196,7 +196,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": undefined,
       },
     },
@@ -232,7 +232,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "World",
       },
     },
@@ -256,7 +256,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": undefined,
       },
     },
@@ -280,7 +280,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "poll": Object {
           "duration": 60,
           "options": Array [
@@ -311,7 +311,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": undefined,
       },
     },
@@ -330,7 +330,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "quote_tweet_id": "98765",
         "text": "Hi",
       },
@@ -355,7 +355,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": undefined,
       },
     },
@@ -379,7 +379,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "Howdy",
       },
     },
@@ -403,7 +403,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": undefined,
       },
     },
@@ -436,7 +436,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "Hello",
       },
     },
@@ -455,7 +455,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "World",
       },
     },
@@ -479,7 +479,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": undefined,
       },
     },
@@ -503,7 +503,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "Haro",
       },
     },
@@ -522,7 +522,7 @@ Array [
     "request": Object {
       "href": "1.1/foo",
       "method": "POST",
-      "parameters": null,
+      "params": Object {},
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -544,7 +544,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜",
       },
     },
@@ -568,7 +568,7 @@ Array [
     "request": Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "text": "龍龜",
       },
     },
@@ -597,7 +597,7 @@ Array [
     "request": Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -619,8 +619,8 @@ Array [
     },
     "target": TwitterChat {
       "agentId": "",
-      "id": "",
       "platform": "twitter",
+      "userId": "",
     },
   },
 ]
@@ -634,7 +634,7 @@ Array [
     "key": undefined,
     "mediaSources": Array [
       Object {
-        "parameters": Object {
+        "params": Object {
           "media_category": "dm_image",
         },
         "type": "url",
@@ -645,7 +645,7 @@ Array [
     "request": Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -667,8 +667,8 @@ Array [
     },
     "target": TwitterChat {
       "agentId": "",
-      "id": "",
       "platform": "twitter",
+      "userId": "",
     },
   },
 ]
@@ -685,7 +685,7 @@ Array [
     "request": Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -702,8 +702,8 @@ Array [
     },
     "target": TwitterChat {
       "agentId": "",
-      "id": "",
       "platform": "twitter",
+      "userId": "",
     },
   },
 ]

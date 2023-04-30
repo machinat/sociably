@@ -27,7 +27,7 @@ test('rendering with plain text', async () => {
     Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -55,7 +55,7 @@ test('rendering with plain text', async () => {
     Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "custom_profile_id": "11111",
@@ -86,7 +86,7 @@ test('rendering with media', async () => {
     Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -130,7 +130,7 @@ test('rendering with buttons', async () => {
     Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -186,7 +186,7 @@ test('rendering with quick replies', async () => {
     Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -235,7 +235,7 @@ test('rendering with placeId', async () => {
     Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {
@@ -274,7 +274,7 @@ test('rendering with coordinates', async () => {
     Object {
       "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "event": Object {
           "message_create": Object {
             "message_data": Object {

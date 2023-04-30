@@ -26,7 +26,7 @@ export const Unfollow: TwitterComponent<
       request: {
         method: 'DELETE',
         href: '2/users/:source_user_id/following/:target_user_id',
-        parameters: null,
+        params: {},
       },
       accomplishRequest: (target, request) => ({
         ...request,

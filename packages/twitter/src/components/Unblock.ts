@@ -26,7 +26,7 @@ export const Unblock: TwitterComponent<
       request: {
         method: 'DELETE',
         href: '2/users/:source_user_id/blocking/:target_user_id',
-        parameters: null,
+        params: {},
       },
       accomplishRequest: (target, request) => ({
         ...request,

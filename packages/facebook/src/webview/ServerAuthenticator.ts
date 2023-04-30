@@ -5,9 +5,14 @@ import {
   CheckDataResult,
 } from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
+import { MetaApiError } from '@sociably/meta-api';
 import BotP from '../Bot';
-import { FACEBOOK } from '../constant';
+import ProfilerP from '../Profiler';
+import FacebookPage from '../Page';
 import FacebookChat from '../Chat';
+import FacebookUser from '../User';
+import { FACEBOOK } from '../constant';
+import { PageSettingsAccessorI } from '../interface';
 import { getAuthContextDetails } from './utils';
 import type { FacebookAuthContext, FacebookAuthData } from './types';
 
@@ -17,8 +22,9 @@ import type { FacebookAuthContext, FacebookAuthData } from './types';
 export class FacebookServerAuthenticator
   implements ServerAuthenticator<never, FacebookAuthData, FacebookAuthContext>
 {
-  bot: BotP;
+  private profiler: ProfilerP;
   basicAuthenticator: BasicAuthenticator;
+  settingsAccessor: PageSettingsAccessorI;
   delegateAuthRequest: ServerAuthenticator<
     never,
     FacebookAuthData,
@@ -27,10 +33,17 @@ export class FacebookServerAuthenticator
 
   platform = FACEBOOK;
 
-  constructor(bot: BotP, basicAuthenticator: BasicAuthenticator) {
-    this.bot = bot;
+  constructor(
+    bot: BotP,
+    profiler: ProfilerP,
+    basicAuthenticator: BasicAuthenticator,
+    settingsAccessor: PageSettingsAccessorI
+  ) {
+    this.profiler = profiler;
     this.basicAuthenticator = basicAuthenticator;
+    this.settingsAccessor = settingsAccessor;
     this.delegateAuthRequest = this.basicAuthenticator.createRequestDelegator<
+      FacebookAuthData,
       FacebookAuthData,
       FacebookChat
     >({
@@ -39,26 +52,29 @@ export class FacebookServerAuthenticator
       platformName: 'Facebook',
       platformColor: '#4B69FF',
       platformImageUrl: 'https://sociably.js.org/img/icon/messenger.png',
+      verifyCredential: async (credential) => {
+        const { page: pageId, user: userId } = credential;
+        return this._verifyUser(pageId, userId);
+      },
       checkAuthData: (data) => {
         const result = this.checkAuthData(data);
         if (!result.ok) {
           return result;
         }
-
         return {
           ok: true,
           data,
           thread: result.contextDetails.thread,
         };
       },
-      getChatLink: () => `https://m.me/${this.bot.pageId}`,
+      getChatLink: (chat) => `https://m.me/${chat.pageId}`,
     });
   }
 
-  getAuthUrl(userId: string, redirectUrl?: string): string {
+  getAuthUrl(user: FacebookUser, redirectUrl?: string): string {
     return this.basicAuthenticator.getAuthUrl<FacebookAuthData>(
       FACEBOOK,
-      { id: userId, page: this.bot.pageId },
+      { page: user.pageId, user: user.id },
       redirectUrl
     );
   }
@@ -75,27 +91,59 @@ export class FacebookServerAuthenticator
   async verifyRefreshment(
     data: FacebookAuthData
   ): Promise<VerifyResult<FacebookAuthData>> {
-    if (data.page !== this.bot.pageId) {
-      return { ok: false, code: 400, reason: 'page not match' };
-    }
-    return { ok: true, data };
+    return this._verifyUser(data.page, data.user);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   checkAuthData(data: FacebookAuthData): CheckDataResult<FacebookAuthContext> {
-    if (data.page !== this.bot.pageId) {
-      return { ok: false, code: 400, reason: 'page not match' };
-    }
-
     return {
       ok: true,
       contextDetails: getAuthContextDetails(data),
     };
   }
+
+  private async _verifyUser(
+    pageId: string,
+    userId: string
+  ): Promise<VerifyResult<FacebookAuthData>> {
+    try {
+      const [settings, userProfile] = await Promise.all([
+        this.settingsAccessor.getChannelSettings(new FacebookPage(pageId)),
+        this.profiler.getUserProfile(
+          new FacebookPage(pageId),
+          new FacebookUser(pageId, userId)
+        ),
+      ]);
+
+      return settings
+        ? {
+            ok: true,
+            data: {
+              page: pageId,
+              user: userId,
+              profile: userProfile?.data,
+            },
+          }
+        : { ok: false, code: 404, reason: `page "${pageId}" not registered` };
+    } catch (err) {
+      return err instanceof MetaApiError && err.code === 404
+        ? {
+            ok: false,
+            code: 404,
+            reason: `user "${userId}" not found or not authorized`,
+          }
+        : {
+            ok: false,
+            code: err instanceof MetaApiError ? err.code : 500,
+            reason: err.message,
+          };
+    }
+  }
 }
 
 const ServerAuthenticatorP = makeClassProvider({
   lifetime: 'singleton',
-  deps: [BotP, BasicAuthenticator],
+  deps: [BotP, ProfilerP, BasicAuthenticator, PageSettingsAccessorI],
 })(FacebookServerAuthenticator);
 
 type ServerAuthenticatorP = FacebookServerAuthenticator;

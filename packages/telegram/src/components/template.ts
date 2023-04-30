@@ -1,7 +1,7 @@
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import { makeTelegramComponent } from '../utils';
+import makeTelegramComponent from '../utils/makeTelegramComponent';
 import {
   TelegramSegmentValue,
   TelegramComponent,
@@ -57,7 +57,7 @@ export const Text: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendMessage',
-      parameters: {
+      params: {
         text: textSegments[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
         disable_web_page_preview: disableWebPagePreview,
@@ -107,7 +107,7 @@ export const Contact: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendContact',
-      parameters: {
+      params: {
         phone_number: phoneNumber,
         first_name: firstName,
         last_name: lastName,
@@ -180,7 +180,7 @@ export const Poll: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendPoll',
-      parameters: {
+      params: {
         question,
         options,
         is_anonymous: isAnonymous,
@@ -229,7 +229,7 @@ export const Dice: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendDice',
-      parameters: {
+      params: {
         emoji,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
@@ -322,7 +322,7 @@ export const Invoice: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendInvoice',
-      parameters: {
+      params: {
         title,
         description,
         payload,
@@ -375,7 +375,7 @@ export const Game: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendGame',
-      parameters: {
+      params: {
         game_short_name: gameShortName,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,

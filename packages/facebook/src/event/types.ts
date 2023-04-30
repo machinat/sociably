@@ -27,6 +27,7 @@ import type {
 } from './mixin';
 import type FacebookChat from '../Chat';
 import type FacebookUser from '../User';
+import type FacebookPage from '../Page';
 import type { FacebookThread, FacebookRawEvent } from '../types';
 
 interface EventObject<
@@ -39,6 +40,7 @@ interface EventObject<
   type: Type;
   thread: Thread;
   user: User;
+  channel: FacebookPage;
   payload: FacebookRawEvent;
 }
 

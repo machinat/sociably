@@ -9,7 +9,8 @@ Object {
         "body": Object {
           "id": 1,
         },
-        "executionKey": "foo",
+        "chatChannelId": "1",
+        "key": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -26,7 +27,8 @@ Object {
         "body": Object {
           "id": 2,
         },
-        "executionKey": "foo",
+        "chatChannelId": "1",
+        "key": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -43,7 +45,8 @@ Object {
         "body": Object {
           "id": 3,
         },
-        "executionKey": "bar",
+        "chatChannelId": "1",
+        "key": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -60,7 +63,8 @@ Object {
         "body": Object {
           "id": 4,
         },
-        "executionKey": "bar",
+        "chatChannelId": "1",
+        "key": "bar",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -77,7 +81,8 @@ Object {
         "body": Object {
           "id": 5,
         },
-        "executionKey": "baz",
+        "chatChannelId": "2",
+        "key": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -94,7 +99,8 @@ Object {
         "body": Object {
           "id": 6,
         },
-        "executionKey": "baz",
+        "chatChannelId": "2",
+        "key": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -111,7 +117,8 @@ Object {
         "body": Object {
           "id": 7,
         },
-        "executionKey": "foo",
+        "chatChannelId": "1",
+        "key": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -128,7 +135,8 @@ Object {
         "body": Object {
           "id": 8,
         },
-        "executionKey": "bar",
+        "chatChannelId": "1",
+        "key": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -145,7 +153,8 @@ Object {
         "body": Object {
           "id": 9,
         },
-        "executionKey": "baz",
+        "chatChannelId": "2",
+        "key": "baz",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -171,7 +180,8 @@ Object {
         "body": Object {
           "id": 1,
         },
-        "executionKey": "foo",
+        "chatChannelId": "1",
+        "key": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -188,7 +198,8 @@ Object {
         "body": Object {
           "id": 2,
         },
-        "executionKey": "foo",
+        "chatChannelId": "1",
+        "key": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -205,7 +216,8 @@ Object {
         "body": Object {
           "id": 3,
         },
-        "executionKey": "bar",
+        "chatChannelId": "1",
+        "key": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -222,7 +234,8 @@ Object {
         "body": Object {
           "id": 4,
         },
-        "executionKey": "bar",
+        "chatChannelId": "1",
+        "key": "bar",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -239,7 +252,8 @@ Object {
         "body": Object {
           "id": 5,
         },
-        "executionKey": "baz",
+        "chatChannelId": "2",
+        "key": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -256,7 +270,8 @@ Object {
         "body": Object {
           "id": 6,
         },
-        "executionKey": "baz",
+        "chatChannelId": "2",
+        "key": "baz",
         "method": "POST",
         "path": "v2/bot/message/reply",
       },
@@ -273,7 +288,8 @@ Object {
         "body": Object {
           "id": 7,
         },
-        "executionKey": "foo",
+        "chatChannelId": "1",
+        "key": "foo",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -290,7 +306,8 @@ Object {
         "body": Object {
           "id": 8,
         },
-        "executionKey": "bar",
+        "chatChannelId": "1",
+        "key": "bar",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -307,7 +324,8 @@ Object {
         "body": Object {
           "id": 9,
         },
-        "executionKey": "baz",
+        "chatChannelId": "2",
+        "key": "baz",
         "method": "POST",
         "path": "v2/bot/message/push",
       },
@@ -321,69 +339,5 @@ Object {
   ],
   "errors": null,
   "success": true,
-}
-`;
-
-exports[`throw if api error happen 1`] = `
-Object {
-  "batch": Array [
-    Object {
-      "error": undefined,
-      "job": Object {
-        "body": Object {
-          "id": 1,
-        },
-        "executionKey": "foo",
-        "method": "POST",
-        "path": "v2/bot/message/push",
-      },
-      "result": Object {
-        "body": Object {},
-        "code": 200,
-        "headers": Object {
-          "content-type": "application/json",
-        },
-      },
-      "success": true,
-    },
-    undefined,
-    undefined,
-  ],
-  "errors": Array [
-    [LineAPIError (Bad Request): The request body has 2 error(s): 1) May not be empty, at messages[0].text. 2) Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type.],
-  ],
-  "success": false,
-}
-`;
-
-exports[`throw if connection error happen 1`] = `
-Object {
-  "batch": Array [
-    Object {
-      "error": undefined,
-      "job": Object {
-        "body": Object {
-          "id": 1,
-        },
-        "executionKey": "foo",
-        "method": "POST",
-        "path": "v2/bot/message/push",
-      },
-      "result": Object {
-        "body": Object {},
-        "code": 200,
-        "headers": Object {
-          "content-type": "application/json",
-        },
-      },
-      "success": true,
-    },
-    undefined,
-    undefined,
-  ],
-  "errors": Array [
-    [FetchError: request to https://api.line.me/v2/bot/message/push failed, reason: something wrong like connection error],
-  ],
-  "success": false,
 }
 `;

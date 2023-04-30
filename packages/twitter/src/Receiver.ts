@@ -101,8 +101,14 @@ const handleWebhook = ({
           bot,
           event,
           metadata,
-          reply: async (message: SociablyNode) =>
-            bot.render(event.thread, message),
+          reply: async (message: SociablyNode) => {
+            if (!event.thread) {
+              throw new Error(
+                `Cannot reply to ${event.type} event with no chat thread info`
+              );
+            }
+            return bot.render(event.thread, message);
+          },
         })
       );
     }

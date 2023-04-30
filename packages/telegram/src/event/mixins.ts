@@ -40,12 +40,16 @@ import type {
 
 export interface EventBase {
   platform: typeof TELEGRAM;
+  channel: TelegramUser;
   /** The update's unique identifier. Update identifiers start from a certain positive number and increase sequentially. This ID becomes especially handy if you're using Webhooks, since it allows you to ignore repeated updates or to restore the correct update sequence, should they get out of order. If there are no new updates for at least a week, then identifier of the next update will be chosen randomly instead of sequentially. */
   updateId: string;
 }
 
 export const EventBase: EventBase = {
   platform: TELEGRAM,
+  get channel() {
+    return new TelegramUser(this.botId, true);
+  },
   get updateId() {
     return this.payload.update_id;
   },
@@ -66,7 +70,7 @@ export const Message: Message = {
       return new TelegramChatSender(rawMeaasge.sender_chat);
     }
     const rawUser = rawMeaasge.from;
-    return new TelegramUser(rawUser.id, rawUser);
+    return new TelegramUser(rawUser.id, undefined, rawUser);
   },
 };
 
@@ -76,7 +80,7 @@ export const EditedMessage: Message = {
   },
   get user() {
     const fromUser = this.payload.edited_message.from;
-    return new TelegramUser(fromUser.id, fromUser);
+    return new TelegramUser(fromUser.id, undefined, fromUser);
   },
 };
 
@@ -722,7 +726,7 @@ export interface NewChatMembers {
 export const NewChatMembers: NewChatMembers = {
   get newChatMembers() {
     return this.message.new_chat_members.map(
-      (rawUser: RawUser) => new TelegramUser(rawUser.id, rawUser)
+      (rawUser: RawUser) => new TelegramUser(rawUser.id, undefined, rawUser)
     );
   },
 };
@@ -735,7 +739,7 @@ export interface LeftChatMember {
 export const LeftChatMember: LeftChatMember = {
   get leftChatMember() {
     const leftMember: RawUser = this.message.left_chat_member;
-    return new TelegramUser(leftMember.id, leftMember);
+    return new TelegramUser(leftMember.id, undefined, leftMember);
   },
 };
 
@@ -841,8 +845,8 @@ export const SuccessfulPayment: SuccessfulPayment = {
 };
 
 export interface InlineQuery {
-  /** The chat thread */
-  thread: null;
+  /** The bot scoped thread */
+  thread: TelegramUser;
   /** Sender */
   user: TelegramUser;
   /** Inline query object. */
@@ -858,7 +862,9 @@ export interface InlineQuery {
 }
 
 export const InlineQuery: InlineQuery = {
-  thread: null,
+  get thread() {
+    return new TelegramUser(this.botId, true);
+  },
   get user() {
     return new TelegramUser(this.payload.inline_query.from);
   },
@@ -896,7 +902,9 @@ export interface ChosenInlineResult {
 }
 
 export const ChosenInlineResult: ChosenInlineResult = {
-  thread: null,
+  get thread() {
+    return null;
+  },
   get user() {
     return new TelegramUser(this.payload.chosen_inline_result.from);
   },
@@ -918,8 +926,8 @@ export const ChosenInlineResult: ChosenInlineResult = {
 };
 
 export interface CallbackBase {
-  /** The chat thread. It's null if the callback is triggered by an inline message */
-  thread: null | TelegramChat;
+  /** The chat thread. If the callback is triggered by an inline message, it's a bot scoped thread */
+  thread: TelegramChat | TelegramUser;
   /** Sender */
   user: TelegramUser;
   /** Callback query object. */
@@ -939,7 +947,7 @@ export const CallbackBase: CallbackBase = {
     const { message } = this.payload.callback_query;
     return message
       ? new TelegramChat(this.botId, message.chat.id, message.chat)
-      : null;
+      : new TelegramUser(this.botId, true);
   },
   get user() {
     return new TelegramUser(this.payload.callback_query.from);
@@ -1159,14 +1167,14 @@ export const ChatMemberUpdated: ChatMemberUpdated = {
   },
   get user() {
     const rawUser: RawUser = this.chatMember.from;
-    return new TelegramUser(rawUser.id, rawUser);
+    return new TelegramUser(rawUser.id, undefined, rawUser);
   },
   get date() {
     return new Date(this.chatMember.date * 1000);
   },
   get updatedUser() {
     const rawUser: RawUser = this.chatMember.new_chat_member.user;
-    return new TelegramUser(rawUser.id, rawUser);
+    return new TelegramUser(rawUser.id, undefined, rawUser);
   },
   get newStatus() {
     return this.chatMember.new_chat_member.status;

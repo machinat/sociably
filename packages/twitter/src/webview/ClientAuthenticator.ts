@@ -13,28 +13,18 @@ import TwitterUserProfile from '../UserProfile';
 import { getAuthContextDetails } from './utils';
 import type { TwitterAuthContext, TwitterAuthData } from './types';
 
-type TwitterClientOptions = {
-  /** The agent user id */
-  agentId: string;
-};
-
 /* eslint-disable class-methods-use-this */
 export default class TwitterClientAuthenticator
   implements
     WebviewClientAuthenticator<void, TwitterAuthData, TwitterAuthContext>
 {
   platform = TWITTER;
-  agentId: string;
   marshalTypes = [
     TwitterChat,
     TwitterTweetTarget,
     TwitterUser,
     TwitterUserProfile,
   ];
-
-  constructor({ agentId }: TwitterClientOptions) {
-    this.agentId = agentId;
-  }
 
   async init(): Promise<void> {
     // do nothing
@@ -49,22 +39,21 @@ export default class TwitterClientAuthenticator
   }
 
   checkAuthData(data: TwitterAuthData): CheckDataResult<TwitterAuthContext> {
-    if (data.agent !== this.agentId) {
-      return { ok: false, code: 400, reason: 'agent not match' };
-    }
-
     return {
       ok: true,
       contextDetails: getAuthContextDetails(data),
     };
   }
 
-  closeWebview(): boolean {
-    if (parseBrowser(window.navigator.userAgent).platform.type === 'desktop') {
+  closeWebview(context: null | TwitterAuthContext): boolean {
+    if (
+      !context ||
+      parseBrowser(window.navigator.userAgent).platform.type === 'desktop'
+    ) {
       return false;
     }
 
-    window.location.href = `https://twitter.com/messages/compose?recipient_id=${this.agentId}`;
+    window.location.href = `https://twitter.com/messages/compose?recipient_id=${context.agentId}`;
     return true;
   }
 }

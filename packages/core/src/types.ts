@@ -8,7 +8,11 @@ import type {
   ServiceScope,
   MaybeContainer,
 } from './service';
-import type { DispatchFrame, DispatchResponse } from './engine/types';
+import type {
+  DispatchFrame,
+  DispatchResponse,
+  AnyDispatchFrame,
+} from './engine/types';
 import type {
   SOCIABLY_ELEMENT_TYPE,
   SOCIABLY_NATIVE_TYPE,
@@ -29,8 +33,8 @@ export type SociablyRenderable =
   | ProviderElement<unknown>
   | RawElement
   | ThunkElement
-  | FunctionalElement<unknown, any>
-  | ContainerElement<unknown, any>;
+  | FunctionalElement<unknown, FunctionalComponent<unknown>>
+  | ContainerElement<unknown, ContainerComponent<unknown>>;
 
 export type SociablyNode =
   | SociablyEmpty
@@ -42,7 +46,7 @@ export type SociablyElementType =
   | string
   | FunctionalComponent<unknown>
   | ContainerComponent<unknown>
-  | NativeComponent<unknown, any>
+  | NativeComponent<unknown, IntermediateSegment<unknown>>
   | typeof SOCIABLY_FRAGMENT_TYPE
   | typeof SOCIABLY_PAUSE_TYPE
   | typeof SOCIABLY_PROVIDER_TYPE
@@ -58,7 +62,10 @@ export type SociablyElement<P, T> = {
 export type SociablyText = string | number;
 export type SociablyEmpty = null | undefined | boolean;
 
-export type GeneralElement = SociablyElement<{ [key: string]: any }, string>;
+export type GeneralElement = SociablyElement<
+  { [key: string]: unknown },
+  string
+>;
 
 type RenderEnv = {
   path: string;
@@ -107,7 +114,7 @@ export type NativeComponent<
 
 export type NativeElement<
   Props,
-  Component extends NativeComponent<Props, any>
+  Component extends NativeComponent<Props, IntermediateSegment<unknown>>
 > = SociablyElement<Props, Component>;
 
 export type FragmentProps = { children: SociablyNode };
@@ -150,6 +157,29 @@ export interface UniqueOmniIdentifier {
   readonly id: string | number;
 }
 
+/**
+ * A channel represents an instance that user can communicate with.
+ * It could be a phone number, an email address, an account on social
+ * media, etc. depending on which commnication platform.
+ */
+export interface SociablyChannel {
+  readonly platform: string;
+  /**
+   * A set of attributes to identify the channel. All the attributes
+   * together can be used as an unique key of the channel
+   */
+  readonly uniqueIdentifier: UniqueOmniIdentifier;
+  /**
+   * The unique string id of the channel. It's promised to be unique
+   * while using Sociably
+   */
+  readonly uid: string;
+}
+
+/**
+ * A thread represents a conversation between two or more users.
+ * It's where a communication event happened in Sociably.
+ */
 export interface SociablyThread {
   readonly platform: string;
   /**
@@ -164,6 +194,9 @@ export interface SociablyThread {
   readonly uid: string;
 }
 
+/**
+ * An user who communicates through a social platform.
+ */
 export interface SociablyUser {
   readonly platform: string;
   /**
@@ -185,6 +218,7 @@ export interface SociablyEvent<Payload> {
   readonly payload: Payload;
   readonly thread: null | SociablyThread;
   readonly user: null | SociablyUser;
+  readonly channel: null | SociablyChannel;
 }
 
 export interface TextMessageMixin {
@@ -235,7 +269,11 @@ export type EventContext<
   reply(message: SociablyNode): ReturnType<Bot['render']>;
 };
 
-export type AnyEventContext = EventContext<any, any, any>;
+export type AnyEventContext = EventContext<
+  SociablyEvent<unknown>,
+  SociablyMetadata,
+  SociablyBot<SociablyThread, unknown, unknown>
+>;
 
 export type Middleware<Input, Output> = (
   input: Input,
@@ -249,7 +287,7 @@ export type EventMiddleware<
 
 export type DispatchMiddleware<
   Job,
-  Frame extends DispatchFrame<SociablyThread, Job>,
+  Frame extends DispatchFrame<DispatchTarget, Job>,
   Result
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
@@ -263,7 +301,7 @@ export type SociablyPlatform<
   Context extends AnyEventContext,
   EventResp,
   Job,
-  Frame extends DispatchFrame<SociablyThread, Job>,
+  Frame extends DispatchFrame<DispatchTarget, Job>,
   Result
 > = {
   name: string;
@@ -280,10 +318,10 @@ export type SociablyPlatform<
 };
 
 export type AnySociablyPlatform = SociablyPlatform<
-  any,
+  AnyEventContext,
   unknown,
   unknown,
-  any,
+  AnyDispatchFrame,
   unknown
 >;
 
@@ -298,7 +336,7 @@ export type EventContextOfPlatform<Platform extends AnySociablyPlatform> =
     infer Context,
     unknown,
     unknown,
-    any,
+    AnyDispatchFrame,
     unknown
   >
     ? Context
@@ -317,9 +355,15 @@ export type PopEventWrapper<Context extends AnyEventContext, Response> = (
 
 export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
 
+export type DispatchTarget =
+  | null
+  | SociablyChannel
+  | SociablyThread
+  | SociablyUser;
+
 export type DispatchFn<
   Job,
-  Frame extends DispatchFrame<SociablyThread, Job>,
+  Frame extends DispatchFrame<DispatchTarget, Job>,
   Result
 > = (
   frame: Frame,
@@ -328,7 +372,7 @@ export type DispatchFn<
 
 export type DispatchWrapper<
   Job,
-  Frame extends DispatchFrame<SociablyThread, Job>,
+  Frame extends DispatchFrame<DispatchTarget, Job>,
   Result
 > = (
   dispatch: (frame: Frame) => Promise<DispatchResponse<Job, Result>>
@@ -343,9 +387,18 @@ export type PlatformUtilities<
   Context extends AnyEventContext,
   EventResponse,
   Job,
-  Frame extends DispatchFrame<SociablyThread, Job>,
+  Frame extends DispatchFrame<DispatchTarget, Job>,
   Result
 > = {
   popEventWrapper: PopEventWrapper<Context, EventResponse>;
   dispatchWrapper: DispatchWrapper<Job, Frame, Result>;
 };
+
+export interface ChannelSettingsAccessor<
+  Channel extends SociablyChannel,
+  Settings
+> {
+  getChannelSettings(channel: Channel): Promise<null | Settings>;
+  getChannelSettingsBatch(channels: Channel[]): Promise<(null | Settings)[]>;
+  listAllChannelSettings(platfrom: string): Promise<Settings[]>;
+}

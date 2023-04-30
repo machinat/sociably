@@ -26,23 +26,23 @@ it('hoist text value into message object', async () => {
     </Expression>
   );
   expect(result[0].value.method).toBe('sendMessage');
-  expect(result[0].value.parameters.text).toBe('foo');
+  expect(result[0].value.params.text).toBe('foo');
   expect(result[1].value.method).toBe('sendMessage');
-  expect(result[1].value.parameters.text).toBe('<b>bar</b>');
+  expect(result[1].value.params.text).toBe('<b>bar</b>');
   expect(result[2].value.method).toBe('sendMessage');
-  expect(result[2].value.parameters.text).toBe('baz');
+  expect(result[2].value.params.text).toBe('baz');
   expect().toMatchSnapshot();
 });
 
-it('set disableNotification in message parameters', async () => {
+it('set disableNotification in message params', async () => {
   const result = await renderer.render(
     <Expression disableNotification>
       foo
       <Photo url="http://sociably.io/bar.jpg" />
     </Expression>
   );
-  expect(result[0].value.parameters.disable_notification).toBe(true);
-  expect(result[1].value.parameters.disable_notification).toBe(true);
+  expect(result[0].value.params.disable_notification).toBe(true);
+  expect(result[1].value.params.disable_notification).toBe(true);
   expect().toMatchSnapshot();
 });
 
@@ -53,8 +53,8 @@ it('respect the original disableNotification setting set on the messgage', async
       <Photo disableNotification={false} url="http://sociably.io/baz.jpg" />
     </Expression>
   );
-  expect(result[0].value.parameters.disable_notification).toBe(true);
-  expect(result[1].value.parameters.disable_notification).toBe(false);
+  expect(result[0].value.params.disable_notification).toBe(true);
+  expect(result[1].value.params.disable_notification).toBe(false);
   expect(result).toMatchSnapshot();
 });
 
@@ -66,7 +66,7 @@ it('add replyMarkup to the last supported message', async () => {
     </Expression>
   );
   expect(result).toMatchSnapshot();
-  expect(result[0].value.parameters.reply_markup).toMatchInlineSnapshot(`
+  expect(result[0].value.params.reply_markup).toMatchInlineSnapshot(`
     Object {
       "force_reply": true,
       "selective": undefined,
@@ -80,7 +80,7 @@ it('add replyMarkup to the last supported message', async () => {
     </Expression>
   );
   expect(result).toMatchSnapshot();
-  expect(result[0].value.parameters.reply_markup).toMatchInlineSnapshot(`
+  expect(result[0].value.params.reply_markup).toMatchInlineSnapshot(`
     Object {
       "force_reply": true,
       "selective": undefined,

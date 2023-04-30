@@ -1,38 +1,40 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { FACEBOOK, FB } from './constant';
 
-type PageValue = {
+type FacebookPageValue = {
   page: string;
 };
 
-class FacebookPage implements SociablyThread, MarshallableInstance<PageValue> {
+class FacebookPage
+  implements SociablyChannel, MarshallableInstance<FacebookPageValue>
+{
   static typeName = 'FbPage';
-  static fromJSONValue(value: PageValue): FacebookPage {
+  static fromJSONValue(value: FacebookPageValue): FacebookPage {
     const { page } = value;
     return new FacebookPage(page);
   }
 
-  pageId: string;
+  id: string;
   platform = FACEBOOK;
 
   constructor(pageId: string) {
-    this.pageId = pageId;
+    this.id = pageId;
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
       platform: FACEBOOK,
-      id: this.pageId,
+      id: this.id,
     };
   }
 
   get uid(): string {
-    return `${FB}.${this.pageId}`;
+    return `${FB}.${this.id}`;
   }
 
-  toJSONValue(): PageValue {
-    return { page: this.pageId };
+  toJSONValue(): FacebookPageValue {
+    return { page: this.id };
   }
 
   // eslint-disable-next-line class-methods-use-this

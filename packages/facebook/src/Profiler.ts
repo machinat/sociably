@@ -2,6 +2,7 @@ import { makeClassProvider } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import { MetaApiError } from '@sociably/meta-api';
 import BotP from './Bot';
+import type FacebookPage from './Page';
 import type FacebookUser from './User';
 import type { RawUserProfile } from './types';
 import { FACEBOOK } from './constant';
@@ -24,13 +25,15 @@ type ProfilerOptions = {
  * FacebookProfiler fetch user profile from Facebook platform.
  * @category Provider
  */
-export class FacebookProfiler implements UserProfiler<FacebookUser> {
-  bot: BotP;
+export class FacebookProfiler
+  implements UserProfiler<FacebookPage, FacebookUser>
+{
   profileFields: string;
+  private _bot: BotP;
   platform = FACEBOOK;
 
   constructor(bot: BotP, { optionalProfileFields = [] }: ProfilerOptions = {}) {
-    this.bot = bot;
+    this._bot = bot;
     this.profileFields = [
       ...optionalProfileFields,
       ...DEFAULT_PROFILE_FIELDS,
@@ -38,15 +41,17 @@ export class FacebookProfiler implements UserProfiler<FacebookUser> {
   }
 
   async getUserProfile(
+    page: FacebookPage,
     user: FacebookUser
   ): Promise<null | FacebookUserProfile> {
     let rawProfile: RawUserProfile;
 
     try {
-      rawProfile = await this.bot.makeApiCall(
-        'GET',
-        `${user.id}?fields=${this.profileFields}`
-      );
+      rawProfile = await this._bot.makeApiCall({
+        page,
+        method: 'GET',
+        path: `${user.id}?fields=${this.profileFields}`,
+      });
     } catch (err) {
       if (err instanceof MetaApiError) {
         const errSubCode = err.info.error_subcode;

@@ -26,7 +26,7 @@ test('rendering', async () => {
           "request": Object {
             "href": "1.1/direct_messages/mark_read.json",
             "method": "POST",
-            "parameters": Object {
+            "params": Object {
               "last_read_event_id": "12345",
               "recipient_id": "",
             },
@@ -42,7 +42,7 @@ test('rendering', async () => {
     Object {
       "href": "1.1/direct_messages/mark_read.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "last_read_event_id": "12345",
         "recipient_id": "67890",
       },

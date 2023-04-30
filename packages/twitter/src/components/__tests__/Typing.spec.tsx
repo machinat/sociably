@@ -24,7 +24,7 @@ test('rendering', async () => {
           "request": Object {
             "href": "1.1/direct_messages/indicate_typing.json",
             "method": "POST",
-            "parameters": Object {
+            "params": Object {
               "recipient_id": "",
             },
           },
@@ -40,7 +40,7 @@ test('rendering', async () => {
     Object {
       "href": "1.1/direct_messages/indicate_typing.json",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "recipient_id": "67890",
       },
     }

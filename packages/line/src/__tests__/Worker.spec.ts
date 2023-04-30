@@ -1,13 +1,27 @@
 import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
+import LineChannel from '../Channel';
 import LineWorker from '../Worker';
 
 nock.disableNetConnect();
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
-const accessToken = '__LINE_CHANNEL_TOKEN__';
+const channelSettingsAccessor = moxy({
+  getChannelSettings: async (channel: LineChannel) => ({
+    channelId: `__CHANNEL_ID_${channel.id}__`,
+    providerId: '__PROVIDER_ID__',
+    accessToken: `__ACCESS_TOKEN_${channel.id}__`,
+    channelSecret: `__CHANNEL_SECRET_${channel.id}__`,
+  }),
+  getChannelSettingsBatch: async () => [],
+  listAllChannelSettings: async () => [],
+  getLineChatChannelSettingsByBotUserId: async () => null,
+  getLineLoginChannelSettings: async () => null,
+});
+
+const authorizationHeaderSpy = moxy(() => true);
 
 let lineApi;
 let queue;
@@ -15,15 +29,18 @@ beforeEach(() => {
   lineApi = nock('https://api.line.me', {
     reqheaders: {
       'content-type': 'application/json',
-      authorization: 'Bearer __LINE_CHANNEL_TOKEN__',
+      authorization: authorizationHeaderSpy,
     },
   });
 
   queue = new Queue();
+
+  authorizationHeaderSpy.mock.clear();
+  channelSettingsAccessor.mock.reset();
 });
 
 it('makes calls to api', async () => {
-  const client = new LineWorker(accessToken, 10);
+  const client = new LineWorker(channelSettingsAccessor, 10);
 
   const apiAssertions = [
     lineApi.post('/foo/1', { id: 1 }).delay(100).reply(200, { id: 1 }),
@@ -37,12 +54,42 @@ it('makes calls to api', async () => {
   client.start(queue);
 
   const jobs = [
-    { method: 'POST', path: 'foo/1', body: { id: 1 }, executionKey: undefined },
-    { method: 'POST', path: 'bar/1', body: { id: 2 }, executionKey: undefined },
-    { method: 'POST', path: 'baz/1', body: { id: 3 }, executionKey: undefined },
-    { method: 'POST', path: 'foo/2', body: { id: 4 }, executionKey: undefined },
-    { method: 'POST', path: 'bar/2', body: { id: 5 }, executionKey: undefined },
-    { method: 'POST', path: 'baz/2', body: { id: 6 }, executionKey: undefined },
+    {
+      method: 'POST',
+      path: 'foo/1',
+      body: { id: 1 },
+      chatChannelId: '1',
+    },
+    {
+      method: 'POST',
+      path: 'bar/1',
+      body: { id: 2 },
+      chatChannelId: '1',
+    },
+    {
+      method: 'POST',
+      path: 'baz/1',
+      body: { id: 3 },
+      chatChannelId: '1',
+    },
+    {
+      method: 'POST',
+      path: 'foo/2',
+      body: { id: 4 },
+      chatChannelId: '2',
+    },
+    {
+      method: 'POST',
+      path: 'bar/2',
+      body: { id: 5 },
+      chatChannelId: '2',
+    },
+    {
+      method: 'POST',
+      path: 'baz/2',
+      body: { id: 6 },
+      chatChannelId: '3',
+    },
   ];
 
   const promise = queue.executeJobs(jobs);
@@ -65,10 +112,109 @@ it('makes calls to api', async () => {
       },
     })),
   });
+
+  expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(6);
+
+  jobs.forEach(({ chatChannelId }, i) => {
+    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenNthCalledWith(
+      i + 1,
+      new LineChannel(chatChannelId)
+    );
+    expect(authorizationHeaderSpy).toHaveBeenNthCalledWith(
+      i + 1,
+      `Bearer __ACCESS_TOKEN_${chatChannelId}__`
+    );
+  });
 });
 
-it('throw if connection error happen', async () => {
-  const client = new LineWorker(accessToken, 10);
+it('fail if unable to get channel setting', async () => {
+  const client = new LineWorker(channelSettingsAccessor, 10);
+
+  const scope = lineApi.post('/v2/bot/message/push').reply(200, {});
+
+  channelSettingsAccessor.getChannelSettings.mock.fake(async (channel) =>
+    channel.id === '1'
+      ? null
+      : { accessToken: `__ACCESS_TOKEN_${channel.id}__` }
+  );
+
+  client.start(queue);
+
+  const promise = expect(
+    queue.executeJobs([
+      {
+        method: 'POST',
+        path: 'v2/bot/message/push',
+        body: { id: 1 },
+        key: 'foo',
+        chatChannelId: '1',
+      },
+      {
+        method: 'POST',
+        path: 'v2/bot/message/push',
+        body: { id: 2 },
+        key: 'foo',
+        chatChannelId: '1',
+      },
+      {
+        method: 'POST',
+        path: 'v2/bot/message/push',
+        body: { id: 2 },
+        key: 'bar',
+        chatChannelId: '2',
+      },
+      {
+        method: 'POST',
+        path: 'v2/bot/message/push',
+        body: { id: 3 },
+        key: 'baz',
+        chatChannelId: '1',
+      },
+    ])
+  ).resolves.toMatchInlineSnapshot(`
+                    Object {
+                      "batch": Array [
+                        undefined,
+                        undefined,
+                        Object {
+                          "error": undefined,
+                          "job": Object {
+                            "body": Object {
+                              "id": 2,
+                            },
+                            "chatChannelId": "2",
+                            "key": "bar",
+                            "method": "POST",
+                            "path": "v2/bot/message/push",
+                          },
+                          "result": Object {
+                            "body": Object {},
+                            "code": 200,
+                            "headers": Object {
+                              "content-type": "application/json",
+                            },
+                          },
+                          "success": true,
+                        },
+                        undefined,
+                      ],
+                      "errors": Array [
+                        [Error: Channel "1" settings not found],
+                        [Error: Channel "1" settings not found],
+                      ],
+                      "success": false,
+                    }
+                  `);
+
+  await new Promise((r) => setTimeout(r, 1000));
+
+  await promise;
+
+  expect(scope.isDone()).toBe(true);
+});
+
+it('fail if connection error happen', async () => {
+  const client = new LineWorker(channelSettingsAccessor, 10);
 
   const scope1 = lineApi.post('/v2/bot/message/push').reply(200, {});
   const scope2 = lineApi
@@ -83,29 +229,63 @@ it('throw if connection error happen', async () => {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 1 },
-        executionKey: 'foo',
+        key: 'foo',
+        chatChannelId: '1',
       },
       {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 2 },
-        executionKey: 'foo',
+        key: 'foo',
+        chatChannelId: '1',
       },
       {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 3 },
-        executionKey: 'foo',
+        key: 'foo',
+        chatChannelId: '1',
       },
     ])
-  ).resolves.toMatchSnapshot();
+  ).resolves.toMatchInlineSnapshot(`
+          Object {
+            "batch": Array [
+              Object {
+                "error": undefined,
+                "job": Object {
+                  "body": Object {
+                    "id": 1,
+                  },
+                  "chatChannelId": "1",
+                  "key": "foo",
+                  "method": "POST",
+                  "path": "v2/bot/message/push",
+                },
+                "result": Object {
+                  "body": Object {},
+                  "code": 200,
+                  "headers": Object {
+                    "content-type": "application/json",
+                  },
+                },
+                "success": true,
+              },
+              undefined,
+              undefined,
+            ],
+            "errors": Array [
+              [FetchError: request to https://api.line.me/v2/bot/message/push failed, reason: something wrong like connection error],
+            ],
+            "success": false,
+          }
+        `);
 
   expect(scope1.isDone()).toBe(true);
   expect(scope2.isDone()).toBe(true);
 });
 
-it('throw if api error happen', async () => {
-  const client = new LineWorker(accessToken, 10);
+it('fail if api error happen', async () => {
+  const client = new LineWorker(channelSettingsAccessor, 10);
 
   const scope1 = lineApi.post('/v2/bot/message/push').reply(200, {});
   const scope2 = lineApi.post('/v2/bot/message/push').reply(400, {
@@ -130,29 +310,63 @@ it('throw if api error happen', async () => {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 1 },
-        executionKey: 'foo',
+        key: 'foo',
+        chatChannelId: '1',
       },
       {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 2 },
-        executionKey: 'foo',
+        key: 'foo',
+        chatChannelId: '1',
       },
       {
         method: 'POST',
         path: 'v2/bot/message/push',
         body: { id: 3 },
-        executionKey: 'foo',
+        key: 'foo',
+        chatChannelId: '1',
       },
     ])
-  ).resolves.toMatchSnapshot();
+  ).resolves.toMatchInlineSnapshot(`
+          Object {
+            "batch": Array [
+              Object {
+                "error": undefined,
+                "job": Object {
+                  "body": Object {
+                    "id": 1,
+                  },
+                  "chatChannelId": "1",
+                  "key": "foo",
+                  "method": "POST",
+                  "path": "v2/bot/message/push",
+                },
+                "result": Object {
+                  "body": Object {},
+                  "code": 200,
+                  "headers": Object {
+                    "content-type": "application/json",
+                  },
+                },
+                "success": true,
+              },
+              undefined,
+              undefined,
+            ],
+            "errors": Array [
+              [LineAPIError (Bad Request): The request body has 2 error(s): 1) May not be empty, at messages[0].text. 2) Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type.],
+            ],
+            "success": false,
+          }
+        `);
 
   expect(scope1.isDone()).toBe(true);
   expect(scope2.isDone()).toBe(true);
 });
 
 it('sequently excute jobs within an identical thread', async () => {
-  const client = new LineWorker(accessToken, 10);
+  const client = new LineWorker(channelSettingsAccessor, 10);
 
   const bodySpy = moxy(() => true);
   const msgScope = lineApi
@@ -167,56 +381,65 @@ it('sequently excute jobs within an identical thread', async () => {
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'foo',
+      key: 'foo',
       body: { id: 1 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'foo',
+      key: 'foo',
       body: { id: 2 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'bar',
+      key: 'bar',
       body: { id: 3 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      executionKey: 'bar',
+      key: 'bar',
       body: { id: 4 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      executionKey: 'baz',
+      key: 'baz',
       body: { id: 5 },
+      chatChannelId: '2',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      executionKey: 'baz',
+      key: 'baz',
       body: { id: 6 },
+      chatChannelId: '2',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'foo',
+      key: 'foo',
       body: { id: 7 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'bar',
+      key: 'bar',
       body: { id: 8 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'baz',
+      key: 'baz',
       body: { id: 9 },
+      chatChannelId: '2',
     },
   ]);
 
@@ -241,12 +464,25 @@ it('sequently excute jobs within an identical thread', async () => {
     }
   }
 
+  expect(authorizationHeaderSpy).toHaveBeenCalledTimes(9);
+  expect(authorizationHeaderSpy.mock.calls.map(({ args }) => args[0])).toEqual([
+    'Bearer __ACCESS_TOKEN_1__',
+    'Bearer __ACCESS_TOKEN_1__',
+    'Bearer __ACCESS_TOKEN_2__',
+    'Bearer __ACCESS_TOKEN_1__',
+    'Bearer __ACCESS_TOKEN_1__',
+    'Bearer __ACCESS_TOKEN_2__',
+    'Bearer __ACCESS_TOKEN_1__',
+    'Bearer __ACCESS_TOKEN_1__',
+    'Bearer __ACCESS_TOKEN_2__',
+  ]);
+
   expect(msgScope.isDone()).toBe(true);
   await expect(executePromise).resolves.toMatchSnapshot();
 });
 
 it('open requests up to maxConnections', async () => {
-  const client = new LineWorker(accessToken, 2);
+  const client = new LineWorker(channelSettingsAccessor, 2);
 
   const bodySpy = moxy(() => true);
   const msgScope = lineApi
@@ -261,56 +497,65 @@ it('open requests up to maxConnections', async () => {
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'foo',
+      key: 'foo',
       body: { id: 1 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'foo',
+      key: 'foo',
       body: { id: 2 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'bar',
+      key: 'bar',
       body: { id: 3 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      executionKey: 'bar',
+      key: 'bar',
       body: { id: 4 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      executionKey: 'baz',
+      key: 'baz',
       body: { id: 5 },
+      chatChannelId: '2',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/reply',
-      executionKey: 'baz',
+      key: 'baz',
       body: { id: 6 },
+      chatChannelId: '2',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'foo',
+      key: 'foo',
       body: { id: 7 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'bar',
+      key: 'bar',
       body: { id: 8 },
+      chatChannelId: '1',
     },
     {
       method: 'POST',
       path: 'v2/bot/message/push',
-      executionKey: 'baz',
+      key: 'baz',
       body: { id: 9 },
+      chatChannelId: '2',
     },
   ]);
 

@@ -65,7 +65,10 @@ module.exports = {
   overrides: [
     {
       files: '**/__{tests,fixtures,mocks}__/*',
-      rules: { 'import/no-extraneous-dependencies': 'off' },
+      rules: {
+        'import/no-extraneous-dependencies': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+      },
     },
   ],
   settings: {

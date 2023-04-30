@@ -20,11 +20,11 @@ export const Typing: TwitterComponent<
       request: {
         method: 'POST',
         href: '1.1/direct_messages/indicate_typing.json',
-        parameters: { recipient_id: '' },
+        params: { recipient_id: '' },
       },
       accomplishRequest: (chat: TwitterChat, request) => {
         // eslint-disable-next-line no-param-reassign
-        request.parameters.recipient_id = chat.id;
+        request.params.recipient_id = chat.userId;
         return request;
       },
       mediaSources: null,

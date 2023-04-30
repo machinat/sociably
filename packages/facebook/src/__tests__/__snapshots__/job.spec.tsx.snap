@@ -3,12 +3,17 @@
 exports[`createChatJobs(options)(thread, segments) add attached file data and info 1`] = `
 Array [
   Object {
-    "assetTag": undefined,
-    "fileData": "_FOO_",
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": Object {
+      "data": "_FOO_",
+    },
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "message": Object {
           "attachment": Object {
             "type": "image",
@@ -18,21 +23,27 @@ Array [
           "id": "67890",
         },
       },
-      "method": "POST",
-      "relative_url": "me/messages",
+      "relativeUrl": "me/messages",
     },
   },
   Object {
-    "assetTag": "BAR!",
-    "fileData": "_BAR_",
-    "fileInfo": Object {
-      "contentType": "image/jpeg",
-      "filename": "deathangel.jpg",
-      "knownLength": 66666,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": Object {
+      "assetTag": "BAR!",
+      "data": "_BAR_",
+      "info": Object {
+        "contentType": "image/jpeg",
+        "filename": "deathangel.jpg",
+        "knownLength": 66666,
+      },
     },
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "message": Object {
           "attachment": Object {
             "type": "file",
@@ -42,8 +53,7 @@ Array [
           "id": "67890",
         },
       },
-      "method": "POST",
-      "relative_url": "bar/baz",
+      "relativeUrl": "bar/baz",
     },
   },
 ]
@@ -52,12 +62,15 @@ Array [
 exports[`createChatJobs(options)(thread, segments) respect options set in job value 1`] = `
 Array [
   Object {
-    "assetTag": undefined,
-    "fileData": undefined,
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": undefined,
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "message": Object {
           "text": "bibiboo",
         },
@@ -69,17 +82,19 @@ Array [
         },
         "tag": "POST_PURCHASE_UPDATE",
       },
-      "method": "POST",
-      "relative_url": "me/messages",
+      "relativeUrl": "me/messages",
     },
   },
   Object {
-    "assetTag": undefined,
-    "fileData": undefined,
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": undefined,
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "message": Object {
           "text": "Oh! I apologize.",
         },
@@ -91,8 +106,7 @@ Array [
         },
         "tag": undefined,
       },
-      "method": "POST",
-      "relative_url": "me/messages",
+      "relativeUrl": "me/messages",
     },
   },
 ]
@@ -101,12 +115,15 @@ Array [
 exports[`createChatJobs(options)(thread, segments) respect the empty tag if messaging_type has already been set 1`] = `
 Array [
   Object {
-    "assetTag": undefined,
-    "fileData": undefined,
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": undefined,
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "message": Object {
           "text": "bibibooboobibooboo",
         },
@@ -117,8 +134,7 @@ Array [
           "id": "67890",
         },
       },
-      "method": "POST",
-      "relative_url": "me/messages",
+      "relativeUrl": "me/messages",
     },
   },
 ]
@@ -127,29 +143,34 @@ Array [
 exports[`createChatJobs(options)(thread, segments) with message metadata 1`] = `
 Array [
   Object {
-    "assetTag": undefined,
-    "fileData": undefined,
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": undefined,
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "persona_id": "your-dearest-friend",
         "recipient": Object {
           "id": "67890",
         },
         "sender_action": "typing_on",
       },
-      "method": "POST",
-      "relative_url": "me/messages",
+      "relativeUrl": "me/messages",
     },
   },
   Object {
-    "assetTag": undefined,
-    "fileData": undefined,
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": undefined,
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "message": Object {
           "id": 1,
         },
@@ -161,33 +182,37 @@ Array [
         },
         "tag": "PAYMENT_UPDATE",
       },
-      "method": "POST",
-      "relative_url": "me/messages",
+      "relativeUrl": "me/messages",
     },
   },
   Object {
-    "assetTag": undefined,
-    "fileData": undefined,
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": undefined,
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "id": 2,
         "recipient": Object {
           "id": "67890",
         },
       },
-      "method": "POST",
-      "relative_url": "bar/baz",
+      "relativeUrl": "bar/baz",
     },
   },
   Object {
-    "assetTag": undefined,
-    "fileData": undefined,
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": undefined,
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "message": Object {
           "text": "id:3",
         },
@@ -199,17 +224,19 @@ Array [
         },
         "tag": "PAYMENT_UPDATE",
       },
-      "method": "POST",
-      "relative_url": "me/messages",
+      "relativeUrl": "me/messages",
     },
   },
   Object {
-    "assetTag": undefined,
-    "fileData": undefined,
-    "fileInfo": undefined,
+    "channel": FacebookPage {
+      "id": "12345",
+      "platform": "facebook",
+    },
+    "file": undefined,
     "key": "fb.12345.67890",
     "request": Object {
-      "body": Object {
+      "method": "POST",
+      "params": Object {
         "message": Object {
           "text": "4",
         },
@@ -221,8 +248,7 @@ Array [
         },
         "tag": "PAYMENT_UPDATE",
       },
-      "method": "POST",
-      "relative_url": "me/messages",
+      "relativeUrl": "me/messages",
     },
   },
 ]

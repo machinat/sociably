@@ -9,7 +9,7 @@ import type {
   DisconnectBody,
   EventsBody,
   RejectBody,
-} from '../socket';
+} from '../Socket';
 import SocketError from '../error';
 import type { ClientLoginFn, EventInput } from '../types';
 import createClientSocket from './createClientSocket';

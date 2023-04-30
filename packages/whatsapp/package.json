@@ -34,6 +34,7 @@
     "@sociably/meta-api": "^0.8.0-alpha.8",
     "bowser": "^2.11.0",
     "invariant": "^2.2.4",
+    "libphonenumber-js": "^1.10.26",
     "snake-case": "^3.0.4",
     "warning": "^4.0.2"
   },

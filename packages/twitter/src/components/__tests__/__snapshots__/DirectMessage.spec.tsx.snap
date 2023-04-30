@@ -31,7 +31,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
@@ -88,7 +88,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
@@ -140,7 +140,7 @@ Array [
       "mediaSources": Array [
         Object {
           "id": "11111",
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
@@ -151,7 +151,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
@@ -193,7 +193,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
@@ -238,7 +238,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {
@@ -275,7 +275,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": "11111",
@@ -331,7 +331,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "message_data": Object {

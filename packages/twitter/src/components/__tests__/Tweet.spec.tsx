@@ -24,7 +24,7 @@ test("rendering to agent's page", async () => {
     Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "direct_message_deep_link": undefined,
         "for_super_followers_only": true,
         "geo": undefined,
@@ -56,7 +56,7 @@ test('rendering as a reply', async () => {
     Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "direct_message_deep_link": undefined,
         "for_super_followers_only": undefined,
         "geo": Object {
@@ -115,7 +115,7 @@ test('rendering with media', async () => {
     Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "direct_message_deep_link": undefined,
         "for_super_followers_only": true,
         "geo": undefined,
@@ -149,7 +149,7 @@ test("rendering to agent's page", async () => {
     Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=12345",
         "for_super_followers_only": undefined,
         "geo": undefined,
@@ -174,7 +174,7 @@ test("rendering to agent's page", async () => {
     Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=23456&text=boo",
         "for_super_followers_only": undefined,
         "geo": undefined,
@@ -201,7 +201,7 @@ test("rendering to agent's page", async () => {
     Object {
       "href": "2/tweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=12345&welcome_message_id=22222&text=hello%20world",
         "for_super_followers_only": undefined,
         "geo": undefined,
@@ -316,7 +316,7 @@ test('spliting long content into tweet thread', async () => {
       Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": true,
           "geo": Object {
@@ -333,7 +333,7 @@ test('spliting long content into tweet thread', async () => {
       Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "direct_message_deep_link": undefined,
           "media": undefined,
           "reply": Object {
@@ -346,7 +346,7 @@ test('spliting long content into tweet thread', async () => {
       Object {
         "href": "2/tweets",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "direct_message_deep_link": undefined,
           "media": undefined,
           "reply": Object {

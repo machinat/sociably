@@ -20,6 +20,7 @@
     "./base/Bot": "./lib/base/Bot.js",
     "./base/IntentRecognizer": "./lib/base/IntentRecognizer.js",
     "./base/Marshaler": "./lib/base/Marshaler.js",
+    "./base/ChannelSettingsAccessor": "./lib/base/ChannelSettingsAccessor.js",
     "./base/ModuleUtilities": "./lib/base/ModuleUtilities.js",
     "./base/Profiler": "./lib/base/Profiler.js",
     "./base/StateController": "./lib/base/StateController.js",

@@ -7,10 +7,10 @@ import { WhatsAppComponent } from '../types';
  */
 export type UrlButtonParamProps = {
   /**
-   * Developer-provided suffix that is appended to the predefined prefix URL in
+   * Developer-provided postfix that is appended to the predefined prefix URL in
    * the template.
    */
-  urlSuffix: string;
+  urlPostfix: string;
   /**
    * The 0-indexed position of the button. If the value is undefined, it's
    * decided by the order of params.
@@ -27,14 +27,14 @@ export const UrlButtonParam: WhatsAppComponent<
   UrlButtonParamProps,
   PartSegment<{}>
 > = makeWhatsAppComponent(function UrlButtonParam(node, path) {
-  const { index, urlSuffix } = node.props;
+  const { index, urlPostfix } = node.props;
   return [
     makePartSegment(node, path, {
       type: 'url',
       index,
       parameter: {
         type: 'text',
-        text: urlSuffix,
+        text: urlPostfix,
       },
     }),
   ];

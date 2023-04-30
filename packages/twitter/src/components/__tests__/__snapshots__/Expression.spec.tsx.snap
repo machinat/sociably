@@ -14,7 +14,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": "11111",
@@ -45,7 +45,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": "11111",
@@ -81,7 +81,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": undefined,
@@ -111,7 +111,7 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": Array [
         Object {
-          "parameters": Object {
+          "params": Object {
             "additional_owners": undefined,
             "media_category": "dm_image",
             "shared": "true",
@@ -123,7 +123,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": undefined,
@@ -174,7 +174,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": undefined,
@@ -205,7 +205,7 @@ Array [
       "request": Object {
         "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
-        "parameters": Object {
+        "params": Object {
           "event": Object {
             "message_create": Object {
               "custom_profile_id": undefined,

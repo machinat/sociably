@@ -1,5 +1,6 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import TwitterUser from './User';
 import { TWITTER, TWTR } from './constant';
 
 type SerializedTweetTarget = {
@@ -38,6 +39,10 @@ export default class TwitterTweetTarget
 
   get uid(): string {
     return `${TWTR}.${this.agentId}.${this.tweetId || DEFAULT_FEED_SIGN}`;
+  }
+
+  get agent(): TwitterUser {
+    return new TwitterUser(this.agentId);
   }
 
   // eslint-disable-next-line class-methods-use-this

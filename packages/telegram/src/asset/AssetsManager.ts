@@ -1,8 +1,12 @@
 import { makeClassProvider } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
-import BotP from '../Bot';
+import TelegramUser from '../User';
+import { TG } from '../constant';
 
 const FILE = 'file';
+
+const makeResourceToken = (botId: number, resource: string): string =>
+  `${TG}.assets.${botId}.${resource}`;
 
 /**
  * TelegramAssetsManager stores name-to-id mapping for assets created in
@@ -10,75 +14,76 @@ const FILE = 'file';
  * @category Provider
  */
 export class TelegramAssetsManager {
-  bot: BotP;
-  botId: number;
-  _stateController: StateControllerI;
+  private _stateController: StateControllerI;
 
-  constructor(stateManager: StateControllerI, bot: BotP) {
+  constructor(stateManager: StateControllerI) {
     this._stateController = stateManager;
-    this.bot = bot;
-    this.botId = bot.id;
-  }
-
-  private _makeResourceToken(resource: string): string {
-    return `telegram.assets.${this.botId}.${resource}`;
   }
 
   async getAssetId(
+    bot: TelegramUser,
     resource: string,
     name: string
   ): Promise<undefined | string> {
     const existed = await this._stateController
-      .globalState(this._makeResourceToken(resource))
+      .globalState(makeResourceToken(bot.id, resource))
       .get<string>(name);
     return existed || undefined;
   }
 
   async saveAssetId(
+    bot: TelegramUser,
     resource: string,
     name: string,
     id: string
   ): Promise<boolean> {
     const isUpdated = await this._stateController
-      .globalState(this._makeResourceToken(resource))
+      .globalState(makeResourceToken(bot.id, resource))
       .set<string>(name, id);
     return isUpdated;
   }
 
-  getAllAssets(resource: string): Promise<null | Map<string, string>> {
+  getAllAssets(
+    bot: TelegramUser,
+    resource: string
+  ): Promise<null | Map<string, string>> {
     return this._stateController
-      .globalState(this._makeResourceToken(resource))
+      .globalState(makeResourceToken(bot.id, resource))
       .getAll();
   }
 
-  async unsaveAssetId(resource: string, name: string): Promise<boolean> {
+  async unsaveAssetId(
+    bot: TelegramUser,
+    resource: string,
+    name: string
+  ): Promise<boolean> {
     const isDeleted = await this._stateController
-      .globalState(this._makeResourceToken(resource))
+      .globalState(makeResourceToken(bot.id, resource))
       .delete(name);
 
     return isDeleted;
   }
 
-  getFile(name: string): Promise<undefined | string> {
-    return this.getAssetId(FILE, name);
+  getFile(bot: TelegramUser, name: string): Promise<undefined | string> {
+    return this.getAssetId(bot, FILE, name);
   }
 
-  saveFile(name: string, id: string): Promise<boolean> {
-    return this.saveAssetId(FILE, name, id);
+  saveFile(bot: TelegramUser, name: string, id: string): Promise<boolean> {
+    return this.saveAssetId(bot, FILE, name, id);
   }
 
-  getAllFiles(): Promise<null | Map<string, string>> {
-    return this.getAllAssets(FILE);
+  getAllFiles(bot: TelegramUser): Promise<null | Map<string, string>> {
+    return this.getAllAssets(bot, FILE);
   }
 
-  unsaveFile(name: string): Promise<boolean> {
-    return this.unsaveAssetId(FILE, name);
+  unsaveFile(bot: TelegramUser, name: string): Promise<boolean> {
+    return this.unsaveAssetId(bot, FILE, name);
   }
 }
 
 const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP],
+  deps: [StateControllerI],
 })(TelegramAssetsManager);
 
 type AssetsManagerP = TelegramAssetsManager;

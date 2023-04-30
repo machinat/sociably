@@ -91,7 +91,7 @@ export const Expression: TwitterComponent<
     }
 
     if (createDmRequest) {
-      const dmOptions = createDmRequest.parameters.event.message_create;
+      const dmOptions = createDmRequest.params.event.message_create;
 
       if (!dmOptions.custom_profile_id) {
         dmOptions.custom_profile_id = customProfileId;
@@ -106,11 +106,10 @@ export const Expression: TwitterComponent<
         'no message content available to attach quick replies'
       );
     }
-    lastCreateDmRequest.parameters.event.message_create.message_data.quick_reply =
-      {
-        type: 'options',
-        options: quickRepliesSegments.map(({ value }) => value),
-      };
+    lastCreateDmRequest.params.event.message_create.message_data.quick_reply = {
+      type: 'options',
+      options: quickRepliesSegments.map(({ value }) => value),
+    };
   }
 
   return outputSegment.length > 0 ? outputSegment : null;

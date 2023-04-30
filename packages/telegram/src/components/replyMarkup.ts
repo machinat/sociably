@@ -1,6 +1,6 @@
 import { SociablyNode } from '@sociably/core';
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
-import { makeTelegramComponent } from '../utils';
+import makeTelegramComponent from '../utils/makeTelegramComponent';
 import type { TelegramComponent } from '../types';
 
 /**
@@ -31,7 +31,7 @@ export interface UrlButtonProps {
  */
 export const UrlButton: TelegramComponent<
   UrlButtonProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function UrlButton(node, path) {
   const { text, url, login, forwardText, botUserName, requestWriteAccess } =
     node.props;
@@ -73,7 +73,7 @@ export interface CallbackButtonProps {
  */
 export const CallbackButton: TelegramComponent<
   CallbackButtonProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function CallbackButton(node, path) {
   const { text, data } = node.props;
 
@@ -102,7 +102,7 @@ export interface SwitchQueryButtonProps {
  */
 export const SwitchQueryButton: TelegramComponent<
   SwitchQueryButtonProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function SwitchQueryButton(node, path) {
   const { text, query, currentChat } = node.props;
 
@@ -133,7 +133,7 @@ export interface GameButtonProps {
  */
 export const GameButton: TelegramComponent<
   GameButtonProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function GameButton(node, path) {
   const { text } = node.props;
   return [
@@ -160,7 +160,7 @@ export interface PayButtonProps {
  */
 export const PayButton: TelegramComponent<
   PayButtonProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function PayButton(node, path) {
   const { text } = node.props;
   return [
@@ -194,7 +194,7 @@ export interface KeyboardRowProps {
  */
 export const KeyboardRow: TelegramComponent<
   KeyboardRowProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function KeyboardRow(node, path, render) {
   const { children } = node.props;
   const buttonsSegments = await render(children, '.children');
@@ -232,7 +232,7 @@ export interface InlineKeyboardProps {
  */
 export const InlineKeyboard: TelegramComponent<
   InlineKeyboardProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineKeyboard(node, path, render) {
   const { children } = node.props;
   const buttonsSegments = await render(children, '.children');
@@ -266,7 +266,7 @@ export interface TextReplyProps {
  */
 export const TextReply: TelegramComponent<
   TextReplyProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function TextReply(node, path) {
   const { text } = node.props;
   return [makePartSegment(node, path, { text })];
@@ -288,7 +288,7 @@ export interface ContactReplyProps {
  */
 export const ContactReply: TelegramComponent<
   ContactReplyProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function ContactReply(node, path) {
   const { text } = node.props;
   return [makePartSegment(node, path, { text, request_contact: true })];
@@ -310,7 +310,7 @@ export interface LocationReplyProps {
  */
 export const LocationReply: TelegramComponent<
   LocationReplyProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function LocationReply(node, path) {
   const { text } = node.props;
   return [makePartSegment(node, path, { text, request_location: true })];
@@ -334,7 +334,7 @@ export interface PollReplyProps {
  */
 export const PollReply: TelegramComponent<
   PollReplyProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function PollReply(node, path) {
   const { text, type } = node.props;
   return [makePartSegment(node, path, { text, request_poll: { type } })];
@@ -372,7 +372,7 @@ export interface ReplyKeyboardProps {
  */
 export const ReplyKeyboard: TelegramComponent<
   ReplyKeyboardProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function ReplyKeyboard(node, path, render) {
   const { children, resizeKeyboard, oneTimeKeyboard, selective } = node.props;
   const rowsSegments = await render(children, '.children');
@@ -409,7 +409,7 @@ export interface RemoveReplyKeyboardProps {
  */
 export const RemoveReplyKeyboard: TelegramComponent<
   RemoveReplyKeyboardProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function RemoveReplyKeyboard(node, path) {
   const { selective } = node.props;
   return [makePartSegment(node, path, { remove_keyboard: true, selective })];
@@ -431,7 +431,7 @@ export interface ForceReplyProps {
  */
 export const ForceReply: TelegramComponent<
   ForceReplyProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(function ForceReply(node, path) {
   const { selective } = node.props;
   return [makePartSegment(node, path, { force_reply: true, selective })];

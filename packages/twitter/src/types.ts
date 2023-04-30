@@ -8,28 +8,36 @@ import type {
 } from '@sociably/core';
 import { IntermediateSegment, UnitSegment } from '@sociably/core/renderer';
 import { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
+import { Interfaceable } from '@sociably/core/service';
 import type { WebhookMetadata } from '@sociably/http/webhook';
 import type { TwitterEvent } from './event/types';
 import type TwitterChat from './Chat';
 import type TweetTarget from './TweetTarget';
 import type { TwitterBot } from './Bot';
 import type TwitterUser from './User';
+import { AgentSettingsAccessorI } from './interface';
 
 export type TwitterThread = TweetTarget | TwitterChat;
 
+export type TwitterAgentSettings = {
+  /** The ID of the agent user */
+  userId: string;
+  /** The access token for the agent user */
+  accessToken: string;
+  /** The secret of the access token */
+  tokenSecret: string;
+};
+
 export type TwitterPlatformConfigs = {
-  /** The id of Twitter app */
-  appId: string;
+  agentSettings?: TwitterAgentSettings;
+  multiAgentSettings?: TwitterAgentSettings[];
+  agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;
   /** The key of Twitter app */
   appKey: string;
   /** The secret of Twitter app */
   appSecret: string;
   /** The bearer token of Twitter app */
   bearerToken: string;
-  /** The access token for the agent user */
-  accessToken: string;
-  /** The secret of the access token */
-  accessSecret: string;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
   /** The max API request connections at the same time */
@@ -50,13 +58,13 @@ export type IdMediaSource = {
 export type UrlMediaSource = {
   type: 'url';
   url: string;
-  parameters: { [k: string]: undefined | string | number };
+  params: { [k: string]: undefined | string | number };
   assetTag?: string;
 };
 
 export type FileMediaSource = {
   type: 'file';
-  parameters: { [k: string]: undefined | string | number };
+  params: { [k: string]: undefined | string | number };
   fileData: Buffer | NodeJS.ReadableStream;
   assetTag?: string;
 };
@@ -71,7 +79,7 @@ export type MediaAttachment = {
 export type TwitterApiRequest = {
   method: string;
   href: string;
-  parameters: any;
+  params: Record<string, any>;
 };
 
 type AccomplishRequestFn = (
@@ -83,7 +91,7 @@ type AccomplishRequestFn = (
 export type TwitterJob = {
   key: undefined | string;
   request: TwitterApiRequest;
-  target: TwitterThread;
+  target: null | TwitterThread;
   asApplication: boolean;
   refreshTarget:
     | null

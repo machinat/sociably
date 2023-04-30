@@ -3,9 +3,13 @@ import { makeClassProvider } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
 import BotP from '../Bot';
-import { WHATSAPP } from '../constant';
+import WhatsAppAgent from '../Agent';
+import { WA } from '../constant';
 
 const MEDIA = 'media';
+
+const makeResourceToken = (numberId: string, resource: string): string =>
+  `${WA}.assets.${numberId}.${resource}`;
 
 /**
  * WhatsAppAssetsManager manage name-to-id mapping for assets in WhatsApp
@@ -13,89 +17,98 @@ const MEDIA = 'media';
  * @category Provider
  */
 export class WhatsAppAssetsManager {
-  bot: BotP;
-  _stateController: StateControllerI;
+  private _bot: BotP;
+  private _stateController: StateControllerI;
 
-  constructor(stateManager: StateControllerI, bot: BotP) {
-    this._stateController = stateManager;
-    this.bot = bot;
-  }
-
-  private _makeResourceToken(resource: string): string {
-    return `${WHATSAPP}.assets.${this.bot.businessNumber}.${resource}`;
+  constructor(bot: BotP, stateController: StateControllerI) {
+    this._bot = bot;
+    this._stateController = stateController;
   }
 
   async getAssetId(
+    agent: WhatsAppAgent,
     resource: string,
     name: string
   ): Promise<undefined | string> {
     const existed = await this._stateController
-      .globalState(this._makeResourceToken(resource))
+      .globalState(makeResourceToken(agent.numberId, resource))
       .get<string>(name);
     return existed || undefined;
   }
 
   async saveAssetId(
+    agent: WhatsAppAgent,
     resource: string,
     name: string,
     id: string
   ): Promise<boolean> {
     const isUpdated = await this._stateController
-      .globalState(this._makeResourceToken(resource))
+      .globalState(makeResourceToken(agent.numberId, resource))
       .set<string>(name, id);
     return isUpdated;
   }
 
-  getAllAssets(resource: string): Promise<null | Map<string, string>> {
+  getAllAssets(
+    agent: WhatsAppAgent,
+    resource: string
+  ): Promise<null | Map<string, string>> {
     return this._stateController
-      .globalState(this._makeResourceToken(resource))
+      .globalState(makeResourceToken(agent.numberId, resource))
       .getAll();
   }
 
-  async unsaveAssetId(resource: string, name: string): Promise<boolean> {
+  async unsaveAssetId(
+    agent: WhatsAppAgent,
+    resource: string,
+    name: string
+  ): Promise<boolean> {
     const isDeleted = await this._stateController
-      .globalState(this._makeResourceToken(resource))
+      .globalState(makeResourceToken(agent.numberId, resource))
       .delete(name);
 
     return isDeleted;
   }
 
-  getMedia(name: string): Promise<undefined | string> {
-    return this.getAssetId(MEDIA, name);
+  getMedia(agent: WhatsAppAgent, name: string): Promise<undefined | string> {
+    return this.getAssetId(agent, MEDIA, name);
   }
 
-  saveMedia(name: string, id: string): Promise<boolean> {
-    return this.saveAssetId(MEDIA, name, id);
+  saveMedia(agent: WhatsAppAgent, name: string, id: string): Promise<boolean> {
+    return this.saveAssetId(agent, MEDIA, name, id);
   }
 
-  getAllMedias(): Promise<null | Map<string, string>> {
-    return this.getAllAssets(MEDIA);
+  getAllMedias(agent: WhatsAppAgent): Promise<null | Map<string, string>> {
+    return this.getAllAssets(agent, MEDIA);
   }
 
-  unsaveMedia(name: string): Promise<boolean> {
-    return this.unsaveAssetId(MEDIA, name);
+  unsaveMedia(agent: WhatsAppAgent, name: string): Promise<boolean> {
+    return this.unsaveAssetId(agent, MEDIA, name);
   }
 
-  async uploadMedia(name: string, node: SociablyNode): Promise<string> {
-    const existed = await this.getMedia(name);
+  async uploadMedia(
+    agent: WhatsAppAgent,
+    name: string,
+    node: SociablyNode
+  ): Promise<string> {
+    const existed = await this.getMedia(agent, name);
     if (existed !== undefined) {
       throw new Error(`attachment [ ${name} ] already exist`);
     }
 
-    const result = await this.bot.uploadMedia(node);
+    const result = await this._bot.uploadMedia(agent, node);
     if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
     const id = result.id as string;
-    await this.saveMedia(name, id);
+    await this.saveMedia(agent, name, id);
     return id;
   }
 }
 
 const AssetsManagerP = makeClassProvider({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP],
+  deps: [BotP, StateControllerI],
 })(WhatsAppAssetsManager);
 
 type AssetsManagerP = WhatsAppAssetsManager;

@@ -3,14 +3,10 @@ import Sociably from '@sociably/core';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
-import {
-  WebSocketConnection,
-  WebSocketUserThread,
-  WebSocketTopicThread,
-} from '../thread';
-import { WebSocketServer } from '../server';
-import { WebSocketReceiver } from '../receiver';
-import { WebSocketBot } from '../bot';
+import WebSocketConnection from '../Connection';
+import { WebSocketServer } from '../Server';
+import { WebSocketReceiver } from '../Receiver';
+import { WebSocketBot } from '../Bot';
 import WebSocket from '../module';
 
 it('export interfaces', () => {
@@ -145,13 +141,7 @@ describe('initModule()', () => {
     ]);
 
     expect(bots.get('websocket')).toBeInstanceOf(WebSocketBot);
-    expect(marshalTypes).toEqual(
-      expect.arrayContaining([
-        WebSocketConnection,
-        WebSocketUserThread,
-        WebSocketTopicThread,
-      ])
-    );
+    expect(marshalTypes).toEqual(expect.arrayContaining([WebSocketConnection]));
   });
 
   test('startHook() calls bot.start()', async () => {

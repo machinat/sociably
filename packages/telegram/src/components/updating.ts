@@ -1,7 +1,7 @@
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import { makeTelegramComponent } from '../utils';
+import makeTelegramComponent from '../utils/makeTelegramComponent';
 import {
   TelegramSegmentValue,
   TelegramComponent,
@@ -66,7 +66,7 @@ export const EditText: TelegramComponent<
     makeUnitSegment(node, path, {
       method: 'editMessageText',
       toNonChatTarget: !!inlineMessageId,
-      parameters: {
+      params: {
         text: textSegments[0].value,
         message_id: messageId,
         inline_message_id: inlineMessageId,
@@ -126,7 +126,7 @@ export const EditCaption: TelegramComponent<
     makeUnitSegment(node, path, {
       method: 'editMessageCaption',
       toNonChatTarget: !!inlineMessageId,
-      parameters: {
+      params: {
         caption: textSegments[0].value,
         message_id: messageId,
         inline_message_id: inlineMessageId,
@@ -166,63 +166,63 @@ export const EditMedia: TelegramComponent<
     return null;
   }
 
-  const { method, parameters, uploadingFiles }: TelegramSegmentValue =
+  const { method, params, uploadFiles }: TelegramSegmentValue =
     mediaSegments[0].value;
   let mediaInput;
 
   if (method === 'sendPhoto') {
     mediaInput = {
       type: 'photo',
-      media: parameters.photo,
-      caption: parameters.caption,
-      parse_mode: parameters.parse_mode,
+      media: params.photo,
+      caption: params.caption,
+      parse_mode: params.parse_mode,
     };
   } else if (method === 'sendVideo') {
     mediaInput = {
       type: 'video',
-      media: parameters.video,
-      caption: parameters.caption,
-      parse_mode: parameters.parse_mode,
-      thumb: parameters.thumb,
-      duration: parameters.duration,
-      width: parameters.width,
-      height: parameters.height,
-      supports_streaming: parameters.supports_streaming,
+      media: params.video,
+      caption: params.caption,
+      parse_mode: params.parse_mode,
+      thumb: params.thumb,
+      duration: params.duration,
+      width: params.width,
+      height: params.height,
+      supports_streaming: params.supports_streaming,
     };
   } else if (method === 'sendAnimation') {
     mediaInput = {
       type: 'animation',
-      media: parameters.animation,
-      caption: parameters.caption,
-      parse_mode: parameters.parse_mode,
-      thumb: parameters.thumb,
-      duration: parameters.duration,
-      width: parameters.width,
-      height: parameters.height,
+      media: params.animation,
+      caption: params.caption,
+      parse_mode: params.parse_mode,
+      thumb: params.thumb,
+      duration: params.duration,
+      width: params.width,
+      height: params.height,
     };
   } else if (method === 'sendAudio') {
     mediaInput = {
       type: 'audio',
-      media: parameters.audio,
-      caption: parameters.caption,
-      parse_mode: parameters.parse_mode,
-      thumb: parameters.thumb,
-      duration: parameters.duration,
-      performer: parameters.performer,
-      title: parameters.title,
+      media: params.audio,
+      caption: params.caption,
+      parse_mode: params.parse_mode,
+      thumb: params.thumb,
+      duration: params.duration,
+      performer: params.performer,
+      title: params.title,
     };
   } else if (method === 'sendDocument') {
     mediaInput = {
       type: 'document',
-      media: parameters.document,
-      caption: parameters.caption,
-      parse_mode: parameters.parse_mode,
-      thumb: parameters.thumb,
+      media: params.document,
+      caption: params.caption,
+      parse_mode: params.parse_mode,
+      thumb: params.thumb,
     };
   }
 
-  if (uploadingFiles) {
-    for (const { fieldName } of uploadingFiles) {
+  if (uploadFiles) {
+    for (const { fieldName } of uploadFiles) {
       if (fieldName === 'thumb') {
         mediaInput.thumb = 'attach://thumb';
       } else {
@@ -236,13 +236,13 @@ export const EditMedia: TelegramComponent<
     makeUnitSegment(node, path, {
       method: 'editMessageMedia',
       toNonChatTarget: !!inlineMessageId,
-      parameters: {
+      params: {
         media: mediaInput,
         message_id: messageId,
         inline_message_id: inlineMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      uploadingFiles,
+      uploadFiles,
     }),
   ];
 });
@@ -273,7 +273,7 @@ export const StopPoll: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'stopPoll',
-      parameters: {
+      params: {
         message_id: messageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
@@ -304,7 +304,7 @@ export const DeleteMessage: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'deleteMessage',
-      parameters: {
+      params: {
         message_id: messageId,
       },
     }),

@@ -1,8 +1,9 @@
 import moxy from '@moxyjs/moxy';
 import { MetaApiError } from '@sociably/meta-api';
 import type { FacebookBot } from '../Bot';
+import FacebookPage from '../Page';
 import FacebookUser from '../User';
-import FacebookUserProfile from '../UserProfile';
+import UserProfile from '../UserProfile';
 import { FacebookProfiler } from '../Profiler';
 
 const rawProfileData = {
@@ -18,6 +19,7 @@ const bot = moxy<FacebookBot>({
   makeApiCall: async () => rawProfileData,
 } as never);
 
+const page = new FacebookPage('1234567890');
 const user = new FacebookUser('1234567890', '_USER_ID_');
 
 beforeEach(() => {
@@ -26,30 +28,34 @@ beforeEach(() => {
 
 test('fetch profile from api', async () => {
   const profiler = new FacebookProfiler(bot);
-  const profile = (await profiler.getUserProfile(user))!;
+  const profile = await profiler.getUserProfile(page, user);
 
-  expect(profile.id).toBe('xxxxxxxxx');
-  expect(profile.name).toBe('Peter Chang');
-  expect(profile.firstName).toBe('Peter');
-  expect(profile.lastName).toBe('Chang');
-  expect(profile.avatarUrl).toBe(
+  expect(profile?.id).toBe('xxxxxxxxx');
+  expect(profile?.name).toBe('Peter Chang');
+  expect(profile?.firstName).toBe('Peter');
+  expect(profile?.lastName).toBe('Chang');
+  expect(profile?.avatarUrl).toBe(
     'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/p200x200/13055603_10105219398495383_8237637584159975445_n.jpg?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce'
   );
-  expect(profile.languageCode).toBe(undefined);
-  expect(profile.timeZone).toBe(undefined);
-  expect(profile.gender).toBe(undefined);
-  expect(profile.data).toEqual(rawProfileData);
+  expect(profile?.languageCode).toBe(undefined);
+  expect(profile?.timeZone).toBe(undefined);
+  expect(profile?.gender).toBe(undefined);
+  expect(profile?.data).toEqual(rawProfileData);
 
   expect(bot.makeApiCall).toHaveReturnedTimes(1);
-  expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
-    Array [
-      "GET",
-      "_USER_ID_?fields=id,name,first_name,last_name,profile_pic",
-    ]
+  expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    Object {
+      "method": "GET",
+      "page": FacebookPage {
+        "id": "1234567890",
+        "platform": "facebook",
+      },
+      "path": "_USER_ID_?fields=id,name,first_name,last_name,profile_pic",
+    }
   `);
 
-  expect(profile.typeName()).toBe('FbUserProfile');
-  expect(profile.toJSONValue()).toMatchInlineSnapshot(`
+  expect(profile?.typeName()).toBe('FbUserProfile');
+  expect(profile?.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "first_name": "Peter",
       "id": "xxxxxxxxx",
@@ -59,7 +65,7 @@ test('fetch profile from api', async () => {
     }
   `);
   expect(
-    FacebookUserProfile.fromJSONValue(profile.toJSONValue())
+    UserProfile.fromJSONValue((profile as UserProfile)?.toJSONValue())
   ).toStrictEqual(profile);
 });
 
@@ -80,23 +86,27 @@ it('query additional optionalProfileFields if given', async () => {
   const profiler = new FacebookProfiler(bot, {
     optionalProfileFields: ['locale', 'timezone', 'gender'],
   });
-  const profile = (await profiler.getUserProfile(user))!;
+  const profile = await profiler.getUserProfile(page, user);
 
-  expect(profile.languageCode).toBe('en_US');
-  expect(profile.timeZone).toBe(-7);
-  expect(profile.gender).toBe('male');
-  expect(profile.data).toEqual(profileWithMoreFields);
+  expect(profile?.languageCode).toBe('en_US');
+  expect(profile?.timeZone).toBe(-7);
+  expect(profile?.gender).toBe('male');
+  expect(profile?.data).toEqual(profileWithMoreFields);
 
   expect(bot.makeApiCall).toHaveReturnedTimes(1);
-  expect(bot.makeApiCall.mock.calls[0].args).toMatchInlineSnapshot(`
-    Array [
-      "GET",
-      "_USER_ID_?fields=locale,timezone,gender,id,name,first_name,last_name,profile_pic",
-    ]
+  expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    Object {
+      "method": "GET",
+      "page": FacebookPage {
+        "id": "1234567890",
+        "platform": "facebook",
+      },
+      "path": "_USER_ID_?fields=locale,timezone,gender,id,name,first_name,last_name,profile_pic",
+    }
   `);
 
-  expect(profile.typeName()).toBe('FbUserProfile');
-  expect(profile.toJSONValue()).toMatchInlineSnapshot(`
+  expect(profile?.typeName()).toBe('FbUserProfile');
+  expect(profile?.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "first_name": "Peter",
       "gender": "male",
@@ -109,7 +119,7 @@ it('query additional optionalProfileFields if given', async () => {
     }
   `);
   expect(
-    FacebookUserProfile.fromJSONValue(profile.toJSONValue())
+    UserProfile.fromJSONValue((profile as UserProfile).toJSONValue())
   ).toStrictEqual(profile);
 });
 
@@ -128,6 +138,6 @@ it('return null if phone number user error met', async () => {
     });
   });
 
-  expect(profiler.getUserProfile(user)).resolves.toBe(null);
+  expect(profiler.getUserProfile(page, user)).resolves.toBe(null);
   expect(bot.makeApiCall).toHaveReturnedTimes(1);
 });

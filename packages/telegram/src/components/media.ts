@@ -1,7 +1,7 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import { makeTelegramComponent } from '../utils';
+import makeTelegramComponent from '../utils/makeTelegramComponent';
 import {
   TelegramSegmentValue,
   UploadingFile,
@@ -75,7 +75,7 @@ export const Photo: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendPhoto',
-      parameters: {
+      params: {
         photo: fileId || url || undefined,
         caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
@@ -83,7 +83,7 @@ export const Photo: TelegramComponent<
         reply_to_message_id: replyToMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      uploadingFiles: fileData
+      uploadFiles: fileData
         ? [
             {
               fieldName: 'photo',
@@ -143,10 +143,10 @@ export const Audio: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadingFiles: UploadingFile[] = [];
+  const uploadFiles: UploadingFile[] = [];
 
   if (fileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'audio',
       fileData,
       fileInfo,
@@ -155,7 +155,7 @@ export const Audio: TelegramComponent<
   }
 
   if (thumbnailFileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
@@ -166,7 +166,7 @@ export const Audio: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendAudio',
-      parameters: {
+      params: {
         audio: fileId || url || undefined,
         caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
@@ -177,7 +177,7 @@ export const Audio: TelegramComponent<
         performer,
         title,
       },
-      uploadingFiles,
+      uploadFiles,
     }),
   ];
 });
@@ -218,10 +218,10 @@ export const Document: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadingFiles: UploadingFile[] = [];
+  const uploadFiles: UploadingFile[] = [];
 
   if (fileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'document',
       fileData,
       fileInfo,
@@ -230,7 +230,7 @@ export const Document: TelegramComponent<
   }
 
   if (thumbnailFileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
@@ -241,7 +241,7 @@ export const Document: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendDocument',
-      parameters: {
+      params: {
         document: fileId || url || undefined,
         caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
@@ -249,7 +249,7 @@ export const Document: TelegramComponent<
         reply_to_message_id: replyToMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      uploadingFiles,
+      uploadFiles,
     }),
   ];
 });
@@ -303,10 +303,10 @@ export const Video: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadingFiles: UploadingFile[] = [];
+  const uploadFiles: UploadingFile[] = [];
 
   if (fileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'video',
       fileData,
       fileInfo,
@@ -315,7 +315,7 @@ export const Video: TelegramComponent<
   }
 
   if (thumbnailFileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
@@ -326,7 +326,7 @@ export const Video: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendVideo',
-      parameters: {
+      params: {
         video: fileId || url || undefined,
         caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
@@ -338,7 +338,7 @@ export const Video: TelegramComponent<
         height,
         supports_streaming: supportsStreaming,
       },
-      uploadingFiles,
+      uploadFiles,
     }),
   ];
 });
@@ -389,10 +389,10 @@ export const Animation: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadingFiles: UploadingFile[] = [];
+  const uploadFiles: UploadingFile[] = [];
 
   if (fileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'animation',
       fileData,
       fileInfo,
@@ -401,7 +401,7 @@ export const Animation: TelegramComponent<
   }
 
   if (thumbnailFileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
@@ -412,7 +412,7 @@ export const Animation: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendAnimation',
-      parameters: {
+      params: {
         animation: fileId || url || undefined,
         caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
@@ -423,7 +423,7 @@ export const Animation: TelegramComponent<
         width,
         height,
       },
-      uploadingFiles,
+      uploadFiles,
     }),
   ];
 });
@@ -465,7 +465,7 @@ export const Voice: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendVoice',
-      parameters: {
+      params: {
         voice: fileId || url || undefined,
         caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
@@ -474,7 +474,7 @@ export const Voice: TelegramComponent<
         reply_markup: replyMarkupSegments?.[0].value,
         duration,
       },
-      uploadingFiles: fileData
+      uploadFiles: fileData
         ? [
             {
               fieldName: 'voice',
@@ -531,10 +531,10 @@ export const VideoNote: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadingFiles: UploadingFile[] = [];
+  const uploadFiles: UploadingFile[] = [];
 
   if (fileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'video_note',
       fileData,
       fileInfo,
@@ -543,7 +543,7 @@ export const VideoNote: TelegramComponent<
   }
 
   if (thumbnailFileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'thumb',
       fileData: thumbnailFileData,
       fileInfo: thumbnailFileInfo,
@@ -554,7 +554,7 @@ export const VideoNote: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendVideoNote',
-      parameters: {
+      params: {
         video_note: fileId || url || undefined,
         caption: captionSegments?.[0].value,
         parse_mode: parseMode === 'None' ? undefined : parseMode,
@@ -564,7 +564,7 @@ export const VideoNote: TelegramComponent<
         duration,
         length,
       },
-      uploadingFiles,
+      uploadFiles,
     }),
   ];
 });
@@ -603,12 +603,12 @@ export const MediaGroup: TelegramComponent<
   const inputMedia: any[] = [];
 
   mediaSegments.forEach(({ node: inputNode, value }) => {
-    const { parameters, uploadingFiles } = value;
+    const { params, uploadFiles } = value;
 
     let inputType;
-    if ('video' in parameters) {
+    if ('video' in params) {
       inputType = 'video';
-    } else if ('photo' in parameters) {
+    } else if ('photo' in params) {
       inputType = 'photo';
     } else {
       throw new TypeError(
@@ -620,24 +620,24 @@ export const MediaGroup: TelegramComponent<
       inputType === 'photo'
         ? {
             type: 'photo',
-            media: parameters.photo,
-            caption: parameters.caption,
-            parse_mode: parameters.parse_mode,
+            media: params.photo,
+            caption: params.caption,
+            parse_mode: params.parse_mode,
           }
         : {
             type: 'video',
-            media: parameters.video,
-            caption: parameters.caption,
-            thumb: parameters.thumb,
-            parse_mode: parameters.parse_mode,
-            width: parameters.width,
-            height: parameters.height,
-            duration: parameters.duration,
-            supports_streaming: parameters.supports_streaming,
+            media: params.video,
+            caption: params.caption,
+            thumb: params.thumb,
+            parse_mode: params.parse_mode,
+            width: params.width,
+            height: params.height,
+            duration: params.duration,
+            supports_streaming: params.supports_streaming,
           };
 
-    if (uploadingFiles) {
-      uploadingFiles.forEach(({ fieldName, fileData, fileInfo, assetTag }) => {
+    if (uploadFiles) {
+      uploadFiles.forEach(({ fieldName, fileData, fileInfo, assetTag }) => {
         const fileName = `file_${fileCount}`;
         fileCount += 1;
 
@@ -662,12 +662,12 @@ export const MediaGroup: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendMediaGroup',
-      parameters: {
+      params: {
         media: inputMedia,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
       },
-      uploadingFiles: mediaFiles,
+      uploadFiles: mediaFiles,
     }),
   ];
 });
@@ -699,10 +699,10 @@ export const Sticker: TelegramComponent<
   } = node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadingFiles: UploadingFile[] = [];
+  const uploadFiles: UploadingFile[] = [];
 
   if (fileData) {
-    uploadingFiles.push({
+    uploadFiles.push({
       fieldName: 'sticker',
       fileData,
       fileInfo,
@@ -713,13 +713,13 @@ export const Sticker: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendSticker',
-      parameters: {
+      params: {
         sticker: fileId || url || undefined,
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      uploadingFiles,
+      uploadFiles,
     }),
   ];
 });

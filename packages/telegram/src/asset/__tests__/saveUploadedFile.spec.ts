@@ -2,14 +2,15 @@ import { DispatchError } from '@sociably/core/engine';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import type AssetsManagerP from '../AssetsManager';
 import saveUploadedFile from '../saveUploadedFile';
+import TelegramUser from '../../User';
 
 const sendMessageJob = {
   method: 'sendMessage',
-  parameters: {
+  params: {
     chai_id: 12345,
     text: 'foo',
   },
-  uploadingFiles: [],
+  uploadFiles: [],
 };
 
 const sendMessageResult = {
@@ -72,6 +73,9 @@ const manager: Moxy<AssetsManagerP> = moxy({
   async saveFile() {},
 } as never);
 
+const botId = 12345;
+const botUser = new TelegramUser(botId, true);
+
 const mediaMethodPairs = [
   ['animation', 'sendAnimation'],
   ['audio', 'sendAudio'],
@@ -96,17 +100,19 @@ it('ignore noraml messages and media message without assetTag', async () => {
     jobs: [
       sendMessageJob,
       {
+        botId,
         method: 'sendPhoto',
-        parameters: { chat_id: 12345 },
-        uploadingFiles: [
+        params: { chat_id: 67890 },
+        uploadFiles: [
           { fieldName: 'photo', fileData },
           { fieldName: 'thumb', fileData },
         ],
       },
       ...mediaMethodPairs.map(([mediaType, method]) => ({
+        botId,
         method,
-        parameters: { chat_id: 12345 },
-        uploadingFiles: [
+        params: { chat_id: 67890 },
+        uploadFiles: [
           { fieldName: mediaType, fileData },
           { fieldName: 'thumb', fileData },
         ],
@@ -129,18 +135,20 @@ it('save files uploaded when sending media with assetTag', async () => {
   const frame = moxy();
 
   const sendPhotoJob = {
+    botId,
     method: 'sendPhoto',
-    parameters: { chat_id: 12345 },
-    uploadingFiles: [
+    params: { chat_id: 67890 },
+    uploadFiles: [
       { fieldName: 'photo', assetTag: 'my_photo', fileData },
       { fieldName: 'thumb', fileData },
     ],
   };
 
   const sendOtherMediaJobs = mediaMethodPairs.map(([mediaType, method]) => ({
+    botId,
     method,
-    parameters: { chat_id: 12345 },
-    uploadingFiles: [
+    params: { chat_id: 67890 },
+    uploadFiles: [
       { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
       { fieldName: 'thumb', fileData },
     ],
@@ -161,9 +169,14 @@ it('save files uploaded when sending media with assetTag', async () => {
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
 
   expect(manager.saveFile).toHaveBeenCalledTimes(mediaMethodPairs.length + 1);
-  expect(manager.saveFile).toHaveBeenCalledWith('my_photo', '_PHOTO_L_ID_');
+  expect(manager.saveFile).toHaveBeenCalledWith(
+    botUser,
+    'my_photo',
+    '_PHOTO_L_ID_'
+  );
   mediaMethodPairs.forEach(([mediaType]) => {
     expect(manager.saveFile).toHaveBeenCalledWith(
+      botUser,
       `my_${mediaType}`,
       `_${mediaType.toUpperCase()}_ID_`
     );
@@ -177,16 +190,16 @@ it('save uploaded media when partial success', async () => {
     [],
     [
       {
+        botId,
         method: 'sendPhoto',
-        parameters: { chat_id: 12345 },
-        uploadingFiles: [
-          { fieldName: 'photo', assetTag: 'my_photo', fileData },
-        ],
+        params: { chat_id: 67890 },
+        uploadFiles: [{ fieldName: 'photo', assetTag: 'my_photo', fileData }],
       },
       ...mediaMethodPairs.map(([mediaType, method]) => ({
+        botId,
         method,
-        parameters: { chat_id: 12345 },
-        uploadingFiles: [
+        params: { chat_id: 67890 },
+        uploadFiles: [
           { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
         ],
       })),
@@ -208,9 +221,14 @@ it('save uploaded media when partial success', async () => {
   );
 
   expect(manager.saveFile).toHaveBeenCalledTimes(mediaMethodPairs.length + 1);
-  expect(manager.saveFile).toHaveBeenCalledWith('my_photo', '_PHOTO_L_ID_');
+  expect(manager.saveFile).toHaveBeenCalledWith(
+    botUser,
+    'my_photo',
+    '_PHOTO_L_ID_'
+  );
   mediaMethodPairs.forEach(([mediaType]) => {
     expect(manager.saveFile).toHaveBeenCalledWith(
+      botUser,
       `my_${mediaType}`,
       `_${mediaType.toUpperCase()}_ID_`
     );
@@ -222,9 +240,10 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
   const editableMedias = ['animation', 'audio', 'document', 'video'];
 
   const editPhotoJob = {
+    botId,
     method: 'editMessageMedia',
-    parameters: {
-      chat_id: 12345,
+    params: {
+      chat_id: 67890,
       message_id: 456,
       media: {
         type: 'photo',
@@ -232,16 +251,17 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
         thumb: 'attach://thumb',
       },
     },
-    uploadingFiles: [
+    uploadFiles: [
       { fieldName: 'photo', assetTag: 'my_photo', fileData },
       { fieldName: 'thumb', fileData },
     ],
   };
 
   const editOtherMediaJobs = editableMedias.map((mediaType) => ({
+    botId,
     method: 'editMessageMedia',
-    parameters: {
-      chat_id: 12345,
+    params: {
+      chat_id: 67890,
       message_id: 456,
       media: {
         type: mediaType,
@@ -250,7 +270,7 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
         // rest of properties
       },
     },
-    uploadingFiles: [
+    uploadFiles: [
       { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
       { fieldName: 'thumb', fileData },
     ],
@@ -267,9 +287,14 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
 
   expect(manager.saveFile).toHaveBeenCalledTimes(5);
-  expect(manager.saveFile).toHaveBeenCalledWith('my_photo', '_PHOTO_L_ID_');
+  expect(manager.saveFile).toHaveBeenCalledWith(
+    botUser,
+    'my_photo',
+    '_PHOTO_L_ID_'
+  );
   editableMedias.forEach((mediaType) => {
     expect(manager.saveFile).toHaveBeenCalledWith(
+      botUser,
       `my_${mediaType}`,
       `_${mediaType.toUpperCase()}_ID_`
     );
@@ -284,9 +309,10 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
     jobs: [
       sendMessageJob,
       {
+        botId,
         method: 'sendMediaGroup',
-        parameters: {
-          chat_id: 12345,
+        params: {
+          chat_id: 67890,
           media: [
             {
               type: 'photo',
@@ -300,7 +326,7 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
             },
           ],
         },
-        uploadingFiles: [
+        uploadFiles: [
           { fieldName: 'file_0', assetTag: 'my_photo', fileData },
           { fieldName: 'file_1', fileData },
           { fieldName: 'file_2', assetTag: 'my_video', fileData },
@@ -322,6 +348,14 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
   await expect(saveUploadedFile(manager)(frame, next)).resolves.toBe(response);
 
   expect(manager.saveFile).toHaveBeenCalledTimes(2);
-  expect(manager.saveFile).toHaveBeenCalledWith('my_photo', '_PHOTO_L_ID_');
-  expect(manager.saveFile).toHaveBeenCalledWith('my_video', '_VIDEO_ID_');
+  expect(manager.saveFile).toHaveBeenCalledWith(
+    botUser,
+    'my_photo',
+    '_PHOTO_L_ID_'
+  );
+  expect(manager.saveFile).toHaveBeenCalledWith(
+    botUser,
+    'my_video',
+    '_VIDEO_ID_'
+  );
 });

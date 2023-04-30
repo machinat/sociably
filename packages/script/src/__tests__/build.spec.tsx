@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import Sociably, { RenderingThread } from '@sociably/core';
+import Sociably, { RenderingTarget } from '@sociably/core';
 import { isContainerType } from '@sociably/core/utils/isX';
 import ProcessorP from '../processor';
 import build from '../build';
@@ -113,7 +113,7 @@ test('Script.Start', () => {
   expect(MyScript.Start.$$name).toBe('MyScript');
   expect(MyScript.Start.$$deps).toEqual([
     { require: ProcessorP, optional: false },
-    { require: RenderingThread, optional: false },
+    { require: RenderingTarget, optional: false },
   ]);
 
   expect((MyScript.Start as any)(mockProcessor, thread)({})).resolves.toBe(

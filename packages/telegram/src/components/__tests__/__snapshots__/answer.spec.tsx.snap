@@ -133,7 +133,7 @@ Array [
     "type": "unit",
     "value": Object {
       "method": "answerInlineQuery",
-      "parameters": Object {
+      "params": Object {
         "cache_time": undefined,
         "inline_query_id": "12345",
         "is_personal": undefined,
@@ -544,7 +544,7 @@ Array [
     "type": "unit",
     "value": Object {
       "method": "answerInlineQuery",
-      "parameters": Object {
+      "params": Object {
         "cache_time": 999,
         "inline_query_id": "12345",
         "is_personal": true,
@@ -898,7 +898,7 @@ Array [
     "type": "unit",
     "value": Object {
       "method": "answerPreCheckoutQuery",
-      "parameters": Object {
+      "params": Object {
         "error_message": undefined,
         "ok": true,
         "pre_checkout_query_id": "12345",
@@ -921,7 +921,7 @@ Array [
     "type": "unit",
     "value": Object {
       "method": "answerPreCheckoutQuery",
-      "parameters": Object {
+      "params": Object {
         "error_message": "NOOO",
         "ok": false,
         "pre_checkout_query_id": "12345",
@@ -943,7 +943,7 @@ Array [
     "type": "unit",
     "value": Object {
       "method": "answerShippingQuery",
-      "parameters": Object {
+      "params": Object {
         "error_message": undefined,
         "ok": true,
         "shipping_options": undefined,
@@ -990,7 +990,7 @@ Array [
     "type": "unit",
     "value": Object {
       "method": "answerShippingQuery",
-      "parameters": Object {
+      "params": Object {
         "error_message": undefined,
         "ok": true,
         "shipping_options": Array [
@@ -1035,7 +1035,7 @@ Array [
     "type": "unit",
     "value": Object {
       "method": "answerShippingQuery",
-      "parameters": Object {
+      "params": Object {
         "error_message": "NOOO",
         "ok": false,
         "shipping_options": undefined,

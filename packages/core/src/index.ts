@@ -26,12 +26,12 @@ export {
   makeClassProvider,
   makeFactoryProvider,
 } from './service';
-export { default as BasicBot } from './base/Bot';
-export { default as BasicProfiler } from './base/Profiler';
+export { default as BaseBot } from './base/Bot';
+export { default as BaseProfiler } from './base/Profiler';
 export { default as StateController } from './base/StateController';
 export { default as IntentRecognizer } from './base/IntentRecognizer';
 export { default as Marshaler } from './base/Marshaler';
-export { default as RenderingThread } from './base/RenderingThread';
+export { default as RenderingTarget } from './base/RenderingTarget';
 export * from './types';
 
 /**

@@ -1,6 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import TwitterUser from '../../User';
 import TwitterChat from '../../Chat';
+import UserProfile from '../../UserProfile';
 import ClientAuthenticator from '../ClientAuthenticator';
 
 const location = moxy({});
@@ -21,7 +22,13 @@ beforeEach(() => {
   navigator.mock.reset();
 });
 
-const authenticator = new ClientAuthenticator({ agentId: '12345' });
+const authenticator = new ClientAuthenticator();
+
+const rawUserData = {
+  id: 9876543210,
+  id_str: '9876543210',
+  name: 'John Doe',
+} as never;
 
 it('.init() do nothing', async () => {
   await expect(authenticator.init()).resolves.toBe(undefined);
@@ -38,7 +45,19 @@ it('.fetchCredential() always reject', async () => {
 });
 
 it('.closeWebview() redirect to twitter chat deep link in mobile devices', () => {
-  expect(authenticator.closeWebview()).toBe(false);
+  const authContext = {
+    platform: 'twitter' as const,
+    agentId: '12345',
+    channel: new TwitterUser('1234567890'),
+    thread: new TwitterChat('1234567890', '9876543210'),
+    user: new TwitterUser('9876543210'),
+    userProfile: new UserProfile(rawUserData),
+    loginAt: new Date(),
+    expireAt: new Date(),
+  };
+
+  expect(authenticator.closeWebview(null)).toBe(false);
+  expect(authenticator.closeWebview(authContext)).toBe(false);
   expect(location.mock.setter('href')).not.toHaveBeenCalled();
 
   navigator.mock
@@ -46,7 +65,10 @@ it('.closeWebview() redirect to twitter chat deep link in mobile devices', () =>
     .fakeReturnValue(
       'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
     );
-  expect(authenticator.closeWebview()).toBe(true);
+
+  expect(authenticator.closeWebview(null)).toBe(false);
+  expect(authenticator.closeWebview(authContext)).toBe(true);
+
   expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
   expect(location.mock.setter('href').calls[0].args[0]).toMatchInlineSnapshot(
     `"https://twitter.com/messages/compose?recipient_id=12345"`
@@ -54,21 +76,19 @@ it('.closeWebview() redirect to twitter chat deep link in mobile devices', () =>
 });
 
 test('.checkAuthData(data)', () => {
-  expect(authenticator.checkAuthData({ agent: '12345', id: '67890' })).toEqual({
+  expect(
+    authenticator.checkAuthData({
+      agent: '1234567890',
+      user: { id: '9876543210', data: rawUserData },
+    })
+  ).toEqual({
     ok: true,
     contextDetails: {
-      agentId: '12345',
-      thread: new TwitterChat('12345', '67890'),
-      user: new TwitterUser('67890'),
+      agentId: '1234567890',
+      channel: new TwitterUser('1234567890'),
+      thread: new TwitterChat('1234567890', '9876543210'),
+      user: new TwitterUser('9876543210', rawUserData),
+      userProfile: new UserProfile(rawUserData),
     },
   });
-
-  expect(authenticator.checkAuthData({ agent: '54321', id: '67890' }))
-    .toMatchInlineSnapshot(`
-          Object {
-            "code": 400,
-            "ok": false,
-            "reason": "agent not match",
-          }
-        `);
 });

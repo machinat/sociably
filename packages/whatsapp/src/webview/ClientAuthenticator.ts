@@ -6,16 +6,12 @@ import type {
 import type { WebviewClientAuthenticator } from '@sociably/webview';
 import { parse as parseBrowser } from 'bowser';
 import { WHATSAPP } from '../constant';
+import WhatsAppAgent from '../Agent';
 import WhatsAppChat from '../Chat';
 import WhatsAppUser from '../User';
 import WhatsAppUserProfile from '../UserProfile';
-import { getAuthContextDetails } from './utils';
+import { getAuthContextDetails, trimWaUrlNumber } from './utils';
 import type { WhatsAppAuthContext, WhatsAppAuthData } from './types';
-
-type WhatsAppClientOptions = {
-  /** The business phone number id  */
-  businessNumber: string;
-};
 
 /* eslint-disable class-methods-use-this */
 export default class WhatsAppClientAuthenticator
@@ -23,12 +19,12 @@ export default class WhatsAppClientAuthenticator
     WebviewClientAuthenticator<void, WhatsAppAuthData, WhatsAppAuthContext>
 {
   platform = WHATSAPP;
-  businessNumber: string;
-  marshalTypes = [WhatsAppChat, WhatsAppUser, WhatsAppUserProfile];
-
-  constructor({ businessNumber }: WhatsAppClientOptions) {
-    this.businessNumber = businessNumber;
-  }
+  marshalTypes = [
+    WhatsAppAgent,
+    WhatsAppChat,
+    WhatsAppUser,
+    WhatsAppUserProfile,
+  ];
 
   async init(): Promise<void> {
     // do nothing
@@ -43,22 +39,23 @@ export default class WhatsAppClientAuthenticator
   }
 
   checkAuthData(data: WhatsAppAuthData): CheckDataResult<WhatsAppAuthContext> {
-    if (data.business !== this.businessNumber) {
-      return { ok: false, code: 400, reason: 'business number not match' };
-    }
-
     return {
       ok: true,
       contextDetails: getAuthContextDetails(data),
     };
   }
 
-  closeWebview(): boolean {
-    if (parseBrowser(window.navigator.userAgent).platform.type === 'desktop') {
+  closeWebview(authContext: null | WhatsAppAuthContext): boolean {
+    if (
+      !authContext ||
+      parseBrowser(window.navigator.userAgent).platform.type === 'desktop'
+    ) {
       return false;
     }
 
-    window.location.href = `https://wa.me/${this.businessNumber}`;
+    window.location.href = `https://wa.me/${trimWaUrlNumber(
+      authContext.agentNumber
+    )}`;
     return true;
   }
 }

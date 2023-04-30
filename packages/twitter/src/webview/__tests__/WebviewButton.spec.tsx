@@ -14,12 +14,10 @@ beforeEach(() => {
 });
 
 test('rendering to UrlButton', () => {
-  expect(
-    WebviewButton(
-      authenticator,
-      new TwitterChat('12345', '67890')
-    )({ label: 'Foo' })
-  ).toMatchInlineSnapshot(`
+  const chat = new TwitterChat('1234567890', '9876543210');
+
+  expect(WebviewButton(authenticator, chat)({ label: 'Foo' }))
+    .toMatchInlineSnapshot(`
     <UrlButton
       label="Foo"
       url="https://sociably.io/foo/auth/twitter?login=__LOGIN_TOKEN__"
@@ -27,10 +25,7 @@ test('rendering to UrlButton', () => {
   `);
 
   expect(
-    WebviewButton(
-      authenticator,
-      new TwitterChat('12345', '67890')
-    )({ label: 'Foo', page: '/foo?bar=baz' })
+    WebviewButton(authenticator, chat)({ label: 'Foo', page: '/foo?bar=baz' })
   ).toMatchInlineSnapshot(`
     <UrlButton
       label="Foo"
@@ -41,12 +36,14 @@ test('rendering to UrlButton', () => {
   expect(authenticator.getAuthUrl).toHaveBeenCalledTimes(2);
   expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     1,
-    '67890',
+    '1234567890',
+    '9876543210',
     undefined
   );
   expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
-    '67890',
+    '1234567890',
+    '9876543210',
     'foo?bar=baz'
   );
 });

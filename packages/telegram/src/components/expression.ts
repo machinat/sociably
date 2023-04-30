@@ -1,6 +1,6 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, IntermediateSegment } from '@sociably/core/renderer';
-import { makeTelegramComponent } from '../utils';
+import makeTelegramComponent from '../utils/makeTelegramComponent';
 import {
   TelegramComponent,
   TelegramSegmentValue,
@@ -53,7 +53,7 @@ export const Expression: TelegramComponent<
       outputSegments.push(
         makeUnitSegment(node, path, {
           method: 'sendMessage',
-          parameters: {
+          params: {
             text: segment.value,
             parse_mode: parseMode === 'None' ? undefined : parseMode,
             disable_notification: disableNotification,
@@ -64,8 +64,8 @@ export const Expression: TelegramComponent<
       const { method } = segment.value;
 
       if (method.slice(0, 4) === 'send' && method !== 'sendChatAction') {
-        const { parameters } = segment.value;
-        if (!parameters.reply_markup) {
+        const { params } = segment.value;
+        if (!params.reply_markup) {
           lastEmptyMarkupSlot = outputSegments.length;
         }
 
@@ -73,12 +73,12 @@ export const Expression: TelegramComponent<
           ...segment,
           value: {
             ...segment.value,
-            parameters: {
-              ...parameters,
+            params: {
+              ...params,
               disable_notification:
-                typeof parameters.disable_notification === 'undefined'
+                typeof params.disable_notification === 'undefined'
                   ? disableNotification
-                  : parameters.disable_notification,
+                  : params.disable_notification,
             },
           },
         });
@@ -94,7 +94,7 @@ export const Expression: TelegramComponent<
     if (lastEmptyMarkupSlot === -1) {
       throw new Error('no message available to attach reply markup');
     }
-    outputSegments[lastEmptyMarkupSlot].value.parameters.reply_markup =
+    outputSegments[lastEmptyMarkupSlot].value.params.reply_markup =
       replyMarkupSegments[0].value;
   }
 

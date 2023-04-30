@@ -26,7 +26,7 @@ test('rendering', async () => {
           "request": Object {
             "href": "2/users/:id/retweets",
             "method": "POST",
-            "parameters": Object {
+            "params": Object {
               "tweet_id": "12345",
             },
           },
@@ -41,7 +41,7 @@ test('rendering', async () => {
     Object {
       "href": "2/users/67890/retweets",
       "method": "POST",
-      "parameters": Object {
+      "params": Object {
         "tweet_id": "12345",
       },
     }

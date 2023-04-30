@@ -1,6 +1,6 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import { makeTelegramComponent } from '../utils';
+import makeTelegramComponent from '../utils/makeTelegramComponent';
 import { TelegramSegmentValue, TelegramComponent } from '../types';
 import { MessageProps } from './types';
 
@@ -39,7 +39,7 @@ export const Location: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendLocation',
-      parameters: {
+      params: {
         latitude,
         longitude,
         live_period: livePeriod,
@@ -84,7 +84,7 @@ export const EditLiveLocation: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'editMessageLiveLocation',
-      parameters: {
+      params: {
         latitude,
         longitude,
         message_id: messageId,
@@ -123,7 +123,7 @@ export const StopLiveLocation: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'stopMessageLiveLocation',
-      parameters: {
+      params: {
         message_id: messageId,
         inline_message_id: inlineMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
@@ -176,7 +176,7 @@ export const Venue: TelegramComponent<
   return [
     makeUnitSegment(node, path, {
       method: 'sendVenue',
-      parameters: {
+      params: {
         latitude,
         longitude,
         title,

@@ -17,6 +17,7 @@ test('user with id only', () => {
   expect(user.avatarUrl).toBe(undefined);
   expect(user.profile).toBe(null);
   expect(user.type).toBe('user');
+  expect(user.isBot).toBe(false);
 
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
@@ -30,6 +31,35 @@ test('user with id only', () => {
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": 12345,
+      "isBot": undefined,
+    }
+  `);
+});
+
+test('bot user', () => {
+  const bot = new TelegramUser(12345, true);
+
+  expect(bot.platform).toBe('telegram');
+  expect(bot.id).toBe(12345);
+  expect(bot.data).toBe(null);
+  expect(bot.avatarUrl).toBe(undefined);
+  expect(bot.profile).toBe(null);
+  expect(bot.type).toBe('user');
+  expect(bot.isBot).toBe(true);
+
+  expect(bot.uid).toMatchInlineSnapshot(`"tg.12345"`);
+  expect(bot.uniqueIdentifier).toMatchInlineSnapshot(`
+    Object {
+      "id": 12345,
+      "platform": "telegram",
+    }
+  `);
+
+  expect(bot.typeName()).toBe('TgUser');
+  expect(bot.toJSONValue()).toMatchInlineSnapshot(`
+    Object {
+      "id": 12345,
+      "isBot": true,
     }
   `);
 });
@@ -43,7 +73,7 @@ test('user with raw data', () => {
     username: 'jojodoe',
     language_code: 'en-US',
   };
-  const user = new TelegramUser(12345, data);
+  const user = new TelegramUser(12345, undefined, data);
 
   expect(user.platform).toBe('telegram');
   expect(user.id).toBe(12345);
@@ -64,6 +94,7 @@ test('user with raw data', () => {
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": 12345,
+      "isBot": undefined,
     }
   `);
   expect(TelegramUser.fromJSONValue(user.toJSONValue())).toStrictEqual(
@@ -73,7 +104,7 @@ test('user with raw data', () => {
 
 test('user with photo url', () => {
   const avatarUrl = 'https://...';
-  const user = new TelegramUser(12345, undefined, avatarUrl);
+  const user = new TelegramUser(12345, undefined, undefined, avatarUrl);
 
   expect(user.platform).toBe('telegram');
   expect(user.id).toBe(12345);
@@ -93,6 +124,7 @@ test('user with photo url', () => {
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
     Object {
       "id": 12345,
+      "isBot": undefined,
     }
   `);
 });

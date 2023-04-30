@@ -63,7 +63,7 @@ test.each([
 
 test('AnswerCallbackQuery match snapshot', async () => {
   await expect(
-    renderer.render(<AnswerCallbackQuery queryId="12345" />, null as never)
+    renderer.render(<AnswerCallbackQuery queryId="12345" />, null, [])
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
@@ -74,7 +74,7 @@ test('AnswerCallbackQuery match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "answerCallbackQuery",
-                "parameters": Object {
+                "params": Object {
                   "cache_time": undefined,
                   "callback_query_id": "12345",
                   "show_alert": undefined,
@@ -89,7 +89,8 @@ test('AnswerCallbackQuery match snapshot', async () => {
   await expect(
     renderer.render(
       <AnswerCallbackQuery queryId="12345" text="foo" showAlert />,
-      null as never
+      null,
+      []
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
@@ -103,7 +104,7 @@ test('AnswerCallbackQuery match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "answerCallbackQuery",
-                "parameters": Object {
+                "params": Object {
                   "cache_time": undefined,
                   "callback_query_id": "12345",
                   "show_alert": true,
@@ -122,7 +123,8 @@ test('AnswerCallbackQuery match snapshot', async () => {
         url="http://foo.bar/baz"
         cacheTime={999}
       />,
-      null as never
+      null,
+      []
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
@@ -136,7 +138,7 @@ test('AnswerCallbackQuery match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "answerCallbackQuery",
-                "parameters": Object {
+                "params": Object {
                   "cache_time": 999,
                   "callback_query_id": "12345",
                   "show_alert": undefined,
@@ -271,7 +273,8 @@ test('AnswerInlineQuery match snapshot', async () => {
           caption="bar"
         />
       </AnswerInlineQuery>,
-      null as never
+      null,
+      []
     )
   ).resolves.toMatchSnapshot();
 
@@ -394,7 +397,8 @@ test('AnswerInlineQuery match snapshot', async () => {
           replyMarkup={inlineKeyboard}
         />
       </AnswerInlineQuery>,
-      null as never
+      null,
+      []
     )
   ).resolves.toMatchSnapshot();
 
@@ -402,24 +406,25 @@ test('AnswerInlineQuery match snapshot', async () => {
     renderer.render(
       <AnswerInlineQuery
         queryId="123456"
-        switchPMText="foo"
-        switchPMParameter="bar"
+        switchPmText="foo"
+        switchPmParameter="bar"
       />,
-      null as never
+      null,
+      []
     )
   ).resolves.toMatchInlineSnapshot(`
           Array [
             Object {
               "node": <AnswerInlineQuery
                 queryId="123456"
-                switchPMParameter="bar"
-                switchPMText="foo"
+                switchPmParameter="bar"
+                switchPmText="foo"
               />,
               "path": "$",
               "type": "unit",
               "value": Object {
                 "method": "answerInlineQuery",
-                "parameters": Object {
+                "params": Object {
                   "cache_time": undefined,
                   "inline_query_id": "123456",
                   "is_personal": undefined,
@@ -437,7 +442,7 @@ test('AnswerInlineQuery match snapshot', async () => {
 
 test('AnswerShippingQuery match snapshot', async () => {
   await expect(
-    renderer.render(<AnswerShippingQuery queryId="12345" ok />, null as never)
+    renderer.render(<AnswerShippingQuery queryId="12345" ok />, null, [])
   ).resolves.toMatchSnapshot();
   await expect(
     renderer.render(
@@ -449,29 +454,29 @@ test('AnswerShippingQuery match snapshot', async () => {
           { id: '2', title: 'dog', prices: [{ label: 'food', amount: 456 }] },
         ]}
       />,
-      null as never
+      null,
+      []
     )
   ).resolves.toMatchSnapshot();
   await expect(
     renderer.render(
       <AnswerShippingQuery queryId="12345" ok={false} errorMessage="NOOO" />,
-      null as never
+      null,
+      []
     )
   ).resolves.toMatchSnapshot();
 });
 
 test('AnswerPreCheckoutQuery match snapshot', async () => {
   await expect(
-    renderer.render(
-      <AnswerPreCheckoutQuery queryId="12345" ok />,
-      null as never
-    )
+    renderer.render(<AnswerPreCheckoutQuery queryId="12345" ok />, null, [])
   ).resolves.toMatchSnapshot();
 
   await expect(
     renderer.render(
       <AnswerPreCheckoutQuery queryId="12345" ok={false} errorMessage="NOOO" />,
-      null as never
+      null,
+      []
     )
   ).resolves.toMatchSnapshot();
 });

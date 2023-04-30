@@ -2,10 +2,12 @@ import url from 'url';
 import _liff from '@line/liff';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import ClientAuthenticator from '../ClientAuthenticator';
+import LineChannel from '../../Channel';
 import LineChat from '../../Chat';
 import LineUser from '../../User';
-import { LiffOs, LiffReferer } from '../../constant';
-import LineUserProfile from '../../UserProfile';
+import GroupProfile from '../../GroupProfile';
+import UserProfile from '../../UserProfile';
+import { LiffOs, RefChatType } from '../constant';
 
 jest.mock('@line/liff', () => {
   const actualMoxy = jest.requireActual('@moxyjs/moxy').default;
@@ -70,21 +72,34 @@ describe('.constructor()', () => {
 
     expect(authenticator.platform).toBe('line');
     expect(authenticator.liffId).toBe('_LIFF_ID_');
-    expect(authenticator.marshalTypes.map((t) => t.name))
-      .toMatchInlineSnapshot(`
-      Array [
-        "LineChat",
-        "LineUser",
-        "LineUserProfile",
-        "LineGroupProfile",
-      ]
-    `);
+    expect(authenticator.marshalTypes).toEqual(
+      expect.arrayContaining([
+        LineChannel,
+        LineUser,
+        LineChat,
+        UserProfile,
+        GroupProfile,
+      ])
+    );
+  });
+
+  test('use "liffId" querystring if not given in options', () => {
+    window.mock
+      .getter('location')
+      .fakeReturnValue(
+        url.parse('https://sociably.io/foo?bar=baz&liffId=_LIFF_ID_')
+      );
+
+    const authenticator = new ClientAuthenticator();
+    expect(authenticator.liffId).toBe('_LIFF_ID_');
   });
 
   it('throw if liffId is empty', () => {
     expect(
       () => new ClientAuthenticator({} as never)
-    ).toThrowErrorMatchingInlineSnapshot(`"options.liffId must not be empty"`);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"liff id is required on either \`options.liffId\` or \`liffId\` query param"`
+    );
   });
 });
 
@@ -119,7 +134,7 @@ describe('.init()', () => {
 });
 
 describe('.fetchCredential()', () => {
-  it('resolve credential containing liff infos and access token', async () => {
+  it('resolve credential data', async () => {
     liff.getContext.mock.fakeReturnValue(liffContext);
 
     const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
@@ -130,7 +145,7 @@ describe('.fetchCredential()', () => {
       credential: {
         accessToken: '_ACCESS_TOKEN_',
         os: 'ios',
-        refererType: 'utou',
+        contextType: 'utou',
         language: 'en-US',
         userId: '_USER_ID_',
       },
@@ -139,44 +154,80 @@ describe('.fetchCredential()', () => {
     expect(liff.login).not.toHaveBeenCalled();
   });
 
-  test('credential in group chat', async () => {
+  test('credential data with chat channel ID', async () => {
+    liff.getContext.mock.fakeReturnValue({ ...liffContext, type: 'external' });
+    window.mock
+      .getter('location')
+      .fakeReturnValue(
+        url.parse(
+          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_'
+        )
+      );
+
     const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
-
-    liff.getContext.mock.fakeReturnValue({
-      ...liffContext,
-      type: 'group',
-    });
-
     await authenticator.init();
+
     await expect(authenticator.fetchCredential()).resolves.toEqual({
       ok: true,
       credential: {
+        chatChannelId: '_CHAT_CHANNEL_',
         accessToken: '_ACCESS_TOKEN_',
-        refererType: 'group',
         os: 'ios',
+        contextType: 'external',
         language: 'en-US',
         userId: '_USER_ID_',
       },
     });
-
-    expect(liff.login).not.toHaveBeenCalled();
   });
 
-  test('credential in room chat', async () => {
+  test('credential data with group chat', async () => {
+    liff.getContext.mock.fakeReturnValue({ ...liffContext, type: 'group' });
+    window.mock
+      .getter('location')
+      .fakeReturnValue(
+        url.parse(
+          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_&groupId=_GROUP_ID_'
+        )
+      );
+
     const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
-
-    liff.getContext.mock.fakeReturnValue({
-      ...liffContext,
-      type: 'room',
-    });
-
     await authenticator.init();
+
     await expect(authenticator.fetchCredential()).resolves.toEqual({
       ok: true,
       credential: {
+        chatChannelId: '_CHAT_CHANNEL_',
+        groupId: '_GROUP_ID_',
         accessToken: '_ACCESS_TOKEN_',
-        refererType: 'room',
         os: 'ios',
+        contextType: 'group',
+        language: 'en-US',
+        userId: '_USER_ID_',
+      },
+    });
+  });
+
+  test('credential data with room chat', async () => {
+    liff.getContext.mock.fakeReturnValue({ ...liffContext, type: 'room' });
+    window.mock
+      .getter('location')
+      .fakeReturnValue(
+        url.parse(
+          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_&roomId=_ROOM_ID_'
+        )
+      );
+
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    await authenticator.init();
+
+    await expect(authenticator.fetchCredential()).resolves.toEqual({
+      ok: true,
+      credential: {
+        chatChannelId: '_CHAT_CHANNEL_',
+        roomId: '_ROOM_ID_',
+        accessToken: '_ACCESS_TOKEN_',
+        os: 'ios',
+        contextType: 'room',
         language: 'en-US',
         userId: '_USER_ID_',
       },
@@ -212,81 +263,108 @@ describe('.fetchCredential()', () => {
 });
 
 describe('.checkAuthData(data)', () => {
-  it('resolve utou chat', () => {
+  const authData = {
+    provider: '_PROVIDER_ID_',
+    channel: '_CHANNEL_ID_',
+    client: '1234567890',
+    ref: RefChatType.External,
+    os: LiffOs.Web,
+    lang: 'en-US',
+    user: '_USER_ID_',
+  };
+
+  test('with no messaging channel', () => {
     const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
-    expect(
-      authenticator.checkAuthData({
-        provider: '_PROVIDER_ID_',
-        channel: '_BOT_CHANNEL_ID_',
-        client: '_CLIENT_ID_',
-        ref: LiffReferer.Utou,
-        os: LiffOs.Web,
-        lang: 'en-US',
-        user: '_USER_ID_',
-      })
-    ).toEqual({
+    expect(authenticator.checkAuthData(authData)).toEqual({
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        clientId: '_CLIENT_ID_',
+        clientId: '1234567890',
+        channel: null,
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        thread: new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'),
-        refererType: 'utou',
+        thread: null,
+        refChatType: 'external',
         os: 'web',
         language: 'en-US',
       },
     });
   });
 
-  it('resolve group chat', () => {
+  test('with private chat', () => {
     const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     expect(
       authenticator.checkAuthData({
-        provider: '_PROVIDER_ID_',
-        channel: '_BOT_CHANNEL_ID_',
-        client: '_CLIENT_ID_',
-        ref: LiffReferer.Group,
+        ...authData,
+        chan: '_CHANNEL_ID_',
+        ref: RefChatType.Utou,
         os: LiffOs.Ios,
         lang: 'zh-TW',
-        user: '_USER_ID_',
       })
     ).toEqual({
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        clientId: '_CLIENT_ID_',
+        clientId: '1234567890',
+        channel: new LineChannel('_CHANNEL_ID_'),
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        thread: null,
-        refererType: 'group',
+        thread: new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'),
+        refChatType: 'utou',
         os: 'ios',
         language: 'zh-TW',
       },
     });
   });
 
-  it('resolve room chat', () => {
+  test('with group chat', () => {
     const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
     expect(
       authenticator.checkAuthData({
-        provider: '_PROVIDER_ID_',
-        channel: '_BOT_CHANNEL_ID_',
-        client: '_CLIENT_ID_',
-        ref: LiffReferer.Room,
-        os: LiffOs.Android,
-        lang: 'jp',
-        user: '_USER_ID_',
+        ...authData,
+        chan: '_CHANNEL_ID_',
+        group: '_GROUP_ID_',
+        ref: RefChatType.Group,
+        os: LiffOs.Ios,
+        lang: 'zh-TW',
       })
     ).toEqual({
       ok: true,
       contextDetails: {
         providerId: '_PROVIDER_ID_',
-        clientId: '_CLIENT_ID_',
+        clientId: '1234567890',
+        channel: new LineChannel('_CHANNEL_ID_'),
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
-        thread: null,
-        refererType: 'room',
+        thread: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
+        refChatType: 'group',
+        os: 'ios',
+        language: 'zh-TW',
+      },
+    });
+  });
+
+  test('with room chat', () => {
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+
+    expect(
+      authenticator.checkAuthData({
+        ...authData,
+        chan: '_CHANNEL_ID_',
+        room: '_ROOM_ID_',
+        ref: RefChatType.Room,
+        os: LiffOs.Android,
+        lang: 'jp',
+      })
+    ).toEqual({
+      ok: true,
+      contextDetails: {
+        providerId: '_PROVIDER_ID_',
+        clientId: '1234567890',
+        channel: new LineChannel('_CHANNEL_ID_'),
+        user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
+        thread: new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'),
+        refChatType: 'room',
         os: 'android',
         language: 'jp',
       },

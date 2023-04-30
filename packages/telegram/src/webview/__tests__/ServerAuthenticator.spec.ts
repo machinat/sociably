@@ -19,6 +19,18 @@ const res = moxy<ServerResponse>({
   end() {},
 } as never);
 
+const botSettings = {
+  botToken: '12345:_BOT_TOKEN_',
+  botName: 'MyBot',
+  secretToken: '_SECRET_TOKEN_',
+};
+
+const botSettingsAccessor = moxy({
+  getChannelSettings: async () => botSettings,
+  getChannelSettingsBatch: async () => [],
+  listAllChannelSettings: async () => [],
+});
+
 const httpOperator = moxy<AuthHttpOperator>({
   async issueAuth() {},
   async issueError() {},
@@ -27,21 +39,24 @@ const httpOperator = moxy<AuthHttpOperator>({
 } as never);
 
 const bot = moxy<TelegramBot>({
-  id: 12345,
-  token: '12345:_BOT_TOKEN_',
   makeApiCall() {
     throw new Error();
   },
 } as never);
 
-const authenticator = new TelegramServerAuthenticator(bot, httpOperator, {
-  botName: 'MyBot',
-});
+const botUser = new TelegramUser(12345, true);
+
+const authenticator = new TelegramServerAuthenticator(
+  bot,
+  botSettingsAccessor,
+  httpOperator
+);
 
 beforeEach(() => {
   bot.mock.reset();
   res.mock.reset();
   httpOperator.mock.reset();
+  botSettingsAccessor.mock.reset();
 });
 
 const MockDate = moxy(Date);
@@ -58,17 +73,20 @@ afterAll(() => {
 
 describe('.delegateAuthRequest() on root route', () => {
   const telegramLoginSearch = {
-    id: '12345',
+    id: '67890',
     auth_date: '1601136776',
     first_name: 'John',
     last_name: 'Doe',
     username: 'johndoe',
     photo_url: 'https://...',
-    hash: 'e0aeac2cb5f34b930e6d83d16eecc5df1483c61eedf4ad07f3f43e55d6dd195d',
+    hash: '2fab0fcc9f122624f9007c7d93852afad07584bad3937ac45dda7882b58fabc8',
   };
 
   it('receive login request and redirct user to webview', async () => {
-    const search = new URLSearchParams(telegramLoginSearch);
+    const search = new URLSearchParams({
+      ...telegramLoginSearch,
+      botId: '12345',
+    });
 
     const req = createReq({ url: `/auth/telegram?${search}` });
     await authenticator.delegateAuthRequest(req, res, {
@@ -85,10 +103,11 @@ describe('.delegateAuthRequest() on root route', () => {
     expect(httpOperator.issueError).not.toHaveBeenCalled();
     expect(httpOperator.issueAuth).toHaveBeenCalledTimes(1);
     expect(httpOperator.issueAuth).toHaveBeenCalledWith(res, 'telegram', {
-      bot: 12345,
+      botId: 12345,
+      botName: 'MyBot',
       chat: undefined,
       user: {
-        id: 12345,
+        id: 67890,
         first_name: 'John',
         last_name: 'Doe',
         username: 'johndoe',
@@ -97,10 +116,11 @@ describe('.delegateAuthRequest() on root route', () => {
     });
   });
 
-  it('verify user is a chat member if telegramChat query param given', async () => {
+  it('verify user is a chat member if `chatId` query param given', async () => {
     const search = new URLSearchParams({
       ...telegramLoginSearch,
-      telegramChat: '23456',
+      botId: '12345',
+      chatId: '55555',
     });
 
     const req = createReq({ url: `/auth/telegram?${search}` });
@@ -108,7 +128,7 @@ describe('.delegateAuthRequest() on root route', () => {
     // getChatMember
     bot.makeApiCall.mock.fakeOnce(async () => ({
       user: {
-        id: 12345,
+        id: 67890,
         first_name: 'John',
         last_name: 'Doe',
         username: 'johndoe',
@@ -119,7 +139,7 @@ describe('.delegateAuthRequest() on root route', () => {
 
     // getChat
     bot.makeApiCall.mock.fakeOnce(async () => ({
-      id: 23456,
+      id: 55555,
       type: 'group',
       title: 'Does',
     }));
@@ -131,24 +151,31 @@ describe('.delegateAuthRequest() on root route', () => {
     });
 
     expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(1, 'getChatMember', {
-      user_id: 12345,
-      chat_id: 23456,
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(1, {
+      bot: botUser,
+      method: 'getChatMember',
+      params: {
+        user_id: 67890,
+        chat_id: 55555,
+      },
     });
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(2, 'getChat', {
-      chat_id: 23456,
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(2, {
+      bot: botUser,
+      method: 'getChat',
+      params: { chat_id: 55555 },
     });
 
     expect(httpOperator.issueAuth).toHaveBeenCalledTimes(1);
     expect(httpOperator.issueAuth).toHaveBeenCalledWith(res, 'telegram', {
-      bot: 12345,
+      botId: 12345,
+      botName: 'MyBot',
       chat: {
         type: 'group',
-        id: 23456,
+        id: 55555,
         title: 'Does',
       },
       user: {
-        id: 12345,
+        id: 67890,
         first_name: 'John',
         last_name: 'Doe',
         username: 'johndoe',
@@ -158,10 +185,40 @@ describe('.delegateAuthRequest() on root route', () => {
     });
   });
 
+  it('fail if bot settings not found', async () => {
+    botSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+
+    const search = new URLSearchParams({
+      ...telegramLoginSearch,
+      botId: '12345',
+    });
+
+    const req = createReq({ url: `/auth/telegram?${search}` });
+    await authenticator.delegateAuthRequest(req, res, {
+      originalPath: '/auth/telegram',
+      matchedPath: '/auth/telegram',
+      trailingPath: '',
+    });
+
+    expect(bot.makeApiCall).not.toHaveBeenCalled();
+
+    expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError).toHaveBeenCalledWith(
+      res,
+      'telegram',
+      404,
+      expect.any(String)
+    );
+    expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
+      `"bot \\"12345\\" not registered"`
+    );
+  });
+
   it('fail if user is not a member of telegramChat', async () => {
     const search = new URLSearchParams({
       ...telegramLoginSearch,
-      telegramChat: '23456',
+      botId: '12345',
+      chatId: '23456',
     });
 
     const req = createReq({ url: `/auth/telegram?${search}` });
@@ -180,7 +237,7 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
 
     expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
     expect(httpOperator.issueError).toHaveBeenCalledWith(
@@ -197,6 +254,7 @@ describe('.delegateAuthRequest() on root route', () => {
   it('redirect to `redirectUrl` query param if specified', async () => {
     const search = new URLSearchParams({
       ...telegramLoginSearch,
+      botId: '12345',
       redirectUrl: '/webview/hello_world.html',
     });
 
@@ -220,8 +278,9 @@ describe('.delegateAuthRequest() on root route', () => {
   it('issue error if auth_date expired (20 second)', async () => {
     const search = new URLSearchParams({
       ...telegramLoginSearch,
+      botId: '12345',
       auth_date: '1601136765',
-      hash: '6fe5c0198e70297fffec814bf443afef5d3f6587d722399816d808e61217e571',
+      hash: '7bacdcbfa60768f607cbe6de9589cc4aadb4b4cb0ca1a4098a53b2a73fadfc00',
     });
 
     const req = createReq({ url: `/auth/telegram?${search}` });
@@ -251,6 +310,7 @@ describe('.delegateAuthRequest() on root route', () => {
   it('issue error if hash invalid', async () => {
     const search = new URLSearchParams({
       ...telegramLoginSearch,
+      botId: '12345',
       hash: '_INVALID_HASH_',
     });
 
@@ -276,47 +336,130 @@ describe('.delegateAuthRequest() on root route', () => {
       expect.any(String)
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"invalid login signature"`
+      `"invalid auth signature"`
     );
   });
 });
 
-test('.delegateAuthRequest() on login route', async () => {
-  const req = createReq({ url: `/auth/telegram/login` });
+describe('.delegateAuthRequest() on login route', () => {
   const loginRoute = {
     originalPath: '/auth/telegram/login',
     matchedPath: '/auth/telegram',
     trailingPath: 'login',
   };
 
-  await authenticator.delegateAuthRequest(req, res, loginRoute);
+  test('render login page with Telegarm login button', async () => {
+    const req = createReq({ url: `/auth/telegram/login?botId=12345` });
+    await authenticator.delegateAuthRequest(req, res, loginRoute);
 
-  expect(res.writeHead).toHaveBeenCalledTimes(1);
-  expect(res.writeHead.mock.calls[0].args).toMatchInlineSnapshot(`
-    Array [
-      200,
-      Object {
-        "Content-Type": "text/html",
-      },
-    ]
-  `);
-  expect(res.end).toHaveBeenCalledTimes(1);
-  expect(res.end.mock.calls[0].args[0]).toMatchSnapshot();
+    expect(res.writeHead).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledWith(200, {
+      'Content-Type': 'text/html',
+    });
+    expect(res.end).toHaveBeenCalledTimes(1);
 
-  const authenticatorWithAppDetails = new TelegramServerAuthenticator(
-    bot,
-    httpOperator,
-    {
-      botName: 'MyBot',
-      appName: 'Mine Mine Mine App',
-      appIconUrl: 'http://sociably.io/MyApp/icon.png',
-    }
-  );
-  await authenticatorWithAppDetails.delegateAuthRequest(req, res, loginRoute);
+    const pageHtml = res.end.mock.calls[0].args[0];
+    expect(pageHtml).toMatchSnapshot();
+    expect(pageHtml).toEqual(
+      expect.stringContaining(
+        'https://sociably.io/MyApp/auth/telegram?botId=12345'
+      )
+    );
+  });
 
-  expect(res.writeHead).toHaveBeenCalledTimes(2);
-  expect(res.end).toHaveBeenCalledTimes(2);
-  expect(res.end.mock.calls[1].args[0]).toMatchSnapshot();
+  test('with `chatId` & `redirectUrl` specified', async () => {
+    const req = createReq({
+      url: `/auth/telegram/login?botId=12345&chatId=67890&redirectUrl=%2Fwebview%2Fhello_world`,
+    });
+    await authenticator.delegateAuthRequest(req, res, loginRoute);
+
+    expect(res.writeHead).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledWith(200, {
+      'Content-Type': 'text/html',
+    });
+    expect(res.end).toHaveBeenCalledTimes(1);
+
+    const pageHtml = res.end.mock.calls[0].args[0];
+    expect(pageHtml).toMatchSnapshot();
+    expect(pageHtml).toEqual(
+      expect.stringContaining(
+        'https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=%2Fwebview%2Fhello_world'
+      )
+    );
+  });
+
+  test('login page with specified `appName` & `appIconUrl`', async () => {
+    const req = createReq({ url: `/auth/telegram/login?botId=12345` });
+
+    const authenticatorWithAppDetails = new TelegramServerAuthenticator(
+      bot,
+      botSettingsAccessor,
+      httpOperator,
+      {
+        appName: 'Mine Mine Mine App',
+        appIconUrl: 'http://sociably.io/MyApp/icon.png',
+      }
+    );
+    await authenticatorWithAppDetails.delegateAuthRequest(req, res, loginRoute);
+
+    expect(res.writeHead).toHaveBeenCalledTimes(1);
+    expect(res.end).toHaveBeenCalledTimes(1);
+
+    const pageHtml = res.end.mock.calls[0].args[0];
+    expect(pageHtml).toMatchSnapshot();
+    expect(pageHtml).toEqual(
+      expect.stringContaining('<h1>Mine Mine Mine App</h1>')
+    );
+    expect(pageHtml).toEqual(
+      expect.stringContaining('src="http://sociably.io/MyApp/icon.png"')
+    );
+  });
+
+  test('redirect with error if no `botId` query', async () => {
+    const req = createReq({ url: `/auth/telegram/login` });
+    await authenticator.delegateAuthRequest(req, res, loginRoute);
+
+    expect(httpOperator.redirect).toHaveBeenCalledTimes(1);
+    expect(httpOperator.redirect).toHaveBeenCalledWith(res, undefined, {
+      assertInternal: true,
+    });
+    expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError).toHaveBeenCalledWith(
+      res,
+      'telegram',
+      400,
+      expect.any(String)
+    );
+    expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
+      `"invalid bot id \\"undefined\\""`
+    );
+  });
+
+  test('redirect with error if bot settings not found', async () => {
+    botSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+
+    const req = createReq({
+      url: `/auth/telegram/login?botId=12345&redirectUrl=%2Fwebview%2Fhello_world`,
+    });
+    await authenticator.delegateAuthRequest(req, res, loginRoute);
+
+    expect(httpOperator.redirect).toHaveBeenCalledTimes(1);
+    expect(httpOperator.redirect).toHaveBeenCalledWith(
+      res,
+      '/webview/hello_world',
+      { assertInternal: true }
+    );
+    expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
+    expect(httpOperator.issueError).toHaveBeenCalledWith(
+      res,
+      'telegram',
+      404,
+      expect.any(String)
+    );
+    expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
+      `"bot \\"12345\\" not registered"`
+    );
+  });
 });
 
 test('.delegateAuthRequest() on unknown route', async () => {
@@ -328,24 +471,26 @@ test('.delegateAuthRequest() on unknown route', async () => {
   });
 
   expect(res.writeHead).toHaveBeenCalledTimes(1);
-  expect(res.writeHead.mock.calls[0].args).toMatchInlineSnapshot(`
-    Array [
-      404,
-    ]
-  `);
+  expect(res.writeHead).toHaveBeenCalledWith(404);
   expect(res.end).toHaveBeenCalledTimes(1);
-  expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(`undefined`);
 });
 
 test('.getAuthUrl()', () => {
-  expect(authenticator.getAuthUrl()).toMatchInlineSnapshot(
-    `"https://sociably.io/MyApp/auth/telegram"`
+  expect(authenticator.getAuthUrl(12345)).toMatchInlineSnapshot(
+    `"https://sociably.io/MyApp/auth/telegram?botId=12345"`
   );
-  expect(authenticator.getAuthUrl('foo?bar=baz')).toMatchInlineSnapshot(
-    `"https://sociably.io/MyApp/auth/telegram?redirectUrl=foo%3Fbar%3Dbaz"`
+  expect(
+    authenticator.getAuthUrl(12345, undefined, 'foo?bar=baz')
+  ).toMatchInlineSnapshot(
+    `"https://sociably.io/MyApp/auth/telegram?botId=12345&redirectUrl=foo%3Fbar%3Dbaz"`
+  );
+  expect(
+    authenticator.getAuthUrl(12345, 67890, 'foo?bar=baz')
+  ).toMatchInlineSnapshot(
+    `"https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=foo%3Fbar%3Dbaz"`
   );
 
-  expect(httpOperator.getAuthUrl).toHaveBeenCalledTimes(2);
+  expect(httpOperator.getAuthUrl).toHaveBeenCalledTimes(3);
   expect(httpOperator.getAuthUrl).toHaveBeenCalledWith('telegram');
 });
 
@@ -363,11 +508,8 @@ test('.verifyCredential() simply return not ok', async () => {
 describe('.verifyRefreshment()', () => {
   test('return ok and original data', async () => {
     const authData = {
-      bot: 12345,
-      chat: {
-        type: 'private' as const,
-        id: 67890,
-      },
+      botId: 12345,
+      botName: 'MyBot',
       user: {
         id: 67890,
         first_name: 'Jojo',
@@ -382,10 +524,101 @@ describe('.verifyRefreshment()', () => {
     });
   });
 
-  it('return fail if botId not match', async () => {
+  it('verify user is a chat member if `chat` is specified', async () => {
+    // getChatMember
+    bot.makeApiCall.mock.fakeOnce(async () => ({
+      user: {
+        id: 67890,
+        first_name: 'John',
+        last_name: 'Doe',
+        username: 'johndoe',
+        language_code: 'en-US',
+      },
+      status: 'member',
+    }));
+
+    // getChat
+    bot.makeApiCall.mock.fakeOnce(async () => ({
+      id: 55555,
+      type: 'group',
+      title: 'Does',
+    }));
+
+    const authData = {
+      botId: 12345,
+      botName: 'MyBot',
+      chat: {
+        type: 'group' as const,
+        id: 55555,
+        title: 'Stardust Crusaders',
+      },
+      user: {
+        id: 67890,
+        first_name: 'Jojo',
+        last_name: 'Doe',
+        username: 'jojodoe',
+      },
+      photo: undefined,
+    };
+    await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
+      ok: true,
+      data: authData,
+    });
+
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(1, {
+      bot: botUser,
+      method: 'getChatMember',
+      params: {
+        user_id: 67890,
+        chat_id: 55555,
+      },
+    });
+    expect(bot.makeApiCall).toHaveBeenNthCalledWith(2, {
+      bot: botUser,
+      method: 'getChat',
+      params: { chat_id: 55555 },
+    });
+  });
+
+  it('fail if chat member check fails', async () => {
+    bot.makeApiCall.mock.fake(async () => {
+      throw new TelegramApiError({
+        ok: false,
+        error_code: 404,
+        description: 'Bad Request: user not found',
+      });
+    });
+
     await expect(
       authenticator.verifyRefreshment({
-        bot: 55555,
+        botId: 12345,
+        botName: 'MyBot',
+        chat: { type: 'group', id: 55555, title: 'Stardust Crusaders' },
+        user: {
+          id: 67890,
+          first_name: 'Jojo',
+          last_name: 'Doe',
+          username: 'jojodoe',
+        },
+        photo: undefined,
+      })
+    ).resolves.toEqual({
+      ok: false,
+      code: 404,
+      reason: 'Bad Request: user not found',
+    });
+
+    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
+  });
+
+  it('fail if bot settings not found', async () => {
+    botSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+
+    await expect(
+      authenticator.verifyRefreshment({
+        botId: 55555,
+        botName: 'MyBot',
         chat: undefined,
         user: {
           id: 67890,
@@ -397,9 +630,9 @@ describe('.verifyRefreshment()', () => {
       })
     ).resolves.toMatchInlineSnapshot(`
             Object {
-              "code": 400,
+              "code": 404,
               "ok": false,
-              "reason": "bot not match",
+              "reason": "bot \\"55555\\" not registered",
             }
           `);
   });
@@ -407,7 +640,9 @@ describe('.verifyRefreshment()', () => {
 
 test('.checkAuthData()', () => {
   const authData = {
-    bot: 12345,
+    botId: 12345,
+    botName: 'MyBot',
+    chat: undefined,
     user: {
       id: 67890,
       first_name: 'Jojo',
@@ -415,11 +650,11 @@ test('.checkAuthData()', () => {
       username: 'jojodoe',
     },
     photo: 'http://crazy.dm/stand.png',
-    chat: undefined,
   };
 
   const expectedUser = new TelegramUser(
     67890,
+    false,
     {
       id: 67890,
       is_bot: false,
@@ -434,6 +669,8 @@ test('.checkAuthData()', () => {
     ok: true,
     contextDetails: {
       botId: 12345,
+      botName: 'MyBot',
+      channel: new TelegramUser(12345, true),
       user: expectedUser,
       thread: new TelegramChat(12345, 67890, {
         type: 'private',
@@ -445,18 +682,19 @@ test('.checkAuthData()', () => {
       photoUrl: 'http://crazy.dm/stand.png',
     },
   });
-
   expect(
     authenticator.checkAuthData({
       ...authData,
-      chat: { type: 'group', id: 98765 },
+      chat: { type: 'group', id: 67890 },
     })
   ).toEqual({
     ok: true,
     contextDetails: {
       botId: 12345,
+      botName: 'MyBot',
+      channel: new TelegramUser(12345, true),
       user: expectedUser,
-      thread: new TelegramChat(12345, 98765, { type: 'group', id: 98765 }),
+      thread: new TelegramChat(12345, 67890, { type: 'group', id: 67890 }),
       photoUrl: 'http://crazy.dm/stand.png',
     },
   });

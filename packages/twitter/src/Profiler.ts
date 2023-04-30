@@ -15,7 +15,7 @@ type GetUserProfileOptions = {
 /**
  * @category Provider
  */
-export class TwitterProfiler implements UserProfiler<TwitterUser> {
+export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
   bot: BotP;
   platform = TWITTER;
 
@@ -27,6 +27,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser> {
    * Get profile of the user.
    */
   async getUserProfile(
+    agent: TwitterUser,
     user: TwitterUser,
     {
       withEntities = false,
@@ -40,19 +41,21 @@ export class TwitterProfiler implements UserProfiler<TwitterUser> {
 
     let rawUser = user.data;
     if (fromApi || !rawUser) {
-      rawUser = await this.bot.makeApiCall<RawUser>(
-        'GET',
-        `1.1/users/show.json`,
-        { user_id: user.id, include_entities: withEntities }
-      );
+      rawUser = await this.bot.makeApiCall<RawUser>({
+        agent,
+        method: 'GET',
+        path: '1.1/users/show.json',
+        params: { user_id: user.id, include_entities: withEntities },
+      });
     }
 
     let rawSettings: undefined | RawSettings;
     if (withSettings) {
-      rawSettings = await this.bot.makeApiCall(
-        'GET',
-        `1.1/account/settings.json`
-      );
+      rawSettings = await this.bot.makeApiCall({
+        agent,
+        method: 'GET',
+        path: '1.1/account/settings.json',
+      });
     }
 
     return new TwitterUserProfile(rawUser, rawSettings);

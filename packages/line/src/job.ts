@@ -3,6 +3,7 @@ import type { DispatchableSegment } from '@sociably/core/engine';
 import type LineChat from './Chat';
 import { PATH_PUSH, PATH_REPLY, PATH_MULTICAST } from './constant';
 import type { LineSegmentValue, LineJob, MessageParams } from './types';
+import LineChannel from './Channel';
 
 const createMessageJob = (
   thread: LineChat,
@@ -11,7 +12,9 @@ const createMessageJob = (
 ): LineJob => ({
   method: 'POST',
   path: replyToken ? PATH_REPLY : PATH_PUSH,
-  executionKey: thread.uid,
+  key: thread.uid,
+  chatChannelId: thread.channelId,
+  accessToken: undefined,
   body: replyToken
     ? { replyToken: replyToken as string, messages }
     : { to: thread.id, messages },
@@ -74,7 +77,9 @@ export const createChatJobs = (replyToken: undefined | string) => {
         jobs.push({
           method,
           path,
-          executionKey: thread.uid,
+          key: thread.uid,
+          chatChannelId: thread.channelId,
+          accessToken: undefined,
           body,
         });
       }
@@ -87,8 +92,8 @@ export const createChatJobs = (replyToken: undefined | string) => {
 const MULITCAST_EXECUTION_KEY = 'line.multicast';
 
 export const createMulticastJobs =
-  (targets: string[]) =>
-  (_: null, segments: DispatchableSegment<LineSegmentValue>[]) => {
+  (channel: LineChannel, targets: string[]) =>
+  (_: null, segments: DispatchableSegment<LineSegmentValue>[]): LineJob[] => {
     const jobs: LineJob[] = [];
     let messages: MessageParams[] = [];
 
@@ -108,7 +113,9 @@ export const createMulticastJobs =
             method: 'POST',
             path: PATH_MULTICAST,
             body: { to: targets, messages },
-            executionKey: MULITCAST_EXECUTION_KEY,
+            key: MULITCAST_EXECUTION_KEY,
+            chatChannelId: channel.id,
+            accessToken: undefined,
           });
           messages = [];
         }
@@ -119,7 +126,9 @@ export const createMulticastJobs =
             method: 'POST',
             path: PATH_MULTICAST,
             body: { to: targets, messages },
-            executionKey: MULITCAST_EXECUTION_KEY,
+            key: MULITCAST_EXECUTION_KEY,
+            chatChannelId: channel.id,
+            accessToken: undefined,
           });
           messages = [];
         }
@@ -135,8 +144,10 @@ export const createMulticastJobs =
         jobs.push({
           method,
           path,
-          executionKey: MULITCAST_EXECUTION_KEY,
           body,
+          key: MULITCAST_EXECUTION_KEY,
+          chatChannelId: channel.id,
+          accessToken: undefined,
         });
       }
     }

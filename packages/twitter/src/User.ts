@@ -1,4 +1,8 @@
-import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
+import type {
+  SociablyUser,
+  SociablyChannel,
+  UniqueOmniIdentifier,
+} from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import UserProfile from './UserProfile';
 import { TWITTER, TWTR } from './constant';
@@ -9,7 +13,10 @@ type SerializedUser = {
 };
 
 export default class TwitterUser
-  implements SociablyUser, MarshallableInstance<SerializedUser>
+  implements
+    SociablyUser,
+    SociablyChannel,
+    MarshallableInstance<SerializedUser>
 {
   static typeName = 'TwtrUser';
   static fromJSONValue({ id }: SerializedUser): TwitterUser {

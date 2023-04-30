@@ -222,7 +222,7 @@ export default class SociablyQueue<Job, Result> {
       request.responses = new Array(requestEnd - requestBegin);
     }
 
-    let success = true;
+    let isAllJobsOk = true;
     const end = begin + count;
 
     for (let i = begin; i < end; i += 1) {
@@ -233,7 +233,7 @@ export default class SociablyQueue<Job, Result> {
 
       request.finishedCount += 1;
       if (!jobResponse.success) {
-        success = false;
+        isAllJobsOk = false;
 
         if (!request.errors) {
           request.errors = [];
@@ -242,16 +242,17 @@ export default class SociablyQueue<Job, Result> {
       }
     }
 
-    if (!success) {
+    if (!isAllJobsOk) {
       this._removeJobsOfRequest(request);
     }
 
-    request.success = request.success && success;
-
     const jobLength = requestEnd - requestBegin;
+    request.success = request.success && isAllJobsOk;
+    request.acquiredCount -= 1;
+
     if (
-      request.acquiredCount <= 1 &&
-      (request.finishedCount === jobLength || !success)
+      request.acquiredCount <= 0 &&
+      (request.finishedCount === jobLength || !request.success)
     ) {
       // NOTE: either SuccessJobResponse or FailedJobResponse should be fulfilled here
       request.resolve({
@@ -261,8 +262,6 @@ export default class SociablyQueue<Job, Result> {
       } as JobBatchResponse<Job, Result>);
 
       this._waitingRequets.delete(request);
-    } else {
-      request.acquiredCount -= 1;
     }
 
     return jobResps;

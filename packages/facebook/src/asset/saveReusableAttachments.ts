@@ -2,6 +2,7 @@ import { DispatchError } from '@sociably/core/engine';
 import { makeContainer } from '@sociably/core/service';
 import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import type { FacebookDispatchMiddleware } from '../types';
+import FacebookPage from '../Page';
 import AssetsManagerP from './AssetsManager';
 
 const updateAssetsFromSuccessfulJobs = async (
@@ -14,12 +15,16 @@ const updateAssetsFromSuccessfulJobs = async (
   for (let i = 0; i < jobs.length; i += 1) {
     const result = results[i];
     if (result) {
-      const { assetTag } = jobs[i];
+      const { file, channel } = jobs[i];
       const { body } = result;
 
-      if (assetTag && body.attachment_id) {
+      if (file?.assetTag && body.attachment_id) {
         updatingAssets.push(
-          manager.saveAttachment(assetTag, body.attachment_id)
+          manager.saveAttachment(
+            channel as FacebookPage,
+            file.assetTag,
+            body.attachment_id
+          )
         );
       }
     }

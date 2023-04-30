@@ -1,11 +1,5 @@
 export { default } from './module';
-export { WebviewBot } from './bot';
-export { WebviewReceiver } from './receiver';
+export { WebviewBot } from './Bot';
+export { WebviewReceiver } from './Receiver';
 export { Event } from './component';
 export * from './types';
-
-export {
-  default as NoneAuthenticator,
-  NoneUser,
-  NoneThread,
-} from './noneAuthenticator';

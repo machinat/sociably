@@ -4,9 +4,10 @@ exports[`.render(thread, message, options) render global actions without a chat 
 Object {
   "jobs": Array [
     Object {
+      "botId": 12345,
       "key": undefined,
       "method": "editMessageText",
-      "parameters": Object {
+      "params": Object {
         "disable_web_page_preview": undefined,
         "inline_message_id": "1",
         "message_id": undefined,
@@ -14,12 +15,13 @@ Object {
         "reply_markup": undefined,
         "text": "foo <b>bar</b>",
       },
-      "uploadingFiles": null,
+      "uploadFiles": null,
     },
     Object {
+      "botId": 12345,
       "key": undefined,
       "method": "editMessageMedia",
-      "parameters": Object {
+      "params": Object {
         "inline_message_id": "2",
         "media": Object {
           "caption": undefined,
@@ -30,7 +32,7 @@ Object {
         "message_id": undefined,
         "reply_markup": undefined,
       },
-      "uploadingFiles": null,
+      "uploadFiles": null,
     },
   ],
   "results": Array [
@@ -51,9 +53,10 @@ Object {
     Object {
       "payload": Array [
         Object {
+          "botId": 12345,
           "key": undefined,
           "method": "editMessageText",
-          "parameters": Object {
+          "params": Object {
             "disable_web_page_preview": undefined,
             "inline_message_id": "1",
             "message_id": undefined,
@@ -61,12 +64,13 @@ Object {
             "reply_markup": undefined,
             "text": "foo <b>bar</b>",
           },
-          "uploadingFiles": null,
+          "uploadFiles": null,
         },
         Object {
+          "botId": 12345,
           "key": undefined,
           "method": "editMessageMedia",
-          "parameters": Object {
+          "params": Object {
             "inline_message_id": "2",
             "media": Object {
               "caption": undefined,
@@ -77,7 +81,7 @@ Object {
             "message_id": undefined,
             "reply_markup": undefined,
           },
-          "uploadingFiles": null,
+          "uploadFiles": null,
         },
       ],
       "type": "dispatch",
@@ -90,20 +94,22 @@ exports[`.render(thread, message, options) send rendered messages to telegram ap
 Object {
   "jobs": Array [
     Object {
+      "botId": 12345,
       "key": "tg.12345.67890",
       "method": "sendMessage",
-      "parameters": Object {
+      "params": Object {
         "chat_id": 67890,
         "disable_notification": undefined,
         "parse_mode": "HTML",
         "text": "Hello <b>World!</b>",
       },
-      "uploadingFiles": null,
+      "uploadFiles": null,
     },
     Object {
+      "botId": 12345,
       "key": "tg.12345.67890",
       "method": "sendPhoto",
-      "parameters": Object {
+      "params": Object {
         "caption": undefined,
         "chat_id": 67890,
         "disable_notification": undefined,
@@ -115,7 +121,7 @@ Object {
         },
         "reply_to_message_id": undefined,
       },
-      "uploadingFiles": null,
+      "uploadFiles": null,
     },
   ],
   "results": Array [
@@ -136,20 +142,22 @@ Object {
     Object {
       "payload": Array [
         Object {
+          "botId": 12345,
           "key": "tg.12345.67890",
           "method": "sendMessage",
-          "parameters": Object {
+          "params": Object {
             "chat_id": 67890,
             "disable_notification": undefined,
             "parse_mode": "HTML",
             "text": "Hello <b>World!</b>",
           },
-          "uploadingFiles": null,
+          "uploadFiles": null,
         },
         Object {
+          "botId": 12345,
           "key": "tg.12345.67890",
           "method": "sendPhoto",
-          "parameters": Object {
+          "params": Object {
             "caption": undefined,
             "chat_id": 67890,
             "disable_notification": undefined,
@@ -161,7 +169,7 @@ Object {
             },
             "reply_to_message_id": undefined,
           },
-          "uploadingFiles": null,
+          "uploadFiles": null,
         },
       ],
       "type": "dispatch",

@@ -1,5 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import FacebookChat from '../../Chat';
+import FacebookUser from '../../User';
 import ServerAuthenticator from '../ServerAuthenticator';
 import WebviewButton from '../WebviewButton';
 
@@ -52,24 +53,44 @@ test('rendering to UrlButton', () => {
   `);
 
   expect(authenticator.getAuthUrl).toHaveBeenCalledTimes(3);
-  expect(authenticator.getAuthUrl).toHaveBeenCalledWith('67890', undefined);
+  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
+    1,
+    new FacebookUser('12345', '67890'),
+    undefined
+  );
+  expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
+    2,
+    new FacebookUser('12345', '67890'),
+    undefined
+  );
   expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     3,
-    '67890',
+    new FacebookUser('12345', '67890'),
     'foo?bar=baz'
   );
 });
 
-test('rendering to null if thread is not a FacebookChat', () => {
-  expect(WebviewButton(authenticator, null)({ title: 'Foo' })).toBe(null);
-  expect(
+test('throw if thread is not a FacebookChat', () => {
+  expect(() =>
+    WebviewButton(authenticator, null)({ title: 'Foo' })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"WebviewButton can only be used in the FacebookChat with a user ID"`
+  );
+  expect(() =>
     WebviewButton(authenticator, null)({ title: 'Foo', page: '/foo' })
-  ).toBe(null);
-  expect(
-    WebviewButton(authenticator, { platform: 'test', uid: 'test.foo' })({
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"WebviewButton can only be used in the FacebookChat with a user ID"`
+  );
+  expect(() =>
+    WebviewButton(authenticator, {
+      platform: 'test',
+      uid: 'test.foo',
+    } as never)({
       title: 'Foo',
     })
-  ).toBe(null);
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"WebviewButton can only be used in the FacebookChat with a user ID"`
+  );
 
   expect(authenticator.getAuthUrl).not.toHaveBeenCalled();
 });

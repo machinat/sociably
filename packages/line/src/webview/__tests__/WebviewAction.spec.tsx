@@ -1,6 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import ServerAuthenticator from '../ServerAuthenticator';
 import WebviewAction from '../WebviewAction';
+import LineChat from '../../Chat';
 
 const authenticator = moxy<ServerAuthenticator>({
   getLiffUrl: () => `https://liff.line.me/1234567890-AaBbCcDd/`,
@@ -10,8 +11,11 @@ beforeEach(() => {
   authenticator.mock.reset();
 });
 
-test('rendering to UrlButton', () => {
-  expect(WebviewAction(authenticator)({ label: 'Foo' })).toMatchInlineSnapshot(`
+test('rendering to UrlButton', async () => {
+  const chat = new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_');
+
+  await expect(WebviewAction(authenticator, chat)({ label: 'Foo' })).resolves
+    .toMatchInlineSnapshot(`
     <UriAction
       label="Foo"
       uri="https://liff.line.me/1234567890-AaBbCcDd/"
@@ -21,8 +25,9 @@ test('rendering to UrlButton', () => {
   authenticator.getLiffUrl.mock.fakeReturnValue(
     `https://liff.line.me/1234567890-AaBbCcDd/foo?bar=baz`
   );
-  expect(WebviewAction(authenticator)({ label: 'Foo', page: '/foo?bar=baz' }))
-    .toMatchInlineSnapshot(`
+  await expect(
+    WebviewAction(authenticator, chat)({ label: 'Foo', page: '/foo?bar=baz' })
+  ).resolves.toMatchInlineSnapshot(`
     <UriAction
       label="Foo"
       uri="https://liff.line.me/1234567890-AaBbCcDd/foo?bar=baz"
@@ -30,5 +35,16 @@ test('rendering to UrlButton', () => {
   `);
 
   expect(authenticator.getLiffUrl).toHaveBeenCalledTimes(2);
-  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(2, '/foo?bar=baz');
+  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(
+    1,
+    chat.channel,
+    undefined,
+    chat
+  );
+  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(
+    2,
+    chat.channel,
+    '/foo?bar=baz',
+    chat
+  );
 });

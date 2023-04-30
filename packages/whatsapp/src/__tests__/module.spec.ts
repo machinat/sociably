@@ -1,10 +1,13 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
+import { makeFactoryProvider } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import WhatsApp from '../module';
+import { AgentSettingsAccessorI } from '../interface';
+import WhatsAppAgent from '../Agent';
 import WhatsAppChat from '../Chat';
 import WhatsAppUser from '../User';
 import WhatsAppUserProfile from '../UserProfile';
@@ -12,6 +15,12 @@ import { WhatsAppProfiler } from '../Profiler';
 
 import { WhatsAppReceiver } from '../Receiver';
 import { WhatsAppBot } from '../Bot';
+
+const agentSettings = {
+  phoneNumber: '+1234567890',
+  numberId: '1111111111',
+  accountId: '2222222222',
+};
 
 it('export interfaces', () => {
   expect(WhatsApp.Receiver).toBe(WhatsAppReceiver);
@@ -33,8 +42,7 @@ describe('initModule(configs)', () => {
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
 
     const module = WhatsApp.initModule({
-      businessId: '9999999999',
-      businessNumber: '1234567890',
+      agentSettings,
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
@@ -59,8 +67,7 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
-      businessId: '9999999999',
-      businessNumber: '1234567890',
+      agentSettings,
       accessToken: '_ACCESS_TOKEN_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
@@ -101,8 +108,7 @@ describe('initModule(configs)', () => {
     const app = Sociably.createApp({
       platforms: [
         WhatsApp.initModule({
-          businessId: '9999999999',
-          businessNumber: '1234567890',
+          agentSettings,
           accessToken: '_ACCESS_TOKEN_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
@@ -122,21 +128,165 @@ describe('initModule(configs)', () => {
     expect(bots.get('whatsapp')).toBe(bot);
     expect(profilers.get('whatsapp')).toBeInstanceOf(WhatsAppProfiler);
     expect(marshalTypes).toEqual(
-      expect.arrayContaining([WhatsAppChat, WhatsAppUser, WhatsAppUserProfile])
+      expect.arrayContaining([
+        WhatsAppAgent,
+        WhatsAppChat,
+        WhatsAppUser,
+        WhatsAppUserProfile,
+      ])
     );
 
     bot.stop();
+  });
+
+  test('with configs.agentSettings', async () => {
+    const app = Sociably.createApp({
+      platforms: [
+        WhatsApp.initModule({
+          agentSettings,
+          accessToken: '_ACCESS_TOKEN_',
+          appSecret: '_APP_SECRET_',
+          verifyToken: '_VERIFY_TOKEN_',
+        }),
+      ],
+    });
+    await app.start();
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
+
+    const agent = new WhatsAppAgent('1111111111');
+    const unknownAgent = new WhatsAppAgent('2222222222');
+
+    await expect(
+      agentSettingsAccessor.getChannelSettings(agent)
+    ).resolves.toEqual(agentSettings);
+    await expect(
+      agentSettingsAccessor.getChannelSettings(unknownAgent)
+    ).resolves.toBe(null);
+
+    await expect(
+      agentSettingsAccessor.getChannelSettingsBatch([agent, unknownAgent])
+    ).resolves.toEqual([agentSettings, null]);
+
+    await expect(
+      agentSettingsAccessor.listAllChannelSettings('facebook')
+    ).resolves.toEqual([agentSettings]);
+
+    await app.stop();
+  });
+
+  test('with configs.multiPageSettings', async () => {
+    const businessAccountSettings = [
+      {
+        accountId: '9999999999',
+        numbers: [
+          { numberId: '1111111111', phoneNumber: '+1234567890' },
+          { numberId: '2222222222', phoneNumber: '+9876543210' },
+        ],
+      },
+      {
+        accountId: '8888888888',
+        numbers: [{ numberId: '3333333333', phoneNumber: '+1111111111' }],
+      },
+    ];
+    const app = Sociably.createApp({
+      platforms: [
+        WhatsApp.initModule({
+          multiAgentSettings: businessAccountSettings,
+          accessToken: '_ACCESS_TOKEN_',
+          appSecret: '_APP_SECRET_',
+          verifyToken: '_VERIFY_TOKEN_',
+        }),
+      ],
+    });
+    await app.start();
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
+
+    const agent1 = new WhatsAppAgent('1111111111');
+    const agentSettings1 = {
+      numberId: '1111111111',
+      accountId: '9999999999',
+      phoneNumber: '+1234567890',
+    };
+    const agent2 = new WhatsAppAgent('2222222222');
+    const agentSettings2 = {
+      numberId: '2222222222',
+      accountId: '9999999999',
+      phoneNumber: '+9876543210',
+    };
+    const agent3 = new WhatsAppAgent('3333333333');
+    const agentSettings3 = {
+      numberId: '3333333333',
+      accountId: '8888888888',
+      phoneNumber: '+1111111111',
+    };
+    const unknownAgent = new WhatsAppAgent('4444444444');
+
+    await expect(
+      agentSettingsAccessor.getChannelSettings(agent1)
+    ).resolves.toEqual(agentSettings1);
+    await expect(
+      agentSettingsAccessor.getChannelSettings(agent2)
+    ).resolves.toEqual(agentSettings2);
+    await expect(
+      agentSettingsAccessor.getChannelSettings(agent3)
+    ).resolves.toEqual(agentSettings3);
+    await expect(
+      agentSettingsAccessor.getChannelSettings(unknownAgent)
+    ).resolves.toBe(null);
+
+    await expect(
+      agentSettingsAccessor.getChannelSettingsBatch([
+        agent2,
+        agent3,
+        unknownAgent,
+      ])
+    ).resolves.toEqual([agentSettings2, agentSettings3, null]);
+
+    await expect(
+      agentSettingsAccessor.listAllChannelSettings('facebook')
+    ).resolves.toEqual([agentSettings1, agentSettings2, agentSettings3]);
+
+    await app.stop();
+  });
+
+  test('with configs.agentSettingsService', async () => {
+    const settingsAccessor = {
+      getChannelSettings: async () => agentSettings,
+      getChannelSettingsBatch: async () => [agentSettings, agentSettings],
+      listAllChannelSettings: async () => [agentSettings, agentSettings],
+    };
+    const myAgentSettingsService = makeFactoryProvider({})(
+      () => settingsAccessor
+    );
+
+    const app = Sociably.createApp({
+      platforms: [
+        WhatsApp.initModule({
+          agentSettingsService: myAgentSettingsService,
+          accessToken: '_ACCESS_TOKEN_',
+          appSecret: '_APP_SECRET_',
+          verifyToken: '_VERIFY_TOKEN_',
+        }),
+      ],
+      services: [myAgentSettingsService],
+    });
+    await app.start();
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
+
+    expect(agentSettingsAccessor).toBe(settingsAccessor);
+    await app.stop();
   });
 
   test('default webhookPath to "/"', async () => {
     const app = Sociably.createApp({
       platforms: [
         WhatsApp.initModule({
-          businessId: '9999999999',
-          businessNumber: '1234567890',
+          agentSettings,
           accessToken: '_ACCESS_TOKEN_',
           shouldHandleChallenge: false,
+          verifyToken: '',
           shouldVerifyRequest: false,
+          appSecret: '',
         }),
       ],
     });
@@ -153,24 +303,26 @@ describe('initModule(configs)', () => {
   test('#startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = WhatsApp.initModule({
-      businessId: '9999999999',
-      businessNumber: '1234567890',
+      agentSettings,
       accessToken: '_ACCESS_TOKEN_',
+      appSecret: '',
+      verifyToken: '',
     });
 
-    await expect((module.startHook as any)(bot)).resolves.toBe(undefined);
+    await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
     expect(bot.start).toHaveBeenCalledTimes(1);
   });
 
   test('#stopHook() stop bot', async () => {
     const bot = moxy({ stop: async () => {} });
     const module = WhatsApp.initModule({
-      businessId: '9999999999',
-      businessNumber: '1234567890',
+      agentSettings,
       accessToken: '_ACCESS_TOKEN_',
+      appSecret: '',
+      verifyToken: '',
     });
 
-    await expect((module.stopHook as any)(bot)).resolves.toBe(undefined);
+    await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);
     expect(bot.stop).toHaveBeenCalledTimes(1);
   });
 });

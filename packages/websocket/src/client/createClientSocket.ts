@@ -1,6 +1,6 @@
 /// <reference lib="DOM" />
 import { EventEmitter } from 'events';
-import Socket from '../socket';
+import Socket from '../Socket';
 import SocketError from '../error';
 
 const Ws =

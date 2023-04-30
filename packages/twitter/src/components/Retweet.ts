@@ -26,7 +26,7 @@ export const Retweet: TwitterComponent<
       request: {
         method: 'POST',
         href: '2/users/:id/retweets',
-        parameters: { tweet_id: node.props.tweetId },
+        params: { tweet_id: node.props.tweetId },
       },
       accomplishRequest: (target, request) => ({
         ...request,

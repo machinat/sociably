@@ -15,9 +15,10 @@ import WebSocket, {
 } from '@sociably/websocket';
 import { WEBVIEW } from './constant';
 import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
-import { BotP } from './bot';
-import { WebviewConnection } from './thread';
-import { createEvent } from './utils';
+import { BotP } from './Bot';
+import WebviewConnection from './Connection';
+import createEvent from './utils/createEvent';
+import { createThreadTopicKey, createUserTopicKey } from './utils/topicKey';
 import type { WebviewEventContext } from './types';
 
 /**
@@ -30,12 +31,11 @@ export class WebviewReceiver<
   private _bot: BotP;
   private _server: WebviewSocketServer<Authenticator>;
 
+  private _popError: PopErrorFn;
   private _popEvent: PopEventFn<
     WebviewEventContext<Authenticator, Value>,
     null
   >;
-
-  private _popError: PopErrorFn;
 
   constructor(
     bot: BotP,
@@ -56,7 +56,8 @@ export class WebviewReceiver<
       'events',
       (values, { connId, user, request, authContext }) => {
         values.forEach((value) => {
-          this._issueEvent(value, connId, user, request, authContext);
+          const connection = new WebviewConnection(this._server.id, connId);
+          this._issueEvent(value, connection, user, request, authContext);
         });
       }
     );
@@ -67,7 +68,22 @@ export class WebviewReceiver<
         type: 'connect',
         payload: null,
       };
-      this._issueEvent(value, connId, user, request, authContext);
+
+      const connection = new WebviewConnection(this._server.id, connId);
+      if (authContext.user) {
+        this._server.subscribeTopic(
+          connection,
+          createUserTopicKey(authContext.user)
+        );
+      }
+      if (authContext.thread) {
+        this._server.subscribeTopic(
+          connection,
+          createThreadTopicKey(authContext.thread)
+        );
+      }
+
+      this._issueEvent(value, connection, user, request, authContext);
     });
 
     this._server.on('disconnect', ({ reason }, connData) => {
@@ -78,7 +94,8 @@ export class WebviewReceiver<
         payload: { reason },
       };
 
-      this._issueEvent(value, connId, user, request, authContext);
+      const connection = new WebviewConnection(this._server.id, connId);
+      this._issueEvent(value, connection, user, request, authContext);
     });
 
     this._server.on('error', (err: Error) => {
@@ -88,23 +105,22 @@ export class WebviewReceiver<
 
   private _issueEvent(
     value: EventInput,
-    connId: string,
+    connection: WebviewConnection,
     user: UserOfAuthenticator<Authenticator>,
     request: HttpRequestInfo,
     authContext: ContextOfAuthenticator<Authenticator>
   ) {
-    const thread = new WebviewConnection(this._server.id, connId);
     this._popEvent({
       platform: WEBVIEW,
       bot: this._bot,
-      event: createEvent(value, thread, user),
+      event: createEvent(value, connection, user),
       metadata: {
         source: 'websocket',
         request,
-        connection: thread,
+        connection,
         auth: authContext,
       },
-      reply: (message) => this._bot.render(thread, message),
+      reply: (message) => this._bot.render(connection, message),
     }).catch(this._popError);
   }
 }

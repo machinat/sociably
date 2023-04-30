@@ -43,6 +43,11 @@ const numericCode = (n: number) => {
 
 const DefaultCodeMessage = ({ code }) => <p>Your login code is: {code}</p>;
 
+type InitPayload<Credential> = {
+  credential: Credential;
+  redirectUrl: undefined | string;
+};
+
 export class BasicAuthenticator {
   mode: 'strict' | 'loose';
   operator: HttpOperator;
@@ -78,16 +83,16 @@ export class BasicAuthenticator {
     this.loginDurationTime = loginDuration * 1000;
   }
 
-  createRequestDelegator<Data, Thread extends SociablyThread>(
-    options: AuthDelegatorOptions<Data, Thread>
+  createRequestDelegator<Credential, Data, Thread extends SociablyThread>(
+    options: AuthDelegatorOptions<Credential, Data, Thread>
   ) {
     return async (
       req: IncomingMessage,
       res: ServerResponse,
       { trailingPath }: RoutingInfo
     ): Promise<void> => {
-      if (trailingPath === '') {
-        await this._handleStart(req, res, options);
+      if (trailingPath === 'init') {
+        await this._handleInit(req, res, options);
       } else if (trailingPath === 'login') {
         await this._handleLogin(req, res, options);
       } else if (trailingPath === 'verify') {
@@ -99,53 +104,43 @@ export class BasicAuthenticator {
     };
   }
 
-  getAuthUrl<Data>(platform: string, data: Data, redirectUrl?: string): string {
-    const loginToken = this.operator.signToken(platform, { data, redirectUrl });
-    const authRoot = new URL(this.operator.getAuthUrl(platform));
+  getAuthUrl<Credential>(
+    platform: string,
+    credential: Credential,
+    redirectUrl?: string
+  ): string {
+    const payload: InitPayload<Credential> = { credential, redirectUrl };
+    const loginToken = this.operator.signToken(platform, payload);
+    const authRoot = new URL(this.operator.getAuthUrl(platform, 'init'));
 
     authRoot.searchParams.set(LOGIN_QUERY, loginToken);
     return authRoot.href;
   }
 
-  private async _handleStart<Data, Thread extends SociablyThread>(
+  private async _handleInit<Credential, Data, Thread extends SociablyThread>(
     req: IncomingMessage,
     res: ServerResponse,
-    { platform, checkAuthData }: AuthDelegatorOptions<Data, Thread>
+    {
+      platform,
+      verifyCredential,
+      checkAuthData,
+    }: AuthDelegatorOptions<Credential, Data, Thread>
   ) {
     const {
       query: { [LOGIN_QUERY]: loginToken },
     } = parseUrl(req.url as string, true);
 
     // check the login query
-    let payload: null | { data: Data; redirectUrl: undefined | string };
+    let payload: null | InitPayload<Credential>;
     if (
       typeof loginToken !== 'string' ||
       !(payload = this.operator.verifyToken(platform, loginToken))
     ) {
-      await this.operator.issueError(res, platform, 400, 'invald login param');
-      this.operator.redirect(res);
+      await this._redirectError(res, platform, 400, 'invalid login param');
       return;
     }
 
-    const { data, redirectUrl } = payload;
-
-    // skip verifying code in 'loose' mode
-    if (this.mode === 'loose') {
-      const checkResult = checkAuthData(data);
-      if (checkResult.ok) {
-        await this.operator.issueAuth(res, platform, checkResult.data);
-      } else {
-        await this.operator.issueError(
-          res,
-          platform,
-          checkResult.code,
-          checkResult.reason
-        );
-      }
-
-      this.operator.redirect(res, redirectUrl, { assertInternal: true });
-      return;
-    }
+    const { credential, redirectUrl } = payload;
 
     // redirect if user is already logged in
     const currentAuth = await this.operator.getAuth<Data>(req, platform, {
@@ -156,34 +151,46 @@ export class BasicAuthenticator {
       return;
     }
 
-    // check the auth data
-    const checkResult = checkAuthData(data);
+    // check auth data
+    const verifyResult = await verifyCredential(credential);
+    if (!verifyResult.ok) {
+      const { code, reason } = verifyResult;
+      await this._redirectError(res, platform, code, reason, redirectUrl);
+      return;
+    }
+
+    const checkResult = checkAuthData(verifyResult.data);
     if (!checkResult.ok) {
       const { code, reason } = checkResult;
-      await this.operator.issueError(res, platform, code, reason);
+      await this._redirectError(res, platform, code, reason, redirectUrl);
+      return;
+    }
+
+    // skip verifying code in 'loose' mode
+    if (this.mode === 'loose') {
+      await this.operator.issueAuth(res, platform, verifyResult.data);
       this.operator.redirect(res, redirectUrl, { assertInternal: true });
       return;
     }
-    const { data: checkedData, thread } = checkResult;
 
-    // redirect to login page if it's during the login process
-    const loginUrl = this.operator.getAuthUrl(platform, 'login');
+    const { data: verifiedData, thread } = checkResult;
+
+    // redirect to login page in 'strict' mode
     const currentState = await this.operator.getState<BasicAuthState<Data>>(
       req,
       platform
     );
-    if (currentState && currentState.ch === thread.uid) {
-      this.operator.redirect(res, loginUrl);
-      return;
+
+    if (!currentState || currentState.ch !== thread.uid) {
+      await this.operator.issueState<BasicAuthLoginState<Data>>(res, platform, {
+        status: 'login',
+        ch: thread.uid,
+        data: verifiedData,
+        redirect: redirectUrl,
+      });
     }
 
-    await this.operator.issueState<BasicAuthLoginState<Data>>(res, platform, {
-      status: 'login',
-      ch: thread.uid,
-      data: checkedData,
-      redirect: redirectUrl,
-    });
-
+    const loginUrl = this.operator.getAuthUrl(platform, 'login');
     res.setHeader('X-Robots-Tag', 'none');
     this.operator.redirect(res, loginUrl);
   }
@@ -199,7 +206,7 @@ export class BasicAuthenticator {
       platformImageUrl,
       checkAuthData,
       getChatLink,
-    }: AuthDelegatorOptions<Data, Thread>
+    }: AuthDelegatorOptions<unknown, Data, Thread>
   ) {
     const now = Date.now();
     const state = await this.operator.getState<BasicAuthState<Data>>(
@@ -207,21 +214,14 @@ export class BasicAuthenticator {
       platform
     );
     if (!state) {
-      await this.operator.issueError(
-        res,
-        platform,
-        401,
-        'login session expired'
-      );
-      this.operator.redirect(res);
+      await this._redirectError(res, platform, 401, 'login session expired');
       return;
     }
 
     const checkResult = checkAuthData(state.data);
     if (!checkResult.ok) {
       const { code, reason } = checkResult;
-      await this.operator.issueError(res, platform, code, reason);
-      this.operator.redirect(res, state.redirect);
+      await this._redirectError(res, platform, code, reason, state.redirect);
       return;
     }
     const { data: checkedData, thread } = checkResult;
@@ -262,13 +262,13 @@ export class BasicAuthenticator {
           />
         );
       } catch {
-        await this.operator.issueError(
+        await this._redirectError(
           res,
           platform,
           510,
-          'fail to send login code'
+          'fail to send login code',
+          state.redirect
         );
-        this.operator.redirect(res, state.redirect);
         return;
       }
 
@@ -302,7 +302,7 @@ export class BasicAuthenticator {
         platformName,
         platformColor,
         platformImageUrl,
-        chatLinkUrl: getChatLink(checkResult.thread),
+        chatLinkUrl: getChatLink(thread, state.data),
       })
     );
   }
@@ -310,7 +310,7 @@ export class BasicAuthenticator {
   private async _handleVerify<Data, Thread extends SociablyThread>(
     req: IncomingMessage,
     res: ServerResponse,
-    { platform }: AuthDelegatorOptions<Data, Thread>
+    { platform }: AuthDelegatorOptions<unknown, Data, Thread>
   ) {
     const body: VerifyCodeRequestBody = await parseJsonBody(req);
     if (!body || !body.code) {
@@ -379,6 +379,17 @@ export class BasicAuthenticator {
       .signToken(platform, `${ch}:${ts}:${code}`, { noTimestamp: true })
       .split('.', 3);
     return hashedCode;
+  }
+
+  private async _redirectError(
+    res: ServerResponse,
+    platform: string,
+    code: number,
+    reason: string,
+    redirectUrl?: string
+  ) {
+    await this.operator.issueError(res, platform, code, reason);
+    this.operator.redirect(res, redirectUrl, { assertInternal: true });
   }
 
   private async _checkVerifyCount(

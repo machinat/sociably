@@ -46,10 +46,12 @@ const app = Sociably.createApp({
   platforms: [
     Line.intiModule({
       webhookPath: '/webhook/line',       // webhook path
-      channelId: LINE_CHANNEL_ID,         // messaging API channel id
-      providerId: LINE_PROVIDER_ID,       // provider id of the channel
-      accessToken: LINE_ACCESS_TOKEN,     // channel access token
-      channelSecret: LINE_CHANNEL_SECRET, // channel secret
+      channelSettings: {
+        providerId: LINE_PROVIDER_ID,       // provider id of the channel
+        channelId: LINE_CHANNEL_ID,         // messaging API channel id
+        accessToken: LINE_ACCESS_TOKEN,     // channel access token
+        channelSecret: LINE_CHANNEL_SECRET, // channel secret
+      },
     }),
   ],
 });
@@ -116,8 +118,10 @@ const app = Sociably.createApp({
   platforms: [
     Line.initModule({
       // add the login channel id
-      liffId: LINE_LIFF_ID,
-      // ...
+      channelSettings: {
+        // ...
+        liff: { default: LINE_LIFF_ID },
+      },
     }),
     Webview.initModule({
       authPlatforms: [

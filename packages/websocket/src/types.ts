@@ -10,12 +10,8 @@ import type { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
 import type { MaybeContainer } from '@sociably/core/service';
 import type { UnitSegment } from '@sociably/core/renderer';
 import type { HttpRequestInfo } from '@sociably/http';
-import type { WebSocketBot } from './bot';
-import type {
-  WebSocketTopicThread,
-  WebSocketUserThread,
-  WebSocketConnection,
-} from './thread';
+import type { WebSocketBot } from './Bot';
+import type WebSocketConnection from './Connection';
 
 export type { Server as WsServer } from 'ws';
 export type { HttpRequestInfo } from '@sociably/http';
@@ -30,7 +26,7 @@ export type UpgradeRequestInfo = Omit<HttpRequestInfo, 'body'>;
 export type EventValue<
   Category extends string = string,
   Type extends string = string,
-  Payload = any
+  Payload = unknown
 > = {
   category: Category;
   type: Type;
@@ -53,6 +49,8 @@ export type WebSocketEvent<
 > = Value & {
   platform: 'websokcet';
   thread: WebSocketConnection;
+  // TODO: channel field is left for potential namespace feature
+  channel: null;
   user: User;
 };
 
@@ -70,15 +68,10 @@ export interface ConnectionTarget {
 
 export interface TopicTarget {
   type: 'topic';
-  name: string;
+  key: string;
 }
 
-export interface UserTarget {
-  type: 'user';
-  userUid: string;
-}
-
-export type DispatchTarget = ConnectionTarget | TopicTarget | UserTarget;
+export type DispatchTarget = ConnectionTarget | TopicTarget;
 
 export type WebSocketJob = {
   target: DispatchTarget;
@@ -89,13 +82,8 @@ export type WebSocketResult = {
   connections: ConnIdentifier[];
 };
 
-export type WebSocketDispatchThread =
-  | WebSocketConnection
-  | WebSocketUserThread
-  | WebSocketTopicThread;
-
 export type WebSocketDispatchFrame = DispatchFrame<
-  WebSocketDispatchThread,
+  null | WebSocketConnection,
   WebSocketJob
 >;
 

@@ -6,11 +6,12 @@ import type {
   SociablyNode,
 } from '@sociably/core';
 import type { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
-import type { MaybeContainer } from '@sociably/core/service';
+import type { Interfaceable, MaybeContainer } from '@sociably/core/service';
 import type { IntermediateSegment } from '@sociably/core/renderer';
 import type { WebhookMetadata } from '@sociably/http/webhook';
 import { LineBot } from './Bot';
 import type LineChat from './Chat';
+import type { ChannelSettingsAccessorI } from './interface';
 import type { LineEvent, LineRawEvent } from './event/types';
 
 export * from './event/types';
@@ -202,7 +203,9 @@ export type LineJob = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body: null | LineMessageRequestBody | unknown;
   path: string;
-  executionKey: undefined | string;
+  chatChannelId: undefined | string;
+  accessToken: undefined | string;
+  key: undefined | string;
 };
 
 export type MessagingApiResult = Record<string, any>;
@@ -234,15 +237,51 @@ export type LineDispatchMiddleware = DispatchMiddleware<
   LineResult
 >;
 
-export type LineConfigs = {
-  /** The LINE  */
+export type LineChatChannelSettings = {
+  /** The provider ID of the business  */
   providerId: string;
-  /** The id of the messaging API channel */
+  /** The ID of the messaging channel */
   channelId: string;
-  /** The secret of the messaging API channel */
-  channelSecret?: string;
-  /** The access token of the messaging API channel */
+  /** The secret of the messaging channel */
+  channelSecret: string;
+  /** The access token of the messaging channel */
   accessToken: string;
+  liff?: { default: string };
+};
+
+export type LineLoginChannelSettings = {
+  /** The provider ID of the business  */
+  providerId: string;
+  /** The ID of the login channel */
+  channelId: string;
+  liffIds: string[];
+  refChatChannelIds: string[];
+};
+
+export type LineProviderSettings = {
+  /** The provider ID of the business  */
+  providerId: string;
+  channels: {
+    /** The id of the messaging API channel */
+    channelId: string;
+    /** The secret of the messaging API channel */
+    channelSecret: string;
+    /** The access token of the messaging API channel */
+    accessToken: string;
+    /**
+     * The bot user ID of the messaging channel. It can be retrieved through
+     * https://api.line.me/v2/bot/info API
+     */
+    botUserId: string;
+    liff?: { default: string };
+  }[];
+  fallbackLiff?: string;
+};
+
+export type LineConfigs = {
+  channelSettings?: LineChatChannelSettings;
+  multiChannelSettings?: LineProviderSettings[];
+  channelSettingsService?: Interfaceable<ChannelSettingsAccessorI>;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
   /** To verify the webhook request by the signature or not. Default to `true` */

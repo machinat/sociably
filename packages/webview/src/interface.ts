@@ -9,7 +9,8 @@ import type {
 import { BasicAuthenticator } from '@sociably/auth/basicAuth';
 import Next, { NextReceiver } from '@sociably/next';
 import WebSocket, { WebSocketServer } from '@sociably/websocket';
-import { useAuthLogin, verifyOrigin } from './utils';
+import useAuthLogin from './utils/useAuthLogin';
+import verifyOrigin from './utils/verifyOrigin';
 import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant';
 import type { WebviewConfigs, WebviewPlatformUtilities } from './types';
 

@@ -1,49 +1,64 @@
 import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
+import TelegramUser from '../User';
 import TelegramWorker from '../Worker';
 
 nock.disableNetConnect();
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
-const botToken = '__BOT_TOKEN__';
+const botId1 = 1111111;
+const botId2 = 2222222;
+const botToken1 = '1111111:_BOT_TOKEN_';
+const botToken2 = '2222222:_BOT_TOKEN_';
+
+const botSettingsAccessor = moxy({
+  getChannelSettings: async (botUser) => ({
+    botToken: botUser.id === botId1 ? botToken1 : botToken2,
+    botName: 'MyBot',
+    secretToken: '_SECRET_TOKEN_',
+  }),
+  getChannelSettingsBatch: async () => [],
+  listAllChannelSettings: async () => [],
+});
 
 const telegramApi = nock(`https://api.telegram.org`, {
   reqheaders: { 'content-type': 'application/json' },
 });
 let queue: Queue<any, any>;
 beforeEach(() => {
-  nock.cleanAll();
   queue = new Queue();
+  nock.cleanAll();
+  botSettingsAccessor.mock.reset();
 });
 
 it('makes calls to api', async () => {
-  const client = new TelegramWorker(botToken, 10);
+  const client = new TelegramWorker(botSettingsAccessor, 10);
 
-  const apiAssertions = [
+  const apiCalls = [
     telegramApi
-      .post(`/bot${botToken}/foo`, { n: 1 })
+      .post(`/bot${botToken1}/foo`, { n: 1 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 1 } }),
     telegramApi
-      .post(`/bot${botToken}/bar`, { n: 2 })
+      .post(`/bot${botToken1}/bar`, { n: 2 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 2 } }),
     telegramApi
-      .post(`/bot${botToken}/baz`, { n: 3 })
+      .post(`/bot${botToken2}/baz`, { n: 3 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 3 } }),
     telegramApi
-      .post(`/bot${botToken}/foo`, { n: 4 })
+      .post(`/bot${botToken2}/foo`, { n: 4 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 4 } }),
     telegramApi
-      .post(`/bot${botToken}/bar`, { n: 5 })
+      .post(`/bot${botToken1}/bar`, { n: 5 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 5 } }),
     telegramApi
-      .post(`/bot${botToken}/baz`, { n: 6 })
+      .post(`/bot${botToken2}/baz`, { n: 6 })
       .delay(100)
       .reply(200, { ok: true, result: { n: 6 } }),
   ];
@@ -51,19 +66,19 @@ it('makes calls to api', async () => {
   client.start(queue);
 
   const jobs = [
-    { method: 'foo', parameters: { n: 1 }, key: undefined },
-    { method: 'bar', parameters: { n: 2 }, key: undefined },
-    { method: 'baz', parameters: { n: 3 }, key: undefined },
-    { method: 'foo', parameters: { n: 4 }, key: undefined },
-    { method: 'bar', parameters: { n: 5 }, key: undefined },
-    { method: 'baz', parameters: { n: 6 }, key: undefined },
+    { botId: botId1, method: 'foo', params: { n: 1 }, key: undefined },
+    { botId: botId1, method: 'bar', params: { n: 2 }, key: undefined },
+    { botId: botId2, method: 'baz', params: { n: 3 }, key: undefined },
+    { botId: botId2, method: 'foo', params: { n: 4 }, key: undefined },
+    { botId: botId1, method: 'bar', params: { n: 5 }, key: undefined },
+    { botId: botId2, method: 'baz', params: { n: 6 }, key: undefined },
   ];
 
   const promise = queue.executeJobs(jobs);
 
   await delay(100);
-  for (const scope of apiAssertions) {
-    expect(scope.isDone()).toBe(true);
+  for (const apiCall of apiCalls) {
+    expect(apiCall.isDone()).toBe(true);
   }
 
   await expect(promise).resolves.toEqual({
@@ -75,30 +90,43 @@ it('makes calls to api', async () => {
       result: { ok: true, result: { n: i + 1 } },
     })),
   });
+
+  expect(botSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(6);
+  expect(botSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+    new TelegramUser(botId1, true)
+  );
+  expect(botSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+    new TelegramUser(botId2, true)
+  );
 });
 
 it('sequently excute jobs within the same identical chat', async () => {
-  const client = new TelegramWorker(botToken, 10);
+  const client = new TelegramWorker(botSettingsAccessor, 10);
 
   const bodySpy = moxy(() => true);
-  const msgScope = telegramApi
-    .post(new RegExp(`^/bot${botToken}/send(Photo|Message)$`), bodySpy)
+  const bot1ApiCalls = telegramApi
+    .post(new RegExp(`^/bot${botToken1}/send(Photo|Message)$`), bodySpy)
     .delay(100)
-    .times(9)
+    .times(6)
+    .reply(200, (_, body) => ({ ok: true, result: body }));
+  const bot2ApiCalls = telegramApi
+    .post(new RegExp(`^/bot${botToken2}/send(Photo|Message)$`), bodySpy)
+    .delay(100)
+    .times(3)
     .reply(200, (_, body) => ({ ok: true, result: body }));
 
   client.start(queue);
 
   const jobs = [
-    { method: 'sendMessage', key: 'foo', parameters: { n: 1 } },
-    { method: 'sendPhoto', key: 'foo', parameters: { n: 2 } },
-    { method: 'sendMessage', key: 'bar', parameters: { n: 3 } },
-    { method: 'sendPhoto', key: 'bar', parameters: { n: 4 } },
-    { method: 'sendMessage', key: 'baz', parameters: { n: 5 } },
-    { method: 'sendPhoto', key: 'baz', parameters: { n: 6 } },
-    { method: 'sendMessage', key: 'foo', parameters: { n: 7 } },
-    { method: 'sendMessage', key: 'bar', parameters: { n: 8 } },
-    { method: 'sendMessage', key: 'baz', parameters: { n: 9 } },
+    { botId: botId1, method: 'sendMessage', key: 'foo', params: { n: 1 } },
+    { botId: botId1, method: 'sendPhoto', key: 'foo', params: { n: 2 } },
+    { botId: botId1, method: 'sendMessage', key: 'bar', params: { n: 3 } },
+    { botId: botId1, method: 'sendPhoto', key: 'bar', params: { n: 4 } },
+    { botId: botId2, method: 'sendMessage', key: 'baz', params: { n: 5 } },
+    { botId: botId2, method: 'sendPhoto', key: 'baz', params: { n: 6 } },
+    { botId: botId1, method: 'sendMessage', key: 'foo', params: { n: 7 } },
+    { botId: botId1, method: 'sendMessage', key: 'bar', params: { n: 8 } },
+    { botId: botId2, method: 'sendMessage', key: 'baz', params: { n: 9 } },
   ];
 
   const executePromise = queue.executeJobs(jobs);
@@ -121,7 +149,8 @@ it('sequently excute jobs within the same identical chat', async () => {
   expect(bodySpy.mock.calls[7].args[0]).toEqual({ n: 8 });
   expect(bodySpy.mock.calls[8].args[0]).toEqual({ n: 9 });
 
-  expect(msgScope.isDone()).toBe(true);
+  expect(bot1ApiCalls.isDone()).toBe(true);
+  expect(bot2ApiCalls.isDone()).toBe(true);
 
   const result = await executePromise;
   expect(result.success).toBe(true);
@@ -136,27 +165,32 @@ it('sequently excute jobs within the same identical chat', async () => {
 });
 
 it('open requests up to maxConnections', async () => {
-  const client = new TelegramWorker(botToken, 2);
+  const client = new TelegramWorker(botSettingsAccessor, 2);
 
   const bodySpy = moxy(() => true);
-  const msgScope = telegramApi
-    .post(new RegExp(`^/bot${botToken}/send(Photo|Message)$`), bodySpy)
+  const bot1ApiCall = telegramApi
+    .post(new RegExp(`^/bot${botToken1}/send(Photo|Message)$`), bodySpy)
     .delay(100)
-    .times(9)
+    .times(6)
+    .reply(200, (_, body) => ({ ok: true, result: body }));
+  const bot2ApiCall = telegramApi
+    .post(new RegExp(`^/bot${botToken2}/send(Photo|Message)$`), bodySpy)
+    .delay(100)
+    .times(3)
     .reply(200, (_, body) => ({ ok: true, result: body }));
 
   client.start(queue);
 
   const jobs = [
-    { method: 'sendMessage', key: 'foo', parameters: { n: 1 } },
-    { method: 'sendPhoto', key: 'foo', parameters: { n: 2 } },
-    { method: 'sendMessage', key: 'bar', parameters: { n: 3 } },
-    { method: 'sendPhoto', key: 'bar', parameters: { n: 4 } },
-    { method: 'sendMessage', key: 'baz', parameters: { n: 5 } },
-    { method: 'sendPhoto', key: 'baz', parameters: { n: 6 } },
-    { method: 'sendMessage', key: 'foo', parameters: { n: 7 } },
-    { method: 'sendMessage', key: 'bar', parameters: { n: 8 } },
-    { method: 'sendMessage', key: 'baz', parameters: { n: 9 } },
+    { botId: botId1, method: 'sendMessage', key: 'foo', params: { n: 1 } },
+    { botId: botId1, method: 'sendPhoto', key: 'foo', params: { n: 2 } },
+    { botId: botId1, method: 'sendMessage', key: 'bar', params: { n: 3 } },
+    { botId: botId1, method: 'sendPhoto', key: 'bar', params: { n: 4 } },
+    { botId: botId2, method: 'sendMessage', key: 'baz', params: { n: 5 } },
+    { botId: botId2, method: 'sendPhoto', key: 'baz', params: { n: 6 } },
+    { botId: botId1, method: 'sendMessage', key: 'foo', params: { n: 7 } },
+    { botId: botId1, method: 'sendMessage', key: 'bar', params: { n: 8 } },
+    { botId: botId2, method: 'sendMessage', key: 'baz', params: { n: 9 } },
   ];
 
   const executePromise = queue.executeJobs(jobs);
@@ -185,7 +219,8 @@ it('open requests up to maxConnections', async () => {
   expect(bodySpy).toHaveBeenCalledTimes(9);
   expect(bodySpy.mock.calls[8].args[0]).toEqual({ n: 9 });
 
-  expect(msgScope.isDone()).toBe(true);
+  expect(bot1ApiCall.isDone()).toBe(true);
+  expect(bot2ApiCall.isDone()).toBe(true);
   const result = await executePromise;
 
   expect(result.success).toBe(true);
@@ -200,28 +235,43 @@ it('open requests up to maxConnections', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const client = new TelegramWorker(botToken, 10);
+  const client = new TelegramWorker(botSettingsAccessor, 10);
 
-  const scope1 = telegramApi
-    .post(`/bot${botToken}/sendMessage`)
+  const apiCall1 = telegramApi
+    .post(`/bot${botToken1}/sendMessage`)
     .reply(200, { ok: true, result: { n: 1 } });
-  const scope2 = telegramApi
-    .post(`/bot${botToken}/sendPhoto`)
+  const apiCall2 = telegramApi
+    .post(`/bot${botToken1}/sendPhoto`)
     .replyWithError('something wrong like connection error');
 
   client.start(queue);
 
   const jobs = [
-    { method: 'sendMessage', parameters: { text: 'hi' }, key: 'foo' },
-    { method: 'sendPhoto', parameters: { file_id: 123 }, key: 'foo' },
-    { method: 'sendMessage', parameters: { text: 'bye' }, key: 'foo' },
+    {
+      botId: botId1,
+      method: 'sendMessage',
+      params: { text: 'hi' },
+      key: 'foo',
+    },
+    {
+      botId: botId1,
+      method: 'sendPhoto',
+      params: { file_id: 123 },
+      key: 'foo',
+    },
+    {
+      botId: botId1,
+      method: 'sendMessage',
+      params: { text: 'bye' },
+      key: 'foo',
+    },
   ];
 
   const result = await queue.executeJobs(jobs);
   expect(result.success).toBe(false);
   expect(result.errors).toMatchInlineSnapshot(`
     Array [
-      [FetchError: request to https://api.telegram.org/bot__BOT_TOKEN__/sendPhoto failed, reason: something wrong like connection error],
+      [FetchError: request to https://api.telegram.org/bot1111111:_BOT_TOKEN_/sendPhoto failed, reason: something wrong like connection error],
     ]
   `);
   expect(result.batch).toEqual([
@@ -234,26 +284,41 @@ it('throw if connection error happen', async () => {
     undefined,
   ]);
 
-  expect(scope1.isDone()).toBe(true);
-  expect(scope2.isDone()).toBe(true);
+  expect(apiCall1.isDone()).toBe(true);
+  expect(apiCall2.isDone()).toBe(true);
 });
 
 it('throw if api error happen', async () => {
-  const client = new TelegramWorker(botToken, 10);
+  const client = new TelegramWorker(botSettingsAccessor, 10);
 
-  const scope1 = telegramApi
-    .post(`/bot${botToken}/sendMessage`)
+  const apiCall1 = telegramApi
+    .post(`/bot${botToken1}/sendMessage`)
     .reply(200, { ok: true, result: { n: 1 } });
-  const scope2 = telegramApi.post(`/bot${botToken}/sendPhoto`).reply(400, {
+  const apiCall2 = telegramApi.post(`/bot${botToken1}/sendPhoto`).reply(400, {
     ok: false,
     description: 'error from api',
     error_code: 400,
   });
 
   const jobs = [
-    { method: 'sendMessage', parameters: { text: 'hi' }, key: 'foo' },
-    { method: 'sendPhoto', parameters: { file_id: 123 }, key: 'foo' },
-    { method: 'sendMessage', parameters: { text: 'bye' }, key: 'foo' },
+    {
+      botId: botId1,
+      method: 'sendMessage',
+      params: { text: 'hi' },
+      key: 'foo',
+    },
+    {
+      botId: botId1,
+      method: 'sendPhoto',
+      params: { file_id: 123 },
+      key: 'foo',
+    },
+    {
+      botId: botId1,
+      method: 'sendMessage',
+      params: { text: 'bye' },
+      key: 'foo',
+    },
   ];
 
   client.start(queue);
@@ -275,27 +340,28 @@ it('throw if api error happen', async () => {
     undefined,
   ]);
 
-  expect(scope1.isDone()).toBe(true);
-  expect(scope2.isDone()).toBe(true);
+  expect(apiCall1.isDone()).toBe(true);
+  expect(apiCall2.isDone()).toBe(true);
 });
 
-test('with uploadingFiles', async () => {
-  const client = new TelegramWorker(botToken, 10);
+test('with uploadFiles', async () => {
+  const client = new TelegramWorker(botSettingsAccessor, 10);
   const bodySpy = moxy(() => true);
 
   const apiCallWithFile = nock(`https://api.telegram.org`, {
     reqheaders: { 'content-type': /^multipart\/form-data; boundary=-+[0-9]+$/ },
   })
-    .post(new RegExp(`^/bot${botToken}/send(Photo|MediaGroup)$`), bodySpy)
+    .post(new RegExp(`^/bot${botToken1}/send(Photo|MediaGroup)$`), bodySpy)
     .times(2)
     .reply(200, { ok: true, result: {} });
 
   const jobs = [
     {
+      botId: botId1,
       method: 'sendPhoto',
-      parameters: { chat_id: 12345, caption: 'hi photo' },
+      params: { chat_id: 12345, caption: 'hi photo' },
       key: 'foo',
-      uploadingFiles: [
+      uploadFiles: [
         {
           fieldName: 'photo',
           fileData: '__PHOTO_CONTENT__',
@@ -309,8 +375,9 @@ test('with uploadingFiles', async () => {
       ],
     },
     {
+      botId: botId1,
       method: 'sendMediaGroup',
-      parameters: {
+      params: {
         chat_id: 12345,
         media: [
           { type: 'video', media: 'attach://my_video' },
@@ -318,7 +385,7 @@ test('with uploadingFiles', async () => {
         ],
       },
       key: 'foo',
-      uploadingFiles: [
+      uploadFiles: [
         {
           fieldName: 'my_video',
           fileData: '__VIDEO_CONTENT__',

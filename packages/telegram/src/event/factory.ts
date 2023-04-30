@@ -49,7 +49,7 @@ import {
 import { TelegramRawEvent } from '../types';
 import { TelegramEvent } from './types';
 
-const makeEvent = <Proto extends {}>(
+const makeEventObject = <Proto extends {}>(
   botId: number,
   payload: TelegramRawEvent,
   proto: Proto
@@ -543,166 +543,167 @@ const UnknownProto = mixin(EventBase, Unknown, {
   type: 'unknown' as const,
 });
 
-const eventFactory =
-  (botId: number) =>
-  (payload: TelegramRawEvent): TelegramEvent => {
-    if (payload.message) {
-      const { message } = payload;
+const createEvent = (
+  botId: number,
+  payload: TelegramRawEvent
+): TelegramEvent => {
+  if (payload.message) {
+    const { message } = payload;
 
-      return message.text
-        ? makeEvent(botId, payload, TextMessageProto)
-        : message.animation
-        ? makeEvent(botId, payload, AnimationMessageProto)
-        : message.audio
-        ? makeEvent(botId, payload, AudioMessageProto)
-        : message.document
-        ? makeEvent(botId, payload, DocumentMessageProto)
-        : message.photo
-        ? makeEvent(botId, payload, PhotoMessageProto)
-        : message.sticker
-        ? makeEvent(botId, payload, StickerMessageProto)
-        : message.video
-        ? makeEvent(botId, payload, VideoMessageProto)
-        : message.video_note
-        ? makeEvent(botId, payload, VideoNoteMessageProto)
-        : message.voice
-        ? makeEvent(botId, payload, VoiceMessageProto)
-        : message.contact
-        ? makeEvent(botId, payload, ContactMessageProto)
-        : message.dice
-        ? makeEvent(botId, payload, DiceMessageProto)
-        : message.game
-        ? makeEvent(botId, payload, GameMessageProto)
-        : message.poll
-        ? makeEvent(botId, payload, PollMessageProto)
-        : message.venue
-        ? makeEvent(botId, payload, VenueMessageProto)
-        : message.location
-        ? makeEvent(botId, payload, LocationMessageProto)
-        : message.new_chat_members
-        ? makeEvent(botId, payload, NewChatMembersMessageProto)
-        : message.left_chat_member
-        ? makeEvent(botId, payload, LeftChatMemberMessageProto)
-        : message.new_chat_title
-        ? makeEvent(botId, payload, NewChatTitleActionProto)
-        : message.new_chat_photo
-        ? makeEvent(botId, payload, NewChatPhotoActionProto)
-        : message.delete_chat_photo
-        ? makeEvent(botId, payload, DeleteChatPhotoActionProto)
-        : message.group_chat_created
-        ? makeEvent(botId, payload, CreateGroupChatActionProto)
-        : message.migrate_to_chat_id
-        ? makeEvent(botId, payload, MigrateToChatActionProto)
-        : message.migrate_from_chat_id
-        ? makeEvent(botId, payload, MigrateFromChatActionProto)
-        : message.pinned_message
-        ? makeEvent(botId, payload, PinMessageActionProto)
-        : message.successful_payment
-        ? makeEvent(botId, payload, SuccessfulPaymentPostbackProto)
-        : makeEvent(botId, payload, UnknownProto);
-    }
+    return message.text
+      ? makeEventObject(botId, payload, TextMessageProto)
+      : message.animation
+      ? makeEventObject(botId, payload, AnimationMessageProto)
+      : message.audio
+      ? makeEventObject(botId, payload, AudioMessageProto)
+      : message.document
+      ? makeEventObject(botId, payload, DocumentMessageProto)
+      : message.photo
+      ? makeEventObject(botId, payload, PhotoMessageProto)
+      : message.sticker
+      ? makeEventObject(botId, payload, StickerMessageProto)
+      : message.video
+      ? makeEventObject(botId, payload, VideoMessageProto)
+      : message.video_note
+      ? makeEventObject(botId, payload, VideoNoteMessageProto)
+      : message.voice
+      ? makeEventObject(botId, payload, VoiceMessageProto)
+      : message.contact
+      ? makeEventObject(botId, payload, ContactMessageProto)
+      : message.dice
+      ? makeEventObject(botId, payload, DiceMessageProto)
+      : message.game
+      ? makeEventObject(botId, payload, GameMessageProto)
+      : message.poll
+      ? makeEventObject(botId, payload, PollMessageProto)
+      : message.venue
+      ? makeEventObject(botId, payload, VenueMessageProto)
+      : message.location
+      ? makeEventObject(botId, payload, LocationMessageProto)
+      : message.new_chat_members
+      ? makeEventObject(botId, payload, NewChatMembersMessageProto)
+      : message.left_chat_member
+      ? makeEventObject(botId, payload, LeftChatMemberMessageProto)
+      : message.new_chat_title
+      ? makeEventObject(botId, payload, NewChatTitleActionProto)
+      : message.new_chat_photo
+      ? makeEventObject(botId, payload, NewChatPhotoActionProto)
+      : message.delete_chat_photo
+      ? makeEventObject(botId, payload, DeleteChatPhotoActionProto)
+      : message.group_chat_created
+      ? makeEventObject(botId, payload, CreateGroupChatActionProto)
+      : message.migrate_to_chat_id
+      ? makeEventObject(botId, payload, MigrateToChatActionProto)
+      : message.migrate_from_chat_id
+      ? makeEventObject(botId, payload, MigrateFromChatActionProto)
+      : message.pinned_message
+      ? makeEventObject(botId, payload, PinMessageActionProto)
+      : message.successful_payment
+      ? makeEventObject(botId, payload, SuccessfulPaymentPostbackProto)
+      : makeEventObject(botId, payload, UnknownProto);
+  }
 
-    if (payload.edited_message) {
-      const { edited_message: message } = payload;
+  if (payload.edited_message) {
+    const { edited_message: message } = payload;
 
-      return message.text
-        ? makeEvent(botId, payload, TextEditedMessageProto)
-        : message.animation
-        ? makeEvent(botId, payload, AnimationEditedMessageProto)
-        : message.audio
-        ? makeEvent(botId, payload, AudioEditedMessageProto)
-        : message.document
-        ? makeEvent(botId, payload, DocumentEditedMessageProto)
-        : message.photo
-        ? makeEvent(botId, payload, PhotoEditedMessageProto)
-        : message.sticker
-        ? makeEvent(botId, payload, StickerEditedMessageProto)
-        : message.video
-        ? makeEvent(botId, payload, VideoEditedMessageProto)
-        : message.voice
-        ? makeEvent(botId, payload, VoiceEditedMessageProto)
-        : message.game
-        ? makeEvent(botId, payload, GameEditedMessageProto)
-        : makeEvent(botId, payload, UnknownProto);
-    }
+    return message.text
+      ? makeEventObject(botId, payload, TextEditedMessageProto)
+      : message.animation
+      ? makeEventObject(botId, payload, AnimationEditedMessageProto)
+      : message.audio
+      ? makeEventObject(botId, payload, AudioEditedMessageProto)
+      : message.document
+      ? makeEventObject(botId, payload, DocumentEditedMessageProto)
+      : message.photo
+      ? makeEventObject(botId, payload, PhotoEditedMessageProto)
+      : message.sticker
+      ? makeEventObject(botId, payload, StickerEditedMessageProto)
+      : message.video
+      ? makeEventObject(botId, payload, VideoEditedMessageProto)
+      : message.voice
+      ? makeEventObject(botId, payload, VoiceEditedMessageProto)
+      : message.game
+      ? makeEventObject(botId, payload, GameEditedMessageProto)
+      : makeEventObject(botId, payload, UnknownProto);
+  }
 
-    if (payload.channel_post) {
-      const { channel_post: message } = payload;
+  if (payload.channel_post) {
+    const { channel_post: message } = payload;
 
-      return message.text
-        ? makeEvent(botId, payload, TextChannelPostProto)
-        : message.animation
-        ? makeEvent(botId, payload, AnimationChannelPostProto)
-        : message.audio
-        ? makeEvent(botId, payload, AudioChannelPostProto)
-        : message.document
-        ? makeEvent(botId, payload, DocumentChannelPostProto)
-        : message.photo
-        ? makeEvent(botId, payload, PhotoChannelPostProto)
-        : message.sticker
-        ? makeEvent(botId, payload, StickerChannelPostProto)
-        : message.video
-        ? makeEvent(botId, payload, VideoChannelPostProto)
-        : message.video_note
-        ? makeEvent(botId, payload, VideoNoteChannelPostProto)
-        : message.voice
-        ? makeEvent(botId, payload, VoiceChannelPostProto)
-        : message.contact
-        ? makeEvent(botId, payload, ContactChannelPostProto)
-        : message.dice
-        ? makeEvent(botId, payload, DiceChannelPostProto)
-        : message.poll
-        ? makeEvent(botId, payload, PollChannelPostProto)
-        : message.venue
-        ? makeEvent(botId, payload, VenueChannelPostProto)
-        : message.location
-        ? makeEvent(botId, payload, LocationChannelPostProto)
-        : makeEvent(botId, payload, UnknownProto);
-    }
+    return message.text
+      ? makeEventObject(botId, payload, TextChannelPostProto)
+      : message.animation
+      ? makeEventObject(botId, payload, AnimationChannelPostProto)
+      : message.audio
+      ? makeEventObject(botId, payload, AudioChannelPostProto)
+      : message.document
+      ? makeEventObject(botId, payload, DocumentChannelPostProto)
+      : message.photo
+      ? makeEventObject(botId, payload, PhotoChannelPostProto)
+      : message.sticker
+      ? makeEventObject(botId, payload, StickerChannelPostProto)
+      : message.video
+      ? makeEventObject(botId, payload, VideoChannelPostProto)
+      : message.video_note
+      ? makeEventObject(botId, payload, VideoNoteChannelPostProto)
+      : message.voice
+      ? makeEventObject(botId, payload, VoiceChannelPostProto)
+      : message.contact
+      ? makeEventObject(botId, payload, ContactChannelPostProto)
+      : message.dice
+      ? makeEventObject(botId, payload, DiceChannelPostProto)
+      : message.poll
+      ? makeEventObject(botId, payload, PollChannelPostProto)
+      : message.venue
+      ? makeEventObject(botId, payload, VenueChannelPostProto)
+      : message.location
+      ? makeEventObject(botId, payload, LocationChannelPostProto)
+      : makeEventObject(botId, payload, UnknownProto);
+  }
 
-    if (payload.edited_channel_post) {
-      const { edited_channel_post: message } = payload;
+  if (payload.edited_channel_post) {
+    const { edited_channel_post: message } = payload;
 
-      return message.text
-        ? makeEvent(botId, payload, TextEditedChannelPostProto)
-        : message.animation
-        ? makeEvent(botId, payload, AnimationEditedChannelPostProto)
-        : message.audio
-        ? makeEvent(botId, payload, AudioEditedChannelPostProto)
-        : message.document
-        ? makeEvent(botId, payload, DocumentEditedChannelPostProto)
-        : message.photo
-        ? makeEvent(botId, payload, PhotoEditedChannelPostProto)
-        : message.sticker
-        ? makeEvent(botId, payload, StickerEditedChannelPostProto)
-        : message.video
-        ? makeEvent(botId, payload, VideoEditedChannelPostProto)
-        : message.voice
-        ? makeEvent(botId, payload, VoiceEditedChannelPostProto)
-        : makeEvent(botId, payload, UnknownProto);
-    }
+    return message.text
+      ? makeEventObject(botId, payload, TextEditedChannelPostProto)
+      : message.animation
+      ? makeEventObject(botId, payload, AnimationEditedChannelPostProto)
+      : message.audio
+      ? makeEventObject(botId, payload, AudioEditedChannelPostProto)
+      : message.document
+      ? makeEventObject(botId, payload, DocumentEditedChannelPostProto)
+      : message.photo
+      ? makeEventObject(botId, payload, PhotoEditedChannelPostProto)
+      : message.sticker
+      ? makeEventObject(botId, payload, StickerEditedChannelPostProto)
+      : message.video
+      ? makeEventObject(botId, payload, VideoEditedChannelPostProto)
+      : message.voice
+      ? makeEventObject(botId, payload, VoiceEditedChannelPostProto)
+      : makeEventObject(botId, payload, UnknownProto);
+  }
 
-    return payload.shipping_query
-      ? makeEvent(botId, payload, ShippingQueryPostbackProto)
-      : payload.pre_checkout_query
-      ? makeEvent(botId, payload, PreCheckoutQueryPostbackProto)
-      : payload.inline_query
-      ? makeEvent(botId, payload, InlineQueryPostbackProto)
-      : payload.chosen_inline_result
-      ? makeEvent(botId, payload, ChooseInlineResultPostbackProto)
-      : payload.callback_query
-      ? payload.callback_query.game_short_name
-        ? makeEvent(botId, payload, CallbackGamePostbackProto)
-        : makeEvent(botId, payload, CallbackQueryPostbackProto)
-      : payload.poll
-      ? makeEvent(botId, payload, PollChangePostbackProto)
-      : payload.poll_answer
-      ? makeEvent(botId, payload, PollAnswerChangePostbackProto)
-      : payload.my_chat_member
-      ? makeEvent(botId, payload, BotMemberUpdatedActionProto)
-      : payload.chat_member
-      ? makeEvent(botId, payload, ChatMemberUpdatedActionProto)
-      : makeEvent(botId, payload, UnknownProto);
-  };
+  return payload.shipping_query
+    ? makeEventObject(botId, payload, ShippingQueryPostbackProto)
+    : payload.pre_checkout_query
+    ? makeEventObject(botId, payload, PreCheckoutQueryPostbackProto)
+    : payload.inline_query
+    ? makeEventObject(botId, payload, InlineQueryPostbackProto)
+    : payload.chosen_inline_result
+    ? makeEventObject(botId, payload, ChooseInlineResultPostbackProto)
+    : payload.callback_query
+    ? payload.callback_query.game_short_name
+      ? makeEventObject(botId, payload, CallbackGamePostbackProto)
+      : makeEventObject(botId, payload, CallbackQueryPostbackProto)
+    : payload.poll
+    ? makeEventObject(botId, payload, PollChangePostbackProto)
+    : payload.poll_answer
+    ? makeEventObject(botId, payload, PollAnswerChangePostbackProto)
+    : payload.my_chat_member
+    ? makeEventObject(botId, payload, BotMemberUpdatedActionProto)
+    : payload.chat_member
+    ? makeEventObject(botId, payload, ChatMemberUpdatedActionProto)
+    : makeEventObject(botId, payload, UnknownProto);
+};
 
-export default eventFactory;
+export default createEvent;

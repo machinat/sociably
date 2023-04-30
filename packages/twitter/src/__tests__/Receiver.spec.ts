@@ -84,6 +84,7 @@ const messageEventBody = {
 const appSecret = '__APP_SECRET__';
 
 beforeEach(() => {
+  bot.mock.reset();
   popEventMock.reset();
   popEventWrapper.mock.reset();
 });
@@ -173,6 +174,7 @@ it('respond 200 and pop events', async () => {
   expect(context.event.platform).toBe('twitter');
   expect(context.event.category).toBe('message');
   expect(context.event.type).toBe('text');
+  expect(context.event.channel).toEqual(new TwitterUser('4337869213'));
   expect(context.event.thread).toEqual(
     new TwitterChat('4337869213', '3001969357')
   );
@@ -187,7 +189,7 @@ it('respond 200 and pop events', async () => {
   expect(context.event.usersMapping).toEqual(messageEventBody.users);
 });
 
-test('reply(message) sugar', async () => {
+describe('context.reply(message)', () => {
   const receiver = new TwitterReceiver({
     bot,
     popEventWrapper,
@@ -195,14 +197,15 @@ test('reply(message) sugar', async () => {
     shouldVerifyRequest: false,
   });
 
-  await receiver.handleRequest(
-    createReq({ method: 'POST', body: JSON.stringify(messageEventBody) }),
-    createRes()
-  );
+  test('render message on event.thread', async () => {
+    await receiver.handleRequest(
+      createReq({ method: 'POST', body: JSON.stringify(messageEventBody) }),
+      createRes()
+    );
 
-  expect(popEventMock).toHaveBeenCalledTimes(1);
-  let { reply, event } = popEventMock.calls[0].args[0];
-  await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
+    expect(popEventMock).toHaveBeenCalledTimes(1);
+    const { reply, event } = popEventMock.calls[0].args[0];
+    await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
           Object {
             "jobs": Array [],
             "results": Array [],
@@ -210,30 +213,36 @@ test('reply(message) sugar', async () => {
           }
         `);
 
-  expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+  });
 
-  await receiver.handleRequest(
-    createReq({
-      method: 'POST',
-      body: JSON.stringify({
-        user_event: {
-          revoke: {
-            date_time: '2018-05-24T09:48:12+00:00',
-            target: { app_id: '13090192' },
-            source: { user_id: '63046977' },
+  it('throw if context.thread is null', async () => {
+    await receiver.handleRequest(
+      createReq({
+        method: 'POST',
+        body: JSON.stringify({
+          user_event: {
+            revoke: {
+              date_time: '2018-05-24T09:48:12+00:00',
+              target: { app_id: '13090192' },
+              source: { user_id: '63046977' },
+            },
           },
-        },
+        }),
       }),
-    }),
-    createRes()
-  );
-  expect(popEventMock).toHaveBeenCalledTimes(2);
-  [{ reply, event }] = popEventMock.calls[1].args;
+      createRes()
+    );
+    expect(popEventMock).toHaveBeenCalledTimes(1);
+    const [{ reply }] = popEventMock.calls[0].args;
 
-  await reply('hello world');
-  expect(bot.render).toHaveBeenCalledTimes(2);
-  expect(bot.render).toHaveBeenNthCalledWith(2, null, 'hello world');
+    await expect(
+      reply('hello world')
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Cannot reply to subscription_revoke event with no chat thread info"`
+    );
+    expect(bot.render).not.toHaveBeenCalled();
+  });
 });
 
 it('verify request with appSecret', async () => {

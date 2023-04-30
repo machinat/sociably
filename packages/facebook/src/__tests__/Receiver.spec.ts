@@ -54,9 +54,11 @@ describe('handling POST', () => {
   it('respond 404 if "object" field is not "page"', async () => {
     const receiver = new FacebookReceiver({
       bot,
-      popEventWrapper,
-      shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      appSecret: '...',
+      shouldHandleChallenge: false,
+      verifyToken: '...',
+      popEventWrapper,
     });
 
     const req = createReq({
@@ -77,8 +79,10 @@ describe('handling POST', () => {
     const receiver = new FacebookReceiver({
       bot,
       popEventWrapper,
-      shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      appSecret: '...',
+      shouldHandleChallenge: false,
+      verifyToken: '...',
     });
 
     const body = {
@@ -158,7 +162,9 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
+      verifyToken: '...',
       shouldVerifyRequest: false,
+      appSecret: '...',
     });
 
     const body = {
@@ -228,7 +234,9 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
+      appSecret: '...',
       shouldVerifyRequest: false,
+      verifyToken: '...',
     });
 
     await receiver.handleRequest(

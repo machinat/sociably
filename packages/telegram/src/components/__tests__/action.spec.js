@@ -63,7 +63,7 @@ test('ForwardMessage match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "forwardMessage",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "from_chat_id": 12345,
                   "message_id": 6789,
@@ -88,7 +88,7 @@ test('ForwardMessage match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "forwardMessage",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "from_chat_id": 54321,
                   "message_id": 9876,
@@ -111,7 +111,7 @@ test('ChatAction match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendChatAction",
-                "parameters": Object {
+                "params": Object {
                   "action": "typing",
                 },
               },
@@ -129,7 +129,7 @@ test('ChatAction match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendChatAction",
-                "parameters": Object {
+                "params": Object {
                   "action": "upload_photo",
                 },
               },
@@ -150,7 +150,7 @@ test('KickChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "kickChatMember",
-                "parameters": Object {
+                "params": Object {
                   "until_date": undefined,
                   "user_id": 123456,
                 },
@@ -171,7 +171,7 @@ test('KickChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "kickChatMember",
-                "parameters": Object {
+                "params": Object {
                   "until_date": 160077304,
                   "user_id": 123456,
                 },
@@ -194,7 +194,7 @@ test('KickChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "kickChatMember",
-                "parameters": Object {
+                "params": Object {
                   "until_date": 160077304,
                   "user_id": 123456,
                 },
@@ -216,7 +216,7 @@ test('UnbanChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "unbanChatMember",
-                "parameters": Object {
+                "params": Object {
                   "user_id": 123456,
                 },
               },
@@ -239,7 +239,7 @@ test('RestrictChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "restrictChatMember",
-                "parameters": Object {
+                "params": Object {
                   "permisions": Object {
                     "can_add_web_page_previews": undefined,
                     "can_change_info": undefined,
@@ -283,7 +283,7 @@ test('RestrictChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "restrictChatMember",
-                "parameters": Object {
+                "params": Object {
                   "permisions": Object {
                     "can_add_web_page_previews": undefined,
                     "can_change_info": undefined,
@@ -327,7 +327,7 @@ test('RestrictChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "restrictChatMember",
-                "parameters": Object {
+                "params": Object {
                   "permisions": Object {
                     "can_add_web_page_previews": false,
                     "can_change_info": false,
@@ -361,7 +361,7 @@ test('PromoteChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "promoteChatMember",
-                "parameters": Object {
+                "params": Object {
                   "can_change_info": undefined,
                   "can_delete_messages": undefined,
                   "can_edit_messages": undefined,
@@ -408,7 +408,7 @@ test('PromoteChatMember match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "promoteChatMember",
-                "parameters": Object {
+                "params": Object {
                   "can_change_info": true,
                   "can_delete_messages": false,
                   "can_edit_messages": true,
@@ -441,7 +441,7 @@ test('SetChatAdministratorCustomTitle match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "setChatAdministratorCustomTitle",
-                "parameters": Object {
+                "params": Object {
                   "custom_title": "Big Boss",
                   "user_id": 123456,
                 },
@@ -463,7 +463,7 @@ test('SetChatPermissions match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "setChatPermissions",
-                "parameters": Object {
+                "params": Object {
                   "permisions": Object {
                     "can_add_web_page_previews": undefined,
                     "can_change_info": undefined,
@@ -509,7 +509,7 @@ test('SetChatPermissions match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "setChatPermissions",
-                "parameters": Object {
+                "params": Object {
                   "permisions": Object {
                     "can_add_web_page_previews": false,
                     "can_change_info": false,
@@ -539,7 +539,7 @@ test('SetChatPhoto match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "setChatPhoto",
-                "parameters": Object {
+                "params": Object {
                   "photo": undefined,
                 },
                 "uploadingFiles": Array [
@@ -584,7 +584,7 @@ test('SetChatPhoto match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "setChatPhoto",
-                "parameters": Object {
+                "params": Object {
                   "photo": undefined,
                 },
                 "uploadingFiles": Array [
@@ -616,7 +616,7 @@ test('DeleteChatPhoto match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "deleteChatPhoto",
-                "parameters": Object {},
+                "params": Object {},
               },
             },
           ]
@@ -635,7 +635,7 @@ test('SetChatTitle match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "setChatTitle",
-                "parameters": Object {
+                "params": Object {
                   "title": "Foo",
                 },
               },
@@ -656,7 +656,7 @@ test('SetChatDescription match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "setChatDescription",
-                "parameters": Object {
+                "params": Object {
                   "description": "Bar",
                 },
               },
@@ -677,7 +677,7 @@ test('PinChatMessage match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "pinChatMessage",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "message_id": 123456,
                 },
@@ -698,7 +698,7 @@ test('PinChatMessage match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "pinChatMessage",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "message_id": 123456,
                 },
@@ -718,7 +718,7 @@ test('UnpinChatMessage match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "unpinChatMessage",
-                "parameters": Object {},
+                "params": Object {},
               },
             },
           ]
@@ -734,7 +734,7 @@ test('LeaveChat match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "leaveChat",
-                "parameters": Object {},
+                "params": Object {},
               },
             },
           ]
@@ -753,7 +753,7 @@ test('SetChatStickerSet match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "setChatStickerSet",
-                "parameters": Object {
+                "params": Object {
                   "sticker_set_name": "Stitch",
                 },
               },
@@ -772,7 +772,7 @@ test('DeleteChatStickerSet match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "deleteChatStickerSet",
-                "parameters": Object {},
+                "params": Object {},
               },
             },
           ]

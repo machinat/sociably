@@ -9,6 +9,7 @@ import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
 import { FacebookBot } from '../Bot';
 import { Image, Expression, TextReply } from '../components';
 import FacebookChat from '../Chat';
+import FacebookPage from '../Page';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
@@ -45,6 +46,14 @@ const pageId = '1234567890';
 const accessToken = '_ACCESS_TOKEN_';
 const appSecret = '_APP_SECRET_';
 
+const pageSettingsAccessor = {
+  getChannelSettings: async () => ({ pageId, accessToken }),
+  getChannelSettingsBatch: async () => [{ pageId, accessToken }],
+  listAllChannelSettings: async () => [{ pageId, accessToken }],
+};
+
+const page = new FacebookPage(pageId);
+
 const message = (
   <Expression quickReplies={<TextReply title="Hi!" payload="👋" />}>
     Hello <b>World!</b>
@@ -68,28 +77,11 @@ afterEach(() => {
 });
 
 describe('.constructor(options)', () => {
-  it('throw if accessToken not given', () => {
-    expect(
-      () => new FacebookBot({ pageId, appSecret } as never)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.accessToken should not be empty"`
-    );
-  });
-
-  it('throw if pageId not given', () => {
-    expect(
-      () => new FacebookBot({ accessToken, appSecret } as never)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.pageId should not be empty"`
-    );
-  });
-
   it('assemble core modules', () => {
     const bot = new FacebookBot({
+      pageSettingsAccessor,
       initScope,
       dispatchWrapper,
-      pageId,
-      accessToken,
     });
 
     expect(bot.engine).toBeInstanceOf(Engine);
@@ -109,20 +101,19 @@ describe('.constructor(options)', () => {
 
     expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker).toHaveBeenCalledWith(
-      '_ACCESS_TOKEN_',
-      500,
+      pageSettingsAccessor,
+      undefined,
       'v11.0',
-      undefined
+      500
     );
   });
 
   it('pass options to worker', () => {
     expect(
       new FacebookBot({
+        pageSettingsAccessor,
         initScope,
         dispatchWrapper,
-        pageId,
-        accessToken,
         appSecret,
         graphApiVersion: 'v8.0',
         apiBatchRequestInterval: 0,
@@ -131,20 +122,19 @@ describe('.constructor(options)', () => {
 
     expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker).toHaveBeenCalledWith(
-      '_ACCESS_TOKEN_',
-      0,
+      pageSettingsAccessor,
+      '_APP_SECRET_',
       'v8.0',
-      '_APP_SECRET_'
+      0
     );
   });
 });
 
 test('.start() and .stop() start/stop engine', () => {
   const bot = new FacebookBot({
+    pageSettingsAccessor,
     initScope,
     dispatchWrapper,
-    pageId,
-    accessToken,
     appSecret,
   });
 
@@ -158,7 +148,7 @@ test('.start() and .stop() start/stop engine', () => {
 });
 
 describe('.message(thread, message, options)', () => {
-  const bot = new FacebookBot({ pageId, accessToken, appSecret });
+  const bot = new FacebookBot({ pageSettingsAccessor, appSecret });
 
   let apiStatus;
   beforeEach(() => {
@@ -201,7 +191,9 @@ describe('.message(thread, message, options)', () => {
 
     for (const request of JSON.parse(body.batch)) {
       expect(request.method).toBe('POST');
-      expect(request.relative_url).toBe('me/messages');
+      expect(request.relative_url).toBe(
+        'me/messages?access_token=_ACCESS_TOKEN_'
+      );
     }
 
     expect(body).toMatchSnapshot();
@@ -269,7 +261,7 @@ describe('.message(thread, message, options)', () => {
 });
 
 describe('.uploadChatAttachment(message)', () => {
-  const bot = new FacebookBot({ pageId, accessToken, appSecret });
+  const bot = new FacebookBot({ pageSettingsAccessor, appSecret });
 
   beforeEach(() => {
     bot.start();
@@ -282,7 +274,7 @@ describe('.uploadChatAttachment(message)', () => {
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
-      await expect(bot.uploadChatAttachment(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+      await expect(bot.uploadChatAttachment(page, empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
     }
   });
 
@@ -293,6 +285,7 @@ describe('.uploadChatAttachment(message)', () => {
 
     await expect(
       bot.uploadChatAttachment(
+        page,
         <Image url="https://sociably.io/trollface.png" />
       )
     ).resolves.toEqual({ attachmentId: 401759795 });
@@ -303,7 +296,9 @@ describe('.uploadChatAttachment(message)', () => {
     expect(body).toMatchSnapshot();
     const reqest = JSON.parse(body.batch)[0];
     expect(reqest.method).toBe('POST');
-    expect(reqest.relative_url).toBe('me/message_attachments');
+    expect(reqest.relative_url).toBe(
+      'me/message_attachments?access_token=_ACCESS_TOKEN_'
+    );
     expect(querystring.decode(reqest.body)).toMatchInlineSnapshot(`
       Object {
         "message": "{\\"attachment\\":{\\"type\\":\\"image\\",\\"payload\\":{\\"url\\":\\"https://sociably.io/trollface.png\\"}}}",
@@ -316,13 +311,18 @@ describe('.uploadChatAttachment(message)', () => {
 
 describe('.makeApiCall()', () => {
   it('call facebook graph api', async () => {
-    const bot = new FacebookBot({ accessToken, pageId });
+    const bot = new FacebookBot({ pageSettingsAccessor });
     bot.start();
 
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
 
     await expect(
-      bot.makeApiCall('POST', 'foo', { bar: 'baz' })
+      bot.makeApiCall({
+        page,
+        method: 'POST',
+        path: 'foo',
+        params: { bar: 'baz' },
+      })
     ).resolves.toEqual({
       foo: 'bar',
     });
@@ -331,7 +331,7 @@ describe('.makeApiCall()', () => {
   });
 
   it('throw MetaApiError if api call fail', async () => {
-    const bot = new FacebookBot({ accessToken, pageId });
+    const bot = new FacebookBot({ pageSettingsAccessor });
     bot.start();
 
     const apiCall = graphApi.reply(200, [
@@ -350,7 +350,12 @@ describe('.makeApiCall()', () => {
     ]);
 
     try {
-      await bot.makeApiCall('POST', 'foo', { bar: 'baz' });
+      await bot.makeApiCall({
+        page,
+        method: 'POST',
+        path: 'foo',
+        params: { bar: 'baz' },
+      });
       expect('should not be here').toBeFalsy();
     } catch (err) {
       expect(err).toBeInstanceOf(MetaApiError);

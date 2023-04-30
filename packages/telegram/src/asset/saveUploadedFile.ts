@@ -1,5 +1,6 @@
 import { makeContainer } from '@sociably/core/service';
 import { DispatchError } from '@sociably/core/engine';
+import TelegramUser from '../User';
 import type {
   TelegramDispatchMiddleware,
   TelegramJob,
@@ -25,11 +26,11 @@ const updateAssetsFromSuccessfulJobs = async (
   for (let i = 0; i < jobs.length; i += 1) {
     const resultBody = results[i];
     if (resultBody) {
-      const { method, parameters, uploadingFiles } = jobs[i];
+      const { botId, method, params, uploadFiles } = jobs[i];
       const { result } = resultBody;
 
-      if (uploadingFiles) {
-        for (const { fieldName, assetTag } of uploadingFiles) {
+      if (uploadFiles) {
+        for (const { fieldName, assetTag } of uploadFiles) {
           if (assetTag) {
             let fileId: string | undefined;
 
@@ -38,7 +39,7 @@ const updateAssetsFromSuccessfulJobs = async (
             } else if (SINGLE_MEDIA_MESSAGE_METHODS_PATTERN.test(method)) {
               fileId = result[fieldName].file_id;
             } else if (method === 'editMessageMedia') {
-              const mediaType = parameters.media.type;
+              const mediaType = params.media.type;
               fileId =
                 mediaType === 'photo'
                   ? getLargestFileIdOfPhotoMessage(result)
@@ -46,12 +47,12 @@ const updateAssetsFromSuccessfulJobs = async (
             } else if (method === 'sendMediaGroup') {
               const fileRef = `attach://${fieldName}`;
 
-              const inputIdx = parameters.media.findIndex(
+              const inputIdx = params.media.findIndex(
                 (input) => input.media === fileRef
               );
 
               if (inputIdx !== -1) {
-                const input = parameters.media[inputIdx];
+                const input = params.media[inputIdx];
                 fileId =
                   input.type === 'photo'
                     ? getLargestFileIdOfPhotoMessage(result[inputIdx])
@@ -62,7 +63,8 @@ const updateAssetsFromSuccessfulJobs = async (
             }
 
             if (fileId) {
-              updatingAssets.push(manager.saveFile(assetTag, fileId));
+              const bot = new TelegramUser(botId, true);
+              updatingAssets.push(manager.saveFile(bot, assetTag, fileId));
             }
           }
         }

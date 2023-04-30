@@ -6,16 +6,16 @@ import {
   PartSegment,
 } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import { makeTelegramComponent } from '../utils';
+import makeTelegramComponent from '../utils/makeTelegramComponent';
 import {
   TelegramSegmentValue,
   TelegramComponent,
   TelegramParseMode,
 } from '../types';
 
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-  k: infer I
-) => void
+type UnionToIntersection<U> = (
+  U extends unknown ? (k: U) => void : never
+) extends (k: infer I) => void
   ? I
   : never;
 
@@ -51,7 +51,7 @@ export const AnswerCallbackQuery: TelegramComponent<
     makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerCallbackQuery',
       toNonChatTarget: true,
-      parameters: {
+      params: {
         callback_query_id: queryId,
         text,
         url,
@@ -83,38 +83,38 @@ const renderInputMessageContent = async (node, render) => {
     };
   }
 
-  const { method, parameters } = segments[0].value;
+  const { method, params } = segments[0].value;
 
   if (method === 'sendMessage') {
     return {
-      message_text: parameters.text,
-      parse_mode: parameters.parse_mode,
-      disable_web_page_preview: parameters.disable_web_page_preview,
+      message_text: params.text,
+      parse_mode: params.parse_mode,
+      disable_web_page_preview: params.disable_web_page_preview,
     };
   }
   if (method === 'sendLocation') {
     return {
-      latitude: parameters.latitude,
-      longitude: parameters.longitude,
-      live_period: parameters.live_period,
+      latitude: params.latitude,
+      longitude: params.longitude,
+      live_period: params.live_period,
     };
   }
   if (method === 'sendVenue') {
     return {
-      latitude: parameters.latitude,
-      longitude: parameters.longitude,
-      title: parameters.title,
-      address: parameters.address,
-      foursquare_id: parameters.foursquare_id,
-      foursquare_type: parameters.foursquare_type,
+      latitude: params.latitude,
+      longitude: params.longitude,
+      title: params.title,
+      address: params.address,
+      foursquare_id: params.foursquare_id,
+      foursquare_type: params.foursquare_type,
     };
   }
   if (method === 'sendContact') {
     return {
-      phone_number: parameters.phone_number,
-      first_name: parameters.first_name,
-      last_name: parameters.last_name,
-      vcard: parameters.vcard,
+      phone_number: params.phone_number,
+      first_name: params.first_name,
+      last_name: params.last_name,
+      vcard: params.vcard,
     };
   }
 
@@ -153,7 +153,7 @@ type InlineQueryResultArticleProps = InlineQueryResultProps & {
  */
 export const InlineQueryResultArticle: TelegramComponent<
   InlineQueryResultArticleProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultArticle(
   node,
   path,
@@ -236,7 +236,7 @@ type InlineQueryResultPhotoProps = InlineQueryResultProps &
  */
 export const InlineQueryResultPhoto: TelegramComponent<
   InlineQueryResultPhotoProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultPhoto(
   node,
   path,
@@ -325,7 +325,7 @@ type InlineQueryResultGifProps = InlineQueryResultProps &
  */
 export const InlineQueryResultGif: TelegramComponent<
   InlineQueryResultGifProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultGif(
   node,
   path,
@@ -416,7 +416,7 @@ type InlineQueryResultMpeg4GifProps = InlineQueryResultProps &
  */
 export const InlineQueryResultMpeg4Gif: TelegramComponent<
   InlineQueryResultMpeg4GifProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultMpeg4Gif(
   node,
   path,
@@ -508,7 +508,7 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
  */
 export const InlineQueryResultVideo: TelegramComponent<
   InlineQueryResultVideoProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultVideo(
   node,
   path,
@@ -594,7 +594,7 @@ type InlineQueryResultAudioProps = InlineQueryResultProps &
  */
 export const InlineQueryResultAudio: TelegramComponent<
   InlineQueryResultAudioProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultAudio(
   node,
   path,
@@ -670,7 +670,7 @@ type InlineQueryResultVoiceProps = InlineQueryResultProps &
  */
 export const InlineQueryResultVoice: TelegramComponent<
   InlineQueryResultVoiceProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultVoice(
   node,
   path,
@@ -752,7 +752,7 @@ type InlineQueryResultDocumentProps = InlineQueryResultProps &
  */
 export const InlineQueryResultDocument: TelegramComponent<
   InlineQueryResultDocumentProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultDocument(
   node,
   path,
@@ -817,7 +817,7 @@ type InlineQueryResultStickerProps = InlineQueryResultProps & {
  */
 export const InlineQueryResultSticker: TelegramComponent<
   InlineQueryResultStickerProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultSticker(
   node,
   path,
@@ -871,7 +871,7 @@ type InlineQueryResultLocationProps = InlineQueryResultProps & {
  */
 export const InlineQueryResultLocation: TelegramComponent<
   InlineQueryResultLocationProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultLocation(
   node,
   path,
@@ -946,7 +946,7 @@ type InlineQueryResultVenueProps = InlineQueryResultProps & {
  */
 export const InlineQueryResultVenue: TelegramComponent<
   InlineQueryResultVenueProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultVenue(
   node,
   path,
@@ -1021,7 +1021,7 @@ type InlineQueryResultContactProps = InlineQueryResultProps & {
  */
 export const InlineQueryResultContact: TelegramComponent<
   InlineQueryResultContactProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultContact(
   node,
   path,
@@ -1081,7 +1081,7 @@ export interface InlineQueryResultGameProps {
  */
 export const InlineQueryResultGame: TelegramComponent<
   InlineQueryResultGameProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeTelegramComponent(async function InlineQueryResultGame(
   node,
   path,
@@ -1130,9 +1130,9 @@ export interface AnswerInlineQueryProps {
   /** Pass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes. */
   nextOffset?: string;
   /** If passed, clients will display a button with specified text that switches the user to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter */
-  switchPMText?: string;
+  switchPmText?: string;
   /** Deep-linking parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed. */
-  switchPMParameter?: string;
+  switchPmParameter?: string;
 }
 
 /**
@@ -1151,8 +1151,8 @@ export const AnswerInlineQuery: TelegramComponent<
     cacheTime,
     isPersonal,
     nextOffset,
-    switchPMText,
-    switchPMParameter,
+    switchPmText,
+    switchPmParameter,
   } = node.props;
 
   const resultSegments = await render(children, '.children');
@@ -1161,14 +1161,14 @@ export const AnswerInlineQuery: TelegramComponent<
     makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerInlineQuery',
       toNonChatTarget: true,
-      parameters: {
+      params: {
         inline_query_id: queryId,
         results: resultSegments?.map(({ value }) => value) || [],
         cache_time: cacheTime,
         is_personal: isPersonal,
         next_offset: nextOffset,
-        switch_pm_text: switchPMText,
-        switch_pm_parameter: switchPMParameter,
+        switch_pm_text: switchPmText,
+        switch_pm_parameter: switchPmParameter,
       },
     }),
   ];
@@ -1222,7 +1222,7 @@ export const AnswerShippingQuery: TelegramComponent<
     makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerShippingQuery',
       toNonChatTarget: true,
-      parameters: {
+      params: {
         shipping_query_id: queryId,
         ok,
         shipping_options: shippingOptions,
@@ -1260,7 +1260,7 @@ export const AnswerPreCheckoutQuery: TelegramComponent<
     makeUnitSegment<TelegramSegmentValue>(node, path, {
       method: 'answerPreCheckoutQuery',
       toNonChatTarget: true,
-      parameters: {
+      params: {
         pre_checkout_query_id: queryId,
         ok,
         error_message: errorMessage,

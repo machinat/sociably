@@ -1,5 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
+import LineChannel from '../Channel';
 import LineChat from '../Chat';
 import { createChatJobs, createMulticastJobs } from '../job';
 
@@ -65,6 +66,7 @@ describe('createChatJobs()', () => {
     expect(jobs).toMatchInlineSnapshot(`
       Array [
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -90,11 +92,13 @@ describe('createChatJobs()', () => {
             ],
             "to": "john",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -108,19 +112,23 @@ describe('createChatJobs()', () => {
             ],
             "to": "john",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "do": "something",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "some/channel/api",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -130,15 +138,18 @@ describe('createChatJobs()', () => {
             ],
             "to": "john",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "do": "something",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "some/channel/api",
         },
@@ -156,6 +167,7 @@ describe('createChatJobs()', () => {
     expect(jobs).toMatchInlineSnapshot(`
       Array [
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -181,11 +193,13 @@ describe('createChatJobs()', () => {
             ],
             "replyToken": "__REPLY_TOKEN__",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/reply",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -199,19 +213,23 @@ describe('createChatJobs()', () => {
             ],
             "to": "john",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "do": "something",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "some/channel/api",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -221,15 +239,18 @@ describe('createChatJobs()', () => {
             ],
             "to": "john",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "v2/bot/message/push",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "do": "something",
           },
-          "executionKey": "line._CHANNEL_ID_.john",
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john",
           "method": "POST",
           "path": "some/channel/api",
         },
@@ -261,12 +282,18 @@ describe('createChatJobs()', () => {
 });
 
 describe('createMulticastJobs()', () => {
+  const channel = new LineChannel('__CHANNEL_ID__');
+
   it('create job of multicast api', () => {
-    const jobs = createMulticastJobs(['foo', 'bar', 'baz'])(null, segments);
+    const jobs = createMulticastJobs(channel, ['foo', 'bar', 'baz'])(
+      null,
+      segments
+    );
 
     expect(jobs).toMatchInlineSnapshot(`
       Array [
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -296,11 +323,13 @@ describe('createMulticastJobs()', () => {
               "baz",
             ],
           },
-          "executionKey": "line.multicast",
+          "chatChannelId": "__CHANNEL_ID__",
+          "key": "line.multicast",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -318,19 +347,23 @@ describe('createMulticastJobs()', () => {
               "baz",
             ],
           },
-          "executionKey": "line.multicast",
+          "chatChannelId": "__CHANNEL_ID__",
+          "key": "line.multicast",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "bulk": "do something",
           },
-          "executionKey": "line.multicast",
+          "chatChannelId": "__CHANNEL_ID__",
+          "key": "line.multicast",
           "method": "POST",
           "path": "some/bulk/api",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "messages": Array [
               Object {
@@ -344,15 +377,18 @@ describe('createMulticastJobs()', () => {
               "baz",
             ],
           },
-          "executionKey": "line.multicast",
+          "chatChannelId": "__CHANNEL_ID__",
+          "key": "line.multicast",
           "method": "POST",
           "path": "v2/bot/message/multicast",
         },
         Object {
+          "accessToken": undefined,
           "body": Object {
             "bulk": "do something",
           },
-          "executionKey": "line.multicast",
+          "chatChannelId": "__CHANNEL_ID__",
+          "key": "line.multicast",
           "method": "POST",
           "path": "some/bulk/api",
         },
@@ -371,7 +407,7 @@ describe('createMulticastJobs()', () => {
     chatActionValue.mock.getter('getBulkRequest').fakeReturnValue(null);
 
     expect(() =>
-      createMulticastJobs(['foo', 'bar', 'baz'])(null, [
+      createMulticastJobs(channel, ['foo', 'bar', 'baz'])(null, [
         segment('text', '0', '0'),
         segment('unit', <p />, {
           type: 'message',

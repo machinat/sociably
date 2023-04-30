@@ -1,69 +1,78 @@
 import url from 'url';
 import fetch from 'node-fetch';
-import type { SociablyWorker } from '@sociably/core/engine';
-import type Queue from '@sociably/core/queue';
-import type { LineJob, LineResult } from './types';
+import { SociablyWorker } from '@sociably/core/engine';
+import Queue, { JobResponse } from '@sociably/core/queue';
+import { ChannelSettingsAccessorI } from './interface';
+import { LineJob, LineResult } from './types';
+import LineChannel from './Channel';
 import LineApiError from './error';
 
 const API_HOST = 'https://api.line.me';
 
 type LineJobQueue = Queue<LineJob, LineResult>;
 
+const request = async (
+  method: string,
+  path: string,
+  body: unknown | null,
+  accessToken?: string
+): Promise<LineResult> => {
+  const requestUrl = new url.URL(path, API_HOST);
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(requestUrl.href, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  let resBody;
+  // catch parsing error, body can be empty string in some api
+  try {
+    resBody = await response.json();
+  } catch (e) {
+    // catch some line api respond empty string
+    if (e.message.indexOf('Unexpected end of JSON input') === -1) {
+      throw e;
+    }
+    resBody = {};
+  }
+
+  const result = {
+    code: response.status,
+    headers: Object.fromEntries(response.headers),
+    body: resBody,
+  };
+
+  if (!response.ok) {
+    throw new LineApiError(result);
+  }
+
+  return result;
+};
+
 class LineWorker implements SociablyWorker<LineJob, LineResult> {
-  accessToken: string;
   connectionCount: number;
   maxConnections: number;
 
+  private _settingsAccessor: ChannelSettingsAccessorI;
   private _started: boolean;
   private _lockedKeys: Set<string>;
 
-  constructor(accessToken: string, maxConnections: number) {
-    this.accessToken = accessToken;
+  constructor(
+    settingsAccessor: ChannelSettingsAccessorI,
+    maxConnections: number
+  ) {
     this.connectionCount = 0;
     this.maxConnections = maxConnections;
+    this._settingsAccessor = settingsAccessor;
     this._lockedKeys = new Set();
     this._started = false;
-  }
-
-  async _request(
-    method: string,
-    path: string,
-    body: unknown | null
-  ): Promise<LineResult> {
-    const requestUrl = new url.URL(path, API_HOST);
-
-    const response = await fetch(requestUrl.href, {
-      method,
-      body: body ? JSON.stringify(body) : undefined,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.accessToken}`,
-      },
-    });
-
-    let resBody;
-    // catch parsing error, body can be empty string in some api
-    try {
-      resBody = await response.json();
-    } catch (e) {
-      // catch some line api respond empty string
-      if (e.message.indexOf('Unexpected end of JSON input') === -1) {
-        throw e;
-      }
-      resBody = {};
-    }
-
-    const result = {
-      code: response.status,
-      headers: Object.fromEntries(response.headers),
-      body: resBody,
-    };
-
-    if (!response.ok) {
-      throw new LineApiError(result);
-    }
-
-    return result;
   }
 
   get started(): boolean {
@@ -102,7 +111,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
         break;
       }
 
-      const { executionKey } = queue.peekAt(i) as LineJob;
+      const { key: executionKey } = queue.peekAt(i) as LineJob;
       if (executionKey !== undefined && lockedIds.has(executionKey)) {
         i += 1;
       } else {
@@ -139,12 +148,27 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
     }
   }
 
-  private _executeJobCallback = this._executeJob.bind(this);
+  private _executeJobCallback: typeof this._executeJob =
+    this._executeJob.bind(this);
 
-  private async _executeJob([job]: LineJob[]) {
-    const { method, path, body } = job;
-    const result = await this._request(method, path, body);
+  private async _executeJob([job]: LineJob[]): Promise<
+    JobResponse<LineJob, LineResult>[]
+  > {
+    const { method, path, body, chatChannelId, accessToken } = job;
+    let accessTokenToUse = accessToken;
 
+    if (!accessTokenToUse && chatChannelId) {
+      const settings = await this._settingsAccessor.getChannelSettings(
+        new LineChannel(chatChannelId)
+      );
+      if (!settings) {
+        throw new Error(`Channel "${chatChannelId}" settings not found`);
+      }
+
+      accessTokenToUse = settings.accessToken;
+    }
+
+    const result = await request(method, path, body, accessTokenToUse);
     return [{ success: true, result, job, error: undefined }];
   }
 }

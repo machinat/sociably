@@ -24,14 +24,14 @@ export const MarkRead: TwitterComponent<
       request: {
         method: 'POST',
         href: '1.1/direct_messages/mark_read.json',
-        parameters: {
+        params: {
           recipient_id: '',
           last_read_event_id: node.props.messageId,
         },
       },
       accomplishRequest: (chat: TwitterChat, request) => {
         // eslint-disable-next-line no-param-reassign
-        request.parameters.recipient_id = chat.id;
+        request.params.recipient_id = chat.userId;
         return request;
       },
       mediaSources: null,

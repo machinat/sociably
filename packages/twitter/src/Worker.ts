@@ -6,7 +6,9 @@ import _BigIntJSON from 'json-bigint';
 import { nanoid } from 'nanoid';
 import type { SociablyWorker } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
+import TwitterUser from './User';
 import TwitterApiError from './Error';
+import { AgentSettingsAccessorI } from './interface';
 import type {
   TwitterThread,
   TwitterJob,
@@ -21,17 +23,7 @@ type TwitterWorkerOptions = {
   appKey: string;
   appSecret: string;
   bearerToken: string;
-  accessToken: string;
-  accessSecret: string;
   maxConnections: number;
-};
-
-type OauthOptions = {
-  asApplication?: boolean;
-  asUser?: {
-    token: string;
-    secret: string;
-  };
 };
 
 const BigIntJSON = _BigIntJSON({ useNativeBigInt: true });
@@ -60,11 +52,16 @@ export default class TwitterWorker
   options: TwitterWorkerOptions;
   connectionCount: number;
 
+  private _settingsAccessor: AgentSettingsAccessorI;
   private _started: boolean;
   private _lockedKeys: Set<string>;
   private _targetCache: Map<string, TwitterThread>;
 
-  constructor(options: TwitterWorkerOptions) {
+  constructor(
+    settingsAccessor: AgentSettingsAccessorI,
+    options: TwitterWorkerOptions
+  ) {
+    this._settingsAccessor = settingsAccessor;
     this.options = options;
     this.connectionCount = 0;
 
@@ -74,30 +71,39 @@ export default class TwitterWorker
   }
 
   async requestApi(
+    agent: null | TwitterUser,
     method: string,
     href: string,
-    parameters?: Record<string, any>,
-    oauth?: OauthOptions
+    params: Record<string, unknown>,
+    asApplication?: boolean,
+    withUserOauth?: { token: string; secret: string }
   ): Promise<{ code: number; body: unknown }> {
     const apiUrl = new URL(href, API_ENTRY);
     const apiLocation = `${apiUrl.origin}${apiUrl.pathname}`;
     let body: undefined | string;
 
     if (method === 'GET') {
-      if (parameters) {
-        Object.entries(parameters).forEach(([k, v]) => {
+      if (params) {
+        Object.entries(params).forEach(([k, v]) => {
           apiUrl.searchParams.set(k, v as string);
         });
       }
-    } else if (parameters) {
-      body = JSON.stringify(parameters);
+    } else if (params) {
+      body = JSON.stringify(params);
     }
-    const authHeader = this.getAuthHeader(
-      method,
-      apiLocation,
-      Object.fromEntries(apiUrl.searchParams.entries()),
-      oauth
-    );
+
+    let authHeader: string;
+    if (asApplication) {
+      authHeader = `Bearer ${(this, this.options.bearerToken)}`;
+    } else {
+      authHeader = await this.getUserOauthHeader(
+        agent,
+        method,
+        apiLocation,
+        Object.fromEntries(apiUrl.searchParams.entries()),
+        withUserOauth
+      );
+    }
 
     const response = await fetch(apiUrl.href, {
       method,
@@ -114,7 +120,10 @@ export default class TwitterWorker
     };
   }
 
-  async uploadMediaSources(mediaSources: MediaSource[]): Promise<{
+  async uploadMediaSources(
+    agent: TwitterUser,
+    mediaSources: MediaSource[]
+  ): Promise<{
     mediaIds: string[];
     uploadedMedia: TwitterApiResult['uploadedMedia'];
   }> {
@@ -124,17 +133,19 @@ export default class TwitterWorker
           return source.id;
         }
         if (source.type === 'file') {
-          const { parameters, fileData } = source;
-          return this.uploadMediaFile(fileData, parameters, {
-            contentType: parameters.media_type as string | undefined,
-            knownLength: parameters.total_bytes as number | undefined,
+          const { params, fileData } = source;
+          return this.uploadMediaFile(agent, fileData, params, {
+            contentType: params.media_type as string | undefined,
+            knownLength: params.total_bytes as number | undefined,
           });
         }
         if (source.type === 'url') {
-          const { url, parameters } = source;
-          return this.uploadMediaUrl(url, parameters);
+          const { url, params } = source;
+          return this.uploadMediaUrl(agent, url, params);
         }
-        throw new Error(`unknown media source ${(source as any).type}`);
+        throw new Error(
+          `unknown media source ${(source as { type: string }).type}`
+        );
       })
     );
 
@@ -164,8 +175,9 @@ export default class TwitterWorker
   }
 
   async uploadMediaUrl(
+    agent: TwitterUser,
     url: string,
-    parameters: Record<string, undefined | string | number>
+    params: Record<string, undefined | string | number>
   ): Promise<MediaUploadResult> {
     const downloadRes = await fetch(url);
     if (!downloadRes.ok) {
@@ -177,15 +189,16 @@ export default class TwitterWorker
     const contentType = downloadRes.headers.get('Content-Type');
     const contentLength = downloadRes.headers.get('Content-Length');
 
-    const updatedParameters = {
-      ...parameters,
-      media_type: parameters.media_type || contentType || undefined,
-      total_bytes: parameters.total_bytes || contentLength || undefined,
+    const updatedParams = {
+      ...params,
+      media_type: params.media_type || contentType || undefined,
+      total_bytes: params.total_bytes || contentLength || undefined,
     };
 
     const uploadResult = await this.uploadMediaFile(
+      agent,
       downloadRes.body,
-      updatedParameters,
+      updatedParams,
       {
         contentType: contentType || undefined,
         knownLength: contentLength ? Number(contentLength) : undefined,
@@ -195,18 +208,19 @@ export default class TwitterWorker
   }
 
   async uploadMediaFile(
+    agent: TwitterUser,
     fileData: Buffer | NodeJS.ReadableStream,
-    parameters: Record<string, undefined | string | number>,
+    params: Record<string, undefined | string | number>,
     contentOptions: FormData.AppendOptions
   ): Promise<MediaUploadResult> {
     const initForm = new FormData();
     initForm.append('command', 'INIT');
-    Object.entries(parameters).forEach(([filed, value]) => {
+    Object.entries(params).forEach(([filed, value]) => {
       if (value) {
         initForm.append(filed, value);
       }
     });
-    const initResult = await this._requestUpload(initForm);
+    const initResult = await this._requestUpload(agent, initForm);
 
     const { media_id_string: mediaId } = initResult;
     const appendForm = new FormData();
@@ -215,23 +229,25 @@ export default class TwitterWorker
     appendForm.append('media', fileData, contentOptions);
     appendForm.append('segment_index', 0);
 
-    await this._requestUpload(appendForm);
+    await this._requestUpload(agent, appendForm);
 
     const finalizeForm = new FormData();
     finalizeForm.append('command', 'FINALIZE');
     finalizeForm.append('media_id', mediaId);
 
-    const fnializeResult = await this._requestUpload(finalizeForm);
+    const fnializeResult = await this._requestUpload(agent, finalizeForm);
     return fnializeResult;
   }
 
-  private async _requestUpload(form: FormData) {
+  private async _requestUpload(agent: TwitterUser, form: FormData) {
+    const authHeader = await this.getUserOauthHeader(agent, 'POST', UPLOAD_URL);
+
     const response = await fetch(UPLOAD_URL, {
       method: 'POST',
       body: form,
       headers: {
         ...form.getHeaders(),
-        Authorization: this.getAuthHeader('POST', UPLOAD_URL),
+        Authorization: authHeader,
       },
     });
 
@@ -265,14 +281,28 @@ export default class TwitterWorker
     return true;
   }
 
-  getAuthHeader(
+  async getUserOauthHeader(
+    agent: null | TwitterUser,
     method: string,
     baseUrl: string,
     additionalParams?: null | Record<string, string>,
-    { asApplication, asUser }: OauthOptions = {}
-  ): string {
-    if (asApplication) {
-      return `Bearer ${(this, this.options.bearerToken)}`;
+    withUserOauth?: { token: string; secret: string }
+  ): Promise<string> {
+    let accessToken: string;
+    let tokenSecret: string;
+    if (agent) {
+      const agentSettings = await this._settingsAccessor.getChannelSettings(
+        agent
+      );
+      if (!agentSettings) {
+        throw new Error(`agent user "${agent.id}" not registered`);
+      }
+      ({ accessToken, tokenSecret } = agentSettings);
+    } else if (withUserOauth) {
+      accessToken = withUserOauth.token;
+      tokenSecret = withUserOauth.secret;
+    } else {
+      throw new Error('no user token and secret provided');
     }
 
     const oauthParams = {
@@ -280,7 +310,7 @@ export default class TwitterWorker
       oauth_nonce: nanoid(),
       oauth_signature_method: 'HMAC-SHA1',
       oauth_timestamp: Math.floor(Date.now() / 1000),
-      oauth_token: asUser?.token || this.options.accessToken,
+      oauth_token: accessToken,
       oauth_version: '1.0',
     };
 
@@ -301,7 +331,7 @@ export default class TwitterWorker
     const signature = createHmac(
       'sha1',
       `${encodeURIComponent(this.options.appSecret)}&${encodeURIComponent(
-        asUser?.secret || this.options.accessSecret
+        tokenSecret
       )}`
     )
       .update(baseStr)
@@ -376,25 +406,32 @@ export default class TwitterWorker
     } = job;
     const currentTarget =
       (key && refreshTarget && this._targetCache.get(key)) || initialTarget;
+    const agent = initialTarget?.agent || null;
 
-    const mediaResults = mediaSources
-      ? await this.uploadMediaSources(mediaSources)
-      : null;
+    const mediaResults =
+      agent && mediaSources
+        ? await this.uploadMediaSources(agent, mediaSources)
+        : null;
 
-    const { method, href, parameters } = accomplishRequest
-      ? accomplishRequest(
-          currentTarget,
-          request,
-          mediaResults?.mediaIds || null
-        )
-      : request;
+    const { method, href, params } =
+      currentTarget && accomplishRequest
+        ? accomplishRequest(
+            currentTarget,
+            request,
+            mediaResults?.mediaIds || null
+          )
+        : request;
 
-    const { code, body } = await this.requestApi(method, href, parameters, {
-      asApplication,
-    });
+    const { code, body } = await this.requestApi(
+      agent,
+      method,
+      href,
+      params,
+      asApplication
+    );
 
     if (key) {
-      const nextTarget = refreshTarget && refreshTarget(currentTarget, body);
+      const nextTarget = currentTarget && refreshTarget?.(currentTarget, body);
       if (nextTarget) {
         this._targetCache.set(key, nextTarget);
       } else if (currentTarget !== initialTarget) {

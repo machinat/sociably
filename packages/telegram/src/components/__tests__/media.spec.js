@@ -59,7 +59,7 @@ test('Photo match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendPhoto",
-                "parameters": Object {
+                "params": Object {
                   "caption": "<b>My Photo</b>",
                   "disable_notification": undefined,
                   "parse_mode": "HTML",
@@ -67,7 +67,7 @@ test('Photo match snapshot', async () => {
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                 },
-                "uploadingFiles": undefined,
+                "uploadFiles": undefined,
               },
             },
           ]
@@ -92,7 +92,7 @@ test('Photo match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendPhoto",
-                "parameters": Object {
+                "params": Object {
                   "caption": "PlainTextCaption",
                   "disable_notification": undefined,
                   "parse_mode": undefined,
@@ -100,7 +100,7 @@ test('Photo match snapshot', async () => {
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                 },
-                "uploadingFiles": undefined,
+                "uploadFiles": undefined,
               },
             },
           ]
@@ -150,7 +150,7 @@ test('Photo match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendPhoto",
-                "parameters": Object {
+                "params": Object {
                   "caption": "__MyPhoto__",
                   "disable_notification": true,
                   "parse_mode": "MarkdownV2",
@@ -167,7 +167,7 @@ test('Photo match snapshot', async () => {
                   },
                   "reply_to_message_id": 123,
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_photo",
                     "fieldName": "photo",
@@ -201,7 +201,7 @@ test('Animation match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendAnimation",
-                "parameters": Object {
+                "params": Object {
                   "animation": "12345",
                   "caption": "<b>My Animation</b>",
                   "disable_notification": undefined,
@@ -212,7 +212,7 @@ test('Animation match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "width": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -237,7 +237,7 @@ test('Animation match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendAnimation",
-                "parameters": Object {
+                "params": Object {
                   "animation": "http://foo.bar/baz.gif",
                   "caption": "PlainTextCaption",
                   "disable_notification": undefined,
@@ -248,7 +248,7 @@ test('Animation match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "width": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -312,7 +312,7 @@ test('Animation match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendAnimation",
-                "parameters": Object {
+                "params": Object {
                   "animation": undefined,
                   "caption": "__MyAnimation__",
                   "disable_notification": true,
@@ -332,7 +332,7 @@ test('Animation match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "width": 1920,
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_animate",
                     "fieldName": "animation",
@@ -374,7 +374,7 @@ test('Audio match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendAudio",
-                "parameters": Object {
+                "params": Object {
                   "audio": "12345",
                   "caption": "<b>My Audio</b>",
                   "disable_notification": undefined,
@@ -385,7 +385,7 @@ test('Audio match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "title": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -410,7 +410,7 @@ test('Audio match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendAudio",
-                "parameters": Object {
+                "params": Object {
                   "audio": "http://foo.bar/baz.mp3",
                   "caption": "PlainTextCaption",
                   "disable_notification": undefined,
@@ -421,7 +421,7 @@ test('Audio match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "title": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -485,7 +485,7 @@ test('Audio match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendAudio",
-                "parameters": Object {
+                "params": Object {
                   "audio": undefined,
                   "caption": "__MyAudio__",
                   "disable_notification": true,
@@ -505,7 +505,7 @@ test('Audio match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "title": "Foo",
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_audio",
                     "fieldName": "audio",
@@ -547,7 +547,7 @@ test('Document match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendDocument",
-                "parameters": Object {
+                "params": Object {
                   "caption": "<b>My Document</b>",
                   "disable_notification": undefined,
                   "document": "12345",
@@ -555,7 +555,7 @@ test('Document match snapshot', async () => {
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -580,7 +580,7 @@ test('Document match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendDocument",
-                "parameters": Object {
+                "params": Object {
                   "caption": "PlainTextCaption",
                   "disable_notification": undefined,
                   "document": "http://foo.bar/baz.txt",
@@ -588,7 +588,7 @@ test('Document match snapshot', async () => {
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -646,7 +646,7 @@ test('Document match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendDocument",
-                "parameters": Object {
+                "params": Object {
                   "caption": "__MyDocument__",
                   "disable_notification": true,
                   "document": undefined,
@@ -663,7 +663,7 @@ test('Document match snapshot', async () => {
                   },
                   "reply_to_message_id": 123,
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_doc",
                     "fieldName": "document",
@@ -705,7 +705,7 @@ test('Video match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVideo",
-                "parameters": Object {
+                "params": Object {
                   "caption": "<b>My Video</b>",
                   "disable_notification": undefined,
                   "duration": undefined,
@@ -717,7 +717,7 @@ test('Video match snapshot', async () => {
                   "video": "12345",
                   "width": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -742,7 +742,7 @@ test('Video match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVideo",
-                "parameters": Object {
+                "params": Object {
                   "caption": "PlainTextCaption",
                   "disable_notification": undefined,
                   "duration": undefined,
@@ -754,7 +754,7 @@ test('Video match snapshot', async () => {
                   "video": "http://foo.bar/baz.mp4",
                   "width": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -820,7 +820,7 @@ test('Video match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVideo",
-                "parameters": Object {
+                "params": Object {
                   "caption": "__MyVideo__",
                   "disable_notification": true,
                   "duration": 100,
@@ -841,7 +841,7 @@ test('Video match snapshot', async () => {
                   "video": undefined,
                   "width": 1920,
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_video",
                     "fieldName": "video",
@@ -883,7 +883,7 @@ test('Voice match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVoice",
-                "parameters": Object {
+                "params": Object {
                   "caption": "<b>My Voice</b>",
                   "disable_notification": undefined,
                   "duration": undefined,
@@ -892,7 +892,7 @@ test('Voice match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "voice": "12345",
                 },
-                "uploadingFiles": undefined,
+                "uploadFiles": undefined,
               },
             },
           ]
@@ -917,7 +917,7 @@ test('Voice match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVoice",
-                "parameters": Object {
+                "params": Object {
                   "caption": "PlainTextCaption",
                   "disable_notification": undefined,
                   "duration": undefined,
@@ -926,7 +926,7 @@ test('Voice match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "voice": "http://foo.bar/baz.wmv",
                 },
-                "uploadingFiles": undefined,
+                "uploadFiles": undefined,
               },
             },
           ]
@@ -978,7 +978,7 @@ test('Voice match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVoice",
-                "parameters": Object {
+                "params": Object {
                   "caption": "__MyVoice__",
                   "disable_notification": true,
                   "duration": 100,
@@ -996,7 +996,7 @@ test('Voice match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "voice": undefined,
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_voice",
                     "fieldName": "voice",
@@ -1030,7 +1030,7 @@ test('VideoNote match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVideoNote",
-                "parameters": Object {
+                "params": Object {
                   "caption": "<b>My Video Note</b>",
                   "disable_notification": undefined,
                   "duration": undefined,
@@ -1040,7 +1040,7 @@ test('VideoNote match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "video_note": "12345",
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -1065,7 +1065,7 @@ test('VideoNote match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVideoNote",
-                "parameters": Object {
+                "params": Object {
                   "caption": "PlainTextCaption",
                   "disable_notification": undefined,
                   "duration": undefined,
@@ -1075,7 +1075,7 @@ test('VideoNote match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "video_note": "http://foo.bar/baz.mpeg",
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -1137,7 +1137,7 @@ test('VideoNote match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVideoNote",
-                "parameters": Object {
+                "params": Object {
                   "caption": "__MyVideoNote__",
                   "disable_notification": true,
                   "duration": 100,
@@ -1156,7 +1156,7 @@ test('VideoNote match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "video_note": undefined,
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_video_note",
                     "fieldName": "video_note",
@@ -1209,7 +1209,7 @@ test('MediaGroup match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendMediaGroup",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "media": Array [
                     Object {
@@ -1232,7 +1232,7 @@ test('MediaGroup match snapshot', async () => {
                   ],
                   "reply_to_message_id": undefined,
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -1304,7 +1304,7 @@ test('MediaGroup match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendMediaGroup",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "media": Array [
                     Object {
@@ -1327,7 +1327,7 @@ test('MediaGroup match snapshot', async () => {
                   ],
                   "reply_to_message_id": 123,
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_photo",
                     "fieldName": "file_0",
@@ -1371,13 +1371,13 @@ test('Sticker match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendSticker",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                   "sticker": "12345",
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -1393,13 +1393,13 @@ test('Sticker match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendSticker",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                   "sticker": "http://foo.bar/baz.webp",
                 },
-                "uploadingFiles": Array [],
+                "uploadFiles": Array [],
               },
             },
           ]
@@ -1445,7 +1445,7 @@ test('Sticker match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendSticker",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "reply_markup": Object {
                     "inline_keyboard": Array [
@@ -1460,7 +1460,7 @@ test('Sticker match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "sticker": undefined,
                 },
-                "uploadingFiles": Array [
+                "uploadFiles": Array [
                   Object {
                     "assetTag": "my_sticker",
                     "fieldName": "sticker",

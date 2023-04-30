@@ -47,10 +47,12 @@ const app = Sociably.createApp({
   platforms: [
     Facebook.intiModule({
       entryPath: '/webhook/facebook',     // webhook path
+      pageSettings: {
+        accessToken: FACEBOOK_ACCESS_TOKEN, // page access token
+        verifyToken: FACEBOOK_VERIFY_TOKEN, // token for webhook verification
+      },
       pageId: FACEBOOK_PAGE_ID,           // Facebook page id
       appSecret: FACEBOOK_APP_SECRET,     // Facebook app secret
-      accessToken: FACEBOOK_ACCESS_TOKEN, // page access token
-      verifyToken: FACEBOOK_VERIFY_TOKEN, // token for webhook verification
     }),
   ],
 });
@@ -133,34 +135,15 @@ const app = Sociably.createApp({
 });
 ```
 
-2. Expose your Facebook page id in `next.config.js`:
-
-```js
-const { FACEBOOK_PAGE_ID } = process.env;
-
-module.exports = {
-  publicRuntimeConfig: {
-    // highlight-next-line
-    FACEBOOK_PAGE_ID,
-  },
-  // ...
-};
-```
-
-3. Set up the `WebviewClient` in the webview:
+2. Set up the `WebviewClient` in the webview:
 
 ```ts
-import getConfig from 'next/config';
 import WebviewClient from '@sociably/webview/client';
 import FacebookAuth from '@sociably/facebook/webview/client';
 
-const {
-  publicRuntimeConfig: { FACEBOOK_PAGE_ID },
-} = getConfig();
-
 const client =  new WebviewClient({
   authPlatforms: [
-    new FacebookAuth({ pageId: FACEBOOK_PAGE_ID }),
+    new FacebookAuth(),
   ],
 });
 ```

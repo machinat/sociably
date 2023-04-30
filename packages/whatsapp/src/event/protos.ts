@@ -2,6 +2,7 @@ import { mixin } from '@sociably/core/utils';
 import { WHATSAPP } from '../constant';
 import WhatsAppChat from '../Chat';
 import WhatsAppUser from '../User';
+import WhatsAppAgent from '../Agent';
 import {
   EventBaseMixin,
   MessageMixin,
@@ -33,25 +34,28 @@ import {
 
 const EventBaseProto: EventBaseMixin = {
   platform: WHATSAPP,
-  businessId: '',
-  businessNumber: '',
-  businessNumberDisplay: '',
+  businessAccountId: '',
+  agentNumberId: '',
+  agentNumberDisplay: '',
   payload: null as never,
   [Symbol.toStringTag]: 'WhatsAppEvent',
 };
 
 const MessageProto: MessageMixin = mixin(EventBaseProto, {
   userProfile: null as never,
+  get channel() {
+    return new WhatsAppAgent(this.agentNumberId);
+  },
   get thread() {
-    return new WhatsAppChat(this.businessNumber, this.userNumber);
+    return new WhatsAppChat(this.agentNumberId, this.userNumberId);
   },
   get user() {
-    return new WhatsAppUser(this.userNumber, this.userProfile.data);
+    return new WhatsAppUser(this.userNumberId, this.userProfile?.data);
   },
   get messageId() {
     return this.payload.id;
   },
-  get userNumber() {
+  get userNumberId() {
     return this.payload.from;
   },
   get time() {
@@ -287,16 +291,19 @@ export const UnsupportedProto: UnsupportedEvent = mixin(MessageProto, {
 });
 
 const StatusProto: StatusMixin = mixin(EventBaseProto, {
+  get channel() {
+    return new WhatsAppAgent(this.agentNumberId);
+  },
   get thread() {
-    return new WhatsAppChat(this.businessNumber, this.userNumber);
+    return new WhatsAppChat(this.agentNumberId, this.userNumberId);
   },
   get user() {
-    return new WhatsAppUser(this.userNumber);
+    return new WhatsAppUser(this.userNumberId);
   },
   get messageId() {
     return this.payload.id;
   },
-  get userNumber() {
+  get userNumberId() {
     return this.payload.recipient_id;
   },
   get time() {
@@ -337,6 +344,7 @@ export const FailedProto: FailedEvent = mixin(StatusProto, {
 export const ErrorProto: ErrorEvent = mixin(EventBaseProto, {
   category: 'system' as const,
   type: 'error' as const,
+  channel: null,
   thread: null,
   user: null,
   get code() {
@@ -350,6 +358,7 @@ export const ErrorProto: ErrorEvent = mixin(EventBaseProto, {
 export const UnknownProto: UnknownEvent = mixin(EventBaseProto, {
   category: 'message' as const,
   type: 'unknown' as const,
+  channel: null,
   thread: null,
   user: null,
 });

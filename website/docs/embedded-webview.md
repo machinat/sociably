@@ -433,13 +433,13 @@ like selecting a location on the map.
 #### Send Messages to Chat
 
 To send messages back to the original chatroom,
-you can use `BasicBot` service like:
+you can use `BaseBot` service like:
 
 ```js
-import Sociably, { BasicBot } from '@sociably/core';
+import Sociably, { BaseBot } from '@sociably/core';
 
 app.onEvent(
-  makeContainer({ deps: [BasicBot] })(
+  makeContainer({ deps: [BaseBot] })(
     (basicBot) =>
     async ({ platform, metadata, event }) => {
       if (platform === 'webview' && event.type === 'connect') {

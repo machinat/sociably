@@ -7,7 +7,7 @@ import type {
   SociablyNode,
 } from '@sociably/core';
 import type { DispatchFrame } from '@sociably/core/engine';
-import type { MaybeContainer } from '@sociably/core/service';
+import type { MaybeContainer, Interfaceable } from '@sociably/core/service';
 import type { IntermediateSegment } from '@sociably/core/renderer';
 import type { WebhookMetadata } from '@sociably/http/webhook';
 import type {
@@ -19,7 +19,7 @@ import type {
 import type { FacebookBot } from './Bot';
 import type FacebookChat from './Chat';
 import FacebookInteractTarget from './InteractTarget';
-import FacebookPage from './Page';
+import { PageSettingsAccessorI } from './interface';
 import type { FacebookEvent } from './event/types';
 import type {
   FACEBOOK,
@@ -34,10 +34,7 @@ import type {
 
 export * from './event/types';
 
-export type FacebookThread =
-  | FacebookChat
-  | FacebookInteractTarget
-  | FacebookPage;
+export type FacebookThread = FacebookChat | FacebookInteractTarget;
 
 export type PsidTarget = { id: string };
 export type UserRefTarget = { user_ref: string };
@@ -64,9 +61,10 @@ type MessageTags =
   | 'ACCOUNT_UPDATE'
   | 'HUMAN_AGENT';
 
-type AttachFileValue = {
+export type AttachFileValue = {
   data: string | Buffer | NodeJS.ReadableStream;
   info?: FileInfo;
+  assetTag?: string;
 };
 
 export type MessageValue = {
@@ -79,7 +77,6 @@ export type MessageValue = {
     tag?: MessageTags;
     persona_id?: string;
   };
-  assetTag?: string;
   attachFile?: AttachFileValue;
 };
 
@@ -90,7 +87,6 @@ export type SenderActionValue = {
     sender_action: 'mark_seen' | 'typing_on' | 'typing_off';
     persona_id?: string;
   };
-  assetTag?: undefined;
   attachFile?: undefined;
 };
 
@@ -101,7 +97,6 @@ export type PassThreadControlValue = {
     target_app_id: number;
     metadata?: string;
   };
-  assetTag?: undefined;
   attachFile?: undefined;
 };
 
@@ -111,7 +106,6 @@ export type RequestThreadControlValue = {
   params: {
     metadata?: string;
   };
-  assetTag?: undefined;
   attachFile?: undefined;
 };
 
@@ -121,14 +115,12 @@ export type TakeThreadControlValue = {
   params: {
     metadata?: string;
   };
-  assetTag?: undefined;
   attachFile?: undefined;
 };
 
 export type CommentValue = {
   type: 'comment';
   params: Record<string, unknown>;
-  assetTag?: undefined;
   attachFile?: undefined;
   photo?: PagePhotoValue;
 };
@@ -137,7 +129,6 @@ export type PagePhotoValue = {
   type: 'page';
   apiPath: typeof PATH_PHOTOS;
   params: Record<string, unknown>;
-  assetTag?: string;
   attachFile?: AttachFileValue;
 };
 
@@ -145,7 +136,6 @@ export type PageVideoValue = {
   type: 'page';
   apiPath: typeof PATH_VIDEOS;
   params: Record<string, unknown>;
-  assetTag?: string;
   attachFile?: AttachFileValue;
   thumbnailFile?: AttachFileValue;
 };
@@ -154,7 +144,6 @@ export type PagePostValue = {
   type: 'page';
   apiPath: typeof PATH_FEED;
   params: Record<string, unknown>;
-  assetTag?: string;
   attachFile?: AttachFileValue;
   photos?: PagePhotoValue[];
 };
@@ -210,19 +199,28 @@ export type FacebookDispatchMiddleware = DispatchMiddleware<
   MetaApiResult
 >;
 
-export type FacebookConfigs = {
+export type FacebookPageSettings = {
   /** The Facebook page id */
   pageId: string;
   /** The page access token for the app */
   accessToken: string;
+};
+
+export type FacebookConfigs = {
+  /** Page integration settings in single page mode */
+  pageSettings?: FacebookPageSettings;
+  /** Page integration settings in multi page mode */
+  multiPageSettings?: FacebookPageSettings[];
+  /** Host page integration settings with your own service */
+  pageSettingsService?: Interfaceable<PageSettingsAccessorI>;
   /** The Facebook app secret */
-  appSecret?: string;
+  appSecret: string;
   /** To verify the webhook request by the signature or not. Default to `true` */
   shouldVerifyRequest?: boolean;
   /** To handle the webhook challenge request or not. Default to `true` */
   shouldHandleChallenge?: boolean;
   /** The secret string to verify the webhook challenge request */
-  verifyToken?: string;
+  verifyToken: string;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
   /** The graph API version to make API calls */

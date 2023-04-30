@@ -1,5 +1,12 @@
+import { ChannelSettingsAccessor } from '@sociably/core';
 import { makeInterface } from '@sociably/core/service';
-import type { LineConfigs, LinePlatformUtilities } from './types';
+import type LineChannel from './Channel';
+import type {
+  LineConfigs,
+  LinePlatformUtilities,
+  LineChatChannelSettings,
+  LineLoginChannelSettings,
+} from './types';
 
 /**
  * @category Interface
@@ -16,3 +23,20 @@ export type ConfigsI = LineConfigs;
 export const PlatformUtilitiesI = makeInterface<LinePlatformUtilities>({
   name: 'LinePlatformUtilities',
 });
+
+export interface ChannelSettingsAccessorI
+  extends ChannelSettingsAccessor<LineChannel, LineChatChannelSettings> {
+  getLineChatChannelSettingsByBotUserId(
+    botUserId: string
+  ): Promise<null | LineChatChannelSettings>;
+  getLineLoginChannelSettings(
+    channelId: string
+  ): Promise<null | LineLoginChannelSettings>;
+}
+
+/**
+ * @category Interface
+ */
+export const ChannelSettingsAccessorI = makeInterface<ChannelSettingsAccessorI>(
+  { name: 'LineChannelSettingsAccessor' }
+);

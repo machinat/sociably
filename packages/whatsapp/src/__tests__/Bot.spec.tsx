@@ -6,6 +6,8 @@ import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
+import WhatsAppAgent from '../Agent';
+import WhatsAppChat from '../Chat';
 import { WhatsAppBot } from '../Bot';
 import { Image, ButtonsTemplate, ReplyButton } from '../components';
 
@@ -77,19 +79,10 @@ describe('#constructor(options)', () => {
     );
   });
 
-  it('throw if businessNumber not given', () => {
-    expect(
-      () => new WhatsAppBot({ accessToken, appSecret } as never)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"options.businessNumber should not be empty"`
-    );
-  });
-
   it('assemble core modules', () => {
     const bot = new WhatsAppBot({
       initScope,
       dispatchWrapper,
-      businessNumber,
       accessToken,
     });
 
@@ -110,19 +103,18 @@ describe('#constructor(options)', () => {
 
     expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker).toHaveBeenCalledWith(
-      '_ACCESS_TOKEN_',
-      500,
+      expect.any(Object),
+      undefined,
       'v11.0',
-      undefined
+      500
     );
   });
 
-  it('pass options to worker', () => {
+  it('pass options to worker', async () => {
     expect(
       new WhatsAppBot({
         initScope,
         dispatchWrapper,
-        businessNumber,
         accessToken,
         appSecret,
         graphApiVersion: 'v8.0',
@@ -132,11 +124,25 @@ describe('#constructor(options)', () => {
 
     expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker).toHaveBeenCalledWith(
-      '_ACCESS_TOKEN_',
-      0,
+      expect.any(Object),
+      '_APP_SECRET_',
       'v8.0',
-      '_APP_SECRET_'
+      0
     );
+
+    const accessTokenAccessor = Worker.mock.calls[0].args[0];
+    await expect(
+      accessTokenAccessor.getChannelSettings(new WhatsAppAgent('1111111111'))
+    ).resolves.toEqual({ accessToken });
+    await expect(
+      accessTokenAccessor.getChannelSettingsBatch([
+        new WhatsAppAgent('1111111111'),
+        new WhatsAppAgent('2222222222'),
+      ])
+    ).resolves.toEqual([{ accessToken }, { accessToken }]);
+    await expect(
+      accessTokenAccessor.listAllChannelSettings('whatsapp')
+    ).resolves.toEqual([{ accessToken }]);
   });
 });
 
@@ -144,7 +150,6 @@ test('#start() and #stop() start/stop engine', () => {
   const bot = new WhatsAppBot({
     initScope,
     dispatchWrapper,
-    businessNumber,
     accessToken,
     appSecret,
   });
@@ -159,7 +164,7 @@ test('#start() and #stop() start/stop engine', () => {
 });
 
 describe('#render(thread, message, options)', () => {
-  const bot = new WhatsAppBot({ businessNumber, accessToken, appSecret });
+  const bot = new WhatsAppBot({ accessToken, appSecret });
   const sucessfulResult = {
     messaging_product: 'whatsapp',
     contacts: [{ input: '9876543210', wa_id: '9876543210' }],
@@ -184,13 +189,18 @@ describe('#render(thread, message, options)', () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(bot.render('9876543210', empty)).resolves.toBe(null);
+      await expect(
+        bot.render(new WhatsAppChat('1234567890', '9876543210'), empty)
+      ).resolves.toBe(null);
       expect(apiStatus.isDone()).toBe(false);
     }
   });
 
   it('post to NUMBER/messages api', async () => {
-    const response = await bot.render('9876543210', message);
+    const response = await bot.render(
+      new WhatsAppChat('1234567890', '9876543210'),
+      message
+    );
     expect(response).toMatchSnapshot();
 
     for (const result of response!.results) {
@@ -205,7 +215,9 @@ describe('#render(thread, message, options)', () => {
 
     for (const request of JSON.parse(body.batch)) {
       expect(request.method).toBe('POST');
-      expect(request.relative_url).toBe('1234567890/messages');
+      expect(request.relative_url).toBe(
+        '1234567890/messages?access_token=_ACCESS_TOKEN_'
+      );
     }
 
     expect(body).toMatchSnapshot();
@@ -224,7 +236,7 @@ describe('#render(thread, message, options)', () => {
 });
 
 describe('#uploadMedia(message)', () => {
-  const bot = new WhatsAppBot({ businessNumber, accessToken, appSecret });
+  const bot = new WhatsAppBot({ accessToken, appSecret });
 
   beforeEach(() => {
     bot.start();
@@ -237,7 +249,10 @@ describe('#uploadMedia(message)', () => {
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
-      await expect(bot.uploadMedia(empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+      // eslint-disable-next-line no-await-in-loop
+      await expect(
+        bot.uploadMedia(new WhatsAppAgent('1234567890'), empty)
+      ).resolves.toBe(null);
     }
   });
 
@@ -247,6 +262,7 @@ describe('#uploadMedia(message)', () => {
     ]);
 
     const result = await bot.uploadMedia(
+      new WhatsAppAgent('1234567890'),
       <Image fileData={Buffer.from('foo')} fileType="image/png" />
     );
     expect(result).toEqual({ id: 401759795 });
@@ -262,13 +278,13 @@ describe('#uploadMedia(message)', () => {
 
 describe('#makeApiCall()', () => {
   it('call facebook graph api', async () => {
-    const bot = new WhatsAppBot({ accessToken, businessNumber });
+    const bot = new WhatsAppBot({ accessToken });
     bot.start();
 
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
 
     await expect(
-      bot.makeApiCall('POST', 'foo', { bar: 'baz' })
+      bot.makeApiCall({ method: 'POST', path: 'foo', params: { bar: 'baz' } })
     ).resolves.toEqual({
       foo: 'bar',
     });
@@ -277,7 +293,7 @@ describe('#makeApiCall()', () => {
   });
 
   it('throw MetaApiError if api call fail', async () => {
-    const bot = new WhatsAppBot({ accessToken, businessNumber });
+    const bot = new WhatsAppBot({ accessToken });
     bot.start();
 
     const apiCall = graphApi.reply(200, [
@@ -296,7 +312,11 @@ describe('#makeApiCall()', () => {
     ]);
 
     try {
-      await bot.makeApiCall('POST', 'foo', { bar: 'baz' });
+      await bot.makeApiCall({
+        method: 'POST',
+        path: 'foo',
+        params: { bar: 'baz' },
+      });
       expect('should not be here').toBeFalsy();
     } catch (err) {
       expect(err).toBeInstanceOf(MetaApiError);

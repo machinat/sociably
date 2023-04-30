@@ -1,14 +1,20 @@
 /// <reference lib="DOM" />
 /* eslint-disable class-methods-use-this */
-import invariant from 'invariant';
 import type { CheckDataResult } from '@sociably/auth';
 import type { WebviewClientAuthenticator } from '@sociably/webview';
 import liff from '@line/liff';
 import { LINE } from '../constant';
+import LineChannel from '../Channel';
 import LineChat from '../Chat';
 import LineUser from '../User';
 import LineUserProfile from '../UserProfile';
 import LineGroupProfile from '../GroupProfile';
+import {
+  CHAT_CHANNEL_QUERY_KEY,
+  LIFF_ID_QUERY_KEY,
+  ROOM_ID_QUERY_KEY,
+  GROUP_ID_QUERY_KEY,
+} from './constant';
 import { getAuthContextDetails } from './utils';
 import type {
   LineAuthCredential,
@@ -16,11 +22,11 @@ import type {
   LineAuthContext,
   LineCredentialResult,
   ClientOs,
-  ClientReferer,
+  LiffRefChatType,
 } from './types';
 
 type ClientAuthenticatorOptions = {
-  liffId: string;
+  liffId?: string;
 };
 
 const waitingForRedirecting = (): Promise<never> =>
@@ -40,12 +46,23 @@ class LineClientAuthenticator
 {
   platform = LINE;
   liffId: string;
-  marshalTypes = [LineChat, LineUser, LineUserProfile, LineGroupProfile];
+  marshalTypes = [
+    LineChannel,
+    LineChat,
+    LineUser,
+    LineUserProfile,
+    LineGroupProfile,
+  ];
 
-  constructor(options: ClientAuthenticatorOptions) {
-    invariant(options?.liffId, 'options.liffId must not be empty');
-    const { liffId } = options;
+  constructor(options?: ClientAuthenticatorOptions) {
+    const searchParams = new URLSearchParams(window.location.search);
+    const liffId = options?.liffId ?? searchParams.get(LIFF_ID_QUERY_KEY);
 
+    if (!liffId) {
+      throw new Error(
+        'liff id is required on either `options.liffId` or `liffId` query param'
+      );
+    }
     this.liffId = liffId;
   }
 
@@ -75,13 +92,17 @@ class LineClientAuthenticator
       };
     }
 
-    const { type: refererType, userId } = context;
+    const searchParams = new URLSearchParams(window.location.search);
+    const { type: contextType, userId } = context;
     return {
       ok: true,
       credential: {
+        chatChannelId: searchParams.get(CHAT_CHANNEL_QUERY_KEY) || undefined,
+        groupId: searchParams.get(GROUP_ID_QUERY_KEY) || undefined,
+        roomId: searchParams.get(ROOM_ID_QUERY_KEY) || undefined,
         accessToken,
         userId,
-        refererType: refererType as ClientReferer,
+        contextType: contextType as LiffRefChatType,
         os: liff.getOS() as ClientOs,
         language: liff.getLanguage(),
       },

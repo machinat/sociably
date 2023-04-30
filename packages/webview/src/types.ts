@@ -27,12 +27,8 @@ import type {
   WebSocketResult,
   WebSocketDispatchResponse,
 } from '@sociably/websocket';
-import type { BotP } from './bot';
-import type {
-  WebviewConnection,
-  WebviewTopicThread,
-  WebviewUserThread,
-} from './thread';
+import type { BotP } from './Bot';
+import type WebviewConnection from './Connection';
 
 export type {
   EventValue,
@@ -52,6 +48,8 @@ export type WebviewEvent<
   User extends null | SociablyUser
 > = Value & {
   platform: 'webview';
+  // TODO: channel field is left for potential namespace feature
+  channel: null;
   thread: WebviewConnection;
   user: User;
 };
@@ -66,7 +64,7 @@ export interface WebviewClientAuthenticator<
   Data,
   Context extends AnyAuthContext
 > extends ClientAuthenticator<Credential, Data, Context> {
-  closeWebview: () => boolean;
+  closeWebview: (ctx: null | Context) => boolean;
   marshalTypes: null | AnyMarshalType[];
 }
 
@@ -92,13 +90,8 @@ export type WebviewEventMiddleware<
   Value extends EventValue = EventValue
 > = EventMiddleware<WebviewEventContext<Authenticator, Value>, null>;
 
-export type WebviewDispatchThread =
-  | WebviewTopicThread
-  | WebviewUserThread
-  | WebviewConnection;
-
 export type WebviewDispatchFrame = DispatchFrame<
-  WebviewDispatchThread,
+  null | WebviewConnection,
   WebSocketJob
 >;
 

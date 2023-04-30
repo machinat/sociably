@@ -36,7 +36,7 @@ test('Location match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendLocation",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": undefined,
                   "latitude": 123.45,
                   "live_period": undefined,
@@ -85,7 +85,7 @@ test('Location match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendLocation",
-                "parameters": Object {
+                "params": Object {
                   "disable_notification": true,
                   "latitude": 98.76,
                   "live_period": 86400,
@@ -125,7 +125,7 @@ test('EditLiveLocation match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageLiveLocation",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": undefined,
                   "latitude": 123.45,
                   "longitude": 67.89,
@@ -169,7 +169,7 @@ test('EditLiveLocation match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "editMessageLiveLocation",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": "123456789",
                   "latitude": 98.76,
                   "longitude": 54.321,
@@ -203,7 +203,7 @@ test('StopLiveLocation match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "stopMessageLiveLocation",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": undefined,
                   "message_id": 123,
                   "reply_markup": undefined,
@@ -241,7 +241,7 @@ test('StopLiveLocation match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "stopMessageLiveLocation",
-                "parameters": Object {
+                "params": Object {
                   "inline_message_id": "123456789",
                   "message_id": undefined,
                   "reply_markup": Object {
@@ -284,7 +284,7 @@ test('Venue match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVenue",
-                "parameters": Object {
+                "params": Object {
                   "address": "somewhere",
                   "disable_notification": undefined,
                   "foursquare_id": undefined,
@@ -342,7 +342,7 @@ test('Venue match snapshot', async () => {
               "type": "unit",
               "value": Object {
                 "method": "sendVenue",
-                "parameters": Object {
+                "params": Object {
                   "address": "somewhere",
                   "disable_notification": true,
                   "foursquare_id": "xxx",

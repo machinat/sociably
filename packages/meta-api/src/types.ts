@@ -1,3 +1,4 @@
+import type { SociablyChannel } from '@sociably/core';
 import type { DispatchResponse } from '@sociably/core/engine';
 
 export type FileInfo = {
@@ -7,18 +8,27 @@ export type FileInfo = {
   knownLength?: number;
 };
 
+export type MetaApiJobRequest = {
+  method: string;
+  relativeUrl: string;
+  params?: Record<string, unknown>;
+};
+
 type AccomplishRequestFn = (
-  request: MetaBatchRequest,
+  request: MetaApiJobRequest,
   keys: string[],
   getResultValue: (key: string, path: string) => string | null
-) => MetaBatchRequest;
+) => MetaApiJobRequest;
 
 export type MetaApiJob = {
-  request: MetaBatchRequest;
+  request: MetaApiJobRequest;
+  channel: SociablyChannel;
   key?: string;
-  assetTag?: string;
-  fileData?: string | Buffer | NodeJS.ReadableStream;
-  fileInfo?: FileInfo;
+  file?: {
+    data: string | Buffer | NodeJS.ReadableStream;
+    info?: FileInfo;
+    assetTag?: string;
+  };
   registerResult?: string;
   consumeResult?: {
     keys: string[];
@@ -41,7 +51,7 @@ export type MetaApiDispatchResponse = DispatchResponse<
 export type MetaBatchRequest = {
   method: string;
   relative_url: string;
-  body: null | Record<string, unknown>;
+  body?: string;
   name?: string;
   depends_on?: string;
   attached_files?: string;
