@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`with uploadFiles 1`] = `
+exports[`with files 1`] = `
 Array [
   "------------------BOUNDARY-PLACEHOLDER
 Content-Disposition: form-data; name=\\"chat_id\\"

@@ -17,7 +17,7 @@ const msgResult = { code: 200, headers: {}, body: {} };
 const chat = new WhatsAppChat('9876543210', '1234567890');
 const agent = new WhatsAppAgent('9876543210');
 const plainJob = {
-  request: { method: 'POST', relativeUrl: 'foo' },
+  request: { method: 'POST', url: 'foo' },
   channel: agent,
 };
 

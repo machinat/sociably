@@ -53,7 +53,7 @@ describe('#getUserProfile(user)', () => {
           "platform": "line",
         },
         "method": "GET",
-        "path": "v2/bot/profile/_USER_ID_",
+        "url": "v2/bot/profile/_USER_ID_",
       }
     `);
   });
@@ -112,7 +112,7 @@ describe('#getUserProfile(user)', () => {
           "platform": "line",
         },
         "method": "GET",
-        "path": "v2/bot/group/_GROUP_ID_/member/_USER_ID_",
+        "url": "v2/bot/group/_GROUP_ID_/member/_USER_ID_",
       }
     `);
   });
@@ -150,7 +150,7 @@ describe('#getUserProfile(user)', () => {
           "platform": "line",
         },
         "method": "GET",
-        "path": "v2/bot/room/_ROOM_ID_/member/_USER_ID_",
+        "url": "v2/bot/room/_ROOM_ID_/member/_USER_ID_",
       }
     `);
   });
@@ -192,7 +192,7 @@ describe('#getGroupProfile(user)', () => {
           "platform": "line",
         },
         "method": "GET",
-        "path": "v2/bot/group/_GROUP_ID_/summary",
+        "url": "v2/bot/group/_GROUP_ID_/summary",
       }
     `);
   });

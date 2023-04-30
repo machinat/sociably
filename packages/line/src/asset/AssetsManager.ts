@@ -90,7 +90,7 @@ export class LineAssetsManager {
   async createRichMenu(
     channel: LineChannel,
     name: string,
-    body: unknown
+    params: Record<string, unknown>
   ): Promise<string> {
     const existed = await this.getRichMenu(channel, name);
     if (existed) {
@@ -99,8 +99,8 @@ export class LineAssetsManager {
 
     const { richMenuId }: { richMenuId: string } = await this._bot.makeApiCall({
       method: 'POST',
-      path: PATH_RICHMENU,
-      body,
+      url: PATH_RICHMENU,
+      params,
       channel,
     });
 
@@ -116,7 +116,7 @@ export class LineAssetsManager {
 
     await this._bot.makeApiCall({
       method: 'DELETE',
-      path: `${PATH_RICHMENU}/${id}`,
+      url: `${PATH_RICHMENU}/${id}`,
       channel,
     });
 

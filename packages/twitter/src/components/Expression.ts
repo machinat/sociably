@@ -69,7 +69,7 @@ export const Expression: TwitterComponent<
       }
       if (
         segValue.type === 'dm' &&
-        segValue.request.href === '1.1/direct_messages/events/new.json'
+        segValue.request.url === '1.1/direct_messages/events/new.json'
       ) {
         createDmRequest = segValue.request;
         outputSegment.push(segment);

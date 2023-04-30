@@ -21,10 +21,10 @@ export const createChatJob = (
           parse_mode: 'HTML',
         },
         key: chat.uid,
-        uploadFiles: null,
+        files: [],
       });
     } else {
-      const { method, toNonChatTarget, params, uploadFiles } = segment.value;
+      const { method, toNonChatTarget, params, files } = segment.value;
 
       jobs.push({
         botId: chat.botId,
@@ -34,7 +34,7 @@ export const createChatJob = (
           chat_id: toNonChatTarget ? undefined : chat.id,
         },
         key: chat?.uid,
-        uploadFiles: uploadFiles || null,
+        files,
       });
     }
   });
@@ -52,7 +52,7 @@ export const createBotScopeJobs = (
     if (segment.type === 'text') {
       throw new TypeError('text is invalid to be rendered without target chat');
     } else {
-      const { method, toNonChatTarget, params, uploadFiles } = segment.value;
+      const { method, toNonChatTarget, params, files } = segment.value;
 
       if (!toNonChatTarget) {
         throw new TypeError(
@@ -69,7 +69,7 @@ export const createBotScopeJobs = (
         method,
         params,
         key: undefined,
-        uploadFiles: uploadFiles || null,
+        files,
       });
     }
   });

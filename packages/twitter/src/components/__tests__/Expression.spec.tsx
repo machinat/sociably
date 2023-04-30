@@ -34,7 +34,6 @@ test('rendering', async () => {
   ).toMatchInlineSnapshot(`
     Array [
       Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -51,9 +50,9 @@ test('rendering', async () => {
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -70,6 +69,7 @@ test('rendering', async () => {
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
     ]
   `);
@@ -98,7 +98,6 @@ test('rendering with quick replies', async () => {
   ).toMatchInlineSnapshot(`
     Array [
       Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -115,9 +114,9 @@ test('rendering with quick replies', async () => {
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -154,6 +153,7 @@ test('rendering with quick replies', async () => {
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
     ]
   `);
@@ -176,7 +176,6 @@ test('rendering with media content', async () => {
   ).toMatchInlineSnapshot(`
     Array [
       Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -193,9 +192,9 @@ test('rendering with media content', async () => {
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -227,6 +226,7 @@ test('rendering with media content', async () => {
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
     ]
   `);

@@ -270,7 +270,7 @@ test('.createPersona()', async () => {
   expect(bot.makeApiCall).toHaveBeenCalledWith({
     page,
     method: 'POST',
-    path: 'me/personas',
+    url: 'me/personas',
     params: {
       name: 'Baby Yoda',
       profile_picture_url: '_URL_',
@@ -311,7 +311,7 @@ test('.deletePersona()', async () => {
   expect(bot.makeApiCall).toHaveBeenCalledWith({
     page,
     method: 'DELETE',
-    path: '_PERSONA_ID_',
+    url: '_PERSONA_ID_',
   });
   expect(state.delete).toHaveBeenCalledTimes(1);
   expect(state.delete).toHaveBeenCalledWith('my_persona');

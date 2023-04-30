@@ -35,16 +35,16 @@ test('api request getter', async () => {
     getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'))
   ).toEqual({
     method: 'POST',
-    path: 'v2/bot/group/_GROUP_ID_/leave',
-    body: null,
+    url: 'v2/bot/group/_GROUP_ID_/leave',
+    params: null,
   });
 
   expect(
     getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_'))
   ).toEqual({
     method: 'POST',
-    path: 'v2/bot/room/_ROOM_ID_/leave',
-    body: null,
+    url: 'v2/bot/room/_ROOM_ID_/leave',
+    params: null,
   });
 });
 

@@ -6,13 +6,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "1",
+        "key": "foo",
+        "method": "POST",
+        "params": Object {
           "id": 1,
         },
-        "chatChannelId": "1",
-        "key": "foo",
-        "method": "POST",
-        "path": "v2/bot/message/push",
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -24,13 +24,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "1",
+        "key": "foo",
+        "method": "POST",
+        "params": Object {
           "id": 2,
         },
-        "chatChannelId": "1",
-        "key": "foo",
-        "method": "POST",
-        "path": "v2/bot/message/push",
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -42,13 +42,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "1",
+        "key": "bar",
+        "method": "POST",
+        "params": Object {
           "id": 3,
         },
-        "chatChannelId": "1",
-        "key": "bar",
-        "method": "POST",
-        "path": "v2/bot/message/push",
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -60,13 +60,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "1",
+        "key": "bar",
+        "method": "POST",
+        "params": Object {
           "id": 4,
         },
-        "chatChannelId": "1",
-        "key": "bar",
-        "method": "POST",
-        "path": "v2/bot/message/reply",
+        "url": "v2/bot/message/reply",
       },
       "result": Object {
         "body": Object {},
@@ -78,13 +78,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "2",
+        "key": "baz",
+        "method": "POST",
+        "params": Object {
           "id": 5,
         },
-        "chatChannelId": "2",
-        "key": "baz",
-        "method": "POST",
-        "path": "v2/bot/message/reply",
+        "url": "v2/bot/message/reply",
       },
       "result": Object {
         "body": Object {},
@@ -96,13 +96,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "2",
+        "key": "baz",
+        "method": "POST",
+        "params": Object {
           "id": 6,
         },
-        "chatChannelId": "2",
-        "key": "baz",
-        "method": "POST",
-        "path": "v2/bot/message/reply",
+        "url": "v2/bot/message/reply",
       },
       "result": Object {
         "body": Object {},
@@ -114,13 +114,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
-          "id": 7,
-        },
         "chatChannelId": "1",
         "key": "foo",
         "method": "POST",
-        "path": "v2/bot/message/push",
+        "params": Object {
+          "id": 7,
+        },
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -132,13 +132,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
-          "id": 8,
-        },
         "chatChannelId": "1",
         "key": "bar",
         "method": "POST",
-        "path": "v2/bot/message/push",
+        "params": Object {
+          "id": 8,
+        },
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -150,13 +150,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
-          "id": 9,
-        },
         "chatChannelId": "2",
         "key": "baz",
         "method": "POST",
-        "path": "v2/bot/message/push",
+        "params": Object {
+          "id": 9,
+        },
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -177,13 +177,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "1",
+        "key": "foo",
+        "method": "POST",
+        "params": Object {
           "id": 1,
         },
-        "chatChannelId": "1",
-        "key": "foo",
-        "method": "POST",
-        "path": "v2/bot/message/push",
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -195,13 +195,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "1",
+        "key": "foo",
+        "method": "POST",
+        "params": Object {
           "id": 2,
         },
-        "chatChannelId": "1",
-        "key": "foo",
-        "method": "POST",
-        "path": "v2/bot/message/push",
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -213,13 +213,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "1",
+        "key": "bar",
+        "method": "POST",
+        "params": Object {
           "id": 3,
         },
-        "chatChannelId": "1",
-        "key": "bar",
-        "method": "POST",
-        "path": "v2/bot/message/push",
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -231,13 +231,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "1",
+        "key": "bar",
+        "method": "POST",
+        "params": Object {
           "id": 4,
         },
-        "chatChannelId": "1",
-        "key": "bar",
-        "method": "POST",
-        "path": "v2/bot/message/reply",
+        "url": "v2/bot/message/reply",
       },
       "result": Object {
         "body": Object {},
@@ -249,13 +249,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "2",
+        "key": "baz",
+        "method": "POST",
+        "params": Object {
           "id": 5,
         },
-        "chatChannelId": "2",
-        "key": "baz",
-        "method": "POST",
-        "path": "v2/bot/message/reply",
+        "url": "v2/bot/message/reply",
       },
       "result": Object {
         "body": Object {},
@@ -267,13 +267,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
+        "chatChannelId": "2",
+        "key": "baz",
+        "method": "POST",
+        "params": Object {
           "id": 6,
         },
-        "chatChannelId": "2",
-        "key": "baz",
-        "method": "POST",
-        "path": "v2/bot/message/reply",
+        "url": "v2/bot/message/reply",
       },
       "result": Object {
         "body": Object {},
@@ -285,13 +285,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
-          "id": 7,
-        },
         "chatChannelId": "1",
         "key": "foo",
         "method": "POST",
-        "path": "v2/bot/message/push",
+        "params": Object {
+          "id": 7,
+        },
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -303,13 +303,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
-          "id": 8,
-        },
         "chatChannelId": "1",
         "key": "bar",
         "method": "POST",
-        "path": "v2/bot/message/push",
+        "params": Object {
+          "id": 8,
+        },
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},
@@ -321,13 +321,13 @@ Object {
     Object {
       "error": undefined,
       "job": Object {
-        "body": Object {
-          "id": 9,
-        },
         "chatChannelId": "2",
         "key": "baz",
         "method": "POST",
-        "path": "v2/bot/message/push",
+        "params": Object {
+          "id": 9,
+        },
+        "url": "v2/bot/message/push",
       },
       "result": Object {
         "body": Object {},

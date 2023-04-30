@@ -40,7 +40,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
     const profileData: LineRawUserProfile = await this.bot.makeApiCall({
       channel,
       method: 'GET',
-      path: requestApi,
+      url: requestApi,
     });
 
     return new LineUserProfile(profileData);
@@ -60,7 +60,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
     const groupSummary: LineGroupData = await this.bot.makeApiCall({
       channel,
       method: 'GET',
-      path: `v2/bot/group/${chat.id}/summary`,
+      url: `v2/bot/group/${chat.id}/summary`,
     });
 
     return new LineGroupProfile(groupSummary);

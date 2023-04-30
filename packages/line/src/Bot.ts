@@ -39,12 +39,16 @@ type LineBotOptions = {
 };
 
 type ApiCallOptions = {
-  /** The LINE channel to  */
-  channel?: LineChannel;
-  accessToken?: string;
+  /** HTTP method */
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  path: string;
-  body?: unknown;
+  /** API request URL relative to https://api.line.me/ */
+  url: string;
+  /** API request parameters */
+  params?: Record<string, unknown>;
+  /** The LINE messaging API channel to make the rrequest */
+  channel?: LineChannel;
+  /** Force to use the access token */
+  accessToken?: string;
 };
 
 /**
@@ -124,8 +128,8 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
 
   async makeApiCall<ResBody extends MessagingApiResult>({
     method,
-    path,
-    body,
+    url,
+    params,
     channel,
     accessToken,
   }: ApiCallOptions): Promise<ResBody> {
@@ -133,8 +137,8 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
       const response = await this.engine.dispatchJobs(null, [
         {
           method: method ?? 'GET',
-          path,
-          body,
+          url,
+          params,
           key: undefined,
           chatChannelId: channel?.id,
           accessToken,

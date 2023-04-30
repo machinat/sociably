@@ -44,7 +44,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
       rawUser = await this.bot.makeApiCall<RawUser>({
         agent,
         method: 'GET',
-        path: '1.1/users/show.json',
+        url: '1.1/users/show.json',
         params: { user_id: user.id, include_entities: withEntities },
       });
     }
@@ -54,7 +54,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
       rawSettings = await this.bot.makeApiCall({
         agent,
         method: 'GET',
-        path: '1.1/account/settings.json',
+        url: '1.1/account/settings.json',
       });
     }
 

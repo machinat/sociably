@@ -93,7 +93,6 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -107,9 +106,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             "reply": undefined,
             "text": "Hello",
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -120,9 +119,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": "World",
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -138,9 +137,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": undefined,
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -156,6 +155,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": "Haro",
           },
+          "url": "2/tweets",
         },
         Object {
           "href": "1.1/foo",
@@ -274,7 +274,6 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -287,9 +286,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             "reply": undefined,
             "text": "Hello",
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -305,9 +304,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": undefined,
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -323,9 +322,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": undefined,
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -344,9 +343,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": "World",
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -362,6 +361,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": undefined,
           },
+          "url": "2/tweets",
         },
       ]
     `);
@@ -401,7 +401,6 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -412,9 +411,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": "龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜",
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -430,6 +429,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": "龍龜",
           },
+          "url": "2/tweets",
         },
       ]
     `);
@@ -517,7 +517,6 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -532,9 +531,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             "reply": undefined,
             "text": "Yo",
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -550,9 +549,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": undefined,
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -564,9 +563,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": "Hi",
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -582,9 +581,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": undefined,
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -600,9 +599,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": "Howdy",
           },
+          "url": "2/tweets",
         },
         Object {
-          "href": "2/tweets",
           "method": "POST",
           "params": Object {
             "direct_message_deep_link": undefined,
@@ -618,6 +617,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             },
             "text": undefined,
           },
+          "url": "2/tweets",
         },
       ]
     `);
@@ -699,7 +699,6 @@ describe('createDmSegmentValue(chat, segment)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "href": "1.1/direct_messages/events/new.json",
           "method": "POST",
           "params": Object {
             "event": Object {
@@ -715,9 +714,9 @@ describe('createDmSegmentValue(chat, segment)', () => {
               "type": "message_create",
             },
           },
+          "url": "1.1/direct_messages/events/new.json",
         },
         Object {
-          "href": "1.1/direct_messages/events/new.json",
           "method": "POST",
           "params": Object {
             "event": Object {
@@ -738,9 +737,9 @@ describe('createDmSegmentValue(chat, segment)', () => {
               "type": "message_create",
             },
           },
+          "url": "1.1/direct_messages/events/new.json",
         },
         Object {
-          "href": "1.1/direct_messages/events/new.json",
           "method": "POST",
           "params": Object {
             "event": Object {
@@ -761,6 +760,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
               "type": "message_create",
             },
           },
+          "url": "1.1/direct_messages/events/new.json",
         },
         Object {
           "href": "1.1/foo",
@@ -809,7 +809,6 @@ describe('createWelcomeMessageJobs', () => {
     expect(job.accomplishRequest!(job.target!, job.request, null))
       .toMatchInlineSnapshot(`
       Object {
-        "href": "1.1/direct_messages/welcome_messages/new.json",
         "method": "POST",
         "params": Object {
           "welcome_message": Object {
@@ -820,6 +819,7 @@ describe('createWelcomeMessageJobs', () => {
             "name": "foo",
           },
         },
+        "url": "1.1/direct_messages/welcome_messages/new.json",
       }
     `);
   });
@@ -848,7 +848,6 @@ describe('createWelcomeMessageJobs', () => {
     expect(job.accomplishRequest!(job.target!, job.request, ['1234567890']))
       .toMatchInlineSnapshot(`
       Object {
-        "href": "1.1/direct_messages/welcome_messages/new.json",
         "method": "POST",
         "params": Object {
           "welcome_message": Object {
@@ -864,6 +863,7 @@ describe('createWelcomeMessageJobs', () => {
             "name": "foo",
           },
         },
+        "url": "1.1/direct_messages/welcome_messages/new.json",
       }
     `);
   });
@@ -889,7 +889,6 @@ describe('createWelcomeMessageJobs', () => {
     expect(job.accomplishRequest!(job.target!, job.request, ['1234567890']))
       .toMatchInlineSnapshot(`
       Object {
-        "href": "1.1/direct_messages/welcome_messages/new.json",
         "method": "POST",
         "params": Object {
           "welcome_message": Object {
@@ -905,6 +904,7 @@ describe('createWelcomeMessageJobs', () => {
             "name": "foo",
           },
         },
+        "url": "1.1/direct_messages/welcome_messages/new.json",
       }
     `);
   });

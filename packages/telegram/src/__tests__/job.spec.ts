@@ -24,11 +24,11 @@ describe('createChatJob(thread, segments)', () => {
           value: {
             method: 'sendPhoto',
             params: { caption: 'bar', photo: undefined },
-            uploadFiles: [
+            files: [
               {
                 fieldName: 'photo',
-                fileData: Buffer.from('BAR'),
-                fileInfo: { filename: 'bar.jpg' },
+                data: Buffer.from('BAR'),
+                info: { filename: 'bar.jpg' },
                 assetTag: 'MyBar',
               },
             ],
@@ -45,28 +45,20 @@ describe('createChatJob(thread, segments)', () => {
       Array [
         Object {
           "botId": 12345,
+          "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendMesage",
           "params": Object {
             "chat_id": 67890,
             "text": "foo",
           },
-          "uploadFiles": null,
         },
         Object {
           "botId": 12345,
-          "key": "tg.12345.67890",
-          "method": "sendPhoto",
-          "params": Object {
-            "caption": "bar",
-            "chat_id": 67890,
-            "photo": undefined,
-          },
-          "uploadFiles": Array [
+          "files": Array [
             Object {
               "assetTag": "MyBar",
-              "fieldName": "photo",
-              "fileData": Object {
+              "data": Object {
                 "data": Array [
                   66,
                   65,
@@ -74,14 +66,23 @@ describe('createChatJob(thread, segments)', () => {
                 ],
                 "type": "Buffer",
               },
-              "fileInfo": Object {
+              "fieldName": "photo",
+              "info": Object {
                 "filename": "bar.jpg",
               },
             },
           ],
+          "key": "tg.12345.67890",
+          "method": "sendPhoto",
+          "params": Object {
+            "caption": "bar",
+            "chat_id": 67890,
+            "photo": undefined,
+          },
         },
         Object {
           "botId": 12345,
+          "files": Array [],
           "key": "tg.12345.67890",
           "method": "sendMessage",
           "params": Object {
@@ -89,7 +90,6 @@ describe('createChatJob(thread, segments)', () => {
             "parse_mode": "HTML",
             "text": "baz",
           },
-          "uploadFiles": null,
         },
       ]
     `);
@@ -139,11 +139,11 @@ describe('createBotScopeJobs(action, segments)', () => {
                 media: 'attach://photo',
               },
             },
-            uploadFiles: [
+            files: [
               {
                 fieldName: 'photo',
-                fileData: Buffer.from('BAR'),
-                fileInfo: { filename: 'bar.jpg' },
+                data: Buffer.from('BAR'),
+                info: { filename: 'bar.jpg' },
                 assetTag: 'MyBar',
               },
             ],
@@ -154,25 +154,42 @@ describe('createBotScopeJobs(action, segments)', () => {
       Array [
         Object {
           "botId": 12345,
+          "files": undefined,
           "key": undefined,
           "method": "answerCallbackQuery",
           "params": Object {
             "callback_query_id": "_CALLBACK_QUERY_ID_",
           },
-          "uploadFiles": null,
         },
         Object {
           "botId": 12345,
+          "files": undefined,
           "key": undefined,
           "method": "editMessageText",
           "params": Object {
             "inline_message_id": 123,
             "text": "foo",
           },
-          "uploadFiles": null,
         },
         Object {
           "botId": 12345,
+          "files": Array [
+            Object {
+              "assetTag": "MyBar",
+              "data": Object {
+                "data": Array [
+                  66,
+                  65,
+                  82,
+                ],
+                "type": "Buffer",
+              },
+              "fieldName": "photo",
+              "info": Object {
+                "filename": "bar.jpg",
+              },
+            },
+          ],
           "key": undefined,
           "method": "editMessageMedia",
           "params": Object {
@@ -182,23 +199,6 @@ describe('createBotScopeJobs(action, segments)', () => {
               "type": "photo",
             },
           },
-          "uploadFiles": Array [
-            Object {
-              "assetTag": "MyBar",
-              "fieldName": "photo",
-              "fileData": Object {
-                "data": Array [
-                  66,
-                  65,
-                  82,
-                ],
-                "type": "Buffer",
-              },
-              "fileInfo": Object {
-                "filename": "bar.jpg",
-              },
-            },
-          ],
         },
       ]
     `);

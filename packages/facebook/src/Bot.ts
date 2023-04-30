@@ -79,9 +79,13 @@ type CommentResult = {
 };
 
 type ApiCallOptions = {
+  /** The page to make the API call */
   page: FacebookPage;
+  /** HTTP method */
   method?: string;
-  path: string;
+  /** API request URL relative to https://graph.facebook.com/{version}/ */
+  url: string;
+  /** API request parameters */
   params?: Record<string, unknown>;
 };
 
@@ -201,9 +205,9 @@ export class FacebookBot
     for (const [i, { request }] of jobs.entries()) {
       const resultBody = results[i].body;
 
-      if (request.relativeUrl === PATH_FEED) {
+      if (request.url === PATH_FEED) {
         postId = resultBody.id;
-      } else if (request.relativeUrl === PATH_PHOTOS) {
+      } else if (request.url === PATH_PHOTOS) {
         if (resultBody.post_id) {
           postId = resultBody.post_id;
         }
@@ -232,9 +236,9 @@ export class FacebookBot
     let photo: null | PagePhotoResult = null;
 
     for (const [i, { request }] of response.jobs.entries()) {
-      if (request.relativeUrl === PATH_PHOTOS) {
+      if (request.url === PATH_PHOTOS) {
         photo = { photoId: response.results[i].body.id };
-      } else if (request.relativeUrl === PATH_PHOTOS) {
+      } else if (request.url === PATH_PHOTOS) {
         results.push({
           commentId: response.results[i].body.id,
           photo,
@@ -248,18 +252,14 @@ export class FacebookBot
   async makeApiCall<ResBody extends MetaApiResponseBody>({
     page,
     method = 'GET',
-    path,
+    url,
     params,
   }: ApiCallOptions): Promise<ResBody> {
     try {
       const { results } = await this.engine.dispatchJobs(page, [
         {
           channel: page,
-          request: {
-            method,
-            relativeUrl: path,
-            params,
-          },
+          request: { method, url, params },
         },
       ]);
 

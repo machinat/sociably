@@ -23,7 +23,7 @@ export const MarkRead: TwitterComponent<
       type: 'dm',
       request: {
         method: 'POST',
-        href: '1.1/direct_messages/mark_read.json',
+        url: '1.1/direct_messages/mark_read.json',
         params: {
           recipient_id: '',
           last_read_event_id: node.props.messageId,

@@ -55,10 +55,15 @@ type TwitterBotOptions = {
 };
 
 type ApiCallOptions = {
+  /** The agent user to make the API call with */
   agent?: TwitterUser;
+  /** HTTP method */
   method: string;
-  path: string;
+  /** API request URL relative to https://api.twitter.com/ */
+  url: string;
+  /** API request parameters */
   params?: Record<string, unknown>;
+  /** Call the API using app scoped auth */
   asApplication?: boolean;
 };
 
@@ -144,7 +149,7 @@ export class TwitterBot
   async makeApiCall<Result>({
     agent,
     method,
-    path,
+    url,
     params = {},
     asApplication = false,
   }: ApiCallOptions): Promise<Result> {
@@ -152,7 +157,7 @@ export class TwitterBot
     try {
       const response = await this.engine.dispatchJobs(target, [
         {
-          request: { method, href: path, params },
+          request: { method, url, params },
           target,
           refreshTarget: null,
           key: undefined,

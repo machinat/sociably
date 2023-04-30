@@ -24,11 +24,11 @@ test('rendering', async () => {
           "accomplishRequest": [Function],
           "mediaSources": null,
           "request": Object {
-            "href": "2/users/:id/retweets",
             "method": "POST",
             "params": Object {
               "tweet_id": "12345",
             },
+            "url": "2/users/:id/retweets",
           },
           "type": "action",
         },
@@ -39,11 +39,11 @@ test('rendering', async () => {
   expect(accomplishRequest(new TweetTarget('67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "2/users/67890/retweets",
       "method": "POST",
       "params": Object {
         "tweet_id": "12345",
       },
+      "url": "2/users/67890/retweets",
     }
   `);
 });

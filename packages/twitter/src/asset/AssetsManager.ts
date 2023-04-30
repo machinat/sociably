@@ -176,7 +176,8 @@ export class TwitterAssetsManager {
     await this._bot.makeApiCall({
       agent,
       method: 'DELETE',
-      path: `1.1/direct_messages/welcome_messages/destroy.json?id=${welcomeId}`,
+      url: `1.1/direct_messages/welcome_messages/destroy.json`,
+      params: { id: welcomeId },
     });
     await this.unsaveWelcomeMessage(agent, tag);
     return welcomeId;
@@ -224,7 +225,7 @@ export class TwitterAssetsManager {
     } = await this._bot.makeApiCall<CreateCustomProfileResult>({
       agent,
       method: 'POST',
-      path: `1.1/custom_profiles/new.json`,
+      url: `1.1/custom_profiles/new.json`,
       params: {
         custom_profile: {
           name,
@@ -246,7 +247,8 @@ export class TwitterAssetsManager {
     await this._bot.makeApiCall({
       agent,
       method: 'DELETE',
-      path: `1.1/custom_profiles/destroy.json?id=${customProfileId}`,
+      url: `1.1/custom_profiles/destroy.json`,
+      params: { id: customProfileId },
     });
     await this.unsaveCustomProfile(agent, tag);
     return customProfileId;

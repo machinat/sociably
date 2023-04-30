@@ -22,7 +22,6 @@ test("rendering to agent's page", async () => {
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "direct_message_deep_link": undefined,
@@ -35,6 +34,7 @@ test("rendering to agent's page", async () => {
         "reply_settings": "following",
         "text": "Hello World",
       },
+      "url": "2/tweets",
     }
   `);
 });
@@ -54,7 +54,6 @@ test('rendering as a reply', async () => {
   expect(accomplishRequest(new TweetTarget('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "direct_message_deep_link": undefined,
@@ -81,6 +80,7 @@ test('rendering as a reply', async () => {
         "reply_settings": undefined,
         "text": "Hello World",
       },
+      "url": "2/tweets",
     }
   `);
 });
@@ -113,7 +113,6 @@ test('rendering with media', async () => {
     ])
   ).toMatchInlineSnapshot(`
     Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "direct_message_deep_link": undefined,
@@ -135,6 +134,7 @@ test('rendering with media', async () => {
         "reply_settings": undefined,
         "text": undefined,
       },
+      "url": "2/tweets",
     }
   `);
 });
@@ -147,7 +147,6 @@ test("rendering to agent's page", async () => {
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=12345",
@@ -160,6 +159,7 @@ test("rendering to agent's page", async () => {
         "reply_settings": undefined,
         "text": "Hello World",
       },
+      "url": "2/tweets",
     }
   `);
 
@@ -172,7 +172,6 @@ test("rendering to agent's page", async () => {
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=23456&text=boo",
@@ -185,6 +184,7 @@ test("rendering to agent's page", async () => {
         "reply_settings": undefined,
         "text": "Hello World",
       },
+      "url": "2/tweets",
     }
   `);
 
@@ -199,7 +199,6 @@ test("rendering to agent's page", async () => {
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=12345&welcome_message_id=22222&text=hello%20world",
@@ -212,6 +211,7 @@ test("rendering to agent's page", async () => {
         "reply_settings": undefined,
         "text": "Hello World",
       },
+      "url": "2/tweets",
     }
   `);
 });
@@ -314,7 +314,6 @@ test('spliting long content into tweet thread', async () => {
   ).toMatchInlineSnapshot(`
     Array [
       Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "direct_message_deep_link": undefined,
@@ -329,9 +328,9 @@ test('spliting long content into tweet thread', async () => {
           "reply_settings": "following",
           "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國",
         },
+        "url": "2/tweets",
       },
       Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "direct_message_deep_link": undefined,
@@ -342,9 +341,9 @@ test('spliting long content into tweet thread', async () => {
           },
           "text": "國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國",
         },
+        "url": "2/tweets",
       },
       Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "direct_message_deep_link": undefined,
@@ -355,6 +354,7 @@ test('spliting long content into tweet thread', async () => {
           },
           "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國",
         },
+        "url": "2/tweets",
       },
     ]
   `);

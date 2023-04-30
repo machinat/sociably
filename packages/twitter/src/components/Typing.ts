@@ -19,7 +19,7 @@ export const Typing: TwitterComponent<
       type: 'dm',
       request: {
         method: 'POST',
-        href: '1.1/direct_messages/indicate_typing.json',
+        url: '1.1/direct_messages/indicate_typing.json',
         params: { recipient_id: '' },
       },
       accomplishRequest: (chat: TwitterChat, request) => {

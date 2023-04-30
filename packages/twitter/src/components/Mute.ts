@@ -25,12 +25,12 @@ export const Mute: TwitterComponent<
       type: 'action',
       request: {
         method: 'POST',
-        href: '2/users/:id/muting',
+        url: '2/users/:id/muting',
         params: { target_user_id: node.props.userId },
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/muting`,
+        url: `2/users/${target.agentId}/muting`,
       }),
       mediaSources: null,
     }),

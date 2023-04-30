@@ -11,11 +11,11 @@ const createMessageJob = (
   replyToken: undefined | string
 ): LineJob => ({
   method: 'POST',
-  path: replyToken ? PATH_REPLY : PATH_PUSH,
+  url: replyToken ? PATH_REPLY : PATH_PUSH,
   key: thread.uid,
   chatChannelId: thread.channelId,
   accessToken: undefined,
-  body: replyToken
+  params: replyToken
     ? { replyToken: replyToken as string, messages }
     : { to: thread.id, messages },
 });
@@ -73,14 +73,14 @@ export const createChatJobs = (replyToken: undefined | string) => {
         }
 
         // get dynamic api request
-        const { method, path, body } = value.getChatRequest(thread);
+        const { method, url, params } = value.getChatRequest(thread);
         jobs.push({
           method,
-          path,
+          url,
           key: thread.uid,
           chatChannelId: thread.channelId,
           accessToken: undefined,
-          body,
+          params,
         });
       }
     }
@@ -111,8 +111,8 @@ export const createMulticastJobs =
         if (messages.length === 5 || i === segments.length - 1) {
           jobs.push({
             method: 'POST',
-            path: PATH_MULTICAST,
-            body: { to: targets, messages },
+            url: PATH_MULTICAST,
+            params: { to: targets, messages },
             key: MULITCAST_EXECUTION_KEY,
             chatChannelId: channel.id,
             accessToken: undefined,
@@ -124,8 +124,8 @@ export const createMulticastJobs =
         if (messages.length > 0) {
           jobs.push({
             method: 'POST',
-            path: PATH_MULTICAST,
-            body: { to: targets, messages },
+            url: PATH_MULTICAST,
+            params: { to: targets, messages },
             key: MULITCAST_EXECUTION_KEY,
             chatChannelId: channel.id,
             accessToken: undefined,
@@ -140,11 +140,11 @@ export const createMulticastJobs =
         }
 
         // get dynamic api request
-        const { method, path, body } = value.getBulkRequest(targets);
+        const { method, url, params } = value.getBulkRequest(targets);
         jobs.push({
           method,
-          path,
-          body,
+          url,
+          params,
           key: MULITCAST_EXECUTION_KEY,
           chatChannelId: channel.id,
           accessToken: undefined,

@@ -50,7 +50,7 @@ export class FacebookProfiler
       rawProfile = await this._bot.makeApiCall({
         page,
         method: 'GET',
-        path: `${user.id}?fields=${this.profileFields}`,
+        url: `${user.id}?fields=${this.profileFields}`,
       });
     } catch (err) {
       if (err instanceof MetaApiError) {

@@ -91,7 +91,7 @@ describe('createChatJobs(options)(thread, segments)', () => {
         channel: new FacebookPage('12345'),
         request: {
           method: 'POST',
-          relativeUrl: i === 2 ? 'bar/baz' : 'me/messages',
+          url: i === 2 ? 'bar/baz' : 'me/messages',
           params: {
             recipient: { id: '67890' },
             ...expectedBodyFields[i],
@@ -411,7 +411,7 @@ describe('createChatAttachmentJobs()', () => {
         channel: new FacebookPage('1234567890'),
         request: {
           method: 'POST',
-          relativeUrl: 'me/message_attachments',
+          url: 'me/message_attachments',
           params: {
             message: {
               attachment: {
@@ -467,7 +467,7 @@ describe('createChatAttachmentJobs()', () => {
         },
         request: {
           method: 'POST',
-          relativeUrl: 'me/message_attachments',
+          url: 'me/message_attachments',
           params: {
             message: {
               attachment: { type: 'image', is_sharable: true },
@@ -574,7 +574,7 @@ describe('createPostJobs()', () => {
             "params": Object {
               "message": "hello facebook",
             },
-            "relativeUrl": "me/feed",
+            "url": "me/feed",
           },
         },
       ]
@@ -610,7 +610,7 @@ describe('createPostJobs()', () => {
             "params": Object {
               "object_attachment": "1234567890",
             },
-            "relativeUrl": "me/feed",
+            "url": "me/feed",
           },
         },
       ]
@@ -664,7 +664,7 @@ describe('createPostJobs()', () => {
               "link": "http://sociably.js.org",
               "name": "Sociably",
             },
-            "relativeUrl": "me/feed",
+            "url": "me/feed",
           },
         },
       ]
@@ -708,7 +708,7 @@ describe('createPostJobs()', () => {
           "request": Object {
             "method": "POST",
             "params": Object {},
-            "relativeUrl": "me/photos",
+            "url": "me/photos",
           },
         },
       ]
@@ -749,7 +749,7 @@ describe('createPostJobs()', () => {
             "params": Object {
               "url": "http://foo.bar/baz.jpg",
             },
-            "relativeUrl": "9876543210/photos",
+            "url": "9876543210/photos",
           },
         },
       ]
@@ -806,7 +806,7 @@ describe('createPostJobs()', () => {
               "temporary": undefined,
               "url": "http://sociably.com/foo.jpg",
             },
-            "relativeUrl": "me/photos",
+            "url": "me/photos",
           },
         },
         Object {
@@ -831,7 +831,7 @@ describe('createPostJobs()', () => {
               "published": false,
               "temporary": undefined,
             },
-            "relativeUrl": "me/photos",
+            "url": "me/photos",
           },
         },
         Object {
@@ -852,7 +852,7 @@ describe('createPostJobs()', () => {
             "params": Object {
               "message": "foo",
             },
-            "relativeUrl": "me/feed",
+            "url": "me/feed",
           },
         },
       ]
@@ -884,7 +884,7 @@ describe('createPostJobs()', () => {
           ],
           "message": "foo",
         },
-        "relativeUrl": "me/feed",
+        "url": "me/feed",
       }
     `);
 
@@ -930,7 +930,7 @@ describe('createPostJobs()', () => {
               "temporary": true,
               "url": "http://sociably.com/foo.jpg",
             },
-            "relativeUrl": "me/photos",
+            "url": "me/photos",
           },
         },
         Object {
@@ -951,7 +951,7 @@ describe('createPostJobs()', () => {
               "message": "foo",
               "scheduled_publish_time": 1666666666,
             },
-            "relativeUrl": "me/feed",
+            "url": "me/feed",
           },
         },
       ]
@@ -1033,7 +1033,7 @@ describe('createInteractJobs()', () => {
             "params": Object {
               "message": "hello",
             },
-            "relativeUrl": "_OBJECT_ID_/comments",
+            "url": "_OBJECT_ID_/comments",
           },
         },
       ]
@@ -1071,7 +1071,7 @@ describe('createInteractJobs()', () => {
               "attachment_share_url": "http://sociably.js/hello.jpg",
               "message": "hello",
             },
-            "relativeUrl": "_OBJECT_ID_/comments",
+            "url": "_OBJECT_ID_/comments",
           },
         },
       ]
@@ -1119,7 +1119,7 @@ describe('createInteractJobs()', () => {
           "request": Object {
             "method": "POST",
             "params": Object {},
-            "relativeUrl": "me/photos",
+            "url": "me/photos",
           },
         },
         Object {
@@ -1139,7 +1139,7 @@ describe('createInteractJobs()', () => {
             "params": Object {
               "message": "hello",
             },
-            "relativeUrl": "_OBJECT_ID_/comments",
+            "url": "_OBJECT_ID_/comments",
           },
         },
       ]
@@ -1161,7 +1161,7 @@ describe('createInteractJobs()', () => {
           "attachment_id": "_PHOTO_ID_",
           "message": "hello",
         },
-        "relativeUrl": "_OBJECT_ID_/comments",
+        "url": "_OBJECT_ID_/comments",
       }
     `);
     expect(getRegisteredResult).toHaveBeenCalledTimes(1);
@@ -1211,7 +1211,7 @@ describe('createInteractJobs()', () => {
             "params": Object {
               "message": "foo",
             },
-            "relativeUrl": "_OBJECT_ID_/comments",
+            "url": "_OBJECT_ID_/comments",
           },
         },
         Object {
@@ -1231,7 +1231,7 @@ describe('createInteractJobs()', () => {
             "params": Object {
               "message": "bar",
             },
-            "relativeUrl": "_OBJECT_ID_/comments",
+            "url": "_OBJECT_ID_/comments",
           },
         },
         Object {
@@ -1246,7 +1246,7 @@ describe('createInteractJobs()', () => {
             "params": Object {
               "url": "http://sociably.js",
             },
-            "relativeUrl": "me/photos",
+            "url": "me/photos",
           },
         },
         Object {
@@ -1267,7 +1267,7 @@ describe('createInteractJobs()', () => {
             "params": Object {
               "message": "baz",
             },
-            "relativeUrl": "_OBJECT_ID_/comments",
+            "url": "_OBJECT_ID_/comments",
           },
         },
       ]
@@ -1289,7 +1289,7 @@ describe('createInteractJobs()', () => {
         "params": Object {
           "message": "bar",
         },
-        "relativeUrl": "_COMMENT_ID_1_/comments",
+        "url": "_COMMENT_ID_1_/comments",
       }
     `);
     expect(getRegisteredResult).toHaveBeenCalledTimes(1);
@@ -1320,7 +1320,7 @@ describe('createInteractJobs()', () => {
           "attachment_id": "_PHOTO_ID_",
           "message": "bar",
         },
-        "relativeUrl": "_COMMENT_ID_2_/comments",
+        "url": "_COMMENT_ID_2_/comments",
       }
     `);
     expect(getRegisteredResult).toHaveBeenCalledTimes(3);

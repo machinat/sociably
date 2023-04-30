@@ -16,16 +16,16 @@ const UNLINK_RICHMENU_VALUE = {
 
     return {
       method: 'DELETE' as const,
-      path: `v2/bot/user/${thread.id}/richmenu`,
-      body: null,
+      url: `v2/bot/user/${thread.id}/richmenu`,
+      params: null,
     };
   },
 
   getBulkRequest(userIds: string[]) {
     return {
       method: 'POST' as const,
-      path: 'v2/bot/richmenu/bulk/unlink',
-      body: { userIds },
+      url: 'v2/bot/richmenu/bulk/unlink',
+      params: { userIds },
     };
   },
 };

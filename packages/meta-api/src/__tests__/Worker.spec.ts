@@ -24,7 +24,7 @@ const jobs = [
     key: 'facebook.id.foo.john',
     request: {
       method: 'POST',
-      relativeUrl: 'me/messages',
+      url: 'me/messages',
       params: { recipient: { id: 'john' }, id: 1 },
     },
     channel: { platform: 'test', uid: 'foo' },
@@ -33,7 +33,7 @@ const jobs = [
     key: 'facebook.id.foo.john',
     request: {
       method: 'POST',
-      relativeUrl: 'some/api',
+      url: 'some/api',
       params: { recipient: { id: 'john' }, id: 2 },
     },
     channel: { platform: 'test', uid: 'foo' },
@@ -42,7 +42,7 @@ const jobs = [
     key: 'facebook.id.bar.jane',
     request: {
       method: 'POST',
-      relativeUrl: 'me/messages',
+      url: 'me/messages',
       params: { recipient: { id: 'jane' }, id: 3 },
     },
     channel: { platform: 'test', uid: 'bar' },
@@ -51,7 +51,7 @@ const jobs = [
     key: 'facebook.id.baz.jojo',
     request: {
       method: 'POST',
-      relativeUrl: 'another/api',
+      url: 'another/api',
       params: { recipient: { id: 'jojo' }, id: 4 },
     },
     channel: { platform: 'test', uid: 'baz' },
@@ -529,7 +529,7 @@ it('use querystring params for GET request', async () => {
     key: undefined,
     request: {
       method: 'GET',
-      relativeUrl: '1234567890',
+      url: '1234567890',
       params: { fields: ['id', 'name', 'email'] },
     },
     channel: { uid: 'foo' },
@@ -584,7 +584,7 @@ it('use querystring params for DELETE request', async () => {
     key: undefined,
     request: {
       method: 'DELETE',
-      relativeUrl: 'me/messenger_profile',
+      url: 'me/messenger_profile',
       params: { fields: ['whitelisted_domains'] },
     },
     channel: { uid: 'foo' },
@@ -627,7 +627,7 @@ describe('multiple access tokens', () => {
       key: 'facebook:id:foo',
       request: {
         method: 'POST',
-        relativeUrl: 'me/messages',
+        url: 'me/messages',
         params: { id: 1 },
       },
       channel: { uid: 'foo' },
@@ -636,21 +636,21 @@ describe('multiple access tokens', () => {
       key: 'facebook:id:bar',
       request: {
         method: 'POST',
-        relativeUrl: 'me/messages',
+        url: 'me/messages',
         params: { id: 2 },
       },
       channel: { uid: 'bar' },
     },
     {
       key: 'facebook:id:bar',
-      request: { method: 'POST', relativeUrl: 'bar/baz', params: { id: 3 } },
+      request: { method: 'POST', url: 'bar/baz', params: { id: 3 } },
       channel: { uid: 'bar' },
     },
     {
       key: 'facebook:id:baz',
       request: {
         method: 'POST',
-        relativeUrl: 'me/messages',
+        url: 'me/messages',
         params: { id: 4 },
       },
       channel: { uid: 'baz' },
@@ -758,7 +758,7 @@ describe('multiple access tokens', () => {
                       "params": Object {
                         "id": 1,
                       },
-                      "relativeUrl": "me/messages",
+                      "url": "me/messages",
                     },
                   },
                   "result": Object {
@@ -781,7 +781,7 @@ describe('multiple access tokens', () => {
                       "params": Object {
                         "id": 2,
                       },
-                      "relativeUrl": "me/messages",
+                      "url": "me/messages",
                     },
                   },
                   "result": Object {
@@ -803,7 +803,7 @@ describe('multiple access tokens', () => {
                       "params": Object {
                         "id": 3,
                       },
-                      "relativeUrl": "bar/baz",
+                      "url": "bar/baz",
                     },
                   },
                   "result": Object {
@@ -825,7 +825,7 @@ describe('multiple access tokens', () => {
                       "params": Object {
                         "id": 4,
                       },
-                      "relativeUrl": "me/messages",
+                      "url": "me/messages",
                     },
                   },
                   "result": Object {
@@ -890,7 +890,7 @@ describe('using API result in following request', () => {
       key: 'foo_thread',
       request: {
         method: 'POST',
-        relativeUrl: '1234567890/media',
+        url: '1234567890/media',
         params: {
           type: 'image/jpeg',
           file: '@/pretend/to/upload/a/file.jpg',
@@ -903,7 +903,7 @@ describe('using API result in following request', () => {
       key: 'foo_thread',
       request: {
         method: 'POST',
-        relativeUrl: '1234567890/media',
+        url: '1234567890/media',
         params: {
           type: 'image/jpeg',
           file: '@/pretend/to/upload/b/file.jpg',
@@ -916,7 +916,7 @@ describe('using API result in following request', () => {
       key: 'foo_thread',
       request: {
         method: 'POST',
-        relativeUrl: '1234567890/messages',
+        url: '1234567890/messages',
         params: {
           to: '9876543210',
           type: 'image',
@@ -1076,7 +1076,7 @@ describe('using API result in following request', () => {
     await expect(
       queue.executeJobs([
         ...new Array(49).fill({
-          request: { method: 'GET', relativeUrl: '1234567890' },
+          request: { method: 'GET', url: '1234567890' },
           channel: { uid: 'foo' },
         }),
         ...continuousJobs,

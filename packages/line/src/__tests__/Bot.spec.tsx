@@ -274,8 +274,8 @@ describe('#makeApiCall()', () => {
       bot.makeApiCall({
         channel,
         method: 'POST',
-        path: 'v2/bot/foo',
-        body: { bar: 'baz' },
+        url: 'v2/bot/foo',
+        params: { bar: 'baz' },
       })
     ).resolves.toEqual({
       foo: 'bar.baz',
@@ -296,8 +296,8 @@ describe('#makeApiCall()', () => {
       await bot.makeApiCall({
         channel,
         method: 'POST',
-        path: 'v2/bot/foo',
-        body: { bar: 'baz' },
+        url: 'v2/bot/foo',
+        params: { bar: 'baz' },
       });
       expect('should not be here').toBeFalsy();
     } catch (err) {

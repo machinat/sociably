@@ -18,7 +18,7 @@ export const createChatJobs = (
         channel: chat.agent,
         request: {
           method: 'POST',
-          relativeUrl: `${chat.agentNumberId}/messages`,
+          url: `${chat.agentNumberId}/messages`,
           params: {
             type: 'text',
             text: segment.value,
@@ -44,7 +44,7 @@ export const createChatJobs = (
           channel: chat.agent,
           request: {
             method: 'POST',
-            relativeUrl: `${chat.agentNumberId}/media`,
+            url: `${chat.agentNumberId}/media`,
             params: { type: fileType, messaging_product: 'whatsapp' },
           },
           file: { data: fileData, info: fileInfo, assetTag },
@@ -57,7 +57,7 @@ export const createChatJobs = (
         channel: chat.agent,
         request: {
           method: 'POST',
-          relativeUrl: `${chat.agentNumberId}/messages`,
+          url: `${chat.agentNumberId}/messages`,
           params: {
             ...message,
             to: chat.userNumberId,
@@ -111,7 +111,7 @@ export const createUploadingMediaJobs = (
       channel: agent,
       request: {
         method: 'POST',
-        relativeUrl: `${agent.numberId}/media`,
+        url: `${agent.numberId}/media`,
         params: { type: fileType, messaging_product: 'whatsapp' },
       },
       file: { data: fileData, info: fileInfo, assetTag },

@@ -9,7 +9,6 @@ Array [
     "mediaSources": null,
     "refreshTarget": null,
     "request": Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -25,6 +24,7 @@ Array [
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
       "agentId": "12345",
@@ -44,7 +44,6 @@ Array [
     ],
     "refreshTarget": null,
     "request": Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -65,6 +64,7 @@ Array [
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
       "agentId": "12345",
@@ -84,7 +84,6 @@ Array [
     ],
     "refreshTarget": null,
     "request": Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -105,6 +104,7 @@ Array [
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
       "agentId": "12345",
@@ -146,11 +146,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "Hello",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -170,11 +170,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": undefined,
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -194,11 +194,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": undefined,
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -230,11 +230,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "World",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -254,11 +254,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": undefined,
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -278,7 +278,6 @@ Array [
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "poll": Object {
@@ -290,6 +289,7 @@ Array [
         },
         "text": "Yo",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -309,11 +309,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": undefined,
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -328,12 +328,12 @@ Array [
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "quote_tweet_id": "98765",
         "text": "Hi",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -353,11 +353,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": undefined,
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -377,11 +377,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "Howdy",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -401,11 +401,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": undefined,
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -434,11 +434,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "Hello",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -453,11 +453,11 @@ Array [
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "World",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -477,11 +477,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": undefined,
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -501,11 +501,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "Haro",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -542,11 +542,11 @@ Array [
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -566,11 +566,11 @@ Array [
     ],
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "龍龜",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "12345",
@@ -595,7 +595,6 @@ Array [
     ],
     "refreshTarget": null,
     "request": Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -616,6 +615,7 @@ Array [
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
       "agentId": "",
@@ -643,7 +643,6 @@ Array [
     ],
     "refreshTarget": null,
     "request": Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -664,6 +663,7 @@ Array [
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
       "agentId": "",
@@ -683,7 +683,6 @@ Array [
     "mediaSources": null,
     "refreshTarget": null,
     "request": Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -699,6 +698,7 @@ Array [
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
       "agentId": "",

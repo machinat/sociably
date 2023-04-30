@@ -157,7 +157,7 @@ export class FacebookAssetsManager {
     const { id: personaId } = await this._bot.makeApiCall<{ id: string }>({
       page,
       method: 'POST',
-      path: PATH_PERSONAS,
+      url: PATH_PERSONAS,
       params: snakecaseKeys(params),
     });
 
@@ -171,7 +171,7 @@ export class FacebookAssetsManager {
       return false;
     }
 
-    await this._bot.makeApiCall({ page, method: 'DELETE', path: personaId });
+    await this._bot.makeApiCall({ page, method: 'DELETE', url: personaId });
     await this.unsavePersona(page, name);
     return true;
   }

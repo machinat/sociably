@@ -25,12 +25,12 @@ export const Unmute: TwitterComponent<
       type: 'action',
       request: {
         method: 'DELETE',
-        href: '2/users/:source_user_id/muting/:target_user_id',
+        url: '2/users/:source_user_id/muting/:target_user_id',
         params: {},
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/muting/${node.props.userId}`,
+        url: `2/users/${target.agentId}/muting/${node.props.userId}`,
       }),
       mediaSources: null,
     }),

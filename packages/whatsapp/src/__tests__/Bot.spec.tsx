@@ -284,7 +284,7 @@ describe('#makeApiCall()', () => {
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
 
     await expect(
-      bot.makeApiCall({ method: 'POST', path: 'foo', params: { bar: 'baz' } })
+      bot.makeApiCall({ method: 'POST', url: 'foo', params: { bar: 'baz' } })
     ).resolves.toEqual({
       foo: 'bar',
     });
@@ -314,7 +314,7 @@ describe('#makeApiCall()', () => {
     try {
       await bot.makeApiCall({
         method: 'POST',
-        path: 'foo',
+        url: 'foo',
         params: { bar: 'baz' },
       });
       expect('should not be here').toBeFalsy();

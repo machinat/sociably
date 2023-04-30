@@ -344,7 +344,7 @@ it('throw if api error happen', async () => {
   expect(apiCall2.isDone()).toBe(true);
 });
 
-test('with uploadFiles', async () => {
+test('with files', async () => {
   const client = new TelegramWorker(botSettingsAccessor, 10);
   const bodySpy = moxy(() => true);
 
@@ -361,12 +361,12 @@ test('with uploadFiles', async () => {
       method: 'sendPhoto',
       params: { chat_id: 12345, caption: 'hi photo' },
       key: 'foo',
-      uploadFiles: [
+      files: [
         {
           fieldName: 'photo',
-          fileData: '__PHOTO_CONTENT__',
+          data: '__PHOTO_CONTENT__',
           assetTag: 'foo',
-          fileInfo: {
+          info: {
             contentType: 'image/png',
             filename: 'my_photo.png',
             knownLength: 16,
@@ -385,15 +385,15 @@ test('with uploadFiles', async () => {
         ],
       },
       key: 'foo',
-      uploadFiles: [
+      files: [
         {
           fieldName: 'my_video',
-          fileData: '__VIDEO_CONTENT__',
+          data: '__VIDEO_CONTENT__',
           assetTag: 'bar',
         },
         {
           fieldName: 'my_audio',
-          fileData: '__AUDIO_CONTENT__',
+          data: '__AUDIO_CONTENT__',
           assetTag: 'bar',
         },
       ],

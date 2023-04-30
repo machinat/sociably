@@ -12,7 +12,6 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -29,6 +28,7 @@ Array [
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       "type": "dm",
     },
@@ -43,7 +43,6 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -60,6 +59,7 @@ Array [
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       "type": "dm",
     },
@@ -79,7 +79,6 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -96,6 +95,7 @@ Array [
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       "type": "dm",
     },
@@ -121,7 +121,6 @@ Array [
         },
       ],
       "request": Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -153,6 +152,7 @@ Array [
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       "type": "dm",
     },
@@ -172,7 +172,6 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -189,6 +188,7 @@ Array [
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       "type": "dm",
     },
@@ -203,7 +203,6 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -240,6 +239,7 @@ Array [
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       "type": "dm",
     },

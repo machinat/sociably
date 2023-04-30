@@ -29,7 +29,6 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "direct_message_deep_link": undefined,
@@ -56,6 +55,7 @@ Array [
           "reply_settings": undefined,
           "text": "Hello World",
         },
+        "url": "2/tweets",
       },
       "type": "tweet",
     },
@@ -79,7 +79,6 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "direct_message_deep_link": undefined,
@@ -92,6 +91,7 @@ Array [
           "reply_settings": "following",
           "text": "Hello World",
         },
+        "url": "2/tweets",
       },
       "type": "tweet",
     },
@@ -178,7 +178,6 @@ Array [
         },
       ],
       "request": Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "direct_message_deep_link": undefined,
@@ -196,6 +195,7 @@ Array [
           "reply_settings": undefined,
           "text": undefined,
         },
+        "url": "2/tweets",
       },
       "type": "tweet",
     },
@@ -220,7 +220,6 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "direct_message_deep_link": undefined,
@@ -235,6 +234,7 @@ Array [
           "reply_settings": "following",
           "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國",
         },
+        "url": "2/tweets",
       },
       "type": "tweet",
     },
@@ -254,11 +254,11 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "text": "國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國",
         },
+        "url": "2/tweets",
       },
       "type": "tweet",
     },
@@ -278,11 +278,11 @@ Array [
       "accomplishRequest": [Function],
       "mediaSources": null,
       "request": Object {
-        "href": "2/tweets",
         "method": "POST",
         "params": Object {
           "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國",
         },
+        "url": "2/tweets",
       },
       "type": "tweet",
     },

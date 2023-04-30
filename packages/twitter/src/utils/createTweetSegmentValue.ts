@@ -13,7 +13,7 @@ const createTweetSegmentValue = (
   type: 'tweet',
   request: {
     method: 'POST',
-    href: '2/tweets',
+    url: '2/tweets',
     params,
   },
   mediaSources: media

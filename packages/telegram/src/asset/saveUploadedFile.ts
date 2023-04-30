@@ -26,11 +26,11 @@ const updateAssetsFromSuccessfulJobs = async (
   for (let i = 0; i < jobs.length; i += 1) {
     const resultBody = results[i];
     if (resultBody) {
-      const { botId, method, params, uploadFiles } = jobs[i];
+      const { botId, method, params, files } = jobs[i];
       const { result } = resultBody;
 
-      if (uploadFiles) {
-        for (const { fieldName, assetTag } of uploadFiles) {
+      if (files) {
+        for (const { fieldName, assetTag } of files) {
           if (assetTag) {
             let fileId: string | undefined;
 

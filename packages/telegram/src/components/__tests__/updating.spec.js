@@ -303,6 +303,7 @@ test('EditMedia match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "editMessageMedia",
                 "params": Object {
                   "inline_message_id": undefined,
@@ -320,7 +321,6 @@ test('EditMedia match snapshot', async () => {
                   "reply_markup": undefined,
                 },
                 "toNonChatTarget": false,
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -356,6 +356,7 @@ test('EditMedia match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "editMessageMedia",
                 "params": Object {
                   "inline_message_id": undefined,
@@ -373,7 +374,6 @@ test('EditMedia match snapshot', async () => {
                   "reply_markup": undefined,
                 },
                 "toNonChatTarget": false,
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -413,6 +413,16 @@ test('EditMedia match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_doc",
+                    "data": "__DATA__",
+                    "fieldName": "document",
+                    "info": Object {
+                      "fileName": "baz.txt",
+                    },
+                  },
+                ],
                 "method": "editMessageMedia",
                 "params": Object {
                   "inline_message_id": undefined,
@@ -427,16 +437,6 @@ test('EditMedia match snapshot', async () => {
                   "reply_markup": undefined,
                 },
                 "toNonChatTarget": false,
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_doc",
-                    "fieldName": "document",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.txt",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -490,6 +490,24 @@ test('EditMedia match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_video",
+                    "data": "__DATA__",
+                    "fieldName": "video",
+                    "info": Object {
+                      "fileName": "baz.mp4",
+                    },
+                  },
+                  Object {
+                    "assetTag": undefined,
+                    "data": "__THUMB_DATA__",
+                    "fieldName": "thumb",
+                    "info": Object {
+                      "fileName": "baz.jpg",
+                    },
+                  },
+                ],
                 "method": "editMessageMedia",
                 "params": Object {
                   "inline_message_id": undefined,
@@ -508,24 +526,6 @@ test('EditMedia match snapshot', async () => {
                   "reply_markup": undefined,
                 },
                 "toNonChatTarget": false,
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_video",
-                    "fieldName": "video",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.mp4",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "thumb",
-                    "fileData": "__THUMB_DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -574,6 +574,16 @@ test('EditMedia match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_photo",
+                    "data": "__DATA__",
+                    "fieldName": "photo",
+                    "info": Object {
+                      "fileName": "baz.jpg",
+                    },
+                  },
+                ],
                 "method": "editMessageMedia",
                 "params": Object {
                   "inline_message_id": "123456",
@@ -596,16 +606,6 @@ test('EditMedia match snapshot', async () => {
                   },
                 },
                 "toNonChatTarget": true,
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_photo",
-                    "fieldName": "photo",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]

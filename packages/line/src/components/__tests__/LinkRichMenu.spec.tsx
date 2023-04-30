@@ -38,8 +38,8 @@ test('getChatRequest', async () => {
     getChatRequest?.(new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'))
   ).toEqual({
     method: 'POST',
-    path: 'v2/bot/user/_USER_ID_/richmenu/_RICH_MENU_ID_',
-    body: null,
+    url: 'v2/bot/user/_USER_ID_/richmenu/_RICH_MENU_ID_',
+    params: null,
   });
 });
 
@@ -70,8 +70,8 @@ test('bulk api getter', async () => {
 
   expect(getBulkRequest?.(['foo', 'bar', 'baz'])).toEqual({
     method: 'POST',
-    path: 'v2/bot/richmenu/bulk/link',
-    body: {
+    url: 'v2/bot/richmenu/bulk/link',
+    params: {
       richMenuId: '_RICH_MENU_ID_',
       userIds: ['foo', 'bar', 'baz'],
     },

@@ -24,9 +24,9 @@ test('rendering', async () => {
           "accomplishRequest": [Function],
           "mediaSources": null,
           "request": Object {
-            "href": "2/users/:id/retweets/:source_tweet_id",
             "method": "DELETE",
             "params": Object {},
+            "url": "2/users/:id/retweets/:source_tweet_id",
           },
           "type": "action",
         },
@@ -37,9 +37,9 @@ test('rendering', async () => {
   expect(accomplishRequest(new TweetTarget('67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "2/users/67890/retweets/12345",
       "method": "DELETE",
       "params": Object {},
+      "url": "2/users/67890/retweets/12345",
     }
   `);
 });

@@ -19,8 +19,8 @@ const jobs = [
     target: chat,
     request: {
       method: 'POST',
-      href: '2/tweets',
-      parameters: { text: 'foo', media: {} },
+      url: '2/tweets',
+      params: { text: 'foo', media: {} },
     },
     mediaSources: [
       { sourceType: 'id', type: 'photo', id: '11111111111111' },
@@ -47,8 +47,8 @@ const jobs = [
     target: chat,
     request: {
       method: 'POST',
-      href: '2/tweets',
-      parameters: { text: 'bar', media: {} },
+      url: '2/tweets',
+      params: { text: 'bar', media: {} },
     },
     mediaSources: [
       {
@@ -63,8 +63,8 @@ const jobs = [
     target: chat,
     request: {
       method: 'POST',
-      href: '2/tweets',
-      parameters: { text: 'baz', media: {} },
+      url: '2/tweets',
+      params: { text: 'baz', media: {} },
     },
     mediaSources: [
       { sourceType: 'url', type: 'animated_gif', url: 'https://...' },

@@ -25,7 +25,6 @@ test('rendering with plain text', async () => {
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -41,6 +40,7 @@ test('rendering with plain text', async () => {
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     }
   `);
   segments = await render(
@@ -53,7 +53,6 @@ test('rendering with plain text', async () => {
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -70,6 +69,7 @@ test('rendering with plain text', async () => {
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     }
   `);
 });
@@ -84,7 +84,6 @@ test('rendering with media', async () => {
     accomplishRequest(new TwitterChat('12345', '67890'), request, ['11111'])
   ).toMatchInlineSnapshot(`
     Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -105,6 +104,7 @@ test('rendering with media', async () => {
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     }
   `);
 });
@@ -128,7 +128,6 @@ test('rendering with buttons', async () => {
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -161,6 +160,7 @@ test('rendering with buttons', async () => {
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     }
   `);
 });
@@ -184,7 +184,6 @@ test('rendering with quick replies', async () => {
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -220,6 +219,7 @@ test('rendering with quick replies', async () => {
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     }
   `);
 });
@@ -233,7 +233,6 @@ test('rendering with placeId', async () => {
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -259,6 +258,7 @@ test('rendering with placeId', async () => {
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     }
   `);
 });
@@ -272,7 +272,6 @@ test('rendering with coordinates', async () => {
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "1.1/direct_messages/events/new.json",
       "method": "POST",
       "params": Object {
         "event": Object {
@@ -302,6 +301,7 @@ test('rendering with coordinates', async () => {
           "type": "message_create",
         },
       },
+      "url": "1.1/direct_messages/events/new.json",
     }
   `);
 });

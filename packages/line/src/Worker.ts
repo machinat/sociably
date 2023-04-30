@@ -1,4 +1,4 @@
-import url from 'url';
+import { URL } from 'url';
 import fetch from 'node-fetch';
 import { SociablyWorker } from '@sociably/core/engine';
 import Queue, { JobResponse } from '@sociably/core/queue';
@@ -13,11 +13,11 @@ type LineJobQueue = Queue<LineJob, LineResult>;
 
 const request = async (
   method: string,
-  path: string,
-  body: unknown | null,
+  apiUrl: string,
+  params: unknown | null,
   accessToken?: string
 ): Promise<LineResult> => {
-  const requestUrl = new url.URL(path, API_HOST);
+  const requestUrl = new URL(apiUrl, API_HOST);
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -25,10 +25,17 @@ const request = async (
     headers.Authorization = `Bearer ${accessToken}`;
   }
 
+  const isNoBodyMethod = method === 'GET' || method === 'DELETE';
+  if (params && isNoBodyMethod) {
+    Object.entries(params).forEach(([key, value]) => {
+      requestUrl.searchParams.append(key, String(value));
+    });
+  }
+
   const response = await fetch(requestUrl.href, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: params && !isNoBodyMethod ? JSON.stringify(params) : undefined,
   });
 
   let resBody;
@@ -154,7 +161,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
   private async _executeJob([job]: LineJob[]): Promise<
     JobResponse<LineJob, LineResult>[]
   > {
-    const { method, path, body, chatChannelId, accessToken } = job;
+    const { method, url, params, chatChannelId, accessToken } = job;
     let accessTokenToUse = accessToken;
 
     if (!accessTokenToUse && chatChannelId) {
@@ -168,7 +175,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
       accessTokenToUse = settings.accessToken;
     }
 
-    const result = await request(method, path, body, accessTokenToUse);
+    const result = await request(method, url, params, accessTokenToUse);
     return [{ success: true, result, job, error: undefined }];
   }
 }

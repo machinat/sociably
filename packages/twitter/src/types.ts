@@ -78,7 +78,7 @@ export type MediaAttachment = {
 
 export type TwitterApiRequest = {
   method: string;
-  href: string;
+  url: string;
   params: Record<string, any>;
 };
 

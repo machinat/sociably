@@ -350,7 +350,7 @@ describe('.makeApiCall(method, uri, params)', () => {
       bot.makeApiCall({
         agent,
         method: 'GET',
-        path: '2/foo',
+        url: '2/foo',
         params: { a: 0, b: 1 },
       })
     ).resolves.toEqual({ data: { id: '11111' } });
@@ -370,7 +370,7 @@ describe('.makeApiCall(method, uri, params)', () => {
       bot.makeApiCall({
         agent,
         method: 'POST',
-        path: '2/foo',
+        url: '2/foo',
         params: { a: 0, b: 1 },
       })
     ).resolves.toEqual({ data: { id: '11111' } });
@@ -394,7 +394,7 @@ describe('.makeApiCall(method, uri, params)', () => {
       bot.makeApiCall({
         agent,
         method: 'POST',
-        path: '2/foo',
+        url: '2/foo',
         params: { a: 0, b: 1 },
         asApplication: true,
       })

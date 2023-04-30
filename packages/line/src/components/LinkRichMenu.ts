@@ -36,15 +36,15 @@ export const LinkRichMenu: LineComponent<
 
         return {
           method: 'POST',
-          path: `v2/bot/user/${thread.id}/richmenu/${id}`,
-          body: null,
+          url: `v2/bot/user/${thread.id}/richmenu/${id}`,
+          params: null,
         };
       },
 
       getBulkRequest: (userIds: string[]) => ({
         method: 'POST',
-        path: 'v2/bot/richmenu/bulk/link',
-        body: {
+        url: 'v2/bot/richmenu/bulk/link',
+        params: {
           userIds,
           richMenuId: id,
         },

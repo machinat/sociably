@@ -17,19 +17,19 @@ const requestBotApi = async (
   botToken: string,
   method: string,
   parameters: { [k: string]: unknown },
-  uploadFiles: null | UploadingFile[]
+  files: undefined | UploadingFile[]
 ): Promise<TelegramResult> => {
   const botApiEntry = makeBotApiEntry(botToken);
   let response: Response;
 
-  if (uploadFiles) {
+  if (files && files.length > 0) {
     const form = new FormData();
     Object.entries(parameters).forEach(([key, value]) => {
       form.append(key, JSON.stringify(value));
     });
 
-    uploadFiles.forEach(({ fieldName, fileData, fileInfo }) => {
-      form.append(fieldName, fileData, fileInfo);
+    files.forEach(({ fieldName, data, info: fileInfo }) => {
+      form.append(fieldName, data, fileInfo);
     });
 
     response = await fetch(`${botApiEntry}/${method}`, {
@@ -149,7 +149,7 @@ export default class TelegramWorker
     this._executeJob.bind(this);
 
   private async _executeJob([job]: TelegramJob[]) {
-    const { method, params, uploadFiles, botId } = job;
+    const { method, params, files, botId } = job;
     const botSettings = await this._settingsAccessor.getChannelSettings(
       new TelegramUser(botId, true)
     );
@@ -161,7 +161,7 @@ export default class TelegramWorker
       botSettings.botToken,
       method,
       params,
-      uploadFiles
+      files
     );
 
     return [{ success: true as const, result, job, error: undefined }];

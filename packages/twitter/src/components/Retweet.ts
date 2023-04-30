@@ -25,12 +25,12 @@ export const Retweet: TwitterComponent<
       type: 'action',
       request: {
         method: 'POST',
-        href: '2/users/:id/retweets',
+        url: '2/users/:id/retweets',
         params: { tweet_id: node.props.tweetId },
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/retweets`,
+        url: `2/users/${target.agentId}/retweets`,
       }),
       mediaSources: null,
     }),

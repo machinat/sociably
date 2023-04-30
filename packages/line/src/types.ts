@@ -160,15 +160,15 @@ export type ChatActionSegmentValue = {
     | null
     | ((thread: LineChat) => {
         method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-        path: string;
-        body: null | Record<string, unknown>;
+        url: string;
+        params: null | Record<string, unknown>;
       });
   getBulkRequest:
     | null
     | ((ids: string[]) => {
         method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-        path: string;
-        body: null | Record<string, unknown>;
+        url: string;
+        params: null | Record<string, unknown>;
       });
 };
 
@@ -201,8 +201,8 @@ export type LineMessageRequestBody =
 
 export type LineJob = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  body: null | LineMessageRequestBody | unknown;
-  path: string;
+  url: string;
+  params: null | LineMessageRequestBody | unknown;
   chatChannelId: undefined | string;
   accessToken: undefined | string;
   key: undefined | string;

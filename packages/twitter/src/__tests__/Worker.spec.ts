@@ -77,7 +77,7 @@ beforeEach(() => {
 test('api request', async () => {
   const jobsAndScopes = [
     [
-      { target: chatThread, request: { method: 'GET', href: '1.1/foo' } },
+      { target: chatThread, request: { method: 'GET', url: '1.1/foo' } },
       twitterApi.get(`/1.1/foo`).delay(50).reply(200, { data: 1 }),
     ] as const,
     [
@@ -85,7 +85,7 @@ test('api request', async () => {
         target: chatThread,
         request: {
           method: 'GET',
-          href: '2/foo/bar',
+          url: '2/foo/bar',
           params: { a: 1, b: 2 },
         },
       },
@@ -96,7 +96,7 @@ test('api request', async () => {
         target: tweetTargetThread,
         request: {
           method: 'GET',
-          href: '1.1/bar/baz?f=oo',
+          url: '1.1/bar/baz?f=oo',
           params: { s: 'hello world' },
         },
       },
@@ -108,17 +108,14 @@ test('api request', async () => {
     [
       {
         target: tweetTargetThread,
-        request: { method: 'DELETE', href: '2/bar?z=0', params: { a: 1 } },
+        request: { method: 'DELETE', url: '2/bar?z=0', params: { a: 1 } },
       },
-      twitterApi
-        .delete(`/2/bar?z=0`, { a: 1 })
-        .delay(50)
-        .reply(200, { data: 4 }),
+      twitterApi.delete(`/2/bar?z=0&a=1`).delay(50).reply(200, { data: 4 }),
     ] as const,
     [
       {
         target: chatThread2,
-        request: { method: 'POST', href: '2/baz', params: { a: 1 } },
+        request: { method: 'POST', url: '2/baz', params: { a: 1 } },
       },
       twitterApi.post(`/2/baz`, { a: 1 }).delay(50).reply(200, { data: 5 }),
     ] as const,
@@ -127,7 +124,7 @@ test('api request', async () => {
         target: chatThread2,
         request: {
           method: 'POST',
-          href: '2/foo/bar/baz',
+          url: '2/foo/bar/baz',
           params: { s: 'hello world' },
         },
       },
@@ -139,7 +136,7 @@ test('api request', async () => {
     [
       {
         target: chatThread,
-        request: { method: 'GET', href: '2/foo', params: { a: 1 } },
+        request: { method: 'GET', url: '2/foo', params: { a: 1 } },
         asApplication: true,
       },
       twitterApi.get(`/2/foo?a=1`).delay(50).reply(200, { data: 7 }),
@@ -147,7 +144,7 @@ test('api request', async () => {
     [
       {
         target: chatThread,
-        request: { method: 'POST', href: '2/bar', params: { a: 1 } },
+        request: { method: 'POST', url: '2/bar', params: { a: 1 } },
         asApplication: true,
       },
       twitterApi.post(`/2/bar`, { a: 1 }).delay(50).reply(200, { data: 8 }),
@@ -196,47 +193,47 @@ it('sequently excute jobs with the same key', async () => {
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 1 } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/bar', params: { n: 2 } },
+      request: { method: 'POST', url: '2/bar', params: { n: 2 } },
     },
     {
       key: 'beta',
       target: tweetTargetThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 3 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 3 } },
     },
     {
       key: 'beta',
       target: tweetTargetThread,
-      request: { method: 'POST', href: '2/bar', params: { n: 4 } },
+      request: { method: 'POST', url: '2/bar', params: { n: 4 } },
     },
     {
       key: 'gamma',
       target: chatThread2,
-      request: { method: 'POST', href: '2/foo', params: { n: 5 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 5 } },
     },
     {
       key: 'gamma',
       target: chatThread2,
-      request: { method: 'POST', href: '2/bar', params: { n: 6 } },
+      request: { method: 'POST', url: '2/bar', params: { n: 6 } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 7 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 7 } },
     },
     {
       key: 'beta',
       target: tweetTargetThread,
-      request: { method: 'POST', href: '2/baz', params: { n: 8 } },
+      request: { method: 'POST', url: '2/baz', params: { n: 8 } },
     },
     {
       key: 'gamma',
       target: chatThread2,
-      request: { method: 'POST', href: '2/baz', params: { n: 9 } },
+      request: { method: 'POST', url: '2/baz', params: { n: 9 } },
     },
   ];
 
@@ -299,47 +296,47 @@ it('open requests up to maxConnections', async () => {
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 1 } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/bar', params: { n: 2 } },
+      request: { method: 'POST', url: '2/bar', params: { n: 2 } },
     },
     {
       key: 'beta',
       target: tweetTargetThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 3 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 3 } },
     },
     {
       key: 'beta',
       target: tweetTargetThread,
-      request: { method: 'POST', href: '2/bar', params: { n: 4 } },
+      request: { method: 'POST', url: '2/bar', params: { n: 4 } },
     },
     {
       key: 'gamma',
       target: chatThread2,
-      request: { method: 'POST', href: '2/foo', params: { n: 5 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 5 } },
     },
     {
       key: 'gamma',
       target: chatThread2,
-      request: { method: 'POST', href: '2/bar', params: { n: 6 } },
+      request: { method: 'POST', url: '2/bar', params: { n: 6 } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 7 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 7 } },
     },
     {
       key: 'beta',
       target: tweetTargetThread,
-      request: { method: 'POST', href: '2/baz', params: { n: 8 } },
+      request: { method: 'POST', url: '2/baz', params: { n: 8 } },
     },
     {
       key: 'gamma',
       target: chatThread2,
-      request: { method: 'POST', href: '2/baz', params: { n: 9 } },
+      request: { method: 'POST', url: '2/baz', params: { n: 9 } },
     },
   ];
 
@@ -400,17 +397,17 @@ it('throw if agent settings not found', async () => {
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { text: 'hi' } },
+      request: { method: 'POST', url: '2/foo', params: { text: 'hi' } },
     },
     {
       key: 'beta',
       target: chatThread2,
-      request: { method: 'POST', href: '2/bar', params: { text: 'good' } },
+      request: { method: 'POST', url: '2/bar', params: { text: 'good' } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { text: 'bye' } },
+      request: { method: 'POST', url: '2/foo', params: { text: 'bye' } },
     },
   ];
 
@@ -446,17 +443,17 @@ it('throw if connection error happen', async () => {
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { text: 'hi' } },
+      request: { method: 'POST', url: '2/foo', params: { text: 'hi' } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/bar', params: { text: 'good' } },
+      request: { method: 'POST', url: '2/bar', params: { text: 'good' } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { text: 'bye' } },
+      request: { method: 'POST', url: '2/foo', params: { text: 'bye' } },
     },
   ];
 
@@ -496,17 +493,17 @@ it('throw if api error happen', async () => {
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { text: 'hi' } },
+      request: { method: 'POST', url: '2/foo', params: { text: 'hi' } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/bar', params: { text: 'good' } },
+      request: { method: 'POST', url: '2/bar', params: { text: 'good' } },
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { text: 'bye' } },
+      request: { method: 'POST', url: '2/foo', params: { text: 'bye' } },
     },
   ];
 
@@ -550,19 +547,19 @@ test('with target & accomplishRequest', async () => {
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 1 } },
       accomplishRequest,
     },
     {
       key: 'alpha',
       target: chatThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 2 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 2 } },
       accomplishRequest,
     },
     {
       key: 'beta',
       target: tweetTargetThread,
-      request: { method: 'POST', href: '2/foo', params: { n: 3 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 3 } },
       accomplishRequest,
     },
   ];
@@ -640,28 +637,28 @@ test('with target & refreshTarget & accomplishRequest', async () => {
       target: initialThread1,
       refreshTarget,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 1 } },
     },
     {
       key: 'alpha',
       target: initialThread1,
       refreshTarget,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', params: { n: 2 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 2 } },
     },
     {
       key: 'beta',
       target: initialThread2,
       refreshTarget,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', params: { n: 3 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 3 } },
     },
     {
       key: 'beta',
       target: initialThread2,
       refreshTarget,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', params: { n: 4 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 4 } },
     },
   ];
 
@@ -849,7 +846,7 @@ test('with mediaSources & accomplishRequest', async () => {
       key: 'alpha',
       target: chatThread,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', params: { n: 1 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 1 } },
       mediaSources: [
         { type: 'id', id: '111111111111111111' },
         {
@@ -871,7 +868,7 @@ test('with mediaSources & accomplishRequest', async () => {
       key: 'beta',
       target: tweetTargetThread,
       accomplishRequest,
-      request: { method: 'POST', href: '2/foo', params: { n: 2 } },
+      request: { method: 'POST', url: '2/foo', params: { n: 2 } },
       mediaSources: [
         {
           type: 'url',

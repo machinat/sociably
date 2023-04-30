@@ -198,8 +198,8 @@ test('#createRichMenu()', async () => {
   expect(bot.makeApiCall).toHaveBeenCalledWith({
     channel,
     method: 'POST',
-    path: 'v2/bot/richmenu',
-    body: richMenuBody,
+    url: 'v2/bot/richmenu',
+    params: richMenuBody,
   });
 
   state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ID_');
@@ -230,7 +230,7 @@ test('#deleteRichMenu()', async () => {
   expect(bot.makeApiCall).toHaveBeenCalledWith({
     channel,
     method: 'DELETE',
-    path: 'v2/bot/richmenu/_RICH_MENU_ID_',
+    url: 'v2/bot/richmenu/_RICH_MENU_ID_',
   });
 
   expect(state.delete).toHaveBeenCalledTimes(1);

@@ -82,7 +82,7 @@ export default class TwitterWorker
     const apiLocation = `${apiUrl.origin}${apiUrl.pathname}`;
     let body: undefined | string;
 
-    if (method === 'GET') {
+    if (method === 'GET' || method === 'DELETE') {
       if (params) {
         Object.entries(params).forEach(([k, v]) => {
           apiUrl.searchParams.set(k, v as string);
@@ -413,7 +413,7 @@ export default class TwitterWorker
         ? await this.uploadMediaSources(agent, mediaSources)
         : null;
 
-    const { method, href, params } =
+    const { method, url, params } =
       currentTarget && accomplishRequest
         ? accomplishRequest(
             currentTarget,
@@ -425,7 +425,7 @@ export default class TwitterWorker
     const { code, body } = await this.requestApi(
       agent,
       method,
-      href,
+      url,
       params,
       asApplication
     );

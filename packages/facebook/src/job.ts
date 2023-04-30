@@ -32,15 +32,15 @@ export const createChatJobs = (options?: MessagingOptions) => {
       const { node, value } = segments[i];
 
       let params: { [k: string]: unknown };
-      let relativeUrl: string;
+      let apiUrl: string;
       let file: undefined | AttachFileValue;
 
       if (typeof value === 'string') {
-        relativeUrl = PATH_MESSAGES;
+        apiUrl = PATH_MESSAGES;
         params = { message: { text: value } };
       } else if (typeof value === 'object' && value.type === 'message') {
         ({ params } = value);
-        relativeUrl = value.apiPath;
+        apiUrl = value.apiPath;
         file = value.attachFile;
       } else {
         throw new TypeError(
@@ -50,7 +50,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
 
       params.recipient = chat.target;
 
-      if (options && relativeUrl === PATH_MESSAGES) {
+      if (options && apiUrl === PATH_MESSAGES) {
         if (params.message) {
           if (params.messaging_type === undefined) {
             params.messaging_type =
@@ -86,7 +86,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
       jobs[i] = {
         request: {
           method: POST,
-          relativeUrl,
+          url: apiUrl,
           params,
         },
         key: chat.uid,
@@ -138,7 +138,7 @@ export const createChatAttachmentJobs = (
       file: value.attachFile,
       request: {
         method: POST,
-        relativeUrl: PATH_MESSAGE_ATTACHMENTS,
+        url: PATH_MESSAGE_ATTACHMENTS,
         params: value.params,
       },
     },
@@ -165,7 +165,7 @@ export const createPostJobs = (
         channel,
         request: {
           method: 'POST',
-          relativeUrl: PATH_FEED,
+          url: PATH_FEED,
           params: { message: value },
         },
       },
@@ -185,7 +185,7 @@ export const createPostJobs = (
         channel,
         request: {
           method: 'POST',
-          relativeUrl:
+          url:
             feedOrAlbum instanceof FacebookPage
               ? PATH_PHOTOS
               : `${feedOrAlbum.id}/photos`,
@@ -201,7 +201,7 @@ export const createPostJobs = (
     channel,
     request: {
       method: 'POST',
-      relativeUrl: PATH_FEED,
+      url: PATH_FEED,
       params,
     },
     file: attachFile,
@@ -229,7 +229,7 @@ export const createPostJobs = (
     channel,
     request: {
       method: 'POST',
-      relativeUrl:
+      url:
         feedOrAlbum instanceof FacebookPage
           ? PATH_PHOTOS
           : `${feedOrAlbum.id}/photos`,
@@ -251,7 +251,7 @@ const accomplishContiuousCommentRequest = (
   getResult: (key: string, path: string) => string
 ) => ({
   ...request,
-  relativeUrl: `${getResult(lastCommentKey, '$.id')}/comments`,
+  url: `${getResult(lastCommentKey, '$.id')}/comments`,
 });
 
 const accomplishPhotoCommentRequest = (
@@ -302,7 +302,7 @@ export const createInteractJobs = (
         channel: target.channel,
         request: {
           method: 'POST',
-          relativeUrl: initialCommentApiPath,
+          url: initialCommentApiPath,
           params: { message: segValue },
         },
         registerResult: registerResultKey,
@@ -316,7 +316,7 @@ export const createInteractJobs = (
             channel: target.channel,
             request: {
               method: 'POST',
-              relativeUrl: PATH_PHOTOS,
+              url: PATH_PHOTOS,
               params: photo.params,
             },
             file: photo.attachFile,
@@ -328,7 +328,7 @@ export const createInteractJobs = (
         channel: target.channel,
         request: {
           method: 'POST',
-          relativeUrl: initialCommentApiPath,
+          url: initialCommentApiPath,
           params: { ...params },
         },
         registerResult: registerResultKey,

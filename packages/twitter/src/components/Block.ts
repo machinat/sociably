@@ -25,12 +25,12 @@ export const Block: TwitterComponent<
       type: 'action',
       request: {
         method: 'POST',
-        href: '2/users/:id/blocking',
+        url: '2/users/:id/blocking',
         params: { target_user_id: node.props.userId },
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/blocking`,
+        url: `2/users/${target.agentId}/blocking`,
       }),
       mediaSources: null,
     }),

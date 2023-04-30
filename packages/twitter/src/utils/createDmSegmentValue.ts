@@ -9,7 +9,7 @@ const createDmSegmentValue = (
   type: 'dm',
   request: {
     method: 'POST',
-    href: '1.1/direct_messages/events/new.json',
+    url: '1.1/direct_messages/events/new.json',
     params: {
       event: {
         type: 'message_create',

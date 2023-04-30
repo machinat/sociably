@@ -16,11 +16,11 @@ beforeEach(() => {
 const page = new FacebookPage('12345');
 const chat = new FacebookChat('12345', { id: '67890' });
 
-const plainJob = { channel: page, request: { method: 'GET', relativeUrl: '' } };
+const plainJob = { channel: page, request: { method: 'GET', url: 'foo' } };
 
 const jobWithFileAndAssetTag = (assetTag?: string) => ({
   channel: page,
-  request: { method: 'POST', relativeUrl: '' },
+  request: { method: 'POST', url: 'foo' },
   file: { data: '__FILE_DATA__', assetTag },
 });
 

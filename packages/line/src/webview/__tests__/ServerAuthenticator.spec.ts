@@ -24,16 +24,16 @@ const minProfileData = {
 const botChannel = new LineChannel(botChannelId);
 
 const bot = moxy<LineBot>({
-  makeApiCall: async ({ path }) =>
-    path === `oauth2/v2.1/verify?access_token=${accessToken}`
+  makeApiCall: async ({ url }) =>
+    url === `oauth2/v2.1/verify?access_token=${accessToken}`
       ? { scope: 'profile', client_id: loginChannelId, expires_in: 2591659 }
-      : path === 'v2/profile'
+      : url === 'v2/profile'
       ? { ...minProfileData, statusMessage: 'OlaOlaOla' }
-      : path === `v2/bot/profile/${userId}`
+      : url === `v2/bot/profile/${userId}`
       ? { ...minProfileData, statusMessage: 'OlaOlaOla', language: 'jp' }
-      : path === `v2/bot/group/${groupId}/member/${userId}`
+      : url === `v2/bot/group/${groupId}/member/${userId}`
       ? minProfileData
-      : path === `v2/bot/room/${roomId}/member/${userId}`
+      : url === `v2/bot/room/${roomId}/member/${userId}`
       ? minProfileData
       : {},
 } as never);
@@ -187,12 +187,12 @@ describe('.verifyCredential(credential)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       method: 'GET',
-      path: `oauth2/v2.1/verify?access_token=${credential.accessToken}`,
+      url: `oauth2/v2.1/verify?access_token=${credential.accessToken}`,
     });
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       accessToken: credential.accessToken,
       method: 'GET',
-      path: `v2/profile`,
+      url: `v2/profile`,
     });
   });
 
@@ -222,7 +222,7 @@ describe('.verifyCredential(credential)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       channel: botChannel,
       method: 'GET',
-      path: `v2/bot/profile/${userId}`,
+      url: `v2/bot/profile/${userId}`,
     });
   });
 
@@ -254,7 +254,7 @@ describe('.verifyCredential(credential)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       channel: botChannel,
       method: 'GET',
-      path: `v2/bot/group/${groupId}/member/${userId}`,
+      url: `v2/bot/group/${groupId}/member/${userId}`,
     });
   });
 
@@ -286,7 +286,7 @@ describe('.verifyCredential(credential)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       channel: botChannel,
       method: 'GET',
-      path: `v2/bot/room/${roomId}/member/${userId}`,
+      url: `v2/bot/room/${roomId}/member/${userId}`,
     });
   });
 
@@ -306,7 +306,7 @@ describe('.verifyCredential(credential)', () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
     bot.makeApiCall.mock.wrap((originalImpl) => async (options) => {
-      if (options.path.startsWith('oauth2/v2.1/verify')) {
+      if (options.url.startsWith('oauth2/v2.1/verify')) {
         throw new LineApiError({
           code: 400,
           headers: {},
@@ -384,7 +384,7 @@ describe('.verifyCredential(credential)', () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
     bot.makeApiCall.mock.wrap((originalImpl) => async (options) => {
-      if (options.path.startsWith('v2/bot/profile')) {
+      if (options.url.startsWith('v2/bot/profile')) {
         throw new LineApiError({
           code: 404,
           headers: {},
@@ -411,7 +411,7 @@ describe('.verifyCredential(credential)', () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
     bot.makeApiCall.mock.wrap((originalImpl) => async (options) => {
-      if (options.path.startsWith('v2/bot/group')) {
+      if (options.url.startsWith('v2/bot/group')) {
         throw new LineApiError({
           code: 404,
           headers: {},
@@ -439,7 +439,7 @@ describe('.verifyCredential(credential)', () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
     bot.makeApiCall.mock.wrap((originalImpl) => async (options) => {
-      if (options.path.startsWith('v2/bot/room')) {
+      if (options.url.startsWith('v2/bot/room')) {
         throw new LineApiError({
           code: 404,
           headers: {},
@@ -553,7 +553,7 @@ describe('.verifyRefreshment()', () => {
           "platform": "line",
         },
         "method": "GET",
-        "path": "v2/bot/profile/_USER_ID_",
+        "url": "v2/bot/profile/_USER_ID_",
       }
     `);
   });
@@ -582,7 +582,7 @@ describe('.verifyRefreshment()', () => {
           "platform": "line",
         },
         "method": "GET",
-        "path": "v2/bot/group/_GROUP_ID_/member/_USER_ID_",
+        "url": "v2/bot/group/_GROUP_ID_/member/_USER_ID_",
       }
     `);
   });
@@ -611,7 +611,7 @@ describe('.verifyRefreshment()', () => {
           "platform": "line",
         },
         "method": "GET",
-        "path": "v2/bot/room/_ROOM_ID_/member/_USER_ID_",
+        "url": "v2/bot/room/_ROOM_ID_/member/_USER_ID_",
       }
     `);
   });
@@ -805,7 +805,7 @@ describe('.verifyRefreshment()', () => {
           "platform": "line",
         },
         "method": "GET",
-        "path": "v2/bot/room/_ROOM_ID_/member/_USER_ID_",
+        "url": "v2/bot/room/_ROOM_ID_/member/_USER_ID_",
       }
     `);
   });

@@ -21,13 +21,13 @@ const encodeParams = (fields: { [key: string]: unknown }): string => {
 };
 
 const formatRequestParams = (
-  { method, relativeUrl, params }: MetaApiJobRequest,
+  { method, url, params }: MetaApiJobRequest,
   accessToken: string
 ): MetaBatchRequest =>
   method === 'GET' || method === 'DELETE'
     ? {
         method,
-        relative_url: `${relativeUrl}?${encodeParams({
+        relative_url: `${url}?${encodeParams({
           ...params,
           access_token: accessToken,
         })}`,
@@ -35,7 +35,7 @@ const formatRequestParams = (
       }
     : {
         method,
-        relative_url: `${relativeUrl}?${encodeParams({
+        relative_url: `${url}?${encodeParams({
           access_token: accessToken,
         })}`,
         body: params ? encodeParams(params) : undefined,

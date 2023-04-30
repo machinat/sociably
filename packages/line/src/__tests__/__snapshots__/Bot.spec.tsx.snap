@@ -5,7 +5,10 @@ Object {
   "jobs": Array [
     Object {
       "accessToken": undefined,
-      "body": Object {
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line._CHANNEL_ID_.john_doe",
+      "method": "POST",
+      "params": Object {
         "messages": Array [
           Object {
             "text": "Hello LINE",
@@ -32,18 +35,15 @@ Object {
         ],
         "to": "john_doe",
       },
-      "chatChannelId": "_CHANNEL_ID_",
-      "key": "line._CHANNEL_ID_.john_doe",
-      "method": "POST",
-      "path": "v2/bot/message/push",
+      "url": "v2/bot/message/push",
     },
     Object {
       "accessToken": undefined,
-      "body": null,
       "chatChannelId": "_CHANNEL_ID_",
       "key": "line._CHANNEL_ID_.john_doe",
       "method": "POST",
-      "path": "v2/bot/user/john_doe/richmenu/newbie",
+      "params": null,
+      "url": "v2/bot/user/john_doe/richmenu/newbie",
     },
   ],
   "results": Array [
@@ -63,7 +63,10 @@ Object {
       "payload": Array [
         Object {
           "accessToken": undefined,
-          "body": Object {
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john_doe",
+          "method": "POST",
+          "params": Object {
             "messages": Array [
               Object {
                 "text": "Hello LINE",
@@ -90,18 +93,15 @@ Object {
             ],
             "to": "john_doe",
           },
-          "chatChannelId": "_CHANNEL_ID_",
-          "key": "line._CHANNEL_ID_.john_doe",
-          "method": "POST",
-          "path": "v2/bot/message/push",
+          "url": "v2/bot/message/push",
         },
         Object {
           "accessToken": undefined,
-          "body": null,
           "chatChannelId": "_CHANNEL_ID_",
           "key": "line._CHANNEL_ID_.john_doe",
           "method": "POST",
-          "path": "v2/bot/user/john_doe/richmenu/newbie",
+          "params": null,
+          "url": "v2/bot/user/john_doe/richmenu/newbie",
         },
       ],
       "type": "dispatch",
@@ -115,7 +115,10 @@ Object {
   "jobs": Array [
     Object {
       "accessToken": undefined,
-      "body": Object {
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line._CHANNEL_ID_.john_doe",
+      "method": "POST",
+      "params": Object {
         "messages": Array [
           Object {
             "text": "Hello LINE",
@@ -142,18 +145,15 @@ Object {
         ],
         "replyToken": "__REPLY_TOKEN__",
       },
-      "chatChannelId": "_CHANNEL_ID_",
-      "key": "line._CHANNEL_ID_.john_doe",
-      "method": "POST",
-      "path": "v2/bot/message/reply",
+      "url": "v2/bot/message/reply",
     },
     Object {
       "accessToken": undefined,
-      "body": null,
       "chatChannelId": "_CHANNEL_ID_",
       "key": "line._CHANNEL_ID_.john_doe",
       "method": "POST",
-      "path": "v2/bot/user/john_doe/richmenu/newbie",
+      "params": null,
+      "url": "v2/bot/user/john_doe/richmenu/newbie",
     },
   ],
   "results": Array [
@@ -173,7 +173,10 @@ Object {
       "payload": Array [
         Object {
           "accessToken": undefined,
-          "body": Object {
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line._CHANNEL_ID_.john_doe",
+          "method": "POST",
+          "params": Object {
             "messages": Array [
               Object {
                 "text": "Hello LINE",
@@ -200,18 +203,15 @@ Object {
             ],
             "replyToken": "__REPLY_TOKEN__",
           },
-          "chatChannelId": "_CHANNEL_ID_",
-          "key": "line._CHANNEL_ID_.john_doe",
-          "method": "POST",
-          "path": "v2/bot/message/reply",
+          "url": "v2/bot/message/reply",
         },
         Object {
           "accessToken": undefined,
-          "body": null,
           "chatChannelId": "_CHANNEL_ID_",
           "key": "line._CHANNEL_ID_.john_doe",
           "method": "POST",
-          "path": "v2/bot/user/john_doe/richmenu/newbie",
+          "params": null,
+          "url": "v2/bot/user/john_doe/richmenu/newbie",
         },
       ],
       "type": "dispatch",
@@ -225,7 +225,10 @@ Object {
   "jobs": Array [
     Object {
       "accessToken": undefined,
-      "body": Object {
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line.multicast",
+      "method": "POST",
+      "params": Object {
         "messages": Array [
           Object {
             "text": "Hello LINE",
@@ -256,14 +259,14 @@ Object {
           "dog",
         ],
       },
-      "chatChannelId": "_CHANNEL_ID_",
-      "key": "line.multicast",
-      "method": "POST",
-      "path": "v2/bot/message/multicast",
+      "url": "v2/bot/message/multicast",
     },
     Object {
       "accessToken": undefined,
-      "body": Object {
+      "chatChannelId": "_CHANNEL_ID_",
+      "key": "line.multicast",
+      "method": "POST",
+      "params": Object {
         "richMenuId": "newbie",
         "userIds": Array [
           "john",
@@ -271,10 +274,7 @@ Object {
           "dog",
         ],
       },
-      "chatChannelId": "_CHANNEL_ID_",
-      "key": "line.multicast",
-      "method": "POST",
-      "path": "v2/bot/richmenu/bulk/link",
+      "url": "v2/bot/richmenu/bulk/link",
     },
   ],
   "results": Array [
@@ -294,7 +294,10 @@ Object {
       "payload": Array [
         Object {
           "accessToken": undefined,
-          "body": Object {
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line.multicast",
+          "method": "POST",
+          "params": Object {
             "messages": Array [
               Object {
                 "text": "Hello LINE",
@@ -325,14 +328,14 @@ Object {
               "dog",
             ],
           },
-          "chatChannelId": "_CHANNEL_ID_",
-          "key": "line.multicast",
-          "method": "POST",
-          "path": "v2/bot/message/multicast",
+          "url": "v2/bot/message/multicast",
         },
         Object {
           "accessToken": undefined,
-          "body": Object {
+          "chatChannelId": "_CHANNEL_ID_",
+          "key": "line.multicast",
+          "method": "POST",
+          "params": Object {
             "richMenuId": "newbie",
             "userIds": Array [
               "john",
@@ -340,10 +343,7 @@ Object {
               "dog",
             ],
           },
-          "chatChannelId": "_CHANNEL_ID_",
-          "key": "line.multicast",
-          "method": "POST",
-          "path": "v2/bot/richmenu/bulk/link",
+          "url": "v2/bot/richmenu/bulk/link",
         },
       ],
       "type": "dispatch",

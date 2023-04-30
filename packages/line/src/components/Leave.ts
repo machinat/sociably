@@ -13,8 +13,8 @@ const LEAVE_REQUESTER = {
 
     return {
       method: 'POST' as const,
-      path: `v2/bot/${type}/${id}/leave`,
-      body: null,
+      url: `v2/bot/${type}/${id}/leave`,
+      params: null,
     };
   },
   getBulkRequest: null,

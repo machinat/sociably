@@ -25,12 +25,12 @@ export const CancelRetweet: TwitterComponent<
       type: 'action',
       request: {
         method: 'DELETE',
-        href: '2/users/:id/retweets/:source_tweet_id',
+        url: '2/users/:id/retweets/:source_tweet_id',
         params: {},
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/retweets/${node.props.tweetId}`,
+        url: `2/users/${target.agentId}/retweets/${node.props.tweetId}`,
       }),
       mediaSources: null,
     }),

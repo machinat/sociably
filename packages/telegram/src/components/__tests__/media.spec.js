@@ -58,6 +58,7 @@ test('Photo match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": undefined,
                 "method": "sendPhoto",
                 "params": Object {
                   "caption": "<b>My Photo</b>",
@@ -67,7 +68,6 @@ test('Photo match snapshot', async () => {
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                 },
-                "uploadFiles": undefined,
               },
             },
           ]
@@ -91,6 +91,7 @@ test('Photo match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": undefined,
                 "method": "sendPhoto",
                 "params": Object {
                   "caption": "PlainTextCaption",
@@ -100,7 +101,6 @@ test('Photo match snapshot', async () => {
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                 },
-                "uploadFiles": undefined,
               },
             },
           ]
@@ -149,6 +149,16 @@ test('Photo match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_photo",
+                    "data": "__DATA__",
+                    "fieldName": "photo",
+                    "info": Object {
+                      "fileName": "baz.jpg",
+                    },
+                  },
+                ],
                 "method": "sendPhoto",
                 "params": Object {
                   "caption": "__MyPhoto__",
@@ -167,16 +177,6 @@ test('Photo match snapshot', async () => {
                   },
                   "reply_to_message_id": 123,
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_photo",
-                    "fieldName": "photo",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -200,6 +200,7 @@ test('Animation match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendAnimation",
                 "params": Object {
                   "animation": "12345",
@@ -212,7 +213,6 @@ test('Animation match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "width": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -236,6 +236,7 @@ test('Animation match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendAnimation",
                 "params": Object {
                   "animation": "http://foo.bar/baz.gif",
@@ -248,7 +249,6 @@ test('Animation match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "width": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -311,6 +311,24 @@ test('Animation match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_animate",
+                    "data": "__DATA__",
+                    "fieldName": "animation",
+                    "info": Object {
+                      "fileName": "baz.gif",
+                    },
+                  },
+                  Object {
+                    "assetTag": undefined,
+                    "data": "__THUMB_DATA__",
+                    "fieldName": "thumb",
+                    "info": Object {
+                      "fileName": "baz.jpg",
+                    },
+                  },
+                ],
                 "method": "sendAnimation",
                 "params": Object {
                   "animation": undefined,
@@ -332,24 +350,6 @@ test('Animation match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "width": 1920,
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_animate",
-                    "fieldName": "animation",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.gif",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "thumb",
-                    "fileData": "__THUMB_DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -373,6 +373,7 @@ test('Audio match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendAudio",
                 "params": Object {
                   "audio": "12345",
@@ -385,7 +386,6 @@ test('Audio match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "title": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -409,6 +409,7 @@ test('Audio match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendAudio",
                 "params": Object {
                   "audio": "http://foo.bar/baz.mp3",
@@ -421,7 +422,6 @@ test('Audio match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "title": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -484,6 +484,24 @@ test('Audio match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_audio",
+                    "data": "__DATA__",
+                    "fieldName": "audio",
+                    "info": Object {
+                      "fileName": "baz.mp3",
+                    },
+                  },
+                  Object {
+                    "assetTag": undefined,
+                    "data": "__THUMB_DATA__",
+                    "fieldName": "thumb",
+                    "info": Object {
+                      "fileName": "baz.jpg",
+                    },
+                  },
+                ],
                 "method": "sendAudio",
                 "params": Object {
                   "audio": undefined,
@@ -505,24 +523,6 @@ test('Audio match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "title": "Foo",
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_audio",
-                    "fieldName": "audio",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.mp3",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "thumb",
-                    "fileData": "__THUMB_DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -546,6 +546,7 @@ test('Document match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendDocument",
                 "params": Object {
                   "caption": "<b>My Document</b>",
@@ -555,7 +556,6 @@ test('Document match snapshot', async () => {
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -579,6 +579,7 @@ test('Document match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendDocument",
                 "params": Object {
                   "caption": "PlainTextCaption",
@@ -588,7 +589,6 @@ test('Document match snapshot', async () => {
                   "reply_markup": undefined,
                   "reply_to_message_id": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -645,6 +645,24 @@ test('Document match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_doc",
+                    "data": "__DATA__",
+                    "fieldName": "document",
+                    "info": Object {
+                      "fileName": "baz.txt",
+                    },
+                  },
+                  Object {
+                    "assetTag": undefined,
+                    "data": "__THUMB_DATA__",
+                    "fieldName": "thumb",
+                    "info": Object {
+                      "fileName": "baz.jpg",
+                    },
+                  },
+                ],
                 "method": "sendDocument",
                 "params": Object {
                   "caption": "__MyDocument__",
@@ -663,24 +681,6 @@ test('Document match snapshot', async () => {
                   },
                   "reply_to_message_id": 123,
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_doc",
-                    "fieldName": "document",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.txt",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "thumb",
-                    "fileData": "__THUMB_DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -704,6 +704,7 @@ test('Video match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendVideo",
                 "params": Object {
                   "caption": "<b>My Video</b>",
@@ -717,7 +718,6 @@ test('Video match snapshot', async () => {
                   "video": "12345",
                   "width": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -741,6 +741,7 @@ test('Video match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendVideo",
                 "params": Object {
                   "caption": "PlainTextCaption",
@@ -754,7 +755,6 @@ test('Video match snapshot', async () => {
                   "video": "http://foo.bar/baz.mp4",
                   "width": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -819,6 +819,24 @@ test('Video match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_video",
+                    "data": "__DATA__",
+                    "fieldName": "video",
+                    "info": Object {
+                      "fileName": "baz.mp4",
+                    },
+                  },
+                  Object {
+                    "assetTag": undefined,
+                    "data": "__THUMB_DATA__",
+                    "fieldName": "thumb",
+                    "info": Object {
+                      "fileName": "baz.jpg",
+                    },
+                  },
+                ],
                 "method": "sendVideo",
                 "params": Object {
                   "caption": "__MyVideo__",
@@ -841,24 +859,6 @@ test('Video match snapshot', async () => {
                   "video": undefined,
                   "width": 1920,
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_video",
-                    "fieldName": "video",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.mp4",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "thumb",
-                    "fileData": "__THUMB_DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -882,6 +882,7 @@ test('Voice match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": undefined,
                 "method": "sendVoice",
                 "params": Object {
                   "caption": "<b>My Voice</b>",
@@ -892,7 +893,6 @@ test('Voice match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "voice": "12345",
                 },
-                "uploadFiles": undefined,
               },
             },
           ]
@@ -916,6 +916,7 @@ test('Voice match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": undefined,
                 "method": "sendVoice",
                 "params": Object {
                   "caption": "PlainTextCaption",
@@ -926,7 +927,6 @@ test('Voice match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "voice": "http://foo.bar/baz.wmv",
                 },
-                "uploadFiles": undefined,
               },
             },
           ]
@@ -977,6 +977,16 @@ test('Voice match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_voice",
+                    "data": "__DATA__",
+                    "fieldName": "voice",
+                    "info": Object {
+                      "fileName": "baz.wmv",
+                    },
+                  },
+                ],
                 "method": "sendVoice",
                 "params": Object {
                   "caption": "__MyVoice__",
@@ -996,16 +1006,6 @@ test('Voice match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "voice": undefined,
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_voice",
-                    "fieldName": "voice",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.wmv",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -1029,6 +1029,7 @@ test('VideoNote match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendVideoNote",
                 "params": Object {
                   "caption": "<b>My Video Note</b>",
@@ -1040,7 +1041,6 @@ test('VideoNote match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "video_note": "12345",
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -1064,6 +1064,7 @@ test('VideoNote match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendVideoNote",
                 "params": Object {
                   "caption": "PlainTextCaption",
@@ -1075,7 +1076,6 @@ test('VideoNote match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "video_note": "http://foo.bar/baz.mpeg",
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -1136,6 +1136,24 @@ test('VideoNote match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_video_note",
+                    "data": "__DATA__",
+                    "fieldName": "video_note",
+                    "info": Object {
+                      "fileName": "baz.mpeg",
+                    },
+                  },
+                  Object {
+                    "assetTag": undefined,
+                    "data": "__THUMB_DATA__",
+                    "fieldName": "thumb",
+                    "info": Object {
+                      "fileName": "baz.jpg",
+                    },
+                  },
+                ],
                 "method": "sendVideoNote",
                 "params": Object {
                   "caption": "__MyVideoNote__",
@@ -1156,24 +1174,6 @@ test('VideoNote match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "video_note": undefined,
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_video_note",
-                    "fieldName": "video_note",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.mpeg",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "thumb",
-                    "fileData": "__THUMB_DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -1208,6 +1208,7 @@ test('MediaGroup match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendMediaGroup",
                 "params": Object {
                   "disable_notification": undefined,
@@ -1232,7 +1233,6 @@ test('MediaGroup match snapshot', async () => {
                   ],
                   "reply_to_message_id": undefined,
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -1303,6 +1303,26 @@ test('MediaGroup match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_photo",
+                    "data": undefined,
+                    "fieldName": "file_0",
+                    "info": undefined,
+                  },
+                  Object {
+                    "assetTag": "my_video",
+                    "data": undefined,
+                    "fieldName": "file_1",
+                    "info": undefined,
+                  },
+                  Object {
+                    "assetTag": undefined,
+                    "data": undefined,
+                    "fieldName": "file_2",
+                    "info": undefined,
+                  },
+                ],
                 "method": "sendMediaGroup",
                 "params": Object {
                   "disable_notification": true,
@@ -1327,32 +1347,6 @@ test('MediaGroup match snapshot', async () => {
                   ],
                   "reply_to_message_id": 123,
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_photo",
-                    "fieldName": "file_0",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                  Object {
-                    "assetTag": "my_video",
-                    "fieldName": "file_1",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.mpeg",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "file_2",
-                    "fileData": "__THUMB_DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
               },
             },
           ]
@@ -1370,6 +1364,7 @@ test('Sticker match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendSticker",
                 "params": Object {
                   "disable_notification": undefined,
@@ -1377,7 +1372,6 @@ test('Sticker match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "sticker": "12345",
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -1392,6 +1386,7 @@ test('Sticker match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [],
                 "method": "sendSticker",
                 "params": Object {
                   "disable_notification": undefined,
@@ -1399,7 +1394,6 @@ test('Sticker match snapshot', async () => {
                   "reply_to_message_id": undefined,
                   "sticker": "http://foo.bar/baz.webp",
                 },
-                "uploadFiles": Array [],
               },
             },
           ]
@@ -1444,6 +1438,16 @@ test('Sticker match snapshot', async () => {
               "path": "$",
               "type": "unit",
               "value": Object {
+                "files": Array [
+                  Object {
+                    "assetTag": "my_sticker",
+                    "data": "__DATA__",
+                    "fieldName": "sticker",
+                    "info": Object {
+                      "fileName": "baz.gif",
+                    },
+                  },
+                ],
                 "method": "sendSticker",
                 "params": Object {
                   "disable_notification": true,
@@ -1460,16 +1464,6 @@ test('Sticker match snapshot', async () => {
                   "reply_to_message_id": 123,
                   "sticker": undefined,
                 },
-                "uploadFiles": Array [
-                  Object {
-                    "assetTag": "my_sticker",
-                    "fieldName": "sticker",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "fileName": "baz.gif",
-                    },
-                  },
-                ],
               },
             },
           ]

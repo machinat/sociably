@@ -166,7 +166,7 @@ export const EditMedia: TelegramComponent<
     return null;
   }
 
-  const { method, params, uploadFiles }: TelegramSegmentValue =
+  const { method, params, files }: TelegramSegmentValue =
     mediaSegments[0].value;
   let mediaInput;
 
@@ -221,8 +221,8 @@ export const EditMedia: TelegramComponent<
     };
   }
 
-  if (uploadFiles) {
-    for (const { fieldName } of uploadFiles) {
+  if (files) {
+    for (const { fieldName } of files) {
       if (fieldName === 'thumb') {
         mediaInput.thumb = 'attach://thumb';
       } else {
@@ -242,7 +242,7 @@ export const EditMedia: TelegramComponent<
         inline_message_id: inlineMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      uploadFiles,
+      files,
     }),
   ];
 });

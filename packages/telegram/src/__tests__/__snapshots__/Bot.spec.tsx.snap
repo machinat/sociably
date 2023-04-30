@@ -5,6 +5,7 @@ Object {
   "jobs": Array [
     Object {
       "botId": 12345,
+      "files": undefined,
       "key": undefined,
       "method": "editMessageText",
       "params": Object {
@@ -15,10 +16,10 @@ Object {
         "reply_markup": undefined,
         "text": "foo <b>bar</b>",
       },
-      "uploadFiles": null,
     },
     Object {
       "botId": 12345,
+      "files": undefined,
       "key": undefined,
       "method": "editMessageMedia",
       "params": Object {
@@ -32,7 +33,6 @@ Object {
         "message_id": undefined,
         "reply_markup": undefined,
       },
-      "uploadFiles": null,
     },
   ],
   "results": Array [
@@ -54,6 +54,7 @@ Object {
       "payload": Array [
         Object {
           "botId": 12345,
+          "files": undefined,
           "key": undefined,
           "method": "editMessageText",
           "params": Object {
@@ -64,10 +65,10 @@ Object {
             "reply_markup": undefined,
             "text": "foo <b>bar</b>",
           },
-          "uploadFiles": null,
         },
         Object {
           "botId": 12345,
+          "files": undefined,
           "key": undefined,
           "method": "editMessageMedia",
           "params": Object {
@@ -81,7 +82,6 @@ Object {
             "message_id": undefined,
             "reply_markup": undefined,
           },
-          "uploadFiles": null,
         },
       ],
       "type": "dispatch",
@@ -95,6 +95,7 @@ Object {
   "jobs": Array [
     Object {
       "botId": 12345,
+      "files": undefined,
       "key": "tg.12345.67890",
       "method": "sendMessage",
       "params": Object {
@@ -103,10 +104,10 @@ Object {
         "parse_mode": "HTML",
         "text": "Hello <b>World!</b>",
       },
-      "uploadFiles": null,
     },
     Object {
       "botId": 12345,
+      "files": undefined,
       "key": "tg.12345.67890",
       "method": "sendPhoto",
       "params": Object {
@@ -121,7 +122,6 @@ Object {
         },
         "reply_to_message_id": undefined,
       },
-      "uploadFiles": null,
     },
   ],
   "results": Array [
@@ -143,6 +143,7 @@ Object {
       "payload": Array [
         Object {
           "botId": 12345,
+          "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendMessage",
           "params": Object {
@@ -151,10 +152,10 @@ Object {
             "parse_mode": "HTML",
             "text": "Hello <b>World!</b>",
           },
-          "uploadFiles": null,
         },
         Object {
           "botId": 12345,
+          "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendPhoto",
           "params": Object {
@@ -169,7 +170,6 @@ Object {
             },
             "reply_to_message_id": undefined,
           },
-          "uploadFiles": null,
         },
       ],
       "type": "dispatch",

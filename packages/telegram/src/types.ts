@@ -114,8 +114,8 @@ export type UploadingFileInfo = {
 
 export type UploadingFile = {
   fieldName: string;
-  fileData: string | Buffer | NodeJS.ReadableStream;
-  fileInfo?: UploadingFileInfo;
+  data: string | Buffer | NodeJS.ReadableStream;
+  info?: UploadingFileInfo;
   assetTag?: string;
 };
 
@@ -123,7 +123,7 @@ export type TelegramSegmentValue = {
   method: string;
   params: { [k: string]: unknown };
   toNonChatTarget?: boolean;
-  uploadFiles?: UploadingFile[];
+  files?: UploadingFile[];
 };
 
 export type TelegramComponent<
@@ -136,7 +136,7 @@ export type TelegramJob = {
   method: string;
   params: { [k: string]: any };
   key: undefined | string;
-  uploadFiles: null | UploadingFile[];
+  files?: UploadingFile[];
 };
 
 export type TelegramEventContext = {

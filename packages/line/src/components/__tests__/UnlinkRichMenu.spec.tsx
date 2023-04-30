@@ -35,8 +35,8 @@ describe('<UnlinkRichMenu/>', () => {
       getChatRequest?.(new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'))
     ).toEqual({
       method: 'DELETE',
-      path: 'v2/bot/user/_USER_ID_/richmenu',
-      body: null,
+      url: 'v2/bot/user/_USER_ID_/richmenu',
+      params: null,
     });
   });
 
@@ -63,8 +63,8 @@ describe('<UnlinkRichMenu/>', () => {
 
     expect(getBulkRequest?.(['foo', 'bar', 'baz'])).toEqual({
       method: 'POST',
-      path: 'v2/bot/richmenu/bulk/unlink',
-      body: {
+      url: 'v2/bot/richmenu/bulk/unlink',
+      params: {
         userIds: ['foo', 'bar', 'baz'],
       },
     });

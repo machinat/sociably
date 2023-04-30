@@ -25,12 +25,12 @@ export const Like: TwitterComponent<
       type: 'action',
       request: {
         method: 'POST',
-        href: '2/users/:id/likes',
+        url: '2/users/:id/likes',
         params: { tweet_id: node.props.tweetId },
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/likes`,
+        url: `2/users/${target.agentId}/likes`,
       }),
       mediaSources: null,
     }),

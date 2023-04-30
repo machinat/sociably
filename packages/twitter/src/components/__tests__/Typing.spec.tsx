@@ -22,11 +22,11 @@ test('rendering', async () => {
           "accomplishRequest": [Function],
           "mediaSources": null,
           "request": Object {
-            "href": "1.1/direct_messages/indicate_typing.json",
             "method": "POST",
             "params": Object {
               "recipient_id": "",
             },
+            "url": "1.1/direct_messages/indicate_typing.json",
           },
           "type": "dm",
         },
@@ -38,11 +38,11 @@ test('rendering', async () => {
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "1.1/direct_messages/indicate_typing.json",
       "method": "POST",
       "params": Object {
         "recipient_id": "67890",
       },
+      "url": "1.1/direct_messages/indicate_typing.json",
     }
   `);
 });

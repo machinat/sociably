@@ -218,7 +218,7 @@ export const createWelcomeMessageJobs = (name?: string) => {
 
           return {
             method: 'POST',
-            href: '1.1/direct_messages/welcome_messages/new.json',
+            url: '1.1/direct_messages/welcome_messages/new.json',
             params: {
               welcome_message: {
                 name,

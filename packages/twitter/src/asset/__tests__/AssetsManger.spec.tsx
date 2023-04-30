@@ -356,7 +356,8 @@ test('.deleteWelcomeMessage(name)', async () => {
   expect(bot.makeApiCall).toHaveBeenCalledWith({
     agent,
     method: 'DELETE',
-    path: '1.1/direct_messages/welcome_messages/destroy.json?id=1234567890',
+    url: '1.1/direct_messages/welcome_messages/destroy.json',
+    params: { id: '1234567890' },
   });
 
   expect(
@@ -403,7 +404,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
   expect(bot.makeApiCall).toHaveBeenCalledWith({
     agent,
     method: 'POST',
-    path: '1.1/custom_profiles/new.json',
+    url: '1.1/custom_profiles/new.json',
     params: {
       custom_profile: {
         name: 'Jon C, Partner Engineer',
@@ -446,7 +447,8 @@ test('.deleteCustomProfile(name)', async () => {
   expect(bot.makeApiCall).toHaveBeenCalledWith({
     agent,
     method: 'DELETE',
-    path: '1.1/custom_profiles/destroy.json?id=1234567890',
+    url: '1.1/custom_profiles/destroy.json',
+    params: { id: '1234567890' },
   });
 
   expect(

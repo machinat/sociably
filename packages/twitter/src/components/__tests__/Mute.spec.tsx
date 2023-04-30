@@ -24,11 +24,11 @@ test('rendering', async () => {
           "accomplishRequest": [Function],
           "mediaSources": null,
           "request": Object {
-            "href": "2/users/:id/muting",
             "method": "POST",
             "params": Object {
               "target_user_id": "12345",
             },
+            "url": "2/users/:id/muting",
           },
           "type": "action",
         },
@@ -39,11 +39,11 @@ test('rendering', async () => {
   expect(accomplishRequest(new TweetTarget('67890'), request, null))
     .toMatchInlineSnapshot(`
     Object {
-      "href": "2/users/67890/muting",
       "method": "POST",
       "params": Object {
         "target_user_id": "12345",
       },
+      "url": "2/users/67890/muting",
     }
   `);
 });

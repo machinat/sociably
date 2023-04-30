@@ -22,7 +22,7 @@ describe('createChatJobs', () => {
         key: chat.uid,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/messages',
+          url: '1234567890/messages',
           params: {
             type: 'text',
             text,
@@ -64,7 +64,7 @@ describe('createChatJobs', () => {
         key: chat.uid,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/messages',
+          url: '1234567890/messages',
           params: {
             type: 'text',
             text: 'FOO',
@@ -78,7 +78,7 @@ describe('createChatJobs', () => {
         key: chat.uid,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/messages',
+          url: '1234567890/messages',
           params: {
             type: 'text',
             text: 'BAR',
@@ -92,7 +92,7 @@ describe('createChatJobs', () => {
         key: chat.uid,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/messages',
+          url: '1234567890/messages',
           params: {
             type: 'image',
             image: { caption: 'BAZ', link: 'http://foo.bar/baz.jpg' },
@@ -139,7 +139,7 @@ describe('createChatJobs', () => {
         key: chat.uid,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/media',
+          url: '1234567890/media',
           params: { type: 'image/jpeg', messaging_product: 'whatsapp' },
         },
         file: { data: '_IMAGE_BLOB_DATA_' },
@@ -150,7 +150,7 @@ describe('createChatJobs', () => {
         key: chat.uid,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/messages',
+          url: '1234567890/messages',
           params: {
             type: 'image',
             image: { caption: 'FOO' },
@@ -168,7 +168,7 @@ describe('createChatJobs', () => {
         key: chat.uid,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/media',
+          url: '1234567890/media',
           params: { type: 'audio/mp3', messaging_product: 'whatsapp' },
         },
         file: {
@@ -183,7 +183,7 @@ describe('createChatJobs', () => {
         key: chat.uid,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/messages',
+          url: '1234567890/messages',
           params: {
             type: 'audio',
             audio: { caption: 'BAR' },
@@ -220,7 +220,7 @@ describe('createChatJobs', () => {
         messaging_product: 'whatsapp',
       },
       method: 'POST',
-      relativeUrl: '1234567890/messages',
+      url: '1234567890/messages',
     });
     expect(
       jobs[3].consumeResult?.accomplishRequest(
@@ -236,7 +236,7 @@ describe('createChatJobs', () => {
         messaging_product: 'whatsapp',
       },
       method: 'POST',
-      relativeUrl: '1234567890/messages',
+      url: '1234567890/messages',
     });
 
     expect(getResultValue).toHaveBeenCalledTimes(2);
@@ -272,7 +272,7 @@ describe('createUploadingMediaJobs', () => {
         channel: agent,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/media',
+          url: '1234567890/media',
           params: { type: 'image/jpeg', messaging_product: 'whatsapp' },
         },
         file: { data: '_IMAGE_BLOB_DATA_' },
@@ -300,7 +300,7 @@ describe('createUploadingMediaJobs', () => {
         channel: agent,
         request: {
           method: 'POST',
-          relativeUrl: '1234567890/media',
+          url: '1234567890/media',
           params: { type: 'audio/mp3', messaging_product: 'whatsapp' },
         },
         file: {

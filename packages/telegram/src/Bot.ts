@@ -45,9 +45,13 @@ type TelegramBotOptions = {
 };
 
 type ApiCallOptions = {
+  /** The bot user to make the API call with */
   bot: TelegramUser;
+  /** Bot API method */
   method: string;
+  /** Bot API parameter */
   params?: Record<string, unknown>;
+  /** Attach files with the API request */
   uploadFiles?: UploadingFile[];
 };
 
@@ -177,7 +181,7 @@ export class TelegramBot
           method,
           params,
           key: undefined,
-          uploadFiles: uploadFiles || null,
+          files: uploadFiles || [],
         },
       ]);
 

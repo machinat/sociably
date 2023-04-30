@@ -10,7 +10,7 @@ const sendMessageJob = {
     chai_id: 12345,
     text: 'foo',
   },
-  uploadFiles: [],
+  files: [],
 };
 
 const sendMessageResult = {
@@ -103,7 +103,7 @@ it('ignore noraml messages and media message without assetTag', async () => {
         botId,
         method: 'sendPhoto',
         params: { chat_id: 67890 },
-        uploadFiles: [
+        files: [
           { fieldName: 'photo', fileData },
           { fieldName: 'thumb', fileData },
         ],
@@ -112,7 +112,7 @@ it('ignore noraml messages and media message without assetTag', async () => {
         botId,
         method,
         params: { chat_id: 67890 },
-        uploadFiles: [
+        files: [
           { fieldName: mediaType, fileData },
           { fieldName: 'thumb', fileData },
         ],
@@ -138,7 +138,7 @@ it('save files uploaded when sending media with assetTag', async () => {
     botId,
     method: 'sendPhoto',
     params: { chat_id: 67890 },
-    uploadFiles: [
+    files: [
       { fieldName: 'photo', assetTag: 'my_photo', fileData },
       { fieldName: 'thumb', fileData },
     ],
@@ -148,7 +148,7 @@ it('save files uploaded when sending media with assetTag', async () => {
     botId,
     method,
     params: { chat_id: 67890 },
-    uploadFiles: [
+    files: [
       { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
       { fieldName: 'thumb', fileData },
     ],
@@ -193,13 +193,13 @@ it('save uploaded media when partial success', async () => {
         botId,
         method: 'sendPhoto',
         params: { chat_id: 67890 },
-        uploadFiles: [{ fieldName: 'photo', assetTag: 'my_photo', fileData }],
+        files: [{ fieldName: 'photo', assetTag: 'my_photo', fileData }],
       },
       ...mediaMethodPairs.map(([mediaType, method]) => ({
         botId,
         method,
         params: { chat_id: 67890 },
-        uploadFiles: [
+        files: [
           { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
         ],
       })),
@@ -251,7 +251,7 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
         thumb: 'attach://thumb',
       },
     },
-    uploadFiles: [
+    files: [
       { fieldName: 'photo', assetTag: 'my_photo', fileData },
       { fieldName: 'thumb', fileData },
     ],
@@ -270,7 +270,7 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
         // rest of properties
       },
     },
-    uploadFiles: [
+    files: [
       { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
       { fieldName: 'thumb', fileData },
     ],
@@ -326,7 +326,7 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
             },
           ],
         },
-        uploadFiles: [
+        files: [
           { fieldName: 'file_0', assetTag: 'my_photo', fileData },
           { fieldName: 'file_1', fileData },
           { fieldName: 'file_2', assetTag: 'my_video', fileData },

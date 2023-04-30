@@ -234,19 +234,19 @@ export class LineServerAuthenticator
         await this.bot.makeApiCall({
           channel: chat.channel,
           method: 'GET',
-          path: `v2/bot/profile/${chat.id}`,
+          url: `v2/bot/profile/${chat.id}`,
         });
       } else if (chat.type === 'group') {
         await this.bot.makeApiCall({
           channel: chat.channel,
           method: 'GET',
-          path: `v2/bot/group/${chat.id}/member/${userId}`,
+          url: `v2/bot/group/${chat.id}/member/${userId}`,
         });
       } else if (chat.type === 'room') {
         await this.bot.makeApiCall({
           channel: chat.channel,
           method: 'GET',
-          path: `v2/bot/room/${chat.id}/member/${userId}`,
+          url: `v2/bot/room/${chat.id}/member/${userId}`,
         });
       }
       return { ok: true as const, chat };
@@ -267,7 +267,7 @@ export class LineServerAuthenticator
       const profile = await this.bot.makeApiCall<LineRawUserProfile>({
         accessToken: loginToken,
         method: 'GET',
-        path: `v2/profile`,
+        url: `v2/profile`,
       });
 
       if (profile.userId !== userId) {
@@ -297,7 +297,7 @@ export class LineServerAuthenticator
     try {
       const tokenInfo = await this.bot.makeApiCall<VerifyTokenResult>({
         method: 'GET',
-        path: `oauth2/v2.1/verify?access_token=${accessToken}`,
+        url: `oauth2/v2.1/verify?access_token=${accessToken}`,
       });
 
       return { ok: true as const, tokenInfo };

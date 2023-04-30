@@ -83,12 +83,12 @@ export const Photo: TelegramComponent<
         reply_to_message_id: replyToMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      uploadFiles: fileData
+      files: fileData
         ? [
             {
               fieldName: 'photo',
-              fileData,
-              fileInfo,
+              data: fileData,
+              info: fileInfo,
               assetTag,
             },
           ]
@@ -143,22 +143,22 @@ export const Audio: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadFiles: UploadingFile[] = [];
+  const files: UploadingFile[] = [];
 
   if (fileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'audio',
-      fileData,
-      fileInfo,
+      data: fileData,
+      info: fileInfo,
       assetTag,
     });
   }
 
   if (thumbnailFileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'thumb',
-      fileData: thumbnailFileData,
-      fileInfo: thumbnailFileInfo,
+      data: thumbnailFileData,
+      info: thumbnailFileInfo,
       assetTag: undefined,
     });
   }
@@ -177,7 +177,7 @@ export const Audio: TelegramComponent<
         performer,
         title,
       },
-      uploadFiles,
+      files,
     }),
   ];
 });
@@ -218,22 +218,22 @@ export const Document: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadFiles: UploadingFile[] = [];
+  const files: UploadingFile[] = [];
 
   if (fileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'document',
-      fileData,
-      fileInfo,
+      data: fileData,
+      info: fileInfo,
       assetTag,
     });
   }
 
   if (thumbnailFileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'thumb',
-      fileData: thumbnailFileData,
-      fileInfo: thumbnailFileInfo,
+      data: thumbnailFileData,
+      info: thumbnailFileInfo,
       assetTag: undefined,
     });
   }
@@ -249,7 +249,7 @@ export const Document: TelegramComponent<
         reply_to_message_id: replyToMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      uploadFiles,
+      files,
     }),
   ];
 });
@@ -303,22 +303,22 @@ export const Video: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadFiles: UploadingFile[] = [];
+  const files: UploadingFile[] = [];
 
   if (fileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'video',
-      fileData,
-      fileInfo,
+      data: fileData,
+      info: fileInfo,
       assetTag,
     });
   }
 
   if (thumbnailFileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'thumb',
-      fileData: thumbnailFileData,
-      fileInfo: thumbnailFileInfo,
+      data: thumbnailFileData,
+      info: thumbnailFileInfo,
       assetTag: undefined,
     });
   }
@@ -338,7 +338,7 @@ export const Video: TelegramComponent<
         height,
         supports_streaming: supportsStreaming,
       },
-      uploadFiles,
+      files,
     }),
   ];
 });
@@ -389,22 +389,22 @@ export const Animation: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadFiles: UploadingFile[] = [];
+  const files: UploadingFile[] = [];
 
   if (fileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'animation',
-      fileData,
-      fileInfo,
+      data: fileData,
+      info: fileInfo,
       assetTag,
     });
   }
 
   if (thumbnailFileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'thumb',
-      fileData: thumbnailFileData,
-      fileInfo: thumbnailFileInfo,
+      data: thumbnailFileData,
+      info: thumbnailFileInfo,
       assetTag: undefined,
     });
   }
@@ -423,7 +423,7 @@ export const Animation: TelegramComponent<
         width,
         height,
       },
-      uploadFiles,
+      files,
     }),
   ];
 });
@@ -474,12 +474,12 @@ export const Voice: TelegramComponent<
         reply_markup: replyMarkupSegments?.[0].value,
         duration,
       },
-      uploadFiles: fileData
+      files: fileData
         ? [
             {
               fieldName: 'voice',
-              fileData,
-              fileInfo,
+              data: fileData,
+              info: fileInfo,
               assetTag,
             },
           ]
@@ -531,22 +531,22 @@ export const VideoNote: TelegramComponent<
 
   const captionSegments = await render(caption, '.caption');
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadFiles: UploadingFile[] = [];
+  const files: UploadingFile[] = [];
 
   if (fileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'video_note',
-      fileData,
-      fileInfo,
+      data: fileData,
+      info: fileInfo,
       assetTag,
     });
   }
 
   if (thumbnailFileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'thumb',
-      fileData: thumbnailFileData,
-      fileInfo: thumbnailFileInfo,
+      data: thumbnailFileData,
+      info: thumbnailFileInfo,
       assetTag: undefined,
     });
   }
@@ -564,7 +564,7 @@ export const VideoNote: TelegramComponent<
         duration,
         length,
       },
-      uploadFiles,
+      files,
     }),
   ];
 });
@@ -603,7 +603,7 @@ export const MediaGroup: TelegramComponent<
   const inputMedia: any[] = [];
 
   mediaSegments.forEach(({ node: inputNode, value }) => {
-    const { params, uploadFiles } = value;
+    const { params, files } = value;
 
     let inputType;
     if ('video' in params) {
@@ -636,8 +636,8 @@ export const MediaGroup: TelegramComponent<
             supports_streaming: params.supports_streaming,
           };
 
-    if (uploadFiles) {
-      uploadFiles.forEach(({ fieldName, fileData, fileInfo, assetTag }) => {
+    if (files) {
+      files.forEach(({ fieldName, fileData, fileInfo, assetTag }) => {
         const fileName = `file_${fileCount}`;
         fileCount += 1;
 
@@ -649,8 +649,8 @@ export const MediaGroup: TelegramComponent<
 
         mediaFiles.push({
           fieldName: fileName,
-          fileData,
-          fileInfo,
+          data: fileData,
+          info: fileInfo,
           assetTag,
         });
       });
@@ -667,7 +667,7 @@ export const MediaGroup: TelegramComponent<
         disable_notification: disableNotification,
         reply_to_message_id: replyToMessageId,
       },
-      uploadFiles: mediaFiles,
+      files: mediaFiles,
     }),
   ];
 });
@@ -699,13 +699,13 @@ export const Sticker: TelegramComponent<
   } = node.props;
 
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const uploadFiles: UploadingFile[] = [];
+  const files: UploadingFile[] = [];
 
   if (fileData) {
-    uploadFiles.push({
+    files.push({
       fieldName: 'sticker',
-      fileData,
-      fileInfo,
+      data: fileData,
+      info: fileInfo,
       assetTag,
     });
   }
@@ -719,7 +719,7 @@ export const Sticker: TelegramComponent<
         reply_to_message_id: replyToMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      uploadFiles,
+      files,
     }),
   ];
 });

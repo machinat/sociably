@@ -10,7 +10,7 @@ export type FileInfo = {
 
 export type MetaApiJobRequest = {
   method: string;
-  relativeUrl: string;
+  url: string;
   params?: Record<string, unknown>;
 };
 

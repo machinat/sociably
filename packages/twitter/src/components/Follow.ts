@@ -25,12 +25,12 @@ export const Follow: TwitterComponent<
       type: 'action',
       request: {
         method: 'POST',
-        href: '2/users/:id/following',
+        url: '2/users/:id/following',
         params: { target_user_id: node.props.userId },
       },
       accomplishRequest: (target, request) => ({
         ...request,
-        href: `2/users/${target.agentId}/following`,
+        url: `2/users/${target.agentId}/following`,
       }),
       mediaSources: null,
     }),

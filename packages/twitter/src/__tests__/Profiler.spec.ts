@@ -65,7 +65,7 @@ describe('.getUserProfile(user)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       agent,
       method: 'GET',
-      path: '1.1/users/show.json',
+      url: '1.1/users/show.json',
       params: {
         user_id: '6253282',
         include_entities: false,
@@ -91,7 +91,7 @@ describe('.getUserProfile(user)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       agent,
       method: 'GET',
-      path: '1.1/users/show.json',
+      url: '1.1/users/show.json',
       params: {
         user_id: '6253282',
         include_entities: false,
@@ -116,7 +116,7 @@ describe('.getUserProfile(user)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       agent,
       method: 'GET',
-      path: '1.1/account/settings.json',
+      url: '1.1/account/settings.json',
     });
   });
 
@@ -136,7 +136,7 @@ describe('.getUserProfile(user)', () => {
     expect(bot.makeApiCall).toHaveBeenCalledWith({
       agent,
       method: 'GET',
-      path: '1.1/users/show.json',
+      url: '1.1/users/show.json',
       params: {
         user_id: '6253282',
         include_entities: true,

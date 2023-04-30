@@ -34,11 +34,11 @@ Array [
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "Hello World",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "1234567890",
@@ -53,11 +53,11 @@ Array [
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "Foo Bar Baz",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "1234567890",
@@ -102,11 +102,11 @@ Array [
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "Hello World",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "1234567890",
@@ -121,11 +121,11 @@ Array [
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": Object {
-      "href": "2/tweets",
       "method": "POST",
       "params": Object {
         "text": "Foo Bar Baz",
       },
+      "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
       "agentId": "1234567890",
@@ -146,7 +146,6 @@ Object {
       "mediaSources": null,
       "refreshTarget": null,
       "request": Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -162,6 +161,7 @@ Object {
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       "target": TwitterChat {
         "agentId": "1234567890",
@@ -176,7 +176,6 @@ Object {
       "mediaSources": null,
       "refreshTarget": null,
       "request": Object {
-        "href": "1.1/direct_messages/events/new.json",
         "method": "POST",
         "params": Object {
           "event": Object {
@@ -192,6 +191,7 @@ Object {
             "type": "message_create",
           },
         },
+        "url": "1.1/direct_messages/events/new.json",
       },
       "target": TwitterChat {
         "agentId": "1234567890",
@@ -226,7 +226,6 @@ Object {
           "mediaSources": null,
           "refreshTarget": null,
           "request": Object {
-            "href": "1.1/direct_messages/events/new.json",
             "method": "POST",
             "params": Object {
               "event": Object {
@@ -242,6 +241,7 @@ Object {
                 "type": "message_create",
               },
             },
+            "url": "1.1/direct_messages/events/new.json",
           },
           "target": TwitterChat {
             "agentId": "1234567890",
@@ -256,7 +256,6 @@ Object {
           "mediaSources": null,
           "refreshTarget": null,
           "request": Object {
-            "href": "1.1/direct_messages/events/new.json",
             "method": "POST",
             "params": Object {
               "event": Object {
@@ -272,6 +271,7 @@ Object {
                 "type": "message_create",
               },
             },
+            "url": "1.1/direct_messages/events/new.json",
           },
           "target": TwitterChat {
             "agentId": "1234567890",

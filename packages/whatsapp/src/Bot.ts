@@ -63,8 +63,11 @@ const createStaticSettingsAccessor = (
 });
 
 type ApiCallOptions = {
+  /** HTTP method */
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  path: string;
+  /** API request URL relative to https://graph.facebook.com/{version}/ */
+  url: string;
+  /** API request parameters */
   params?: Record<string, unknown>;
 };
 
@@ -152,18 +155,14 @@ export class WhatsAppBot
 
   async makeApiCall<ResBody extends MetaApiResponseBody>({
     method,
-    path,
+    url,
     params,
   }: ApiCallOptions): Promise<ResBody> {
     try {
       const { results } = await this.engine.dispatchJobs(null, [
         {
           channel: DUMMY_API_CALL_CHANNEL,
-          request: {
-            method,
-            relativeUrl: path,
-            params,
-          },
+          request: { method, url, params },
         },
       ]);
 

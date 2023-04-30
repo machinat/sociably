@@ -9,6 +9,7 @@ Array [
     "path": "$#Expression.children:0",
     "type": "unit",
     "value": Object {
+      "files": undefined,
       "method": "sendPhoto",
       "params": Object {
         "caption": undefined,
@@ -21,7 +22,6 @@ Array [
         },
         "reply_to_message_id": undefined,
       },
-      "uploadFiles": undefined,
     },
   },
   Object {
@@ -76,6 +76,7 @@ Array [
     "path": "$#Expression.children:1",
     "type": "unit",
     "value": Object {
+      "files": undefined,
       "method": "sendPhoto",
       "params": Object {
         "caption": undefined,
@@ -88,7 +89,6 @@ Array [
         },
         "reply_to_message_id": undefined,
       },
-      "uploadFiles": undefined,
     },
   },
 ]
@@ -105,6 +105,7 @@ Array [
     "path": "$#Expression.children:0",
     "type": "unit",
     "value": Object {
+      "files": undefined,
       "method": "sendPhoto",
       "params": Object {
         "caption": undefined,
@@ -114,7 +115,6 @@ Array [
         "reply_markup": undefined,
         "reply_to_message_id": undefined,
       },
-      "uploadFiles": undefined,
     },
   },
   Object {
@@ -125,6 +125,7 @@ Array [
     "path": "$#Expression.children:1",
     "type": "unit",
     "value": Object {
+      "files": undefined,
       "method": "sendPhoto",
       "params": Object {
         "caption": undefined,
@@ -134,7 +135,6 @@ Array [
         "reply_markup": undefined,
         "reply_to_message_id": undefined,
       },
-      "uploadFiles": undefined,
     },
   },
 ]
