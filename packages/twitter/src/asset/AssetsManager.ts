@@ -173,7 +173,7 @@ export class TwitterAssetsManager {
       throw new Error(`welcome message [${tag}] doesn't exist`);
     }
 
-    await this._bot.makeApiCall({
+    await this._bot.requestApi({
       agent,
       method: 'DELETE',
       url: `1.1/direct_messages/welcome_messages/destroy.json`,
@@ -222,7 +222,7 @@ export class TwitterAssetsManager {
 
     const {
       custom_profile: { id: customProfileId },
-    } = await this._bot.makeApiCall<CreateCustomProfileResult>({
+    } = await this._bot.requestApi<CreateCustomProfileResult>({
       agent,
       method: 'POST',
       url: `1.1/custom_profiles/new.json`,
@@ -244,7 +244,7 @@ export class TwitterAssetsManager {
       throw new Error(`custom profile [${tag}] doesn't exist`);
     }
 
-    await this._bot.makeApiCall({
+    await this._bot.requestApi({
       agent,
       method: 'DELETE',
       url: `1.1/custom_profiles/destroy.json`,

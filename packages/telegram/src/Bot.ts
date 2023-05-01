@@ -138,7 +138,7 @@ export class TelegramBot
       throw new Error(`Bot ${bot.id} not found`);
     }
 
-    const { file_path: filePath } = await this.makeApiCall({
+    const { file_path: filePath } = await this.requestApi({
       bot,
       method: 'getFile',
       params: { file_id: fileId },
@@ -168,7 +168,7 @@ export class TelegramBot
     };
   }
 
-  async makeApiCall<Result extends BotApiResult>({
+  async requestApi<Result extends BotApiResult>({
     bot,
     method,
     params = {},

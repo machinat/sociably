@@ -26,7 +26,7 @@ const bot = moxy<FacebookBot>({
   uploadChatAttachment() {
     return {};
   },
-  makeApiCall() {},
+  requestApi() {},
 } as never);
 
 const pageSettings = {
@@ -255,7 +255,7 @@ test('.createPersona()', async () => {
     bot,
     pageSettingsAccessor
   );
-  bot.makeApiCall.mock.fake(() => ({
+  bot.requestApi.mock.fake(() => ({
     id: '_PERSONA_ID_',
   }));
 
@@ -266,8 +266,8 @@ test('.createPersona()', async () => {
     })
   ).resolves.toBe('_PERSONA_ID_');
 
-  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall).toHaveBeenCalledWith({
+  expect(bot.requestApi).toHaveBeenCalledTimes(1);
+  expect(bot.requestApi).toHaveBeenCalledWith({
     page,
     method: 'POST',
     url: 'me/personas',
@@ -297,18 +297,18 @@ test('.deletePersona()', async () => {
     bot,
     pageSettingsAccessor
   );
-  bot.makeApiCall.mock.fake(() => ({
+  bot.requestApi.mock.fake(() => ({
     id: '_PERSONA_ID_',
   }));
 
   await expect(manager.deletePersona(page, 'my_persona')).resolves.toBe(false);
-  expect(bot.makeApiCall).not.toHaveBeenCalled();
+  expect(bot.requestApi).not.toHaveBeenCalled();
 
   state.get.mock.fake(async () => '_PERSONA_ID_');
   await expect(manager.deletePersona(page, 'my_persona')).resolves.toBe(true);
 
-  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall).toHaveBeenCalledWith({
+  expect(bot.requestApi).toHaveBeenCalledTimes(1);
+  expect(bot.requestApi).toHaveBeenCalledWith({
     page,
     method: 'DELETE',
     url: '_PERSONA_ID_',

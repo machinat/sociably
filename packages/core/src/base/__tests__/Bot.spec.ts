@@ -7,7 +7,7 @@ type UnknownBot = SociablyBot<SociablyThread, unknown, unknown>;
 const fooBot = moxy<UnknownBot>({ render: async () => 'FOO' } as never);
 const barBot = moxy<UnknownBot>({ render: async () => 'BAR' } as never);
 
-it('proxy #render() call to the bot corresponded to the thread platform', async () => {
+it('proxy .render() call to the bot corresponded to the thread platform', async () => {
   const bot = new BaseBot(
     new Map([
       ['foo', fooBot],

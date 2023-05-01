@@ -126,7 +126,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
     );
   }
 
-  async makeApiCall<ResBody extends MessagingApiResult>({
+  async requestApi<ResBody extends MessagingApiResult>({
     method,
     url,
     params,

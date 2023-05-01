@@ -39,7 +39,7 @@ const httpOperator = moxy<AuthHttpOperator>({
 } as never);
 
 const bot = moxy<TelegramBot>({
-  makeApiCall() {
+  requestApi() {
     throw new Error();
   },
 } as never);
@@ -126,7 +126,7 @@ describe('.delegateAuthRequest() on root route', () => {
     const req = createReq({ url: `/auth/telegram?${search}` });
 
     // getChatMember
-    bot.makeApiCall.mock.fakeOnce(async () => ({
+    bot.requestApi.mock.fakeOnce(async () => ({
       user: {
         id: 67890,
         first_name: 'John',
@@ -138,7 +138,7 @@ describe('.delegateAuthRequest() on root route', () => {
     }));
 
     // getChat
-    bot.makeApiCall.mock.fakeOnce(async () => ({
+    bot.requestApi.mock.fakeOnce(async () => ({
       id: 55555,
       type: 'group',
       title: 'Does',
@@ -150,8 +150,8 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(1, {
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
       bot: botUser,
       method: 'getChatMember',
       params: {
@@ -159,7 +159,7 @@ describe('.delegateAuthRequest() on root route', () => {
         chat_id: 55555,
       },
     });
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(2, {
+    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
       bot: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
@@ -200,7 +200,7 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.makeApiCall).not.toHaveBeenCalled();
+    expect(bot.requestApi).not.toHaveBeenCalled();
 
     expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
     expect(httpOperator.issueError).toHaveBeenCalledWith(
@@ -223,7 +223,7 @@ describe('.delegateAuthRequest() on root route', () => {
 
     const req = createReq({ url: `/auth/telegram?${search}` });
 
-    bot.makeApiCall.mock.fake(async () => {
+    bot.requestApi.mock.fake(async () => {
       throw new TelegramApiError({
         ok: false,
         error_code: 400,
@@ -237,7 +237,7 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
 
     expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
     expect(httpOperator.issueError).toHaveBeenCalledWith(
@@ -526,7 +526,7 @@ describe('.verifyRefreshment()', () => {
 
   it('verify user is a chat member if `chat` is specified', async () => {
     // getChatMember
-    bot.makeApiCall.mock.fakeOnce(async () => ({
+    bot.requestApi.mock.fakeOnce(async () => ({
       user: {
         id: 67890,
         first_name: 'John',
@@ -538,7 +538,7 @@ describe('.verifyRefreshment()', () => {
     }));
 
     // getChat
-    bot.makeApiCall.mock.fakeOnce(async () => ({
+    bot.requestApi.mock.fakeOnce(async () => ({
       id: 55555,
       type: 'group',
       title: 'Does',
@@ -565,8 +565,8 @@ describe('.verifyRefreshment()', () => {
       data: authData,
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(1, {
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
       bot: botUser,
       method: 'getChatMember',
       params: {
@@ -574,7 +574,7 @@ describe('.verifyRefreshment()', () => {
         chat_id: 55555,
       },
     });
-    expect(bot.makeApiCall).toHaveBeenNthCalledWith(2, {
+    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
       bot: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
@@ -582,7 +582,7 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if chat member check fails', async () => {
-    bot.makeApiCall.mock.fake(async () => {
+    bot.requestApi.mock.fake(async () => {
       throw new TelegramApiError({
         ok: false,
         error_code: 404,
@@ -609,7 +609,7 @@ describe('.verifyRefreshment()', () => {
       reason: 'Bad Request: user not found',
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
   });
 
   it('fail if bot settings not found', async () => {

@@ -24,7 +24,7 @@ const minProfileData = {
 const botChannel = new LineChannel(botChannelId);
 
 const bot = moxy<LineBot>({
-  makeApiCall: async ({ url }) =>
+  requestApi: async ({ url }) =>
     url === `oauth2/v2.1/verify?access_token=${accessToken}`
       ? { scope: 'profile', client_id: loginChannelId, expires_in: 2591659 }
       : url === 'v2/profile'
@@ -184,12 +184,12 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(2);
-    expect(bot.makeApiCall).toHaveBeenCalledWith({
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenCalledWith({
       method: 'GET',
       url: `oauth2/v2.1/verify?access_token=${credential.accessToken}`,
     });
-    expect(bot.makeApiCall).toHaveBeenCalledWith({
+    expect(bot.requestApi).toHaveBeenCalledWith({
       accessToken: credential.accessToken,
       method: 'GET',
       url: `v2/profile`,
@@ -218,8 +218,8 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(3);
-    expect(bot.makeApiCall).toHaveBeenCalledWith({
+    expect(bot.requestApi).toHaveBeenCalledTimes(3);
+    expect(bot.requestApi).toHaveBeenCalledWith({
       channel: botChannel,
       method: 'GET',
       url: `v2/bot/profile/${userId}`,
@@ -250,8 +250,8 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(3);
-    expect(bot.makeApiCall).toHaveBeenCalledWith({
+    expect(bot.requestApi).toHaveBeenCalledTimes(3);
+    expect(bot.requestApi).toHaveBeenCalledWith({
       channel: botChannel,
       method: 'GET',
       url: `v2/bot/group/${groupId}/member/${userId}`,
@@ -282,8 +282,8 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(3);
-    expect(bot.makeApiCall).toHaveBeenCalledWith({
+    expect(bot.requestApi).toHaveBeenCalledTimes(3);
+    expect(bot.requestApi).toHaveBeenCalledWith({
       channel: botChannel,
       method: 'GET',
       url: `v2/bot/room/${roomId}/member/${userId}`,
@@ -305,7 +305,7 @@ describe('.verifyCredential(credential)', () => {
   it('fail if token verify api respond error', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
-    bot.makeApiCall.mock.wrap((originalImpl) => async (options) => {
+    bot.requestApi.mock.wrap((originalImpl) => async (options) => {
       if (options.url.startsWith('oauth2/v2.1/verify')) {
         throw new LineApiError({
           code: 400,
@@ -383,7 +383,7 @@ describe('.verifyCredential(credential)', () => {
   it('fail when chat user not found', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
-    bot.makeApiCall.mock.wrap((originalImpl) => async (options) => {
+    bot.requestApi.mock.wrap((originalImpl) => async (options) => {
       if (options.url.startsWith('v2/bot/profile')) {
         throw new LineApiError({
           code: 404,
@@ -410,7 +410,7 @@ describe('.verifyCredential(credential)', () => {
   test('fail if group member not found', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
-    bot.makeApiCall.mock.wrap((originalImpl) => async (options) => {
+    bot.requestApi.mock.wrap((originalImpl) => async (options) => {
       if (options.url.startsWith('v2/bot/group')) {
         throw new LineApiError({
           code: 404,
@@ -438,7 +438,7 @@ describe('.verifyCredential(credential)', () => {
   it('fail if room member not found', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
-    bot.makeApiCall.mock.wrap((originalImpl) => async (options) => {
+    bot.requestApi.mock.wrap((originalImpl) => async (options) => {
       if (options.url.startsWith('v2/bot/room')) {
         throw new LineApiError({
           code: 404,
@@ -499,7 +499,7 @@ describe('.verifyCredential(credential)', () => {
   it('throw if unknown error happen', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
-    bot.makeApiCall.mock.fake(async () => {
+    bot.requestApi.mock.fake(async () => {
       throw new Error('connection error');
     });
 
@@ -527,7 +527,7 @@ describe('.verifyRefreshment()', () => {
       data: authData,
     });
 
-    expect(bot.makeApiCall).not.toHaveBeenCalled();
+    expect(bot.requestApi).not.toHaveBeenCalled();
   });
 
   test('with messaging channel', async () => {
@@ -545,8 +545,8 @@ describe('.verifyRefreshment()', () => {
       data: authDataWithMessagingChannel,
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
           "id": "_BOT_CHAN_ID_",
@@ -574,8 +574,8 @@ describe('.verifyRefreshment()', () => {
       data: authDataWithGroup,
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
           "id": "_BOT_CHAN_ID_",
@@ -603,8 +603,8 @@ describe('.verifyRefreshment()', () => {
       data: authDataWithRoom,
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
           "id": "_BOT_CHAN_ID_",
@@ -726,7 +726,7 @@ describe('.verifyRefreshment()', () => {
 
   it('fail when user not found', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
-    bot.makeApiCall.mock.fakeRejectedValue(
+    bot.requestApi.mock.fakeRejectedValue(
       new LineApiError({
         code: 404,
         headers: {},
@@ -750,7 +750,7 @@ describe('.verifyRefreshment()', () => {
 
   test('with group chat', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
-    bot.makeApiCall.mock.fakeRejectedValue(
+    bot.requestApi.mock.fakeRejectedValue(
       new LineApiError({
         code: 404,
         headers: {},
@@ -775,7 +775,7 @@ describe('.verifyRefreshment()', () => {
 
   test('with room chat', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
-    bot.makeApiCall.mock.fakeRejectedValue(
+    bot.requestApi.mock.fakeRejectedValue(
       new LineApiError({
         code: 404,
         headers: {},
@@ -797,8 +797,8 @@ describe('.verifyRefreshment()', () => {
       reason: 'room member not found',
     });
 
-    expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
-    expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
           "id": "_BOT_CHAN_ID_",

@@ -337,7 +337,7 @@ describe('.render(thread, content)', () => {
   });
 });
 
-describe('.makeApiCall(method, uri, params)', () => {
+describe('.requestApi(method, uri, params)', () => {
   test('GET request', async () => {
     const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
@@ -347,7 +347,7 @@ describe('.makeApiCall(method, uri, params)', () => {
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.makeApiCall({
+      bot.requestApi({
         agent,
         method: 'GET',
         url: '2/foo',
@@ -367,7 +367,7 @@ describe('.makeApiCall(method, uri, params)', () => {
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.makeApiCall({
+      bot.requestApi({
         agent,
         method: 'POST',
         url: '2/foo',
@@ -391,7 +391,7 @@ describe('.makeApiCall(method, uri, params)', () => {
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.makeApiCall({
+      bot.requestApi({
         agent,
         method: 'POST',
         url: '2/foo',

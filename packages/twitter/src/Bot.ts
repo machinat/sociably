@@ -146,7 +146,7 @@ export class TwitterBot
     );
   }
 
-  async makeApiCall<Result>({
+  async requestApi<Result>({
     agent,
     method,
     url,

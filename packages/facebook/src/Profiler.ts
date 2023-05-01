@@ -47,7 +47,7 @@ export class FacebookProfiler
     let rawProfile: RawUserProfile;
 
     try {
-      rawProfile = await this._bot.makeApiCall({
+      rawProfile = await this._bot.requestApi({
         page,
         method: 'GET',
         url: `${user.id}?fields=${this.profileFields}`,

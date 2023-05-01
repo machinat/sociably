@@ -43,7 +43,7 @@ export const up = makeContainer({
   lineBot`}
 ) => {${when(platforms.includes('facebook'))`
   // setup page profile in Messenger
-  await facebookBot.makeApiCall('POST', 'me/messenger_profile', {
+  await facebookBot.requestApi('POST', 'me/messenger_profile', {
     greeting: [
       { locale: 'default', text: 'Hello World!' },
     ],${when(withWebview)`
@@ -51,7 +51,7 @@ export const up = makeContainer({
   });
   
   // create Facebook webhook subscription, require running server in advance
-  await facebookBot.makeApiCall(
+  await facebookBot.requestApi(
     'POST',
     \`\${FACEBOOK_APP_ID}/subscriptions\`,
     {
@@ -65,7 +65,7 @@ export const up = makeContainer({
   );
 
   // add page to Facebook webhook
-  await facebookBot.makeApiCall('POST', 'me/subscribed_apps', {
+  await facebookBot.requestApi('POST', 'me/subscribed_apps', {
       subscribed_fields: ['messages', 'messaging_postbacks'],
   });`}${when(platforms.includes('twitter'))`
 
@@ -77,18 +77,18 @@ export const up = makeContainer({
   );
 
   // subscribe to Twitter agent user
-  await twitterBot.makeApiCall(
+  await twitterBot.requestApi(
     'POST',
     \`1.1/account_activity/all/\${TWITTER_WEBHOOK_ENV}/subscriptions.json\`
   );`}${when(platforms.includes('telegram'))`
 
   // setup webhook of the Telegram bot
-  await telegramBot.makeApiCall('setWebhook', {
+  await telegramBot.requestApi('setWebhook', {
     url: \`\${ENTRY_URL}/webhook/telegram/\${TELEGRAM_SECRET_PATH}\`,
   });`}${when(platforms.includes('line'))`
 
   // setup webhook of the LINE channel
-  await lineBot.makeApiCall('PUT', 'v2/bot/channel/webhook/endpoint', {
+  await lineBot.requestApi('PUT', 'v2/bot/channel/webhook/endpoint', {
     endpoint: \`\${ENTRY_URL}/webhook/line\`,
   });`}
 });
@@ -106,7 +106,7 @@ export const down = makeContainer({
 ) => {
 ${when(platforms.includes('facebook'))`
   // clear page profile in Messenger
-  await facebookBot.makeApiCall('DELETE', 'me/messenger_profile', {
+  await facebookBot.requestApi('DELETE', 'me/messenger_profile', {
     fields: [
       'get_started',
       'greeting',
@@ -116,14 +116,14 @@ ${when(platforms.includes('facebook'))`
   });
 
   // delete app subscriptions
-  await facebookBot.makeApiCall(
+  await facebookBot.requestApi(
     'DELETE',
     \`\${FACEBOOK_PAGE_ID}/subscribed_apps\`,
     { access_token: \`\${FACEBOOK_APP_ID}|\${FACEBOOK_APP_SECRET}\` }
   );
   
   // remove page from webhook subscription
-  await facebookBot.makeApiCall(
+  await facebookBot.requestApi(
     'DELETE',
     \`\${FACEBOOK_APP_ID}/subscriptions\`,
     {
@@ -138,6 +138,6 @@ ${when(platforms.includes('twitter'))`
 ${when(platforms.includes('telegram'))`
 
   // delete Telegram webhook
-  await telegramBot.makeApiCall('deleteWebhook');`}
+  await telegramBot.requestApi('deleteWebhook');`}
 });
 `;

@@ -77,7 +77,7 @@ export class TelegramProfiler
     if (user.data && !fromApi) {
       userData = user.data;
     } else {
-      const chatMember = await this.bot.makeApiCall({
+      const chatMember = await this.bot.requestApi({
         bot,
         method: 'getChatMember',
         params: {
@@ -123,7 +123,7 @@ export class TelegramProfiler
       chatId = id;
     }
 
-    const chatData: RawChat = await this.bot.makeApiCall({
+    const chatData: RawChat = await this.bot.requestApi({
       bot,
       method: 'getChat',
       params: { chat_id: chatId },
@@ -141,7 +141,7 @@ export class TelegramProfiler
       minWidth?: number;
     }
   ): Promise<null | PhotoResponse> {
-    const { photos } = await this.bot.makeApiCall<{ photos: RawPhotoSize[] }>({
+    const { photos } = await this.bot.requestApi<{ photos: RawPhotoSize[] }>({
       bot,
       method: 'getUserProfilePhotos',
       params: { user_id: user.id },
@@ -177,7 +177,7 @@ export class TelegramProfiler
     chat: number | string | TelegramChat | TelegramChatSender,
     options?: { size?: 'big' | 'small' }
   ): Promise<null | PhotoResponse> {
-    const { photo } = await this.bot.makeApiCall<{ photo: RawPhotoSize }>({
+    const { photo } = await this.bot.requestApi<{ photo: RawPhotoSize }>({
       bot,
       method: 'getChat',
       params: {

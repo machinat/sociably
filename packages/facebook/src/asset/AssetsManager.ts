@@ -154,7 +154,7 @@ export class FacebookAssetsManager {
       throw new Error(`persona [ ${assetName} ] already exist`);
     }
 
-    const { id: personaId } = await this._bot.makeApiCall<{ id: string }>({
+    const { id: personaId } = await this._bot.requestApi<{ id: string }>({
       page,
       method: 'POST',
       url: PATH_PERSONAS,
@@ -171,7 +171,7 @@ export class FacebookAssetsManager {
       return false;
     }
 
-    await this._bot.makeApiCall({ page, method: 'DELETE', url: personaId });
+    await this._bot.requestApi({ page, method: 'DELETE', url: personaId });
     await this.unsavePersona(page, name);
     return true;
   }

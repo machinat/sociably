@@ -18,7 +18,7 @@ app.start().then(async () => {
     TwitterAssetManager,
   ]);
   const webhookId = await twitterAssetManager.getWebhook('default');
-  await twitterBot.makeApiCall(
+  await twitterBot.requestApi(
     'PUT',
     \`1.1/account_activity/all/\${TWITTER_WEBHOOK_ENV}/webhooks/\${webhookId}.json\`
   );

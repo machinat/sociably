@@ -23,7 +23,7 @@ const stateController = moxy<StateControllerI>({
 
 const bot = moxy<TwitterBot>({
   id: 123456,
-  makeApiCall() {},
+  requestApi() {},
   renderMedia() {},
   renderWelcomeMessage() {},
 } as never);
@@ -347,13 +347,13 @@ test('.deleteWelcomeMessage(name)', async () => {
   const manager = new TwitterAssetsManager(bot, stateController);
 
   state.get.mock.fake(async () => '1234567890');
-  bot.makeApiCall.mock.fake(async () => ({}));
+  bot.requestApi.mock.fake(async () => ({}));
 
   await expect(
     manager.deleteWelcomeMessage(agent, 'my_welcome_message')
   ).resolves.toBe('1234567890');
 
-  expect(bot.makeApiCall).toHaveBeenCalledWith({
+  expect(bot.requestApi).toHaveBeenCalledWith({
     agent,
     method: 'DELETE',
     url: '1.1/direct_messages/welcome_messages/destroy.json',
@@ -373,13 +373,13 @@ test('.deleteWelcomeMessage(name)', async () => {
   );
 
   expect(state.delete).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+  expect(bot.requestApi).toHaveBeenCalledTimes(1);
 });
 
 test('.createCustomProfile(tag, name, img)', async () => {
   const manager = new TwitterAssetsManager(bot, stateController);
 
-  bot.makeApiCall.mock.fake(async () => ({
+  bot.requestApi.mock.fake(async () => ({
     custom_profile: {
       id: '1234567890',
       created_timestamp: '1479767168196',
@@ -401,7 +401,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
     )
   ).resolves.toBe('1234567890');
 
-  expect(bot.makeApiCall).toHaveBeenCalledWith({
+  expect(bot.requestApi).toHaveBeenCalledWith({
     agent,
     method: 'POST',
     url: '1.1/custom_profiles/new.json',
@@ -430,7 +430,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
     `"custom profile [my_custom_profile] already exists"`
   );
 
-  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+  expect(bot.requestApi).toHaveBeenCalledTimes(1);
   expect(state.set).toHaveBeenCalledTimes(1);
 });
 
@@ -438,13 +438,13 @@ test('.deleteCustomProfile(name)', async () => {
   const manager = new TwitterAssetsManager(bot, stateController);
 
   state.get.mock.fake(async () => '1234567890');
-  bot.makeApiCall.mock.fake(async () => ({}));
+  bot.requestApi.mock.fake(async () => ({}));
 
   await expect(
     manager.deleteCustomProfile(agent, 'my_custom_profile')
   ).resolves.toBe('1234567890');
 
-  expect(bot.makeApiCall).toHaveBeenCalledWith({
+  expect(bot.requestApi).toHaveBeenCalledWith({
     agent,
     method: 'DELETE',
     url: '1.1/custom_profiles/destroy.json',
@@ -464,5 +464,5 @@ test('.deleteCustomProfile(name)', async () => {
   );
 
   expect(state.delete).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
+  expect(bot.requestApi).toHaveBeenCalledTimes(1);
 });

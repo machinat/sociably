@@ -82,7 +82,7 @@ const message = (
   </Expression>
 );
 
-describe('#constructor(options)', () => {
+describe('.constructor(options)', () => {
   it('assemble engine', () => {
     const bot = new LineBot({
       channelSettingsAccessor,
@@ -110,7 +110,7 @@ describe('#constructor(options)', () => {
   });
 });
 
-describe('#render(token, node, options)', () => {
+describe('.render(chat, node, options)', () => {
   it('make api calls', async () => {
     const bot = new LineBot({ channelSettingsAccessor });
 
@@ -204,7 +204,7 @@ describe('#render(token, node, options)', () => {
   });
 });
 
-describe('#renderMulticast(targets, node)', () => {
+describe('.renderMulticast(channel, userIds, message)', () => {
   it('return null if message is empty', async () => {
     const bot = new LineBot({ channelSettingsAccessor });
 
@@ -261,7 +261,7 @@ describe('#renderMulticast(targets, node)', () => {
   });
 });
 
-describe('#makeApiCall()', () => {
+describe('.requestApi(options)', () => {
   it('call line REST api', async () => {
     const bot = new LineBot({ channelSettingsAccessor });
     bot.start();
@@ -271,7 +271,7 @@ describe('#makeApiCall()', () => {
       .reply(200, '{"foo":"bar.baz"}');
 
     await expect(
-      bot.makeApiCall({
+      bot.requestApi({
         channel,
         method: 'POST',
         url: 'v2/bot/foo',
@@ -293,7 +293,7 @@ describe('#makeApiCall()', () => {
       .reply(400, { message: 'bad' });
 
     try {
-      await bot.makeApiCall({
+      await bot.requestApi({
         channel,
         method: 'POST',
         url: 'v2/bot/foo',

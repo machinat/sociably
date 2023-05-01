@@ -153,7 +153,7 @@ export class WhatsAppBot
     return response.results[0].body as { id: string };
   }
 
-  async makeApiCall<ResBody extends MetaApiResponseBody>({
+  async requestApi<ResBody extends MetaApiResponseBody>({
     method,
     url,
     params,

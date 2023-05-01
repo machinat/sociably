@@ -97,7 +97,7 @@ export class LineAssetsManager {
       throw new Error(`rich menu [ ${name} ] already exist`);
     }
 
-    const { richMenuId }: { richMenuId: string } = await this._bot.makeApiCall({
+    const { richMenuId }: { richMenuId: string } = await this._bot.requestApi({
       method: 'POST',
       url: PATH_RICHMENU,
       params,
@@ -114,7 +114,7 @@ export class LineAssetsManager {
       return false;
     }
 
-    await this._bot.makeApiCall({
+    await this._bot.requestApi({
       method: 'DELETE',
       url: `${PATH_RICHMENU}/${id}`,
       channel,

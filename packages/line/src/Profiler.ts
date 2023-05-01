@@ -37,7 +37,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
       ? `v2/bot/room/${inChat.id}/member/${user.id}`
       : `v2/bot/profile/${user.id}`;
 
-    const profileData: LineRawUserProfile = await this.bot.makeApiCall({
+    const profileData: LineRawUserProfile = await this.bot.requestApi({
       channel,
       method: 'GET',
       url: requestApi,
@@ -57,7 +57,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
       throw new Error(`expect a group chat, got ${chat.type}`);
     }
 
-    const groupSummary: LineGroupData = await this.bot.makeApiCall({
+    const groupSummary: LineGroupData = await this.bot.requestApi({
       channel,
       method: 'GET',
       url: `v2/bot/group/${chat.id}/summary`,

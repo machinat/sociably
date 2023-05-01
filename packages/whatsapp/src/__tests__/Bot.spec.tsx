@@ -276,7 +276,7 @@ describe('#uploadMedia(message)', () => {
   });
 });
 
-describe('#makeApiCall()', () => {
+describe('#requestApi()', () => {
   it('call facebook graph api', async () => {
     const bot = new WhatsAppBot({ accessToken });
     bot.start();
@@ -284,7 +284,7 @@ describe('#makeApiCall()', () => {
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
 
     await expect(
-      bot.makeApiCall({ method: 'POST', url: 'foo', params: { bar: 'baz' } })
+      bot.requestApi({ method: 'POST', url: 'foo', params: { bar: 'baz' } })
     ).resolves.toEqual({
       foo: 'bar',
     });
@@ -312,7 +312,7 @@ describe('#makeApiCall()', () => {
     ]);
 
     try {
-      await bot.makeApiCall({
+      await bot.requestApi({
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },

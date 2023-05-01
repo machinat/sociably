@@ -28,7 +28,7 @@ const bot = moxy<WhatsAppBot>({
   uploadMedia() {
     return { jobs: [{}], results: [{}] };
   },
-  makeApiCall() {},
+  requestApi() {},
 } as never);
 
 beforeEach(() => {

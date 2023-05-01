@@ -16,7 +16,7 @@ const rawProfileData = {
 };
 
 const bot = moxy<FacebookBot>({
-  makeApiCall: async () => rawProfileData,
+  requestApi: async () => rawProfileData,
 } as never);
 
 const page = new FacebookPage('1234567890');
@@ -42,8 +42,8 @@ test('fetch profile from api', async () => {
   expect(profile?.gender).toBe(undefined);
   expect(profile?.data).toEqual(rawProfileData);
 
-  expect(bot.makeApiCall).toHaveReturnedTimes(1);
-  expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+  expect(bot.requestApi).toHaveReturnedTimes(1);
+  expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     Object {
       "method": "GET",
       "page": FacebookPage {
@@ -81,7 +81,7 @@ it('query additional optionalProfileFields if given', async () => {
     timezone: -7,
     gender: 'male',
   };
-  bot.makeApiCall.mock.fake(async () => profileWithMoreFields);
+  bot.requestApi.mock.fake(async () => profileWithMoreFields);
 
   const profiler = new FacebookProfiler(bot, {
     optionalProfileFields: ['locale', 'timezone', 'gender'],
@@ -93,8 +93,8 @@ it('query additional optionalProfileFields if given', async () => {
   expect(profile?.gender).toBe('male');
   expect(profile?.data).toEqual(profileWithMoreFields);
 
-  expect(bot.makeApiCall).toHaveReturnedTimes(1);
-  expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+  expect(bot.requestApi).toHaveReturnedTimes(1);
+  expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     Object {
       "method": "GET",
       "page": FacebookPage {
@@ -126,7 +126,7 @@ it('query additional optionalProfileFields if given', async () => {
 it('return null if phone number user error met', async () => {
   const profiler = new FacebookProfiler(bot);
 
-  bot.makeApiCall.mock.fake(async () => {
+  bot.requestApi.mock.fake(async () => {
     throw new MetaApiError({
       error: {
         message: '(#100) No profile available for this user.',
@@ -139,5 +139,5 @@ it('return null if phone number user error met', async () => {
   });
 
   expect(profiler.getUserProfile(page, user)).resolves.toBe(null);
-  expect(bot.makeApiCall).toHaveReturnedTimes(1);
+  expect(bot.requestApi).toHaveReturnedTimes(1);
 });

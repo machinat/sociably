@@ -260,7 +260,7 @@ describe('.message(thread, message, options)', () => {
   });
 });
 
-describe('.uploadChatAttachment(message)', () => {
+describe('.uploadChatAttachment(page, message)', () => {
   const bot = new FacebookBot({ pageSettingsAccessor, appSecret });
 
   beforeEach(() => {
@@ -309,7 +309,7 @@ describe('.uploadChatAttachment(message)', () => {
   });
 });
 
-describe('.makeApiCall()', () => {
+describe('.requestApi(options)', () => {
   it('call facebook graph api', async () => {
     const bot = new FacebookBot({ pageSettingsAccessor });
     bot.start();
@@ -317,10 +317,10 @@ describe('.makeApiCall()', () => {
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
 
     await expect(
-      bot.makeApiCall({
+      bot.requestApi({
         page,
         method: 'POST',
-        path: 'foo',
+        url: 'foo',
         params: { bar: 'baz' },
       })
     ).resolves.toEqual({
@@ -350,10 +350,10 @@ describe('.makeApiCall()', () => {
     ]);
 
     try {
-      await bot.makeApiCall({
+      await bot.requestApi({
         page,
         method: 'POST',
-        path: 'foo',
+        url: 'foo',
         params: { bar: 'baz' },
       });
       expect('should not be here').toBeFalsy();

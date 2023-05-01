@@ -21,7 +21,7 @@ const stateController = moxy<StateControllerI>({
 
 const bot = moxy<LineBot>({
   channelId: '_CHANNEL_ID_',
-  makeApiCall: () => ({}),
+  requestApi: () => ({}),
 } as never);
 
 const channel = new LineChannel('_CHANNEL_ID_');
@@ -173,7 +173,7 @@ test('unsave asset id', async () => {
 
 test('#createRichMenu()', async () => {
   const manager = new LineAssetsManager(stateController, bot);
-  bot.makeApiCall.mock.fake(async () => ({
+  bot.requestApi.mock.fake(async () => ({
     richMenuId: '_RICH_MENU_ID_',
   }));
 
@@ -194,8 +194,8 @@ test('#createRichMenu()', async () => {
     manager.createRichMenu(channel, 'my_rich_menu', richMenuBody)
   ).resolves.toBe('_RICH_MENU_ID_');
 
-  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall).toHaveBeenCalledWith({
+  expect(bot.requestApi).toHaveBeenCalledTimes(1);
+  expect(bot.requestApi).toHaveBeenCalledWith({
     channel,
     method: 'POST',
     url: 'v2/bot/richmenu',
@@ -215,7 +215,7 @@ test('#createRichMenu()', async () => {
 
 test('#deleteRichMenu()', async () => {
   const manager = new LineAssetsManager(stateController, bot);
-  bot.makeApiCall.mock.fake(async () => ({}));
+  bot.requestApi.mock.fake(async () => ({}));
 
   await expect(manager.deleteRichMenu(channel, 'my_rich_menu')).resolves.toBe(
     false
@@ -226,8 +226,8 @@ test('#deleteRichMenu()', async () => {
     true
   );
 
-  expect(bot.makeApiCall).toHaveBeenCalledTimes(1);
-  expect(bot.makeApiCall).toHaveBeenCalledWith({
+  expect(bot.requestApi).toHaveBeenCalledTimes(1);
+  expect(bot.requestApi).toHaveBeenCalledWith({
     channel,
     method: 'DELETE',
     url: 'v2/bot/richmenu/_RICH_MENU_ID_',

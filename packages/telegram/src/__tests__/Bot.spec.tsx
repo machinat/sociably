@@ -264,7 +264,7 @@ describe('.render(thread, message, options)', () => {
   });
 });
 
-describe('.makeApiCall()', () => {
+describe('.requestApi()', () => {
   test('call telegram bot api', async () => {
     const bot = new TelegramBot({
       initScope,
@@ -281,7 +281,7 @@ describe('.makeApiCall()', () => {
       });
 
     await expect(
-      bot.makeApiCall({ bot: botUser, method: 'foo', params: { bar: 'baz' } })
+      bot.requestApi({ bot: botUser, method: 'foo', params: { bar: 'baz' } })
     ).resolves.toEqual({
       foo: 'bar',
     });
@@ -311,7 +311,7 @@ describe('.makeApiCall()', () => {
       .reply(200, failBody);
 
     try {
-      await bot.makeApiCall({
+      await bot.requestApi({
         bot: botUser,
         method: 'foo',
         params: { bar: 'baz' },

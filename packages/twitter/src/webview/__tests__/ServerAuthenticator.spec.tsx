@@ -10,7 +10,7 @@ import ServerAuthenticator from '../ServerAuthenticator';
 import { RawUser } from '../../types';
 
 const bot = moxy<TwitterBot>({
-  makeApiCall() {},
+  requestApi() {},
 } as never);
 
 const rawUserData = {
@@ -75,7 +75,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     expect(delegatorOptions).toMatchInlineSnapshot(`
     Object {
       "bot": Object {
-        "makeApiCall": [MockFunction moxy(makeApiCall)],
+        "requestApi": [MockFunction moxy(requestApi)],
       },
       "checkAuthData": [Function],
       "getChatLink": [Function],

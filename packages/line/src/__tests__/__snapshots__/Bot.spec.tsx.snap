@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`#render(token, node, options) make api calls 1`] = `
+exports[`.render(chat, node, options) make api calls 1`] = `
 Object {
   "jobs": Array [
     Object {
@@ -110,7 +110,7 @@ Object {
 }
 `;
 
-exports[`#render(token, node, options) works with replyToken 1`] = `
+exports[`.render(chat, node, options) works with replyToken 1`] = `
 Object {
   "jobs": Array [
     Object {
@@ -220,7 +220,7 @@ Object {
 }
 `;
 
-exports[`#renderMulticast(targets, node) make api call to message/mulitcast 1`] = `
+exports[`.renderMulticast(channel, userIds, message) make api call to message/mulitcast 1`] = `
 Object {
   "jobs": Array [
     Object {

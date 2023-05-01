@@ -332,7 +332,7 @@ Object {
 }
 `;
 
-exports[`.uploadChatAttachment(message) call message_attachments api 1`] = `
+exports[`.uploadChatAttachment(page, message) call message_attachments api 1`] = `
 Object {
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",

@@ -249,7 +249,7 @@ export class FacebookBot
     return results;
   }
 
-  async makeApiCall<ResBody extends MetaApiResponseBody>({
+  async requestApi<ResBody extends MetaApiResponseBody>({
     page,
     method = 'GET',
     url,

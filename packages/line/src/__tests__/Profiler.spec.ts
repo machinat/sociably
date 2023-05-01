@@ -8,7 +8,7 @@ import LineGroupProfile from '../GroupProfile';
 import { LineProfiler } from '../Profiler';
 
 const bot = moxy<LineBot>({
-  makeApiCall: async () => ({}),
+  requestApi: async () => ({}),
 } as never);
 
 beforeEach(() => {
@@ -28,7 +28,7 @@ describe('#getUserProfile(user)', () => {
   const user = new LineUser('_PROVIDER_ID_', '_USER_ID_');
 
   beforeEach(() => {
-    bot.makeApiCall.mock.fake(async () => userProfileData);
+    bot.requestApi.mock.fake(async () => userProfileData);
   });
 
   it('fetch profile from api', async () => {
@@ -45,8 +45,8 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe('en');
     expect(profile.data).toEqual(userProfileData);
 
-    expect(bot.makeApiCall).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(bot.requestApi).toHaveReturnedTimes(1);
+    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
           "id": "_CHANNEL_ID_",
@@ -89,7 +89,7 @@ describe('#getUserProfile(user)', () => {
       pictureUrl: 'https://obs.line-apps.com/...',
     };
 
-    bot.makeApiCall.mock.fake(async () => groupMemberData);
+    bot.requestApi.mock.fake(async () => groupMemberData);
 
     const profile = await profiler.getUserProfile(channel, user, {
       inChat: group,
@@ -104,8 +104,8 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe(undefined);
     expect(profile.data).toEqual(groupMemberData);
 
-    expect(bot.makeApiCall).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(bot.requestApi).toHaveReturnedTimes(1);
+    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
           "id": "_CHANNEL_ID_",
@@ -127,7 +127,7 @@ describe('#getUserProfile(user)', () => {
       pictureUrl: 'https://obs.line-apps.com/...',
     };
 
-    bot.makeApiCall.mock.fake(async () => roomMemberData);
+    bot.requestApi.mock.fake(async () => roomMemberData);
 
     const profile = await profiler.getUserProfile(channel, user, {
       inChat: room,
@@ -142,8 +142,8 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe(undefined);
     expect(profile.data).toEqual(roomMemberData);
 
-    expect(bot.makeApiCall).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(bot.requestApi).toHaveReturnedTimes(1);
+    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
           "id": "_CHANNEL_ID_",
@@ -167,7 +167,7 @@ describe('#getGroupProfile(user)', () => {
   const group = new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_');
 
   beforeEach(() => {
-    bot.makeApiCall.mock.fake(async () => groupSummary);
+    bot.requestApi.mock.fake(async () => groupSummary);
   });
 
   it('fetch profile from api', async () => {
@@ -184,8 +184,8 @@ describe('#getGroupProfile(user)', () => {
     );
     expect(profile.data).toEqual(groupSummary);
 
-    expect(bot.makeApiCall).toHaveReturnedTimes(1);
-    expect(bot.makeApiCall.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(bot.requestApi).toHaveReturnedTimes(1);
+    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
           "id": "_CHANNEL_ID_",

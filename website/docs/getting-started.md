@@ -99,7 +99,7 @@ export const up = makeContainer({
 })(
   async (facebookBot) => {
     // create resources...
-    facebookBot.makeApiCall(/* ... */);
+    facebookBot.requestApi(/* ... */);
   }
 );
 
@@ -108,7 +108,7 @@ export const down = makeContainer({
 })(
   async (facebookBot) => {
     // remove resources...
-    facebookBot.makeApiCall(/* ... */);
+    facebookBot.requestApi(/* ... */);
   }
 );
 ```

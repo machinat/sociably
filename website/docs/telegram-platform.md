@@ -60,16 +60,24 @@ Finally, you have to register the webhook to subscribe to events from Telegram.
 You can use these codes to do that:
 
 ```ts
-import { TelegramBot } from '@sociably/telegram';
-const { DOMAIN, TELEGRAM_BOT_TOKEN, TELEGRAM_SECRET_PATH } = process.env;
+import { TelegramBot, TelegramUser } from '@sociably/telegram';
+const { DOMAIN, TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_ID } = process.env;
+const botId = parseInt(TELEGRAM_BOT_ID, 10);
+
 
 const bot = new TelegramBot({ token: TELEGRAM_BOT_TOKEN });
+const botUser = new TelegramUser(botId, true)
+
 bot
   .start()
   .then(() =>
-    bot.makeApiCall('setWebhook', {
-      // webhook url with trailing secretPath
-      url: `https://${DOMAIN}/webhook/telegram/${TELEGRAM_SECRET_PATH}`,
+    bot.requestApi({
+      bot: botUser,
+      method: 'setWebhook',
+      params: {
+        // webhook URL with trailing bot ID
+        url: `https://${DOMAIN}/webhook/telegram/${botId}`,
+      },
     })
   );
 ```

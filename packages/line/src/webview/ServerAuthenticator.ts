@@ -231,19 +231,19 @@ export class LineServerAuthenticator
 
     try {
       if (chat.type === 'user') {
-        await this.bot.makeApiCall({
+        await this.bot.requestApi({
           channel: chat.channel,
           method: 'GET',
           url: `v2/bot/profile/${chat.id}`,
         });
       } else if (chat.type === 'group') {
-        await this.bot.makeApiCall({
+        await this.bot.requestApi({
           channel: chat.channel,
           method: 'GET',
           url: `v2/bot/group/${chat.id}/member/${userId}`,
         });
       } else if (chat.type === 'room') {
-        await this.bot.makeApiCall({
+        await this.bot.requestApi({
           channel: chat.channel,
           method: 'GET',
           url: `v2/bot/room/${chat.id}/member/${userId}`,
@@ -264,7 +264,7 @@ export class LineServerAuthenticator
 
   private async _verifyUser(loginToken: string, userId: string) {
     try {
-      const profile = await this.bot.makeApiCall<LineRawUserProfile>({
+      const profile = await this.bot.requestApi<LineRawUserProfile>({
         accessToken: loginToken,
         method: 'GET',
         url: `v2/profile`,
@@ -295,7 +295,7 @@ export class LineServerAuthenticator
 
   private async _verifyAccessToken(accessToken: string) {
     try {
-      const tokenInfo = await this.bot.makeApiCall<VerifyTokenResult>({
+      const tokenInfo = await this.bot.requestApi<VerifyTokenResult>({
         method: 'GET',
         url: `oauth2/v2.1/verify?access_token=${accessToken}`,
       });
