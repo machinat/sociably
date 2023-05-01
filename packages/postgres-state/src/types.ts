@@ -17,7 +17,7 @@ export type PostgresStateConfigs = {
   connectOptions: PoolConfig;
 };
 
-export type SociablyStateType = 'global' | 'thread' | 'user';
+export type SociablyStateType = 'channel' | 'global' | 'thread' | 'user';
 
 /**
  * The entity value stored in the DB. `platform` & `scopeId` use `''`

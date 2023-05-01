@@ -1,4 +1,4 @@
-import type { SociablyThread, SociablyUser } from '../types';
+import type { SociablyChannel, SociablyThread, SociablyUser } from '../types';
 import { makeInterface } from '../service';
 
 export interface StateAccessor {
@@ -36,23 +36,31 @@ export interface StateAccessor {
  */
 export interface BaseStateController {
   /**
-   * Return the {@link StateAccessor} of a thread
+   * Return the {@link StateAccessor} for a SociablyChannel
+   */
+  channelState(
+    /** The channel object */
+    channel: SociablyChannel
+  ): StateAccessor;
+
+  /**
+   * Return the {@link StateAccessor} for a SociablyThread
    */
   threadState(
-    /** The thread object or uid of the thread */
-    thread: string | SociablyThread
+    /** The thread object */
+    thread: SociablyThread
   ): StateAccessor;
 
   /**
-   * Return the {@link StateAccessor} of a user
+   * Return the {@link StateAccessor} for a SociablyUser
    */
   userState(
-    /** The user object or uid of the user */
-    user: string | SociablyUser
+    /** The user object */
+    user: SociablyUser
   ): StateAccessor;
 
   /**
-   * Return the {@link StateAccessor} of a global name
+   * Return the {@link StateAccessor} for a global name
    */
   globalState(name: string): StateAccessor;
 }

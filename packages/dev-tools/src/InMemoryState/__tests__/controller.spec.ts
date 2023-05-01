@@ -3,18 +3,25 @@ import { InMemoryStateController } from '../controller';
 
 const controller = new InMemoryStateController();
 
+const fooInstance = {
+  platform: 'test',
+  uid: 'test.foo',
+  uniqueIdentifier: { platform: 'test', id: 'foo' },
+};
+
 test.each([
   [
-    'thread',
-    controller.threadState({ platform: 'test', uid: 'foo' }),
-    controller.threadState('bar'),
+    'channel',
+    controller.channelState(fooInstance),
+    controller.channelState('teat.bar'),
   ],
   [
-    'user',
-    controller.userState({ platform: 'test', uid: 'foo' }),
-    controller.userState('bar'),
+    'thread',
+    controller.threadState(fooInstance),
+    controller.threadState('teat.bar'),
   ],
-  ['global', controller.globalState('foo'), controller.globalState('bar')],
+  ['user', controller.userState(fooInstance), controller.userState('test.bar')],
+  ['global', controller.globalState('FOO'), controller.globalState('BAR')],
 ])('%s state', async (_, fooState, barState) => {
   const updator = moxy(() => undefined);
 

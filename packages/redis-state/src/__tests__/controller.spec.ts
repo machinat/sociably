@@ -32,43 +32,66 @@ beforeEach(() => {
 
 const controller = new RedisStateController(client, marshaler);
 
+const fooInstance = {
+  platform: 'test',
+  uid: 'test.foo',
+  uniqueIdentifier: { platform: 'test', id: 'foo' },
+};
+const barInstance = {
+  platform: 'test',
+  uid: 'test.bar',
+  uniqueIdentifier: { platform: 'test', id: 'bar' },
+};
+
 describe.each([
   [
+    'channel state',
+    '$C',
+    controller.channelState(fooInstance),
+    controller.channelState(barInstance),
+  ],
+  [
+    'channel state using uid',
+    '$C',
+    controller.channelState('test.foo'),
+    controller.channelState('test.bar'),
+  ],
+  [
     'thread state',
-    'T',
-    controller.threadState({ platform: 'test', uid: 'foo' }),
-    controller.threadState({ platform: 'test', uid: 'bar' }),
+    '$T',
+    controller.threadState(fooInstance),
+    controller.threadState(barInstance),
   ],
   [
     'thread state using uid',
-    'T',
-    controller.threadState('foo'),
-    controller.threadState('bar'),
+    '$T',
+    controller.threadState('test.foo'),
+    controller.threadState('test.bar'),
   ],
   [
     'user state',
-    'U',
-    controller.userState({ platform: 'test', uid: 'foo' }),
-    controller.userState({ platform: 'test', uid: 'bar' }),
+    '$U',
+    controller.userState(fooInstance),
+    controller.userState(barInstance),
   ],
   [
     'user state using uid',
-    'U',
-    controller.userState('foo'),
-    controller.userState('bar'),
+    '$U',
+    controller.userState('test.foo'),
+    controller.userState('test.bar'),
   ],
   [
     'global state',
-    'G',
-    controller.globalState('foo'),
-    controller.globalState('bar'),
+    '$G',
+    controller.globalState('test.foo'),
+    controller.globalState('test.bar'),
   ],
 ])('%s', (_, prefix, fooState, barState) => {
   test('.get()', async () => {
     await expect(fooState.get('key1')).resolves.toBe(undefined);
     expect(client.hget).toHaveBeenCalledTimes(1);
     expect(client.hget).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       'key1',
       expect.any(Function)
     );
@@ -77,7 +100,7 @@ describe.each([
     await expect(fooState.get('key2')).resolves.toBe('foo');
     expect(client.hget).toHaveBeenCalledTimes(2);
     expect(client.hget).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       'key2',
       expect.any(Function)
     );
@@ -88,7 +111,7 @@ describe.each([
     });
     expect(client.hget).toHaveBeenCalledTimes(3);
     expect(client.hget).toHaveBeenCalledWith(
-      `${prefix}:bar`,
+      `${prefix}:test.bar`,
       'key3',
       expect.any(Function)
     );
@@ -98,7 +121,7 @@ describe.each([
     await expect(fooState.set('key1', 'foo')).resolves.toBe(false);
     expect(client.hset).toHaveBeenCalledTimes(1);
     expect(client.hset).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       'key1',
       '"foo"',
       expect.any(Function)
@@ -109,7 +132,7 @@ describe.each([
     await expect(fooState.set('key2', { bar: 'baz' })).resolves.toBe(true);
     expect(client.hset).toHaveBeenCalledTimes(2);
     expect(client.hset).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       'key2',
       '{"bar":"baz"}',
       expect.any(Function)
@@ -118,7 +141,7 @@ describe.each([
     await expect(barState.set('key3', [1, 2, 3])).resolves.toBe(true);
     expect(client.hset).toHaveBeenCalledTimes(3);
     expect(client.hset).toHaveBeenCalledWith(
-      `${prefix}:bar`,
+      `${prefix}:test.bar`,
       'key3',
       '[1,2,3]',
       expect.any(Function)
@@ -133,7 +156,7 @@ describe.each([
       expect(client.hget).toHaveBeenCalledTimes(1);
       expect(client.hset).toHaveBeenCalledTimes(1);
       expect(client.hset).toHaveBeenCalledWith(
-        `${prefix}:foo`,
+        `${prefix}:test.foo`,
         'key1',
         '"foo"',
         expect.any(Function)
@@ -152,7 +175,7 @@ describe.each([
       expect(client.hget).toHaveBeenCalledTimes(2);
       expect(client.hset).toHaveBeenCalledTimes(2);
       expect(client.hset).toHaveBeenCalledWith(
-        `${prefix}:foo`,
+        `${prefix}:test.foo`,
         'key2',
         '{"bar":"baz"}',
         expect.any(Function)
@@ -172,7 +195,7 @@ describe.each([
       expect(client.hset).toHaveBeenCalledTimes(0);
       expect(client.hdel).toHaveBeenCalledTimes(1);
       expect(client.hdel).toHaveBeenCalledWith(
-        `${prefix}:bar`,
+        `${prefix}:test.bar`,
         'key1',
         expect.any(Function)
       );
@@ -195,7 +218,7 @@ describe.each([
     await expect(fooState.delete('key1')).resolves.toBe(true);
     expect(client.hdel).toHaveBeenCalledTimes(1);
     expect(client.hdel).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       'key1',
       expect.any(Function)
     );
@@ -203,7 +226,7 @@ describe.each([
     await expect(barState.delete('key1')).resolves.toBe(true);
     expect(client.hdel).toHaveBeenCalledTimes(2);
     expect(client.hdel).toHaveBeenCalledWith(
-      `${prefix}:bar`,
+      `${prefix}:test.bar`,
       'key1',
       expect.any(Function)
     );
@@ -213,7 +236,7 @@ describe.each([
     await expect(fooState.delete('key2')).resolves.toBe(false);
     expect(client.hdel).toHaveBeenCalledTimes(3);
     expect(client.hdel).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       'key2',
       expect.any(Function)
     );
@@ -223,7 +246,7 @@ describe.each([
     await expect(fooState.clear()).resolves.toBe(undefined);
     expect(client.del).toHaveBeenCalledTimes(1);
     expect(client.del).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       expect.any(Function)
     );
 
@@ -232,7 +255,7 @@ describe.each([
     await expect(barState.clear()).resolves.toBe(undefined);
     expect(client.del).toHaveBeenCalledTimes(2);
     expect(client.del).toHaveBeenCalledWith(
-      `${prefix}:bar`,
+      `${prefix}:test.bar`,
       expect.any(Function)
     );
   });
@@ -241,7 +264,7 @@ describe.each([
     await expect(fooState.keys()).resolves.toEqual([]);
     expect(client.hkeys).toHaveBeenCalledTimes(1);
     expect(client.hkeys).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       expect.any(Function)
     );
 
@@ -253,7 +276,7 @@ describe.each([
     await expect(barState.keys()).resolves.toEqual(['bar', 'baz']);
     expect(client.hkeys).toHaveBeenCalledTimes(3);
     expect(client.hkeys).toHaveBeenCalledWith(
-      `${prefix}:bar`,
+      `${prefix}:test.bar`,
       expect.any(Function)
     );
   });
@@ -262,7 +285,7 @@ describe.each([
     await expect(fooState.getAll()).resolves.toEqual(new Map());
     expect(client.hgetall).toHaveBeenCalledTimes(1);
     expect(client.hgetall).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       expect.any(Function)
     );
 
@@ -281,7 +304,7 @@ describe.each([
     await expect(barState.getAll()).resolves.toEqual(new Map([['key1', 123]]));
     expect(client.hgetall).toHaveBeenCalledTimes(3);
     expect(client.hgetall).toHaveBeenCalledWith(
-      `${prefix}:bar`,
+      `${prefix}:test.bar`,
       expect.any(Function)
     );
   });
@@ -297,7 +320,7 @@ describe.each([
     await expect(fooState.set('key1', 'foo')).resolves.toBe(false);
     expect(marshaler.marshal).toHaveBeenCalledWith('foo');
     expect(client.hset).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       'key1',
       '{"value":"foo"}',
       expect.any(Function)
@@ -306,7 +329,7 @@ describe.each([
     const updator = moxy(() => 'bar');
     await expect(fooState.update('key1', updator)).resolves.toBe('bar');
     expect(client.hset).toHaveBeenCalledWith(
-      `${prefix}:foo`,
+      `${prefix}:test.foo`,
       'key1',
       '{"value":"bar"}',
       expect.any(Function)

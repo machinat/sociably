@@ -1,5 +1,1430 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`default table channel state .clear() 1`] = `
+"
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table channel state .clear() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`default table channel state .delete() 1`] = `
+"
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`default table channel state .delete() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state .get() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`default table channel state .get() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state .getAll() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table channel state .getAll() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`default table channel state .keys() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table channel state .keys() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`default table channel state .set() 1`] = `
+"
+        INSERT INTO \\"SociablyStates\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`default table channel state .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table channel state .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+]
+`;
+
+exports[`default table channel state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table channel state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"SociablyStates\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table channel state .update() update value 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .clear() 1`] = `
+"
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table channel state with scope id .clear() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .delete() 1`] = `
+"
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`default table channel state with scope id .delete() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .get() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`default table channel state with scope id .get() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .getAll() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table channel state with scope id .getAll() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .keys() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table channel state with scope id .keys() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .set() 1`] = `
+"
+        INSERT INTO \\"SociablyStates\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`default table channel state with scope id .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table channel state with scope id .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table channel state with scope id .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"SociablyStates\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table channel state with scope id .update() update value 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table global state .clear() 1`] = `
+"
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table global state .clear() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`default table global state .delete() 1`] = `
+"
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`default table global state .delete() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table global state .get() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`default table global state .get() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table global state .getAll() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table global state .getAll() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`default table global state .keys() 1`] = `
+"
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`default table global state .keys() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`default table global state .set() 1`] = `
+"
+        INSERT INTO \\"SociablyStates\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`default table global state .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table global state .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table global state .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+]
+`;
+
+exports[`default table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`default table global state .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"SociablyStates\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"SociablyStates\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`default table global state .update() update value 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
 exports[`default table thread state .clear() 1`] = `
 "
         DELETE FROM \\"SociablyStates\\"
@@ -945,481 +2370,6 @@ Array [
     "test",
     "foo",
     "1",
-    "key6",
-  ],
-]
-`;
-
-exports[`default table global state .clear() 1`] = `
-"
-        DELETE FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`default table global state .clear() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`default table global state .delete() 1`] = `
-"
-        DELETE FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      "
-`;
-
-exports[`default table global state .delete() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`default table global state .get() 1`] = `
-"
-        SELECT * FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      "
-`;
-
-exports[`default table global state .get() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`default table global state .getAll() 1`] = `
-"
-        SELECT * FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`default table global state .getAll() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`default table global state .keys() 1`] = `
-"
-        SELECT * FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`default table global state .keys() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`default table global state .set() 1`] = `
-"
-        INSERT INTO \\"SociablyStates\\" (
-          \\"data\\",
-          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
-        )
-        VALUES (
-          $1,
-          $2, $3, $4, $5, $6
-        )
-        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET
-          \\"data\\" = EXCLUDED.\\"data\\",
-          \\"updatedAt\\" = current_timestamp
-        RETURNING (xmax = 0) AS inserted;
-      "
-`;
-
-exports[`default table global state .set() 2`] = `
-Array [
-  Array [
-    Object {
-      "value": "foo",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    Object {
-      "value": "bar",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    Object {
-      "value": 456,
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    Object {
-      "value": Object {
-        "bar": "bae",
-      },
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    Object {
-      "value": Array [
-        1,
-        2,
-        3,
-      ],
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    Object {
-      "value": Object {},
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`default table global state .update() delete entity if updater returns \`undefined\` 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "
-        DELETE FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`default table global state .update() delete entity if updater returns \`undefined\` 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-]
-`;
-
-exports[`default table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`default table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`default table global state .update() update value 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"SociablyStates\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "
-        INSERT INTO \\"SociablyStates\\" (
-          \\"data\\",
-          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
-        )
-        VALUES (
-          $1,
-          $2, $3, $4, $5, $6
-        )
-        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET
-          \\"data\\" = EXCLUDED.\\"data\\",
-          \\"updatedAt\\" = current_timestamp
-        RETURNING (xmax = 0) AS inserted;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`default table global state .update() update value 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    Object {
-      "value": "foo",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    Object {
-      "value": "bar",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    Object {
-      "value": 456,
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    Object {
-      "value": Object {
-        "bar": "bae",
-      },
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    Object {
-      "value": Array [
-        1,
-        2,
-        3,
-      ],
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-  Array [
-    Object {
-      "value": Object {},
-    },
-    "global",
-    "",
-    "",
-    "foo",
     "key6",
   ],
 ]
@@ -2375,6 +3325,1431 @@ Array [
 ]
 `;
 
+exports[`specified schema & table channel state .clear() 1`] = `
+"
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table channel state .clear() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state .delete() 1`] = `
+"
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified schema & table channel state .delete() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state .get() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified schema & table channel state .get() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state .getAll() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table channel state .getAll() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state .keys() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table channel state .keys() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state .set() 1`] = `
+"
+        INSERT INTO \\"my_schema\\".\\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`specified schema & table channel state .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table channel state .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table channel state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"my_schema\\".\\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table channel state .update() update value 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .clear() 1`] = `
+"
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table channel state with scope id .clear() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .delete() 1`] = `
+"
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified schema & table channel state with scope id .delete() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .get() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified schema & table channel state with scope id .get() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .getAll() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table channel state with scope id .getAll() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .keys() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table channel state with scope id .keys() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .set() 1`] = `
+"
+        INSERT INTO \\"my_schema\\".\\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`specified schema & table channel state with scope id .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table channel state with scope id .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table channel state with scope id .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"my_schema\\".\\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table channel state with scope id .update() update value 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .clear() 1`] = `
+"
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table global state .clear() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .delete() 1`] = `
+"
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified schema & table global state .delete() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .get() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified schema & table global state .get() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .getAll() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table global state .getAll() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .keys() 1`] = `
+"
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified schema & table global state .keys() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .set() 1`] = `
+"
+        INSERT INTO \\"my_schema\\".\\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`specified schema & table global state .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table global state .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified schema & table global state .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_schema\\".\\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"my_schema\\".\\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified schema & table global state .update() update value 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
 exports[`specified schema & table thread state .clear() 1`] = `
 "
         DELETE FROM \\"my_schema\\".\\"my_table\\"
@@ -3320,481 +5695,6 @@ Array [
     "test",
     "foo",
     "1",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .clear() 1`] = `
-"
-        DELETE FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`specified schema & table global state .clear() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .delete() 1`] = `
-"
-        DELETE FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      "
-`;
-
-exports[`specified schema & table global state .delete() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .get() 1`] = `
-"
-        SELECT * FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      "
-`;
-
-exports[`specified schema & table global state .get() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .getAll() 1`] = `
-"
-        SELECT * FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`specified schema & table global state .getAll() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .keys() 1`] = `
-"
-        SELECT * FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`specified schema & table global state .keys() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .set() 1`] = `
-"
-        INSERT INTO \\"my_schema\\".\\"my_table\\" (
-          \\"data\\",
-          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
-        )
-        VALUES (
-          $1,
-          $2, $3, $4, $5, $6
-        )
-        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET
-          \\"data\\" = EXCLUDED.\\"data\\",
-          \\"updatedAt\\" = current_timestamp
-        RETURNING (xmax = 0) AS inserted;
-      "
-`;
-
-exports[`specified schema & table global state .set() 2`] = `
-Array [
-  Array [
-    Object {
-      "value": "foo",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    Object {
-      "value": "bar",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    Object {
-      "value": 456,
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    Object {
-      "value": Object {
-        "bar": "bae",
-      },
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    Object {
-      "value": Array [
-        1,
-        2,
-        3,
-      ],
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    Object {
-      "value": Object {},
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .update() delete entity if updater returns \`undefined\` 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "
-        DELETE FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`specified schema & table global state .update() delete entity if updater returns \`undefined\` 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`specified schema & table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified schema & table global state .update() update value 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"my_schema\\".\\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "
-        INSERT INTO \\"my_schema\\".\\"my_table\\" (
-          \\"data\\",
-          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
-        )
-        VALUES (
-          $1,
-          $2, $3, $4, $5, $6
-        )
-        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET
-          \\"data\\" = EXCLUDED.\\"data\\",
-          \\"updatedAt\\" = current_timestamp
-        RETURNING (xmax = 0) AS inserted;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`specified schema & table global state .update() update value 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    Object {
-      "value": "foo",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    Object {
-      "value": "bar",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    Object {
-      "value": 456,
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    Object {
-      "value": Object {
-        "bar": "bae",
-      },
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    Object {
-      "value": Array [
-        1,
-        2,
-        3,
-      ],
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-  Array [
-    Object {
-      "value": Object {},
-    },
-    "global",
-    "",
-    "",
-    "foo",
     "key6",
   ],
 ]
@@ -4750,6 +6650,1431 @@ Array [
 ]
 `;
 
+exports[`specified table channel state .clear() 1`] = `
+"
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table channel state .clear() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified table channel state .delete() 1`] = `
+"
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified table channel state .delete() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state .get() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified table channel state .get() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state .getAll() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table channel state .getAll() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified table channel state .keys() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table channel state .keys() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified table channel state .set() 1`] = `
+"
+        INSERT INTO \\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`specified table channel state .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table channel state .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+]
+`;
+
+exports[`specified table channel state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table channel state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table channel state .update() update value 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .clear() 1`] = `
+"
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table channel state with scope id .clear() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .delete() 1`] = `
+"
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified table channel state with scope id .delete() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .get() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified table channel state with scope id .get() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .getAll() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table channel state with scope id .getAll() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .keys() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table channel state with scope id .keys() 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .set() 1`] = `
+"
+        INSERT INTO \\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`specified table channel state with scope id .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table channel state with scope id .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table channel state with scope id .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table channel state with scope id .update() update value 2`] = `
+Array [
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key1",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key2",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key3",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key4",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key5",
+  ],
+  Array [
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "channel",
+    "test",
+    "foo",
+    "1",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table global state .clear() 1`] = `
+"
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table global state .clear() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified table global state .delete() 1`] = `
+"
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified table global state .delete() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table global state .get() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      "
+`;
+
+exports[`specified table global state .get() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table global state .getAll() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table global state .getAll() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified table global state .keys() 1`] = `
+"
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
+      "
+`;
+
+exports[`specified table global state .keys() 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+  ],
+]
+`;
+
+exports[`specified table global state .set() 1`] = `
+"
+        INSERT INTO \\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      "
+`;
+
+exports[`specified table global state .set() 2`] = `
+Array [
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table global state .update() delete entity if updater returns \`undefined\` 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        DELETE FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table global state .update() delete entity if updater returns \`undefined\` 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+]
+`;
+
+exports[`specified table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
+exports[`specified table global state .update() update value 1`] = `
+Array [
+  "BEGIN",
+  "
+        SELECT * FROM \\"my_table\\"
+        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
+      ",
+  "
+        INSERT INTO \\"my_table\\" (
+          \\"data\\",
+          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
+        )
+        VALUES (
+          $1,
+          $2, $3, $4, $5, $6
+        )
+        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
+        SET
+          \\"data\\" = EXCLUDED.\\"data\\",
+          \\"updatedAt\\" = current_timestamp
+        RETURNING (xmax = 0) AS inserted;
+      ",
+  "COMMIT",
+]
+`;
+
+exports[`specified table global state .update() update value 2`] = `
+Array [
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    Object {
+      "value": "foo",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key1",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    Object {
+      "value": "bar",
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key2",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    Object {
+      "value": 456,
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key3",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    Object {
+      "value": Object {
+        "bar": "bae",
+      },
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key4",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    Object {
+      "value": Array [
+        1,
+        2,
+        3,
+      ],
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key5",
+  ],
+  Array [
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+  Array [
+    Object {
+      "value": Object {},
+    },
+    "global",
+    "",
+    "",
+    "foo",
+    "key6",
+  ],
+]
+`;
+
 exports[`specified table thread state .clear() 1`] = `
 "
         DELETE FROM \\"my_table\\"
@@ -5695,481 +9020,6 @@ Array [
     "test",
     "foo",
     "1",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified table global state .clear() 1`] = `
-"
-        DELETE FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`specified table global state .clear() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`specified table global state .delete() 1`] = `
-"
-        DELETE FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      "
-`;
-
-exports[`specified table global state .delete() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified table global state .get() 1`] = `
-"
-        SELECT * FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      "
-`;
-
-exports[`specified table global state .get() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified table global state .getAll() 1`] = `
-"
-        SELECT * FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`specified table global state .getAll() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`specified table global state .keys() 1`] = `
-"
-        SELECT * FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4;
-      "
-`;
-
-exports[`specified table global state .keys() 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-  ],
-]
-`;
-
-exports[`specified table global state .set() 1`] = `
-"
-        INSERT INTO \\"my_table\\" (
-          \\"data\\",
-          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
-        )
-        VALUES (
-          $1,
-          $2, $3, $4, $5, $6
-        )
-        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET
-          \\"data\\" = EXCLUDED.\\"data\\",
-          \\"updatedAt\\" = current_timestamp
-        RETURNING (xmax = 0) AS inserted;
-      "
-`;
-
-exports[`specified table global state .set() 2`] = `
-Array [
-  Array [
-    Object {
-      "value": "foo",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    Object {
-      "value": "bar",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    Object {
-      "value": 456,
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    Object {
-      "value": Object {
-        "bar": "bae",
-      },
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    Object {
-      "value": Array [
-        1,
-        2,
-        3,
-      ],
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    Object {
-      "value": Object {},
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified table global state .update() delete entity if updater returns \`undefined\` 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "
-        DELETE FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`specified table global state .update() delete entity if updater returns \`undefined\` 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-]
-`;
-
-exports[`specified table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`specified table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-]
-`;
-
-exports[`specified table global state .update() update value 1`] = `
-Array [
-  "BEGIN",
-  "
-        SELECT * FROM \\"my_table\\"
-        WHERE \\"type\\" = $1 AND \\"platform\\" = $2 AND \\"scopeId\\" = $3 AND \\"id\\" = $4 AND \\"key\\" = $5 FOR UPDATE;
-      ",
-  "
-        INSERT INTO \\"my_table\\" (
-          \\"data\\",
-          \\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\"
-        )
-        VALUES (
-          $1,
-          $2, $3, $4, $5, $6
-        )
-        ON CONFLICT (\\"type\\", \\"platform\\", \\"scopeId\\", \\"id\\", \\"key\\") DO UPDATE
-        SET
-          \\"data\\" = EXCLUDED.\\"data\\",
-          \\"updatedAt\\" = current_timestamp
-        RETURNING (xmax = 0) AS inserted;
-      ",
-  "COMMIT",
-]
-`;
-
-exports[`specified table global state .update() update value 2`] = `
-Array [
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    Object {
-      "value": "foo",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key1",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    Object {
-      "value": "bar",
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key2",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    Object {
-      "value": 456,
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key3",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    Object {
-      "value": Object {
-        "bar": "bae",
-      },
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key4",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    Object {
-      "value": Array [
-        1,
-        2,
-        3,
-      ],
-    },
-    "global",
-    "",
-    "",
-    "foo",
-    "key5",
-  ],
-  Array [
-    "global",
-    "",
-    "",
-    "foo",
-    "key6",
-  ],
-  Array [
-    Object {
-      "value": Object {},
-    },
-    "global",
-    "",
-    "",
-    "foo",
     "key6",
   ],
 ]

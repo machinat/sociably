@@ -7,14 +7,20 @@ const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const initialContent = `
 {
+  "channelStates": {
+    "test.boo": {
+      "key1": "boo",
+      "key2": true
+    }
+  },
   "threadStates": {
-    "foo": {
+    "test.foo": {
       "key1": "foo",
       "key2": 123
     }
   },
   "userStates": {
-    "bar": {
+    "test.bar": {
       "key1": "bar",
       "key2": 456
     }
@@ -27,8 +33,26 @@ const initialContent = `
   }
 }`;
 
-const fooThread = { platform: 'test', uid: 'foo' };
-const barUser = { platform: 'test', uid: 'bar' };
+const booChannel = {
+  platform: 'test',
+  uid: 'test.boo',
+  uniqueIdentifier: { platform: 'test', id: 'boo' },
+};
+const fooThread = {
+  platform: 'test',
+  uid: 'test.foo',
+  uniqueIdentifier: { platform: 'test', id: 'foo' },
+};
+const barUser = {
+  platform: 'test',
+  uid: 'test.bar',
+  uniqueIdentifier: { platform: 'test', id: 'bar' },
+};
+const unknownThread = {
+  platform: 'test',
+  uid: 'test.unknown',
+  uniqueIdentifier: { platform: 'test', id: 'unknown' },
+};
 
 describe('.get()', () => {
   test('get value from storage file', async () => {
@@ -36,6 +60,11 @@ describe('.get()', () => {
     fs.writeFileSync(tmpPath, initialContent);
 
     const controller = new FileStateController({ path: tmpPath });
+
+    const channelState = controller.channelState(booChannel);
+    await expect(channelState.get('key1')).resolves.toBe('boo');
+    await expect(channelState.get('key2')).resolves.toBe(true);
+    await expect(channelState.get('key3')).resolves.toBe(undefined);
 
     const fooThreadState = controller.threadState(fooThread);
     await expect(fooThreadState.get('key1')).resolves.toBe('foo');
@@ -56,9 +85,9 @@ describe('.get()', () => {
   test('when sotrage file is empty', async () => {
     const tmpPath = tmpNameSync();
     const controller = new FileStateController({ path: tmpPath });
-    await expect(
-      controller.threadState({ platform: 'test', uid: 'foo' }).get('key')
-    ).resolves.toBe(undefined);
+    await expect(controller.threadState(fooThread).get('key')).resolves.toBe(
+      undefined
+    );
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       Object {
@@ -77,6 +106,13 @@ describe('.getAll()', () => {
 
     const controller = new FileStateController({ path: tmpPath });
 
+    await expect(controller.channelState(booChannel).getAll()).resolves
+      .toMatchInlineSnapshot(`
+                      Map {
+                        "key1" => "boo",
+                        "key2" => true,
+                      }
+                  `);
     await expect(controller.threadState(fooThread).getAll()).resolves
       .toMatchInlineSnapshot(`
                       Map {
@@ -92,7 +128,6 @@ describe('.getAll()', () => {
                         "key2" => 456,
                       }
                   `);
-
     await expect(controller.globalState('baz').getAll()).resolves
       .toMatchInlineSnapshot(`
                       Map {
@@ -108,7 +143,7 @@ describe('.getAll()', () => {
                   `);
 
     await expect(
-      controller.threadState({ platform: 'test', uid: 'unknown' }).getAll()
+      controller.threadState(unknownThread).getAll()
     ).resolves.toEqual(new Map());
   });
 
@@ -136,6 +171,10 @@ describe('.keys()', () => {
     fs.writeFileSync(tmpPath, initialContent);
     const controller = new FileStateController({ path: tmpPath });
 
+    await expect(controller.channelState(booChannel).keys()).resolves.toEqual([
+      'key1',
+      'key2',
+    ]);
     await expect(controller.threadState(fooThread).keys()).resolves.toEqual([
       'key1',
       'key2',
@@ -148,9 +187,9 @@ describe('.keys()', () => {
       'key1',
       'key2',
     ]);
-    await expect(
-      controller.threadState({ platform: 'test', uid: 'unknown' }).keys()
-    ).resolves.toEqual([]);
+    await expect(controller.threadState(unknownThread).keys()).resolves.toEqual(
+      []
+    );
   });
 
   test('when storage file is empty', async () => {
@@ -176,6 +215,10 @@ describe('.set()', () => {
 
     const controller = new FileStateController({ path: tmpPath });
 
+    const booChannelState = controller.channelState(booChannel);
+    await expect(booChannelState.set('key1', ['bar'])).resolves.toBe(true);
+    await expect(booChannelState.get('key1')).resolves.toEqual(['bar']);
+
     const fooThreadState = controller.threadState(fooThread);
     await expect(fooThreadState.set('key1', 'bar')).resolves.toBe(true);
     await expect(fooThreadState.get('key1')).resolves.toBe('bar');
@@ -184,28 +227,28 @@ describe('.set()', () => {
     await expect(barUserState.set('key3', 'bar')).resolves.toBe(false);
     await expect(barUserState.get('key3')).resolves.toBe('bar');
 
-    const barGlobalState = controller.globalState('bar');
-    await expect(barGlobalState.set('key1', { bar: 'yes' })).resolves.toBe(
-      false
-    );
-    await expect(barGlobalState.get('key1')).resolves.toEqual({
-      bar: 'yes',
-    });
+    const barGlobalState = controller.globalState('BAR');
+    await expect(barGlobalState.set('key1', { bar: 'y' })).resolves.toBe(false);
+    await expect(barGlobalState.get('key1')).resolves.toEqual({ bar: 'y' });
 
-    await expect(barGlobalState.set('key1', { bar: false })).resolves.toBe(
-      true
-    );
-    await expect(barGlobalState.get('key1')).resolves.toEqual({
-      bar: false,
-    });
+    await expect(barGlobalState.set('key1', { bar: 'n' })).resolves.toBe(true);
+    await expect(barGlobalState.get('key1')).resolves.toEqual({ bar: 'n' });
 
     await delay(40);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       Object {
+        "channelStates": Object {
+          "test.boo": Object {
+            "key1": Array [
+              "bar",
+            ],
+            "key2": true,
+          },
+        },
         "globalStates": Object {
-          "bar": Object {
+          "BAR": Object {
             "key1": Object {
-              "bar": false,
+              "bar": "n",
             },
           },
           "baz": Object {
@@ -220,13 +263,13 @@ describe('.set()', () => {
           },
         },
         "threadStates": Object {
-          "foo": Object {
+          "test.foo": Object {
             "key1": "bar",
             "key2": 123,
           },
         },
         "userStates": Object {
-          "bar": Object {
+          "test.bar": Object {
             "key1": "bar",
             "key2": 456,
             "key3": "bar",
@@ -249,7 +292,7 @@ describe('.set()', () => {
       Object {
         "globalStates": Object {},
         "threadStates": Object {
-          "foo": Object {
+          "test.foo": Object {
             "bar": "baz",
           },
         },
@@ -280,10 +323,19 @@ describe('.delete()', () => {
     await expect(controller.userState(barUser).delete('key1')).resolves.toBe(
       true
     );
+    await expect(
+      controller.channelState(booChannel).delete('key3')
+    ).resolves.toBe(false);
 
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       Object {
+        "channelStates": Object {
+          "test.boo": Object {
+            "key1": "boo",
+            "key2": true,
+          },
+        },
         "globalStates": Object {
           "baz": Object {
             "key1": Object {
@@ -298,7 +350,7 @@ describe('.delete()', () => {
         },
         "threadStates": Object {},
         "userStates": Object {
-          "bar": Object {
+          "test.bar": Object {
             "key2": 456,
           },
         },
@@ -331,6 +383,11 @@ describe('.clear()', () => {
 
     const controller = new FileStateController({ path: tmpPath });
 
+    const booChannelState = controller.channelState(booChannel);
+    await expect(booChannelState.clear()).resolves.toBe(2);
+    await expect(booChannelState.get('key1')).resolves.toBe(undefined);
+    await expect(booChannelState.get('key2')).resolves.toBe(undefined);
+
     const fooThreadState = controller.threadState(fooThread);
     await expect(fooThreadState.clear()).resolves.toBe(2);
     await expect(fooThreadState.get('key1')).resolves.toBe(undefined);
@@ -344,6 +401,7 @@ describe('.clear()', () => {
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       Object {
+        "channelStates": Object {},
         "globalStates": Object {
           "baz": Object {
             "key1": Object {
@@ -388,7 +446,7 @@ test('reflect content changes on storage file', async () => {
 
   await expect(fooThreadState.get('key1')).resolves.toBe('foo');
   await expect(fooThreadState.getAll()).resolves.toEqual(
-    new Map<string, any>([
+    new Map<string, unknown>([
       ['key1', 'foo'],
       ['key2', 123],
     ])
@@ -398,7 +456,7 @@ test('reflect content changes on storage file', async () => {
     tmpPath,
     `{
        "threadStates": {
-         "foo": {
+         "test.foo": {
            "key1": "foooo",
            "key2": "baz"
          }
@@ -427,7 +485,7 @@ test('custom marshaler', async () => {
     tmpPath,
     `{
        "threadStates": {
-         "foo": {
+         "test.foo": {
            "key1": {
              "hello": "world",
              "value": 123
@@ -451,7 +509,9 @@ test('custom marshaler', async () => {
   await delay(20);
   expect(marshaler.marshal).toHaveBeenCalledWith(456);
 
-  await expect(fooState.update('key1', (v: any) => v + 666)).resolves.toBe(789);
+  await expect(fooState.update('key1', (v: number) => v + 666)).resolves.toBe(
+    789
+  );
   await delay(20);
   expect(marshaler.marshal).toHaveBeenCalledWith(789);
 
@@ -464,7 +524,7 @@ test('custom marshaler', async () => {
   expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
     Object {
       "threadStates": Object {
-        "foo": Object {
+        "test.foo": Object {
           "key1": Object {
             "hello": "world",
             "value": 789,
@@ -487,7 +547,7 @@ test('custom serializer', async () => {
     parse() {
       return {
         threadStates: {
-          foo: {
+          'test.foo': {
             from: 'MAGIC',
           },
         },
@@ -517,7 +577,7 @@ test('custom serializer', async () => {
   );
   expect(serializer.stringify).toHaveBeenCalledWith({
     threadStates: {
-      foo: { from: 'MAGIC', is: 'magical' },
+      'test.foo': { from: 'MAGIC', is: 'magical' },
     },
   });
 });

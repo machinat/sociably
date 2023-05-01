@@ -4,7 +4,11 @@ import {
   watch,
   FSWatcher,
 } from 'fs';
-import type { SociablyUser, SociablyThread } from '@sociably/core';
+import type {
+  SociablyChannel,
+  SociablyUser,
+  SociablyThread,
+} from '@sociably/core';
 import { makeClassProvider } from '@sociably/core/service';
 import {
   BaseStateController,
@@ -24,13 +28,13 @@ const objectHasOwnProperty = (obj, prop) =>
 
 export class FileStateAccessor implements StateAccessor {
   private _marshaler: BaseMarshaler;
-  private _getData: () => Promise<Record<string, any>>;
-  private _updateData: (data: Record<string, any>) => void;
+  private _getData: () => Promise<Record<string, unknown>>;
+  private _updateData: (data: Record<string, unknown>) => void;
 
   constructor(
     marshaler: BaseMarshaler,
-    getData: () => Promise<Record<string, any>>,
-    updateData: (data: Record<string, any>) => void
+    getData: () => Promise<Record<string, unknown>>,
+    updateData: (data: Record<string, unknown>) => void
   ) {
     this._marshaler = marshaler;
     this._getData = getData;
@@ -99,7 +103,7 @@ export class FileStateAccessor implements StateAccessor {
 
 type StorageObj = {
   [key: string]: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
 };
 
@@ -137,6 +141,15 @@ export class FileStateController implements BaseStateController {
 
     this._readingJob = this._open();
     this._writingJob = Promise.resolve();
+  }
+
+  channelState(channel: string | SociablyChannel): FileStateAccessor {
+    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+    return new FileStateAccessor(
+      this.marshaler,
+      this._getDataCallback('channelStates', channelUid),
+      this._updateDataCallback('channelStates', channelUid)
+    );
   }
 
   threadState(thread: string | SociablyThread): FileStateAccessor {
@@ -179,7 +192,7 @@ export class FileStateController implements BaseStateController {
   }
 
   private _updateDataCallback(type: string, id: string) {
-    return (data: Record<string, any>) => {
+    return (data: Record<string, unknown>) => {
       if (Object.keys(data).length > 0) {
         this._storages[type][id] = data;
       } else {

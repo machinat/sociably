@@ -1,4 +1,8 @@
-import type { SociablyUser, SociablyThread } from '@sociably/core';
+import type {
+  SociablyChannel,
+  SociablyUser,
+  SociablyThread,
+} from '@sociably/core';
 import type {
   BaseStateController,
   StateAccessor,
@@ -6,14 +10,14 @@ import type {
 import { makeClassProvider } from '@sociably/core/service';
 
 export class InMemoryStateAccessor implements StateAccessor {
-  _stateData: Map<string, any>;
+  _stateData: Map<string, unknown>;
 
-  constructor(data: Map<string, any>) {
+  constructor(data: Map<string, unknown>) {
     this._stateData = data;
   }
 
   async get<T>(key: string): Promise<T> {
-    return this._stateData.get(key);
+    return this._stateData.get(key) as T;
   }
 
   async set<T>(key: string, value: T): Promise<boolean> {
@@ -28,7 +32,7 @@ export class InMemoryStateAccessor implements StateAccessor {
     key: string,
     updator: (originalValue: undefined | T) => undefined | T
   ): Promise<undefined | T> {
-    const originalValue = this._stateData.get(key);
+    const originalValue = this._stateData.get(key) as undefined | T;
     const nextValue = updator(originalValue);
 
     if (nextValue !== undefined) {
@@ -49,7 +53,7 @@ export class InMemoryStateAccessor implements StateAccessor {
   }
 
   async getAll<T>(): Promise<Map<string, T>> {
-    return this._stateData;
+    return this._stateData as Map<string, T>;
   }
 
   async clear(): Promise<number> {
@@ -63,14 +67,30 @@ export class InMemoryStateAccessor implements StateAccessor {
  * @category Provider
  */
 export class InMemoryStateController implements BaseStateController {
+  private _channelStates: Map<string, Map<string, unknown>>;
   private _threadStates: Map<string, Map<string, unknown>>;
   private _userStates: Map<string, Map<string, unknown>>;
   private _globalStates: Map<string, Map<string, unknown>>;
 
   constructor() {
+    this._channelStates = new Map();
     this._threadStates = new Map();
     this._userStates = new Map();
     this._globalStates = new Map();
+  }
+
+  channelState(channel: string | SociablyChannel): InMemoryStateAccessor {
+    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+
+    const data = this._channelStates.get(channelUid);
+    if (data) {
+      return new InMemoryStateAccessor(data);
+    }
+
+    const newStateData = new Map();
+    this._channelStates.set(channelUid, newStateData);
+
+    return new InMemoryStateAccessor(newStateData);
   }
 
   threadState(thread: string | SociablyThread): InMemoryStateAccessor {

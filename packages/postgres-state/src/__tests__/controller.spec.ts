@@ -85,6 +85,34 @@ describe.each([
 
   describe.each<StateTestCase>([
     [
+      'channel state',
+      controller.channelState({
+        platform: 'test',
+        uid: 'test.foo',
+        uniqueIdentifier: { platform: 'test', id: 'foo' },
+      }),
+      {
+        [FIELD_STATE_TYPE]: 'channel',
+        [FIELD_STATE_PLATFORM]: 'test',
+        [FIELD_STATE_SCOPE_ID]: '',
+        [FIELD_STATE_ID]: 'foo',
+      },
+    ],
+    [
+      'channel state with scope id',
+      controller.channelState({
+        platform: 'test',
+        uid: 'test.foo.1',
+        uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
+      }),
+      {
+        [FIELD_STATE_TYPE]: 'channel',
+        [FIELD_STATE_PLATFORM]: 'test',
+        [FIELD_STATE_SCOPE_ID]: 'foo',
+        [FIELD_STATE_ID]: '1',
+      },
+    ],
+    [
       'thread state',
       controller.threadState({
         platform: 'test',
@@ -103,11 +131,7 @@ describe.each([
       controller.threadState({
         platform: 'test',
         uid: 'test.foo.1',
-        uniqueIdentifier: {
-          platform: 'test',
-          scopeId: 'foo',
-          id: 1,
-        },
+        uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
       }),
       {
         [FIELD_STATE_TYPE]: 'thread',
