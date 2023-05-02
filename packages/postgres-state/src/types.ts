@@ -1,6 +1,5 @@
 import { PoolConfig } from 'pg';
 import {
-  FIELD_STATE_TYPE,
   FIELD_STATE_PLATFORM,
   FIELD_STATE_SCOPE_ID,
   FIELD_STATE_DATA,
@@ -9,28 +8,30 @@ import {
 } from './constants';
 
 export type PostgresStateConfigs = {
-  /** schema used to store state data */
+  /** The schema used to create state tables */
   schemaName?: string;
-  /** table used to store state data */
-  tableName?: string;
+  /** The table used to store global state data */
+  globalStateTableName?: string;
+  /** The table used to store channel state data */
+  channelStateTableName?: string;
+  /** The table used to store thread state data */
+  threadStateTableName?: string;
+  /** The table used to store user state data */
+  userStateTableName?: string;
   /** options to connect with DB */
   connectOptions: PoolConfig;
 };
 
 export type SociablyStateType = 'channel' | 'global' | 'thread' | 'user';
 
-/**
- * The entity value stored in the DB. `platform` & `scopeId` use `''`
- * but not `null` when it's empty because `null` cannot be idnetified
- * on an unique index in pg.
- */
-export type StateEntity = {
-  [FIELD_STATE_TYPE]: SociablyStateType;
-  // '' on global state
-  [FIELD_STATE_PLATFORM]: string;
-  // '' on global state or when scopeId of a thread/user is null
-  [FIELD_STATE_SCOPE_ID]: string;
+export type BasicStateEntity = {
   [FIELD_STATE_ID]: string;
   [FIELD_STATE_KEY]: string;
   [FIELD_STATE_DATA]: { value: unknown };
+};
+
+export type InstanceStateEntity = BasicStateEntity & {
+  [FIELD_STATE_PLATFORM]: string;
+  // NOTE: use '' when `scopeId` is null, cuz null can't be identified by unique index
+  [FIELD_STATE_SCOPE_ID]: string;
 };

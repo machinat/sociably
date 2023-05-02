@@ -1,9 +1,12 @@
 /* eslint-disable no-await-in-loop */
 import { Pool } from 'pg';
 import moxy, { Mock, isMoxy } from '@moxyjs/moxy';
+import { StateAccessor } from '@sociably/core/base/StateController';
 import {
-  DEFAULT_STATE_TABLE_NAME,
-  FIELD_STATE_TYPE,
+  DEFAULT_GLOBAL_STATE_TABLE_NAME,
+  DEFAULT_CHANNEL_STATE_TABLE_NAME,
+  DEFAULT_THREAD_STATE_TABLE_NAME,
+  DEFAULT_USER_STATE_TABLE_NAME,
   FIELD_STATE_PLATFORM,
   FIELD_STATE_KEY,
   FIELD_STATE_SCOPE_ID,
@@ -12,7 +15,7 @@ import {
   FIELD_CREATED_AT,
   FIELD_UPDATED_AT,
 } from '../constants';
-import { PostgresStateController, PostgresStateAccessor } from '../controller';
+import { PostgresStateController } from '../Controller';
 
 const pgPool = moxy(new Pool({ connectionString: process.env.DATABASE_URL }), {
   mockMethod: false,
@@ -57,33 +60,56 @@ const getQueryCallsText = (queryCalls) =>
 const getQueryCallsValues = (queryCalls) =>
   queryCalls.map(({ args: [{ values }] }) => values);
 
-describe.each([
-  ['default table', undefined, undefined],
-  ['specified table', undefined, 'my_table'],
-  ['specified schema & table', 'my_schema', 'my_table'],
-])('%s', (_, schemaName, tableName) => {
-  const controller = new PostgresStateController(
-    pgPool,
-    marshaler,
-    schemaName,
-    tableName
-  );
+describe.each<[string, Record<string, string>]>([
+  ['default table', {}],
+  [
+    'specified table',
+    {
+      globalStateTableName: 'my_global_state',
+      channelStateTableName: 'my_channel_state',
+      threadStateTableName: 'my_thread_state',
+      userStateTableName: 'my_user_state',
+    },
+  ],
+  [
+    'specified schema & table',
+    {
+      schemaName: 'my_schema',
+      globalStateTableName: 'my_global_state',
+      channelStateTableName: 'my_channel_state',
+      threadStateTableName: 'my_thread_state',
+      userStateTableName: 'my_user_state',
+    },
+  ],
+])('%s', (_, options) => {
+  const controller = new PostgresStateController(pgPool, marshaler, options);
 
   beforeAll(async () => {
-    await controller.createTable();
+    await controller.createTables();
   });
 
   afterAll(async () => {
-    await controller.dropTable();
+    await controller.dropTables();
   });
 
-  type StateTestCase = [
-    string, // test name
-    PostgresStateAccessor, // state object
-    Record<string, unknown> // identifier fields in DB
-  ];
+  const schemaPrefix = options.schemaName ? `"${options.schemaName}".` : '';
+  const channelStateTableName =
+    options.channelStateTableName || DEFAULT_CHANNEL_STATE_TABLE_NAME;
+  const threadStateTableName =
+    options.threadStateTableName || DEFAULT_THREAD_STATE_TABLE_NAME;
+  const userStateTableName =
+    options.userStateTableName || DEFAULT_USER_STATE_TABLE_NAME;
+  const globalStateTableName =
+    options.globalStateTableName || DEFAULT_GLOBAL_STATE_TABLE_NAME;
 
-  describe.each<StateTestCase>([
+  describe.each<
+    [
+      string, // test name
+      StateAccessor, // state accessor object
+      string, // table name
+      Record<string, unknown> // identifier fields in DB
+    ]
+  >([
     [
       'channel state',
       controller.channelState({
@@ -91,8 +117,8 @@ describe.each([
         uid: 'test.foo',
         uniqueIdentifier: { platform: 'test', id: 'foo' },
       }),
+      `${schemaPrefix}"${channelStateTableName}"`,
       {
-        [FIELD_STATE_TYPE]: 'channel',
         [FIELD_STATE_PLATFORM]: 'test',
         [FIELD_STATE_SCOPE_ID]: '',
         [FIELD_STATE_ID]: 'foo',
@@ -105,8 +131,8 @@ describe.each([
         uid: 'test.foo.1',
         uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
       }),
+      `${schemaPrefix}"${channelStateTableName}"`,
       {
-        [FIELD_STATE_TYPE]: 'channel',
         [FIELD_STATE_PLATFORM]: 'test',
         [FIELD_STATE_SCOPE_ID]: 'foo',
         [FIELD_STATE_ID]: '1',
@@ -119,8 +145,8 @@ describe.each([
         uid: 'test.foo',
         uniqueIdentifier: { platform: 'test', id: 'foo' },
       }),
+      `${schemaPrefix}"${threadStateTableName}"`,
       {
-        [FIELD_STATE_TYPE]: 'thread',
         [FIELD_STATE_PLATFORM]: 'test',
         [FIELD_STATE_SCOPE_ID]: '',
         [FIELD_STATE_ID]: 'foo',
@@ -133,8 +159,8 @@ describe.each([
         uid: 'test.foo.1',
         uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
       }),
+      `${schemaPrefix}"${threadStateTableName}"`,
       {
-        [FIELD_STATE_TYPE]: 'thread',
         [FIELD_STATE_PLATFORM]: 'test',
         [FIELD_STATE_SCOPE_ID]: 'foo',
         [FIELD_STATE_ID]: '1',
@@ -147,8 +173,8 @@ describe.each([
         uid: 'test.foo',
         uniqueIdentifier: { platform: 'test', id: 'foo' },
       }),
+      `${schemaPrefix}"${userStateTableName}"`,
       {
-        [FIELD_STATE_TYPE]: 'user',
         [FIELD_STATE_PLATFORM]: 'test',
         [FIELD_STATE_SCOPE_ID]: '',
         [FIELD_STATE_ID]: 'foo',
@@ -161,8 +187,8 @@ describe.each([
         uid: 'test.foo.1',
         uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
       }),
+      `${schemaPrefix}"${userStateTableName}"`,
       {
-        [FIELD_STATE_TYPE]: 'user',
         [FIELD_STATE_PLATFORM]: 'test',
         [FIELD_STATE_SCOPE_ID]: 'foo',
         [FIELD_STATE_ID]: '1',
@@ -170,40 +196,35 @@ describe.each([
     ],
     [
       'global state',
-      controller.globalState('foo'),
+      controller.globalState('MY_SUPER_STATE'),
+      `${schemaPrefix}"${globalStateTableName}"`,
       {
-        [FIELD_STATE_TYPE]: 'global',
-        [FIELD_STATE_PLATFORM]: '',
-        [FIELD_STATE_SCOPE_ID]: '',
-        [FIELD_STATE_ID]: 'foo',
+        [FIELD_STATE_ID]: 'MY_SUPER_STATE',
       },
     ],
-  ])('%s', (__, state, identifierFields) => {
-    const tableId = schemaName
-      ? `"${schemaName}"."${tableName}"`
-      : `"${tableName ?? DEFAULT_STATE_TABLE_NAME}"`;
-
+  ])('%s', (__, state, tableId, idFields) => {
+    const idKeys = Object.keys(idFields);
     const insertStateEntity = (key, value) =>
       pgPool.query({
         text: `
           INSERT INTO ${tableId} (
-            "${FIELD_STATE_KEY}", "${FIELD_STATE_DATA}",
-            ${Object.keys(identifierFields)
-              .map((name) => `"${name}"`)
-              .join(', ')}
-          ) VALUES ($1, $2, $3, $4, $5, $6)
+            "${FIELD_STATE_KEY}",
+            "${FIELD_STATE_DATA}",
+            ${idKeys.map((name) => `"${name}"`).join(', ')}
+          ) VALUES ($1, $2, ${idKeys.map((_n, i) => `$${i + 3}`).join(', ')})
         `,
-        values: [key, { value }, ...Object.values(identifierFields)],
+        values: [key, { value }, ...Object.values(idFields)],
       });
+
     const getStateEntities = async () => {
       const result = await pgPool.query({
         text: `
             SELECT * FROM ${tableId} WHERE
-            ${Object.keys(identifierFields)
+            ${Object.keys(idFields)
               .map((k, i) => `"${k}"=$${i + 1}`)
               .join(' AND ')}
           `,
-        values: Object.values(identifierFields),
+        values: Object.values(idFields),
       });
       return result.rows;
     };
@@ -304,7 +325,7 @@ describe.each([
 
         await expect(getStateEntities()).resolves.toEqual(
           cases.map(([key, _originalValue, newValue]) => ({
-            ...identifierFields,
+            ...idFields,
             [FIELD_STATE_KEY]: key,
             [FIELD_STATE_DATA]: { value: newValue },
             [FIELD_CREATED_AT]: expect.any(Date),
@@ -367,7 +388,7 @@ describe.each([
 
         await expect(getStateEntities()).resolves.toEqual(
           cases.map(([key, value]) => ({
-            ...identifierFields,
+            ...idFields,
             [FIELD_STATE_KEY]: key,
             [FIELD_STATE_DATA]: { value },
             [FIELD_CREATED_AT]: expect.any(Date),
@@ -447,7 +468,7 @@ describe.each([
       await expect(state.set('key1', 'foo')).resolves.toBe(false);
       await expect(state.get('key1')).resolves.toBe('foo');
       await expect(getStateEntityOfKey('key1')).resolves.toEqual({
-        ...identifierFields,
+        ...idFields,
         [FIELD_STATE_KEY]: 'key1',
         [FIELD_STATE_DATA]: { value: { hello: 'foo' } },
         [FIELD_CREATED_AT]: expect.any(Date),
@@ -461,7 +482,7 @@ describe.each([
 
       expect(updater).toHaveBeenCalledWith('foo');
       await expect(getStateEntityOfKey('key1')).resolves.toEqual({
-        ...identifierFields,
+        ...idFields,
         [FIELD_STATE_KEY]: 'key1',
         [FIELD_STATE_DATA]: { value: { hello: { bar: 'baz' } } },
         [FIELD_CREATED_AT]: expect.any(Date),

@@ -1,3 +1,3 @@
 export { default } from './module';
-export { PostgresStateController } from './controller';
+export { PostgresStateController } from './Controller';
 export * from './types';

@@ -3,7 +3,7 @@ import { Pool as _Pool } from 'pg';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
 import PostgresState from '../module';
-import { ControllerP as PostgresStateController } from '../controller';
+import { ControllerP as PostgresStateController } from '../Controller';
 
 const Pool = _Pool as Moxy<typeof _Pool>;
 

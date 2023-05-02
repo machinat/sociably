@@ -3,7 +3,7 @@ import type { ServiceModule } from '@sociably/core';
 import { makeFactoryProvider } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 
-import { ControllerP } from './controller';
+import { ControllerP } from './Controller';
 import { ConfigsI, ConnectionPoolI } from './interface';
 
 const initConnectionPool = makeFactoryProvider({
