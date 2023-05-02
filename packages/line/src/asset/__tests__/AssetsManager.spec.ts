@@ -24,7 +24,7 @@ const bot = moxy<LineBot>({
   requestApi: () => ({}),
 } as never);
 
-const channel = new LineChannel('_CHANNEL_ID_');
+const channel = new LineChannel('1234567');
 
 beforeEach(() => {
   stateController.mock.reset();
@@ -46,8 +46,8 @@ test('get asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "line.assets._CHANNEL_ID_.foo",
-      "line.assets._CHANNEL_ID_.rich_menu",
+      "$line.foo.1234567",
+      "$line.rich_menu.1234567",
     ]
   `);
 
@@ -82,8 +82,8 @@ test('set asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "line.assets._CHANNEL_ID_.foo",
-      "line.assets._CHANNEL_ID_.rich_menu",
+      "$line.foo.1234567",
+      "$line.rich_menu.1234567",
     ]
   `);
 
@@ -116,8 +116,8 @@ test('get all assets', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "line.assets._CHANNEL_ID_.foo",
-      "line.assets._CHANNEL_ID_.rich_menu",
+      "$line.foo.1234567",
+      "$line.rich_menu.1234567",
     ]
   `);
 
@@ -152,8 +152,8 @@ test('unsave asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "line.assets._CHANNEL_ID_.foo",
-      "line.assets._CHANNEL_ID_.rich_menu",
+      "$line.foo.1234567",
+      "$line.rich_menu.1234567",
     ]
   `);
 

@@ -9,7 +9,7 @@ import { WA } from '../constant';
 const MEDIA = 'media';
 
 const makeResourceToken = (numberId: string, resource: string): string =>
-  `${WA}.assets.${numberId}.${resource}`;
+  `$${WA}.${resource}.${numberId}`;
 
 /**
  * WhatsAppAssetsManager manage name-to-id mapping for assets in WhatsApp

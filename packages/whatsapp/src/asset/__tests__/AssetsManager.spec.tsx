@@ -49,8 +49,8 @@ test('get asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "wa.assets.1111111111.foo",
-      "wa.assets.1111111111.media",
+      "$wa.foo.1111111111",
+      "$wa.media.1111111111",
     ]
   `);
 
@@ -82,8 +82,8 @@ test('set asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "wa.assets.1111111111.foo",
-      "wa.assets.1111111111.media",
+      "$wa.foo.1111111111",
+      "$wa.media.1111111111",
     ]
   `);
 
@@ -111,8 +111,8 @@ test('get all assets', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "wa.assets.1111111111.foo",
-      "wa.assets.1111111111.media",
+      "$wa.foo.1111111111",
+      "$wa.media.1111111111",
     ]
   `);
 
@@ -138,8 +138,8 @@ test('remove asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "wa.assets.1111111111.foo",
-      "wa.assets.1111111111.media",
+      "$wa.foo.1111111111",
+      "$wa.media.1111111111",
     ]
   `);
 

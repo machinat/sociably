@@ -24,7 +24,7 @@ type CreateCustomProfileResult = {
 /* eslint-enable camelcase */
 
 const makeResourceToken = (agentId: string, resource: string): string =>
-  `${TWTR}.assets.${agentId}.${resource}`;
+  `$${TWTR}.${resource}.${agentId}`;
 
 /**
  * TwitterAssetsManager stores ids of assets created at Twitter platform.

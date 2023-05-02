@@ -7,7 +7,7 @@ import { PATH_RICHMENU, LINE } from '../constant';
 const RICH_MENU = 'rich_menu';
 
 const resourceToken = (channelId: string, resource: string) =>
-  `${LINE}.assets.${channelId}.${resource}`;
+  `$${LINE}.${resource}.${channelId}`;
 
 /**
  * @category Provider

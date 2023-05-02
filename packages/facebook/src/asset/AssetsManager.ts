@@ -12,7 +12,7 @@ const ATTACHMENT = 'attachment';
 const PERSONA = 'persona';
 
 const makeResourceToken = (pageId: string, resource: string): string =>
-  `${FB}.assets.${pageId}.${resource}`;
+  `$${FB}.${resource}.${pageId}`;
 
 /**
  * FacebookAssetsManager stores name-to-id mapping for assets created in

@@ -6,7 +6,7 @@ import { TG } from '../constant';
 const FILE = 'file';
 
 const makeResourceToken = (botId: number, resource: string): string =>
-  `${TG}.assets.${botId}.${resource}`;
+  `$${TG}.${resource}.${botId}`;
 
 /**
  * TelegramAssetsManager stores name-to-id mapping for assets created in

@@ -52,10 +52,10 @@ test('get asset id', async () => {
   expect(stateController.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "twtr.assets.1234567890.foo",
-      "twtr.assets.1234567890.media",
-      "twtr.assets.1234567890.custom_profile",
-      "twtr.assets.1234567890.welcome_message",
+      "$twtr.foo.1234567890",
+      "$twtr.media.1234567890",
+      "$twtr.custom_profile.1234567890",
+      "$twtr.welcome_message.1234567890",
     ]
   `);
   expect(state.get).toHaveBeenCalledTimes(4);
@@ -113,10 +113,10 @@ test('save asset id', async () => {
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "twtr.assets.1234567890.foo",
-      "twtr.assets.1234567890.media",
-      "twtr.assets.1234567890.custom_profile",
-      "twtr.assets.1234567890.welcome_message",
+      "$twtr.foo.1234567890",
+      "$twtr.media.1234567890",
+      "$twtr.custom_profile.1234567890",
+      "$twtr.welcome_message.1234567890",
     ]
   `);
 
@@ -166,10 +166,10 @@ test('get all assets', async () => {
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "twtr.assets.1234567890.foo",
-      "twtr.assets.1234567890.media",
-      "twtr.assets.1234567890.custom_profile",
-      "twtr.assets.1234567890.welcome_message",
+      "$twtr.foo.1234567890",
+      "$twtr.media.1234567890",
+      "$twtr.custom_profile.1234567890",
+      "$twtr.welcome_message.1234567890",
     ]
   `);
   expect(state.getAll).toHaveBeenCalledTimes(4);
@@ -209,10 +209,10 @@ test('unsave asset id', async () => {
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "twtr.assets.1234567890.foo",
-      "twtr.assets.1234567890.media",
-      "twtr.assets.1234567890.custom_profile",
-      "twtr.assets.1234567890.welcome_message",
+      "$twtr.foo.1234567890",
+      "$twtr.media.1234567890",
+      "$twtr.custom_profile.1234567890",
+      "$twtr.welcome_message.1234567890",
     ]
   `);
   expect(state.delete).toHaveBeenCalledTimes(4);
@@ -265,7 +265,7 @@ describe('.renderMedia(tag, media)', () => {
 
     expect(
       stateController.globalState.mock.calls[0].args[0]
-    ).toMatchInlineSnapshot(`"twtr.assets.1234567890.media"`);
+    ).toMatchInlineSnapshot(`"$twtr.media.1234567890"`);
 
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('foo', '111111111111111111');
@@ -324,7 +324,7 @@ test('.renderWelcomeMessage(name, message)', async () => {
 
   expect(
     stateController.globalState.mock.calls[0].args[0]
-  ).toMatchInlineSnapshot(`"twtr.assets.1234567890.welcome_message"`);
+  ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_welcome_message', '844385345234');
 
   bot.renderWelcomeMessage.mock.fake(async () => null);
@@ -362,7 +362,7 @@ test('.deleteWelcomeMessage(name)', async () => {
 
   expect(
     stateController.globalState.mock.calls[0].args[0]
-  ).toMatchInlineSnapshot(`"twtr.assets.1234567890.welcome_message"`);
+  ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
   expect(state.delete).toHaveBeenCalledWith('my_welcome_message');
 
   state.get.mock.fake(async () => undefined);
@@ -415,7 +415,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
 
   expect(
     stateController.globalState.mock.calls[0].args[0]
-  ).toMatchInlineSnapshot(`"twtr.assets.1234567890.custom_profile"`);
+  ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_custom_profile', '1234567890');
 
   state.get.mock.fake(async () => '1234567890');
@@ -453,7 +453,7 @@ test('.deleteCustomProfile(name)', async () => {
 
   expect(
     stateController.globalState.mock.calls[0].args[0]
-  ).toMatchInlineSnapshot(`"twtr.assets.1234567890.custom_profile"`);
+  ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
   expect(state.delete).toHaveBeenCalledWith('my_custom_profile');
 
   state.get.mock.fake(async () => undefined);

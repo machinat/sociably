@@ -14,7 +14,7 @@ const state = moxy({
   clear: () => {},
 });
 
-const page = new FacebookPage('__PAGE_ID__');
+const page = new FacebookPage('1234567890');
 
 const stateController = moxy<StateControllerI>({
   globalState() {
@@ -62,9 +62,9 @@ test('get asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "fb.assets.__PAGE_ID__.foo",
-      "fb.assets.__PAGE_ID__.attachment",
-      "fb.assets.__PAGE_ID__.persona",
+      "$fb.foo.1234567890",
+      "$fb.attachment.1234567890",
+      "$fb.persona.1234567890",
     ]
   `);
 
@@ -111,9 +111,9 @@ test('set asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "fb.assets.__PAGE_ID__.foo",
-      "fb.assets.__PAGE_ID__.attachment",
-      "fb.assets.__PAGE_ID__.persona",
+      "$fb.foo.1234567890",
+      "$fb.attachment.1234567890",
+      "$fb.persona.1234567890",
     ]
   `);
 
@@ -154,9 +154,9 @@ test('get all assets', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "fb.assets.__PAGE_ID__.foo",
-      "fb.assets.__PAGE_ID__.attachment",
-      "fb.assets.__PAGE_ID__.persona",
+      "$fb.foo.1234567890",
+      "$fb.attachment.1234567890",
+      "$fb.persona.1234567890",
     ]
   `);
 
@@ -190,9 +190,9 @@ test('remove asset id', async () => {
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     Array [
-      "fb.assets.__PAGE_ID__.foo",
-      "fb.assets.__PAGE_ID__.attachment",
-      "fb.assets.__PAGE_ID__.persona",
+      "$fb.foo.1234567890",
+      "$fb.attachment.1234567890",
+      "$fb.persona.1234567890",
     ]
   `);
 
