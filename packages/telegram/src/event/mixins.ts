@@ -846,7 +846,7 @@ export const SuccessfulPayment: SuccessfulPayment = {
 
 export interface InlineQuery {
   /** The bot scoped thread */
-  thread: TelegramUser;
+  thread: null;
   /** Sender */
   user: TelegramUser;
   /** Inline query object. */
@@ -863,7 +863,7 @@ export interface InlineQuery {
 
 export const InlineQuery: InlineQuery = {
   get thread() {
-    return new TelegramUser(this.botId, true);
+    return null;
   },
   get user() {
     return new TelegramUser(this.payload.inline_query.from);
@@ -927,7 +927,7 @@ export const ChosenInlineResult: ChosenInlineResult = {
 
 export interface CallbackBase {
   /** The chat thread. If the callback is triggered by an inline message, it's a bot scoped thread */
-  thread: TelegramChat | TelegramUser;
+  thread: TelegramChat | null;
   /** Sender */
   user: TelegramUser;
   /** Callback query object. */
@@ -947,7 +947,7 @@ export const CallbackBase: CallbackBase = {
     const { message } = this.payload.callback_query;
     return message
       ? new TelegramChat(this.botId, message.chat.id, message.chat)
-      : new TelegramUser(this.botId, true);
+      : null;
   },
   get user() {
     return new TelegramUser(this.payload.callback_query.from);

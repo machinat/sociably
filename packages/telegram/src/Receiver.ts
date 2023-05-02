@@ -91,12 +91,7 @@ const handleWebhook = ({
       event,
       metadata,
       reply: (message) => {
-        if (!event.thread) {
-          throw new Error(
-            `Cannot reply to ${event.type} event with no chat thread info`
-          );
-        }
-        return bot.render(event.thread, message);
+        return bot.render(event.thread ?? event.channel, message);
       },
     });
     return { code: 200 };

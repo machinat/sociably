@@ -81,6 +81,7 @@ const botSettingsAccessor = moxy({
 });
 
 beforeEach(() => {
+  bot.mock.reset();
   popEventMock.reset();
   popEventWrapper.mock.reset();
   botSettingsAccessor.mock.reset();
@@ -280,7 +281,7 @@ it('respond 200 and pop events received', async () => {
   expect(context.event.payload).toEqual(updateBody);
 });
 
-test('reply(message) sugar', async () => {
+describe('constext.reply(message)', () => {
   const receiver = new TelegramReceiver({
     bot,
     botSettingsAccessor,
@@ -288,18 +289,19 @@ test('reply(message) sugar', async () => {
     popEventWrapper,
   });
 
-  await receiver.handleRequest(
-    createReq({
-      method: 'POST',
-      url: `/${botId}`,
-      body: JSON.stringify(updateBody),
-    }),
-    createRes()
-  );
+  it("render to event.thread when it's available", async () => {
+    await receiver.handleRequest(
+      createReq({
+        method: 'POST',
+        url: `/${botId}`,
+        body: JSON.stringify(updateBody),
+      }),
+      createRes()
+    );
 
-  expect(popEventMock).toHaveBeenCalledTimes(1);
-  let { reply, event } = popEventMock.calls[0].args[0];
-  await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
+    expect(popEventMock).toHaveBeenCalledTimes(1);
+    const { reply, event } = popEventMock.calls[0].args[0];
+    await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
           Object {
             "jobs": Array [],
             "results": Array [],
@@ -307,31 +309,37 @@ test('reply(message) sugar', async () => {
           }
         `);
 
-  expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+  });
 
-  await receiver.handleRequest(
-    createReq({
-      method: 'POST',
-      url: `/${botId}`,
-      body: JSON.stringify({
-        update_id: 9999,
-        callback_query: {
-          id: '12345',
-          from: { id: '67890' },
-          chat_instance: '43210',
-          data: 'foo',
-        },
+  it('render using event.channel if no event.thread', async () => {
+    await receiver.handleRequest(
+      createReq({
+        method: 'POST',
+        url: `/${botId}`,
+        body: JSON.stringify({
+          update_id: 9999,
+          callback_query: {
+            id: '12345',
+            from: { id: '67890' },
+            chat_instance: '43210',
+            data: 'foo',
+          },
+        }),
       }),
-    }),
-    createRes()
-  );
-  expect(popEventMock).toHaveBeenCalledTimes(2);
-  [{ reply, event }] = popEventMock.calls[1].args;
-  await reply('hello callback_query');
+      createRes()
+    );
+    expect(popEventMock).toHaveBeenCalledTimes(1);
+    const [{ reply, event }] = popEventMock.calls[0].args;
+    await reply('hello callback_query');
 
-  expect(bot.render).toHaveBeenCalledTimes(2);
-  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello callback_query');
+    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(bot.render).toHaveBeenCalledWith(
+      event.channel,
+      'hello callback_query'
+    );
+  });
 });
 
 it('verify "x-telegram-bot-api-secret-token" header matching options.secretToken', async () => {

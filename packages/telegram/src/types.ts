@@ -18,7 +18,6 @@ import type { TelegramBot } from './Bot';
 export * from './event/types';
 
 export type TelegramChatType = 'private' | 'group' | 'supergroup' | 'channel';
-
 export type TelegramParseMode = 'HTML' | 'MarkdownV2' | 'Markdown' | 'None';
 
 export type RawUser = {
