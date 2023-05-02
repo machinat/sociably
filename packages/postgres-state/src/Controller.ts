@@ -4,7 +4,7 @@ import type {
   SociablyUser,
   SociablyThread,
 } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import type {
   BaseStateController,
@@ -174,7 +174,7 @@ export class PostgresStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = makeClassProvider({
+export const ControllerP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConnectionPoolI, { require: BaseMarshaler, optional: true }, ConfigsI],
 })(PostgresStateController);

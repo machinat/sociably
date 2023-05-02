@@ -1,4 +1,4 @@
-import { makeContainer } from '@sociably/core/service';
+import { serviceContainer } from '@sociably/core/service';
 import { DispatchError } from '@sociably/core/engine';
 import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import type { WhatsAppDispatchMiddleware } from '../types';
@@ -53,6 +53,6 @@ const saveUploadedMedia =
     }
   };
 
-export default makeContainer({
+export default serviceContainer({
   deps: [AssetsManagerP],
 })(saveUploadedMedia);

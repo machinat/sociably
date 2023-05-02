@@ -1,5 +1,5 @@
 import { DispatchError } from '@sociably/core/engine';
-import { makeContainer } from '@sociably/core/service';
+import { serviceContainer } from '@sociably/core/service';
 import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import type { FacebookDispatchMiddleware } from '../types';
 import FacebookPage from '../Page';
@@ -57,6 +57,6 @@ const saveReusableAttachments =
     }
   };
 
-export default makeContainer({
+export default serviceContainer({
   deps: [AssetsManagerP],
 })(saveReusableAttachments);

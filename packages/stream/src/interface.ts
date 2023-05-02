@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 
-export const STREAMING_KEY_I = makeInterface({
+export const STREAMING_KEY_I = serviceInterface({
   name: 'XStreamingKey',
 });

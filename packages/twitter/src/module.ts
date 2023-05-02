@@ -1,7 +1,7 @@
 import type { SociablyPlatform } from '@sociably/core';
 import {
-  makeContainer,
-  makeFactoryProvider,
+  serviceContainer,
+  serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -31,7 +31,7 @@ import type {
 } from './types';
 
 /** @interanl */
-const webhookRouteFactory = makeFactoryProvider({
+const webhookRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [ConfigsI, ReceiverP],
 })(
@@ -98,7 +98,7 @@ namespace Twitter {
     if (configs.agentSettingsService) {
       provisions.push({
         provide: AgentSettingsAccessorI,
-        withProvider: makeFactoryProvider({
+        withProvider: serviceProviderFactory({
           deps: [configs.agentSettingsService],
         })((accessor) => accessor),
       });
@@ -133,8 +133,8 @@ namespace Twitter {
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
-      startHook: makeContainer({ deps: [BotP] })((bot: BotP) => bot.start()),
-      stopHook: makeContainer({ deps: [BotP] })((bot: BotP) => bot.stop()),
+      startHook: serviceContainer({ deps: [BotP] })((bot: BotP) => bot.start()),
+      stopHook: serviceContainer({ deps: [BotP] })((bot: BotP) => bot.stop()),
     };
   };
 }

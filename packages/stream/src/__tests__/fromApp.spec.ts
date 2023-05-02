@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import { SociablyApp } from '@sociably/core';
 import {
   isServiceContainer,
-  makeContainer,
+  serviceContainer,
   ServiceScope,
 } from '@sociably/core/service';
 import { STREAMING_KEY_I } from '../interface';
@@ -78,7 +78,7 @@ test('transmit scope and use thread.uid as the key', () => {
   const event$ = fromApp(app);
   const nextListener = moxy();
   const nextContainer = moxy(
-    makeContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
   );
 
   event$.subscribe(nextContainer);
@@ -154,7 +154,7 @@ test('transmit scope and empty key', () => {
   const event$ = fromApp(app);
   const errorListener = moxy();
   const errorContainer = moxy(
-    makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
   );
 
   event$.catch(errorContainer);

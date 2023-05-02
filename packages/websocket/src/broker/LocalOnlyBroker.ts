@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import { BrokerI } from '../interface';
 import type { ConnIdentifier } from '../types';
 
@@ -34,7 +34,7 @@ export class LocalOnlyBroker implements BrokerI {
   onRemoteEvent(): void {}
 }
 
-const LocalOnlyBrokerP = makeClassProvider({
+const LocalOnlyBrokerP = serviceProviderClass({
   lifetime: 'singleton',
 })(LocalOnlyBroker);
 

@@ -8,7 +8,7 @@ import Engine from '@sociably/core/engine';
 import Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 
 import { WEBSOCKET } from './constant';
 import { PlatformUtilitiesI } from './interface';
@@ -154,7 +154,7 @@ export class WebSocketBot
   }
 }
 
-export const BotP = makeClassProvider({
+export const BotP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ServerP,

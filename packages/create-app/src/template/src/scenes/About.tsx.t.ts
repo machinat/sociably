@@ -1,5 +1,5 @@
 export default (): string => `
-import Sociably, { makeContainer } from '@sociably/core';
+import Sociably, { serviceContainer } from '@sociably/core';
 import { build } from '@sociably/script';
 import * as $ from '@sociably/script/keywords';
 import WithYesNoReplies from '../components/WithYesNoReplies'
@@ -13,7 +13,7 @@ const ASK_YES_OR_NO = (key: string) => (
   <$.PROMPT<AboutVars>
     key={key}
     set={
-      makeContainer({ deps: [useIntent] })(
+      serviceContainer({ deps: [useIntent] })(
         (getIntent) => async (_, { event }) => {
           const intent = await getIntent(event);
           return { isOk: intent.type !== 'no' }

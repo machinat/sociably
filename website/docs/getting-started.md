@@ -91,10 +91,10 @@ The managing operations are described in migration files under `/src/migrations`
 A migration file might looks like this:
 
 ```js
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import Facebook from '@sociably/facebook';
 
-export const up = makeContainer({
+export const up = serviceContainer({
   deps: [Facebook.Bot],
 })(
   async (facebookBot) => {
@@ -103,7 +103,7 @@ export const up = makeContainer({
   }
 );
 
-export const down = makeContainer({
+export const down = serviceContainer({
   deps: [Facebook.Bot],
 })(
   async (facebookBot) => {

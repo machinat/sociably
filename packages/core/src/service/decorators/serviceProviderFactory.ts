@@ -26,15 +26,15 @@ type FactoryFn<T, Deps extends AnyDep[]> = (
 type ProviderFn<T, Deps extends AnyDep[]> = ServiceProvider<T, Deps> &
   ((...args: ResolveDependencies<Deps>) => T);
 
-function makeFactoryProvider<A extends AnyDep>(
+function serviceProviderFactory<A extends AnyDep>(
   opts: FactoryProviderOptions<[A]>
 ): <T>(factory: FactoryFn<T, [A]>) => ProviderFn<T, [A]>;
 
-function makeFactoryProvider<A extends AnyDep, B extends AnyDep>(
+function serviceProviderFactory<A extends AnyDep, B extends AnyDep>(
   opts: FactoryProviderOptions<[A, B]>
 ): <T>(factory: FactoryFn<T, [A, B]>) => ProviderFn<T, [A, B]>;
 
-function makeFactoryProvider<
+function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep
@@ -42,7 +42,7 @@ function makeFactoryProvider<
   opts: FactoryProviderOptions<[A, B, C]>
 ): <T>(factory: FactoryFn<T, [A, B, C]>) => ProviderFn<T, [A, B, C]>;
 
-function makeFactoryProvider<
+function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -51,7 +51,7 @@ function makeFactoryProvider<
   opts: FactoryProviderOptions<[A, B, C, D]>
 ): <T>(factory: FactoryFn<T, [A, B, C, D]>) => ProviderFn<T, [A, B, C, D]>;
 
-function makeFactoryProvider<
+function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -63,7 +63,7 @@ function makeFactoryProvider<
   factory: FactoryFn<T, [A, B, C, D, E]>
 ) => ProviderFn<T, [A, B, C, D, E]>;
 
-function makeFactoryProvider<
+function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -76,7 +76,7 @@ function makeFactoryProvider<
   factory: FactoryFn<T, [A, B, C, D, E, F]>
 ) => ServiceProvider<T, [A, B, C, D, E, F]>;
 
-function makeFactoryProvider<
+function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -90,7 +90,7 @@ function makeFactoryProvider<
   factory: FactoryFn<T, [A, B, C, D, E, F, G]>
 ) => ProviderFn<T, [A, B, C, D, E, F, G]>;
 
-function makeFactoryProvider<
+function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -105,7 +105,7 @@ function makeFactoryProvider<
   factory: FactoryFn<T, [A, B, C, D, E, F, G, H]>
 ) => ProviderFn<T, [A, B, C, D, E, F, G, H]>;
 
-function makeFactoryProvider<
+function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -121,7 +121,7 @@ function makeFactoryProvider<
   factory: FactoryFn<T, [A, B, C, D, E, F, G, H, I]>
 ) => ProviderFn<T, [A, B, C, D, E, F, G, H, I]>;
 
-function makeFactoryProvider<
+function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -139,11 +139,11 @@ function makeFactoryProvider<
 ) => ProviderFn<T, [A, B, C, D, E, F, G, H, I, J]>;
 
 /**
- * makeFactoryProvider annotate a factory function as a provider serving for the
+ * serviceProviderFactory annotate a factory function as a provider serving for the
  * instance type, and also an interface can be implemented.
  * @category Service Registry
  */
-function makeFactoryProvider<Deps extends AnyDep[]>({
+function serviceProviderFactory<Deps extends AnyDep[]>({
   name,
   deps = [] as never,
   lifetime = 'transient',
@@ -163,4 +163,4 @@ function makeFactoryProvider<Deps extends AnyDep[]>({
   };
 }
 
-export default makeFactoryProvider;
+export default serviceProviderFactory;

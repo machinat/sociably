@@ -75,10 +75,10 @@ you can use the `IntentRecognizer` service to detect intent.
 For example:
 
 ```js
-import { makeContainer, IntentRecognizer } from '@sociably/core';
+import { serviceContainer, IntentRecognizer } from '@sociably/core';
 
 app.onEvent(
-  makeContainer({ deps: [IntentRecognizer] })(
+  serviceContainer({ deps: [IntentRecognizer] })(
     (recognizer) =>
       async ({ reply, event }) => {
         if (event.category === 'message' && event.type === 'text') {
@@ -117,9 +117,9 @@ Like handling postback data, recognizing emoji or parsing special formats.
 You can make your own recognizing service for that, like:
 
 ```js
-import { makeFactoryProvider, IntentRecognizer } from '@sociably/core';
+import { serviceProviderFactory, IntentRecognizer } from '@sociably/core';
 
-const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
+const useIntent = serviceProviderFactory({ deps: [IntentRecognizer] })(
   (recognizer) =>
     async (event) => {
       if (event.type === 'postback') {
@@ -151,11 +151,11 @@ const useIntent = makeFactoryProvider({ deps: [IntentRecognizer] })(
 Then use your recognizing service to detect intent like:
 
 ```js
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import useIntent from './useIntent';
 
 app.onEvent(
-  makeContainer({ deps: [useIntent] })(
+  serviceContainer({ deps: [useIntent] })(
     (getIntent) =>
     async ({ event }) => {
       const intent = await getIntent(event);
@@ -172,10 +172,10 @@ you can use the implementation provider directly.
 For example, use `DialogFlow.Recognizer` like this:
 
 ```js
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import DialogFlow from '@sociably/dialogflow';
 
-makeContainer({ deps: [DialogFlow.Recognizer] })(
+serviceContainer({ deps: [DialogFlow.Recognizer] })(
   (recognizer) =>
   async (context) => {
     const { thread, text } = context.event;

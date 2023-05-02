@@ -216,11 +216,11 @@ Here is an example to upload a reusable attachment:
 
 ```tsx
 import fs from 'fs';
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import * as Facebook from '@sociably/facebook/components';
 import FacebookAssetsManager from '@sociably/facebook/asssets';
 
-app.onEvent(makeContainer({ deps: [FacebookAssetsManager] })(
+app.onEvent(serviceContainer({ deps: [FacebookAssetsManager] })(
   (assetsManager) =>
     async ({ reply }) => {
       const fooImageId = await assetsManager.getAttachment('foo.image');

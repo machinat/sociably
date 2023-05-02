@@ -1,10 +1,12 @@
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type { RegexRecognitionConfigs } from './types';
 
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<RegexRecognitionConfigs<string, string>>({
+export const ConfigsI = serviceInterface<
+  RegexRecognitionConfigs<string, string>
+>({
   name: 'RegexRecognitionConfigs',
 });
 

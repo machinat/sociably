@@ -1,5 +1,5 @@
 import type { SociablyUser, SociablyChannel } from '../types';
-import { makeInterface, makeClassProvider } from '../service';
+import { serviceInterface, serviceProviderClass } from '../service';
 
 export interface SociablyProfile {
   readonly platform: string;
@@ -25,7 +25,7 @@ type AnyUserProfiler = UserProfiler<SociablyChannel, SociablyUser>;
  * @category Base
  */
 export class BaseProfiler implements AnyUserProfiler {
-  static PlatformMap = makeInterface<AnyUserProfiler>({
+  static PlatformMap = serviceInterface<AnyUserProfiler>({
     name: 'ProfilerPlatformMap',
     polymorphic: true,
   });
@@ -56,7 +56,7 @@ export class BaseProfiler implements AnyUserProfiler {
   }
 }
 
-const ProfilerP = makeClassProvider({
+const ProfilerP = serviceProviderClass({
   lifetime: 'transient',
   deps: [BaseProfiler.PlatformMap],
 })(BaseProfiler);

@@ -3,7 +3,7 @@ import { STATUS_CODES, IncomingMessage, ServerResponse } from 'http';
 import { Socket as NetSocket } from 'net';
 import {
   maybeInjectContainer,
-  makeClassProvider,
+  serviceProviderClass,
   createEmptyScope,
   ServiceScope,
 } from '@sociably/core/service';
@@ -206,7 +206,7 @@ export class NextReceiver {
   }
 }
 
-export const ReceiverP = makeClassProvider({
+export const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ServerI, ConfigsI, { require: ModuleUtilitiesI, optional: true }],
   factory: (nextApp, { entryPath, noPrepare, handleRequest }, moduleUtils) =>

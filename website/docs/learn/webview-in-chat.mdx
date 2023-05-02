@@ -311,11 +311,11 @@ On the server side, we have to send the todos data to the webview.
 Edit the `handleWebview` handlers to this:
 
 ```tsx title="src/handlers/handleWebview.tsx"
-import { makeContainer } from '@sociably/core/service';
+import { serviceContainer } from '@sociably/core/service';
 import TodoController from '../services/TodoController';
 import { WebAppEventContext } from '../types';
 
-const handleWebview = makeContainer({
+const handleWebview = serviceContainer({
   deps: [TodoController],
 })(
   (todoController) =>

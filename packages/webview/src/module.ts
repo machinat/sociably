@@ -1,8 +1,8 @@
 import createNextServer from 'next';
 import type { SociablyPlatform } from '@sociably/core';
 import {
-  makeContainer,
-  makeFactoryProvider,
+  serviceContainer,
+  serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -52,18 +52,18 @@ import type {
   WebviewConfigs,
 } from './types';
 
-const nextServerFactory = makeFactoryProvider({
+const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',
   deps: [ConfigsI],
 })(({ nextServerOptions }) =>
   createNextServer((nextServerOptions || {}) as {})
 );
 
-const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
+const wsServerFactory = serviceProviderFactory({ lifetime: 'singleton' })(
   createWsServer
 );
 
-const webSocketRouteFactory = makeFactoryProvider({
+const webSocketRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [WebSocket.Server, ConfigsI],
 })(
@@ -74,7 +74,7 @@ const webSocketRouteFactory = makeFactoryProvider({
   })
 );
 
-const authRouteFactory = makeFactoryProvider({
+const authRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [Auth.Controller, ConfigsI],
 })(
@@ -87,7 +87,7 @@ const authRouteFactory = makeFactoryProvider({
   })
 );
 
-const nextRequestRouteFactory = makeFactoryProvider({
+const nextRequestRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [Next.Receiver, ConfigsI],
 })(
@@ -108,7 +108,7 @@ const nextRequestRouteFactory = makeFactoryProvider({
         }
 );
 
-const hmrRouteFactory = makeFactoryProvider({
+const hmrRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [Next.Receiver, ConfigsI],
 })(
@@ -256,12 +256,12 @@ namespace Webview {
       dispatchMiddlewares: configs.dispatchMiddlewares,
       provisions,
 
-      startHook: makeContainer({
+      startHook: serviceContainer({
         deps: [BotP, { require: NextReceiverP, optional: true }],
       })(async (bot, nextReceiver) => {
         await Promise.all([bot.start(), nextReceiver?.prepare()]);
       }),
-      stopHook: makeContainer({
+      stopHook: serviceContainer({
         deps: [BotP, { require: NextReceiverP, optional: true }],
       })(async (bot, nextReceiver) => {
         await Promise.all([bot.stop(), nextReceiver?.close()]);

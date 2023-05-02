@@ -1,7 +1,7 @@
 import type { SociablyPlatform } from '@sociably/core';
 import {
-  makeContainer,
-  makeFactoryProvider,
+  serviceContainer,
+  serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -34,7 +34,7 @@ import type {
   LineResult,
 } from './types';
 
-const webhookRouteFactory = makeFactoryProvider({
+const webhookRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [ConfigsI, ReceiverP],
 })(
@@ -102,7 +102,7 @@ namespace Line {
     if (configs.channelSettingsService) {
       provisions.push({
         provide: ChannelSettingsAccessorI,
-        withProvider: makeFactoryProvider({
+        withProvider: serviceProviderFactory({
           deps: [configs.channelSettingsService],
         })((accessor) => accessor),
       });
@@ -137,8 +137,8 @@ namespace Line {
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
-      startHook: makeContainer({ deps: [BotP] })((bot) => bot.start()),
-      stopHook: makeContainer({ deps: [BotP] })((bot) => bot.stop()),
+      startHook: serviceContainer({ deps: [BotP] })((bot) => bot.start()),
+      stopHook: serviceContainer({ deps: [BotP] })((bot) => bot.stop()),
     };
   };
 }

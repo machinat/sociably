@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import { MetaApiError } from '@sociably/meta-api';
 import BotP from './Bot';
@@ -68,7 +68,7 @@ export class FacebookProfiler
   }
 }
 
-const ProfilerP = makeClassProvider({
+const ProfilerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [BotP, ConfigsI],
 })(FacebookProfiler);

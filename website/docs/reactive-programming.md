@@ -62,7 +62,7 @@ Like:
 import Sociably, { BaseProfiler } from '@sociably/core';
 
 event$.subscribe(
-  makeContainer({ deps: [BaseProfiler] })(
+  serviceContainer({ deps: [BaseProfiler] })(
     (profiler) =>
     async ({ event, reply }) => {
       const profile = await profiler.getUserProfile(event.user);
@@ -113,12 +113,12 @@ We can use it to execute a job and attach the result onto the context.
 For example:
 
 ```js
-import { makeContainer, IntentRecognizer } from '@sociably/core';
+import { serviceContainer, IntentRecognizer } from '@sociably/core';
 import { map } from '@sociably/stream/operators';
 
 const eventWithIntent$ = event$.pipe(
   map(
-    makeContainer({ deps: [IntentRecognizer] })(
+    serviceContainer({ deps: [IntentRecognizer] })(
       (recognizer) =>
       async (context) => {
         const { event } = context;
@@ -142,12 +142,12 @@ const eventWithIntent$ = event$.pipe(
 The difference from `stream.subscribe(operator)` is that `tap` guarantees the execution order is one-by-one under a chat.
 
 ```js
-import Sociably, { makeContainer, StateController } from '@sociably/core';
+import Sociably, { serviceContainer, StateController } from '@sociably/core';
 import { tap } from '@sociably/stream/operators';
 
 event$.pipe(
   tap(
-    makeContainer({
+    serviceContainer({
       deps: [StateController],
     })(
       (stateController) =>

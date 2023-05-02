@@ -221,11 +221,11 @@ Here's an example to upload an image message and reuse it:
 
 ```tsx
 import fs from 'fs';
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import * as Telegram from '@sociably/telegram/components';
 import TelegramAssetsManager from '@sociably/telegram/asssets';
 
-app.onEvent(makeContainer({ deps: [TelegramAssetsManager] })(
+app.onEvent(serviceContainer({ deps: [TelegramAssetsManager] })(
   (assetsManager) =>
     async ({ reply }) => {
       const fooImageId = await assetsManager.getFile('foo.image');

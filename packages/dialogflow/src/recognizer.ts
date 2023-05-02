@@ -8,7 +8,7 @@ import {
   EnvironmentsClient,
 } from '@google-cloud/dialogflow';
 import type { SociablyThread } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type {
   DetectIntentResult,
   IntentRecognizer,
@@ -337,7 +337,7 @@ export class DialogflowIntentRecognizer<
   }
 }
 
-const IntentRecognizerP = makeClassProvider({
+const IntentRecognizerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [ConfigsI],
 })(DialogflowIntentRecognizer);

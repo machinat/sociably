@@ -1,5 +1,5 @@
 import { ChannelSettingsAccessor } from '@sociably/core';
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import TwitterUser from './User';
 import type {
   TwitterPlatformUtilities,
@@ -10,7 +10,7 @@ import type {
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<TwitterPlatformConfigs>({
+export const ConfigsI = serviceInterface<TwitterPlatformConfigs>({
   name: 'TwitterConfigs',
 });
 
@@ -19,7 +19,7 @@ export type ConfigsI = TwitterPlatformConfigs;
 /**
  * @category Interface
  */
-export const PlatformUtilitiesI = makeInterface<TwitterPlatformUtilities>({
+export const PlatformUtilitiesI = serviceInterface<TwitterPlatformUtilities>({
   name: 'TwitterPlatformUtilities',
 });
 
@@ -31,6 +31,6 @@ export type AgentSettingsAccessorI = ChannelSettingsAccessor<
 /**
  * @category Interface
  */
-export const AgentSettingsAccessorI = makeInterface<AgentSettingsAccessorI>({
+export const AgentSettingsAccessorI = serviceInterface<AgentSettingsAccessorI>({
   name: 'TwitterAgentSettingsAccessor',
 });

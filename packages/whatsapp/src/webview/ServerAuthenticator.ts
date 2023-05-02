@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import {
   ServerAuthenticator,
   VerifyResult,
@@ -142,7 +142,7 @@ export class WhatsAppServerAuthenticator
   }
 }
 
-const ServerAuthenticatorP = makeClassProvider({
+const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [BotP, BasicAuthenticator, AgentSettingsAccessorI],
 })(WhatsAppServerAuthenticator);

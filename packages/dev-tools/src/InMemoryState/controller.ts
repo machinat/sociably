@@ -7,7 +7,7 @@ import type {
   BaseStateController,
   StateAccessor,
 } from '@sociably/core/base/StateController';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 
 export class InMemoryStateAccessor implements StateAccessor {
   _stateData: Map<string, unknown>;
@@ -134,7 +134,7 @@ export class InMemoryStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = makeClassProvider({
+export const ControllerP = serviceProviderClass({
   lifetime: 'singleton',
 })(InMemoryStateController);
 

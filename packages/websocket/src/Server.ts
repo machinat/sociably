@@ -5,7 +5,7 @@ import type { Socket as NetSocket } from 'net';
 import type { Server as WsServer } from 'ws';
 import uniqid from 'uniqid';
 import type { SociablyUser } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import Marshaler from '@sociably/core/base/Marshaler';
 import { HttpRequestInfo } from '@sociably/http';
 
@@ -516,7 +516,7 @@ export class WebSocketServer<
   }
 }
 
-export const ServerP = makeClassProvider({
+export const ServerP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     { require: ServerIdI, optional: true },

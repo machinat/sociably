@@ -1,9 +1,9 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import {
-  makeContainer,
-  makeClassProvider,
-  makeFactoryProvider,
-  makeInterface,
+  serviceContainer,
+  serviceProviderClass,
+  serviceProviderFactory,
+  serviceInterface,
 } from '../service';
 import BaseBotP from '../base/Bot';
 import BaseProfilerP from '../base/Profiler';
@@ -15,7 +15,7 @@ import App from '../app';
 const useModuleUtils = moxy(() => ({}));
 
 const TestService = moxy(
-  makeClassProvider({
+  serviceProviderClass({
     lifetime: 'transient',
   })(class TestService {})
 );
@@ -23,17 +23,17 @@ const TestService = moxy(
 const TestModule = moxy({
   provisions: [
     TestService,
-    makeFactoryProvider({
+    serviceProviderFactory({
       lifetime: 'singleton',
       deps: [ModuleUtilitiesI],
     })(useModuleUtils),
   ],
-  startHook: makeContainer({ deps: [TestService] })(async () => {}),
-  stopHook: makeContainer({ deps: [TestService] })(async () => {}),
+  startHook: serviceContainer({ deps: [TestService] })(async () => {}),
+  stopHook: serviceContainer({ deps: [TestService] })(async () => {}),
 });
 
 const AnotherService = moxy(
-  makeClassProvider({
+  serviceProviderClass({
     deps: [TestService],
     lifetime: 'scoped',
   })(class AnotherService {})
@@ -41,22 +41,22 @@ const AnotherService = moxy(
 
 const AnotherModule = moxy({
   provisions: [AnotherService],
-  startHook: makeContainer({
+  startHook: serviceContainer({
     deps: [TestService, AnotherService],
   })(async () => {}),
-  stopHook: makeContainer({
+  stopHook: serviceContainer({
     deps: [TestService, AnotherService],
   })(async () => {}),
 });
 
 const FooService = moxy(
-  makeClassProvider({
+  serviceProviderClass({
     deps: [TestService, AnotherService],
     lifetime: 'singleton',
   })(class FooService {})
 );
 
-const TestPlatformUtilsI = makeInterface({ name: 'TestPlatformUtils' });
+const TestPlatformUtilsI = serviceInterface({ name: 'TestPlatformUtils' });
 const useTestPlatformUtils = moxy(() => ({}));
 
 const FooPlatform = moxy(
@@ -64,16 +64,16 @@ const FooPlatform = moxy(
     name: 'foo',
     provisions: [
       FooService,
-      makeFactoryProvider({
+      serviceProviderFactory({
         lifetime: 'singleton',
         deps: [TestPlatformUtilsI, ModuleUtilitiesI],
       })(useTestPlatformUtils),
     ],
     utilitiesInterface: TestPlatformUtilsI,
-    startHook: makeContainer({
+    startHook: serviceContainer({
       deps: [TestService, AnotherService, FooService],
     })(async () => {}),
-    stopHook: makeContainer({
+    stopHook: serviceContainer({
       deps: [TestService, AnotherService, FooService],
     })(async () => {}),
     eventMiddlewares: [
@@ -91,13 +91,15 @@ const FooPlatform = moxy(
 );
 
 const BarService = moxy(
-  makeClassProvider({
+  serviceProviderClass({
     deps: [TestService, AnotherService],
     lifetime: 'scoped',
   })(class BarService {})
 );
 
-const AnotherPlatformUtilsI = makeInterface({ name: 'AnotherPlatformUtils' });
+const AnotherPlatformUtilsI = serviceInterface({
+  name: 'AnotherPlatformUtils',
+});
 const useAnotherPlatformUtils = moxy(() => ({}));
 
 const BarPlatform = moxy({
@@ -105,28 +107,28 @@ const BarPlatform = moxy({
   utilitiesInterface: AnotherPlatformUtilsI,
   provisions: [
     BarService,
-    makeFactoryProvider({
+    serviceProviderFactory({
       deps: [AnotherPlatformUtilsI],
       lifetime: 'singleton',
     })(useAnotherPlatformUtils),
   ],
-  startHook: makeContainer({
+  startHook: serviceContainer({
     deps: [TestService, AnotherService, BarService],
   })(async () => {}),
-  stopHook: makeContainer({
+  stopHook: serviceContainer({
     deps: [TestService, AnotherService, BarService],
   })(async () => {}),
 });
 
 const MyService = moxy(
-  makeClassProvider({
+  serviceProviderClass({
     deps: [TestService, AnotherService, FooService, BarService],
     lifetime: 'scoped',
   })(class MyService {})
 );
 
 const YourService = moxy(
-  makeClassProvider({
+  serviceProviderClass({
     deps: [TestService, AnotherService, FooService, BarService, MyService],
     lifetime: 'transient',
   })(class YourService {})
@@ -356,7 +358,7 @@ describe('module utilities', () => {
   test('listen error using DI container', async () => {
     const containedListener = moxy();
     const errorListnerContainer = moxy(
-      makeContainer({
+      serviceContainer({
         deps: [
           FooService,
           BarService,
@@ -622,7 +624,7 @@ describe('popEventWrapper', () => {
   test('use service container for event listener', async () => {
     const containedListener = moxy();
     const eventListenerContainer = moxy(
-      makeContainer({
+      serviceContainer({
         deps: [
           FooService,
           BarService,
@@ -664,7 +666,7 @@ describe('popEventWrapper', () => {
   test('use service container for middleware', async () => {
     const containedMiddleware = moxy((ctx, next) => next(ctx));
     const middlewareContainer = moxy(
-      makeContainer({
+      serviceContainer({
         deps: [
           FooService,
           BarService,
@@ -891,7 +893,7 @@ describe('dispatchWrapper', () => {
   test('DI within dispatch middleware', async () => {
     const containedMiddleware = moxy((ctx, next) => next(ctx));
     const middlewareContainer = moxy(
-      makeContainer({
+      serviceContainer({
         deps: [
           FooService,
           BarService,
@@ -951,7 +953,7 @@ describe('#useServices(requirements)', () => {
 
     await app.start();
 
-    const NoneService = makeClassProvider({
+    const NoneService = serviceProviderClass({
       lifetime: 'singleton',
     })(class NoneService {});
 

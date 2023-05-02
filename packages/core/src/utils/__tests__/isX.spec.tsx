@@ -1,6 +1,6 @@
 import Sociably, { RenderingTarget } from '../..';
 import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
-import { makeInterface, makeContainer } from '../../service';
+import { serviceInterface, serviceContainer } from '../../service';
 import {
   isEmpty,
   isElement,
@@ -20,10 +20,10 @@ const Native = () => null;
 Native.$$typeof = SOCIABLY_NATIVE_TYPE;
 Native.$$platform = test;
 
-const fooInterface = makeInterface({ name: 'Foo' });
+const fooInterface = serviceInterface({ name: 'Foo' });
 
 const MyComponent = () => <foo />;
-const MyContainer = makeContainer({ deps: [RenderingTarget] })(() => () => (
+const MyContainer = serviceContainer({ deps: [RenderingTarget] })(() => () => (
   <bar />
 ));
 

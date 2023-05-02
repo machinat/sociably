@@ -1,11 +1,11 @@
 import type { RedisClient } from 'redis';
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type { RedisStateConfigs } from './types';
 
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<RedisStateConfigs>({
+export const ConfigsI = serviceInterface<RedisStateConfigs>({
   name: 'RedisStateConfigs',
 });
 
@@ -14,7 +14,7 @@ export type ConfigsI = RedisStateConfigs;
 /**
  * @category Interface
  */
-export const ClientI = makeInterface<RedisClient>({
+export const ClientI = serviceInterface<RedisClient>({
   name: 'RedisClient',
 });
 

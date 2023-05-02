@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { makeContainer, ServiceScope } from '@sociably/core/service';
+import { serviceContainer, ServiceScope } from '@sociably/core/service';
 import { STREAMING_KEY_I } from '../interface';
 import injectMaybe from '../injectMaybe';
 
@@ -17,7 +17,7 @@ beforeEach(() => {
 it('inject container with frame.scope', () => {
   const containedFn = moxy((...args) => 'baz');
   const myContainer = moxy(
-    makeContainer({
+    serviceContainer({
       deps: [
         /* FooProvider */
       ],
@@ -65,7 +65,7 @@ it('return a thunk if target is normal function', () => {
 });
 
 it('provide StreamingFrame key when inject', () => {
-  const myContainer = moxy(makeContainer({})(() => () => 'baz'));
+  const myContainer = moxy(serviceContainer({})(() => () => 'baz'));
 
   expect(injectMaybe(myContainer)(frame)('bar')).toBe('baz');
 

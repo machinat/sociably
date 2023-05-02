@@ -4,7 +4,7 @@ import type {
   PopEventFn,
   PopErrorFn,
 } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import type { HttpRequestInfo } from '@sociably/http';
 
@@ -107,7 +107,7 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
   }
 }
 
-export const ReceiverP = makeClassProvider({
+export const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [BotP, ServerP, ModuleUtilitiesI, PlatformUtilitiesI],
   factory: (bot, server, { popError }, { popEventWrapper }) =>

@@ -1,9 +1,9 @@
 export { default as ServiceSpace } from './space';
 export { default as ServiceScope } from './scope';
-export { default as makeClassProvider } from './decorators/makeClassProvider';
-export { default as makeFactoryProvider } from './decorators/makeFactoryProvider';
-export { default as makeContainer } from './decorators/makeContainer';
-export { default as makeInterface } from './decorators/makeInterface';
+export { default as serviceProviderClass } from './decorators/serviceProviderClass';
+export { default as serviceProviderFactory } from './decorators/serviceProviderFactory';
+export { default as serviceContainer } from './decorators/serviceContainer';
+export { default as serviceInterface } from './decorators/serviceInterface';
 export {
   isServiceContainer,
   isServiceProvider,

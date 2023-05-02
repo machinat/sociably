@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
@@ -248,7 +248,7 @@ describe('initModule(configs)', () => {
     });
 
     test('with options.agentSettings', async () => {
-      const MyAgentSettingsServiceI = makeInterface({
+      const MyAgentSettingsServiceI = serviceInterface({
         name: 'MyAgentSettingsService',
       });
       const mySettingsAccessor = {

@@ -1,15 +1,15 @@
 import { SOCIABLY_SERVICE_INTERFACE } from '../../../symbol';
-import makeInterface from '../makeInterface';
+import serviceInterface from '../serviceInterface';
 
-describe('makeInterface(name)', () => {
+describe('serviceInterface(name)', () => {
   it('create annotation object', () => {
-    const MyFooInterface = makeInterface({ name: 'Foo' });
+    const MyFooInterface = serviceInterface({ name: 'Foo' });
 
     expect(MyFooInterface.$$typeof).toBe(SOCIABLY_SERVICE_INTERFACE);
     expect(MyFooInterface.$$name).toBe('Foo');
     expect(MyFooInterface.$$multi).toBe(false);
 
-    const MyBarsInterface = makeInterface({ name: 'Bars', multi: true });
+    const MyBarsInterface = serviceInterface({ name: 'Bars', multi: true });
 
     expect(MyBarsInterface.$$typeof).toBe(SOCIABLY_SERVICE_INTERFACE);
     expect(MyBarsInterface.$$name).toBe('Bars');

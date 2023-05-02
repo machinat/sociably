@@ -1,5 +1,5 @@
 import type { SociablyChannel, SociablyThread, SociablyUser } from '../types';
-import { makeInterface } from '../service';
+import { serviceInterface } from '../service';
 
 export interface StateAccessor {
   /**
@@ -65,7 +65,7 @@ export interface BaseStateController {
   globalState(name: string): StateAccessor;
 }
 
-const StateControllerI = makeInterface<BaseStateController>({
+const StateControllerI = serviceInterface<BaseStateController>({
   name: 'BaseStateController',
 });
 

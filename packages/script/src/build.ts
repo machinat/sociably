@@ -1,5 +1,5 @@
 import {
-  makeContainer,
+  serviceContainer,
   RenderingTarget,
   SociablyElement,
   AnyEventContext,
@@ -41,7 +41,7 @@ const build = <
     meta: meta as Meta,
   };
 
-  lib.Start = makeContainer({
+  lib.Start = serviceContainer({
     deps: [ProcessorP, RenderingTarget],
     name: scriptName,
   })((processor, thread) => async ({ params, goto }) => {

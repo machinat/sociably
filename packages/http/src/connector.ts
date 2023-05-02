@@ -2,7 +2,7 @@ import { parse as parseUrl } from 'url';
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import { ServerI, RequestRouteListI, UpgradeRouteListI } from './interface';
 import {
   endRes,
@@ -177,7 +177,7 @@ export class HttpConnector {
   }
 }
 
-export const ConnectorP = makeClassProvider({
+export const ConnectorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [RequestRouteListI, UpgradeRouteListI],
   factory: (requestRoutes, upgradeRoutes) =>

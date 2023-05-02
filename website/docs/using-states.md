@@ -51,10 +51,10 @@ you can use the `StateController` service to access the state.
 For example:
 
 ```js
-import { makeContainer, StateController } from '@sociably/core';
+import { serviceContainer, StateController } from '@sociably/core';
 
 app.onEvent(
-  makeContainer({ deps: [StateController] })(
+  serviceContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply }) => {
       const bookmarks = await stateController
         .threadState(event.thread)
@@ -83,7 +83,7 @@ For example:
 
 ```js
 app.onEvent(
-  makeContainer({ deps: [StateController] })(
+  serviceContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply } ) => {
       if (event.type === 'text') {
         const matchAdding = event.text.match(/^add (.*)$/i);
@@ -152,7 +152,7 @@ For example:
 
 ```js
 app.onEvent(
-  makeContainer({ deps: [StateController] })(
+  serviceContainer({ deps: [StateController] })(
     (stateController) => async ({ event, reply }) => {
       if (event.type === 'text') {
         const matchCallMe = event.text.match(/^call me (.*)$/i);

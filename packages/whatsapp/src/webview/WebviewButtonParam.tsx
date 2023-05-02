@@ -1,4 +1,4 @@
-import Sociably, { makeContainer, RenderingTarget } from '@sociably/core';
+import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import { posix as posixPath } from 'path';
 import WhatsAppChat from '../Chat';
 import UserProfile from '../UserProfile';
@@ -31,6 +31,6 @@ const WebviewButtonParam =
     return <UrlButtonParam urlPostfix={urlPostfix} index={index} />;
   };
 
-export default makeContainer({
+export default serviceContainer({
   deps: [ServerAuthenticator, RenderingTarget],
 })(WebviewButtonParam);

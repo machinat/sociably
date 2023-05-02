@@ -1,5 +1,5 @@
 import type { SociablyNode } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
 import BotP from '../Bot';
@@ -106,7 +106,7 @@ export class WhatsAppAssetsManager {
   }
 }
 
-const AssetsManagerP = makeClassProvider({
+const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [BotP, StateControllerI],
 })(WhatsAppAssetsManager);

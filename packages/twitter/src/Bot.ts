@@ -11,7 +11,7 @@ import Queue from '@sociably/core/queue';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import { formatNode, getTimeId } from '@sociably/core/utils';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import {
   createTweetJobs,
   createDirectMessageJobs,
@@ -264,7 +264,7 @@ export class TwitterBot
   }
 }
 
-const BotP = makeClassProvider({
+const BotP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,

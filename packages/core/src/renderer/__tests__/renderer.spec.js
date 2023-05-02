@@ -4,8 +4,8 @@ import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
 import {
   ServiceSpace,
   createEmptyScope,
-  makeContainer,
-  makeInterface,
+  serviceContainer,
+  serviceInterface,
 } from '../../service';
 import Renderer from '../renderer';
 
@@ -472,14 +472,14 @@ describe('.render()', () => {
   });
 
   it('provide services with Sociably.Provider', async () => {
-    const FooI = makeInterface('Foo');
-    const BarI = makeInterface('Bar');
-    const BazI = makeInterface('Baz');
+    const FooI = serviceInterface('Foo');
+    const BarI = serviceInterface('Bar');
+    const BazI = serviceInterface('Baz');
     const scope = moxy(createEmptyScope());
 
     const componentMock = new Mock();
     const Container = moxy(
-      makeContainer({
+      serviceContainer({
         deps: [
           { require: FooI, optional: true },
           { require: BarI, optional: true },
@@ -647,13 +647,13 @@ describe('.render()', () => {
   });
 
   test('with runtime provisions', async () => {
-    const FooI = makeInterface('Foo');
-    const BarI = makeInterface('Bar');
-    const BazI = makeInterface('Baz');
+    const FooI = serviceInterface('Foo');
+    const BarI = serviceInterface('Bar');
+    const BazI = serviceInterface('Baz');
     const renderer = new Renderer('test', generalElementDelegate);
 
     const Container = moxy(
-      makeContainer({
+      serviceContainer({
         deps: [
           { require: FooI, optional: true },
           { require: BarI, optional: true },
@@ -696,7 +696,7 @@ describe('.render()', () => {
   });
 
   it('reject when container component fail', async () => {
-    const ContainerFailWhenInject = makeContainer({ deps: [] })(() => {
+    const ContainerFailWhenInject = serviceContainer({ deps: [] })(() => {
       throw new Error('無駄無駄無駄');
     });
 
@@ -706,7 +706,7 @@ describe('.render()', () => {
       renderer.render(<ContainerFailWhenInject />, null)
     ).rejects.toThrow(new Error('無駄無駄無駄'));
 
-    const ContainerFailAtComponent = makeContainer({ deps: [] })(
+    const ContainerFailAtComponent = serviceContainer({ deps: [] })(
       () => async () => {
         throw new Error('オラオラオラ');
       }

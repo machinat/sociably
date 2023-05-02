@@ -2,7 +2,7 @@ import { parse as parseUrl, URL } from 'url';
 import type { ParsedUrlQuery } from 'querystring';
 import { createHmac, createHash } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type { RoutingInfo } from '@sociably/http';
 import Auth, {
   ServerAuthenticator,
@@ -359,7 +359,7 @@ export class TelegramServerAuthenticator
   }
 }
 
-const ServerAuthenticatorP = makeClassProvider({
+const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     BotP,

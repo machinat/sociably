@@ -1,8 +1,8 @@
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type { AnyServerAuthenticator, AuthConfigs } from './types';
 
 /** @category Interface */
-export const AuthenticatorListI = makeInterface<AnyServerAuthenticator>({
+export const AuthenticatorListI = serviceInterface<AnyServerAuthenticator>({
   name: 'AuthAuthenticatorList',
   multi: true,
 });
@@ -10,7 +10,7 @@ export const AuthenticatorListI = makeInterface<AnyServerAuthenticator>({
 export type AuthenticatorListI = AnyServerAuthenticator[];
 
 /** @category Interface */
-export const ConfigsI = makeInterface<AuthConfigs>({
+export const ConfigsI = serviceInterface<AuthConfigs>({
   name: 'AuthConfigs',
 });
 

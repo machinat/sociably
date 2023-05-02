@@ -21,10 +21,10 @@ import type {
 } from './types';
 
 export {
-  makeContainer,
-  makeInterface,
-  makeClassProvider,
-  makeFactoryProvider,
+  serviceContainer,
+  serviceInterface,
+  serviceProviderClass,
+  serviceProviderFactory,
 } from './service';
 export { default as BaseBot } from './base/Bot';
 export { default as BaseProfiler } from './base/Profiler';

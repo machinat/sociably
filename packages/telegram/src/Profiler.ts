@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import type TelegramUser from './User';
 import TelegramChat from './Chat';
@@ -210,7 +210,7 @@ export class TelegramProfiler
   }
 }
 
-const ProfilerP = makeClassProvider({
+const ProfilerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [BotP],
 })(TelegramProfiler);

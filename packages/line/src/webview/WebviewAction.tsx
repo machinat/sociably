@@ -1,4 +1,4 @@
-import Sociably, { makeContainer, RenderingTarget } from '@sociably/core';
+import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import { UriAction } from '../components';
 import LineChannel from '../Channel';
 import LineChat from '../Chat';
@@ -26,6 +26,6 @@ const WebviewAction =
     return <UriAction label={label} uri={url} />;
   };
 
-export default makeContainer({
+export default serviceContainer({
   deps: [ServerAuthenticator, RenderingTarget],
 })(WebviewAction);

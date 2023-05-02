@@ -1,10 +1,10 @@
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type { FileStateConfigs, FileStateSerializer } from './types';
 
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<FileStateConfigs>({
+export const ConfigsI = serviceInterface<FileStateConfigs>({
   name: 'FileStateConfigs',
 });
 
@@ -13,7 +13,7 @@ export type ConfigsI = FileStateConfigs;
 /**
  * @category Interface
  */
-export const SerializerI = makeInterface<FileStateSerializer>({
+export const SerializerI = serviceInterface<FileStateSerializer>({
   name: 'FileStateSerializer',
 });
 

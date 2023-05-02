@@ -439,7 +439,7 @@ you can use `BaseBot` service like:
 import Sociably, { BaseBot } from '@sociably/core';
 
 app.onEvent(
-  makeContainer({ deps: [BaseBot] })(
+  serviceContainer({ deps: [BaseBot] })(
     (basicBot) =>
     async ({ platform, metadata, event }) => {
       if (platform === 'webview' && event.type === 'connect') {

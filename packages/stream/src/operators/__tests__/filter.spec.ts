@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { makeContainer, createEmptyScope } from '@sociably/core/service';
+import { serviceContainer, createEmptyScope } from '@sociably/core/service';
 import { STREAMING_KEY_I } from '../../interface';
 import Stream from '../../stream';
 import filter from '../filter';
@@ -11,11 +11,11 @@ const nextTick = () => new Promise(process.nextTick);
 
 const nextListener = moxy();
 const nextContainer = moxy(
-  makeContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
 );
 const errorListener = moxy();
 const errorContainer = moxy(
-  makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
 );
 
 beforeEach(() => {
@@ -171,7 +171,7 @@ test('use service container as filterer', async () => {
     return value % 2 === 1;
   });
   const filterContainer = moxy(
-    makeContainer({ deps: [STREAMING_KEY_I] })(() => filterFn)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => filterFn)
   );
 
   const stream = new Stream();

@@ -4,7 +4,7 @@ import {
   SOCIABLY_SERVICE_CONTAINER,
   SOCIABLY_SERVICE_INTERFACE,
 } from '../../../symbol';
-import makeContainer from '../makeContainer';
+import serviceContainer from '../serviceContainer';
 
 const FooServiceI = {
   $$typeof: SOCIABLY_SERVICE_PROVIDER,
@@ -19,11 +19,11 @@ const BazServiceI = {
   /* ... */
 } as never;
 
-describe('makeContainer({ deps })(fn)', () => {
+describe('serviceContainer({ deps })(fn)', () => {
   it('annotate deps of container', () => {
     const containerFn = () => {};
 
-    const myContainer = makeContainer({
+    const myContainer = serviceContainer({
       name: 'myContainer',
       deps: [
         FooServiceI,
@@ -44,7 +44,7 @@ describe('makeContainer({ deps })(fn)', () => {
 
   test('default $$name and $$deps', () => {
     const containerFn = () => {};
-    const myContainer = makeContainer({})(containerFn);
+    const myContainer = serviceContainer({})(containerFn);
 
     expect(myContainer).toBe(containerFn);
     expect(myContainer.$$typeof).toBe(SOCIABLY_SERVICE_CONTAINER);
@@ -56,7 +56,7 @@ describe('makeContainer({ deps })(fn)', () => {
     class NoneService {}
 
     expect(() => {
-      makeContainer({ deps: [NoneService as never] })((_whatever) => 'boom');
+      serviceContainer({ deps: [NoneService as never] })((_whatever) => 'boom');
     }).toThrowErrorMatchingInlineSnapshot(
       `"NoneService is not a valid interface"`
     );

@@ -1,5 +1,8 @@
 import type { SociablyPlatform, SociablyUser } from '@sociably/core';
-import { makeContainer, makeFactoryProvider } from '@sociably/core/service';
+import {
+  serviceContainer,
+  serviceProviderFactory,
+} from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
@@ -29,11 +32,11 @@ import type {
   WebSocketConfigs,
 } from './types';
 
-const wsServerFactory = makeFactoryProvider({ lifetime: 'singleton' })(
+const wsServerFactory = serviceProviderFactory({ lifetime: 'singleton' })(
   createWsServer
 );
 
-const upgradeRouteFactory = makeFactoryProvider({
+const upgradeRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [ConfigsI, ServerP],
 })(
@@ -118,10 +121,10 @@ namespace WebSocket {
         { provide: BaseMarshaler.TypeList, withValue: WebSocketConnection },
       ],
 
-      startHook: makeContainer({ deps: [BotP] })(async (bot) => {
+      startHook: serviceContainer({ deps: [BotP] })(async (bot) => {
         await bot.start();
       }),
-      stopHook: makeContainer({ deps: [BotP] })(async (bot) => {
+      stopHook: serviceContainer({ deps: [BotP] })(async (bot) => {
         await bot.stop();
       }),
     };

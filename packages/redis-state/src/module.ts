@@ -1,12 +1,15 @@
 import redis from 'redis';
 import type { ServiceModule } from '@sociably/core';
-import { makeFactoryProvider, makeContainer } from '@sociably/core/service';
+import {
+  serviceProviderFactory,
+  serviceContainer,
+} from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 
 import { ControllerP } from './controller';
 import { ConfigsI, ClientI } from './interface';
 
-const createRedisClient = makeFactoryProvider({
+const createRedisClient = serviceProviderFactory({
   lifetime: 'singleton',
   deps: [ConfigsI],
 })(({ connectOptions }) => redis.createClient(connectOptions));
@@ -33,15 +36,17 @@ namespace RedisState {
       { provide: ConfigsI, withValue: configs },
     ],
 
-    startHook: makeContainer({ deps: [ClientI] })(async (client: ClientI) => {
-      if (!client.connected) {
-        await new Promise((resolve, reject) => {
-          client.once('ready', resolve);
-          client.once('error', reject);
-        });
+    startHook: serviceContainer({ deps: [ClientI] })(
+      async (client: ClientI) => {
+        if (!client.connected) {
+          await new Promise((resolve, reject) => {
+            client.once('ready', resolve);
+            client.once('error', reject);
+          });
+        }
       }
-    }),
-    stopHook: makeContainer({ deps: [ClientI] })(async (client: ClientI) => {
+    ),
+    stopHook: serviceContainer({ deps: [ClientI] })(async (client: ClientI) => {
       client.quit();
     }),
   });

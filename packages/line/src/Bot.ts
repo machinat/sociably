@@ -8,7 +8,7 @@ import Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 
 import { createChatJobs, createMulticastJobs } from './job';
 import generalElementDelegate from './components/general';
@@ -155,7 +155,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
   }
 }
 
-const BotP = makeClassProvider({
+const BotP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,

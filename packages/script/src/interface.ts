@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type { AnyScriptLibrary } from './types';
 
 /**
  * @category Interface
  */
-export const LibraryListI = makeInterface<AnyScriptLibrary>({
+export const LibraryListI = serviceInterface<AnyScriptLibrary>({
   name: 'ScriptLibraryList',
   multi: true,
 });

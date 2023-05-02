@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import LineChannel from '../Channel';
 import BotP from '../Bot';
@@ -125,7 +125,7 @@ export class LineAssetsManager {
   }
 }
 
-const AssetsManagerP = makeClassProvider({
+const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [StateControllerI, BotP],
 })(LineAssetsManager);

@@ -80,15 +80,15 @@ Note that it should only be called after `app.start()` is finished.
 
 We can also require services as the params of a function,
 that is a **Service Container**.
-The `makeContainer` decorator annotates a JavaScript function as a container.
+The `serviceContainer` decorator annotates a JavaScript function as a container.
 Like:
 
 ```js
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import FooService from './services/Foo';
 import BarService from './services/Bar';
 
-const fooBarContainer = makeContainer({
+const fooBarContainer = serviceContainer({
   deps: [FooService, BarService]
 })((foo, bar) => {
   // do something with foo & bar ...
@@ -104,10 +104,10 @@ The `app.onEvent` and `app.onError` methods can accept a container of the handle
 For example:
 
 ```js
-import { makeContainer, BaseProfiler } from '@sociably/core';
+import { serviceContainer, BaseProfiler } from '@sociably/core';
 
 app.onEvent(
-  makeContainer({ deps: [BaseProfiler] })(
+  serviceContainer({ deps: [BaseProfiler] })(
     (profiler) =>
     async ({ event, reply } ) => {
       const profile = await profiler.getUserProfile(event.user);
@@ -131,7 +131,7 @@ By default it throws an error if an unregistered dependency is required.
 You can mark a dependency as optional to prevent it.
 
 ```js
-makeContainer({
+serviceContainer({
   deps: [{ require: FooService, optional: true }]
 })((foo) => (ctx) => {
   // foo would be null if not registered
@@ -150,14 +150,14 @@ Here is an example to put them together:
 
 ```js
 import {
-  makeContainer,
+  serviceContainer,
   IntentRecognizer,
   BaseProfiler,
   StateController,
 } from '@sociably/core';
 
 app.onEvent(
-  makeContainer({
+  serviceContainer({
     deps: [IntentRecognizer, BaseProfiler, StateController],
   })(
     (recognizer, profiler, stateController) =>
@@ -215,7 +215,7 @@ const [foo, assets] = app.useServices([
   FacebookAssetsManager,
 ]);
 
-makeContainer({ deps: [FooService, FacebookAssetsManager] })(
+serviceContainer({ deps: [FooService, FacebookAssetsManager] })(
   (foo, assetsManager) =>
   (ctx) => {
     // ...
@@ -232,7 +232,7 @@ You only have to mark a normal class as a service provider.
 For example:
 
 ```js
-import { makeClassProvider } from '@sociably/core';
+import { serviceProviderClass } from '@sociably/core';
 import BeerService from './Beer';
 
 class BarService {
@@ -248,13 +248,13 @@ class BarService {
   }
 }
 
-export default makeClassProvider({
+export default serviceProviderClass({
   lifetime: 'singleton',
   deps: [BeerService],
 })(BarService);
 ```
 
-`makeClassProvider(options)(Klass)` decorator annotates a class constructor as a service.
+`serviceProviderClass(options)(Klass)` decorator annotates a class constructor as a service.
 It takes the following options:
 
 - `deps` - required, the dependencies of the provider.
@@ -281,19 +281,19 @@ We can make a provider with another style: a factory function.
 For example:
 
 ```js
-import { makeFactoryProvider } from '@sociably/core';
+import { serviceProviderFactory } from '@sociably/core';
 import BeerService from './Beer';
 
 const useBar = (beerService) => (drink) =>
   drink === '🍺' ? beerService.pour() : null;
 
-export default makeFactoryProvider({
+export default serviceProviderFactory({
   lifetime: 'transient',
   deps: [BeerService],
 })(BarService);
 ```
 
-`makeFactoryProvider(options)(factoryFn)` decorator annotates a factory function as a service.
+`serviceProviderFactory(options)(factoryFn)` decorator annotates a factory function as a service.
 The factory function receives the dependencies like a container and returns the service instance (which can be a function).
 It takes the following options:
 
@@ -349,14 +349,14 @@ console.log(myService instanceof AnotherService); // true
 ### Pure Interface
 
 Besides the provider itself,
-we can create an interface with `makeInterface` for binding different implementations.
+we can create an interface with `serviceInterface` for binding different implementations.
 For example:
 
 ```js
-import { makeInterface } from '@sociably/core';
+import { serviceInterface } from '@sociably/core';
 import MyServiceImpl from './MyServiceImpl';
 
-const MyService = makeInterface({ name: 'MyService' });
+const MyService = serviceInterface({ name: 'MyService' });
 
 Sociably.crrateApp({
   services: [
@@ -374,7 +374,7 @@ An interface can be bound with the value directly instead of a provider.
 This is especially useful to pass configurations in a decoupled way:
 
 ```js
-const BotName = makeInterface({ name: 'BotName' })
+const BotName = serviceInterface({ name: 'BotName' })
 
 Sociably.crrateApp({
   services: [
@@ -393,9 +393,9 @@ When we require a `multi` interface, a list of services is resolved.
 Like this:
 
 ```js
-import { makeInterface } from '@sociably/core';
+import { serviceInterface } from '@sociably/core';
 
-const MyFavoriteFood = makeInterface({ name: 'MyService', multi: true })
+const MyFavoriteFood = serviceInterface({ name: 'MyService', multi: true })
 
 Sociably.crrateApp({
   services: [

@@ -1,5 +1,5 @@
 export default (): string => `
-import { makeFactoryProvider, IntentRecognizer } from '@sociably/core';
+import { serviceProviderFactory, IntentRecognizer } from '@sociably/core';
 import { ChatEventContext } from '../types';
 
 const useIntent =
@@ -26,7 +26,7 @@ const useIntent =
     };
   };
 
-export default makeFactoryProvider({
+export default serviceProviderFactory({
   deps: [IntentRecognizer],
 })(useIntent);
 `;

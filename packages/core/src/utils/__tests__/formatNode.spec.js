@@ -1,6 +1,6 @@
 import Sociably from '../..';
 import formatNode from '../formatNode';
-import makeInterface from '../../service/decorators/makeInterface';
+import serviceInterface from '../../service/decorators/serviceInterface';
 
 const { Pause, Fragment, Provider, Raw, Thunk } = Sociably;
 
@@ -8,7 +8,7 @@ const MyComp = () => {};
 const Sym = Symbol('_symbol_component_');
 const Unnamed = (() => () => {})();
 
-const Foo = makeInterface({ name: 'Foo' });
+const Foo = serviceInterface({ name: 'Foo' });
 
 test.each`
   element                                        | withProps | expected

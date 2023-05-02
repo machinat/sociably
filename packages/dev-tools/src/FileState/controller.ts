@@ -9,7 +9,7 @@ import type {
   SociablyUser,
   SociablyThread,
 } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import {
   BaseStateController,
   StateAccessor,
@@ -255,7 +255,7 @@ export class FileStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = makeClassProvider({
+export const ControllerP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,

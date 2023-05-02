@@ -4,7 +4,7 @@ import invariant from 'invariant';
 import _BigIntJSON from 'json-bigint';
 import type { PopEventWrapper, SociablyNode } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import eventFactory from './event/factory';
 import BotP from './Bot';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
@@ -130,7 +130,7 @@ export class TwitterReceiver extends WebhookReceiver {
   }
 }
 
-const ReceiverP = makeClassProvider({
+const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, PlatformUtilitiesI],
   factory: ({ appSecret, shouldVerifyRequest }, bot, { popEventWrapper }) =>

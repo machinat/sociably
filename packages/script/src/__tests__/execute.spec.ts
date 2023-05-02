@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { makeContainer, ServiceScope } from '@sociably/core/service';
+import { serviceContainer, ServiceScope } from '@sociably/core/service';
 import execute from '../execute';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
@@ -156,7 +156,7 @@ describe('execute content command', () => {
   test('with async getContent container', async () => {
     const getContent = moxy(async () => 'a contained');
     const getContentContainer = moxy(
-      makeContainer({ deps: [] })(() => getContent)
+      serviceContainer({ deps: [] })(() => getContent)
     );
 
     await expect(
@@ -298,7 +298,9 @@ describe('execute prompt command', () => {
 
   test('continue with async container setVars', async () => {
     const setVars = moxy(async ({ vars }, { answer }) => ({ ...vars, answer }));
-    const setVarsContainer = moxy(makeContainer({ deps: [] })(() => setVars));
+    const setVarsContainer = moxy(
+      serviceContainer({ deps: [] })(() => setVars)
+    );
     promptCommand.mock.getter('setVars').fake(() => setVarsContainer);
 
     await expect(
@@ -488,14 +490,14 @@ describe('execute call command', () => {
     test('with container vars functions', async () => {
       const withParamsFn = moxy(async () => ({ hello: 'from top container' }));
       const withParamsContainer = moxy(
-        makeContainer({ deps: [] })(() => withParamsFn)
+        serviceContainer({ deps: [] })(() => withParamsFn)
       );
       const setVarsFn = moxy(async ({ vars }, returnedValue) => ({
         ...vars,
         ...returnedValue,
       }));
       const setVarsContainer = moxy(
-        makeContainer({ deps: [] })(() => setVarsFn)
+        serviceContainer({ deps: [] })(() => setVarsFn)
       );
 
       callCommand.mock.getter('setVars').fake(() => setVarsContainer);
@@ -731,7 +733,7 @@ describe('execute jump_condition command', () => {
   test('with async condition container', async () => {
     const conditionFn = moxy(async () => true);
     const conditionContainer = moxy(
-      makeContainer({ deps: [] })(() => conditionFn)
+      serviceContainer({ deps: [] })(() => conditionFn)
     );
 
     jumpCondCommand.mock.getter('condition').fake(() => conditionContainer);
@@ -869,7 +871,7 @@ describe('execute return command', () => {
 
   test('return with async getValue container', async () => {
     const valueFn = moxy(async ({ vars }) => vars.foo);
-    const valueContainer = moxy(makeContainer({ deps: [] })(() => valueFn));
+    const valueContainer = moxy(serviceContainer({ deps: [] })(() => valueFn));
     returnCommand.mock.getter('getValue').fake(() => valueContainer);
 
     await expect(
@@ -936,7 +938,9 @@ describe('execute effect command', () => {
 
   test('async setVars container', async () => {
     const setVarsFn = moxy(async (_) => ({ foo: 'EFFECT!' }));
-    const setVarsContainer = moxy(makeContainer({ deps: [] })(() => setVarsFn));
+    const setVarsContainer = moxy(
+      serviceContainer({ deps: [] })(() => setVarsFn)
+    );
     const effectCommand = moxy({ type: 'effect', setVars: setVarsContainer });
     const script = mockScript([
       effectCommand,
@@ -1015,7 +1019,7 @@ describe('execute effect command', () => {
 
   test('yield with async container yieldValue', async () => {
     const yieldFn = moxy(async (_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
-    const yieldContainer = moxy(makeContainer({ deps: [] })(() => yieldFn));
+    const yieldContainer = moxy(serviceContainer({ deps: [] })(() => yieldFn));
     const script = mockScript([
       { type: 'effect', yieldValue: yieldContainer },
       { type: 'content', getContent: () => 'hello' },

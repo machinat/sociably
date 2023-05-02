@@ -21,7 +21,7 @@ document and the [package reference](https://sociably.js.org/api/modules/stream.
 ## Example
 
 ```js
-import { makeContainer, IntentRecognizer } from '@sociably/core';
+import { serviceContainer, IntentRecognizer } from '@sociably/core';
 import { fromApp } from '@sociably/stream';
 import { map, filter } from '@sociably/stream/operators';
 import app from './app';
@@ -31,7 +31,7 @@ const event$ = fromApp(app);
 const textMsg$ = events$.pipe(
   filter(({ event }) => event.type === 'text'),
   map(
-    makeContainer({ deps: [IntentRecognizer] })(
+    serviceContainer({ deps: [IntentRecognizer] })(
       (recognizer) =>
         async (context) => {
           const { thread, text } = context.event;

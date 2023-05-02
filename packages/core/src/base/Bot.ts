@@ -1,10 +1,10 @@
 import type { SociablyBot, SociablyThread, SociablyNode } from '../types';
 import type { DispatchResponse } from '../engine/types';
-import { makeInterface, makeClassProvider } from '../service';
+import { serviceInterface, serviceProviderClass } from '../service';
 
 type BaseBotI = SociablyBot<SociablyThread, unknown, unknown>;
 
-const BotPlatformMapI = makeInterface<BaseBotI>({
+const BotPlatformMapI = serviceInterface<BaseBotI>({
   name: 'BotPlatformMap',
   polymorphic: true,
 });
@@ -39,7 +39,7 @@ export class BaseBot implements BaseBotI {
   async stop(): Promise<void> {} // eslint-disable-line class-methods-use-this
 }
 
-const BotP = makeClassProvider({
+const BotP = serviceProviderClass({
   lifetime: 'transient',
   deps: [BotPlatformMapI],
 })(BaseBot);

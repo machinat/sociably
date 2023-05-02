@@ -3,7 +3,7 @@ import { parse as parseUrl, URL } from 'url';
 import { parse as parseAgent } from 'bowser';
 import { getClientIp } from 'request-ip';
 import Sociably, {
-  makeClassProvider,
+  serviceProviderClass,
   SociablyThread,
   StateController,
 } from '@sociably/core';
@@ -450,7 +450,7 @@ export class BasicAuthenticator {
   }
 }
 
-const AuthenticatorP = makeClassProvider({
+const AuthenticatorP = serviceProviderClass({
   deps: [StateController, HttpOperator, ConfigsI],
   factory: (stateController, httpOperator, configs) =>
     new BasicAuthenticator(stateController, httpOperator, {

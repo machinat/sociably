@@ -1,5 +1,5 @@
 import moxy, { Mock } from '@moxyjs/moxy';
-import { makeContainer, createEmptyScope } from '@sociably/core/service';
+import { serviceContainer, createEmptyScope } from '@sociably/core/service';
 import Stream from '../../stream';
 import { STREAMING_KEY_I } from '../../interface';
 import tap from '../tap';
@@ -11,11 +11,11 @@ const nextTick = () => new Promise(process.nextTick);
 
 const nextListener = moxy();
 const nextContainer = moxy(
-  makeContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
 );
 const errorListener = moxy();
 const errorContainer = moxy(
-  makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
 );
 
 beforeEach(() => {
@@ -149,7 +149,7 @@ it('emit error if thrown in tap function', async () => {
 test('use service container side effect', async () => {
   const tapFnMock = new Mock();
   const tapper = moxy(
-    makeContainer({
+    serviceContainer({
       deps: [STREAMING_KEY_I],
     })(() => tapFnMock.proxify(async () => delay(100)))
   );

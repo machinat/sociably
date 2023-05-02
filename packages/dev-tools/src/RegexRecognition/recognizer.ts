@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type {
   RecognitionData,
   IntentRecognizer,
@@ -87,4 +87,6 @@ export class RegexIntentRecognizer<
   }
 }
 
-export default makeClassProvider({ deps: [ConfigsI] })(RegexIntentRecognizer);
+export default serviceProviderClass({ deps: [ConfigsI] })(
+  RegexIntentRecognizer
+);

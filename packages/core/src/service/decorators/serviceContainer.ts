@@ -28,19 +28,19 @@ type ContainerFn<T, Deps extends AnyDep[]> = ServiceContainer<
 > &
   ((...args: ResolveDependencies<Deps>) => T);
 
-function makeContainer<A extends AnyDep>(
+function serviceContainer<A extends AnyDep>(
   opts: ContainerOptions<[A]>
 ): <T>(fn: FactoryFn<T, [A]>) => ContainerFn<T, [A]>;
 
-function makeContainer<A extends AnyDep, B extends AnyDep>(
+function serviceContainer<A extends AnyDep, B extends AnyDep>(
   opts: ContainerOptions<[A, B]>
 ): <T>(fn: FactoryFn<T, [A, B]>) => ContainerFn<T, [A, B]>;
 
-function makeContainer<A extends AnyDep, B extends AnyDep, C extends AnyDep>(
+function serviceContainer<A extends AnyDep, B extends AnyDep, C extends AnyDep>(
   opts: ContainerOptions<[A, B, C]>
 ): <T>(fn: FactoryFn<T, [A, B, C]>) => ContainerFn<T, [A, B, C]>;
 
-function makeContainer<
+function serviceContainer<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -49,7 +49,7 @@ function makeContainer<
   opts: ContainerOptions<[A, B, C, D]>
 ): <T>(fn: FactoryFn<T, [A, B, C, D]>) => ContainerFn<T, [A, B, C, D]>;
 
-function makeContainer<
+function serviceContainer<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -59,7 +59,7 @@ function makeContainer<
   opts: ContainerOptions<[A, B, C, D, E]>
 ): <T>(fn: FactoryFn<T, [A, B, C, D, E]>) => ContainerFn<T, [A, B, C, D, E]>;
 
-function makeContainer<
+function serviceContainer<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -72,7 +72,7 @@ function makeContainer<
   fn: FactoryFn<T, [A, B, C, D, E, F]>
 ) => ContainerFn<T, [A, B, C, D, E, F]>;
 
-function makeContainer<
+function serviceContainer<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -86,7 +86,7 @@ function makeContainer<
   fn: FactoryFn<T, [A, B, C, D, E, F, G]>
 ) => ContainerFn<T, [A, B, C, D, E, F, G]>;
 
-function makeContainer<
+function serviceContainer<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -101,7 +101,7 @@ function makeContainer<
   fn: FactoryFn<T, [A, B, C, D, E, F, G, H]>
 ) => ContainerFn<T, [A, B, C, D, E, F, G, H]>;
 
-function makeContainer<
+function serviceContainer<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -117,7 +117,7 @@ function makeContainer<
   fn: FactoryFn<T, [A, B, C, D, E, F, G, H, I]>
 ) => ContainerFn<T, [A, B, C, D, E, F, G, H, I]>;
 
-function makeContainer<
+function serviceContainer<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
@@ -135,10 +135,10 @@ function makeContainer<
 ) => ContainerFn<T, [A, B, C, D, E, F, G, H, I, J]>;
 
 /**
- * makeContainer marks a function as a container and annotate the dependencies.
+ * serviceContainer marks a function as a container and annotate the dependencies.
  * @category Service Registry
  */
-function makeContainer<Deps extends AnyDep[]>({
+function serviceContainer<Deps extends AnyDep[]>({
   name,
   deps = [] as never,
 }: ContainerOptions<Deps>) {
@@ -154,4 +154,4 @@ function makeContainer<Deps extends AnyDep[]>({
   };
 }
 
-export default makeContainer;
+export default serviceContainer;

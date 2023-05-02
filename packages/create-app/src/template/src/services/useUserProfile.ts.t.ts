@@ -1,6 +1,6 @@
 export default (): string => `
 import {
-  makeFactoryProvider,
+  serviceProviderFactory,
   BaseProfiler,
   StateController,
   SociablyUser,
@@ -34,7 +34,7 @@ const useUserProfile =
     return profile;
   };
 
-export default makeFactoryProvider({
+export default serviceProviderFactory({
   deps: [BaseProfiler, StateController],
 })(useUserProfile);
 `;

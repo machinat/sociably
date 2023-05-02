@@ -3,8 +3,8 @@ import thenifiedly from 'thenifiedly';
 import { ServiceModule } from '@sociably/core';
 import {
   ServiceProvision,
-  makeContainer,
-  makeFactoryProvider,
+  serviceContainer,
+  serviceProviderFactory,
 } from '@sociably/core/service';
 
 import {
@@ -15,7 +15,7 @@ import {
 } from './interface';
 import { ConnectorP } from './connector';
 
-const httpServerFactory = makeFactoryProvider({
+const httpServerFactory = serviceProviderFactory({
   lifetime: 'singleton',
 })(() => createServer());
 
@@ -50,14 +50,14 @@ namespace Http {
 
     return {
       provisions,
-      startHook: makeContainer({
+      startHook: serviceContainer({
         deps: [ConnectorP, { require: ServerI, optional: true }, ConfigsI],
       })(async (connector, server, { listenOptions, noServer }) => {
         if (server && !noServer) {
           await connector.connect(server, listenOptions);
         }
       }),
-      stopHook: makeContainer({
+      stopHook: serviceContainer({
         deps: [{ require: ServerI, optional: true }, ConfigsI],
       })(async (server, { noServer }) => {
         if (server && !noServer) {

@@ -31,7 +31,7 @@ import TabItem from '@theme/TabItem';
   <TabItem value="facebook">
 
 ```tsx {2,18-27} title="src/handlers/handleChat.tsx"
-import Sociably, { makeContainer } from '@sociably/core';
+import Sociably, { serviceContainer } from '@sociably/core';
 import * as Facebook from '@sociably/facebook/components';
 // ...
     async (
@@ -79,7 +79,7 @@ We use these Facebook native components above:
 
 
 ```tsx {2,18-29} title="src/handlers/handleChat.tsx"
-import Sociably, { makeContainer } from '@sociably/core';
+import Sociably, { serviceContainer } from '@sociably/core';
 import * as Telegram from '@sociably/telegram/components';
 // ...
     async (
@@ -130,7 +130,7 @@ We use these Telegram native components above:
 
 
 ```tsx {2,18-28} title="src/handlers/handleChat.tsx"
-import Sociably, { makeContainer } from '@sociably/core';
+import Sociably, { serviceContainer } from '@sociably/core';
 import * as Line from '@sociably/line/components';
 //...
   async (

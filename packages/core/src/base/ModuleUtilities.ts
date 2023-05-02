@@ -1,7 +1,7 @@
-import { makeInterface } from '../service';
+import { serviceInterface } from '../service';
 import type { ModuleUtilities } from '../types';
 
-const ModuleUtilitiesI = makeInterface<ModuleUtilities>({
+const ModuleUtilitiesI = serviceInterface<ModuleUtilities>({
   name: 'ModuleUtilities',
 });
 

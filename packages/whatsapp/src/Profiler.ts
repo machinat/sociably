@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import { WHATSAPP } from './constant';
 import type WhatsAppAgent from './Agent';
@@ -22,7 +22,9 @@ export class WhatsAppProfiler
   }
 }
 
-const ProfilerP = makeClassProvider({ lifetime: 'scoped' })(WhatsAppProfiler);
+const ProfilerP = serviceProviderClass({ lifetime: 'scoped' })(
+  WhatsAppProfiler
+);
 
 type ProfilerP = WhatsAppProfiler;
 export default ProfilerP;

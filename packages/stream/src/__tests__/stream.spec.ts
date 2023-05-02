@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import { makeContainer, createEmptyScope } from '@sociably/core/service';
+import { serviceContainer, createEmptyScope } from '@sociably/core/service';
 import Stream from '../stream';
 import { STREAMING_KEY_I } from '../interface';
 
@@ -31,7 +31,7 @@ describe('#subscribe()', () => {
     const stream = new Stream();
     const eventListener = moxy();
     const nextContainer = moxy(
-      makeContainer({ deps: [STREAMING_KEY_I] })(() => eventListener)
+      serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListener)
     );
 
     stream.subscribe(nextContainer);
@@ -151,7 +151,7 @@ describe('#catch()', () => {
     const stream = new Stream();
     const errorListener = moxy();
     const errorContainer = moxy(
-      makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+      serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
     );
 
     stream.catch(errorContainer);

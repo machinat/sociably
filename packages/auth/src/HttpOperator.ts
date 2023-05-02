@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core';
+import { serviceProviderClass } from '@sociably/core';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import { posix as posixPath } from 'path';
@@ -385,7 +385,7 @@ export class AuthHttpOperator {
   }
 }
 
-const OperatorP = makeClassProvider({
+const OperatorP = serviceProviderClass({
   deps: [ConfigsI],
   factory: (configs) => new AuthHttpOperator(configs),
 })(AuthHttpOperator);

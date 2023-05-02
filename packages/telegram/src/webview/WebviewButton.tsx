@@ -1,5 +1,5 @@
 import { posix as posixPath } from 'path';
-import Sociably, { makeContainer, RenderingTarget } from '@sociably/core';
+import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import { UrlButton } from '../components';
 import TelegramChat from '../Chat';
 import ServerAuthenticator from './ServerAuthenticator';
@@ -52,6 +52,6 @@ const WebviewButton =
     );
   };
 
-export default makeContainer({
+export default serviceContainer({
   deps: [ServerAuthenticator, RenderingTarget],
 })(WebviewButton);

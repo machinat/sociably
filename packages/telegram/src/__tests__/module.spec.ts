@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import { makeFactoryProvider } from '@sociably/core/service';
+import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
@@ -232,7 +232,7 @@ describe('initModule(configs)', () => {
       getChannelSettingsBatch: async () => [botSettings, botSettings],
       listAllChannelSettings: async () => [botSettings, botSettings],
     };
-    const myBotSettingsService = makeFactoryProvider({})(
+    const myBotSettingsService = serviceProviderFactory({})(
       () => settingsAccessor
     );
 

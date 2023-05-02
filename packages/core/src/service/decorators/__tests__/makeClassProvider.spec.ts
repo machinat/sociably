@@ -3,7 +3,7 @@ import {
   SOCIABLY_SERVICE_PROVIDER,
   SOCIABLY_SERVICE_INTERFACE,
 } from '../../../symbol';
-import makeClassProvider from '../makeClassProvider';
+import serviceProviderClass from '../serviceProviderClass';
 
 const FooServiceI = {
   $$typeof: SOCIABLY_SERVICE_PROVIDER,
@@ -18,12 +18,12 @@ const BazServiceI = {
   /* ... */
 } as any;
 
-describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
+describe('serviceProviderClass({ deps, factory, lifetime })(klass)', () => {
   it('annotate metadatas', () => {
     const ServiceKlazz = class ServiceKlazz {};
     const klazzFactory = () => new ServiceKlazz();
 
-    const MyProvider = makeClassProvider({
+    const MyProvider = serviceProviderClass({
       name: 'MyProvider',
       factory: klazzFactory,
       deps: [
@@ -50,7 +50,7 @@ describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
   test('default properties', () => {
     const ServiceKlazz = moxy(class ServiceKlazz {}, { mockMethod: false });
 
-    const MyProvider = makeClassProvider({
+    const MyProvider = serviceProviderClass({
       deps: [FooServiceI, BarServiceI, BazServiceI],
     })(ServiceKlazz);
 
@@ -68,7 +68,7 @@ describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
     class NoneService {}
 
     expect(() => {
-      makeClassProvider({
+      serviceProviderClass({
         deps: [NoneService as any],
         lifetime: 'singleton',
       })(class MyProvider {});
@@ -79,17 +79,17 @@ describe('makeClassProvider({ deps, factory, lifetime })(klass)', () => {
 
   it('throw if invalid lifetime received', () => {
     expect(() =>
-      makeClassProvider({ lifetime: 'singleton' })(class K {})
+      serviceProviderClass({ lifetime: 'singleton' })(class K {})
     ).not.toThrow();
     expect(() =>
-      makeClassProvider({ lifetime: 'scoped' })(class K {})
+      serviceProviderClass({ lifetime: 'scoped' })(class K {})
     ).not.toThrow();
     expect(() =>
-      makeClassProvider({ lifetime: 'transient' })(class K {})
+      serviceProviderClass({ lifetime: 'transient' })(class K {})
     ).not.toThrow();
 
     expect(() => {
-      makeClassProvider({ lifetime: 'elf' } as never)(class K {});
+      serviceProviderClass({ lifetime: 'elf' } as never)(class K {});
     }).toThrowErrorMatchingInlineSnapshot(
       `"elf is not valid service lifetime"`
     );

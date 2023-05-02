@@ -1,5 +1,5 @@
 import type { Server } from 'http';
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type {
   HttpConfigs,
   RequestRoute,
@@ -8,7 +8,7 @@ import type {
   DefaultUpgradeRoute,
 } from './types';
 
-export const ServerI = makeInterface<Server>({
+export const ServerI = serviceInterface<Server>({
   name: 'HttpServer',
 });
 
@@ -17,7 +17,7 @@ export type ServerI = Server;
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<HttpConfigs>({
+export const ConfigsI = serviceInterface<HttpConfigs>({
   name: 'HttpConfigs',
 });
 
@@ -26,7 +26,7 @@ export type ConfigsI = HttpConfigs;
 /**
  * @category Interface
  */
-export const RequestRouteListI = makeInterface<
+export const RequestRouteListI = serviceInterface<
   RequestRoute | DefaultRequestRoute
 >({
   name: 'HttpRequestRouteList',
@@ -38,7 +38,7 @@ export type RequestRouteListI = (RequestRoute | DefaultRequestRoute)[];
 /**
  * @category Interface
  */
-export const UpgradeRouteListI = makeInterface<
+export const UpgradeRouteListI = serviceInterface<
   UpgradeRoute | DefaultUpgradeRoute
 >({
   name: 'HttpUpgradeRouteList',

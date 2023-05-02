@@ -3,7 +3,7 @@ import { CreateAppContext } from '../../types';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
 import ${when(platforms.includes('telegram'))`Sociably, `}{
-    makeContainer,
+    serviceContainer,
 } from '@sociably/core';${when(platforms.includes('telegram'))`
 import { AnswerCallbackQuery } from '@sociably/telegram/components';`}
 import { Stream } from '@sociably/stream';
@@ -23,7 +23,7 @@ const main = (event$: Stream<AppEventContext>): void => {
           ctx.event.category === 'message' || ctx.event.category === 'postback'
       ),
       filter(
-        makeContainer({ deps: [Script.Processor] })(
+        serviceContainer({ deps: [Script.Processor] })(
           (processor) => async (ctx: ChatEventContext) => {
             if (!ctx.event.thread) {
               return true;

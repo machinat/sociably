@@ -1,5 +1,5 @@
 import { SociablyApp } from '@sociably/core';
-import { makeContainer, ServiceScope } from '@sociably/core/service';
+import { serviceContainer, ServiceScope } from '@sociably/core/service';
 import Stream from './stream';
 import { EventContextOfApp } from './types';
 
@@ -9,7 +9,7 @@ const fromApp = <App extends SociablyApp<any>>(
   const subject = new Stream<EventContextOfApp<App>>();
 
   app.onEvent(
-    makeContainer({ deps: [ServiceScope] })(
+    serviceContainer({ deps: [ServiceScope] })(
       (scope: ServiceScope) => (context: EventContextOfApp<App>) => {
         subject.next({
           scope,
@@ -21,7 +21,7 @@ const fromApp = <App extends SociablyApp<any>>(
   );
 
   app.onError(
-    makeContainer({ deps: [ServiceScope] })(
+    serviceContainer({ deps: [ServiceScope] })(
       (scope: ServiceScope) => (error: Error) => {
         subject.error({
           scope,

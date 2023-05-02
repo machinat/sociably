@@ -1,10 +1,10 @@
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type { NextConfigs, NextServer } from './types';
 
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<NextConfigs>({
+export const ConfigsI = serviceInterface<NextConfigs>({
   name: 'NextConfigs',
 });
 
@@ -13,7 +13,7 @@ export type ConfigsI = NextConfigs;
 /**
  * @category Interface
  */
-export const ServerI = makeInterface<NextServer>({
+export const ServerI = serviceInterface<NextServer>({
   name: 'NextServer',
 });
 

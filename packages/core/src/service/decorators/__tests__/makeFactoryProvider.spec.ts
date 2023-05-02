@@ -3,7 +3,7 @@ import {
   SOCIABLY_SERVICE_PROVIDER,
   SOCIABLY_SERVICE_INTERFACE,
 } from '../../../symbol';
-import makeFactoryProvider from '../makeFactoryProvider';
+import serviceProviderFactory from '../serviceProviderFactory';
 
 const FooServiceI = {
   $$typeof: SOCIABLY_SERVICE_PROVIDER,
@@ -18,13 +18,13 @@ const BazServiceI = {
   /* ... */
 } as any;
 
-describe('makeFactoryProvider({ deps, lifetime })(factory)', () => {
+describe('serviceProviderFactory({ deps, lifetime })(factory)', () => {
   it('annotate metadatas', () => {
     const factoryFn = moxy(function factoryFn(foo, bar, baz) {
       return { foo, bar, baz };
     });
 
-    const factoryProvider = makeFactoryProvider({
+    const factoryProvider = serviceProviderFactory({
       name: 'myFactory',
       deps: [
         FooServiceI,
@@ -51,7 +51,7 @@ describe('makeFactoryProvider({ deps, lifetime })(factory)', () => {
   });
 
   test('default properties', () => {
-    const providerFactory = makeFactoryProvider({})(function factoryFn() {});
+    const providerFactory = serviceProviderFactory({})(function factoryFn() {});
 
     expect(providerFactory.$$lifetime).toBe('transient');
     expect(providerFactory.$$name).toBe('factoryFn');
@@ -62,7 +62,7 @@ describe('makeFactoryProvider({ deps, lifetime })(factory)', () => {
     class NoneService {}
 
     expect(() => {
-      makeFactoryProvider({
+      serviceProviderFactory({
         deps: [NoneService as any],
         lifetime: 'scoped',
       })((foo) => ({ foo }));
@@ -73,17 +73,17 @@ describe('makeFactoryProvider({ deps, lifetime })(factory)', () => {
 
   it('throw if invalid lifetime received', () => {
     expect(() =>
-      makeFactoryProvider({ lifetime: 'singleton' })(() => 'foo')
+      serviceProviderFactory({ lifetime: 'singleton' })(() => 'foo')
     ).not.toThrow();
     expect(() =>
-      makeFactoryProvider({ lifetime: 'scoped' })(() => 'foo')
+      serviceProviderFactory({ lifetime: 'scoped' })(() => 'foo')
     ).not.toThrow();
     expect(() =>
-      makeFactoryProvider({ lifetime: 'transient' })(() => 'foo')
+      serviceProviderFactory({ lifetime: 'transient' })(() => 'foo')
     ).not.toThrow();
 
     expect(() => {
-      makeFactoryProvider({ lifetime: 'halfling' } as never)(() => 'foo');
+      serviceProviderFactory({ lifetime: 'halfling' } as never)(() => 'foo');
     }).toThrowErrorMatchingInlineSnapshot(
       `"halfling is not valid service lifetime"`
     );

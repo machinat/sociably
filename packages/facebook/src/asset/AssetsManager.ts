@@ -1,5 +1,5 @@
 import type { SociablyNode } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
 import snakecaseKeys from 'snakecase-keys';
@@ -177,7 +177,7 @@ export class FacebookAssetsManager {
   }
 }
 
-const AssetsManagerP = makeClassProvider({
+const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [StateControllerI, BotP],
 })(FacebookAssetsManager);

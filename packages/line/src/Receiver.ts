@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { SociablyNode } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type { PopEventWrapper } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
 
@@ -131,7 +131,7 @@ export class LineReceiver extends WebhookReceiver {
   }
 }
 
-const ReceiverP = makeClassProvider({
+const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, ChannelSettingsAccessorI, PlatformUtilitiesI],
   factory: (

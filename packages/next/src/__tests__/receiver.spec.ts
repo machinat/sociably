@@ -1,7 +1,7 @@
 import { parse as parseUrl } from 'url';
 import {
   createEmptyScope,
-  makeContainer,
+  serviceContainer,
   ServiceScope,
 } from '@sociably/core/service';
 import moxy from '@moxyjs/moxy';
@@ -296,7 +296,9 @@ test('use service container for handleRequest', async () => {
     noPrepare: true,
     popError,
     initScope,
-    handleRequest: makeContainer({ deps: [ServiceScope] })(useRequestHandler),
+    handleRequest: serviceContainer({ deps: [ServiceScope] })(
+      useRequestHandler
+    ),
   });
   await receiver.prepare();
 

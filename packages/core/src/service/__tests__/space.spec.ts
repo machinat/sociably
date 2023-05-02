@@ -2,16 +2,16 @@
 import moxy from '@moxyjs/moxy';
 import ServiceSpace from '../space';
 import ServiceScope from '../scope';
-import makeContainer from '../decorators/makeContainer';
-import makeFactoryProvider from '../decorators/makeFactoryProvider';
-import makeClassProvider from '../decorators/makeClassProvider';
-import makeInterface from '../decorators/makeInterface';
+import serviceContainer from '../decorators/serviceContainer';
+import serviceProviderFactory from '../decorators/serviceProviderFactory';
+import serviceProviderClass from '../decorators/serviceProviderClass';
+import serviceInterface from '../decorators/serviceInterface';
 
-const HELLO = makeInterface<{ hello(): string }>({ name: 'Hello' });
+const HELLO = serviceInterface<{ hello(): string }>({ name: 'Hello' });
 const staticGreeter = moxy({ hello: () => 'HI' });
 
 const Foo = moxy(
-  makeClassProvider({ deps: [HELLO], lifetime: 'singleton' })(
+  serviceProviderClass({ deps: [HELLO], lifetime: 'singleton' })(
     class Foo {
       foo() {
         return 'Foo';
@@ -20,10 +20,10 @@ const Foo = moxy(
   )
 );
 
-const Bar = makeInterface<{ bar(): string }>({ name: 'BAR' });
+const Bar = serviceInterface<{ bar(): string }>({ name: 'BAR' });
 
 const BarImpl = moxy(
-  makeClassProvider({ deps: [Foo], lifetime: 'scoped' })(
+  serviceProviderClass({ deps: [Foo], lifetime: 'scoped' })(
     class BarImpl {
       bar() {
         return 'BarImpl';
@@ -32,20 +32,20 @@ const BarImpl = moxy(
   )
 );
 
-const BAZ = makeInterface<{ baz(): string }>({ name: 'Baz' });
+const BAZ = serviceInterface<{ baz(): string }>({ name: 'Baz' });
 const Baz = class Baz {
   baz() {
     return 'Baz';
   }
 };
 const bazProvider = moxy(
-  makeFactoryProvider({ deps: [Foo, Bar], lifetime: 'transient' })(
+  serviceProviderFactory({ deps: [Foo, Bar], lifetime: 'transient' })(
     () => new Baz()
   )
 );
 
 const myContainer = moxy(
-  makeContainer({ deps: [HELLO, Foo, Bar, BAZ] })(
+  serviceContainer({ deps: [HELLO, Foo, Bar, BAZ] })(
     (greeter, foo, bar, baz) =>
       `${greeter.hello()} ${foo.foo()} ${bar.bar()} ${baz.baz()}`
   )
@@ -101,7 +101,7 @@ it('provide services bound in bindings', () => {
 
 test('new bindings are prioritized to the bindings from base space', () => {
   const MyFoo = moxy(
-    makeClassProvider({ deps: [Bar, BAZ], lifetime: 'singleton' })(
+    serviceProviderClass({ deps: [Bar, BAZ], lifetime: 'singleton' })(
       class MyFoo {
         foo() {
           return 'MyFoo';
@@ -110,7 +110,7 @@ test('new bindings are prioritized to the bindings from base space', () => {
     )
   );
   const AnotherBar = moxy(
-    makeClassProvider({ deps: [BAZ], lifetime: 'singleton' })(
+    serviceProviderClass({ deps: [BAZ], lifetime: 'singleton' })(
       class AnotherBar {
         bar() {
           return 'AnotherBar';
@@ -226,7 +226,7 @@ it('throw if invalid binding received', () => {
 });
 
 it('throw circular dependent provider found when bootstrap', () => {
-  const SelfDependentFoo = makeClassProvider({
+  const SelfDependentFoo = serviceProviderClass({
     deps: [Foo],
     lifetime: 'scoped',
   })(class SelfDependentFoo {});
@@ -239,7 +239,7 @@ it('throw circular dependent provider found when bootstrap', () => {
     `"SelfDependentFoo is circular dependent (SelfDependentFoo > SelfDependentFoo)"`
   );
 
-  const CircularDependentFoo = makeClassProvider({
+  const CircularDependentFoo = serviceProviderClass({
     deps: [Bar],
     lifetime: 'scoped',
   })(class CircularDependentFoo {});
@@ -254,13 +254,13 @@ it('throw circular dependent provider found when bootstrap', () => {
 });
 
 it('provide polymorphic interface with a map of platform and service', () => {
-  const polymorphicMammal = makeInterface({
+  const polymorphicMammal = serviceInterface({
     name: 'FooMammal',
     polymorphic: true,
   });
 
   const fooCat = { foo: () => 'FOO_MEOW' };
-  const fooCatFactory = makeFactoryProvider({ lifetime: 'transient' })(
+  const fooCatFactory = serviceProviderFactory({ lifetime: 'transient' })(
     () => fooCat
   );
   const fooBird = { foo: () => 'FOO_TWEET' };
@@ -289,20 +289,20 @@ it('provide polymorphic interface with a map of platform and service', () => {
 
   expect(scope.useServices([polymorphicMammal])).toEqual([expectedMap]);
 
-  const mammalContainer = makeContainer({ deps: [polymorphicMammal] })(
+  const mammalContainer = serviceContainer({ deps: [polymorphicMammal] })(
     (mammals) => mammals
   );
   expect(scope.injectContainer(mammalContainer)).toEqual(expectedMap);
 });
 
 it('throw if bindings conflicted on specified platform', () => {
-  const polymorphicMammal = makeInterface({
+  const polymorphicMammal = serviceInterface({
     name: 'FooMammal',
     polymorphic: true,
   });
 
   const whiteCat = { foo: () => 'FOO_MEOW' };
-  const whiteCatFactory = makeFactoryProvider({ lifetime: 'transient' })(
+  const whiteCatFactory = serviceProviderFactory({ lifetime: 'transient' })(
     () => whiteCat
   );
   const blackCat = { foo: () => 'FOO_MEOW' };
@@ -321,7 +321,7 @@ it('throw if bindings conflicted on specified platform', () => {
 });
 
 it('registered polymorphic bindings overrides the base one on platform', () => {
-  const polymorphicMammal = makeInterface({
+  const polymorphicMammal = serviceInterface({
     name: 'FooMammal',
     polymorphic: true,
   });
@@ -350,7 +350,9 @@ it('throw if unbound service usage required', () => {
   ]);
   space.bootstrap();
 
-  const fooContainer = makeContainer({ deps: [Foo, Bar, BAZ] })(() => 'BOOM');
+  const fooContainer = serviceContainer({ deps: [Foo, Bar, BAZ] })(
+    () => 'BOOM'
+  );
 
   const scope = space.createScope();
   expect(() =>
@@ -370,7 +372,7 @@ test('optional dependency', () => {
   ]);
   space.bootstrap();
 
-  const optionalDepsContainer = makeContainer({
+  const optionalDepsContainer = serviceContainer({
     deps: [
       Foo,
       { require: Bar, optional: true },
@@ -395,8 +397,8 @@ test('optional dependency', () => {
 });
 
 it('use the same instance of the same provider on different interface', () => {
-  const MusicalBar = makeInterface({ name: 'MusicalBar' });
-  const JazzBar = makeInterface({ name: 'JazzBar' });
+  const MusicalBar = serviceInterface({ name: 'MusicalBar' });
+  const JazzBar = serviceInterface({ name: 'JazzBar' });
 
   const space = new ServiceSpace(null, [
     { provide: HELLO, withValue: staticGreeter },
@@ -467,9 +469,9 @@ test('lifecycle of services of different lifetime', () => {
 });
 
 test('provide multi interface as an array of bound value', () => {
-  const MULTI_FOOD = makeInterface({ name: 'MultiFood', multi: true });
+  const MULTI_FOOD = serviceInterface({ name: 'MultiFood', multi: true });
   const bistroFactory = moxy(
-    makeFactoryProvider({
+    serviceProviderFactory({
       lifetime: 'singleton',
       deps: [MULTI_FOOD],
     })((dishes) => ({
@@ -478,30 +480,30 @@ test('provide multi interface as an array of bound value', () => {
   );
 
   const meatFactory = moxy(
-    makeFactoryProvider({ lifetime: 'scoped' })(() => '🥩')
+    serviceProviderFactory({ lifetime: 'scoped' })(() => '🥩')
   );
 
   const burgerFactory = moxy(
-    makeFactoryProvider({
+    serviceProviderFactory({
       lifetime: 'singleton',
       deps: [meatFactory],
     })(() => '🍔')
   );
   const hotdogFactory = moxy(
-    makeFactoryProvider({
+    serviceProviderFactory({
       lifetime: 'scoped',
       deps: [meatFactory],
     })(() => '🌭')
   );
 
   const pizzaFactory = moxy(
-    makeFactoryProvider({ lifetime: 'singleton' })(() => '🍕')
+    serviceProviderFactory({ lifetime: 'singleton' })(() => '🍕')
   );
   const tacoFactory = moxy(
-    makeFactoryProvider({ lifetime: 'scoped' })(() => '🌮')
+    serviceProviderFactory({ lifetime: 'scoped' })(() => '🌮')
   );
   const ramenFactory = moxy(
-    makeFactoryProvider({ lifetime: 'transient' })(() => '🍜')
+    serviceProviderFactory({ lifetime: 'transient' })(() => '🍜')
   );
 
   const baseSpace = new ServiceSpace(null, [
@@ -556,9 +558,9 @@ test('provide multi interface as an array of bound value', () => {
 });
 
 test('provide multi interface as an empty array if no value bound', () => {
-  const MULTI_FOO = makeInterface({ name: 'MultiFoo', multi: true });
+  const MULTI_FOO = serviceInterface({ name: 'MultiFoo', multi: true });
   const needFooFactory = moxy(
-    makeFactoryProvider({
+    serviceProviderFactory({
       lifetime: 'singleton',
       deps: [MULTI_FOO],
     })(() => ({}))
@@ -611,7 +613,7 @@ test('inject time provision', () => {
 
   expect(
     scope.injectContainer(
-      makeContainer({ deps: [HELLO, Foo, Bar, BAZ] })((...args) => args),
+      serviceContainer({ deps: [HELLO, Foo, Bar, BAZ] })((...args) => args),
       injectTimeProvisions
     )
   ).toEqual([greeter, foo, bar, baz]);
@@ -622,8 +624,8 @@ test('inject time provision', () => {
 });
 
 test('boostrap time provision', () => {
-  const BOOTSTRAP_TIME_INTERFACE = makeInterface({ name: 'BOO' });
-  const BooConsumer = makeClassProvider({
+  const BOOTSTRAP_TIME_INTERFACE = serviceInterface({ name: 'BOO' });
+  const BooConsumer = serviceProviderClass({
     deps: [BOOTSTRAP_TIME_INTERFACE],
     lifetime: 'singleton',
   })(moxy(class BooConsumer {}));
@@ -647,14 +649,14 @@ test('boostrap time provision', () => {
 
 test('require underlying ServiceScope', () => {
   const singletonService = moxy(
-    makeClassProvider({
+    serviceProviderClass({
       deps: [ServiceScope],
       lifetime: 'singleton',
     })(class A {})
   );
 
   const scopedService = moxy(
-    makeClassProvider({
+    serviceProviderClass({
       deps: [ServiceScope],
       lifetime: 'scoped',
     })(class B {})
@@ -668,7 +670,7 @@ test('require underlying ServiceScope', () => {
   expect(singletonService.$$factory.mock.calls[0].args[0]).toBe(scope);
 
   const consumerContainer = moxy(
-    makeContainer({ deps: [ServiceScope, scopedService] })(() => ({}))
+    serviceContainer({ deps: [ServiceScope, scopedService] })(() => ({}))
   );
 
   scope.injectContainer(consumerContainer);

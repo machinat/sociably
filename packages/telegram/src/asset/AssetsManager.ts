@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import TelegramUser from '../User';
 import { TG } from '../constant';
@@ -81,7 +81,7 @@ export class TelegramAssetsManager {
   }
 }
 
-const AssetsManagerP = makeClassProvider({
+const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [StateControllerI],
 })(TelegramAssetsManager);

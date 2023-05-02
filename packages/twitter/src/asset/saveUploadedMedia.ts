@@ -1,4 +1,4 @@
-import { makeContainer } from '@sociably/core/service';
+import { serviceContainer } from '@sociably/core/service';
 import { DispatchError } from '@sociably/core/engine';
 import type {
   TwitterDispatchMiddleware,
@@ -64,6 +64,6 @@ const saveUplodedMedia =
     }
   };
 
-export default makeContainer({
+export default serviceContainer({
   deps: [AssetsManagerP],
 })(saveUplodedMedia);

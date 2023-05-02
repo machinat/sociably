@@ -1,5 +1,5 @@
 import moxy, { Mock } from '@moxyjs/moxy';
-import { makeContainer, createEmptyScope } from '@sociably/core/service';
+import { serviceContainer, createEmptyScope } from '@sociably/core/service';
 import Stream from '../../stream';
 import { STREAMING_KEY_I } from '../../interface';
 import map from '../map';
@@ -11,11 +11,11 @@ const nextTick = () => new Promise(process.nextTick);
 
 const nextListener = moxy();
 const nextContainer = moxy(
-  makeContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
 );
 const errorListener = moxy();
 const errorContainer = moxy(
-  makeContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
 );
 
 beforeEach(() => {
@@ -158,7 +158,7 @@ it('emit error if thrown in mapper', async () => {
 test('use service container as mapper', async () => {
   const mapFnMock = new Mock();
   const mapper = moxy(
-    makeContainer({
+    serviceContainer({
       deps: [STREAMING_KEY_I],
     })((key) =>
       mapFnMock.proxify(async (value: string) => {

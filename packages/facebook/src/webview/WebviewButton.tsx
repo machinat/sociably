@@ -1,4 +1,4 @@
-import Sociably, { makeContainer, RenderingTarget } from '@sociably/core';
+import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import { posix as posixPath } from 'path';
 import FacebookChat from '../Chat';
 import FacebookUser from '../User';
@@ -48,6 +48,6 @@ const WebviewButton =
     );
   };
 
-export default makeContainer({
+export default serviceContainer({
   deps: [ServerAuthenticator, RenderingTarget],
 })(WebviewButton);

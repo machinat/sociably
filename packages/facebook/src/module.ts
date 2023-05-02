@@ -1,7 +1,7 @@
 import type { SociablyPlatform } from '@sociably/core';
 import {
-  makeContainer,
-  makeFactoryProvider,
+  serviceContainer,
+  serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -31,7 +31,7 @@ import type {
 } from './types';
 
 /** @interanl */
-const webhookRouteFactory = makeFactoryProvider({
+const webhookRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [ConfigsI, ReceiverP],
 })(
@@ -98,7 +98,7 @@ namespace Facebook {
     if (configs.pageSettingsService) {
       provisions.push({
         provide: PageSettingsAccessorI,
-        withProvider: makeFactoryProvider({
+        withProvider: serviceProviderFactory({
           deps: [configs.pageSettingsService],
         })((accessor) => accessor),
       });
@@ -133,8 +133,8 @@ namespace Facebook {
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
-      startHook: makeContainer({ deps: [BotP] })(async (bot) => bot.start()),
-      stopHook: makeContainer({ deps: [BotP] })(async (bot) => bot.stop()),
+      startHook: serviceContainer({ deps: [BotP] })(async (bot) => bot.start()),
+      stopHook: serviceContainer({ deps: [BotP] })(async (bot) => bot.stop()),
     };
   };
 }

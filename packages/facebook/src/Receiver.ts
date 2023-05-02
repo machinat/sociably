@@ -1,6 +1,6 @@
 import type { PopEventWrapper } from '@sociably/core';
 import { MetaWebhookReceiver } from '@sociably/meta-api';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import eventFactory from './event/factory';
 import BotP from './Bot';
 import { ConfigsI, PlatformUtilitiesI } from './interface';
@@ -51,7 +51,7 @@ export class FacebookReceiver extends MetaWebhookReceiver<FacebookEventContext> 
   }
 }
 
-const ReceiverP = makeClassProvider({
+const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, PlatformUtilitiesI],
   factory: (

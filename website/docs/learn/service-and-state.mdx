@@ -20,7 +20,7 @@ export const GetUserProfile = ({platform}) => (
   <div>
     <CodeBlock language="tsx" title="src/handlers/handleChat.tsx">
         {`//...
-const handleChat = makeContainer({
+const handleChat = serviceContainer({
   deps: [useIntent, useUserProfile],
 })(
   (getIntent, getUserProfile) =>
@@ -83,7 +83,7 @@ The `handleChat` handler is a **service container**.
 A container declares the services it requires,
 and the system will inject the required dependencies at runtime.
 
-`handleChat` is declared by `makeContainer({ deps: [useIntent, useUserProfile] })(factoryFn)`.
+`handleChat` is declared by `serviceContainer({ deps: [useIntent, useUserProfile] })(factoryFn)`.
 It requires the `useIntent` and `useUserProfile` services, which can be used like:
 
 ```ts
@@ -105,7 +105,7 @@ Check the `src/services/useUserProfile.ts` file, you should codes like:
 
 ```ts {2-4,10,16-18} title="src/services/useUserProfile.ts"
 import {
-  makeFactoryProvider,
+  serviceProviderFactory,
   BaseProfiler,
   StateController,
   SociablyUser,
@@ -119,7 +119,7 @@ const useUserProfile =
     return profile;
   };
 
-export default makeFactoryProvider({
+export default serviceProviderFactory({
   deps: [BaseProfiler, StateController],
 })(useUserProfile);
 ```
@@ -227,12 +227,12 @@ export class TodoController {
   //...
 }
 
-export default makeClassProvider({
+export default serviceProviderClass({
   deps: [StateController],
 })(TodoController);
 ```
 
-The `makeClassProvider` works just like `makeFactoryProvider`,
+The `serviceProviderClass` works just like `serviceProviderFactory`,
 except that the provider is a class.
 It also requires `StateController` to save/load todos data.
 
@@ -293,7 +293,7 @@ export const UseTodoController = ({platform}) => (
 // highlight-next-line
 import TodoController from '../services/TodoController';
 // ...
-const handleChat = makeContainer({
+const handleChat = serviceContainer({
   // highlight-next-line
   deps: [useIntent, useUserProfile, TodoController],
 })(

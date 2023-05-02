@@ -25,19 +25,19 @@ type Constructor<T> = {
   new (...args: any[]): T;
 };
 
-function makeClassProvider<_T, A extends AnyDep>(
+function serviceProviderClass<_T, A extends AnyDep>(
   opts: ClassProviderOptions<_T, [A]>
 ): <T extends _T, Klazz extends Constructor<T>>(
   klazz: Klazz & Constructor<T>
 ) => ServiceProvider<T, ResolveDependencies<[A]>> & Klazz;
 
-function makeClassProvider<_T, A extends AnyDep, B extends AnyDep>(
+function serviceProviderClass<_T, A extends AnyDep, B extends AnyDep>(
   opts: ClassProviderOptions<_T, [A, B]>
 ): <T extends _T, Klazz extends Constructor<T>>(
   klazz: Klazz & Constructor<T>
 ) => ServiceProvider<T, ResolveDependencies<[A, B]>> & Klazz;
 
-function makeClassProvider<
+function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
@@ -48,7 +48,7 @@ function makeClassProvider<
   klazz: Klazz & Constructor<T>
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C]>> & Klazz;
 
-function makeClassProvider<
+function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
@@ -60,7 +60,7 @@ function makeClassProvider<
   klazz: Klazz & Constructor<T>
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D]>> & Klazz;
 
-function makeClassProvider<
+function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
@@ -73,7 +73,7 @@ function makeClassProvider<
   klazz: Klazz & Constructor<T>
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E]>> & Klazz;
 
-function makeClassProvider<
+function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
@@ -87,7 +87,7 @@ function makeClassProvider<
   klazz: Klazz & Constructor<T>
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F]>> & Klazz;
 
-function makeClassProvider<
+function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
@@ -102,7 +102,7 @@ function makeClassProvider<
   klazz: Klazz & Constructor<T>
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F, G]>> & Klazz;
 
-function makeClassProvider<
+function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
@@ -118,7 +118,7 @@ function makeClassProvider<
   klazz: Klazz & Constructor<T>
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F, G, H]>> & Klazz;
 
-function makeClassProvider<
+function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
@@ -136,7 +136,7 @@ function makeClassProvider<
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F, G, H, I]>> &
   Klazz;
 
-function makeClassProvider<
+function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
@@ -156,11 +156,11 @@ function makeClassProvider<
   Klazz;
 
 /**
- * makeClassProvider annotate a class as a provider serving for the instance
+ * serviceProviderClass annotate a class as a provider serving for the instance
  * type, and also an interface can be implemented.
  * @category Service Registry
  */
-function makeClassProvider<_T, Deps extends AnyDep[]>({
+function serviceProviderClass<_T, Deps extends AnyDep[]>({
   name,
   factory,
   deps = [] as never,
@@ -189,4 +189,4 @@ function makeClassProvider<_T, Deps extends AnyDep[]>({
   };
 }
 
-export default makeClassProvider;
+export default serviceProviderClass;

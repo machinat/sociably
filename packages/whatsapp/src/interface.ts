@@ -1,5 +1,5 @@
 import { ChannelSettingsAccessor } from '@sociably/core';
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type WhatsAppAgent from './Agent';
 import type {
   WhatsAppPlatformUtilities,
@@ -10,7 +10,7 @@ import type {
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<WhatsAppConfigs>({
+export const ConfigsI = serviceInterface<WhatsAppConfigs>({
   name: 'WhatsAppConfigs',
 });
 
@@ -19,7 +19,7 @@ export type ConfigsI = WhatsAppConfigs;
 /**
  * @category Interface
  */
-export const PlatformUtilitiesI = makeInterface<WhatsAppPlatformUtilities>({
+export const PlatformUtilitiesI = serviceInterface<WhatsAppPlatformUtilities>({
   name: 'WhatsAppPlatformUtilities',
 });
 
@@ -31,6 +31,6 @@ export type AgentSettingsAccessorI = ChannelSettingsAccessor<
 /**
  * @category Interface
  */
-export const AgentSettingsAccessorI = makeInterface<AgentSettingsAccessorI>({
+export const AgentSettingsAccessorI = serviceInterface<AgentSettingsAccessorI>({
   name: 'WhatsAppAgentSettingsAccessor',
 });

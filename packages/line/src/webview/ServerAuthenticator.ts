@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import { ServerAuthenticator, CheckDataResult } from '@sociably/auth';
 import { ChannelSettingsAccessorI } from '../interface';
 import LineChannel from '../Channel';
@@ -346,7 +346,7 @@ export class LineServerAuthenticator
   }
 }
 
-const ServerAuthenticatorP = makeClassProvider({
+const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'transient',
   deps: [BotP, ChannelSettingsAccessorI],
 })(LineServerAuthenticator);

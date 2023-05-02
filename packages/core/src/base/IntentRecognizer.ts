@@ -1,5 +1,5 @@
 import type { SociablyThread } from '../types';
-import { makeInterface } from '../service';
+import { serviceInterface } from '../service';
 
 export type RecognitionData<
   Language extends string = string,
@@ -49,7 +49,7 @@ export interface IntentRecognizer<
   ): Promise<DetectIntentResult<Recognition, Payload>>;
 }
 
-const IntentRecognizerI = makeInterface<IntentRecognizer>({
+const IntentRecognizerI = serviceInterface<IntentRecognizer>({
   name: 'IntentRecognizer',
 });
 

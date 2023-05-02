@@ -225,12 +225,12 @@ const app = Sociably.createApp({
 Here is an example to reuse a richmenu:
 
 ```tsx
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import * as Line from '@sociably/line/components';
 import LineAssetsManager from '@sociably/line/asssets';
 
 app.onEvent(
-  makeContainer({ deps: [LineAssetsManager] })(
+  serviceContainer({ deps: [LineAssetsManager] })(
     (assetsManager) =>
       async ({ reply }) => {
         const fooMenuId = await assetsManager.getRichMenu('foo.menu');

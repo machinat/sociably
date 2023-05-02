@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import type { IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type {
   ServerAuthenticator,
   VerifyResult,
@@ -54,7 +54,7 @@ export class NoneServerAuthenticator
   }
 }
 
-const ServerAuthenticatorP = makeClassProvider({ lifetime: 'transient' })(
+const ServerAuthenticatorP = serviceProviderClass({ lifetime: 'transient' })(
   NoneServerAuthenticator
 );
 type ServerAuthenticatorP = NoneServerAuthenticator;

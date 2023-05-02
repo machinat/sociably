@@ -3,7 +3,7 @@ import { posix as posixPath } from 'path';
 import type { PopEventWrapper } from '@sociably/core';
 import { WebhookReceiver } from '@sociably/http/webhook';
 import type { WebhookHandler } from '@sociably/http/webhook';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import createEvent from './event/factory';
 import BotP from './Bot';
 import {
@@ -113,7 +113,7 @@ export class TelegramReceiver extends WebhookReceiver {
   }
 }
 
-const ReceiverP = makeClassProvider({
+const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, BotSettingsAccessorI, PlatformUtilitiesI],
   factory: (

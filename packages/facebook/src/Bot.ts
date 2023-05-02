@@ -3,7 +3,7 @@ import Engine, { DispatchError } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import Renderer from '@sociably/core/renderer';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type {
   SociablyNode,
   SociablyBot,
@@ -273,7 +273,7 @@ export class FacebookBot
   }
 }
 
-const BotP = makeClassProvider({
+const BotP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,

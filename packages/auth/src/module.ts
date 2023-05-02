@@ -1,5 +1,8 @@
 import type { ServiceModule } from '@sociably/core';
-import { makeFactoryProvider, ServiceProvision } from '@sociably/core/service';
+import {
+  serviceProviderFactory,
+  ServiceProvision,
+} from '@sociably/core/service';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
 import ControllerP from './Controller';
@@ -8,7 +11,7 @@ import BasicAuthenticator from './basicAuth';
 import { ConfigsI, AuthenticatorListI } from './interface';
 import type { AuthConfigs, AnyServerAuthenticator } from './types';
 
-const authRouteFactory = makeFactoryProvider({
+const authRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [ControllerP, ConfigsI],
 })(

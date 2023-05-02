@@ -1,7 +1,7 @@
 import { parse as parseUrl } from 'url';
 import { posix as posixPath } from 'path';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import { HttpRequestInfo, RoutingInfo } from '@sociably/http';
 import invariant from 'invariant';
 import {
@@ -414,7 +414,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
   }
 }
 
-const ControllerP = makeClassProvider({
+const ControllerP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [OperatorP, AuthenticatorListI],
 })(AuthController);

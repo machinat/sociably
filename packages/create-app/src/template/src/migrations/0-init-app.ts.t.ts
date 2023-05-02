@@ -2,7 +2,7 @@ import { when } from '../../../utils';
 import { CreateAppContext } from '../../../types';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
-import { makeContainer } from '@sociably/core';${when(
+import { serviceContainer } from '@sociably/core';${when(
   platforms.includes('facebook')
 )`
 import Facebook from '@sociably/facebook';`}${when(
@@ -27,7 +27,7 @@ const {
 
 const ENTRY_URL = \`https://\${DOMAIN}\`;
 
-export const up = makeContainer({
+export const up = serviceContainer({
   deps: [${when(platforms.includes('facebook'))`
     Facebook.Bot,`}${when(platforms.includes('twitter'))`
     Twitter.Bot,
@@ -93,7 +93,7 @@ export const up = makeContainer({
   });`}
 });
 
-export const down = makeContainer({
+export const down = serviceContainer({
   deps: [${when(platforms.includes('facebook'))`
     Facebook.Bot,`}${when(platforms.includes('twitter'))`
     TwitterAssetManager,`}${when(platforms.includes('telegram'))`

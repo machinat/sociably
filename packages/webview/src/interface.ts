@@ -1,5 +1,5 @@
 import { Marshaler, StateController } from '@sociably/core';
-import { makeInterface, makeClassProvider } from '@sociably/core/service';
+import { serviceInterface, serviceProviderClass } from '@sociably/core/service';
 import Auth, { AuthController, AuthHttpOperator } from '@sociably/auth';
 import type {
   AnyServerAuthenticator,
@@ -14,7 +14,7 @@ import verifyOrigin from './utils/verifyOrigin';
 import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant';
 import type { WebviewConfigs, WebviewPlatformUtilities } from './types';
 
-export const ConfigsI = makeInterface<WebviewConfigs>({
+export const ConfigsI = serviceInterface<WebviewConfigs>({
   name: 'WebviewConfigs',
 });
 
@@ -23,7 +23,7 @@ export class WebviewAuthController<
   Authenticator extends AnyServerAuthenticator
 > extends AuthController<Authenticator> {}
 
-export const AuthControllerP = makeClassProvider({
+export const AuthControllerP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [Auth.HttpOperator, Auth.AuthenticatorList],
   factory: (operator, authenticators) => {
@@ -37,7 +37,7 @@ export const AuthControllerP = makeClassProvider({
 
 export class WebviewAuthHttpOperator extends AuthHttpOperator {}
 
-export const AuthHttpOperatorP = makeClassProvider({
+export const AuthHttpOperatorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConfigsI],
   factory: ({
@@ -59,7 +59,7 @@ export const AuthHttpOperatorP = makeClassProvider({
 
 export class WebviewBasicServerAuthenticator extends BasicAuthenticator {}
 
-export const WebviewBasicAuthenticatorP = makeClassProvider({
+export const WebviewBasicAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [StateController, Auth.HttpOperator, ConfigsI],
   factory: (stateController, httpOperator, configs) => {
@@ -75,7 +75,7 @@ export const WebviewBasicAuthenticatorP = makeClassProvider({
 
 export class WebviewNextReceiver extends NextReceiver {}
 
-export const NextReceiverP = makeClassProvider({
+export const NextReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [Next.Server, ConfigsI],
   factory: (
@@ -98,7 +98,7 @@ export class WebviewSocketServer<
   ContextOfAuthenticator<Authenticator>
 > {}
 
-export const SocketServerP = makeClassProvider({
+export const SocketServerP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     { require: WebSocket.ServerId, optional: true },
@@ -128,7 +128,7 @@ export const SocketServerP = makeClassProvider({
     }),
 })(WebviewSocketServer);
 
-export const PlatformUtilitiesI = makeInterface<
+export const PlatformUtilitiesI = serviceInterface<
   WebviewPlatformUtilities<AnyServerAuthenticator>
 >({
   name: 'WebviewPlatformUtilities',

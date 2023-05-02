@@ -203,11 +203,11 @@ Here's an example to upload a reusable media from an external URL:
 
 ```tsx
 import fs from 'fs';
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import * as Twitter from '@sociably/twitter/components';
 import TwitterAssetsManager from '@sociably/twitter/asssets';
 
-app.onEvent(makeContainer({ deps: [TwitterAssetsManager] })(
+app.onEvent(serviceContainer({ deps: [TwitterAssetsManager] })(
   (assetsManager) =>
     async ({ reply }) => {
       const fooImageId = await assetsManager.getMedia('foo.image');

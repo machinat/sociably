@@ -1,8 +1,8 @@
 import createNextServer from 'next';
 import type { ServiceModule } from '@sociably/core';
 import {
-  makeFactoryProvider,
-  makeContainer,
+  serviceProviderFactory,
+  serviceContainer,
   ServiceProvision,
 } from '@sociably/core/service';
 import Http from '@sociably/http';
@@ -10,12 +10,12 @@ import type { RequestRoute, UpgradeRoute } from '@sociably/http';
 import { ReceiverP } from './receiver';
 import { ConfigsI, ServerI } from './interface';
 
-const nextServerFactory = makeFactoryProvider({
+const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',
   deps: [ConfigsI],
 })(({ serverOptions }) => createNextServer((serverOptions || {}) as {}));
 
-const requestRouteFactory = makeFactoryProvider({
+const requestRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [ReceiverP, ConfigsI],
 })(
@@ -26,7 +26,7 @@ const requestRouteFactory = makeFactoryProvider({
   })
 );
 
-const hmrRouteFactory = makeFactoryProvider({
+const hmrRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [ReceiverP, ConfigsI],
 })(
@@ -67,10 +67,10 @@ namespace Next {
 
     return {
       provisions,
-      startHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
+      startHook: serviceContainer({ deps: [ReceiverP] })((receiver) =>
         receiver.prepare()
       ),
-      stopHook: makeContainer({ deps: [ReceiverP] })((receiver) =>
+      stopHook: serviceContainer({ deps: [ReceiverP] })((receiver) =>
         receiver.close()
       ),
     };

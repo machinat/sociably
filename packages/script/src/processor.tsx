@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
 import type { SociablyThread, SociablyNode } from '@sociably/core';
-import { ServiceScope, makeClassProvider } from '@sociably/core/service';
+import { ServiceScope, serviceProviderClass } from '@sociably/core/service';
 import execute from './execute';
 import { SCRIPT_STATE_KEY } from './constant';
 import { LibraryListI } from './interface';
@@ -314,7 +314,7 @@ export class ScriptProcessor<Script extends AnyScriptLibrary> {
   }
 }
 
-const ProcessorP = makeClassProvider({
+const ProcessorP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [StateControllerI, ServiceScope, LibraryListI],
 })(ScriptProcessor);

@@ -9,7 +9,7 @@ import type {
 import Engine from '@sociably/core/engine';
 import Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import type { DispatchResponse } from '@sociably/core/engine';
 import type { AnyServerAuthenticator } from '@sociably/auth';
@@ -165,7 +165,7 @@ export class WebviewBot
   }
 }
 
-export const BotP = makeClassProvider({
+export const BotP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     WebSocket.Server,

@@ -314,11 +314,11 @@ The processor will continue the dialog from the stop point in the script.
 You can add these codes in the `app.onEvent` handler:
 
 ```js
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import Script from '@sociably/script';
 
 app.onEvent(
-  makeContainer({ deps: [Script.Processor] })(
+  serviceContainer({ deps: [Script.Processor] })(
     (processor) => async (context) => {
       const { event, reply } = context;
       const runtime = await processor.continue(event.thread, context);
@@ -335,14 +335,14 @@ app.onEvent(
 If you're using `@sociably/stream`, you can `filter` the stream like:
 
 ```js
-import { makeContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import Script from '@sociably/script';
 import { fromApp } from '@sociably/stream'
 import { filter } from '@sociably/stream/operators'
 
 const event$ = fromApp(app).pipe(
   filter(
-    makeContainer({ deps: [Script.Processor] })(
+    serviceContainer({ deps: [Script.Processor] })(
       (processor) => async (ctx) => {
         const runtime = await processor.continue(ctx.event.thread, ctx);
         if (runtime) {
@@ -422,14 +422,14 @@ for the function props.
 For example:
 
 ```js
-import Sociably, { makeContainer, IntentRecognizer } from '@sociably/core';
+import Sociably, { serviceContainer, IntentRecognizer } from '@sociably/core';
 //...
 <>
   {() => <p>Would you like any side dish?</p>}
   <$.PROMPT
     key="ask-side-dish"
     set={
-      makeContainer({ deps: [IntentRecognizer] })(
+      serviceContainer({ deps: [IntentRecognizer] })(
         (recognizer) =>
         async ({ vars, thread }, { event }) => {
           const intent = await recognizer.detectText(
@@ -453,7 +453,7 @@ including content nodes.
 
 ```js
 <>
-  {makeContainer({ deps:[BaseProfiler] })(
+  {serviceContainer({ deps:[BaseProfiler] })(
     (profiler) => async ({ vars: { user, mainDishChoice } }) => {
       const profile = await profiler.getUserProfile(user);
       return <p>Hi, {profile.name}! Here's your {mainDishChoice}</p>;
@@ -549,7 +549,7 @@ Like:
 
 ```js
   <$.EFFECT
-    set={makeContainer({ deps: [StateController] })(
+    set={serviceContainer({ deps: [StateController] })(
       (stateController) => async ({ vars, thread }) => {
         const visitCount = await stateController
           .threadState(thread)

@@ -1,4 +1,4 @@
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import type TwitterUser from './User';
 import TwitterUserProfile from './UserProfile';
@@ -62,7 +62,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
   }
 }
 
-const ProfilerP = makeClassProvider({
+const ProfilerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [BotP],
 })(TwitterProfiler);

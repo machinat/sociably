@@ -23,7 +23,7 @@ Here is a simple example to protect your API with auth module:
 #### Back-end
 
 ```js
-import Sociably, { makeFactoryProvider } from '@sociably/core';
+import Sociably, { serviceProviderFactory } from '@sociably/core';
 import Http from '@sociably/http';
 import Auth from '@sociably/auth';
 // add the platforms and the authenticator you need
@@ -42,7 +42,7 @@ const app = Sociably.createApp({
     { porvide: Auth.AuthenticatorList, withProvider: LineServerAuthenticator },
     { // a simple API route
       provide: Http.RequestRouteList,
-      withProvider: makeFactoryProvider({ deps: [Auth.Controller] })(
+      withProvider: serviceProviderFactory({ deps: [Auth.Controller] })(
         authController => ({
           path: '/myAPI',
           handler: async (req, res) => {

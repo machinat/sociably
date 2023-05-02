@@ -1,5 +1,5 @@
 import { createEJSON } from '@machinat/ejson';
-import { makeInterface, makeClassProvider } from '../service';
+import { serviceInterface, serviceProviderClass } from '../service';
 
 export interface MarshallableInstance<V> {
   typeName(): string;
@@ -19,7 +19,7 @@ export type MarshalType<V, T extends MarshallableInstance<V>> = {
 export type AnyMarshalType = MarshalType<any, MarshallableInstance<any>>;
 
 export class BaseMarshaler {
-  static TypeList = makeInterface<AnyMarshalType>({
+  static TypeList = serviceInterface<AnyMarshalType>({
     name: 'MarshalTypeList',
     multi: true,
   });
@@ -42,7 +42,7 @@ export class BaseMarshaler {
   }
 }
 
-const MarshalerP = makeClassProvider({
+const MarshalerP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [BaseMarshaler.TypeList],
 })(BaseMarshaler);

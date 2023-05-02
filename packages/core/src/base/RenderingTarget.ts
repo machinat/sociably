@@ -1,9 +1,9 @@
-import { makeInterface } from '../service';
+import { serviceInterface } from '../service';
 import type { DispatchTarget } from '../types';
 
 type RenderingTargetI = DispatchTarget;
 
-const RenderingTargetI = makeInterface<DispatchTarget>({
+const RenderingTargetI = serviceInterface<DispatchTarget>({
   name: 'RenderingTarget',
 });
 

@@ -1,4 +1,4 @@
-import { makeContainer } from '@sociably/core/service';
+import { serviceContainer } from '@sociably/core/service';
 import { DispatchError } from '@sociably/core/engine';
 import TelegramUser from '../User';
 import type {
@@ -99,7 +99,7 @@ const saveUplodedFile =
     }
   };
 
-const saveUplodedFileC = makeContainer({
+const saveUplodedFileC = serviceContainer({
   deps: [AssetsManagerP],
 })(saveUplodedFile);
 

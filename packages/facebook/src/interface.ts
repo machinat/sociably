@@ -1,5 +1,5 @@
 import { ChannelSettingsAccessor } from '@sociably/core';
-import { makeInterface } from '@sociably/core/service';
+import { serviceInterface } from '@sociably/core/service';
 import type FacebookPage from './Page';
 import type {
   FacebookPlatformUtilities,
@@ -10,7 +10,7 @@ import type {
 /**
  * @category Interface
  */
-export const ConfigsI = makeInterface<FacebookConfigs>({
+export const ConfigsI = serviceInterface<FacebookConfigs>({
   name: 'FacebookConfigs',
 });
 
@@ -19,7 +19,7 @@ export type ConfigsI = FacebookConfigs;
 /**
  * @category Interface
  */
-export const PlatformUtilitiesI = makeInterface<FacebookPlatformUtilities>({
+export const PlatformUtilitiesI = serviceInterface<FacebookPlatformUtilities>({
   name: 'FacebookPlatformUtilities',
 });
 
@@ -31,7 +31,7 @@ export type PageSettingsAccessorI = ChannelSettingsAccessor<
 /**
  * @category Interface
  */
-export const PageSettingsAccessorI = makeInterface<
+export const PageSettingsAccessorI = serviceInterface<
   ChannelSettingsAccessor<FacebookPage, FacebookPageSettings>
 >({
   name: 'FacebookPageSettingsAccessor',

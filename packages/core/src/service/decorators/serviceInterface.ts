@@ -14,26 +14,26 @@ type MakeInterfaceOptions = {
 };
 
 /**
- * makeInterface make a non class service interface
+ * serviceInterface make a non class service interface
  * @category Service Registry
  */
-function makeInterface<T>(options: {
+function serviceInterface<T>(options: {
   name: string;
   polymorphic: true;
 }): PolymorphicServiceInterface<T>;
 
-function makeInterface<T>(options: {
+function serviceInterface<T>(options: {
   name: string;
   multi: true;
 }): MultiServiceInterface<T>;
 
-function makeInterface<T>(options: {
+function serviceInterface<T>(options: {
   name: string;
   multi?: false;
   polymorphic?: false;
 }): SingularServiceInterface<T>;
 
-function makeInterface<T>({
+function serviceInterface<T>({
   multi = false,
   polymorphic = false,
   name,
@@ -51,4 +51,4 @@ function makeInterface<T>({
   };
 }
 
-export default makeInterface;
+export default serviceInterface;

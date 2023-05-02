@@ -2,14 +2,14 @@ import { CreateAppContext } from '../../../types';
 import { when } from '../../../utils';
 
 export default ({ platforms }: CreateAppContext): string => `
-import Sociably, { makeContainer } from '@sociably/core';
+import Sociably, { serviceContainer } from '@sociably/core';
 import About from '../scenes/About';
 import WithMenu from '../components/WithMenu';
 import useIntent from '../services/useIntent';
 import useUserProfile from '../services/useUserProfile';
 import { ChatEventContext } from '../types';
 
-const handleChat = makeContainer({
+const handleChat = serviceContainer({
   deps: [useIntent, useUserProfile],
 })(
   (getIntent, getUserProfile) =>

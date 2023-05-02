@@ -1,5 +1,5 @@
 import type { PopEventWrapper, PopEventFn, PopErrorFn } from '@sociably/core';
-import { makeClassProvider } from '@sociably/core/service';
+import { serviceProviderClass } from '@sociably/core/service';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import {
   AnyServerAuthenticator,
@@ -125,7 +125,7 @@ export class WebviewReceiver<
   }
 }
 
-export const ReceiverP = makeClassProvider({
+export const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [BotP, WebSocket.Server, ModuleUtilitiesI, PlatformUtilitiesI],
   factory: (
