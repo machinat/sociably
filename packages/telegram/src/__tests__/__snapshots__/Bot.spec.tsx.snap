@@ -4,7 +4,7 @@ exports[`.render(thread, message, options) render global actions without a chat 
 Object {
   "jobs": Array [
     Object {
-      "botId": 12345,
+      "agentId": 12345,
       "files": undefined,
       "key": undefined,
       "method": "editMessageText",
@@ -18,7 +18,7 @@ Object {
       },
     },
     Object {
-      "botId": 12345,
+      "agentId": 12345,
       "files": undefined,
       "key": undefined,
       "method": "editMessageMedia",
@@ -53,7 +53,7 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": undefined,
           "key": undefined,
           "method": "editMessageText",
@@ -67,7 +67,7 @@ Object {
           },
         },
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": undefined,
           "key": undefined,
           "method": "editMessageMedia",
@@ -94,7 +94,7 @@ exports[`.render(thread, message, options) send rendered messages to telegram ap
 Object {
   "jobs": Array [
     Object {
-      "botId": 12345,
+      "agentId": 12345,
       "files": undefined,
       "key": "tg.12345.67890",
       "method": "sendMessage",
@@ -106,7 +106,7 @@ Object {
       },
     },
     Object {
-      "botId": 12345,
+      "agentId": 12345,
       "files": undefined,
       "key": "tg.12345.67890",
       "method": "sendPhoto",
@@ -142,7 +142,7 @@ Object {
     Object {
       "payload": Array [
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendMessage",
@@ -154,7 +154,7 @@ Object {
           },
         },
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendPhoto",

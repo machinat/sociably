@@ -27,25 +27,27 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
    * Get profile of the user.
    */
   async getUserProfile(
-    agent: TwitterUser,
-    user: TwitterUser,
+    agent: string | TwitterUser,
+    user: string | TwitterUser,
     {
       withEntities = false,
       fromApi = false,
       withSettings = false,
     }: GetUserProfileOptions = {}
   ): Promise<TwitterUserProfile> {
-    if (!fromApi && user.profile && !withSettings) {
+    if (!fromApi && typeof user === 'object' && user.profile && !withSettings) {
       return user.profile;
     }
 
-    let rawUser = user.data;
+    const userId = typeof user === 'string' ? user : user.id;
+    let rawUser = typeof user === 'string' ? null : user.data;
+
     if (fromApi || !rawUser) {
       rawUser = await this.bot.requestApi<RawUser>({
         agent,
         method: 'GET',
         url: '1.1/users/show.json',
-        params: { user_id: user.id, include_entities: withEntities },
+        params: { user_id: userId, include_entities: withEntities },
       });
     }
 

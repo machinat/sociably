@@ -1,4 +1,5 @@
 export { default } from './module';
+export { default as FacebookPage } from './Page';
 export { default as FacebookChat } from './Chat';
 export { default as FacebookUser } from './User';
 export { default as FacebookUserProfile } from './UserProfile';

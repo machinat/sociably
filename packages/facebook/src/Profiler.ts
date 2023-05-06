@@ -41,16 +41,17 @@ export class FacebookProfiler
   }
 
   async getUserProfile(
-    page: FacebookPage,
-    user: FacebookUser
+    page: string | FacebookPage,
+    user: string | FacebookUser
   ): Promise<null | FacebookUserProfile> {
+    const userId = typeof user === 'string' ? user : user.id;
     let rawProfile: RawUserProfile;
 
     try {
       rawProfile = await this._bot.requestApi({
         page,
         method: 'GET',
-        url: `${user.id}?fields=${this.profileFields}`,
+        url: `${userId}?fields=${this.profileFields}`,
       });
     } catch (err) {
       if (err instanceof MetaApiError) {

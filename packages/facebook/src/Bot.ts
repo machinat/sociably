@@ -80,7 +80,7 @@ type CommentResult = {
 
 type ApiCallOptions = {
   /** The page to make the API call */
-  page: FacebookPage;
+  page: string | FacebookPage;
   /** HTTP method */
   method?: string;
   /** API request URL relative to https://graph.facebook.com/{version}/ */
@@ -173,10 +173,12 @@ export class FacebookBot
 
   /** Upload a media chat attachment for later use */
   async uploadChatAttachment(
-    /** The {@link FacebookPage} thread to post */
-    page: FacebookPage,
+    /** The {@link FacebookPage} that owns the attachment */
+    pageInput: string | FacebookPage,
     /** An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be uploaded */ node: SociablyNode
   ): Promise<null | UploadAttachmentResult> {
+    const page =
+      typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
     const response = await this.engine.render(
       page,
       node,
@@ -188,11 +190,13 @@ export class FacebookBot
 
   /** Create a post or a photo on the page feed */
   async post(
-    /** The {@link FacebookPage} thread to post */
-    page: FacebookPage,
+    /** The {@link FacebookPage} to post */
+    pageInput: string | FacebookPage,
     /** Text, a {@link PagePost} or a {@link PagePhoto} to post */
     node: SociablyNode
   ): Promise<null | PagePostResult> {
+    const page =
+      typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
     const response = await this.engine.render(page, node, createPostJobs);
     if (!response) {
       return null;
@@ -250,11 +254,13 @@ export class FacebookBot
   }
 
   async requestApi<ResBody extends MetaApiResponseBody>({
-    page,
+    page: pageInput,
     method = 'GET',
     url,
     params,
   }: ApiCallOptions): Promise<ResBody> {
+    const page =
+      typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
     try {
       const { results } = await this.engine.dispatchJobs(page, [
         {

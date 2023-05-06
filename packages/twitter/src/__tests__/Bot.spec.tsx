@@ -404,7 +404,7 @@ describe('.requestApi(method, uri, params)', () => {
   });
 });
 
-describe('.renderMedia(media)', () => {
+describe('.uploadMedia(media)', () => {
   test('render and upload media', async () => {
     let initMediaCount = 1;
     const uploadCall = nock('https://upload.twitter.com')
@@ -432,7 +432,7 @@ describe('.renderMedia(media)', () => {
     const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
     await expect(
-      bot.renderMedia(
+      bot.uploadMedia(
         agent,
         <>
           <Photo shared url="https://sociably.io/img/foo.jpg" />
@@ -500,13 +500,13 @@ describe('.renderMedia(media)', () => {
     const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
     await expect(
-      bot.renderMedia(agent, 'foo')
+      bot.uploadMedia(agent, 'foo')
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"\\"foo\\" is not media"`);
     await expect(
-      bot.renderMedia(agent, <Sociably.Pause />)
+      bot.uploadMedia(agent, <Sociably.Pause />)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<Pause /> is not media"`);
     await expect(
-      bot.renderMedia(agent, <DirectMessage>foo</DirectMessage>)
+      bot.uploadMedia(agent, <DirectMessage>foo</DirectMessage>)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"<DirectMessage /> is not media"`
     );
@@ -515,11 +515,11 @@ describe('.renderMedia(media)', () => {
   it('return null if the node is empty', async () => {
     const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
-    await expect(bot.renderMedia(agent, <>{null}</>)).resolves.toBe(null);
+    await expect(bot.uploadMedia(agent, <>{null}</>)).resolves.toBe(null);
   });
 });
 
-describe('.renderWelcomeMessage(name, message)', () => {
+describe('.createWelcomeMessage(name, message)', () => {
   test('create welcome message', async () => {
     const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
     bot.start();
@@ -536,7 +536,7 @@ describe('.renderWelcomeMessage(name, message)', () => {
       });
 
     await expect(
-      bot.renderWelcomeMessage(
+      bot.createWelcomeMessage(
         agent,
         'foo_welcome',
         <DirectMessage>Foo!</DirectMessage>
@@ -569,7 +569,7 @@ describe('.renderWelcomeMessage(name, message)', () => {
     bot.start();
 
     await expect(
-      bot.renderWelcomeMessage(agent, 'foo_welcome', null)
+      bot.createWelcomeMessage(agent, 'foo_welcome', null)
     ).resolves.toBe(null);
   });
 });

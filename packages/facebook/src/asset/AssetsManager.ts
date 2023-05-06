@@ -42,71 +42,83 @@ export class FacebookAssetsManager {
   }
 
   async getAssetId(
-    page: FacebookPage,
+    page: string | FacebookPage,
     resource: string,
     name: string
   ): Promise<undefined | string> {
+    const pageId = typeof page === 'string' ? page : page.id;
     const existed = await this._stateController
-      .globalState(makeResourceToken(page.id, resource))
+      .globalState(makeResourceToken(pageId, resource))
       .get<string>(name);
     return existed || undefined;
   }
 
   async saveAssetId(
-    page: FacebookPage,
+    page: string | FacebookPage,
     resource: string,
     name: string,
     id: string
   ): Promise<boolean> {
+    const pageId = typeof page === 'string' ? page : page.id;
     const isUpdated = await this._stateController
-      .globalState(makeResourceToken(page.id, resource))
+      .globalState(makeResourceToken(pageId, resource))
       .set<string>(name, id);
     return isUpdated;
   }
 
   getAllAssets(
-    page: FacebookPage,
+    page: string | FacebookPage,
     resource: string
   ): Promise<null | Map<string, string>> {
+    const pageId = typeof page === 'string' ? page : page.id;
     return this._stateController
-      .globalState(makeResourceToken(page.id, resource))
+      .globalState(makeResourceToken(pageId, resource))
       .getAll();
   }
 
   async unsaveAssetId(
-    page: FacebookPage,
+    page: string | FacebookPage,
     resource: string,
     name: string
   ): Promise<boolean> {
-    const isDeleted = await this._stateController
-      .globalState(makeResourceToken(page.id, resource))
-      .delete(name);
+    const pageId = typeof page === 'string' ? page : page.id;
 
+    const isDeleted = await this._stateController
+      .globalState(makeResourceToken(pageId, resource))
+      .delete(name);
     return isDeleted;
   }
 
-  getAttachment(page: FacebookPage, name: string): Promise<undefined | string> {
+  getAttachment(
+    page: string | FacebookPage,
+    name: string
+  ): Promise<undefined | string> {
     return this.getAssetId(page, ATTACHMENT, name);
   }
 
   saveAttachment(
-    page: FacebookPage,
+    page: string | FacebookPage,
     name: string,
     id: string
   ): Promise<boolean> {
     return this.saveAssetId(page, ATTACHMENT, name, id);
   }
 
-  getAllAttachments(page: FacebookPage): Promise<null | Map<string, string>> {
+  getAllAttachments(
+    page: string | FacebookPage
+  ): Promise<null | Map<string, string>> {
     return this.getAllAssets(page, ATTACHMENT);
   }
 
-  unsaveAttachment(page: FacebookPage, name: string): Promise<boolean> {
+  unsaveAttachment(
+    page: string | FacebookPage,
+    name: string
+  ): Promise<boolean> {
     return this.unsaveAssetId(page, ATTACHMENT, name);
   }
 
   async uploadChatAttachment(
-    page: FacebookPage,
+    page: string | FacebookPage,
     name: string,
     node: SociablyNode
   ): Promise<string> {
@@ -125,24 +137,33 @@ export class FacebookAssetsManager {
     return attachmentId;
   }
 
-  getPersona(page: FacebookPage, name: string): Promise<undefined | string> {
+  getPersona(
+    page: string | FacebookPage,
+    name: string
+  ): Promise<undefined | string> {
     return this.getAssetId(page, PERSONA, name);
   }
 
-  getAllPersonas(page: FacebookPage): Promise<null | Map<string, string>> {
+  getAllPersonas(
+    page: string | FacebookPage
+  ): Promise<null | Map<string, string>> {
     return this.getAllAssets(page, PERSONA);
   }
 
-  savePersona(page: FacebookPage, name: string, id: string): Promise<boolean> {
+  savePersona(
+    page: string | FacebookPage,
+    name: string,
+    id: string
+  ): Promise<boolean> {
     return this.saveAssetId(page, PERSONA, name, id);
   }
 
-  unsavePersona(page: FacebookPage, name: string): Promise<boolean> {
+  unsavePersona(page: string | FacebookPage, name: string): Promise<boolean> {
     return this.unsaveAssetId(page, PERSONA, name);
   }
 
   async createPersona(
-    page: FacebookPage,
+    page: string | FacebookPage,
     assetName: string,
     params: {
       name: string;
@@ -165,7 +186,10 @@ export class FacebookAssetsManager {
     return personaId;
   }
 
-  async deletePersona(page: FacebookPage, name: string): Promise<boolean> {
+  async deletePersona(
+    page: string | FacebookPage,
+    name: string
+  ): Promise<boolean> {
     const personaId = await this.getPersona(page, name);
     if (!personaId) {
       return false;

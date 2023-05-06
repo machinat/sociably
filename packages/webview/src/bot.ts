@@ -47,7 +47,7 @@ export class WebviewBot
 {
   private _server: WebviewSocketServer<AnyServerAuthenticator>;
   engine: Engine<
-    null | WebviewConnection,
+    WebviewConnection,
     EventInput,
     WebviewComponent,
     WebSocketJob,

@@ -310,16 +310,16 @@ export class TelegramServerAuthenticator
     chatId: number | string,
     userId: number
   ) {
-    const bot = new TelegramUser(botId, true);
+    const agent = new TelegramUser(botId, true);
     try {
       const [chatMember, chatData] = await Promise.all([
         this.bot.requestApi({
-          bot,
+          agent,
           method: 'getChatMember',
           params: { chat_id: chatId, user_id: userId },
         }),
         this.bot.requestApi({
-          bot,
+          agent,
           method: 'getChat',
           params: { chat_id: chatId },
         }),

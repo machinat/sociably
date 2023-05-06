@@ -56,7 +56,7 @@ type TwitterBotOptions = {
 
 type ApiCallOptions = {
   /** The agent user to make the API call with */
-  agent?: TwitterUser;
+  agent?: string | TwitterUser;
   /** HTTP method */
   method: string;
   /** API request URL relative to https://api.twitter.com/ */
@@ -76,7 +76,7 @@ export class TwitterBot
   agentSettingsAccessor: AgentSettingsAccessorI;
   client: TwitterWorker;
   engine: Engine<
-    null | TwitterThread,
+    TwitterThread,
     TwitterSegmentValue,
     TwitterComponent<unknown>,
     TwitterJob,
@@ -153,7 +153,8 @@ export class TwitterBot
     params = {},
     asApplication = false,
   }: ApiCallOptions): Promise<Result> {
-    const target = agent ? new TweetTarget(agent.id) : null;
+    const agentId = typeof agent === 'string' ? agent : agent?.id;
+    const target = agentId ? new TweetTarget(agentId) : null;
     try {
       const response = await this.engine.dispatchJobs(target, [
         {
@@ -176,8 +177,8 @@ export class TwitterBot
     }
   }
 
-  async renderMedia(
-    agent: TwitterUser,
+  async uploadMedia(
+    agentIdOrInstance: string | TwitterUser,
     media: SociablyNode
   ): Promise<null | RenderMediaResponse[]> {
     const segments = await this.engine.renderer.render(media, null, null);
@@ -198,6 +199,10 @@ export class TwitterBot
       }
     }
 
+    const agent =
+      typeof agentIdOrInstance === 'string'
+        ? new TwitterUser(agentIdOrInstance)
+        : agentIdOrInstance;
     const { uploadedMedia } = await this.client.uploadMediaSources(
       agent,
       attachments.map(({ source }) => source)
@@ -214,8 +219,8 @@ export class TwitterBot
     }));
   }
 
-  async renderWelcomeMessage(
-    agent: TwitterUser,
+  async createWelcomeMessage(
+    agent: string | TwitterUser,
     name: undefined | string,
     message: SociablyNode
   ): Promise<null | {
@@ -228,8 +233,9 @@ export class TwitterBot
     /* eslint-enable camelcase */
     name: string;
   }> {
+    const agentId = typeof agent === 'string' ? agent : agent?.id;
     const response = await this.engine.render(
-      new TweetTarget(agent.id),
+      new TweetTarget(agentId),
       message,
       createWelcomeMessageJobs(name)
     );
@@ -237,13 +243,18 @@ export class TwitterBot
   }
 
   async fetchMediaFile(
-    agent: TwitterUser,
+    agentIdOrInstance: string | TwitterUser,
     url: string
   ): Promise<{
     content: NodeJS.ReadableStream;
     contentType?: string;
     contentLength?: number;
   }> {
+    const agent =
+      typeof agentIdOrInstance === 'string'
+        ? new TwitterUser(agentIdOrInstance)
+        : agentIdOrInstance;
+
     const authHeader = await this.client.getUserOauthHeader(agent, 'GET', url);
     const response = await fetch(url, {
       headers: {

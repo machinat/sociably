@@ -22,73 +22,85 @@ export class LineAssetsManager {
   }
 
   async getAssetId(
-    channel: LineChannel,
+    channel: string | LineChannel,
     resource: string,
     name: string
   ): Promise<undefined | string> {
+    const channelId = typeof channel === 'string' ? channel : channel.id;
     const existed = await this._stateController
-      .globalState(resourceToken(channel.id, resource))
+      .globalState(resourceToken(channelId, resource))
       .get<string>(name);
 
     return existed || undefined;
   }
 
   async saveAssetId(
-    channel: LineChannel,
+    channel: string | LineChannel,
     resource: string,
     name: string,
     id: string
   ): Promise<boolean> {
+    const channelId = typeof channel === 'string' ? channel : channel.id;
     const isUpdated = await this._stateController
-      .globalState(resourceToken(channel.id, resource))
+      .globalState(resourceToken(channelId, resource))
       .set<string>(name, id);
 
     return isUpdated;
   }
 
   getAllAssets(
-    channel: LineChannel,
+    channel: string | LineChannel,
     resource: string
   ): Promise<null | Map<string, string>> {
+    const channelId = typeof channel === 'string' ? channel : channel.id;
     return this._stateController
-      .globalState(resourceToken(channel.id, resource))
+      .globalState(resourceToken(channelId, resource))
       .getAll();
   }
 
   async unsaveAssetId(
-    channel: LineChannel,
+    channel: string | LineChannel,
     resource: string,
     name: string
   ): Promise<boolean> {
+    const channelId = typeof channel === 'string' ? channel : channel.id;
     const isDeleted = await this._stateController
-      .globalState(resourceToken(channel.id, resource))
+      .globalState(resourceToken(channelId, resource))
       .delete(name);
 
     return isDeleted;
   }
 
-  getRichMenu(channel: LineChannel, name: string): Promise<undefined | string> {
+  getRichMenu(
+    channel: string | LineChannel,
+    name: string
+  ): Promise<undefined | string> {
     return this.getAssetId(channel, RICH_MENU, name);
   }
 
   saveRichMenu(
-    channel: LineChannel,
+    channel: string | LineChannel,
     name: string,
     id: string
   ): Promise<boolean> {
     return this.saveAssetId(channel, RICH_MENU, name, id);
   }
 
-  getAllRichMenus(channel: LineChannel): Promise<null | Map<string, string>> {
+  getAllRichMenus(
+    channel: string | LineChannel
+  ): Promise<null | Map<string, string>> {
     return this.getAllAssets(channel, RICH_MENU);
   }
 
-  unsaveRichMenu(channel: LineChannel, name: string): Promise<boolean> {
+  unsaveRichMenu(
+    channel: string | LineChannel,
+    name: string
+  ): Promise<boolean> {
     return this.unsaveAssetId(channel, RICH_MENU, name);
   }
 
   async createRichMenu(
-    channel: LineChannel,
+    channel: string | LineChannel,
     name: string,
     params: Record<string, unknown>
   ): Promise<string> {
@@ -108,7 +120,10 @@ export class LineAssetsManager {
     return richMenuId;
   }
 
-  async deleteRichMenu(channel: LineChannel, name: string): Promise<boolean> {
+  async deleteRichMenu(
+    channel: string | LineChannel,
+    name: string
+  ): Promise<boolean> {
     const id = await this.getRichMenu(channel, name);
     if (id === undefined) {
       return false;

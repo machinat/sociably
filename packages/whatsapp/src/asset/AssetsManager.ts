@@ -26,67 +26,80 @@ export class WhatsAppAssetsManager {
   }
 
   async getAssetId(
-    agent: WhatsAppAgent,
+    agent: string | WhatsAppAgent,
     resource: string,
     name: string
   ): Promise<undefined | string> {
+    const numberId = typeof agent === 'string' ? agent : agent.numberId;
     const existed = await this._stateController
-      .globalState(makeResourceToken(agent.numberId, resource))
+      .globalState(makeResourceToken(numberId, resource))
       .get<string>(name);
     return existed || undefined;
   }
 
   async saveAssetId(
-    agent: WhatsAppAgent,
+    agent: string | WhatsAppAgent,
     resource: string,
     name: string,
     id: string
   ): Promise<boolean> {
+    const numberId = typeof agent === 'string' ? agent : agent.numberId;
     const isUpdated = await this._stateController
-      .globalState(makeResourceToken(agent.numberId, resource))
+      .globalState(makeResourceToken(numberId, resource))
       .set<string>(name, id);
     return isUpdated;
   }
 
   getAllAssets(
-    agent: WhatsAppAgent,
+    agent: string | WhatsAppAgent,
     resource: string
   ): Promise<null | Map<string, string>> {
+    const numberId = typeof agent === 'string' ? agent : agent.numberId;
     return this._stateController
-      .globalState(makeResourceToken(agent.numberId, resource))
+      .globalState(makeResourceToken(numberId, resource))
       .getAll();
   }
 
   async unsaveAssetId(
-    agent: WhatsAppAgent,
+    agent: string | WhatsAppAgent,
     resource: string,
     name: string
   ): Promise<boolean> {
+    const numberId = typeof agent === 'string' ? agent : agent.numberId;
     const isDeleted = await this._stateController
-      .globalState(makeResourceToken(agent.numberId, resource))
+      .globalState(makeResourceToken(numberId, resource))
       .delete(name);
 
     return isDeleted;
   }
 
-  getMedia(agent: WhatsAppAgent, name: string): Promise<undefined | string> {
+  getMedia(
+    agent: string | WhatsAppAgent,
+    name: string
+  ): Promise<undefined | string> {
     return this.getAssetId(agent, MEDIA, name);
   }
 
-  saveMedia(agent: WhatsAppAgent, name: string, id: string): Promise<boolean> {
+  saveMedia(
+    agent: string | WhatsAppAgent,
+    name: string,
+    id: string
+  ): Promise<boolean> {
     return this.saveAssetId(agent, MEDIA, name, id);
   }
 
-  getAllMedias(agent: WhatsAppAgent): Promise<null | Map<string, string>> {
+  getAllMedias(
+    agent: string | WhatsAppAgent
+  ): Promise<null | Map<string, string>> {
     return this.getAllAssets(agent, MEDIA);
   }
 
-  unsaveMedia(agent: WhatsAppAgent, name: string): Promise<boolean> {
+  unsaveMedia(agent: string | WhatsAppAgent, name: string): Promise<boolean> {
     return this.unsaveAssetId(agent, MEDIA, name);
   }
 
   async uploadMedia(
-    agent: WhatsAppAgent,
+    agent: string | WhatsAppAgent,
     name: string,
     node: SociablyNode
   ): Promise<string> {

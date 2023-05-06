@@ -45,8 +45,8 @@ type TelegramBotOptions = {
 };
 
 type ApiCallOptions = {
-  /** The bot user to make the API call with */
-  bot: TelegramUser;
+  /** The bot user id/username/instance to make the API call with */
+  agent: number | TelegramUser;
   /** Bot API method */
   method: string;
   /** Bot API parameter */
@@ -126,20 +126,28 @@ export class TelegramBot
   }
 
   async fetchFile(
-    bot: TelegramUser,
+    /** The ID or username or instance of the bot user */
+    agentIdOrInstance: number | TelegramUser,
     fileId: string
   ): Promise<null | {
     content: NodeJS.ReadableStream;
     contentType?: string;
     contentLength?: number;
   }> {
-    const botSettings = await this.botSettingsAccessor.getChannelSettings(bot);
+    const agent =
+      typeof agentIdOrInstance === 'number'
+        ? new TelegramUser(agentIdOrInstance, true)
+        : agentIdOrInstance;
+
+    const botSettings = await this.botSettingsAccessor.getChannelSettings(
+      agent
+    );
     if (!botSettings) {
-      throw new Error(`Bot ${bot.id} not found`);
+      throw new Error(`Bot agent "${agent.id}" not registered`);
     }
 
     const { file_path: filePath } = await this.requestApi({
-      bot,
+      agent,
       method: 'getFile',
       params: { file_id: fileId },
     });
@@ -169,21 +177,25 @@ export class TelegramBot
   }
 
   async requestApi<Result extends BotApiResult>({
-    bot,
+    agent,
     method,
     params = {},
     uploadFiles,
   }: ApiCallOptions): Promise<Result> {
     try {
-      const response = await this.engine.dispatchJobs(bot, [
-        {
-          botId: bot.id,
-          method,
-          params,
-          key: undefined,
-          files: uploadFiles || [],
-        },
-      ]);
+      const agentId = typeof agent === 'number' ? agent : agent.id;
+      const response = await this.engine.dispatchJobs(
+        new TelegramUser(agentId, true),
+        [
+          {
+            agentId,
+            method,
+            params,
+            key: undefined,
+            files: uploadFiles || [],
+          },
+        ]
+      );
 
       return response.results[0].result as Result;
     } catch (err) {

@@ -25,17 +25,18 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
   }
 
   async getUserProfile(
-    channel: LineChnnel,
-    user: LineUser,
+    channel: string | LineChnnel,
+    user: string | LineUser,
     { inChat }: GetUserProfileOptions = {}
   ): Promise<LineUserProfile> {
+    const userId = typeof user === 'string' ? user : user.id;
     const requestApi = !inChat
-      ? `v2/bot/profile/${user.id}`
+      ? `v2/bot/profile/${userId}`
       : inChat.type === 'group'
-      ? `v2/bot/group/${inChat.id}/member/${user.id}`
+      ? `v2/bot/group/${inChat.id}/member/${userId}`
       : inChat.type === 'room'
-      ? `v2/bot/room/${inChat.id}/member/${user.id}`
-      : `v2/bot/profile/${user.id}`;
+      ? `v2/bot/room/${inChat.id}/member/${userId}`
+      : `v2/bot/profile/${userId}`;
 
     const profileData: LineRawUserProfile = await this.bot.requestApi({
       channel,
@@ -50,17 +51,18 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
    * Get profile object of a group chat. Throws if a user/room chat is received.
    */
   async getGroupProfile(
-    channel: LineChnnel,
-    chat: LineChat
+    channel: string | LineChnnel,
+    chat: string | LineChat
   ): Promise<LineGroupProfile> {
-    if (chat.type !== 'group') {
+    if (typeof chat !== 'string' && chat.type !== 'group') {
       throw new Error(`expect a group chat, got ${chat.type}`);
     }
 
+    const chatId = typeof chat === 'string' ? chat : chat.id;
     const groupSummary: LineGroupData = await this.bot.requestApi({
       channel,
       method: 'GET',
-      url: `v2/bot/group/${chat.id}/summary`,
+      url: `v2/bot/group/${chatId}/summary`,
     });
 
     return new LineGroupProfile(groupSummary);

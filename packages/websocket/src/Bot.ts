@@ -41,7 +41,7 @@ export class WebSocketBot
 {
   private _server: ServerP<any, unknown>;
   engine: Engine<
-    null | WebSocketConnection,
+    WebSocketConnection,
     EventInput,
     WebSocketComponent,
     WebSocketJob,

@@ -13,7 +13,7 @@ export const createChatJob = (
   segments.forEach((segment) => {
     if (segment.type === 'text') {
       jobs.push({
-        botId: chat.botId,
+        agentId: chat.botId,
         method: 'sendMessage',
         params: {
           chat_id: chat.id,
@@ -27,7 +27,7 @@ export const createChatJob = (
       const { method, toNonChatTarget, params, files } = segment.value;
 
       jobs.push({
-        botId: chat.botId,
+        agentId: chat.botId,
         method,
         params: {
           ...params,
@@ -65,7 +65,7 @@ export const createBotScopeJobs = (
       }
 
       jobs.push({
-        botId: botUser.id,
+        agentId: botUser.id,
         method,
         params,
         key: undefined,

@@ -92,8 +92,11 @@ export const createChatJobs = (replyToken: undefined | string) => {
 const MULITCAST_EXECUTION_KEY = 'line.multicast';
 
 export const createMulticastJobs =
-  (channel: LineChannel, targets: string[]) =>
-  (_: null, segments: DispatchableSegment<LineSegmentValue>[]): LineJob[] => {
+  (targets: string[]) =>
+  (
+    channel: LineChannel,
+    segments: DispatchableSegment<LineSegmentValue>[]
+  ): LineJob[] => {
     const jobs: LineJob[] = [];
     let messages: MessageParams[] = [];
 

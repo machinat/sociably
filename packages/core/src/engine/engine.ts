@@ -38,7 +38,7 @@ export default class SociablyEngine<
 
   private _initScope: InitScopeFn;
   private _dispatcher: (
-    frame: DispatchFrame<Target, Job>,
+    frame: DispatchFrame<null | Target, Job>,
     scope: ServiceScope
   ) => Promise<DispatchResponse<Job, Result>>;
 
@@ -50,7 +50,7 @@ export default class SociablyEngine<
     initScope: InitScopeFn = () => createEmptyScope(),
     dispatchWrapper: DispatchWrapper<
       Job,
-      DispatchFrame<Target, Job>,
+      DispatchFrame<null | Target, Job>,
       Result
     > = (dispatch) => dispatch
   ) {
@@ -153,10 +153,10 @@ export default class SociablyEngine<
    * dispatch jobs directly without rendering procedures.
    */
   async dispatchJobs(
-    target: Target,
+    target: null | Target,
     jobs: Job[]
   ): Promise<DispatchResponse<Job, Result>> {
-    const frame: DispatchFrame<Target, Job> = {
+    const frame: DispatchFrame<null | Target, Job> = {
       platform: this.platform,
       target,
       tasks: [{ type: 'dispatch', payload: jobs }],

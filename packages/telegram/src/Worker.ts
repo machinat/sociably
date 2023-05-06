@@ -149,12 +149,12 @@ export default class TelegramWorker
     this._executeJob.bind(this);
 
   private async _executeJob([job]: TelegramJob[]) {
-    const { method, params, files, botId } = job;
+    const { method, params, files, agentId } = job;
     const botSettings = await this._settingsAccessor.getChannelSettings(
-      new TelegramUser(botId, true)
+      new TelegramUser(agentId, true)
     );
     if (!botSettings) {
-      throw new Error(`Bot ${botId} not found`);
+      throw new Error(`Agent bot "${agentId}" not registered`);
     }
 
     const result = await requestBotApi(

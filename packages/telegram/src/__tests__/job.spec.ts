@@ -44,7 +44,7 @@ describe('createChatJob(thread, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendMesage",
@@ -54,7 +54,7 @@ describe('createChatJob(thread, segments)', () => {
           },
         },
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": Array [
             Object {
               "assetTag": "MyBar",
@@ -81,7 +81,7 @@ describe('createChatJob(thread, segments)', () => {
           },
         },
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": Array [],
           "key": "tg.12345.67890",
           "method": "sendMessage",
@@ -153,7 +153,7 @@ describe('createBotScopeJobs(action, segments)', () => {
     ).toMatchInlineSnapshot(`
       Array [
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": undefined,
           "key": undefined,
           "method": "answerCallbackQuery",
@@ -162,7 +162,7 @@ describe('createBotScopeJobs(action, segments)', () => {
           },
         },
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": undefined,
           "key": undefined,
           "method": "editMessageText",
@@ -172,7 +172,7 @@ describe('createBotScopeJobs(action, segments)', () => {
           },
         },
         Object {
-          "botId": 12345,
+          "agentId": 12345,
           "files": Array [
             Object {
               "assetTag": "MyBar",

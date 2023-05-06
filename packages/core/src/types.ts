@@ -8,11 +8,7 @@ import type {
   ServiceScope,
   MaybeContainer,
 } from './service';
-import type {
-  DispatchFrame,
-  DispatchResponse,
-  AnyDispatchFrame,
-} from './engine/types';
+import type { DispatchResponse, AnyDispatchFrame } from './engine/types';
 import type {
   SOCIABLY_ELEMENT_TYPE,
   SOCIABLY_NATIVE_TYPE,
@@ -287,7 +283,7 @@ export type EventMiddleware<
 
 export type DispatchMiddleware<
   Job,
-  Frame extends DispatchFrame<DispatchTarget, Job>,
+  Frame extends AnyDispatchFrame,
   Result
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
@@ -301,7 +297,7 @@ export type SociablyPlatform<
   Context extends AnyEventContext,
   EventResp,
   Job,
-  Frame extends DispatchFrame<DispatchTarget, Job>,
+  Frame extends AnyDispatchFrame,
   Result
 > = {
   name: string;
@@ -355,26 +351,14 @@ export type PopEventWrapper<Context extends AnyEventContext, Response> = (
 
 export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
 
-export type DispatchTarget =
-  | null
-  | SociablyChannel
-  | SociablyThread
-  | SociablyUser;
+export type DispatchTarget = SociablyChannel | SociablyThread | SociablyUser;
 
-export type DispatchFn<
-  Job,
-  Frame extends DispatchFrame<DispatchTarget, Job>,
-  Result
-> = (
+export type DispatchFn<Job, Frame extends AnyDispatchFrame, Result> = (
   frame: Frame,
   scope?: ServiceScope
 ) => Promise<DispatchResponse<Job, Result>>;
 
-export type DispatchWrapper<
-  Job,
-  Frame extends DispatchFrame<DispatchTarget, Job>,
-  Result
-> = (
+export type DispatchWrapper<Job, Frame extends AnyDispatchFrame, Result> = (
   dispatch: (frame: Frame) => Promise<DispatchResponse<Job, Result>>
 ) => DispatchFn<Job, Frame, Result>;
 
@@ -387,7 +371,7 @@ export type PlatformUtilities<
   Context extends AnyEventContext,
   EventResponse,
   Job,
-  Frame extends DispatchFrame<DispatchTarget, Job>,
+  Frame extends AnyDispatchFrame,
   Result
 > = {
   popEventWrapper: PopEventWrapper<Context, EventResponse>;

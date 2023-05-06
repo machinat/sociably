@@ -26,7 +26,7 @@ const updateAssetsFromSuccessfulJobs = async (
   for (let i = 0; i < jobs.length; i += 1) {
     const resultBody = results[i];
     if (resultBody) {
-      const { botId, method, params, files } = jobs[i];
+      const { agentId, method, params, files } = jobs[i];
       const { result } = resultBody;
 
       if (files) {
@@ -63,7 +63,7 @@ const updateAssetsFromSuccessfulJobs = async (
             }
 
             if (fileId) {
-              const bot = new TelegramUser(botId, true);
+              const bot = new TelegramUser(agentId, true);
               updatingAssets.push(manager.saveFile(bot, assetTag, fileId));
             }
           }

@@ -152,7 +152,7 @@ describe('.delegateAuthRequest() on root route', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-      bot: botUser,
+      agent: botUser,
       method: 'getChatMember',
       params: {
         user_id: 67890,
@@ -160,7 +160,7 @@ describe('.delegateAuthRequest() on root route', () => {
       },
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      bot: botUser,
+      agent: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
     });
@@ -567,7 +567,7 @@ describe('.verifyRefreshment()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-      bot: botUser,
+      agent: botUser,
       method: 'getChatMember',
       params: {
         user_id: 67890,
@@ -575,7 +575,7 @@ describe('.verifyRefreshment()', () => {
       },
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      bot: botUser,
+      agent: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
     });

@@ -80,7 +80,7 @@ export class WhatsAppBot
 {
   worker: MetaApiWorker;
   engine: Engine<
-    null | WhatsAppChat | WhatsAppAgent,
+    WhatsAppChat | WhatsAppAgent,
     WhatsAppSegmentValue,
     WhatsAppComponent<unknown>,
     MetaApiJob,
@@ -138,9 +138,14 @@ export class WhatsAppBot
   }
 
   async uploadMedia(
-    agent: WhatsAppAgent,
+    agentIdOrInstance: string | WhatsAppAgent,
     node: SociablyNode
   ): Promise<null | { id: string }> {
+    const agent =
+      typeof agentIdOrInstance === 'string'
+        ? new WhatsAppAgent(agentIdOrInstance)
+        : agentIdOrInstance;
+
     const response = await this.engine.render(
       agent,
       node,

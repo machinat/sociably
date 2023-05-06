@@ -45,8 +45,8 @@ type ApiCallOptions = {
   url: string;
   /** API request parameters */
   params?: Record<string, unknown>;
-  /** The LINE messaging API channel to make the rrequest */
-  channel?: LineChannel;
+  /** The LINE messaging API channel to make the request */
+  channel?: string | LineChannel;
   /** Force to use the access token */
   accessToken?: string;
 };
@@ -57,7 +57,7 @@ type ApiCallOptions = {
 export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
   maxRequestConnections: number;
   engine: Engine<
-    null | LineChat,
+    LineChannel | LineChat,
     LineSegmentValue,
     LineComponent<unknown>,
     LineJob,
@@ -119,11 +119,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
     targets: string[],
     message: SociablyNode
   ): Promise<null | LineDispatchResponse> {
-    return this.engine.render(
-      null,
-      message,
-      createMulticastJobs(channel, targets)
-    );
+    return this.engine.render(channel, message, createMulticastJobs(targets));
   }
 
   async requestApi<ResBody extends MessagingApiResult>({
@@ -139,9 +135,9 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
           method: method ?? 'GET',
           url,
           params,
-          key: undefined,
-          chatChannelId: channel?.id,
+          chatChannelId: typeof channel === 'string' ? channel : channel?.id,
           accessToken,
+          key: undefined,
         },
       ]);
 

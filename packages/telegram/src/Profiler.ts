@@ -51,24 +51,22 @@ export class TelegramProfiler
    * called to fetch user data.
    */
   async getUserProfile(
-    bot: TelegramUser,
-    user: TelegramUser,
-    options?: GetUserProfileOptions
-  ): Promise<TelegramUserProfile>;
-
-  async getUserProfile(
-    bot: TelegramUser,
-    user: TelegramChatSender,
-    options?: GetUserProfileOptions
-  ): Promise<TelegramChatProfile>;
-
-  async getUserProfile(
-    bot: TelegramUser,
+    agent: number | TelegramUser,
     user: TelegramUser | TelegramChatSender,
     options: GetUserProfileOptions = {}
-  ): Promise<TelegramUserProfile | TelegramChatProfile> {
+  ): Promise<TelegramUserProfile> {
     if (user.type !== 'user') {
-      return this.getChatProfile(bot, user);
+      const chatProfile = await this.getChatProfile(agent, user);
+      return new TelegramUserProfile(
+        {
+          id: chatProfile.id,
+          is_bot: false,
+          first_name: chatProfile.firstName || chatProfile.title || '',
+          last_name: chatProfile.lastName,
+          username: chatProfile.username,
+        },
+        chatProfile.avatarUrl
+      );
     }
 
     const { inChat, avatarUrl, fromApi } = options;
@@ -78,7 +76,7 @@ export class TelegramProfiler
       userData = user.data;
     } else {
       const chatMember = await this.bot.requestApi({
-        bot,
+        agent,
         method: 'getChatMember',
         params: {
           chat_id: inChat?.id || user.id,
@@ -97,7 +95,7 @@ export class TelegramProfiler
    * to fetch chat data.
    */
   async getChatProfile(
-    bot: TelegramUser,
+    agent: number | TelegramUser,
     chat: string | number | TelegramChat | TelegramChatSender,
     options: {
       /**
@@ -124,7 +122,7 @@ export class TelegramProfiler
     }
 
     const chatData: RawChat = await this.bot.requestApi({
-      bot,
+      agent,
       method: 'getChat',
       params: { chat_id: chatId },
     });
@@ -134,7 +132,7 @@ export class TelegramProfiler
 
   /** Fetch the photo file of a user */
   async fetchUserPhoto(
-    bot: TelegramUser,
+    agent: number | TelegramUser,
     user: TelegramUser,
     options?: {
       /** If set, the minimum size above the value is chosen. Otherwise the smallest one */
@@ -142,7 +140,7 @@ export class TelegramProfiler
     }
   ): Promise<null | PhotoResponse> {
     const { photos } = await this.bot.requestApi<{ photos: RawPhotoSize[] }>({
-      bot,
+      agent,
       method: 'getUserProfilePhotos',
       params: { user_id: user.id },
     });
@@ -156,7 +154,7 @@ export class TelegramProfiler
     const photoSize =
       sizes.find(({ width }) => width > minWidth) || sizes[sizes.length - 1];
 
-    const fileResponse = await this.bot.fetchFile(bot, photoSize.file_id);
+    const fileResponse = await this.bot.fetchFile(agent, photoSize.file_id);
     if (!fileResponse) {
       return null;
     }
@@ -173,12 +171,12 @@ export class TelegramProfiler
 
   /** Fetch the photo file of a chat */
   async fetchChatPhoto(
-    bot: TelegramUser,
+    agent: number | TelegramUser,
     chat: number | string | TelegramChat | TelegramChatSender,
     options?: { size?: 'big' | 'small' }
   ): Promise<null | PhotoResponse> {
     const { photo } = await this.bot.requestApi<{ photo: RawPhotoSize }>({
-      bot,
+      agent,
       method: 'getChat',
       params: {
         chat_id:
@@ -191,7 +189,7 @@ export class TelegramProfiler
     }
 
     const fileResponse = await this.bot.fetchFile(
-      bot,
+      agent,
       options?.size === 'small' ? photo.small_file_id : photo.big_file_id
     );
     if (!fileResponse) {

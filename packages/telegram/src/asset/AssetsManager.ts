@@ -21,63 +21,76 @@ export class TelegramAssetsManager {
   }
 
   async getAssetId(
-    bot: TelegramUser,
+    agent: number | TelegramUser,
     resource: string,
     name: string
   ): Promise<undefined | string> {
+    const agentId = typeof agent === 'number' ? agent : agent.id;
     const existed = await this._stateController
-      .globalState(makeResourceToken(bot.id, resource))
+      .globalState(makeResourceToken(agentId, resource))
       .get<string>(name);
     return existed || undefined;
   }
 
   async saveAssetId(
-    bot: TelegramUser,
+    agent: number | TelegramUser,
     resource: string,
     name: string,
     id: string
   ): Promise<boolean> {
+    const agentId = typeof agent === 'number' ? agent : agent.id;
     const isUpdated = await this._stateController
-      .globalState(makeResourceToken(bot.id, resource))
+      .globalState(makeResourceToken(agentId, resource))
       .set<string>(name, id);
     return isUpdated;
   }
 
   getAllAssets(
-    bot: TelegramUser,
+    agent: number | TelegramUser,
     resource: string
   ): Promise<null | Map<string, string>> {
+    const agentId = typeof agent === 'number' ? agent : agent.id;
     return this._stateController
-      .globalState(makeResourceToken(bot.id, resource))
+      .globalState(makeResourceToken(agentId, resource))
       .getAll();
   }
 
   async unsaveAssetId(
-    bot: TelegramUser,
+    agent: number | TelegramUser,
     resource: string,
     name: string
   ): Promise<boolean> {
-    const isDeleted = await this._stateController
-      .globalState(makeResourceToken(bot.id, resource))
-      .delete(name);
+    const agentId = typeof agent === 'number' ? agent : agent.id;
 
+    const isDeleted = await this._stateController
+      .globalState(makeResourceToken(agentId, resource))
+      .delete(name);
     return isDeleted;
   }
 
-  getFile(bot: TelegramUser, name: string): Promise<undefined | string> {
-    return this.getAssetId(bot, FILE, name);
+  getFile(
+    agent: number | TelegramUser,
+    name: string
+  ): Promise<undefined | string> {
+    return this.getAssetId(agent, FILE, name);
   }
 
-  saveFile(bot: TelegramUser, name: string, id: string): Promise<boolean> {
-    return this.saveAssetId(bot, FILE, name, id);
+  saveFile(
+    agent: number | TelegramUser,
+    name: string,
+    id: string
+  ): Promise<boolean> {
+    return this.saveAssetId(agent, FILE, name, id);
   }
 
-  getAllFiles(bot: TelegramUser): Promise<null | Map<string, string>> {
-    return this.getAllAssets(bot, FILE);
+  getAllFiles(
+    agent: number | TelegramUser
+  ): Promise<null | Map<string, string>> {
+    return this.getAllAssets(agent, FILE);
   }
 
-  unsaveFile(bot: TelegramUser, name: string): Promise<boolean> {
-    return this.unsaveAssetId(bot, FILE, name);
+  unsaveFile(agent: number | TelegramUser, name: string): Promise<boolean> {
+    return this.unsaveAssetId(agent, FILE, name);
   }
 }
 

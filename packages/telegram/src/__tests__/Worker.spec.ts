@@ -66,12 +66,12 @@ it('makes calls to api', async () => {
   client.start(queue);
 
   const jobs = [
-    { botId: botId1, method: 'foo', params: { n: 1 }, key: undefined },
-    { botId: botId1, method: 'bar', params: { n: 2 }, key: undefined },
-    { botId: botId2, method: 'baz', params: { n: 3 }, key: undefined },
-    { botId: botId2, method: 'foo', params: { n: 4 }, key: undefined },
-    { botId: botId1, method: 'bar', params: { n: 5 }, key: undefined },
-    { botId: botId2, method: 'baz', params: { n: 6 }, key: undefined },
+    { agentId: botId1, method: 'foo', params: { n: 1 }, key: undefined },
+    { agentId: botId1, method: 'bar', params: { n: 2 }, key: undefined },
+    { agentId: botId2, method: 'baz', params: { n: 3 }, key: undefined },
+    { agentId: botId2, method: 'foo', params: { n: 4 }, key: undefined },
+    { agentId: botId1, method: 'bar', params: { n: 5 }, key: undefined },
+    { agentId: botId2, method: 'baz', params: { n: 6 }, key: undefined },
   ];
 
   const promise = queue.executeJobs(jobs);
@@ -118,15 +118,15 @@ it('sequently excute jobs within the same identical chat', async () => {
   client.start(queue);
 
   const jobs = [
-    { botId: botId1, method: 'sendMessage', key: 'foo', params: { n: 1 } },
-    { botId: botId1, method: 'sendPhoto', key: 'foo', params: { n: 2 } },
-    { botId: botId1, method: 'sendMessage', key: 'bar', params: { n: 3 } },
-    { botId: botId1, method: 'sendPhoto', key: 'bar', params: { n: 4 } },
-    { botId: botId2, method: 'sendMessage', key: 'baz', params: { n: 5 } },
-    { botId: botId2, method: 'sendPhoto', key: 'baz', params: { n: 6 } },
-    { botId: botId1, method: 'sendMessage', key: 'foo', params: { n: 7 } },
-    { botId: botId1, method: 'sendMessage', key: 'bar', params: { n: 8 } },
-    { botId: botId2, method: 'sendMessage', key: 'baz', params: { n: 9 } },
+    { agentId: botId1, method: 'sendMessage', key: 'foo', params: { n: 1 } },
+    { agentId: botId1, method: 'sendPhoto', key: 'foo', params: { n: 2 } },
+    { agentId: botId1, method: 'sendMessage', key: 'bar', params: { n: 3 } },
+    { agentId: botId1, method: 'sendPhoto', key: 'bar', params: { n: 4 } },
+    { agentId: botId2, method: 'sendMessage', key: 'baz', params: { n: 5 } },
+    { agentId: botId2, method: 'sendPhoto', key: 'baz', params: { n: 6 } },
+    { agentId: botId1, method: 'sendMessage', key: 'foo', params: { n: 7 } },
+    { agentId: botId1, method: 'sendMessage', key: 'bar', params: { n: 8 } },
+    { agentId: botId2, method: 'sendMessage', key: 'baz', params: { n: 9 } },
   ];
 
   const executePromise = queue.executeJobs(jobs);
@@ -182,15 +182,15 @@ it('open requests up to maxConnections', async () => {
   client.start(queue);
 
   const jobs = [
-    { botId: botId1, method: 'sendMessage', key: 'foo', params: { n: 1 } },
-    { botId: botId1, method: 'sendPhoto', key: 'foo', params: { n: 2 } },
-    { botId: botId1, method: 'sendMessage', key: 'bar', params: { n: 3 } },
-    { botId: botId1, method: 'sendPhoto', key: 'bar', params: { n: 4 } },
-    { botId: botId2, method: 'sendMessage', key: 'baz', params: { n: 5 } },
-    { botId: botId2, method: 'sendPhoto', key: 'baz', params: { n: 6 } },
-    { botId: botId1, method: 'sendMessage', key: 'foo', params: { n: 7 } },
-    { botId: botId1, method: 'sendMessage', key: 'bar', params: { n: 8 } },
-    { botId: botId2, method: 'sendMessage', key: 'baz', params: { n: 9 } },
+    { agentId: botId1, method: 'sendMessage', key: 'foo', params: { n: 1 } },
+    { agentId: botId1, method: 'sendPhoto', key: 'foo', params: { n: 2 } },
+    { agentId: botId1, method: 'sendMessage', key: 'bar', params: { n: 3 } },
+    { agentId: botId1, method: 'sendPhoto', key: 'bar', params: { n: 4 } },
+    { agentId: botId2, method: 'sendMessage', key: 'baz', params: { n: 5 } },
+    { agentId: botId2, method: 'sendPhoto', key: 'baz', params: { n: 6 } },
+    { agentId: botId1, method: 'sendMessage', key: 'foo', params: { n: 7 } },
+    { agentId: botId1, method: 'sendMessage', key: 'bar', params: { n: 8 } },
+    { agentId: botId2, method: 'sendMessage', key: 'baz', params: { n: 9 } },
   ];
 
   const executePromise = queue.executeJobs(jobs);
@@ -248,19 +248,19 @@ it('throw if connection error happen', async () => {
 
   const jobs = [
     {
-      botId: botId1,
+      agentId: botId1,
       method: 'sendMessage',
       params: { text: 'hi' },
       key: 'foo',
     },
     {
-      botId: botId1,
+      agentId: botId1,
       method: 'sendPhoto',
       params: { file_id: 123 },
       key: 'foo',
     },
     {
-      botId: botId1,
+      agentId: botId1,
       method: 'sendMessage',
       params: { text: 'bye' },
       key: 'foo',
@@ -302,19 +302,19 @@ it('throw if api error happen', async () => {
 
   const jobs = [
     {
-      botId: botId1,
+      agentId: botId1,
       method: 'sendMessage',
       params: { text: 'hi' },
       key: 'foo',
     },
     {
-      botId: botId1,
+      agentId: botId1,
       method: 'sendPhoto',
       params: { file_id: 123 },
       key: 'foo',
     },
     {
-      botId: botId1,
+      agentId: botId1,
       method: 'sendMessage',
       params: { text: 'bye' },
       key: 'foo',
@@ -357,7 +357,7 @@ test('with files', async () => {
 
   const jobs = [
     {
-      botId: botId1,
+      agentId: botId1,
       method: 'sendPhoto',
       params: { chat_id: 12345, caption: 'hi photo' },
       key: 'foo',
@@ -375,7 +375,7 @@ test('with files', async () => {
       ],
     },
     {
-      botId: botId1,
+      agentId: botId1,
       method: 'sendMediaGroup',
       params: {
         chat_id: 12345,

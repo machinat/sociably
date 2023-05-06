@@ -228,7 +228,7 @@ export type LineResult = {
 
 export type LineDispatchResponse = DispatchResponse<LineJob, LineResult>;
 
-export type LineDispatchFrame = DispatchFrame<LineChat, LineJob>;
+export type LineDispatchFrame = DispatchFrame<null | LineChat, LineJob>;
 
 export type LineEventMiddleware = EventMiddleware<LineEventContext, null>;
 export type LineDispatchMiddleware = DispatchMiddleware<

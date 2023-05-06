@@ -281,7 +281,7 @@ describe('.requestApi()', () => {
       });
 
     await expect(
-      bot.requestApi({ bot: botUser, method: 'foo', params: { bar: 'baz' } })
+      bot.requestApi({ agent: botUser, method: 'foo', params: { bar: 'baz' } })
     ).resolves.toEqual({
       foo: 'bar',
     });
@@ -312,7 +312,7 @@ describe('.requestApi()', () => {
 
     try {
       await bot.requestApi({
-        bot: botUser,
+        agent: botUser,
         method: 'foo',
         params: { bar: 'baz' },
       });

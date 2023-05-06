@@ -73,8 +73,8 @@ const manager: Moxy<AssetsManagerP> = moxy({
   async saveFile() {},
 } as never);
 
-const botId = 12345;
-const botUser = new TelegramUser(botId, true);
+const agentId = 12345;
+const botUser = new TelegramUser(agentId, true);
 
 const mediaMethodPairs = [
   ['animation', 'sendAnimation'],
@@ -100,7 +100,7 @@ it('ignore noraml messages and media message without assetTag', async () => {
     jobs: [
       sendMessageJob,
       {
-        botId,
+        agentId,
         method: 'sendPhoto',
         params: { chat_id: 67890 },
         files: [
@@ -109,7 +109,7 @@ it('ignore noraml messages and media message without assetTag', async () => {
         ],
       },
       ...mediaMethodPairs.map(([mediaType, method]) => ({
-        botId,
+        agentId,
         method,
         params: { chat_id: 67890 },
         files: [
@@ -135,7 +135,7 @@ it('save files uploaded when sending media with assetTag', async () => {
   const frame = moxy();
 
   const sendPhotoJob = {
-    botId,
+    agentId,
     method: 'sendPhoto',
     params: { chat_id: 67890 },
     files: [
@@ -145,7 +145,7 @@ it('save files uploaded when sending media with assetTag', async () => {
   };
 
   const sendOtherMediaJobs = mediaMethodPairs.map(([mediaType, method]) => ({
-    botId,
+    agentId,
     method,
     params: { chat_id: 67890 },
     files: [
@@ -190,13 +190,13 @@ it('save uploaded media when partial success', async () => {
     [],
     [
       {
-        botId,
+        agentId,
         method: 'sendPhoto',
         params: { chat_id: 67890 },
         files: [{ fieldName: 'photo', assetTag: 'my_photo', fileData }],
       },
       ...mediaMethodPairs.map(([mediaType, method]) => ({
-        botId,
+        agentId,
         method,
         params: { chat_id: 67890 },
         files: [
@@ -240,7 +240,7 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
   const editableMedias = ['animation', 'audio', 'document', 'video'];
 
   const editPhotoJob = {
-    botId,
+    agentId,
     method: 'editMessageMedia',
     params: {
       chat_id: 67890,
@@ -258,7 +258,7 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
   };
 
   const editOtherMediaJobs = editableMedias.map((mediaType) => ({
-    botId,
+    agentId,
     method: 'editMessageMedia',
     params: {
       chat_id: 67890,
@@ -309,7 +309,7 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
     jobs: [
       sendMessageJob,
       {
-        botId,
+        agentId,
         method: 'sendMediaGroup',
         params: {
           chat_id: 67890,

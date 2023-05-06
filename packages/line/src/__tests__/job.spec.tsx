@@ -285,10 +285,7 @@ describe('createMulticastJobs()', () => {
   const channel = new LineChannel('__CHANNEL_ID__');
 
   it('create job of multicast api', () => {
-    const jobs = createMulticastJobs(channel, ['foo', 'bar', 'baz'])(
-      null,
-      segments
-    );
+    const jobs = createMulticastJobs(['foo', 'bar', 'baz'])(channel, segments);
 
     expect(jobs).toMatchInlineSnapshot(`
       Array [
@@ -407,7 +404,7 @@ describe('createMulticastJobs()', () => {
     chatActionValue.mock.getter('getBulkRequest').fakeReturnValue(null);
 
     expect(() =>
-      createMulticastJobs(channel, ['foo', 'bar', 'baz'])(null, [
+      createMulticastJobs(['foo', 'bar', 'baz'])(channel, [
         segment('text', '0', '0'),
         segment('unit', <p />, {
           type: 'message',

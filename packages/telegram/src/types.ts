@@ -131,7 +131,7 @@ export type TelegramComponent<
 > = NativeComponent<Props, Segment>;
 
 export type TelegramJob = {
-  botId: number;
+  agentId: number;
   method: string;
   params: { [k: string]: any };
   key: undefined | string;

@@ -24,8 +24,8 @@ const stateController = moxy<StateControllerI>({
 const bot = moxy<TwitterBot>({
   id: 123456,
   requestApi() {},
-  renderMedia() {},
-  renderWelcomeMessage() {},
+  uploadMedia() {},
+  createWelcomeMessage() {},
 } as never);
 
 const agent = new TwitterUser('1234567890');
@@ -237,7 +237,7 @@ test('unsave asset id', async () => {
   expect(state.delete).toHaveBeenCalledTimes(8);
 });
 
-describe('.renderMedia(tag, media)', () => {
+describe('.uploadMedia(tag, media)', () => {
   it('render and save media', async () => {
     const manager = new TwitterAssetsManager(bot, stateController);
     const photo = <Photo url="https://sociably.io/img/foo.jpg" />;
@@ -254,14 +254,14 @@ describe('.renderMedia(tag, media)', () => {
         media_id_string: '111111111111111111',
       },
     };
-    bot.renderMedia.mock.fake(async () => [uploadResponse]);
+    bot.uploadMedia.mock.fake(async () => [uploadResponse]);
 
-    await expect(manager.renderMedia(agent, 'foo', photo)).resolves.toEqual(
+    await expect(manager.uploadMedia(agent, 'foo', photo)).resolves.toEqual(
       uploadResponse
     );
 
-    expect(bot.renderMedia).toHaveBeenCalledTimes(1);
-    expect(bot.renderMedia).toHaveBeenCalledWith(agent, photo);
+    expect(bot.uploadMedia).toHaveBeenCalledTimes(1);
+    expect(bot.uploadMedia).toHaveBeenCalledWith(agent, photo);
 
     expect(
       stateController.globalState.mock.calls[0].args[0]
@@ -275,7 +275,7 @@ describe('.renderMedia(tag, media)', () => {
     const manager = new TwitterAssetsManager(bot, stateController);
 
     await expect(
-      manager.renderMedia(agent, 'foo', null)
+      manager.uploadMedia(agent, 'foo', null)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"media content is empty"`);
 
     expect(state.set).not.toHaveBeenCalled();
@@ -286,20 +286,20 @@ describe('.renderMedia(tag, media)', () => {
 
     state.get.mock.fake(async () => '1234567890');
     await expect(
-      manager.renderWelcomeMessage(agent, 'my_welcome_message', 'foo')
+      manager.createWelcomeMessage(agent, 'my_welcome_message', 'foo')
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"welcome message [my_welcome_message] already exists"`
     );
 
     expect(state.set).not.toHaveBeenCalled();
-    expect(bot.renderMedia).not.toHaveBeenCalled();
+    expect(bot.uploadMedia).not.toHaveBeenCalled();
   });
 });
 
-test('.renderWelcomeMessage(name, message)', async () => {
+test('.createWelcomeMessage(name, message)', async () => {
   const manager = new TwitterAssetsManager(bot, stateController);
 
-  bot.renderWelcomeMessage.mock.fake(async () => ({
+  bot.createWelcomeMessage.mock.fake(async () => ({
     welcome_message: {
       id: '844385345234',
       created_timestamp: '1470182274821',
@@ -309,14 +309,14 @@ test('.renderWelcomeMessage(name, message)', async () => {
   }));
 
   await expect(
-    manager.renderWelcomeMessage(
+    manager.createWelcomeMessage(
       agent,
       'my_welcome_message',
       <p>Hello World!</p>
     )
   ).resolves.toBe('844385345234');
 
-  expect(bot.renderWelcomeMessage).toHaveBeenCalledWith(
+  expect(bot.createWelcomeMessage).toHaveBeenCalledWith(
     agent,
     'my_welcome_message',
     <p>Hello World!</p>
@@ -327,20 +327,20 @@ test('.renderWelcomeMessage(name, message)', async () => {
   ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_welcome_message', '844385345234');
 
-  bot.renderWelcomeMessage.mock.fake(async () => null);
+  bot.createWelcomeMessage.mock.fake(async () => null);
   await expect(
-    manager.renderWelcomeMessage(agent, 'my_welcome_message', null)
+    manager.createWelcomeMessage(agent, 'my_welcome_message', null)
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"message content is empty"`);
 
   state.get.mock.fake(async () => '1234567890');
   await expect(
-    manager.renderWelcomeMessage(agent, 'my_welcome_message', 'foo')
+    manager.createWelcomeMessage(agent, 'my_welcome_message', 'foo')
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"welcome message [my_welcome_message] already exists"`
   );
 
   expect(state.set).toHaveBeenCalledTimes(1);
-  expect(bot.renderWelcomeMessage).toHaveBeenCalledTimes(2);
+  expect(bot.createWelcomeMessage).toHaveBeenCalledTimes(2);
 });
 
 test('.deleteWelcomeMessage(name)', async () => {
