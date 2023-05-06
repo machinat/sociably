@@ -15,8 +15,10 @@ class WhatsAppAgent
     return new WhatsAppAgent(id);
   }
 
-  platform = WHATSAPP;
   numberId: string;
+
+  readonly platform = WHATSAPP;
+  readonly $$typeofChannel = true;
 
   constructor(numberId: string) {
     this.numberId = numberId;
@@ -24,6 +26,7 @@ class WhatsAppAgent
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['channel'],
       platform: WHATSAPP,
       id: this.numberId,
     };

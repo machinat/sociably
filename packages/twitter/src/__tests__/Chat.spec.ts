@@ -13,6 +13,9 @@ test('with id only', () => {
   expect(chat.uid).toBe('twtr.1234567890.9876543210');
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "9876543210",
       "platform": "twitter",
       "scopeId": "1234567890",

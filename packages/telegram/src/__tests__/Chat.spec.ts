@@ -28,6 +28,9 @@ test('private chat', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": 67890,
       "platform": "telegram",
       "scopeId": 12345,
@@ -57,6 +60,9 @@ test('group chat', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": 67890,
       "platform": "telegram",
       "scopeId": 12345,
@@ -85,6 +91,9 @@ test('without raw data', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": 67890,
       "platform": "telegram",
       "scopeId": 12345,
@@ -111,6 +120,9 @@ test('without raw data', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.@foo_channel"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "@foo_channel",
       "platform": "telegram",
       "scopeId": 12345,

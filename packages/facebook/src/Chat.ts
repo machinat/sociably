@@ -24,7 +24,9 @@ class FacebookChat<Type extends ChatType = ChatType>
 
   pageId: string;
   target: MessagingTarget;
-  platform = FACEBOOK;
+
+  readonly platform = FACEBOOK;
+  readonly $$typeofThread = true;
 
   constructor(pageId: string, target: MessagingTarget) {
     this.pageId = pageId;
@@ -60,6 +62,7 @@ class FacebookChat<Type extends ChatType = ChatType>
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: FACEBOOK,
       scopeId: this.pageId,
       id: this.id,

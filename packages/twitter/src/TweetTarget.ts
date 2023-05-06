@@ -18,11 +18,13 @@ export default class TwitterTweetTarget
     return new TwitterTweetTarget(val.agent, val.tweet);
   }
 
-  platform = TWITTER;
   /** The id of the agent user */
   agentId: string;
   /** The tweet to reply. If it's empty, the tweet is created under agent user's page  */
   tweetId?: string;
+
+  readonly platform = TWITTER;
+  readonly $$typeofThread = true;
 
   constructor(agentId: string, tweetId?: string) {
     this.agentId = agentId;
@@ -31,6 +33,7 @@ export default class TwitterTweetTarget
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: TWITTER,
       scopeId: this.agentId,
       id: this.tweetId || DEFAULT_FEED_SIGN,

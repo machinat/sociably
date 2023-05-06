@@ -191,6 +191,7 @@ it('register auth user topic if authContext.user is present', () => {
   expect(server.subscribeTopic.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       WebviewConnection {
+        "$$typeofThread": true,
         "id": "_CONN_ID_",
         "platform": "webview",
         "serverId": "_SERVER_ID_",
@@ -223,6 +224,7 @@ it('register auth thread topic if authContext.thread is present', () => {
   expect(server.subscribeTopic.mock.calls[0].args).toMatchInlineSnapshot(`
     Array [
       WebviewConnection {
+        "$$typeofThread": true,
         "id": "_CONN_ID_",
         "platform": "webview",
         "serverId": "_SERVER_ID_",

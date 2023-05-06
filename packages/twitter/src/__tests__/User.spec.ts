@@ -25,6 +25,10 @@ test('with id only', () => {
   expect(user.uid).toBe('twtr.6253282');
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "channel",
+        "user",
+      ],
       "id": "6253282",
       "platform": "twitter",
     }
@@ -44,6 +48,10 @@ test('with user data', () => {
   expect(user.uid).toBe('twtr.6253282');
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "channel",
+        "user",
+      ],
       "id": "6253282",
       "platform": "twitter",
     }

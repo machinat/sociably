@@ -5,8 +5,10 @@ import type {
   AuthenticatorCredentialResult,
   CheckDataResult,
 } from '@sociably/auth';
+import WebviewConnection from '../../Connection';
 import { WebviewClientAuthenticator } from '../../types';
 import type { NoneAuthData, NoneAuthContext } from './types';
+import { WEBVIEW } from '../../constant';
 
 const USER_KEY = 'none_user';
 const THREAD_KEY = 'none_thread';
@@ -15,8 +17,8 @@ class NoneClientAuthenticator
   implements
     WebviewClientAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>
 {
-  platform = 'none';
-  marshalTypes = [];
+  readonly platform = WEBVIEW;
+  readonly marshalTypes = [WebviewConnection];
 
   async init(): Promise<void> {}
 

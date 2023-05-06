@@ -25,6 +25,9 @@ test('supergroup sender', () => {
   expect(sender.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(sender.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+      ],
       "id": 12345,
       "platform": "telegram",
     }

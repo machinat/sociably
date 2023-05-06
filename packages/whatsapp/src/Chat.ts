@@ -24,7 +24,9 @@ class WhatsAppChat
 
   agentNumberId: string;
   userNumberId: string;
-  platform = WHATSAPP;
+
+  readonly platform = WHATSAPP;
+  readonly $$typeofThread = true;
 
   constructor(agentNumberId: string, userNumberId: string) {
     this.agentNumberId = agentNumberId;
@@ -33,6 +35,7 @@ class WhatsAppChat
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: WHATSAPP,
       scopeId: this.agentNumberId,
       id: this.userNumberId,

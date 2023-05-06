@@ -29,7 +29,8 @@ class TelegramChat
     });
   }
 
-  platform = TELEGRAM;
+  readonly platform = TELEGRAM;
+  readonly $$typeofThread = true;
   botId: number;
   id: number | string;
   data: null | RawChat;
@@ -47,6 +48,7 @@ class TelegramChat
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: TELEGRAM,
       scopeId: this.botId,
       id: this.id,

@@ -10,6 +10,9 @@ test('preperties', () => {
 
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+      ],
       "id": "_USER_ID_",
       "platform": "line",
       "scopeId": "_PROVIDER_ID_",

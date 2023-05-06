@@ -11,6 +11,9 @@ test('WebviewConnection(serverId, connId)', () => {
   expect(thread.uid).toMatchInlineSnapshot(`"webview.#server.#conn"`);
   expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "#conn",
       "platform": "webview",
       "scopeId": "#server",

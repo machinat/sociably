@@ -11,6 +11,9 @@ test('WebSocketConnection(serverId, connId)', () => {
   expect(thread.uid).toMatchInlineSnapshot(`"websocket.#server.#conn"`);
   expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "#conn",
       "platform": "websocket",
       "scopeId": "#server",

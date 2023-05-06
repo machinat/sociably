@@ -16,7 +16,8 @@ class FacebookPage
   }
 
   id: string;
-  platform = FACEBOOK;
+  readonly platform = FACEBOOK;
+  readonly $$typeofChannel = true;
 
   constructor(pageId: string) {
     this.id = pageId;
@@ -24,6 +25,7 @@ class FacebookPage
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['channel'],
       platform: FACEBOOK,
       id: this.id,
     };

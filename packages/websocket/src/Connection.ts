@@ -20,8 +20,9 @@ class WebSocketConnection
     return new WebSocketConnection(server, id);
   }
 
-  platform = WEBSOCKET;
-  type = 'connection' as const;
+  readonly platform = WEBSOCKET;
+  readonly $$typeofThread = true;
+  readonly type = 'connection';
 
   serverId: string;
   id: string;
@@ -33,6 +34,7 @@ class WebSocketConnection
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: WEBSOCKET,
       scopeId: this.serverId,
       id: this.id,

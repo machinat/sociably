@@ -12,6 +12,9 @@ test('user chat', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._USER_ID_"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "_USER_ID_",
       "platform": "line",
       "scopeId": "_CHANNEL_ID_",
@@ -40,6 +43,9 @@ test('room chat', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._ROOM_ID_"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "_ROOM_ID_",
       "platform": "line",
       "scopeId": "_CHANNEL_ID_",
@@ -68,6 +74,9 @@ test('group chat', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._GROUP_ID_"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "_GROUP_ID_",
       "platform": "line",
       "scopeId": "_CHANNEL_ID_",

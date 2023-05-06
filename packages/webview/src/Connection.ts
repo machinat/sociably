@@ -19,8 +19,9 @@ class WebviewConnection
     return new WebviewConnection(server, id);
   }
 
-  platform = WEBVIEW;
-  type = 'connection' as const;
+  readonly platform = WEBVIEW;
+  readonly $$typeofThread = true;
+  readonly type = 'connection';
 
   serverId: string;
   id: string;
@@ -32,6 +33,7 @@ class WebviewConnection
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: WEBVIEW,
       scopeId: this.serverId,
       id: this.id,

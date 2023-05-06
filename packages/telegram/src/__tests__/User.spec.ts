@@ -22,6 +22,10 @@ test('user with id only', () => {
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+        "channel",
+      ],
       "id": 12345,
       "platform": "telegram",
     }
@@ -50,6 +54,10 @@ test('bot user', () => {
   expect(bot.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(bot.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+        "channel",
+      ],
       "id": 12345,
       "platform": "telegram",
     }
@@ -85,6 +93,10 @@ test('user with raw data', () => {
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+        "channel",
+      ],
       "id": 12345,
       "platform": "telegram",
     }
@@ -115,6 +127,10 @@ test('user with photo url', () => {
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+        "channel",
+      ],
       "id": 12345,
       "platform": "telegram",
     }

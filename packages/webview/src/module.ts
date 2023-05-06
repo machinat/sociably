@@ -45,7 +45,7 @@ import {
 import { BotP } from './Bot';
 import { ReceiverP } from './Receiver';
 import WebviewConnection from './Connection';
-import { MemoizedUser, MemoizedThread } from './authenticators/memoized';
+import { MemoCacheTarget } from './authenticators/memo';
 import type {
   WebviewEventContext,
   WebviewDispatchFrame,
@@ -206,8 +206,7 @@ namespace Webview {
       },
 
       { provide: BaseMarshaler.TypeList, withValue: WebviewConnection },
-      { provide: BaseMarshaler.TypeList, withValue: MemoizedUser },
-      { provide: BaseMarshaler.TypeList, withValue: MemoizedThread },
+      { provide: BaseMarshaler.TypeList, withValue: MemoCacheTarget },
 
       { provide: Auth.HttpOperator, withProvider: AuthHttpOperatorP },
       { provide: Auth.Controller, withProvider: AuthControllerP },

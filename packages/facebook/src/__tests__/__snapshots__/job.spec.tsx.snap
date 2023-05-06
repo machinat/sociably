@@ -4,6 +4,7 @@ exports[`createChatJobs(options)(thread, segments) add attached file data and in
 Array [
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -28,6 +29,7 @@ Array [
   },
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -63,6 +65,7 @@ exports[`createChatJobs(options)(thread, segments) respect options set in job va
 Array [
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -87,6 +90,7 @@ Array [
   },
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -116,6 +120,7 @@ exports[`createChatJobs(options)(thread, segments) respect the empty tag if mess
 Array [
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -144,6 +149,7 @@ exports[`createChatJobs(options)(thread, segments) with message metadata 1`] = `
 Array [
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -163,6 +169,7 @@ Array [
   },
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -187,6 +194,7 @@ Array [
   },
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -205,6 +213,7 @@ Array [
   },
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
@@ -229,6 +238,7 @@ Array [
   },
   Object {
     "channel": FacebookPage {
+      "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },

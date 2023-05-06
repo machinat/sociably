@@ -549,6 +549,7 @@ describe('.verifyRefreshment()', () => {
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
+          "$$typeofChannel": true,
           "id": "_BOT_CHAN_ID_",
           "platform": "line",
         },
@@ -578,6 +579,7 @@ describe('.verifyRefreshment()', () => {
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
+          "$$typeofChannel": true,
           "id": "_BOT_CHAN_ID_",
           "platform": "line",
         },
@@ -607,6 +609,7 @@ describe('.verifyRefreshment()', () => {
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
+          "$$typeofChannel": true,
           "id": "_BOT_CHAN_ID_",
           "platform": "line",
         },
@@ -801,6 +804,7 @@ describe('.verifyRefreshment()', () => {
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
+          "$$typeofChannel": true,
           "id": "_BOT_CHAN_ID_",
           "platform": "line",
         },

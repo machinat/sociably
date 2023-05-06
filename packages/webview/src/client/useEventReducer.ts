@@ -1,5 +1,5 @@
 import { useReducer, useEffect } from 'react';
-import type WebviewClient from './client';
+import type WebviewClient from './Client';
 import type { EventValue, AnyClientAuthenticator } from '../types';
 import type { ClientEventContext, EventContextOfClient } from './types';
 

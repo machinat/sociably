@@ -27,6 +27,7 @@ Array [
       "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "userId": "67890",
@@ -67,6 +68,7 @@ Array [
       "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "userId": "67890",
@@ -107,6 +109,7 @@ Array [
       "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "userId": "67890",
@@ -124,6 +127,7 @@ Array [
       "params": Object {},
     },
     "target": TwitterChat {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "userId": "67890",
@@ -153,6 +157,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -177,6 +182,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -201,6 +207,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -237,6 +244,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -261,6 +269,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -292,6 +301,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -316,6 +326,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -336,6 +347,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -360,6 +372,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -384,6 +397,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -408,6 +422,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -441,6 +456,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -460,6 +476,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -484,6 +501,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -508,6 +526,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -525,6 +544,7 @@ Array [
       "params": Object {},
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": undefined,
@@ -549,6 +569,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": "56789",
@@ -573,6 +594,7 @@ Array [
       "url": "2/tweets",
     },
     "target": TwitterTweetTarget {
+      "$$typeofThread": true,
       "agentId": "12345",
       "platform": "twitter",
       "tweetId": "56789",
@@ -618,6 +640,7 @@ Array [
       "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
+      "$$typeofThread": true,
       "agentId": "",
       "platform": "twitter",
       "userId": "",
@@ -666,6 +689,7 @@ Array [
       "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
+      "$$typeofThread": true,
       "agentId": "",
       "platform": "twitter",
       "userId": "",
@@ -701,6 +725,7 @@ Array [
       "url": "1.1/direct_messages/events/new.json",
     },
     "target": TwitterChat {
+      "$$typeofThread": true,
       "agentId": "",
       "platform": "twitter",
       "userId": "",

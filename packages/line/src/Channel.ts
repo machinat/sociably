@@ -16,7 +16,8 @@ class LineChannel
   }
 
   id: string;
-  platform = LINE;
+  readonly platform = LINE;
+  readonly $$typeofChannel = true;
 
   constructor(id: string) {
     this.id = id;
@@ -24,6 +25,7 @@ class LineChannel
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['channel'],
       platform: LINE,
       id: this.id,
     };

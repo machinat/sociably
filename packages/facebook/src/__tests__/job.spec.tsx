@@ -566,6 +566,7 @@ describe('createPostJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -601,6 +602,7 @@ describe('createPostJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -642,6 +644,7 @@ describe('createPostJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -692,6 +695,7 @@ describe('createPostJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -740,6 +744,7 @@ describe('createPostJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -794,6 +799,7 @@ describe('createPostJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -811,6 +817,7 @@ describe('createPostJobs()', () => {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -836,6 +843,7 @@ describe('createPostJobs()', () => {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -918,6 +926,7 @@ describe('createPostJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -935,6 +944,7 @@ describe('createPostJobs()', () => {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -1023,6 +1033,7 @@ describe('createInteractJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -1060,6 +1071,7 @@ describe('createInteractJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -1102,6 +1114,7 @@ describe('createInteractJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -1124,6 +1137,7 @@ describe('createInteractJobs()', () => {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -1201,6 +1215,7 @@ describe('createInteractJobs()', () => {
       Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -1216,6 +1231,7 @@ describe('createInteractJobs()', () => {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -1236,6 +1252,7 @@ describe('createInteractJobs()', () => {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -1251,6 +1268,7 @@ describe('createInteractJobs()', () => {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },

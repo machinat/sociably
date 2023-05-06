@@ -1,4 +1,8 @@
-import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
+import type {
+  SociablyUser,
+  SociablyChannel,
+  UniqueOmniIdentifier,
+} from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TELEGRAM, TG } from './constant';
 import UserProfile from './UserProfile';
@@ -10,7 +14,10 @@ type TelegramUserValue = {
 };
 
 class TelegramUser
-  implements SociablyUser, MarshallableInstance<TelegramUserValue>
+  implements
+    SociablyUser,
+    SociablyChannel,
+    MarshallableInstance<TelegramUserValue>
 {
   static typeName = 'TgUser';
   static fromJSONValue({ id, isBot }: TelegramUserValue): TelegramUser {
@@ -22,9 +29,12 @@ class TelegramUser
   data: null | RawUser;
   avatarUrl: undefined | string;
 
-  platform = TELEGRAM;
-  type = 'user' as const;
   private _isBot?: boolean;
+
+  readonly platform = TELEGRAM;
+  readonly $$typeofUser = true;
+  readonly $$typeofChannel = true;
+  readonly type = 'user';
 
   constructor(
     id: number,
@@ -49,6 +59,7 @@ class TelegramUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['user', 'channel'],
       platform: TELEGRAM,
       id: this.id,
     };

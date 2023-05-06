@@ -49,6 +49,7 @@ describe('#getUserProfile(user)', () => {
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
+          "$$typeofChannel": true,
           "id": "_CHANNEL_ID_",
           "platform": "line",
         },
@@ -108,6 +109,7 @@ describe('#getUserProfile(user)', () => {
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
+          "$$typeofChannel": true,
           "id": "_CHANNEL_ID_",
           "platform": "line",
         },
@@ -146,6 +148,7 @@ describe('#getUserProfile(user)', () => {
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
+          "$$typeofChannel": true,
           "id": "_CHANNEL_ID_",
           "platform": "line",
         },
@@ -188,6 +191,7 @@ describe('#getGroupProfile(user)', () => {
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       Object {
         "channel": LineChannel {
+          "$$typeofChannel": true,
           "id": "_CHANNEL_ID_",
           "platform": "line",
         },

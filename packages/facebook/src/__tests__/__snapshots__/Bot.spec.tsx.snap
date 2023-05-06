@@ -5,6 +5,7 @@ Object {
   "jobs": Array [
     Object {
       "channel": FacebookPage {
+        "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "facebook",
       },
@@ -29,6 +30,7 @@ Object {
     },
     Object {
       "channel": FacebookPage {
+        "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "facebook",
       },
@@ -89,6 +91,7 @@ Object {
       "payload": Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -113,6 +116,7 @@ Object {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -171,6 +175,7 @@ Object {
   "jobs": Array [
     Object {
       "channel": FacebookPage {
+        "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "facebook",
       },
@@ -195,6 +200,7 @@ Object {
     },
     Object {
       "channel": FacebookPage {
+        "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "facebook",
       },
@@ -255,6 +261,7 @@ Object {
       "payload": Array [
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -279,6 +286,7 @@ Object {
         },
         Object {
           "channel": FacebookPage {
+            "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "facebook",
           },

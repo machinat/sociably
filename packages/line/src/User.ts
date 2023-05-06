@@ -12,9 +12,10 @@ export default class LineUser
 {
   static typeName = 'LineUser';
 
-  platform = LINE;
   providerId: string;
   id: string;
+  readonly platform = LINE;
+  readonly $$typeofUser = true;
 
   static fromJSONValue({ provider, id }: LineUserValue): LineUser {
     return new LineUser(provider, id);
@@ -27,6 +28,7 @@ export default class LineUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['user'],
       platform: LINE,
       scopeId: this.providerId,
       id: this.id,

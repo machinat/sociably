@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import WebviewClient from './client';
+import WebviewClient from './Client';
 import type { EventValue, AnyClientAuthenticator } from '../types';
 import type { ClientOptions } from './types';
 

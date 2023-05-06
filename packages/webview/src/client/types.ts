@@ -7,7 +7,7 @@ import type {
   WebviewEvent,
   AnyClientAuthenticator,
 } from '../types';
-import type WebviewClient from './client';
+import type WebviewClient from './Client';
 
 export type ClientEventContext<
   Authenticator extends AnyClientAuthenticator = AnyClientAuthenticator,

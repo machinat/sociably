@@ -17,9 +17,11 @@ class WhatsAppUser
     return new WhatsAppUser(id);
   }
 
-  platform = WHATSAPP;
   numberId: string;
   profileData?: UserProfileData;
+
+  readonly platform = WHATSAPP;
+  readonly $$typeofUser = true;
 
   constructor(numberId: string, profileData?: UserProfileData) {
     this.numberId = numberId;
@@ -34,6 +36,7 @@ class WhatsAppUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['user'],
       platform: WHATSAPP,
       id: this.numberId,
     };

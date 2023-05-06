@@ -39,10 +39,11 @@ class LineChat implements SociablyThread, MarshallableInstance<LineChatValue> {
     return new LineChat(channel, type, id);
   }
 
-  platform = LINE;
   channelId: string;
   type: LineChatType;
   id: string;
+  readonly platform = LINE;
+  readonly $$typeofThread = true;
 
   constructor(channelId: string, type: LineChatType, id: string) {
     this.channelId = channelId;
@@ -52,6 +53,7 @@ class LineChat implements SociablyThread, MarshallableInstance<LineChatValue> {
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: LINE,
       scopeId: this.channelId,
       id: this.id,

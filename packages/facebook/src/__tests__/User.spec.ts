@@ -10,6 +10,9 @@ test('properties', () => {
 
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+      ],
       "id": "foo",
       "platform": "facebook",
       "scopeId": "1234567890",

@@ -16,11 +16,14 @@ export default class TwitterChat
     return new TwitterChat(agent, user);
   }
 
-  platform = TWITTER;
   /** The id of the agent user */
   agentId: string;
   /** The id of the target user */
   userId: string;
+
+  readonly platform = TWITTER;
+  readonly $$typeofThread = true;
+
   constructor(agentId: string, userId: string) {
     this.agentId = agentId;
     this.userId = userId;
@@ -28,6 +31,7 @@ export default class TwitterChat
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: TWITTER,
       scopeId: this.agentId,
       id: this.userId,

@@ -13,7 +13,7 @@ import { WebviewReceiver } from '../Receiver';
 import { WebviewBot } from '../Bot';
 import WebviewConnection from '../Connection';
 import NoneAuthenticator from '../authenticators/none';
-import { MemoizedThread, MemoizedUser } from '../authenticators/memoized';
+import { MemoCacheTarget } from '../authenticators/memo';
 import Webview from '../module';
 
 const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
@@ -265,7 +265,7 @@ test('provide base interfaces', async () => {
 
   expect(bots.get('webview')).toBeInstanceOf(WebviewBot);
   expect(marshalTypes).toEqual(
-    expect.arrayContaining([WebviewConnection, MemoizedThread, MemoizedUser])
+    expect.arrayContaining([WebviewConnection, MemoCacheTarget])
   );
   await app.stop();
 });

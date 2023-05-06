@@ -18,8 +18,10 @@ class TelegramChatSender
     return new TelegramChatSender({ id, type });
   }
 
-  platform = TELEGRAM;
   data: RawChat;
+
+  readonly platform = TELEGRAM;
+  readonly $$typeofUser = true;
 
   constructor(data: RawChat) {
     this.data = data;
@@ -37,6 +39,7 @@ class TelegramChatSender
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['user'],
       platform: TELEGRAM,
       id: this.id,
     };

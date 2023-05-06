@@ -148,6 +148,7 @@ export type RawProps = { value: unknown };
 export type RawElement = SociablyElement<RawProps, typeof SOCIABLY_RAW_TYPE>;
 
 export interface UniqueOmniIdentifier {
+  readonly $$typeof: ('channel' | 'user' | 'thread')[];
   readonly platform: string;
   readonly scopeId?: string | number;
   readonly id: string | number;
@@ -159,6 +160,7 @@ export interface UniqueOmniIdentifier {
  * media, etc. depending on which commnication platform.
  */
 export interface SociablyChannel {
+  readonly $$typeofChannel: true;
   readonly platform: string;
   /**
    * A set of attributes to identify the channel. All the attributes
@@ -177,6 +179,7 @@ export interface SociablyChannel {
  * It's where a communication event happened in Sociably.
  */
 export interface SociablyThread {
+  readonly $$typeofThread: true;
   readonly platform: string;
   /**
    * A set of attributes to identify the thread. All the attributes
@@ -194,6 +197,7 @@ export interface SociablyThread {
  * An user who communicates through a social platform.
  */
 export interface SociablyUser {
+  readonly $$typeofUser: true;
   readonly platform: string;
   /**
    * A set of attributes to identify the user. All the attributes
@@ -246,9 +250,9 @@ export interface SociablyMetadata {
   source: string;
 }
 
-export interface SociablyBot<Thread extends SociablyThread, Job, Result> {
+export interface SociablyBot<Target extends DispatchTarget, Job, Result> {
   render(
-    thread: Thread,
+    target: Target,
     message: SociablyNode
   ): Promise<null | DispatchResponse<Job, Result>>;
 }
@@ -268,7 +272,7 @@ export type EventContext<
 export type AnyEventContext = EventContext<
   SociablyEvent<unknown>,
   SociablyMetadata,
-  SociablyBot<SociablyThread, unknown, unknown>
+  SociablyBot<DispatchTarget, unknown, unknown>
 >;
 
 export type Middleware<Input, Output> = (
@@ -351,7 +355,7 @@ export type PopEventWrapper<Context extends AnyEventContext, Response> = (
 
 export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
 
-export type DispatchTarget = SociablyChannel | SociablyThread | SociablyUser;
+export type DispatchTarget = SociablyChannel | SociablyThread;
 
 export type DispatchFn<Job, Frame extends AnyDispatchFrame, Result> = (
   frame: Frame,

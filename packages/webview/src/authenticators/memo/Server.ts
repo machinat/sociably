@@ -6,18 +6,14 @@ import type {
   VerifyResult,
   CheckDataResult,
 } from '@sociably/auth';
-import { MemoizedUser, MemoizedThread } from './instance';
-import type { MemoizedAuthData, MemoizedAuthContext } from './types';
+import MemoCacheTarget from './CacheTarget';
+import type { MemoAuthData, MemoAuthContext } from './types';
+import { WEBVIEW } from '../../constant';
 
-export class MemoizedServerAuthenticator
-  implements
-    ServerAuthenticator<
-      MemoizedAuthData,
-      MemoizedAuthData,
-      MemoizedAuthContext
-    >
+export class MemoServerAuthenticator
+  implements ServerAuthenticator<MemoAuthData, MemoAuthData, MemoAuthContext>
 {
-  platform = 'memoized';
+  readonly platform = WEBVIEW;
 
   async delegateAuthRequest(
     req: IncomingMessage,
@@ -28,8 +24,8 @@ export class MemoizedServerAuthenticator
   }
 
   async verifyCredential(
-    data: MemoizedAuthData
-  ): Promise<VerifyResult<MemoizedAuthData>> {
+    data: MemoAuthData
+  ): Promise<VerifyResult<MemoAuthData>> {
     return {
       ok: true as const,
       data,
@@ -37,8 +33,8 @@ export class MemoizedServerAuthenticator
   }
 
   async verifyRefreshment(
-    data: MemoizedAuthData
-  ): Promise<VerifyResult<MemoizedAuthData>> {
+    data: MemoAuthData
+  ): Promise<VerifyResult<MemoAuthData>> {
     return {
       ok: true as const,
       data,
@@ -48,21 +44,21 @@ export class MemoizedServerAuthenticator
   checkAuthData({
     user: userId,
     thread: threadId,
-  }: MemoizedAuthData): CheckDataResult<MemoizedAuthContext> {
+  }: MemoAuthData): CheckDataResult<MemoAuthContext> {
     return {
       ok: true,
       contextDetails: {
         channel: null,
-        user: new MemoizedUser(userId),
-        thread: new MemoizedThread(threadId),
+        user: new MemoCacheTarget('localStorage', userId),
+        thread: new MemoCacheTarget('sessionStorage', threadId),
       },
     };
   }
 }
 
 const ServerAuthenticatorP = serviceProviderClass({ lifetime: 'transient' })(
-  MemoizedServerAuthenticator
+  MemoServerAuthenticator
 );
-type ServerAuthenticatorP = MemoizedServerAuthenticator;
+type ServerAuthenticatorP = MemoServerAuthenticator;
 
 export default ServerAuthenticatorP;

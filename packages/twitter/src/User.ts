@@ -23,9 +23,12 @@ export default class TwitterUser
     return new TwitterUser(id);
   }
 
-  platform = TWITTER;
   id: string;
   data: null | RawUser;
+
+  readonly platform = TWITTER;
+  readonly $$typeofChannel = true;
+  readonly $$typeofUser = true;
 
   constructor(id: string, rawData?: RawUser) {
     this.id = id;
@@ -34,6 +37,7 @@ export default class TwitterUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['channel', 'user'],
       platform: TWITTER,
       id: this.id,
     };

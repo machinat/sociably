@@ -17,7 +17,8 @@ export default class FacebookUser
     return new FacebookUser(page, id);
   }
 
-  platform = FACEBOOK;
+  readonly platform = FACEBOOK;
+  readonly $$typeofUser = true;
   pageId: string;
   id: string;
 
@@ -28,6 +29,7 @@ export default class FacebookUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['user'],
       platform: FACEBOOK,
       scopeId: this.pageId,
       id: this.id,

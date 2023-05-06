@@ -8,6 +8,9 @@ test('with no reply tweet', () => {
   expect(user.uid).toBe('twtr.1234567890.-');
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "-",
       "platform": "twitter",
       "scopeId": "1234567890",
@@ -26,6 +29,9 @@ test('with reply tweet id', () => {
   expect(user.uid).toBe('twtr.1234567890.1111111111');
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "thread",
+      ],
       "id": "1111111111",
       "platform": "twitter",
       "scopeId": "1234567890",

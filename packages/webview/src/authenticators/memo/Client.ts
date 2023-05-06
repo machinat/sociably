@@ -5,28 +5,26 @@ import type {
   AuthenticatorCredentialResult,
   CheckDataResult,
 } from '@sociably/auth';
-import { MemoizedUser, MemoizedThread } from './instance';
+import MemoCacheTarget from './CacheTarget';
+import WebviewConnection from '../../Connection';
 import { WebviewClientAuthenticator } from '../../types';
-import type { MemoizedAuthData, MemoizedAuthContext } from './types';
+import type { MemoAuthData, MemoAuthContext } from './types';
+import { WEBVIEW } from '../../constant';
 
 const USER_KEY = 'momoized_user';
-const THREAD_KEY = 'memoized_thread';
+const THREAD_KEY = 'memo_thread';
 
-class MemoizedClientAuthenticator
+class MemoClientAuthenticator
   implements
-    WebviewClientAuthenticator<
-      MemoizedAuthData,
-      MemoizedAuthData,
-      MemoizedAuthContext
-    >
+    WebviewClientAuthenticator<MemoAuthData, MemoAuthData, MemoAuthContext>
 {
-  platform = 'memoized';
-  marshalTypes = [MemoizedUser, MemoizedThread];
+  readonly platform = WEBVIEW;
+  readonly marshalTypes = [WebviewConnection, MemoCacheTarget];
 
   async init(): Promise<void> {}
 
   async fetchCredential(): Promise<
-    AuthenticatorCredentialResult<MemoizedAuthData>
+    AuthenticatorCredentialResult<MemoAuthData>
   > {
     const existedUserId = window.localStorage.getItem(USER_KEY);
     const existedThreadId = window.sessionStorage.getItem(THREAD_KEY);
@@ -59,13 +57,13 @@ class MemoizedClientAuthenticator
   checkAuthData({
     user: userId,
     thread: threadId,
-  }: MemoizedAuthData): CheckDataResult<MemoizedAuthContext> {
+  }: MemoAuthData): CheckDataResult<MemoAuthContext> {
     return {
       ok: true,
       contextDetails: {
         channel: null,
-        user: new MemoizedUser(userId),
-        thread: new MemoizedThread(threadId),
+        user: new MemoCacheTarget('localStorage', userId),
+        thread: new MemoCacheTarget('sessionStorage', threadId),
       },
     };
   }
@@ -75,4 +73,4 @@ class MemoizedClientAuthenticator
   }
 }
 
-export default MemoizedClientAuthenticator;
+export default MemoClientAuthenticator;

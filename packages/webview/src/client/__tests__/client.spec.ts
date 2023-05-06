@@ -5,7 +5,7 @@ import _Connector from '@sociably/websocket/client/Connector';
 import _AuthClient from '@sociably/auth/client';
 import WebviewConnection from '../../Connection';
 import { AnyClientAuthenticator } from '../../types';
-import Client from '../client';
+import Client from '../Client';
 
 const Connector = _Connector as Moxy<typeof _Connector>;
 const AuthClient = _AuthClient as Moxy<typeof _AuthClient>;

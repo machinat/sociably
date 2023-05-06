@@ -46,8 +46,10 @@ type WhatsAppBotOptions = {
 
 const DUMMY_API_CALL_CHANNEL: SociablyChannel = {
   platform: WHATSAPP,
+  $$typeofChannel: true,
   uid: 'whatsapp:dummy_api_call_channel',
   uniqueIdentifier: {
+    $$typeof: ['channel'],
     platform: WHATSAPP,
     id: 'dummy_api_call_channel',
   },

@@ -21,7 +21,9 @@ class FacebookInteractTarget
   pageId: string;
   type?: string;
   id: string;
-  platform = FACEBOOK;
+
+  readonly platform = FACEBOOK;
+  readonly $$typeofThread = true;
 
   constructor(pageId: string, id: string, objectType?: string) {
     this.pageId = pageId;
@@ -35,6 +37,7 @@ class FacebookInteractTarget
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
+      $$typeof: ['thread'],
       platform: FACEBOOK,
       scopeId: this.pageId,
       id: this.id,

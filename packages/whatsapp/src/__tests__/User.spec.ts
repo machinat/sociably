@@ -13,6 +13,9 @@ test('with profile', () => {
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+      ],
       "id": "1234567890",
       "platform": "whatsapp",
     }
@@ -29,6 +32,9 @@ test('with no profile', () => {
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     Object {
+      "$$typeof": Array [
+        "user",
+      ],
       "id": "1234567890",
       "platform": "whatsapp",
     }

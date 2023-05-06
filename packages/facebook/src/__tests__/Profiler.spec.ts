@@ -47,6 +47,7 @@ test('fetch profile from api', async () => {
     Object {
       "method": "GET",
       "page": FacebookPage {
+        "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "facebook",
       },
@@ -98,6 +99,7 @@ it('query additional optionalProfileFields if given', async () => {
     Object {
       "method": "GET",
       "page": FacebookPage {
+        "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "facebook",
       },
