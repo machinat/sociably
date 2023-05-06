@@ -1,4 +1,5 @@
 import moxy from '@moxyjs/moxy';
+import nock from 'nock';
 import type StateControllerI from '@sociably/core/base/StateController';
 import LineChannel from '../../Channel';
 import type { LineBot } from '../../Bot';
@@ -24,17 +25,35 @@ const bot = moxy<LineBot>({
   requestApi: () => ({}),
 } as never);
 
+const channelSettingsAccessor = moxy({
+  getChannelSettings: async () => ({
+    channelId: `__CHANNEL_ID__`,
+    providerId: '__PROVIDER_ID__',
+    accessToken: `__ACCESS_TOKEN__`,
+    channelSecret: `__CHANNEL_SECRET__`,
+  }),
+  getChannelSettingsBatch: async () => [],
+  listAllChannelSettings: async () => [],
+  getLineChatChannelSettingsByBotUserId: async () => null,
+  getLineLoginChannelSettings: async () => null,
+});
+
 const channel = new LineChannel('1234567');
 
 beforeEach(() => {
   stateController.mock.reset();
   state.mock.reset();
   bot.mock.reset();
+  channelSettingsAccessor.mock.reset();
 });
 
-test('get asset id', async () => {
-  const manager = new LineAssetsManager(stateController, bot);
+const manager = new LineAssetsManager(
+  stateController,
+  bot,
+  channelSettingsAccessor
+);
 
+test('get asset id', async () => {
   await expect(manager.getAssetId(channel, 'foo', 'bar')).resolves.toBe(
     undefined
   );
@@ -68,8 +87,6 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const manager = new LineAssetsManager(stateController, bot);
-
   await expect(manager.saveAssetId(channel, 'foo', 'bar', 'baz')).resolves.toBe(
     true
   );
@@ -107,8 +124,6 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new LineAssetsManager(stateController, bot);
-
   await expect(manager.getAllAssets(channel, 'foo')).resolves.toBe(null);
   await expect(manager.getAllRichMenus(channel)).resolves.toBe(null);
 
@@ -139,8 +154,6 @@ test('get all assets', async () => {
 });
 
 test('unsave asset id', async () => {
-  const manager = new LineAssetsManager(stateController, bot);
-
   await expect(manager.unsaveAssetId(channel, 'foo', 'bar')).resolves.toBe(
     true
   );
@@ -171,8 +184,7 @@ test('unsave asset id', async () => {
   expect(state.delete).toHaveBeenCalledTimes(4);
 });
 
-test('#createRichMenu()', async () => {
-  const manager = new LineAssetsManager(stateController, bot);
+test('.createRichMenu()', async () => {
   bot.requestApi.mock.fake(async () => ({
     richMenuId: '_RICH_MENU_ID_',
   }));
@@ -213,8 +225,7 @@ test('#createRichMenu()', async () => {
   expect(state.set).toHaveBeenCalledWith('my_rich_menu', '_RICH_MENU_ID_');
 });
 
-test('#deleteRichMenu()', async () => {
-  const manager = new LineAssetsManager(stateController, bot);
+test('.deleteRichMenu()', async () => {
   bot.requestApi.mock.fake(async () => ({}));
 
   await expect(manager.deleteRichMenu(channel, 'my_rich_menu')).resolves.toBe(
@@ -235,4 +246,77 @@ test('#deleteRichMenu()', async () => {
 
   expect(state.delete).toHaveBeenCalledTimes(1);
   expect(state.delete).toHaveBeenCalledWith('my_rich_menu');
+});
+
+describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
+  const richMenuId = '__RICHMENU_ID__';
+
+  it('upload image content', async () => {
+    const uploadCall = nock('https://api-data.line.me', {
+      reqheaders: {
+        authorization: 'Bearer __ACCESS_TOKEN__',
+        'content-type': 'image/png',
+      },
+    })
+      .post(`/v2/bot/richmenu/${richMenuId}/content`)
+      .reply(200, {});
+
+    await expect(
+      manager.uploadRichMenuImage(channel, richMenuId, Buffer.from('IMAGE'), {
+        contentType: 'image/png',
+      })
+    ).resolves.toBe(undefined);
+
+    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(1);
+    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+      channel
+    );
+
+    expect(uploadCall.isDone()).toBe(true);
+  });
+
+  it('throw if API call fail', async () => {
+    const uploadCall = nock('https://api-data.line.me', {
+      reqheaders: {
+        authorization: 'Bearer __ACCESS_TOKEN__',
+        'content-type': 'image/png',
+      },
+    })
+      .post(`/v2/bot/richmenu/${richMenuId}/content`)
+      .reply(400, { message: 'BOOM' });
+
+    await expect(
+      manager.uploadRichMenuImage(channel, richMenuId, Buffer.from('IMAGE'), {
+        contentType: 'image/png',
+      })
+    ).rejects.toThrowError('BOOM');
+
+    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(1);
+    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+      channel
+    );
+
+    expect(uploadCall.isDone()).toBe(true);
+  });
+
+  it('throw if page not found', async () => {
+    nock.disableNetConnect();
+
+    channelSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+
+    await expect(
+      manager.uploadRichMenuImage(channel, richMenuId, Buffer.from('IMAGE'), {
+        contentType: 'image/png',
+      })
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Line channel \\"[object Object]\\" not registered"`
+    );
+
+    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(1);
+    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+      channel
+    );
+
+    nock.enableNetConnect();
+  });
 });

@@ -1,8 +1,11 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
+import fetch from 'node-fetch';
 import LineChannel from '../Channel';
 import BotP from '../Bot';
+import { ChannelSettingsAccessorI } from '../interface';
 import { PATH_RICHMENU, LINE } from '../constant';
+import LineApiError from '../error';
 
 const RICH_MENU = 'rich_menu';
 
@@ -14,10 +17,16 @@ const resourceToken = (channelId: string, resource: string) =>
  */
 export class LineAssetsManager {
   private _stateController: StateControllerI;
+  private _settingsAccessor: ChannelSettingsAccessorI;
   private _bot: BotP;
 
-  constructor(stateMaanger: StateControllerI, bot: BotP) {
-    this._stateController = stateMaanger;
+  constructor(
+    stateManger: StateControllerI,
+    bot: BotP,
+    settingsAccessor: ChannelSettingsAccessorI
+  ) {
+    this._stateController = stateManger;
+    this._settingsAccessor = settingsAccessor;
     this._bot = bot;
   }
 
@@ -137,6 +146,45 @@ export class LineAssetsManager {
 
     await this.unsaveAssetId(channel, RICH_MENU, name);
     return true;
+  }
+
+  async uploadRichMenuImage(
+    channel: string | LineChannel,
+    menuId: string,
+    content: NodeJS.ReadStream | Buffer,
+    { contentType }: { contentType?: string } = {}
+  ): Promise<void> {
+    const settings = await this._settingsAccessor.getChannelSettings(
+      typeof channel === 'string' ? new LineChannel(channel) : channel
+    );
+    if (!settings) {
+      throw new Error(`Line channel "${channel}" not registered`);
+    }
+
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${settings.accessToken}`,
+    };
+    if (contentType) {
+      headers['Content-Type'] = contentType;
+    }
+
+    const res = await fetch(
+      `https://api-data.line.me/v2/bot/richmenu/${menuId}/content`,
+      {
+        method: 'POST',
+        headers,
+        body: content,
+      }
+    );
+    const body = await res.json();
+
+    if (res.status >= 300) {
+      throw new LineApiError({
+        code: res.status,
+        headers: Object.fromEntries(res.headers),
+        body,
+      });
+    }
   }
 }
 
