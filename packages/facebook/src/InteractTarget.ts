@@ -31,7 +31,7 @@ class FacebookInteractTarget
     this.id = id;
   }
 
-  get channel(): FacebookPage {
+  get page(): FacebookPage {
     return new FacebookPage(this.pageId);
   }
 

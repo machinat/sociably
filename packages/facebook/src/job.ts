@@ -154,7 +154,7 @@ export const createPostJobs = (
   }
 
   const channel =
-    feedOrAlbum instanceof FacebookPage ? feedOrAlbum : feedOrAlbum.channel;
+    feedOrAlbum instanceof FacebookPage ? feedOrAlbum : feedOrAlbum.page;
 
   const [segment] = segments;
   const { type: segType, value, node } = segment;
@@ -299,7 +299,7 @@ export const createInteractJobs = (
 
     if (segType === 'text') {
       jobs.push({
-        channel: target.channel,
+        channel: target.page,
         request: {
           method: 'POST',
           url: initialCommentApiPath,
@@ -313,7 +313,7 @@ export const createInteractJobs = (
 
       const photoJob = photo
         ? {
-            channel: target.channel,
+            channel: target.page,
             request: {
               method: 'POST',
               url: PATH_PHOTOS,
@@ -325,7 +325,7 @@ export const createInteractJobs = (
         : null;
 
       const commentJob = {
-        channel: target.channel,
+        channel: target.page,
         request: {
           method: 'POST',
           url: initialCommentApiPath,
