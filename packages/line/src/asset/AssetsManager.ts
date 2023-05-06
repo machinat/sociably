@@ -151,7 +151,7 @@ export class LineAssetsManager {
   async uploadRichMenuImage(
     channel: string | LineChannel,
     menuId: string,
-    content: NodeJS.ReadStream | Buffer,
+    content: NodeJS.ReadableStream | Buffer,
     { contentType }: { contentType?: string } = {}
   ): Promise<void> {
     const settings = await this._settingsAccessor.getChannelSettings(
