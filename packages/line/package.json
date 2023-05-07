@@ -1,6 +1,6 @@
 {
   "name": "@sociably/line",
-  "version": "0.8.0-alpha.19",
+  "version": "0.8.0-alpha.16",
   "description": "LINE platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -31,7 +31,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@line/liff": "2.21",
     "invariant": "^2.2.4",
     "node-fetch": "^2.6.7",
     "warning": "^4.0.2"
@@ -49,5 +48,9 @@
     "@sociably/webview": {
       "optional": true
     }
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.1",
+    "jsdom": "^22.0.0"
   }
 }

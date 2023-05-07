@@ -1,6 +1,7 @@
 import url from 'url';
-import _liff from '@line/liff';
+import { performance } from 'perf_hooks';
 import moxy, { Moxy } from '@moxyjs/moxy';
+import { JSDOM } from 'jsdom';
 import ClientAuthenticator from '../ClientAuthenticator';
 import LineChannel from '../../Channel';
 import LineChat from '../../Chat';
@@ -8,31 +9,6 @@ import LineUser from '../../User';
 import GroupProfile from '../../GroupProfile';
 import UserProfile from '../../UserProfile';
 import { LiffOs, RefChatType } from '../constant';
-
-jest.mock('@line/liff', () => {
-  const actualMoxy = jest.requireActual('@moxyjs/moxy').default;
-  return actualMoxy({
-    init: () => Promise.resolve(),
-    getOS: () => 'ios',
-    getLanguage: () => 'en-US',
-    getVersion: () => 'v2.1',
-    isInClient: () => true,
-    isLoggedIn: () => true,
-    login: () => {},
-    getAccessToken: () => '_ACCESS_TOKEN_',
-    getContext: () => ({}),
-    getProfile: () =>
-      Promise.resolve({
-        userId: '_USER_ID_',
-        displayName: 'John',
-        pictureUrl: 'https://example.com/abcdefghijklmn',
-        statusMessage: 'Hello, LINE!',
-      }),
-    closeWindow: () => {},
-  });
-});
-
-const liff = _liff as Moxy<typeof _liff>;
 
 const liffContext = {
   type: 'utou',
@@ -48,8 +24,32 @@ const liffContext = {
   },
 };
 
+const liff = moxy({
+  init: () => Promise.resolve(),
+  getOS: () => 'ios',
+  getLanguage: () => 'en-US',
+  getVersion: () => 'v2.1',
+  isInClient: () => true,
+  isLoggedIn: () => true,
+  login: () => {},
+  getAccessToken: () => '_ACCESS_TOKEN_',
+  getContext: () => liffContext,
+  getProfile: () =>
+    Promise.resolve({
+      userId: '_USER_ID_',
+      displayName: 'John',
+      pictureUrl: 'https://example.com/abcdefghijklmn',
+      statusMessage: 'Hello, LINE!',
+    }),
+  closeWindow: () => {},
+});
+
+global.performance = performance as never;
+const { document } = new JSDOM('').window;
 const window = moxy(
   {
+    document,
+    liff,
     location: url.parse(
       'https://sociably.io/foo?bar=baz'
     ) as unknown as Moxy<Location>,
@@ -57,13 +57,22 @@ const window = moxy(
   { includeProperties: ['*'] }
 );
 
-beforeAll(() => {
-  (global as any).window = window;
-});
+global.window = window as never;
+global.document = document as never;
 
 beforeEach(() => {
   liff.mock.reset();
   window.mock.reset();
+  window.document.body.innerHTML = `
+    <html>
+      <head>
+        <script src="..."/>
+      </head>
+      <body>
+        <dev id="app"/>
+      </body>
+    </html>
+  `;
 });
 
 describe('.constructor()', () => {
@@ -104,12 +113,37 @@ describe('.constructor()', () => {
 });
 
 describe('.init()', () => {
-  it('add liff sdk and call init() after loaded', async () => {
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+  it('add liff sdk and call liff.init() after loaded', async () => {
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+    });
 
-    await expect(authenticator.init()).resolves.toBe(undefined);
+    const promise = authenticator.init();
+
+    const liffScriptEle: any = window.document.getElementById('LIFF');
+    expect(liffScriptEle.tagName).toBe('SCRIPT');
+    expect(liffScriptEle.getAttribute('src')).toBe(
+      'https://static.line-scdn.net/liff/edge/2/sdk.js'
+    );
+    expect(liff.init).not.toHaveBeenCalled();
+
+    liffScriptEle.onload();
+
+    await expect(promise).resolves.toBe(undefined);
     expect(liff.init).toHaveBeenCalledTimes(1);
     expect(liff.login).not.toHaveBeenCalled();
+  });
+
+  it('skip adding LIFF SDK if options.shouldLoadSDK is false', async () => {
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
+
+    await expect(authenticator.init()).resolves.toBe(undefined);
+
+    expect(document.getElementById('LIFF')).toBe(null);
+    expect(liff.init).toHaveBeenCalledTimes(1);
   });
 
   it('wait for redirect while in LIFF primary redirecting', async () => {
@@ -119,7 +153,10 @@ describe('.init()', () => {
       .getter('search')
       .fakeReturnValue('?liff.state=__DATA_FROM_LIFF__');
 
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
 
     const promise = authenticator.init();
     setImmediate(jest.runAllTimers);
@@ -137,7 +174,10 @@ describe('.fetchCredential()', () => {
   it('resolve credential data', async () => {
     liff.getContext.mock.fakeReturnValue(liffContext);
 
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
     await authenticator.init();
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
@@ -164,7 +204,10 @@ describe('.fetchCredential()', () => {
         )
       );
 
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
     await authenticator.init();
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
@@ -190,7 +233,10 @@ describe('.fetchCredential()', () => {
         )
       );
 
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
     await authenticator.init();
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
@@ -217,7 +263,10 @@ describe('.fetchCredential()', () => {
         )
       );
 
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
     await authenticator.init();
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
@@ -240,7 +289,10 @@ describe('.fetchCredential()', () => {
     jest.useFakeTimers();
     liff.isLoggedIn.mock.fakeReturnValue(false);
 
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
 
     expect(liff.login).not.toHaveBeenCalled();
 
@@ -274,7 +326,10 @@ describe('.checkAuthData(data)', () => {
   };
 
   test('with no messaging channel', () => {
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
 
     expect(authenticator.checkAuthData(authData)).toEqual({
       ok: true,
@@ -292,7 +347,10 @@ describe('.checkAuthData(data)', () => {
   });
 
   test('with private chat', () => {
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
 
     expect(
       authenticator.checkAuthData({
@@ -318,7 +376,10 @@ describe('.checkAuthData(data)', () => {
   });
 
   test('with group chat', () => {
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
 
     expect(
       authenticator.checkAuthData({
@@ -345,7 +406,10 @@ describe('.checkAuthData(data)', () => {
   });
 
   test('with room chat', () => {
-    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+    const authenticator = new ClientAuthenticator({
+      liffId: '_LIFF_ID_',
+      shouldLoadLiffSDK: false,
+    });
 
     expect(
       authenticator.checkAuthData({
@@ -373,7 +437,10 @@ describe('.checkAuthData(data)', () => {
 });
 
 test('.closeWebview', async () => {
-  const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
+  const authenticator = new ClientAuthenticator({
+    liffId: '_LIFF_ID_',
+    shouldLoadLiffSDK: false,
+  });
   await authenticator.init();
 
   expect(authenticator.closeWebview()).toBe(true);
