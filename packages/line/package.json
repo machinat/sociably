@@ -31,7 +31,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@line/liff": "^2.22.0",
+    "@line/liff": "2.21",
     "invariant": "^2.2.4",
     "node-fetch": "^2.6.7",
     "warning": "^4.0.2"
