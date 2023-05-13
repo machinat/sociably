@@ -105,9 +105,8 @@ describe('initModule(configs)', () => {
       },
     ]);
     expect(pageSettingsAccessor).toEqual({
-      getChannelSettings: expect.any(Function),
-      getChannelSettingsBatch: expect.any(Function),
-      listAllChannelSettings: expect.any(Function),
+      getAgentSettings: expect.any(Function),
+      getAgentSettingsBatch: expect.any(Function),
     });
 
     bot.stop();
@@ -193,22 +192,18 @@ describe('initModule(configs)', () => {
     const [pageSettingsAccessor] = app.useServices([PageSettingsAccessorI]);
 
     await expect(
-      pageSettingsAccessor.getChannelSettings(new FacebookPage('1234567890'))
+      pageSettingsAccessor.getAgentSettings(new FacebookPage('1234567890'))
     ).resolves.toEqual(pageSettings);
     await expect(
-      pageSettingsAccessor.getChannelSettings(new FacebookPage('9876543210'))
+      pageSettingsAccessor.getAgentSettings(new FacebookPage('9876543210'))
     ).resolves.toEqual(null);
 
     await expect(
-      pageSettingsAccessor.getChannelSettingsBatch([
+      pageSettingsAccessor.getAgentSettingsBatch([
         new FacebookPage('1234567890'),
         new FacebookPage('9876543210'),
       ])
     ).resolves.toEqual([pageSettings, null]);
-
-    await expect(
-      pageSettingsAccessor.listAllChannelSettings('facebook')
-    ).resolves.toEqual([pageSettings]);
 
     await app.stop();
   });
@@ -236,23 +231,23 @@ describe('initModule(configs)', () => {
     const [pageSettingsAccessor] = app.useServices([PageSettingsAccessorI]);
 
     await expect(
-      pageSettingsAccessor.getChannelSettings(new FacebookPage('1234567890'))
+      pageSettingsAccessor.getAgentSettings(new FacebookPage('1234567890'))
     ).resolves.toEqual({
       pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_1_',
     });
     await expect(
-      pageSettingsAccessor.getChannelSettings(new FacebookPage('9876543210'))
+      pageSettingsAccessor.getAgentSettings(new FacebookPage('9876543210'))
     ).resolves.toEqual({
       pageId: '9876543210',
       accessToken: '_ACCESS_TOKEN_2_',
     });
     await expect(
-      pageSettingsAccessor.getChannelSettings(new FacebookPage('8888888888'))
+      pageSettingsAccessor.getAgentSettings(new FacebookPage('8888888888'))
     ).resolves.toBe(null);
 
     await expect(
-      pageSettingsAccessor.getChannelSettingsBatch([
+      pageSettingsAccessor.getAgentSettingsBatch([
         new FacebookPage('9876543210'),
         new FacebookPage('1234567890'),
         new FacebookPage('8888888888'),
@@ -261,13 +256,6 @@ describe('initModule(configs)', () => {
       { pageId: '9876543210', accessToken: '_ACCESS_TOKEN_2_' },
       { pageId: '1234567890', accessToken: '_ACCESS_TOKEN_1_' },
       null,
-    ]);
-
-    await expect(
-      pageSettingsAccessor.listAllChannelSettings('facebook')
-    ).resolves.toEqual([
-      { pageId: '1234567890', accessToken: '_ACCESS_TOKEN_1_' },
-      { pageId: '9876543210', accessToken: '_ACCESS_TOKEN_2_' },
     ]);
 
     await app.stop();
@@ -279,9 +267,8 @@ describe('initModule(configs)', () => {
       accessToken: '_ACCESS_TOKEN_',
     };
     const settingsAccessor = {
-      getChannelSettings: async () => pageSettings,
-      getChannelSettingsBatch: async () => [pageSettings, pageSettings],
-      listAllChannelSettings: async () => [pageSettings, pageSettings],
+      getAgentSettings: async () => pageSettings,
+      getAgentSettingsBatch: async () => [pageSettings, pageSettings],
     };
     const myPageSettingsService = serviceProviderFactory({})(
       () => settingsAccessor

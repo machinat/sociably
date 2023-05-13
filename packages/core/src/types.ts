@@ -382,11 +382,10 @@ export type PlatformUtilities<
   dispatchWrapper: DispatchWrapper<Job, Frame, Result>;
 };
 
-export interface ChannelSettingsAccessor<
-  Channel extends SociablyChannel,
+export interface AgentSettingsAccessor<
+  Agent extends SociablyChannel,
   Settings
 > {
-  getChannelSettings(channel: Channel): Promise<null | Settings>;
-  getChannelSettingsBatch(channels: Channel[]): Promise<(null | Settings)[]>;
-  listAllChannelSettings(platfrom: string): Promise<Settings[]>;
+  getAgentSettings(agent: Agent): Promise<null | Settings>;
+  getAgentSettingsBatch(agents: Agent[]): Promise<(null | Settings)[]>;
 }

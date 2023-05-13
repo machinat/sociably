@@ -42,9 +42,8 @@ const basicAuthenticator = moxy<BasicAuthenticator>({
 
 const pageSettings = { pageId: '12345', accessToken: '_ACCESS_TOKEN_' };
 const pageSettingsAccessor = moxy({
-  getChannelSettings: async () => pageSettings,
-  getChannelSettingsBatch: async () => [pageSettings],
-  listAllChannelSettings: async () => [pageSettings],
+  getAgentSettings: async () => pageSettings,
+  getAgentSettingsBatch: async () => [pageSettings],
 });
 
 beforeEach(() => {
@@ -134,8 +133,8 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         data: { page: '12345', user: '67890', profile: profileData },
       });
 
-      expect(pageSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(1);
-      expect(pageSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+      expect(pageSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+      expect(pageSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
         new FacebookPage('12345')
       );
 
@@ -147,7 +146,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     });
 
     it('fail if fail to find page settings', async () => {
-      pageSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+      pageSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
       await expect(
         delegatorOptions.verifyCredential({ page: '12345', user: '67890' })
       ).resolves.toMatchInlineSnapshot(`
@@ -238,8 +237,8 @@ describe('.verifyRefreshment(data)', () => {
       data: { page: '12345', user: '67890', profile: profileData },
     });
 
-    expect(pageSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(1);
-    expect(pageSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+    expect(pageSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(pageSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
       new FacebookPage('12345')
     );
 
@@ -251,7 +250,7 @@ describe('.verifyRefreshment(data)', () => {
   });
 
   it('fails if page not found', async () => {
-    pageSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+    pageSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
     await expect(
       authenticator.verifyRefreshment({ page: '54321', user: '67890' })
     ).resolves.toMatchInlineSnapshot(`

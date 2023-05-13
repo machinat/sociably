@@ -8,15 +8,14 @@ const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 nock.disableNetConnect();
 
 const settingsAccessor = moxy({
-  getChannelSettings: async (channel) => ({
+  getAgentSettings: async (channel) => ({
     accessToken: `access_token_${channel.uid}`,
   }),
-  getChannelSettingsBatch: async (channels) => {
+  getAgentSettingsBatch: async (channels) => {
     return channels.map((channel) => ({
       accessToken: `access_token_${channel.uid}`,
     }));
   },
-  listAllChannelSettings: async () => [],
 });
 
 const jobs = [
@@ -732,7 +731,7 @@ describe('multiple access tokens', () => {
   it('skip job when no access token available', async () => {
     const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
 
-    settingsAccessor.getChannelSettingsBatch.mock.fake(async (channels) => {
+    settingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) => {
       return channels.map((channel) =>
         channel.uid === 'bar'
           ? null

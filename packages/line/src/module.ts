@@ -12,7 +12,7 @@ import Http, { RequestRoute } from '@sociably/http';
 import {
   ConfigsI,
   PlatformUtilitiesI,
-  ChannelSettingsAccessorI,
+  AgentSettingsAccessorI,
 } from './interface';
 import { LINE } from './constant';
 import ReceiverP from './Receiver';
@@ -24,7 +24,7 @@ import LineChannel from './Channel';
 import LineChat from './Chat';
 import LineUser from './User';
 import {
-  createSingleStaticChannelSettingsAccessor,
+  createSingleStaticAgentSettingsAccessor,
   createMultiStaticNumberSettingsAccessor,
 } from './utils/staticChannelSettingsAccessor';
 import type {
@@ -61,8 +61,8 @@ namespace Line {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
-  export const ChannelSettingsAccessor = ChannelSettingsAccessorI;
-  export type ChannelSettingsAccessor = ChannelSettingsAccessorI;
+  export const AgentSettingsAccessor = AgentSettingsAccessorI;
+  export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
     configs: ConfigsI
@@ -101,15 +101,15 @@ namespace Line {
 
     if (configs.channelSettingsService) {
       provisions.push({
-        provide: ChannelSettingsAccessorI,
+        provide: AgentSettingsAccessorI,
         withProvider: serviceProviderFactory({
           deps: [configs.channelSettingsService],
         })((accessor) => accessor),
       });
     } else if (configs.channelSettings) {
       provisions.push({
-        provide: ChannelSettingsAccessorI,
-        withValue: createSingleStaticChannelSettingsAccessor(
+        provide: AgentSettingsAccessorI,
+        withValue: createSingleStaticAgentSettingsAccessor(
           configs.channelSettings
         ),
       });
@@ -119,7 +119,7 @@ namespace Line {
       }
 
       provisions.push({
-        provide: ChannelSettingsAccessorI,
+        provide: AgentSettingsAccessorI,
         withValue: createMultiStaticNumberSettingsAccessor([
           ...configs.multiChannelSettings,
         ]),

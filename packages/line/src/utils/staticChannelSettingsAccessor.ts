@@ -1,4 +1,4 @@
-import { ChannelSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 import {
   LineChatChannelSettings,
   LineLoginChannelSettings,
@@ -8,22 +8,21 @@ import {
 const getLoginChannelIdFromLiffId = (liffId: string): string =>
   liffId.split('-', 1)[0];
 
-export const createSingleStaticChannelSettingsAccessor = (
+export const createSingleStaticAgentSettingsAccessor = (
   channelSettings: LineChatChannelSettings
-): ChannelSettingsAccessorI => {
+): AgentSettingsAccessorI => {
   const liffIds = channelSettings.liff
     ? Object.values(channelSettings.liff)
     : [];
   const loginChannelIds = liffIds.map(getLoginChannelIdFromLiffId);
 
   return {
-    getChannelSettings: async (channel) =>
+    getAgentSettings: async (channel) =>
       channel.id === channelSettings.channelId ? channelSettings : null,
-    getChannelSettingsBatch: async (channels) =>
+    getAgentSettingsBatch: async (channels) =>
       channels.map((channel) =>
         channel.id === channelSettings.channelId ? channelSettings : null
       ),
-    listAllChannelSettings: async () => [channelSettings],
     getLineChatChannelSettingsByBotUserId: async () => channelSettings,
     getLineLoginChannelSettings: async (loginChannelId) =>
       loginChannelIds.includes(loginChannelId)
@@ -43,7 +42,7 @@ type SettingsWithBotUserId = LineChatChannelSettings & {
 
 export const createMultiStaticNumberSettingsAccessor = (
   providerSettingsList: LineProviderSettings[]
-): ChannelSettingsAccessorI => {
+): AgentSettingsAccessorI => {
   const messagingChannelsSettings = new Map<string, SettingsWithBotUserId>();
   const loginChannelsSettings = new Map<string, LineLoginChannelSettings>();
 
@@ -97,13 +96,12 @@ export const createMultiStaticNumberSettingsAccessor = (
   }
 
   return {
-    getChannelSettings: async ({ id: channelId }) =>
+    getAgentSettings: async ({ id: channelId }) =>
       messagingChannelsSettings.get(channelId) || null,
-    getChannelSettingsBatch: async (channels) =>
+    getAgentSettingsBatch: async (channels) =>
       channels.map(
         ({ id: channelId }) => messagingChannelsSettings.get(channelId) || null
       ),
-    listAllChannelSettings: async () => [...messagingChannelsSettings.values()],
     getLineChatChannelSettingsByBotUserId: async (botUserId) => {
       for (const settings of messagingChannelsSettings.values()) {
         if (settings.botUserId === botUserId) {

@@ -26,9 +26,8 @@ const botSettings = {
 };
 
 const botSettingsAccessor = moxy({
-  getChannelSettings: async () => botSettings,
-  getChannelSettingsBatch: async () => [],
-  listAllChannelSettings: async () => [],
+  getAgentSettings: async () => botSettings,
+  getAgentSettingsBatch: async () => [],
 });
 
 const httpOperator = moxy<AuthHttpOperator>({
@@ -186,7 +185,7 @@ describe('.delegateAuthRequest() on root route', () => {
   });
 
   it('fail if bot settings not found', async () => {
-    botSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+    botSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     const search = new URLSearchParams({
       ...telegramLoginSearch,
@@ -436,7 +435,7 @@ describe('.delegateAuthRequest() on login route', () => {
   });
 
   test('redirect with error if bot settings not found', async () => {
-    botSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+    botSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     const req = createReq({
       url: `/auth/telegram/login?botId=12345&redirectUrl=%2Fwebview%2Fhello_world`,
@@ -613,7 +612,7 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if bot settings not found', async () => {
-    botSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+    botSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     await expect(
       authenticator.verifyRefreshment({

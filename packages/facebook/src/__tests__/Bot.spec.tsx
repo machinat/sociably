@@ -47,9 +47,8 @@ const accessToken = '_ACCESS_TOKEN_';
 const appSecret = '_APP_SECRET_';
 
 const pageSettingsAccessor = {
-  getChannelSettings: async () => ({ pageId, accessToken }),
-  getChannelSettingsBatch: async () => [{ pageId, accessToken }],
-  listAllChannelSettings: async () => [{ pageId, accessToken }],
+  getAgentSettings: async () => ({ pageId, accessToken }),
+  getAgentSettingsBatch: async () => [{ pageId, accessToken }],
 };
 
 const page = new FacebookPage(pageId);

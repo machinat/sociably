@@ -26,14 +26,13 @@ const bot = moxy<LineBot>({
 } as never);
 
 const channelSettingsAccessor = moxy({
-  getChannelSettings: async () => ({
+  getAgentSettings: async () => ({
     channelId: `__CHANNEL_ID__`,
     providerId: '__PROVIDER_ID__',
     accessToken: `__ACCESS_TOKEN__`,
     channelSecret: `__CHANNEL_SECRET__`,
   }),
-  getChannelSettingsBatch: async () => [],
-  listAllChannelSettings: async () => [],
+  getAgentSettingsBatch: async () => [],
   getLineChatChannelSettingsByBotUserId: async () => null,
   getLineLoginChannelSettings: async () => null,
 });
@@ -267,8 +266,8 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
       })
     ).resolves.toBe(undefined);
 
-    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(1);
-    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
       channel
     );
 
@@ -291,8 +290,8 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
       })
     ).rejects.toThrowError('BOOM');
 
-    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(1);
-    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
       channel
     );
 
@@ -302,7 +301,7 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
   it('throw if page not found', async () => {
     nock.disableNetConnect();
 
-    channelSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+    channelSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     await expect(
       manager.uploadRichMenuImage(channel, richMenuId, Buffer.from('IMAGE'), {
@@ -312,8 +311,8 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
       `"Line channel \\"[object Object]\\" not registered"`
     );
 
-    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(1);
-    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
       channel
     );
 

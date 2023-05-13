@@ -18,7 +18,7 @@ import LineChat from './Chat';
 import {
   ConfigsI,
   PlatformUtilitiesI,
-  ChannelSettingsAccessorI,
+  AgentSettingsAccessorI,
 } from './interface';
 import { LINE } from './constant';
 import type {
@@ -32,7 +32,7 @@ import type {
 } from './types';
 
 type LineBotOptions = {
-  channelSettingsAccessor: ChannelSettingsAccessorI;
+  channelSettingsAccessor: AgentSettingsAccessorI;
   maxRequestConnections?: number;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<LineJob, LineDispatchFrame, LineResult>;
@@ -155,7 +155,7 @@ const BotP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
-    ChannelSettingsAccessorI,
+    AgentSettingsAccessorI,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
   ],

@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
-import type { ChannelSettingsAccessor, SociablyChannel } from '@sociably/core';
+import type { AgentSettingsAccessor, SociablyChannel } from '@sociably/core';
 import type { SociablyWorker } from '@sociably/core/engine';
 import SociablyQueue, { JobResponse } from '@sociably/core/queue';
 import GraphAPIError from './Error';
@@ -13,7 +13,7 @@ import type { MetaApiJob, MetaApiResult, MetaBatchRequest } from './types';
 type MetaSendingSettings = {
   accessToken: string;
 };
-type MetaSettingsAccessor = ChannelSettingsAccessor<
+type MetaSettingsAccessor = AgentSettingsAccessor<
   SociablyChannel,
   MetaSendingSettings
 >;
@@ -136,7 +136,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     const uniqChannelsMap = new Map(channels.map((chan) => [chan.uid, chan]));
     const uniqChannels = [...uniqChannelsMap.values()];
 
-    const settings = await this._settingsAccessor.getChannelSettingsBatch(
+    const settings = await this._settingsAccessor.getAgentSettingsBatch(
       uniqChannels
     );
     return new Map(

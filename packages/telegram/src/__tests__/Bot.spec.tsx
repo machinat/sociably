@@ -53,9 +53,8 @@ const botSettings = {
 };
 
 const botSettingsAccessor = moxy({
-  getChannelSettings: async () => botSettings,
-  getChannelSettingsBatch: async () => [],
-  listAllChannelSettings: async () => [],
+  getAgentSettings: async () => botSettings,
+  getAgentSettingsBatch: async () => [],
 });
 
 const botUser = new TelegramUser(12345, true);
@@ -119,9 +118,8 @@ describe('.constructor(options)', () => {
     expect(Worker.mock.calls[0].args).toMatchInlineSnapshot(`
       Array [
         Object {
-          "getChannelSettings": [MockFunction moxy(getChannelSettings)],
-          "getChannelSettingsBatch": [MockFunction moxy(getChannelSettingsBatch)],
-          "listAllChannelSettings": [MockFunction moxy(listAllChannelSettings)],
+          "getAgentSettings": [MockFunction moxy(getAgentSettings)],
+          "getAgentSettingsBatch": [MockFunction moxy(getAgentSettingsBatch)],
         },
         100,
       ]

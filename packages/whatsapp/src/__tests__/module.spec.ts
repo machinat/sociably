@@ -157,19 +157,15 @@ describe('initModule(configs)', () => {
     const unknownAgent = new WhatsAppAgent('2222222222');
 
     await expect(
-      agentSettingsAccessor.getChannelSettings(agent)
+      agentSettingsAccessor.getAgentSettings(agent)
     ).resolves.toEqual(agentSettings);
     await expect(
-      agentSettingsAccessor.getChannelSettings(unknownAgent)
+      agentSettingsAccessor.getAgentSettings(unknownAgent)
     ).resolves.toBe(null);
 
     await expect(
-      agentSettingsAccessor.getChannelSettingsBatch([agent, unknownAgent])
+      agentSettingsAccessor.getAgentSettingsBatch([agent, unknownAgent])
     ).resolves.toEqual([agentSettings, null]);
-
-    await expect(
-      agentSettingsAccessor.listAllChannelSettings('facebook')
-    ).resolves.toEqual([agentSettings]);
 
     await app.stop();
   });
@@ -222,38 +218,33 @@ describe('initModule(configs)', () => {
     const unknownAgent = new WhatsAppAgent('4444444444');
 
     await expect(
-      agentSettingsAccessor.getChannelSettings(agent1)
+      agentSettingsAccessor.getAgentSettings(agent1)
     ).resolves.toEqual(agentSettings1);
     await expect(
-      agentSettingsAccessor.getChannelSettings(agent2)
+      agentSettingsAccessor.getAgentSettings(agent2)
     ).resolves.toEqual(agentSettings2);
     await expect(
-      agentSettingsAccessor.getChannelSettings(agent3)
+      agentSettingsAccessor.getAgentSettings(agent3)
     ).resolves.toEqual(agentSettings3);
     await expect(
-      agentSettingsAccessor.getChannelSettings(unknownAgent)
+      agentSettingsAccessor.getAgentSettings(unknownAgent)
     ).resolves.toBe(null);
 
     await expect(
-      agentSettingsAccessor.getChannelSettingsBatch([
+      agentSettingsAccessor.getAgentSettingsBatch([
         agent2,
         agent3,
         unknownAgent,
       ])
     ).resolves.toEqual([agentSettings2, agentSettings3, null]);
 
-    await expect(
-      agentSettingsAccessor.listAllChannelSettings('facebook')
-    ).resolves.toEqual([agentSettings1, agentSettings2, agentSettings3]);
-
     await app.stop();
   });
 
   test('with configs.agentSettingsService', async () => {
     const settingsAccessor = {
-      getChannelSettings: async () => agentSettings,
-      getChannelSettingsBatch: async () => [agentSettings, agentSettings],
-      listAllChannelSettings: async () => [agentSettings, agentSettings],
+      getAgentSettings: async () => agentSettings,
+      getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
     const myAgentSettingsService = serviceProviderFactory({})(
       () => settingsAccessor

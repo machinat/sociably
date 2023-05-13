@@ -10,7 +10,7 @@ import { LINE } from './constant';
 import {
   ConfigsI,
   PlatformUtilitiesI,
-  ChannelSettingsAccessorI,
+  AgentSettingsAccessorI,
 } from './interface';
 import type {
   LineWebhookRequestBody,
@@ -20,7 +20,7 @@ import type {
 
 type LineReceiverOptions = {
   bot: BotP;
-  channelSettingsAccessor: ChannelSettingsAccessorI;
+  channelSettingsAccessor: AgentSettingsAccessorI;
   shouldVerifyRequest?: boolean;
   popEventWrapper: PopEventWrapper<LineEventContext, null>;
 };
@@ -133,7 +133,7 @@ export class LineReceiver extends WebhookReceiver {
 
 const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, ChannelSettingsAccessorI, PlatformUtilitiesI],
+  deps: [ConfigsI, BotP, AgentSettingsAccessorI, PlatformUtilitiesI],
   factory: (
     { shouldVerifyRequest },
     bot,

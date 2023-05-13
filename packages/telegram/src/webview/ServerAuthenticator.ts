@@ -292,7 +292,7 @@ export class TelegramServerAuthenticator
   }
 
   private async _verifyBotSettings(botId: number) {
-    const botSettings = await this.settingsAccessor.getChannelSettings(
+    const botSettings = await this.settingsAccessor.getAgentSettings(
       new TelegramUser(botId, true)
     );
     if (!botSettings) {

@@ -29,9 +29,8 @@ const agentSettings = {
   phoneNumber: '+1234567890',
 };
 const agentSettingsAccessor = moxy({
-  getChannelSettings: async () => agentSettings,
-  getChannelSettingsBatch: async () => [agentSettings],
-  listAllChannelSettings: async () => [agentSettings],
+  getAgentSettings: async () => agentSettings,
+  getAgentSettingsBatch: async () => [agentSettings],
 });
 
 beforeEach(() => {
@@ -132,7 +131,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       },
     });
 
-    agentSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     await expect(verifyCredential({ agent: '3333333333', user: '9876543210' }))
       .resolves.toMatchInlineSnapshot(`
@@ -216,7 +215,7 @@ test('.verifyRefreshment(data)', async () => {
     },
   });
 
-  agentSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+  agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
   await expect(
     authenticator.verifyRefreshment({
       account: '1111111111',

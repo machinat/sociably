@@ -3,7 +3,7 @@ import StateControllerI from '@sociably/core/base/StateController';
 import fetch from 'node-fetch';
 import LineChannel from '../Channel';
 import BotP from '../Bot';
-import { ChannelSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 import { PATH_RICHMENU, LINE } from '../constant';
 import LineApiError from '../error';
 
@@ -17,13 +17,13 @@ const resourceToken = (channelId: string, resource: string) =>
  */
 export class LineAssetsManager {
   private _stateController: StateControllerI;
-  private _settingsAccessor: ChannelSettingsAccessorI;
+  private _settingsAccessor: AgentSettingsAccessorI;
   private _bot: BotP;
 
   constructor(
     stateManger: StateControllerI,
     bot: BotP,
-    settingsAccessor: ChannelSettingsAccessorI
+    settingsAccessor: AgentSettingsAccessorI
   ) {
     this._stateController = stateManger;
     this._settingsAccessor = settingsAccessor;
@@ -154,7 +154,7 @@ export class LineAssetsManager {
     content: NodeJS.ReadableStream | Buffer,
     { contentType }: { contentType?: string } = {}
   ): Promise<void> {
-    const settings = await this._settingsAccessor.getChannelSettings(
+    const settings = await this._settingsAccessor.getAgentSettings(
       typeof channel === 'string' ? new LineChannel(channel) : channel
     );
     if (!settings) {

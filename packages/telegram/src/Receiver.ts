@@ -62,7 +62,7 @@ const handleWebhook = ({
       return { code: 404 };
     }
 
-    const botSettings = await botSettingsAccessor.getChannelSettings(
+    const botSettings = await botSettingsAccessor.getAgentSettings(
       new TelegramUser(botId, true)
     );
     if (!botSettings) {

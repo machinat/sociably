@@ -52,13 +52,12 @@ const agentSettings2 = {
 };
 
 const agentSettingsAccessor = moxy({
-  getChannelSettings: async (agent) =>
+  getAgentSettings: async (agent) =>
     agent.id === '1111111111' ? agentSettings : agentSettings2,
-  getChannelSettingsBatch: async (agents) =>
+  getAgentSettingsBatch: async (agents) =>
     agents.map((agent) =>
       agent.id === '1111111111' ? agentSettings : agentSettings2
     ),
-  listAllChannelSettings: async () => [agentSettings, agentSettings2],
 });
 
 beforeEach(() => {
@@ -385,7 +384,7 @@ it('open requests up to maxConnections', async () => {
 });
 
 it('throw if agent settings not found', async () => {
-  agentSettingsAccessor.getChannelSettings.mock.wrap(
+  agentSettingsAccessor.getAgentSettings.mock.wrap(
     (impl) => (channel) =>
       channel.id === chatThread2.agentId ? null : impl(channel)
   );

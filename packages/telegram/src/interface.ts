@@ -1,5 +1,5 @@
 import { serviceInterface } from '@sociably/core/service';
-import { ChannelSettingsAccessor } from '@sociably/core';
+import { AgentSettingsAccessor } from '@sociably/core';
 import TelegramUser from './User';
 import type {
   TelegramPlatformUtilities,
@@ -23,7 +23,7 @@ export const PlatformUtilitiesI = serviceInterface<TelegramPlatformUtilities>({
   name: 'TelegramPlatformUtilities',
 });
 
-export type BotSettingsAccessorI = ChannelSettingsAccessor<
+export type BotSettingsAccessorI = AgentSettingsAccessor<
   TelegramUser,
   TelegramBotSettings
 >;

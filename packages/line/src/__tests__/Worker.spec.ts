@@ -9,14 +9,13 @@ nock.disableNetConnect();
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const channelSettingsAccessor = moxy({
-  getChannelSettings: async (channel: LineChannel) => ({
+  getAgentSettings: async (channel: LineChannel) => ({
     channelId: `__CHANNEL_ID_${channel.id}__`,
     providerId: '__PROVIDER_ID__',
     accessToken: `__ACCESS_TOKEN_${channel.id}__`,
     channelSecret: `__CHANNEL_SECRET_${channel.id}__`,
   }),
-  getChannelSettingsBatch: async () => [],
-  listAllChannelSettings: async () => [],
+  getAgentSettingsBatch: async () => [],
   getLineChatChannelSettingsByBotUserId: async () => null,
   getLineLoginChannelSettings: async () => null,
 });
@@ -113,10 +112,10 @@ it('makes calls to api', async () => {
     })),
   });
 
-  expect(channelSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(6);
+  expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(6);
 
   jobs.forEach(({ chatChannelId }, i) => {
-    expect(channelSettingsAccessor.getChannelSettings).toHaveBeenNthCalledWith(
+    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenNthCalledWith(
       i + 1,
       new LineChannel(chatChannelId)
     );
@@ -132,7 +131,7 @@ it('fail if unable to get channel setting', async () => {
 
   const scope = lineApi.post('/v2/bot/message/push').reply(200, {});
 
-  channelSettingsAccessor.getChannelSettings.mock.fake(async (channel) =>
+  channelSettingsAccessor.getAgentSettings.mock.fake(async (channel) =>
     channel.id === '1'
       ? null
       : { accessToken: `__ACCESS_TOKEN_${channel.id}__` }

@@ -5,8 +5,7 @@ import { formatNode } from '@sociably/core/utils';
 import snakecaseKeys from 'snakecase-keys';
 import BotP from '../Bot';
 import FacebookPage from '../Page';
-import { PATH_PERSONAS, FACEBOOK, FB } from '../constant';
-import { PageSettingsAccessorI } from '../interface';
+import { PATH_PERSONAS, FB } from '../constant';
 
 const ATTACHMENT = 'attachment';
 const PERSONA = 'persona';
@@ -21,24 +20,11 @@ const makeResourceToken = (pageId: string, resource: string): string =>
  */
 export class FacebookAssetsManager {
   private _bot: BotP;
-  private _pagesSettingsAccessor: PageSettingsAccessorI;
   private _stateController: StateControllerI;
 
-  constructor(
-    stateManager: StateControllerI,
-    bot: BotP,
-    pagesSettingsAccessor: PageSettingsAccessorI
-  ) {
+  constructor(stateManager: StateControllerI, bot: BotP) {
     this._stateController = stateManager;
     this._bot = bot;
-    this._pagesSettingsAccessor = pagesSettingsAccessor;
-  }
-
-  async listPages(): Promise<FacebookPage[]> {
-    const settings = await this._pagesSettingsAccessor.listAllChannelSettings(
-      FACEBOOK
-    );
-    return settings.map(({ pageId }) => new FacebookPage(pageId));
   }
 
   async getAssetId(

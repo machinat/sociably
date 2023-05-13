@@ -291,7 +291,7 @@ export default class TwitterWorker
     let accessToken: string;
     let tokenSecret: string;
     if (agent) {
-      const agentSettings = await this._settingsAccessor.getChannelSettings(
+      const agentSettings = await this._settingsAccessor.getAgentSettings(
         agent
       );
       if (!agentSettings) {

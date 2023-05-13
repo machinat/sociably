@@ -14,13 +14,12 @@ const botToken1 = '1111111:_BOT_TOKEN_';
 const botToken2 = '2222222:_BOT_TOKEN_';
 
 const botSettingsAccessor = moxy({
-  getChannelSettings: async (botUser) => ({
+  getAgentSettings: async (botUser) => ({
     botToken: botUser.id === botId1 ? botToken1 : botToken2,
     botName: 'MyBot',
     secretToken: '_SECRET_TOKEN_',
   }),
-  getChannelSettingsBatch: async () => [],
-  listAllChannelSettings: async () => [],
+  getAgentSettingsBatch: async () => [],
 });
 
 const telegramApi = nock(`https://api.telegram.org`, {
@@ -91,11 +90,11 @@ it('makes calls to api', async () => {
     })),
   });
 
-  expect(botSettingsAccessor.getChannelSettings).toHaveBeenCalledTimes(6);
-  expect(botSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+  expect(botSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(6);
+  expect(botSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
     new TelegramUser(botId1, true)
   );
-  expect(botSettingsAccessor.getChannelSettings).toHaveBeenCalledWith(
+  expect(botSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
     new TelegramUser(botId2, true)
   );
 });

@@ -29,16 +29,6 @@ const bot = moxy<FacebookBot>({
   requestApi() {},
 } as never);
 
-const pageSettings = {
-  pageId: page.id,
-  accessToken: '__ACCESS_TOKEN__',
-};
-const pageSettingsAccessor = {
-  getChannelSettings: async () => pageSettings,
-  getChannelSettingsBatch: async () => [pageSettings],
-  listAllChannelSettings: async () => [pageSettings],
-};
-
 beforeEach(() => {
   stateController.mock.reset();
   state.mock.reset();
@@ -46,11 +36,7 @@ beforeEach(() => {
 });
 
 test('get asset id', async () => {
-  const manager = new FacebookAssetsManager(
-    stateController,
-    bot,
-    pageSettingsAccessor
-  );
+  const manager = new FacebookAssetsManager(stateController, bot);
 
   await expect(manager.getAssetId(page, 'foo', 'bar')).resolves.toBe(undefined);
   await expect(manager.getAttachment(page, 'my_attachment')).resolves.toBe(
@@ -91,11 +77,7 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const manager = new FacebookAssetsManager(
-    stateController,
-    bot,
-    pageSettingsAccessor
-  );
+  const manager = new FacebookAssetsManager(stateController, bot);
 
   await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
     false
@@ -140,11 +122,7 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new FacebookAssetsManager(
-    stateController,
-    bot,
-    pageSettingsAccessor
-  );
+  const manager = new FacebookAssetsManager(stateController, bot);
 
   await expect(manager.getAllAssets(page, 'foo')).resolves.toBe(null);
   await expect(manager.getAllAttachments(page)).resolves.toBe(null);
@@ -174,11 +152,7 @@ test('get all assets', async () => {
 });
 
 test('remove asset id', async () => {
-  const manager = new FacebookAssetsManager(
-    stateController,
-    bot,
-    pageSettingsAccessor
-  );
+  const manager = new FacebookAssetsManager(stateController, bot);
 
   await expect(manager.unsaveAssetId(page, 'foo', 'bar')).resolves.toBe(true);
   await expect(manager.unsaveAttachment(page, 'my_attachment')).resolves.toBe(
@@ -211,11 +185,7 @@ test('remove asset id', async () => {
 });
 
 test('.uploadChatAttachment()', async () => {
-  const manager = new FacebookAssetsManager(
-    stateController,
-    bot,
-    pageSettingsAccessor
-  );
+  const manager = new FacebookAssetsManager(stateController, bot);
   bot.uploadChatAttachment.mock.fake(async () => ({
     attachmentId: '1857777774821032',
   }));
@@ -250,11 +220,7 @@ test('.uploadChatAttachment()', async () => {
 });
 
 test('.createPersona()', async () => {
-  const manager = new FacebookAssetsManager(
-    stateController,
-    bot,
-    pageSettingsAccessor
-  );
+  const manager = new FacebookAssetsManager(stateController, bot);
   bot.requestApi.mock.fake(() => ({
     id: '_PERSONA_ID_',
   }));
@@ -292,11 +258,7 @@ test('.createPersona()', async () => {
 });
 
 test('.deletePersona()', async () => {
-  const manager = new FacebookAssetsManager(
-    stateController,
-    bot,
-    pageSettingsAccessor
-  );
+  const manager = new FacebookAssetsManager(stateController, bot);
   bot.requestApi.mock.fake(() => ({
     id: '_PERSONA_ID_',
   }));

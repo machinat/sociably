@@ -132,17 +132,14 @@ describe('#constructor(options)', () => {
 
     const accessTokenAccessor = Worker.mock.calls[0].args[0];
     await expect(
-      accessTokenAccessor.getChannelSettings(new WhatsAppAgent('1111111111'))
+      accessTokenAccessor.getAgentSettings(new WhatsAppAgent('1111111111'))
     ).resolves.toEqual({ accessToken });
     await expect(
-      accessTokenAccessor.getChannelSettingsBatch([
+      accessTokenAccessor.getAgentSettingsBatch([
         new WhatsAppAgent('1111111111'),
         new WhatsAppAgent('2222222222'),
       ])
     ).resolves.toEqual([{ accessToken }, { accessToken }]);
-    await expect(
-      accessTokenAccessor.listAllChannelSettings('whatsapp')
-    ).resolves.toEqual([{ accessToken }]);
   });
 });
 

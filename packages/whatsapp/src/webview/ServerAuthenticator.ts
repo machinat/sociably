@@ -57,7 +57,7 @@ export class WhatsAppServerAuthenticator
         agent: agentNumberId,
         user: userNumberId,
       }) => {
-        const settings = await this.numberSettingsAccessor.getChannelSettings(
+        const settings = await this.numberSettingsAccessor.getAgentSettings(
           new WhatsAppAgent(agentNumberId)
         );
         if (!settings) {
@@ -119,7 +119,7 @@ export class WhatsAppServerAuthenticator
     data: WhatsAppAuthData
   ): Promise<VerifyResult<WhatsAppAuthData>> {
     const agent = new WhatsAppAgent(data.agent.id);
-    const numberSettings = await this.numberSettingsAccessor.getChannelSettings(
+    const numberSettings = await this.numberSettingsAccessor.getAgentSettings(
       agent
     );
 

@@ -1,4 +1,4 @@
-import { ChannelSettingsAccessor } from '@sociably/core';
+import { AgentSettingsAccessor } from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
 import type WhatsAppAgent from './Agent';
 import type {
@@ -23,7 +23,7 @@ export const PlatformUtilitiesI = serviceInterface<WhatsAppPlatformUtilities>({
   name: 'WhatsAppPlatformUtilities',
 });
 
-export type AgentSettingsAccessorI = ChannelSettingsAccessor<
+export type AgentSettingsAccessorI = AgentSettingsAccessor<
   WhatsAppAgent,
   WhatsAppAgentSettings
 >;

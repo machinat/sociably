@@ -44,15 +44,14 @@ const httpOperator = moxy<AuthHttpOperator>({
 } as never);
 
 const channelSettingsAccessor = moxy({
-  getChannelSettings: async () => ({
+  getAgentSettings: async () => ({
     providerId,
     channelId: botChannelId,
     accessToken: '_ACCESS_TOKEN_',
     channelSecret: '_CHANNEL_SECRET_',
     liff: { default: `${loginChannelId}-_LIFF_1_` },
   }),
-  getChannelSettingsBatch: async () => [],
-  listAllChannelSettings: async () => [],
+  getAgentSettingsBatch: async () => [],
   getLineChatChannelSettingsByBotUserId: async () => null,
   getLineLoginChannelSettings: async () => ({
     providerId,
@@ -120,14 +119,14 @@ describe('.getLiffUrl(channel, path, chat)', () => {
   it('throw if messaging channel settings not found', async () => {
     const authenticator = new ServerAuthenticator(bot, channelSettingsAccessor);
 
-    channelSettingsAccessor.getChannelSettings.mock.fakeResolvedValue(null);
+    channelSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
     await expect(
       authenticator.getLiffUrl(botChannel)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"liff setting for messaging channel \\"_BOT_CHAN_ID_\\" not found"`
     );
 
-    channelSettingsAccessor.getChannelSettings.mock.fakeResolvedValue({
+    channelSettingsAccessor.getAgentSettings.mock.fakeResolvedValue({
       providerId: '_PROVIDER_ID_',
       channelId: '_CHANNEL_ID_',
       accessToken: '_ACCESS_TOKEN_',

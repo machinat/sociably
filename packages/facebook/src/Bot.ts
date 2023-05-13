@@ -1,4 +1,4 @@
-import { ChannelSettingsAccessor } from '@sociably/core';
+import { AgentSettingsAccessor } from '@sociably/core';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import Renderer from '@sociably/core/renderer';
@@ -48,7 +48,7 @@ type FacebookBotOptions = {
   appSecret?: string;
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;
-  pageSettingsAccessor: ChannelSettingsAccessor<
+  pageSettingsAccessor: AgentSettingsAccessor<
     FacebookPage,
     FacebookPageSettings
   >;

@@ -71,13 +71,12 @@ const updateBody = {
 };
 
 const botSettingsAccessor = moxy({
-  getChannelSettings: async () => ({
+  getAgentSettings: async () => ({
     botToken: '_BOT_TOKEN_',
     botName: 'MyBot',
     secretToken: '_SECRET_TOKEN_',
   }),
-  getChannelSettingsBatch: async () => [],
-  listAllChannelSettings: async () => [],
+  getAgentSettingsBatch: async () => [],
 });
 
 beforeEach(() => {
@@ -183,7 +182,7 @@ it('respond 404 if bot settings not found', async () => {
     popEventWrapper,
   });
 
-  botSettingsAccessor.getChannelSettings.mock.fake(async () => null);
+  botSettingsAccessor.getAgentSettings.mock.fake(async () => null);
 
   const req = createReq({
     method: 'POST',

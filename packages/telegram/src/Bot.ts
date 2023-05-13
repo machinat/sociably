@@ -139,9 +139,7 @@ export class TelegramBot
         ? new TelegramUser(agentIdOrInstance, true)
         : agentIdOrInstance;
 
-    const botSettings = await this.botSettingsAccessor.getChannelSettings(
-      agent
-    );
+    const botSettings = await this.botSettingsAccessor.getAgentSettings(agent);
     if (!botSettings) {
       throw new Error(`Bot agent "${agent.id}" not registered`);
     }

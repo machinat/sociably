@@ -160,18 +160,18 @@ describe('initModule(configs)', () => {
       const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
       await expect(
-        agentSettingsAccessor.getChannelSettings(new TwitterUser('1234567890'))
+        agentSettingsAccessor.getAgentSettings(new TwitterUser('1234567890'))
       ).resolves.toEqual({
         userId: '1234567890',
         accessToken: '__ACCESS_TOKEN__',
         tokenSecret: '__ACCESS_SECRET__',
       });
       await expect(
-        agentSettingsAccessor.getChannelSettings(new TwitterUser('9876543210'))
+        agentSettingsAccessor.getAgentSettings(new TwitterUser('9876543210'))
       ).resolves.toBe(null);
 
       await expect(
-        agentSettingsAccessor.getChannelSettingsBatch([
+        agentSettingsAccessor.getAgentSettingsBatch([
           new TwitterUser('1234567890'),
           new TwitterUser('9876543210'),
         ])
@@ -182,16 +182,6 @@ describe('initModule(configs)', () => {
           tokenSecret: '__ACCESS_SECRET__',
         },
         null,
-      ]);
-
-      await expect(
-        agentSettingsAccessor.listAllChannelSettings('twitter')
-      ).resolves.toEqual([
-        {
-          userId: '1234567890',
-          accessToken: '__ACCESS_TOKEN__',
-          tokenSecret: '__ACCESS_SECRET__',
-        },
       ]);
     });
 
@@ -225,26 +215,22 @@ describe('initModule(configs)', () => {
       const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
       await expect(
-        agentSettingsAccessor.getChannelSettings(agent1)
+        agentSettingsAccessor.getAgentSettings(agent1)
       ).resolves.toEqual(agentSettings1);
       await expect(
-        agentSettingsAccessor.getChannelSettings(agent2)
+        agentSettingsAccessor.getAgentSettings(agent2)
       ).resolves.toEqual(agentSettings2);
       await expect(
-        agentSettingsAccessor.getChannelSettings(new TwitterUser('3333333333'))
+        agentSettingsAccessor.getAgentSettings(new TwitterUser('3333333333'))
       ).resolves.toBe(null);
 
       await expect(
-        agentSettingsAccessor.getChannelSettingsBatch([
+        agentSettingsAccessor.getAgentSettingsBatch([
           agent1,
           agent2,
           new TwitterUser('3333333333'),
         ])
       ).resolves.toEqual([agentSettings1, agentSettings2, null]);
-
-      await expect(
-        agentSettingsAccessor.listAllChannelSettings('twitter')
-      ).resolves.toEqual([agentSettings1, agentSettings2]);
     });
 
     test('with options.agentSettings', async () => {
@@ -252,9 +238,8 @@ describe('initModule(configs)', () => {
         name: 'MyAgentSettingsService',
       });
       const mySettingsAccessor = {
-        getChannelSettings: async () => null,
-        getChannelSettingsBatch: async () => [],
-        listAllChannelSettings: async () => [],
+        getAgentSettings: async () => null,
+        getAgentSettingsBatch: async () => [],
       };
 
       const app = Sociably.createApp({

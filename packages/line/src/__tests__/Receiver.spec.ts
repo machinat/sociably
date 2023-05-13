@@ -18,9 +18,8 @@ const channelSettingsAccessor = moxy({
     accessToken: `_ACCESS_TOKEN_${botUserId}_`,
     channelSecret: `_CHANNEL_SECRET_${botUserId}_`,
   }),
-  getChannelSettings: async () => null,
-  getChannelSettingsBatch: async () => [],
-  listAllChannelSettings: async () => [],
+  getAgentSettings: async () => null,
+  getAgentSettingsBatch: async () => [],
   getLineLoginChannelSettings: async () => null,
 });
 

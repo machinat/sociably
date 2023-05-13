@@ -10,7 +10,7 @@ import { LineReceiver } from '../Receiver';
 import LineUserProfile from '../UserProfile';
 import LineGroupProfile from '../GroupProfile';
 import { LineProfiler } from '../Profiler';
-import { ChannelSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 import { LineBot } from '../Bot';
 import LineChannel from '../Channel';
 import LineUser from '../User';
@@ -112,25 +112,21 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [settingsAccessor] = app.useServices([ChannelSettingsAccessorI]);
+    const [settingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      settingsAccessor.getChannelSettings(new LineChannel('_CHANNEL_ID_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_'))
     ).resolves.toEqual(configs.channelSettings);
     await expect(
-      settingsAccessor.getChannelSettings(new LineChannel('_WRONG_CHANNEL_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_WRONG_CHANNEL_'))
     ).resolves.toBe(null);
 
     await expect(
-      settingsAccessor.getChannelSettingsBatch([
+      settingsAccessor.getAgentSettingsBatch([
         new LineChannel('_CHANNEL_ID_'),
         new LineChannel('_WRONG_CHANNEL_'),
       ])
     ).resolves.toEqual([configs.channelSettings, null]);
-
-    await expect(
-      settingsAccessor.listAllChannelSettings('line')
-    ).resolves.toEqual([configs.channelSettings]);
 
     await expect(
       settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_')
@@ -191,7 +187,7 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [settingsAccessor] = app.useServices([ChannelSettingsAccessorI]);
+    const [settingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     const expectedChannel1Settings = {
       botUserId: '_BOT_ID_1_',
@@ -219,20 +215,20 @@ describe('initModule(configs)', () => {
     };
 
     await expect(
-      settingsAccessor.getChannelSettings(new LineChannel('_CHANNEL_ID_1_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_1_'))
     ).resolves.toEqual(expectedChannel1Settings);
     await expect(
-      settingsAccessor.getChannelSettings(new LineChannel('_CHANNEL_ID_2_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_2_'))
     ).resolves.toEqual(expectedChannel2Settings);
     await expect(
-      settingsAccessor.getChannelSettings(new LineChannel('_CHANNEL_ID_3_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_3_'))
     ).resolves.toEqual(expectedChannel3Settings);
     await expect(
-      settingsAccessor.getChannelSettings(new LineChannel('_WRONG_CHANNEL_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_WRONG_CHANNEL_'))
     ).resolves.toBe(null);
 
     await expect(
-      settingsAccessor.getChannelSettingsBatch([
+      settingsAccessor.getAgentSettingsBatch([
         new LineChannel('_CHANNEL_ID_2_'),
         new LineChannel('_CHANNEL_ID_3_'),
         new LineChannel('_WRONG_CHANNEL_'),
@@ -241,14 +237,6 @@ describe('initModule(configs)', () => {
       expectedChannel2Settings,
       expectedChannel3Settings,
       null,
-    ]);
-
-    await expect(
-      settingsAccessor.listAllChannelSettings('line')
-    ).resolves.toEqual([
-      expectedChannel1Settings,
-      expectedChannel2Settings,
-      expectedChannel3Settings,
     ]);
 
     await expect(
@@ -287,9 +275,8 @@ describe('initModule(configs)', () => {
 
   test('with options.channelSettings', async () => {
     const channelSettingsAccessor = {
-      getChannelSettings: async () => null,
-      getChannelSettingsBatch: async () => [],
-      listAllChannelSettings: async () => [],
+      getAgentSettings: async () => null,
+      getAgentSettingsBatch: async () => [],
       getLineChatChannelSettingsByBotUserId: async () => null,
       getLineLoginChannelSettings: async () => null,
     };
@@ -303,11 +290,11 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [acquiredChannelSettingsAccessor] = app.useServices([
-      ChannelSettingsAccessorI,
+    const [acquiredAgentSettingsAccessor] = app.useServices([
+      AgentSettingsAccessorI,
     ]);
 
-    expect(acquiredChannelSettingsAccessor).toBe(channelSettingsAccessor);
+    expect(acquiredAgentSettingsAccessor).toBe(channelSettingsAccessor);
   });
 
   it('throws if no channel settings source provided', async () => {

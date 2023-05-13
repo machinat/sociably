@@ -5,7 +5,7 @@ import type {
   SociablyChannel,
   InitScopeFn,
   DispatchWrapper,
-  ChannelSettingsAccessor,
+  AgentSettingsAccessor,
 } from '@sociably/core';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
@@ -57,11 +57,10 @@ const DUMMY_API_CALL_CHANNEL: SociablyChannel = {
 
 const createStaticSettingsAccessor = (
   accessToken: string
-): ChannelSettingsAccessor<WhatsAppAgent, { accessToken: string }> => ({
-  getChannelSettings: async () => ({ accessToken }),
-  getChannelSettingsBatch: async (channels) =>
+): AgentSettingsAccessor<WhatsAppAgent, { accessToken: string }> => ({
+  getAgentSettings: async () => ({ accessToken }),
+  getAgentSettingsBatch: async (channels) =>
     channels.map(() => ({ accessToken })),
-  listAllChannelSettings: async () => [{ accessToken }],
 });
 
 type ApiCallOptions = {

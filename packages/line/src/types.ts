@@ -11,7 +11,7 @@ import type { IntermediateSegment } from '@sociably/core/renderer';
 import type { WebhookMetadata } from '@sociably/http/webhook';
 import { LineBot } from './Bot';
 import type LineChat from './Chat';
-import type { ChannelSettingsAccessorI } from './interface';
+import type { AgentSettingsAccessorI } from './interface';
 import type { LineEvent, LineRawEvent } from './event/types';
 
 export * from './event/types';
@@ -281,7 +281,7 @@ export type LineProviderSettings = {
 export type LineConfigs = {
   channelSettings?: LineChatChannelSettings;
   multiChannelSettings?: LineProviderSettings[];
-  channelSettingsService?: Interfaceable<ChannelSettingsAccessorI>;
+  channelSettingsService?: Interfaceable<AgentSettingsAccessorI>;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
   /** To verify the webhook request by the signature or not. Default to `true` */

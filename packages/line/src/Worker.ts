@@ -2,7 +2,7 @@ import { URL } from 'url';
 import fetch from 'node-fetch';
 import { SociablyWorker } from '@sociably/core/engine';
 import Queue, { JobResponse } from '@sociably/core/queue';
-import { ChannelSettingsAccessorI } from './interface';
+import { AgentSettingsAccessorI } from './interface';
 import { LineJob, LineResult } from './types';
 import LineChannel from './Channel';
 import LineApiError from './error';
@@ -67,12 +67,12 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
   connectionCount: number;
   maxConnections: number;
 
-  private _settingsAccessor: ChannelSettingsAccessorI;
+  private _settingsAccessor: AgentSettingsAccessorI;
   private _started: boolean;
   private _lockedKeys: Set<string>;
 
   constructor(
-    settingsAccessor: ChannelSettingsAccessorI,
+    settingsAccessor: AgentSettingsAccessorI,
     maxConnections: number
   ) {
     this.connectionCount = 0;
@@ -165,7 +165,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
     let accessTokenToUse = accessToken;
 
     if (!accessTokenToUse && chatChannelId) {
-      const settings = await this._settingsAccessor.getChannelSettings(
+      const settings = await this._settingsAccessor.getAgentSettings(
         new LineChannel(chatChannelId)
       );
       if (!settings) {

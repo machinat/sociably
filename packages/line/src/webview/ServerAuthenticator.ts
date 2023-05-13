@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { serviceProviderClass } from '@sociably/core/service';
 import { ServerAuthenticator, CheckDataResult } from '@sociably/auth';
-import { ChannelSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 import LineChannel from '../Channel';
 import LineChat from '../Chat';
 import BotP from '../Bot';
@@ -40,10 +40,10 @@ export class LineServerAuthenticator
     ServerAuthenticator<LineAuthCredential, LineAuthData, LineAuthContext>
 {
   bot: BotP;
-  channelSettingsAccessor: ChannelSettingsAccessorI;
+  channelSettingsAccessor: AgentSettingsAccessorI;
   platform = LINE;
 
-  constructor(bot: BotP, channelSettingsAccessor: ChannelSettingsAccessorI) {
+  constructor(bot: BotP, channelSettingsAccessor: AgentSettingsAccessorI) {
     this.bot = bot;
     this.channelSettingsAccessor = channelSettingsAccessor;
   }
@@ -53,7 +53,7 @@ export class LineServerAuthenticator
     path?: string,
     chat?: LineChat
   ): Promise<string> {
-    const setting = await this.channelSettingsAccessor.getChannelSettings(
+    const setting = await this.channelSettingsAccessor.getAgentSettings(
       channel
     );
     if (!setting || !setting.liff) {
@@ -219,7 +219,7 @@ export class LineServerAuthenticator
     }
 
     const messagingChannelSettings =
-      await this.channelSettingsAccessor.getChannelSettings(chat.channel);
+      await this.channelSettingsAccessor.getAgentSettings(chat.channel);
 
     if (!messagingChannelSettings) {
       return {
@@ -348,7 +348,7 @@ export class LineServerAuthenticator
 
 const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'transient',
-  deps: [BotP, ChannelSettingsAccessorI],
+  deps: [BotP, AgentSettingsAccessorI],
 })(LineServerAuthenticator);
 
 type ServerAuthenticatorP = LineServerAuthenticator;

@@ -150,7 +150,7 @@ export default class TelegramWorker
 
   private async _executeJob([job]: TelegramJob[]) {
     const { method, params, files, agentId } = job;
-    const botSettings = await this._settingsAccessor.getChannelSettings(
+    const botSettings = await this._settingsAccessor.getAgentSettings(
       new TelegramUser(agentId, true)
     );
     if (!botSettings) {

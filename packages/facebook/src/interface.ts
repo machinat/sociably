@@ -1,4 +1,4 @@
-import { ChannelSettingsAccessor } from '@sociably/core';
+import { AgentSettingsAccessor } from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
 import type FacebookPage from './Page';
 import type {
@@ -23,7 +23,7 @@ export const PlatformUtilitiesI = serviceInterface<FacebookPlatformUtilities>({
   name: 'FacebookPlatformUtilities',
 });
 
-export type PageSettingsAccessorI = ChannelSettingsAccessor<
+export type PageSettingsAccessorI = AgentSettingsAccessor<
   FacebookPage,
   FacebookPageSettings
 >;
@@ -32,7 +32,7 @@ export type PageSettingsAccessorI = ChannelSettingsAccessor<
  * @category Interface
  */
 export const PageSettingsAccessorI = serviceInterface<
-  ChannelSettingsAccessor<FacebookPage, FacebookPageSettings>
+  AgentSettingsAccessor<FacebookPage, FacebookPageSettings>
 >({
   name: 'FacebookPageSettingsAccessor',
 });

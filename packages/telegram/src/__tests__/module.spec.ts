@@ -169,13 +169,10 @@ describe('initModule(configs)', () => {
     const [botSettingsAccessor] = app.useServices([BotSettingsAccessorI]);
 
     await expect(
-      botSettingsAccessor.getChannelSettings(new TelegramUser(12345))
+      botSettingsAccessor.getAgentSettings(new TelegramUser(12345))
     ).resolves.toEqual(botSettings);
     await expect(
-      botSettingsAccessor.getChannelSettingsBatch([new TelegramUser(12345)])
-    ).resolves.toEqual([botSettings]);
-    await expect(
-      botSettingsAccessor.listAllChannelSettings('telegram')
+      botSettingsAccessor.getAgentSettingsBatch([new TelegramUser(12345)])
     ).resolves.toEqual([botSettings]);
 
     await app.stop();
@@ -202,21 +199,17 @@ describe('initModule(configs)', () => {
     const [botSettingsAccessor] = app.useServices([BotSettingsAccessorI]);
 
     await expect(
-      botSettingsAccessor.getChannelSettings(new TelegramUser(1111111, true))
+      botSettingsAccessor.getAgentSettings(new TelegramUser(1111111, true))
     ).resolves.toEqual(multiBotSettings[0]);
     await expect(
-      botSettingsAccessor.getChannelSettings(new TelegramUser(2222222, true))
+      botSettingsAccessor.getAgentSettings(new TelegramUser(2222222, true))
     ).resolves.toEqual(multiBotSettings[1]);
     await expect(
-      botSettingsAccessor.getChannelSettingsBatch([
+      botSettingsAccessor.getAgentSettingsBatch([
         new TelegramUser(1111111, true),
         new TelegramUser(1234567, true),
       ])
     ).resolves.toEqual([multiBotSettings[0], null]);
-
-    await expect(
-      botSettingsAccessor.listAllChannelSettings('telegram')
-    ).resolves.toEqual(multiBotSettings);
 
     await app.stop();
   });
@@ -228,9 +221,8 @@ describe('initModule(configs)', () => {
       secretToken: '_SECRET_',
     };
     const settingsAccessor = {
-      getChannelSettings: async () => botSettings,
-      getChannelSettingsBatch: async () => [botSettings, botSettings],
-      listAllChannelSettings: async () => [botSettings, botSettings],
+      getAgentSettings: async () => botSettings,
+      getAgentSettingsBatch: async () => [botSettings, botSettings],
     };
     const myBotSettingsService = serviceProviderFactory({})(
       () => settingsAccessor

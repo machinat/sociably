@@ -108,7 +108,7 @@ export class FacebookServerAuthenticator
   ): Promise<VerifyResult<FacebookAuthData>> {
     try {
       const [settings, userProfile] = await Promise.all([
-        this.settingsAccessor.getChannelSettings(new FacebookPage(pageId)),
+        this.settingsAccessor.getAgentSettings(new FacebookPage(pageId)),
         this.profiler.getUserProfile(
           new FacebookPage(pageId),
           new FacebookUser(pageId, userId)

@@ -51,9 +51,8 @@ const agentSettings = {
   tokenSecret: '__ACCESS_SECRET__',
 };
 const agentSettingsAccessor = {
-  getChannelSettings: async () => agentSettings,
-  getChannelSettingsBatch: async () => [agentSettings],
-  listAllChannelSettings: async () => [agentSettings],
+  getAgentSettings: async () => agentSettings,
+  getAgentSettingsBatch: async () => [agentSettings],
 };
 
 const twitterApi = nock('https://api.twitter.com');

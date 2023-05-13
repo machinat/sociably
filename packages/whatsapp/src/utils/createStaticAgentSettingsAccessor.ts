@@ -25,13 +25,12 @@ export const singleStaticAgentSettingsAccessor = (
   const normalizedSettings = normalizePhoneNumber(settings);
 
   return {
-    getChannelSettings: async ({ numberId }) =>
+    getAgentSettings: async ({ numberId }) =>
       numberId === normalizedSettings.numberId ? normalizedSettings : null,
-    getChannelSettingsBatch: async (numbers) =>
+    getAgentSettingsBatch: async (numbers) =>
       numbers.map(({ numberId }) =>
         numberId === normalizedSettings.numberId ? normalizedSettings : null
       ),
-    listAllChannelSettings: async () => [normalizedSettings],
   };
 };
 
@@ -53,10 +52,9 @@ export const multiStaticAgentSettingsAccessor = (
   }
 
   return {
-    getChannelSettings: async ({ numberId }) =>
+    getAgentSettings: async ({ numberId }) =>
       settingsMapping.get(numberId) || null,
-    getChannelSettingsBatch: async (numbers) =>
+    getAgentSettingsBatch: async (numbers) =>
       numbers.map(({ numberId }) => settingsMapping.get(numberId) || null),
-    listAllChannelSettings: async () => [...settingsMapping.values()],
   };
 };

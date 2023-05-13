@@ -45,9 +45,8 @@ const channelSettings = {
 };
 
 const channelSettingsAccessor = moxy({
-  getChannelSettings: async () => channelSettings,
-  getChannelSettingsBatch: async () => [channelSettings, channelSettings],
-  listAllChannelSettings: async () => [channelSettings, channelSettings],
+  getAgentSettings: async () => channelSettings,
+  getAgentSettingsBatch: async () => [channelSettings, channelSettings],
   getLineChatChannelSettingsByBotUserId: async () => channelSettings,
   getLineLoginChannelSettings: async () => null,
 });
