@@ -44,6 +44,7 @@ const dispatchWrapper = moxy((x) => x);
 
 const pageId = '1234567890';
 const accessToken = '_ACCESS_TOKEN_';
+const appId = '_APP_ID_';
 const appSecret = '_APP_SECRET_';
 
 const pageSettingsAccessor = {
@@ -78,6 +79,8 @@ afterEach(() => {
 describe('.constructor(options)', () => {
   it('assemble core modules', () => {
     const bot = new FacebookBot({
+      appId,
+      appSecret,
       pageSettingsAccessor,
       initScope,
       dispatchWrapper,
@@ -99,42 +102,46 @@ describe('.constructor(options)', () => {
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
-    expect(Worker).toHaveBeenCalledWith(
-      pageSettingsAccessor,
-      undefined,
-      'v11.0',
-      500
-    );
+    expect(Worker).toHaveBeenCalledWith({
+      agentSettingsAccessor: pageSettingsAccessor,
+      appId,
+      appSecret,
+      graphApiVersion: 'v11.0',
+      consumeInterval: 500,
+    });
   });
 
   it('pass options to worker', () => {
     expect(
       new FacebookBot({
+        appId,
+        appSecret,
         pageSettingsAccessor,
         initScope,
         dispatchWrapper,
-        appSecret,
         graphApiVersion: 'v8.0',
         apiBatchRequestInterval: 0,
       })
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
-    expect(Worker).toHaveBeenCalledWith(
-      pageSettingsAccessor,
-      '_APP_SECRET_',
-      'v8.0',
-      0
-    );
+    expect(Worker).toHaveBeenCalledWith({
+      agentSettingsAccessor: pageSettingsAccessor,
+      appId,
+      appSecret,
+      graphApiVersion: 'v8.0',
+      consumeInterval: 0,
+    });
   });
 });
 
 test('.start() and .stop() start/stop engine', () => {
   const bot = new FacebookBot({
+    appId,
+    appSecret,
     pageSettingsAccessor,
     initScope,
     dispatchWrapper,
-    appSecret,
   });
 
   type MockEngine = Moxy<FacebookBot['engine']>;
@@ -147,7 +154,7 @@ test('.start() and .stop() start/stop engine', () => {
 });
 
 describe('.message(thread, message, options)', () => {
-  const bot = new FacebookBot({ pageSettingsAccessor, appSecret });
+  const bot = new FacebookBot({ pageSettingsAccessor, appId, appSecret });
 
   let apiStatus;
   beforeEach(() => {
@@ -260,7 +267,7 @@ describe('.message(thread, message, options)', () => {
 });
 
 describe('.uploadChatAttachment(page, message)', () => {
-  const bot = new FacebookBot({ pageSettingsAccessor, appSecret });
+  const bot = new FacebookBot({ pageSettingsAccessor, appId, appSecret });
 
   beforeEach(() => {
     bot.start();
@@ -310,7 +317,7 @@ describe('.uploadChatAttachment(page, message)', () => {
 
 describe('.requestApi(options)', () => {
   it('call facebook graph api', async () => {
-    const bot = new FacebookBot({ pageSettingsAccessor });
+    const bot = new FacebookBot({ pageSettingsAccessor, appId, appSecret });
     bot.start();
 
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
@@ -330,7 +337,7 @@ describe('.requestApi(options)', () => {
   });
 
   it('throw MetaApiError if api call fail', async () => {
-    const bot = new FacebookBot({ pageSettingsAccessor });
+    const bot = new FacebookBot({ pageSettingsAccessor, appId, appSecret });
     bot.start();
 
     const apiCall = graphApi.reply(200, [

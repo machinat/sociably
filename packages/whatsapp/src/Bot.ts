@@ -2,10 +2,8 @@ import invariant from 'invariant';
 import type {
   SociablyNode,
   SociablyBot,
-  SociablyChannel,
   InitScopeFn,
   DispatchWrapper,
-  AgentSettingsAccessor,
 } from '@sociably/core';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
@@ -33,7 +31,8 @@ import type {
 
 type WhatsAppBotOptions = {
   accessToken: string;
-  appSecret?: string;
+  appId: string;
+  appSecret: string;
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;
   initScope?: InitScopeFn;
@@ -43,25 +42,6 @@ type WhatsAppBotOptions = {
     MetaApiResult
   >;
 };
-
-const DUMMY_API_CALL_CHANNEL: SociablyChannel = {
-  platform: WHATSAPP,
-  $$typeofChannel: true,
-  uid: 'whatsapp:dummy_api_call_channel',
-  uniqueIdentifier: {
-    $$typeof: ['channel'],
-    platform: WHATSAPP,
-    id: 'dummy_api_call_channel',
-  },
-};
-
-const createStaticSettingsAccessor = (
-  accessToken: string
-): AgentSettingsAccessor<WhatsAppAgent, { accessToken: string }> => ({
-  getAgentSettings: async () => ({ accessToken }),
-  getAgentSettingsBatch: async (channels) =>
-    channels.map(() => ({ accessToken })),
-});
 
 type ApiCallOptions = {
   /** HTTP method */
@@ -92,6 +72,7 @@ export class WhatsAppBot
 
   constructor({
     accessToken,
+    appId,
     appSecret,
     graphApiVersion = 'v11.0',
     apiBatchRequestInterval = 500,
@@ -106,12 +87,13 @@ export class WhatsAppBot
     >(WHATSAPP, generalComponentDelegator);
 
     const queue = new Queue<MetaApiJob, MetaApiResult>();
-    const worker = new MetaApiWorker(
-      createStaticSettingsAccessor(accessToken),
+    const worker = new MetaApiWorker({
+      appId,
       appSecret,
       graphApiVersion,
-      apiBatchRequestInterval
-    );
+      consumeInterval: apiBatchRequestInterval,
+      defaultAccessToken: accessToken,
+    });
 
     this.engine = new Engine(
       WHATSAPP,
@@ -166,10 +148,7 @@ export class WhatsAppBot
   }: ApiCallOptions): Promise<ResBody> {
     try {
       const { results } = await this.engine.dispatchJobs(null, [
-        {
-          channel: DUMMY_API_CALL_CHANNEL,
-          request: { method, url, params },
-        },
+        { request: { method, url, params } },
       ]);
 
       return results[0].body as ResBody;
@@ -190,12 +169,13 @@ const BotP = serviceProviderClass({
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { accessToken, appSecret, apiBatchRequestInterval },
+    { accessToken, appId, appSecret, apiBatchRequestInterval },
     moduleUitils,
     platformUtils
   ) =>
     new WhatsAppBot({
       accessToken,
+      appId,
       appSecret,
       apiBatchRequestInterval,
       initScope: moduleUitils?.initScope,

@@ -39,6 +39,7 @@ describe('initModule(configs)', () => {
         pageId: '1234567890',
         accessToken: '_ACCESS_TOKEN_',
       },
+      appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
       eventMiddlewares,
@@ -66,6 +67,7 @@ describe('initModule(configs)', () => {
         pageId: '1234567890',
         accessToken: '_ACCESS_TOKEN_',
       },
+      appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
       webhookPath: '/webhook/facebook',
@@ -120,6 +122,7 @@ describe('initModule(configs)', () => {
             pageId: '1234567890',
             accessToken: '_ACCESS_TOKEN_',
           },
+          appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -157,6 +160,7 @@ describe('initModule(configs)', () => {
             pageId: '1234567890',
             accessToken: '_ACCESS_TOKEN_',
           },
+          appId: '...',
           appSecret: '...',
           verifyToken: '...',
           shouldHandleChallenge: false,
@@ -183,6 +187,7 @@ describe('initModule(configs)', () => {
       platforms: [
         Facebook.initModule({
           pageSettings,
+          appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -222,6 +227,7 @@ describe('initModule(configs)', () => {
               accessToken: '_ACCESS_TOKEN_2_',
             },
           ],
+          appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -278,6 +284,7 @@ describe('initModule(configs)', () => {
       platforms: [
         Facebook.initModule({
           pageSettingsService: myPageSettingsService,
+          appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -294,8 +301,9 @@ describe('initModule(configs)', () => {
   it('throw if no page settings source provided', () => {
     expect(() =>
       Facebook.initModule({
-        appSecret: '_APP_SECRET_',
-        verifyToken: '_VERIFY_TOKEN_',
+        appId: '...',
+        appSecret: '...',
+        verifyToken: '...',
       })
     ).toThrowErrorMatchingInlineSnapshot(
       `"Facebook platform requires one of \`pageSettings\`, \`multiPageSettings\` or \`pageSettingsService\` option"`
@@ -309,6 +317,7 @@ describe('initModule(configs)', () => {
         pageId: '1234567890',
         accessToken: '_ACCESS_TOKEN_',
       },
+      appId: '...',
       appSecret: '...',
       verifyToken: '...',
     });
@@ -324,6 +333,7 @@ describe('initModule(configs)', () => {
         pageId: '1234567890',
         accessToken: '_ACCESS_TOKEN_',
       },
+      appId: '...',
       appSecret: '...',
       verifyToken: '...',
     });

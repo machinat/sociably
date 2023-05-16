@@ -13,7 +13,7 @@ import type { MetaApiJob, MetaApiResult, MetaBatchRequest } from './types';
 type MetaSendingSettings = {
   accessToken: string;
 };
-type MetaSettingsAccessor = AgentSettingsAccessor<
+type MetaAgentSettingsAccessor = AgentSettingsAccessor<
   SociablyChannel,
   MetaSendingSettings
 >;
@@ -21,17 +21,27 @@ type MetaSettingsAccessor = AgentSettingsAccessor<
 type MetaApiQueue = SociablyQueue<MetaApiJob, MetaApiResult>;
 type TimeoutID = ReturnType<typeof setTimeout>;
 
+type MetaApiWorkerOptions = {
+  agentSettingsAccessor?: MetaAgentSettingsAccessor;
+  appId: string;
+  appSecret: string;
+  graphApiVersion: string;
+  defaultAccessToken?: string;
+  consumeInterval: number;
+};
+
 const POST = 'POST';
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 const makeRequestName = (key: string, count: number) => `${key}-${count}`;
-
 const makeFileName = (num: number) => `file_${num}`;
 
 class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
   consumeInterval: number;
-  private _settingsAccessor: MetaSettingsAccessor;
-  private _appSecret: undefined | string;
+  defaultAccessToken?: string;
+  private _agentSettingsAccessor: MetaAgentSettingsAccessor;
+  private _appId: string;
+  private _appSecret: string;
   private _graphApiEntry: string;
 
   private _started: boolean;
@@ -41,15 +51,22 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
 
   private _resultCache: Map<string, MetaApiResult>;
 
-  constructor(
-    settingsAccessor: MetaSettingsAccessor,
-    appSecret: undefined | string,
-    graphApiVersion: string,
-    consumeInterval: number
-  ) {
-    this._settingsAccessor = settingsAccessor;
+  constructor({
+    agentSettingsAccessor,
+    appId,
+    appSecret,
+    graphApiVersion,
+    consumeInterval,
+    defaultAccessToken,
+  }: MetaApiWorkerOptions) {
     this.consumeInterval = consumeInterval;
+    this.defaultAccessToken = defaultAccessToken;
+    this._agentSettingsAccessor = agentSettingsAccessor || {
+      getAgentSettings: async () => null,
+      getAgentSettingsBatch: async () => [],
+    };
 
+    this._appId = appId;
     this._appSecret = appSecret;
     this._graphApiEntry = `https://graph.facebook.com/${graphApiVersion}/`;
 
@@ -136,7 +153,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     const uniqChannelsMap = new Map(channels.map((chan) => [chan.uid, chan]));
     const uniqChannels = [...uniqChannelsMap.values()];
 
-    const settings = await this._settingsAccessor.getAgentSettingsBatch(
+    const settings = await this._agentSettingsAccessor.getAgentSettingsBatch(
       uniqChannels
     );
     return new Map(
@@ -159,8 +176,11 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     const batchRequests: MetaBatchRequest[] = [];
 
     const channelTokenMap = await this._getAccessTokensOfChannels(
-      jobs.map((job) => job.channel)
+      jobs
+        .map((job) => job.channel)
+        .filter((channel): channel is SociablyChannel => !!channel)
     );
+    let rootAccessToken: string | undefined;
 
     for (let i = 0; i < jobs.length; i += 1) {
       const job = jobs[i];
@@ -173,14 +193,24 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         channel,
       } = job;
 
-      const accessToken = channelTokenMap.get(channel.uid);
+      const accessToken = job.asApplication
+        ? `${this._appId}|${this._appSecret}`
+        : channel
+        ? channelTokenMap.get(channel.uid) || this.defaultAccessToken
+        : this.defaultAccessToken;
+      if (!rootAccessToken) {
+        rootAccessToken = accessToken;
+      }
+
       if (!accessToken) {
         jobResponses[i] = {
           success: false,
           job,
           result: { code: 0, headers: {}, body: {} },
           error: new Error(
-            `No access token available for channel ${channel.uid}`
+            `No access token available for ${
+              channel ? `channel ${channel.uid}` : 'job'
+            }`
           ),
         };
       } else {
@@ -253,10 +283,13 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
       }
     }
 
-    const fallbackToken = channelTokenMap.values().next().value as string;
+    if (!rootAccessToken) {
+      // no access token available for every job
+      return jobResponses;
+    }
     const batchBody = {
-      access_token: fallbackToken,
-      appsecret_proof: this._createAppSecretProof(fallbackToken),
+      access_token: rootAccessToken,
+      appsecret_proof: this._createAppSecretProof(rootAccessToken),
       batch: JSON.stringify(batchRequests),
     };
 

@@ -44,6 +44,7 @@ const dispatchWrapper = moxy((x) => x);
 
 const businessNumber = '1234567890';
 const accessToken = '_ACCESS_TOKEN_';
+const appId = '_APP_ID_';
 const appSecret = '_APP_SECRET_';
 
 const message = (
@@ -81,6 +82,8 @@ describe('#constructor(options)', () => {
 
   it('assemble core modules', () => {
     const bot = new WhatsAppBot({
+      appId,
+      appSecret,
       initScope,
       dispatchWrapper,
       accessToken,
@@ -102,12 +105,13 @@ describe('#constructor(options)', () => {
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
-    expect(Worker).toHaveBeenCalledWith(
-      expect.any(Object),
-      undefined,
-      'v11.0',
-      500
-    );
+    expect(Worker).toHaveBeenCalledWith({
+      appId,
+      appSecret,
+      defaultAccessToken: accessToken,
+      graphApiVersion: 'v11.0',
+      consumeInterval: 500,
+    });
   });
 
   it('pass options to worker', async () => {
@@ -116,6 +120,7 @@ describe('#constructor(options)', () => {
         initScope,
         dispatchWrapper,
         accessToken,
+        appId,
         appSecret,
         graphApiVersion: 'v8.0',
         apiBatchRequestInterval: 0,
@@ -123,23 +128,13 @@ describe('#constructor(options)', () => {
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
-    expect(Worker).toHaveBeenCalledWith(
-      expect.any(Object),
-      '_APP_SECRET_',
-      'v8.0',
-      0
-    );
-
-    const accessTokenAccessor = Worker.mock.calls[0].args[0];
-    await expect(
-      accessTokenAccessor.getAgentSettings(new WhatsAppAgent('1111111111'))
-    ).resolves.toEqual({ accessToken });
-    await expect(
-      accessTokenAccessor.getAgentSettingsBatch([
-        new WhatsAppAgent('1111111111'),
-        new WhatsAppAgent('2222222222'),
-      ])
-    ).resolves.toEqual([{ accessToken }, { accessToken }]);
+    expect(Worker).toHaveBeenCalledWith({
+      appId,
+      appSecret,
+      defaultAccessToken: accessToken,
+      graphApiVersion: 'v8.0',
+      consumeInterval: 0,
+    });
   });
 });
 
@@ -148,6 +143,7 @@ test('#start() and #stop() start/stop engine', () => {
     initScope,
     dispatchWrapper,
     accessToken,
+    appId,
     appSecret,
   });
 
@@ -161,7 +157,7 @@ test('#start() and #stop() start/stop engine', () => {
 });
 
 describe('#render(thread, message, options)', () => {
-  const bot = new WhatsAppBot({ accessToken, appSecret });
+  const bot = new WhatsAppBot({ accessToken, appId, appSecret });
   const sucessfulResult = {
     messaging_product: 'whatsapp',
     contacts: [{ input: '9876543210', wa_id: '9876543210' }],
@@ -233,7 +229,7 @@ describe('#render(thread, message, options)', () => {
 });
 
 describe('#uploadMedia(message)', () => {
-  const bot = new WhatsAppBot({ accessToken, appSecret });
+  const bot = new WhatsAppBot({ accessToken, appId, appSecret });
 
   beforeEach(() => {
     bot.start();
@@ -275,7 +271,7 @@ describe('#uploadMedia(message)', () => {
 
 describe('#requestApi()', () => {
   it('call facebook graph api', async () => {
-    const bot = new WhatsAppBot({ accessToken });
+    const bot = new WhatsAppBot({ accessToken, appId, appSecret });
     bot.start();
 
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
@@ -290,7 +286,7 @@ describe('#requestApi()', () => {
   });
 
   it('throw MetaApiError if api call fail', async () => {
-    const bot = new WhatsAppBot({ accessToken });
+    const bot = new WhatsAppBot({ accessToken, appId, appSecret });
     bot.start();
 
     const apiCall = graphApi.reply(200, [

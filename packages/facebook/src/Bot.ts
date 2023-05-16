@@ -45,7 +45,8 @@ import type {
 type FacebookDispatchTarget = FacebookThread | FacebookPage;
 
 type FacebookBotOptions = {
-  appSecret?: string;
+  appId: string;
+  appSecret: string;
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;
   pageSettingsAccessor: AgentSettingsAccessor<
@@ -80,13 +81,15 @@ type CommentResult = {
 
 type ApiCallOptions = {
   /** The page to make the API call */
-  page: string | FacebookPage;
+  page?: string | FacebookPage;
   /** HTTP method */
   method?: string;
   /** API request URL relative to https://graph.facebook.com/{version}/ */
   url: string;
   /** API request parameters */
   params?: Record<string, unknown>;
+  /** Make the API call as the FB app */
+  asApplication?: boolean;
 };
 
 /**
@@ -108,6 +111,7 @@ export class FacebookBot
   platform = FACEBOOK;
 
   constructor({
+    appId,
     appSecret,
     graphApiVersion = 'v11.0',
     apiBatchRequestInterval = 500,
@@ -121,12 +125,13 @@ export class FacebookBot
     >(FACEBOOK, generalComponentDelegator);
 
     const queue = new Queue<MetaApiJob, MetaApiResult>();
-    const worker = new MetaApiWorker(
-      pageSettingsAccessor,
+    const worker = new MetaApiWorker({
+      agentSettingsAccessor: pageSettingsAccessor,
+      appId,
       appSecret,
       graphApiVersion,
-      apiBatchRequestInterval
-    );
+      consumeInterval: apiBatchRequestInterval,
+    });
 
     this.engine = new Engine(
       FACEBOOK,
@@ -262,7 +267,7 @@ export class FacebookBot
     const page =
       typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
     try {
-      const { results } = await this.engine.dispatchJobs(page, [
+      const { results } = await this.engine.dispatchJobs(page || null, [
         {
           channel: page,
           request: { method, url, params },
@@ -288,13 +293,14 @@ const BotP = serviceProviderClass({
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
-    { appSecret, apiBatchRequestInterval },
+    { appSecret, appId, apiBatchRequestInterval },
     pageSettingsAccessor,
     moduleUitils,
     platformUtils
   ) =>
     new FacebookBot({
       pageSettingsAccessor,
+      appId,
       appSecret,
       apiBatchRequestInterval,
       initScope: moduleUitils?.initScope,

@@ -1,3 +1,4 @@
+import deepEqual from 'fast-deep-equal';
 import type { SociablyNode } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
@@ -6,12 +7,52 @@ import snakecaseKeys from 'snakecase-keys';
 import BotP from '../Bot';
 import FacebookPage from '../Page';
 import { PATH_PERSONAS, FB } from '../constant';
+import { ConfigsI } from '../interface';
 
 const ATTACHMENT = 'attachment';
 const PERSONA = 'persona';
 
-const makeResourceToken = (pageId: string, resource: string): string =>
+const makeResourceKey = (pageId: string, resource: string): string =>
   `$${FB}.${resource}.${pageId}`;
+
+const mapLocaleInstancesToRecord = (values) =>
+  Object.fromEntries(values.map((value) => [value.locale, value]));
+const deepCompareLocaleInstances = (a, b) =>
+  deepEqual(mapLocaleInstancesToRecord(a), mapLocaleInstancesToRecord(b));
+const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
+  {
+    get_started: deepEqual,
+    greeting: deepCompareLocaleInstances,
+    ice_breakers: deepCompareLocaleInstances,
+    persistent_menu: deepCompareLocaleInstances,
+    whitelisted_domains: (a, b) => deepEqual(a.sort(), b.sort()),
+    account_linking_url: (a, b) => a === b,
+  };
+
+const DEFAULT_PAGE_SUBSCRIPTION_FIELDS = [
+  'messages',
+  'messaging_postbacks',
+  'messaging_optins',
+  'messaging_handovers',
+  'messaging_policy_enforcement',
+  'messaging_account_linking',
+  'messaging_game_plays',
+  'messaging_referrals',
+];
+
+export type DefaultAppSettings = {
+  appId?: string;
+  verifyToken?: string;
+  pageSubscriptionFields?: string[];
+};
+
+export type AppWebhookSubscriptionOptions = {
+  appId?: string;
+  verifyToken?: string;
+  url: string;
+  fields?: string[];
+  objectType?: 'user' | 'page' | 'permissions' | 'payments';
+};
 
 /**
  * FacebookAssetsManager stores name-to-id mapping for assets created in
@@ -21,10 +62,120 @@ const makeResourceToken = (pageId: string, resource: string): string =>
 export class FacebookAssetsManager {
   private _bot: BotP;
   private _stateController: StateControllerI;
+  defaultAppSettings?: DefaultAppSettings;
 
-  constructor(stateManager: StateControllerI, bot: BotP) {
+  constructor(
+    stateManager: StateControllerI,
+    bot: BotP,
+    defaultAppSettings?: DefaultAppSettings
+  ) {
     this._stateController = stateManager;
     this._bot = bot;
+    this.defaultAppSettings = defaultAppSettings;
+  }
+
+  async setAppSubscriptionWebhook({
+    url: webhookUrl,
+    objectType = 'page',
+    fields: fieldsInput,
+    appId: appIdInput,
+    verifyToken: verifyTokenInput,
+  }: AppWebhookSubscriptionOptions): Promise<void> {
+    const appId = appIdInput || this.defaultAppSettings?.appId;
+    const verifyToken =
+      verifyTokenInput || this.defaultAppSettings?.verifyToken;
+    const fields =
+      fieldsInput ||
+      this.defaultAppSettings?.pageSubscriptionFields ||
+      DEFAULT_PAGE_SUBSCRIPTION_FIELDS;
+
+    if (!appId || !verifyToken || !webhookUrl || !fields?.length) {
+      throw new Error('appId, url, verifyToken or fields is empty');
+    }
+
+    await this._bot.requestApi({
+      asApplication: true,
+      method: 'POST',
+      url: `${appId}/subscriptions`,
+      params: {
+        object: objectType,
+        callback_url: webhookUrl,
+        fields,
+        include_values: true,
+        verify_token: verifyToken,
+      },
+    });
+  }
+
+  async setPageSubscribedApp(
+    page: string | FacebookPage,
+    options?: { fields?: string[] }
+  ): Promise<void> {
+    const fields =
+      options?.fields ||
+      this.defaultAppSettings?.pageSubscriptionFields ||
+      DEFAULT_PAGE_SUBSCRIPTION_FIELDS;
+
+    await this._bot.requestApi({
+      page,
+      method: 'POST',
+      url: 'me/subscribed_apps',
+      params: {
+        subscribed_fields: fields,
+      },
+    });
+  }
+
+  async setPageMessengerProfile(
+    page: string | FacebookPage,
+    settingsInput: Record<string, unknown>
+  ): Promise<void> {
+    const newSettings = snakecaseKeys(settingsInput);
+
+    const {
+      data: [currentSettings],
+    } = await this._bot.requestApi({
+      page,
+      method: 'GET',
+      url: 'me/messenger_profile',
+      params: {
+        fields: Object.keys(MESSENGER_PROFILE_FIELDS_COMPARATERS),
+      },
+    });
+
+    const deletedKeys: string[] = [];
+    const changedSettings: Record<string, unknown> = {};
+
+    for (const key of Object.keys(currentSettings)) {
+      if (newSettings[key] === undefined) {
+        deletedKeys.push(key);
+      }
+    }
+    for (const [key, value] of Object.entries(newSettings)) {
+      const comparator = MESSENGER_PROFILE_FIELDS_COMPARATERS[key] || deepEqual;
+      const currentValue = currentSettings[key];
+      if (currentValue === undefined || !comparator(currentValue, value)) {
+        changedSettings[key] = value;
+      }
+    }
+
+    if (deletedKeys.length > 0) {
+      await this._bot.requestApi({
+        page,
+        method: 'DELETE',
+        url: 'me/messenger_profile',
+        params: { fields: deletedKeys },
+      });
+    }
+
+    if (Object.keys(changedSettings).length > 0) {
+      await this._bot.requestApi({
+        page,
+        method: 'POST',
+        url: 'me/messenger_profile',
+        params: changedSettings,
+      });
+    }
   }
 
   async getAssetId(
@@ -34,7 +185,7 @@ export class FacebookAssetsManager {
   ): Promise<undefined | string> {
     const pageId = typeof page === 'string' ? page : page.id;
     const existed = await this._stateController
-      .globalState(makeResourceToken(pageId, resource))
+      .globalState(makeResourceKey(pageId, resource))
       .get<string>(name);
     return existed || undefined;
   }
@@ -47,7 +198,7 @@ export class FacebookAssetsManager {
   ): Promise<boolean> {
     const pageId = typeof page === 'string' ? page : page.id;
     const isUpdated = await this._stateController
-      .globalState(makeResourceToken(pageId, resource))
+      .globalState(makeResourceKey(pageId, resource))
       .set<string>(name, id);
     return isUpdated;
   }
@@ -58,7 +209,7 @@ export class FacebookAssetsManager {
   ): Promise<null | Map<string, string>> {
     const pageId = typeof page === 'string' ? page : page.id;
     return this._stateController
-      .globalState(makeResourceToken(pageId, resource))
+      .globalState(makeResourceKey(pageId, resource))
       .getAll();
   }
 
@@ -70,7 +221,7 @@ export class FacebookAssetsManager {
     const pageId = typeof page === 'string' ? page : page.id;
 
     const isDeleted = await this._stateController
-      .globalState(makeResourceToken(pageId, resource))
+      .globalState(makeResourceKey(pageId, resource))
       .delete(name);
     return isDeleted;
   }
@@ -189,7 +340,12 @@ export class FacebookAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP],
+  deps: [StateControllerI, BotP, ConfigsI],
+  factory: (stateController, bot, fbConfigs) =>
+    new FacebookAssetsManager(stateController, bot, {
+      appId: fbConfigs.appId,
+      verifyToken: fbConfigs.verifyToken,
+    }),
 })(FacebookAssetsManager);
 
 type AssetsManagerP = FacebookAssetsManager;

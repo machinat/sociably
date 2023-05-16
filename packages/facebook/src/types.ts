@@ -213,6 +213,8 @@ export type FacebookConfigs = {
   multiPageSettings?: FacebookPageSettings[];
   /** Host page integration settings with your own service */
   pageSettingsService?: Interfaceable<PageSettingsAccessorI>;
+  /** The Facebook app ID */
+  appId: string;
   /** The Facebook app secret */
   appSecret: string;
   /** To verify the webhook request by the signature or not. Default to `true` */
@@ -223,6 +225,12 @@ export type FacebookConfigs = {
   verifyToken: string;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
+  /**
+   * The webhook subscription fields. Default to `['messages', 'messaging_postbacks', 'messaging_optins',
+   * 'messaging_handovers', 'messaging_policy_enforcement', 'messaging_account_linking', 'messaging_game_plays',
+   * 'messaging_referrals']`
+   * */
+  webhookSubscriptionFields?: string[];
   /** The graph API version to make API calls */
   graphApiVersion?: string;
   /** Request additional info of user profile. This requires addtional permisions of your app */

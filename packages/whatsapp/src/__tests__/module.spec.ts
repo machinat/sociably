@@ -44,6 +44,7 @@ describe('initModule(configs)', () => {
     const module = WhatsApp.initModule({
       agentSettings,
       accessToken: '_ACCESS_TOKEN_',
+      appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
       eventMiddlewares,
@@ -69,6 +70,7 @@ describe('initModule(configs)', () => {
     const configs = {
       agentSettings,
       accessToken: '_ACCESS_TOKEN_',
+      appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
       webhookPath: '/webhook/whatsapp',
@@ -110,6 +112,7 @@ describe('initModule(configs)', () => {
         WhatsApp.initModule({
           agentSettings,
           accessToken: '_ACCESS_TOKEN_',
+          appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -145,6 +148,7 @@ describe('initModule(configs)', () => {
         WhatsApp.initModule({
           agentSettings,
           accessToken: '_ACCESS_TOKEN_',
+          appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -189,6 +193,7 @@ describe('initModule(configs)', () => {
         WhatsApp.initModule({
           multiAgentSettings: businessAccountSettings,
           accessToken: '_ACCESS_TOKEN_',
+          appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -255,6 +260,7 @@ describe('initModule(configs)', () => {
         WhatsApp.initModule({
           agentSettingsService: myAgentSettingsService,
           accessToken: '_ACCESS_TOKEN_',
+          appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
         }),
@@ -277,6 +283,7 @@ describe('initModule(configs)', () => {
           shouldHandleChallenge: false,
           verifyToken: '',
           shouldVerifyRequest: false,
+          appId: '',
           appSecret: '',
         }),
       ],
@@ -296,8 +303,9 @@ describe('initModule(configs)', () => {
     const module = WhatsApp.initModule({
       agentSettings,
       accessToken: '_ACCESS_TOKEN_',
-      appSecret: '',
-      verifyToken: '',
+      appId: '_APP_ID_',
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
     });
 
     await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
@@ -309,8 +317,9 @@ describe('initModule(configs)', () => {
     const module = WhatsApp.initModule({
       agentSettings,
       accessToken: '_ACCESS_TOKEN_',
-      appSecret: '',
-      verifyToken: '',
+      appId: '_APP_ID_',
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
     });
 
     await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);

@@ -87,6 +87,8 @@ export type WhatsAppConfigs = {
   agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;
   /** The access token for the app */
   accessToken: string;
+  /** The Facebook app ID */
+  appId: string;
   /** The Facebook app secret */
   appSecret: string;
   /** To verify the webhook request by the signature or not. Default to `true` */

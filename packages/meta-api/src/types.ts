@@ -22,7 +22,8 @@ type AccomplishRequestFn = (
 
 export type MetaApiJob = {
   request: MetaApiJobRequest;
-  channel: SociablyChannel;
+  channel?: SociablyChannel;
+  asApplication?: boolean;
   key?: string;
   file?: {
     data: string | Buffer | NodeJS.ReadableStream;

@@ -7,7 +7,10 @@ const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 nock.disableNetConnect();
 
-const settingsAccessor = moxy({
+const appId = '_APP_ID_';
+const appSecret = '_APP_SECRET_';
+
+const agentSettingsAccessor = moxy({
   getAgentSettings: async (channel) => ({
     accessToken: `access_token_${channel.uid}`,
   }),
@@ -65,6 +68,7 @@ beforeEach(() => {
   graphApi = nock('https://graph.facebook.com');
   queue = new Queue();
   bodySpy.mock.clear();
+  agentSettingsAccessor.mock.reset();
 });
 
 afterEach(() => {
@@ -72,7 +76,13 @@ afterEach(() => {
 });
 
 it('call to graph api', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
 
   const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
@@ -106,6 +116,11 @@ it('call to graph api', async () => {
 
   expect(body.access_token).toBe('access_token_foo');
   expect(body.include_headers).toBe(undefined);
+
+  expect(body.appsecret_proof).toMatchInlineSnapshot(
+    `"c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e"`
+  );
+
   expect(body).toMatchSnapshot();
 
   const batch = JSON.parse(body.batch);
@@ -146,50 +161,14 @@ it('call to graph api', async () => {
   expect(scope.isDone()).toBe(true);
 });
 
-it('attach appsecret_proof if appSecret is given', async () => {
-  const appSecret = '_fb_app_secret_';
-  const worker = new MetaApiWorker(settingsAccessor, appSecret, 'v11.0', 0);
-
-  const scope = graphApi.post('/v11.0/', bodySpy).reply(
-    200,
-    JSON.stringify(
-      new Array(4).fill({
-        code: 200,
-        body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
-      })
-    )
-  );
-
-  worker.start(queue);
-
-  const expectedResult = {
-    code: 200,
-    body: { message_id: 'xxx', recipient_id: 'xxx' },
-  };
-  await expect(queue.executeJobs(jobs)).resolves.toEqual({
-    success: true,
-    errors: null,
-    batch: [
-      { success: true, job: jobs[0], result: expectedResult },
-      { success: true, job: jobs[1], result: expectedResult },
-      { success: true, job: jobs[2], result: expectedResult },
-      { success: true, job: jobs[3], result: expectedResult },
-    ],
-  });
-
-  const body = bodySpy.mock.calls[0].args[0];
-
-  expect(body.access_token).toBe('access_token_foo');
-  expect(body.appsecret_proof).toBe(
-    'ca75a42e982f92428eb9b338ec73939888812d4da57ca9b7844a9d7d486f1ddc'
-  );
-  expect(body).toMatchSnapshot();
-
-  expect(scope.isDone()).toBe(true);
-});
-
 test('use different graph api version', async () => {
-  const worker1 = new MetaApiWorker(settingsAccessor, undefined, 'v8.0', 0);
+  const worker1 = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v8.0',
+    consumeInterval: 0,
+  });
   const scope1 = graphApi.post('/v8.0/').reply(200, '[]');
 
   worker1.start(queue);
@@ -197,7 +176,13 @@ test('use different graph api version', async () => {
   expect(scope1.isDone()).toBe(true);
   worker1.stop(queue);
 
-  const worker2 = new MetaApiWorker(settingsAccessor, undefined, 'v10.0', 0);
+  const worker2 = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v10.0',
+    consumeInterval: 0,
+  });
   const scope2 = graphApi.post('/v10.0/').reply(200, '[]');
 
   worker2.start(queue);
@@ -206,7 +191,13 @@ test('use different graph api version', async () => {
 });
 
 it('upload files with form data if binary attached on job', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
 
   const scope = graphApi
     .matchHeader('content-type', /multipart\/form-data.*/)
@@ -345,7 +336,13 @@ it('upload files with form data if binary attached on job', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
 
   const scope = graphApi
     .post('/v11.0/')
@@ -366,8 +363,13 @@ it('throw if connection error happen', async () => {
 });
 
 it('throw if api error happen', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
-
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
   const scope = graphApi.post('/v11.0/').reply(400, {
     error: {
       message: 'The access token could not be decrypted',
@@ -392,7 +394,13 @@ it('throw if api error happen', async () => {
 });
 
 it('fail if one single job fail', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
 
   const scope = graphApi.post('/v11.0/').reply(
     200,
@@ -437,8 +445,13 @@ it('fail if one single job fail', async () => {
 });
 
 it('waits consumeInterval for jobs to execute if set', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 300);
-
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 300,
+  });
   const scope = graphApi.post('/v11.0/', bodySpy).reply(
     200,
     JSON.stringify(
@@ -472,8 +485,13 @@ it('waits consumeInterval for jobs to execute if set', async () => {
 });
 
 it('execute immediatly if consumeInterval is 0', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
-
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
   const scope = graphApi
     .post('/v11.0/', bodySpy)
     .times(3)
@@ -511,8 +529,13 @@ it('execute immediatly if consumeInterval is 0', async () => {
 });
 
 it('use querystring params for GET request', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
-
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
   const scope = graphApi
     .post('/v11.0/', bodySpy)
     .reply(
@@ -566,8 +589,13 @@ it('use querystring params for GET request', async () => {
 });
 
 it('use querystring params for DELETE request', async () => {
-  const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
-
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
   const scope = graphApi
     .post('/v11.0/', bodySpy)
     .reply(
@@ -620,259 +648,299 @@ it('use querystring params for DELETE request', async () => {
   expect(scope.isDone()).toBe(true);
 });
 
-describe('multiple access tokens', () => {
-  const jobsForDifferentChannels = [
-    {
-      key: 'facebook:id:foo',
-      request: {
-        method: 'POST',
-        url: 'me/messages',
-        params: { id: 1 },
-      },
-      channel: { uid: 'foo' },
-    },
-    {
-      key: 'facebook:id:bar',
-      request: {
-        method: 'POST',
-        url: 'me/messages',
-        params: { id: 2 },
-      },
-      channel: { uid: 'bar' },
-    },
-    {
-      key: 'facebook:id:bar',
-      request: { method: 'POST', url: 'bar/baz', params: { id: 3 } },
-      channel: { uid: 'bar' },
-    },
-    {
-      key: 'facebook:id:baz',
-      request: {
-        method: 'POST',
-        url: 'me/messages',
-        params: { id: 4 },
-      },
-      channel: { uid: 'baz' },
-    },
-  ];
+test('with asApplication job', async () => {
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
+  const scope = graphApi
+    .post('/v11.0/', bodySpy)
+    .reply(
+      200,
+      JSON.stringify([{ code: 200, body: JSON.stringify({ settings: 'ok' }) }])
+    );
+  worker.start(queue);
 
-  let scope;
-  beforeEach(() => {
-    scope = graphApi.post('/v11.0/', bodySpy).reply(200, (_, { batch }) =>
-      JSON.stringify(
-        JSON.parse(batch).map((_r, i) => ({
-          code: 200,
-          body: JSON.stringify({ id: i + 1 }),
-        }))
-      )
+  await expect(
+    queue.executeJobs([
+      {
+        request: {
+          method: 'POST',
+          url: 'settins/api',
+          params: { some: 'app settings' },
+        },
+        asApplication: true,
+      },
+    ])
+  ).resolves.toMatchSnapshot();
+
+  expect(bodySpy).toHaveBeenCalledTimes(1);
+  const body = bodySpy.mock.calls[0].args[0];
+
+  expect(body.access_token).toBe('_APP_ID_|_APP_SECRET_');
+  expect(body).toMatchSnapshot();
+
+  const batch = JSON.parse(body.batch);
+
+  expect(batch).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "body": "some=app%20settings",
+        "method": "POST",
+        "omit_response_on_success": false,
+        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_",
+      },
+    ]
+  `);
+  expect(scope.isDone()).toBe(true);
+});
+
+it('skip job when no access token available', async () => {
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) => {
+    return channels.map((channel) =>
+      channel.uid === 'foo' ? { accessToken: `access_token_foo` } : null
     );
   });
+  const scope = graphApi.post('/v11.0/', bodySpy).reply(200, (_, { batch }) =>
+    JSON.stringify(
+      JSON.parse(batch).map((_r, i) => ({
+        code: 200,
+        body: JSON.stringify({ id: i + 1 }),
+      }))
+    )
+  );
 
-  it('use access token for each channels', async () => {
-    const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
+  worker.start(queue);
 
-    worker.start(queue);
+  const asApplicationJob = {
+    request: {
+      method: 'POST',
+      url: 'settins/api',
+      params: { some: 'app settings' },
+    },
+    asApplication: true,
+  };
 
-    await expect(queue.executeJobs(jobsForDifferentChannels)).resolves.toEqual({
-      success: true,
-      errors: null,
-      batch: jobsForDifferentChannels.map((job, i) => ({
-        success: true,
-        job,
-        result: { code: 200, body: { id: i + 1 } },
-      })),
-    });
+  await expect(
+    queue.executeJobs([...jobs, asApplicationJob])
+  ).resolves.toMatchSnapshot();
 
-    expect(bodySpy).toHaveBeenCalledTimes(1);
-    const body = bodySpy.mock.calls[0].args[0];
+  expect(bodySpy).toHaveBeenCalledTimes(1);
+  const body = bodySpy.mock.calls[0].args[0];
 
-    expect(body.access_token).toBe('access_token_foo');
-    expect(body).toMatchSnapshot();
+  expect(body.access_token).toBe('access_token_foo');
+  expect(body).toMatchSnapshot();
 
-    const batch = JSON.parse(body.batch);
+  const batch = JSON.parse(body.batch);
 
-    expect(batch).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "body": "id=1",
-          "method": "POST",
-          "name": "facebook:id:foo-1",
-          "omit_response_on_success": false,
-          "relative_url": "me/messages?access_token=access_token_foo",
-        },
-        Object {
-          "body": "id=2",
-          "method": "POST",
-          "name": "facebook:id:bar-1",
-          "omit_response_on_success": false,
-          "relative_url": "me/messages?access_token=access_token_bar",
-        },
-        Object {
-          "body": "id=3",
-          "depends_on": "facebook:id:bar-1",
-          "method": "POST",
-          "name": "facebook:id:bar-2",
-          "omit_response_on_success": false,
-          "relative_url": "bar/baz?access_token=access_token_bar",
-        },
-        Object {
-          "body": "id=4",
-          "method": "POST",
-          "name": "facebook:id:baz-1",
-          "omit_response_on_success": false,
-          "relative_url": "me/messages?access_token=access_token_baz",
-        },
-      ]
-    `);
+  expect(batch).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=1",
+        "method": "POST",
+        "name": "facebook.id.foo.john-1",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages?access_token=access_token_foo",
+      },
+      Object {
+        "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
+        "depends_on": "facebook.id.foo.john-1",
+        "method": "POST",
+        "name": "facebook.id.foo.john-2",
+        "omit_response_on_success": false,
+        "relative_url": "some/api?access_token=access_token_foo",
+      },
+      Object {
+        "body": "some=app%20settings",
+        "method": "POST",
+        "omit_response_on_success": false,
+        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_",
+      },
+    ]
+  `);
+  expect(scope.isDone()).toBe(true);
+});
 
-    expect(scope.isDone()).toBe(true);
+it('skip request when fail to get access token for all the jobs', async () => {
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) => {
+    return channels.map(() => null);
   });
 
-  it('skip job when no access token available', async () => {
-    const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
+  worker.start(queue);
 
-    settingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) => {
-      return channels.map((channel) =>
-        channel.uid === 'bar'
-          ? null
-          : { accessToken: `access_token_${channel.uid}` }
-      );
-    });
-
-    worker.start(queue);
-
-    await expect(queue.executeJobs(jobsForDifferentChannels)).resolves
-      .toMatchInlineSnapshot(`
-            Object {
-              "batch": Array [
-                Object {
-                  "error": undefined,
-                  "job": Object {
-                    "channel": Object {
-                      "uid": "foo",
-                    },
-                    "key": "facebook:id:foo",
-                    "request": Object {
-                      "method": "POST",
-                      "params": Object {
-                        "id": 1,
-                      },
-                      "url": "me/messages",
-                    },
+  await expect(
+    queue.executeJobs([
+      jobs[0],
+      {
+        request: {
+          method: 'POST',
+          url: 'settins/api',
+          params: { some: 'app settings' },
+        },
+      },
+    ])
+  ).resolves.toMatchInlineSnapshot(`
+          Object {
+            "batch": Array [
+              Object {
+                "error": [Error: No access token available for channel foo],
+                "job": Object {
+                  "channel": Object {
+                    "platform": "test",
+                    "uid": "foo",
                   },
-                  "result": Object {
-                    "body": Object {
+                  "key": "facebook.id.foo.john",
+                  "request": Object {
+                    "method": "POST",
+                    "params": Object {
                       "id": 1,
-                    },
-                    "code": 200,
-                  },
-                  "success": true,
-                },
-                Object {
-                  "error": [Error: No access token available for channel bar],
-                  "job": Object {
-                    "channel": Object {
-                      "uid": "bar",
-                    },
-                    "key": "facebook:id:bar",
-                    "request": Object {
-                      "method": "POST",
-                      "params": Object {
-                        "id": 2,
+                      "recipient": Object {
+                        "id": "john",
                       },
-                      "url": "me/messages",
                     },
+                    "url": "me/messages",
                   },
-                  "result": Object {
-                    "body": Object {},
-                    "code": 0,
-                    "headers": Object {},
-                  },
-                  "success": false,
                 },
-                Object {
-                  "error": [Error: No access token available for channel bar],
-                  "job": Object {
-                    "channel": Object {
-                      "uid": "bar",
-                    },
-                    "key": "facebook:id:bar",
-                    "request": Object {
-                      "method": "POST",
-                      "params": Object {
-                        "id": 3,
-                      },
-                      "url": "bar/baz",
-                    },
-                  },
-                  "result": Object {
-                    "body": Object {},
-                    "code": 0,
-                    "headers": Object {},
-                  },
-                  "success": false,
+                "result": Object {
+                  "body": Object {},
+                  "code": 0,
+                  "headers": Object {},
                 },
-                Object {
-                  "error": undefined,
-                  "job": Object {
-                    "channel": Object {
-                      "uid": "baz",
+                "success": false,
+              },
+              Object {
+                "error": [Error: No access token available for job],
+                "job": Object {
+                  "request": Object {
+                    "method": "POST",
+                    "params": Object {
+                      "some": "app settings",
                     },
-                    "key": "facebook:id:baz",
-                    "request": Object {
-                      "method": "POST",
-                      "params": Object {
-                        "id": 4,
-                      },
-                      "url": "me/messages",
-                    },
+                    "url": "settins/api",
                   },
-                  "result": Object {
-                    "body": Object {
-                      "id": 2,
-                    },
-                    "code": 200,
-                  },
-                  "success": true,
                 },
-              ],
-              "errors": Array [
-                [Error: No access token available for channel bar],
-                [Error: No access token available for channel bar],
-              ],
-              "success": false,
-            }
-          `);
+                "result": Object {
+                  "body": Object {},
+                  "code": 0,
+                  "headers": Object {},
+                },
+                "success": false,
+              },
+            ],
+            "errors": Array [
+              [Error: No access token available for channel foo],
+              [Error: No access token available for job],
+            ],
+            "success": false,
+          }
+        `);
 
-    expect(bodySpy).toHaveBeenCalledTimes(1);
-    const body = bodySpy.mock.calls[0].args[0];
+  expect(bodySpy).not.toHaveBeenCalled();
+});
 
-    expect(body.access_token).toBe('access_token_foo');
-    expect(body).toMatchSnapshot();
-
-    const batch = JSON.parse(body.batch);
-
-    expect(batch).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "body": "id=1",
-          "method": "POST",
-          "name": "facebook:id:foo-1",
-          "omit_response_on_success": false,
-          "relative_url": "me/messages?access_token=access_token_foo",
-        },
-        Object {
-          "body": "id=4",
-          "method": "POST",
-          "name": "facebook:id:baz-1",
-          "omit_response_on_success": false,
-          "relative_url": "me/messages?access_token=access_token_baz",
-        },
-      ]
-    `);
-
-    expect(scope.isDone()).toBe(true);
+test('with defaultAccessTokenOption', async () => {
+  const worker = new MetaApiWorker({
+    defaultAccessToken: '_DEFAULT_ACCESS_TOKEN_',
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
   });
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) => {
+    return channels.map((channel) =>
+      channel.uid === 'bar' ? { accessToken: `access_token_bar` } : null
+    );
+  });
+  const scope = graphApi.post('/v11.0/', bodySpy).reply(200, (_, { batch }) =>
+    JSON.stringify(
+      JSON.parse(batch).map((_r, i) => ({
+        code: 200,
+        body: JSON.stringify({ id: i + 1 }),
+      }))
+    )
+  );
+
+  worker.start(queue);
+
+  const asApplicationJob = {
+    request: {
+      method: 'POST',
+      url: 'settins/api',
+      params: { some: 'app settings' },
+    },
+    asApplication: true,
+  };
+
+  await expect(
+    queue.executeJobs([...jobs, asApplicationJob])
+  ).resolves.toMatchSnapshot();
+
+  expect(bodySpy).toHaveBeenCalledTimes(1);
+  const body = bodySpy.mock.calls[0].args[0];
+
+  expect(body.access_token).toBe('_DEFAULT_ACCESS_TOKEN_');
+  expect(body).toMatchSnapshot();
+
+  const batch = JSON.parse(body.batch);
+
+  expect(batch).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=1",
+        "method": "POST",
+        "name": "facebook.id.foo.john-1",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages?access_token=_DEFAULT_ACCESS_TOKEN_",
+      },
+      Object {
+        "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
+        "depends_on": "facebook.id.foo.john-1",
+        "method": "POST",
+        "name": "facebook.id.foo.john-2",
+        "omit_response_on_success": false,
+        "relative_url": "some/api?access_token=_DEFAULT_ACCESS_TOKEN_",
+      },
+      Object {
+        "body": "recipient=%7B%22id%22%3A%22jane%22%7D&id=3",
+        "method": "POST",
+        "name": "facebook.id.bar.jane-1",
+        "omit_response_on_success": false,
+        "relative_url": "me/messages?access_token=access_token_bar",
+      },
+      Object {
+        "body": "recipient=%7B%22id%22%3A%22jojo%22%7D&id=4",
+        "method": "POST",
+        "name": "facebook.id.baz.jojo-1",
+        "omit_response_on_success": false,
+        "relative_url": "another/api?access_token=_DEFAULT_ACCESS_TOKEN_",
+      },
+      Object {
+        "body": "some=app%20settings",
+        "method": "POST",
+        "omit_response_on_success": false,
+        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_",
+      },
+    ]
+  `);
+  expect(scope.isDone()).toBe(true);
 });
 
 describe('using API result in following request', () => {
@@ -951,8 +1019,13 @@ describe('using API result in following request', () => {
   });
 
   test('registerResult & consumeResult in the same batch', async () => {
-    const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
-
+    const worker = new MetaApiWorker({
+      appId,
+      appSecret,
+      agentSettingsAccessor,
+      graphApiVersion: 'v11.0',
+      consumeInterval: 0,
+    });
     const apiCall = graphApi
       .post('/v11.0/', bodySpy)
       .reply(200, JSON.stringify(continuousApiResults));
@@ -1004,8 +1077,13 @@ describe('using API result in following request', () => {
   });
 
   test('when job key is undeinfed', async () => {
-    const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
-
+    const worker = new MetaApiWorker({
+      appId,
+      appSecret,
+      agentSettingsAccessor,
+      graphApiVersion: 'v11.0',
+      consumeInterval: 0,
+    });
     const apiCall = graphApi
       .post('/v11.0/', bodySpy)
       .reply(200, JSON.stringify(continuousApiResults));
@@ -1055,8 +1133,13 @@ describe('using API result in following request', () => {
   });
 
   test('registerResult & consumeResult in different batches', async () => {
-    const worker = new MetaApiWorker(settingsAccessor, undefined, 'v11.0', 0);
-
+    const worker = new MetaApiWorker({
+      appId,
+      appSecret,
+      agentSettingsAccessor,
+      graphApiVersion: 'v11.0',
+      consumeInterval: 0,
+    });
     const apiCall1 = graphApi.post('/v11.0/', bodySpy).reply(
       200,
       JSON.stringify([
