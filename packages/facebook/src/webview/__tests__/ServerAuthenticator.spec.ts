@@ -41,7 +41,7 @@ const basicAuthenticator = moxy<BasicAuthenticator>({
 } as never);
 
 const pageSettings = { pageId: '12345', accessToken: '_ACCESS_TOKEN_' };
-const pageSettingsAccessor = moxy({
+const agentSettingsAccessor = moxy({
   getAgentSettings: async () => pageSettings,
   getAgentSettingsBatch: async () => [pageSettings],
 });
@@ -50,7 +50,7 @@ beforeEach(() => {
   profiler.mock.reset();
   requestDelegator.mock.reset();
   basicAuthenticator.mock.reset();
-  pageSettingsAccessor.mock.reset();
+  agentSettingsAccessor.mock.reset();
 });
 
 describe('.delegateAuthRequest(req, res, routing)', () => {
@@ -73,7 +73,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       bot,
       profiler,
       basicAuthenticator,
-      pageSettingsAccessor
+      agentSettingsAccessor
     );
     delegatorOptions =
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
@@ -133,8 +133,8 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         data: { page: '12345', user: '67890', profile: profileData },
       });
 
-      expect(pageSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
-      expect(pageSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+      expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+      expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
         new FacebookPage('12345')
       );
 
@@ -146,7 +146,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     });
 
     it('fail if fail to find page settings', async () => {
-      pageSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
+      agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
       await expect(
         delegatorOptions.verifyCredential({ page: '12345', user: '67890' })
       ).resolves.toMatchInlineSnapshot(`
@@ -184,7 +184,7 @@ test('.getAuthUrl(id, path)', () => {
     bot,
     profiler,
     basicAuthenticator,
-    pageSettingsAccessor
+    agentSettingsAccessor
   );
   expect(authenticator.getAuthUrl(user)).toBe(loginUrl);
   expect(authenticator.getAuthUrl(user, '/foo?bar=baz')).toBe(loginUrl);
@@ -209,7 +209,7 @@ test('.verifyCredential() fails anyway', async () => {
     bot,
     profiler,
     basicAuthenticator,
-    pageSettingsAccessor
+    agentSettingsAccessor
   );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
@@ -226,7 +226,7 @@ describe('.verifyRefreshment(data)', () => {
     bot,
     profiler,
     basicAuthenticator,
-    pageSettingsAccessor
+    agentSettingsAccessor
   );
 
   test('returns ok when verification passed', async () => {
@@ -237,8 +237,8 @@ describe('.verifyRefreshment(data)', () => {
       data: { page: '12345', user: '67890', profile: profileData },
     });
 
-    expect(pageSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
-    expect(pageSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
       new FacebookPage('12345')
     );
 
@@ -250,7 +250,7 @@ describe('.verifyRefreshment(data)', () => {
   });
 
   it('fails if page not found', async () => {
-    pageSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
+    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
     await expect(
       authenticator.verifyRefreshment({ page: '54321', user: '67890' })
     ).resolves.toMatchInlineSnapshot(`
@@ -268,7 +268,7 @@ test('.checkAuthData(data)', () => {
     bot,
     profiler,
     basicAuthenticator,
-    pageSettingsAccessor
+    agentSettingsAccessor
   );
 
   expect(

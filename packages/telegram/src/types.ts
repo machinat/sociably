@@ -11,7 +11,7 @@ import { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
 import { Interfaceable } from '@sociably/core/service';
 import type { WebhookMetadata } from '@sociably/http/webhook';
 import type { TelegramEvent } from './event/types';
-import { BotSettingsAccessorI } from './interface';
+import { AgentSettingsAccessorI } from './interface';
 import type TelegramChat from './Chat';
 import type { TelegramBot } from './Bot';
 
@@ -190,7 +190,7 @@ export type TelegramPlatformUtilities = PlatformUtilities<
   TelegramResult
 >;
 
-export type TelegramBotSettings = {
+export type TelegramAgentSettings = {
   /** The access token of the bot. Like: `1234567890:AaBbCc_321-DdEeFf` */
   botToken: string;
   /** The username of the bot without the prefixing `@`. Like `MyBot` */
@@ -200,9 +200,9 @@ export type TelegramBotSettings = {
 };
 
 export type TelegramConfigs = {
-  botSettings?: TelegramBotSettings;
-  multiBotSettings?: TelegramBotSettings[];
-  botSettingsService?: Interfaceable<BotSettingsAccessorI>;
+  agentSettings?: TelegramAgentSettings;
+  multiAgentSettings?: TelegramAgentSettings[];
+  agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
   /** The max API request connections at the same time */
@@ -215,3 +215,5 @@ export type TelegramConfigs = {
   eventMiddlewares?: TelegramEventMiddleware[];
   dispatchMiddlewares?: TelegramDispatchMiddleware[];
 };
+
+export type AgentSettingsAccessor = AgentSettingsAccessorI;

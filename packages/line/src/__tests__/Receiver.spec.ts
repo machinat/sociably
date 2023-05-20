@@ -11,12 +11,13 @@ const bot = moxy<LineBot>({
   render: async () => ({ jobs: [], tasks: [], results: [] }),
 } as never);
 
-const channelSettingsAccessor = moxy({
+const agentSettingsAccessor = moxy({
   getLineChatChannelSettingsByBotUserId: async (botUserId: string) => ({
     channelId: `_CHANNEL_ID_${botUserId}_`,
     providerId: '_PROVIDER_ID_',
     accessToken: `_ACCESS_TOKEN_${botUserId}_`,
     channelSecret: `_CHANNEL_SECRET_${botUserId}_`,
+    botUserId: '_BOT_USER_ID_',
   }),
   getAgentSettings: async () => null,
   getAgentSettingsBatch: async () => [],
@@ -64,7 +65,7 @@ const createRes = (): ServerResponse =>
 beforeEach(() => {
   popEventMock.reset();
   popEventWrapper.mock.reset();
-  channelSettingsAccessor.mock.reset();
+  agentSettingsAccessor.mock.reset();
 });
 
 it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
@@ -72,7 +73,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   async (method) => {
     const receiver = new LineReceiver({
       bot,
-      channelSettingsAccessor,
+      agentSettingsAccessor,
       popEventWrapper,
       shouldVerifyRequest: false,
     });
@@ -90,7 +91,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 it('responds 400 if body is empty', async () => {
   const receiver = new LineReceiver({
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
   });
@@ -107,7 +108,7 @@ it('responds 400 if body is empty', async () => {
 it('responds 400 if body is not not valid json format', async () => {
   const receiver = new LineReceiver({
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
   });
@@ -124,7 +125,7 @@ it('responds 400 if body is not not valid json format', async () => {
 it('responds 400 if body is in invalid format', async () => {
   const receiver = new LineReceiver({
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
   });
@@ -144,7 +145,7 @@ it('responds 400 if body is in invalid format', async () => {
 it('respond 200 and pop events received', async () => {
   const receiver = new LineReceiver({
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
   });
@@ -230,17 +231,17 @@ it('respond 200 and pop events received', async () => {
   expect(event2.payload).toEqual(body.events[1]);
 
   expect(
-    channelSettingsAccessor.getLineChatChannelSettingsByBotUserId
+    agentSettingsAccessor.getLineChatChannelSettingsByBotUserId
   ).toHaveBeenCalledTimes(1);
   expect(
-    channelSettingsAccessor.getLineChatChannelSettingsByBotUserId
+    agentSettingsAccessor.getLineChatChannelSettingsByBotUserId
   ).toHaveBeenCalledWith('FOO');
 });
 
 test('reply(message)', async () => {
   const receiver = new LineReceiver({
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
   });
@@ -274,12 +275,12 @@ test('reply(message)', async () => {
 it('validate request', async () => {
   const receiver = new LineReceiver({
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: true,
   });
 
-  channelSettingsAccessor.getLineChatChannelSettingsByBotUserId.mock.fakeResolvedValue(
+  agentSettingsAccessor.getLineChatChannelSettingsByBotUserId.mock.fakeResolvedValue(
     {
       channelSecret: '__LINE_CHANNEL_SECRET__',
       channelId: '_CHANNEL_ID_',
@@ -325,7 +326,7 @@ it('validate request', async () => {
 it('responds 401 if request validation failed', async () => {
   const receiver = new LineReceiver({
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: true,
   });

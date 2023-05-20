@@ -20,7 +20,7 @@ import type {
 
 type LineReceiverOptions = {
   bot: BotP;
-  channelSettingsAccessor: AgentSettingsAccessorI;
+  agentSettingsAccessor: AgentSettingsAccessorI;
   shouldVerifyRequest?: boolean;
   popEventWrapper: PopEventWrapper<LineEventContext, null>;
 };
@@ -39,7 +39,7 @@ const replyClosure = (bot: BotP, event: LineEvent) => {
 
 const handleWebhook = ({
   bot,
-  channelSettingsAccessor,
+  agentSettingsAccessor,
   popEventWrapper,
   shouldVerifyRequest,
 }: LineReceiverOptions): WebhookHandler => {
@@ -70,7 +70,7 @@ const handleWebhook = ({
     }
 
     const settings =
-      await channelSettingsAccessor.getLineChatChannelSettingsByBotUserId(
+      await agentSettingsAccessor.getLineChatChannelSettingsByBotUserId(
         destination
       );
     if (!settings) {
@@ -116,14 +116,14 @@ const handleWebhook = ({
 export class LineReceiver extends WebhookReceiver {
   constructor({
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest = true,
   }: LineReceiverOptions) {
     super(
       handleWebhook({
         bot,
-        channelSettingsAccessor,
+        agentSettingsAccessor,
         popEventWrapper,
         shouldVerifyRequest,
       })
@@ -137,12 +137,12 @@ const ReceiverP = serviceProviderClass({
   factory: (
     { shouldVerifyRequest },
     bot,
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     { popEventWrapper }
   ) =>
     new LineReceiver({
       bot,
-      channelSettingsAccessor,
+      agentSettingsAccessor,
       popEventWrapper,
       shouldVerifyRequest,
     }),

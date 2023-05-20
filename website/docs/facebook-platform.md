@@ -47,7 +47,7 @@ const app = Sociably.createApp({
   platforms: [
     Facebook.intiModule({
       entryPath: '/webhook/facebook',     // webhook path
-      pageSettings: {
+      agentSettings: {
         accessToken: FACEBOOK_ACCESS_TOKEN, // page access token
         verifyToken: FACEBOOK_VERIFY_TOKEN, // token for webhook verification
       },

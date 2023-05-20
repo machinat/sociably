@@ -19,7 +19,7 @@ import type {
 import type { FacebookBot } from './Bot';
 import type FacebookChat from './Chat';
 import FacebookInteractTarget from './InteractTarget';
-import { PageSettingsAccessorI } from './interface';
+import { AgentSettingsAccessorI } from './interface';
 import type { FacebookEvent } from './event/types';
 import type {
   FACEBOOK,
@@ -208,11 +208,11 @@ export type FacebookPageSettings = {
 
 export type FacebookConfigs = {
   /** Page integration settings in single page mode */
-  pageSettings?: FacebookPageSettings;
+  agentSettings?: FacebookPageSettings;
   /** Page integration settings in multi page mode */
-  multiPageSettings?: FacebookPageSettings[];
+  multiAgentSettings?: FacebookPageSettings[];
   /** Host page integration settings with your own service */
-  pageSettingsService?: Interfaceable<PageSettingsAccessorI>;
+  agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;
   /** The Facebook app ID */
   appId: string;
   /** The Facebook app secret */

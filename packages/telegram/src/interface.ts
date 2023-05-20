@@ -4,7 +4,7 @@ import TelegramUser from './User';
 import type {
   TelegramPlatformUtilities,
   TelegramConfigs,
-  TelegramBotSettings,
+  TelegramAgentSettings,
 } from './types';
 
 /**
@@ -23,14 +23,14 @@ export const PlatformUtilitiesI = serviceInterface<TelegramPlatformUtilities>({
   name: 'TelegramPlatformUtilities',
 });
 
-export type BotSettingsAccessorI = AgentSettingsAccessor<
+export type AgentSettingsAccessorI = AgentSettingsAccessor<
   TelegramUser,
-  TelegramBotSettings
+  TelegramAgentSettings
 >;
 
 /**
  * @category Interface
  */
-export const BotSettingsAccessorI = serviceInterface<BotSettingsAccessorI>({
-  name: 'TelegramBotSettingsAccessor',
+export const AgentSettingsAccessorI = serviceInterface<AgentSettingsAccessorI>({
+  name: 'TelegramAgentSettingsAccessor',
 });

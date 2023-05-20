@@ -1,9 +1,9 @@
 import { FacebookPageSettings } from '../types';
-import { PageSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 
-const createStaticPageSettingsAccessor = (
+const createStaticAgentSettingsAccessor = (
   settings: FacebookPageSettings[]
-): PageSettingsAccessorI => ({
+): AgentSettingsAccessorI => ({
   getAgentSettings: async (page) =>
     settings.find(({ pageId }) => pageId === page.id) || null,
   getAgentSettingsBatch: async (pages) =>
@@ -12,4 +12,4 @@ const createStaticPageSettingsAccessor = (
     ),
 });
 
-export default createStaticPageSettingsAccessor;
+export default createStaticAgentSettingsAccessor;

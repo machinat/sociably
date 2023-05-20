@@ -9,7 +9,7 @@ import BotP from './Bot';
 import {
   ConfigsI,
   PlatformUtilitiesI,
-  BotSettingsAccessorI,
+  AgentSettingsAccessorI,
 } from './interface';
 import TelegramUser from './User';
 import { TELEGRAM } from './constant';
@@ -17,7 +17,7 @@ import type { TelegramEventContext, TelegramRawEvent } from './types';
 
 type TelegramReceiverOptions = {
   bot: BotP;
-  botSettingsAccessor: BotSettingsAccessorI;
+  agentSettingsAccessor: AgentSettingsAccessorI;
   popEventWrapper: PopEventWrapper<TelegramEventContext, null>;
   shouldVerifySecretToken?: boolean;
   webhookPath?: string;
@@ -26,7 +26,7 @@ type TelegramReceiverOptions = {
 const handleWebhook = ({
   bot,
   popEventWrapper,
-  botSettingsAccessor,
+  agentSettingsAccessor,
   shouldVerifySecretToken = true,
   webhookPath = '/',
 }: TelegramReceiverOptions): WebhookHandler => {
@@ -62,17 +62,17 @@ const handleWebhook = ({
       return { code: 404 };
     }
 
-    const botSettings = await botSettingsAccessor.getAgentSettings(
+    const agentSettings = await agentSettingsAccessor.getAgentSettings(
       new TelegramUser(botId, true)
     );
-    if (!botSettings) {
+    if (!agentSettings) {
       return { code: 404 };
     }
 
     // validate secret token header
     if (
       shouldVerifySecretToken &&
-      headers['x-telegram-bot-api-secret-token'] !== botSettings.secretToken
+      headers['x-telegram-bot-api-secret-token'] !== agentSettings.secretToken
     ) {
       return { code: 401 };
     }
@@ -110,17 +110,17 @@ export class TelegramReceiver extends WebhookReceiver {
 
 const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, BotSettingsAccessorI, PlatformUtilitiesI],
+  deps: [ConfigsI, BotP, AgentSettingsAccessorI, PlatformUtilitiesI],
   factory: (
     { webhookPath, shouldVerifySecretToken },
     bot,
-    botSettingsAccessor,
+    agentSettingsAccessor,
     { popEventWrapper }
   ) => {
     return new TelegramReceiver({
       bot,
       webhookPath,
-      botSettingsAccessor,
+      agentSettingsAccessor,
       shouldVerifySecretToken,
       popEventWrapper,
     });

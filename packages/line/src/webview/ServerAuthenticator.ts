@@ -40,12 +40,12 @@ export class LineServerAuthenticator
     ServerAuthenticator<LineAuthCredential, LineAuthData, LineAuthContext>
 {
   bot: BotP;
-  channelSettingsAccessor: AgentSettingsAccessorI;
+  agentSettingsAccessor: AgentSettingsAccessorI;
   platform = LINE;
 
-  constructor(bot: BotP, channelSettingsAccessor: AgentSettingsAccessorI) {
+  constructor(bot: BotP, agentSettingsAccessor: AgentSettingsAccessorI) {
     this.bot = bot;
-    this.channelSettingsAccessor = channelSettingsAccessor;
+    this.agentSettingsAccessor = agentSettingsAccessor;
   }
 
   async getLiffUrl(
@@ -53,9 +53,7 @@ export class LineServerAuthenticator
     path?: string,
     chat?: LineChat
   ): Promise<string> {
-    const setting = await this.channelSettingsAccessor.getAgentSettings(
-      channel
-    );
+    const setting = await this.agentSettingsAccessor.getAgentSettings(channel);
     if (!setting || !setting.liff) {
       throw new Error(
         `liff setting for messaging channel "${channel.id}" not found`
@@ -219,7 +217,7 @@ export class LineServerAuthenticator
     }
 
     const messagingChannelSettings =
-      await this.channelSettingsAccessor.getAgentSettings(chat.channel);
+      await this.agentSettingsAccessor.getAgentSettings(chat.channel);
 
     if (!messagingChannelSettings) {
       return {
@@ -318,7 +316,7 @@ export class LineServerAuthenticator
     chatChannelId: undefined | string
   ) {
     const loginChannelSettings =
-      await this.channelSettingsAccessor.getLineLoginChannelSettings(
+      await this.agentSettingsAccessor.getLineLoginChannelSettings(
         loginChannelId
       );
     if (!loginChannelSettings) {

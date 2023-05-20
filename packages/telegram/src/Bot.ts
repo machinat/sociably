@@ -18,7 +18,7 @@ import TelegramUser from './User';
 import {
   ConfigsI,
   PlatformUtilitiesI,
-  BotSettingsAccessorI,
+  AgentSettingsAccessorI,
 } from './interface';
 import { TELEGRAM } from './constant';
 import TelegramApiError from './Error';
@@ -34,7 +34,7 @@ import type {
 } from './types';
 
 type TelegramBotOptions = {
-  botSettingsAccessor: BotSettingsAccessorI;
+  agentSettingsAccessor: AgentSettingsAccessorI;
   maxRequestConnections?: number;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<
@@ -61,7 +61,7 @@ type ApiCallOptions = {
 export class TelegramBot
   implements SociablyBot<TelegramChat, TelegramJob, TelegramResult>
 {
-  botSettingsAccessor: BotSettingsAccessorI;
+  agentSettingsAccessor: AgentSettingsAccessorI;
   engine: Engine<
     TelegramUser | TelegramChat,
     TelegramSegmentValue,
@@ -73,14 +73,14 @@ export class TelegramBot
   platform = TELEGRAM;
 
   constructor({
-    botSettingsAccessor,
+    agentSettingsAccessor,
     maxRequestConnections = 100,
     initScope,
     dispatchWrapper,
   }: TelegramBotOptions) {
     const queue = new Queue<TelegramJob, TelegramResult>();
     const worker = new TelegramWorker(
-      botSettingsAccessor,
+      agentSettingsAccessor,
       maxRequestConnections
     );
     const renderer = new Renderer<
@@ -88,7 +88,7 @@ export class TelegramBot
       TelegramComponent<unknown>
     >(TELEGRAM, generalElementDelegate);
 
-    this.botSettingsAccessor = botSettingsAccessor;
+    this.agentSettingsAccessor = agentSettingsAccessor;
     this.engine = new Engine(
       TELEGRAM,
       renderer,
@@ -139,8 +139,10 @@ export class TelegramBot
         ? new TelegramUser(agentIdOrInstance, true)
         : agentIdOrInstance;
 
-    const botSettings = await this.botSettingsAccessor.getAgentSettings(agent);
-    if (!botSettings) {
+    const agentSettings = await this.agentSettingsAccessor.getAgentSettings(
+      agent
+    );
+    if (!agentSettings) {
       throw new Error(`Bot agent "${agent.id}" not registered`);
     }
 
@@ -155,7 +157,7 @@ export class TelegramBot
     }
 
     const fetchResponse = await fetch(
-      `https://api.telegram.org/file/bot${botSettings.botToken}/${filePath}`
+      `https://api.telegram.org/file/bot${agentSettings.botToken}/${filePath}`
     );
 
     if (!fetchResponse.ok) {
@@ -209,18 +211,18 @@ const BotP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
-    BotSettingsAccessorI,
+    AgentSettingsAccessorI,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
     { maxRequestConnections },
-    botSettingsAccessor,
+    agentSettingsAccessor,
     moduleUtils,
     platformUtils
   ) => {
     return new TelegramBot({
-      botSettingsAccessor,
+      agentSettingsAccessor,
       maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,

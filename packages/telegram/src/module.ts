@@ -13,7 +13,7 @@ import type { RequestRoute } from '@sociably/http';
 import {
   ConfigsI,
   PlatformUtilitiesI,
-  BotSettingsAccessorI,
+  AgentSettingsAccessorI,
 } from './interface';
 import { TELEGRAM } from './constant';
 import BotP from './Bot';
@@ -24,7 +24,7 @@ import ProfilerP from './Profiler';
 import TelegramChat from './Chat';
 import TelegramUser from './User';
 import TelegramChatSender from './ChatSender';
-import createStaticBotSettingsAccessor from './utils/createStaticBotSettingsAccessor';
+import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor';
 import type {
   TelegramEventContext,
   TelegramJob,
@@ -60,8 +60,8 @@ namespace Telegram {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
-  export const BotSettingsAccessor = BotSettingsAccessorI;
-  export type BotSettingsAccessor = BotSettingsAccessorI;
+  export const AgentSettingsAccessor = AgentSettingsAccessorI;
+  export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
     configs: ConfigsI
@@ -98,34 +98,34 @@ namespace Telegram {
       { provide: BaseMarshaler.TypeList, withValue: TelegramChatProfile },
     ];
 
-    if (configs.botSettingsService) {
+    if (configs.agentSettingsService) {
       provisions.push({
-        provide: BotSettingsAccessorI,
+        provide: AgentSettingsAccessorI,
         withProvider: serviceProviderFactory({
-          deps: [configs.botSettingsService],
+          deps: [configs.agentSettingsService],
         })((accessor) => accessor),
       });
-    } else if (configs.botSettings) {
+    } else if (configs.agentSettings) {
       provisions.push({
-        provide: BotSettingsAccessorI,
-        withValue: createStaticBotSettingsAccessor([configs.botSettings]),
+        provide: AgentSettingsAccessorI,
+        withValue: createStaticAgentSettingsAccessor([configs.agentSettings]),
       });
-    } else if (configs.multiBotSettings) {
-      if (configs.multiBotSettings.length === 0) {
+    } else if (configs.multiAgentSettings) {
+      if (configs.multiAgentSettings.length === 0) {
         throw new Error(
-          'configs.multiBotSettings must have at least one page settings'
+          'configs.multiAgentSettings must have at least one page settings'
         );
       }
 
       provisions.push({
-        provide: BotSettingsAccessorI,
-        withValue: createStaticBotSettingsAccessor([
-          ...configs.multiBotSettings,
+        provide: AgentSettingsAccessorI,
+        withValue: createStaticAgentSettingsAccessor([
+          ...configs.multiAgentSettings,
         ]),
       });
     } else {
       throw new Error(
-        'Telegram platform requires one of `botSettings`, `multiBotSettings` or `botSettingsService` option'
+        'Telegram platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
       );
     }
 

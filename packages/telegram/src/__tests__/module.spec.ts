@@ -14,7 +14,7 @@ import TelegramChatProfile from '../ChatProfile';
 import TelegramUserProfile from '../UserProfile';
 import { TelegramProfiler } from '../Profiler';
 import { TelegramBot } from '../Bot';
-import { BotSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 
 it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);
@@ -36,7 +36,7 @@ describe('initModule(configs)', () => {
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
 
     const module = Telegram.initModule({
-      botSettings: {
+      agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
         secretToken: '_SECRET_',
@@ -64,7 +64,7 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
-      botSettings: {
+      agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
         secretToken: '_SECRET_',
@@ -106,7 +106,7 @@ describe('initModule(configs)', () => {
     const app = Sociably.createApp({
       platforms: [
         Telegram.initModule({
-          botSettings: {
+          agentSettings: {
             botToken: '12345:_BOT_TOKEN_',
             botName: 'FooBot',
             secretToken: '_SECRET_',
@@ -137,7 +137,7 @@ describe('initModule(configs)', () => {
 
   test('default webhookPath to "/"', async () => {
     const configs = {
-      botSettings: {
+      agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
         secretToken: '_SECRET_',
@@ -155,31 +155,31 @@ describe('initModule(configs)', () => {
     ]);
   });
 
-  test('with configs.botSettings', async () => {
-    const botSettings = {
+  test('with configs.agentSettings', async () => {
+    const agentSettings = {
       botName: 'MyBot',
       botToken: '12345:_ACCESS_TOKEN_',
       secretToken: '_SECRET_',
     };
 
     const app = Sociably.createApp({
-      platforms: [Telegram.initModule({ botSettings })],
+      platforms: [Telegram.initModule({ agentSettings })],
     });
     await app.start();
-    const [botSettingsAccessor] = app.useServices([BotSettingsAccessorI]);
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      botSettingsAccessor.getAgentSettings(new TelegramUser(12345))
-    ).resolves.toEqual(botSettings);
+      agentSettingsAccessor.getAgentSettings(new TelegramUser(12345))
+    ).resolves.toEqual(agentSettings);
     await expect(
-      botSettingsAccessor.getAgentSettingsBatch([new TelegramUser(12345)])
-    ).resolves.toEqual([botSettings]);
+      agentSettingsAccessor.getAgentSettingsBatch([new TelegramUser(12345)])
+    ).resolves.toEqual([agentSettings]);
 
     await app.stop();
   });
 
-  test('with configs.multiBotSettings', async () => {
-    const multiBotSettings = [
+  test('with configs.multiAgentSettings', async () => {
+    const multiAgentSettings = [
       {
         botName: 'MyBot',
         botToken: '1111111:_ACCESS_TOKEN_',
@@ -193,66 +193,66 @@ describe('initModule(configs)', () => {
     ];
 
     const app = Sociably.createApp({
-      platforms: [Telegram.initModule({ multiBotSettings })],
+      platforms: [Telegram.initModule({ multiAgentSettings })],
     });
     await app.start();
-    const [botSettingsAccessor] = app.useServices([BotSettingsAccessorI]);
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      botSettingsAccessor.getAgentSettings(new TelegramUser(1111111, true))
-    ).resolves.toEqual(multiBotSettings[0]);
+      agentSettingsAccessor.getAgentSettings(new TelegramUser(1111111, true))
+    ).resolves.toEqual(multiAgentSettings[0]);
     await expect(
-      botSettingsAccessor.getAgentSettings(new TelegramUser(2222222, true))
-    ).resolves.toEqual(multiBotSettings[1]);
+      agentSettingsAccessor.getAgentSettings(new TelegramUser(2222222, true))
+    ).resolves.toEqual(multiAgentSettings[1]);
     await expect(
-      botSettingsAccessor.getAgentSettingsBatch([
+      agentSettingsAccessor.getAgentSettingsBatch([
         new TelegramUser(1111111, true),
         new TelegramUser(1234567, true),
       ])
-    ).resolves.toEqual([multiBotSettings[0], null]);
+    ).resolves.toEqual([multiAgentSettings[0], null]);
 
     await app.stop();
   });
 
-  test('with configs.botSettingsService', async () => {
-    const botSettings = {
+  test('with configs.agentSettingsService', async () => {
+    const agentSettings = {
       botName: 'MyBot',
       botToken: '12345:_ACCESS_TOKEN_',
       secretToken: '_SECRET_',
     };
     const settingsAccessor = {
-      getAgentSettings: async () => botSettings,
-      getAgentSettingsBatch: async () => [botSettings, botSettings],
+      getAgentSettings: async () => agentSettings,
+      getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
-    const myBotSettingsService = serviceProviderFactory({})(
+    const myAgentSettingsService = serviceProviderFactory({})(
       () => settingsAccessor
     );
 
     const app = Sociably.createApp({
       platforms: [
         Telegram.initModule({
-          botSettingsService: myBotSettingsService,
+          agentSettingsService: myAgentSettingsService,
         }),
       ],
-      services: [myBotSettingsService],
+      services: [myAgentSettingsService],
     });
     await app.start();
-    const [botSettingsAccessor] = app.useServices([BotSettingsAccessorI]);
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
-    expect(botSettingsAccessor).toBe(settingsAccessor);
+    expect(agentSettingsAccessor).toBe(settingsAccessor);
     await app.stop();
   });
 
   it('throw if no bot settings source provided', () => {
     expect(() => Telegram.initModule({})).toThrowErrorMatchingInlineSnapshot(
-      `"Telegram platform requires one of \`botSettings\`, \`multiBotSettings\` or \`botSettingsService\` option"`
+      `"Telegram platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
     );
   });
 
   test('.startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Telegram.initModule({
-      botSettings: {
+      agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
         secretToken: '_SECRET_',
@@ -267,7 +267,7 @@ describe('initModule(configs)', () => {
   test('.stopHook() stop bot', async () => {
     const bot = moxy({ stop: async () => {} });
     const module = Telegram.initModule({
-      botSettings: {
+      agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
         secretToken: '_SECRET_',

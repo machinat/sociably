@@ -32,7 +32,7 @@ import type {
 } from './types';
 
 type LineBotOptions = {
-  channelSettingsAccessor: AgentSettingsAccessorI;
+  agentSettingsAccessor: AgentSettingsAccessorI;
   maxRequestConnections?: number;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<LineJob, LineDispatchFrame, LineResult>;
@@ -67,7 +67,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
   platform = LINE;
 
   constructor({
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     maxRequestConnections = 100,
     initScope,
     dispatchWrapper,
@@ -75,10 +75,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
     this.maxRequestConnections = maxRequestConnections;
 
     const queue = new Queue<LineJob, LineResult>();
-    const worker = new LineWorker(
-      channelSettingsAccessor,
-      maxRequestConnections
-    );
+    const worker = new LineWorker(agentSettingsAccessor, maxRequestConnections);
     const renderer = new Renderer<LineSegmentValue, LineComponent<unknown>>(
       LINE,
       generalElementDelegate
@@ -161,12 +158,12 @@ const BotP = serviceProviderClass({
   ],
   factory: (
     { maxRequestConnections },
-    channelSettingsAccessor,
+    agentSettingsAccessor,
     moduleUtils,
     platformUtils
   ) =>
     new LineBot({
-      channelSettingsAccessor,
+      agentSettingsAccessor,
       maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,

@@ -3,7 +3,7 @@ import FormData from 'form-data';
 import type { SociablyWorker } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import TelegramUser from './User';
-import { BotSettingsAccessorI } from './interface';
+import { AgentSettingsAccessorI } from './interface';
 import type { TelegramJob, TelegramResult, UploadingFile } from './types';
 import TelegramApiError from './Error';
 
@@ -57,14 +57,17 @@ const requestBotApi = async (
 export default class TelegramWorker
   implements SociablyWorker<TelegramJob, TelegramResult>
 {
-  private _settingsAccessor: BotSettingsAccessorI;
+  private _settingsAccessor: AgentSettingsAccessorI;
   private _started: boolean;
   private _lockedKeys: Set<string>;
 
   connectionCount: number;
   maxConnections: number;
 
-  constructor(settingsAccessor: BotSettingsAccessorI, maxConnections: number) {
+  constructor(
+    settingsAccessor: AgentSettingsAccessorI,
+    maxConnections: number
+  ) {
     this._settingsAccessor = settingsAccessor;
     this.connectionCount = 0;
     this.maxConnections = maxConnections;
@@ -150,15 +153,15 @@ export default class TelegramWorker
 
   private async _executeJob([job]: TelegramJob[]) {
     const { method, params, files, agentId } = job;
-    const botSettings = await this._settingsAccessor.getAgentSettings(
+    const agentSettings = await this._settingsAccessor.getAgentSettings(
       new TelegramUser(agentId, true)
     );
-    if (!botSettings) {
+    if (!agentSettings) {
       throw new Error(`Agent bot "${agentId}" not registered`);
     }
 
     const result = await requestBotApi(
-      botSettings.botToken,
+      agentSettings.botToken,
       method,
       params,
       files

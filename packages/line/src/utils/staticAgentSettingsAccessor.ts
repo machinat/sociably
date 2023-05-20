@@ -9,28 +9,32 @@ const getLoginChannelIdFromLiffId = (liffId: string): string =>
   liffId.split('-', 1)[0];
 
 export const createSingleStaticAgentSettingsAccessor = (
-  channelSettings: LineChatChannelSettings
+  agentSettings: Omit<LineChatChannelSettings, 'botUserId'> & {
+    botUserId?: string;
+  }
 ): AgentSettingsAccessorI => {
-  const liffIds = channelSettings.liff
-    ? Object.values(channelSettings.liff)
-    : [];
+  const liffIds = agentSettings.liff ? Object.values(agentSettings.liff) : [];
   const loginChannelIds = liffIds.map(getLoginChannelIdFromLiffId);
 
+  const polishedChannelSettings = {
+    ...agentSettings,
+    botUserId: agentSettings?.botUserId || '',
+  };
+
+  const getChannelSettings = (channel) =>
+    channel.id === agentSettings.channelId ? polishedChannelSettings : null;
+
   return {
-    getAgentSettings: async (channel) =>
-      channel.id === channelSettings.channelId ? channelSettings : null,
-    getAgentSettingsBatch: async (channels) =>
-      channels.map((channel) =>
-        channel.id === channelSettings.channelId ? channelSettings : null
-      ),
-    getLineChatChannelSettingsByBotUserId: async () => channelSettings,
+    getAgentSettings: async (channel) => getChannelSettings(channel),
+    getAgentSettingsBatch: async (channels) => channels.map(getChannelSettings),
+    getLineChatChannelSettingsByBotUserId: async () => polishedChannelSettings,
     getLineLoginChannelSettings: async (loginChannelId) =>
       loginChannelIds.includes(loginChannelId)
         ? {
-            providerId: channelSettings.providerId,
+            providerId: agentSettings.providerId,
             channelId: loginChannelId,
             liffIds,
-            refChatChannelIds: [channelSettings.channelId],
+            refChatChannelIds: [agentSettings.channelId],
           }
         : null,
   };
@@ -54,7 +58,7 @@ export const createMultiStaticNumberSettingsAccessor = (
       botUserId,
       liff,
     } of channels) {
-      const channelSettings = {
+      const agentSettings = {
         providerId,
         channelId,
         channelSecret,
@@ -62,7 +66,7 @@ export const createMultiStaticNumberSettingsAccessor = (
         botUserId,
         liff,
       };
-      messagingChannelsSettings.set(channelId, channelSettings);
+      messagingChannelsSettings.set(channelId, agentSettings);
 
       const liffSettings = liff ?? fallbackLiff;
       const liffIds = liffSettings ? Object.values(liffSettings) : [];

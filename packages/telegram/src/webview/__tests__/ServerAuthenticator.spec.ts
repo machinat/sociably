@@ -19,14 +19,14 @@ const res = moxy<ServerResponse>({
   end() {},
 } as never);
 
-const botSettings = {
+const agentSettings = {
   botToken: '12345:_BOT_TOKEN_',
   botName: 'MyBot',
   secretToken: '_SECRET_TOKEN_',
 };
 
-const botSettingsAccessor = moxy({
-  getAgentSettings: async () => botSettings,
+const agentSettingsAccessor = moxy({
+  getAgentSettings: async () => agentSettings,
   getAgentSettingsBatch: async () => [],
 });
 
@@ -47,7 +47,7 @@ const botUser = new TelegramUser(12345, true);
 
 const authenticator = new TelegramServerAuthenticator(
   bot,
-  botSettingsAccessor,
+  agentSettingsAccessor,
   httpOperator
 );
 
@@ -55,7 +55,7 @@ beforeEach(() => {
   bot.mock.reset();
   res.mock.reset();
   httpOperator.mock.reset();
-  botSettingsAccessor.mock.reset();
+  agentSettingsAccessor.mock.reset();
 });
 
 const MockDate = moxy(Date);
@@ -185,7 +185,7 @@ describe('.delegateAuthRequest() on root route', () => {
   });
 
   it('fail if bot settings not found', async () => {
-    botSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
+    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     const search = new URLSearchParams({
       ...telegramLoginSearch,
@@ -392,7 +392,7 @@ describe('.delegateAuthRequest() on login route', () => {
 
     const authenticatorWithAppDetails = new TelegramServerAuthenticator(
       bot,
-      botSettingsAccessor,
+      agentSettingsAccessor,
       httpOperator,
       {
         appName: 'Mine Mine Mine App',
@@ -435,7 +435,7 @@ describe('.delegateAuthRequest() on login route', () => {
   });
 
   test('redirect with error if bot settings not found', async () => {
-    botSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
+    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     const req = createReq({
       url: `/auth/telegram/login?botId=12345&redirectUrl=%2Fwebview%2Fhello_world`,
@@ -612,7 +612,7 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if bot settings not found', async () => {
-    botSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
+    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     await expect(
       authenticator.verifyRefreshment({

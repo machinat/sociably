@@ -23,7 +23,7 @@ export const PlatformUtilitiesI = serviceInterface<FacebookPlatformUtilities>({
   name: 'FacebookPlatformUtilities',
 });
 
-export type PageSettingsAccessorI = AgentSettingsAccessor<
+export type AgentSettingsAccessorI = AgentSettingsAccessor<
   FacebookPage,
   FacebookPageSettings
 >;
@@ -31,8 +31,8 @@ export type PageSettingsAccessorI = AgentSettingsAccessor<
 /**
  * @category Interface
  */
-export const PageSettingsAccessorI = serviceInterface<
+export const AgentSettingsAccessorI = serviceInterface<
   AgentSettingsAccessor<FacebookPage, FacebookPageSettings>
 >({
-  name: 'FacebookPageSettingsAccessor',
+  name: 'FacebookAgentSettingsAccessor',
 });

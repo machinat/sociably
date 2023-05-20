@@ -46,7 +46,7 @@ const app = Sociably.createApp({
   platforms: [
     Line.intiModule({
       webhookPath: '/webhook/line',       // webhook path
-      channelSettings: {
+      agentSettings: {
         providerId: LINE_PROVIDER_ID,       // provider id of the channel
         channelId: LINE_CHANNEL_ID,         // messaging API channel id
         accessToken: LINE_ACCESS_TOKEN,     // channel access token
@@ -118,7 +118,7 @@ const app = Sociably.createApp({
   platforms: [
     Line.initModule({
       // add the login channel id
-      channelSettings: {
+      agentSettings: {
         // ...
         liff: { default: LINE_LIFF_ID },
       },

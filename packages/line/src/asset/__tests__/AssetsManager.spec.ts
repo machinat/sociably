@@ -25,12 +25,13 @@ const bot = moxy<LineBot>({
   requestApi: () => ({}),
 } as never);
 
-const channelSettingsAccessor = moxy({
+const agentSettingsAccessor = moxy({
   getAgentSettings: async () => ({
     channelId: `__CHANNEL_ID__`,
     providerId: '__PROVIDER_ID__',
     accessToken: `__ACCESS_TOKEN__`,
     channelSecret: `__CHANNEL_SECRET__`,
+    botUserId: '_BOT_USER_ID_',
   }),
   getAgentSettingsBatch: async () => [],
   getLineChatChannelSettingsByBotUserId: async () => null,
@@ -43,13 +44,13 @@ beforeEach(() => {
   stateController.mock.reset();
   state.mock.reset();
   bot.mock.reset();
-  channelSettingsAccessor.mock.reset();
+  agentSettingsAccessor.mock.reset();
 });
 
 const manager = new LineAssetsManager(
   stateController,
   bot,
-  channelSettingsAccessor
+  agentSettingsAccessor
 );
 
 test('get asset id', async () => {
@@ -266,8 +267,8 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
       })
     ).resolves.toBe(undefined);
 
-    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
-    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
       channel
     );
 
@@ -290,8 +291,8 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
       })
     ).rejects.toThrowError('BOOM');
 
-    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
-    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
       channel
     );
 
@@ -301,7 +302,7 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
   it('throw if page not found', async () => {
     nock.disableNetConnect();
 
-    channelSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
+    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     await expect(
       manager.uploadRichMenuImage(channel, richMenuId, Buffer.from('IMAGE'), {
@@ -311,8 +312,8 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
       `"Line channel \\"[object Object]\\" not registered"`
     );
 
-    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
-    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
       channel
     );
 

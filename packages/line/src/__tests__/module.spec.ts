@@ -36,7 +36,7 @@ describe('initModule(configs)', () => {
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
 
     const module = Line.initModule({
-      channelSettings: {
+      agentSettings: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         channelSecret: '_CHANNEL_SECRET_',
@@ -63,7 +63,7 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
-      channelSettings: {
+      agentSettings: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         channelSecret: '_CHANNEL_SECRET_',
@@ -96,9 +96,9 @@ describe('initModule(configs)', () => {
     ]);
   });
 
-  test('with options.channelSettings', async () => {
+  test('with options.agentSettings', async () => {
     const configs = {
-      channelSettings: {
+      agentSettings: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         channelSecret: '_CHANNEL_SECRET_',
@@ -114,9 +114,14 @@ describe('initModule(configs)', () => {
 
     const [settingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
+    const expectedAgentSettings = {
+      ...configs.agentSettings,
+      botUserId: '',
+    };
+
     await expect(
       settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_'))
-    ).resolves.toEqual(configs.channelSettings);
+    ).resolves.toEqual(expectedAgentSettings);
     await expect(
       settingsAccessor.getAgentSettings(new LineChannel('_WRONG_CHANNEL_'))
     ).resolves.toBe(null);
@@ -126,11 +131,11 @@ describe('initModule(configs)', () => {
         new LineChannel('_CHANNEL_ID_'),
         new LineChannel('_WRONG_CHANNEL_'),
       ])
-    ).resolves.toEqual([configs.channelSettings, null]);
+    ).resolves.toEqual([expectedAgentSettings, null]);
 
     await expect(
       settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_')
-    ).resolves.toEqual(configs.channelSettings);
+    ).resolves.toEqual(expectedAgentSettings);
 
     await expect(
       settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_')
@@ -145,11 +150,11 @@ describe('initModule(configs)', () => {
     ).resolves.toBe(null);
   });
 
-  test('with options.multiChannelSettings', async () => {
+  test('with options.multiAgentSettings', async () => {
     const app = Sociably.createApp({
       platforms: [
         Line.initModule({
-          multiChannelSettings: [
+          multiAgentSettings: [
             {
               providerId: '_PROVIDER_ID_1_',
               channels: [
@@ -273,20 +278,20 @@ describe('initModule(configs)', () => {
     ).resolves.toBe(null);
   });
 
-  test('with options.channelSettings', async () => {
-    const channelSettingsAccessor = {
+  test('with options.agentSettings', async () => {
+    const agentSettingsAccessor = {
       getAgentSettings: async () => null,
       getAgentSettingsBatch: async () => [],
       getLineChatChannelSettingsByBotUserId: async () => null,
       getLineLoginChannelSettings: async () => null,
     };
-    const channelSettingsService = serviceProviderFactory({})(
-      () => channelSettingsAccessor
+    const agentSettingsService = serviceProviderFactory({})(
+      () => agentSettingsAccessor
     );
 
     const app = Sociably.createApp({
-      platforms: [Line.initModule({ channelSettingsService })],
-      services: [channelSettingsService],
+      platforms: [Line.initModule({ agentSettingsService })],
+      services: [agentSettingsService],
     });
     await app.start();
 
@@ -294,12 +299,12 @@ describe('initModule(configs)', () => {
       AgentSettingsAccessorI,
     ]);
 
-    expect(acquiredAgentSettingsAccessor).toBe(channelSettingsAccessor);
+    expect(acquiredAgentSettingsAccessor).toBe(agentSettingsAccessor);
   });
 
   it('throws if no channel settings source provided', async () => {
     expect(() => Line.initModule({})).toThrowErrorMatchingInlineSnapshot(
-      `"Line platform requires one of \`channelSettings\`, \`multiChannelSettings\` or \`channelSettingsService\` option"`
+      `"Line platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
     );
   });
 
@@ -307,7 +312,7 @@ describe('initModule(configs)', () => {
     const app = Sociably.createApp({
       platforms: [
         Line.initModule({
-          channelSettings: {
+          agentSettings: {
             providerId: '_PROVIDER_ID_',
             channelId: '_CHANNEL_ID_',
             channelSecret: '_CHANNEL_SECRET_',
@@ -339,7 +344,7 @@ describe('initModule(configs)', () => {
 
   test('default webhookPath to "/"', async () => {
     const configs = {
-      channelSettings: {
+      agentSettings: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         channelSecret: '_CHANNEL_SECRET_',
@@ -362,7 +367,7 @@ describe('initModule(configs)', () => {
   test('#startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Line.initModule({
-      channelSettings: {
+      agentSettings: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         channelSecret: '_CHANNEL_SECRET_',
@@ -378,7 +383,7 @@ describe('initModule(configs)', () => {
   test('#stopHook() stop bot', async () => {
     const bot = moxy({ stop: async () => {} });
     const module = Line.initModule({
-      channelSettings: {
+      agentSettings: {
         providerId: '_PROVIDER_ID_',
         channelId: '_CHANNEL_ID_',
         channelSecret: '_CHANNEL_SECRET_',

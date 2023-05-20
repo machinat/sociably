@@ -7,4 +7,5 @@ export { default as LineUser } from './User';
 export { default as LineUserProfile } from './UserProfile';
 export { default as LineGroupProfile } from './GroupProfile';
 export { default as LineAssetsManager } from './asset';
+export { AgentSettingsAccessorI as LineAgentSettingsAccessor } from './interface';
 export * from './types';

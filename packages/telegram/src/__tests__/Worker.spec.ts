@@ -13,7 +13,7 @@ const botId2 = 2222222;
 const botToken1 = '1111111:_BOT_TOKEN_';
 const botToken2 = '2222222:_BOT_TOKEN_';
 
-const botSettingsAccessor = moxy({
+const agentSettingsAccessor = moxy({
   getAgentSettings: async (botUser) => ({
     botToken: botUser.id === botId1 ? botToken1 : botToken2,
     botName: 'MyBot',
@@ -29,11 +29,11 @@ let queue: Queue<any, any>;
 beforeEach(() => {
   queue = new Queue();
   nock.cleanAll();
-  botSettingsAccessor.mock.reset();
+  agentSettingsAccessor.mock.reset();
 });
 
 it('makes calls to api', async () => {
-  const client = new TelegramWorker(botSettingsAccessor, 10);
+  const client = new TelegramWorker(agentSettingsAccessor, 10);
 
   const apiCalls = [
     telegramApi
@@ -90,17 +90,17 @@ it('makes calls to api', async () => {
     })),
   });
 
-  expect(botSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(6);
-  expect(botSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+  expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(6);
+  expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
     new TelegramUser(botId1, true)
   );
-  expect(botSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+  expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
     new TelegramUser(botId2, true)
   );
 });
 
 it('sequently excute jobs within the same identical chat', async () => {
-  const client = new TelegramWorker(botSettingsAccessor, 10);
+  const client = new TelegramWorker(agentSettingsAccessor, 10);
 
   const bodySpy = moxy(() => true);
   const bot1ApiCalls = telegramApi
@@ -164,7 +164,7 @@ it('sequently excute jobs within the same identical chat', async () => {
 });
 
 it('open requests up to maxConnections', async () => {
-  const client = new TelegramWorker(botSettingsAccessor, 2);
+  const client = new TelegramWorker(agentSettingsAccessor, 2);
 
   const bodySpy = moxy(() => true);
   const bot1ApiCall = telegramApi
@@ -234,7 +234,7 @@ it('open requests up to maxConnections', async () => {
 });
 
 it('throw if connection error happen', async () => {
-  const client = new TelegramWorker(botSettingsAccessor, 10);
+  const client = new TelegramWorker(agentSettingsAccessor, 10);
 
   const apiCall1 = telegramApi
     .post(`/bot${botToken1}/sendMessage`)
@@ -288,7 +288,7 @@ it('throw if connection error happen', async () => {
 });
 
 it('throw if api error happen', async () => {
-  const client = new TelegramWorker(botSettingsAccessor, 10);
+  const client = new TelegramWorker(agentSettingsAccessor, 10);
 
   const apiCall1 = telegramApi
     .post(`/bot${botToken1}/sendMessage`)
@@ -344,7 +344,7 @@ it('throw if api error happen', async () => {
 });
 
 test('with files', async () => {
-  const client = new TelegramWorker(botSettingsAccessor, 10);
+  const client = new TelegramWorker(agentSettingsAccessor, 10);
   const bodySpy = moxy(() => true);
 
   const apiCallWithFile = nock(`https://api.telegram.org`, {

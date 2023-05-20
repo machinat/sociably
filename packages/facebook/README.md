@@ -39,7 +39,7 @@ const app = Sociably.createApp({
       entryPath: '/webhook/facebook',
       appSecret: FACEBOOK_APP_SECRET,
       verifyToken: FACEBOOK_VERIFY_TOKEN,
-      pageSettings: {
+      agentSettings: {
         pageId: FACEBOOK_PAGE_ID,
         accessToken: FACEBOOK_ACCESS_TOKEN,
       },

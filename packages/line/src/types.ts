@@ -246,6 +246,11 @@ export type LineChatChannelSettings = {
   channelSecret: string;
   /** The access token of the messaging channel */
   accessToken: string;
+  /**
+   * The bot user ID of the messaging channel. It can be retrieved through
+   * https://api.line.me/v2/bot/info API
+   */
+  botUserId: string;
   liff?: { default: string };
 };
 
@@ -261,27 +266,14 @@ export type LineLoginChannelSettings = {
 export type LineProviderSettings = {
   /** The provider ID of the business  */
   providerId: string;
-  channels: {
-    /** The id of the messaging API channel */
-    channelId: string;
-    /** The secret of the messaging API channel */
-    channelSecret: string;
-    /** The access token of the messaging API channel */
-    accessToken: string;
-    /**
-     * The bot user ID of the messaging channel. It can be retrieved through
-     * https://api.line.me/v2/bot/info API
-     */
-    botUserId: string;
-    liff?: { default: string };
-  }[];
+  channels: Omit<LineChatChannelSettings, 'providerId'>[];
   fallbackLiff?: string;
 };
 
 export type LineConfigs = {
-  channelSettings?: LineChatChannelSettings;
-  multiChannelSettings?: LineProviderSettings[];
-  channelSettingsService?: Interfaceable<AgentSettingsAccessorI>;
+  agentSettings?: Omit<LineChatChannelSettings, 'botUserId'>;
+  multiAgentSettings?: LineProviderSettings[];
+  agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;
   /** The webhook path to receive events. Default to `/` */
   webhookPath?: string;
   /** To verify the webhook request by the signature or not. Default to `true` */

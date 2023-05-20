@@ -46,14 +46,14 @@ jest.mock('../Worker', () =>
 const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
 
-const botSettings = {
+const agentSettings = {
   botToken: '12345:_BOT_TOKEN_',
   botName: 'MyBot',
   secretToken: '_SECRET_TOKEN_',
 };
 
-const botSettingsAccessor = moxy({
-  getAgentSettings: async () => botSettings,
+const agentSettingsAccessor = moxy({
+  getAgentSettings: async () => agentSettings,
   getAgentSettingsBatch: async () => [],
 });
 
@@ -82,7 +82,7 @@ describe('.constructor(options)', () => {
     const bot = new TelegramBot({
       initScope,
       dispatchWrapper,
-      botSettingsAccessor,
+      agentSettingsAccessor,
       maxRequestConnections: 999,
     });
 
@@ -102,7 +102,7 @@ describe('.constructor(options)', () => {
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
-    expect(Worker).toHaveBeenCalledWith(botSettingsAccessor, 999);
+    expect(Worker).toHaveBeenCalledWith(agentSettingsAccessor, 999);
   });
 
   test('default maxRequestConnections', () => {
@@ -110,7 +110,7 @@ describe('.constructor(options)', () => {
       new TelegramBot({
         initScope,
         dispatchWrapper,
-        botSettingsAccessor,
+        agentSettingsAccessor,
       })
     );
 
@@ -131,7 +131,7 @@ test('.start() and .stop() start/stop engine', () => {
   const bot = new TelegramBot({
     initScope,
     dispatchWrapper,
-    botSettingsAccessor,
+    agentSettingsAccessor,
   });
 
   type MockEngine = Moxy<TelegramBot['engine']>;
@@ -144,7 +144,7 @@ test('.start() and .stop() start/stop engine', () => {
 });
 
 describe('.render(thread, message, options)', () => {
-  const bot = new TelegramBot({ botSettingsAccessor });
+  const bot = new TelegramBot({ agentSettingsAccessor });
 
   beforeAll(() => {
     bot.start();
@@ -267,7 +267,7 @@ describe('.requestApi()', () => {
     const bot = new TelegramBot({
       initScope,
       dispatchWrapper,
-      botSettingsAccessor,
+      agentSettingsAccessor,
     });
     bot.start();
 
@@ -294,7 +294,7 @@ describe('.requestApi()', () => {
     const bot = new TelegramBot({
       initScope,
       dispatchWrapper,
-      botSettingsAccessor,
+      agentSettingsAccessor,
     });
     bot.start();
 
@@ -331,7 +331,7 @@ test('.fetchFile()', async () => {
   const bot = new TelegramBot({
     initScope,
     dispatchWrapper,
-    botSettingsAccessor,
+    agentSettingsAccessor,
   });
   bot.start();
 

@@ -6,7 +6,7 @@ import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import Facebook from '../module';
-import { PageSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 import FacebookPage from '../Page';
 import FacebookChat from '../Chat';
 import FacebookUser from '../User';
@@ -35,7 +35,7 @@ describe('initModule(configs)', () => {
     const dispatchMiddlewares = [(ctx, next) => next(ctx)];
 
     const module = Facebook.initModule({
-      pageSettings: {
+      agentSettings: {
         pageId: '1234567890',
         accessToken: '_ACCESS_TOKEN_',
       },
@@ -63,7 +63,7 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
-      pageSettings: {
+      agentSettings: {
         pageId: '1234567890',
         accessToken: '_ACCESS_TOKEN_',
       },
@@ -85,14 +85,14 @@ describe('initModule(configs)', () => {
       profiler,
       configsProvided,
       routings,
-      pageSettingsAccessor,
+      agentSettingsAccessor,
     ] = app.useServices([
       Facebook.Bot,
       Facebook.Receiver,
       Facebook.Profiler,
       Facebook.Configs,
       Http.RequestRouteList,
-      PageSettingsAccessorI,
+      AgentSettingsAccessorI,
     ]);
 
     expect(bot).toBeInstanceOf(FacebookBot);
@@ -106,7 +106,7 @@ describe('initModule(configs)', () => {
         handler: expect.any(Function),
       },
     ]);
-    expect(pageSettingsAccessor).toEqual({
+    expect(agentSettingsAccessor).toEqual({
       getAgentSettings: expect.any(Function),
       getAgentSettingsBatch: expect.any(Function),
     });
@@ -118,7 +118,7 @@ describe('initModule(configs)', () => {
     const app = Sociably.createApp({
       platforms: [
         Facebook.initModule({
-          pageSettings: {
+          agentSettings: {
             pageId: '1234567890',
             accessToken: '_ACCESS_TOKEN_',
           },
@@ -156,7 +156,7 @@ describe('initModule(configs)', () => {
     const app = Sociably.createApp({
       platforms: [
         Facebook.initModule({
-          pageSettings: {
+          agentSettings: {
             pageId: '1234567890',
             accessToken: '_ACCESS_TOKEN_',
           },
@@ -178,15 +178,15 @@ describe('initModule(configs)', () => {
     app.useServices([Facebook.Bot])[0].stop();
   });
 
-  test('with configs.pageSettings', async () => {
-    const pageSettings = {
+  test('with configs.agentSettings', async () => {
+    const agentSettings = {
       pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_',
     };
     const app = Sociably.createApp({
       platforms: [
         Facebook.initModule({
-          pageSettings,
+          agentSettings,
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
@@ -194,30 +194,30 @@ describe('initModule(configs)', () => {
       ],
     });
     await app.start();
-    const [pageSettingsAccessor] = app.useServices([PageSettingsAccessorI]);
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      pageSettingsAccessor.getAgentSettings(new FacebookPage('1234567890'))
-    ).resolves.toEqual(pageSettings);
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('1234567890'))
+    ).resolves.toEqual(agentSettings);
     await expect(
-      pageSettingsAccessor.getAgentSettings(new FacebookPage('9876543210'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('9876543210'))
     ).resolves.toEqual(null);
 
     await expect(
-      pageSettingsAccessor.getAgentSettingsBatch([
+      agentSettingsAccessor.getAgentSettingsBatch([
         new FacebookPage('1234567890'),
         new FacebookPage('9876543210'),
       ])
-    ).resolves.toEqual([pageSettings, null]);
+    ).resolves.toEqual([agentSettings, null]);
 
     await app.stop();
   });
 
-  test('with configs.multiPageSettings', async () => {
+  test('with configs.multiAgentSettings', async () => {
     const app = Sociably.createApp({
       platforms: [
         Facebook.initModule({
-          multiPageSettings: [
+          multiAgentSettings: [
             {
               pageId: '1234567890',
               accessToken: '_ACCESS_TOKEN_1_',
@@ -234,26 +234,26 @@ describe('initModule(configs)', () => {
       ],
     });
     await app.start();
-    const [pageSettingsAccessor] = app.useServices([PageSettingsAccessorI]);
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      pageSettingsAccessor.getAgentSettings(new FacebookPage('1234567890'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('1234567890'))
     ).resolves.toEqual({
       pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_1_',
     });
     await expect(
-      pageSettingsAccessor.getAgentSettings(new FacebookPage('9876543210'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('9876543210'))
     ).resolves.toEqual({
       pageId: '9876543210',
       accessToken: '_ACCESS_TOKEN_2_',
     });
     await expect(
-      pageSettingsAccessor.getAgentSettings(new FacebookPage('8888888888'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('8888888888'))
     ).resolves.toBe(null);
 
     await expect(
-      pageSettingsAccessor.getAgentSettingsBatch([
+      agentSettingsAccessor.getAgentSettingsBatch([
         new FacebookPage('9876543210'),
         new FacebookPage('1234567890'),
         new FacebookPage('8888888888'),
@@ -267,14 +267,14 @@ describe('initModule(configs)', () => {
     await app.stop();
   });
 
-  test('with configs.pageSettingsService', async () => {
-    const pageSettings = {
+  test('with configs.agentSettingsService', async () => {
+    const agentSettings = {
       pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_',
     };
     const settingsAccessor = {
-      getAgentSettings: async () => pageSettings,
-      getAgentSettingsBatch: async () => [pageSettings, pageSettings],
+      getAgentSettings: async () => agentSettings,
+      getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
     const myPageSettingsService = serviceProviderFactory({})(
       () => settingsAccessor
@@ -283,7 +283,7 @@ describe('initModule(configs)', () => {
     const app = Sociably.createApp({
       platforms: [
         Facebook.initModule({
-          pageSettingsService: myPageSettingsService,
+          agentSettingsService: myPageSettingsService,
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           verifyToken: '_VERIFY_TOKEN_',
@@ -292,9 +292,9 @@ describe('initModule(configs)', () => {
       services: [myPageSettingsService],
     });
     await app.start();
-    const [pageSettingsAccessor] = app.useServices([PageSettingsAccessorI]);
+    const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
-    expect(pageSettingsAccessor).toBe(settingsAccessor);
+    expect(agentSettingsAccessor).toBe(settingsAccessor);
     await app.stop();
   });
 
@@ -306,14 +306,14 @@ describe('initModule(configs)', () => {
         verifyToken: '...',
       })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Facebook platform requires one of \`pageSettings\`, \`multiPageSettings\` or \`pageSettingsService\` option"`
+      `"Facebook platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
     );
   });
 
   test('#startHook() start bot', async () => {
     const bot = moxy({ start: async () => {} });
     const module = Facebook.initModule({
-      pageSettings: {
+      agentSettings: {
         pageId: '1234567890',
         accessToken: '_ACCESS_TOKEN_',
       },
@@ -329,7 +329,7 @@ describe('initModule(configs)', () => {
   test('#stopHook() stop bot', async () => {
     const bot = moxy<FacebookBot>({ stop: async () => {} } as never);
     const module = Facebook.initModule({
-      pageSettings: {
+      agentSettings: {
         pageId: '1234567890',
         accessToken: '_ACCESS_TOKEN_',
       },

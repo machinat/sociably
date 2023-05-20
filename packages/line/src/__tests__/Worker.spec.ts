@@ -8,12 +8,13 @@ nock.disableNetConnect();
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
-const channelSettingsAccessor = moxy({
+const agentSettingsAccessor = moxy({
   getAgentSettings: async (channel: LineChannel) => ({
     channelId: `__CHANNEL_ID_${channel.id}__`,
     providerId: '__PROVIDER_ID__',
     accessToken: `__ACCESS_TOKEN_${channel.id}__`,
     channelSecret: `__CHANNEL_SECRET_${channel.id}__`,
+    botUserId: '_BOT_USER_ID_',
   }),
   getAgentSettingsBatch: async () => [],
   getLineChatChannelSettingsByBotUserId: async () => null,
@@ -35,11 +36,11 @@ beforeEach(() => {
   queue = new Queue();
 
   authorizationHeaderSpy.mock.clear();
-  channelSettingsAccessor.mock.reset();
+  agentSettingsAccessor.mock.reset();
 });
 
 it('makes calls to api', async () => {
-  const client = new LineWorker(channelSettingsAccessor, 10);
+  const client = new LineWorker(agentSettingsAccessor, 10);
 
   const apiAssertions = [
     lineApi.get('/foo/1?id=1').delay(100).reply(200, { id: 1 }),
@@ -112,10 +113,10 @@ it('makes calls to api', async () => {
     })),
   });
 
-  expect(channelSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(6);
+  expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(6);
 
   jobs.forEach(({ chatChannelId }, i) => {
-    expect(channelSettingsAccessor.getAgentSettings).toHaveBeenNthCalledWith(
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenNthCalledWith(
       i + 1,
       new LineChannel(chatChannelId)
     );
@@ -127,11 +128,11 @@ it('makes calls to api', async () => {
 });
 
 it('fail if unable to get channel setting', async () => {
-  const client = new LineWorker(channelSettingsAccessor, 10);
+  const client = new LineWorker(agentSettingsAccessor, 10);
 
   const scope = lineApi.post('/v2/bot/message/push').reply(200, {});
 
-  channelSettingsAccessor.getAgentSettings.mock.fake(async (channel) =>
+  agentSettingsAccessor.getAgentSettings.mock.fake(async (channel) =>
     channel.id === '1'
       ? null
       : { accessToken: `__ACCESS_TOKEN_${channel.id}__` }
@@ -213,7 +214,7 @@ it('fail if unable to get channel setting', async () => {
 });
 
 it('fail if connection error happen', async () => {
-  const client = new LineWorker(channelSettingsAccessor, 10);
+  const client = new LineWorker(agentSettingsAccessor, 10);
 
   const scope1 = lineApi.post('/v2/bot/message/push').reply(200, {});
   const scope2 = lineApi
@@ -284,7 +285,7 @@ it('fail if connection error happen', async () => {
 });
 
 it('fail if api error happen', async () => {
-  const client = new LineWorker(channelSettingsAccessor, 10);
+  const client = new LineWorker(agentSettingsAccessor, 10);
 
   const scope1 = lineApi.post('/v2/bot/message/push').reply(200, {});
   const scope2 = lineApi.post('/v2/bot/message/push').reply(400, {
@@ -365,7 +366,7 @@ it('fail if api error happen', async () => {
 });
 
 it('sequently excute jobs within an identical thread', async () => {
-  const client = new LineWorker(channelSettingsAccessor, 10);
+  const client = new LineWorker(agentSettingsAccessor, 10);
 
   const bodySpy = moxy(() => true);
   const msgScope = lineApi
@@ -481,7 +482,7 @@ it('sequently excute jobs within an identical thread', async () => {
 });
 
 it('open requests up to maxConnections', async () => {
-  const client = new LineWorker(channelSettingsAccessor, 2);
+  const client = new LineWorker(agentSettingsAccessor, 2);
 
   const bodySpy = moxy(() => true);
   const msgScope = lineApi

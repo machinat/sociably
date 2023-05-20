@@ -37,17 +37,18 @@ nock.disableNetConnect();
 const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
 
-const channelSettings = {
+const agentSettings = {
   providerId: '_PROVIDER_ID_',
   channelId: '_CHANNEL_ID_',
   accessToken: '_ACCESS_TOKEN_',
   channelSecret: '_CHANNEL_SECRET_',
+  botUserId: '_BOT_USER_ID_',
 };
 
-const channelSettingsAccessor = moxy({
-  getAgentSettings: async () => channelSettings,
-  getAgentSettingsBatch: async () => [channelSettings, channelSettings],
-  getLineChatChannelSettingsByBotUserId: async () => channelSettings,
+const agentSettingsAccessor = moxy({
+  getAgentSettings: async () => agentSettings,
+  getAgentSettingsBatch: async () => [agentSettings, agentSettings],
+  getLineChatChannelSettingsByBotUserId: async () => agentSettings,
   getLineLoginChannelSettings: async () => null,
 });
 
@@ -84,7 +85,7 @@ const message = (
 describe('.constructor(options)', () => {
   it('assemble engine', () => {
     const bot = new LineBot({
-      channelSettingsAccessor,
+      agentSettingsAccessor,
       maxRequestConnections: 999,
       initScope,
       dispatchWrapper,
@@ -111,7 +112,7 @@ describe('.constructor(options)', () => {
 
 describe('.render(chat, node, options)', () => {
   it('make api calls', async () => {
-    const bot = new LineBot({ channelSettingsAccessor });
+    const bot = new LineBot({ agentSettingsAccessor });
 
     bot.start();
 
@@ -151,7 +152,7 @@ describe('.render(chat, node, options)', () => {
   });
 
   it('works with replyToken', async () => {
-    const bot = new LineBot({ channelSettingsAccessor });
+    const bot = new LineBot({ agentSettingsAccessor });
     bot.start();
 
     const apiCall1 = lineApi
@@ -192,7 +193,7 @@ describe('.render(chat, node, options)', () => {
   });
 
   it('return null if message is empty', async () => {
-    const bot = new LineBot({ channelSettingsAccessor });
+    const bot = new LineBot({ agentSettingsAccessor });
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
@@ -205,7 +206,7 @@ describe('.render(chat, node, options)', () => {
 
 describe('.renderMulticast(channel, userIds, message)', () => {
   it('return null if message is empty', async () => {
-    const bot = new LineBot({ channelSettingsAccessor });
+    const bot = new LineBot({ agentSettingsAccessor });
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
@@ -216,7 +217,7 @@ describe('.renderMulticast(channel, userIds, message)', () => {
   });
 
   it('make api call to message/mulitcast', async () => {
-    const bot = new LineBot({ channelSettingsAccessor });
+    const bot = new LineBot({ agentSettingsAccessor });
     bot.start();
 
     const apiCall1 = lineApi
@@ -262,7 +263,7 @@ describe('.renderMulticast(channel, userIds, message)', () => {
 
 describe('.requestApi(options)', () => {
   it('call line REST api', async () => {
-    const bot = new LineBot({ channelSettingsAccessor });
+    const bot = new LineBot({ agentSettingsAccessor });
     bot.start();
 
     const apiCall = lineApi
@@ -284,7 +285,7 @@ describe('.requestApi(options)', () => {
   });
 
   it('throw LineApiError if api call fail', async () => {
-    const bot = new LineBot({ channelSettingsAccessor });
+    const bot = new LineBot({ agentSettingsAccessor });
     bot.start();
 
     const apiCall = lineApi

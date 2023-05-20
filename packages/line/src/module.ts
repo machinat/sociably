@@ -26,7 +26,7 @@ import LineUser from './User';
 import {
   createSingleStaticAgentSettingsAccessor,
   createMultiStaticNumberSettingsAccessor,
-} from './utils/staticChannelSettingsAccessor';
+} from './utils/staticAgentSettingsAccessor';
 import type {
   LineEventContext,
   LineJob,
@@ -99,34 +99,34 @@ namespace Line {
       { provide: BaseMarshaler.TypeList, withValue: LineGroupProfile },
     ];
 
-    if (configs.channelSettingsService) {
+    if (configs.agentSettingsService) {
       provisions.push({
         provide: AgentSettingsAccessorI,
         withProvider: serviceProviderFactory({
-          deps: [configs.channelSettingsService],
+          deps: [configs.agentSettingsService],
         })((accessor) => accessor),
       });
-    } else if (configs.channelSettings) {
+    } else if (configs.agentSettings) {
       provisions.push({
         provide: AgentSettingsAccessorI,
         withValue: createSingleStaticAgentSettingsAccessor(
-          configs.channelSettings
+          configs.agentSettings
         ),
       });
-    } else if (configs.multiChannelSettings) {
-      if (configs.multiChannelSettings.length === 0) {
-        throw new Error('configs.multiChannelSettings must not be empty');
+    } else if (configs.multiAgentSettings) {
+      if (configs.multiAgentSettings.length === 0) {
+        throw new Error('configs.multiAgentSettings must not be empty');
       }
 
       provisions.push({
         provide: AgentSettingsAccessorI,
         withValue: createMultiStaticNumberSettingsAccessor([
-          ...configs.multiChannelSettings,
+          ...configs.multiAgentSettings,
         ]),
       });
     } else {
       throw new Error(
-        'Line platform requires one of `channelSettings`, `multiChannelSettings` or `channelSettingsService` option'
+        'Line platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
       );
     }
 

@@ -22,7 +22,7 @@ import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant';
 import {
   ConfigsI,
   PlatformUtilitiesI,
-  PageSettingsAccessorI,
+  AgentSettingsAccessorI,
 } from './interface';
 import FacebookPage from './Page';
 import FacebookChat from './Chat';
@@ -49,7 +49,7 @@ type FacebookBotOptions = {
   appSecret: string;
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;
-  pageSettingsAccessor: AgentSettingsAccessor<
+  agentSettingsAccessor: AgentSettingsAccessor<
     FacebookPage,
     FacebookPageSettings
   >;
@@ -115,7 +115,7 @@ export class FacebookBot
     appSecret,
     graphApiVersion = 'v11.0',
     apiBatchRequestInterval = 500,
-    pageSettingsAccessor,
+    agentSettingsAccessor,
     initScope,
     dispatchWrapper,
   }: FacebookBotOptions) {
@@ -126,7 +126,7 @@ export class FacebookBot
 
     const queue = new Queue<MetaApiJob, MetaApiResult>();
     const worker = new MetaApiWorker({
-      agentSettingsAccessor: pageSettingsAccessor,
+      agentSettingsAccessor,
       appId,
       appSecret,
       graphApiVersion,
@@ -288,18 +288,18 @@ const BotP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
-    PageSettingsAccessorI,
+    AgentSettingsAccessorI,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (
     { appSecret, appId, apiBatchRequestInterval },
-    pageSettingsAccessor,
+    agentSettingsAccessor,
     moduleUitils,
     platformUtils
   ) =>
     new FacebookBot({
-      pageSettingsAccessor,
+      agentSettingsAccessor,
       appId,
       appSecret,
       apiBatchRequestInterval,

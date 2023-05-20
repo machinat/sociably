@@ -12,7 +12,7 @@ import FacebookPage from '../Page';
 import FacebookChat from '../Chat';
 import FacebookUser from '../User';
 import { FACEBOOK } from '../constant';
-import { PageSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 import { getAuthContextDetails } from './utils';
 import type { FacebookAuthContext, FacebookAuthData } from './types';
 
@@ -24,7 +24,7 @@ export class FacebookServerAuthenticator
 {
   private profiler: ProfilerP;
   basicAuthenticator: BasicAuthenticator;
-  settingsAccessor: PageSettingsAccessorI;
+  settingsAccessor: AgentSettingsAccessorI;
   delegateAuthRequest: ServerAuthenticator<
     never,
     FacebookAuthData,
@@ -37,7 +37,7 @@ export class FacebookServerAuthenticator
     bot: BotP,
     profiler: ProfilerP,
     basicAuthenticator: BasicAuthenticator,
-    settingsAccessor: PageSettingsAccessorI
+    settingsAccessor: AgentSettingsAccessorI
   ) {
     this.profiler = profiler;
     this.basicAuthenticator = basicAuthenticator;
@@ -143,7 +143,7 @@ export class FacebookServerAuthenticator
 
 const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [BotP, ProfilerP, BasicAuthenticator, PageSettingsAccessorI],
+  deps: [BotP, ProfilerP, BasicAuthenticator, AgentSettingsAccessorI],
 })(FacebookServerAuthenticator);
 
 type ServerAuthenticatorP = FacebookServerAuthenticator;

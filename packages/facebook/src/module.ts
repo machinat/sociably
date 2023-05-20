@@ -13,7 +13,7 @@ import type { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import {
   ConfigsI,
   PlatformUtilitiesI,
-  PageSettingsAccessorI,
+  AgentSettingsAccessorI,
 } from './interface';
 import { FACEBOOK } from './constant';
 import BotP from './Bot';
@@ -23,7 +23,7 @@ import ProfilerP from './Profiler';
 import FacebookPage from './Page';
 import FacebookChat from './Chat';
 import FacebookUser from './User';
-import createStaticPageSettingsAccessor from './utils/createStaticPageSettingsAccessor';
+import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor';
 import type {
   FacebookConfigs,
   FacebookEventContext,
@@ -58,8 +58,8 @@ namespace Facebook {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
-  export const PageSettingsAccessor = PageSettingsAccessorI;
-  export type PageSettingsAccessor = PageSettingsAccessorI;
+  export const AgentSettingsAccessor = AgentSettingsAccessorI;
+  export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
     configs: FacebookConfigs
@@ -95,34 +95,34 @@ namespace Facebook {
       { provide: BaseMarshaler.TypeList, withValue: FacebookUserProfile },
     ];
 
-    if (configs.pageSettingsService) {
+    if (configs.agentSettingsService) {
       provisions.push({
-        provide: PageSettingsAccessorI,
+        provide: AgentSettingsAccessorI,
         withProvider: serviceProviderFactory({
-          deps: [configs.pageSettingsService],
+          deps: [configs.agentSettingsService],
         })((accessor) => accessor),
       });
-    } else if (configs.pageSettings) {
+    } else if (configs.agentSettings) {
       provisions.push({
-        provide: PageSettingsAccessorI,
-        withValue: createStaticPageSettingsAccessor([configs.pageSettings]),
+        provide: AgentSettingsAccessorI,
+        withValue: createStaticAgentSettingsAccessor([configs.agentSettings]),
       });
-    } else if (configs.multiPageSettings) {
-      if (configs.multiPageSettings.length === 0) {
+    } else if (configs.multiAgentSettings) {
+      if (configs.multiAgentSettings.length === 0) {
         throw new Error(
-          'configs.multiPageSettings must have at least one page settings'
+          'configs.multiAgentSettings must have at least one page settings'
         );
       }
 
       provisions.push({
-        provide: PageSettingsAccessorI,
-        withValue: createStaticPageSettingsAccessor([
-          ...configs.multiPageSettings,
+        provide: AgentSettingsAccessorI,
+        withValue: createStaticAgentSettingsAccessor([
+          ...configs.multiAgentSettings,
         ]),
       });
     } else {
       throw new Error(
-        'Facebook platform requires one of `pageSettings`, `multiPageSettings` or `pageSettingsService` option'
+        'Facebook platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
       );
     }
 

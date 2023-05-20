@@ -13,7 +13,7 @@ import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { TELEGRAM } from '../constant';
 import BotP from '../Bot';
 import TelegramUser from '../User';
-import { BotSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface';
 import type TelegramApiError from '../Error';
 import type { RawChat, RawUser } from '../types';
 import { getAuthContextDetails } from './utils';
@@ -79,7 +79,7 @@ export class TelegramServerAuthenticator
   implements ServerAuthenticator<never, TelegramAuthData, TelegramAuthContext>
 {
   bot: BotP;
-  settingsAccessor: BotSettingsAccessorI;
+  settingsAccessor: AgentSettingsAccessorI;
   operator: Auth.HttpOperator;
   appName: undefined | string;
   appIconUrl: undefined | string;
@@ -88,7 +88,7 @@ export class TelegramServerAuthenticator
 
   constructor(
     bot: BotP,
-    settingsAccessor: BotSettingsAccessorI,
+    settingsAccessor: AgentSettingsAccessorI,
     operator: Auth.HttpOperator,
     { appName, appIconUrl }: ServerAuthenticatorOptions = {}
   ) {
@@ -148,13 +148,13 @@ export class TelegramServerAuthenticator
   ): Promise<VerifyResult<TelegramAuthData>> {
     const { chat, user, botId } = data;
 
-    const [botSettingsResult, chatMemberResult] = await Promise.all([
-      this._verifyBotSettings(botId),
+    const [agentSettingsResult, chatMemberResult] = await Promise.all([
+      this._verifyAgentSettings(botId),
       chat ? this._verifyChatMember(botId, chat.id, user.id) : null,
     ]);
 
-    if (!botSettingsResult.ok || (chatMemberResult && !chatMemberResult.ok)) {
-      return [botSettingsResult, chatMemberResult].find(
+    if (!agentSettingsResult.ok || (chatMemberResult && !chatMemberResult.ok)) {
+      return [agentSettingsResult, chatMemberResult].find(
         (result) => result && !result.ok
       ) as VerifyResult<TelegramAuthData>;
     }
@@ -180,10 +180,10 @@ export class TelegramServerAuthenticator
       this._redirectError(res, code, reason, redirectUrl);
       return;
     }
-    const { botId, botSettings, chatId, redirectUrl } = targetsResult;
+    const { botId, agentSettings, chatId, redirectUrl } = targetsResult;
 
     const authQueryResult = verifyTelegramAuthQuery(
-      botSettings.botToken,
+      agentSettings.botToken,
       query
     );
     if (!authQueryResult.ok) {
@@ -220,7 +220,7 @@ export class TelegramServerAuthenticator
 
     await this.operator.issueAuth<TelegramAuthData>(res, TELEGRAM, {
       botId,
-      botName: botSettings.botName,
+      botName: agentSettings.botName,
       chat: chatData,
       user: userData,
       photo: query.photo_url as string | undefined,
@@ -235,12 +235,12 @@ export class TelegramServerAuthenticator
       this._redirectError(res, code, reason, redirectUrl);
       return;
     }
-    const { botId, botSettings, chatId, redirectUrl } = targetsResult;
+    const { botId, agentSettings, chatId, redirectUrl } = targetsResult;
 
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(
       renderLoginPage({
-        botName: botSettings.botName,
+        botName: agentSettings.botName,
         appName: this.appName,
         appIconUrl: this.appIconUrl,
         callbackUrl: this.getAuthUrl(botId, chatId, redirectUrl),
@@ -277,7 +277,7 @@ export class TelegramServerAuthenticator
       };
     }
 
-    const settingsResult = await this._verifyBotSettings(botId);
+    const settingsResult = await this._verifyAgentSettings(botId);
     if (!settingsResult.ok) {
       return { ...settingsResult, redirectUrl };
     }
@@ -287,22 +287,22 @@ export class TelegramServerAuthenticator
       botId,
       redirectUrl,
       chatId,
-      botSettings: settingsResult.botSettings,
+      agentSettings: settingsResult.agentSettings,
     };
   }
 
-  private async _verifyBotSettings(botId: number) {
-    const botSettings = await this.settingsAccessor.getAgentSettings(
+  private async _verifyAgentSettings(botId: number) {
+    const agentSettings = await this.settingsAccessor.getAgentSettings(
       new TelegramUser(botId, true)
     );
-    if (!botSettings) {
+    if (!agentSettings) {
       return {
         ok: false as const,
         code: 404,
         reason: `bot "${botId}" not registered`,
       };
     }
-    return { ok: true as const, botSettings };
+    return { ok: true as const, agentSettings };
   }
 
   private async _verifyChatMember(
@@ -363,7 +363,7 @@ const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     BotP,
-    BotSettingsAccessorI,
+    AgentSettingsAccessorI,
     Auth.HttpOperator,
     { require: BasicAuthenticator, optional: true },
   ],

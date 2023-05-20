@@ -1,10 +1,10 @@
 import type TelegramUser from '../User';
-import { BotSettingsAccessorI } from '../interface';
-import { TelegramBotSettings } from '../types';
+import { AgentSettingsAccessorI } from '../interface';
+import { TelegramAgentSettings } from '../types';
 
-const createStaticBotSettingsAccessor = (
-  settings: TelegramBotSettings[]
-): BotSettingsAccessorI => {
+const createStaticAgentSettingsAccessor = (
+  settings: TelegramAgentSettings[]
+): AgentSettingsAccessorI => {
   const findSettingsWithMatchedToken = ({ id: botId }: TelegramUser) =>
     settings.find(({ botToken }) => botToken.startsWith(`${botId}:`)) || null;
 
@@ -15,4 +15,4 @@ const createStaticBotSettingsAccessor = (
   };
 };
 
-export default createStaticBotSettingsAccessor;
+export default createStaticAgentSettingsAccessor;
