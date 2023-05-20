@@ -31,9 +31,9 @@ test('makeTextSegment(node, path, text)', () => {
 });
 
 test('makeBreakSegment(node, path)', () => {
-  expect(makeBreakSegment(<hello world />, '$::1')).toEqual({
+  expect(makeBreakSegment(<hello />, '$::1')).toEqual({
     type: 'break',
-    node: <hello world />,
+    node: <hello />,
     value: null,
     path: '$::1',
   });
