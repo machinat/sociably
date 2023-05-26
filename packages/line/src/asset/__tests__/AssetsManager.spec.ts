@@ -184,11 +184,7 @@ test('unsave asset id', async () => {
   expect(state.delete).toHaveBeenCalledTimes(4);
 });
 
-test('.createRichMenu()', async () => {
-  bot.requestApi.mock.fake(async () => ({
-    richMenuId: '_RICH_MENU_ID_',
-  }));
-
+describe('.createRichMenu()', () => {
   const richMenuBody = {
     size: { width: 2500, height: 1686 },
     selected: false,
@@ -201,28 +197,141 @@ test('.createRichMenu()', async () => {
       },
     ],
   };
+  const richMenuId = '_RICH_MENU_ID_';
 
-  await expect(
-    manager.createRichMenu(channel, 'my_rich_menu', richMenuBody)
-  ).resolves.toEqual({ richMenuId: '_RICH_MENU_ID_' });
+  it('create menu and upload menu content', async () => {
+    bot.requestApi.mock.fake(async () => ({ richMenuId }));
+    const uploadApiCall = nock('https://api-data.line.me', {
+      reqheaders: {
+        authorization: 'Bearer __ACCESS_TOKEN__',
+        'content-type': 'image/png',
+      },
+    })
+      .post(`/v2/bot/richmenu/${richMenuId}/content`, 'IMAGE')
+      .reply(200, {});
 
-  expect(bot.requestApi).toHaveBeenCalledTimes(1);
-  expect(bot.requestApi).toHaveBeenCalledWith({
-    channel,
-    method: 'POST',
-    url: 'v2/bot/richmenu',
-    params: richMenuBody,
+    await expect(
+      manager.createRichMenu(
+        channel,
+        'my_rich_menu',
+        Buffer.from('IMAGE'),
+        richMenuBody,
+        { contentType: 'image/png' }
+      )
+    ).resolves.toEqual({ richMenuId });
+
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+      channel
+    );
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      channel,
+      method: 'POST',
+      url: 'v2/bot/richmenu',
+      params: richMenuBody,
+    });
+
+    expect(uploadApiCall.isDone()).toBe(true);
   });
 
-  state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ID_');
-  await expect(
-    manager.createRichMenu(channel, 'my_rich_menu', richMenuBody)
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"rich menu [ my_rich_menu ] already exist"`
-  );
+  test('with asDefault option', async () => {
+    bot.requestApi.mock.fake(async () => ({ richMenuId }));
+    const uploadApiCall = nock('https://api-data.line.me', {
+      reqheaders: {
+        authorization: 'Bearer __ACCESS_TOKEN__',
+        'content-type': 'image/png',
+      },
+    })
+      .post(`/v2/bot/richmenu/${richMenuId}/content`, 'IMAGE')
+      .reply(200, {});
 
-  expect(state.set).toHaveBeenCalledTimes(1);
-  expect(state.set).toHaveBeenCalledWith('my_rich_menu', '_RICH_MENU_ID_');
+    await expect(
+      manager.createRichMenu(
+        channel,
+        'my_rich_menu',
+        Buffer.from('IMAGE'),
+        richMenuBody,
+        { contentType: 'image/png', asDefault: true }
+      )
+    ).resolves.toEqual({ richMenuId });
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      channel,
+      method: 'POST',
+      url: `/v2/bot/user/all/richmenu/${richMenuId}`,
+    });
+
+    expect(uploadApiCall.isDone()).toBe(true);
+  });
+
+  it('throw if rich menu asset name already exist', async () => {
+    state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ID_');
+    await expect(
+      manager.createRichMenu(
+        channel,
+        'my_rich_menu',
+        Buffer.from('IMAGE'),
+        richMenuBody,
+        { contentType: 'image/png' }
+      )
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"rich menu [ my_rich_menu ] already exist"`
+    );
+
+    expect(state.set).not.toHaveBeenCalled();
+  });
+
+  it('throw if upload API call fail', async () => {
+    bot.requestApi.mock.fake(async () => ({ richMenuId }));
+    const uploadCall = nock('https://api-data.line.me', {
+      reqheaders: {
+        authorization: 'Bearer __ACCESS_TOKEN__',
+        'content-type': 'image/png',
+      },
+    })
+      .post(`/v2/bot/richmenu/${richMenuId}/content`)
+      .reply(400, { message: 'BOOM' });
+
+    await expect(
+      manager.createRichMenu(
+        channel,
+        'my_rich_menu',
+        Buffer.from('IMAGE'),
+        richMenuBody,
+        { contentType: 'image/png' }
+      )
+    ).rejects.toThrowError('BOOM');
+
+    expect(uploadCall.isDone()).toBe(true);
+  });
+
+  it('throw if page not found', async () => {
+    nock.disableNetConnect();
+
+    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
+
+    await expect(
+      manager.createRichMenu(
+        channel,
+        'my_rich_menu',
+        Buffer.from('IMAGE'),
+        richMenuBody,
+        { contentType: 'image/png' }
+      )
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Line channel \\"[object Object]\\" not registered"`
+    );
+
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
+    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
+      channel
+    );
+
+    nock.enableNetConnect();
+  });
 });
 
 test('.deleteRichMenu()', async () => {
@@ -246,79 +355,6 @@ test('.deleteRichMenu()', async () => {
 
   expect(state.delete).toHaveBeenCalledTimes(1);
   expect(state.delete).toHaveBeenCalledWith('my_rich_menu');
-});
-
-describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
-  const richMenuId = '__RICHMENU_ID__';
-
-  it('upload image content', async () => {
-    const uploadCall = nock('https://api-data.line.me', {
-      reqheaders: {
-        authorization: 'Bearer __ACCESS_TOKEN__',
-        'content-type': 'image/png',
-      },
-    })
-      .post(`/v2/bot/richmenu/${richMenuId}/content`)
-      .reply(200, {});
-
-    await expect(
-      manager.uploadRichMenuImage(channel, richMenuId, Buffer.from('IMAGE'), {
-        contentType: 'image/png',
-      })
-    ).resolves.toBe(undefined);
-
-    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
-    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-      channel
-    );
-
-    expect(uploadCall.isDone()).toBe(true);
-  });
-
-  it('throw if API call fail', async () => {
-    const uploadCall = nock('https://api-data.line.me', {
-      reqheaders: {
-        authorization: 'Bearer __ACCESS_TOKEN__',
-        'content-type': 'image/png',
-      },
-    })
-      .post(`/v2/bot/richmenu/${richMenuId}/content`)
-      .reply(400, { message: 'BOOM' });
-
-    await expect(
-      manager.uploadRichMenuImage(channel, richMenuId, Buffer.from('IMAGE'), {
-        contentType: 'image/png',
-      })
-    ).rejects.toThrowError('BOOM');
-
-    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
-    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-      channel
-    );
-
-    expect(uploadCall.isDone()).toBe(true);
-  });
-
-  it('throw if page not found', async () => {
-    nock.disableNetConnect();
-
-    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
-
-    await expect(
-      manager.uploadRichMenuImage(channel, richMenuId, Buffer.from('IMAGE'), {
-        contentType: 'image/png',
-      })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Line channel \\"[object Object]\\" not registered"`
-    );
-
-    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
-    expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-      channel
-    );
-
-    nock.enableNetConnect();
-  });
 });
 
 test('.setChannelWebhook', async () => {

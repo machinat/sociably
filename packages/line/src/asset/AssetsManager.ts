@@ -111,19 +111,62 @@ export class LineAssetsManager {
   async createRichMenu(
     channel: string | LineChannel,
     name: string,
-    params: Record<string, unknown>
+    content: NodeJS.ReadableStream | Buffer,
+    params: Record<string, unknown>,
+    {
+      asDefault,
+      contentType,
+    }: { asDefault?: boolean; contentType?: string } = {}
   ): Promise<{ richMenuId: string }> {
+    // check if rich menu already exist
     const existed = await this.getRichMenu(channel, name);
     if (existed) {
       throw new Error(`rich menu [ ${name} ] already exist`);
     }
 
+    // create rich menu
     const { richMenuId } = await this._bot.requestApi<{ richMenuId: string }>({
       method: 'POST',
       url: PATH_RICHMENU,
       params,
       channel,
     });
+
+    // upload rich menu image
+    const settings = await this._settingsAccessor.getAgentSettings(
+      typeof channel === 'string' ? new LineChannel(channel) : channel
+    );
+    if (!settings) {
+      throw new Error(`Line channel "${channel}" not registered`);
+    }
+    const uploadRes = await fetch(
+      `https://api-data.line.me/v2/bot/richmenu/${richMenuId}/content`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${settings.accessToken}`,
+          'Content-Type': contentType,
+        } as Record<string, string>,
+        body: content,
+      }
+    );
+    const uploadBody = await uploadRes.json();
+    if (uploadRes.status >= 300) {
+      throw new LineApiError({
+        code: uploadRes.status,
+        headers: Object.fromEntries(uploadRes.headers),
+        body: uploadBody,
+      });
+    }
+
+    // set to default rich menu if asDefault
+    if (asDefault) {
+      await this._bot.requestApi({
+        channel,
+        method: 'POST',
+        url: `/v2/bot/user/all/richmenu/${richMenuId}`,
+      });
+    }
 
     await this.saveAssetId(channel, RICH_MENU, name, richMenuId);
     return { richMenuId };
@@ -146,45 +189,6 @@ export class LineAssetsManager {
 
     await this.unsaveAssetId(channel, RICH_MENU, name);
     return true;
-  }
-
-  async uploadRichMenuImage(
-    channel: string | LineChannel,
-    menuId: string,
-    content: NodeJS.ReadableStream | Buffer,
-    { contentType }: { contentType?: string } = {}
-  ): Promise<void> {
-    const settings = await this._settingsAccessor.getAgentSettings(
-      typeof channel === 'string' ? new LineChannel(channel) : channel
-    );
-    if (!settings) {
-      throw new Error(`Line channel "${channel}" not registered`);
-    }
-
-    const headers: Record<string, string> = {
-      Authorization: `Bearer ${settings.accessToken}`,
-    };
-    if (contentType) {
-      headers['Content-Type'] = contentType;
-    }
-
-    const res = await fetch(
-      `https://api-data.line.me/v2/bot/richmenu/${menuId}/content`,
-      {
-        method: 'POST',
-        headers,
-        body: content,
-      }
-    );
-    const body = await res.json();
-
-    if (res.status >= 300) {
-      throw new LineApiError({
-        code: res.status,
-        headers: Object.fromEntries(res.headers),
-        body,
-      });
-    }
   }
 
   async setChannelWebhook(
