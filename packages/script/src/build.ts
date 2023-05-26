@@ -3,11 +3,12 @@ import {
   RenderingTarget,
   SociablyElement,
   AnyEventContext,
+  SociablyThread,
 } from '@sociably/core';
 import { SOCIABLY_SCRIPT_TYPE } from './constant';
 import parseScript from './parse';
 import compile from './compile';
-import ProcessorP from './processor';
+import ProcessorP from './Processor';
 import type { ScriptLibrary } from './types';
 
 type ScriptBuildOtions<Params, Vars, Meta> = {
@@ -49,7 +50,10 @@ const build = <
       return null;
     }
 
-    const runtime = await processor.start(thread, lib, { params, goto });
+    const runtime = await processor.start(thread as SociablyThread, lib, {
+      params,
+      goto,
+    });
     return runtime.output();
   });
 

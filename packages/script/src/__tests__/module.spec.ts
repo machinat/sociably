@@ -1,12 +1,14 @@
+import Sociably from '@sociably/core';
+import { InMemoryState } from '@sociably/dev-tools';
 import Script from '../module';
-import { ScriptProcessor } from '../processor';
+import { ScriptProcessor } from '../Processor';
 
 it('exports interfaces', () => {
   expect(Script.Processor).toBe(ScriptProcessor);
-  expect(Script.LibraryList).toMatchInlineSnapshot(`
+  expect(Script.LibraryAccessor).toMatchInlineSnapshot(`
     Object {
-      "$$multi": true,
-      "$$name": "ScriptLibraryList",
+      "$$multi": false,
+      "$$name": "ScriptLibraryAccessor",
       "$$polymorphic": false,
       "$$typeof": Symbol(interface.service.sociably),
     }
@@ -14,30 +16,35 @@ it('exports interfaces', () => {
 });
 
 describe('initModule()', () => {
-  test('create module service provisions', () => {
-    const MyScript = { name: 'Mine' /* , ... */ } as never;
-    const YourScript = { name: 'MineMine' /* , ... */ } as never;
+  const MyScript = { name: 'Mine' /* , ... */ } as never;
+  const YourScript = { name: 'MineMine' /* , ... */ } as never;
 
+  test('create module service provisions', () => {
     expect(Script.initModule({ libs: [MyScript, YourScript] })).toEqual({
       provisions: expect.arrayContaining([
         ScriptProcessor,
-        { provide: Script.LibraryList, withValue: MyScript },
-        { provide: Script.LibraryList, withValue: YourScript },
+        {
+          provide: Script.LibraryAccessor,
+          withValue: {
+            getScript: expect.any(Function),
+          },
+        },
       ]),
     });
   });
 
-  test('fail if lib is empty', () => {
-    expect(() =>
-      Script.initModule(undefined as never)
-    ).toThrowErrorMatchingInlineSnapshot(`"configs.libs should not be empty"`);
+  test('provide LibraryAccessor with libs input', async () => {
+    const app = Sociably.createApp({
+      modules: [
+        Script.initModule({ libs: [MyScript, YourScript] }),
+        InMemoryState.initModule(),
+      ],
+    });
+    await app.start();
 
-    expect(() =>
-      Script.initModule({} as never)
-    ).toThrowErrorMatchingInlineSnapshot(`"configs.libs should not be empty"`);
-
-    expect(() =>
-      Script.initModule({ libs: [] })
-    ).toThrowErrorMatchingInlineSnapshot(`"configs.libs should not be empty"`);
+    const [accessor] = app.useServices([Script.LibraryAccessor]);
+    expect(accessor.getScript('Mine')).toBe(MyScript);
+    expect(accessor.getScript('MineMine')).toBe(YourScript);
+    expect(accessor.getScript('MineMineMine')).toBeNull();
   });
 });

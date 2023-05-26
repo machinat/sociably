@@ -1,11 +1,19 @@
-import invariant from 'invariant';
 import type { ServiceModule } from '@sociably/core';
-import ProcessorP from './processor';
-import { LibraryListI } from './interface';
+import ProcessorP from './Processor';
+import { LibraryAccessorI } from './interface';
 import type { AnyScriptLibrary } from './types';
 
 type ScriptModuleConfigs = {
-  libs: AnyScriptLibrary[];
+  libs?: AnyScriptLibrary[];
+};
+
+const createScriptAccessorOfLibs = (
+  libs: AnyScriptLibrary[]
+): LibraryAccessorI => {
+  const libMap = new Map(libs.map((lib) => [lib.name, lib]));
+  return {
+    getScript: (name: string) => libMap.get(name) ?? null,
+  };
 };
 
 /**
@@ -15,21 +23,19 @@ namespace Script {
   export const Processor = ProcessorP;
   export type Processor<Script extends AnyScriptLibrary> = ProcessorP<Script>;
 
-  export const LibraryList = LibraryListI;
-  export type LibraryList = LibraryListI;
+  export const LibraryAccessor = LibraryAccessorI;
+  export type LibraryAccessor = LibraryAccessorI;
 
-  export const initModule = (configs: ScriptModuleConfigs): ServiceModule => {
-    invariant(
-      configs?.libs && configs.libs.length > 0,
-      'configs.libs should not be empty'
-    );
+  export const initModule = ({ libs }: ScriptModuleConfigs): ServiceModule => {
+    const provisions = [
+      ProcessorP,
+      {
+        provide: LibraryAccessor,
+        withValue: createScriptAccessorOfLibs(libs || []),
+      },
+    ];
 
-    const libProvisions = configs.libs.map((lib) => ({
-      provide: LibraryListI,
-      withValue: lib,
-    }));
-
-    return { provisions: [ProcessorP, ...libProvisions] };
+    return { provisions };
   };
 }
 

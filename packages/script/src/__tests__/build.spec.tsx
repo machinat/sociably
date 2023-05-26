@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably, { RenderingTarget } from '@sociably/core';
 import { isContainerType } from '@sociably/core/utils/isX';
-import ProcessorP from '../processor';
+import ProcessorP from '../Processor';
 import build from '../build';
 import { SOCIABLY_SCRIPT_TYPE } from '../constant';
 import {

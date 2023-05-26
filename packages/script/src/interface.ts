@@ -5,9 +5,10 @@ import type { AnyScriptLibrary } from './types';
 /**
  * @category Interface
  */
-export const LibraryListI = serviceInterface<AnyScriptLibrary>({
-  name: 'ScriptLibraryList',
-  multi: true,
+export const LibraryAccessorI = serviceInterface<LibraryAccessorI>({
+  name: 'ScriptLibraryAccessor',
 });
 
-export type LibraryListI = AnyScriptLibrary;
+export type LibraryAccessorI = {
+  getScript: (name: string) => null | AnyScriptLibrary;
+};

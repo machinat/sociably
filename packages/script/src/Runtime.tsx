@@ -1,17 +1,14 @@
-import invariant from 'invariant';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
 import type { SociablyThread, SociablyNode } from '@sociably/core';
-import { ServiceScope, serviceProviderClass } from '@sociably/core/service';
+import { ServiceScope } from '@sociably/core/service';
 import execute from './execute';
 import { SCRIPT_STATE_KEY } from './constant';
-import { LibraryListI } from './interface';
 import { serializeScriptStatus } from './utils';
 import type {
   AnyScriptLibrary,
   CallStatus,
   ScriptProcessState,
-  ParamsOfScript,
   InputOfScript,
   ReturnOfScript,
   YieldOfScript,
@@ -192,133 +189,4 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   }
 }
 
-type StartRuntimeOptions<Params> = {
-  params?: Params;
-  goto?: string;
-  isPrompting?: boolean;
-};
-
-export class ScriptProcessor<Script extends AnyScriptLibrary> {
-  private _stateContoller: StateControllerI;
-  private _serviceScope: ServiceScope;
-  private _libs: Map<string, Script>;
-
-  constructor(
-    stateController: StateControllerI,
-    scope: ServiceScope,
-    scripts: Script[]
-  ) {
-    this._stateContoller = stateController;
-    this._serviceScope = scope;
-
-    const libs = new Map();
-    for (const script of scripts) {
-      invariant(
-        !libs.has(script.name),
-        `script name "${script.name}" duplicated`
-      );
-      libs.set(script.name, script);
-    }
-
-    this._libs = libs;
-  }
-
-  async start<StartingScript extends Script>(
-    thread: SociablyThread,
-    script: StartingScript,
-    {
-      goto,
-      params = {} as ParamsOfScript<StartingScript>,
-      isPrompting = false,
-    }: StartRuntimeOptions<ParamsOfScript<StartingScript>> = {}
-  ): Promise<ScriptRuntime<Script>> {
-    if (this._libs.get(script.name) !== script) {
-      throw new Error(`script ${script.name} is not registered as libs`);
-    }
-
-    const state = await this._stateContoller
-      .threadState(thread)
-      .get<ScriptProcessState>(SCRIPT_STATE_KEY);
-
-    if (state) {
-      const scriptName = state.callStack[0].name;
-      throw new Error(
-        `script [${scriptName}] is already running on thread [${thread.uid}], exit the current runtime before start new one`
-      );
-    }
-
-    const runtime = new ScriptRuntime<StartingScript>(
-      this._stateContoller,
-      this._serviceScope,
-      thread,
-      [
-        {
-          script,
-          vars: script.initVars(params),
-          stopAt: goto,
-        } as CallStatus<StartingScript>,
-      ],
-      undefined,
-      isPrompting
-    );
-
-    await runtime.run();
-    return runtime;
-  }
-
-  async getRuntime(
-    thread: SociablyThread
-  ): Promise<null | ScriptRuntime<Script>> {
-    const state = await this._stateContoller
-      .threadState(thread)
-      .get<ScriptProcessState>(SCRIPT_STATE_KEY);
-
-    if (!state) {
-      return null;
-    }
-
-    const stack: CallStatus<unknown>[] = [];
-
-    for (const { name, vars, stopAt } of state.callStack) {
-      const script = this._libs.get(name);
-      if (!script) {
-        throw new Error(
-          `script ${name} is not registered, the linked libs might have been changed`
-        );
-      }
-
-      stack.push({ script, vars, stopAt } as CallStatus<unknown>);
-    }
-
-    return new ScriptRuntime(
-      this._stateContoller,
-      this._serviceScope,
-      thread,
-      stack,
-      state.timestamp,
-      true
-    );
-  }
-
-  async continue(
-    thread: SociablyThread,
-    input: InputOfScript<Script>
-  ): Promise<null | ScriptRuntime<Script>> {
-    const runtime = await this.getRuntime(thread);
-    if (!runtime) {
-      return null;
-    }
-
-    await runtime.run(input);
-    return runtime;
-  }
-}
-
-const ProcessorP = serviceProviderClass({
-  lifetime: 'scoped',
-  deps: [StateControllerI, ServiceScope, LibraryListI],
-})(ScriptProcessor);
-
-type ProcessorP<Script extends AnyScriptLibrary> = ScriptProcessor<Script>;
-
-export default ProcessorP;
+export default ScriptRuntime;

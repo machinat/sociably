@@ -1,9 +1,9 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
+import Sociably, { SociablyThread } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
 import { traverse as traverseMessage } from '@sociably/core/iterator';
 import { InMemoryStateController } from '@sociably/dev-tools/InMemoryState';
-import { ScriptProcessor } from '../processor';
+import { ScriptProcessor } from '../Processor';
 import build from '../build';
 import { SCRIPT_STATE_KEY } from '../constant';
 import {
@@ -96,22 +96,38 @@ const MyScript = moxy(
   )
 );
 
-const thread = { platform: 'test', uid: '#thread' };
+const scriptAccessor = moxy({
+  getScript: (name: string) =>
+    name === 'MyScript'
+      ? MyScript
+      : name === 'AnotherScript'
+      ? AnotherScript
+      : null,
+});
+
+const thread: SociablyThread = {
+  $$typeofThread: true,
+  platform: 'test',
+  uid: 'test.thread',
+  uniqueIdentifier: { $$typeof: ['thread'], platform: 'test', id: 'thread' },
+};
 
 beforeEach(() => {
   MyScript.mock.clear();
   AnotherScript.mock.clear();
   promptSetFn.mock.reset();
   effectYieldFn.mock.reset();
+  scriptAccessor.mock.reset();
 });
 
 describe('.start(thread, Script)', () => {
   test('start script from begin', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = await processor.start(thread, MyScript);
 
     expect(promptSetFn).not.toHaveBeenCalled();
@@ -177,10 +193,11 @@ describe('.start(thread, Script)', () => {
 
   test('start script at label', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = await processor.start(thread, MyScript, {
       goto: '#3',
     });
@@ -240,10 +257,11 @@ describe('.start(thread, Script)', () => {
 
   test('init script with params specified', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = await processor.start(thread, MyScript, {
       params: { foo: 'bar' },
     });
@@ -308,7 +326,13 @@ describe('.start(thread, Script)', () => {
 
   it('throw if script is not registered', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [MyScript]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
+
+    scriptAccessor.getScript.mock.fakeReturnValue(null);
 
     await expect(
       processor.start(thread, AnotherScript)
@@ -325,12 +349,16 @@ describe('.start(thread, Script)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [MyScript]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
 
     await expect(
       processor.start(thread, MyScript)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"script [MyScript] is already running on thread [#thread], exit the current runtime before start new one"`
+      `"script [MyScript] is already running on thread [test.thread], exit the current runtime before start new one"`
     );
   });
 });
@@ -344,10 +372,11 @@ describe('.continue(thread, input)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = (await processor.continue(thread, { hello: 'world' }))!;
 
     expect(MyScript.initVars).not.toHaveBeenCalled();
@@ -430,10 +459,11 @@ describe('.continue(thread, input)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = (await processor.continue(thread, { hello: 'world' }))!;
 
     expect(MyScript.initVars).not.toHaveBeenCalled();
@@ -503,10 +533,11 @@ describe('.continue(thread, input)', () => {
 
   it('return null if no executing runtime on chanel', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     await expect(processor.continue(thread, { hello: 'world' })).resolves.toBe(
       null
     );
@@ -520,7 +551,11 @@ describe('.continue(thread, input)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [MyScript]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     await expect(
       processor.continue(thread, { hello: 'world' })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -538,10 +573,11 @@ describe('.getRuntime(thread)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = (await processor.getRuntime(thread))!;
 
     expect(runtime.thread).toEqual(thread);
@@ -619,10 +655,11 @@ describe('.getRuntime(thread)', () => {
 
   it('return null if no executing runtime on chanel', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     await expect(processor.getRuntime(thread)).resolves.toBe(null);
   });
 
@@ -634,7 +671,11 @@ describe('.getRuntime(thread)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [MyScript]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     await expect(
       processor.getRuntime(thread)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -652,7 +693,11 @@ describe('Runtime.exit(thread)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [MyScript]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = (await processor.getRuntime(thread))!;
 
     await expect(runtime.exit()).resolves.toBe(true);
@@ -664,7 +709,11 @@ describe('Runtime.exit(thread)', () => {
 
   it('return false if no saved runtime state', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [MyScript]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
 
     const runtime = await processor.start(thread, MyScript);
     await expect(runtime.exit()).resolves.toBe(false);
@@ -678,10 +727,11 @@ describe('Runtime.exit(thread)', () => {
 describe('Runtime.save(runtime)', () => {
   test('save newly initiated runtime', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
 
     const runtime = await processor.start(thread, MyScript, {
       params: { foo: 'bar' },
@@ -699,10 +749,11 @@ describe('Runtime.save(runtime)', () => {
 
   test('save continued runtime', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
 
     stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
       callStack: [{ name: 'MyScript', stopAt: 'ask_3', vars: { foo: 'bar' } }],
@@ -728,10 +779,11 @@ describe('Runtime.save(runtime)', () => {
 
   test('do nothing if newly initiated runtime is finished', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = await processor.start(thread, MyScript, {
       goto: '#3',
     });
@@ -749,10 +801,11 @@ describe('Runtime.save(runtime)', () => {
 
   test('throw if newly initiated runtime save while runtime state existing', async () => {
     const stateController = new InMemoryStateController();
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
 
     const runtime = await processor.start(thread, MyScript, {
       goto: '#3',
@@ -781,10 +834,11 @@ describe('Runtime.save(runtime)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = (await processor.getRuntime(thread))!;
 
     stateController.threadState(thread).delete(SCRIPT_STATE_KEY);
@@ -805,10 +859,11 @@ describe('Runtime.save(runtime)', () => {
       timestamp: 1587205023190,
     });
 
-    const processor = new ScriptProcessor(stateController, scope, [
-      MyScript,
-      AnotherScript,
-    ]);
+    const processor = new ScriptProcessor(
+      stateController,
+      scope,
+      scriptAccessor
+    );
     const runtime = (await processor.getRuntime(thread))!;
 
     stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
