@@ -68,6 +68,10 @@ class LineChat implements SociablyThread, MarshallableInstance<LineChatValue> {
     return new LineChannel(this.channelId);
   }
 
+  get agent(): LineChannel {
+    return this.channel;
+  }
+
   toJSONValue(): LineChatValue {
     const { type, channelId, id } = this;
     return { type, channel: channelId, id };

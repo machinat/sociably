@@ -60,6 +60,10 @@ class FacebookChat<Type extends ChatType = ChatType>
     return new FacebookPage(this.pageId);
   }
 
+  get agent(): FacebookPage {
+    return this.page;
+  }
+
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
       $$typeof: ['thread'],
