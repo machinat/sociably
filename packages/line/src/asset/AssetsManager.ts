@@ -112,13 +112,13 @@ export class LineAssetsManager {
     channel: string | LineChannel,
     name: string,
     params: Record<string, unknown>
-  ): Promise<string> {
+  ): Promise<{ richMenuId: string }> {
     const existed = await this.getRichMenu(channel, name);
     if (existed) {
       throw new Error(`rich menu [ ${name} ] already exist`);
     }
 
-    const { richMenuId }: { richMenuId: string } = await this._bot.requestApi({
+    const { richMenuId } = await this._bot.requestApi<{ richMenuId: string }>({
       method: 'POST',
       url: PATH_RICHMENU,
       params,
@@ -126,7 +126,7 @@ export class LineAssetsManager {
     });
 
     await this.saveAssetId(channel, RICH_MENU, name, richMenuId);
-    return richMenuId;
+    return { richMenuId };
   }
 
   async deleteRichMenu(
@@ -185,6 +185,20 @@ export class LineAssetsManager {
         body,
       });
     }
+  }
+
+  async setChannelWebhook(
+    channel: string | LineChannel,
+    { url: webhookUrl }: { url: string }
+  ): Promise<void> {
+    await this._bot.requestApi({
+      channel,
+      method: 'PUT',
+      url: 'v2/bot/channel/webhook/endpoint',
+      params: {
+        endpoint: webhookUrl,
+      },
+    });
   }
 }
 

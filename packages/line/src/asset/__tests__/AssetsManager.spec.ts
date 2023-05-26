@@ -204,7 +204,7 @@ test('.createRichMenu()', async () => {
 
   await expect(
     manager.createRichMenu(channel, 'my_rich_menu', richMenuBody)
-  ).resolves.toBe('_RICH_MENU_ID_');
+  ).resolves.toEqual({ richMenuId: '_RICH_MENU_ID_' });
 
   expect(bot.requestApi).toHaveBeenCalledTimes(1);
   expect(bot.requestApi).toHaveBeenCalledWith({
@@ -318,5 +318,21 @@ describe('.uploadRichMenuImage(channel, menuId, content, options)', () => {
     );
 
     nock.enableNetConnect();
+  });
+});
+
+test('.setChannelWebhook', async () => {
+  bot.requestApi.mock.fake(async () => ({}));
+
+  await expect(
+    manager.setChannelWebhook(channel, { url: 'https://example.com/webhook' })
+  ).resolves.toBe(undefined);
+
+  expect(bot.requestApi).toHaveBeenCalledTimes(1);
+  expect(bot.requestApi).toHaveBeenCalledWith({
+    channel,
+    method: 'PUT',
+    url: 'v2/bot/channel/webhook/endpoint',
+    params: { endpoint: 'https://example.com/webhook' },
   });
 });
