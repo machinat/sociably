@@ -16,7 +16,7 @@ import NoneAuthenticator from '../authenticators/none/index.js';
 import { MemoCacheTarget } from '../authenticators/memo/index.js';
 import Webview from '../module.js';
 
-const createNextServer = NextJs.default as Moxy<typeof NextJs.default>;
+const createNextServer = NextJs as unknown as Moxy<typeof NextJs.default>;
 
 beforeEach(() => {
   createNextServer.mock.reset();

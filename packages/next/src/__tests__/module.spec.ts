@@ -5,7 +5,7 @@ import NextJs from 'next';
 import { NextReceiver } from '../receiver.js';
 import Next from '../module.js';
 
-const createNextApp = NextJs.default as Moxy<typeof NextJs.default>;
+const createNextApp = NextJs as unknown as Moxy<typeof NextJs.default>;
 
 it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);

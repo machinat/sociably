@@ -12,4 +12,4 @@ const createNextServer = moxy(() =>
   })
 );
 
-module.exports = { default: createNextServer };
+module.exports = createNextServer;

@@ -10,7 +10,8 @@ import type { RequestRoute, UpgradeRoute } from '@sociably/http';
 import { ReceiverP } from './receiver.js';
 import { ConfigsI, ServerI } from './interface.js';
 
-const createNextServer = NextJs.default;
+// HACK: NextJs type is not compatible with moduleResolution: Node16
+const createNextServer = NextJs as unknown as typeof NextJs.default;
 
 const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',

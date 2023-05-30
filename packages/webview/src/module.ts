@@ -52,7 +52,8 @@ import type {
   WebviewConfigs,
 } from './types.js';
 
-const createNextServer = NextJs.default;
+// HACK: NextJs type is not compatible with moduleResolution: Node16
+const createNextServer = NextJs as unknown as typeof NextJs.default;
 
 const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',
