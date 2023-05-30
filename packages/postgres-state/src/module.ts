@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import Pg from 'pg';
 import type { ServiceModule } from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
@@ -9,7 +9,7 @@ import { ConfigsI, ConnectionPoolI } from './interface.js';
 const initConnectionPool = serviceProviderFactory({
   lifetime: 'singleton',
   deps: [ConfigsI],
-})(({ connectOptions }) => new Pool(connectOptions));
+})(({ connectOptions }) => new Pg.Pool(connectOptions));
 
 /**
  * @category Root
