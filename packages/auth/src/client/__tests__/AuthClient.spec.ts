@@ -761,7 +761,7 @@ describe('refresh flow', () => {
         .reply(200, { platform: 'foo', token: newToken });
 
       await jest.advanceTimersToNextTimerAsync(1); // eslint-disable-line no-await-in-loop
-      await delayLoops(150); // eslint-disable-line no-await-in-loop
+      await delayLoops(200); // eslint-disable-line no-await-in-loop
 
       expect(refreshSpy).toHaveBeenCalledTimes(i);
       expect(refreshingCall.isDone()).toBe(true);
@@ -831,9 +831,9 @@ describe('refresh flow', () => {
         .reply(200, { platform: 'foo', token: newToken });
 
       await jest.advanceTimersToNextTimerAsync(1); // eslint-disable-line no-await-in-loop
-      await delayLoops(150); // eslint-disable-line no-await-in-loop
+      await delayLoops(200); // eslint-disable-line no-await-in-loop
       jest.runAllTicks();
-      await delayLoops(150); // eslint-disable-line no-await-in-loop
+      await delayLoops(200); // eslint-disable-line no-await-in-loop
 
       expect(refreshSpy).toHaveBeenCalledTimes(i);
       expect(refreshingCall.isDone()).toBe(true);
@@ -892,7 +892,7 @@ describe('refresh flow', () => {
       .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
 
     await jest.advanceTimersToNextTimerAsync(1);
-    await delayLoops(150);
+    await delayLoops(200);
 
     expect(client.isAuthorized).toBe(true);
     expect(refreshingCall.isDone()).toBe(true);
@@ -911,7 +911,7 @@ describe('refresh flow', () => {
     });
 
     await jest.advanceTimersToNextTimerAsync(1);
-    await delayLoops(150);
+    await delayLoops(200);
 
     expect(expireSpy).toHaveBeenCalledTimes(1);
     expect(expireSpy).toHaveBeenCalledWith(context);
@@ -952,9 +952,9 @@ describe('refresh flow', () => {
       .reply(418, { error: { code: 418, reason: "I'm a teapot too" } });
 
     await jest.advanceTimersToNextTimerAsync(1);
-    await delayLoops(150);
+    await delayLoops(200);
     jest.runAllTicks();
-    await delayLoops(150);
+    await delayLoops(200);
 
     expect(refreshingCall.isDone()).toBe(true);
     expect(signingCall.isDone()).toBe(true);
@@ -974,9 +974,9 @@ describe('refresh flow', () => {
     });
 
     await jest.advanceTimersToNextTimerAsync(1);
-    await delayLoops(150);
+    await delayLoops(200);
     jest.runAllTicks();
-    await delayLoops(150);
+    await delayLoops(200);
 
     expect(expireSpy).toHaveBeenCalledTimes(1);
     expect(expireSpy).toHaveBeenCalledWith(context);
@@ -1021,7 +1021,7 @@ describe('refresh flow', () => {
 
     await jest.advanceTimersToNextTimerAsync(1);
     client.signOut();
-    await delayLoops(150);
+    await delayLoops(200);
     jest.runAllTicks();
     await delayLoops(200);
 
