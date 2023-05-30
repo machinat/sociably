@@ -22,12 +22,12 @@ import {
   FIELD_STATE_ID,
   FIELD_CREATED_AT,
   FIELD_UPDATED_AT,
-} from './constants';
-import PostgresStateAccessor from './StateAccessor';
-import tableId from './utils/tableId';
-import getGlobalStateIdentifierFields from './utils/getGlobalStateIdentifierFields';
-import getInstanceStateIdentifierFields from './utils/getInstanceStateIdentifierFields';
-import { ConnectionPoolI, ConfigsI } from './interface';
+} from './constants.js';
+import PostgresStateAccessor from './StateAccessor.js';
+import tableId from './utils/tableId.js';
+import getGlobalStateIdentifierFields from './utils/getGlobalStateIdentifierFields.js';
+import getInstanceStateIdentifierFields from './utils/getInstanceStateIdentifierFields.js';
+import { ConnectionPoolI, ConfigsI } from './interface.js';
 
 const identity = (x) => x;
 

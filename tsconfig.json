@@ -6,19 +6,18 @@
     "rootDir": ".",
     "paths": {
       "@sociably/auth": ["./packages/auth/src/index.js"],
-      "@sociably/auth/*": ["./packages/auth/src/*/index.js"],
+      "@sociably/auth/*": ["./packages/auth/src/*/index.js", "./packages/auth/src/*.js"],
       "@sociably/core": ["./packages/core/src/index.js"],
-      "@sociably/core/*": ["./packages/core/src/*/index.js"],
+      "@sociably/core/*": ["./packages/core/src/*/index.js", "./packages/core/src/*.js"],
       "@sociably/http": ["./packages/http/src/index.js"],
-      "@sociably/http/*": ["./packages/http/src/*/index.js"],
+      "@sociably/http/*": ["./packages/http/src/*/index.js", "./packages/http/src/*.js"],
       "@sociably/meta-api": ["./packages/meta-api/src/index.js"],
       "@sociably/next": ["./packages/next/src/index.js"],
-      "@sociably/next/*": ["./packages/next/src/*/index.js"],
-      "@sociably/dev-tools/*": ["./packages/dev-tools/src/*/index.js"],
+      "@sociably/dev-tools/*": ["./packages/dev-tools/src/*/index.js", "./packages/dev-tools/src/*.js"],
       "@sociably/websocket": ["./packages/websocket/src/index.js"],
-      "@sociably/websocket/*": ["./packages/websocket/src/*/index.js"],
+      "@sociably/websocket/*": ["./packages/websocket/src/*/index.js", "./packages/websocket/src/*.js"],
       "@sociably/webview": ["./packages/webview/src/index.js"],
-      "@sociably/webview/*": ["./packages/webview/src/*/index.js"]
+      "@sociably/webview/*": ["./packages/webview/src/*/index.js", "./packages/webview/src/*.js"]
     }
   }
 }

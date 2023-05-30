@@ -1,6 +1,6 @@
 import type { Pool } from 'pg';
 import { serviceInterface } from '@sociably/core/service';
-import type { PostgresStateConfigs } from './types';
+import type { PostgresStateConfigs } from './types.js';
 
 /**
  * @category Interface

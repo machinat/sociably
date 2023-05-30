@@ -1,9 +1,9 @@
 import { Pool } from 'pg';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import type { StateAccessor } from '@sociably/core/base/StateController';
-import { FIELD_STATE_DATA, FIELD_UPDATED_AT } from './constants';
-import tableId from './utils/tableId';
-import { InstanceStateEntity } from './types';
+import { FIELD_STATE_DATA, FIELD_UPDATED_AT } from './constants.js';
+import tableId from './utils/tableId.js';
+import { InstanceStateEntity } from './types.js';
 
 type IdentifierFieldsGetter = (key: null | string) => [string, string][];
 

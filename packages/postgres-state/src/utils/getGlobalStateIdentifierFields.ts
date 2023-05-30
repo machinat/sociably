@@ -1,4 +1,4 @@
-import { FIELD_STATE_ID, FIELD_STATE_KEY } from '../constants';
+import { FIELD_STATE_ID, FIELD_STATE_KEY } from '../constants.js';
 
 const getGlobalStateIdentifierFields =
   (stateId: string) =>

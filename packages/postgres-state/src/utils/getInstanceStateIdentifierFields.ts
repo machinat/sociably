@@ -4,7 +4,7 @@ import {
   FIELD_STATE_SCOPE_ID,
   FIELD_STATE_ID,
   FIELD_STATE_KEY,
-} from '../constants';
+} from '../constants.js';
 
 const getInstanceStateIdentifierFields =
   ({ platform, scopeId, id }: UniqueOmniIdentifier) =>

@@ -3,8 +3,8 @@ import type { ServiceModule } from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 
-import { ControllerP } from './Controller';
-import { ConfigsI, ConnectionPoolI } from './interface';
+import { ControllerP } from './Controller.js';
+import { ConfigsI, ConnectionPoolI } from './interface.js';
 
 const initConnectionPool = serviceProviderFactory({
   lifetime: 'singleton',

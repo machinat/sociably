@@ -5,7 +5,7 @@ import {
   FIELD_STATE_DATA,
   FIELD_STATE_KEY,
   FIELD_STATE_ID,
-} from './constants';
+} from './constants.js';
 
 export type PostgresStateConfigs = {
   /** The schema used to create state tables */
