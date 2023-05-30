@@ -15,8 +15,8 @@ import {
   StateAccessor,
 } from '@sociably/core/base/StateController';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
-import { ConfigsI, SerializerI } from './interface';
-import type { FileStateConfigs } from './types';
+import { ConfigsI, SerializerI } from './interface.js';
+import type { FileStateConfigs } from './types.js';
 
 type FileHandle = fsPromises.FileHandle;
 

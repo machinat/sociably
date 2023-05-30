@@ -1,7 +1,7 @@
-import TwitterUser from './User';
-import polishMentionEntity from './utils/polishMentionEntity';
-import polishUrlEntity from './utils/polishUrlEntity';
-import polishMedia from './utils/polishMedia';
+import TwitterUser from './User.js';
+import polishMentionEntity from './utils/polishMentionEntity.js';
+import polishUrlEntity from './utils/polishUrlEntity.js';
+import polishMedia from './utils/polishMedia.js';
 import type {
   RawTweet,
   Place,
@@ -16,7 +16,7 @@ import type {
   Photo,
   Video,
   AnimatedGif,
-} from './types';
+} from './types.js';
 
 export default class Tweet {
   data: RawTweet;

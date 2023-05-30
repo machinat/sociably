@@ -1,4 +1,6 @@
-import { parseTweet } from 'twitter-text';
+import TwitterText from 'twitter-text';
+
+const { parseTweet } = TwitterText;
 
 const splitTweetText = (text: undefined | string): null | string[] => {
   if (!text) {

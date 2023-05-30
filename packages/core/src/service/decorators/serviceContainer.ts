@@ -1,11 +1,11 @@
-import { SOCIABLY_SERVICE_CONTAINER } from '../../symbol';
+import { SOCIABLY_SERVICE_CONTAINER } from '../../symbol.js';
 import type {
   ServiceContainer,
   ServiceDependency,
   Interfaceable,
   ResolveDependencies,
-} from '../types';
-import { polishServiceRequirement } from '../utils';
+} from '../types.js';
+import { polishServiceRequirement } from '../utils.js';
 
 type AnyDep = ServiceDependency<Interfaceable<unknown>>;
 

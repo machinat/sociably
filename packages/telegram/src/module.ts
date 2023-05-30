@@ -14,23 +14,23 @@ import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import { TELEGRAM } from './constant';
-import BotP from './Bot';
-import ReceiverP from './Receiver';
-import TelegramUserProfile from './UserProfile';
-import TelegramChatProfile from './ChatProfile';
-import ProfilerP from './Profiler';
-import TelegramChat from './Chat';
-import TelegramUser from './User';
-import TelegramChatSender from './ChatSender';
-import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor';
+} from './interface.js';
+import { TELEGRAM } from './constant.js';
+import BotP from './Bot.js';
+import ReceiverP from './Receiver.js';
+import TelegramUserProfile from './UserProfile.js';
+import TelegramChatProfile from './ChatProfile.js';
+import ProfilerP from './Profiler.js';
+import TelegramChat from './Chat.js';
+import TelegramUser from './User.js';
+import TelegramChatSender from './ChatSender.js';
+import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor.js';
 import type {
   TelegramEventContext,
   TelegramJob,
   TelegramDispatchFrame,
   TelegramResult,
-} from './types';
+} from './types.js';
 
 /** @interanl */
 const webhookRouteFactory = serviceProviderFactory({

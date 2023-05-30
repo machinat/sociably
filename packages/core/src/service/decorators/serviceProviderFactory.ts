@@ -1,12 +1,12 @@
-import { SOCIABLY_SERVICE_PROVIDER } from '../../symbol';
+import { SOCIABLY_SERVICE_PROVIDER } from '../../symbol.js';
 import type {
   ServiceLifetime,
   ServiceProvider,
   Interfaceable,
   ServiceDependency,
   ResolveDependencies,
-} from '../types';
-import { polishServiceRequirement, validateLifetime } from '../utils';
+} from '../types.js';
+import { polishServiceRequirement, validateLifetime } from '../utils.js';
 
 type AnyDep = ServiceDependency<Interfaceable<unknown>>;
 

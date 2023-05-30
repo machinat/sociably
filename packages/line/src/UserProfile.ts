@@ -1,7 +1,7 @@
 import type { SociablyProfile } from '@sociably/core/base/Profiler';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import type { LineRawUserProfile } from './types';
-import { LINE } from './constant';
+import type { LineRawUserProfile } from './types.js';
+import { LINE } from './constant.js';
 
 type UserProfileValue = {
   data: LineRawUserProfile;

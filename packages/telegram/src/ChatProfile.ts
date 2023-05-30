@@ -1,7 +1,7 @@
 import type { SociablyProfile } from '@sociably/core/base/Profiler';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { TELEGRAM } from './constant';
-import type { RawChat, TelegramChatType } from './types';
+import { TELEGRAM } from './constant.js';
+import type { RawChat, TelegramChatType } from './types.js';
 
 type TelegramChatProfileValue = {
   data: RawChat;

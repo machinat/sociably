@@ -24,11 +24,11 @@ import type {
   PolicyEnforcement,
   Postback,
   Referral,
-} from './mixin';
-import type FacebookChat from '../Chat';
-import type FacebookUser from '../User';
-import type FacebookPage from '../Page';
-import type { FacebookThread, FacebookRawEvent } from '../types';
+} from './mixin.js';
+import type FacebookChat from '../Chat.js';
+import type FacebookUser from '../User.js';
+import type FacebookPage from '../Page.js';
+import type { FacebookThread, FacebookRawEvent } from '../types.js';
 
 interface EventObject<
   Category extends string,

@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PassThreadControl } from '../PassThreadControl';
-import { renderUnitElement } from './utils';
+import { PassThreadControl } from '../PassThreadControl.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
   expect(typeof PassThreadControl).toBe('function');
@@ -18,23 +18,23 @@ it('match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PassThreadControl
-                metadata="you have my bow"
-                targetAppId="Legolas"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/pass_thread_control",
-                "params": Object {
-                  "metadata": "you have my bow",
-                  "target_app_id": "Legolas",
-                },
-                "type": "message",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <PassThreadControl
+          metadata="you have my bow"
+          targetAppId="Legolas"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/pass_thread_control",
+          "params": {
+            "metadata": "you have my bow",
+            "target_app_id": "Legolas",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

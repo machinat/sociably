@@ -1,11 +1,11 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import type { AuthHttpOperator } from '@sociably/auth';
-import type { TelegramBot } from '../../Bot';
-import { TelegramServerAuthenticator } from '../ServerAuthenticator';
-import TelegramChat from '../../Chat';
-import TelegramUser from '../../User';
-import TelegramApiError from '../../Error';
+import type { TelegramBot } from '../../Bot.js';
+import { TelegramServerAuthenticator } from '../ServerAuthenticator.js';
+import TelegramChat from '../../Chat.js';
+import TelegramUser from '../../User.js';
+import TelegramApiError from '../../Error.js';
 
 const createReq = ({ url }) =>
   moxy<IncomingMessage>({
@@ -209,7 +209,7 @@ describe('.delegateAuthRequest() on root route', () => {
       expect.any(String)
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"bot \\"12345\\" not registered"`
+      `"bot "12345" not registered"`
     );
   });
 
@@ -430,7 +430,7 @@ describe('.delegateAuthRequest() on login route', () => {
       expect.any(String)
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"invalid bot id \\"undefined\\""`
+      `"invalid bot id "undefined""`
     );
   });
 
@@ -456,7 +456,7 @@ describe('.delegateAuthRequest() on login route', () => {
       expect.any(String)
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"bot \\"12345\\" not registered"`
+      `"bot "12345" not registered"`
     );
   });
 });
@@ -496,12 +496,12 @@ test('.getAuthUrl()', () => {
 test('.verifyCredential() simply return not ok', async () => {
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
-          Object {
-            "code": 403,
-            "ok": false,
-            "reason": "should initiate st server side only",
-          }
-        `);
+    {
+      "code": 403,
+      "ok": false,
+      "reason": "should initiate st server side only",
+    }
+  `);
 });
 
 describe('.verifyRefreshment()', () => {
@@ -628,12 +628,12 @@ describe('.verifyRefreshment()', () => {
         photo: undefined,
       })
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 404,
-              "ok": false,
-              "reason": "bot \\"55555\\" not registered",
-            }
-          `);
+      {
+        "code": 404,
+        "ok": false,
+        "reason": "bot "55555" not registered",
+      }
+    `);
   });
 });
 

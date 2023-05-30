@@ -1,26 +1,26 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
-import Facebook from '../module';
-import { AgentSettingsAccessorI } from '../interface';
-import FacebookPage from '../Page';
-import FacebookChat from '../Chat';
-import FacebookUser from '../User';
-import FacebookUserProfile from '../UserProfile';
-import { FacebookProfiler } from '../Profiler';
-import { FacebookReceiver } from '../Receiver';
-import { FacebookBot } from '../Bot';
+import Facebook from '../module.js';
+import { AgentSettingsAccessorI } from '../interface.js';
+import FacebookPage from '../Page.js';
+import FacebookChat from '../Chat.js';
+import FacebookUser from '../User.js';
+import FacebookUserProfile from '../UserProfile.js';
+import { FacebookProfiler } from '../Profiler.js';
+import { FacebookReceiver } from '../Receiver.js';
+import { FacebookBot } from '../Bot.js';
 
 it('export interfaces', () => {
   expect(Facebook.Receiver).toBe(FacebookReceiver);
   expect(Facebook.Bot).toBe(FacebookBot);
   expect(Facebook.Profiler).toBe(FacebookProfiler);
   expect(Facebook.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "FacebookConfigs",
       "$$polymorphic": false,
@@ -48,7 +48,7 @@ describe('initModule(configs)', () => {
 
     expect(module.name).toBe('facebook');
     expect(module.utilitiesInterface).toMatchInlineSnapshot(`
-      Object {
+      {
         "$$multi": false,
         "$$name": "FacebookPlatformUtilities",
         "$$polymorphic": false,

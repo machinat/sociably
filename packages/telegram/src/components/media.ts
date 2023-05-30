@@ -1,15 +1,15 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import makeTelegramComponent from '../utils/makeTelegramComponent';
+import makeTelegramComponent from '../utils/makeTelegramComponent.js';
 import {
   TelegramSegmentValue,
   UploadingFile,
   UploadingFileInfo,
   TelegramComponent,
   TelegramParseMode,
-} from '../types';
-import { MessageProps } from './types';
+} from '../types.js';
+import { MessageProps } from './types.js';
 
 export interface FileProps {
   /** The file id already stored somewhere on the Telegram servers. */

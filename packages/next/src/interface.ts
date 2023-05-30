@@ -1,5 +1,5 @@
 import { serviceInterface } from '@sociably/core/service';
-import type { NextConfigs, NextServer } from './types';
+import type { NextConfigs, NextServer } from './types.js';
 
 /**
  * @category Interface

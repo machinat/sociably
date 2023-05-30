@@ -1,13 +1,13 @@
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
-import _Worker from '../Worker';
-import WebSocketConnection from '../Connection';
-import { Event } from '../component';
-import { WebSocketBot } from '../Bot';
-import type { WebSocketServer } from '../Server';
+import _Worker from '../Worker.js';
+import WebSocketConnection from '../Connection.js';
+import { Event } from '../component.js';
+import { WebSocketBot } from '../Bot.js';
+import type { WebSocketServer } from '../Server.js';
 
 const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
@@ -16,17 +16,15 @@ const Worker = _Worker as Moxy<typeof _Worker>;
 jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/engine'))
+    .moxy(jest.requireActual('@sociably/core/engine'))
 );
-
 jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/renderer'))
+    .moxy(jest.requireActual('@sociably/core/renderer'))
 );
-
-jest.mock('../Worker', () =>
-  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../worker'))
+jest.mock('../Worker.js', () =>
+  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../Worker.js'))
 );
 
 const server = moxy<WebSocketServer<any, unknown>>({

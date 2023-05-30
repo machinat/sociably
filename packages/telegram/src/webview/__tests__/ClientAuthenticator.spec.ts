@@ -1,7 +1,7 @@
-import moxy from '@moxyjs/moxy';
-import TelegramClientAuthenticator from '../ClientAuthenticator';
-import TelegramChat from '../../Chat';
-import TelegramUser from '../../User';
+import { moxy } from '@moxyjs/moxy';
+import TelegramClientAuthenticator from '../ClientAuthenticator.js';
+import TelegramChat from '../../Chat.js';
+import TelegramUser from '../../User.js';
 
 const location = moxy();
 const navigator = moxy({
@@ -23,7 +23,7 @@ test('.constructor() properties', () => {
   const authenticator = new TelegramClientAuthenticator({ botId: 12345 });
 
   expect(authenticator.marshalTypes.map((t) => t.name)).toMatchInlineSnapshot(`
-    Array [
+    [
       "TelegramChat",
       "TelegramUser",
       "TelegramChatSender",
@@ -165,7 +165,7 @@ describe('.init()', () => {
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(2);
     expect(location.mock.setter('href').calls.map(({ args }) => args[0]))
       .toMatchInlineSnapshot(`
-      Array [
+      [
         "https://sociably.io/auth/telegram/login?botId=54321&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz",
         "https://sociably.io/auth/telegram/login?botId=54321&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz",
       ]
@@ -178,12 +178,12 @@ describe('.init()', () => {
 test('.fetchCredential() return not ok', async () => {
   const authenticator = new TelegramClientAuthenticator({ botId: 12345 });
   await expect(authenticator.fetchCredential()).resolves.toMatchInlineSnapshot(`
-          Object {
-            "code": 400,
-            "ok": false,
-            "reason": "should only initiate from backend",
-          }
-        `);
+    {
+      "code": 400,
+      "ok": false,
+      "reason": "should only initiate from backend",
+    }
+  `);
 });
 
 test('.checkAuthData()', () => {

@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import readRawBody from 'raw-body';
-import type { RequestHandler, RoutingInfo } from '../types';
-import type { WebhookHandler } from './types';
+import type { RequestHandler, RoutingInfo } from '../types.js';
+import type { WebhookHandler } from './types.js';
 
 const RAW_BODY_OPTION = { encoding: true as const };
 

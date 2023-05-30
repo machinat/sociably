@@ -1,5 +1,5 @@
-import type { SociablyThread } from '../types';
-import { serviceInterface } from '../service';
+import type { SociablyThread } from '../types.js';
+import { serviceInterface } from '../service/index.js';
 
 export type RecognitionData<
   Language extends string = string,

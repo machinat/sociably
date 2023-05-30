@@ -1,15 +1,15 @@
 import { mixin } from '@sociably/core/utils';
-import { WHATSAPP } from '../constant';
-import WhatsAppChat from '../Chat';
-import WhatsAppUser from '../User';
-import WhatsAppAgent from '../Agent';
+import { WHATSAPP } from '../constant.js';
+import WhatsAppChat from '../Chat.js';
+import WhatsAppUser from '../User.js';
+import WhatsAppAgent from '../Agent.js';
 import {
   EventBaseMixin,
   MessageMixin,
   UserChangeMixin,
   WithTextMixin,
   StatusMixin,
-} from './mixins';
+} from './mixins.js';
 import {
   TextEvent,
   AudioEvent,
@@ -30,7 +30,7 @@ import {
   FailedEvent,
   ErrorEvent,
   UnknownEvent,
-} from './types';
+} from './types.js';
 
 const EventBaseProto: EventBaseMixin = {
   platform: WHATSAPP,

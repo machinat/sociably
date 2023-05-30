@@ -1,9 +1,9 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import LineChat from '../../Chat';
-import { Leave } from '../Leave';
-import { ChatActionSegmentValue } from '../../types';
-import { renderUnitElement } from './utils';
+import LineChat from '../../Chat.js';
+import { Leave } from '../Leave.js';
+import { ChatActionSegmentValue } from '../../types.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid native unit component with entry getter', () => {
   expect(typeof Leave).toBe('function');

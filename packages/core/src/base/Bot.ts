@@ -1,6 +1,6 @@
-import type { SociablyBot, SociablyThread, SociablyNode } from '../types';
-import type { DispatchResponse } from '../engine/types';
-import { serviceInterface, serviceProviderClass } from '../service';
+import type { SociablyBot, SociablyThread, SociablyNode } from '../types.js';
+import type { DispatchResponse } from '../engine/types.js';
+import { serviceInterface, serviceProviderClass } from '../service/index.js';
 
 type BaseBotI = SociablyBot<SociablyThread, unknown, unknown>;
 

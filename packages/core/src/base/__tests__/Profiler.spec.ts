@@ -1,5 +1,5 @@
-import moxy from '@moxyjs/moxy';
-import { BaseProfiler, SociablyProfile } from '../Profiler';
+import { moxy } from '@moxyjs/moxy';
+import { BaseProfiler, SociablyProfile } from '../Profiler.js';
 
 const fooProfiler = moxy({
   getUserProfile: async () =>
@@ -108,6 +108,6 @@ it('throw if user from unsupported platform received', async () => {
   await expect(
     profiler.getUserProfile(bazChannel, bazUser)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"getting profile on \\"baz\\" platform is not supported"`
+    `"getting profile on "baz" platform is not supported"`
   );
 });

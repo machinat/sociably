@@ -1,4 +1,5 @@
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
+import { SociablyThread } from '@sociably/core';
 import {
   SessionsClient as _SessionsClient,
   AgentsClient as _AgentsClient,
@@ -6,7 +7,7 @@ import {
   EnvironmentsClient as _EnvironmentsClient,
   IntentsClient as _IntentsClient,
 } from '@google-cloud/dialogflow';
-import { DialogflowIntentRecognizer as Recognizer } from '../recognizer';
+import { DialogflowIntentRecognizer as Recognizer } from '../recognizer.js';
 
 const SessionsClient: Moxy<typeof _SessionsClient> = _SessionsClient as never;
 type SessionsClient = _SessionsClient;
@@ -21,7 +22,7 @@ const IntentsClient: Moxy<typeof _IntentsClient> = _IntentsClient as never;
 type IntentsClient = _IntentsClient;
 
 jest.mock('@google-cloud/dialogflow', () =>
-  jest.requireActual('@moxyjs/moxy').default({
+  jest.requireActual('@moxyjs/moxy').moxy({
     SessionsClient: class {},
     AgentsClient: class {},
     VersionsClient: class {},
@@ -56,6 +57,17 @@ const detectTextResponse = {
   },
 };
 
+const thread: SociablyThread = {
+  $$typeofThread: true,
+  platform: 'test',
+  uid: 'foo.chat',
+  uniqueIdentifier: {
+    $$typeof: ['thread'],
+    platform: 'test',
+    id: 'foo',
+  },
+};
+
 test('throw if porjectId is empty', () => {
   expect(
     () =>
@@ -80,7 +92,7 @@ test('throw if recognitionData is empty', () => {
 });
 
 describe('.detectText()', () => {
-  const client = moxy<SessionsClient>({
+  const client = moxy<InstanceType<typeof SessionsClient>>({
     detectIntent: () => [detectTextResponse],
     projectAgentSessionPath: (pId, sId) =>
       `projects/${pId}/agent/sessions/${sId}`,
@@ -109,7 +121,6 @@ describe('.detectText()', () => {
       projectId: 'test',
       recognitionData,
     });
-    const thread = { platform: 'test', uid: 'foo.chat' };
 
     await expect(recognizer.detectText(thread, 'hello bot')).resolves.toEqual({
       type: 'Default Welcome Intent',
@@ -120,9 +131,9 @@ describe('.detectText()', () => {
 
     expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "queryInput": Object {
-          "text": Object {
+      {
+        "queryInput": {
+          "text": {
             "languageCode": "en",
             "text": "hello bot",
           },
@@ -135,7 +146,6 @@ describe('.detectText()', () => {
 
   test('detect with options', async () => {
     const recognizer = new Recognizer({ projectId: 'test', recognitionData });
-    const thread = { platform: 'test', uid: 'foo.chat' };
 
     await expect(
       recognizer.detectText(thread, 'hello bot', {
@@ -154,23 +164,23 @@ describe('.detectText()', () => {
 
     expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "queryInput": Object {
-          "text": Object {
+      {
+        "queryInput": {
+          "text": {
             "languageCode": "zh-TW",
             "text": "hello bot",
           },
         },
-        "queryParams": Object {
-          "contexts": Array [
-            Object {
+        "queryParams": {
+          "contexts": [
+            {
               "name": "projects/test/agent/environments/sociably-entry/users/-/sessions/foo.chat/contexts/bar",
             },
-            Object {
+            {
               "name": "projects/test/agent/environments/sociably-entry/users/-/sessions/foo.chat/contexts/baz",
             },
           ],
-          "geoLocation": Object {
+          "geoLocation": {
             "latitude": 25.0456,
             "longitude": 121.5196,
           },
@@ -188,7 +198,6 @@ describe('.detectText()', () => {
       environment: 'Pleasantville',
       recognitionData,
     });
-    const thread = { platform: 'test', uid: 'maguire.chat' };
 
     await expect(
       recognizer.detectText(thread, 'Hello, Tobey!', {
@@ -203,27 +212,27 @@ describe('.detectText()', () => {
 
     expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "queryInput": Object {
-          "text": Object {
+      {
+        "queryInput": {
+          "text": {
             "languageCode": "en",
             "text": "Hello, Tobey!",
           },
         },
-        "queryParams": Object {
-          "contexts": Array [
-            Object {
-              "name": "projects/test/agent/environments/Pleasantville/users/-/sessions/maguire.chat/contexts/bar",
+        "queryParams": {
+          "contexts": [
+            {
+              "name": "projects/test/agent/environments/Pleasantville/users/-/sessions/foo.chat/contexts/bar",
             },
-            Object {
-              "name": "projects/test/agent/environments/Pleasantville/users/-/sessions/maguire.chat/contexts/baz",
+            {
+              "name": "projects/test/agent/environments/Pleasantville/users/-/sessions/foo.chat/contexts/baz",
             },
           ],
           "geoLocation": undefined,
           "resetContexts": undefined,
           "timeZone": undefined,
         },
-        "session": "projects/test/agent/environments/Pleasantville/users/-/sessions/maguire.chat",
+        "session": "projects/test/agent/environments/Pleasantville/users/-/sessions/foo.chat",
       }
     `);
   });
@@ -234,7 +243,6 @@ describe('.detectText()', () => {
       useDefaultAgent: true,
       recognitionData,
     });
-    const thread = { platform: 'test', uid: 'foo.chat' };
 
     await expect(recognizer.detectText(thread, 'hello bot')).resolves.toEqual({
       type: 'Default Welcome Intent',
@@ -245,9 +253,9 @@ describe('.detectText()', () => {
 
     expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "queryInput": Object {
-          "text": Object {
+      {
+        "queryInput": {
+          "text": {
             "languageCode": "en",
             "text": "hello bot",
           },
@@ -264,7 +272,6 @@ describe('.detectText()', () => {
       useDefaultAgent: true,
       recognitionData,
     });
-    const thread = { platform: 'test', uid: 'foo.chat' };
 
     await expect(
       recognizer.detectText(thread, 'hello bot', {
@@ -283,23 +290,23 @@ describe('.detectText()', () => {
 
     expect(client.detectIntent).toHaveBeenCalledTimes(1);
     expect(client.detectIntent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "queryInput": Object {
-          "text": Object {
+      {
+        "queryInput": {
+          "text": {
             "languageCode": "zh-TW",
             "text": "hello bot",
           },
         },
-        "queryParams": Object {
-          "contexts": Array [
-            Object {
+        "queryParams": {
+          "contexts": [
+            {
               "name": "projects/test/agent/sessions/foo.chat/contexts/bar",
             },
-            Object {
+            {
               "name": "projects/test/agent/sessions/foo.chat/contexts/baz",
             },
           ],
-          "geoLocation": Object {
+          "geoLocation": {
             "latitude": 25.0456,
             "longitude": 121.5196,
           },
@@ -339,12 +346,12 @@ describe('.train()', () => {
 
   const projectPath = (pId) => `projects/${pId}`;
   const projectAgentPath = (pId) => `projects/${pId}/agent`;
-  const agentsClient = moxy<AgentsClient>({
+  const agentsClient = moxy<InstanceType<typeof AgentsClient>>({
     projectPath,
     getAgent: async () => [agentResult],
     setAgent: async () => [agentResult],
   } as never);
-  const versionsClient = moxy<VersionsClient>({
+  const versionsClient = moxy<InstanceType<typeof VersionsClient>>({
     projectPath,
     projectAgentPath,
     listVersions: async () => [
@@ -359,7 +366,7 @@ describe('.train()', () => {
       { name: 'projects/test/agent/versions/2', description: '...' },
     ],
   } as never);
-  const intentsClient = moxy<IntentsClient>({
+  const intentsClient = moxy<InstanceType<typeof IntentsClient>>({
     projectPath,
     projectAgentPath,
     listIntents: async () => [defaultIntents],
@@ -377,7 +384,7 @@ describe('.train()', () => {
       },
     ],
   } as never);
-  const environmentsClient = moxy<EnvironmentsClient>(
+  const environmentsClient = moxy<InstanceType<typeof EnvironmentsClient>>(
     {
       projectPath,
       projectAgentPath,
@@ -452,13 +459,13 @@ describe('.train()', () => {
 
     expect(agentsClient.setAgent).toHaveBeenCalledTimes(1);
     expect(agentsClient.setAgent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "agent": Object {
+      {
+        "agent": {
           "defaultLanguageCode": "ja",
           "description": "This agent is generated by @sociably/dialogflow package",
           "displayName": "sociably-agent",
           "parent": "projects/test",
-          "supportedLanguageCodes": Array [
+          "supportedLanguageCodes": [
             "zh-TW",
             "en",
           ],
@@ -470,12 +477,12 @@ describe('.train()', () => {
     expect(intentsClient.batchDeleteIntents).toHaveBeenCalledTimes(1);
     expect(intentsClient.batchDeleteIntents.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-      Object {
-        "intents": Array [
-          Object {
+      {
+        "intents": [
+          {
             "name": "projects/test/agent/intents/545b197f-04dc-4518-9237-96ffa7ecbda7",
           },
-          Object {
+          {
             "name": "projects/test/agent/intents/7c3d010e-8ac3-4fd6-8898-8d15f729e78f",
           },
         ],
@@ -494,9 +501,9 @@ describe('.train()', () => {
     expect(versionsClient.createVersion).toHaveBeenCalledTimes(1);
     expect(versionsClient.createVersion.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "parent": "projects/test/agent",
-        "version": Object {
+        "version": {
           "description": "@sociably/dialogflow:V0:c08fccf84d0eb503d0bc1356741d45f64c18a072",
         },
       }
@@ -505,8 +512,8 @@ describe('.train()', () => {
     expect(environmentsClient.createEnvironment).toHaveBeenCalledTimes(1);
     expect(environmentsClient.createEnvironment.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-      Object {
-        "environment": Object {
+      {
+        "environment": {
           "agentVersion": "projects/test/agent/versions/2",
           "description": "This evnironment is generated by @sociably/dialogflow package",
         },
@@ -528,12 +535,12 @@ describe('.train()', () => {
     expect(intentsClient.batchDeleteIntents).toHaveBeenCalledTimes(1);
     expect(intentsClient.batchDeleteIntents.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-      Object {
-        "intents": Array [
-          Object {
+      {
+        "intents": [
+          {
             "name": "projects/test/agent/intents/545b197f-04dc-4518-9237-96ffa7ecbda7",
           },
-          Object {
+          {
             "name": "projects/test/agent/intents/7c3d010e-8ac3-4fd6-8898-8d15f729e78f",
           },
         ],
@@ -552,24 +559,24 @@ describe('.train()', () => {
     expect(versionsClient.createVersion).toHaveBeenCalledTimes(1);
     expect(versionsClient.createVersion.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-        Object {
-          "parent": "projects/test/agent",
-          "version": Object {
-            "description": "@sociably/dialogflow:V0:c08fccf84d0eb503d0bc1356741d45f64c18a072",
-          },
-        }
-      `);
+      {
+        "parent": "projects/test/agent",
+        "version": {
+          "description": "@sociably/dialogflow:V0:c08fccf84d0eb503d0bc1356741d45f64c18a072",
+        },
+      }
+    `);
 
     expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
     expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
     expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-      Object {
-        "data": Object {
+      {
+        "data": {
           "agentVersion": "projects/test/agent/versions/2",
         },
         "method": "PATCH",
-        "params": Object {
+        "params": {
           "updateMask": "agentVersion",
         },
         "url": "https://dialogflow.googleapis.com/v2/projects/test/agent/environments/sociably-entry",
@@ -631,12 +638,12 @@ describe('.train()', () => {
     expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
     expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-      Object {
-        "data": Object {
+      {
+        "data": {
           "agentVersion": "projects/test/agent/versions/2",
         },
         "method": "PATCH",
-        "params": Object {
+        "params": {
           "updateMask": "agentVersion",
         },
         "url": "https://dialogflow.googleapis.com/v2/projects/test/agent/environments/sociably-entry",
@@ -667,11 +674,11 @@ describe('.train()', () => {
 
     expect(agentsClient.setAgent).toHaveBeenCalledTimes(1);
     expect(agentsClient.setAgent.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "agent": Object {
+      {
+        "agent": {
           "displayName": "smith",
           "parent": "projects/test",
-          "supportedLanguageCodes": Array [
+          "supportedLanguageCodes": [
             "es",
             "en",
           ],
@@ -683,8 +690,8 @@ describe('.train()', () => {
     expect(environmentsClient.createEnvironment).toHaveBeenCalledTimes(1);
     expect(environmentsClient.createEnvironment.mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-      Object {
-        "environment": Object {
+      {
+        "environment": {
           "agentVersion": "projects/test/agent/versions/2",
           "description": "This evnironment is generated by @sociably/dialogflow package",
         },
@@ -720,12 +727,12 @@ describe('.train()', () => {
     expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
     expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
       .toMatchInlineSnapshot(`
-      Object {
-        "data": Object {
+      {
+        "data": {
           "agentVersion": "projects/test/agent/versions/2",
         },
         "method": "PATCH",
-        "params": Object {
+        "params": {
           "updateMask": "agentVersion",
         },
         "url": "https://dialogflow.googleapis.com/v2/projects/test/agent/environments/sociably-entry",

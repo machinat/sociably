@@ -2,10 +2,10 @@ import type {
   AuthContextBase,
   AuthenticatorCredentialResult,
 } from '@sociably/auth';
-import type LineChannel from '../Channel';
-import type LineUser from '../User';
-import type LineChat from '../Chat';
-import { LiffOs, RefChatType } from './constant';
+import type LineChannel from '../Channel.js';
+import type LineUser from '../User.js';
+import type LineChat from '../Chat.js';
+import { LiffOs, RefChatType } from './constant.js';
 
 export type ClientOs = 'ios' | 'android' | 'web';
 

@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderPartElement } from './utils';
-import { LoginButton } from '../LoginButton';
+import { renderPartElement } from './utils.js';
+import { LoginButton } from '../LoginButton.js';
 
 it('is valid Component', () => {
   expect(typeof LoginButton).toBe('function');
@@ -12,18 +12,18 @@ it('is valid Component', () => {
 it('match snapshot', async () => {
   await expect(renderPartElement(<LoginButton url="https://council.elrond" />))
     .resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <LoginButton
-                  url="https://council.elrond"
-                />,
-                "path": "$#container",
-                "type": "part",
-                "value": Object {
-                  "type": "account_link",
-                  "url": "https://council.elrond",
-                },
-              },
-            ]
-          `);
+    [
+      {
+        "node": <LoginButton
+          url="https://council.elrond"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "type": "account_link",
+          "url": "https://council.elrond",
+        },
+      },
+    ]
+  `);
 });

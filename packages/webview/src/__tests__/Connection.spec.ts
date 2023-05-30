@@ -1,4 +1,4 @@
-import WebviewConnection from '../Connection';
+import WebviewConnection from '../Connection.js';
 
 test('WebviewConnection(serverId, connId)', () => {
   const thread = new WebviewConnection('#server', '#conn');
@@ -10,8 +10,8 @@ test('WebviewConnection(serverId, connId)', () => {
 
   expect(thread.uid).toMatchInlineSnapshot(`"webview.#server.#conn"`);
   expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "#conn",
@@ -22,7 +22,7 @@ test('WebviewConnection(serverId, connId)', () => {
 
   expect(thread.typeName()).toBe('WebviewConnection');
   expect(thread.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": "#conn",
       "server": "#server",
     }

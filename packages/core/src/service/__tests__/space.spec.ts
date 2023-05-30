@@ -1,11 +1,11 @@
 /* eslint-disable class-methods-use-this */
-import moxy from '@moxyjs/moxy';
-import ServiceSpace from '../space';
-import ServiceScope from '../scope';
-import serviceContainer from '../decorators/serviceContainer';
-import serviceProviderFactory from '../decorators/serviceProviderFactory';
-import serviceProviderClass from '../decorators/serviceProviderClass';
-import serviceInterface from '../decorators/serviceInterface';
+import { moxy } from '@moxyjs/moxy';
+import ServiceSpace from '../space.js';
+import ServiceScope from '../scope.js';
+import serviceContainer from '../decorators/serviceContainer.js';
+import serviceProviderFactory from '../decorators/serviceProviderFactory.js';
+import serviceProviderClass from '../decorators/serviceProviderClass.js';
+import serviceInterface from '../decorators/serviceInterface.js';
 
 const HELLO = serviceInterface<{ hello(): string }>({ name: 'Hello' });
 const staticGreeter = moxy({ hello: () => 'HI' });

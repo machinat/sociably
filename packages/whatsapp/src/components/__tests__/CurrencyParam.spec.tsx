@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { CurrencyParam } from '../CurrencyParam';
-import { renderPartElement } from './utils';
+import { CurrencyParam } from '../CurrencyParam.js';
+import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof CurrencyParam).toBe('function');
@@ -27,24 +27,24 @@ test('rendering value', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <CurrencyParam
-                amount1000={9999}
-                code="USD"
-                fallbackValue="a lot of money"
-              />,
-              "path": "$#p",
-              "type": "part",
-              "value": Object {
-                "currency": Object {
-                  "amount_1000": 9999,
-                  "code": "USD",
-                  "fallback_value": "a lot of money",
-                },
-                "type": "currency",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <CurrencyParam
+          amount1000={9999}
+          code="USD"
+          fallbackValue="a lot of money"
+        />,
+        "path": "$#p",
+        "type": "part",
+        "value": {
+          "currency": {
+            "amount_1000": 9999,
+            "code": "USD",
+            "fallback_value": "a lot of money",
+          },
+          "type": "currency",
+        },
+      },
+    ]
+  `);
 });

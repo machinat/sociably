@@ -1,8 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import TwitterChat from '../Chat';
-import makeTwitterComponent from '../utils/makeTwitterComponent';
-import { TwitterSegmentValue, TwitterComponent } from '../types';
+import TwitterChat from '../Chat.js';
+import makeTwitterComponent from '../utils/makeTwitterComponent.js';
+import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
 /**
  * Display typing action in the direct message chat

@@ -1,6 +1,7 @@
 {
   "name": "@sociably/meta-api",
   "version": "0.8.0-alpha.22",
+  "type": "module",
   "description": "Meta API utilities of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -26,9 +27,9 @@
     "access": "public"
   },
   "dependencies": {
-    "form-data": "^3.0.0",
+    "form-data": "3.0.1",
     "invariant": "^2.2.4",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "2.6.7",
     "warning": "^4.0.2"
   },
   "peerDependencies": {

@@ -6,9 +6,9 @@ import type {
   VerifyResult,
   CheckDataResult,
 } from '@sociably/auth';
-import MemoCacheTarget from './CacheTarget';
-import type { MemoAuthData, MemoAuthContext } from './types';
-import { WEBVIEW } from '../../constant';
+import MemoCacheTarget from './CacheTarget.js';
+import type { MemoAuthData, MemoAuthContext } from './types.js';
+import { WEBVIEW } from '../../constant.js';
 
 export class MemoServerAuthenticator
   implements ServerAuthenticator<MemoAuthData, MemoAuthData, MemoAuthContext>

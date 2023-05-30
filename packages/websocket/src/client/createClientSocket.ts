@@ -1,7 +1,7 @@
 /// <reference lib="DOM" />
 import { EventEmitter } from 'events';
-import Socket from '../Socket';
-import SocketError from '../error';
+import Socket from '../Socket.js';
+import SocketError from '../error.js';
 
 const Ws =
   typeof WebSocket === 'undefined'

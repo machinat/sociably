@@ -1,4 +1,4 @@
-import type { MetaApiErrorInfo, GraphApiErrorBody } from './types';
+import type { MetaApiErrorInfo, GraphApiErrorBody } from './types.js';
 
 export default class MetaApiError extends Error {
   code: number;

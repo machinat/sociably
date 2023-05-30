@@ -1,7 +1,7 @@
 import { snakeCase } from 'snake-case';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeWhatsAppComponent from '../utils/makeWhatsAppComponent';
-import { WhatsAppSegmentValue, WhatsAppComponent } from '../types';
+import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
+import { WhatsAppSegmentValue, WhatsAppComponent } from '../types.js';
 
 export type ContactProps = {
   /** Full contact addresses */

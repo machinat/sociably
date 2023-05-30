@@ -1,7 +1,7 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import TwitterUser from './User';
-import { TWITTER, TWTR } from './constant';
+import TwitterUser from './User.js';
+import { TWITTER, TWTR } from './constant.js';
 
 type SerializedChatValue = {
   agent: string;

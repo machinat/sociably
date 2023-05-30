@@ -1,8 +1,8 @@
 import { DispatchError } from '@sociably/core/engine';
-import moxy, { Moxy } from '@moxyjs/moxy';
-import type AssetsManagerP from '../AssetsManager';
-import saveUploadedFile from '../saveUploadedFile';
-import TelegramUser from '../../User';
+import { moxy, Moxy } from '@moxyjs/moxy';
+import type AssetsManagerP from '../AssetsManager.js';
+import saveUploadedFile from '../saveUploadedFile.js';
+import TelegramUser from '../../User.js';
 
 const sendMessageJob = {
   method: 'sendMessage',

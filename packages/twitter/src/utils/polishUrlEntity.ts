@@ -1,4 +1,4 @@
-import type { RawEntities, UrlEntity } from '../types';
+import type { RawEntities, UrlEntity } from '../types.js';
 
 const polishUrlEntity = (raw: RawEntities['urls'][number]): UrlEntity => ({
   url: raw.url,

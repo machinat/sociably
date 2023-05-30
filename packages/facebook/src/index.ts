@@ -1,13 +1,13 @@
-export { default } from './module';
-export { default as FacebookPage } from './Page';
-export { default as FacebookChat } from './Chat';
-export { default as FacebookUser } from './User';
-export { default as FacebookUserProfile } from './UserProfile';
-export { FacebookBot } from './Bot';
-export { FacebookReceiver } from './Receiver';
-export { FacebookProfiler } from './Profiler';
+export { default } from './module.js';
+export { default as FacebookPage } from './Page.js';
+export { default as FacebookChat } from './Chat.js';
+export { default as FacebookUser } from './User.js';
+export { default as FacebookUserProfile } from './UserProfile.js';
+export { FacebookBot } from './Bot.js';
+export { FacebookReceiver } from './Receiver.js';
+export { FacebookProfiler } from './Profiler.js';
 export {
   default as FacebookAssetsManager,
   saveReusableAttachments,
-} from './asset';
-export * from './types';
+} from './asset/index.js';
+export * from './types.js';

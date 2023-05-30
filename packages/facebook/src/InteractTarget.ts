@@ -1,7 +1,7 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import FacebookPage from './Page';
-import { FACEBOOK, FB } from './constant';
+import FacebookPage from './Page.js';
+import { FACEBOOK, FB } from './constant.js';
 
 type InteractTargetValue = {
   page: string;

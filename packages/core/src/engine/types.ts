@@ -1,11 +1,15 @@
-import type { TextSegment, UnitSegment, RawSegment } from '../renderer/types';
+import type {
+  TextSegment,
+  UnitSegment,
+  RawSegment,
+} from '../renderer/types.js';
 import type {
   SociablyNode,
   DispatchTarget,
   PauseDelayFn,
   ThunkEffectFn,
-} from '../types';
-import type SociablyQueue from '../queue';
+} from '../types.js';
+import type SociablyQueue from '../queue/index.js';
 
 export type DispatchableSegment<SegmentValue> =
   | TextSegment

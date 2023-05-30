@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderPartElement } from './utils';
-import { PostbackButton } from '../PostbackButton';
+import { renderPartElement } from './utils.js';
+import { PostbackButton } from '../PostbackButton.js';
 
 it('is valid Component', () => {
   expect(typeof PostbackButton).toBe('function');
@@ -15,20 +15,20 @@ it('match snapshot', async () => {
       <PostbackButton title="my button" payload="_MY_PAYLOAD_" />
     )
   ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <PostbackButton
-                  payload="_MY_PAYLOAD_"
-                  title="my button"
-                />,
-                "path": "$#container",
-                "type": "part",
-                "value": Object {
-                  "payload": "_MY_PAYLOAD_",
-                  "title": "my button",
-                  "type": "postback",
-                },
-              },
-            ]
-          `);
+    [
+      {
+        "node": <PostbackButton
+          payload="_MY_PAYLOAD_"
+          title="my button"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "payload": "_MY_PAYLOAD_",
+          "title": "my button",
+          "type": "postback",
+        },
+      },
+    ]
+  `);
 });

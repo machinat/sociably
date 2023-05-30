@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import { FacebookComponent } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import { FacebookComponent } from '../types.js';
 
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 

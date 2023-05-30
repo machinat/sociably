@@ -1,13 +1,13 @@
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { OutputSegment } from '@sociably/core/renderer';
-import makeTwitterComponent from '../utils/makeTwitterComponent';
-import createDmSegmentValue from '../utils/createDmSegmentValue';
+import makeTwitterComponent from '../utils/makeTwitterComponent.js';
+import createDmSegmentValue from '../utils/createDmSegmentValue.js';
 import {
   TwitterSegmentValue,
   TwitterComponent,
   TwitterApiRequest,
-} from '../types';
+} from '../types.js';
 
 /**
  * @category Props

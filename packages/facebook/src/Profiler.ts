@@ -1,13 +1,13 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import { MetaApiError } from '@sociably/meta-api';
-import BotP from './Bot';
-import type FacebookPage from './Page';
-import type FacebookUser from './User';
-import type { RawUserProfile } from './types';
-import { FACEBOOK } from './constant';
-import { ConfigsI } from './interface';
-import FacebookUserProfile from './UserProfile';
+import BotP from './Bot.js';
+import type FacebookPage from './Page.js';
+import type FacebookUser from './User.js';
+import type { RawUserProfile } from './types.js';
+import { FACEBOOK } from './constant.js';
+import { ConfigsI } from './interface.js';
+import FacebookUserProfile from './UserProfile.js';
 
 const DEFAULT_PROFILE_FIELDS = [
   'id',

@@ -3,7 +3,7 @@ import {
   LineResult,
   FailMessagingApiResult,
   FailOAuthApiResult,
-} from './types';
+} from './types.js';
 
 class LineApiError extends Error {
   info: FailMessagingApiResult | FailOAuthApiResult;

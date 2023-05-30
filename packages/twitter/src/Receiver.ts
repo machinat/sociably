@@ -5,11 +5,11 @@ import _BigIntJSON from 'json-bigint';
 import type { PopEventWrapper, SociablyNode } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
 import { serviceProviderClass } from '@sociably/core/service';
-import eventFactory from './event/factory';
-import BotP from './Bot';
-import { ConfigsI, PlatformUtilitiesI } from './interface';
-import { TWITTER } from './constant';
-import type { TwitterEventContext } from './types';
+import eventFactory from './event/factory.js';
+import BotP from './Bot.js';
+import { ConfigsI, PlatformUtilitiesI } from './interface.js';
+import { TWITTER } from './constant.js';
+import type { TwitterEventContext } from './types.js';
 
 const BigIntJSON = _BigIntJSON({ useNativeBigInt: true });
 

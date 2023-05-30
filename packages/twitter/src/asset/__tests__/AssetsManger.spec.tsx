@@ -1,10 +1,10 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
-import TwitterUser from '../../User';
-import type { TwitterBot } from '../../Bot';
-import { Photo } from '../../components/Media';
-import { TwitterAssetsManager } from '../AssetsManager';
+import TwitterUser from '../../User.js';
+import type { TwitterBot } from '../../Bot.js';
+import { Photo } from '../../components/Media.js';
+import { TwitterAssetsManager } from '../AssetsManager.js';
 
 const state = moxy({
   get: async () => null,
@@ -51,7 +51,7 @@ test('get asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
   expect(stateController.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$twtr.foo.1234567890",
       "$twtr.media.1234567890",
       "$twtr.custom_profile.1234567890",
@@ -112,7 +112,7 @@ test('save asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$twtr.foo.1234567890",
       "$twtr.media.1234567890",
       "$twtr.custom_profile.1234567890",
@@ -165,7 +165,7 @@ test('get all assets', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$twtr.foo.1234567890",
       "$twtr.media.1234567890",
       "$twtr.custom_profile.1234567890",
@@ -208,7 +208,7 @@ test('unsave asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
   expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$twtr.foo.1234567890",
       "$twtr.media.1234567890",
       "$twtr.custom_profile.1234567890",

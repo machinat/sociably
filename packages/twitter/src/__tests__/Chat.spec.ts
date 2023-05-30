@@ -1,5 +1,5 @@
-import TwitterUser from '../User';
-import TwitterChat from '../Chat';
+import TwitterUser from '../User.js';
+import TwitterChat from '../Chat.js';
 
 test('with id only', () => {
   const chat = new TwitterChat('1234567890', '9876543210');
@@ -12,8 +12,8 @@ test('with id only', () => {
 
   expect(chat.uid).toBe('twtr.1234567890.9876543210');
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "9876543210",

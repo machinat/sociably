@@ -1,3 +1,3 @@
-export { default } from './module';
-export { RegexIntentRecognizer } from './recognizer';
-export * from './types';
+export { default } from './module.js';
+export { RegexIntentRecognizer } from './recognizer.js';
+export * from './types.js';

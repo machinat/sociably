@@ -1,10 +1,10 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
-import type { WhatsAppBot } from '../../Bot';
-import WhatsAppAgent from '../../Agent';
-import { Image } from '../../components/Media';
-import { WhatsAppAssetsManager } from '../AssetsManager';
+import type { WhatsAppBot } from '../../Bot.js';
+import WhatsAppAgent from '../../Agent.js';
+import { Image } from '../../components/Media.js';
+import { WhatsAppAssetsManager } from '../AssetsManager.js';
 
 const state = moxy({
   get: async () => null,
@@ -48,7 +48,7 @@ test('get asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$wa.foo.1111111111",
       "$wa.media.1111111111",
     ]
@@ -81,7 +81,7 @@ test('set asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$wa.foo.1111111111",
       "$wa.media.1111111111",
     ]
@@ -110,7 +110,7 @@ test('get all assets', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$wa.foo.1111111111",
       "$wa.media.1111111111",
     ]
@@ -137,7 +137,7 @@ test('remove asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$wa.foo.1111111111",
       "$wa.media.1111111111",
     ]

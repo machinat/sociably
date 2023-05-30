@@ -1,9 +1,9 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
-import { WHATSAPP } from './constant';
-import type WhatsAppAgent from './Agent';
-import type WhatsAppUser from './User';
-import WhatsAppUserProfile from './UserProfile';
+import { WHATSAPP } from './constant.js';
+import type WhatsAppAgent from './Agent.js';
+import type WhatsAppUser from './User.js';
+import WhatsAppUserProfile from './UserProfile.js';
 
 /**
  * @category Provider

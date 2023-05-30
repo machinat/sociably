@@ -1,8 +1,8 @@
 import { makeUnitSegment } from '@sociably/core/renderer';
 import type { UnitSegment } from '@sociably/core/renderer';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import { PATH_PASS_THREAD_CONTROL } from '../constant';
-import type { FacebookComponent, PassThreadControlValue } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import { PATH_PASS_THREAD_CONTROL } from '../constant.js';
+import type { FacebookComponent, PassThreadControlValue } from '../types.js';
 
 /**
  * @category Props

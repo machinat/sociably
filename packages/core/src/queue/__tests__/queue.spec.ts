@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop, no-loop-func, no-return-assign, no-fallthrough, default-case */
-import moxy from '@moxyjs/moxy';
-import SociablyQueue from '../queue';
+import { moxy } from '@moxyjs/moxy';
+import SociablyQueue from '../queue.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 const makeJobs = (n) => new Array(n).fill(0).map((_, i) => ({ id: i }));

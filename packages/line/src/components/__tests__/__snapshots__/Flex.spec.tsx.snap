@@ -1,24 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`News flex sample match snapshot 1`] = `
-Object {
-  "params": Object {
+{
+  "params": {
     "altText": "hello flex",
-    "contents": Object {
+    "contents": {
       "action": undefined,
-      "body": Object {
+      "body": {
         "action": undefined,
         "backgroundColor": undefined,
         "borderColor": undefined,
         "borderWidth": undefined,
-        "contents": Array [
-          Object {
+        "contents": [
+          {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
+            "contents": [
+              {
                 "action": undefined,
                 "align": undefined,
                 "aspectMode": "cover",
@@ -36,7 +36,7 @@ Object {
                 "type": "image",
                 "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/02_1_news_thumbnail_1.png",
               },
-              Object {
+              {
                 "action": undefined,
                 "align": undefined,
                 "aspectMode": "cover",
@@ -74,13 +74,13 @@ Object {
             "type": "box",
             "width": undefined,
           },
-          Object {
+          {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
+            "contents": [
+              {
                 "action": undefined,
                 "align": undefined,
                 "color": undefined,
@@ -102,12 +102,12 @@ Object {
                 "weight": undefined,
                 "wrap": undefined,
               },
-              Object {
+              {
                 "color": undefined,
                 "margin": undefined,
                 "type": "separator",
               },
-              Object {
+              {
                 "action": undefined,
                 "align": undefined,
                 "color": undefined,
@@ -129,12 +129,12 @@ Object {
                 "weight": undefined,
                 "wrap": undefined,
               },
-              Object {
+              {
                 "color": undefined,
                 "margin": undefined,
                 "type": "separator",
               },
-              Object {
+              {
                 "action": undefined,
                 "align": undefined,
                 "color": undefined,
@@ -156,12 +156,12 @@ Object {
                 "weight": undefined,
                 "wrap": undefined,
               },
-              Object {
+              {
                 "color": undefined,
                 "margin": undefined,
                 "type": "separator",
               },
-              Object {
+              {
                 "action": undefined,
                 "align": undefined,
                 "color": undefined,
@@ -224,14 +224,14 @@ Object {
         "width": undefined,
       },
       "direction": "ltr",
-      "footer": Object {
+      "footer": {
         "action": undefined,
         "backgroundColor": undefined,
         "borderColor": undefined,
         "borderWidth": undefined,
-        "contents": Array [
-          Object {
-            "action": Object {
+        "contents": [
+          {
+            "action": {
               "label": "More",
               "type": "uri",
               "uri": "http://linecorp.com/",
@@ -270,13 +270,13 @@ Object {
         "type": "box",
         "width": undefined,
       },
-      "header": Object {
+      "header": {
         "action": undefined,
         "backgroundColor": undefined,
         "borderColor": undefined,
         "borderWidth": undefined,
-        "contents": Array [
-          Object {
+        "contents": [
+          {
             "action": undefined,
             "align": undefined,
             "color": "#aaaaaa",
@@ -318,8 +318,8 @@ Object {
         "type": "box",
         "width": undefined,
       },
-      "hero": Object {
-        "action": Object {
+      "hero": {
+        "action": {
           "label": undefined,
           "type": "uri",
           "uri": "http://linecorp.com/",
@@ -350,18 +350,18 @@ Object {
 `;
 
 exports[`Restaurant flex sample match snapshot 1`] = `
-Object {
-  "params": Object {
+{
+  "params": {
     "altText": "hello restaurant flex",
-    "contents": Object {
+    "contents": {
       "action": undefined,
-      "body": Object {
+      "body": {
         "action": undefined,
         "backgroundColor": undefined,
         "borderColor": undefined,
         "borderWidth": undefined,
-        "contents": Array [
-          Object {
+        "contents": [
+          {
             "action": undefined,
             "align": undefined,
             "color": undefined,
@@ -383,13 +383,13 @@ Object {
             "weight": "bold",
             "wrap": undefined,
           },
-          Object {
+          {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
+            "contents": [
+              {
                 "aspectRatio": undefined,
                 "margin": undefined,
                 "offsetBottom": undefined,
@@ -401,7 +401,7 @@ Object {
                 "type": "icon",
                 "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
               },
-              Object {
+              {
                 "aspectRatio": undefined,
                 "margin": undefined,
                 "offsetBottom": undefined,
@@ -413,7 +413,7 @@ Object {
                 "type": "icon",
                 "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
               },
-              Object {
+              {
                 "aspectRatio": undefined,
                 "margin": undefined,
                 "offsetBottom": undefined,
@@ -425,7 +425,7 @@ Object {
                 "type": "icon",
                 "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
               },
-              Object {
+              {
                 "aspectRatio": undefined,
                 "margin": undefined,
                 "offsetBottom": undefined,
@@ -437,7 +437,7 @@ Object {
                 "type": "icon",
                 "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png",
               },
-              Object {
+              {
                 "aspectRatio": undefined,
                 "margin": undefined,
                 "offsetBottom": undefined,
@@ -449,7 +449,7 @@ Object {
                 "type": "icon",
                 "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png",
               },
-              Object {
+              {
                 "action": undefined,
                 "align": undefined,
                 "color": "#999999",
@@ -471,7 +471,7 @@ Object {
                 "weight": undefined,
                 "wrap": undefined,
               },
-              Object {
+              {
                 "flex": undefined,
                 "type": "filler",
               },
@@ -495,19 +495,19 @@ Object {
             "type": "box",
             "width": undefined,
           },
-          Object {
+          {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
+            "contents": [
+              {
                 "action": undefined,
                 "backgroundColor": undefined,
                 "borderColor": undefined,
                 "borderWidth": undefined,
-                "contents": Array [
-                  Object {
+                "contents": [
+                  {
                     "action": undefined,
                     "align": undefined,
                     "color": "#aaaaaa",
@@ -529,7 +529,7 @@ Object {
                     "weight": undefined,
                     "wrap": undefined,
                   },
-                  Object {
+                  {
                     "action": undefined,
                     "align": undefined,
                     "color": "#666666",
@@ -571,13 +571,13 @@ Object {
                 "type": "box",
                 "width": undefined,
               },
-              Object {
+              {
                 "action": undefined,
                 "backgroundColor": undefined,
                 "borderColor": undefined,
                 "borderWidth": undefined,
-                "contents": Array [
-                  Object {
+                "contents": [
+                  {
                     "action": undefined,
                     "align": undefined,
                     "color": "#aaaaaa",
@@ -599,7 +599,7 @@ Object {
                     "weight": undefined,
                     "wrap": undefined,
                   },
-                  Object {
+                  {
                     "action": undefined,
                     "align": undefined,
                     "color": "#666666",
@@ -682,14 +682,14 @@ Object {
         "width": undefined,
       },
       "direction": "ltr",
-      "footer": Object {
+      "footer": {
         "action": undefined,
         "backgroundColor": undefined,
         "borderColor": undefined,
         "borderWidth": undefined,
-        "contents": Array [
-          Object {
-            "action": Object {
+        "contents": [
+          {
+            "action": {
               "label": "CALL",
               "type": "uri",
               "uri": "https://linecorp.com",
@@ -708,8 +708,8 @@ Object {
             "style": "link",
             "type": "button",
           },
-          Object {
-            "action": Object {
+          {
+            "action": {
               "label": "WEBSITE",
               "type": "uri",
               "uri": "https://linecorp.com",
@@ -728,7 +728,7 @@ Object {
             "style": "link",
             "type": "button",
           },
-          Object {
+          {
             "size": undefined,
             "type": "spacer",
           },
@@ -752,8 +752,8 @@ Object {
         "type": "box",
         "width": undefined,
       },
-      "hero": Object {
-        "action": Object {
+      "hero": {
+        "action": {
           "label": undefined,
           "type": "uri",
           "uri": "http://linecorp.com/",
@@ -784,20 +784,20 @@ Object {
 `;
 
 exports[`Shopping flex sample match snapshot 1`] = `
-Object {
-  "params": Object {
+{
+  "params": {
     "altText": "hello shopping flex",
-    "contents": Object {
-      "contents": Array [
-        Object {
+    "contents": {
+      "contents": [
+        {
           "action": undefined,
-          "body": Object {
+          "body": {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
+            "contents": [
+              {
                 "action": undefined,
                 "align": undefined,
                 "color": undefined,
@@ -819,13 +819,13 @@ Object {
                 "weight": "bold",
                 "wrap": true,
               },
-              Object {
+              {
                 "action": undefined,
                 "backgroundColor": undefined,
                 "borderColor": undefined,
                 "borderWidth": undefined,
-                "contents": Array [
-                  Object {
+                "contents": [
+                  {
                     "action": undefined,
                     "align": undefined,
                     "color": undefined,
@@ -847,7 +847,7 @@ Object {
                     "weight": "bold",
                     "wrap": true,
                   },
-                  Object {
+                  {
                     "action": undefined,
                     "align": undefined,
                     "color": undefined,
@@ -910,14 +910,14 @@ Object {
             "width": undefined,
           },
           "direction": "ltr",
-          "footer": Object {
+          "footer": {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
-                "action": Object {
+            "contents": [
+              {
+                "action": {
                   "label": "Add to Cart",
                   "type": "uri",
                   "uri": "https://linecorp.com",
@@ -936,8 +936,8 @@ Object {
                 "style": "primary",
                 "type": "button",
               },
-              Object {
-                "action": Object {
+              {
+                "action": {
                   "label": "Add to wishlist",
                   "type": "uri",
                   "uri": "https://linecorp.com",
@@ -976,7 +976,7 @@ Object {
             "type": "box",
             "width": undefined,
           },
-          "hero": Object {
+          "hero": {
             "action": undefined,
             "align": undefined,
             "aspectMode": "cover",
@@ -997,15 +997,15 @@ Object {
           "styles": undefined,
           "type": "bubble",
         },
-        Object {
+        {
           "action": undefined,
-          "body": Object {
+          "body": {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
+            "contents": [
+              {
                 "action": undefined,
                 "align": undefined,
                 "color": undefined,
@@ -1027,13 +1027,13 @@ Object {
                 "weight": "bold",
                 "wrap": true,
               },
-              Object {
+              {
                 "action": undefined,
                 "backgroundColor": undefined,
                 "borderColor": undefined,
                 "borderWidth": undefined,
-                "contents": Array [
-                  Object {
+                "contents": [
+                  {
                     "action": undefined,
                     "align": undefined,
                     "color": undefined,
@@ -1055,7 +1055,7 @@ Object {
                     "weight": "bold",
                     "wrap": true,
                   },
-                  Object {
+                  {
                     "action": undefined,
                     "align": undefined,
                     "color": undefined,
@@ -1097,7 +1097,7 @@ Object {
                 "type": "box",
                 "width": undefined,
               },
-              Object {
+              {
                 "action": undefined,
                 "align": undefined,
                 "color": "#ff5551",
@@ -1140,14 +1140,14 @@ Object {
             "width": undefined,
           },
           "direction": "ltr",
-          "footer": Object {
+          "footer": {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
-                "action": Object {
+            "contents": [
+              {
+                "action": {
                   "label": "Add to Cart",
                   "type": "uri",
                   "uri": "https://linecorp.com",
@@ -1166,8 +1166,8 @@ Object {
                 "style": "primary",
                 "type": "button",
               },
-              Object {
-                "action": Object {
+              {
+                "action": {
                   "label": "Add to wishlist",
                   "type": "uri",
                   "uri": "https://linecorp.com",
@@ -1206,7 +1206,7 @@ Object {
             "type": "box",
             "width": undefined,
           },
-          "hero": Object {
+          "hero": {
             "action": undefined,
             "align": undefined,
             "aspectMode": "cover",
@@ -1227,16 +1227,16 @@ Object {
           "styles": undefined,
           "type": "bubble",
         },
-        Object {
+        {
           "action": undefined,
-          "body": Object {
+          "body": {
             "action": undefined,
             "backgroundColor": undefined,
             "borderColor": undefined,
             "borderWidth": undefined,
-            "contents": Array [
-              Object {
-                "action": Object {
+            "contents": [
+              {
+                "action": {
                   "label": "See more",
                   "type": "uri",
                   "uri": "https://linecorp.com",

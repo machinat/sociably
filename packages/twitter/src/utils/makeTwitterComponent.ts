@@ -1,5 +1,5 @@
 import { makeNativeComponent } from '@sociably/core/renderer';
-import { TWITTER } from '../constant';
+import { TWITTER } from '../constant.js';
 
 const makeTwitterComponent = makeNativeComponent(TWITTER);
 

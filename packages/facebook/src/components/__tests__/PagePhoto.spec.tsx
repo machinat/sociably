@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PagePhoto } from '../PagePhoto';
+import { PagePhoto } from '../PagePhoto.js';
 
-import { renderUnitElement } from './utils';
+import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
   expect(typeof PagePhoto).toBe('function');
@@ -14,95 +14,95 @@ it('match snapshot', async () => {
   await expect(
     renderUnitElement(<PagePhoto url="http://sociably.js/awesome.jpg" />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PagePhoto
-                url="http://sociably.js/awesome.jpg"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/photos",
-                "attachFile": undefined,
-                "params": Object {
-                  "backdated_time": undefined,
-                  "spherical_metadata": undefined,
-                  "url": "http://sociably.js/awesome.jpg",
-                  "vault_image_id": undefined,
-                },
-                "type": "page",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <PagePhoto
+          url="http://sociably.js/awesome.jpg"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/photos",
+          "attachFile": undefined,
+          "params": {
+            "backdated_time": undefined,
+            "spherical_metadata": undefined,
+            "url": "http://sociably.js/awesome.jpg",
+            "vault_image_id": undefined,
+          },
+          "type": "page",
+        },
+      },
+    ]
+  `);
 
   await expect(renderUnitElement(<PagePhoto fileData={Buffer.from('COOL')} />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PagePhoto
-                fileData={
-                  Object {
-                    "data": Array [
-                      67,
-                      79,
-                      79,
-                      76,
-                    ],
-                    "type": "Buffer",
-                  }
-                }
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/photos",
-                "attachFile": Object {
-                  "data": Object {
-                    "data": Array [
-                      67,
-                      79,
-                      79,
-                      76,
-                    ],
-                    "type": "Buffer",
-                  },
-                },
-                "params": Object {
-                  "backdated_time": undefined,
-                  "spherical_metadata": undefined,
-                  "url": undefined,
-                  "vault_image_id": undefined,
-                },
-                "type": "page",
-              },
+    [
+      {
+        "node": <PagePhoto
+          fileData={
+            {
+              "data": [
+                67,
+                79,
+                79,
+                76,
+              ],
+              "type": "Buffer",
+            }
+          }
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/photos",
+          "attachFile": {
+            "data": {
+              "data": [
+                67,
+                79,
+                79,
+                76,
+              ],
+              "type": "Buffer",
             },
-          ]
-        `);
+          },
+          "params": {
+            "backdated_time": undefined,
+            "spherical_metadata": undefined,
+            "url": undefined,
+            "vault_image_id": undefined,
+          },
+          "type": "page",
+        },
+      },
+    ]
+  `);
 
   await expect(renderUnitElement(<PagePhoto vaultImageId="1234" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PagePhoto
-                vaultImageId="1234"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/photos",
-                "attachFile": undefined,
-                "params": Object {
-                  "backdated_time": undefined,
-                  "spherical_metadata": undefined,
-                  "url": undefined,
-                  "vault_image_id": "1234",
-                },
-                "type": "page",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <PagePhoto
+          vaultImageId="1234"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/photos",
+          "attachFile": undefined,
+          "params": {
+            "backdated_time": undefined,
+            "spherical_metadata": undefined,
+            "url": undefined,
+            "vault_image_id": "1234",
+          },
+          "type": "page",
+        },
+      },
+    ]
+  `);
 
   await expect(
     renderUnitElement(
@@ -125,64 +125,64 @@ it('match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PagePhoto
-                allowSphericalPhoto={true}
-                altTextCustom="COOL"
-                backdatedTime={2022-01-01T00:00:00.000Z}
-                caption="COOOL"
-                feedTargeting={
-                  Object {
-                    "ageMax": 300,
-                    "ageMin": 3,
-                  }
-                }
-                ogIconId={1234}
-                place="social media"
-                sphericalMetadata={
-                  Object {
-                    "CroppedAreaImageWidthPixels": 123,
-                    "ProjectionType": "equirectangular",
-                  }
-                }
-                url="http://sociably.js/cooool.jpg"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/photos",
-                "attachFile": undefined,
-                "params": Object {
-                  "allow_spherical_photo": true,
-                  "alt_text_custom": "COOL",
-                  "backdated_time": 1640995200,
-                  "caption": "COOOL",
-                  "feed_targeting": Object {
-                    "age_max": 300,
-                    "age_min": 3,
-                  },
-                  "og_icon_id": 1234,
-                  "place": "social media",
-                  "spherical_metadata": Object {
-                    "CroppedAreaImageWidthPixels": 123,
-                    "ProjectionType": "equirectangular",
-                  },
-                  "url": "http://sociably.js/cooool.jpg",
-                  "vault_image_id": undefined,
-                },
-                "type": "page",
-              },
+    [
+      {
+        "node": <PagePhoto
+          allowSphericalPhoto={true}
+          altTextCustom="COOL"
+          backdatedTime={2022-01-01T00:00:00.000Z}
+          caption="COOOL"
+          feedTargeting={
+            {
+              "ageMax": 300,
+              "ageMin": 3,
+            }
+          }
+          ogIconId={1234}
+          place="social media"
+          sphericalMetadata={
+            {
+              "CroppedAreaImageWidthPixels": 123,
+              "ProjectionType": "equirectangular",
+            }
+          }
+          url="http://sociably.js/cooool.jpg"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/photos",
+          "attachFile": undefined,
+          "params": {
+            "allow_spherical_photo": true,
+            "alt_text_custom": "COOL",
+            "backdated_time": 1640995200,
+            "caption": "COOOL",
+            "feed_targeting": {
+              "age_max": 300,
+              "age_min": 3,
             },
-          ]
-        `);
+            "og_icon_id": 1234,
+            "place": "social media",
+            "spherical_metadata": {
+              "CroppedAreaImageWidthPixels": 123,
+              "ProjectionType": "equirectangular",
+            },
+            "url": "http://sociably.js/cooool.jpg",
+            "vault_image_id": undefined,
+          },
+          "type": "page",
+        },
+      },
+    ]
+  `);
 });
 
 it('throw if there is no source prop', async () => {
   await expect(
     renderUnitElement(<PagePhoto />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: \\"url\\", \\"fileData\\" or \\"vaultImageId\\""`
+    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
   );
 });
 
@@ -192,18 +192,18 @@ it('throw if multiple source props are set', async () => {
       <PagePhoto vaultImageId="123" fileData={Buffer.from('foo')} />
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: \\"url\\", \\"fileData\\" or \\"vaultImageId\\""`
+    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
   );
   await expect(
     renderUnitElement(<PagePhoto vaultImageId="123" url="http://..." />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: \\"url\\", \\"fileData\\" or \\"vaultImageId\\""`
+    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
   );
   await expect(
     renderUnitElement(
       <PagePhoto fileData={Buffer.from('foo')} url="http://..." />
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: \\"url\\", \\"fileData\\" or \\"vaultImageId\\""`
+    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
   );
 });

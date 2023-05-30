@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderUnitElement } from './utils';
-import { ReceiptTemplate, ReceiptItem } from '../ReceiptTemplate';
+import { renderUnitElement } from './utils.js';
+import { ReceiptTemplate, ReceiptItem } from '../ReceiptTemplate.js';
 
 it('is valid component', () => {
   expect(typeof ReceiptItem).toBe('function');
@@ -27,67 +27,67 @@ it('match snapshot', async () => {
       </ReceiptTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ReceiptTemplate
-                currency="USD"
-                orderNumber="12345"
-                orderUrl="http://what.a.shop"
-                paymentMethod="Visa 2345"
-                recipientName="John Doe"
-                summary={
-                  Object {
-                    "total_cost": 56.14,
-                  }
-                }
-              >
-                <ReceiptItem
-                  price={9.99}
-                  title="Woody"
-                />
-              </ReceiptTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "message": Object {
-                    "attachment": Object {
-                      "payload": Object {
-                        "address": undefined,
-                        "adjustments": undefined,
-                        "currency": "USD",
-                        "elements": Array [
-                          Object {
-                            "currency": undefined,
-                            "image_url": undefined,
-                            "price": 9.99,
-                            "quantity": undefined,
-                            "subtitle": undefined,
-                            "title": "Woody",
-                          },
-                        ],
-                        "merchant_name": undefined,
-                        "order_number": "12345",
-                        "order_url": "http://what.a.shop",
-                        "payment_method": "Visa 2345",
-                        "recipient_name": "John Doe",
-                        "sharable": undefined,
-                        "summary": Object {
-                          "total_cost": 56.14,
-                        },
-                        "template_type": "receipt",
-                        "timestamp": undefined,
-                      },
-                      "type": "template",
+    [
+      {
+        "node": <ReceiptTemplate
+          currency="USD"
+          orderNumber="12345"
+          orderUrl="http://what.a.shop"
+          paymentMethod="Visa 2345"
+          recipientName="John Doe"
+          summary={
+            {
+              "total_cost": 56.14,
+            }
+          }
+        >
+          <ReceiptItem
+            price={9.99}
+            title="Woody"
+          />
+        </ReceiptTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
+                  "address": undefined,
+                  "adjustments": undefined,
+                  "currency": "USD",
+                  "elements": [
+                    {
+                      "currency": undefined,
+                      "image_url": undefined,
+                      "price": 9.99,
+                      "quantity": undefined,
+                      "subtitle": undefined,
+                      "title": "Woody",
                     },
+                  ],
+                  "merchant_name": undefined,
+                  "order_number": "12345",
+                  "order_url": "http://what.a.shop",
+                  "payment_method": "Visa 2345",
+                  "recipient_name": "John Doe",
+                  "sharable": undefined,
+                  "summary": {
+                    "total_cost": 56.14,
                   },
+                  "template_type": "receipt",
+                  "timestamp": undefined,
                 },
-                "type": "message",
+                "type": "template",
               },
             },
-          ]
-        `);
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
   await expect(
     renderUnitElement(
       <ReceiptTemplate
@@ -104,91 +104,91 @@ it('match snapshot', async () => {
       </ReceiptTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ReceiptTemplate
-                currency="USD"
-                orderNumber="12345"
-                orderUrl="http://what.a.shop"
-                paymentMethod="Visa 2345"
-                recipientName="John Doe"
-                summary={
-                  Object {
-                    "total_cost": 56.14,
-                  }
-                }
-              >
-                <ReceiptItem
-                  price={9.99}
-                  title="Woody"
-                />
-                <ReceiptItem
-                  price={9.99}
-                  title="Buzz Lightyear"
-                />
-                <ReceiptItem
-                  price={9.99}
-                  title="Slinky Dog"
-                />
-              </ReceiptTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "message": Object {
-                    "attachment": Object {
-                      "payload": Object {
-                        "address": undefined,
-                        "adjustments": undefined,
-                        "currency": "USD",
-                        "elements": Array [
-                          Object {
-                            "currency": undefined,
-                            "image_url": undefined,
-                            "price": 9.99,
-                            "quantity": undefined,
-                            "subtitle": undefined,
-                            "title": "Woody",
-                          },
-                          Object {
-                            "currency": undefined,
-                            "image_url": undefined,
-                            "price": 9.99,
-                            "quantity": undefined,
-                            "subtitle": undefined,
-                            "title": "Buzz Lightyear",
-                          },
-                          Object {
-                            "currency": undefined,
-                            "image_url": undefined,
-                            "price": 9.99,
-                            "quantity": undefined,
-                            "subtitle": undefined,
-                            "title": "Slinky Dog",
-                          },
-                        ],
-                        "merchant_name": undefined,
-                        "order_number": "12345",
-                        "order_url": "http://what.a.shop",
-                        "payment_method": "Visa 2345",
-                        "recipient_name": "John Doe",
-                        "sharable": undefined,
-                        "summary": Object {
-                          "total_cost": 56.14,
-                        },
-                        "template_type": "receipt",
-                        "timestamp": undefined,
-                      },
-                      "type": "template",
+    [
+      {
+        "node": <ReceiptTemplate
+          currency="USD"
+          orderNumber="12345"
+          orderUrl="http://what.a.shop"
+          paymentMethod="Visa 2345"
+          recipientName="John Doe"
+          summary={
+            {
+              "total_cost": 56.14,
+            }
+          }
+        >
+          <ReceiptItem
+            price={9.99}
+            title="Woody"
+          />
+          <ReceiptItem
+            price={9.99}
+            title="Buzz Lightyear"
+          />
+          <ReceiptItem
+            price={9.99}
+            title="Slinky Dog"
+          />
+        </ReceiptTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
+                  "address": undefined,
+                  "adjustments": undefined,
+                  "currency": "USD",
+                  "elements": [
+                    {
+                      "currency": undefined,
+                      "image_url": undefined,
+                      "price": 9.99,
+                      "quantity": undefined,
+                      "subtitle": undefined,
+                      "title": "Woody",
                     },
+                    {
+                      "currency": undefined,
+                      "image_url": undefined,
+                      "price": 9.99,
+                      "quantity": undefined,
+                      "subtitle": undefined,
+                      "title": "Buzz Lightyear",
+                    },
+                    {
+                      "currency": undefined,
+                      "image_url": undefined,
+                      "price": 9.99,
+                      "quantity": undefined,
+                      "subtitle": undefined,
+                      "title": "Slinky Dog",
+                    },
+                  ],
+                  "merchant_name": undefined,
+                  "order_number": "12345",
+                  "order_url": "http://what.a.shop",
+                  "payment_method": "Visa 2345",
+                  "recipient_name": "John Doe",
+                  "sharable": undefined,
+                  "summary": {
+                    "total_cost": 56.14,
                   },
+                  "template_type": "receipt",
+                  "timestamp": undefined,
                 },
-                "type": "message",
+                "type": "template",
               },
             },
-          ]
-        `);
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
   await expect(
     renderUnitElement(
       <ReceiptTemplate
@@ -230,118 +230,118 @@ it('match snapshot', async () => {
       </ReceiptTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ReceiptTemplate
-                address={
-                  Object {
+    [
+      {
+        "node": <ReceiptTemplate
+          address={
+            {
+              "city": "Menlo Park",
+              "country": "US",
+              "postal_code": "94025",
+              "state": "CA",
+              "street_1": "1 Hacker Way",
+              "street_2": "Somewhere...",
+            }
+          }
+          adjustments={
+            [
+              {
+                "amount": 20,
+                "name": "New Customer Discount",
+              },
+              {
+                "amount": 10,
+                "name": "$10 Off Coupon",
+              },
+            ]
+          }
+          currency="USD"
+          merchantName="AI"
+          orderNumber="12345"
+          orderUrl="http://what.a.shop"
+          paymentMethod="Visa 2345"
+          recipientName="John Doe"
+          sharable={true}
+          summary={
+            {
+              "shipping_cost": 4.95,
+              "subtotal": 75,
+              "total_cost": 56.14,
+              "total_tax": 6.19,
+            }
+          }
+          timestamp="1428444852"
+        >
+          <ReceiptItem
+            currency="USD"
+            imageUrl="http://i.robot/avatar"
+            price={99.99}
+            quantity={999}
+            subtitle="It's real!"
+            title="A robot!"
+          />
+        </ReceiptTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
+                  "address": {
                     "city": "Menlo Park",
                     "country": "US",
                     "postal_code": "94025",
                     "state": "CA",
                     "street_1": "1 Hacker Way",
                     "street_2": "Somewhere...",
-                  }
-                }
-                adjustments={
-                  Array [
-                    Object {
+                  },
+                  "adjustments": [
+                    {
                       "amount": 20,
                       "name": "New Customer Discount",
                     },
-                    Object {
+                    {
                       "amount": 10,
                       "name": "$10 Off Coupon",
                     },
-                  ]
-                }
-                currency="USD"
-                merchantName="AI"
-                orderNumber="12345"
-                orderUrl="http://what.a.shop"
-                paymentMethod="Visa 2345"
-                recipientName="John Doe"
-                sharable={true}
-                summary={
-                  Object {
+                  ],
+                  "currency": "USD",
+                  "elements": [
+                    {
+                      "currency": "USD",
+                      "image_url": "http://i.robot/avatar",
+                      "price": 99.99,
+                      "quantity": 999,
+                      "subtitle": "It's real!",
+                      "title": "A robot!",
+                    },
+                  ],
+                  "merchant_name": "AI",
+                  "order_number": "12345",
+                  "order_url": "http://what.a.shop",
+                  "payment_method": "Visa 2345",
+                  "recipient_name": "John Doe",
+                  "sharable": true,
+                  "summary": {
                     "shipping_cost": 4.95,
                     "subtotal": 75,
                     "total_cost": 56.14,
                     "total_tax": 6.19,
-                  }
-                }
-                timestamp="1428444852"
-              >
-                <ReceiptItem
-                  currency="USD"
-                  imageUrl="http://i.robot/avatar"
-                  price={99.99}
-                  quantity={999}
-                  subtitle="It's real!"
-                  title="A robot!"
-                />
-              </ReceiptTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "message": Object {
-                    "attachment": Object {
-                      "payload": Object {
-                        "address": Object {
-                          "city": "Menlo Park",
-                          "country": "US",
-                          "postal_code": "94025",
-                          "state": "CA",
-                          "street_1": "1 Hacker Way",
-                          "street_2": "Somewhere...",
-                        },
-                        "adjustments": Array [
-                          Object {
-                            "amount": 20,
-                            "name": "New Customer Discount",
-                          },
-                          Object {
-                            "amount": 10,
-                            "name": "$10 Off Coupon",
-                          },
-                        ],
-                        "currency": "USD",
-                        "elements": Array [
-                          Object {
-                            "currency": "USD",
-                            "image_url": "http://i.robot/avatar",
-                            "price": 99.99,
-                            "quantity": 999,
-                            "subtitle": "It's real!",
-                            "title": "A robot!",
-                          },
-                        ],
-                        "merchant_name": "AI",
-                        "order_number": "12345",
-                        "order_url": "http://what.a.shop",
-                        "payment_method": "Visa 2345",
-                        "recipient_name": "John Doe",
-                        "sharable": true,
-                        "summary": Object {
-                          "shipping_cost": 4.95,
-                          "subtotal": 75,
-                          "total_cost": 56.14,
-                          "total_tax": 6.19,
-                        },
-                        "template_type": "receipt",
-                        "timestamp": "1428444852",
-                      },
-                      "type": "template",
-                    },
                   },
+                  "template_type": "receipt",
+                  "timestamp": "1428444852",
                 },
-                "type": "message",
+                "type": "template",
               },
             },
-          ]
-        `);
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });
 
 it('accept Date object for timestamp prop', async () => {

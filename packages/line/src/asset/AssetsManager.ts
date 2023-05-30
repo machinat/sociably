@@ -1,11 +1,11 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import fetch from 'node-fetch';
-import LineChannel from '../Channel';
-import BotP from '../Bot';
-import { AgentSettingsAccessorI } from '../interface';
-import { PATH_RICHMENU, LINE } from '../constant';
-import LineApiError from '../error';
+import LineChannel from '../Channel.js';
+import BotP from '../Bot.js';
+import { AgentSettingsAccessorI } from '../interface.js';
+import { PATH_RICHMENU, LINE } from '../constant.js';
+import LineApiError from '../error.js';
 
 const RICH_MENU = 'rich_menu';
 
@@ -109,7 +109,7 @@ export class LineAssetsManager {
   }
 
   async createRichMenu(
-    channel: string | LineChannel,
+    channelInput: string | LineChannel,
     name: string,
     content: NodeJS.ReadableStream | Buffer,
     params: Record<string, unknown>,
@@ -118,6 +118,11 @@ export class LineAssetsManager {
       contentType,
     }: { asDefault?: boolean; contentType?: string } = {}
   ): Promise<{ richMenuId: string }> {
+    const channel =
+      typeof channelInput === 'string'
+        ? new LineChannel(channelInput)
+        : channelInput;
+
     // check if rich menu already exist
     const existed = await this.getRichMenu(channel, name);
     if (existed) {
@@ -133,11 +138,9 @@ export class LineAssetsManager {
     });
 
     // upload rich menu image
-    const settings = await this._settingsAccessor.getAgentSettings(
-      typeof channel === 'string' ? new LineChannel(channel) : channel
-    );
+    const settings = await this._settingsAccessor.getAgentSettings(channel);
     if (!settings) {
-      throw new Error(`Line channel "${channel}" not registered`);
+      throw new Error(`Line channel "${channel.uid}" not registered`);
     }
     const uploadRes = await fetch(
       `https://api-data.line.me/v2/bot/richmenu/${richMenuId}/content`,
@@ -155,7 +158,7 @@ export class LineAssetsManager {
       throw new LineApiError({
         code: uploadRes.status,
         headers: Object.fromEntries(uploadRes.headers),
-        body: uploadBody,
+        body: uploadBody as Record<string, unknown>,
       });
     }
 

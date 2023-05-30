@@ -1,6 +1,6 @@
 import { MaybeContainer } from '@sociably/core/service';
-import injectMaybe from './injectMaybe';
-import Stream from './stream';
+import injectMaybe from './injectMaybe.js';
+import Stream from './stream.js';
 
 type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 

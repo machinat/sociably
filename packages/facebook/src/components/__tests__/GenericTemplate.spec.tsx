@@ -1,10 +1,10 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderUnitElement } from './utils';
-import { GenericItem, GenericTemplate } from '../GenericTemplate';
-import { UrlButton } from '../UrlButton';
-import { PostbackButton } from '../PostbackButton';
-import { CallButton } from '../CallButton';
+import { renderUnitElement } from './utils.js';
+import { GenericItem, GenericTemplate } from '../GenericTemplate.js';
+import { UrlButton } from '../UrlButton.js';
+import { PostbackButton } from '../PostbackButton.js';
+import { CallButton } from '../CallButton.js';
 
 it('is valid component', () => {
   expect(typeof GenericItem).toBe('function');
@@ -37,123 +37,123 @@ const items = [
 it('match snapshot', async () => {
   await expect(renderUnitElement(<GenericTemplate>{items}</GenericTemplate>))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <GenericTemplate>
-                <GenericItem
-                  buttons={
-                    Array [
-                      <UrlButton
-                        title="check"
-                        url="http://xxx.yy.z"
-                      />,
-                    ]
-                  }
-                  imageUrl="http://foo.bar/image"
-                  title="foo"
-                />
-                <GenericItem
-                  buttons={
-                    Array [
-                      <UrlButton
-                        title="check"
-                        url="http://xxx.yy.z"
-                      />,
-                      <PostbackButton
-                        payload="_MORE_"
-                        title="more"
-                      />,
-                      <CallButton
-                        number="+12345678"
-                        title="call us"
-                      />,
-                    ]
-                  }
-                  defaultAction={
-                    <UrlButton
-                      title="TITLE!"
-                      url="http://foo.bar/"
-                    />
-                  }
-                  imageUrl="http://foo.bar/image"
-                  subtitle="bar"
-                  title="foo"
-                />
-              </GenericTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "message": Object {
-                    "attachment": Object {
-                      "payload": Object {
-                        "elements": Array [
-                          Object {
-                            "buttons": Array [
-                              Object {
-                                "fallback_url": undefined,
-                                "messenger_extensions": undefined,
-                                "title": "check",
-                                "type": "web_url",
-                                "url": "http://xxx.yy.z",
-                                "webview_height_ratio": undefined,
-                                "webview_share_button": undefined,
-                              },
-                            ],
-                            "default_action": undefined,
-                            "image_url": "http://foo.bar/image",
-                            "subtitle": undefined,
-                            "title": "foo",
-                          },
-                          Object {
-                            "buttons": Array [
-                              Object {
-                                "fallback_url": undefined,
-                                "messenger_extensions": undefined,
-                                "title": "check",
-                                "type": "web_url",
-                                "url": "http://xxx.yy.z",
-                                "webview_height_ratio": undefined,
-                                "webview_share_button": undefined,
-                              },
-                              Object {
-                                "payload": "_MORE_",
-                                "title": "more",
-                                "type": "postback",
-                              },
-                              Object {
-                                "number": "+12345678",
-                                "title": "call us",
-                                "type": "phone_number",
-                              },
-                            ],
-                            "default_action": Object {
-                              "fallback_url": undefined,
-                              "messenger_extensions": undefined,
-                              "type": "web_url",
-                              "url": "http://foo.bar/",
-                              "webview_height_ratio": undefined,
-                              "webview_share_button": undefined,
-                            },
-                            "image_url": "http://foo.bar/image",
-                            "subtitle": "bar",
-                            "title": "foo",
-                          },
-                        ],
-                        "image_aspect_ratio": undefined,
-                        "sharable": undefined,
-                        "template_type": "generic",
-                      },
-                      "type": "template",
+    [
+      {
+        "node": <GenericTemplate>
+          <GenericItem
+            buttons={
+              [
+                <UrlButton
+                  title="check"
+                  url="http://xxx.yy.z"
+                />,
+              ]
+            }
+            imageUrl="http://foo.bar/image"
+            title="foo"
+          />
+          <GenericItem
+            buttons={
+              [
+                <UrlButton
+                  title="check"
+                  url="http://xxx.yy.z"
+                />,
+                <PostbackButton
+                  payload="_MORE_"
+                  title="more"
+                />,
+                <CallButton
+                  number="+12345678"
+                  title="call us"
+                />,
+              ]
+            }
+            defaultAction={
+              <UrlButton
+                title="TITLE!"
+                url="http://foo.bar/"
+              />
+            }
+            imageUrl="http://foo.bar/image"
+            subtitle="bar"
+            title="foo"
+          />
+        </GenericTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
+                  "elements": [
+                    {
+                      "buttons": [
+                        {
+                          "fallback_url": undefined,
+                          "messenger_extensions": undefined,
+                          "title": "check",
+                          "type": "web_url",
+                          "url": "http://xxx.yy.z",
+                          "webview_height_ratio": undefined,
+                          "webview_share_button": undefined,
+                        },
+                      ],
+                      "default_action": undefined,
+                      "image_url": "http://foo.bar/image",
+                      "subtitle": undefined,
+                      "title": "foo",
                     },
-                  },
+                    {
+                      "buttons": [
+                        {
+                          "fallback_url": undefined,
+                          "messenger_extensions": undefined,
+                          "title": "check",
+                          "type": "web_url",
+                          "url": "http://xxx.yy.z",
+                          "webview_height_ratio": undefined,
+                          "webview_share_button": undefined,
+                        },
+                        {
+                          "payload": "_MORE_",
+                          "title": "more",
+                          "type": "postback",
+                        },
+                        {
+                          "number": "+12345678",
+                          "title": "call us",
+                          "type": "phone_number",
+                        },
+                      ],
+                      "default_action": {
+                        "fallback_url": undefined,
+                        "messenger_extensions": undefined,
+                        "type": "web_url",
+                        "url": "http://foo.bar/",
+                        "webview_height_ratio": undefined,
+                        "webview_share_button": undefined,
+                      },
+                      "image_url": "http://foo.bar/image",
+                      "subtitle": "bar",
+                      "title": "foo",
+                    },
+                  ],
+                  "image_aspect_ratio": undefined,
+                  "sharable": undefined,
+                  "template_type": "generic",
                 },
-                "type": "message",
+                "type": "template",
               },
             },
-          ]
-        `);
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
   await expect(
     renderUnitElement(
       <GenericTemplate imageAspectRatio="square" sharable>
@@ -161,124 +161,124 @@ it('match snapshot', async () => {
       </GenericTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <GenericTemplate
-                imageAspectRatio="square"
-                sharable={true}
-              >
-                <GenericItem
-                  buttons={
-                    Array [
-                      <UrlButton
-                        title="check"
-                        url="http://xxx.yy.z"
-                      />,
-                    ]
-                  }
-                  imageUrl="http://foo.bar/image"
-                  title="foo"
-                />
-                <GenericItem
-                  buttons={
-                    Array [
-                      <UrlButton
-                        title="check"
-                        url="http://xxx.yy.z"
-                      />,
-                      <PostbackButton
-                        payload="_MORE_"
-                        title="more"
-                      />,
-                      <CallButton
-                        number="+12345678"
-                        title="call us"
-                      />,
-                    ]
-                  }
-                  defaultAction={
-                    <UrlButton
-                      title="TITLE!"
-                      url="http://foo.bar/"
-                    />
-                  }
-                  imageUrl="http://foo.bar/image"
-                  subtitle="bar"
-                  title="foo"
-                />
-              </GenericTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "message": Object {
-                    "attachment": Object {
-                      "payload": Object {
-                        "elements": Array [
-                          Object {
-                            "buttons": Array [
-                              Object {
-                                "fallback_url": undefined,
-                                "messenger_extensions": undefined,
-                                "title": "check",
-                                "type": "web_url",
-                                "url": "http://xxx.yy.z",
-                                "webview_height_ratio": undefined,
-                                "webview_share_button": undefined,
-                              },
-                            ],
-                            "default_action": undefined,
-                            "image_url": "http://foo.bar/image",
-                            "subtitle": undefined,
-                            "title": "foo",
-                          },
-                          Object {
-                            "buttons": Array [
-                              Object {
-                                "fallback_url": undefined,
-                                "messenger_extensions": undefined,
-                                "title": "check",
-                                "type": "web_url",
-                                "url": "http://xxx.yy.z",
-                                "webview_height_ratio": undefined,
-                                "webview_share_button": undefined,
-                              },
-                              Object {
-                                "payload": "_MORE_",
-                                "title": "more",
-                                "type": "postback",
-                              },
-                              Object {
-                                "number": "+12345678",
-                                "title": "call us",
-                                "type": "phone_number",
-                              },
-                            ],
-                            "default_action": Object {
-                              "fallback_url": undefined,
-                              "messenger_extensions": undefined,
-                              "type": "web_url",
-                              "url": "http://foo.bar/",
-                              "webview_height_ratio": undefined,
-                              "webview_share_button": undefined,
-                            },
-                            "image_url": "http://foo.bar/image",
-                            "subtitle": "bar",
-                            "title": "foo",
-                          },
-                        ],
-                        "image_aspect_ratio": "square",
-                        "sharable": true,
-                        "template_type": "generic",
-                      },
-                      "type": "template",
+    [
+      {
+        "node": <GenericTemplate
+          imageAspectRatio="square"
+          sharable={true}
+        >
+          <GenericItem
+            buttons={
+              [
+                <UrlButton
+                  title="check"
+                  url="http://xxx.yy.z"
+                />,
+              ]
+            }
+            imageUrl="http://foo.bar/image"
+            title="foo"
+          />
+          <GenericItem
+            buttons={
+              [
+                <UrlButton
+                  title="check"
+                  url="http://xxx.yy.z"
+                />,
+                <PostbackButton
+                  payload="_MORE_"
+                  title="more"
+                />,
+                <CallButton
+                  number="+12345678"
+                  title="call us"
+                />,
+              ]
+            }
+            defaultAction={
+              <UrlButton
+                title="TITLE!"
+                url="http://foo.bar/"
+              />
+            }
+            imageUrl="http://foo.bar/image"
+            subtitle="bar"
+            title="foo"
+          />
+        </GenericTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
+                  "elements": [
+                    {
+                      "buttons": [
+                        {
+                          "fallback_url": undefined,
+                          "messenger_extensions": undefined,
+                          "title": "check",
+                          "type": "web_url",
+                          "url": "http://xxx.yy.z",
+                          "webview_height_ratio": undefined,
+                          "webview_share_button": undefined,
+                        },
+                      ],
+                      "default_action": undefined,
+                      "image_url": "http://foo.bar/image",
+                      "subtitle": undefined,
+                      "title": "foo",
                     },
-                  },
+                    {
+                      "buttons": [
+                        {
+                          "fallback_url": undefined,
+                          "messenger_extensions": undefined,
+                          "title": "check",
+                          "type": "web_url",
+                          "url": "http://xxx.yy.z",
+                          "webview_height_ratio": undefined,
+                          "webview_share_button": undefined,
+                        },
+                        {
+                          "payload": "_MORE_",
+                          "title": "more",
+                          "type": "postback",
+                        },
+                        {
+                          "number": "+12345678",
+                          "title": "call us",
+                          "type": "phone_number",
+                        },
+                      ],
+                      "default_action": {
+                        "fallback_url": undefined,
+                        "messenger_extensions": undefined,
+                        "type": "web_url",
+                        "url": "http://foo.bar/",
+                        "webview_height_ratio": undefined,
+                        "webview_share_button": undefined,
+                      },
+                      "image_url": "http://foo.bar/image",
+                      "subtitle": "bar",
+                      "title": "foo",
+                    },
+                  ],
+                  "image_aspect_ratio": "square",
+                  "sharable": true,
+                  "template_type": "generic",
                 },
-                "type": "message",
+                "type": "template",
               },
             },
-          ]
-        `);
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

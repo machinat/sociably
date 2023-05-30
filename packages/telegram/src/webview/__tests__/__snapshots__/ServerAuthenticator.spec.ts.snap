@@ -6,8 +6,8 @@ exports[`.delegateAuthRequest() on login route login page with specified \`appNa
 <html>
 <head>
 <title>Telegram Webview Login</title>
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1, user-scalable=no\\">
-<meta charset=\\"UTF-8\\">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta charset="UTF-8">
 <style>
 body {
   margin:0;
@@ -54,20 +54,20 @@ h1 {
 </head>
 <body>
 
-<div class=\\"flex center column container\\">
-  <div class=\\"flex center icons\\">
-    <img alt=\\"Telegram\\" src=\\"https://sociably.js.org/img/icon/telegram.png\\" />
-    <div class=\\"x\\"></div>
-    <img alt=\\"Mine Mine Mine App\\" src=\\"http://sociably.io/MyApp/icon.png\\" />
+<div class="flex center column container">
+  <div class="flex center icons">
+    <img alt="Telegram" src="https://sociably.js.org/img/icon/telegram.png" />
+    <div class="x"></div>
+    <img alt="Mine Mine Mine App" src="http://sociably.io/MyApp/icon.png" />
   </div>
   <h1>Mine Mine Mine App</h1>
-  <div id=\\"loginButton\\">
+  <div id="loginButton">
   </div>
 </div>
 
 <script>
 
-const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram?botId=12345\\");
+const authUrl = new URL("https://sociably.io/MyApp/auth/telegram?botId=12345");
 const redirectQuery =
   new URL(window.location.href)
     .searchParams
@@ -101,8 +101,8 @@ exports[`.delegateAuthRequest() on login route render login page with Telegarm l
 <html>
 <head>
 <title>Telegram Webview Login</title>
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1, user-scalable=no\\">
-<meta charset=\\"UTF-8\\">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta charset="UTF-8">
 <style>
 body {
   margin:0;
@@ -149,18 +149,18 @@ h1 {
 </head>
 <body>
 
-<div class=\\"flex center column container\\">
-  <div class=\\"flex center icons\\">
-    <img alt=\\"Telegram\\" src=\\"https://sociably.js.org/img/icon/telegram.png\\" />
+<div class="flex center column container">
+  <div class="flex center icons">
+    <img alt="Telegram" src="https://sociably.js.org/img/icon/telegram.png" />
   </div>
   <h1></h1>
-  <div id=\\"loginButton\\">
+  <div id="loginButton">
   </div>
 </div>
 
 <script>
 
-const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram?botId=12345\\");
+const authUrl = new URL("https://sociably.io/MyApp/auth/telegram?botId=12345");
 const redirectQuery =
   new URL(window.location.href)
     .searchParams
@@ -194,8 +194,8 @@ exports[`.delegateAuthRequest() on login route with \`chatId\` & \`redirectUrl\`
 <html>
 <head>
 <title>Telegram Webview Login</title>
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1, user-scalable=no\\">
-<meta charset=\\"UTF-8\\">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta charset="UTF-8">
 <style>
 body {
   margin:0;
@@ -242,18 +242,18 @@ h1 {
 </head>
 <body>
 
-<div class=\\"flex center column container\\">
-  <div class=\\"flex center icons\\">
-    <img alt=\\"Telegram\\" src=\\"https://sociably.js.org/img/icon/telegram.png\\" />
+<div class="flex center column container">
+  <div class="flex center icons">
+    <img alt="Telegram" src="https://sociably.js.org/img/icon/telegram.png" />
   </div>
   <h1></h1>
-  <div id=\\"loginButton\\">
+  <div id="loginButton">
   </div>
 </div>
 
 <script>
 
-const authUrl = new URL(\\"https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=%2Fwebview%2Fhello_world\\");
+const authUrl = new URL("https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=%2Fwebview%2Fhello_world");
 const redirectQuery =
   new URL(window.location.href)
     .searchParams

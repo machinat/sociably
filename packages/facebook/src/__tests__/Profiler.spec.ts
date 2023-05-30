@@ -1,10 +1,10 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { MetaApiError } from '@sociably/meta-api';
-import type { FacebookBot } from '../Bot';
-import FacebookPage from '../Page';
-import FacebookUser from '../User';
-import UserProfile from '../UserProfile';
-import { FacebookProfiler } from '../Profiler';
+import type { FacebookBot } from '../Bot.js';
+import FacebookPage from '../Page.js';
+import FacebookUser from '../User.js';
+import UserProfile from '../UserProfile.js';
+import { FacebookProfiler } from '../Profiler.js';
 
 const rawProfileData = {
   id: 'xxxxxxxxx',
@@ -44,7 +44,7 @@ test('fetch profile from api', async () => {
 
   expect(bot.requestApi).toHaveReturnedTimes(1);
   expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "GET",
       "page": FacebookPage {
         "$$typeofChannel": true,
@@ -57,7 +57,7 @@ test('fetch profile from api', async () => {
 
   expect(profile?.typeName()).toBe('FbUserProfile');
   expect(profile?.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "first_name": "Peter",
       "id": "xxxxxxxxx",
       "last_name": "Chang",
@@ -96,7 +96,7 @@ it('query additional optionalProfileFields if given', async () => {
 
   expect(bot.requestApi).toHaveReturnedTimes(1);
   expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "GET",
       "page": FacebookPage {
         "$$typeofChannel": true,
@@ -109,7 +109,7 @@ it('query additional optionalProfileFields if given', async () => {
 
   expect(profile?.typeName()).toBe('FbUserProfile');
   expect(profile?.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "first_name": "Peter",
       "gender": "male",
       "id": "xxxxxxxxx",

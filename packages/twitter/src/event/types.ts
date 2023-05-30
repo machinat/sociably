@@ -19,7 +19,7 @@ import type {
   DirectMessageMarkRead,
   DeleteTweet,
   Unknown,
-} from './mixin';
+} from './mixin.js';
 
 interface EventObject<Category extends string, Type extends string> {
   category: Category;

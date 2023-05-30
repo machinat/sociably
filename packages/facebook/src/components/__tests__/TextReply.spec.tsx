@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { TextReply } from '../TextReply';
-import { renderPartElement } from './utils';
+import { TextReply } from '../TextReply.js';
+import { renderPartElement } from './utils.js';
 
 it('is valid Component', () => {
   expect(typeof TextReply).toBe('function');
@@ -12,15 +12,15 @@ it('is valid Component', () => {
 it('match snpshot', async () => {
   expect(renderPartElement(<TextReply title="i want a pie" payload="🥧" />))
     .resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": <TextReply
           payload="🥧"
           title="i want a pie"
         />,
         "path": "$#container",
         "type": "part",
-        "value": Object {
+        "value": {
           "content_type": "text",
           "image_url": undefined,
           "payload": "🥧",
@@ -38,8 +38,8 @@ it('match snpshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": <TextReply
           imageUrl="http://cake.it"
           payload="🍰"
@@ -47,7 +47,7 @@ it('match snpshot', async () => {
         />,
         "path": "$#container",
         "type": "part",
-        "value": Object {
+        "value": {
           "content_type": "text",
           "image_url": "http://cake.it",
           "payload": "🍰",

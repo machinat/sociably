@@ -1,9 +1,9 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import TweetTarget from '../../TweetTarget';
-import { Tweet } from '../Tweet';
-import { Photo } from '../Media';
-import { renderUnitElement } from './utils';
+import TweetTarget from '../../TweetTarget.js';
+import { Tweet } from '../Tweet.js';
+import { Photo } from '../Media.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof Tweet).toBe('function');
@@ -21,9 +21,9 @@ test("rendering to agent's page", async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "direct_message_deep_link": undefined,
         "for_super_followers_only": true,
         "geo": undefined,
@@ -53,26 +53,26 @@ test('rendering as a reply', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TweetTarget('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "direct_message_deep_link": undefined,
         "for_super_followers_only": undefined,
-        "geo": Object {
+        "geo": {
           "place_id": "55555",
         },
         "media": undefined,
-        "poll": Object {
+        "poll": {
           "duration_minutes": 60,
-          "options": Array [
+          "options": [
             "foo",
             "bar",
             "baz",
           ],
         },
         "quote_tweet_id": undefined,
-        "reply": Object {
-          "exclude_reply_user_ids": Array [
+        "reply": {
+          "exclude_reply_user_ids": [
             "56789",
           ],
           "in_reply_to_tweet_id": "67890",
@@ -112,19 +112,19 @@ test('rendering with media', async () => {
       '34567',
     ])
   ).toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "direct_message_deep_link": undefined,
         "for_super_followers_only": true,
         "geo": undefined,
-        "media": Object {
-          "media_ids": Array [
+        "media": {
+          "media_ids": [
             "12345",
             "23456",
             "34567",
           ],
-          "tagged_user_ids": Array [
+          "tagged_user_ids": [
             "56789",
           ],
         },
@@ -146,9 +146,9 @@ test("rendering to agent's page", async () => {
   let { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=12345",
         "for_super_followers_only": undefined,
         "geo": undefined,
@@ -171,9 +171,9 @@ test("rendering to agent's page", async () => {
   ({ request, accomplishRequest } = (segments as any)[0].value);
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=23456&text=boo",
         "for_super_followers_only": undefined,
         "geo": undefined,
@@ -198,9 +198,9 @@ test("rendering to agent's page", async () => {
   ({ request, accomplishRequest } = (segments as any)[0].value);
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "direct_message_deep_link": "https://twitter.com/messages/compose?recipient_id=12345&welcome_message_id=22222&text=hello%20world",
         "for_super_followers_only": undefined,
         "geo": undefined,
@@ -227,7 +227,7 @@ it('throw if multiple attchments received', async () => {
       </Tweet>
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be exactly one of \\"media\\", \\"poll\\" or \\"quoteTweetId\\" prop"`
+    `"there should be exactly one of "media", "poll" or "quoteTweetId" prop"`
   );
 
   await expect(
@@ -235,7 +235,7 @@ it('throw if multiple attchments received', async () => {
       <Tweet media={<Photo mediaId="33333" />} quoteTweetId="23456" />
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be exactly one of \\"media\\", \\"poll\\" or \\"quoteTweetId\\" prop"`
+    `"there should be exactly one of "media", "poll" or "quoteTweetId" prop"`
   );
 });
 
@@ -265,13 +265,13 @@ it('throw if invalid media received', async () => {
   await expect(
     renderUnitElement(<Tweet media={'foo' as never} />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"\\"foo\\" can't be placed in \\"media\\" prop"`
+    `""foo" can't be placed in "media" prop"`
   );
 
   await expect(
     renderUnitElement(<Tweet media={<Sociably.Pause />} />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<Pause /> can't be placed in \\"media\\" prop"`
+    `"<Pause /> can't be placed in "media" prop"`
   );
 });
 
@@ -312,13 +312,13 @@ test('spliting long content into tweet thread', async () => {
       )
     )
   ).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "method": "POST",
-        "params": Object {
+        "params": {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": true,
-          "geo": Object {
+          "geo": {
             "place_id": "98765",
           },
           "media": undefined,
@@ -330,12 +330,12 @@ test('spliting long content into tweet thread', async () => {
         },
         "url": "2/tweets",
       },
-      Object {
+      {
         "method": "POST",
-        "params": Object {
+        "params": {
           "direct_message_deep_link": undefined,
           "media": undefined,
-          "reply": Object {
+          "reply": {
             "exclude_reply_user_ids": undefined,
             "in_reply_to_tweet_id": "11111",
           },
@@ -343,12 +343,12 @@ test('spliting long content into tweet thread', async () => {
         },
         "url": "2/tweets",
       },
-      Object {
+      {
         "method": "POST",
-        "params": Object {
+        "params": {
           "direct_message_deep_link": undefined,
           "media": undefined,
-          "reply": Object {
+          "reply": {
             "exclude_reply_user_ids": undefined,
             "in_reply_to_tweet_id": "22222",
           },

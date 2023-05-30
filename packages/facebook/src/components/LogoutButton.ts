@@ -1,8 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import { makePartSegment } from '@sociably/core/renderer';
 import type { PartSegment } from '@sociably/core/renderer';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import type { FacebookComponent } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import type { FacebookComponent } from '../types.js';
 
 /**
  * The log out button triggers the account unlinking flow.

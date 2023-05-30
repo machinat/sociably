@@ -4,9 +4,9 @@ import type {
   UniqueOmniIdentifier,
 } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import UserProfile from './UserProfile';
-import { TWITTER, TWTR } from './constant';
-import type { RawUser } from './types';
+import UserProfile from './UserProfile.js';
+import { TWITTER, TWTR } from './constant.js';
+import type { RawUser } from './types.js';
 
 type SerializedUser = {
   id: string;

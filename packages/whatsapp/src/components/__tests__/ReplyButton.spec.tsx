@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { ReplyButton } from '../ReplyButton';
-import { renderPartElement } from './utils';
+import { ReplyButton } from '../ReplyButton.js';
+import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof ReplyButton).toBe('function');
@@ -12,20 +12,20 @@ it('is a valid Component', () => {
 test('rendering value', async () => {
   await expect(renderPartElement(<ReplyButton id="0" title="FOO" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ReplyButton
-                id="0"
-                title="FOO"
-              />,
-              "path": "$#p",
-              "type": "part",
-              "value": Object {
-                "id": "0",
-                "title": "FOO",
-                "type": "reply",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <ReplyButton
+          id="0"
+          title="FOO"
+        />,
+        "path": "$#p",
+        "type": "part",
+        "value": {
+          "id": "0",
+          "title": "FOO",
+          "type": "reply",
+        },
+      },
+    ]
+  `);
 });

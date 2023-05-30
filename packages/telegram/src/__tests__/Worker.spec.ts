@@ -1,8 +1,8 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
-import TelegramUser from '../User';
-import TelegramWorker from '../Worker';
+import TelegramUser from '../User.js';
+import TelegramWorker from '../Worker.js';
 
 nock.disableNetConnect();
 
@@ -269,7 +269,7 @@ it('throw if connection error happen', async () => {
   const result = await queue.executeJobs(jobs);
   expect(result.success).toBe(false);
   expect(result.errors).toMatchInlineSnapshot(`
-    Array [
+    [
       [FetchError: request to https://api.telegram.org/bot1111111:_BOT_TOKEN_/sendPhoto failed, reason: something wrong like connection error],
     ]
   `);
@@ -325,7 +325,7 @@ it('throw if api error happen', async () => {
 
   expect(result.success).toBe(false);
   expect(result.errors).toMatchInlineSnapshot(`
-    Array [
+    [
       [TelegramAPIError: (#400) error from api],
     ]
   `);
@@ -368,7 +368,6 @@ test('with files', async () => {
           info: {
             contentType: 'image/png',
             filename: 'my_photo.png',
-            knownLength: 16,
           },
         },
       ],

@@ -1,4 +1,4 @@
-import FacebookChat from '../Chat';
+import FacebookChat from '../Chat.js';
 
 test('from id', () => {
   const chat = new FacebookChat('12345', { id: '67890' });
@@ -12,8 +12,8 @@ test('from id', () => {
   expect(chat.target).toEqual({ id: '67890' });
 
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "67890",
@@ -22,9 +22,9 @@ test('from id', () => {
     }
   `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "page": "12345",
-      "target": Object {
+      "target": {
         "id": "67890",
       },
     }
@@ -44,8 +44,8 @@ test('from user_ref', () => {
   expect(chat.target).toEqual({ user_ref: '_USER_REF_' });
 
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "_USER_REF_",
@@ -54,9 +54,9 @@ test('from user_ref', () => {
     }
   `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "page": "12345",
-      "target": Object {
+      "target": {
         "user_ref": "_USER_REF_",
       },
     }
@@ -76,8 +76,8 @@ test('from post', () => {
   expect(chat.target).toEqual({ post_id: '_POST_ID_' });
 
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "_POST_ID_",
@@ -86,9 +86,9 @@ test('from post', () => {
     }
   `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "page": "12345",
-      "target": Object {
+      "target": {
         "post_id": "_POST_ID_",
       },
     }
@@ -110,8 +110,8 @@ test('from comment', () => {
   expect(chat.target).toEqual({ comment_id: '_COMMENT_ID_' });
 
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "_COMMENT_ID_",
@@ -120,9 +120,9 @@ test('from comment', () => {
     }
   `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "page": "12345",
-      "target": Object {
+      "target": {
         "comment_id": "_COMMENT_ID_",
       },
     }

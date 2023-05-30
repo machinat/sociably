@@ -1,8 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeLineComponent from '../utils/makeLineComponent';
-import LineChat from '../Chat';
-import { LineComponent, ChatActionSegmentValue } from '../types';
+import makeLineComponent from '../utils/makeLineComponent.js';
+import LineChat from '../Chat.js';
+import { LineComponent, ChatActionSegmentValue } from '../types.js';
 
 const UNLINK_RICHMENU_VALUE = {
   type: 'chat_action' as const,

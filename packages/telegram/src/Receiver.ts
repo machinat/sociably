@@ -4,16 +4,16 @@ import type { PopEventWrapper } from '@sociably/core';
 import { WebhookReceiver } from '@sociably/http/webhook';
 import type { WebhookHandler } from '@sociably/http/webhook';
 import { serviceProviderClass } from '@sociably/core/service';
-import createEvent from './event/factory';
-import BotP from './Bot';
+import createEvent from './event/factory.js';
+import BotP from './Bot.js';
 import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import TelegramUser from './User';
-import { TELEGRAM } from './constant';
-import type { TelegramEventContext, TelegramRawEvent } from './types';
+} from './interface.js';
+import TelegramUser from './User.js';
+import { TELEGRAM } from './constant.js';
+import type { TelegramEventContext, TelegramRawEvent } from './types.js';
 
 type TelegramReceiverOptions = {
   bot: BotP;

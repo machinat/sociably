@@ -3,9 +3,7 @@ import type { DispatchResponse } from '@sociably/core/engine';
 
 export type FileInfo = {
   filename?: string;
-  filepath?: string;
   contentType?: string;
-  knownLength?: number;
 };
 
 export type MetaApiJobRequest = {

@@ -1,1 +1,1 @@
-export { default, LineAssetsManager } from './AssetsManager';
+export { default, LineAssetsManager } from './AssetsManager.js';

@@ -1,4 +1,4 @@
-import type { LineSource, UserSource } from '../types';
+import type { LineSource, UserSource } from '../types.js';
 
 /**
  * @category Event Mixin

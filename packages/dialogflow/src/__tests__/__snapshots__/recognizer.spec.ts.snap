@@ -1,44 +1,44 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`.train() create a new version 2`] = `
-Array [
-  Object {
-    "intentBatchInline": Object {
-      "intents": Array [
-        Object {
+[
+  {
+    "intentBatchInline": {
+      "intents": [
+        {
           "displayName": "hello",
           "name": undefined,
-          "trainingPhrases": Array [
-            Object {
-              "parts": Array [
-                Object {
+          "trainingPhrases": [
+            {
+              "parts": [
+                {
                   "text": "hello",
                 },
               ],
             },
-            Object {
-              "parts": Array [
-                Object {
+            {
+              "parts": [
+                {
                   "text": "hi",
                 },
               ],
             },
           ],
         },
-        Object {
+        {
           "displayName": "goodBye",
           "name": undefined,
-          "trainingPhrases": Array [
-            Object {
-              "parts": Array [
-                Object {
+          "trainingPhrases": [
+            {
+              "parts": [
+                {
                   "text": "bye",
                 },
               ],
             },
-            Object {
-              "parts": Array [
-                Object {
+            {
+              "parts": [
+                {
                   "text": "see ya",
                 },
               ],
@@ -54,37 +54,37 @@ Array [
 `;
 
 exports[`.train() create a new version 3`] = `
-Array [
-  Object {
-    "intentBatchInline": Object {
-      "intents": Array [
-        Object {
+[
+  {
+    "intentBatchInline": {
+      "intents": [
+        {
           "displayName": "hello",
           "name": "projects/test/agent/intents/_ID_OF_HELLO_",
-          "trainingPhrases": Array [
-            Object {
-              "parts": Array [
-                Object {
+          "trainingPhrases": [
+            {
+              "parts": [
+                {
                   "text": "こんにちは",
                 },
               ],
             },
-            Object {
-              "parts": Array [
-                Object {
+            {
+              "parts": [
+                {
                   "text": "おはよう",
                 },
               ],
             },
           ],
         },
-        Object {
+        {
           "displayName": "goodBye",
           "name": "projects/test/agent/intents/_ID_OF_GOODBYE_",
-          "trainingPhrases": Array [
-            Object {
-              "parts": Array [
-                Object {
+          "trainingPhrases": [
+            {
+              "parts": [
+                {
                   "text": "さようなら",
                 },
               ],
@@ -100,44 +100,44 @@ Array [
 `;
 
 exports[`.train() start from empty project 3`] = `
-Array [
-  Object {
-    "intentBatchInline": Object {
-      "intents": Array [
-        Object {
+[
+  {
+    "intentBatchInline": {
+      "intents": [
+        {
           "displayName": "hello",
           "name": undefined,
-          "trainingPhrases": Array [
-            Object {
-              "parts": Array [
-                Object {
+          "trainingPhrases": [
+            {
+              "parts": [
+                {
                   "text": "hello",
                 },
               ],
             },
-            Object {
-              "parts": Array [
-                Object {
+            {
+              "parts": [
+                {
                   "text": "hi",
                 },
               ],
             },
           ],
         },
-        Object {
+        {
           "displayName": "goodBye",
           "name": undefined,
-          "trainingPhrases": Array [
-            Object {
-              "parts": Array [
-                Object {
+          "trainingPhrases": [
+            {
+              "parts": [
+                {
                   "text": "bye",
                 },
               ],
             },
-            Object {
-              "parts": Array [
-                Object {
+            {
+              "parts": [
+                {
                   "text": "see ya",
                 },
               ],
@@ -153,37 +153,37 @@ Array [
 `;
 
 exports[`.train() start from empty project 4`] = `
-Array [
-  Object {
-    "intentBatchInline": Object {
-      "intents": Array [
-        Object {
+[
+  {
+    "intentBatchInline": {
+      "intents": [
+        {
           "displayName": "hello",
           "name": "projects/test/agent/intents/_ID_OF_HELLO_",
-          "trainingPhrases": Array [
-            Object {
-              "parts": Array [
-                Object {
+          "trainingPhrases": [
+            {
+              "parts": [
+                {
                   "text": "こんにちは",
                 },
               ],
             },
-            Object {
-              "parts": Array [
-                Object {
+            {
+              "parts": [
+                {
                   "text": "おはよう",
                 },
               ],
             },
           ],
         },
-        Object {
+        {
           "displayName": "goodBye",
           "name": "projects/test/agent/intents/_ID_OF_GOODBYE_",
-          "trainingPhrases": Array [
-            Object {
-              "parts": Array [
-                Object {
+          "trainingPhrases": [
+            {
+              "parts": [
+                {
                   "text": "さようなら",
                 },
               ],

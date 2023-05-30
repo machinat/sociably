@@ -1,6 +1,6 @@
-import type { SociablyNode } from '../types';
-import { isElement, isFragmentType, isEmpty } from '../utils/isX';
-import type { TraverseNodeCallback } from './types';
+import type { SociablyNode } from '../types.js';
+import { isElement, isFragmentType, isEmpty } from '../utils/isX.js';
+import type { TraverseNodeCallback } from './types.js';
 
 const ITER_SEPARATOR = ':';
 

@@ -1,13 +1,15 @@
-import moxy, { Moxy } from '@moxyjs/moxy';
-import redis, { RedisClient } from 'redis';
+import { moxy, Moxy } from '@moxyjs/moxy';
+import _redis, { RedisClient } from 'redis';
 import { EventEmitter } from 'events';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
-import RedisState from '../module';
-import { ControllerP as RedisStateController } from '../controller';
+import RedisState from '../module.js';
+import { ControllerP as RedisStateController } from '../controller.js';
+
+const redis = _redis as Moxy<typeof _redis>;
 
 jest.mock('redis', () =>
-  jest.requireActual('@moxyjs/moxy').default({
+  jest.requireActual('@moxyjs/moxy').moxy({
     createClient: () => ({ connected: true }),
   })
 );
@@ -15,7 +17,7 @@ jest.mock('redis', () =>
 test('export interfaces', () => {
   expect(RedisState.Controller).toBe(RedisStateController);
   expect(RedisState.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "RedisStateConfigs",
       "$$polymorphic": false,
@@ -23,7 +25,7 @@ test('export interfaces', () => {
     }
   `);
   expect(RedisState.Client).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "RedisClient",
       "$$polymorphic": false,
@@ -49,12 +51,12 @@ test('provisions', async () => {
   ]);
 
   expect(controller).toBeInstanceOf(RedisStateController);
-  expect(client).toBe((redis as any).createClient.mock.calls[0].result);
+  expect(client).toBe(redis.createClient.mock.calls[0].result);
   expect(configs).toEqual({
     connectOptions: { host: 'my.redis.com', port: 23456 },
   });
 
-  expect((redis as any).createClient).toHaveBeenCalledWith({
+  expect(redis.createClient).toHaveBeenCalledWith({
     host: 'my.redis.com',
     port: 23456,
   });

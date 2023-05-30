@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<p/> <p/> renders into individual text segment 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
@@ -10,13 +10,13 @@ Array [
     "type": "text",
     "value": "foo",
   },
-  Object {
+  {
     "node": "bar",
     "path": "$::1",
     "type": "text",
     "value": "bar",
   },
-  Object {
+  {
     "node": <p>
       baz
     </p>,
@@ -28,8 +28,8 @@ Array [
 `;
 
 exports[`text components render nested elements 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       123
        
@@ -73,9 +73,9 @@ May the force be with you! Bye!",
 `;
 
 exports[`text components render shallow elements 1`] = `
-Array [
-  Array [
-    Object {
+[
+  [
+    {
       "node": <b>
         important
       </b>,
@@ -84,8 +84,8 @@ Array [
       "value": "important",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <i>
         italic
       </i>,
@@ -94,8 +94,8 @@ Array [
       "value": "italic",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <s>
         nooooo
       </s>,
@@ -104,8 +104,8 @@ Array [
       "value": "nooooo",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <u>
         underlined
       </u>,
@@ -114,8 +114,8 @@ Array [
       "value": "underlined",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <code>
         foo.bar()
       </code>,
@@ -124,8 +124,8 @@ Array [
       "value": "foo.bar()",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <pre>
         foo.bar('hello world')
       </pre>,
@@ -134,8 +134,8 @@ Array [
       "value": "foo.bar('hello world')",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <br />,
       "path": "$",
       "type": "text",

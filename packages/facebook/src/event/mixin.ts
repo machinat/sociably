@@ -1,6 +1,6 @@
 import camelcaseKeys from 'camelcase-keys';
-import { FACEBOOK } from '../constant';
-import type { PsidTarget, UserRefTarget } from '../types';
+import { FACEBOOK } from '../constant.js';
+import type { PsidTarget, UserRefTarget } from '../types.js';
 
 /**
  * @category Event Mixin

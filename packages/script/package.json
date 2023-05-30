@@ -1,6 +1,7 @@
 {
   "name": "@sociably/script",
   "version": "0.8.0-alpha.24",
+  "type": "module",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -15,13 +16,11 @@
     "./keywords": "./lib/keyword.js"
   },
   "scripts": {
-    "postinstall": "node ./polyfill-exports.js",
     "prepack": "make -f ../../package.mk prepack"
   },
   "files": [
     "lib/*",
-    "README.md",
-    "polyfill-exports.js"
+    "README.md"
   ],
   "license": "MIT",
   "publishConfig": {

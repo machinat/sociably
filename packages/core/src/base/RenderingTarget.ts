@@ -1,5 +1,5 @@
-import { serviceInterface } from '../service';
-import type { DispatchTarget } from '../types';
+import { serviceInterface } from '../service/index.js';
+import type { DispatchTarget } from '../types.js';
 
 type RenderingTargetI = DispatchTarget;
 

@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { TypingOn } from '../TypingOn';
-import { renderUnitElement } from './utils';
+import { TypingOn } from '../TypingOn.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid unit Component', () => {
   expect(typeof TypingOn).toBe('function');
@@ -11,19 +11,19 @@ it('is valid unit Component', () => {
 
 it('TypingOn match snapshot', async () => {
   await expect(renderUnitElement(<TypingOn />)).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <TypingOn />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "sender_action": "typing_on",
-                },
-                "type": "message",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <TypingOn />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "sender_action": "typing_on",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

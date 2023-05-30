@@ -1,9 +1,9 @@
 import { parse as parseUrl } from 'url';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
-import _Connector from '../Connector';
-import WebSocketConnection from '../../Connection';
-import Client from '../client';
+import _Connector from '../Connector.js';
+import WebSocketConnection from '../../Connection.js';
+import Client from '../Client.js';
 
 const Connector = _Connector as Moxy<typeof _Connector>;
 const BaseMarshaler = _BaseMarshaler as Moxy<typeof _BaseMarshaler>;
@@ -11,11 +11,11 @@ const BaseMarshaler = _BaseMarshaler as Moxy<typeof _BaseMarshaler>;
 jest.mock('@sociably/core/base/Marshaler', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/base/Marshaler'))
+    .moxy(jest.requireActual('@sociably/core/base/Marshaler'))
 );
 
-jest.mock('../Connector', () => {
-  const _moxy = jest.requireActual('@moxyjs/moxy').default;
+jest.mock('../Connector.js', () => {
+  const _moxy = jest.requireActual('@moxyjs/moxy').moxy;
   const _EventEmitter = jest.requireActual('events').EventEmitter;
   return {
     __esModule: true,

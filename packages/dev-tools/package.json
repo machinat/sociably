@@ -1,6 +1,7 @@
 {
   "name": "@sociably/dev-tools",
   "version": "0.8.0-alpha.10",
+  "type": "module",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",
@@ -18,11 +19,9 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "polyfill-exports.js"
+    "README.md"
   ],
   "scripts": {
-    "postinstall": "node ./polyfill-exports.js",
     "prepack": "make -f ../../package.mk prepack"
   },
   "license": "MIT",

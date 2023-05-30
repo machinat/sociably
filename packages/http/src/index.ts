@@ -1,3 +1,3 @@
-export { default } from './module';
-export { HttpConnector } from './connector';
-export * from './types';
+export { default } from './module.js';
+export { HttpConnector } from './connector.js';
+export * from './types.js';

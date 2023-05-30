@@ -1,7 +1,7 @@
-import { TELEGRAM } from '../constant';
-import TelegramChat from '../Chat';
-import TelegramUser from '../User';
-import TelegramChatSender from '../ChatSender';
+import { TELEGRAM } from '../constant.js';
+import TelegramChat from '../Chat.js';
+import TelegramUser from '../User.js';
+import TelegramChatSender from '../ChatSender.js';
 import type {
   RawChat,
   RawUser,
@@ -36,7 +36,7 @@ import type {
   RawOrderInfo,
   RawPollAnswer,
   RawChatMember,
-} from '../types';
+} from '../types.js';
 
 export interface EventBase {
   platform: typeof TELEGRAM;

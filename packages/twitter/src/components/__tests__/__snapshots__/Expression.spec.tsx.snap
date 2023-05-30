@@ -1,27 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`rendering 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       Hello
     </p>,
     "path": "$#Expression.children:0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": "11111",
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
                 "text": "Hello",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "",
               },
             },
@@ -33,26 +33,26 @@ Array [
       "type": "dm",
     },
   },
-  Object {
+  {
     "node": <p>
       World
     </p>,
     "path": "$#Expression.children:1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": "11111",
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
                 "text": "World",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "",
               },
             },
@@ -68,27 +68,27 @@ Array [
 `;
 
 exports[`rendering with media content 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       Hello
     </p>,
     "path": "$#Expression.children:0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": undefined,
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
                 "text": "Hello",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "",
               },
             },
@@ -100,18 +100,18 @@ Array [
       "type": "dm",
     },
   },
-  Object {
+  {
     "node": <Photo
       shared={true}
       url="http://foo.bar/baz.png"
     />,
     "path": "$#Expression.children:1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
-      "mediaSources": Array [
-        Object {
-          "params": Object {
+      "mediaSources": [
+        {
+          "params": {
             "additional_owners": undefined,
             "media_category": "dm_image",
             "shared": "true",
@@ -120,22 +120,22 @@ Array [
           "url": "http://foo.bar/baz.png",
         },
       ],
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": undefined,
-              "message_data": Object {
-                "attachment": Object {
-                  "media": Object {
+              "message_data": {
+                "attachment": {
+                  "media": {
                     "id": "",
                   },
                   "type": "media",
                 },
-                "quick_reply": Object {
-                  "options": Array [
-                    Object {
+                "quick_reply": {
+                  "options": [
+                    {
                       "description": undefined,
                       "label": "foo",
                       "metadata": undefined,
@@ -145,7 +145,7 @@ Array [
                 },
                 "text": undefined,
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "",
               },
             },
@@ -161,27 +161,27 @@ Array [
 `;
 
 exports[`rendering with quick replies 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       Hello World
     </p>,
     "path": "$#Expression.children:0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": undefined,
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
                 "text": "Hello World",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "",
               },
             },
@@ -193,36 +193,36 @@ Array [
       "type": "dm",
     },
   },
-  Object {
+  {
     "node": <p>
       Choose One
     </p>,
     "path": "$#Expression.children:1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": undefined,
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
-                "quick_reply": Object {
-                  "options": Array [
-                    Object {
+                "quick_reply": {
+                  "options": [
+                    {
                       "description": "FOOOOOOO",
                       "label": "foo",
                       "metadata": "FOO",
                     },
-                    Object {
+                    {
                       "description": "BAAAAAAR",
                       "label": "bar",
                       "metadata": "BAR",
                     },
-                    Object {
+                    {
                       "description": "BAAAAAAZ",
                       "label": "baz",
                       "metadata": "BAZ",
@@ -232,7 +232,7 @@ Array [
                 },
                 "text": "Choose One",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "",
               },
             },

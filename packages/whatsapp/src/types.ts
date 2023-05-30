@@ -15,12 +15,12 @@ import type {
   MetaApiDispatchResponse,
   FileInfo,
 } from '@sociably/meta-api';
-import type { WhatsAppBot } from './Bot';
-import type WhatsAppChat from './Chat';
-import type { AgentSettingsAccessorI } from './interface';
-import type { WhatsAppEvent } from './event/types';
+import type { WhatsAppBot } from './Bot.js';
+import type WhatsAppChat from './Chat.js';
+import type { AgentSettingsAccessorI } from './interface.js';
+import type { WhatsAppEvent } from './event/types.js';
 
-export * from './event/types';
+export * from './event/types.js';
 
 export type WhatsAppSegmentValue = {
   message: Omit<CreateMessageData, 'to' | 'messaging_product'>;

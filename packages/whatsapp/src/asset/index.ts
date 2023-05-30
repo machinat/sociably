@@ -1,2 +1,2 @@
-export { default, WhatsAppAssetsManager } from './AssetsManager';
-export { default as saveUploadedMedia } from './saveUploadedMedia';
+export { default, WhatsAppAssetsManager } from './AssetsManager.js';
+export { default as saveUploadedMedia } from './saveUploadedMedia.js';

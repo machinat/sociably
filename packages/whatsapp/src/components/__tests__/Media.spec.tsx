@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { Audio, Image, Document, Video, Sticker } from '../Media';
-import { renderUnitElement } from './utils';
+import { Audio, Image, Document, Video, Sticker } from '../Media.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
   for (const Media of [Audio, Image, Document, Video, Sticker]) {

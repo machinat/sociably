@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`#render(thread, message, options) post to NUMBER/messages api 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "channel": WhatsAppAgent {
         "$$typeofChannel": true,
         "numberId": "1234567890",
@@ -11,26 +11,26 @@ Object {
       },
       "consumeResult": undefined,
       "key": "wa.1234567890.9876543210",
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
+        "params": {
           "context": undefined,
-          "interactive": Object {
-            "actions": Object {
-              "buttons": Array [
-                Object {
+          "interactive": {
+            "actions": {
+              "buttons": [
+                {
                   "id": "BAZ",
                   "title": "BAR",
                   "type": "reply",
                 },
               ],
             },
-            "body": Object {
+            "body": {
               "text": "Hello *World!*",
             },
             "footer": undefined,
-            "header": Object {
-              "image": Object {
+            "header": {
+              "image": {
                 "caption": undefined,
                 "filename": undefined,
                 "id": undefined,
@@ -48,17 +48,17 @@ Object {
       },
     },
   ],
-  "results": Array [
-    Object {
-      "body": Object {
-        "contacts": Array [
-          Object {
+  "results": [
+    {
+      "body": {
+        "contacts": [
+          {
             "input": "9876543210",
             "wa_id": "9876543210",
           },
         ],
-        "messages": Array [
-          Object {
+        "messages": [
+          {
             "id": "wamid....",
           },
         ],
@@ -67,10 +67,10 @@ Object {
       "code": 200,
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "channel": WhatsAppAgent {
             "$$typeofChannel": true,
             "numberId": "1234567890",
@@ -78,26 +78,26 @@ Object {
           },
           "consumeResult": undefined,
           "key": "wa.1234567890.9876543210",
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
+            "params": {
               "context": undefined,
-              "interactive": Object {
-                "actions": Object {
-                  "buttons": Array [
-                    Object {
+              "interactive": {
+                "actions": {
+                  "buttons": [
+                    {
                       "id": "BAZ",
                       "title": "BAR",
                       "type": "reply",
                     },
                   ],
                 },
-                "body": Object {
+                "body": {
                   "text": "Hello *World!*",
                 },
                 "footer": undefined,
-                "header": Object {
-                  "image": Object {
+                "header": {
+                  "image": {
                     "caption": undefined,
                     "filename": undefined,
                     "id": undefined,
@@ -122,31 +122,31 @@ Object {
 `;
 
 exports[`#render(thread, message, options) post to NUMBER/messages api 2`] = `
-Object {
+{
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages?access_token=_ACCESS_TOKEN_\\",\\"body\\":\\"type=interactive&interactive=%7B%22type%22%3A%22buttons%22%2C%22body%22%3A%7B%22text%22%3A%22Hello%20*World!*%22%7D%2C%22header%22%3A%7B%22type%22%3A%22image%22%2C%22image%22%3A%7B%22link%22%3A%22http%3A%2F%2Fsociably.com%2Ffoo.jpg%22%7D%7D%2C%22actions%22%3A%7B%22buttons%22%3A%5B%7B%22type%22%3A%22reply%22%2C%22title%22%3A%22BAR%22%2C%22id%22%3A%22BAZ%22%7D%5D%7D%7D&to=9876543210&messaging_product=whatsapp\\",\\"name\\":\\"wa.1234567890.9876543210-1\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"1234567890/messages?access_token=_ACCESS_TOKEN_","body":"type=interactive&interactive=%7B%22type%22%3A%22buttons%22%2C%22body%22%3A%7B%22text%22%3A%22Hello%20*World!*%22%7D%2C%22header%22%3A%7B%22type%22%3A%22image%22%2C%22image%22%3A%7B%22link%22%3A%22http%3A%2F%2Fsociably.com%2Ffoo.jpg%22%7D%7D%2C%22actions%22%3A%7B%22buttons%22%3A%5B%7B%22type%22%3A%22reply%22%2C%22title%22%3A%22BAR%22%2C%22id%22%3A%22BAZ%22%7D%5D%7D%7D&to=9876543210&messaging_product=whatsapp","name":"wa.1234567890.9876543210-1","omit_response_on_success":false}]",
 }
 `;
 
 exports[`#uploadMedia(message) post /media api 1`] = `
 "----------------------------SEPERATOR
-Content-Disposition: form-data; name=\\"file_0\\"
+Content-Disposition: form-data; name="file_0"
 Content-Type: image/png
 
 foo
 ----------------------------SEPERATOR
-Content-Disposition: form-data; name=\\"access_token\\"
+Content-Disposition: form-data; name="access_token"
 
 _ACCESS_TOKEN_
 ----------------------------SEPERATOR
-Content-Disposition: form-data; name=\\"appsecret_proof\\"
+Content-Disposition: form-data; name="appsecret_proof"
 
 932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f
 ----------------------------SEPERATOR
-Content-Disposition: form-data; name=\\"batch\\"
+Content-Disposition: form-data; name="batch"
 
-[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media?access_token=_ACCESS_TOKEN_\\",\\"body\\":\\"type=image%2Fpng&messaging_product=whatsapp\\",\\"attached_files\\":\\"file_0\\",\\"omit_response_on_success\\":false}]
+[{"method":"POST","relative_url":"1234567890/media?access_token=_ACCESS_TOKEN_","body":"type=image%2Fpng&messaging_product=whatsapp","attached_files":"file_0","omit_response_on_success":false}]
 ----------------------------SEPERATOR--
 "
 `;

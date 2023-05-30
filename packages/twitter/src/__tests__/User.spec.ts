@@ -1,6 +1,6 @@
-import TwitterUser from '../User';
-import TwitterUserProfile from '../UserProfile';
-import { RawUser } from '../types';
+import TwitterUser from '../User.js';
+import TwitterUserProfile from '../UserProfile.js';
+import { RawUser } from '../types.js';
 
 const userData = {
   id: 6253282,
@@ -24,8 +24,8 @@ test('with id only', () => {
 
   expect(user.uid).toBe('twtr.6253282');
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "channel",
         "user",
       ],
@@ -47,8 +47,8 @@ test('with user data', () => {
 
   expect(user.uid).toBe('twtr.6253282');
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "channel",
         "user",
       ],

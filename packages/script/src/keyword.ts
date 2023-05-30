@@ -9,7 +9,7 @@ import type {
   EffectProps,
   ReturnProps,
   AnyScriptLibrary,
-} from './types';
+} from './types.js';
 
 // HACK: an alia of Fragment with script types
 /**

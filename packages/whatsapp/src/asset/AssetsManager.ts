@@ -2,9 +2,9 @@ import type { SociablyNode } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
-import BotP from '../Bot';
-import WhatsAppAgent from '../Agent';
-import { WA } from '../constant';
+import BotP from '../Bot.js';
+import WhatsAppAgent from '../Agent.js';
+import { WA } from '../constant.js';
 
 const MEDIA = 'media';
 

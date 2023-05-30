@@ -1,27 +1,27 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
-import Line from '../module';
-import { LineReceiver } from '../Receiver';
-import LineUserProfile from '../UserProfile';
-import LineGroupProfile from '../GroupProfile';
-import { LineProfiler } from '../Profiler';
-import { AgentSettingsAccessorI } from '../interface';
-import { LineBot } from '../Bot';
-import LineChannel from '../Channel';
-import LineUser from '../User';
-import LineChat from '../Chat';
+import Line from '../module.js';
+import { LineReceiver } from '../Receiver.js';
+import LineUserProfile from '../UserProfile.js';
+import LineGroupProfile from '../GroupProfile.js';
+import { LineProfiler } from '../Profiler.js';
+import { AgentSettingsAccessorI } from '../interface.js';
+import { LineBot } from '../Bot.js';
+import LineChannel from '../Channel.js';
+import LineUser from '../User.js';
+import LineChat from '../Chat.js';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
   expect(Line.Bot).toBe(LineBot);
   expect(Line.Profiler).toBe(LineProfiler);
   expect(Line.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "LineConfigs",
       "$$polymorphic": false,
@@ -48,7 +48,7 @@ describe('initModule(configs)', () => {
 
     expect(module.name).toBe('line');
     expect(module.utilitiesInterface).toMatchInlineSnapshot(`
-      Object {
+      {
         "$$multi": false,
         "$$name": "LinePlatformUtilities",
         "$$polymorphic": false,

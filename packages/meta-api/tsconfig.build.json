@@ -4,11 +4,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
-    "baseUrl": ".",
-    "paths": {
-      "@sociably/core/*": ["../core/lib/*"],
-      "@sociably/http/*": ["../http/lib/*"]
-    }
+    "baseUrl": "."
   },
   "references": [
     { "path": "../core/tsconfig.build.json" },

@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "lib": ["es2019"],
-    "module": "commonjs",
-    "target": "es2017",
+    "lib": ["es2020"],
+    "module": "Node16",
+    "target": "es2020",
+    "moduleResolution": "Node16",
     "strictNullChecks": true,
     "esModuleInterop": true,
     "jsx": "react",
@@ -12,22 +13,6 @@
     "skipLibCheck": true,
     "noUnusedLocals": true,
     "types": ["node"],
-    "baseUrl": ".",
-    "paths": {
-      "@sociably/auth": ["./packages/auth/src/index.js"],
-      "@sociably/auth/*": ["./packages/auth/src/*"],
-      "@sociably/core": ["./packages/core/src/index.js"],
-      "@sociably/core/*": ["./packages/core/src/*"],
-      "@sociably/http": ["./packages/http/src/index.js"],
-      "@sociably/http/*": ["./packages/http/src/*"],
-      "@sociably/meta-api": ["./packages/meta-api/src/index.js"],
-      "@sociably/next": ["./packages/next/src/index.js"],
-      "@sociably/next/*": ["./packages/next/src/*"],
-      "@sociably/dev-tools/*": ["./packages/dev-tools/src/*"],
-      "@sociably/websocket": ["./packages/websocket/src/index.js"],
-      "@sociably/websocket/*": ["./packages/websocket/src/*"],
-      "@sociably/webview": ["./packages/webview/src/index.js"],
-      "@sociably/webview/*": ["./packages/webview/src/*"]
-    }
+    "baseUrl": "."
   }
 }

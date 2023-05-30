@@ -1,11 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import jwt from 'jsonwebtoken';
 import { Readable } from 'stream';
-import moxy, { Moxy } from '@moxyjs/moxy';
-import { AuthController } from '../Controller';
-import { AnyServerAuthenticator } from '../types';
-import HttpOperator from '../HttpOperator';
-import { getCookies } from './utils';
+import { moxy, Moxy } from '@moxyjs/moxy';
+import { AuthController } from '../Controller.js';
+import { AnyServerAuthenticator } from '../types.js';
+import HttpOperator from '../HttpOperator.js';
+import { getCookies } from './utils.js';
 
 const prepareToken = (payload) => {
   const [head, body, signature] = jwt.sign(payload, '__SECRET__').split('.');
@@ -139,8 +139,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(403);
       expect(res.end).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 403,
             "reason": "path forbidden",
           },
@@ -153,8 +153,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(403);
       expect(res.end).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 403,
             "reason": "path forbidden",
           },
@@ -174,8 +174,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(403);
       expect(res.end).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 403,
             "reason": "path forbidden",
           },
@@ -227,8 +227,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(501);
       expect(res.end).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 501,
             "reason": "connection not closed by authenticator",
           },
@@ -252,10 +252,10 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(404);
       expect(res.end).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 404,
-            "reason": "platform \\"baz\\" not found",
+            "reason": "platform "baz" not found",
           },
         }
       `);
@@ -276,10 +276,10 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(res.statusCode).toBe(404);
       expect(res.end).toHaveBeenCalledTimes(1);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 404,
-            "reason": "invalid auth api route \\"_unknown\\"",
+            "reason": "invalid auth api route "_unknown"",
           },
         }
       `);
@@ -323,19 +323,19 @@ describe('#delegateAuthRequest(req, res)', () => {
       const cookies = getCookies(res);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "sociably_auth_signature" => Object {
+          "sociably_auth_signature" => {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
             "value": "EKG7WOjtwYDAi7tisgcKPmJ_js11Jaf4347vCrFsXbc",
           },
-          "sociably_auth_token" => Object {
+          "sociably_auth_token" => {
             "directives": "Path=/; SameSite=Lax; Secure",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
           },
-          "sociably_auth_state" => Object {
+          "sociably_auth_state" => {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
             "value": "",
           },
-          "sociably_auth_error" => Object {
+          "sociably_auth_error" => {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
             "value": "",
           },
@@ -348,15 +348,15 @@ describe('#delegateAuthRequest(req, res)', () => {
           '__SECRET__'
         )
       ).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
+        {
+          "data": {
             "foo": "data",
           },
           "exp": 1570003600,
           "iat": 1570000000,
           "init": 1570000000,
           "platform": "foo",
-          "scope": Object {
+          "scope": {
             "path": "/",
           },
         }
@@ -395,19 +395,19 @@ describe('#delegateAuthRequest(req, res)', () => {
       const cookies = getCookies(res);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "sociably_auth_signature" => Object {
+          "sociably_auth_signature" => {
             "directives": "Domain=sociably.io; HttpOnly; Path=/app; SameSite=Strict",
             "value": "ajZ9AB8MXaQ710FVOeRiebapqvdFaIejKqd8LRfCicQ",
           },
-          "sociably_auth_token" => Object {
+          "sociably_auth_token" => {
             "directives": "Domain=sociably.io; Path=/app; SameSite=Strict",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJkb21haW4iOiJzb2NpYWJseS5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
           },
-          "sociably_auth_state" => Object {
+          "sociably_auth_state" => {
             "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=Strict",
             "value": "",
           },
-          "sociably_auth_error" => Object {
+          "sociably_auth_error" => {
             "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Strict",
             "value": "",
           },
@@ -421,15 +421,15 @@ describe('#delegateAuthRequest(req, res)', () => {
           '__SECRET__'
         )
       ).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
+        {
+          "data": {
             "foo": "data",
           },
           "exp": 1570009999,
           "iat": 1570000000,
           "init": 1570000000,
           "platform": "foo",
-          "scope": Object {
+          "scope": {
             "domain": "sociably.io",
             "path": "/app",
           },
@@ -457,10 +457,10 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 404,
-            "reason": "unknown platform \\"baz\\"",
+            "reason": "unknown platform "baz"",
           },
           "platform": "baz",
         }
@@ -486,8 +486,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 418,
             "reason": "I'm a teapot",
           },
@@ -510,8 +510,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid body format",
           },
@@ -524,8 +524,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid body format",
           },
@@ -538,8 +538,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid sign params",
           },
@@ -560,8 +560,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(res.statusCode).toBe(500);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 500,
             "reason": "Broken inside",
           },
@@ -580,8 +580,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(405);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 405,
             "reason": "method not allowed",
           },
@@ -630,19 +630,19 @@ describe('#delegateAuthRequest(req, res)', () => {
       const cookies = getCookies(res);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "sociably_auth_signature" => Object {
+          "sociably_auth_signature" => {
             "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
             "value": "3N2v9MBHZEcUr5-EYnyFCKiOk8ShTwu_wj0gAu9FYpw",
           },
-          "sociably_auth_token" => Object {
+          "sociably_auth_token" => {
             "directives": "Path=/; SameSite=Lax; Secure",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTgwMDAxLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
           },
-          "sociably_auth_state" => Object {
+          "sociably_auth_state" => {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
             "value": "",
           },
-          "sociably_auth_error" => Object {
+          "sociably_auth_error" => {
             "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
             "value": "",
           },
@@ -655,15 +655,15 @@ describe('#delegateAuthRequest(req, res)', () => {
           '__SECRET__'
         )
       ).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
+        {
+          "data": {
             "foo": "data",
           },
           "exp": 1570003600,
           "iat": 1570000000,
           "init": 1569980001,
           "platform": "foo",
-          "scope": Object {
+          "scope": {
             "path": "/",
           },
         }
@@ -700,19 +700,19 @@ describe('#delegateAuthRequest(req, res)', () => {
       const cookies = getCookies(res);
       expect(cookies).toMatchInlineSnapshot(`
         Map {
-          "sociably_auth_signature" => Object {
+          "sociably_auth_signature" => {
             "directives": "Domain=sociably.io; HttpOnly; Path=/app; SameSite=Strict",
             "value": "xC5b7EcZ937SYP3QVOix0PpbhG-OySyZYBIsSjvHQlo",
           },
-          "sociably_auth_token" => Object {
+          "sociably_auth_token" => {
             "directives": "Domain=sociably.io; Path=/app; SameSite=Strict",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTgwMDAxLCJzY29wZSI6eyJkb21haW4iOiJzb2NpYWJseS5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
           },
-          "sociably_auth_state" => Object {
+          "sociably_auth_state" => {
             "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=Strict",
             "value": "",
           },
-          "sociably_auth_error" => Object {
+          "sociably_auth_error" => {
             "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=Strict",
             "value": "",
           },
@@ -725,15 +725,15 @@ describe('#delegateAuthRequest(req, res)', () => {
           '__SECRET__'
         )
       ).toMatchInlineSnapshot(`
-        Object {
-          "data": Object {
+        {
+          "data": {
             "foo": "data",
           },
           "exp": 1570009999,
           "iat": 1570000000,
           "init": 1569980001,
           "platform": "foo",
-          "scope": Object {
+          "scope": {
             "domain": "sociably.io",
             "path": "/app",
           },
@@ -767,10 +767,10 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 404,
-            "reason": "unknown platform \\"baz\\"",
+            "reason": "unknown platform "baz"",
           },
           "platform": "baz",
         }
@@ -795,8 +795,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 418,
             "reason": "I'm a teapot",
           },
@@ -817,8 +817,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(res.statusCode).toBe(401);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 401,
             "reason": "no signature found",
           },
@@ -834,8 +834,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid signature",
           },
@@ -872,8 +872,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(resBody).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 401,
             "reason": "refreshment period expired",
           },
@@ -897,8 +897,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid body format",
           },
@@ -911,8 +911,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid body format",
           },
@@ -925,8 +925,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "empty token received",
           },
@@ -946,8 +946,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(res.statusCode).toBe(500);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 500,
             "reason": "Broken inside",
           },
@@ -966,8 +966,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(405);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 405,
             "reason": "method not allowed",
           },
@@ -1039,8 +1039,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(res.statusCode).toBe(401);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 401,
             "reason": "jwt expired",
           },
@@ -1077,10 +1077,10 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(res.statusCode).toBe(404);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 404,
-            "reason": "unknown platform \\"baz\\"",
+            "reason": "unknown platform "baz"",
           },
           "platform": "baz",
         }
@@ -1102,8 +1102,8 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(res.statusCode).toBe(401);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 401,
             "reason": "no signature found",
           },
@@ -1122,8 +1122,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid signature",
           },
@@ -1148,8 +1148,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid body format",
           },
@@ -1162,8 +1162,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "invalid body format",
           },
@@ -1176,8 +1176,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 400,
             "reason": "empty token received",
           },
@@ -1197,8 +1197,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       expect(res.statusCode).toBe(405);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
+        {
+          "error": {
             "code": 405,
             "reason": "method not allowed",
           },
@@ -1236,25 +1236,25 @@ describe('#verifyAuth(req)', () => {
         )
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "context": Object {
-                "expireAt": 2019-10-02T09:53:19.000Z,
-                "foo": "foo.data",
-                "loginAt": 2019-10-02T06:50:01.000Z,
-                "platform": "foo",
-                "thread": Object {
-                  "platform": "foo",
-                  "uid": "foo.thread",
-                },
-                "user": Object {
-                  "platform": "foo",
-                  "uid": "john_doe",
-                },
-              },
-              "ok": true,
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
-            }
-          `);
+      {
+        "context": {
+          "expireAt": 2019-10-02T09:53:19.000Z,
+          "foo": "foo.data",
+          "loginAt": 2019-10-02T06:50:01.000Z,
+          "platform": "foo",
+          "thread": {
+            "platform": "foo",
+            "uid": "foo.thread",
+          },
+          "user": {
+            "platform": "foo",
+            "uid": "john_doe",
+          },
+        },
+        "ok": true,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
+      }
+    `);
 
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
@@ -1278,25 +1278,25 @@ describe('#verifyAuth(req)', () => {
         token
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "context": Object {
-                "expireAt": 2019-10-02T09:53:19.000Z,
-                "foo": "foo.data",
-                "loginAt": 2019-10-02T06:50:01.000Z,
-                "platform": "foo",
-                "thread": Object {
-                  "platform": "foo",
-                  "uid": "foo.thread",
-                },
-                "user": Object {
-                  "platform": "foo",
-                  "uid": "john_doe",
-                },
-              },
-              "ok": true,
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
-            }
-          `);
+      {
+        "context": {
+          "expireAt": 2019-10-02T09:53:19.000Z,
+          "foo": "foo.data",
+          "loginAt": 2019-10-02T06:50:01.000Z,
+          "platform": "foo",
+          "thread": {
+            "platform": "foo",
+            "uid": "foo.thread",
+          },
+          "user": {
+            "platform": "foo",
+            "uid": "john_doe",
+          },
+        },
+        "ok": true,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
+      }
+    `);
 
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
@@ -1322,13 +1322,13 @@ describe('#verifyAuth(req)', () => {
         )
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "invalid signature",
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
-            }
-          `);
+      {
+        "code": 400,
+        "ok": false,
+        "reason": "invalid signature",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
+      }
+    `);
 
     expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
@@ -1348,13 +1348,13 @@ describe('#verifyAuth(req)', () => {
         )
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 401,
-              "ok": false,
-              "reason": "require signature",
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
-            }
-          `);
+      {
+        "code": 401,
+        "ok": false,
+        "reason": "require signature",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
+      }
+    `);
 
     expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
@@ -1374,13 +1374,13 @@ describe('#verifyAuth(req)', () => {
         )
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 401,
-              "ok": false,
-              "reason": "no Authorization header",
-              "token": undefined,
-            }
-          `);
+      {
+        "code": 401,
+        "ok": false,
+        "reason": "no Authorization header",
+        "token": undefined,
+      }
+    `);
 
     expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
@@ -1403,13 +1403,13 @@ describe('#verifyAuth(req)', () => {
         )
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "invalid auth scheme",
-              "token": undefined,
-            }
-          `);
+      {
+        "code": 400,
+        "ok": false,
+        "reason": "invalid auth scheme",
+        "token": undefined,
+      }
+    `);
 
     expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
@@ -1441,13 +1441,13 @@ describe('#verifyAuth(req)', () => {
         )
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 404,
-              "ok": false,
-              "reason": "unknown platform \\"baz\\"",
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImJheiIsImRhdGEiOnsiYmF6IjoiZGF0YSJ9LCJpbml0IjoxNTY5OTkwMDAxLCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
-            }
-          `);
+      {
+        "code": 404,
+        "ok": false,
+        "reason": "unknown platform "baz"",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImJheiIsImRhdGEiOnsiYmF6IjoiZGF0YSJ9LCJpbml0IjoxNTY5OTkwMDAxLCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
+      }
+    `);
 
     expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
   });
@@ -1478,13 +1478,13 @@ describe('#verifyAuth(req)', () => {
         )
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "invalid auth data",
-              "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
-            }
-          `);
+      {
+        "code": 400,
+        "ok": false,
+        "reason": "invalid auth data",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJleHAiOjE1NzAwMDk5OTksImlhdCI6MTU2OTk5OTAwMSwiaW5pdCI6MTU2OTk5MDAwMSwic2NvcGUiOnsicGF0aCI6Ii8ifX0",
+      }
+    `);
 
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
   });

@@ -1,5 +1,5 @@
-import WhatsAppChat from '../Chat';
-import WhatsAppUser from '../User';
+import WhatsAppChat from '../Chat.js';
+import WhatsAppUser from '../User.js';
 
 test('constructing', () => {
   const chat = new WhatsAppChat('1234567890', '9876543210');
@@ -9,8 +9,8 @@ test('constructing', () => {
 
   expect(chat.uid).toMatchInlineSnapshot(`"wa.1234567890.9876543210"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "9876543210",
@@ -23,7 +23,7 @@ test('constructing', () => {
   expect(chat.userNumberId).toBe('9876543210');
 
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "agent": "1234567890",
       "user": "9876543210",
     }

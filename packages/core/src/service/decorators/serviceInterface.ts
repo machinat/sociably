@@ -1,11 +1,11 @@
 import invariant from 'invariant';
-import { SOCIABLY_SERVICE_INTERFACE } from '../../symbol';
+import { SOCIABLY_SERVICE_INTERFACE } from '../../symbol.js';
 import type {
   ServiceInterface,
   PolymorphicServiceInterface,
   MultiServiceInterface,
   SingularServiceInterface,
-} from '../types';
+} from '../types.js';
 
 type MakeInterfaceOptions = {
   multi?: boolean;

@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AnswerInlineQuery match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnswerInlineQuery
       queryId="12345"
     >
@@ -131,15 +131,15 @@ Array [
     </AnswerInlineQuery>,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "answerInlineQuery",
-      "params": Object {
+      "params": {
         "cache_time": undefined,
         "inline_query_id": "12345",
         "is_personal": undefined,
         "next_offset": undefined,
-        "results": Array [
-          Object {
+        "results": [
+          {
             "audio_duration": 123,
             "audio_file_id": undefined,
             "audio_url": "http://foo.bar/audio",
@@ -152,7 +152,7 @@ Array [
             "title": "foo",
             "type": "audio",
           },
-          Object {
+          {
             "description": "bar",
             "hide_url": true,
             "id": "2",
@@ -165,7 +165,7 @@ Array [
             "type": "article",
             "url": "http://foo.bar/article",
           },
-          Object {
+          {
             "first_name": "John",
             "id": "3",
             "input_message_content": undefined,
@@ -178,7 +178,7 @@ Array [
             "type": "contact",
             "vcard": "foo",
           },
-          Object {
+          {
             "caption": "*bar*",
             "description": undefined,
             "document_file_id": undefined,
@@ -194,13 +194,13 @@ Array [
             "title": "foo",
             "type": "document",
           },
-          Object {
+          {
             "game_short_name": "foo",
             "id": "5",
             "reply_markup": undefined,
             "type": "contact",
           },
-          Object {
+          {
             "caption": "*bar*",
             "gif_duration": 789,
             "gif_file_id": undefined,
@@ -216,7 +216,7 @@ Array [
             "title": "foo",
             "type": "gif",
           },
-          Object {
+          {
             "id": "7",
             "input_message_content": undefined,
             "latitude": 123.45,
@@ -229,7 +229,7 @@ Array [
             "title": "foo",
             "type": "location",
           },
-          Object {
+          {
             "caption": "*bar*",
             "id": "8",
             "input_message_content": undefined,
@@ -245,7 +245,7 @@ Array [
             "title": "foo",
             "type": "mpeg4_gif",
           },
-          Object {
+          {
             "caption": undefined,
             "description": "bar",
             "id": "9",
@@ -260,14 +260,14 @@ Array [
             "title": "foo",
             "type": "photo",
           },
-          Object {
+          {
             "id": "10",
             "input_message_content": undefined,
             "reply_markup": undefined,
             "sticker_file_id": "12345",
             "type": "sticker",
           },
-          Object {
+          {
             "address": "somewhere",
             "foursquare_id": "bar",
             "foursquare_type": "baz",
@@ -282,7 +282,7 @@ Array [
             "title": "foo",
             "type": "venue",
           },
-          Object {
+          {
             "caption": "baz",
             "description": "bar",
             "id": "12",
@@ -299,7 +299,7 @@ Array [
             "video_url": "http://foo.bar/video",
             "video_width": 123,
           },
-          Object {
+          {
             "caption": "bar",
             "id": "13",
             "input_message_content": undefined,
@@ -322,8 +322,8 @@ Array [
 `;
 
 exports[`AnswerInlineQuery match snapshot 2`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnswerInlineQuery
       cacheTime={999}
       isPersonal={true}
@@ -542,31 +542,31 @@ Array [
     </AnswerInlineQuery>,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "answerInlineQuery",
-      "params": Object {
+      "params": {
         "cache_time": 999,
         "inline_query_id": "12345",
         "is_personal": true,
         "next_offset": "14",
-        "results": Array [
-          Object {
+        "results": [
+          {
             "audio_duration": undefined,
             "audio_file_id": "1234",
             "audio_url": undefined,
             "caption": undefined,
             "id": "1",
-            "input_message_content": Object {
+            "input_message_content": {
               "disable_web_page_preview": undefined,
               "message_text": "foo",
               "parse_mode": "HTML",
             },
             "parse_mode": "HTML",
             "performer": undefined,
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -576,19 +576,19 @@ Array [
             "title": undefined,
             "type": "audio",
           },
-          Object {
+          {
             "description": undefined,
             "hide_url": undefined,
             "id": "2",
-            "input_message_content": Object {
+            "input_message_content": {
               "latitude": 123.45,
               "live_period": 999,
               "longitude": 67.89,
             },
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -602,20 +602,20 @@ Array [
             "type": "article",
             "url": undefined,
           },
-          Object {
+          {
             "first_name": "John",
             "id": "3",
-            "input_message_content": Object {
+            "input_message_content": {
               "disable_web_page_preview": undefined,
               "message_text": "*foo*",
               "parse_mode": "MarkdownV2",
             },
             "last_name": undefined,
             "phone_number": "1234567890",
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -628,13 +628,13 @@ Array [
             "type": "contact",
             "vcard": undefined,
           },
-          Object {
+          {
             "caption": undefined,
             "description": undefined,
             "document_file_id": "12345",
             "document_url": undefined,
             "id": "4",
-            "input_message_content": Object {
+            "input_message_content": {
               "first_name": "John",
               "last_name": "Doe",
               "phone_number": "12345678",
@@ -642,10 +642,10 @@ Array [
             },
             "mimeType": undefined,
             "parse_mode": "HTML",
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -658,13 +658,13 @@ Array [
             "title": "foo",
             "type": "document",
           },
-          Object {
+          {
             "game_short_name": "foo",
             "id": "5",
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -673,7 +673,7 @@ Array [
             },
             "type": "contact",
           },
-          Object {
+          {
             "caption": undefined,
             "gif_duration": undefined,
             "gif_file_id": undefined,
@@ -681,7 +681,7 @@ Array [
             "gif_url": "http://foo.bar/gif",
             "gif_width": undefined,
             "id": "6",
-            "input_message_content": Object {
+            "input_message_content": {
               "address": "somewhere",
               "foursquare_id": "123",
               "foursquare_type": "xxx",
@@ -690,10 +690,10 @@ Array [
               "title": "bar",
             },
             "parse_mode": "HTML",
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -705,18 +705,18 @@ Array [
             "title": undefined,
             "type": "gif",
           },
-          Object {
+          {
             "id": "7",
-            "input_message_content": Object {
+            "input_message_content": {
               "message_text": "foo",
             },
             "latitude": 123.45,
             "live_period": undefined,
             "longitude": 67.89,
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -729,10 +729,10 @@ Array [
             "title": "foo",
             "type": "location",
           },
-          Object {
+          {
             "caption": undefined,
             "id": "8",
-            "input_message_content": Object {
+            "input_message_content": {
               "message_text": "foo",
             },
             "mpeg4_duration": undefined,
@@ -741,10 +741,10 @@ Array [
             "mpeg4_url": "http://foo.bar/mpeg4",
             "mpeg4_width": undefined,
             "parse_mode": "HTML",
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -756,11 +756,11 @@ Array [
             "title": undefined,
             "type": "mpeg4_gif",
           },
-          Object {
+          {
             "caption": undefined,
             "description": undefined,
             "id": "9",
-            "input_message_content": Object {
+            "input_message_content": {
               "message_text": "foo",
             },
             "parse_mode": "HTML",
@@ -768,10 +768,10 @@ Array [
             "photo_height": undefined,
             "photo_url": undefined,
             "photo_width": undefined,
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -782,15 +782,15 @@ Array [
             "title": undefined,
             "type": "photo",
           },
-          Object {
+          {
             "id": "10",
-            "input_message_content": Object {
+            "input_message_content": {
               "message_text": "foo",
             },
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -800,20 +800,20 @@ Array [
             "sticker_file_id": "12345",
             "type": "sticker",
           },
-          Object {
+          {
             "address": "somewhere",
             "foursquare_id": undefined,
             "foursquare_type": undefined,
             "id": "11",
-            "input_message_content": Object {
+            "input_message_content": {
               "message_text": "foo",
             },
             "latitude": 123.45,
             "longitude": 67.89,
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -826,19 +826,19 @@ Array [
             "title": "foo",
             "type": "venue",
           },
-          Object {
+          {
             "caption": undefined,
             "description": undefined,
             "id": "12",
-            "input_message_content": Object {
+            "input_message_content": {
               "message_text": "foo",
             },
             "mime_type": undefined,
             "parse_mode": "HTML",
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -854,17 +854,17 @@ Array [
             "video_url": undefined,
             "video_width": undefined,
           },
-          Object {
+          {
             "caption": undefined,
             "id": "13",
-            "input_message_content": Object {
+            "input_message_content": {
               "message_text": "foo",
             },
             "parse_mode": "HTML",
-            "reply_markup": Object {
-              "inline_keyboard": Array [
-                Array [
-                  Object {
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
                     "text": "foo",
                     "url": "http://foo.bar/article",
                   },
@@ -888,17 +888,17 @@ Array [
 `;
 
 exports[`AnswerPreCheckoutQuery match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnswerPreCheckoutQuery
       ok={true}
       queryId="12345"
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "answerPreCheckoutQuery",
-      "params": Object {
+      "params": {
         "error_message": undefined,
         "ok": true,
         "pre_checkout_query_id": "12345",
@@ -910,8 +910,8 @@ Array [
 `;
 
 exports[`AnswerPreCheckoutQuery match snapshot 2`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnswerPreCheckoutQuery
       errorMessage="NOOO"
       ok={false}
@@ -919,9 +919,9 @@ Array [
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "answerPreCheckoutQuery",
-      "params": Object {
+      "params": {
         "error_message": "NOOO",
         "ok": false,
         "pre_checkout_query_id": "12345",
@@ -933,17 +933,17 @@ Array [
 `;
 
 exports[`AnswerShippingQuery match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnswerShippingQuery
       ok={true}
       queryId="12345"
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "answerShippingQuery",
-      "params": Object {
+      "params": {
         "error_message": undefined,
         "ok": true,
         "shipping_options": undefined,
@@ -956,27 +956,27 @@ Array [
 `;
 
 exports[`AnswerShippingQuery match snapshot 2`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnswerShippingQuery
       ok={true}
       queryId="12345"
       shippingOptions={
-        Array [
-          Object {
+        [
+          {
             "id": "1",
-            "prices": Array [
-              Object {
+            "prices": [
+              {
                 "amount": 123,
                 "label": "food",
               },
             ],
             "title": "cat",
           },
-          Object {
+          {
             "id": "2",
-            "prices": Array [
-              Object {
+            "prices": [
+              {
                 "amount": 456,
                 "label": "food",
               },
@@ -988,26 +988,26 @@ Array [
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "answerShippingQuery",
-      "params": Object {
+      "params": {
         "error_message": undefined,
         "ok": true,
-        "shipping_options": Array [
-          Object {
+        "shipping_options": [
+          {
             "id": "1",
-            "prices": Array [
-              Object {
+            "prices": [
+              {
                 "amount": 123,
                 "label": "food",
               },
             ],
             "title": "cat",
           },
-          Object {
+          {
             "id": "2",
-            "prices": Array [
-              Object {
+            "prices": [
+              {
                 "amount": 456,
                 "label": "food",
               },
@@ -1024,8 +1024,8 @@ Array [
 `;
 
 exports[`AnswerShippingQuery match snapshot 3`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnswerShippingQuery
       errorMessage="NOOO"
       ok={false}
@@ -1033,9 +1033,9 @@ Array [
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "answerShippingQuery",
-      "params": Object {
+      "params": {
         "error_message": "NOOO",
         "ok": false,
         "shipping_options": undefined,

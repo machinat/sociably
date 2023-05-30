@@ -1,9 +1,9 @@
 import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import { posix as posixPath } from 'path';
-import FacebookChat from '../Chat';
-import FacebookUser from '../User';
-import { UrlButton } from '../components';
-import ServerAuthenticator from './ServerAuthenticator';
+import FacebookChat from '../Chat.js';
+import FacebookUser from '../User.js';
+import { UrlButton } from '../components/index.js';
+import ServerAuthenticator from './ServerAuthenticator.js';
 
 type WebviewButtonProps = {
   /** Button title. 20 character limit. */

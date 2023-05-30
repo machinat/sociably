@@ -20,7 +20,7 @@ test('render shallow elements match snapshot', async () => {
 
   expect(results).toMatchSnapshot();
   expect(results.flat().map((seg) => seg.value)).toMatchInlineSnapshot(`
-    Array [
+    [
       "abc",
       "<b>important</b>",
       "<i>italic</i>",
@@ -54,7 +54,7 @@ test('render nested elements match snapshot', async () => {
   );
   expect(segments).toMatchSnapshot();
   expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
-    Array [
+    [
       "Mic test <code>Hello, <b>Luke Skywalker!</b></code>
     You know what?
     <i><u>I'm your</u> <s>FATHER</s> <code>droid</code>.</i>
@@ -75,7 +75,7 @@ test('<p/> renders into individual text segment', async () => {
 
   expect(segments).toMatchSnapshot();
   expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
-    Array [
+    [
       "foo",
       "bar",
       "baz",
@@ -148,35 +148,35 @@ test('media elements match snapshot', async () => {
   );
   expect(segments).toMatchSnapshot();
   expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "message": Object {
+    [
+      {
+        "message": {
           "method": "sendPhoto",
-          "parameters": Object {
+          "parameters": {
             "photo": "http://avatar.my.bot",
           },
         },
       },
-      Object {
-        "message": Object {
+      {
+        "message": {
           "method": "sendVideo",
-          "parameters": Object {
+          "parameters": {
             "video": "http://vid.my.bot",
           },
         },
       },
-      Object {
-        "message": Object {
+      {
+        "message": {
           "method": "sendAudio",
-          "parameters": Object {
+          "parameters": {
             "audio": "http://sound.my.bot",
           },
         },
       },
-      Object {
-        "message": Object {
+      {
+        "message": {
           "method": "sendDocument",
-          "parameters": Object {
+          "parameters": {
             "document": "http://profile.my.bot",
           },
         },

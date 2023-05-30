@@ -1,23 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createDmSegmentValue(chat, segment) jobs from all kinds og segment 1`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "twtr.12345.67890",
     "mediaSources": null,
     "refreshTarget": null,
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
               "attachment": undefined,
               "text": "Hello",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "",
             },
           },
@@ -33,32 +33,32 @@ Array [
       "userId": "67890",
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "twtr.12345.67890",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "11111",
         "type": "id",
       },
     ],
     "refreshTarget": null,
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "media": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
+              "attachment": {
+                "media": {
                   "id": "",
                 },
                 "type": "media",
               },
               "text": undefined,
             },
-            "target": Object {
+            "target": {
               "recipient_id": "",
             },
           },
@@ -74,32 +74,32 @@ Array [
       "userId": "67890",
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "twtr.12345.67890",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "22222",
         "type": "id",
       },
     ],
     "refreshTarget": null,
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "media": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
+              "attachment": {
+                "media": {
                   "id": "",
                 },
                 "type": "media",
               },
               "text": "World",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "",
             },
           },
@@ -115,16 +115,16 @@ Array [
       "userId": "67890",
     },
   },
-  Object {
+  {
     "accomplishRequest": null,
     "asApplication": false,
     "key": "twtr.12345.67890",
     "mediaSources": null,
     "refreshTarget": null,
-    "request": Object {
+    "request": {
       "href": "1.1/foo",
       "method": "POST",
-      "params": Object {},
+      "params": {},
     },
     "target": TwitterChat {
       "$$typeofThread": true,
@@ -137,21 +137,21 @@ Array [
 `;
 
 exports[`createTweetJobs(options)(tweetTarget, segments) more continuous media that exceed the limit of a tweet 1`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "11111",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "Hello",
       },
       "url": "2/tweets",
@@ -163,20 +163,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "22222",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": undefined,
       },
       "url": "2/tweets",
@@ -188,20 +188,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "33333",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": undefined,
       },
       "url": "2/tweets",
@@ -213,32 +213,32 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "44444",
         "type": "id",
       },
-      Object {
+      {
         "id": "55555",
         "type": "id",
       },
-      Object {
+      {
         "id": "66666",
         "type": "id",
       },
-      Object {
+      {
         "id": "77777",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "World",
       },
       "url": "2/tweets",
@@ -250,20 +250,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "88888",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": undefined,
       },
       "url": "2/tweets",
@@ -279,19 +279,19 @@ Array [
 `;
 
 exports[`createTweetJobs(options)(tweetTarget, segments) with media, poll and quote tweet 1`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "poll": Object {
+      "params": {
+        "poll": {
           "duration": 60,
-          "options": Array [
+          "options": [
             "foo",
             "bar",
           ],
@@ -307,20 +307,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "11111",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": undefined,
       },
       "url": "2/tweets",
@@ -332,15 +332,15 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "quote_tweet_id": "98765",
         "text": "Hi",
       },
@@ -353,20 +353,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "22222",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": undefined,
       },
       "url": "2/tweets",
@@ -378,20 +378,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "33333",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "Howdy",
       },
       "url": "2/tweets",
@@ -403,20 +403,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "44444",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": undefined,
       },
       "url": "2/tweets",
@@ -432,25 +432,25 @@ Array [
 `;
 
 exports[`createTweetJobs(options)(tweetTarget, segments) with text and media 1`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "11111",
         "type": "id",
       },
-      Object {
+      {
         "id": "22222",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "Hello",
       },
       "url": "2/tweets",
@@ -462,15 +462,15 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "World",
       },
       "url": "2/tweets",
@@ -482,20 +482,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "33333",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": undefined,
       },
       "url": "2/tweets",
@@ -507,20 +507,20 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "44444",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "Haro",
       },
       "url": "2/tweets",
@@ -532,16 +532,16 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": null,
     "asApplication": false,
     "key": "123",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "href": "1.1/foo",
       "method": "POST",
-      "params": Object {},
+      "params": {},
     },
     "target": TwitterTweetTarget {
       "$$typeofThread": true,
@@ -554,16 +554,16 @@ Array [
 `;
 
 exports[`createTweetJobs(options)(tweetTarget, segments) with text longer than the limit tweet 1`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜龍龜",
       },
       "url": "2/tweets",
@@ -575,20 +575,20 @@ Array [
       "tweetId": "56789",
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "123",
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "11111",
         "type": "id",
       },
     ],
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "龍龜",
       },
       "url": "2/tweets",
@@ -604,33 +604,33 @@ Array [
 `;
 
 exports[`createWelcomeMessageJobs with dm segment 1`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": undefined,
-    "mediaSources": Array [
-      Object {
+    "mediaSources": [
+      {
         "id": "1234567890",
         "type": "id",
       },
     ],
     "refreshTarget": null,
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "media": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
+              "attachment": {
+                "media": {
                   "id": "",
                 },
                 "type": "media",
               },
               "text": "Foo!",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "",
             },
           },
@@ -650,14 +650,14 @@ Array [
 `;
 
 exports[`createWelcomeMessageJobs with media segment 1`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": undefined,
-    "mediaSources": Array [
-      Object {
-        "params": Object {
+    "mediaSources": [
+      {
+        "params": {
           "media_category": "dm_image",
         },
         "type": "url",
@@ -665,21 +665,21 @@ Array [
       },
     ],
     "refreshTarget": null,
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "media": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
+              "attachment": {
+                "media": {
                   "id": "",
                 },
                 "type": "media",
               },
               "text": undefined,
             },
-            "target": Object {
+            "target": {
               "recipient_id": "",
             },
           },
@@ -699,23 +699,23 @@ Array [
 `;
 
 exports[`createWelcomeMessageJobs with text segment 1`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": undefined,
     "mediaSources": null,
     "refreshTarget": null,
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
               "attachment": undefined,
               "text": "Foo!",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "",
             },
           },

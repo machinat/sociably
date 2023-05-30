@@ -1,4 +1,4 @@
-import type { FailApiResult } from './types';
+import type { FailApiResult } from './types.js';
 
 export default class TelegramApiError extends Error {
   body: FailApiResult;

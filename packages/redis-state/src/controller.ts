@@ -11,7 +11,7 @@ import type {
   BaseStateController,
   StateAccessor,
 } from '@sociably/core/base/StateController';
-import { ClientI } from './interface';
+import { ClientI } from './interface.js';
 
 type CallClientFn = (method: string, ...params: string[]) => Promise<any>;
 

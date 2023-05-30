@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { Location } from '../Location';
-import { renderUnitElement } from './utils';
+import { Location } from '../Location.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid native unit component', () => {
   expect(typeof Location).toBe('function');

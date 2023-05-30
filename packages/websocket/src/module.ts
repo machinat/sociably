@@ -8,7 +8,7 @@ import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import type { UpgradeRoute } from '@sociably/http';
 
-import { WEBSOCKET } from './constant';
+import { WEBSOCKET } from './constant.js';
 import {
   ServerIdI,
   PlatformUtilitiesI,
@@ -17,20 +17,20 @@ import {
   UpgradeVerifierI,
   LoginVerifierI,
   ConfigsI,
-} from './interface';
-import { BotP } from './Bot';
-import { ServerP } from './Server';
-import { ReceiverP } from './Receiver';
-import LocalOnlyBrokerP from './broker/LocalOnlyBroker';
-import WebSocketConnection from './Connection';
-import createWsServer from './utils/createWsServer';
+} from './interface.js';
+import { BotP } from './Bot.js';
+import { ServerP } from './Server.js';
+import { ReceiverP } from './Receiver.js';
+import LocalOnlyBrokerP from './broker/LocalOnlyBroker.js';
+import WebSocketConnection from './Connection.js';
+import createWsServer from './utils/createWsServer.js';
 import type {
   WebSocketEventContext,
   WebSocketJob,
   WebSocketDispatchFrame,
   WebSocketResult,
   WebSocketConfigs,
-} from './types';
+} from './types.js';
 
 const wsServerFactory = serviceProviderFactory({ lifetime: 'singleton' })(
   createWsServer

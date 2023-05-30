@@ -1,11 +1,11 @@
 import { AgentSettingsAccessor } from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
-import TwitterUser from './User';
+import TwitterUser from './User.js';
 import type {
   TwitterPlatformUtilities,
   TwitterPlatformConfigs,
   TwitterAgentSettings,
-} from './types';
+} from './types.js';
 
 /**
  * @category Interface

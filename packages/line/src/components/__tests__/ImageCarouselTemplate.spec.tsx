@@ -1,13 +1,13 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { MessageSegmentValue, TemplateMessageParams } from '../../types';
-import { UriAction } from '../Action';
-import { renderUnitElement } from './utils';
+import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
+import { UriAction } from '../Action.js';
+import { renderUnitElement } from './utils.js';
 import {
   ImageCarouselItem,
   ImageCarouselTemplate,
-} from '../ImageCarouselTemplate';
+} from '../ImageCarouselTemplate.js';
 
 test('is valid native component', () => {
   expect(typeof ImageCarouselItem).toBe('function');
@@ -26,6 +26,7 @@ it('match snapshot', async () => {
           imageUrl="https://..."
           action={<UriAction uri="https://..." label="foo" />}
         />
+
         <ImageCarouselItem
           imageUrl="https://..."
           action={<UriAction uri="https://..." label="bar" />}
@@ -33,63 +34,63 @@ it('match snapshot', async () => {
       </ImageCarouselTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ImageCarouselTemplate
-                altText="xxx"
-              >
-                <ImageCarouselItem
-                  action={
-                    <UriAction
-                      label="foo"
-                      uri="https://..."
-                    />
-                  }
-                  imageUrl="https://..."
-                />
-                <ImageCarouselItem
-                  action={
-                    <UriAction
-                      label="bar"
-                      uri="https://..."
-                    />
-                  }
-                  imageUrl="https://..."
-                />
-              </ImageCarouselTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "altText": "xxx",
-                  "template": Object {
-                    "columns": Array [
-                      Object {
-                        "action": Object {
-                          "label": "foo",
-                          "type": "uri",
-                          "uri": "https://...",
-                        },
-                        "imageUrl": "https://...",
-                      },
-                      Object {
-                        "action": Object {
-                          "label": "bar",
-                          "type": "uri",
-                          "uri": "https://...",
-                        },
-                        "imageUrl": "https://...",
-                      },
-                    ],
-                    "type": "image_carousel",
+    [
+      {
+        "node": <ImageCarouselTemplate
+          altText="xxx"
+        >
+          <ImageCarouselItem
+            action={
+              <UriAction
+                label="foo"
+                uri="https://..."
+              />
+            }
+            imageUrl="https://..."
+          />
+          <ImageCarouselItem
+            action={
+              <UriAction
+                label="bar"
+                uri="https://..."
+              />
+            }
+            imageUrl="https://..."
+          />
+        </ImageCarouselTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "altText": "xxx",
+            "template": {
+              "columns": [
+                {
+                  "action": {
+                    "label": "foo",
+                    "type": "uri",
+                    "uri": "https://...",
                   },
-                  "type": "template",
+                  "imageUrl": "https://...",
                 },
-                "type": "message",
-              },
+                {
+                  "action": {
+                    "label": "bar",
+                    "type": "uri",
+                    "uri": "https://...",
+                  },
+                  "imageUrl": "https://...",
+                },
+              ],
+              "type": "image_carousel",
             },
-          ]
-        `);
+            "type": "template",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });
 
 test('altText as function', async () => {

@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
-import moxy, { Mock } from '@moxyjs/moxy';
+import { moxy, Mock } from '@moxyjs/moxy';
 import { ServerAuthenticator } from '@sociably/auth';
-import type { WebviewSocketServer } from '../interface';
-import { WebviewReceiver } from '../Receiver';
-import WebviewConnection from '../Connection';
-import { WebviewBot } from '../Bot';
+import type { WebviewSocketServer } from '../interface.js';
+import { WebviewReceiver } from '../Receiver.js';
+import WebviewConnection from '../Connection.js';
+import { WebviewBot } from '../Bot.js';
 
 const bot = moxy<WebviewBot>({
   render: async () => ({ jobs: [], results: [], tasks: [] }),
@@ -189,7 +189,7 @@ it('register auth user topic if authContext.user is present', () => {
 
   expect(server.subscribeTopic).toHaveBeenCalledTimes(1);
   expect(server.subscribeTopic.mock.calls[0].args).toMatchInlineSnapshot(`
-    Array [
+    [
       WebviewConnection {
         "$$typeofThread": true,
         "id": "_CONN_ID_",
@@ -222,7 +222,7 @@ it('register auth thread topic if authContext.thread is present', () => {
 
   expect(server.subscribeTopic).toHaveBeenCalledTimes(1);
   expect(server.subscribeTopic.mock.calls[0].args).toMatchInlineSnapshot(`
-    Array [
+    [
       WebviewConnection {
         "$$typeofThread": true,
         "id": "_CONN_ID_",
@@ -249,12 +249,12 @@ test('reply(message) sugar', async () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
   const { reply, event } = popEventMock.calls[0].args[0];
   await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
-          Object {
-            "jobs": Array [],
-            "results": Array [],
-            "tasks": Array [],
-          }
-        `);
+    {
+      "jobs": [],
+      "results": [],
+      "tasks": [],
+    }
+  `);
 
   expect(bot.render).toHaveBeenCalledTimes(1);
   expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');

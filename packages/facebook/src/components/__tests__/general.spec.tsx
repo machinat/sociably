@@ -1,6 +1,6 @@
 import Sociably from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
-import generalComponentDelegator from '../general';
+import generalComponentDelegator from '../general.js';
 
 const renderer = new Renderer('facebook', generalComponentDelegator);
 
@@ -20,7 +20,7 @@ test('render shallow element match snapshot', async () => {
 
   expect(results).toMatchSnapshot();
   expect(results.flat().map((seg) => seg?.value)).toMatchInlineSnapshot(`
-    Array [
+    [
       "abc",
       "important",
       "italic",
@@ -58,7 +58,7 @@ test('render nested elements match snapshot', async () => {
   );
   expect(segments).toMatchSnapshot();
   expect(segments?.map((seg) => seg.value)).toMatchInlineSnapshot(`
-    Array [
+    [
       "Mic test \`Hello, Luke Skywalker!\`
     You know what?
     I'm your FATHER \`droid\`.
@@ -83,7 +83,7 @@ test('<p/> renders into individual text segment', async () => {
 
   expect(segments).toMatchSnapshot();
   expect(segments?.map((seg) => seg.value)).toMatchInlineSnapshot(`
-    Array [
+    [
       "foo",
       "bar",
       "baz",
@@ -158,41 +158,41 @@ test('media elements match snapshot', async () => {
   );
   expect(segments).toMatchSnapshot();
   expect(segments?.map((seg) => seg.value)).toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+    [
+      {
+        "message": {
+          "attachment": {
+            "payload": {
               "url": "http://avatar.my.bot",
             },
             "type": "image",
           },
         },
       },
-      Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      {
+        "message": {
+          "attachment": {
+            "payload": {
               "url": "http://vid.my.bot",
             },
             "type": "video",
           },
         },
       },
-      Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      {
+        "message": {
+          "attachment": {
+            "payload": {
               "url": "http://sound.my.bot",
             },
             "type": "audio",
           },
         },
       },
-      Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      {
+        "message": {
+          "attachment": {
+            "payload": {
               "url": "http://profile.my.bot",
             },
             "type": "file",

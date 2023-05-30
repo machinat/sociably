@@ -6,17 +6,17 @@ import type {
   ContextOfAuthenticator,
 } from '@sociably/auth';
 import { Connector, ClientEmitter } from '@sociably/websocket/client';
-import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant';
-import WebviewConnection from '../Connection';
-import createEvent from '../utils/createEvent';
+import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant.js';
+import WebviewConnection from '../Connection.js';
+import createEvent from '../utils/createEvent.js';
 import type {
   EventInput,
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
   AnyClientAuthenticator,
-} from '../types';
-import type { ClientEventContext, ClientOptions } from './types';
+} from '../types.js';
+import type { ClientEventContext, ClientOptions } from './types.js';
 
 class WebviewClient<
   Authenticator extends AnyClientAuthenticator = AnyClientAuthenticator,

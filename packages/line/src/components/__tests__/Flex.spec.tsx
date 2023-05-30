@@ -16,9 +16,9 @@ import Flex, {
   FlexBubbleContainer,
   FlexCarouselContainer,
   FlexMessage,
-} from '../Flex';
-import { UriAction } from '../Action';
-import { renderUnitElement } from './utils';
+} from '../Flex.js';
+import { UriAction } from '../Action.js';
+import { renderUnitElement } from './utils.js';
 
 test.each(
   [

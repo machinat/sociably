@@ -1,7 +1,7 @@
-import type { LineSource } from '../types';
-import type LineChannel from '../Channel';
-import type LineUser from '../User';
-import type LineChat from '../Chat';
+import type { LineSource } from '../types.js';
+import type LineChannel from '../Channel.js';
+import type LineUser from '../User.js';
+import type LineChat from '../Chat.js';
 import {
   EventBase,
   Message,
@@ -21,7 +21,7 @@ import {
   AccountLink,
   DeviceLink,
   ThingsScenarioExecution,
-} from './mixins';
+} from './mixins.js';
 
 // TODO: complete type of the raw event
 export type LineRawEvent = {

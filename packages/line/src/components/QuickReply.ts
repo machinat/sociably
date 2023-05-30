@@ -1,8 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import { SociablyNode } from '@sociably/core';
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
-import makeLineComponent from '../utils/makeLineComponent';
-import { LineComponent } from '../types';
+import makeLineComponent from '../utils/makeLineComponent.js';
+import { LineComponent } from '../types.js';
 
 /**
  * @category Props

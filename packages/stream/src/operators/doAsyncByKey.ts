@@ -1,5 +1,5 @@
-import Stream from '../stream';
-import { StreamingFrame, OperatorFunction } from '../types';
+import Stream from '../stream.js';
+import { StreamingFrame, OperatorFunction } from '../types.js';
 
 const doAsyncByKey = <T, R>(
   effect: (frame: StreamingFrame<T>, observer: Stream<R>) => Promise<void>

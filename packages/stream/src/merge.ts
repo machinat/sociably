@@ -1,5 +1,5 @@
-import Stream from './stream';
-import { StreamingFrame } from './types';
+import Stream from './stream.js';
+import { StreamingFrame } from './types.js';
 
 /* eslint-disable */
 function merge<A,B>(a:Stream<A>,b:Stream<B>):Stream<A|B>

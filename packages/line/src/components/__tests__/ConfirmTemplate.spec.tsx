@@ -1,10 +1,10 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { MessageSegmentValue, TemplateMessageParams } from '../../types';
-import { ConfirmTemplate } from '../ConfirmTemplate';
-import { UriAction } from '../Action';
-import { renderUnitElement } from './utils';
+import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
+import { ConfirmTemplate } from '../ConfirmTemplate.js';
+import { UriAction } from '../Action.js';
+import { renderUnitElement } from './utils.js';
 
 test('is valid native component', () => {
   expect(typeof ConfirmTemplate).toBe('function');
@@ -26,53 +26,53 @@ it('match snapshot', async () => {
       </ConfirmTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ConfirmTemplate
-                actions={
-                  Array [
-                    <UriAction
-                      label="Blue pill"
-                      uri="https://matrix.io/login"
-                    />,
-                    <UriAction
-                      label="Red pill"
-                      uri="https://matrix.io/leave"
-                    />,
-                  ]
-                }
-                altText="xxx"
-              >
-                Take a pill
-              </ConfirmTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "altText": "xxx",
-                  "template": Object {
-                    "actions": Array [
-                      Object {
-                        "label": "Blue pill",
-                        "type": "uri",
-                        "uri": "https://matrix.io/login",
-                      },
-                      Object {
-                        "label": "Red pill",
-                        "type": "uri",
-                        "uri": "https://matrix.io/leave",
-                      },
-                    ],
-                    "text": "Take a pill",
-                    "type": "confirm",
-                  },
-                  "type": "template",
+    [
+      {
+        "node": <ConfirmTemplate
+          actions={
+            [
+              <UriAction
+                label="Blue pill"
+                uri="https://matrix.io/login"
+              />,
+              <UriAction
+                label="Red pill"
+                uri="https://matrix.io/leave"
+              />,
+            ]
+          }
+          altText="xxx"
+        >
+          Take a pill
+        </ConfirmTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "altText": "xxx",
+            "template": {
+              "actions": [
+                {
+                  "label": "Blue pill",
+                  "type": "uri",
+                  "uri": "https://matrix.io/login",
                 },
-                "type": "message",
-              },
+                {
+                  "label": "Red pill",
+                  "type": "uri",
+                  "uri": "https://matrix.io/leave",
+                },
+              ],
+              "text": "Take a pill",
+              "type": "confirm",
             },
-          ]
-        `);
+            "type": "template",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });
 
 test('altText as function', async () => {

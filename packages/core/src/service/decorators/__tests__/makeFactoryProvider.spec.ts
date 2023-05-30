@@ -1,9 +1,9 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import {
   SOCIABLY_SERVICE_PROVIDER,
   SOCIABLY_SERVICE_INTERFACE,
-} from '../../../symbol';
-import serviceProviderFactory from '../serviceProviderFactory';
+} from '../../../symbol.js';
+import serviceProviderFactory from '../serviceProviderFactory.js';
 
 const FooServiceI = {
   $$typeof: SOCIABLY_SERVICE_PROVIDER,

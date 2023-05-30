@@ -1,9 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 import type { ContextDetails } from '@sociably/auth';
-import WhatsAppChat from '../Chat';
-import WhatsAppUser from '../User';
-import WhatsAppAgent from '../Agent';
-import type { WhatsAppAuthContext, WhatsAppAuthData } from './types';
+import WhatsAppChat from '../Chat.js';
+import WhatsAppUser from '../User.js';
+import WhatsAppAgent from '../Agent.js';
+import type { WhatsAppAuthContext, WhatsAppAuthData } from './types.js';
 
 export const getAuthContextDetails = (
   data: WhatsAppAuthData

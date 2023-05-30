@@ -1,5 +1,5 @@
-import Sociably from '../..';
-import traverse from '../traverse';
+import Sociably from '../../index.js';
+import traverse from '../traverse.js';
 
 it('traverse through node tree and pass all non empty element to callback', () => {
   const context = {};

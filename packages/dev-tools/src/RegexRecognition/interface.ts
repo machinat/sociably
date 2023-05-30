@@ -1,5 +1,5 @@
 import { serviceInterface } from '@sociably/core/service';
-import type { RegexRecognitionConfigs } from './types';
+import type { RegexRecognitionConfigs } from './types.js';
 
 /**
  * @category Interface

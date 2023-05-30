@@ -1,15 +1,15 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PATH_MESSAGES } from '../../constant';
-import { TextReply } from '../TextReply';
-import { PhoneReply } from '../PhoneReply';
-import { EmailReply } from '../EmailReply';
-import { Expression } from '../Expression';
-import { PassThreadControl } from '../PassThreadControl';
-import { TypingOff } from '../TypingOff';
-import { TypingOn } from '../TypingOn';
-import { MarkSeen } from '../MarkSeen';
-import { renderUnitElement } from './utils';
+import { PATH_MESSAGES } from '../../constant.js';
+import { TextReply } from '../TextReply.js';
+import { PhoneReply } from '../PhoneReply.js';
+import { EmailReply } from '../EmailReply.js';
+import { Expression } from '../Expression.js';
+import { PassThreadControl } from '../PassThreadControl.js';
+import { TypingOff } from '../TypingOff.js';
+import { TypingOn } from '../TypingOn.js';
+import { MarkSeen } from '../MarkSeen.js';
+import { renderUnitElement } from './utils.js';
 
 const quickReplies = (
   <>
@@ -105,15 +105,15 @@ it('hoist text value into message object', async () => {
   );
 
   expect(segments).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": "foo",
         "path": "$#Expression.children:0",
         "type": "unit",
-        "value": Object {
+        "value": {
           "apiPath": "me/messages",
-          "params": Object {
-            "message": Object {
+          "params": {
+            "message": {
               "text": "foo",
             },
             "messaging_type": undefined,
@@ -124,16 +124,16 @@ it('hoist text value into message object', async () => {
           "type": "message",
         },
       },
-      Object {
+      {
         "node": <p>
           bar
         </p>,
         "path": "$#Expression.children:1",
         "type": "unit",
-        "value": Object {
+        "value": {
           "apiPath": "me/messages",
-          "params": Object {
-            "message": Object {
+          "params": {
+            "message": {
               "text": "bar",
             },
             "messaging_type": undefined,
@@ -144,14 +144,14 @@ it('hoist text value into message object', async () => {
           "type": "message",
         },
       },
-      Object {
+      {
         "node": "baz",
         "path": "$#Expression.children:2",
         "type": "unit",
-        "value": Object {
+        "value": {
           "apiPath": "me/messages",
-          "params": Object {
-            "message": Object {
+          "params": {
+            "message": {
               "metadata": undefined,
               "quick_replies": undefined,
               "text": "baz",
@@ -215,11 +215,11 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
   );
 
   expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "apiPath": "me/messages",
-        "params": Object {
-          "message": Object {
+        "params": {
+          "message": {
             "metadata": undefined,
             "quick_replies": undefined,
             "text": "foo",
@@ -231,25 +231,25 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
         },
         "type": "message",
       },
-      Object {
+      {
         "apiPath": "me/messages",
-        "params": Object {
+        "params": {
           "persona_id": "_PERSONA_ID_",
           "sender_action": "typing_on",
         },
         "type": "message",
       },
-      Object {
+      {
         "apiPath": "me/messages",
-        "params": Object {
+        "params": {
           "persona_id": "_PERSONA_ID_",
           "sender_action": "typing_off",
         },
         "type": "message",
       },
-      Object {
+      {
         "apiPath": "me/messages",
-        "params": Object {
+        "params": {
           "sender_action": "mark_seen",
         },
         "type": "message",
@@ -268,11 +268,11 @@ it('adds metadata to last message action', async () => {
   );
 
   expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "apiPath": "me/messages",
-        "params": Object {
-          "message": Object {
+        "params": {
+          "message": {
             "text": "foo",
           },
           "messaging_type": undefined,
@@ -282,10 +282,10 @@ it('adds metadata to last message action', async () => {
         },
         "type": "message",
       },
-      Object {
+      {
         "apiPath": "me/messages",
-        "params": Object {
-          "message": Object {
+        "params": {
+          "message": {
             "metadata": "_META_",
             "quick_replies": undefined,
             "text": "bar",
@@ -297,9 +297,9 @@ it('adds metadata to last message action', async () => {
         },
         "type": "message",
       },
-      Object {
+      {
         "apiPath": "me/messages",
-        "params": Object {
+        "params": {
           "persona_id": undefined,
           "sender_action": "typing_on",
         },
@@ -327,11 +327,11 @@ it('adds quickReplies to last message action', async () => {
   );
 
   expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "apiPath": "me/messages",
-        "params": Object {
-          "message": Object {
+        "params": {
+          "message": {
             "text": "foo",
           },
           "messaging_type": undefined,
@@ -341,22 +341,22 @@ it('adds quickReplies to last message action', async () => {
         },
         "type": "message",
       },
-      Object {
+      {
         "apiPath": "me/messages",
-        "params": Object {
-          "message": Object {
+        "params": {
+          "message": {
             "metadata": undefined,
-            "quick_replies": Array [
-              Object {
+            "quick_replies": [
+              {
                 "content_type": "text",
                 "image_url": undefined,
                 "payload": "bar",
                 "title": "foo",
               },
-              Object {
+              {
                 "content_type": "user_phone_number",
               },
-              Object {
+              {
                 "content_type": "user_email",
               },
             ],
@@ -369,9 +369,9 @@ it('adds quickReplies to last message action', async () => {
         },
         "type": "message",
       },
-      Object {
+      {
         "apiPath": "me/messages",
-        "params": Object {
+        "params": {
           "persona_id": undefined,
           "sender_action": "typing_on",
         },
@@ -396,9 +396,9 @@ it('do nothing to non-messgae value', async () => {
   );
 
   expect(segments?.[0].value).toMatchInlineSnapshot(`
-    Object {
+    {
       "apiPath": "me/pass_thread_control",
-      "params": Object {
+      "params": {
         "metadata": undefined,
         "target_app_id": 123,
       },
@@ -406,13 +406,13 @@ it('do nothing to non-messgae value', async () => {
     }
   `);
   expect(segments?.[1].value).toMatchInlineSnapshot(`
-    Object {
+    {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": undefined,
-          "quick_replies": Array [
-            Object {
+          "quick_replies": [
+            {
               "content_type": "text",
               "image_url": undefined,
               "payload": "bar",

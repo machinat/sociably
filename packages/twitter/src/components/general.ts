@@ -5,7 +5,7 @@ import {
   IntermediateSegment,
 } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import { TwitterSegmentValue } from '../types';
+import { TwitterSegmentValue } from '../types.js';
 
 const p = async (node, path, render) => {
   const contentSegments = await render(node.props.children, '.children');

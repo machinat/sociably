@@ -6,8 +6,8 @@ import {
 } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 
-import { ControllerP } from './controller';
-import { ConfigsI, ClientI } from './interface';
+import { ControllerP } from './controller.js';
+import { ConfigsI, ClientI } from './interface.js';
 
 const createRedisClient = serviceProviderFactory({
   lifetime: 'singleton',

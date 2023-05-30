@@ -15,9 +15,13 @@ import type {
   RecognitionData,
 } from '@sociably/core/base/IntentRecognizer';
 import hashObject from 'object-hash';
-import { ConfigsI } from './interface';
-import { DetactIntentPayload, DialogflowConfigs, ClientOptions } from './types';
-import DialogflowApiError from './error';
+import { ConfigsI } from './interface.js';
+import {
+  DetactIntentPayload,
+  DialogflowConfigs,
+  ClientOptions,
+} from './types.js';
+import DialogflowApiError from './error.js';
 
 const getRecognitionDataId = (data: RecognitionData) =>
   `@sociably/dialogflow:V0:${hashObject(data)}`;

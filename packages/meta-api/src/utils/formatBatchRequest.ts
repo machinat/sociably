@@ -1,4 +1,4 @@
-import { MetaBatchRequest, MetaApiJobRequest } from '../types';
+import { MetaBatchRequest, MetaApiJobRequest } from '../types.js';
 
 const appendField = (body: string, key: string, value: string) =>
   `${body.length === 0 ? '' : `${body}&`}${key}=${encodeURIComponent(value)}`;

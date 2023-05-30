@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { Text } from '../Text';
-import { renderUnitElement } from './utils';
+import { Text } from '../Text.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof Text).toBe('function');
@@ -12,26 +12,26 @@ it('is a valid Component', () => {
 test('rendering value', async () => {
   await expect(renderUnitElement(<Text>FOO</Text>)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Text>
-                FOO
-              </Text>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "message": Object {
-                  "context": undefined,
-                  "text": Object {
-                    "body": "FOO",
-                    "preview_url": undefined,
-                  },
-                  "type": "text",
-                },
-              },
+    [
+      {
+        "node": <Text>
+          FOO
+        </Text>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "message": {
+            "context": undefined,
+            "text": {
+              "body": "FOO",
+              "preview_url": undefined,
             },
-          ]
-        `);
+            "type": "text",
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderUnitElement(
       <Text>
@@ -39,31 +39,31 @@ test('rendering value', async () => {
       </Text>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Text>
-                FOO 
-                BAR
-                 
-                <Sociably.Fragment>
-                  BAZ
-                </Sociably.Fragment>
-              </Text>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "message": Object {
-                  "context": undefined,
-                  "text": Object {
-                    "body": "FOO BAR BAZ",
-                    "preview_url": undefined,
-                  },
-                  "type": "text",
-                },
-              },
+    [
+      {
+        "node": <Text>
+          FOO 
+          BAR
+           
+          <Sociably.Fragment>
+            BAZ
+          </Sociably.Fragment>
+        </Text>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "message": {
+            "context": undefined,
+            "text": {
+              "body": "FOO BAR BAZ",
+              "preview_url": undefined,
             },
-          ]
-        `);
+            "type": "text",
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderUnitElement(
       <Text previewUrl replyTo="REPLY_TO_MESSAGE_ID">
@@ -71,31 +71,31 @@ test('rendering value', async () => {
       </Text>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Text
-                previewUrl={true}
-                replyTo="REPLY_TO_MESSAGE_ID"
-              >
-                FOO
-              </Text>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "message": Object {
-                  "context": Object {
-                    "message_id": "REPLY_TO_MESSAGE_ID",
-                  },
-                  "text": Object {
-                    "body": "FOO",
-                    "preview_url": true,
-                  },
-                  "type": "text",
-                },
-              },
+    [
+      {
+        "node": <Text
+          previewUrl={true}
+          replyTo="REPLY_TO_MESSAGE_ID"
+        >
+          FOO
+        </Text>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "message": {
+            "context": {
+              "message_id": "REPLY_TO_MESSAGE_ID",
             },
-          ]
-        `);
+            "text": {
+              "body": "FOO",
+              "preview_url": true,
+            },
+            "type": "text",
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('throw if non textual children received', async () => {
@@ -106,6 +106,6 @@ test('throw if non textual children received', async () => {
       </Text>
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"\\"children\\" prop should contain only texual content"`
+    `""children" prop should contain only texual content"`
   );
 });

@@ -1,5 +1,5 @@
-import { when } from '../../utils';
-import { CreateAppContext } from '../../types';
+import { when } from '../../utils.js';
+import { CreateAppContext } from '../../types.js';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
 import ${when(platforms.includes('telegram'))`Sociably, `}{

@@ -1,6 +1,6 @@
 import type { RedisClient } from 'redis';
 import { serviceInterface } from '@sociably/core/service';
-import type { RedisStateConfigs } from './types';
+import type { RedisStateConfigs } from './types.js';
 
 /**
  * @category Interface

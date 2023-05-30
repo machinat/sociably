@@ -4,10 +4,10 @@ import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
 import snakecaseKeys from 'snakecase-keys';
-import BotP from '../Bot';
-import FacebookPage from '../Page';
-import { PATH_PERSONAS, FB } from '../constant';
-import { ConfigsI } from '../interface';
+import BotP from '../Bot.js';
+import FacebookPage from '../Page.js';
+import { PATH_PERSONAS, FB } from '../constant.js';
+import { ConfigsI } from '../interface.js';
 
 const ATTACHMENT = 'attachment';
 const PERSONA = 'persona';

@@ -45,9 +45,9 @@ import {
   MyChatMember,
   ChatMemberUpdated,
   Unknown,
-} from './mixins';
-import { TelegramRawEvent } from '../types';
-import { TelegramEvent } from './types';
+} from './mixins.js';
+import { TelegramRawEvent } from '../types.js';
+import { TelegramEvent } from './types.js';
 
 const makeEventObject = <Proto extends {}>(
   botId: number,

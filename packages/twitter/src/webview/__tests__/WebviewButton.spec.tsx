@@ -1,8 +1,8 @@
-import moxy from '@moxyjs/moxy';
-import TwitterChat from '../../Chat';
-import TweetTarget from '../../TweetTarget';
-import ServerAuthenticator from '../ServerAuthenticator';
-import WebviewButton from '../WebviewButton';
+import { moxy } from '@moxyjs/moxy';
+import TwitterChat from '../../Chat.js';
+import TweetTarget from '../../TweetTarget.js';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import WebviewButton from '../WebviewButton.js';
 
 const authenticator = moxy<ServerAuthenticator>({
   getAuthUrl: () =>

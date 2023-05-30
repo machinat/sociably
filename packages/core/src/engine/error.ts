@@ -1,4 +1,4 @@
-import type { SociablyTask } from './types';
+import type { SociablyTask } from './types.js';
 
 class DispatchError<Job, Result> extends Error {
   errors: Error[];

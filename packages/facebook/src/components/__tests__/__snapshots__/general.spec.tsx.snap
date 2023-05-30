@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<p/> renders into individual text segment 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
@@ -10,13 +10,13 @@ Array [
     "type": "text",
     "value": "foo",
   },
-  Object {
+  {
     "node": "bar",
     "path": "$::1",
     "type": "text",
     "value": "bar",
   },
-  Object {
+  {
     "node": <p>
       baz
     </p>,
@@ -28,17 +28,17 @@ Array [
 `;
 
 exports[`media elements match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <img
       src="http://avatar.my.bot"
     />,
     "path": "$::0",
     "type": "unit",
-    "value": Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
+    "value": {
+      "message": {
+        "attachment": {
+          "payload": {
             "url": "http://avatar.my.bot",
           },
           "type": "image",
@@ -46,16 +46,16 @@ Array [
       },
     },
   },
-  Object {
+  {
     "node": <video
       src="http://vid.my.bot"
     />,
     "path": "$::1",
     "type": "unit",
-    "value": Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
+    "value": {
+      "message": {
+        "attachment": {
+          "payload": {
             "url": "http://vid.my.bot",
           },
           "type": "video",
@@ -63,16 +63,16 @@ Array [
       },
     },
   },
-  Object {
+  {
     "node": <audio
       src="http://sound.my.bot"
     />,
     "path": "$::2",
     "type": "unit",
-    "value": Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
+    "value": {
+      "message": {
+        "attachment": {
+          "payload": {
             "url": "http://sound.my.bot",
           },
           "type": "audio",
@@ -80,16 +80,16 @@ Array [
       },
     },
   },
-  Object {
+  {
     "node": <file
       src="http://profile.my.bot"
     />,
     "path": "$::3",
     "type": "unit",
-    "value": Object {
-      "message": Object {
-        "attachment": Object {
-          "payload": Object {
+    "value": {
+      "message": {
+        "attachment": {
+          "payload": {
             "url": "http://profile.my.bot",
           },
           "type": "file",
@@ -101,8 +101,8 @@ Array [
 `;
 
 exports[`render nested elements match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       Mic test
        
@@ -150,9 +150,9 @@ May the force be with you!
 `;
 
 exports[`render shallow element match snapshot 1`] = `
-Array [
-  Array [
-    Object {
+[
+  [
+    {
       "node": <p>
         abc
       </p>,
@@ -161,8 +161,8 @@ Array [
       "value": "abc",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <b>
         important
       </b>,
@@ -171,8 +171,8 @@ Array [
       "value": "important",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <i>
         italic
       </i>,
@@ -181,8 +181,8 @@ Array [
       "value": "italic",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <s>
         nooooo
       </s>,
@@ -191,8 +191,8 @@ Array [
       "value": "nooooo",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <u>
         underlined
       </u>,
@@ -201,8 +201,8 @@ Array [
       "value": "underlined",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <code>
         foo.bar()
       </code>,
@@ -211,8 +211,8 @@ Array [
       "value": "\`foo.bar()\`",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <pre>
         foo.bar('hello world')
       </pre>,
@@ -223,8 +223,8 @@ foo.bar('hello world')
 \`\`\`",
     },
   ],
-  Array [
-    Object {
+  [
+    {
       "node": <br />,
       "path": "$",
       "type": "text",

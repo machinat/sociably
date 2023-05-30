@@ -1,4 +1,4 @@
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
 import Sociably, {
@@ -6,8 +6,8 @@ import Sociably, {
   SociablyBot,
   SociablyThread,
 } from '@sociably/core';
-import HttpOperator from '../../HttpOperator';
-import { BasicAuthenticator } from '../BasicAuthenticator';
+import HttpOperator from '../../HttpOperator.js';
+import { BasicAuthenticator } from '../BasicAuthenticator.js';
 
 const state = moxy({
   update: async () => undefined,
@@ -915,7 +915,7 @@ describe('verify code api', () => {
     });
     expect(res.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
+      {
         "ok": true,
         "redirectTo": "https://sociably.io/myApp/webview/foo/bar",
         "retryChances": 0,
@@ -1012,7 +1012,7 @@ describe('verify code api', () => {
     );
     expect(operator.signToken.mock.calls.map(({ args }) => args[1]))
       .toMatchInlineSnapshot(`
-      Array [
+      [
         "test.foo:1647870471457:111111",
         "test.foo:1647870471457:222222",
         "test.foo:1647870471457:333333",
@@ -1025,7 +1025,7 @@ describe('verify code api', () => {
     expect(state.update).toHaveBeenCalledTimes(7);
     expect(state.update.mock.calls.map(({ args }) => args[0]))
       .toMatchInlineSnapshot(`
-      Array [
+      [
         "test.foo:1647870471457",
         "$time_index",
         "test.foo:1647870471457",
@@ -1038,21 +1038,21 @@ describe('verify code api', () => {
     await expect(
       Promise.all(state.update.mock.calls.map(({ result }) => result))
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              1,
-              Array [
-                Object {
-                  "ch": "test.foo",
-                  "ts": 1647870471457,
-                },
-              ],
-              2,
-              3,
-              4,
-              5,
-              5,
-            ]
-          `);
+      [
+        1,
+        [
+          {
+            "ch": "test.foo",
+            "ts": 1647870471457,
+          },
+        ],
+        2,
+        3,
+        4,
+        5,
+        5,
+      ]
+    `);
 
     expect(
       stateController.globalState.mock.calls[0].args[0]
@@ -1082,8 +1082,8 @@ describe('verify code api', () => {
     });
     expect(res1.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res1.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
-        "error": Object {
+      {
+        "error": {
           "code": 400,
           "reason": "invalid request",
         },
@@ -1100,8 +1100,8 @@ describe('verify code api', () => {
     });
     expect(res2.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res2.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
-        "error": Object {
+      {
+        "error": {
           "code": 400,
           "reason": "invalid request",
         },
@@ -1130,7 +1130,7 @@ describe('verify code api', () => {
     });
     expect(res1.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res1.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
+      {
         "ok": false,
         "redirectTo": "https://sociably.io/myApp/webview/",
         "retryChances": 0,
@@ -1164,7 +1164,7 @@ describe('verify code api', () => {
     });
     expect(res2.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res2.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
+      {
         "ok": false,
         "redirectTo": "https://sociably.io/myApp/webview/foo/bar",
         "retryChances": 0,
@@ -1193,7 +1193,7 @@ describe('verify code api', () => {
     });
     expect(res3.end).toHaveBeenCalledTimes(1);
     expect(JSON.parse(res3.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
-      Object {
+      {
         "ok": false,
         "redirectTo": "https://sociably.io/myApp/webview/foo/bar",
         "retryChances": 0,
@@ -1275,26 +1275,26 @@ describe('verify code api', () => {
     );
     await expect(state.update.mock.calls[2].result).resolves
       .toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "ch": "test.foo.4",
-                "ts": 1647869814791,
-              },
-              Object {
-                "ch": "test.foo.5",
-                "ts": 1647869925902,
-              },
-              Object {
-                "ch": "test.foo",
-                "ts": 1647870471457,
-              },
-            ]
-          `);
+      [
+        {
+          "ch": "test.foo.4",
+          "ts": 1647869814791,
+        },
+        {
+          "ch": "test.foo.5",
+          "ts": 1647869925902,
+        },
+        {
+          "ch": "test.foo",
+          "ts": 1647870471457,
+        },
+      ]
+    `);
 
     expect(state.delete).toHaveBeenCalledTimes(3);
     expect(state.delete.mock.calls.map(({ args }) => args[0]))
       .toMatchInlineSnapshot(`
-      Array [
+      [
         "test.foo.1:1647869481458",
         "test.foo.2:1647869592569",
         "test.foo.3:1647869703680",

@@ -1,5 +1,5 @@
-import TelegramUser from '../User';
-import TelegramUserProfile from '../UserProfile';
+import TelegramUser from '../User.js';
+import TelegramUserProfile from '../UserProfile.js';
 
 test('marshallable type meta', () => {
   expect(TelegramUser.typeName).toBe('TgUser');
@@ -21,8 +21,8 @@ test('user with id only', () => {
 
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
         "channel",
       ],
@@ -33,7 +33,7 @@ test('user with id only', () => {
 
   expect(user.typeName()).toBe('TgUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": 12345,
       "isBot": undefined,
     }
@@ -53,8 +53,8 @@ test('bot user', () => {
 
   expect(bot.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(bot.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
         "channel",
       ],
@@ -65,7 +65,7 @@ test('bot user', () => {
 
   expect(bot.typeName()).toBe('TgUser');
   expect(bot.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": 12345,
       "isBot": true,
     }
@@ -92,8 +92,8 @@ test('user with raw data', () => {
 
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
         "channel",
       ],
@@ -104,7 +104,7 @@ test('user with raw data', () => {
 
   expect(user.typeName()).toBe('TgUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": 12345,
       "isBot": undefined,
     }
@@ -126,8 +126,8 @@ test('user with photo url', () => {
 
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
         "channel",
       ],
@@ -138,7 +138,7 @@ test('user with photo url', () => {
 
   expect(user.typeName()).toBe('TgUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": 12345,
       "isBot": undefined,
     }

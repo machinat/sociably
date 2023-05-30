@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import WebviewClient from './Client';
-import type { EventValue, AnyClientAuthenticator } from '../types';
-import type { ClientOptions } from './types';
+import WebviewClient from './Client.js';
+import type { EventValue, AnyClientAuthenticator } from '../types.js';
+import type { ClientOptions } from './types.js';
 
 function useClient<
   Authenticator extends AnyClientAuthenticator,

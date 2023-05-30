@@ -1,175 +1,175 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`api request 1`] = `
-Array [
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"QcOxtkvHxvVZm079BBWaBCDHxbc%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"k1bxBLVu8rOeyYmefXD%2BgbOYTiE%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"rCEoa5sw2aLiIfUb4E7bQ5sruCE%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"TfNdfQ9HU1H10MAIbZCp3JyNp%2F8%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN_2__\\",oauth_version=\\"1.0\\",oauth_signature=\\"wwev0wWcVrn4gNcDEqDU8pfXgwE%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN_2__\\",oauth_version=\\"1.0\\",oauth_signature=\\"FrNpw8l45UMTJwphVQz3mS3B%2F8o%3D\\"",
+[
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="QcOxtkvHxvVZm079BBWaBCDHxbc%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="k1bxBLVu8rOeyYmefXD%2BgbOYTiE%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="rCEoa5sw2aLiIfUb4E7bQ5sruCE%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="TfNdfQ9HU1H10MAIbZCp3JyNp%2F8%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN_2__",oauth_version="1.0",oauth_signature="wwev0wWcVrn4gNcDEqDU8pfXgwE%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN_2__",oauth_version="1.0",oauth_signature="FrNpw8l45UMTJwphVQz3mS3B%2F8o%3D"",
 ]
 `;
 
 exports[`open requests up to maxConnections 1`] = `
-Array [
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"60Y%2BFDnGTRPLbuv76YekDueFwxs%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"60Y%2BFDnGTRPLbuv76YekDueFwxs%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"GHdd5%2Fr1x8xVLLysGAL5iAETckk%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"GHdd5%2Fr1x8xVLLysGAL5iAETckk%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN_2__\\",oauth_version=\\"1.0\\",oauth_signature=\\"wF50S9Pv%2FHyzuyb2D%2BkPwDJIKYM%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"60Y%2BFDnGTRPLbuv76YekDueFwxs%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN_2__\\",oauth_version=\\"1.0\\",oauth_signature=\\"qOfyVOumqJuG9dN%2BuhmMawvuRL4%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"pQSigOM3kkVn2pDRb40E5nJ1eB4%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN_2__\\",oauth_version=\\"1.0\\",oauth_signature=\\"wwev0wWcVrn4gNcDEqDU8pfXgwE%3D\\"",
+[
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="60Y%2BFDnGTRPLbuv76YekDueFwxs%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="60Y%2BFDnGTRPLbuv76YekDueFwxs%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="GHdd5%2Fr1x8xVLLysGAL5iAETckk%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="GHdd5%2Fr1x8xVLLysGAL5iAETckk%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN_2__",oauth_version="1.0",oauth_signature="wF50S9Pv%2FHyzuyb2D%2BkPwDJIKYM%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="60Y%2BFDnGTRPLbuv76YekDueFwxs%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN_2__",oauth_version="1.0",oauth_signature="qOfyVOumqJuG9dN%2BuhmMawvuRL4%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="pQSigOM3kkVn2pDRb40E5nJ1eB4%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN_2__",oauth_version="1.0",oauth_signature="wwev0wWcVrn4gNcDEqDU8pfXgwE%3D"",
 ]
 `;
 
 exports[`sequently excute jobs with the same key 1`] = `
-Array [
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"60Y%2BFDnGTRPLbuv76YekDueFwxs%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"60Y%2BFDnGTRPLbuv76YekDueFwxs%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN_2__\\",oauth_version=\\"1.0\\",oauth_signature=\\"wF50S9Pv%2FHyzuyb2D%2BkPwDJIKYM%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"GHdd5%2Fr1x8xVLLysGAL5iAETckk%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"GHdd5%2Fr1x8xVLLysGAL5iAETckk%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN_2__\\",oauth_version=\\"1.0\\",oauth_signature=\\"qOfyVOumqJuG9dN%2BuhmMawvuRL4%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"60Y%2BFDnGTRPLbuv76YekDueFwxs%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"pQSigOM3kkVn2pDRb40E5nJ1eB4%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN_2__\\",oauth_version=\\"1.0\\",oauth_signature=\\"wwev0wWcVrn4gNcDEqDU8pfXgwE%3D\\"",
+[
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="60Y%2BFDnGTRPLbuv76YekDueFwxs%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="60Y%2BFDnGTRPLbuv76YekDueFwxs%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN_2__",oauth_version="1.0",oauth_signature="wF50S9Pv%2FHyzuyb2D%2BkPwDJIKYM%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="GHdd5%2Fr1x8xVLLysGAL5iAETckk%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="GHdd5%2Fr1x8xVLLysGAL5iAETckk%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN_2__",oauth_version="1.0",oauth_signature="qOfyVOumqJuG9dN%2BuhmMawvuRL4%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="60Y%2BFDnGTRPLbuv76YekDueFwxs%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="pQSigOM3kkVn2pDRb40E5nJ1eB4%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN_2__",oauth_version="1.0",oauth_signature="wwev0wWcVrn4gNcDEqDU8pfXgwE%3D"",
 ]
 `;
 
 exports[`with mediaSources & accomplishRequest 1`] = `
-Array [
+[
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 INIT
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"total_bytes\\"
+Content-Disposition: form-data; name="total_bytes"
 
 11
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_type\\"
+Content-Disposition: form-data; name="media_type"
 
 image/png
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 INIT
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_type\\"
+Content-Disposition: form-data; name="media_type"
 
 image/jpg
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"total_bytes\\"
+Content-Disposition: form-data; name="total_bytes"
 
 34
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 INIT
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"total_bytes\\"
+Content-Disposition: form-data; name="total_bytes"
 
 66
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_type\\"
+Content-Disposition: form-data; name="media_type"
 
 video/mp4
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_category\\"
+Content-Disposition: form-data; name="media_category"
 
 dm_video
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 APPEND
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_id\\"
+Content-Disposition: form-data; name="media_id"
 
 222222222222222222
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media\\"
+Content-Disposition: form-data; name="media"
 Content-Type: image/png
 
 hello media
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"segment_index\\"
+Content-Disposition: form-data; name="segment_index"
 
 0
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 APPEND
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_id\\"
+Content-Disposition: form-data; name="media_id"
 
 333333333333333333
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media\\"
+Content-Disposition: form-data; name="media"
 Content-Type: image/jpg
 
 __FILE_CONTENT_FROM_EXTERNAL_URL__
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"segment_index\\"
+Content-Disposition: form-data; name="segment_index"
 
 0
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 APPEND
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_id\\"
+Content-Disposition: form-data; name="media_id"
 
 444444444444444444
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media\\"
+Content-Disposition: form-data; name="media"
 Content-Type: image/jpg
 
 __FILE_CONTENT_FROM_EXTERNAL_URL__
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"segment_index\\"
+Content-Disposition: form-data; name="segment_index"
 
 0
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 FINALIZE
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_id\\"
+Content-Disposition: form-data; name="media_id"
 
 222222222222222222
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 FINALIZE
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_id\\"
+Content-Disposition: form-data; name="media_id"
 
 333333333333333333
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"command\\"
+Content-Disposition: form-data; name="command"
 
 FINALIZE
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name=\\"media_id\\"
+Content-Disposition: form-data; name="media_id"
 
 444444444444444444
 ------------------BOUNDARY-PLACEHOLDER--
@@ -178,17 +178,17 @@ Content-Disposition: form-data; name=\\"media_id\\"
 `;
 
 exports[`with mediaSources & accomplishRequest 2`] = `
-Array [
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"60Y%2BFDnGTRPLbuv76YekDueFwxs%3D\\"",
-  "OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"__UNIQUE_NONCE__\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1646626057\\",oauth_token=\\"__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"60Y%2BFDnGTRPLbuv76YekDueFwxs%3D\\"",
+[
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="LQbk%2BvsQbQnYeB0e1mX0bA%2B%2BWlI%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="60Y%2BFDnGTRPLbuv76YekDueFwxs%3D"",
+  "OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="__UNIQUE_NONCE__",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1646626057",oauth_token="__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="60Y%2BFDnGTRPLbuv76YekDueFwxs%3D"",
 ]
 `;

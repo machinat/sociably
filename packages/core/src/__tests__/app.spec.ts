@@ -1,16 +1,16 @@
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import {
   serviceContainer,
   serviceProviderClass,
   serviceProviderFactory,
   serviceInterface,
-} from '../service';
-import BaseBotP from '../base/Bot';
-import BaseProfilerP from '../base/Profiler';
-import BaseMarshalerP from '../base/Marshaler';
-import ModuleUtilitiesI from '../base/ModuleUtilities';
-import ServiceScope from '../service/scope';
-import App from '../app';
+} from '../service/index.js';
+import BaseBotP from '../base/Bot.js';
+import BaseProfilerP from '../base/Profiler.js';
+import BaseMarshalerP from '../base/Marshaler.js';
+import ModuleUtilitiesI from '../base/ModuleUtilities.js';
+import ServiceScope from '../service/scope.js';
+import App from '../app.js';
 
 const useModuleUtils = moxy(() => ({}));
 

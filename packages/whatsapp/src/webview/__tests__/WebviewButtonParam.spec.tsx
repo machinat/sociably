@@ -1,7 +1,7 @@
-import moxy from '@moxyjs/moxy';
-import WhatsAppChat from '../../Chat';
-import ServerAuthenticator from '../ServerAuthenticator';
-import WebviewButtonParam from '../WebviewButtonParam';
+import { moxy } from '@moxyjs/moxy';
+import WhatsAppChat from '../../Chat.js';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import WebviewButtonParam from '../WebviewButtonParam.js';
 
 const authenticator = moxy<ServerAuthenticator>({
   getAuthUrlPostfix: () => '/foo/auth/whatsapp?login=__LOGIN_TOKEN__',

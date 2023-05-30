@@ -1,8 +1,8 @@
 import type { ContextDetails } from '@sociably/auth';
-import TwitterChat from '../Chat';
-import TwitterUser from '../User';
-import UserProfile from '../UserProfile';
-import type { TwitterAuthContext, TwitterAuthData } from './types';
+import TwitterChat from '../Chat.js';
+import TwitterUser from '../User.js';
+import UserProfile from '../UserProfile.js';
+import type { TwitterAuthContext, TwitterAuthData } from './types.js';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getAuthContextDetails = ({

@@ -4,14 +4,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
-    "baseUrl": ".",
-    "paths": {
-      "@sociably/auth/*": ["../auth/lib/*"],
-      "@sociably/core/*": ["../core/lib/*"],
-      "@sociably/http/*": ["../http/lib/*"],
-      "@sociably/meta-api/*": ["../meta-api/lib/*"],
-      "@sociably/webview/*": ["../webview/lib/*"]
-    }
+    "baseUrl": "."
   },
   "references": [
     { "path": "../auth/tsconfig.build.json" },

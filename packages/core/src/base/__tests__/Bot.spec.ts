@@ -1,6 +1,6 @@
-import moxy from '@moxyjs/moxy';
-import { SociablyBot, SociablyThread } from '../../types';
-import { BaseBot } from '../Bot';
+import { moxy } from '@moxyjs/moxy';
+import { SociablyBot, SociablyThread } from '../../types.js';
+import { BaseBot } from '../Bot.js';
 
 type UnknownBot = SociablyBot<SociablyThread, unknown, unknown>;
 

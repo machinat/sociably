@@ -1,5 +1,5 @@
 import { makeNativeComponent } from '@sociably/core/renderer';
-import { TELEGRAM } from '../constant';
+import { TELEGRAM } from '../constant.js';
 
 const makeTelegramComponent = makeNativeComponent(TELEGRAM);
 

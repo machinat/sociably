@@ -1,33 +1,33 @@
 // media
-export * from './Media';
+export * from './Media.js';
 // buttons
-export * from './UrlButton';
-export * from './PostbackButton';
-export * from './CallButton';
-export * from './LoginButton';
-export * from './LogoutButton';
-export * from './GamePlayButton';
+export * from './UrlButton.js';
+export * from './PostbackButton.js';
+export * from './CallButton.js';
+export * from './LoginButton.js';
+export * from './LogoutButton.js';
+export * from './GamePlayButton.js';
 // quick replies
-export * from './TextReply';
-export * from './EmailReply';
-export * from './PhoneReply';
+export * from './TextReply.js';
+export * from './EmailReply.js';
+export * from './PhoneReply.js';
 // handover protocols
-export * from './PassThreadControl';
-export * from './RequestThreadControl';
-export * from './TakeThreadContorl';
+export * from './PassThreadControl.js';
+export * from './RequestThreadControl.js';
+export * from './TakeThreadContorl.js';
 // sender actions
-export * from './MarkSeen';
-export * from './TypingOn';
-export * from './TypingOff';
+export * from './MarkSeen.js';
+export * from './TypingOn.js';
+export * from './TypingOff.js';
 // templates
-export * from './GenericTemplate';
-export * from './ButtonTemplate';
-export * from './MediaTemplate';
-export * from './ReceiptTemplate';
-export * from './RequestOneTimeNotif';
+export * from './GenericTemplate.js';
+export * from './ButtonTemplate.js';
+export * from './MediaTemplate.js';
+export * from './ReceiptTemplate.js';
+export * from './RequestOneTimeNotif.js';
 // text
-export * from './Latex';
+export * from './Latex.js';
 // expression
-export * from './Expression';
+export * from './Expression.js';
 // page
 // comment

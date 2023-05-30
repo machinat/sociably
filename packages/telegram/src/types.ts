@@ -10,12 +10,12 @@ import { IntermediateSegment, UnitSegment } from '@sociably/core/renderer';
 import { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
 import { Interfaceable } from '@sociably/core/service';
 import type { WebhookMetadata } from '@sociably/http/webhook';
-import type { TelegramEvent } from './event/types';
-import { AgentSettingsAccessorI } from './interface';
-import type TelegramChat from './Chat';
-import type { TelegramBot } from './Bot';
+import type { TelegramEvent } from './event/types.js';
+import { AgentSettingsAccessorI } from './interface.js';
+import type TelegramChat from './Chat.js';
+import type { TelegramBot } from './Bot.js';
 
-export * from './event/types';
+export * from './event/types.js';
 
 export type TelegramChatType = 'private' | 'group' | 'supergroup' | 'channel';
 export type TelegramParseMode = 'HTML' | 'MarkdownV2' | 'Markdown' | 'None';
@@ -106,9 +106,7 @@ export type TelegramRawEvent = {
 
 export type UploadingFileInfo = {
   filename?: string;
-  filepath?: string;
   contentType?: string;
-  knownLength?: number;
 };
 
 export type UploadingFile = {

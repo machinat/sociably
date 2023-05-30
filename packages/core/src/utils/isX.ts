@@ -13,7 +13,7 @@ import type {
   GeneralElement,
   NativeElement,
   NativeComponent,
-} from '../types';
+} from '../types.js';
 import {
   SOCIABLY_FRAGMENT_TYPE,
   SOCIABLY_ELEMENT_TYPE,
@@ -23,7 +23,7 @@ import {
   SOCIABLY_PROVIDER_TYPE,
   SOCIABLY_NATIVE_TYPE,
   SOCIABLY_SERVICE_CONTAINER,
-} from '../symbol';
+} from '../symbol.js';
 
 export const isEmpty = (node: unknown): node is SociablyEmpty =>
   typeof node === 'boolean' || node === null || node === undefined;

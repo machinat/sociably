@@ -1,7 +1,7 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
-import TelegramUser from '../User';
-import { TG } from '../constant';
+import TelegramUser from '../User.js';
+import { TG } from '../constant.js';
 
 const FILE = 'file';
 

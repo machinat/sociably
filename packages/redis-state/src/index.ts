@@ -1,3 +1,3 @@
-export { default } from './module';
-export { RedisStateController } from './controller';
-export * from './types';
+export { default } from './module.js';
+export { RedisStateController } from './controller.js';
+export * from './types.js';

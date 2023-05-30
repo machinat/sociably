@@ -4,11 +4,16 @@ import FormData from 'form-data';
 import type { AgentSettingsAccessor, SociablyChannel } from '@sociably/core';
 import type { SociablyWorker } from '@sociably/core/engine';
 import SociablyQueue, { JobResponse } from '@sociably/core/queue';
-import GraphAPIError from './Error';
-import formatBatchRequest from './utils/formatBatchRequest';
-import appendFormFields from './utils/appendFormFields';
-import getObjectValueByPath from './utils/getObjectValueByPath';
-import type { MetaApiJob, MetaApiResult, MetaBatchRequest } from './types';
+import GraphAPIError from './Error.js';
+import formatBatchRequest from './utils/formatBatchRequest.js';
+import appendFormFields from './utils/appendFormFields.js';
+import getObjectValueByPath from './utils/getObjectValueByPath.js';
+import type {
+  MetaApiJob,
+  MetaApiResult,
+  MetaBatchRequest,
+  GraphApiErrorBody,
+} from './types.js';
 
 type MetaSendingSettings = {
   accessToken: string;
@@ -305,24 +310,34 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
       body,
     });
 
-    // unexpected batch API error, throw it
     const apiBody = await apiRes.json();
     if (!apiRes.ok) {
-      throw new GraphAPIError(apiBody);
+      // unexpected batch API error, throw it
+      throw new GraphAPIError(apiBody as GraphApiErrorBody);
     }
 
-    // cache result if it's registered in this batch but not consumed
+    const results = (
+      apiBody as (Omit<MetaApiResult, 'body'> & { body: string })[]
+    ).map(
+      (result): MetaApiResult => ({
+        ...result,
+        body: JSON.parse(result.body),
+      })
+    );
+
+    // cache result for the next batch
     this._resultCache.clear();
     for (const [consummingKey, { idx }] of resultRegistry.entries()) {
-      this._resultCache.set(consummingKey, apiBody[idx]);
+      this._resultCache.set(consummingKey, results[idx]);
     }
 
     // collect batch results
-    const results = [...apiBody];
     for (let i = 0; i < jobResponses.length; i += 1) {
       if (!jobResponses[i]) {
         const result = results.shift();
-        result.body = JSON.parse(result.body);
+        if (!result) {
+          throw new Error('Batch API results count is unexpectedly unmatched');
+        }
 
         jobResponses[i] =
           result.code >= 200 && result.code < 300
@@ -335,7 +350,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
             : {
                 success: false,
                 result,
-                error: new GraphAPIError(result.body),
+                error: new GraphAPIError(result.body as GraphApiErrorBody),
                 job: jobs[i],
               };
       }

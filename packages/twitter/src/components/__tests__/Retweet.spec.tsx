@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import TweetTarget from '../../TweetTarget';
-import { Retweet } from '../Retweet';
-import { renderUnitElement } from './utils';
+import TweetTarget from '../../TweetTarget.js';
+import { Retweet } from '../Retweet.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof Retweet).toBe('function');
@@ -13,19 +13,19 @@ it('is a valid Component', () => {
 test('rendering', async () => {
   const segments = await renderUnitElement(<Retweet tweetId="12345" />);
   expect(segments).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": <Retweet
           tweetId="12345"
         />,
         "path": "$",
         "type": "unit",
-        "value": Object {
+        "value": {
           "accomplishRequest": [Function],
           "mediaSources": null,
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
+            "params": {
               "tweet_id": "12345",
             },
             "url": "2/users/:id/retweets",
@@ -38,9 +38,9 @@ test('rendering', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TweetTarget('67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "tweet_id": "12345",
       },
       "url": "2/users/67890/retweets",

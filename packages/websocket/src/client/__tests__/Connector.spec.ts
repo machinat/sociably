@@ -1,8 +1,9 @@
 import url from 'url';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
+import { SociablyUser } from '@sociably/core';
 import _Ws from 'ws';
-import _Socket from '../../Socket';
-import Connector from '../Connector';
+import _Socket from '../../Socket.js';
+import Connector from '../Connector.js';
 
 const Socket = _Socket as Moxy<typeof _Socket>;
 const Ws = _Ws as Moxy<typeof _Ws>;
@@ -10,13 +11,18 @@ const Ws = _Ws as Moxy<typeof _Ws>;
 const location = url.parse('https://sociably.io/hello');
 (global as any).window = { location };
 
-jest.mock('../../socket', () =>
-  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../../socket'))
+jest.mock('../../Socket.js', () =>
+  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../../socket'))
 );
 
 const nextTick = () => new Promise(process.nextTick);
 
-const user = { platform: 'test', uid: 'john_doe' };
+const user: SociablyUser = {
+  $$typeofUser: true,
+  platform: 'test',
+  uid: 'john_doe',
+  uniqueIdentifier: { $$typeof: ['user'], platform: 'test', id: 'john_doe' },
+};
 
 const login = moxy(async () => ({
   user,
@@ -338,7 +344,7 @@ test('throw when sending event after closed', async () => {
 });
 
 test('reconnect behavior at initial connect', async () => {
-  jest.useFakeTimers();
+  jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
 
   const connector = new Connector('/websocket', login, marshaler);
   const errorSpy = moxy();
@@ -362,11 +368,12 @@ test('reconnect behavior at initial connect', async () => {
   jest.advanceTimersByTime(999999);
   expect(Socket).toHaveBeenCalledTimes(20);
 
+  jest.clearAllTimers();
   jest.useRealTimers();
 });
 
 test('reconnect behavior after being close', async () => {
-  jest.useFakeTimers();
+  jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
 
   const [connector, initialSocket] = await openConnection();
   const errorSpy = moxy();
@@ -391,5 +398,6 @@ test('reconnect behavior after being close', async () => {
   jest.advanceTimersByTime(999999);
   expect(Socket).toHaveBeenCalledTimes(21);
 
+  jest.clearAllTimers();
   jest.useRealTimers();
 });

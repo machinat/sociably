@@ -5,11 +5,11 @@ import {
   AnyEventContext,
   SociablyThread,
 } from '@sociably/core';
-import { SOCIABLY_SCRIPT_TYPE } from './constant';
-import parseScript from './parse';
-import compile from './compile';
-import ProcessorP from './Processor';
-import type { ScriptLibrary } from './types';
+import { SOCIABLY_SCRIPT_TYPE } from './constant.js';
+import parseScript from './parse.js';
+import compile from './compile.js';
+import ProcessorP from './Processor.js';
+import type { ScriptLibrary } from './types.js';
 
 type ScriptBuildOtions<Params, Vars, Meta> = {
   name: string;

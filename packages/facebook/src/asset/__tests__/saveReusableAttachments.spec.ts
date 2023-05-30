@@ -1,9 +1,9 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { DispatchError } from '@sociably/core/engine';
-import FacebookPage from '../../Page';
-import FacebookChat from '../../Chat';
-import saveReusableAttachments from '../saveReusableAttachments';
-import AssetsManager from '../AssetsManager';
+import FacebookPage from '../../Page.js';
+import FacebookChat from '../../Chat.js';
+import saveReusableAttachments from '../saveReusableAttachments.js';
+import AssetsManager from '../AssetsManager.js';
 
 const manager = moxy<AssetsManager>({
   saveAttachment: async () => {},

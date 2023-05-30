@@ -1,9 +1,9 @@
-import moxy from '@moxyjs/moxy';
-import WhatsAppAgent from '../../Agent';
-import WhatsAppUser from '../../User';
-import WhatsAppChat from '../../Chat';
-import UserProfile from '../../UserProfile';
-import ClientAuthenticator from '../ClientAuthenticator';
+import { moxy } from '@moxyjs/moxy';
+import WhatsAppAgent from '../../Agent.js';
+import WhatsAppUser from '../../User.js';
+import WhatsAppChat from '../../Chat.js';
+import UserProfile from '../../UserProfile.js';
+import ClientAuthenticator from '../ClientAuthenticator.js';
 
 const location = moxy({});
 const navigator = moxy({
@@ -43,12 +43,12 @@ it('.init() do nothing', async () => {
 
 it('.fetchCredential() always reject', async () => {
   await expect(authenticator.fetchCredential()).resolves.toMatchInlineSnapshot(`
-          Object {
-            "code": 400,
-            "ok": false,
-            "reason": "should only initiate from backend",
-          }
-        `);
+    {
+      "code": 400,
+      "ok": false,
+      "reason": "should only initiate from backend",
+    }
+  `);
 });
 
 describe('.closeWebview()', () => {

@@ -4,14 +4,16 @@ import type {
   CheckDataResult,
 } from '@sociably/auth';
 import type { WebviewClientAuthenticator } from '@sociably/webview';
-import { parse as parseBrowser } from 'bowser';
-import { WHATSAPP } from '../constant';
-import WhatsAppAgent from '../Agent';
-import WhatsAppChat from '../Chat';
-import WhatsAppUser from '../User';
-import WhatsAppUserProfile from '../UserProfile';
-import { getAuthContextDetails, trimWaUrlNumber } from './utils';
-import type { WhatsAppAuthContext, WhatsAppAuthData } from './types';
+import Bowser from 'bowser';
+import { WHATSAPP } from '../constant.js';
+import WhatsAppAgent from '../Agent.js';
+import WhatsAppChat from '../Chat.js';
+import WhatsAppUser from '../User.js';
+import WhatsAppUserProfile from '../UserProfile.js';
+import { getAuthContextDetails, trimWaUrlNumber } from './utils.js';
+import type { WhatsAppAuthContext, WhatsAppAuthData } from './types.js';
+
+const { parse: parseBrowser } = Bowser;
 
 /* eslint-disable class-methods-use-this */
 export default class WhatsAppClientAuthenticator

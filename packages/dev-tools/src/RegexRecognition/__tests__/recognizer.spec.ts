@@ -1,4 +1,4 @@
-import { RegexIntentRecognizer } from '../recognizer';
+import { RegexIntentRecognizer } from '../recognizer.js';
 
 const thread = {
   platform: 'test',

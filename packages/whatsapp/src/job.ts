@@ -1,9 +1,9 @@
 import type { DispatchableSegment } from '@sociably/core/engine';
 import { getTimeId, formatNode } from '@sociably/core/utils';
 import type { MetaApiJob } from '@sociably/meta-api';
-import type WhatsAppChat from './Chat';
-import type WhatsAppAgent from './Agent';
-import { WhatsAppSegmentValue } from './types';
+import type WhatsAppChat from './Chat.js';
+import type WhatsAppAgent from './Agent.js';
+import { WhatsAppSegmentValue } from './types.js';
 
 export const createChatJobs = (
   chat: WhatsAppChat,

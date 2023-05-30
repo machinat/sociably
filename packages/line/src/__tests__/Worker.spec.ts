@@ -1,8 +1,8 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
-import LineChannel from '../Channel';
-import LineWorker from '../Worker';
+import LineChannel from '../Channel.js';
+import LineWorker from '../Worker.js';
 
 nock.disableNetConnect();
 
@@ -172,33 +172,33 @@ it('fail if unable to get channel setting', async () => {
       },
     ])
   ).resolves.toMatchInlineSnapshot(`
-                    Object {
-                      "batch": Array [
-                        undefined,
-                        undefined,
-                        Object {
+                    {
+                      "batch": [
+                        ,
+                        ,
+                        {
                           "error": undefined,
-                          "job": Object {
+                          "job": {
                             "chatChannelId": "2",
                             "key": "bar",
                             "method": "POST",
-                            "params": Object {
+                            "params": {
                               "id": 2,
                             },
                             "url": "v2/bot/message/push",
                           },
-                          "result": Object {
-                            "body": Object {},
+                          "result": {
+                            "body": {},
                             "code": 200,
-                            "headers": Object {
+                            "headers": {
                               "content-type": "application/json",
                             },
                           },
                           "success": true,
                         },
-                        undefined,
+                        ,
                       ],
-                      "errors": Array [
+                      "errors": [
                         [Error: Channel "1" settings not found],
                         [Error: Channel "1" settings not found],
                       ],
@@ -248,37 +248,37 @@ it('fail if connection error happen', async () => {
       },
     ])
   ).resolves.toMatchInlineSnapshot(`
-          Object {
-            "batch": Array [
-              Object {
-                "error": undefined,
-                "job": Object {
-                  "chatChannelId": "1",
-                  "key": "foo",
-                  "method": "POST",
-                  "params": Object {
-                    "id": 1,
-                  },
-                  "url": "v2/bot/message/push",
-                },
-                "result": Object {
-                  "body": Object {},
-                  "code": 200,
-                  "headers": Object {
-                    "content-type": "application/json",
-                  },
-                },
-                "success": true,
-              },
-              undefined,
-              undefined,
-            ],
-            "errors": Array [
-              [FetchError: request to https://api.line.me/v2/bot/message/push failed, reason: something wrong like connection error],
-            ],
-            "success": false,
-          }
-        `);
+    {
+      "batch": [
+        {
+          "error": undefined,
+          "job": {
+            "chatChannelId": "1",
+            "key": "foo",
+            "method": "POST",
+            "params": {
+              "id": 1,
+            },
+            "url": "v2/bot/message/push",
+          },
+          "result": {
+            "body": {},
+            "code": 200,
+            "headers": {
+              "content-type": "application/json",
+            },
+          },
+          "success": true,
+        },
+        ,
+        ,
+      ],
+      "errors": [
+        [FetchError: request to https://api.line.me/v2/bot/message/push failed, reason: something wrong like connection error],
+      ],
+      "success": false,
+    }
+  `);
 
   expect(scope1.isDone()).toBe(true);
   expect(scope2.isDone()).toBe(true);
@@ -329,37 +329,37 @@ it('fail if api error happen', async () => {
       },
     ])
   ).resolves.toMatchInlineSnapshot(`
-          Object {
-            "batch": Array [
-              Object {
-                "error": undefined,
-                "job": Object {
-                  "chatChannelId": "1",
-                  "key": "foo",
-                  "method": "POST",
-                  "params": Object {
-                    "id": 1,
-                  },
-                  "url": "v2/bot/message/push",
-                },
-                "result": Object {
-                  "body": Object {},
-                  "code": 200,
-                  "headers": Object {
-                    "content-type": "application/json",
-                  },
-                },
-                "success": true,
-              },
-              undefined,
-              undefined,
-            ],
-            "errors": Array [
-              [LineAPIError (Bad Request): The request body has 2 error(s): 1) May not be empty, at messages[0].text. 2) Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type.],
-            ],
-            "success": false,
-          }
-        `);
+    {
+      "batch": [
+        {
+          "error": undefined,
+          "job": {
+            "chatChannelId": "1",
+            "key": "foo",
+            "method": "POST",
+            "params": {
+              "id": 1,
+            },
+            "url": "v2/bot/message/push",
+          },
+          "result": {
+            "body": {},
+            "code": 200,
+            "headers": {
+              "content-type": "application/json",
+            },
+          },
+          "success": true,
+        },
+        ,
+        ,
+      ],
+      "errors": [
+        [LineAPIError (Bad Request): The request body has 2 error(s): 1) May not be empty, at messages[0].text. 2) Must be one of the following values: [text, image, video, audio, location, sticker, template, imagemap], at messages[1].type.],
+      ],
+      "success": false,
+    }
+  `);
 
   expect(scope1.isDone()).toBe(true);
   expect(scope2.isDone()).toBe(true);

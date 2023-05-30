@@ -1,5 +1,5 @@
-import TwitterUserProfile from '../UserProfile';
-import { RawUser, RawSettings } from '../types';
+import TwitterUserProfile from '../UserProfile.js';
+import { RawUser, RawSettings } from '../types.js';
 
 const userData = {
   id: 6253282,

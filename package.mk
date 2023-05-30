@@ -1,11 +1,10 @@
 source_files := $(shell find $(CURDIR)/src \( -name '*.ts' -o -name '*.tsx' \) -not -regex '.*/__[^/]*__/.*')
 lib_files := $(addsuffix .js, $(basename $(patsubst $(CURDIR)/src/%, lib/%, $(source_files))))
 tsc := $(CURDIR)/../../node_modules/.bin/tsc
-polyfill_exports := $(CURDIR)/../../node_modules/.bin/polyfill-exports
 
 .PHONY: all build clean
 
-all: $(lib_files) build polyfill-exports.js
+all: $(lib_files) build
 
 lib/%.js: src/%.ts*
 	touch $(CURDIR)/.mark_require_building
@@ -19,7 +18,7 @@ build: | lib
 	    rm $(CURDIR)/.mark_require_building; \
 	fi
 
-prepack: clean lib polyfill-exports.js
+prepack: clean lib
 	$(tsc) \
 	  --build \
 	  --listEmittedFiles \
@@ -28,9 +27,6 @@ prepack: clean lib polyfill-exports.js
 lib:
 	mkdir lib
 
-polyfill-exports.js: $(CURDIR)/package.json
-	$(polyfill_exports) $(CURDIR) --ts-declaration
-
 clean:
 	rm -rf lib
-	rm -f tsconfig.build.tsbuildinfo polyfill-exports.js
+	rm -f tsconfig.build.tsbuildinfo

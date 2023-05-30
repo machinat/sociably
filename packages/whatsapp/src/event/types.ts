@@ -9,7 +9,7 @@ import type {
   InteractiveMixin,
   UserChangeMixin,
   StatusMixin,
-} from './mixins';
+} from './mixins.js';
 
 /**
  * @category Event

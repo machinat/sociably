@@ -1,5 +1,5 @@
-import { TwitterAgentSettings } from '../types';
-import { AgentSettingsAccessorI } from '../interface';
+import { TwitterAgentSettings } from '../types.js';
+import { AgentSettingsAccessorI } from '../interface.js';
 
 const createStaticAgentSettingsAccessor = (
   settings: TwitterAgentSettings[]

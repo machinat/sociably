@@ -1,5 +1,5 @@
-import moxy, { Moxy } from '@moxyjs/moxy';
-import _createNextServer from 'next';
+import { moxy, Moxy } from '@moxyjs/moxy';
+import NextJs from 'next';
 import Sociably from '@sociably/core';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
@@ -9,14 +9,14 @@ import Http from '@sociably/http';
 import Next from '@sociably/next';
 import WebSocket from '@sociably/websocket';
 import { InMemoryState } from '@sociably/dev-tools';
-import { WebviewReceiver } from '../Receiver';
-import { WebviewBot } from '../Bot';
-import WebviewConnection from '../Connection';
-import NoneAuthenticator from '../authenticators/none';
-import { MemoCacheTarget } from '../authenticators/memo';
-import Webview from '../module';
+import { WebviewReceiver } from '../Receiver.js';
+import { WebviewBot } from '../Bot.js';
+import WebviewConnection from '../Connection.js';
+import NoneAuthenticator from '../authenticators/none/index.js';
+import { MemoCacheTarget } from '../authenticators/memo/index.js';
+import Webview from '../module.js';
 
-const createNextServer = _createNextServer as Moxy<typeof _createNextServer>;
+const createNextServer = NextJs.default as Moxy<typeof NextJs.default>;
 
 beforeEach(() => {
   createNextServer.mock.reset();
@@ -24,7 +24,7 @@ beforeEach(() => {
 
 it('export interfaces', () => {
   expect(Webview.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "WebviewConfigs",
       "$$polymorphic": false,
@@ -60,7 +60,7 @@ test('module object', () => {
 
   expect(module.name).toBe('webview');
   expect(module.utilitiesInterface).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "WebviewPlatformUtilities",
       "$$polymorphic": false,
@@ -284,13 +284,13 @@ test('register hmr route when dev', async () => {
   await app.start();
   let [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
   expect(upgradeRoutings).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "handler": [Function],
         "name": "websocket",
         "path": "/websocket",
       },
-      Object {
+      {
         "default": true,
         "handler": [Function],
         "name": "webpack-hmr",
@@ -312,13 +312,13 @@ test('register hmr route when dev', async () => {
   await app.start();
   [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
   expect(upgradeRoutings).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "handler": [Function],
         "name": "websocket",
         "path": "/websocket",
       },
-      Object {
+      {
         "handler": [Function],
         "name": "webpack-hmr",
         "path": "/webview",

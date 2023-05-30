@@ -1,12 +1,12 @@
 import { AgentSettingsAccessor } from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
-import type LineChannel from './Channel';
+import type LineChannel from './Channel.js';
 import type {
   LineConfigs,
   LinePlatformUtilities,
   LineChatChannelSettings,
   LineLoginChannelSettings,
-} from './types';
+} from './types.js';
 
 /**
  * @category Interface

@@ -5,11 +5,11 @@ import type {
   AuthenticatorCredentialResult,
   CheckDataResult,
 } from '@sociably/auth';
-import MemoCacheTarget from './CacheTarget';
-import WebviewConnection from '../../Connection';
-import { WebviewClientAuthenticator } from '../../types';
-import type { MemoAuthData, MemoAuthContext } from './types';
-import { WEBVIEW } from '../../constant';
+import MemoCacheTarget from './CacheTarget.js';
+import WebviewConnection from '../../Connection.js';
+import { WebviewClientAuthenticator } from '../../types.js';
+import type { MemoAuthData, MemoAuthContext } from './types.js';
+import { WEBVIEW } from '../../constant.js';
 
 const USER_KEY = 'momoized_user';
 const THREAD_KEY = 'memo_thread';

@@ -1,14 +1,14 @@
 import { SociablyNode } from '@sociably/core';
 import type { UnitSegment, OutputSegment } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import { PATH_MESSAGES } from '../constant';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import { PATH_MESSAGES } from '../constant.js';
 import type {
   FacebookSegmentValue,
   FacebookComponent,
   MessageValue,
   SenderActionValue,
-} from '../types';
+} from '../types.js';
 
 /**
  * @category Props

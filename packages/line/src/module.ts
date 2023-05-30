@@ -13,26 +13,26 @@ import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import { LINE } from './constant';
-import ReceiverP from './Receiver';
-import BotP from './Bot';
-import LineUserProfile from './UserProfile';
-import LineGroupProfile from './GroupProfile';
-import ProfilerP from './Profiler';
-import LineChannel from './Channel';
-import LineChat from './Chat';
-import LineUser from './User';
+} from './interface.js';
+import { LINE } from './constant.js';
+import ReceiverP from './Receiver.js';
+import BotP from './Bot.js';
+import LineUserProfile from './UserProfile.js';
+import LineGroupProfile from './GroupProfile.js';
+import ProfilerP from './Profiler.js';
+import LineChannel from './Channel.js';
+import LineChat from './Chat.js';
+import LineUser from './User.js';
 import {
   createSingleStaticAgentSettingsAccessor,
   createMultiStaticNumberSettingsAccessor,
-} from './utils/staticAgentSettingsAccessor';
+} from './utils/staticAgentSettingsAccessor.js';
 import type {
   LineEventContext,
   LineJob,
   LineDispatchFrame,
   LineResult,
-} from './types';
+} from './types.js';
 
 const webhookRouteFactory = serviceProviderFactory({
   lifetime: 'transient',

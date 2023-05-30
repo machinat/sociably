@@ -17,22 +17,22 @@ import {
   MetaApiDispatchResponse,
   MetaApiResponseBody,
 } from '@sociably/meta-api';
-import generalComponentDelegator from './components/general';
-import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant';
+import generalComponentDelegator from './components/general.js';
+import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant.js';
 import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import FacebookPage from './Page';
-import FacebookChat from './Chat';
-import InteractTarget from './InteractTarget';
+} from './interface.js';
+import FacebookPage from './Page.js';
+import FacebookChat from './Chat.js';
+import InteractTarget from './InteractTarget.js';
 import {
   createChatJobs,
   createChatAttachmentJobs,
   createPostJobs,
   createInteractJobs,
-} from './job';
+} from './job.js';
 import type {
   FacebookThread,
   FacebookComponent,
@@ -40,7 +40,7 @@ import type {
   FacebookDispatchFrame,
   MessagingOptions,
   FacebookPageSettings,
-} from './types';
+} from './types.js';
 
 type FacebookDispatchTarget = FacebookThread | FacebookPage;
 

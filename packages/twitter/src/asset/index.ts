@@ -1,2 +1,2 @@
-export { default, TwitterAssetsManager } from './AssetsManager';
-export { default as saveUploadedMedia } from './saveUploadedMedia';
+export { default, TwitterAssetsManager } from './AssetsManager.js';
+export { default as saveUploadedMedia } from './saveUploadedMedia.js';

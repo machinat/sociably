@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`call next.render() with page/query returned by handleRequest 1`] = `
-Object {
-  "headers": Object {
+{
+  "headers": {
     "x-y-z": "abc",
   },
   "method": "GET",
@@ -12,8 +12,8 @@ Object {
 `;
 
 exports[`call next.renderError() handleRequest return not ok 1`] = `
-Object {
-  "headers": Object {
+{
+  "headers": {
     "x-y-z": "abc",
   },
   "method": "GET",

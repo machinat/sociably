@@ -1,3 +1,3 @@
-export { default, FacebookServerAuthenticator } from './ServerAuthenticator';
-export { default as FacebookClientAuthenticator } from './ClientAuthenticator';
-export { default as WebviewButton } from './WebviewButton';
+export { default, FacebookServerAuthenticator } from './ServerAuthenticator.js';
+export { default as FacebookClientAuthenticator } from './ClientAuthenticator.js';
+export { default as WebviewButton } from './WebviewButton.js';

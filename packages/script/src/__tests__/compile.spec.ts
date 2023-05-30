@@ -1,4 +1,4 @@
-import compile from '../compile';
+import compile from '../compile.js';
 
 describe('compile conditions segment', () => {
   test('with multi conditions', () => {
@@ -246,9 +246,8 @@ it('throw if conditions key duplicated', () => {
         { type: 'content', getContent: () => 'Who R U exactly!?' },
         { type: 'prompt', key: 'who' },
       ],
+
       { scriptName: 'MyScript' }
     )
-  ).toThrowErrorMatchingInlineSnapshot(
-    `"key \\"who\\" duplicated in MyScript"`
-  );
+  ).toThrowErrorMatchingInlineSnapshot(`"key "who" duplicated in MyScript"`);
 });

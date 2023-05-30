@@ -1,17 +1,17 @@
-import { SOCIABLY_NATIVE_TYPE } from '../symbol';
+import { SOCIABLY_NATIVE_TYPE } from '../symbol.js';
 import type {
   GeneralElement,
   NativeElement,
   NativeComponent,
   PauseDelayFn,
-} from '../types';
+} from '../types.js';
 import type {
   BreakSegment,
   TextSegment,
   PartSegment,
   UnitSegment,
   PauseSegment,
-} from './types';
+} from './types.js';
 
 type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
   ...args: Parameters<Fn>

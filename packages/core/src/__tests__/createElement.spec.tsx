@@ -1,6 +1,6 @@
-import Sociably from '..';
-import createElement from '../createElement';
-import { SOCIABLY_ELEMENT_TYPE } from '../symbol';
+import Sociably from '../index.js';
+import createElement from '../createElement.js';
+import { SOCIABLY_ELEMENT_TYPE } from '../symbol.js';
 
 it('returns element object', () => {
   expect(createElement('text', { a: 1 }, 'abc')).toEqual({

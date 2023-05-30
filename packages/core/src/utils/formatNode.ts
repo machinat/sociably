@@ -4,7 +4,7 @@ import {
   SOCIABLY_PROVIDER_TYPE,
   SOCIABLY_THUNK_TYPE,
   SOCIABLY_RAW_TYPE,
-} from '../symbol';
+} from '../symbol.js';
 
 const formatProps = (props) => {
   const keys = Object.keys(props);

@@ -1,19 +1,19 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
-import Twitter from '../module';
-import TwitterChat from '../Chat';
-import TweetTarget from '../TweetTarget';
-import TwitterUser from '../User';
-import { TwitterReceiver } from '../Receiver';
-import TwitterUserProfile from '../UserProfile';
-import { TwitterProfiler } from '../Profiler';
-import { TwitterBot } from '../Bot';
-import { AgentSettingsAccessorI } from '../interface';
+import Twitter from '../module.js';
+import TwitterChat from '../Chat.js';
+import TweetTarget from '../TweetTarget.js';
+import TwitterUser from '../User.js';
+import { TwitterReceiver } from '../Receiver.js';
+import TwitterUserProfile from '../UserProfile.js';
+import { TwitterProfiler } from '../Profiler.js';
+import { TwitterBot } from '../Bot.js';
+import { AgentSettingsAccessorI } from '../interface.js';
 
 const basicConfigs = {
   agentSettings: {
@@ -31,7 +31,7 @@ it('export interfaces', () => {
   expect(Twitter.Bot).toBe(TwitterBot);
   expect(Twitter.Profiler).toBe(TwitterProfiler);
   expect(Twitter.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "TwitterConfigs",
       "$$polymorphic": false,
@@ -55,7 +55,7 @@ describe('initModule(configs)', () => {
 
     expect(module.name).toBe('twitter');
     expect(module.utilitiesInterface).toMatchInlineSnapshot(`
-      Object {
+      {
         "$$multi": false,
         "$$name": "TwitterPlatformUtilities",
         "$$polymorphic": false,

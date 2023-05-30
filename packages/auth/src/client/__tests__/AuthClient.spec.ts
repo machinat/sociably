@@ -1,11 +1,11 @@
 import url from 'url';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import fetch from 'node-fetch';
-import jsonwebtoken from 'jsonwebtoken';
-import AuthError from '../../error';
-import type { AnyClientAuthenticator } from '../../types';
-import AuthClient from '../AuthClient';
+import jwt from 'jsonwebtoken';
+import AuthError from '../../error.js';
+import type { AnyClientAuthenticator } from '../../types.js';
+import AuthClient from '../AuthClient.js';
 
 const resolveAfterLoops = (resolve, n) => {
   if (n === 0) {
@@ -17,11 +17,10 @@ const resolveAfterLoops = (resolve, n) => {
 const delayLoops = (n = 1) =>
   new Promise((resolve) => resolveAfterLoops(resolve, n));
 
-nock.disableNetConnect();
 const serverEntry = nock('https://sociably.io');
 
 const makeToken = (payload) =>
-  jsonwebtoken.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
+  jwt.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
 
 const fooUser = { platform: 'foo', uid: 'john_doe' };
 const fooThread = { platform: 'foo', uid: 'foo.thread' };
@@ -77,12 +76,6 @@ const barAuthenticator = moxy<AnyClientAuthenticator>({
 const authenticators = [fooAuthenticator, barAuthenticator];
 const serverUrl = '/auth';
 
-jest.useFakeTimers();
-
-const _Date = Date;
-const FAKE_NOW = 1570000000000;
-const SEC_NOW = FAKE_NOW / 1000;
-
 const location = moxy<Location>(
   url.parse('https://sociably.io/app?platform=foo') as never
 );
@@ -97,12 +90,26 @@ const setCookieAuth = (payload) => {
 };
 
 const setCookieError = (payload) => {
-  const token = jsonwebtoken.sign(payload, '__SECRET__');
+  const token = jwt.sign(payload, '__SECRET__');
   document.mock
     .getter('cookie')
     .fakeReturnValue(`sociably_auth_error=${token}`);
   return token;
 };
+
+const _Date = Date;
+const FAKE_NOW = 1570000000000;
+const SEC_NOW = FAKE_NOW / 1000;
+
+const FakeDate = moxy<typeof Date>(
+  Object.assign(
+    function FakeDate(t = FAKE_NOW) {
+      return new _Date(t);
+    },
+    { now: () => FAKE_NOW }
+  ) as never,
+  { mockNewInstance: false }
+);
 
 beforeAll(() => {
   global.document = document;
@@ -112,9 +119,7 @@ beforeAll(() => {
     document,
     fetch,
   } as never;
-
-  global.Date = moxy(_Date, { mockNewInstance: false });
-  Date.now = moxy(() => FAKE_NOW);
+  global.Date = FakeDate;
 });
 
 afterAll(() => {
@@ -125,8 +130,8 @@ afterAll(() => {
 });
 
 beforeEach(() => {
-  nock.cleanAll();
-  (Date as Moxy<DateConstructor>).now.mock.reset();
+  nock.disableNetConnect();
+  FakeDate.mock.reset();
   fooAuthenticator.mock.reset();
   barAuthenticator.mock.reset();
   location.mock.reset();
@@ -134,7 +139,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.clearAllTimers();
+  nock.cleanAll();
 });
 
 describe('bootstraping phase', () => {
@@ -241,6 +246,7 @@ describe('bootstraping phase', () => {
           cookieAuth === 'bar' ? { bar: '__DATA__' } : null
         );
       }
+      client.signOut();
     }
   );
 
@@ -272,6 +278,7 @@ describe('bootstraping phase', () => {
     );
 
     expect(barAuthenticator.init).not.toHaveBeenCalled();
+    client.signOut();
   });
 
   it('emit error if authenticator.init() reject', async () => {
@@ -289,6 +296,7 @@ describe('bootstraping phase', () => {
 
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy).toHaveBeenCalledWith(new Error('Boom!'), null);
+    client.signOut();
   });
 
   it('throw if no platform specified or paltform is unknown', async () => {
@@ -310,9 +318,7 @@ describe('bootstraping phase', () => {
 
     await expect(
       client.signIn({ platform: 'baz' })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"unknown platform \\"baz\\""`
-    );
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"unknown platform "baz""`);
 
     expect(client.platform).toBe(undefined);
 
@@ -322,6 +328,7 @@ describe('bootstraping phase', () => {
       new Error('unknown platform "baz"'),
       null
     );
+    client.signOut();
   });
 
   test('init the same platform only once', async () => {
@@ -346,6 +353,7 @@ describe('bootstraping phase', () => {
 
     expect(client.platform).toBe('foo');
     expect(fooAuthenticator.init).toHaveBeenCalledTimes(1);
+    client.signOut();
   });
 
   test('init different platforms', async () => {
@@ -387,6 +395,7 @@ describe('bootstraping phase', () => {
 
     expect(fooAuthenticator.init).toHaveBeenCalledTimes(1);
     expect(barAuthenticator.init).toHaveBeenCalledTimes(1);
+    client.signOut();
   });
 
   test('change platform after signed in', async () => {
@@ -414,6 +423,7 @@ describe('bootstraping phase', () => {
     expect(client.platform).toBe('bar');
     expect(client.isAuthorized).toBe(false);
     expect(client.isAuthorizing).toBe(false);
+    client.signOut();
   });
 });
 
@@ -457,6 +467,7 @@ describe('.signIn()', () => {
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
+    client.signOut();
   });
 
   it('throw if auth rejected on server side', async () => {
@@ -479,6 +490,7 @@ describe('.signIn()', () => {
 
     expect(client.platform).toBe('foo');
     expect(client.isAuthorized).toBe(false);
+    client.signOut();
   });
 
   it('get credential from authenticator and sign in', async () => {
@@ -506,6 +518,7 @@ describe('.signIn()', () => {
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
+    client.signOut();
   });
 
   it('return current auth if available', async () => {
@@ -532,6 +545,7 @@ describe('.signIn()', () => {
     expect(client.isAuthorized).toBe(true);
     expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    client.signOut();
   });
 
   test('refresh expird auth token', async () => {
@@ -563,6 +577,7 @@ describe('.signIn()', () => {
       foo: 'data',
     });
     expect(refreshCall.isDone()).toBe(true);
+    client.signOut();
   });
 
   test('resign if refresh try fails', async () => {
@@ -608,6 +623,7 @@ describe('.signIn()', () => {
     });
     expect(refreshingCall.isDone()).toBe(true);
     expect(signingCall.isDone()).toBe(true);
+    client.signOut();
   });
 
   it('throw if api respond error', async () => {
@@ -628,6 +644,7 @@ describe('.signIn()', () => {
     expect(client.isAuthorized).toBe(false);
     expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthData).not.toHaveBeenCalled();
+    client.signOut();
   });
 
   it('throw if authenticator.checkAuthData() fail', async () => {
@@ -636,10 +653,7 @@ describe('.signIn()', () => {
         platform: 'foo',
         credential: { foo: 'credential' },
       })
-      .reply(200, {
-        platform: 'foo',
-        token,
-      });
+      .reply(200, { platform: 'foo', token });
 
     fooAuthenticator.checkAuthData.mock.fake(() => ({
       ok: false,
@@ -660,6 +674,7 @@ describe('.signIn()', () => {
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
       foo: 'data',
     });
+    client.signOut();
   });
 
   it('throw if signOut() during authenticating', async () => {
@@ -668,10 +683,7 @@ describe('.signIn()', () => {
         platform: 'foo',
         credential: { foo: 'credential' },
       })
-      .reply(200, {
-        platform: 'foo',
-        token,
-      });
+      .reply(200, { platform: 'foo', token });
 
     const client = new AuthClient({ authenticators, serverUrl });
 
@@ -684,6 +696,7 @@ describe('.signIn()', () => {
       `"signed out during authenticating"`
     );
     expect(client.isAuthorized).toBe(false);
+    client.signOut();
   });
 });
 
@@ -692,7 +705,19 @@ describe('refresh flow', () => {
   const refreshSpy = moxy();
   const errorSpy = moxy();
 
+  beforeAll(() => {
+    jest.useFakeTimers({
+      // advanceTimers: true,
+      now: FAKE_NOW,
+      doNotFake: ['setImmediate'],
+    });
+  });
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
+    jest.clearAllTimers();
     expireSpy.mock.clear();
     refreshSpy.mock.clear();
     errorSpy.mock.clear();
@@ -735,12 +760,12 @@ describe('refresh flow', () => {
         .post('/auth/_refresh', { token: currentToken })
         .reply(200, { platform: 'foo', token: newToken });
 
-      jest.advanceTimersToNextTimer(1);
-      await delayLoops(5); // eslint-disable-line no-await-in-loop
+      await jest.advanceTimersToNextTimerAsync(1); // eslint-disable-line no-await-in-loop
+      await delayLoops(150); // eslint-disable-line no-await-in-loop
 
+      expect(refreshSpy).toHaveBeenCalledTimes(i);
       expect(refreshingCall.isDone()).toBe(true);
       expect(client.isAuthorized).toBe(true);
-      expect(refreshSpy).toHaveBeenCalledTimes(i);
 
       // eslint-disable-next-line no-await-in-loop
       await expect(client.signIn()).resolves.toEqual({
@@ -803,15 +828,17 @@ describe('refresh flow', () => {
           platform: 'foo',
           credential: { foo: 'credential' },
         })
-        .reply(200, { platfrefreshingCallorm: 'foo', token: newToken });
+        .reply(200, { platform: 'foo', token: newToken });
 
-      jest.advanceTimersToNextTimer(1);
-      await delayLoops(10); // eslint-disable-line no-await-in-loop
+      await jest.advanceTimersToNextTimerAsync(1); // eslint-disable-line no-await-in-loop
+      await delayLoops(150); // eslint-disable-line no-await-in-loop
+      jest.runAllTicks();
+      await delayLoops(150); // eslint-disable-line no-await-in-loop
 
+      expect(refreshSpy).toHaveBeenCalledTimes(i);
       expect(refreshingCall.isDone()).toBe(true);
       expect(resigningCall.isDone()).toBe(true);
       expect(client.isAuthorized).toBe(true);
-      expect(refreshSpy).toHaveBeenCalledTimes(i);
       expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(i);
 
       // eslint-disable-next-line
@@ -864,8 +891,8 @@ describe('refresh flow', () => {
       .post('/auth/_refresh', { token })
       .reply(418, { error: { code: 418, reason: "I'm a teapot" } });
 
-    jest.advanceTimersToNextTimer(1);
-    await delayLoops(5);
+    await jest.advanceTimersToNextTimerAsync(1);
+    await delayLoops(150);
 
     expect(client.isAuthorized).toBe(true);
     expect(refreshingCall.isDone()).toBe(true);
@@ -883,8 +910,8 @@ describe('refresh flow', () => {
       context,
     });
 
-    jest.advanceTimersToNextTimer(1);
-    await delayLoops();
+    await jest.advanceTimersToNextTimerAsync(1);
+    await delayLoops(150);
 
     expect(expireSpy).toHaveBeenCalledTimes(1);
     expect(expireSpy).toHaveBeenCalledWith(context);
@@ -924,8 +951,10 @@ describe('refresh flow', () => {
       })
       .reply(418, { error: { code: 418, reason: "I'm a teapot too" } });
 
-    jest.advanceTimersToNextTimer(1);
-    await delayLoops(5);
+    await jest.advanceTimersToNextTimerAsync(1);
+    await delayLoops(150);
+    jest.runAllTicks();
+    await delayLoops(150);
 
     expect(refreshingCall.isDone()).toBe(true);
     expect(signingCall.isDone()).toBe(true);
@@ -944,8 +973,10 @@ describe('refresh flow', () => {
       context,
     });
 
-    jest.advanceTimersToNextTimer(1);
-    await delayLoops();
+    await jest.advanceTimersToNextTimerAsync(1);
+    await delayLoops(150);
+    jest.runAllTicks();
+    await delayLoops(150);
 
     expect(expireSpy).toHaveBeenCalledTimes(1);
     expect(expireSpy).toHaveBeenCalledWith(context);
@@ -988,18 +1019,15 @@ describe('refresh flow', () => {
         }),
       });
 
-    (Date as Moxy<DateConstructor>).now.mock.fake(() => SEC_NOW + 980);
-    jest.advanceTimersToNextTimer(1);
-    (Date as Moxy<DateConstructor>).now.mock.fake(() => SEC_NOW + 985);
+    await jest.advanceTimersToNextTimerAsync(1);
     client.signOut();
-    await delayLoops();
+    await delayLoops(150);
+    jest.runAllTicks();
+    await delayLoops(200);
 
     expect(refreshingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(false);
     expect(expireSpy).not.toHaveBeenCalled();
-
-    jest.runAllTimers();
-    await delayLoops(5);
 
     expect(errorSpy).not.toHaveBeenCalled();
     expect(refreshSpy).not.toHaveBeenCalled();

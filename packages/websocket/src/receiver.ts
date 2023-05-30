@@ -8,18 +8,18 @@ import { serviceProviderClass } from '@sociably/core/service';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import type { HttpRequestInfo } from '@sociably/http';
 
-import WebSocketConnection from './Connection';
-import { BotP } from './Bot';
-import { ServerP } from './Server';
-import createEvent from './utils/createEvent';
-import { WEBSOCKET } from './constant';
-import { PlatformUtilitiesI } from './interface';
+import WebSocketConnection from './Connection.js';
+import { BotP } from './Bot.js';
+import { ServerP } from './Server.js';
+import createEvent from './utils/createEvent.js';
+import { WEBSOCKET } from './constant.js';
+import { PlatformUtilitiesI } from './interface.js';
 import type {
   WebSocketEventContext,
   ConnectEventValue,
   DisconnectEventValue,
   EventInput,
-} from './types';
+} from './types.js';
 
 /**
  * @category Provider

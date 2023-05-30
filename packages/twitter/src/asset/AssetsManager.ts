@@ -1,10 +1,10 @@
 import { SociablyNode } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
-import BotP from '../Bot';
-import TwitterUser from '../User';
-import { TWTR } from '../constant';
-import { RenderMediaResponse } from '../types';
+import BotP from '../Bot.js';
+import TwitterUser from '../User.js';
+import { TWTR } from '../constant.js';
+import { RenderMediaResponse } from '../types.js';
 
 const MEDIA = 'media';
 const WELCOME_MESSAGE = 'welcome_message';

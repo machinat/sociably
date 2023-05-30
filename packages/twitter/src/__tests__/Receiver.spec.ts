@@ -1,11 +1,11 @@
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
-import moxy, { Mock, Moxy } from '@moxyjs/moxy';
+import { moxy, Mock, Moxy } from '@moxyjs/moxy';
 
-import { TwitterReceiver } from '../Receiver';
-import TwitterChat from '../Chat';
-import TwitterUser from '../User';
-import type { TwitterBot } from '../Bot';
+import { TwitterReceiver } from '../Receiver.js';
+import TwitterChat from '../Chat.js';
+import TwitterUser from '../User.js';
+import type { TwitterBot } from '../Bot.js';
 
 const bot = moxy<TwitterBot>({
   render: async () => ({ tasks: [], results: [], jobs: [] }),
@@ -206,12 +206,12 @@ describe('context.reply(message)', () => {
     expect(popEventMock).toHaveBeenCalledTimes(1);
     const { reply, event } = popEventMock.calls[0].args[0];
     await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
-          Object {
-            "jobs": Array [],
-            "results": Array [],
-            "tasks": Array [],
-          }
-        `);
+      {
+        "jobs": [],
+        "results": [],
+        "tasks": [],
+      }
+    `);
 
     expect(bot.render).toHaveBeenCalledTimes(1);
     expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');

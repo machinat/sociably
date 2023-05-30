@@ -1,6 +1,6 @@
-import Sociably, { RenderingTarget } from '../..';
-import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
-import { serviceInterface, serviceContainer } from '../../service';
+import Sociably, { RenderingTarget } from '../../index.js';
+import { SOCIABLY_NATIVE_TYPE } from '../../symbol.js';
+import { serviceInterface, serviceContainer } from '../../service/index.js';
 import {
   isEmpty,
   isElement,
@@ -14,7 +14,7 @@ import {
   isThunkType,
   isRawType,
   isElementTypeValid,
-} from '../isX';
+} from '../isX.js';
 
 const Native = () => null;
 Native.$$typeof = SOCIABLY_NATIVE_TYPE;

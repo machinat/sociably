@@ -1,9 +1,9 @@
 import parsePhoneNumber from 'libphonenumber-js';
-import { AgentSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface.js';
 import {
   WhatsAppBusinessAccountSettings,
   WhatsAppAgentSettings,
-} from '../types';
+} from '../types.js';
 
 const normalizePhoneNumber = (
   settings: WhatsAppAgentSettings

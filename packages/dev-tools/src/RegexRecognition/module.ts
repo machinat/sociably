@@ -2,8 +2,8 @@ import type { ServiceModule } from '@sociably/core';
 import IntentRecognizerI, {
   RecognitionData,
 } from '@sociably/core/base/IntentRecognizer';
-import RecognizerP, { RegexIntentRecognizer } from './recognizer';
-import { ConfigsI } from './interface';
+import RecognizerP, { RegexIntentRecognizer } from './recognizer.js';
+import { ConfigsI } from './interface.js';
 
 /**
  * @category Root

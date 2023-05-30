@@ -67,7 +67,7 @@ it('add replyMarkup to the last supported message', async () => {
   );
   expect(result).toMatchSnapshot();
   expect(result[0].value.params.reply_markup).toMatchInlineSnapshot(`
-    Object {
+    {
       "force_reply": true,
       "selective": undefined,
     }
@@ -81,7 +81,7 @@ it('add replyMarkup to the last supported message', async () => {
   );
   expect(result).toMatchSnapshot();
   expect(result[0].value.params.reply_markup).toMatchInlineSnapshot(`
-    Object {
+    {
       "force_reply": true,
       "selective": undefined,
     }

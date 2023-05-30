@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { resolve as resolvePath } from 'path';
 import meow from 'meow';
-import createApp from './createApp';
-import type { PlatformType } from './types';
+import createApp from './createApp.js';
+import type { PlatformType } from './types.js';
 
 const cli = meow(
   `

@@ -1,16 +1,16 @@
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
-import _createNextApp from 'next';
-import { NextReceiver } from '../receiver';
-import Next from '../module';
+import NextJs from 'next';
+import { NextReceiver } from '../receiver.js';
+import Next from '../module.js';
 
-const createNextApp = _createNextApp as Moxy<typeof _createNextApp>;
+const createNextApp = NextJs.default as Moxy<typeof NextJs.default>;
 
 it('exports interfaces', () => {
   expect(Next.Receiver).toBe(NextReceiver);
   expect(Next.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "NextConfigs",
       "$$polymorphic": false,
@@ -18,7 +18,7 @@ it('exports interfaces', () => {
     }
   `);
   expect(Next.Server).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "NextServer",
       "$$polymorphic": false,
@@ -37,27 +37,27 @@ describe('initModule()', () => {
         handleRequest: () => ({ ok: true }),
       })
     ).toMatchInlineSnapshot(`
-      Object {
-        "provisions": Array [
+      {
+        "provisions": [
           [Function],
-          Object {
-            "provide": Object {
+          {
+            "provide": {
               "$$multi": false,
               "$$name": "NextConfigs",
               "$$polymorphic": false,
               "$$typeof": Symbol(interface.service.sociably),
             },
-            "withValue": Object {
+            "withValue": {
               "entryPath": "/webview",
               "handleRequest": [Function],
               "noPrepare": false,
-              "serverOptions": Object {
+              "serverOptions": {
                 "dir": "./webview",
               },
             },
           },
-          Object {
-            "provide": Object {
+          {
+            "provide": {
               "$$multi": false,
               "$$name": "NextServer",
               "$$polymorphic": false,
@@ -65,8 +65,8 @@ describe('initModule()', () => {
             },
             "withProvider": [Function],
           },
-          Object {
-            "provide": Object {
+          {
+            "provide": {
               "$$multi": true,
               "$$name": "HttpRequestRouteList",
               "$$polymorphic": false,
@@ -112,8 +112,8 @@ describe('initModule()', () => {
     expect(nextApp).toBe(createNextApp.mock.calls[0].result);
 
     expect(routings).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "handler": [Function],
           "name": "next",
           "path": "/webview",
@@ -136,8 +136,8 @@ describe('initModule()', () => {
 
     let [upgradeRoutings] = app.useServices([Http.UpgradeRouteList]);
     expect(upgradeRoutings).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "handler": [Function],
           "name": "webpack-hmr",
           "path": "/webview",

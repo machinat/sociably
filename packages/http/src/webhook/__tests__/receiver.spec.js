@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import WebhookReceiver from '../receiver';
 
 const createReq = ({ method, url = '/', body = '', headers = {} }) => {
@@ -47,18 +47,18 @@ test('handle GET request', async () => {
 
   expect(webhookHandler).toHaveBeenCalledTimes(1);
   expect(webhookHandler.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "request": Object {
-          "body": undefined,
-          "headers": Object {
-            "foo": "bae",
-          },
-          "method": "GET",
-          "url": "/app",
+    {
+      "request": {
+        "body": undefined,
+        "headers": {
+          "foo": "bae",
         },
-        "source": "webhook",
-      }
-    `);
+        "method": "GET",
+        "url": "/app",
+      },
+      "source": "webhook",
+    }
+  `);
 
   expect(res.statusCode).toBe(200);
   expect(res.end).toHaveBeenCalledTimes(1);
@@ -78,18 +78,18 @@ test('handle POST request with body', async () => {
 
   expect(webhookHandler).toHaveBeenCalledTimes(1);
   expect(webhookHandler.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "request": Object {
-          "body": "{ \\"hello\\": \\"webhook\\" }",
-          "headers": Object {
-            "foo": "bae",
-          },
-          "method": "POST",
-          "url": "/app",
+    {
+      "request": {
+        "body": "{ "hello": "webhook" }",
+        "headers": {
+          "foo": "bae",
         },
-        "source": "webhook",
-      }
-    `);
+        "method": "POST",
+        "url": "/app",
+      },
+      "source": "webhook",
+    }
+  `);
 
   expect(res.statusCode).toBe(200);
   expect(res.end).toHaveBeenCalledTimes(1);
@@ -133,7 +133,7 @@ it("respond JSON of the body if it's an object", async () => {
   expect(res.statusCode).toBe(408);
   expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(
-    `"{\\"hello\\":\\"teapot\\"}"`
+    `"{"hello":"teapot"}"`
   );
 });
 
@@ -186,7 +186,7 @@ it('ends res with 500 if error thrown in webhookHandler', async () => {
   expect(res.statusCode).toBe(500);
   expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(
-    `"{\\"code\\":500,\\"message\\":\\"very interal error\\"}"`
+    `"{"code":500,"message":"very interal error"}"`
   );
 });
 
@@ -207,18 +207,18 @@ test('#handleRequestCallback() work', async () => {
 
   expect(webhookHandler).toHaveBeenCalledTimes(1);
   expect(webhookHandler.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
-        "request": Object {
-          "body": "{ \\"hello\\": \\"webhook\\" }",
-          "headers": Object {
-            "foo": "bae",
-          },
-          "method": "POST",
-          "url": "/app",
+    {
+      "request": {
+        "body": "{ "hello": "webhook" }",
+        "headers": {
+          "foo": "bae",
         },
-        "source": "webhook",
-      }
-    `);
+        "method": "POST",
+        "url": "/app",
+      },
+      "source": "webhook",
+    }
+  `);
 
   expect(res.statusCode).toBe(200);
   expect(res.end).toHaveBeenCalledTimes(1);

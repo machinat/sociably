@@ -1,10 +1,10 @@
 import invariant from 'invariant';
-import { SOCIABLY_SCRIPT_TYPE } from './constant';
+import { SOCIABLY_SCRIPT_TYPE } from './constant.js';
 import type {
   AnyScriptLibrary,
   CallStatus,
   SerializedCallStatus,
-} from './types';
+} from './types.js';
 
 export const isScript = (type: any): type is AnyScriptLibrary =>
   typeof type === 'object' &&

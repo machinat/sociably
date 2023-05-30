@@ -1,13 +1,13 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import BasicAuthenticator, {
   AuthDelegatorOptions,
 } from '@sociably/auth/basicAuth';
-import WhatsAppUser from '../../User';
-import WhatsAppChat from '../../Chat';
-import WhatsAppBot from '../../Bot';
-import ServerAuthenticator from '../ServerAuthenticator';
-import WhatsAppAgent from '../../Agent';
-import { WhatsAppAuthCrendential, WhatsAppAuthData } from '../types';
+import WhatsAppUser from '../../User.js';
+import WhatsAppChat from '../../Chat.js';
+import WhatsAppBot from '../../Bot.js';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import WhatsAppAgent from '../../Agent.js';
+import { WhatsAppAuthCrendential, WhatsAppAuthData } from '../types.js';
 
 const bot = moxy<WhatsAppBot>({ platform: 'whatsapp', a: 'bot' } as never);
 
@@ -74,20 +74,20 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       WhatsAppChat
     > = basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
     expect(delegatorOptions).toMatchInlineSnapshot(`
-          Object {
-            "bot": Object {
-              "a": "bot",
-              "platform": "whatsapp",
-            },
-            "checkAuthData": [Function],
-            "getChatLink": [Function],
-            "platform": "whatsapp",
-            "platformColor": "#31BA45",
-            "platformImageUrl": "https://sociably.js.org/img/icon/whatsapp.png",
-            "platformName": "WhatsApp",
-            "verifyCredential": [Function],
-          }
-      `);
+      {
+        "bot": {
+          "a": "bot",
+          "platform": "whatsapp",
+        },
+        "checkAuthData": [Function],
+        "getChatLink": [Function],
+        "platform": "whatsapp",
+        "platformColor": "#31BA45",
+        "platformImageUrl": "https://sociably.js.org/img/icon/whatsapp.png",
+        "platformName": "WhatsApp",
+        "verifyCredential": [Function],
+      }
+    `);
 
     const authData = {
       account: '2222222222',
@@ -135,12 +135,12 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
     await expect(verifyCredential({ agent: '3333333333', user: '9876543210' }))
       .resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 404,
-              "ok": false,
-              "reason": "agent number \\"3333333333\\" not registered",
-            }
-          `);
+      {
+        "code": 404,
+        "ok": false,
+        "reason": "agent number "3333333333" not registered",
+      }
+    `);
   });
 });
 
@@ -186,12 +186,12 @@ test('.verifyCredential() fails anyway', async () => {
   );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
-          Object {
-            "code": 403,
-            "ok": false,
-            "reason": "should use backend based flow only",
-          }
-        `);
+    {
+      "code": 403,
+      "ok": false,
+      "reason": "should use backend based flow only",
+    }
+  `);
 });
 
 test('.verifyRefreshment(data)', async () => {
@@ -223,12 +223,12 @@ test('.verifyRefreshment(data)', async () => {
       user: '9876543210',
     })
   ).resolves.toMatchInlineSnapshot(`
-          Object {
-            "code": 404,
-            "ok": false,
-            "reason": "agent number \\"2222222222\\" not registered",
-          }
-        `);
+    {
+      "code": 404,
+      "ok": false,
+      "reason": "agent number "2222222222" not registered",
+    }
+  `);
 });
 
 test('.checkAuthData(data)', () => {

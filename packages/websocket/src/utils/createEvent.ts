@@ -1,7 +1,7 @@
 import { SociablyUser } from '@sociably/core';
-import WebSocketConnection from '../Connection';
-import { WEBSOCKET } from '../constant';
-import { EventInput, WebSocketEvent } from '../types';
+import WebSocketConnection from '../Connection.js';
+import { WEBSOCKET } from '../constant.js';
+import { EventInput, WebSocketEvent } from '../types.js';
 
 const WebSocketEventProto = { platform: WEBSOCKET };
 

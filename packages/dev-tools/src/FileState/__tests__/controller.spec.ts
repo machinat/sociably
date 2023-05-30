@@ -1,7 +1,7 @@
 import fs from 'fs';
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { tmpNameSync } from 'tmp';
-import { FileStateController } from '../controller';
+import { FileStateController } from '../controller.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
@@ -90,10 +90,10 @@ describe('.get()', () => {
     );
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "globalStates": Object {},
-        "threadStates": Object {},
-        "userStates": Object {},
+      {
+        "globalStates": {},
+        "threadStates": {},
+        "userStates": {},
       }
     `);
   });
@@ -130,17 +130,17 @@ describe('.getAll()', () => {
                   `);
     await expect(controller.globalState('baz').getAll()).resolves
       .toMatchInlineSnapshot(`
-                      Map {
-                        "key1" => Object {
-                          "baz": true,
-                        },
-                        "key2" => Array [
-                          7,
-                          8,
-                          9,
-                        ],
-                      }
-                  `);
+      Map {
+        "key1" => {
+          "baz": true,
+        },
+        "key2" => [
+          7,
+          8,
+          9,
+        ],
+      }
+    `);
 
     await expect(
       controller.threadState(unknownThread).getAll()
@@ -156,10 +156,10 @@ describe('.getAll()', () => {
     );
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "globalStates": Object {},
-        "threadStates": Object {},
-        "userStates": Object {},
+      {
+        "globalStates": {},
+        "threadStates": {},
+        "userStates": {},
       }
     `);
   });
@@ -199,10 +199,10 @@ describe('.keys()', () => {
     await expect(controller.threadState(fooThread).keys()).resolves.toEqual([]);
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "globalStates": Object {},
-        "threadStates": Object {},
-        "userStates": Object {},
+      {
+        "globalStates": {},
+        "threadStates": {},
+        "userStates": {},
       }
     `);
   });
@@ -236,40 +236,40 @@ describe('.set()', () => {
 
     await delay(40);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "channelStates": Object {
-          "test.boo": Object {
-            "key1": Array [
+      {
+        "channelStates": {
+          "test.boo": {
+            "key1": [
               "bar",
             ],
             "key2": true,
           },
         },
-        "globalStates": Object {
-          "BAR": Object {
-            "key1": Object {
+        "globalStates": {
+          "BAR": {
+            "key1": {
               "bar": "n",
             },
           },
-          "baz": Object {
-            "key1": Object {
+          "baz": {
+            "key1": {
               "baz": true,
             },
-            "key2": Array [
+            "key2": [
               7,
               8,
               9,
             ],
           },
         },
-        "threadStates": Object {
-          "test.foo": Object {
+        "threadStates": {
+          "test.foo": {
             "key1": "bar",
             "key2": 123,
           },
         },
-        "userStates": Object {
-          "test.bar": Object {
+        "userStates": {
+          "test.bar": {
             "key1": "bar",
             "key2": 456,
             "key3": "bar",
@@ -289,14 +289,14 @@ describe('.set()', () => {
 
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "globalStates": Object {},
-        "threadStates": Object {
-          "test.foo": Object {
+      {
+        "globalStates": {},
+        "threadStates": {
+          "test.foo": {
             "bar": "baz",
           },
         },
-        "userStates": Object {},
+        "userStates": {},
       }
     `);
   });
@@ -329,28 +329,28 @@ describe('.delete()', () => {
 
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "channelStates": Object {
-          "test.boo": Object {
+      {
+        "channelStates": {
+          "test.boo": {
             "key1": "boo",
             "key2": true,
           },
         },
-        "globalStates": Object {
-          "baz": Object {
-            "key1": Object {
+        "globalStates": {
+          "baz": {
+            "key1": {
               "baz": true,
             },
-            "key2": Array [
+            "key2": [
               7,
               8,
               9,
             ],
           },
         },
-        "threadStates": Object {},
-        "userStates": Object {
-          "test.bar": Object {
+        "threadStates": {},
+        "userStates": {
+          "test.bar": {
             "key2": 456,
           },
         },
@@ -367,10 +367,10 @@ describe('.delete()', () => {
     );
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "globalStates": Object {},
-        "threadStates": Object {},
-        "userStates": Object {},
+      {
+        "globalStates": {},
+        "threadStates": {},
+        "userStates": {},
       }
     `);
   });
@@ -400,22 +400,22 @@ describe('.clear()', () => {
 
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "channelStates": Object {},
-        "globalStates": Object {
-          "baz": Object {
-            "key1": Object {
+      {
+        "channelStates": {},
+        "globalStates": {
+          "baz": {
+            "key1": {
               "baz": true,
             },
-            "key2": Array [
+            "key2": [
               7,
               8,
               9,
             ],
           },
         },
-        "threadStates": Object {},
-        "userStates": Object {},
+        "threadStates": {},
+        "userStates": {},
       }
     `);
   });
@@ -427,10 +427,10 @@ describe('.clear()', () => {
     await expect(controller.threadState(fooThread).clear()).resolves.toBe(0);
     await delay(20);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-      Object {
-        "globalStates": Object {},
-        "threadStates": Object {},
-        "userStates": Object {},
+      {
+        "globalStates": {},
+        "threadStates": {},
+        "userStates": {},
       }
     `);
   });
@@ -522,14 +522,14 @@ test('custom marshaler', async () => {
     ])
   );
   expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
-    Object {
-      "threadStates": Object {
-        "test.foo": Object {
-          "key1": Object {
+    {
+      "threadStates": {
+        "test.foo": {
+          "key1": {
             "hello": "world",
             "value": 789,
           },
-          "key2": Object {
+          "key2": {
             "hello": "world",
             "value": 456,
           },

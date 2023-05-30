@@ -1,9 +1,9 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import type StateControllerI from '@sociably/core/base/StateController';
-import LineChannel from '../../Channel';
-import type { LineBot } from '../../Bot';
-import { LineAssetsManager } from '../AssetsManager';
+import LineChannel from '../../Channel.js';
+import type { LineBot } from '../../Bot.js';
+import { LineAssetsManager } from '../AssetsManager.js';
 
 const state = moxy({
   get: async () => null,
@@ -64,7 +64,7 @@ test('get asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$line.foo.1234567",
       "$line.rich_menu.1234567",
     ]
@@ -98,7 +98,7 @@ test('set asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$line.foo.1234567",
       "$line.rich_menu.1234567",
     ]
@@ -130,7 +130,7 @@ test('get all assets', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$line.foo.1234567",
       "$line.rich_menu.1234567",
     ]
@@ -164,7 +164,7 @@ test('unsave asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$line.foo.1234567",
       "$line.rich_menu.1234567",
     ]
@@ -322,7 +322,7 @@ describe('.createRichMenu()', () => {
         { contentType: 'image/png' }
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Line channel \\"[object Object]\\" not registered"`
+      `"Line channel "line.1234567" not registered"`
     );
 
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);

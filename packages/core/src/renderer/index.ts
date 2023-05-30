@@ -1,3 +1,3 @@
-export { default } from './renderer';
-export * from './componentHelper';
-export * from './types';
+export { default } from './renderer.js';
+export * from './componentHelper.js';
+export * from './types.js';

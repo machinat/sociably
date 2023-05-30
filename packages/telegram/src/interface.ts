@@ -1,11 +1,11 @@
 import { serviceInterface } from '@sociably/core/service';
 import { AgentSettingsAccessor } from '@sociably/core';
-import TelegramUser from './User';
+import TelegramUser from './User.js';
 import type {
   TelegramPlatformUtilities,
   TelegramConfigs,
   TelegramAgentSettings,
-} from './types';
+} from './types.js';
 
 /**
  * @category Interface

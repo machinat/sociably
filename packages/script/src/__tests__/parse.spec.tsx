@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import { SOCIABLY_SCRIPT_TYPE } from '../constant';
+import { SOCIABLY_SCRIPT_TYPE } from '../constant.js';
 import {
   IF,
   ELSE_IF,
@@ -10,9 +10,9 @@ import {
   CALL,
   EFFECT,
   RETURN,
-} from '../keyword';
-import parse from '../parse';
-import type { AnyScriptLibrary } from '../types';
+} from '../keyword.js';
+import parse from '../parse.js';
+import type { AnyScriptLibrary } from '../types.js';
 
 const AnotherScript: AnyScriptLibrary = {
   $$typeof: SOCIABLY_SCRIPT_TYPE,
@@ -158,7 +158,7 @@ describe('parse <IF/>', () => {
     expect(() =>
       parse(<IF condition={null as never}>{[]}</IF>)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"condition\\" of <IF/> should be a function"`
+      `"prop "condition" of <IF/> should be a function"`
     );
   });
 
@@ -207,7 +207,7 @@ describe('parse <IF/>', () => {
         </>
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"condition\\" of <ELSE_IF/> should be a function"`
+      `"prop "condition" of <ELSE_IF/> should be a function"`
     );
   });
 });
@@ -256,7 +256,7 @@ describe('parse <WHILE/>', () => {
     expect(() =>
       parse(<WHILE condition={'true' as never}>{() => 'foo'}</WHILE>)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"condition\\" of <WHILE/> should be a function"`
+      `"prop "condition" of <WHILE/> should be a function"`
     );
   });
 });
@@ -310,10 +310,10 @@ describe('parse <PROMPT/>', () => {
     expect(() =>
       parse(<PROMPT key={undefined as never} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <PROMPT/> should not be empty"`
+      `"prop "key" of <PROMPT/> should not be empty"`
     );
     expect(() => parse(<PROMPT key="" />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <PROMPT/> should not be empty"`
+      `"prop "key" of <PROMPT/> should not be empty"`
     );
   });
 });
@@ -353,15 +353,15 @@ describe('parse <LABEL/>', () => {
     expect(() =>
       parse(<LABEL key={undefined as never} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <LABEL/> should not be empty"`
+      `"prop "key" of <LABEL/> should not be empty"`
     );
     expect(() => parse(<LABEL key="" />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <LABEL/> should not be empty"`
+      `"prop "key" of <LABEL/> should not be empty"`
     );
     expect(() =>
       parse(<LABEL key={null as never} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <LABEL/> should not be empty"`
+      `"prop "key" of <LABEL/> should not be empty"`
     );
   });
 });
@@ -420,7 +420,7 @@ describe('parse <CALL/>', () => {
         />
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"invalid \\"script\\" prop received on <CALL/>"`
+      `"invalid "script" prop received on <CALL/>"`
     );
   });
 
@@ -428,7 +428,7 @@ describe('parse <CALL/>', () => {
     expect(() =>
       parse(<CALL key={undefined as never} script={AnotherScript} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop \\"key\\" of <CALL/> should not be empty"`
+      `"prop "key" of <CALL/> should not be empty"`
     );
   });
 
@@ -442,7 +442,7 @@ describe('parse <CALL/>', () => {
         />
       )
     ).toThrowErrorMatchingInlineSnapshot(
-      `"key \\"not_existed_key\\" not found in AnotherScript"`
+      `"key "not_existed_key" not found in AnotherScript"`
     );
   });
 });
@@ -557,7 +557,7 @@ test('parse whole script', () => {
 
 it('throw if invalid syntax node received', () => {
   expect(() => parse('hello' as never)).toThrowErrorMatchingInlineSnapshot(
-    `"invalid script node: \\"hello\\""`
+    `"invalid script node: "hello""`
   );
 
   expect(() => parse(<world />)).toThrowErrorMatchingInlineSnapshot(

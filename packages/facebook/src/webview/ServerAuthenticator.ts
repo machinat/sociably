@@ -6,15 +6,15 @@ import {
 } from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { MetaApiError } from '@sociably/meta-api';
-import BotP from '../Bot';
-import ProfilerP from '../Profiler';
-import FacebookPage from '../Page';
-import FacebookChat from '../Chat';
-import FacebookUser from '../User';
-import { FACEBOOK } from '../constant';
-import { AgentSettingsAccessorI } from '../interface';
-import { getAuthContextDetails } from './utils';
-import type { FacebookAuthContext, FacebookAuthData } from './types';
+import BotP from '../Bot.js';
+import ProfilerP from '../Profiler.js';
+import FacebookPage from '../Page.js';
+import FacebookChat from '../Chat.js';
+import FacebookUser from '../User.js';
+import { FACEBOOK } from '../constant.js';
+import { AgentSettingsAccessorI } from '../interface.js';
+import { getAuthContextDetails } from './utils.js';
+import type { FacebookAuthContext, FacebookAuthData } from './types.js';
 
 /**
  * @category Provider

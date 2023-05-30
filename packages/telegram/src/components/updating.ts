@@ -1,12 +1,12 @@
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeTelegramComponent from '../utils/makeTelegramComponent';
+import makeTelegramComponent from '../utils/makeTelegramComponent.js';
 import {
   TelegramSegmentValue,
   TelegramComponent,
   TelegramParseMode,
-} from '../types';
+} from '../types.js';
 
 export interface EditMessageProps {
   /** Required if inlineMessageId is not specified. Identifier of the message to edit */

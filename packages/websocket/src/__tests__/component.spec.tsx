@@ -1,6 +1,6 @@
 import Sociably from '@sociably/core';
 
-import { Event } from '../component';
+import { Event } from '../component.js';
 
 const render = (element) => element.type(element, '$', () => null);
 

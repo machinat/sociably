@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { MarkSeen } from '../MarkSeen';
-import { renderUnitElement } from './utils';
+import { MarkSeen } from '../MarkSeen.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid unit Component', () => {
   expect(typeof MarkSeen).toBe('function');
@@ -11,19 +11,19 @@ it('is valid unit Component', () => {
 
 it('match snapshot', async () => {
   await expect(renderUnitElement(<MarkSeen />)).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <MarkSeen />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "sender_action": "mark_seen",
-                },
-                "type": "message",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <MarkSeen />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "sender_action": "mark_seen",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

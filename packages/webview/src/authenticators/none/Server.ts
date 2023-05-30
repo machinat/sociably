@@ -6,8 +6,8 @@ import type {
   VerifyResult,
   CheckDataResult,
 } from '@sociably/auth';
-import type { NoneAuthData, NoneAuthContext } from './types';
-import { WEBVIEW } from '../../constant';
+import type { NoneAuthData, NoneAuthContext } from './types.js';
+import { WEBVIEW } from '../../constant.js';
 
 export class NoneServerAuthenticator
   implements ServerAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>

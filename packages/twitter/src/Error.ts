@@ -1,5 +1,5 @@
 import { STATUS_CODES } from 'http';
-import type { FailApiResult } from './types';
+import type { FailApiResult } from './types.js';
 
 export default class TwitterApiError extends Error {
   statusCode: number;

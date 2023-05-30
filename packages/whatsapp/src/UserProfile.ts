@@ -1,7 +1,7 @@
 import type { SociablyProfile } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { WHATSAPP } from './constant';
-import { UserProfileData } from './types';
+import { WHATSAPP } from './constant.js';
+import { UserProfileData } from './types.js';
 
 type UserProfileValue = {
   num: string;

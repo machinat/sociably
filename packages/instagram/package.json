@@ -1,6 +1,7 @@
 {
   "name": "@sociably/instagram",
   "version": "0.8.0-alpha.22",
+  "type": "module",
   "description": "Instagram platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -20,11 +21,9 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "polyfill-exports.js"
+    "README.md"
   ],
   "scripts": {
-    "postinstall": "node ./polyfill-exports.js",
     "prepack": "make -f ../../package.mk prepack"
   },
   "license": "MIT",

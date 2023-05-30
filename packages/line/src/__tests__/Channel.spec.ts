@@ -1,4 +1,4 @@
-import LineChannel from '../Channel';
+import LineChannel from '../Channel.js';
 
 test('preperties', () => {
   const user = new LineChannel('_CHANNEL_ID_');
@@ -8,8 +8,8 @@ test('preperties', () => {
   expect(user.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_"`);
 
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "channel",
       ],
       "id": "_CHANNEL_ID_",
@@ -23,7 +23,7 @@ test('marshallable', () => {
 
   expect(user.typeName()).toBe('LineChannel');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": "_CHANNEL_ID_",
     }
   `);

@@ -1,5 +1,5 @@
-import { SOCIABLY_SERVICE_INTERFACE } from '../../../symbol';
-import serviceInterface from '../serviceInterface';
+import { SOCIABLY_SERVICE_INTERFACE } from '../../../symbol.js';
+import serviceInterface from '../serviceInterface.js';
 
 describe('serviceInterface(name)', () => {
   it('create annotation object', () => {

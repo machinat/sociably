@@ -1,6 +1,6 @@
-import type { SociablyNode, SociablyRenderable } from '../types';
-import type { NodeMapper } from './types';
-import traverse from './traverse';
+import type { SociablyNode, SociablyRenderable } from '../types.js';
+import type { NodeMapper } from './types.js';
+import traverse from './traverse.js';
 
 type MapTraverseContext<Mapped, Payload> = {
   mappedArray: Array<Mapped>;

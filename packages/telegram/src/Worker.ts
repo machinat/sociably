@@ -2,10 +2,15 @@ import fetch, { Response } from 'node-fetch';
 import FormData from 'form-data';
 import type { SociablyWorker } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
-import TelegramUser from './User';
-import { AgentSettingsAccessorI } from './interface';
-import type { TelegramJob, TelegramResult, UploadingFile } from './types';
-import TelegramApiError from './Error';
+import TelegramUser from './User.js';
+import { AgentSettingsAccessorI } from './interface.js';
+import TelegramApiError from './Error.js';
+import type {
+  TelegramJob,
+  TelegramResult,
+  UploadingFile,
+  FailApiResult,
+} from './types.js';
 
 type TelegramJobQueue = Queue<TelegramJob, TelegramResult>;
 
@@ -45,8 +50,7 @@ const requestBotApi = async (
     });
   }
 
-  const result = await response.json();
-
+  const result = (await response.json()) as TelegramResult | FailApiResult;
   if (!result.ok) {
     throw new TelegramApiError(result);
   }

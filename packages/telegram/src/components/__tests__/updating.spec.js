@@ -39,32 +39,32 @@ test('EditText match snapshot', async () => {
       </EditText>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditText
-                messageId={123}
-              >
-                <b>
-                  foo
-                </b>
-              </EditText>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "editMessageText",
-                "params": Object {
-                  "disable_web_page_preview": undefined,
-                  "inline_message_id": undefined,
-                  "message_id": 123,
-                  "parse_mode": "HTML",
-                  "reply_markup": undefined,
-                  "text": "<b>foo</b>",
-                },
-                "toNonChatTarget": false,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <EditText
+          messageId={123}
+        >
+          <b>
+            foo
+          </b>
+        </EditText>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "editMessageText",
+          "params": {
+            "disable_web_page_preview": undefined,
+            "inline_message_id": undefined,
+            "message_id": 123,
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+            "text": "<b>foo</b>",
+          },
+          "toNonChatTarget": false,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <EditText messageId={123} parseMode="None">
@@ -72,31 +72,31 @@ test('EditText match snapshot', async () => {
       </EditText>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditText
-                messageId={123}
-                parseMode="None"
-              >
-                foo
-              </EditText>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "editMessageText",
-                "params": Object {
-                  "disable_web_page_preview": undefined,
-                  "inline_message_id": undefined,
-                  "message_id": 123,
-                  "parse_mode": undefined,
-                  "reply_markup": undefined,
-                  "text": "foo",
-                },
-                "toNonChatTarget": false,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <EditText
+          messageId={123}
+          parseMode="None"
+        >
+          foo
+        </EditText>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "editMessageText",
+          "params": {
+            "disable_web_page_preview": undefined,
+            "inline_message_id": undefined,
+            "message_id": 123,
+            "parse_mode": undefined,
+            "reply_markup": undefined,
+            "text": "foo",
+          },
+          "toNonChatTarget": false,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <EditText
@@ -113,49 +113,49 @@ test('EditText match snapshot', async () => {
       </EditText>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditText
-                disableWebPagePreview={true}
-                inlineMessageId="123456"
-                parseMode="MarkdownV2"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__BAR__"
-                      text="Bar"
-                    />
-                  </InlineKeyboard>
-                }
-              >
-                *foo*
-              </EditText>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "editMessageText",
-                "params": Object {
-                  "disable_web_page_preview": true,
-                  "inline_message_id": "123456",
-                  "message_id": undefined,
-                  "parse_mode": "MarkdownV2",
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__BAR__",
-                          "text": "Bar",
-                        },
-                      ],
-                    ],
+    [
+      {
+        "node": <EditText
+          disableWebPagePreview={true}
+          inlineMessageId="123456"
+          parseMode="MarkdownV2"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__BAR__"
+                text="Bar"
+              />
+            </InlineKeyboard>
+          }
+        >
+          *foo*
+        </EditText>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "editMessageText",
+          "params": {
+            "disable_web_page_preview": true,
+            "inline_message_id": "123456",
+            "message_id": undefined,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__BAR__",
+                    "text": "Bar",
                   },
-                  "text": "*foo*",
-                },
-                "toNonChatTarget": true,
-              },
+                ],
+              ],
             },
-          ]
-        `);
+            "text": "*foo*",
+          },
+          "toNonChatTarget": true,
+        },
+      },
+    ]
+  `);
 });
 
 test('EditCaption match snapshot', async () => {
@@ -166,31 +166,31 @@ test('EditCaption match snapshot', async () => {
       </EditCaption>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditCaption
-                messageId={123}
-              >
-                <b>
-                  foo
-                </b>
-              </EditCaption>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "editMessageCaption",
-                "params": Object {
-                  "caption": "<b>foo</b>",
-                  "inline_message_id": undefined,
-                  "message_id": 123,
-                  "parse_mode": "HTML",
-                  "reply_markup": undefined,
-                },
-                "toNonChatTarget": false,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <EditCaption
+          messageId={123}
+        >
+          <b>
+            foo
+          </b>
+        </EditCaption>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "editMessageCaption",
+          "params": {
+            "caption": "<b>foo</b>",
+            "inline_message_id": undefined,
+            "message_id": 123,
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+          },
+          "toNonChatTarget": false,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <EditCaption messageId={123} parseMode="None">
@@ -198,30 +198,30 @@ test('EditCaption match snapshot', async () => {
       </EditCaption>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditCaption
-                messageId={123}
-                parseMode="None"
-              >
-                foo
-              </EditCaption>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "editMessageCaption",
-                "params": Object {
-                  "caption": "foo",
-                  "inline_message_id": undefined,
-                  "message_id": 123,
-                  "parse_mode": undefined,
-                  "reply_markup": undefined,
-                },
-                "toNonChatTarget": false,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <EditCaption
+          messageId={123}
+          parseMode="None"
+        >
+          foo
+        </EditCaption>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "editMessageCaption",
+          "params": {
+            "caption": "foo",
+            "inline_message_id": undefined,
+            "message_id": 123,
+            "parse_mode": undefined,
+            "reply_markup": undefined,
+          },
+          "toNonChatTarget": false,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <EditCaption
@@ -237,47 +237,47 @@ test('EditCaption match snapshot', async () => {
       </EditCaption>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditCaption
-                inlineMessageId="123456"
-                parseMode="MarkdownV2"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__BAR__"
-                      text="Bar"
-                    />
-                  </InlineKeyboard>
-                }
-              >
-                *foo*
-              </EditCaption>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "editMessageCaption",
-                "params": Object {
-                  "caption": "*foo*",
-                  "inline_message_id": "123456",
-                  "message_id": undefined,
-                  "parse_mode": "MarkdownV2",
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__BAR__",
-                          "text": "Bar",
-                        },
-                      ],
-                    ],
+    [
+      {
+        "node": <EditCaption
+          inlineMessageId="123456"
+          parseMode="MarkdownV2"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__BAR__"
+                text="Bar"
+              />
+            </InlineKeyboard>
+          }
+        >
+          *foo*
+        </EditCaption>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "editMessageCaption",
+          "params": {
+            "caption": "*foo*",
+            "inline_message_id": "123456",
+            "message_id": undefined,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__BAR__",
+                    "text": "Bar",
                   },
-                },
-                "toNonChatTarget": true,
-              },
+                ],
+              ],
             },
-          ]
-        `);
+          },
+          "toNonChatTarget": true,
+        },
+      },
+    ]
+  `);
 });
 
 test('EditMedia match snapshot', async () => {
@@ -288,43 +288,43 @@ test('EditMedia match snapshot', async () => {
       </EditMedia>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditMedia
-                messageId={123}
-              >
-                <Animation
-                  duration={100}
-                  fileId="123456"
-                  height={1080}
-                  width={1920}
-                />
-              </EditMedia>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "editMessageMedia",
-                "params": Object {
-                  "inline_message_id": undefined,
-                  "media": Object {
-                    "caption": undefined,
-                    "duration": 100,
-                    "height": 1080,
-                    "media": "123456",
-                    "parse_mode": "HTML",
-                    "thumb": undefined,
-                    "type": "animation",
-                    "width": 1920,
-                  },
-                  "message_id": 123,
-                  "reply_markup": undefined,
-                },
-                "toNonChatTarget": false,
-              },
+    [
+      {
+        "node": <EditMedia
+          messageId={123}
+        >
+          <Animation
+            duration={100}
+            fileId="123456"
+            height={1080}
+            width={1920}
+          />
+        </EditMedia>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "editMessageMedia",
+          "params": {
+            "inline_message_id": undefined,
+            "media": {
+              "caption": undefined,
+              "duration": 100,
+              "height": 1080,
+              "media": "123456",
+              "parse_mode": "HTML",
+              "thumb": undefined,
+              "type": "animation",
+              "width": 1920,
             },
-          ]
-        `);
+            "message_id": 123,
+            "reply_markup": undefined,
+          },
+          "toNonChatTarget": false,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <EditMedia messageId={123}>
@@ -339,45 +339,45 @@ test('EditMedia match snapshot', async () => {
       </EditMedia>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditMedia
-                messageId={123}
-              >
-                <Audio
-                  caption="Plain Text Caption"
-                  duration={100}
-                  parseMode="None"
-                  performer="John Doe"
-                  title="Foo"
-                  url="http://foo.bar/baz.mp3"
-                />
-              </EditMedia>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "editMessageMedia",
-                "params": Object {
-                  "inline_message_id": undefined,
-                  "media": Object {
-                    "caption": "Plain Text Caption",
-                    "duration": 100,
-                    "media": "http://foo.bar/baz.mp3",
-                    "parse_mode": undefined,
-                    "performer": "John Doe",
-                    "thumb": undefined,
-                    "title": "Foo",
-                    "type": "audio",
-                  },
-                  "message_id": 123,
-                  "reply_markup": undefined,
-                },
-                "toNonChatTarget": false,
-              },
+    [
+      {
+        "node": <EditMedia
+          messageId={123}
+        >
+          <Audio
+            caption="Plain Text Caption"
+            duration={100}
+            parseMode="None"
+            performer="John Doe"
+            title="Foo"
+            url="http://foo.bar/baz.mp3"
+          />
+        </EditMedia>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "editMessageMedia",
+          "params": {
+            "inline_message_id": undefined,
+            "media": {
+              "caption": "Plain Text Caption",
+              "duration": 100,
+              "media": "http://foo.bar/baz.mp3",
+              "parse_mode": undefined,
+              "performer": "John Doe",
+              "thumb": undefined,
+              "title": "Foo",
+              "type": "audio",
             },
-          ]
-        `);
+            "message_id": 123,
+            "reply_markup": undefined,
+          },
+          "toNonChatTarget": false,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <EditMedia messageId={123}>
@@ -390,57 +390,57 @@ test('EditMedia match snapshot', async () => {
       </EditMedia>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditMedia
-                messageId={123}
-              >
-                <Document
-                  assetTag="my_doc"
-                  caption={
-                    <b>
-                      Important Document
-                    </b>
-                  }
-                  fileData="__DATA__"
-                  fileInfo={
-                    Object {
-                      "fileName": "baz.txt",
-                    }
-                  }
-                />
-              </EditMedia>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_doc",
-                    "data": "__DATA__",
-                    "fieldName": "document",
-                    "info": Object {
-                      "fileName": "baz.txt",
-                    },
-                  },
-                ],
-                "method": "editMessageMedia",
-                "params": Object {
-                  "inline_message_id": undefined,
-                  "media": Object {
-                    "caption": "<b>Important Document</b>",
-                    "media": "attach://document",
-                    "parse_mode": "HTML",
-                    "thumb": undefined,
-                    "type": "document",
-                  },
-                  "message_id": 123,
-                  "reply_markup": undefined,
-                },
-                "toNonChatTarget": false,
+    [
+      {
+        "node": <EditMedia
+          messageId={123}
+        >
+          <Document
+            assetTag="my_doc"
+            caption={
+              <b>
+                Important Document
+              </b>
+            }
+            fileData="__DATA__"
+            fileInfo={
+              {
+                "fileName": "baz.txt",
+              }
+            }
+          />
+        </EditMedia>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_doc",
+              "data": "__DATA__",
+              "fieldName": "document",
+              "info": {
+                "fileName": "baz.txt",
               },
             },
-          ]
-        `);
+          ],
+          "method": "editMessageMedia",
+          "params": {
+            "inline_message_id": undefined,
+            "media": {
+              "caption": "<b>Important Document</b>",
+              "media": "attach://document",
+              "parse_mode": "HTML",
+              "thumb": undefined,
+              "type": "document",
+            },
+            "message_id": 123,
+            "reply_markup": undefined,
+          },
+          "toNonChatTarget": false,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <EditMedia messageId={123}>
@@ -460,76 +460,76 @@ test('EditMedia match snapshot', async () => {
       </EditMedia>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditMedia
-                messageId={123}
-              >
-                <Video
-                  assetTag="my_video"
-                  caption="__MyVideo__"
-                  duration={100}
-                  fileData="__DATA__"
-                  fileInfo={
-                    Object {
-                      "fileName": "baz.mp4",
-                    }
-                  }
-                  height={1080}
-                  parseMode="MarkdownV2"
-                  supportsStreaming={true}
-                  thumbnailFileData="__THUMB_DATA__"
-                  thumbnailFileInfo={
-                    Object {
-                      "fileName": "baz.jpg",
-                    }
-                  }
-                  width={1920}
-                />
-              </EditMedia>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_video",
-                    "data": "__DATA__",
-                    "fieldName": "video",
-                    "info": Object {
-                      "fileName": "baz.mp4",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "data": "__THUMB_DATA__",
-                    "fieldName": "thumb",
-                    "info": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
-                "method": "editMessageMedia",
-                "params": Object {
-                  "inline_message_id": undefined,
-                  "media": Object {
-                    "caption": "__MyVideo__",
-                    "duration": 100,
-                    "height": 1080,
-                    "media": "attach://video",
-                    "parse_mode": "MarkdownV2",
-                    "supports_streaming": true,
-                    "thumb": "attach://thumb",
-                    "type": "video",
-                    "width": 1920,
-                  },
-                  "message_id": 123,
-                  "reply_markup": undefined,
-                },
-                "toNonChatTarget": false,
+    [
+      {
+        "node": <EditMedia
+          messageId={123}
+        >
+          <Video
+            assetTag="my_video"
+            caption="__MyVideo__"
+            duration={100}
+            fileData="__DATA__"
+            fileInfo={
+              {
+                "fileName": "baz.mp4",
+              }
+            }
+            height={1080}
+            parseMode="MarkdownV2"
+            supportsStreaming={true}
+            thumbnailFileData="__THUMB_DATA__"
+            thumbnailFileInfo={
+              {
+                "fileName": "baz.jpg",
+              }
+            }
+            width={1920}
+          />
+        </EditMedia>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_video",
+              "data": "__DATA__",
+              "fieldName": "video",
+              "info": {
+                "fileName": "baz.mp4",
               },
             },
-          ]
-        `);
+            {
+              "assetTag": undefined,
+              "data": "__THUMB_DATA__",
+              "fieldName": "thumb",
+              "info": {
+                "fileName": "baz.jpg",
+              },
+            },
+          ],
+          "method": "editMessageMedia",
+          "params": {
+            "inline_message_id": undefined,
+            "media": {
+              "caption": "__MyVideo__",
+              "duration": 100,
+              "height": 1080,
+              "media": "attach://video",
+              "parse_mode": "MarkdownV2",
+              "supports_streaming": true,
+              "thumb": "attach://thumb",
+              "type": "video",
+              "width": 1920,
+            },
+            "message_id": 123,
+            "reply_markup": undefined,
+          },
+          "toNonChatTarget": false,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <EditMedia
@@ -548,90 +548,90 @@ test('EditMedia match snapshot', async () => {
       </EditMedia>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <EditMedia
-                inlineMessageId="123456"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__BAR__"
-                      text="Bar"
-                    />
-                  </InlineKeyboard>
-                }
-              >
-                <Photo
-                  assetTag="my_photo"
-                  fileData="__DATA__"
-                  fileInfo={
-                    Object {
-                      "fileName": "baz.jpg",
-                    }
-                  }
-                />
-              </EditMedia>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_photo",
-                    "data": "__DATA__",
-                    "fieldName": "photo",
-                    "info": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
-                "method": "editMessageMedia",
-                "params": Object {
-                  "inline_message_id": "123456",
-                  "media": Object {
-                    "caption": undefined,
-                    "media": "attach://photo",
-                    "parse_mode": "HTML",
-                    "type": "photo",
-                  },
-                  "message_id": undefined,
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__BAR__",
-                          "text": "Bar",
-                        },
-                      ],
-                    ],
-                  },
-                },
-                "toNonChatTarget": true,
+    [
+      {
+        "node": <EditMedia
+          inlineMessageId="123456"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__BAR__"
+                text="Bar"
+              />
+            </InlineKeyboard>
+          }
+        >
+          <Photo
+            assetTag="my_photo"
+            fileData="__DATA__"
+            fileInfo={
+              {
+                "fileName": "baz.jpg",
+              }
+            }
+          />
+        </EditMedia>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_photo",
+              "data": "__DATA__",
+              "fieldName": "photo",
+              "info": {
+                "fileName": "baz.jpg",
               },
             },
-          ]
-        `);
+          ],
+          "method": "editMessageMedia",
+          "params": {
+            "inline_message_id": "123456",
+            "media": {
+              "caption": undefined,
+              "media": "attach://photo",
+              "parse_mode": "HTML",
+              "type": "photo",
+            },
+            "message_id": undefined,
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__BAR__",
+                    "text": "Bar",
+                  },
+                ],
+              ],
+            },
+          },
+          "toNonChatTarget": true,
+        },
+      },
+    ]
+  `);
 });
 
 test('StopPoll match snapshot', async () => {
   await expect(renderer.render(<StopPoll messageId={123} />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <StopPoll
-                messageId={123}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "stopPoll",
-                "params": Object {
-                  "message_id": 123,
-                  "reply_markup": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <StopPoll
+          messageId={123}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "stopPoll",
+          "params": {
+            "message_id": 123,
+            "reply_markup": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <StopPoll
@@ -644,59 +644,59 @@ test('StopPoll match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <StopPoll
-                messageId={123}
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__TOO_LATE__"
-                      text="Noooo"
-                    />
-                  </InlineKeyboard>
-                }
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "stopPoll",
-                "params": Object {
-                  "message_id": 123,
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__TOO_LATE__",
-                          "text": "Noooo",
-                        },
-                      ],
-                    ],
+    [
+      {
+        "node": <StopPoll
+          messageId={123}
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__TOO_LATE__"
+                text="Noooo"
+              />
+            </InlineKeyboard>
+          }
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "stopPoll",
+          "params": {
+            "message_id": 123,
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__TOO_LATE__",
+                    "text": "Noooo",
                   },
-                },
-              },
+                ],
+              ],
             },
-          ]
-        `);
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('DeleteMessage match snapshot', async () => {
   await expect(renderer.render(<DeleteMessage messageId={123} />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <DeleteMessage
-                messageId={123}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "deleteMessage",
-                "params": Object {
-                  "message_id": 123,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <DeleteMessage
+          messageId={123}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "deleteMessage",
+          "params": {
+            "message_id": 123,
+          },
+        },
+      },
+    ]
+  `);
 });

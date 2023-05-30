@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderUnitElement } from './utils';
-import { Image, Video, Audio, File } from '../Media';
+import { renderUnitElement } from './utils.js';
+import { Image, Video, Audio, File } from '../Media.js';
 
 describe('media Components', () => {
   test.each([Image, Video, Audio, File])('is valid root Component', (Media) => {
@@ -37,14 +37,14 @@ describe('media Components', () => {
     );
     expect(segments).toMatchSnapshot();
     expect(segments?.map((seg) => seg.value)).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "apiPath": "me/messages",
           "attachFile": undefined,
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": undefined,
                   "is_reusable": true,
                   "url": "http://this.is/a/picture",
@@ -55,13 +55,13 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
           "attachFile": undefined,
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": "_I_am_Image_",
                   "is_reusable": undefined,
                   "url": undefined,
@@ -72,17 +72,17 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
-          "attachFile": Object {
+          "attachFile": {
             "assetTag": undefined,
             "data": "_IMAGE_BINARY_DATA_",
             "info": undefined,
           },
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": undefined,
                   "is_reusable": undefined,
                   "url": undefined,
@@ -93,13 +93,13 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
           "attachFile": undefined,
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": undefined,
                   "is_reusable": true,
                   "url": "http://this.is/a/video",
@@ -110,13 +110,13 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
           "attachFile": undefined,
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": "_I_am_Video_",
                   "is_reusable": undefined,
                   "url": undefined,
@@ -127,19 +127,19 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
-          "attachFile": Object {
+          "attachFile": {
             "assetTag": undefined,
             "data": "_VIDEO_BINARY_DATA_",
-            "info": Object {
+            "info": {
               "filename": "foo.mp4",
             },
           },
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": undefined,
                   "is_reusable": undefined,
                   "url": undefined,
@@ -150,13 +150,13 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
           "attachFile": undefined,
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": undefined,
                   "is_reusable": true,
                   "url": "http://this.is/an/audio",
@@ -167,13 +167,13 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
           "attachFile": undefined,
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": "_I_am_Audio_",
                   "is_reusable": undefined,
                   "url": undefined,
@@ -184,17 +184,17 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
-          "attachFile": Object {
+          "attachFile": {
             "assetTag": "foo_audio",
             "data": "_AUDIO_BINARY_DATA_",
             "info": undefined,
           },
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": undefined,
                   "is_reusable": true,
                   "url": undefined,
@@ -205,13 +205,13 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
           "attachFile": undefined,
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": undefined,
                   "is_reusable": true,
                   "url": "http://this.is/a/file",
@@ -222,13 +222,13 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
           "attachFile": undefined,
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": "_I_am_File_",
                   "is_reusable": undefined,
                   "url": undefined,
@@ -239,19 +239,19 @@ describe('media Components', () => {
           },
           "type": "message",
         },
-        Object {
+        {
           "apiPath": "me/messages",
-          "attachFile": Object {
+          "attachFile": {
             "assetTag": "foo_file",
             "data": "_FILE_BINARY_DATA_",
-            "info": Object {
+            "info": {
               "filename": "foo.pdf",
             },
           },
-          "params": Object {
-            "message": Object {
-              "attachment": Object {
-                "payload": Object {
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
                   "attachment_id": undefined,
                   "is_reusable": true,
                   "url": undefined,

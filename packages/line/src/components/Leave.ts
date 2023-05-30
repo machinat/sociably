@@ -1,8 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import { makeUnitSegment } from '@sociably/core/renderer';
-import makeLineComponent from '../utils/makeLineComponent';
-import LineChat from '../Chat';
-import { LineComponent } from '../types';
+import makeLineComponent from '../utils/makeLineComponent.js';
+import LineChat from '../Chat.js';
+import { LineComponent } from '../types.js';
 
 const LEAVE_REQUESTER = {
   type: 'chat_action' as const,

@@ -1,18 +1,18 @@
 import { parse as parseUrl } from 'url';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
-import _Connector from '@sociably/websocket/client/Connector';
+import { Connector as _Connector } from '@sociably/websocket/client';
 import _AuthClient from '@sociably/auth/client';
-import WebviewConnection from '../../Connection';
-import { AnyClientAuthenticator } from '../../types';
-import Client from '../Client';
+import WebviewConnection from '../../Connection.js';
+import { AnyClientAuthenticator } from '../../types.js';
+import Client from '../Client.js';
 
 const Connector = _Connector as Moxy<typeof _Connector>;
 const AuthClient = _AuthClient as Moxy<typeof _AuthClient>;
 const BaseMarshaler = _BaseMarshaler as Moxy<typeof _BaseMarshaler>;
 
 jest.mock('@sociably/websocket/client/Connector', () => {
-  const _moxy = jest.requireActual('@moxyjs/moxy').default;
+  const _moxy = jest.requireActual('@moxyjs/moxy').moxy;
   const _EventEmitter = jest.requireActual('events').EventEmitter;
   return {
     __esModule: true,
@@ -30,7 +30,7 @@ jest.mock('@sociably/websocket/client/Connector', () => {
 });
 
 jest.mock('@sociably/auth/client', () => {
-  const _moxy = jest.requireActual('@moxyjs/moxy').default;
+  const _moxy = jest.requireActual('@moxyjs/moxy').moxy;
   return {
     __esModule: true,
     default: _moxy(function FakeAuthClient({ authenticators }) {
@@ -44,11 +44,10 @@ jest.mock('@sociably/auth/client', () => {
     }),
   };
 });
-
 jest.mock('@sociably/core/base/Marshaler', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/base/Marshaler'))
+    .moxy(jest.requireActual('@sociably/core/base/Marshaler'))
 );
 
 const location = moxy(parseUrl('https://sociably.io/hello'));

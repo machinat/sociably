@@ -1,39 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Script object 1`] = `
-Array [
-  Object {
+[
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
+  {
     "condition": [Function],
     "isNot": false,
     "offset": 5,
     "type": "jump_cond",
   },
-  Object {
+  {
     "condition": [Function],
     "isNot": false,
     "offset": 9,
     "type": "jump_cond",
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
+  {
     "goto": "childPrompt",
     "key": "call_1",
-    "script": Object {
+    "script": {
       "$$typeof": Symbol(lib.script.sociably),
       "Start": [Function],
-      "commands": Array [
-        Object {
+      "commands": [
+        {
           "getContent": [Function],
           "type": "content",
         },
-        Object {
+        {
           "key": "childPrompt",
           "setVars": [Function],
           "type": "prompt",
@@ -50,56 +50,56 @@ Array [
     "type": "call",
     "withParams": [Function],
   },
-  Object {
+  {
     "offset": 10,
     "type": "jump",
   },
-  Object {
+  {
     "condition": [Function],
     "isNot": true,
     "offset": 4,
     "type": "jump_cond",
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
+  {
     "key": "ask_1",
     "setVars": [Function],
     "type": "prompt",
   },
-  Object {
+  {
     "offset": -3,
     "type": "jump",
   },
-  Object {
+  {
     "offset": 5,
     "type": "jump",
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
+  {
     "key": "ask_2",
     "setVars": [Function],
     "type": "prompt",
   },
-  Object {
+  {
     "getValue": [Function],
     "type": "return",
   },
-  Object {
+  {
     "offset": 1,
     "type": "jump",
   },
-  Object {
+  {
     "setVars": [Function],
     "type": "effect",
     "yieldValue": undefined,
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },
@@ -107,12 +107,12 @@ Array [
 `;
 
 exports[`Script object 3`] = `
-Array [
-  Object {
+[
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
+  {
     "key": "childPrompt",
     "setVars": [Function],
     "type": "prompt",

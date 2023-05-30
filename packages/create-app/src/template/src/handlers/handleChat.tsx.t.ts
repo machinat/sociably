@@ -1,5 +1,5 @@
-import { CreateAppContext } from '../../../types';
-import { when } from '../../../utils';
+import { CreateAppContext } from '../../../types.js';
+import { when } from '../../../utils.js';
 
 export default ({ platforms }: CreateAppContext): string => `
 import Sociably, { serviceContainer } from '@sociably/core';

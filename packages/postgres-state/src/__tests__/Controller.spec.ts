@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { Pool } from 'pg';
-import moxy, { Mock, isMoxy } from '@moxyjs/moxy';
+import { moxy, Mock, isMoxy } from '@moxyjs/moxy';
 import { StateAccessor } from '@sociably/core/base/StateController';
 import {
   DEFAULT_GLOBAL_STATE_TABLE_NAME,
@@ -14,8 +14,8 @@ import {
   FIELD_STATE_DATA,
   FIELD_CREATED_AT,
   FIELD_UPDATED_AT,
-} from '../constants';
-import { PostgresStateController } from '../Controller';
+} from '../constants.js';
+import { PostgresStateController } from '../Controller.js';
 
 const pgPool = moxy(new Pool({ connectionString: process.env.DATABASE_URL }), {
   mockMethod: false,

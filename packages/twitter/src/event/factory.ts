@@ -20,9 +20,9 @@ import {
   QuickReply,
   DeleteTweet,
   Unknown,
-} from './mixin';
-import { RawTwitterEventBody } from '../types';
-import { TwitterEvent } from './types';
+} from './mixin.js';
+import { RawTwitterEventBody } from '../types.js';
+import { TwitterEvent } from './types.js';
 
 const makeEvent = <Proto extends TwitterEvent>(
   forUserId: string,

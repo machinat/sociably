@@ -1,7 +1,7 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeWhatsAppComponent from '../utils/makeWhatsAppComponent';
-import { WhatsAppComponent, WhatsAppSegmentValue } from '../types';
+import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
+import { WhatsAppComponent, WhatsAppSegmentValue } from '../types.js';
 
 /**
  * @category Props

@@ -1,12 +1,19 @@
-import moxy from '@moxyjs/moxy';
-import { InMemoryStateController } from '../controller';
+import { moxy } from '@moxyjs/moxy';
+import { InMemoryStateController } from '../controller.js';
 
 const controller = new InMemoryStateController();
 
 const fooInstance = {
+  $$typeofChannel: true as const,
+  $$typeofThread: true as const,
+  $$typeofUser: true as const,
   platform: 'test',
   uid: 'test.foo',
-  uniqueIdentifier: { platform: 'test', id: 'foo' },
+  uniqueIdentifier: {
+    $$typeof: ['channel' as const, 'thread' as const, 'user' as const],
+    platform: 'test',
+    id: 'foo',
+  },
 };
 
 test.each([
@@ -40,12 +47,12 @@ test.each([
   expect(updator).toHaveBeenNthCalledWith(2, undefined);
   await expect(fooState.get('key2')).resolves.toBe('baz');
   await expect(fooState.keys()).resolves.toEqual(['key1', 'key2']);
-  await expect(fooState.getAll()).resolves.toMatchInlineSnapshot(`
-          Map {
-            "key1" => "bar",
-            "key2" => "baz",
-          }
-        `);
+  await expect(fooState.getAll()).resolves.toEqual(
+    new Map([
+      ['key1', 'bar'],
+      ['key2', 'baz'],
+    ])
+  );
 
   await expect(
     barState.set('key1', { foo: { bar: { baz: 'bae' } } })
@@ -54,28 +61,16 @@ test.each([
     foo: { bar: { baz: 'bae' } },
   });
   await expect(barState.keys()).resolves.toEqual(['key1']);
-  await expect(barState.getAll()).resolves.toMatchInlineSnapshot(`
-          Map {
-            "key1" => Object {
-              "foo": Object {
-                "bar": Object {
-                  "baz": "bae",
-                },
-              },
-            },
-          }
-        `);
+  await expect(barState.getAll()).resolves.toEqual(
+    new Map([['key1', { foo: { bar: { baz: 'bae' } } }]])
+  );
 
   await expect(fooState.delete('key2')).resolves.toBe(true);
   await expect(fooState.get('key2')).resolves.toBe(undefined);
 
   await expect(fooState.delete('key2')).resolves.toBe(false);
   await expect(fooState.keys()).resolves.toEqual(['key1']);
-  await expect(fooState.getAll()).resolves.toMatchInlineSnapshot(`
-          Map {
-            "key1" => "bar",
-          }
-        `);
+  await expect(fooState.getAll()).resolves.toEqual(new Map([['key1', 'bar']]));
 
   updator.mock.fakeReturnValue(undefined);
   await expect(fooState.update('key1', updator)).resolves.toBe(undefined);

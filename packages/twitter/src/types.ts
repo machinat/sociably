@@ -10,12 +10,12 @@ import { IntermediateSegment, UnitSegment } from '@sociably/core/renderer';
 import { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
 import { Interfaceable } from '@sociably/core/service';
 import type { WebhookMetadata } from '@sociably/http/webhook';
-import type { TwitterEvent } from './event/types';
-import type TwitterChat from './Chat';
-import type TweetTarget from './TweetTarget';
-import type { TwitterBot } from './Bot';
-import type TwitterUser from './User';
-import { AgentSettingsAccessorI } from './interface';
+import type { TwitterEvent } from './event/types.js';
+import type TwitterChat from './Chat.js';
+import type TweetTarget from './TweetTarget.js';
+import type { TwitterBot } from './Bot.js';
+import type TwitterUser from './User.js';
+import { AgentSettingsAccessorI } from './interface.js';
 
 export type TwitterThread = TweetTarget | TwitterChat;
 

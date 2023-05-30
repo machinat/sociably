@@ -1,7 +1,7 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { createEmptyScope } from '@sociably/core/service';
-import Stream from '../../stream';
-import debounce from '../debounce';
+import Stream from '../../stream.js';
+import debounce from '../debounce.js';
 
 jest.useFakeTimers();
 

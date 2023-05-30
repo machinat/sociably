@@ -1,27 +1,27 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
-import Telegram from '../module';
-import TelegramChat from '../Chat';
-import TelegramChatSender from '../ChatSender';
-import TelegramUser from '../User';
-import { TelegramReceiver } from '../Receiver';
-import TelegramChatProfile from '../ChatProfile';
-import TelegramUserProfile from '../UserProfile';
-import { TelegramProfiler } from '../Profiler';
-import { TelegramBot } from '../Bot';
-import { AgentSettingsAccessorI } from '../interface';
+import Telegram from '../module.js';
+import TelegramChat from '../Chat.js';
+import TelegramChatSender from '../ChatSender.js';
+import TelegramUser from '../User.js';
+import { TelegramReceiver } from '../Receiver.js';
+import TelegramChatProfile from '../ChatProfile.js';
+import TelegramUserProfile from '../UserProfile.js';
+import { TelegramProfiler } from '../Profiler.js';
+import { TelegramBot } from '../Bot.js';
+import { AgentSettingsAccessorI } from '../interface.js';
 
 it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);
   expect(Telegram.Bot).toBe(TelegramBot);
   expect(Telegram.Profiler).toBe(TelegramProfiler);
   expect(Telegram.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "TelegramConfigs",
       "$$polymorphic": false,
@@ -49,7 +49,7 @@ describe('initModule(configs)', () => {
 
     expect(module.name).toBe('telegram');
     expect(module.utilitiesInterface).toMatchInlineSnapshot(`
-      Object {
+      {
         "$$multi": false,
         "$$name": "TelegramPlatformUtilities",
         "$$polymorphic": false,

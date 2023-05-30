@@ -1,8 +1,8 @@
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { makeTextSegment, TextSegment } from '@sociably/core/renderer';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import type { FacebookComponent } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import type { FacebookComponent } from '../types.js';
 
 /**
  * @category Props

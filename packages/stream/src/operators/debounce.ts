@@ -1,6 +1,6 @@
 import { ServiceScope } from '@sociably/core/service';
-import Stream from '../stream';
-import { OperatorFunction } from '../types';
+import Stream from '../stream.js';
+import { OperatorFunction } from '../types.js';
 
 type DebouncingCache<T> = {
   scope: ServiceScope;

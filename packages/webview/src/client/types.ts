@@ -6,8 +6,8 @@ import type {
   EventValue,
   WebviewEvent,
   AnyClientAuthenticator,
-} from '../types';
-import type WebviewClient from './Client';
+} from '../types.js';
+import type WebviewClient from './Client.js';
 
 export type ClientEventContext<
   Authenticator extends AnyClientAuthenticator = AnyClientAuthenticator,

@@ -2,8 +2,9 @@
 import { EventEmitter } from 'events';
 import invariant from 'invariant';
 import { parse as parseCookie, serialize as serializeCookie } from 'cookie';
-import { decode as decodeJwt } from 'jsonwebtoken';
-import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant';
+import JsonWebToken from 'jsonwebtoken';
+import { TOKEN_COOKIE_KEY, ERROR_COOKIE_KEY } from '../constant.js';
+import AuthError from '../error.js';
 import type {
   AnyClientAuthenticator,
   AnyAuthContext,
@@ -15,8 +16,9 @@ import type {
   VerifyRequestBody,
   AuthApiResponseBody,
   AuthApiErrorBody,
-} from '../types';
-import AuthError from '../error';
+} from '../types.js';
+
+const { decode: decodeJwt } = JsonWebToken;
 
 type AuthClientOptions<Authenticator extends AnyClientAuthenticator> = {
   serverUrl: string;
@@ -343,6 +345,7 @@ class AuthClient<
     authenticator: AnyClientAuthenticator
   ): Promise<[Error | null, string]> {
     const { platform } = authenticator;
+
     const result = await authenticator.fetchCredential(
       this._getAuthEntry(platform)
     );

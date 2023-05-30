@@ -1,13 +1,13 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
-import type TelegramUser from './User';
-import TelegramChat from './Chat';
-import TelegramChatSender from './ChatSender';
-import TelegramChatProfile from './ChatProfile';
-import TelegramUserProfile from './UserProfile';
-import BotP from './Bot';
-import { TELEGRAM } from './constant';
-import type { RawPhotoSize, RawUser, RawChat } from './types';
+import type TelegramUser from './User.js';
+import TelegramChat from './Chat.js';
+import TelegramChatSender from './ChatSender.js';
+import TelegramChatProfile from './ChatProfile.js';
+import TelegramUserProfile from './UserProfile.js';
+import BotP from './Bot.js';
+import { TELEGRAM } from './constant.js';
+import type { RawPhotoSize, RawUser, RawChat } from './types.js';
 
 type PhotoResponse = {
   content: NodeJS.ReadableStream;

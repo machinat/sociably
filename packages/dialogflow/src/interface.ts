@@ -1,5 +1,5 @@
 import { serviceInterface } from '@sociably/core/service';
-import type { DialogflowConfigs } from './types';
+import type { DialogflowConfigs } from './types.js';
 
 /**
  * @category Interface

@@ -1,2 +1,2 @@
-export { default, BasicAuthenticator } from './BasicAuthenticator';
-export * from './types';
+export { default, BasicAuthenticator } from './BasicAuthenticator.js';
+export * from './types.js';

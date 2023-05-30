@@ -4,10 +4,10 @@ import {
   serviceContainer,
   ServiceScope,
 } from '@sociably/core/service';
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import type createNextApp from 'next';
 import { IncomingMessage, ServerResponse } from 'http';
-import { NextReceiver } from '../receiver';
+import { NextReceiver } from '../receiver.js';
 
 const nextDefaultHandler = moxy(async () => {});
 
@@ -115,7 +115,7 @@ test('handle http request', async () => {
       "pathname": "/hello",
       "port": null,
       "protocol": "http:",
-      "query": Object {
+      "query": {
         "foo": "bar",
       },
       "search": "?foo=bar",
@@ -268,7 +268,7 @@ it('call next.render() with page/query returned by handleRequest', async () => {
       "pathname": "/hello",
       "port": null,
       "protocol": "http:",
-      "query": Object {
+      "query": {
         "foo": "bar",
       },
       "search": "?foo=bar",

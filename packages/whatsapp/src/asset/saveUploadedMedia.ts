@@ -1,9 +1,9 @@
 import { serviceContainer } from '@sociably/core/service';
 import { DispatchError } from '@sociably/core/engine';
 import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
-import type { WhatsAppDispatchMiddleware } from '../types';
-import AssetsManagerP from './AssetsManager';
-import WhatsAppAgent from '../Agent';
+import type { WhatsAppDispatchMiddleware } from '../types.js';
+import AssetsManagerP from './AssetsManager.js';
+import WhatsAppAgent from '../Agent.js';
 
 const updateAssetsFromSuccessfulJobs = async (
   manager: AssetsManagerP,

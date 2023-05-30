@@ -1,9 +1,9 @@
 import { makeUnitSegment } from '@sociably/core/renderer';
 import type { UnitSegment } from '@sociably/core/renderer';
 import type { FileInfo } from '@sociably/meta-api';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import { PATH_MESSAGES } from '../constant';
-import type { MessageValue, FacebookComponent } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import { PATH_MESSAGES } from '../constant.js';
+import type { MessageValue, FacebookComponent } from '../types.js';
 
 /**
  * @category Props

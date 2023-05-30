@@ -1,6 +1,6 @@
 import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { LINE } from './constant';
+import { LINE } from './constant.js';
 
 type LineUserValue = {
   provider: string;

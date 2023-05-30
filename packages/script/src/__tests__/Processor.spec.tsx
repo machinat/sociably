@@ -1,11 +1,11 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably, { SociablyThread } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
 import { traverse as traverseMessage } from '@sociably/core/iterator';
 import { InMemoryStateController } from '@sociably/dev-tools/InMemoryState';
-import { ScriptProcessor } from '../Processor';
-import build from '../build';
-import { SCRIPT_STATE_KEY } from '../constant';
+import { ScriptProcessor } from '../Processor.js';
+import build from '../build.js';
+import { SCRIPT_STATE_KEY } from '../constant.js';
 import {
   IF,
   ELSE,
@@ -15,7 +15,7 @@ import {
   LABEL,
   CALL,
   RETURN,
-} from '../keyword';
+} from '../keyword.js';
 
 const scope = moxy<ServiceScope>({
   injectContainer(container) {
@@ -174,18 +174,18 @@ describe('.start(thread, Script)', () => {
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
-            Object {
-              "callStack": Array [
-                Object {
-                  "name": "MyScript",
-                  "stopAt": "ask_1",
-                  "vars": Object {},
-                },
-              ],
-              "timestamp": Any<Number>,
-              "version": "0",
-            }
-          `
+      {
+        "callStack": [
+          {
+            "name": "MyScript",
+            "stopAt": "ask_1",
+            "vars": {},
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "0",
+      }
+    `
     );
 
     expect(promptSetFn).not.toHaveBeenCalled();
@@ -240,18 +240,18 @@ describe('.start(thread, Script)', () => {
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
-            Object {
-              "callStack": Array [
-                Object {
-                  "name": "MyScript",
-                  "stopAt": "ask_2",
-                  "vars": Object {},
-                },
-              ],
-              "timestamp": Any<Number>,
-              "version": "0",
-            }
-          `
+      {
+        "callStack": [
+          {
+            "name": "MyScript",
+            "stopAt": "ask_2",
+            "vars": {},
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "0",
+      }
+    `
     );
   });
 
@@ -307,20 +307,20 @@ describe('.start(thread, Script)', () => {
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
-            Object {
-              "callStack": Array [
-                Object {
-                  "name": "MyScript",
-                  "stopAt": "ask_2",
-                  "vars": Object {
-                    "foo": "bar",
-                  },
-                },
-              ],
-              "timestamp": Any<Number>,
-              "version": "0",
-            }
-          `
+      {
+        "callStack": [
+          {
+            "name": "MyScript",
+            "stopAt": "ask_2",
+            "vars": {
+              "foo": "bar",
+            },
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "0",
+      }
+    `
     );
   });
 
@@ -415,25 +415,25 @@ describe('.continue(thread, input)', () => {
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
-            Object {
-              "callStack": Array [
-                Object {
-                  "name": "MyScript",
-                  "stopAt": "call_1",
-                  "vars": Object {
-                    "foo": "bar",
-                  },
-                },
-                Object {
-                  "name": "AnotherScript",
-                  "stopAt": "ask_4",
-                  "vars": Object {},
-                },
-              ],
-              "timestamp": Any<Number>,
-              "version": "0",
-            }
-          `
+      {
+        "callStack": [
+          {
+            "name": "MyScript",
+            "stopAt": "call_1",
+            "vars": {
+              "foo": "bar",
+            },
+          },
+          {
+            "name": "AnotherScript",
+            "stopAt": "ask_4",
+            "vars": {},
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "0",
+      }
+    `
     );
 
     expect(promptSetFn).toHaveBeenCalledTimes(1);
@@ -502,21 +502,21 @@ describe('.continue(thread, input)', () => {
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
-            Object {
-              "callStack": Array [
-                Object {
-                  "name": "MyScript",
-                  "stopAt": "ask_5",
-                  "vars": Object {
-                    "foo": "bar",
-                    "i": 1,
-                  },
-                },
-              ],
-              "timestamp": Any<Number>,
-              "version": "0",
-            }
-          `
+      {
+        "callStack": [
+          {
+            "name": "MyScript",
+            "stopAt": "ask_5",
+            "vars": {
+              "foo": "bar",
+              "i": 1,
+            },
+          },
+        ],
+        "timestamp": Any<Number>,
+        "version": "0",
+      }
+    `
     );
 
     expect(promptSetFn).toHaveBeenCalledTimes(1);

@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { BaseMarshaler } from '../Marshaler';
+import { BaseMarshaler } from '../Marshaler.js';
 
 class Foo {
   static typeName = 'Foo';
@@ -52,17 +52,17 @@ it('marshal/unmarshal custom types', () => {
 
   const plainValue = marshaler.marshal(valueWithClasses);
   expect(plainValue).toMatchInlineSnapshot(`
-    Object {
-      "bar": Object {
+    {
+      "bar": {
         "$type": "Bar",
-        "$value": Object {
+        "$value": {
           "bar": 2,
         },
       },
       "baz": 3,
-      "foo": Object {
+      "foo": {
         "$type": "Foo",
-        "$value": Object {
+        "$value": {
           "foo": 1,
         },
       },

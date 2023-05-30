@@ -1,4 +1,4 @@
-import type { HttpRequestInfo, RoutingInfo } from '../types';
+import type { HttpRequestInfo, RoutingInfo } from '../types.js';
 
 export interface WebhookMetadata {
   source: 'webhook';

@@ -1,16 +1,16 @@
 import Sociably from '@sociably/core';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
-import _Worker from '../Worker';
-import TwitterUser from '../User';
-import TiwtterChat from '../Chat';
-import TweetTarget from '../TweetTarget';
-import TwitterBot from '../Bot';
-import { DirectMessage } from '../components/DirectMessage';
-import { Photo } from '../components/Media';
+import _Worker from '../Worker.js';
+import TwitterUser from '../User.js';
+import TiwtterChat from '../Chat.js';
+import TweetTarget from '../TweetTarget.js';
+import TwitterBot from '../Bot.js';
+import { DirectMessage } from '../components/DirectMessage.js';
+import { Photo } from '../components/Media.js';
 
 const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
@@ -19,17 +19,15 @@ const Worker = _Worker as Moxy<typeof _Worker>;
 jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/engine'))
+    .moxy(jest.requireActual('@sociably/core/engine'))
 );
-
 jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/renderer'))
+    .moxy(jest.requireActual('@sociably/core/renderer'))
 );
-
-jest.mock('../Worker', () =>
-  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../Worker'), {
+jest.mock('../Worker.js', () =>
+  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../Worker'), {
     mockNewInstance: false,
   })
 );
@@ -140,7 +138,7 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
 
     expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker.mock.calls[0].args[1]).toMatchInlineSnapshot(`
-      Object {
+      {
         "appKey": "__APP_KEY__",
         "appSecret": "__APP_SECRET__",
         "bearerToken": "__BEARER_TOKEN__",
@@ -153,13 +151,11 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
 test('.start() and .stop() start/stop the engine', () => {
   const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
-  type MockEngine = Moxy<TwitterBot['engine']>;
-
   bot.start();
-  expect((bot.engine as MockEngine).start).toHaveBeenCalledTimes(1);
+  expect(bot.engine.start).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
+  expect(bot.engine.stop).toHaveBeenCalledTimes(1);
 });
 
 describe('.render(thread, content)', () => {
@@ -443,53 +439,53 @@ describe('.uploadMedia(media)', () => {
         </>
       )
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "id": "222222222222222222",
-                "result": Object {
-                  "media_id": 222222222222222222n,
-                  "media_id_string": "222222222222222222",
-                },
-                "source": Object {
-                  "params": Object {
-                    "additional_owners": undefined,
-                    "media_category": undefined,
-                    "shared": "true",
-                  },
-                  "type": "url",
-                  "url": "https://sociably.io/img/foo.jpg",
-                },
-                "type": "photo",
-              },
-              Object {
-                "id": "111111111111111111",
-                "result": Object {
-                  "media_id": 111111111111111111n,
-                  "media_id_string": "111111111111111111",
-                },
-                "source": Object {
-                  "assetTag": undefined,
-                  "fileData": Object {
-                    "data": Array [
-                      102,
-                      111,
-                      111,
-                    ],
-                    "type": "Buffer",
-                  },
-                  "params": Object {
-                    "additional_owners": undefined,
-                    "media_category": undefined,
-                    "media_type": "image/jpg",
-                    "shared": undefined,
-                    "total_bytes": 3,
-                  },
-                  "type": "file",
-                },
-                "type": "photo",
-              },
-            ]
-          `);
+      [
+        {
+          "id": "222222222222222222",
+          "result": {
+            "media_id": 222222222222222222n,
+            "media_id_string": "222222222222222222",
+          },
+          "source": {
+            "params": {
+              "additional_owners": undefined,
+              "media_category": undefined,
+              "shared": "true",
+            },
+            "type": "url",
+            "url": "https://sociably.io/img/foo.jpg",
+          },
+          "type": "photo",
+        },
+        {
+          "id": "111111111111111111",
+          "result": {
+            "media_id": 111111111111111111n,
+            "media_id_string": "111111111111111111",
+          },
+          "source": {
+            "assetTag": undefined,
+            "fileData": {
+              "data": [
+                102,
+                111,
+                111,
+              ],
+              "type": "Buffer",
+            },
+            "params": {
+              "additional_owners": undefined,
+              "media_category": undefined,
+              "media_type": "image/jpg",
+              "shared": undefined,
+              "total_bytes": 3,
+            },
+            "type": "file",
+          },
+          "type": "photo",
+        },
+      ]
+    `);
 
     expect(uploadCall.isDone()).toBe(true);
     expect(externalMediaFileCall.isDone()).toBe(true);
@@ -500,7 +496,7 @@ describe('.uploadMedia(media)', () => {
 
     await expect(
       bot.uploadMedia(agent, 'foo')
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"\\"foo\\" is not media"`);
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`""foo" is not media"`);
     await expect(
       bot.uploadMedia(agent, <Sociably.Pause />)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<Pause /> is not media"`);
@@ -541,17 +537,17 @@ describe('.createWelcomeMessage(name, message)', () => {
         <DirectMessage>Foo!</DirectMessage>
       )
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "welcome_message": Object {
-                "created_timestamp": "1470182274821",
-                "id": "844385345234",
-                "message_data": Object {
-                  "text": "Foo!",
-                },
-                "name": "foo_welcome",
-              },
-            }
-          `);
+      {
+        "welcome_message": {
+          "created_timestamp": "1470182274821",
+          "id": "844385345234",
+          "message_data": {
+            "text": "Foo!",
+          },
+          "name": "foo_welcome",
+        },
+      }
+    `);
 
     expect(bodySpy).toHaveBeenCalledTimes(1);
     expect(bodySpy).toHaveBeenCalledWith({
@@ -612,7 +608,7 @@ test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
       .replace(/oauth_timestamp="\d+"/, 'oauth_timestamp="1234567890"')
       .replace(/oauth_signature="[^"]+"/, 'oauth_signature="_SIGNATURE_"')
   ).toMatchInlineSnapshot(
-    `"OAuth oauth_consumer_key=\\"__APP_KEY__\\",oauth_nonce=\\"_NONCE_\\",oauth_signature_method=\\"HMAC-SHA1\\",oauth_timestamp=\\"1234567890\\",oauth_token=\\"1234567890-__ACCESS_TOKEN__\\",oauth_version=\\"1.0\\",oauth_signature=\\"_SIGNATURE_\\""`
+    `"OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="_NONCE_",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1234567890",oauth_token="1234567890-__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="_SIGNATURE_""`
   );
 
   expect(content).toEqual(mediaContent);

@@ -1,6 +1,6 @@
-import TelegramChat from '../Chat';
-import TelegramUser from '../User';
-import { createChatJob, createBotScopeJobs } from '../job';
+import TelegramChat from '../Chat.js';
+import TelegramUser from '../User.js';
+import { createChatJob, createBotScopeJobs } from '../job.js';
 
 describe('createChatJob(thread, segments)', () => {
   const chat = new TelegramChat(12345, 67890);
@@ -42,24 +42,24 @@ describe('createChatJob(thread, segments)', () => {
         },
       ])
     ).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "agentId": 12345,
           "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendMesage",
-          "params": Object {
+          "params": {
             "chat_id": 67890,
             "text": "foo",
           },
         },
-        Object {
+        {
           "agentId": 12345,
-          "files": Array [
-            Object {
+          "files": [
+            {
               "assetTag": "MyBar",
-              "data": Object {
-                "data": Array [
+              "data": {
+                "data": [
                   66,
                   65,
                   82,
@@ -67,25 +67,25 @@ describe('createChatJob(thread, segments)', () => {
                 "type": "Buffer",
               },
               "fieldName": "photo",
-              "info": Object {
+              "info": {
                 "filename": "bar.jpg",
               },
             },
           ],
           "key": "tg.12345.67890",
           "method": "sendPhoto",
-          "params": Object {
+          "params": {
             "caption": "bar",
             "chat_id": 67890,
             "photo": undefined,
           },
         },
-        Object {
+        {
           "agentId": 12345,
-          "files": Array [],
+          "files": [],
           "key": "tg.12345.67890",
           "method": "sendMessage",
-          "params": Object {
+          "params": {
             "chat_id": 67890,
             "parse_mode": "HTML",
             "text": "baz",
@@ -151,33 +151,33 @@ describe('createBotScopeJobs(action, segments)', () => {
         },
       ])
     ).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "agentId": 12345,
           "files": undefined,
           "key": undefined,
           "method": "answerCallbackQuery",
-          "params": Object {
+          "params": {
             "callback_query_id": "_CALLBACK_QUERY_ID_",
           },
         },
-        Object {
+        {
           "agentId": 12345,
           "files": undefined,
           "key": undefined,
           "method": "editMessageText",
-          "params": Object {
+          "params": {
             "inline_message_id": 123,
             "text": "foo",
           },
         },
-        Object {
+        {
           "agentId": 12345,
-          "files": Array [
-            Object {
+          "files": [
+            {
               "assetTag": "MyBar",
-              "data": Object {
-                "data": Array [
+              "data": {
+                "data": [
                   66,
                   65,
                   82,
@@ -185,16 +185,16 @@ describe('createBotScopeJobs(action, segments)', () => {
                 "type": "Buffer",
               },
               "fieldName": "photo",
-              "info": Object {
+              "info": {
                 "filename": "bar.jpg",
               },
             },
           ],
           "key": undefined,
           "method": "editMessageMedia",
-          "params": Object {
+          "params": {
             "inline_message_id": 123,
-            "media": Object {
+            "media": {
               "media": "attach://photo",
               "type": "photo",
             },
@@ -255,7 +255,7 @@ describe('createBotScopeJobs(action, segments)', () => {
         },
       ])
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\\"__ELEMENT__\\" is invalid to be rendered without target chat"`
+      `""__ELEMENT__" is invalid to be rendered without target chat"`
     );
   });
 });

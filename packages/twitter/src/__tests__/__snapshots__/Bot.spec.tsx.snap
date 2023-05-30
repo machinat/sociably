@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`.render(thread, content) post a tweet 1`] = `
-Array [
-  Object {
-    "body": Object {
-      "data": Object {
+[
+  {
+    "body": {
+      "data": {
         "id": "1234567890",
         "text": "Hello World",
       },
@@ -12,9 +12,9 @@ Array [
     "code": 200,
     "uploadedMedia": null,
   },
-  Object {
-    "body": Object {
-      "data": Object {
+  {
+    "body": {
+      "data": {
         "id": "1234567890",
         "text": "Hello World",
       },
@@ -26,16 +26,16 @@ Array [
 `;
 
 exports[`.render(thread, content) post a tweet 2`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "---",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "Hello World",
       },
       "url": "2/tweets",
@@ -47,15 +47,15 @@ Array [
       "tweetId": undefined,
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "---",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "Foo Bar Baz",
       },
       "url": "2/tweets",
@@ -71,10 +71,10 @@ Array [
 `;
 
 exports[`.render(thread, content) reply to a tweet 1`] = `
-Array [
-  Object {
-    "body": Object {
-      "data": Object {
+[
+  {
+    "body": {
+      "data": {
         "id": "2222222222222",
         "text": "Hello World",
       },
@@ -82,9 +82,9 @@ Array [
     "code": 200,
     "uploadedMedia": null,
   },
-  Object {
-    "body": Object {
-      "data": Object {
+  {
+    "body": {
+      "data": {
         "id": "2222222222222",
         "text": "Hello World",
       },
@@ -96,16 +96,16 @@ Array [
 `;
 
 exports[`.render(thread, content) reply to a tweet 2`] = `
-Array [
-  Object {
+[
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "---",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "Hello World",
       },
       "url": "2/tweets",
@@ -117,15 +117,15 @@ Array [
       "tweetId": "1111111111111",
     },
   },
-  Object {
+  {
     "accomplishRequest": [Function],
     "asApplication": false,
     "key": "---",
     "mediaSources": null,
     "refreshTarget": [Function],
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "text": "Foo Bar Baz",
       },
       "url": "2/tweets",
@@ -141,24 +141,24 @@ Array [
 `;
 
 exports[`.render(thread, content) send direct message 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "accomplishRequest": [Function],
       "asApplication": false,
       "key": "twtr.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
-              "message_data": Object {
+        "params": {
+          "event": {
+            "message_create": {
+              "message_data": {
                 "attachment": undefined,
                 "text": "Hello World",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "9876543210",
               },
             },
@@ -174,22 +174,22 @@ Object {
         "userId": "9876543210",
       },
     },
-    Object {
+    {
       "accomplishRequest": [Function],
       "asApplication": false,
       "key": "twtr.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
-              "message_data": Object {
+        "params": {
+          "event": {
+            "message_create": {
+              "message_data": {
                 "attachment": undefined,
                 "text": "Foo Bar Baz",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "9876543210",
               },
             },
@@ -206,41 +206,41 @@ Object {
       },
     },
   ],
-  "results": Array [
-    Object {
-      "body": Object {
-        "event": Object {},
+  "results": [
+    {
+      "body": {
+        "event": {},
       },
       "code": 200,
       "uploadedMedia": null,
     },
-    Object {
-      "body": Object {
-        "event": Object {},
+    {
+      "body": {
+        "event": {},
       },
       "code": 200,
       "uploadedMedia": null,
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "accomplishRequest": [Function],
           "asApplication": false,
           "key": "twtr.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
-              "event": Object {
-                "message_create": Object {
-                  "message_data": Object {
+            "params": {
+              "event": {
+                "message_create": {
+                  "message_data": {
                     "attachment": undefined,
                     "text": "Hello World",
                   },
-                  "target": Object {
+                  "target": {
                     "recipient_id": "9876543210",
                   },
                 },
@@ -256,22 +256,22 @@ Object {
             "userId": "9876543210",
           },
         },
-        Object {
+        {
           "accomplishRequest": [Function],
           "asApplication": false,
           "key": "twtr.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
-              "event": Object {
-                "message_create": Object {
-                  "message_data": Object {
+            "params": {
+              "event": {
+                "message_create": {
+                  "message_data": {
                     "attachment": undefined,
                     "text": "Foo Bar Baz",
                   },
-                  "target": Object {
+                  "target": {
                     "recipient_id": "9876543210",
                   },
                 },

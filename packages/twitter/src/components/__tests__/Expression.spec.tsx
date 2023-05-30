@@ -1,11 +1,11 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
-import TwitterChat from '../../Chat';
-import { Photo } from '../Media';
-import { Typing } from '../Typing';
-import { QuickReply } from '../QuickReply';
-import { Expression } from '../Expression';
+import TwitterChat from '../../Chat.js';
+import { Photo } from '../Media.js';
+import { Typing } from '../Typing.js';
+import { QuickReply } from '../QuickReply.js';
+import { Expression } from '../Expression.js';
 
 const renderer = new Renderer('twitter', async (node, path) => [
   { type: 'text', path, node, value: node.props.children },
@@ -32,18 +32,18 @@ test('rendering', async () => {
       accomplishRequest(new TwitterChat('12345', '67890'), request, null)
     )
   ).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": "11111",
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
                 "text": "Hello",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "67890",
               },
             },
@@ -52,17 +52,17 @@ test('rendering', async () => {
         },
         "url": "1.1/direct_messages/events/new.json",
       },
-      Object {
+      {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": "11111",
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
                 "text": "World",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "67890",
               },
             },
@@ -96,18 +96,18 @@ test('rendering with quick replies', async () => {
       accomplishRequest(new TwitterChat('12345', '67890'), request, null)
     )
   ).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": undefined,
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
                 "text": "Hello World",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "67890",
               },
             },
@@ -116,27 +116,27 @@ test('rendering with quick replies', async () => {
         },
         "url": "1.1/direct_messages/events/new.json",
       },
-      Object {
+      {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": undefined,
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
-                "quick_reply": Object {
-                  "options": Array [
-                    Object {
+                "quick_reply": {
+                  "options": [
+                    {
                       "description": "FOOOOOOO",
                       "label": "foo",
                       "metadata": "FOO",
                     },
-                    Object {
+                    {
                       "description": "BAAAAAAR",
                       "label": "bar",
                       "metadata": "BAR",
                     },
-                    Object {
+                    {
                       "description": "BAAAAAAZ",
                       "label": "baz",
                       "metadata": "BAZ",
@@ -146,7 +146,7 @@ test('rendering with quick replies', async () => {
                 },
                 "text": "Choose One",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "67890",
               },
             },
@@ -174,18 +174,18 @@ test('rendering with media content', async () => {
       accomplishRequest(chat, request, i === 1 ? ['11111'] : null)
     )
   ).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": undefined,
-              "message_data": Object {
+              "message_data": {
                 "attachment": undefined,
                 "text": "Hello",
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "67890",
               },
             },
@@ -194,22 +194,22 @@ test('rendering with media content', async () => {
         },
         "url": "1.1/direct_messages/events/new.json",
       },
-      Object {
+      {
         "method": "POST",
-        "params": Object {
-          "event": Object {
-            "message_create": Object {
+        "params": {
+          "event": {
+            "message_create": {
               "custom_profile_id": undefined,
-              "message_data": Object {
-                "attachment": Object {
-                  "media": Object {
+              "message_data": {
+                "attachment": {
+                  "media": {
                     "id": "11111",
                   },
                   "type": "media",
                 },
-                "quick_reply": Object {
-                  "options": Array [
-                    Object {
+                "quick_reply": {
+                  "options": [
+                    {
                       "description": undefined,
                       "label": "foo",
                       "metadata": undefined,
@@ -219,7 +219,7 @@ test('rendering with media content', async () => {
                 },
                 "text": undefined,
               },
-              "target": Object {
+              "target": {
                 "recipient_id": "67890",
               },
             },

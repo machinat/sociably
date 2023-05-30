@@ -1,10 +1,10 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
-import { STREAMING_KEY_I } from '../../interface';
-import Stream from '../../stream';
-import filter from '../filter';
+import { STREAMING_KEY_I } from '../../interface.js';
+import Stream from '../../stream.js';
+import filter from '../filter.js';
 
-jest.useFakeTimers();
+jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 const nextTick = () => new Promise(process.nextTick);

@@ -9,12 +9,12 @@ module.exports = {
   plugins: ['prettier', '@typescript-eslint'],
   extends: [
     'airbnb-base',
-    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:prettier/recommended',
     'prettier/react',
     'prettier/standard',
     'prettier/@typescript-eslint',
+    'plugin:@typescript-eslint/recommended',
     'plugin:import/typescript',
   ],
   rules: {
@@ -44,13 +44,13 @@ module.exports = {
     'prefer-destructuring': ['error', { object: true, array: false }],
     'max-classes-per-file': 'off',
     'import/extensions': 'off',
-    'import/no-unresolved': ['error', { ignore: ['@sociably/.*'] }],
     'import/no-extraneous-dependencies': [
       'error',
       { optionalDependencies: true },
     ],
     'import/no-cycle': 'off',
     'import/no-named-as-default': 'off',
+    'import/no-named-default': 'off',
     'react/jsx-key': 'off',
     'react/display-name': 'off',
     'react/prop-types': 'off',
@@ -73,5 +73,11 @@ module.exports = {
   ],
   settings: {
     react: { pragma: 'Sociably' },
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
+    'import/resolver': {
+      typescript: {},
+    },
   },
 };

@@ -1,11 +1,11 @@
 import { AgentSettingsAccessor } from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
-import type WhatsAppAgent from './Agent';
+import type WhatsAppAgent from './Agent.js';
 import type {
   WhatsAppPlatformUtilities,
   WhatsAppConfigs,
   WhatsAppAgentSettings,
-} from './types';
+} from './types.js';
 
 /**
  * @category Interface

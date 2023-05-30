@@ -8,8 +8,8 @@ import {
   CameraAction,
   CameraRollAction,
   LocationAction,
-} from '../Action';
-import { renderPartElement } from './utils';
+} from '../Action.js';
+import { renderPartElement } from './utils.js';
 
 test.each(
   [
@@ -38,45 +38,45 @@ test('<PostbackAction/>', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PostbackAction
-                data="__POSTBACK_FOO__"
-                displayText="WORLD!"
-                label="Hello!"
-              />,
-              "path": "$#container",
-              "type": "part",
-              "value": Object {
-                "data": "__POSTBACK_FOO__",
-                "displayText": "WORLD!",
-                "label": "Hello!",
-                "type": "postback",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <PostbackAction
+          data="__POSTBACK_FOO__"
+          displayText="WORLD!"
+          label="Hello!"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "data": "__POSTBACK_FOO__",
+          "displayText": "WORLD!",
+          "label": "Hello!",
+          "type": "postback",
+        },
+      },
+    ]
+  `);
 });
 
 test('<MessageAction/>', async () => {
   await expect(renderPartElement(<MessageAction label="Tick" text="Tock" />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <MessageAction
-                label="Tick"
-                text="Tock"
-              />,
-              "path": "$#container",
-              "type": "part",
-              "value": Object {
-                "label": "Tick",
-                "text": "Tock",
-                "type": "message",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <MessageAction
+          label="Tick"
+          text="Tock"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "label": "Tick",
+          "text": "Tock",
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });
 
 test('<UriAction/>', async () => {
@@ -85,79 +85,79 @@ test('<UriAction/>', async () => {
       <UriAction uri="http://sociably.js.org" label="Try it!" />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <UriAction
-                label="Try it!"
-                uri="http://sociably.js.org"
-              />,
-              "path": "$#container",
-              "type": "part",
-              "value": Object {
-                "label": "Try it!",
-                "type": "uri",
-                "uri": "http://sociably.js.org",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <UriAction
+          label="Try it!"
+          uri="http://sociably.js.org"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "label": "Try it!",
+          "type": "uri",
+          "uri": "http://sociably.js.org",
+        },
+      },
+    ]
+  `);
 });
 
 test('<CameraAction/>', async () => {
   await expect(renderPartElement(<CameraAction label="Cheer!" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <CameraAction
-                label="Cheer!"
-              />,
-              "path": "$#container",
-              "type": "part",
-              "value": Object {
-                "label": "Cheer!",
-                "type": "camera",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <CameraAction
+          label="Cheer!"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "label": "Cheer!",
+          "type": "camera",
+        },
+      },
+    ]
+  `);
 });
 
 test('<CameraRollAction/>', async () => {
   await expect(renderPartElement(<CameraRollAction label="Cheer again!" />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <CameraRollAction
-                label="Cheer again!"
-              />,
-              "path": "$#container",
-              "type": "part",
-              "value": Object {
-                "label": "Cheer again!",
-                "type": "cameraRoll",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <CameraRollAction
+          label="Cheer again!"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "label": "Cheer again!",
+          "type": "cameraRoll",
+        },
+      },
+    ]
+  `);
 });
 
 test('<LocationAction/>', async () => {
   await expect(renderPartElement(<LocationAction label="Ok, where are we?" />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <LocationAction
-                label="Ok, where are we?"
-              />,
-              "path": "$#container",
-              "type": "part",
-              "value": Object {
-                "label": "Ok, where are we?",
-                "type": "location",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <LocationAction
+          label="Ok, where are we?"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "label": "Ok, where are we?",
+          "type": "location",
+        },
+      },
+    ]
+  `);
 });
 
 describe('DateTimePickerAction', () => {

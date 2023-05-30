@@ -1,6 +1,6 @@
 import type { SociablyProfile } from '@sociably/core/base/Profiler';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { LINE } from './constant';
+import { LINE } from './constant.js';
 
 export type LineGroupData = {
   groupId: string;

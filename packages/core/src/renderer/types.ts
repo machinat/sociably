@@ -3,7 +3,7 @@ import type {
   RawElement,
   ThunkEffectFn,
   PauseDelayFn,
-} from '../types';
+} from '../types.js';
 
 export type TextSegment = {
   type: 'text';

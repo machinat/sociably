@@ -1,10 +1,10 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderUnitElement } from './utils';
-import { ButtonTemplate } from '../ButtonTemplate';
-import { UrlButton } from '../UrlButton';
-import { PostbackButton } from '../PostbackButton';
-import { CallButton } from '../CallButton';
+import { renderUnitElement } from './utils.js';
+import { ButtonTemplate } from '../ButtonTemplate.js';
+import { UrlButton } from '../UrlButton.js';
+import { PostbackButton } from '../PostbackButton.js';
+import { CallButton } from '../CallButton.js';
 
 it('is valid component', () => {
   expect(typeof ButtonTemplate).toBe('function');
@@ -26,70 +26,70 @@ it('match snapshot', async () => {
       <ButtonTemplate buttons={buttons}>hello button template</ButtonTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ButtonTemplate
-                buttons={
-                  Array [
-                    <UrlButton
-                      title="check"
-                      url="http://xxx.yy.z"
-                    />,
-                    <PostbackButton
-                      payload="_MORE_"
-                      title="more"
-                    />,
-                    <CallButton
-                      number="+12345678"
-                      title="call us"
-                    />,
-                  ]
-                }
-              >
-                hello button template
-              </ButtonTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "message": Object {
-                    "attachment": Object {
-                      "payload": Object {
-                        "buttons": Array [
-                          Object {
-                            "fallback_url": undefined,
-                            "messenger_extensions": undefined,
-                            "title": "check",
-                            "type": "web_url",
-                            "url": "http://xxx.yy.z",
-                            "webview_height_ratio": undefined,
-                            "webview_share_button": undefined,
-                          },
-                          Object {
-                            "payload": "_MORE_",
-                            "title": "more",
-                            "type": "postback",
-                          },
-                          Object {
-                            "number": "+12345678",
-                            "title": "call us",
-                            "type": "phone_number",
-                          },
-                        ],
-                        "sharable": undefined,
-                        "template_type": "button",
-                        "text": "hello button template",
-                      },
-                      "type": "template",
+    [
+      {
+        "node": <ButtonTemplate
+          buttons={
+            [
+              <UrlButton
+                title="check"
+                url="http://xxx.yy.z"
+              />,
+              <PostbackButton
+                payload="_MORE_"
+                title="more"
+              />,
+              <CallButton
+                number="+12345678"
+                title="call us"
+              />,
+            ]
+          }
+        >
+          hello button template
+        </ButtonTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
+                  "buttons": [
+                    {
+                      "fallback_url": undefined,
+                      "messenger_extensions": undefined,
+                      "title": "check",
+                      "type": "web_url",
+                      "url": "http://xxx.yy.z",
+                      "webview_height_ratio": undefined,
+                      "webview_share_button": undefined,
                     },
-                  },
+                    {
+                      "payload": "_MORE_",
+                      "title": "more",
+                      "type": "postback",
+                    },
+                    {
+                      "number": "+12345678",
+                      "title": "call us",
+                      "type": "phone_number",
+                    },
+                  ],
+                  "sharable": undefined,
+                  "template_type": "button",
+                  "text": "hello button template",
                 },
-                "type": "message",
+                "type": "template",
               },
             },
-          ]
-        `);
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
   await expect(
     renderUnitElement(
       <ButtonTemplate buttons={buttons} sharable>
@@ -99,75 +99,75 @@ it('match snapshot', async () => {
       </ButtonTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ButtonTemplate
-                buttons={
-                  Array [
-                    <UrlButton
-                      title="check"
-                      url="http://xxx.yy.z"
-                    />,
-                    <PostbackButton
-                      payload="_MORE_"
-                      title="more"
-                    />,
-                    <CallButton
-                      number="+12345678"
-                      title="call us"
-                    />,
-                  ]
-                }
-                sharable={true}
-              >
-                foo
-                bar
-                <Sociably.Fragment>
-                  baz
-                </Sociably.Fragment>
-              </ButtonTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/messages",
-                "params": Object {
-                  "message": Object {
-                    "attachment": Object {
-                      "payload": Object {
-                        "buttons": Array [
-                          Object {
-                            "fallback_url": undefined,
-                            "messenger_extensions": undefined,
-                            "title": "check",
-                            "type": "web_url",
-                            "url": "http://xxx.yy.z",
-                            "webview_height_ratio": undefined,
-                            "webview_share_button": undefined,
-                          },
-                          Object {
-                            "payload": "_MORE_",
-                            "title": "more",
-                            "type": "postback",
-                          },
-                          Object {
-                            "number": "+12345678",
-                            "title": "call us",
-                            "type": "phone_number",
-                          },
-                        ],
-                        "sharable": true,
-                        "template_type": "button",
-                        "text": "foobarbaz",
-                      },
-                      "type": "template",
+    [
+      {
+        "node": <ButtonTemplate
+          buttons={
+            [
+              <UrlButton
+                title="check"
+                url="http://xxx.yy.z"
+              />,
+              <PostbackButton
+                payload="_MORE_"
+                title="more"
+              />,
+              <CallButton
+                number="+12345678"
+                title="call us"
+              />,
+            ]
+          }
+          sharable={true}
+        >
+          foo
+          bar
+          <Sociably.Fragment>
+            baz
+          </Sociably.Fragment>
+        </ButtonTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/messages",
+          "params": {
+            "message": {
+              "attachment": {
+                "payload": {
+                  "buttons": [
+                    {
+                      "fallback_url": undefined,
+                      "messenger_extensions": undefined,
+                      "title": "check",
+                      "type": "web_url",
+                      "url": "http://xxx.yy.z",
+                      "webview_height_ratio": undefined,
+                      "webview_share_button": undefined,
                     },
-                  },
+                    {
+                      "payload": "_MORE_",
+                      "title": "more",
+                      "type": "postback",
+                    },
+                    {
+                      "number": "+12345678",
+                      "title": "call us",
+                      "type": "phone_number",
+                    },
+                  ],
+                  "sharable": true,
+                  "template_type": "button",
+                  "text": "foobarbaz",
                 },
-                "type": "message",
+                "type": "template",
               },
             },
-          ]
-        `);
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });
 
 it('throw if children is empty', async () => {
@@ -178,7 +178,7 @@ it('throw if children is empty', async () => {
       </ButtonTemplate>
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"\\"children\\" prop should not be empty"`
+    `""children" prop should not be empty"`
   );
 });
 

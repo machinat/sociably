@@ -19,10 +19,10 @@ import {
   InlineQueryResultVenue,
   InlineQueryResultVideo,
   InlineQueryResultVoice,
-} from '../answer';
-import { InlineKeyboard, UrlButton } from '../replyMarkup';
-import { Text, Contact } from '../template';
-import { Location, Venue } from '../location';
+} from '../answer.js';
+import { InlineKeyboard, UrlButton } from '../replyMarkup.js';
+import { Text, Contact } from '../template.js';
+import { Location, Venue } from '../location.js';
 
 describe.each([
   AnswerCallbackQuery,
@@ -65,27 +65,27 @@ test('AnswerCallbackQuery match snapshot', async () => {
   await expect(
     renderer.render(<AnswerCallbackQuery queryId="12345" />, null, [])
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <AnswerCallbackQuery
-                queryId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "answerCallbackQuery",
-                "params": Object {
-                  "cache_time": undefined,
-                  "callback_query_id": "12345",
-                  "show_alert": undefined,
-                  "text": undefined,
-                  "url": undefined,
-                },
-                "toNonChatTarget": true,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <AnswerCallbackQuery
+          queryId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "answerCallbackQuery",
+          "params": {
+            "cache_time": undefined,
+            "callback_query_id": "12345",
+            "show_alert": undefined,
+            "text": undefined,
+            "url": undefined,
+          },
+          "toNonChatTarget": true,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <AnswerCallbackQuery queryId="12345" text="foo" showAlert />,
@@ -93,29 +93,29 @@ test('AnswerCallbackQuery match snapshot', async () => {
       []
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <AnswerCallbackQuery
-                queryId="12345"
-                showAlert={true}
-                text="foo"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "answerCallbackQuery",
-                "params": Object {
-                  "cache_time": undefined,
-                  "callback_query_id": "12345",
-                  "show_alert": true,
-                  "text": "foo",
-                  "url": undefined,
-                },
-                "toNonChatTarget": true,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <AnswerCallbackQuery
+          queryId="12345"
+          showAlert={true}
+          text="foo"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "answerCallbackQuery",
+          "params": {
+            "cache_time": undefined,
+            "callback_query_id": "12345",
+            "show_alert": true,
+            "text": "foo",
+            "url": undefined,
+          },
+          "toNonChatTarget": true,
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <AnswerCallbackQuery
@@ -123,33 +123,34 @@ test('AnswerCallbackQuery match snapshot', async () => {
         url="http://foo.bar/baz"
         cacheTime={999}
       />,
+
       null,
       []
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <AnswerCallbackQuery
-                cacheTime={999}
-                queryId="12345"
-                url="http://foo.bar/baz"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "answerCallbackQuery",
-                "params": Object {
-                  "cache_time": 999,
-                  "callback_query_id": "12345",
-                  "show_alert": undefined,
-                  "text": undefined,
-                  "url": "http://foo.bar/baz",
-                },
-                "toNonChatTarget": true,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <AnswerCallbackQuery
+          cacheTime={999}
+          queryId="12345"
+          url="http://foo.bar/baz"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "answerCallbackQuery",
+          "params": {
+            "cache_time": 999,
+            "callback_query_id": "12345",
+            "show_alert": undefined,
+            "text": undefined,
+            "url": "http://foo.bar/baz",
+          },
+          "toNonChatTarget": true,
+        },
+      },
+    ]
+  `);
 });
 
 test('AnswerInlineQuery match snapshot', async () => {
@@ -409,35 +410,36 @@ test('AnswerInlineQuery match snapshot', async () => {
         switchPmText="foo"
         switchPmParameter="bar"
       />,
+
       null,
       []
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <AnswerInlineQuery
-                queryId="123456"
-                switchPmParameter="bar"
-                switchPmText="foo"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "answerInlineQuery",
-                "params": Object {
-                  "cache_time": undefined,
-                  "inline_query_id": "123456",
-                  "is_personal": undefined,
-                  "next_offset": undefined,
-                  "results": Array [],
-                  "switch_pm_parameter": "bar",
-                  "switch_pm_text": "foo",
-                },
-                "toNonChatTarget": true,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <AnswerInlineQuery
+          queryId="123456"
+          switchPmParameter="bar"
+          switchPmText="foo"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "answerInlineQuery",
+          "params": {
+            "cache_time": undefined,
+            "inline_query_id": "123456",
+            "is_personal": undefined,
+            "next_offset": undefined,
+            "results": [],
+            "switch_pm_parameter": "bar",
+            "switch_pm_text": "foo",
+          },
+          "toNonChatTarget": true,
+        },
+      },
+    ]
+  `);
 });
 
 test('AnswerShippingQuery match snapshot', async () => {

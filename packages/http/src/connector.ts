@@ -3,21 +3,21 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { serviceProviderClass } from '@sociably/core/service';
-import { ServerI, RequestRouteListI, UpgradeRouteListI } from './interface';
+import { ServerI, RequestRouteListI, UpgradeRouteListI } from './interface.js';
 import {
   endRes,
   respondUpgrade,
   getTrailingPath,
   checkRoutesConfliction,
   formatRoute,
-} from './utils';
+} from './utils.js';
 import type {
   ServerListenOptions,
   RequestRoute,
   DefaultRequestRoute,
   UpgradeRoute,
   DefaultUpgradeRoute,
-} from './types';
+} from './types.js';
 
 type ConnectorOptions = {
   requestRoutes?: (RequestRoute | DefaultRequestRoute)[];

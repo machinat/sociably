@@ -3,7 +3,7 @@ import { SociablyElement } from '@sociably/core';
 import { reduce } from '@sociably/core/iterator';
 import { formatNode, isElement } from '@sociably/core/utils';
 
-import { isScript } from './utils';
+import { isScript } from './utils.js';
 import {
   IF,
   ELSE_IF,
@@ -14,7 +14,7 @@ import {
   CALL,
   EFFECT,
   RETURN,
-} from './keyword';
+} from './keyword.js';
 import type {
   ScriptNode,
   IfProps,
@@ -36,7 +36,7 @@ import type {
   EffectCommand,
   ReturnCommand,
   AnyScriptLibrary,
-} from './types';
+} from './types.js';
 
 type UnknownScriptSegment = ScriptSegment<
   unknown,

@@ -5,11 +5,11 @@ import {
 } from '@sociably/core/service';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
-import ControllerP from './Controller';
-import HttpOperatorP from './HttpOperator';
-import BasicAuthenticator from './basicAuth';
-import { ConfigsI, AuthenticatorListI } from './interface';
-import type { AuthConfigs, AnyServerAuthenticator } from './types';
+import ControllerP from './Controller.js';
+import HttpOperatorP from './HttpOperator.js';
+import BasicAuthenticator from './basicAuth/index.js';
+import { ConfigsI, AuthenticatorListI } from './interface.js';
+import type { AuthConfigs, AnyServerAuthenticator } from './types.js';
 
 const authRouteFactory = serviceProviderFactory({
   lifetime: 'transient',

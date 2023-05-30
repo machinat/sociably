@@ -4,7 +4,7 @@ import {
   UniqueOmniIdentifier,
 } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { WEBVIEW } from '../../constant';
+import { WEBVIEW } from '../../constant.js';
 
 enum MemoCacheTargetType {
   LocalStorage,

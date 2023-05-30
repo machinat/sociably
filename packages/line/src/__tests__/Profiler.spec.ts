@@ -1,11 +1,11 @@
-import moxy from '@moxyjs/moxy';
-import type { LineBot } from '../Bot';
-import LineChannel from '../Channel';
-import LineUser from '../User';
-import LineChat from '../Chat';
-import LineUserProfile from '../UserProfile';
-import LineGroupProfile from '../GroupProfile';
-import { LineProfiler } from '../Profiler';
+import { moxy } from '@moxyjs/moxy';
+import type { LineBot } from '../Bot.js';
+import LineChannel from '../Channel.js';
+import LineUser from '../User.js';
+import LineChat from '../Chat.js';
+import LineUserProfile from '../UserProfile.js';
+import LineGroupProfile from '../GroupProfile.js';
+import { LineProfiler } from '../Profiler.js';
 
 const bot = moxy<LineBot>({
   requestApi: async () => ({}),
@@ -47,7 +47,7 @@ describe('#getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "channel": LineChannel {
           "$$typeofChannel": true,
           "id": "_CHANNEL_ID_",
@@ -67,8 +67,8 @@ describe('#getUserProfile(user)', () => {
 
     const profileValue = profile.toJSONValue();
     expect(profileValue).toMatchInlineSnapshot(`
-      Object {
-        "data": Object {
+      {
+        "data": {
           "displayName": "LINE taro",
           "language": "en",
           "pictureUrl": "https://obs.line-apps.com/...",
@@ -107,7 +107,7 @@ describe('#getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "channel": LineChannel {
           "$$typeofChannel": true,
           "id": "_CHANNEL_ID_",
@@ -146,7 +146,7 @@ describe('#getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "channel": LineChannel {
           "$$typeofChannel": true,
           "id": "_CHANNEL_ID_",
@@ -189,7 +189,7 @@ describe('#getGroupProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "channel": LineChannel {
           "$$typeofChannel": true,
           "id": "_CHANNEL_ID_",
@@ -209,8 +209,8 @@ describe('#getGroupProfile(user)', () => {
 
     const profileValue = profile.toJSONValue();
     expect(profileValue).toMatchInlineSnapshot(`
-      Object {
-        "data": Object {
+      {
+        "data": {
           "groupId": "_GROUP_ID_",
           "groupName": "Group name",
           "pictureUrl": "https://profile.line-scdn.net/abcdefghijklmn",

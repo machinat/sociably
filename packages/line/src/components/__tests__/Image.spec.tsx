@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { Image } from '../Image';
-import { renderUnitElement } from './utils';
+import { Image } from '../Image.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid component', () => {
   expect(typeof Image).toBe('function');
@@ -17,23 +17,23 @@ it('match snapshot', async () => {
       <Image originalContentUrl="https://..." previewImageUrl="https://..." />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Image
-                originalContentUrl="https://..."
-                previewImageUrl="https://..."
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "originalContentUrl": "https://...",
-                  "previewImageUrl": "https://...",
-                  "type": "image",
-                },
-                "type": "message",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Image
+          originalContentUrl="https://..."
+          previewImageUrl="https://..."
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "originalContentUrl": "https://...",
+            "previewImageUrl": "https://...",
+            "type": "image",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

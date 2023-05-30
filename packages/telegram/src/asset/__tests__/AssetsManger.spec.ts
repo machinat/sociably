@@ -1,7 +1,7 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import type StateControllerI from '@sociably/core/base/StateController';
-import TelegramUser from '../../User';
-import { TelegramAssetsManager } from '../AssetsManager';
+import TelegramUser from '../../User.js';
+import { TelegramAssetsManager } from '../AssetsManager.js';
 
 const state = moxy({
   get: async () => null,
@@ -47,7 +47,7 @@ test('get asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
   expect(stateController.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$tg.foo.12345",
       "$tg.file.12345",
       "$tg.foo.12345",
@@ -75,7 +75,7 @@ test('set asset id', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$tg.foo.12345",
       "$tg.file.12345",
     ]
@@ -118,7 +118,7 @@ test('get all assets', async () => {
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$tg.foo.12345",
       "$tg.file.12345",
       "$tg.foo.12345",
@@ -148,7 +148,7 @@ test('remove asset id', async () => {
 
   expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
-    Array [
+    [
       "$tg.foo.12345",
       "$tg.file.12345",
       "$tg.foo.12345",

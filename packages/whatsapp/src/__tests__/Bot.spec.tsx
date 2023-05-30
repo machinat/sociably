@@ -1,15 +1,15 @@
 import querystring from 'querystring';
 import nock from 'nock';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
+import _Renderer from '@sociably/core/renderer';
 import _Engine from '@sociably/core/engine';
 import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
-import WhatsAppAgent from '../Agent';
-import WhatsAppChat from '../Chat';
-import { WhatsAppBot } from '../Bot';
-import { Image, ButtonsTemplate, ReplyButton } from '../components';
+import WhatsAppAgent from '../Agent.js';
+import WhatsAppChat from '../Chat.js';
+import { WhatsAppBot } from '../Bot.js';
+import { Image, ButtonsTemplate, ReplyButton } from '../components/index.js';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
@@ -20,22 +20,20 @@ nock.disableNetConnect();
 jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/engine'))
+    .moxy(jest.requireActual('@sociably/core/engine'))
 );
-
 jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/renderer'))
+    .moxy(jest.requireActual('@sociably/core/renderer'))
 );
-
 jest.mock('@sociably/meta-api', () => {
   const module = jest.requireActual('@sociably/meta-api');
   return {
     ...module,
     MetaApiWorker: jest
       .requireActual('@moxyjs/moxy')
-      .default(module.MetaApiWorker),
+      .moxy(module.MetaApiWorker),
   };
 });
 
@@ -147,13 +145,11 @@ test('#start() and #stop() start/stop engine', () => {
     appSecret,
   });
 
-  type MockEngine = Moxy<WhatsAppBot['engine']>;
-
   bot.start();
-  expect((bot.engine as MockEngine).start).toHaveBeenCalledTimes(1);
+  expect(bot.engine.start).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
+  expect(bot.engine.stop).toHaveBeenCalledTimes(1);
 });
 
 describe('#render(thread, message, options)', () => {
@@ -216,8 +212,8 @@ describe('#render(thread, message, options)', () => {
     expect(body).toMatchSnapshot();
     expect(querystring.decode(JSON.parse(body.batch)[0].body))
       .toMatchInlineSnapshot(`
-      Object {
-        "interactive": "{\\"type\\":\\"buttons\\",\\"body\\":{\\"text\\":\\"Hello *World!*\\"},\\"header\\":{\\"type\\":\\"image\\",\\"image\\":{\\"link\\":\\"http://sociably.com/foo.jpg\\"}},\\"actions\\":{\\"buttons\\":[{\\"type\\":\\"reply\\",\\"title\\":\\"BAR\\",\\"id\\":\\"BAZ\\"}]}}",
+      {
+        "interactive": "{"type":"buttons","body":{"text":"Hello *World!*"},"header":{"type":"image","image":{"link":"http://sociably.com/foo.jpg"}},"actions":{"buttons":[{"type":"reply","title":"BAR","id":"BAZ"}]}}",
         "messaging_product": "whatsapp",
         "to": "9876543210",
         "type": "interactive",

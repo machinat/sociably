@@ -1,11 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
-import moxy, { Mock } from '@moxyjs/moxy';
-import { LineReceiver } from '../Receiver';
-import LineChannel from '../Channel';
-import LineChat from '../Chat';
-import LineUser from '../User';
-import type { LineBot } from '../Bot';
+import { moxy, Mock } from '@moxyjs/moxy';
+import { LineReceiver } from '../Receiver.js';
+import LineChannel from '../Channel.js';
+import LineChat from '../Chat.js';
+import LineUser from '../User.js';
+import type { LineBot } from '../Bot.js';
 
 const bot = moxy<LineBot>({
   render: async () => ({ jobs: [], tasks: [], results: [] }),

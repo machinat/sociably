@@ -1,37 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`call to graph api 2`] = `
-Object {
+{
   "access_token": "access_token_foo",
   "appsecret_proof": "c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=access_token_foo\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22john%22%7D&id=1\\",\\"name\\":\\"facebook.id.foo.john-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"some/api?access_token=access_token_foo\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22john%22%7D&id=2\\",\\"depends_on\\":\\"facebook.id.foo.john-1\\",\\"name\\":\\"facebook.id.foo.john-2\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=access_token_bar\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22jane%22%7D&id=3\\",\\"name\\":\\"facebook.id.bar.jane-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"another/api?access_token=access_token_baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22jojo%22%7D&id=4\\",\\"name\\":\\"facebook.id.baz.jojo-1\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=1","name":"facebook.id.foo.john-1","omit_response_on_success":false},{"method":"POST","relative_url":"some/api?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=2","depends_on":"facebook.id.foo.john-1","name":"facebook.id.foo.john-2","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=access_token_bar","body":"recipient=%7B%22id%22%3A%22jane%22%7D&id=3","name":"facebook.id.bar.jane-1","omit_response_on_success":false},{"method":"POST","relative_url":"another/api?access_token=access_token_baz","body":"recipient=%7B%22id%22%3A%22jojo%22%7D&id=4","name":"facebook.id.baz.jojo-1","omit_response_on_success":false}]",
 }
 `;
 
 exports[`fail if one single job fail 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "foo",
         },
         "key": "facebook.id.foo.john",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 1,
-            "recipient": Object {
+            "recipient": {
               "id": "john",
             },
           },
           "url": "me/messages",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "message_id": "xxx",
           "recipient_id": "xxx",
         },
@@ -39,28 +39,28 @@ Object {
       },
       "success": true,
     },
-    Object {
+    {
       "error": [GraphAPIError (OAuthException): you should not passed!],
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "foo",
         },
         "key": "facebook.id.foo.john",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 2,
-            "recipient": Object {
+            "recipient": {
               "id": "john",
             },
           },
           "url": "some/api",
         },
       },
-      "result": Object {
-        "body": Object {
-          "error": Object {
+      "result": {
+        "body": {
+          "error": {
             "code": 999,
             "fbtrace_id": "DuNgzaHdmcb",
             "message": "you should not passed!",
@@ -71,27 +71,27 @@ Object {
       },
       "success": false,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "bar",
         },
         "key": "facebook.id.bar.jane",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 3,
-            "recipient": Object {
+            "recipient": {
               "id": "jane",
             },
           },
           "url": "me/messages",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "message_id": "xxx",
           "recipient_id": "xxx",
         },
@@ -99,27 +99,27 @@ Object {
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "baz",
         },
         "key": "facebook.id.baz.jojo",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 4,
-            "recipient": Object {
+            "recipient": {
               "id": "jojo",
             },
           },
           "url": "another/api",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "message_id": "xxx",
           "recipient_id": "xxx",
         },
@@ -128,7 +128,7 @@ Object {
       "success": true,
     },
   ],
-  "errors": Array [
+  "errors": [
     [GraphAPIError (OAuthException): you should not passed!],
   ],
   "success": false,
@@ -136,128 +136,128 @@ Object {
 `;
 
 exports[`skip job when no access token available 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "foo",
         },
         "key": "facebook.id.foo.john",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 1,
-            "recipient": Object {
+            "recipient": {
               "id": "john",
             },
           },
           "url": "me/messages",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": 1,
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "foo",
         },
         "key": "facebook.id.foo.john",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 2,
-            "recipient": Object {
+            "recipient": {
               "id": "john",
             },
           },
           "url": "some/api",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": 2,
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": [Error: No access token available for channel bar],
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "bar",
         },
         "key": "facebook.id.bar.jane",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 3,
-            "recipient": Object {
+            "recipient": {
               "id": "jane",
             },
           },
           "url": "me/messages",
         },
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 0,
-        "headers": Object {},
+        "headers": {},
       },
       "success": false,
     },
-    Object {
+    {
       "error": [Error: No access token available for channel baz],
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "baz",
         },
         "key": "facebook.id.baz.jojo",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 4,
-            "recipient": Object {
+            "recipient": {
               "id": "jojo",
             },
           },
           "url": "another/api",
         },
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 0,
-        "headers": Object {},
+        "headers": {},
       },
       "success": false,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "asApplication": true,
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "some": "app settings",
           },
           "url": "settins/api",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": 3,
         },
         "code": 200,
@@ -265,7 +265,7 @@ Object {
       "success": true,
     },
   ],
-  "errors": Array [
+  "errors": [
     [Error: No access token available for channel bar],
     [Error: No access token available for channel baz],
   ],
@@ -274,1081 +274,1081 @@ Object {
 `;
 
 exports[`skip job when no access token available 2`] = `
-Object {
+{
   "access_token": "access_token_foo",
   "appsecret_proof": "c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=access_token_foo\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22john%22%7D&id=1\\",\\"name\\":\\"facebook.id.foo.john-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"some/api?access_token=access_token_foo\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22john%22%7D&id=2\\",\\"depends_on\\":\\"facebook.id.foo.john-1\\",\\"name\\":\\"facebook.id.foo.john-2\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"settins/api?access_token=_APP_ID_%7C_APP_SECRET_\\",\\"body\\":\\"some=app%20settings\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=1","name":"facebook.id.foo.john-1","omit_response_on_success":false},{"method":"POST","relative_url":"some/api?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=2","depends_on":"facebook.id.foo.john-1","name":"facebook.id.foo.john-2","omit_response_on_success":false},{"method":"POST","relative_url":"settins/api?access_token=_APP_ID_%7C_APP_SECRET_","body":"some=app%20settings","omit_response_on_success":false}]",
 }
 `;
 
 exports[`upload files with form data if binary attached on job 1`] = `
 "-----MULTIPART_SEPARATOR-----
-Content-Disposition: form-data; name=\\"file_0\\"
+Content-Disposition: form-data; name="file_0"
 
 _file0_
 -----MULTIPART_SEPARATOR-----
-Content-Disposition: form-data; name=\\"file_1\\"; filename=\\"YouDontSay.jpg\\"
+Content-Disposition: form-data; name="file_1"; filename="YouDontSay.jpg"
 Content-Type: image/jpeg
 
 _file1_
 -----MULTIPART_SEPARATOR-----
-Content-Disposition: form-data; name=\\"file_2\\"; filename=\\"Cage.gif\\"
+Content-Disposition: form-data; name="file_2"; filename="Cage.gif"
 Content-Type: image/gif
 
 _file2_
 -----MULTIPART_SEPARATOR-----
-Content-Disposition: form-data; name=\\"access_token\\"
+Content-Disposition: form-data; name="access_token"
 
 access_token_foo
 -----MULTIPART_SEPARATOR-----
-Content-Disposition: form-data; name=\\"appsecret_proof\\"
+Content-Disposition: form-data; name="appsecret_proof"
 
 c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e
 -----MULTIPART_SEPARATOR-----
-Content-Disposition: form-data; name=\\"batch\\"
+Content-Disposition: form-data; name="batch"
 
-[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=access_token_foo\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22john%22%7D&id=1\\",\\"name\\":\\"facebook.id.foo.john-1\\",\\"attached_files\\":\\"file_0\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"some/api?access_token=access_token_foo\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22john%22%7D&id=2\\",\\"depends_on\\":\\"facebook.id.foo.john-1\\",\\"name\\":\\"facebook.id.foo.john-2\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=access_token_bar\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22jane%22%7D&id=3\\",\\"name\\":\\"facebook.id.bar.jane-1\\",\\"attached_files\\":\\"file_1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"another/api?access_token=access_token_baz\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22jojo%22%7D&id=4\\",\\"name\\":\\"facebook.id.baz.jojo-1\\",\\"attached_files\\":\\"file_2\\",\\"omit_response_on_success\\":false}]
+[{"method":"POST","relative_url":"me/messages?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=1","name":"facebook.id.foo.john-1","attached_files":"file_0","omit_response_on_success":false},{"method":"POST","relative_url":"some/api?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=2","depends_on":"facebook.id.foo.john-1","name":"facebook.id.foo.john-2","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=access_token_bar","body":"recipient=%7B%22id%22%3A%22jane%22%7D&id=3","name":"facebook.id.bar.jane-1","attached_files":"file_1","omit_response_on_success":false},{"method":"POST","relative_url":"another/api?access_token=access_token_baz","body":"recipient=%7B%22id%22%3A%22jojo%22%7D&id=4","name":"facebook.id.baz.jojo-1","attached_files":"file_2","omit_response_on_success":false}]
 -----MULTIPART_SEPARATOR-------
 "
 `;
 
 exports[`use querystring params for DELETE request 1`] = `
-Object {
+{
   "access_token": "access_token_foo",
   "appsecret_proof": "c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
-  "batch": "[{\\"method\\":\\"DELETE\\",\\"relative_url\\":\\"me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D&access_token=access_token_foo\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"DELETE","relative_url":"me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D&access_token=access_token_foo","omit_response_on_success":false}]",
 }
 `;
 
 exports[`use querystring params for GET request 1`] = `
-Object {
+{
   "access_token": "access_token_foo",
   "appsecret_proof": "c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
-  "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?fields=%5B%22id%22%2C%22name%22%2C%22email%22%5D&access_token=access_token_foo\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"GET","relative_url":"1234567890?fields=%5B%22id%22%2C%22name%22%2C%22email%22%5D&access_token=access_token_foo","omit_response_on_success":false}]",
 }
 `;
 
 exports[`using API result in following request registerResult & consumeResult in different batches 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "request": Object {
+        "request": {
           "method": "GET",
           "url": "1234567890",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "result": "ok",
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
         "key": "foo_thread",
         "registerResult": "image_1",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "file": "@/pretend/to/upload/a/file.jpg",
             "type": "image/jpeg",
           },
           "url": "1234567890/media",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": "1111111111",
         },
         "code": 201,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
         "key": "foo_thread",
         "registerResult": "image_2",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "file": "@/pretend/to/upload/b/file.jpg",
             "type": "image/jpeg",
           },
           "url": "1234567890/media",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": "2222222222",
         },
         "code": 201,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "consumeResult": Object {
+        "consumeResult": {
           "accomplishRequest": [MockFunction moxy] {
-            "calls": Array [
-              Array [
-                Object {
+            "calls": [
+              [
+                {
                   "method": "POST",
-                  "params": Object {
-                    "images": Array [],
+                  "params": {
+                    "images": [],
                     "to": "9876543210",
                     "type": "image",
                   },
                   "url": "1234567890/messages",
                 },
-                Array [
+                [
                   "image_1",
                   "image_2",
                 ],
                 [Function],
               ],
             ],
-            "results": Array [
-              Object {
+            "results": [
+              {
                 "type": "return",
-                "value": Object {
+                "value": {
                   "method": "POST",
-                  "params": Object {
-                    "images": Array [
-                      Object {
+                  "params": {
+                    "images": [
+                      {
                         "id": "1111111111",
                       },
-                      Object {
+                      {
                         "id": "{result=foo_thread-1:$.id}",
                       },
                     ],
@@ -1360,26 +1360,26 @@ Object {
               },
             ],
           },
-          "keys": Array [
+          "keys": [
             "image_1",
             "image_2",
           ],
         },
         "key": "foo_thread",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
-            "images": Array [],
+          "params": {
+            "images": [],
             "to": "9876543210",
             "type": "image",
           },
           "url": "1234567890/messages",
         },
       },
-      "result": Object {
-        "body": Object {
-          "messages": Array [
-            Object {
+      "result": {
+        "body": {
+          "messages": [
+            {
               "id": "123",
             },
           ],
@@ -1395,111 +1395,111 @@ Object {
 `;
 
 exports[`using API result in following request registerResult & consumeResult in different batches 2`] = `
-Object {
+{
   "access_token": "access_token_foo",
   "appsecret_proof": "c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
-  "batch": "[{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"GET\\",\\"relative_url\\":\\"1234567890?access_token=access_token_foo\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media?access_token=access_token_foo\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"name\\":\\"foo_thread-1\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo","omit_response_on_success":false},{"method":"POST","relative_url":"1234567890/media?access_token=access_token_foo","body":"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg","name":"foo_thread-1","omit_response_on_success":false}]",
 }
 `;
 
 exports[`using API result in following request registerResult & consumeResult in different batches 3`] = `
-Object {
+{
   "access_token": "access_token_foo",
   "appsecret_proof": "c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media?access_token=access_token_foo\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg\\",\\"name\\":\\"foo_thread-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages?access_token=access_token_foo\\",\\"body\\":\\"to=9876543210&type=image&images=%5B%7B%22id%22%3A%221111111111%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-1%3A%24.id%7D%22%7D%5D\\",\\"depends_on\\":\\"foo_thread-1\\",\\"name\\":\\"foo_thread-2\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"1234567890/media?access_token=access_token_foo","body":"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg","name":"foo_thread-1","omit_response_on_success":false},{"method":"POST","relative_url":"1234567890/messages?access_token=access_token_foo","body":"to=9876543210&type=image&images=%5B%7B%22id%22%3A%221111111111%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-1%3A%24.id%7D%22%7D%5D","depends_on":"foo_thread-1","name":"foo_thread-2","omit_response_on_success":false}]",
 }
 `;
 
 exports[`using API result in following request registerResult & consumeResult in the same batch 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
         "key": "foo_thread",
         "registerResult": "image_1",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "file": "@/pretend/to/upload/a/file.jpg",
             "type": "image/jpeg",
           },
           "url": "1234567890/media",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": "1111111111",
         },
         "code": 201,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
         "key": "foo_thread",
         "registerResult": "image_2",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "file": "@/pretend/to/upload/b/file.jpg",
             "type": "image/jpeg",
           },
           "url": "1234567890/media",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": "2222222222",
         },
         "code": 201,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "consumeResult": Object {
+        "consumeResult": {
           "accomplishRequest": [MockFunction moxy] {
-            "calls": Array [
-              Array [
-                Object {
+            "calls": [
+              [
+                {
                   "method": "POST",
-                  "params": Object {
-                    "images": Array [],
+                  "params": {
+                    "images": [],
                     "to": "9876543210",
                     "type": "image",
                   },
                   "url": "1234567890/messages",
                 },
-                Array [
+                [
                   "image_1",
                   "image_2",
                 ],
                 [Function],
               ],
             ],
-            "results": Array [
-              Object {
+            "results": [
+              {
                 "type": "return",
-                "value": Object {
+                "value": {
                   "method": "POST",
-                  "params": Object {
-                    "images": Array [
-                      Object {
+                  "params": {
+                    "images": [
+                      {
                         "id": "{result=foo_thread-1:$.id}",
                       },
-                      Object {
+                      {
                         "id": "{result=foo_thread-2:$.id}",
                       },
                     ],
@@ -1511,26 +1511,26 @@ Object {
               },
             ],
           },
-          "keys": Array [
+          "keys": [
             "image_1",
             "image_2",
           ],
         },
         "key": "foo_thread",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
-            "images": Array [],
+          "params": {
+            "images": [],
             "to": "9876543210",
             "type": "image",
           },
           "url": "1234567890/messages",
         },
       },
-      "result": Object {
-        "body": Object {
-          "messages": Array [
-            Object {
+      "result": {
+        "body": {
+          "messages": [
+            {
               "id": "123",
             },
           ],
@@ -1546,103 +1546,103 @@ Object {
 `;
 
 exports[`using API result in following request registerResult & consumeResult in the same batch 2`] = `
-Object {
+{
   "access_token": "access_token_foo",
   "appsecret_proof": "c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media?access_token=access_token_foo\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg\\",\\"name\\":\\"foo_thread-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/media?access_token=access_token_foo\\",\\"body\\":\\"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg\\",\\"depends_on\\":\\"foo_thread-1\\",\\"name\\":\\"foo_thread-2\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"1234567890/messages?access_token=access_token_foo\\",\\"body\\":\\"to=9876543210&type=image&images=%5B%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-1%3A%24.id%7D%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-2%3A%24.id%7D%22%7D%5D\\",\\"depends_on\\":\\"foo_thread-2\\",\\"name\\":\\"foo_thread-3\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"1234567890/media?access_token=access_token_foo","body":"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg","name":"foo_thread-1","omit_response_on_success":false},{"method":"POST","relative_url":"1234567890/media?access_token=access_token_foo","body":"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg","depends_on":"foo_thread-1","name":"foo_thread-2","omit_response_on_success":false},{"method":"POST","relative_url":"1234567890/messages?access_token=access_token_foo","body":"to=9876543210&type=image&images=%5B%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-1%3A%24.id%7D%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-2%3A%24.id%7D%22%7D%5D","depends_on":"foo_thread-2","name":"foo_thread-3","omit_response_on_success":false}]",
 }
 `;
 
 exports[`using API result in following request when job key is undeinfed 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
         "key": undefined,
         "registerResult": "image_1",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "file": "@/pretend/to/upload/a/file.jpg",
             "type": "image/jpeg",
           },
           "url": "1234567890/media",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": "1111111111",
         },
         "code": 201,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
         "key": undefined,
         "registerResult": "image_2",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "file": "@/pretend/to/upload/b/file.jpg",
             "type": "image/jpeg",
           },
           "url": "1234567890/media",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": "2222222222",
         },
         "code": 201,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "uid": "foo",
         },
-        "consumeResult": Object {
+        "consumeResult": {
           "accomplishRequest": [MockFunction moxy] {
-            "calls": Array [
-              Array [
-                Object {
+            "calls": [
+              [
+                {
                   "method": "POST",
-                  "params": Object {
-                    "images": Array [],
+                  "params": {
+                    "images": [],
                     "to": "9876543210",
                     "type": "image",
                   },
                   "url": "1234567890/messages",
                 },
-                Array [
+                [
                   "image_1",
                   "image_2",
                 ],
                 [Function],
               ],
             ],
-            "results": Array [
-              Object {
+            "results": [
+              {
                 "type": "return",
-                "value": Object {
+                "value": {
                   "method": "POST",
-                  "params": Object {
-                    "images": Array [
-                      Object {
+                  "params": {
+                    "images": [
+                      {
                         "id": "{result=#request-0:$.id}",
                       },
-                      Object {
+                      {
                         "id": "{result=#request-1:$.id}",
                       },
                     ],
@@ -1654,26 +1654,26 @@ Object {
               },
             ],
           },
-          "keys": Array [
+          "keys": [
             "image_1",
             "image_2",
           ],
         },
         "key": undefined,
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
-            "images": Array [],
+          "params": {
+            "images": [],
             "to": "9876543210",
             "type": "image",
           },
           "url": "1234567890/messages",
         },
       },
-      "result": Object {
-        "body": Object {
-          "messages": Array [
-            Object {
+      "result": {
+        "body": {
+          "messages": [
+            {
               "id": "123",
             },
           ],
@@ -1689,22 +1689,22 @@ Object {
 `;
 
 exports[`with asApplication job 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "asApplication": true,
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "some": "app settings",
           },
           "url": "settins/api",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "settings": "ok",
         },
         "code": 200,
@@ -1718,138 +1718,138 @@ Object {
 `;
 
 exports[`with asApplication job 2`] = `
-Object {
+{
   "access_token": "_APP_ID_|_APP_SECRET_",
   "appsecret_proof": "b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"settins/api?access_token=_APP_ID_%7C_APP_SECRET_\\",\\"body\\":\\"some=app%20settings\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"settins/api?access_token=_APP_ID_%7C_APP_SECRET_","body":"some=app%20settings","omit_response_on_success":false}]",
 }
 `;
 
 exports[`with defaultAccessTokenOption 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "foo",
         },
         "key": "facebook.id.foo.john",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 1,
-            "recipient": Object {
+            "recipient": {
               "id": "john",
             },
           },
           "url": "me/messages",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": 1,
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "foo",
         },
         "key": "facebook.id.foo.john",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 2,
-            "recipient": Object {
+            "recipient": {
               "id": "john",
             },
           },
           "url": "some/api",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": 2,
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "bar",
         },
         "key": "facebook.id.bar.jane",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 3,
-            "recipient": Object {
+            "recipient": {
               "id": "jane",
             },
           },
           "url": "me/messages",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": 3,
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "channel": Object {
+      "job": {
+        "channel": {
           "platform": "test",
           "uid": "baz",
         },
         "key": "facebook.id.baz.jojo",
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "id": 4,
-            "recipient": Object {
+            "recipient": {
               "id": "jojo",
             },
           },
           "url": "another/api",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": 4,
         },
         "code": 200,
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "asApplication": true,
-        "request": Object {
+        "request": {
           "method": "POST",
-          "params": Object {
+          "params": {
             "some": "app settings",
           },
           "url": "settins/api",
         },
       },
-      "result": Object {
-        "body": Object {
+      "result": {
+        "body": {
           "id": 5,
         },
         "code": 200,
@@ -1863,9 +1863,9 @@ Object {
 `;
 
 exports[`with defaultAccessTokenOption 2`] = `
-Object {
+{
   "access_token": "_DEFAULT_ACCESS_TOKEN_",
   "appsecret_proof": "f7ae03d1c98e64204c11200c5da487d46eba9d6608fb5054d60a5075c3782404",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=_DEFAULT_ACCESS_TOKEN_\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22john%22%7D&id=1\\",\\"name\\":\\"facebook.id.foo.john-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"some/api?access_token=_DEFAULT_ACCESS_TOKEN_\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22john%22%7D&id=2\\",\\"depends_on\\":\\"facebook.id.foo.john-1\\",\\"name\\":\\"facebook.id.foo.john-2\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=access_token_bar\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22jane%22%7D&id=3\\",\\"name\\":\\"facebook.id.bar.jane-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"another/api?access_token=_DEFAULT_ACCESS_TOKEN_\\",\\"body\\":\\"recipient=%7B%22id%22%3A%22jojo%22%7D&id=4\\",\\"name\\":\\"facebook.id.baz.jojo-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"settins/api?access_token=_APP_ID_%7C_APP_SECRET_\\",\\"body\\":\\"some=app%20settings\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_DEFAULT_ACCESS_TOKEN_","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=1","name":"facebook.id.foo.john-1","omit_response_on_success":false},{"method":"POST","relative_url":"some/api?access_token=_DEFAULT_ACCESS_TOKEN_","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=2","depends_on":"facebook.id.foo.john-1","name":"facebook.id.foo.john-2","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=access_token_bar","body":"recipient=%7B%22id%22%3A%22jane%22%7D&id=3","name":"facebook.id.bar.jane-1","omit_response_on_success":false},{"method":"POST","relative_url":"another/api?access_token=_DEFAULT_ACCESS_TOKEN_","body":"recipient=%7B%22id%22%3A%22jojo%22%7D&id=4","name":"facebook.id.baz.jojo-1","omit_response_on_success":false},{"method":"POST","relative_url":"settins/api?access_token=_APP_ID_%7C_APP_SECRET_","body":"some=app%20settings","omit_response_on_success":false}]",
 }
 `;

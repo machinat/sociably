@@ -1,11 +1,11 @@
-import TwitterUser from '../User';
-import Tweet from '../Tweet';
-import TweetTarget from '../TweetTarget';
-import DirectMessageChat from '../Chat';
-import { TWITTER } from '../constant';
-import polishUrlEntity from '../utils/polishUrlEntity';
-import polishMentionEntity from '../utils/polishMentionEntity';
-import polishMedia from '../utils/polishMedia';
+import TwitterUser from '../User.js';
+import Tweet from '../Tweet.js';
+import TweetTarget from '../TweetTarget.js';
+import DirectMessageChat from '../Chat.js';
+import { TWITTER } from '../constant.js';
+import polishUrlEntity from '../utils/polishUrlEntity.js';
+import polishMentionEntity from '../utils/polishMentionEntity.js';
+import polishMedia from '../utils/polishMedia.js';
 import type {
   RawFavorite,
   RawTweet,
@@ -25,7 +25,7 @@ import type {
   Photo,
   Video,
   AnimatedGif,
-} from '../types';
+} from '../types.js';
 
 export interface EventBase {
   platform: typeof TWITTER;

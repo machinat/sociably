@@ -5,8 +5,8 @@ import {
   makeUnitSegment,
   UnitSegment,
 } from '@sociably/core/renderer';
-import { WEBSOCKET } from './constant';
-import type { EventInput } from './types';
+import { WEBSOCKET } from './constant.js';
+import type { EventInput } from './types.js';
 
 /**
  * @category Component

@@ -1,7 +1,7 @@
 import invariant from 'invariant';
-import type { TraverseNodeCallback } from '../iterator/types';
-import traverse from '../iterator/traverse';
-import formatNode from '../utils/formatNode';
+import type { TraverseNodeCallback } from '../iterator/types.js';
+import traverse from '../iterator/traverse.js';
+import formatNode from '../utils/formatNode.js';
 import {
   isEmpty,
   isElement,
@@ -12,8 +12,12 @@ import {
   isRawType,
   isProviderType,
   isContainerType,
-} from '../utils/isX';
-import { createEmptyScope, Interfaceable, ServiceScope } from '../service';
+} from '../utils/isX.js';
+import {
+  createEmptyScope,
+  Interfaceable,
+  ServiceScope,
+} from '../service/index.js';
 import type {
   SociablyNode,
   SociablyRenderable,
@@ -27,13 +31,13 @@ import type {
   NativeComponent,
   FunctionalComponent,
   ContainerComponent,
-} from '../types';
+} from '../types.js';
 import type {
   InnerRenderFn,
   TextSegment,
   OutputSegment,
   IntermediateSegment,
-} from './types';
+} from './types.js';
 
 const COMPONENT_SEPARATOR = '#';
 const ROOT_SIGN = '$';
@@ -341,7 +345,9 @@ export default class SociablyRenderer<
       // throw if invalid element met
       invariant(
         false,
-        `${String(node.type)} at poistion '${path}' is not valid element type`
+        `${String(
+          (node as any).type
+        )} at poistion '${path}' is not valid element type`
       );
     }
   }

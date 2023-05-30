@@ -1,10 +1,10 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeTelegramComponent from '../utils/makeTelegramComponent';
+import makeTelegramComponent from '../utils/makeTelegramComponent.js';
 import {
   TelegramSegmentValue,
   UploadingFileInfo,
   TelegramComponent,
-} from '../types';
+} from '../types.js';
 
 /**
  * @category Props

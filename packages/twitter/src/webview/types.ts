@@ -1,8 +1,8 @@
 import type { AuthContextBase } from '@sociably/auth';
-import type TwitterChat from '../Chat';
-import type TwitterUser from '../User';
-import type UserProfile from '../UserProfile';
-import type { RawUser } from '../types';
+import type TwitterChat from '../Chat.js';
+import type TwitterUser from '../User.js';
+import type UserProfile from '../UserProfile.js';
+import type { RawUser } from '../types.js';
 
 export type TwitterAuthCredential = {
   agent: string;

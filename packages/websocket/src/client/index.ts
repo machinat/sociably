@@ -1,4 +1,4 @@
-export { default as WebSocketClient, default } from './client';
-export { default as Connector } from './Connector';
-export { default as createClientSocket } from './createClientSocket';
-export { default as ClientEmitter } from './ClientEmitter';
+export { default as WebSocketClient, default } from './Client.js';
+export { default as Connector } from './Connector.js';
+export { default as createClientSocket } from './createClientSocket.js';
+export { default as ClientEmitter } from './ClientEmitter.js';

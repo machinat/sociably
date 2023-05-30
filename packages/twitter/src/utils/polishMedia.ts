@@ -1,4 +1,4 @@
-import type { RawMedia, Media } from '../types';
+import type { RawMedia, Media } from '../types.js';
 
 const polishMedia = (raw: RawMedia): Media => {
   const videoInfo = raw.video_info;

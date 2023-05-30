@@ -1,57 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createChatJobs(options)(thread, segments) add attached file data and info 1`] = `
-Array [
-  Object {
+[
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
-    "file": Object {
+    "file": {
       "data": "_FOO_",
     },
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
+      "params": {
+        "message": {
+          "attachment": {
             "type": "image",
           },
         },
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
       },
       "url": "me/messages",
     },
   },
-  Object {
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
       "platform": "facebook",
     },
-    "file": Object {
+    "file": {
       "assetTag": "BAR!",
       "data": "_BAR_",
-      "info": Object {
+      "info": {
         "contentType": "image/jpeg",
         "filename": "deathangel.jpg",
-        "knownLength": 66666,
       },
     },
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
+      "params": {
+        "message": {
+          "attachment": {
             "type": "file",
           },
         },
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
       },
@@ -62,8 +61,8 @@ Array [
 `;
 
 exports[`createChatJobs(options)(thread, segments) respect options set in job value 1`] = `
-Array [
-  Object {
+[
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
@@ -71,16 +70,16 @@ Array [
     },
     "file": undefined,
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "bibiboo",
         },
         "messaging_type": "MESSAGE_TAG",
         "notification_type": "SILENT_PUSH",
         "persona_id": "astromech-droid",
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
         "tag": "POST_PURCHASE_UPDATE",
@@ -88,7 +87,7 @@ Array [
       "url": "me/messages",
     },
   },
-  Object {
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
@@ -96,16 +95,16 @@ Array [
     },
     "file": undefined,
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "Oh! I apologize.",
         },
         "messaging_type": "UPDATE",
         "notification_type": "REGULAR",
         "persona_id": "protocol-droid",
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
         "tag": undefined,
@@ -117,8 +116,8 @@ Array [
 `;
 
 exports[`createChatJobs(options)(thread, segments) respect the empty tag if messaging_type has already been set 1`] = `
-Array [
-  Object {
+[
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
@@ -126,16 +125,16 @@ Array [
     },
     "file": undefined,
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "bibibooboobibooboo",
         },
         "messaging_type": "RESPONSE",
         "notification_type": "SILENT_PUSH",
         "persona_id": "astromech-droid",
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
       },
@@ -146,8 +145,8 @@ Array [
 `;
 
 exports[`createChatJobs(options)(thread, segments) with message metadata 1`] = `
-Array [
-  Object {
+[
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
@@ -155,11 +154,11 @@ Array [
     },
     "file": undefined,
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "persona_id": "your-dearest-friend",
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
         "sender_action": "typing_on",
@@ -167,7 +166,7 @@ Array [
       "url": "me/messages",
     },
   },
-  Object {
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
@@ -175,16 +174,16 @@ Array [
     },
     "file": undefined,
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "id": 1,
         },
         "messaging_type": "MESSAGE_TAG",
         "notification_type": "SILENT_PUSH",
         "persona_id": "your-dearest-friend",
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
         "tag": "PAYMENT_UPDATE",
@@ -192,7 +191,7 @@ Array [
       "url": "me/messages",
     },
   },
-  Object {
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
@@ -200,18 +199,18 @@ Array [
     },
     "file": undefined,
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
+      "params": {
         "id": 2,
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
       },
       "url": "bar/baz",
     },
   },
-  Object {
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
@@ -219,16 +218,16 @@ Array [
     },
     "file": undefined,
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "id:3",
         },
         "messaging_type": "MESSAGE_TAG",
         "notification_type": "SILENT_PUSH",
         "persona_id": "your-dearest-friend",
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
         "tag": "PAYMENT_UPDATE",
@@ -236,7 +235,7 @@ Array [
       "url": "me/messages",
     },
   },
-  Object {
+  {
     "channel": FacebookPage {
       "$$typeofChannel": true,
       "id": "12345",
@@ -244,16 +243,16 @@ Array [
     },
     "file": undefined,
     "key": "fb.12345.67890",
-    "request": Object {
+    "request": {
       "method": "POST",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "4",
         },
         "messaging_type": "MESSAGE_TAG",
         "notification_type": "SILENT_PUSH",
         "persona_id": "your-dearest-friend",
-        "recipient": Object {
+        "recipient": {
           "id": "67890",
         },
         "tag": "PAYMENT_UPDATE",

@@ -2,9 +2,9 @@ import snakeCaseKeys from 'snakecase-keys';
 import type { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, makePartSegment } from '@sociably/core/renderer';
 import type { UnitSegment, PartSegment } from '@sociably/core/renderer';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import { PATH_MESSAGES } from '../constant';
-import type { MessageValue, FacebookComponent } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import { PATH_MESSAGES } from '../constant.js';
+import type { MessageValue, FacebookComponent } from '../types.js';
 
 /**
  * @category Props

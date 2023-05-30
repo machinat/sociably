@@ -1,13 +1,13 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
-import TwitterUser from '../../User';
-import TwitterChat from '../../Chat';
-import TwitterBot from '../../Bot';
-import TwitterProfiler from '../../Profiler';
-import UserProfile from '../../UserProfile';
-import TwitterApiError from '../../Error';
-import ServerAuthenticator from '../ServerAuthenticator';
-import { RawUser } from '../../types';
+import TwitterUser from '../../User.js';
+import TwitterChat from '../../Chat.js';
+import TwitterBot from '../../Bot.js';
+import TwitterProfiler from '../../Profiler.js';
+import UserProfile from '../../UserProfile.js';
+import TwitterApiError from '../../Error.js';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import { RawUser } from '../../types.js';
 
 const bot = moxy<TwitterBot>({
   requestApi() {},
@@ -73,19 +73,19 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     const delegatorOptions =
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
     expect(delegatorOptions).toMatchInlineSnapshot(`
-    Object {
-      "bot": Object {
-        "requestApi": [MockFunction moxy(requestApi)],
-      },
-      "checkAuthData": [Function],
-      "getChatLink": [Function],
-      "platform": "twitter",
-      "platformColor": "#1D9BF0",
-      "platformImageUrl": "https://sociably.js.org/img/icon/twitter.png",
-      "platformName": "Twitter",
-      "verifyCredential": [Function],
-    }
-  `);
+      {
+        "bot": {
+          "requestApi": [MockFunction moxy(requestApi)],
+        },
+        "checkAuthData": [Function],
+        "getChatLink": [Function],
+        "platform": "twitter",
+        "platformColor": "#1D9BF0",
+        "platformImageUrl": "https://sociably.js.org/img/icon/twitter.png",
+        "platformName": "Twitter",
+        "verifyCredential": [Function],
+      }
+    `);
 
     expect(
       delegatorOptions.getChatLink(new TwitterChat('1234567890', '9876543210'))
@@ -143,12 +143,12 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         user: '9876543210',
       })
     ).resolves.toMatchInlineSnapshot(`
-                        Object {
-                          "code": 418,
-                          "ok": false,
-                          "reason": "I'm a teapot",
-                        }
-                    `);
+      {
+        "code": 418,
+        "ok": false,
+        "reason": "I'm a teapot",
+      }
+    `);
   });
 });
 
@@ -186,12 +186,12 @@ test('.verifyCredential() fails anyway', async () => {
   );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
-          Object {
-            "code": 403,
-            "ok": false,
-            "reason": "should use backend based flow only",
-          }
-        `);
+    {
+      "code": 403,
+      "ok": false,
+      "reason": "should use backend based flow only",
+    }
+  `);
 });
 
 describe('.verifyRefreshment(data)', () => {
@@ -233,12 +233,12 @@ describe('.verifyRefreshment(data)', () => {
         user: { id: '9876543210', data: rawUserData },
       })
     ).resolves.toMatchInlineSnapshot(`
-                      Object {
-                        "code": 418,
-                        "ok": false,
-                        "reason": "I'm a teapot",
-                      }
-                  `);
+      {
+        "code": 418,
+        "ok": false,
+        "reason": "I'm a teapot",
+      }
+    `);
   });
 });
 

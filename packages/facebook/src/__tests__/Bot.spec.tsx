@@ -1,15 +1,16 @@
 import querystring from 'querystring';
 import nock from 'nock';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
+import * as MetaApiModule from '@sociably/meta-api';
 import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
-import { FacebookBot } from '../Bot';
-import { Image, Expression, TextReply } from '../components';
-import FacebookChat from '../Chat';
-import FacebookPage from '../Page';
+import { FacebookBot } from '../Bot.js';
+import { Image, Expression, TextReply } from '../components/index.js';
+import FacebookChat from '../Chat.js';
+import FacebookPage from '../Page.js';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
@@ -19,23 +20,23 @@ nock.disableNetConnect();
 
 jest.mock('@sociably/core/engine', () =>
   jest
-    .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/engine'))
+    .requireActual<{ moxy: typeof moxy }>('@moxyjs/moxy')
+    .moxy(jest.requireActual('@sociably/core/engine'))
 );
 
 jest.mock('@sociably/core/renderer', () =>
   jest
-    .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/renderer'))
+    .requireActual<{ moxy: typeof moxy }>('@moxyjs/moxy')
+    .moxy(jest.requireActual('@sociably/core/renderer'))
 );
 
 jest.mock('@sociably/meta-api', () => {
-  const module = jest.requireActual('@sociably/meta-api');
+  const module = jest.requireActual<typeof MetaApiModule>('@sociably/meta-api');
   return {
     ...module,
     MetaApiWorker: jest
-      .requireActual('@moxyjs/moxy')
-      .default(module.MetaApiWorker),
+      .requireActual<{ moxy: typeof moxy }>('@moxyjs/moxy')
+      .moxy(module.MetaApiWorker),
   };
 });
 
@@ -144,13 +145,11 @@ test('.start() and .stop() start/stop engine', () => {
     dispatchWrapper,
   });
 
-  type MockEngine = Moxy<FacebookBot['engine']>;
-
   bot.start();
-  expect((bot.engine as MockEngine).start).toHaveBeenCalledTimes(1);
+  expect(bot.engine.start).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
+  expect(bot.engine.stop).toHaveBeenCalledTimes(1);
 });
 
 describe('.message(thread, message, options)', () => {
@@ -205,14 +204,14 @@ describe('.message(thread, message, options)', () => {
     expect(body).toMatchSnapshot();
     expect(JSON.parse(body.batch).map((req) => querystring.decode(req.body)))
       .toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "message": "{\\"text\\":\\"Hello World!\\"}",
-          "recipient": "{\\"id\\":\\"9876543210\\"}",
+      [
+        {
+          "message": "{"text":"Hello World!"}",
+          "recipient": "{"id":"9876543210"}",
         },
-        Object {
-          "message": "{\\"attachment\\":{\\"type\\":\\"image\\",\\"payload\\":{\\"url\\":\\"https://sociably.io/greeting.png\\"}},\\"quick_replies\\":[{\\"content_type\\":\\"text\\",\\"title\\":\\"Hi!\\",\\"payload\\":\\"👋\\"}]}",
-          "recipient": "{\\"id\\":\\"9876543210\\"}",
+        {
+          "message": "{"attachment":{"type":"image","payload":{"url":"https://sociably.io/greeting.png"}},"quick_replies":[{"content_type":"text","title":"Hi!","payload":"👋"}]}",
+          "recipient": "{"id":"9876543210"}",
         },
       ]
     `);
@@ -242,21 +241,21 @@ describe('.message(thread, message, options)', () => {
     expect(body).toMatchSnapshot();
     expect(JSON.parse(body.batch).map((req) => querystring.decode(req.body)))
       .toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "message": "{\\"text\\":\\"Hello World!\\"}",
+      [
+        {
+          "message": "{"text":"Hello World!"}",
           "messaging_type": "MESSAGE_TAG",
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
-          "recipient": "{\\"id\\":\\"9876543210\\"}",
+          "recipient": "{"id":"9876543210"}",
           "tag": "TRANSPORTATION_UPDATE",
         },
-        Object {
-          "message": "{\\"attachment\\":{\\"type\\":\\"image\\",\\"payload\\":{\\"url\\":\\"https://sociably.io/greeting.png\\"}},\\"quick_replies\\":[{\\"content_type\\":\\"text\\",\\"title\\":\\"Hi!\\",\\"payload\\":\\"👋\\"}]}",
+        {
+          "message": "{"attachment":{"type":"image","payload":{"url":"https://sociably.io/greeting.png"}},"quick_replies":[{"content_type":"text","title":"Hi!","payload":"👋"}]}",
           "messaging_type": "MESSAGE_TAG",
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
-          "recipient": "{\\"id\\":\\"9876543210\\"}",
+          "recipient": "{"id":"9876543210"}",
           "tag": "TRANSPORTATION_UPDATE",
         },
       ]
@@ -306,8 +305,8 @@ describe('.uploadChatAttachment(page, message)', () => {
       'me/message_attachments?access_token=_ACCESS_TOKEN_'
     );
     expect(querystring.decode(reqest.body)).toMatchInlineSnapshot(`
-      Object {
-        "message": "{\\"attachment\\":{\\"type\\":\\"image\\",\\"payload\\":{\\"url\\":\\"https://sociably.io/trollface.png\\"}}}",
+      {
+        "message": "{"attachment":{"type":"image","payload":{"url":"https://sociably.io/trollface.png"}}}",
       }
     `);
 

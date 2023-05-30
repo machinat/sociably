@@ -1,9 +1,9 @@
 import { DispatchError } from '@sociably/core/engine';
 import { serviceContainer } from '@sociably/core/service';
 import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
-import type { FacebookDispatchMiddleware } from '../types';
-import FacebookPage from '../Page';
-import AssetsManagerP from './AssetsManager';
+import type { FacebookDispatchMiddleware } from '../types.js';
+import FacebookPage from '../Page.js';
+import AssetsManagerP from './AssetsManager.js';
 
 const updateAssetsFromSuccessfulJobs = async (
   manager: AssetsManagerP,

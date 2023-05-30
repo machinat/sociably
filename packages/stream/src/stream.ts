@@ -1,8 +1,8 @@
 import { Subject as RxSubject } from 'rxjs';
 import { MaybeContainer } from '@sociably/core/service';
-import { StreamingFrame, OperatorFunction } from './types';
-import injectMaybe from './injectMaybe';
-import pipe from './pipe';
+import { StreamingFrame, OperatorFunction } from './types.js';
+import injectMaybe from './injectMaybe.js';
+import pipe from './pipe.js';
 
 export default class Stream<T> {
   private _eventSubject: RxSubject<StreamingFrame<T>>;

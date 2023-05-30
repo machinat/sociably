@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { EmailReply } from '../EmailReply';
-import { renderPartElement } from './utils';
+import { EmailReply } from '../EmailReply.js';
+import { renderPartElement } from './utils.js';
 
 it('is valid Component', () => {
   expect(typeof EmailReply).toBe('function');
@@ -11,12 +11,12 @@ it('is valid Component', () => {
 
 test('EmailReply match snpshot', async () => {
   expect(renderPartElement(<EmailReply />)).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": <EmailReply />,
         "path": "$#container",
         "type": "part",
-        "value": Object {
+        "value": {
           "content_type": "user_email",
         },
       },

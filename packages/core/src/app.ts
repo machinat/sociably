@@ -9,12 +9,12 @@ import {
   ResolveDependencies,
   MaybeContainer,
   Interfaceable,
-} from './service';
-import type { AnyDispatchFrame } from './engine/types';
-import BaseBotP from './base/Bot';
-import BaseProfilerP from './base/Profiler';
-import BaseMarshalerP from './base/Marshaler';
-import ModuleUtilitiesI from './base/ModuleUtilities';
+} from './service/index.js';
+import type { AnyDispatchFrame } from './engine/types.js';
+import BaseBotP from './base/Bot.js';
+import BaseProfilerP from './base/Profiler.js';
+import BaseMarshalerP from './base/Marshaler.js';
+import ModuleUtilitiesI from './base/ModuleUtilities.js';
 import type {
   AppConfig,
   AnyEventContext,
@@ -26,7 +26,7 @@ import type {
   ModuleUtilities,
   PlatformUtilities,
   AnySociablyPlatform,
-} from './types';
+} from './types.js';
 
 type EventListenable<Context> = MaybeContainer<(ctx: Context) => void>;
 

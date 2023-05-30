@@ -1,5 +1,5 @@
-import type { SociablyNode, SociablyRenderable } from '../types';
-import map from './map';
+import type { SociablyNode, SociablyRenderable } from '../types.js';
+import map from './map.js';
 
 const identity = <T>(x: T) => x;
 

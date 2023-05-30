@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { TakeThreadContorl } from '../TakeThreadContorl';
-import { renderUnitElement } from './utils';
+import { TakeThreadContorl } from '../TakeThreadContorl.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
   expect(typeof TakeThreadContorl).toBe('function');
@@ -12,21 +12,21 @@ it('is valid root Component', () => {
 it('match snapshot', async () => {
   await expect(renderUnitElement(<TakeThreadContorl metadata="my precious" />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <TakeThreadContorl
-                metadata="my precious"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/take_thread_control",
-                "params": Object {
-                  "metadata": "my precious",
-                },
-                "type": "message",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <TakeThreadContorl
+          metadata="my precious"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/take_thread_control",
+          "params": {
+            "metadata": "my precious",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

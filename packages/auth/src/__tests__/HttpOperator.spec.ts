@@ -1,8 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import jwt from 'jsonwebtoken';
-import moxy from '@moxyjs/moxy';
-import HttpOperator from '../HttpOperator';
-import { getCookies } from './utils';
+import { moxy } from '@moxyjs/moxy';
+import HttpOperator from '../HttpOperator.js';
+import { getCookies } from './utils.js';
 
 const secret = '__SECRET__';
 const serverUrl = 'https://sociably.io';
@@ -114,7 +114,7 @@ describe('#constructor()', () => {
           serverUrl: 'http://sociably.io',
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"protocol of options.serverUrl should be \\"https\\" when options.secure is set to true"`
+      `"protocol of options.serverUrl should be "https" when options.secure is set to true"`
     );
   });
 });
@@ -136,21 +136,21 @@ test('.issueState(res, data)', async () => {
   let [cookies, payload] = await testIssueState(operator);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "sociably_auth_state" => Object {
+      "sociably_auth_state" => {
         "directives": "HttpOnly; Max-Age=300; Path=/auth; SameSite=Lax; Secure",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMH0.tbccGtUNapTH99Q7SmW6F5CrXlhKWBsN-35NAydX3eg",
       },
     }
   `);
   expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "iat": 1570000000,
-          "platform": "foo",
-          "state": Object {
-            "foo": "state",
-          },
-        }
-      `);
+    {
+      "iat": 1570000000,
+      "platform": "foo",
+      "state": {
+        "foo": "state",
+      },
+    }
+  `);
 
   [cookies, payload] = await testIssueState(
     new HttpOperator({
@@ -166,22 +166,22 @@ test('.issueState(res, data)', async () => {
     })
   );
   expect(cookies).toMatchInlineSnapshot(`
-        Map {
-          "sociably_auth_state" => Object {
-            "directives": "Domain=sociably.io; HttpOnly; Max-Age=999; Path=/app/auth; SameSite=None",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMH0.tbccGtUNapTH99Q7SmW6F5CrXlhKWBsN-35NAydX3eg",
-          },
-        }
-      `);
+    Map {
+      "sociably_auth_state" => {
+        "directives": "Domain=sociably.io; HttpOnly; Max-Age=999; Path=/app/auth; SameSite=None",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInN0YXRlIjp7ImZvbyI6InN0YXRlIn0sImlhdCI6MTU3MDAwMDAwMH0.tbccGtUNapTH99Q7SmW6F5CrXlhKWBsN-35NAydX3eg",
+      },
+    }
+  `);
   expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "iat": 1570000000,
-          "platform": "foo",
-          "state": Object {
-            "foo": "state",
-          },
-        }
-      `);
+    {
+      "iat": 1570000000,
+      "platform": "foo",
+      "state": {
+        "foo": "state",
+      },
+    }
+  `);
 });
 
 test('.issueAuth(data, options)', async () => {
@@ -208,34 +208,34 @@ test('.issueAuth(data, options)', async () => {
   let [cookies, payload] = await testIssueAuth(operator);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "sociably_auth_signature" => Object {
+      "sociably_auth_signature" => {
         "directives": "HttpOnly; Path=/; SameSite=Lax; Secure",
         "value": "EKG7WOjtwYDAi7tisgcKPmJ_js11Jaf4347vCrFsXbc",
       },
-      "sociably_auth_token" => Object {
+      "sociably_auth_token" => {
         "directives": "Path=/; SameSite=Lax; Secure",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
       },
-      "sociably_auth_state" => Object {
+      "sociably_auth_state" => {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
-      "sociably_auth_error" => Object {
+      "sociably_auth_error" => {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
     }
   `);
   expect(payload).toMatchInlineSnapshot(`
-    Object {
-      "data": Object {
+    {
+      "data": {
         "foo": "data",
       },
       "exp": 1570003600,
       "iat": 1570000000,
       "init": 1570000000,
       "platform": "foo",
-      "scope": Object {
+      "scope": {
         "path": "/",
       },
     }
@@ -258,34 +258,34 @@ test('.issueAuth(data, options)', async () => {
   [cookies, payload] = await testIssueAuth(customizedOperator);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "sociably_auth_signature" => Object {
+      "sociably_auth_signature" => {
         "directives": "Domain=sociably.io; HttpOnly; Path=/app; SameSite=None",
         "value": "ajZ9AB8MXaQ710FVOeRiebapqvdFaIejKqd8LRfCicQ",
       },
-      "sociably_auth_token" => Object {
+      "sociably_auth_token" => {
         "directives": "Domain=sociably.io; Path=/app; SameSite=None",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJkb21haW4iOiJzb2NpYWJseS5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
       },
-      "sociably_auth_state" => Object {
+      "sociably_auth_state" => {
         "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
         "value": "",
       },
-      "sociably_auth_error" => Object {
+      "sociably_auth_error" => {
         "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
         "value": "",
       },
     }
   `);
   expect(payload).toMatchInlineSnapshot(`
-    Object {
-      "data": Object {
+    {
+      "data": {
         "foo": "data",
       },
       "exp": 1570009999,
       "iat": 1570000000,
       "init": 1570000000,
       "platform": "foo",
-      "scope": Object {
+      "scope": {
         "domain": "sociably.io",
         "path": "/app",
       },
@@ -295,15 +295,15 @@ test('.issueAuth(data, options)', async () => {
   // with specified init time
   [cookies, payload] = await testIssueAuth(customizedOperator, SEC_NOW - 12345);
   expect(payload).toMatchInlineSnapshot(`
-    Object {
-      "data": Object {
+    {
+      "data": {
         "foo": "data",
       },
       "exp": 1570009999,
       "iat": 1570000000,
       "init": 1569987655,
       "platform": "foo",
-      "scope": Object {
+      "scope": {
         "domain": "sociably.io",
         "path": "/app",
       },
@@ -311,19 +311,19 @@ test('.issueAuth(data, options)', async () => {
   `);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "sociably_auth_signature" => Object {
+      "sociably_auth_signature" => {
         "directives": "Domain=sociably.io; HttpOnly; Path=/app; SameSite=None",
         "value": "cOah-4Tjdw3fiEMmUG5vj5eUsDmlkFP09NRG32zuTLQ",
       },
-      "sociably_auth_token" => Object {
+      "sociably_auth_token" => {
         "directives": "Domain=sociably.io; Path=/app; SameSite=None",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTY5OTg3NjU1LCJzY29wZSI6eyJkb21haW4iOiJzb2NpYWJseS5pbyIsInBhdGgiOiIvYXBwIn0sImlhdCI6MTU3MDAwMDAwMCwiZXhwIjoxNTcwMDA5OTk5fQ",
       },
-      "sociably_auth_state" => Object {
+      "sociably_auth_state" => {
         "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
         "value": "",
       },
-      "sociably_auth_error" => Object {
+      "sociably_auth_error" => {
         "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
         "value": "",
       },
@@ -357,37 +357,37 @@ test('.issueError(code, reason)', async () => {
   let [cookies, payload] = await testIssueError(operator);
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "sociably_auth_error" => Object {
+      "sociably_auth_error" => {
         "directives": "Max-Age=300; Path=/; SameSite=Lax; Secure",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7InBhdGgiOiIvIn0sImlhdCI6MTU3MDAwMDAwMH0.dCs_-sNRQZoWk1dOHoRcGKCs6LEgGCwky_lWqODov3A",
       },
-      "sociably_auth_state" => Object {
+      "sociably_auth_state" => {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/auth; SameSite=Lax; Secure",
         "value": "",
       },
-      "sociably_auth_signature" => Object {
+      "sociably_auth_signature" => {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
-      "sociably_auth_token" => Object {
+      "sociably_auth_token" => {
         "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
         "value": "",
       },
     }
   `);
   expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "code": 418,
-            "reason": "I'm a teapot",
-          },
-          "iat": 1570000000,
-          "platform": "foo",
-          "scope": Object {
-            "path": "/",
-          },
-        }
-      `);
+    {
+      "error": {
+        "code": 418,
+        "reason": "I'm a teapot",
+      },
+      "iat": 1570000000,
+      "platform": "foo",
+      "scope": {
+        "path": "/",
+      },
+    }
+  `);
 
   [cookies, payload] = await testIssueError(
     new HttpOperator({
@@ -404,38 +404,38 @@ test('.issueError(code, reason)', async () => {
   );
   expect(cookies).toMatchInlineSnapshot(`
     Map {
-      "sociably_auth_error" => Object {
+      "sociably_auth_error" => {
         "directives": "Domain=sociably.io; Max-Age=999; Path=/app; SameSite=None",
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImVycm9yIjp7ImNvZGUiOjQxOCwicmVhc29uIjoiSSdtIGEgdGVhcG90In0sInNjb3BlIjp7ImRvbWFpbiI6InNvY2lhYmx5LmlvIiwicGF0aCI6Ii9hcHAifSwiaWF0IjoxNTcwMDAwMDAwfQ.9N6hirUtaF4MnDnbVyarUExMqq4PLXmvgfMCs0Mr-Tc",
       },
-      "sociably_auth_state" => Object {
+      "sociably_auth_state" => {
         "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app/auth; SameSite=None",
         "value": "",
       },
-      "sociably_auth_signature" => Object {
+      "sociably_auth_signature" => {
         "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Path=/app; SameSite=None",
         "value": "",
       },
-      "sociably_auth_token" => Object {
+      "sociably_auth_token" => {
         "directives": "Domain=sociably.io; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/app; SameSite=None",
         "value": "",
       },
     }
   `);
   expect(payload).toMatchInlineSnapshot(`
-        Object {
-          "error": Object {
-            "code": 418,
-            "reason": "I'm a teapot",
-          },
-          "iat": 1570000000,
-          "platform": "foo",
-          "scope": Object {
-            "domain": "sociably.io",
-            "path": "/app",
-          },
-        }
-      `);
+    {
+      "error": {
+        "code": 418,
+        "reason": "I'm a teapot",
+      },
+      "iat": 1570000000,
+      "platform": "foo",
+      "scope": {
+        "domain": "sociably.io",
+        "path": "/app",
+      },
+    }
+  `);
 });
 
 test('.getState()', async () => {

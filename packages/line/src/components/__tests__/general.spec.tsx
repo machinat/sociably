@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import Sociably from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
-import generalComponentDelegator from '../general';
+import generalComponentDelegator from '../general.js';
 
 const renderer = new Renderer('line', generalComponentDelegator);
 
@@ -19,12 +19,12 @@ describe('<p/>', () => {
 
     expect(segments).toMatchSnapshot();
     expect(segments?.map((seg) => seg.value)).toMatchInlineSnapshot(`
-          Array [
-            "foo",
-            "bar",
-            "baz",
-          ]
-      `);
+      [
+        "foo",
+        "bar",
+        "baz",
+      ]
+    `);
   });
 
   it('return null if content is empty', async () => {
@@ -62,7 +62,7 @@ describe('text components', () => {
 
     expect(results).toMatchSnapshot();
     expect(results.flat().map((seg) => seg?.value)).toMatchInlineSnapshot(`
-      Array [
+      [
         "important",
         "italic",
         "nooooo",
@@ -99,7 +99,7 @@ describe('text components', () => {
     const segments = await promise;
 
     expect(segments?.map((r) => r.value)).toMatchInlineSnapshot(`
-      Array [
+      [
         "123 Hello, R2D2!
       You know what?
       I'm your FATHER creator.

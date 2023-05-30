@@ -45,33 +45,33 @@ test('Photo match snapshot', async () => {
   await expect(
     renderer.render(<Photo fileId="12345" caption={<b>My Photo</b>} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Photo
-                caption={
-                  <b>
-                    My Photo
-                  </b>
-                }
-                fileId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": undefined,
-                "method": "sendPhoto",
-                "params": Object {
-                  "caption": "<b>My Photo</b>",
-                  "disable_notification": undefined,
-                  "parse_mode": "HTML",
-                  "photo": "12345",
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Photo
+          caption={
+            <b>
+              My Photo
+            </b>
+          }
+          fileId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": undefined,
+          "method": "sendPhoto",
+          "params": {
+            "caption": "<b>My Photo</b>",
+            "disable_notification": undefined,
+            "parse_mode": "HTML",
+            "photo": "12345",
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Photo
@@ -81,30 +81,30 @@ test('Photo match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Photo
-                caption="PlainTextCaption"
-                parseMode="None"
-                url="http://foo.bar/baz.jpg"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": undefined,
-                "method": "sendPhoto",
-                "params": Object {
-                  "caption": "PlainTextCaption",
-                  "disable_notification": undefined,
-                  "parse_mode": undefined,
-                  "photo": "http://foo.bar/baz.jpg",
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Photo
+          caption="PlainTextCaption"
+          parseMode="None"
+          url="http://foo.bar/baz.jpg"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": undefined,
+          "method": "sendPhoto",
+          "params": {
+            "caption": "PlainTextCaption",
+            "disable_notification": undefined,
+            "parse_mode": undefined,
+            "photo": "http://foo.bar/baz.jpg",
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Photo
@@ -123,100 +123,100 @@ test('Photo match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Photo
-                assetTag="my_photo"
-                caption="__MyPhoto__"
-                disableNotification={true}
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "fileName": "baz.jpg",
-                  }
-                }
-                parseMode="MarkdownV2"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__LIKE__"
-                      text="Like"
-                    />
-                  </InlineKeyboard>
-                }
-                replyToMessageId={123}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_photo",
-                    "data": "__DATA__",
-                    "fieldName": "photo",
-                    "info": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
-                "method": "sendPhoto",
-                "params": Object {
-                  "caption": "__MyPhoto__",
-                  "disable_notification": true,
-                  "parse_mode": "MarkdownV2",
-                  "photo": undefined,
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__LIKE__",
-                          "text": "Like",
-                        },
-                      ],
-                    ],
-                  },
-                  "reply_to_message_id": 123,
-                },
+    [
+      {
+        "node": <Photo
+          assetTag="my_photo"
+          caption="__MyPhoto__"
+          disableNotification={true}
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "fileName": "baz.jpg",
+            }
+          }
+          parseMode="MarkdownV2"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__LIKE__"
+                text="Like"
+              />
+            </InlineKeyboard>
+          }
+          replyToMessageId={123}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_photo",
+              "data": "__DATA__",
+              "fieldName": "photo",
+              "info": {
+                "fileName": "baz.jpg",
               },
             },
-          ]
-        `);
+          ],
+          "method": "sendPhoto",
+          "params": {
+            "caption": "__MyPhoto__",
+            "disable_notification": true,
+            "parse_mode": "MarkdownV2",
+            "photo": undefined,
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__LIKE__",
+                    "text": "Like",
+                  },
+                ],
+              ],
+            },
+            "reply_to_message_id": 123,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('Animation match snapshot', async () => {
   await expect(
     renderer.render(<Animation fileId="12345" caption={<b>My Animation</b>} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Animation
-                caption={
-                  <b>
-                    My Animation
-                  </b>
-                }
-                fileId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendAnimation",
-                "params": Object {
-                  "animation": "12345",
-                  "caption": "<b>My Animation</b>",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "height": undefined,
-                  "parse_mode": "HTML",
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "width": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Animation
+          caption={
+            <b>
+              My Animation
+            </b>
+          }
+          fileId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendAnimation",
+          "params": {
+            "animation": "12345",
+            "caption": "<b>My Animation</b>",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "height": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "width": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Animation
@@ -226,33 +226,33 @@ test('Animation match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Animation
-                caption="PlainTextCaption"
-                parseMode="None"
-                url="http://foo.bar/baz.gif"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendAnimation",
-                "params": Object {
-                  "animation": "http://foo.bar/baz.gif",
-                  "caption": "PlainTextCaption",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "height": undefined,
-                  "parse_mode": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "width": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Animation
+          caption="PlainTextCaption"
+          parseMode="None"
+          url="http://foo.bar/baz.gif"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendAnimation",
+          "params": {
+            "animation": "http://foo.bar/baz.gif",
+            "caption": "PlainTextCaption",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "height": undefined,
+            "parse_mode": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "width": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Animation
@@ -276,120 +276,120 @@ test('Animation match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Animation
-                assetTag="my_animate"
-                caption="__MyAnimation__"
-                disableNotification={true}
-                duration={100}
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "fileName": "baz.gif",
-                  }
-                }
-                height={1080}
-                parseMode="MarkdownV2"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__LIKE__"
-                      text="Like"
-                    />
-                  </InlineKeyboard>
-                }
-                replyToMessageId={123}
-                thumbnailFileData="__THUMB_DATA__"
-                thumbnailFileInfo={
-                  Object {
-                    "fileName": "baz.jpg",
-                  }
-                }
-                width={1920}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_animate",
-                    "data": "__DATA__",
-                    "fieldName": "animation",
-                    "info": Object {
-                      "fileName": "baz.gif",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "data": "__THUMB_DATA__",
-                    "fieldName": "thumb",
-                    "info": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
-                "method": "sendAnimation",
-                "params": Object {
-                  "animation": undefined,
-                  "caption": "__MyAnimation__",
-                  "disable_notification": true,
-                  "duration": 100,
-                  "height": 1080,
-                  "parse_mode": "MarkdownV2",
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__LIKE__",
-                          "text": "Like",
-                        },
-                      ],
-                    ],
-                  },
-                  "reply_to_message_id": 123,
-                  "width": 1920,
-                },
+    [
+      {
+        "node": <Animation
+          assetTag="my_animate"
+          caption="__MyAnimation__"
+          disableNotification={true}
+          duration={100}
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "fileName": "baz.gif",
+            }
+          }
+          height={1080}
+          parseMode="MarkdownV2"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__LIKE__"
+                text="Like"
+              />
+            </InlineKeyboard>
+          }
+          replyToMessageId={123}
+          thumbnailFileData="__THUMB_DATA__"
+          thumbnailFileInfo={
+            {
+              "fileName": "baz.jpg",
+            }
+          }
+          width={1920}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_animate",
+              "data": "__DATA__",
+              "fieldName": "animation",
+              "info": {
+                "fileName": "baz.gif",
               },
             },
-          ]
-        `);
+            {
+              "assetTag": undefined,
+              "data": "__THUMB_DATA__",
+              "fieldName": "thumb",
+              "info": {
+                "fileName": "baz.jpg",
+              },
+            },
+          ],
+          "method": "sendAnimation",
+          "params": {
+            "animation": undefined,
+            "caption": "__MyAnimation__",
+            "disable_notification": true,
+            "duration": 100,
+            "height": 1080,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__LIKE__",
+                    "text": "Like",
+                  },
+                ],
+              ],
+            },
+            "reply_to_message_id": 123,
+            "width": 1920,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('Audio match snapshot', async () => {
   await expect(
     renderer.render(<Audio fileId="12345" caption={<b>My Audio</b>} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Audio
-                caption={
-                  <b>
-                    My Audio
-                  </b>
-                }
-                fileId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendAudio",
-                "params": Object {
-                  "audio": "12345",
-                  "caption": "<b>My Audio</b>",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "parse_mode": "HTML",
-                  "performer": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "title": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Audio
+          caption={
+            <b>
+              My Audio
+            </b>
+          }
+          fileId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendAudio",
+          "params": {
+            "audio": "12345",
+            "caption": "<b>My Audio</b>",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "parse_mode": "HTML",
+            "performer": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "title": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Audio
@@ -399,33 +399,33 @@ test('Audio match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Audio
-                caption="PlainTextCaption"
-                parseMode="None"
-                url="http://foo.bar/baz.mp3"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendAudio",
-                "params": Object {
-                  "audio": "http://foo.bar/baz.mp3",
-                  "caption": "PlainTextCaption",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "parse_mode": undefined,
-                  "performer": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "title": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Audio
+          caption="PlainTextCaption"
+          parseMode="None"
+          url="http://foo.bar/baz.mp3"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendAudio",
+          "params": {
+            "audio": "http://foo.bar/baz.mp3",
+            "caption": "PlainTextCaption",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "parse_mode": undefined,
+            "performer": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "title": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Audio
@@ -449,117 +449,117 @@ test('Audio match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Audio
-                assetTag="my_audio"
-                caption="__MyAudio__"
-                disableNotification={true}
-                duration={100}
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "fileName": "baz.mp3",
-                  }
-                }
-                parseMode="MarkdownV2"
-                performer="John Doe"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__LIKE__"
-                      text="Like"
-                    />
-                  </InlineKeyboard>
-                }
-                replyToMessageId={123}
-                thumbnailFileData="__THUMB_DATA__"
-                thumbnailFileInfo={
-                  Object {
-                    "fileName": "baz.jpg",
-                  }
-                }
-                title="Foo"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_audio",
-                    "data": "__DATA__",
-                    "fieldName": "audio",
-                    "info": Object {
-                      "fileName": "baz.mp3",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "data": "__THUMB_DATA__",
-                    "fieldName": "thumb",
-                    "info": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
-                "method": "sendAudio",
-                "params": Object {
-                  "audio": undefined,
-                  "caption": "__MyAudio__",
-                  "disable_notification": true,
-                  "duration": 100,
-                  "parse_mode": "MarkdownV2",
-                  "performer": "John Doe",
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__LIKE__",
-                          "text": "Like",
-                        },
-                      ],
-                    ],
-                  },
-                  "reply_to_message_id": 123,
-                  "title": "Foo",
-                },
+    [
+      {
+        "node": <Audio
+          assetTag="my_audio"
+          caption="__MyAudio__"
+          disableNotification={true}
+          duration={100}
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "fileName": "baz.mp3",
+            }
+          }
+          parseMode="MarkdownV2"
+          performer="John Doe"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__LIKE__"
+                text="Like"
+              />
+            </InlineKeyboard>
+          }
+          replyToMessageId={123}
+          thumbnailFileData="__THUMB_DATA__"
+          thumbnailFileInfo={
+            {
+              "fileName": "baz.jpg",
+            }
+          }
+          title="Foo"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_audio",
+              "data": "__DATA__",
+              "fieldName": "audio",
+              "info": {
+                "fileName": "baz.mp3",
               },
             },
-          ]
-        `);
+            {
+              "assetTag": undefined,
+              "data": "__THUMB_DATA__",
+              "fieldName": "thumb",
+              "info": {
+                "fileName": "baz.jpg",
+              },
+            },
+          ],
+          "method": "sendAudio",
+          "params": {
+            "audio": undefined,
+            "caption": "__MyAudio__",
+            "disable_notification": true,
+            "duration": 100,
+            "parse_mode": "MarkdownV2",
+            "performer": "John Doe",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__LIKE__",
+                    "text": "Like",
+                  },
+                ],
+              ],
+            },
+            "reply_to_message_id": 123,
+            "title": "Foo",
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('Document match snapshot', async () => {
   await expect(
     renderer.render(<Document fileId="12345" caption={<b>My Document</b>} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Document
-                caption={
-                  <b>
-                    My Document
-                  </b>
-                }
-                fileId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendDocument",
-                "params": Object {
-                  "caption": "<b>My Document</b>",
-                  "disable_notification": undefined,
-                  "document": "12345",
-                  "parse_mode": "HTML",
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Document
+          caption={
+            <b>
+              My Document
+            </b>
+          }
+          fileId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendDocument",
+          "params": {
+            "caption": "<b>My Document</b>",
+            "disable_notification": undefined,
+            "document": "12345",
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Document
@@ -569,30 +569,30 @@ test('Document match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Document
-                caption="PlainTextCaption"
-                parseMode="None"
-                url="http://foo.bar/baz.txt"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendDocument",
-                "params": Object {
-                  "caption": "PlainTextCaption",
-                  "disable_notification": undefined,
-                  "document": "http://foo.bar/baz.txt",
-                  "parse_mode": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Document
+          caption="PlainTextCaption"
+          parseMode="None"
+          url="http://foo.bar/baz.txt"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendDocument",
+          "params": {
+            "caption": "PlainTextCaption",
+            "disable_notification": undefined,
+            "document": "http://foo.bar/baz.txt",
+            "parse_mode": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Document
@@ -613,115 +613,115 @@ test('Document match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Document
-                assetTag="my_doc"
-                caption="__MyDocument__"
-                disableNotification={true}
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "fileName": "baz.txt",
-                  }
-                }
-                parseMode="MarkdownV2"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__LIKE__"
-                      text="Like"
-                    />
-                  </InlineKeyboard>
-                }
-                replyToMessageId={123}
-                thumbnailFileData="__THUMB_DATA__"
-                thumbnailFileInfo={
-                  Object {
-                    "fileName": "baz.jpg",
-                  }
-                }
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_doc",
-                    "data": "__DATA__",
-                    "fieldName": "document",
-                    "info": Object {
-                      "fileName": "baz.txt",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "data": "__THUMB_DATA__",
-                    "fieldName": "thumb",
-                    "info": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
-                "method": "sendDocument",
-                "params": Object {
-                  "caption": "__MyDocument__",
-                  "disable_notification": true,
-                  "document": undefined,
-                  "parse_mode": "MarkdownV2",
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__LIKE__",
-                          "text": "Like",
-                        },
-                      ],
-                    ],
-                  },
-                  "reply_to_message_id": 123,
-                },
+    [
+      {
+        "node": <Document
+          assetTag="my_doc"
+          caption="__MyDocument__"
+          disableNotification={true}
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "fileName": "baz.txt",
+            }
+          }
+          parseMode="MarkdownV2"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__LIKE__"
+                text="Like"
+              />
+            </InlineKeyboard>
+          }
+          replyToMessageId={123}
+          thumbnailFileData="__THUMB_DATA__"
+          thumbnailFileInfo={
+            {
+              "fileName": "baz.jpg",
+            }
+          }
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_doc",
+              "data": "__DATA__",
+              "fieldName": "document",
+              "info": {
+                "fileName": "baz.txt",
               },
             },
-          ]
-        `);
+            {
+              "assetTag": undefined,
+              "data": "__THUMB_DATA__",
+              "fieldName": "thumb",
+              "info": {
+                "fileName": "baz.jpg",
+              },
+            },
+          ],
+          "method": "sendDocument",
+          "params": {
+            "caption": "__MyDocument__",
+            "disable_notification": true,
+            "document": undefined,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__LIKE__",
+                    "text": "Like",
+                  },
+                ],
+              ],
+            },
+            "reply_to_message_id": 123,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('Video match snapshot', async () => {
   await expect(
     renderer.render(<Video fileId="12345" caption={<b>My Video</b>} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Video
-                caption={
-                  <b>
-                    My Video
-                  </b>
-                }
-                fileId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendVideo",
-                "params": Object {
-                  "caption": "<b>My Video</b>",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "height": undefined,
-                  "parse_mode": "HTML",
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "supports_streaming": undefined,
-                  "video": "12345",
-                  "width": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Video
+          caption={
+            <b>
+              My Video
+            </b>
+          }
+          fileId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendVideo",
+          "params": {
+            "caption": "<b>My Video</b>",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "height": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "supports_streaming": undefined,
+            "video": "12345",
+            "width": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Video
@@ -731,34 +731,34 @@ test('Video match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Video
-                caption="PlainTextCaption"
-                parseMode="None"
-                url="http://foo.bar/baz.mp4"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendVideo",
-                "params": Object {
-                  "caption": "PlainTextCaption",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "height": undefined,
-                  "parse_mode": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "supports_streaming": undefined,
-                  "video": "http://foo.bar/baz.mp4",
-                  "width": undefined,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Video
+          caption="PlainTextCaption"
+          parseMode="None"
+          url="http://foo.bar/baz.mp4"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendVideo",
+          "params": {
+            "caption": "PlainTextCaption",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "height": undefined,
+            "parse_mode": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "supports_streaming": undefined,
+            "video": "http://foo.bar/baz.mp4",
+            "width": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Video
@@ -783,120 +783,120 @@ test('Video match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Video
-                assetTag="my_video"
-                caption="__MyVideo__"
-                disableNotification={true}
-                duration={100}
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "fileName": "baz.mp4",
-                  }
-                }
-                height={1080}
-                parseMode="MarkdownV2"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__LIKE__"
-                      text="Like"
-                    />
-                  </InlineKeyboard>
-                }
-                replyToMessageId={123}
-                supportsStreaming={true}
-                thumbnailFileData="__THUMB_DATA__"
-                thumbnailFileInfo={
-                  Object {
-                    "fileName": "baz.jpg",
-                  }
-                }
-                width={1920}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_video",
-                    "data": "__DATA__",
-                    "fieldName": "video",
-                    "info": Object {
-                      "fileName": "baz.mp4",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "data": "__THUMB_DATA__",
-                    "fieldName": "thumb",
-                    "info": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
-                "method": "sendVideo",
-                "params": Object {
-                  "caption": "__MyVideo__",
-                  "disable_notification": true,
-                  "duration": 100,
-                  "height": 1080,
-                  "parse_mode": "MarkdownV2",
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__LIKE__",
-                          "text": "Like",
-                        },
-                      ],
-                    ],
-                  },
-                  "reply_to_message_id": 123,
-                  "supports_streaming": true,
-                  "video": undefined,
-                  "width": 1920,
-                },
+    [
+      {
+        "node": <Video
+          assetTag="my_video"
+          caption="__MyVideo__"
+          disableNotification={true}
+          duration={100}
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "fileName": "baz.mp4",
+            }
+          }
+          height={1080}
+          parseMode="MarkdownV2"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__LIKE__"
+                text="Like"
+              />
+            </InlineKeyboard>
+          }
+          replyToMessageId={123}
+          supportsStreaming={true}
+          thumbnailFileData="__THUMB_DATA__"
+          thumbnailFileInfo={
+            {
+              "fileName": "baz.jpg",
+            }
+          }
+          width={1920}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_video",
+              "data": "__DATA__",
+              "fieldName": "video",
+              "info": {
+                "fileName": "baz.mp4",
               },
             },
-          ]
-        `);
+            {
+              "assetTag": undefined,
+              "data": "__THUMB_DATA__",
+              "fieldName": "thumb",
+              "info": {
+                "fileName": "baz.jpg",
+              },
+            },
+          ],
+          "method": "sendVideo",
+          "params": {
+            "caption": "__MyVideo__",
+            "disable_notification": true,
+            "duration": 100,
+            "height": 1080,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__LIKE__",
+                    "text": "Like",
+                  },
+                ],
+              ],
+            },
+            "reply_to_message_id": 123,
+            "supports_streaming": true,
+            "video": undefined,
+            "width": 1920,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('Voice match snapshot', async () => {
   await expect(
     renderer.render(<Voice fileId="12345" caption={<b>My Voice</b>} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Voice
-                caption={
-                  <b>
-                    My Voice
-                  </b>
-                }
-                fileId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": undefined,
-                "method": "sendVoice",
-                "params": Object {
-                  "caption": "<b>My Voice</b>",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "parse_mode": "HTML",
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "voice": "12345",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Voice
+          caption={
+            <b>
+              My Voice
+            </b>
+          }
+          fileId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": undefined,
+          "method": "sendVoice",
+          "params": {
+            "caption": "<b>My Voice</b>",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "voice": "12345",
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Voice
@@ -906,31 +906,31 @@ test('Voice match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Voice
-                caption="PlainTextCaption"
-                parseMode="None"
-                url="http://foo.bar/baz.wmv"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": undefined,
-                "method": "sendVoice",
-                "params": Object {
-                  "caption": "PlainTextCaption",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "parse_mode": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "voice": "http://foo.bar/baz.wmv",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Voice
+          caption="PlainTextCaption"
+          parseMode="None"
+          url="http://foo.bar/baz.wmv"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": undefined,
+          "method": "sendVoice",
+          "params": {
+            "caption": "PlainTextCaption",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "parse_mode": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "voice": "http://foo.bar/baz.wmv",
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Voice
@@ -950,101 +950,101 @@ test('Voice match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Voice
-                assetTag="my_voice"
-                caption="__MyVoice__"
-                disableNotification={true}
-                duration={100}
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "fileName": "baz.wmv",
-                  }
-                }
-                parseMode="MarkdownV2"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__LIKE__"
-                      text="Like"
-                    />
-                  </InlineKeyboard>
-                }
-                replyToMessageId={123}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_voice",
-                    "data": "__DATA__",
-                    "fieldName": "voice",
-                    "info": Object {
-                      "fileName": "baz.wmv",
-                    },
-                  },
-                ],
-                "method": "sendVoice",
-                "params": Object {
-                  "caption": "__MyVoice__",
-                  "disable_notification": true,
-                  "duration": 100,
-                  "parse_mode": "MarkdownV2",
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__LIKE__",
-                          "text": "Like",
-                        },
-                      ],
-                    ],
-                  },
-                  "reply_to_message_id": 123,
-                  "voice": undefined,
-                },
+    [
+      {
+        "node": <Voice
+          assetTag="my_voice"
+          caption="__MyVoice__"
+          disableNotification={true}
+          duration={100}
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "fileName": "baz.wmv",
+            }
+          }
+          parseMode="MarkdownV2"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__LIKE__"
+                text="Like"
+              />
+            </InlineKeyboard>
+          }
+          replyToMessageId={123}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_voice",
+              "data": "__DATA__",
+              "fieldName": "voice",
+              "info": {
+                "fileName": "baz.wmv",
               },
             },
-          ]
-        `);
+          ],
+          "method": "sendVoice",
+          "params": {
+            "caption": "__MyVoice__",
+            "disable_notification": true,
+            "duration": 100,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__LIKE__",
+                    "text": "Like",
+                  },
+                ],
+              ],
+            },
+            "reply_to_message_id": 123,
+            "voice": undefined,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('VideoNote match snapshot', async () => {
   await expect(
     renderer.render(<VideoNote fileId="12345" caption={<b>My Video Note</b>} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <VideoNote
-                caption={
-                  <b>
-                    My Video Note
-                  </b>
-                }
-                fileId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendVideoNote",
-                "params": Object {
-                  "caption": "<b>My Video Note</b>",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "length": undefined,
-                  "parse_mode": "HTML",
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "video_note": "12345",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <VideoNote
+          caption={
+            <b>
+              My Video Note
+            </b>
+          }
+          fileId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendVideoNote",
+          "params": {
+            "caption": "<b>My Video Note</b>",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "length": undefined,
+            "parse_mode": "HTML",
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "video_note": "12345",
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <VideoNote
@@ -1054,32 +1054,32 @@ test('VideoNote match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <VideoNote
-                caption="PlainTextCaption"
-                parseMode="None"
-                url="http://foo.bar/baz.mpeg"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendVideoNote",
-                "params": Object {
-                  "caption": "PlainTextCaption",
-                  "disable_notification": undefined,
-                  "duration": undefined,
-                  "length": undefined,
-                  "parse_mode": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "video_note": "http://foo.bar/baz.mpeg",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <VideoNote
+          caption="PlainTextCaption"
+          parseMode="None"
+          url="http://foo.bar/baz.mpeg"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendVideoNote",
+          "params": {
+            "caption": "PlainTextCaption",
+            "disable_notification": undefined,
+            "duration": undefined,
+            "length": undefined,
+            "parse_mode": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "video_note": "http://foo.bar/baz.mpeg",
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <VideoNote
@@ -1102,82 +1102,82 @@ test('VideoNote match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <VideoNote
-                assetTag="my_video_note"
-                caption="__MyVideoNote__"
-                disableNotification={true}
-                duration={100}
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "fileName": "baz.mpeg",
-                  }
-                }
-                length={1080}
-                parseMode="MarkdownV2"
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__LIKE__"
-                      text="Like"
-                    />
-                  </InlineKeyboard>
-                }
-                replyToMessageId={123}
-                thumbnailFileData="__THUMB_DATA__"
-                thumbnailFileInfo={
-                  Object {
-                    "fileName": "baz.jpg",
-                  }
-                }
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_video_note",
-                    "data": "__DATA__",
-                    "fieldName": "video_note",
-                    "info": Object {
-                      "fileName": "baz.mpeg",
-                    },
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "data": "__THUMB_DATA__",
-                    "fieldName": "thumb",
-                    "info": Object {
-                      "fileName": "baz.jpg",
-                    },
-                  },
-                ],
-                "method": "sendVideoNote",
-                "params": Object {
-                  "caption": "__MyVideoNote__",
-                  "disable_notification": true,
-                  "duration": 100,
-                  "length": 1080,
-                  "parse_mode": "MarkdownV2",
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__LIKE__",
-                          "text": "Like",
-                        },
-                      ],
-                    ],
-                  },
-                  "reply_to_message_id": 123,
-                  "video_note": undefined,
-                },
+    [
+      {
+        "node": <VideoNote
+          assetTag="my_video_note"
+          caption="__MyVideoNote__"
+          disableNotification={true}
+          duration={100}
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "fileName": "baz.mpeg",
+            }
+          }
+          length={1080}
+          parseMode="MarkdownV2"
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__LIKE__"
+                text="Like"
+              />
+            </InlineKeyboard>
+          }
+          replyToMessageId={123}
+          thumbnailFileData="__THUMB_DATA__"
+          thumbnailFileInfo={
+            {
+              "fileName": "baz.jpg",
+            }
+          }
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_video_note",
+              "data": "__DATA__",
+              "fieldName": "video_note",
+              "info": {
+                "fileName": "baz.mpeg",
               },
             },
-          ]
-        `);
+            {
+              "assetTag": undefined,
+              "data": "__THUMB_DATA__",
+              "fieldName": "thumb",
+              "info": {
+                "fileName": "baz.jpg",
+              },
+            },
+          ],
+          "method": "sendVideoNote",
+          "params": {
+            "caption": "__MyVideoNote__",
+            "disable_notification": true,
+            "duration": 100,
+            "length": 1080,
+            "parse_mode": "MarkdownV2",
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__LIKE__",
+                    "text": "Like",
+                  },
+                ],
+              ],
+            },
+            "reply_to_message_id": 123,
+            "video_note": undefined,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('MediaGroup match snapshot', async () => {
@@ -1193,50 +1193,50 @@ test('MediaGroup match snapshot', async () => {
       </MediaGroup>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <MediaGroup>
-                <Photo
-                  fileId="12345"
-                />
-                <Video
-                  caption="PlainTextCaption"
-                  parseMode="None"
-                  url="http://my.video/xxx"
-                />
-              </MediaGroup>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendMediaGroup",
-                "params": Object {
-                  "disable_notification": undefined,
-                  "media": Array [
-                    Object {
-                      "caption": undefined,
-                      "media": "12345",
-                      "parse_mode": "HTML",
-                      "type": "photo",
-                    },
-                    Object {
-                      "caption": "PlainTextCaption",
-                      "duration": undefined,
-                      "height": undefined,
-                      "media": "http://my.video/xxx",
-                      "parse_mode": undefined,
-                      "supports_streaming": undefined,
-                      "thumb": undefined,
-                      "type": "video",
-                      "width": undefined,
-                    },
-                  ],
-                  "reply_to_message_id": undefined,
-                },
+    [
+      {
+        "node": <MediaGroup>
+          <Photo
+            fileId="12345"
+          />
+          <Video
+            caption="PlainTextCaption"
+            parseMode="None"
+            url="http://my.video/xxx"
+          />
+        </MediaGroup>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendMediaGroup",
+          "params": {
+            "disable_notification": undefined,
+            "media": [
+              {
+                "caption": undefined,
+                "media": "12345",
+                "parse_mode": "HTML",
+                "type": "photo",
               },
-            },
-          ]
-        `);
+              {
+                "caption": "PlainTextCaption",
+                "duration": undefined,
+                "height": undefined,
+                "media": "http://my.video/xxx",
+                "parse_mode": undefined,
+                "supports_streaming": undefined,
+                "thumb": undefined,
+                "type": "video",
+                "width": undefined,
+              },
+            ],
+            "reply_to_message_id": undefined,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <MediaGroup disableNotification replyToMessageId={123}>
@@ -1247,6 +1247,7 @@ test('MediaGroup match snapshot', async () => {
           parseMode="MarkdownV2"
           caption="__MyPhoto__"
         />
+
         <Video
           fileData="__DATA__"
           fileInfo={{ fileName: 'baz.mpeg' }}
@@ -1262,142 +1263,142 @@ test('MediaGroup match snapshot', async () => {
       </MediaGroup>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <MediaGroup
-                disableNotification={true}
-                replyToMessageId={123}
-              >
-                <Photo
-                  assetTag="my_photo"
-                  caption="__MyPhoto__"
-                  fileData="__DATA__"
-                  fileInfo={
-                    Object {
-                      "fileName": "baz.jpg",
-                    }
-                  }
-                  parseMode="MarkdownV2"
-                />
-                <Video
-                  assetTag="my_video"
-                  caption="__MyVideo__"
-                  duration={100}
-                  fileData="__DATA__"
-                  fileInfo={
-                    Object {
-                      "fileName": "baz.mpeg",
-                    }
-                  }
-                  height={1080}
-                  parseMode="MarkdownV2"
-                  thumbnailFileData="__THUMB_DATA__"
-                  thumbnailFileInfo={
-                    Object {
-                      "fileName": "baz.jpg",
-                    }
-                  }
-                  width={1920}
-                />
-              </MediaGroup>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_photo",
-                    "data": undefined,
-                    "fieldName": "file_0",
-                    "info": undefined,
-                  },
-                  Object {
-                    "assetTag": "my_video",
-                    "data": undefined,
-                    "fieldName": "file_1",
-                    "info": undefined,
-                  },
-                  Object {
-                    "assetTag": undefined,
-                    "data": undefined,
-                    "fieldName": "file_2",
-                    "info": undefined,
-                  },
-                ],
-                "method": "sendMediaGroup",
-                "params": Object {
-                  "disable_notification": true,
-                  "media": Array [
-                    Object {
-                      "caption": "__MyPhoto__",
-                      "media": "attach://file_0",
-                      "parse_mode": "MarkdownV2",
-                      "type": "photo",
-                    },
-                    Object {
-                      "caption": "__MyVideo__",
-                      "duration": 100,
-                      "height": 1080,
-                      "media": "attach://file_1",
-                      "parse_mode": "MarkdownV2",
-                      "supports_streaming": undefined,
-                      "thumb": "attach://file_2",
-                      "type": "video",
-                      "width": 1920,
-                    },
-                  ],
-                  "reply_to_message_id": 123,
-                },
-              },
+    [
+      {
+        "node": <MediaGroup
+          disableNotification={true}
+          replyToMessageId={123}
+        >
+          <Photo
+            assetTag="my_photo"
+            caption="__MyPhoto__"
+            fileData="__DATA__"
+            fileInfo={
+              {
+                "fileName": "baz.jpg",
+              }
+            }
+            parseMode="MarkdownV2"
+          />
+          <Video
+            assetTag="my_video"
+            caption="__MyVideo__"
+            duration={100}
+            fileData="__DATA__"
+            fileInfo={
+              {
+                "fileName": "baz.mpeg",
+              }
+            }
+            height={1080}
+            parseMode="MarkdownV2"
+            thumbnailFileData="__THUMB_DATA__"
+            thumbnailFileInfo={
+              {
+                "fileName": "baz.jpg",
+              }
+            }
+            width={1920}
+          />
+        </MediaGroup>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_photo",
+              "data": undefined,
+              "fieldName": "file_0",
+              "info": undefined,
             },
-          ]
-        `);
+            {
+              "assetTag": "my_video",
+              "data": undefined,
+              "fieldName": "file_1",
+              "info": undefined,
+            },
+            {
+              "assetTag": undefined,
+              "data": undefined,
+              "fieldName": "file_2",
+              "info": undefined,
+            },
+          ],
+          "method": "sendMediaGroup",
+          "params": {
+            "disable_notification": true,
+            "media": [
+              {
+                "caption": "__MyPhoto__",
+                "media": "attach://file_0",
+                "parse_mode": "MarkdownV2",
+                "type": "photo",
+              },
+              {
+                "caption": "__MyVideo__",
+                "duration": 100,
+                "height": 1080,
+                "media": "attach://file_1",
+                "parse_mode": "MarkdownV2",
+                "supports_streaming": undefined,
+                "thumb": "attach://file_2",
+                "type": "video",
+                "width": 1920,
+              },
+            ],
+            "reply_to_message_id": 123,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('Sticker match snapshot', async () => {
   await expect(renderer.render(<Sticker fileId="12345" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Sticker
-                fileId="12345"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendSticker",
-                "params": Object {
-                  "disable_notification": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "sticker": "12345",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Sticker
+          fileId="12345"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendSticker",
+          "params": {
+            "disable_notification": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "sticker": "12345",
+          },
+        },
+      },
+    ]
+  `);
   await expect(renderer.render(<Sticker url="http://foo.bar/baz.webp" />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Sticker
-                url="http://foo.bar/baz.webp"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [],
-                "method": "sendSticker",
-                "params": Object {
-                  "disable_notification": undefined,
-                  "reply_markup": undefined,
-                  "reply_to_message_id": undefined,
-                  "sticker": "http://foo.bar/baz.webp",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Sticker
+          url="http://foo.bar/baz.webp"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [],
+          "method": "sendSticker",
+          "params": {
+            "disable_notification": undefined,
+            "reply_markup": undefined,
+            "reply_to_message_id": undefined,
+            "sticker": "http://foo.bar/baz.webp",
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <Sticker
@@ -1414,58 +1415,58 @@ test('Sticker match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Sticker
-                assetTag="my_sticker"
-                disableNotification={true}
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "fileName": "baz.gif",
-                  }
-                }
-                replyMarkup={
-                  <InlineKeyboard>
-                    <CallbackButton
-                      data="__LIKE__"
-                      text="Like"
-                    />
-                  </InlineKeyboard>
-                }
-                replyToMessageId={123}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "files": Array [
-                  Object {
-                    "assetTag": "my_sticker",
-                    "data": "__DATA__",
-                    "fieldName": "sticker",
-                    "info": Object {
-                      "fileName": "baz.gif",
-                    },
-                  },
-                ],
-                "method": "sendSticker",
-                "params": Object {
-                  "disable_notification": true,
-                  "reply_markup": Object {
-                    "inline_keyboard": Array [
-                      Array [
-                        Object {
-                          "callback_data": "__LIKE__",
-                          "text": "Like",
-                        },
-                      ],
-                    ],
-                  },
-                  "reply_to_message_id": 123,
-                  "sticker": undefined,
-                },
+    [
+      {
+        "node": <Sticker
+          assetTag="my_sticker"
+          disableNotification={true}
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "fileName": "baz.gif",
+            }
+          }
+          replyMarkup={
+            <InlineKeyboard>
+              <CallbackButton
+                data="__LIKE__"
+                text="Like"
+              />
+            </InlineKeyboard>
+          }
+          replyToMessageId={123}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
+            {
+              "assetTag": "my_sticker",
+              "data": "__DATA__",
+              "fieldName": "sticker",
+              "info": {
+                "fileName": "baz.gif",
               },
             },
-          ]
-        `);
+          ],
+          "method": "sendSticker",
+          "params": {
+            "disable_notification": true,
+            "reply_markup": {
+              "inline_keyboard": [
+                [
+                  {
+                    "callback_data": "__LIKE__",
+                    "text": "Like",
+                  },
+                ],
+              ],
+            },
+            "reply_to_message_id": 123,
+            "sticker": undefined,
+          },
+        },
+      },
+    ]
+  `);
 });

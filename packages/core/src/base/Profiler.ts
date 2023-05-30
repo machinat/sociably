@@ -1,5 +1,5 @@
-import type { SociablyUser, SociablyChannel } from '../types';
-import { serviceInterface, serviceProviderClass } from '../service';
+import type { SociablyUser, SociablyChannel } from '../types.js';
+import { serviceInterface, serviceProviderClass } from '../service/index.js';
 
 export interface SociablyProfile {
   readonly platform: string;

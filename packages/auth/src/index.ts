@@ -1,5 +1,5 @@
-export { default } from './module';
-export { default as AuthError } from './error';
-export { AuthController } from './Controller';
-export { AuthHttpOperator } from './HttpOperator';
-export * from './types';
+export { default } from './module.js';
+export { default as AuthError } from './error.js';
+export { AuthController } from './Controller.js';
+export { AuthHttpOperator } from './HttpOperator.js';
+export * from './types.js';

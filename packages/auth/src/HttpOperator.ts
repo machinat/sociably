@@ -3,15 +3,16 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import { posix as posixPath } from 'path';
 import invariant from 'invariant';
-import {
-  sign as signJwt,
-  verify as verifyJWT,
-  SignOptions,
-} from 'jsonwebtoken';
+import JsonWebToken from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
-import { ConfigsI } from './interface';
-import { getCookies, setCookie, isSubpath, isSubdomain } from './utils';
-
+import { ConfigsI } from './interface.js';
+import { getCookies, setCookie, isSubpath, isSubdomain } from './utils.js';
+import {
+  STATE_COOKIE_KEY,
+  TOKEN_COOKIE_KEY,
+  SIGNATURE_COOKIE_KEY,
+  ERROR_COOKIE_KEY,
+} from './constant.js';
 import type {
   AuthPayload,
   StatePayload,
@@ -20,14 +21,9 @@ import type {
   StateTokenPayload,
   ErrorTokenPayload,
   ErrorMessage,
-} from './types';
+} from './types.js';
 
-import {
-  STATE_COOKIE_KEY,
-  TOKEN_COOKIE_KEY,
-  SIGNATURE_COOKIE_KEY,
-  ERROR_COOKIE_KEY,
-} from './constant';
+const { sign: signJwt, verify: verifyJWT } = JsonWebToken;
 
 type OperatorOptions = {
   serverUrl: string;
@@ -365,7 +361,11 @@ export class AuthHttpOperator {
     return true;
   }
 
-  signToken(platform: string, payload: unknown, options?: SignOptions): string {
+  signToken(
+    platform: string,
+    payload: unknown,
+    options?: JsonWebToken.SignOptions
+  ): string {
     return signJwt({ platform, payload }, this.secret, options);
   }
 

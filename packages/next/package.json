@@ -1,6 +1,7 @@
 {
   "name": "@sociably/next",
   "version": "0.8.0-alpha.18",
+  "type": "module",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",

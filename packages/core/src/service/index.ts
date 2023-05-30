@@ -1,17 +1,17 @@
-export { default as ServiceSpace } from './space';
-export { default as ServiceScope } from './scope';
-export { default as serviceProviderClass } from './decorators/serviceProviderClass';
-export { default as serviceProviderFactory } from './decorators/serviceProviderFactory';
-export { default as serviceContainer } from './decorators/serviceContainer';
-export { default as serviceInterface } from './decorators/serviceInterface';
+export { default as ServiceSpace } from './space.js';
+export { default as ServiceScope } from './scope.js';
+export { default as serviceProviderClass } from './decorators/serviceProviderClass.js';
+export { default as serviceProviderFactory } from './decorators/serviceProviderFactory.js';
+export { default as serviceContainer } from './decorators/serviceContainer.js';
+export { default as serviceInterface } from './decorators/serviceInterface.js';
 export {
   isServiceContainer,
   isServiceProvider,
   isInterfaceable,
   createEmptyScope,
   maybeInjectContainer,
-} from './utils';
-export * from './types';
+} from './utils.js';
+export * from './types.js';
 
 /**
  * Sociably DI

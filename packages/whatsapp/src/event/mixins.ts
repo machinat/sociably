@@ -1,8 +1,8 @@
-import { WHATSAPP } from '../constant';
-import type WhatsAppChat from '../Chat';
-import type WhatsAppUser from '../User';
-import type WhatsAppAgent from '../Agent';
-import type UserProfile from '../UserProfile';
+import { WHATSAPP } from '../constant.js';
+import type WhatsAppChat from '../Chat.js';
+import type WhatsAppUser from '../User.js';
+import type WhatsAppAgent from '../Agent.js';
+import type UserProfile from '../UserProfile.js';
 
 export interface EventBaseMixin {
   readonly platform: typeof WHATSAPP;

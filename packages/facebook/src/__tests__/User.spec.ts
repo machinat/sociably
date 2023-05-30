@@ -1,4 +1,4 @@
-import User from '../User';
+import User from '../User.js';
 
 test('properties', () => {
   const user = new User('1234567890', 'foo');
@@ -9,8 +9,8 @@ test('properties', () => {
   expect(user.uid).toMatchInlineSnapshot(`"fb.1234567890.foo"`);
 
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
       ],
       "id": "foo",
@@ -25,7 +25,7 @@ test('marshallable', () => {
 
   expect(user.typeName()).toBe('FbUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": "foo",
       "page": "1234567890",
     }

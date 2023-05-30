@@ -13,7 +13,7 @@ import type {
   EffectCommand,
   ReturnCommand,
   ScriptCommand,
-} from './types';
+} from './types.js';
 
 const getCursorIndexAssertedly = (
   script: ScriptLibrary<unknown, unknown, unknown, unknown, unknown, unknown>,

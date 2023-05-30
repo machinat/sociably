@@ -1,4 +1,4 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 
 const createNextServer = moxy(() =>
   moxy({
@@ -12,4 +12,4 @@ const createNextServer = moxy(() =>
   })
 );
 
-export default createNextServer;
+module.exports = { default: createNextServer };

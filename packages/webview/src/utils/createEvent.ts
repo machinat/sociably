@@ -1,8 +1,8 @@
 import type { SociablyUser } from '@sociably/core';
 import type { EventInput, EventValue } from '@sociably/websocket';
-import { WEBVIEW } from '../constant';
-import WebviewConnection from '../Connection';
-import type { WebviewEvent } from '../types';
+import { WEBVIEW } from '../constant.js';
+import WebviewConnection from '../Connection.js';
+import type { WebviewEvent } from '../types.js';
 
 const WebviewEventProto = { platform: WEBVIEW };
 

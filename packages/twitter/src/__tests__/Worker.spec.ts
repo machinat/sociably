@@ -1,12 +1,13 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
-import TwitterWorker from '../Worker';
-import TwitterChat from '../Chat';
-import TweetTarget from '../TweetTarget';
+import TwitterWorker from '../Worker.js';
+import TwitterChat from '../Chat.js';
+import TweetTarget from '../TweetTarget.js';
 
 nock.disableNetConnect();
 jest.mock('nanoid', () => ({ nanoid: () => '__UNIQUE_NONCE__' }));
+
 const mockDateNow = moxy(() => 1646626057392);
 const realDateNow = Date.now;
 
@@ -24,7 +25,7 @@ const twitterApi = nock(`https://api.twitter.com`, {
   },
 });
 
-let worker: TwitterWorker;
+let worker: InstanceType<typeof TwitterWorker>;
 let queue: Queue<any, any>;
 
 beforeAll(() => {
@@ -413,7 +414,7 @@ it('throw if agent settings not found', async () => {
   const result = await queue.executeJobs(jobs);
   expect(result.success).toBe(false);
   expect(result.errors).toMatchInlineSnapshot(`
-    Array [
+    [
       [Error: agent user "2222222222" not registered],
     ]
   `);
@@ -459,7 +460,7 @@ it('throw if connection error happen', async () => {
   const result = await queue.executeJobs(jobs);
   expect(result.success).toBe(false);
   expect(result.errors).toMatchInlineSnapshot(`
-    Array [
+    [
       [FetchError: request to https://api.twitter.com/2/bar failed, reason: something wrong like connection error],
     ]
   `);
@@ -511,7 +512,7 @@ it('throw if api error happen', async () => {
 
   expect(result.success).toBe(false);
   expect(result.errors).toMatchInlineSnapshot(`
-    Array [
+    [
       [TwitterApiError (Bad Request): something is wrong],
     ]
   `);
@@ -852,7 +853,7 @@ test('with mediaSources & accomplishRequest', async () => {
           type: 'file',
           params: { total_bytes: 11, media_type: 'image/png' },
           fileData: Buffer.from('hello media'),
-          fileInfo: { contentType: 'image/png', knownLength: 11 },
+          fileInfo: { contentType: 'image/png' },
           assetTag: 'foo',
         },
         {

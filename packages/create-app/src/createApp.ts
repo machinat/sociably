@@ -13,8 +13,8 @@ import glob from 'glob';
 import chalk from 'chalk';
 import thenifiedly from 'thenifiedly';
 import { format as prettierFormat, Options as PrettierOptions } from 'prettier';
-import { polishFileContent } from './utils';
-import type { CreateAppContext, PlatformType } from './types';
+import { polishFileContent } from './utils.js';
+import type { CreateAppContext, PlatformType } from './types.js';
 
 type CreateAppOptions = {
   platforms: PlatformType[];
@@ -84,7 +84,9 @@ const createSociablyApp = async ({
 
   const templateFiles: string[] = await thenifiedly.call(
     glob,
-    `${__dirname}/template/**/*.t.+(ts|js)`,
+    `${`${process.platform === 'win32' ? '' : '/'}${
+      /file:\/{2,3}(.+)\/[^/]/.exec(import.meta.url)![1]
+    }`}/template/**/*.t.+(ts|js)`,
     { nodir: true }
   );
 
@@ -94,7 +96,15 @@ const createSociablyApp = async ({
       const targetDir = dirname(
         joinPath(
           projectPath,
-          relativePath(joinPath(__dirname, 'template'), file)
+          relativePath(
+            joinPath(
+              `${process.platform === 'win32' ? '' : '/'}${
+                /file:\/{2,3}(.+)\/[^/]/.exec(import.meta.url)![1]
+              }`,
+              'template'
+            ),
+            file
+          )
         )
       );
 
@@ -114,7 +124,16 @@ const createSociablyApp = async ({
       if (binary) {
         await thenifiedly.call(
           copyFile,
-          joinPath(resolvePath(__dirname, '..'), 'binaries', binary),
+          joinPath(
+            resolvePath(
+              `${process.platform === 'win32' ? '' : '/'}${
+                /file:\/{2,3}(.+)\/[^/]/.exec(import.meta.url)![1]
+              }`,
+              '..'
+            ),
+            'binaries',
+            binary
+          ),
           targetPath,
           mode
         );

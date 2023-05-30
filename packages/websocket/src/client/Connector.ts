@@ -4,15 +4,15 @@ import type TypedEmitter from 'typed-emitter';
 import type { SociablyUser } from '@sociably/core';
 import type { Marshaler } from '@sociably/core/base/Marshaler';
 import type {
-  default as Socket, // eslint-disable-line import/no-named-default
+  default as Socket,
   ConnectBody,
   DisconnectBody,
   EventsBody,
   RejectBody,
-} from '../Socket';
-import SocketError from '../error';
-import type { ClientLoginFn, EventInput } from '../types';
-import createClientSocket from './createClientSocket';
+} from '../Socket.js';
+import SocketError from '../error.js';
+import type { ClientLoginFn, EventInput } from '../types.js';
+import createClientSocket from './createClientSocket.js';
 
 type PendingEvent = {
   inputs: EventInput[];
@@ -20,7 +20,9 @@ type PendingEvent = {
   reject: (err: Error) => void;
 };
 
-const Emitter = EventEmitter as { new <T>(): TypedEmitter<T> };
+const Emitter = EventEmitter as {
+  new <T extends TypedEmitter.EventMap>(): TypedEmitter.default<T>;
+};
 
 export type ConnectorContext<User extends null | SociablyUser> = {
   connId: string;

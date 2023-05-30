@@ -1,9 +1,9 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
-import type { FacebookBot } from '../../Bot';
-import FacebookPage from '../../Page';
-import { FacebookAssetsManager } from '../AssetsManager';
+import type { FacebookBot } from '../../Bot.js';
+import FacebookPage from '../../Page.js';
+import { FacebookAssetsManager } from '../AssetsManager.js';
 
 const state = moxy({
   get: async () => null,
@@ -104,7 +104,7 @@ describe('subscription management', () => {
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi.mock.calls[0].args[0].params.fields)
         .toMatchInlineSnapshot(`
-        Array [
+        [
           "messages",
           "messaging_postbacks",
           "messaging_optins",
@@ -203,17 +203,17 @@ describe('subscription management', () => {
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi.mock.calls[0].args[0].params.subscribed_fields)
         .toMatchInlineSnapshot(`
-          Array [
-            "messages",
-            "messaging_postbacks",
-            "messaging_optins",
-            "messaging_handovers",
-            "messaging_policy_enforcement",
-            "messaging_account_linking",
-            "messaging_game_plays",
-            "messaging_referrals",
-          ]
-        `);
+        [
+          "messages",
+          "messaging_postbacks",
+          "messaging_optins",
+          "messaging_handovers",
+          "messaging_policy_enforcement",
+          "messaging_account_linking",
+          "messaging_game_plays",
+          "messaging_referrals",
+        ]
+      `);
     });
   });
 
@@ -397,12 +397,12 @@ describe('assets management', () => {
     expect(stateController.globalState).toHaveBeenCalledTimes(3);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
-          Array [
-            "$fb.foo.1234567890",
-            "$fb.attachment.1234567890",
-            "$fb.persona.1234567890",
-          ]
-      `);
+      [
+        "$fb.foo.1234567890",
+        "$fb.attachment.1234567890",
+        "$fb.persona.1234567890",
+      ]
+    `);
 
     expect(state.get).toHaveBeenCalledTimes(3);
     expect(state.get).toHaveBeenNthCalledWith(1, 'bar');
@@ -442,12 +442,12 @@ describe('assets management', () => {
     expect(stateController.globalState).toHaveBeenCalledTimes(3);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
-          Array [
-            "$fb.foo.1234567890",
-            "$fb.attachment.1234567890",
-            "$fb.persona.1234567890",
-          ]
-      `);
+      [
+        "$fb.foo.1234567890",
+        "$fb.attachment.1234567890",
+        "$fb.persona.1234567890",
+      ]
+    `);
 
     expect(state.set).toHaveBeenCalledTimes(3);
     expect(state.set).toHaveBeenNthCalledWith(1, 'bar', 'baz');
@@ -481,12 +481,12 @@ describe('assets management', () => {
     expect(stateController.globalState).toHaveBeenCalledTimes(3);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
-          Array [
-            "$fb.foo.1234567890",
-            "$fb.attachment.1234567890",
-            "$fb.persona.1234567890",
-          ]
-      `);
+      [
+        "$fb.foo.1234567890",
+        "$fb.attachment.1234567890",
+        "$fb.persona.1234567890",
+      ]
+    `);
 
     expect(state.getAll).toHaveBeenCalledTimes(3);
 
@@ -513,12 +513,12 @@ describe('assets management', () => {
     expect(stateController.globalState).toHaveBeenCalledTimes(3);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
-          Array [
-            "$fb.foo.1234567890",
-            "$fb.attachment.1234567890",
-            "$fb.persona.1234567890",
-          ]
-      `);
+      [
+        "$fb.foo.1234567890",
+        "$fb.attachment.1234567890",
+        "$fb.persona.1234567890",
+      ]
+    `);
 
     expect(state.delete).toHaveBeenCalledTimes(3);
     expect(state.delete).toHaveBeenNthCalledWith(1, 'bar');

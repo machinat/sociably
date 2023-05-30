@@ -1,12 +1,12 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { SociablyApp } from '@sociably/core';
 import {
   isServiceContainer,
   serviceContainer,
   ServiceScope,
 } from '@sociably/core/service';
-import { STREAMING_KEY_I } from '../interface';
-import fromApp from '../fromApp';
+import { STREAMING_KEY_I } from '../interface.js';
+import fromApp from '../fromApp.js';
 
 const scope = moxy({
   injectContainer(container, provisions) {

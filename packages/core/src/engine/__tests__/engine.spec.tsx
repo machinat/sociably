@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
-import moxy, { Mock } from '@moxyjs/moxy';
-import Sociably from '../..';
-import Engine from '../engine';
-import RenderingTargetI from '../../base/RenderingTarget';
-import type Render from '../../renderer';
-import type Queue from '../../queue';
-import { ServiceScope, createEmptyScope } from '../../service';
-import DispatchError from '../error';
+import { moxy, Mock } from '@moxyjs/moxy';
+import Sociably from '../../index.js';
+import Engine from '../engine.js';
+import RenderingTargetI from '../../base/RenderingTarget.js';
+import type Render from '../../renderer/index.js';
+import type Queue from '../../queue/index.js';
+import { ServiceScope, createEmptyScope } from '../../service/index.js';
+import DispatchError from '../error.js';
 
 const queue = moxy<Queue<unknown, unknown>>({
   executeJobs(jobs) {

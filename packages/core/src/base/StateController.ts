@@ -1,5 +1,9 @@
-import type { SociablyChannel, SociablyThread, SociablyUser } from '../types';
-import { serviceInterface } from '../service';
+import type {
+  SociablyChannel,
+  SociablyThread,
+  SociablyUser,
+} from '../types.js';
+import { serviceInterface } from '../service/index.js';
 
 export interface StateAccessor {
   /**

@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderPartElement } from './utils';
-import { UrlButton } from '../UrlButton';
+import { renderPartElement } from './utils.js';
+import { UrlButton } from '../UrlButton.js';
 
 it('is valid Component', () => {
   expect(typeof UrlButton).toBe('function');
@@ -15,26 +15,26 @@ it('match snapshot', async () => {
       <UrlButton title="my button" url="http://sociably.js.org" />
     )
   ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <UrlButton
-                  title="my button"
-                  url="http://sociably.js.org"
-                />,
-                "path": "$#container",
-                "type": "part",
-                "value": Object {
-                  "fallback_url": undefined,
-                  "messenger_extensions": undefined,
-                  "title": "my button",
-                  "type": "web_url",
-                  "url": "http://sociably.js.org",
-                  "webview_height_ratio": undefined,
-                  "webview_share_button": undefined,
-                },
-              },
-            ]
-          `);
+    [
+      {
+        "node": <UrlButton
+          title="my button"
+          url="http://sociably.js.org"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "fallback_url": undefined,
+          "messenger_extensions": undefined,
+          "title": "my button",
+          "type": "web_url",
+          "url": "http://sociably.js.org",
+          "webview_height_ratio": undefined,
+          "webview_share_button": undefined,
+        },
+      },
+    ]
+  `);
 
   await expect(
     renderPartElement(
@@ -48,28 +48,28 @@ it('match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <UrlButton
-                  fallbackUrl="http://..."
-                  hideShareButton={true}
-                  messengerExtensions={true}
-                  title="my button"
-                  url="http://sociably.js.org"
-                  webviewHeightRatio="compact"
-                />,
-                "path": "$#container",
-                "type": "part",
-                "value": Object {
-                  "fallback_url": "http://...",
-                  "messenger_extensions": true,
-                  "title": "my button",
-                  "type": "web_url",
-                  "url": "http://sociably.js.org",
-                  "webview_height_ratio": "compact",
-                  "webview_share_button": "hide",
-                },
-              },
-            ]
-          `);
+    [
+      {
+        "node": <UrlButton
+          fallbackUrl="http://..."
+          hideShareButton={true}
+          messengerExtensions={true}
+          title="my button"
+          url="http://sociably.js.org"
+          webviewHeightRatio="compact"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "fallback_url": "http://...",
+          "messenger_extensions": true,
+          "title": "my button",
+          "type": "web_url",
+          "url": "http://sociably.js.org",
+          "webview_height_ratio": "compact",
+          "webview_share_button": "hide",
+        },
+      },
+    ]
+  `);
 });

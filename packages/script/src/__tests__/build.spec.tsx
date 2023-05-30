@@ -1,9 +1,9 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably, { RenderingTarget } from '@sociably/core';
-import { isContainerType } from '@sociably/core/utils/isX';
-import ProcessorP from '../Processor';
-import build from '../build';
-import { SOCIABLY_SCRIPT_TYPE } from '../constant';
+import { isContainerType } from '@sociably/core/utils';
+import ProcessorP from '../Processor.js';
+import build from '../build.js';
+import { SOCIABLY_SCRIPT_TYPE } from '../constant.js';
 import {
   IF,
   ELSE_IF,
@@ -14,7 +14,7 @@ import {
   LABEL,
   CALL,
   RETURN,
-} from '../keyword';
+} from '../keyword.js';
 
 const initVars = moxy(() => ({}));
 

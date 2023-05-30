@@ -1,6 +1,6 @@
 import type { ServiceModule } from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
-import { ControllerP } from './controller';
+import { ControllerP } from './controller.js';
 
 /**
  * @category Root

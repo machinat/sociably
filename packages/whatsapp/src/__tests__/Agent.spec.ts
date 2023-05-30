@@ -1,4 +1,4 @@
-import WhatsAppAgent from '../Agent';
+import WhatsAppAgent from '../Agent.js';
 
 test('attributes', () => {
   const user = new WhatsAppAgent('1234567890');
@@ -8,8 +8,8 @@ test('attributes', () => {
 
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "channel",
       ],
       "id": "1234567890",
@@ -23,7 +23,7 @@ test('marshallable', () => {
 
   expect(user.typeName()).toBe('WaAgent');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": "1234567890",
     }
   `);

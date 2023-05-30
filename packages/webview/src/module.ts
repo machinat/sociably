@@ -1,4 +1,4 @@
-import createNextServer from 'next';
+import NextJs from 'next';
 import type { SociablyPlatform } from '@sociably/core';
 import {
   serviceContainer,
@@ -30,7 +30,7 @@ import {
   DEFAULT_AUTH_PATH,
   DEFAULT_WEBSOCKET_PATH,
   DEFAULT_NEXT_PATH,
-} from './constant';
+} from './constant.js';
 import {
   WebviewSocketServer,
   SocketServerP,
@@ -41,16 +41,18 @@ import {
   NextReceiverP,
   PlatformUtilitiesI,
   ConfigsI,
-} from './interface';
-import { BotP } from './Bot';
-import { ReceiverP } from './Receiver';
-import WebviewConnection from './Connection';
-import { MemoCacheTarget } from './authenticators/memo';
+} from './interface.js';
+import { BotP } from './Bot.js';
+import { ReceiverP } from './Receiver.js';
+import WebviewConnection from './Connection.js';
+import { MemoCacheTarget } from './authenticators/memo/index.js';
 import type {
   WebviewEventContext,
   WebviewDispatchFrame,
   WebviewConfigs,
-} from './types';
+} from './types.js';
+
+const createNextServer = NextJs.default;
 
 const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',

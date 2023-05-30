@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { RequestThreadControl } from '../RequestThreadControl';
-import { renderUnitElement } from './utils';
+import { RequestThreadControl } from '../RequestThreadControl.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid Component', () => {
   expect(typeof RequestThreadControl).toBe('function');
@@ -13,21 +13,21 @@ it('match snapshot', async () => {
   await expect(
     renderUnitElement(<RequestThreadControl metadata="give me the ring" />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <RequestThreadControl
-                metadata="give me the ring"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "apiPath": "me/request_thread_control",
-                "params": Object {
-                  "metadata": "give me the ring",
-                },
-                "type": "message",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <RequestThreadControl
+          metadata="give me the ring"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "apiPath": "me/request_thread_control",
+          "params": {
+            "metadata": "give me the ring",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

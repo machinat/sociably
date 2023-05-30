@@ -1,6 +1,6 @@
-import type TelegramUser from '../User';
-import { AgentSettingsAccessorI } from '../interface';
-import { TelegramAgentSettings } from '../types';
+import type TelegramUser from '../User.js';
+import { AgentSettingsAccessorI } from '../interface.js';
+import { TelegramAgentSettings } from '../types.js';
 
 const createStaticAgentSettingsAccessor = (
   settings: TelegramAgentSettings[]

@@ -16,15 +16,15 @@ import {
   LoginVerifierI,
   UpgradeVerifierI,
   ConfigsI,
-} from './interface';
+} from './interface.js';
 import Socket, {
   EventsBody,
   LoginBody,
   ConnectBody,
   DisconnectBody,
-} from './Socket';
-import rejectUpgrade from './utils/rejectUpgrade';
-import createWsSocket from './utils/createWsSocket';
+} from './Socket.js';
+import rejectUpgrade from './utils/rejectUpgrade.js';
+import createWsSocket from './utils/createWsSocket.js';
 import type {
   VerifyUpgradeFn,
   VerifyLoginFn,
@@ -33,7 +33,7 @@ import type {
   EventInput,
   ConnIdentifier,
   DispatchTarget,
-} from './types';
+} from './types.js';
 
 const DEFAULT_HEARTBEAT_INTERVAL = 60000; // 1 min
 
@@ -58,7 +58,9 @@ type SocketState = {
   lostHeartbeat: number;
 };
 
-const Emitter = EventEmitter as { new <T>(): TypedEmitter<T> };
+const Emitter = EventEmitter as {
+  new <T extends TypedEmitter.EventMap>(): TypedEmitter.default<T>;
+};
 
 type ServerEvents<User extends null | SociablyUser, Auth> = {
   connect: (conn: ConnectionInfo<User, Auth>) => void;

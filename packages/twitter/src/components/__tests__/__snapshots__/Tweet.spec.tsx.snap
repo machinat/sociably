@@ -1,19 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`rendering as a reply 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Tweet
       excludeUsersInReply={
-        Array [
+        [
           "56789",
         ]
       }
       placeId="55555"
       poll={
-        Object {
+        {
           "durationMinutes": 60,
-          "options": Array [
+          "options": [
             "foo",
             "bar",
             "baz",
@@ -25,29 +25,29 @@ Array [
     </Tweet>,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
+        "params": {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": undefined,
-          "geo": Object {
+          "geo": {
             "place_id": "55555",
           },
           "media": undefined,
-          "poll": Object {
+          "poll": {
             "duration_minutes": 60,
-            "options": Array [
+            "options": [
               "foo",
               "bar",
               "baz",
             ],
           },
           "quote_tweet_id": undefined,
-          "reply": Object {
-            "exclude_reply_user_ids": Array [
+          "reply": {
+            "exclude_reply_user_ids": [
               "56789",
             ],
             "in_reply_to_tweet_id": "",
@@ -64,8 +64,8 @@ Array [
 `;
 
 exports[`rendering to agent's page 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Tweet
       quoteTweetId="67890"
       replySetting="following"
@@ -75,12 +75,12 @@ Array [
     </Tweet>,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
+        "params": {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": true,
           "geo": undefined,
@@ -100,8 +100,8 @@ Array [
 `;
 
 exports[`rendering with media 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Tweet
       media={
         <Sociably.Fragment>
@@ -113,8 +113,8 @@ Array [
           />
           <Photo
             fileData={
-              Object {
-                "data": Array [
+              {
+                "data": [
                   102,
                   111,
                   111,
@@ -129,27 +129,27 @@ Array [
       }
       superFollowersOnly={true}
       tagUsersInMedia={
-        Array [
+        [
           "56789",
         ]
       }
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
-      "mediaSources": Array [
-        Object {
+      "mediaSources": [
+        {
           "id": "123",
-          "params": Object {
+          "params": {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
           },
           "type": "id",
         },
-        Object {
-          "params": Object {
+        {
+          "params": {
             "additional_owners": undefined,
             "media_category": "tweet_image",
             "shared": undefined,
@@ -157,17 +157,17 @@ Array [
           "type": "url",
           "url": "http://foo.bar/baz.png",
         },
-        Object {
+        {
           "assetTag": undefined,
-          "fileData": Object {
-            "data": Array [
+          "fileData": {
+            "data": [
               102,
               111,
               111,
             ],
             "type": "Buffer",
           },
-          "params": Object {
+          "params": {
             "additional_owners": undefined,
             "media_category": "tweet_image",
             "media_type": "image/jpeg",
@@ -177,15 +177,15 @@ Array [
           "type": "file",
         },
       ],
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
+        "params": {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": true,
           "geo": undefined,
-          "media": Object {
-            "media_ids": Array [],
-            "tagged_user_ids": Array [
+          "media": {
+            "media_ids": [],
+            "tagged_user_ids": [
               "56789",
             ],
           },
@@ -204,8 +204,8 @@ Array [
 `;
 
 exports[`spliting long content into tweet thread 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Tweet
       placeId="98765"
       quoteTweetId="67890"
@@ -216,15 +216,15 @@ Array [
     </Tweet>,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
+        "params": {
           "direct_message_deep_link": undefined,
           "for_super_followers_only": true,
-          "geo": Object {
+          "geo": {
             "place_id": "98765",
           },
           "media": undefined,
@@ -239,7 +239,7 @@ Array [
       "type": "tweet",
     },
   },
-  Object {
+  {
     "node": <Tweet
       placeId="98765"
       quoteTweetId="67890"
@@ -250,12 +250,12 @@ Array [
     </Tweet>,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
+        "params": {
           "text": "國國國國國國國國國國國國國國國國囧國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國 國國國國國國國國國國國國",
         },
         "url": "2/tweets",
@@ -263,7 +263,7 @@ Array [
       "type": "tweet",
     },
   },
-  Object {
+  {
     "node": <Tweet
       placeId="98765"
       quoteTweetId="67890"
@@ -274,12 +274,12 @@ Array [
     </Tweet>,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "accomplishRequest": [Function],
       "mediaSources": null,
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
+        "params": {
           "text": "國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國",
         },
         "url": "2/tweets",

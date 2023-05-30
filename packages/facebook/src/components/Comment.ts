@@ -1,8 +1,12 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import { PATH_PHOTOS } from '../constant';
-import type { FacebookComponent, CommentValue, PagePhotoValue } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import { PATH_PHOTOS } from '../constant.js';
+import type {
+  FacebookComponent,
+  CommentValue,
+  PagePhotoValue,
+} from '../types.js';
 
 export type CommentProps = {
   /**

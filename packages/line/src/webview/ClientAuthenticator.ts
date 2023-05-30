@@ -2,19 +2,19 @@
 /* eslint-disable class-methods-use-this */
 import type { CheckDataResult } from '@sociably/auth';
 import type { WebviewClientAuthenticator } from '@sociably/webview';
-import { LINE } from '../constant';
-import LineChannel from '../Channel';
-import LineChat from '../Chat';
-import LineUser from '../User';
-import LineUserProfile from '../UserProfile';
-import LineGroupProfile from '../GroupProfile';
+import { LINE } from '../constant.js';
+import LineChannel from '../Channel.js';
+import LineChat from '../Chat.js';
+import LineUser from '../User.js';
+import LineUserProfile from '../UserProfile.js';
+import LineGroupProfile from '../GroupProfile.js';
 import {
   CHAT_CHANNEL_QUERY_KEY,
   LIFF_ID_QUERY_KEY,
   ROOM_ID_QUERY_KEY,
   GROUP_ID_QUERY_KEY,
-} from './constant';
-import { getAuthContextDetails } from './utils';
+} from './constant.js';
+import { getAuthContextDetails } from './utils.js';
 import type {
   LineAuthCredential,
   LineAuthData,
@@ -22,7 +22,7 @@ import type {
   LineCredentialResult,
   ClientOs,
   LiffRefChatType,
-} from './types';
+} from './types.js';
 
 type ClientAuthenticatorOptions = {
   liffId?: string;

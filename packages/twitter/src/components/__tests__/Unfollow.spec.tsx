@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import TweetTarget from '../../TweetTarget';
-import { Unfollow } from '../Unfollow';
-import { renderUnitElement } from './utils';
+import TweetTarget from '../../TweetTarget.js';
+import { Unfollow } from '../Unfollow.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof Unfollow).toBe('function');
@@ -13,19 +13,19 @@ it('is a valid Component', () => {
 test('rendering', async () => {
   const segments = await renderUnitElement(<Unfollow userId="12345" />);
   expect(segments).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": <Unfollow
           userId="12345"
         />,
         "path": "$",
         "type": "unit",
-        "value": Object {
+        "value": {
           "accomplishRequest": [Function],
           "mediaSources": null,
-          "request": Object {
+          "request": {
             "method": "DELETE",
-            "params": Object {},
+            "params": {},
             "url": "2/users/:source_user_id/following/:target_user_id",
           },
           "type": "action",
@@ -36,9 +36,9 @@ test('rendering', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TweetTarget('67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "DELETE",
-      "params": Object {},
+      "params": {},
       "url": "2/users/67890/following/12345",
     }
   `);

@@ -1,7 +1,7 @@
-import Profiler from '../Profiler';
-import UserProfile from '../UserProfile';
-import WhatsAppAgent from '../Agent';
-import WhatsAppUser from '../User';
+import Profiler from '../Profiler.js';
+import UserProfile from '../UserProfile.js';
+import WhatsAppAgent from '../Agent.js';
+import WhatsAppUser from '../User.js';
 
 it('simply get profile from user', async () => {
   const profiler = new Profiler();

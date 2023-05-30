@@ -1,10 +1,14 @@
 /* eslint-disable import/prefer-default-export  */
 import type { ContextDetails } from '@sociably/auth';
-import LineChannel from '../Channel';
-import LineUser from '../User';
-import LineChat from '../Chat';
-import { LiffOs, RefChatType } from './constant';
-import type { LineAuthContext, LineAuthData, LiffRefChatType } from './types';
+import LineChannel from '../Channel.js';
+import LineUser from '../User.js';
+import LineChat from '../Chat.js';
+import { LiffOs, RefChatType } from './constant.js';
+import type {
+  LineAuthContext,
+  LineAuthData,
+  LiffRefChatType,
+} from './types.js';
 
 export const transformRefChatTypeEnumToName = (
   referer: RefChatType

@@ -27,8 +27,8 @@ import type {
   WebSocketResult,
   WebSocketDispatchResponse,
 } from '@sociably/websocket';
-import type { BotP } from './Bot';
-import type WebviewConnection from './Connection';
+import type { BotP } from './Bot.js';
+import type WebviewConnection from './Connection.js';
 
 export type {
   EventValue,

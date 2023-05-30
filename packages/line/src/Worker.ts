@@ -2,10 +2,10 @@ import { URL } from 'url';
 import fetch from 'node-fetch';
 import { SociablyWorker } from '@sociably/core/engine';
 import Queue, { JobResponse } from '@sociably/core/queue';
-import { AgentSettingsAccessorI } from './interface';
-import { LineJob, LineResult } from './types';
-import LineChannel from './Channel';
-import LineApiError from './error';
+import { AgentSettingsAccessorI } from './interface.js';
+import { LineJob, LineResult } from './types.js';
+import LineChannel from './Channel.js';
+import LineApiError from './error.js';
 
 const API_HOST = 'https://api.line.me';
 

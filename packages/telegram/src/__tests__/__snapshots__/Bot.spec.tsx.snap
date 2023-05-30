@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`.render(thread, message, options) render global actions without a chat target 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "agentId": 12345,
       "files": undefined,
       "key": undefined,
       "method": "editMessageText",
-      "params": Object {
+      "params": {
         "disable_web_page_preview": undefined,
         "inline_message_id": "1",
         "message_id": undefined,
@@ -17,14 +17,14 @@ Object {
         "text": "foo <b>bar</b>",
       },
     },
-    Object {
+    {
       "agentId": 12345,
       "files": undefined,
       "key": undefined,
       "method": "editMessageMedia",
-      "params": Object {
+      "params": {
         "inline_message_id": "2",
-        "media": Object {
+        "media": {
           "caption": undefined,
           "media": "https://sociably.io/trollface.png",
           "parse_mode": "HTML",
@@ -35,29 +35,29 @@ Object {
       },
     },
   ],
-  "results": Array [
-    Object {
+  "results": [
+    {
       "ok": true,
-      "result": Object {
+      "result": {
         "id": "1",
       },
     },
-    Object {
+    {
       "ok": true,
-      "result": Object {
+      "result": {
         "id": "2",
       },
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "agentId": 12345,
           "files": undefined,
           "key": undefined,
           "method": "editMessageText",
-          "params": Object {
+          "params": {
             "disable_web_page_preview": undefined,
             "inline_message_id": "1",
             "message_id": undefined,
@@ -66,14 +66,14 @@ Object {
             "text": "foo <b>bar</b>",
           },
         },
-        Object {
+        {
           "agentId": 12345,
           "files": undefined,
           "key": undefined,
           "method": "editMessageMedia",
-          "params": Object {
+          "params": {
             "inline_message_id": "2",
-            "media": Object {
+            "media": {
               "caption": undefined,
               "media": "https://sociably.io/trollface.png",
               "parse_mode": "HTML",
@@ -91,32 +91,32 @@ Object {
 `;
 
 exports[`.render(thread, message, options) send rendered messages to telegram api 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "agentId": 12345,
       "files": undefined,
       "key": "tg.12345.67890",
       "method": "sendMessage",
-      "params": Object {
+      "params": {
         "chat_id": 67890,
         "disable_notification": undefined,
         "parse_mode": "HTML",
         "text": "Hello <b>World!</b>",
       },
     },
-    Object {
+    {
       "agentId": 12345,
       "files": undefined,
       "key": "tg.12345.67890",
       "method": "sendPhoto",
-      "params": Object {
+      "params": {
         "caption": undefined,
         "chat_id": 67890,
         "disable_notification": undefined,
         "parse_mode": "HTML",
         "photo": "https://sociably.io/greeting.png",
-        "reply_markup": Object {
+        "reply_markup": {
           "force_reply": true,
           "selective": undefined,
         },
@@ -124,47 +124,47 @@ Object {
       },
     },
   ],
-  "results": Array [
-    Object {
+  "results": [
+    {
       "ok": true,
-      "result": Object {
+      "result": {
         "id": 1,
       },
     },
-    Object {
+    {
       "ok": true,
-      "result": Object {
+      "result": {
         "id": 2,
       },
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "agentId": 12345,
           "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendMessage",
-          "params": Object {
+          "params": {
             "chat_id": 67890,
             "disable_notification": undefined,
             "parse_mode": "HTML",
             "text": "Hello <b>World!</b>",
           },
         },
-        Object {
+        {
           "agentId": 12345,
           "files": undefined,
           "key": "tg.12345.67890",
           "method": "sendPhoto",
-          "params": Object {
+          "params": {
             "caption": undefined,
             "chat_id": 67890,
             "disable_notification": undefined,
             "parse_mode": "HTML",
             "photo": "https://sociably.io/greeting.png",
-            "reply_markup": Object {
+            "reply_markup": {
               "force_reply": true,
               "selective": undefined,
             },

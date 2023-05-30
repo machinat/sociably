@@ -10,8 +10,8 @@ import type { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
 import type { MaybeContainer } from '@sociably/core/service';
 import type { UnitSegment } from '@sociably/core/renderer';
 import type { HttpRequestInfo } from '@sociably/http';
-import type { WebSocketBot } from './Bot';
-import type WebSocketConnection from './Connection';
+import type { WebSocketBot } from './Bot.js';
+import type WebSocketConnection from './Connection.js';
 
 export type { Server as WsServer } from 'ws';
 export type { HttpRequestInfo } from '@sociably/http';

@@ -16,11 +16,11 @@ import type {
   MetaApiDispatchResponse,
   FileInfo,
 } from '@sociably/meta-api';
-import type { FacebookBot } from './Bot';
-import type FacebookChat from './Chat';
-import FacebookInteractTarget from './InteractTarget';
-import { AgentSettingsAccessorI } from './interface';
-import type { FacebookEvent } from './event/types';
+import type { FacebookBot } from './Bot.js';
+import type FacebookChat from './Chat.js';
+import FacebookInteractTarget from './InteractTarget.js';
+import { AgentSettingsAccessorI } from './interface.js';
+import type { FacebookEvent } from './event/types.js';
 import type {
   FACEBOOK,
   PATH_MESSAGES,
@@ -30,9 +30,9 @@ import type {
   PATH_FEED,
   PATH_PHOTOS,
   PATH_VIDEOS,
-} from './constant';
+} from './constant.js';
 
-export * from './event/types';
+export * from './event/types.js';
 
 export type FacebookThread = FacebookChat | FacebookInteractTarget;
 

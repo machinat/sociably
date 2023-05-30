@@ -1,7 +1,7 @@
 import { useReducer, useEffect } from 'react';
-import type WebviewClient from './Client';
-import type { EventValue, AnyClientAuthenticator } from '../types';
-import type { ClientEventContext, EventContextOfClient } from './types';
+import type WebviewClient from './Client.js';
+import type { EventValue, AnyClientAuthenticator } from '../types.js';
+import type { ClientEventContext, EventContextOfClient } from './types.js';
 
 function useEventReducer<
   T,

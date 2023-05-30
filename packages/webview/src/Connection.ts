@@ -1,7 +1,7 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import type { ConnectionTarget } from '@sociably/websocket';
-import { WEBVIEW } from './constant';
+import { WEBVIEW } from './constant.js';
 
 type ConnectionValue = {
   server: string;

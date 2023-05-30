@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { QuickReplyParam } from '../QuickReplyParam';
-import { renderPartElement } from './utils';
+import { QuickReplyParam } from '../QuickReplyParam.js';
+import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof QuickReplyParam).toBe('function');
@@ -12,22 +12,22 @@ it('is a valid Component', () => {
 test('rendering value', async () => {
   await expect(renderPartElement(<QuickReplyParam payload="_HELLO_WORLD_" />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <QuickReplyParam
-                payload="_HELLO_WORLD_"
-              />,
-              "path": "$#p",
-              "type": "part",
-              "value": Object {
-                "index": undefined,
-                "parameter": Object {
-                  "payload": "_HELLO_WORLD_",
-                  "type": "payload",
-                },
-                "type": "quick_reply",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <QuickReplyParam
+          payload="_HELLO_WORLD_"
+        />,
+        "path": "$#p",
+        "type": "part",
+        "value": {
+          "index": undefined,
+          "parameter": {
+            "payload": "_HELLO_WORLD_",
+            "type": "payload",
+          },
+          "type": "quick_reply",
+        },
+      },
+    ]
+  `);
 });

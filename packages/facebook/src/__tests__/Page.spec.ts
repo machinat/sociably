@@ -1,4 +1,4 @@
-import FacebookPage from '../Page';
+import FacebookPage from '../Page.js';
 
 test('attributes', () => {
   const page = new FacebookPage('12345');
@@ -10,8 +10,8 @@ test('attributes', () => {
   expect(page.id).toBe('12345');
 
   expect(page.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "channel",
       ],
       "id": "12345",
@@ -19,7 +19,7 @@ test('attributes', () => {
     }
   `);
   expect(page.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "page": "12345",
     }
   `);

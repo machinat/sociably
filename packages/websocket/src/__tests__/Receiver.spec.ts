@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
-import moxy, { Mock } from '@moxyjs/moxy';
-import type { WebSocketServer } from '../Server';
-import { WebSocketReceiver } from '../Receiver';
-import WebSocketConnection from '../Connection';
-import type { WebSocketBot } from '../Bot';
+import { moxy, Mock } from '@moxyjs/moxy';
+import type { WebSocketServer } from '../Server.js';
+import { WebSocketReceiver } from '../Receiver.js';
+import WebSocketConnection from '../Connection.js';
+import type { WebSocketBot } from '../Bot.js';
 
 const bot = moxy<WebSocketBot>({
   render: async () => ({ jobs: [], results: [], tasks: [] }),
@@ -143,12 +143,12 @@ test('reply(message) sugar', async () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
   const { reply, event } = popEventMock.calls[0].args[0];
   await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
-          Object {
-            "jobs": Array [],
-            "results": Array [],
-            "tasks": Array [],
-          }
-        `);
+    {
+      "jobs": [],
+      "results": [],
+      "tasks": [],
+    }
+  `);
 
   expect(bot.render).toHaveBeenCalledTimes(1);
   expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');

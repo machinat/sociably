@@ -1,10 +1,10 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { MessageSegmentValue, TemplateMessageParams } from '../../types';
-import { CarouselTemplate, CarouselItem } from '../CarouselTemplate';
-import { UriAction } from '../Action';
-import { renderUnitElement } from './utils';
+import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
+import { CarouselTemplate, CarouselItem } from '../CarouselTemplate.js';
+import { UriAction } from '../Action.js';
+import { renderUnitElement } from './utils.js';
 
 test('is valid native component', () => {
   expect(typeof CarouselItem).toBe('function');
@@ -45,106 +45,106 @@ it('match snapshot', async () => {
       </CarouselTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <CarouselTemplate
-                altText="xxx"
-                imageAspectRatio="square"
-                imageSize="contain"
-              >
-                <CarouselItem
-                  actions={
-                    Array [
-                      <UriAction
-                        label="with fries"
-                        uri="https://..."
-                      />,
-                      <UriAction
-                        label="with salad"
-                        uri="https://..."
-                      />,
-                    ]
-                  }
-                >
-                  Burger
-                </CarouselItem>
-                <CarouselItem
-                  actions={
-                    Array [
-                      <UriAction
-                        label="with soup"
-                        uri="https://..."
-                      />,
-                      <UriAction
-                        label="with salad"
-                        uri="https://..."
-                      />,
-                    ]
-                  }
-                  imageBackgroundColor="#bbbbbb"
-                  thumbnailImageUrl="https://..."
-                  title="Pasta"
-                >
-                  Naporitan
-                </CarouselItem>
-              </CarouselTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "altText": "xxx",
-                  "template": Object {
-                    "columns": Array [
-                      Object {
-                        "actions": Array [
-                          Object {
-                            "label": "with fries",
-                            "type": "uri",
-                            "uri": "https://...",
-                          },
-                          Object {
-                            "label": "with salad",
-                            "type": "uri",
-                            "uri": "https://...",
-                          },
-                        ],
-                        "defaultAction": undefined,
-                        "imageBackgroundColor": undefined,
-                        "text": "Burger",
-                        "thumbnailImageUrl": undefined,
-                        "title": undefined,
-                      },
-                      Object {
-                        "actions": Array [
-                          Object {
-                            "label": "with soup",
-                            "type": "uri",
-                            "uri": "https://...",
-                          },
-                          Object {
-                            "label": "with salad",
-                            "type": "uri",
-                            "uri": "https://...",
-                          },
-                        ],
-                        "defaultAction": undefined,
-                        "imageBackgroundColor": "#bbbbbb",
-                        "text": "Naporitan",
-                        "thumbnailImageUrl": "https://...",
-                        "title": "Pasta",
-                      },
-                    ],
-                    "imageAspectRatio": "square",
-                    "imageSize": "contain",
-                    "type": "carousel",
-                  },
-                  "type": "template",
+    [
+      {
+        "node": <CarouselTemplate
+          altText="xxx"
+          imageAspectRatio="square"
+          imageSize="contain"
+        >
+          <CarouselItem
+            actions={
+              [
+                <UriAction
+                  label="with fries"
+                  uri="https://..."
+                />,
+                <UriAction
+                  label="with salad"
+                  uri="https://..."
+                />,
+              ]
+            }
+          >
+            Burger
+          </CarouselItem>
+          <CarouselItem
+            actions={
+              [
+                <UriAction
+                  label="with soup"
+                  uri="https://..."
+                />,
+                <UriAction
+                  label="with salad"
+                  uri="https://..."
+                />,
+              ]
+            }
+            imageBackgroundColor="#bbbbbb"
+            thumbnailImageUrl="https://..."
+            title="Pasta"
+          >
+            Naporitan
+          </CarouselItem>
+        </CarouselTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "altText": "xxx",
+            "template": {
+              "columns": [
+                {
+                  "actions": [
+                    {
+                      "label": "with fries",
+                      "type": "uri",
+                      "uri": "https://...",
+                    },
+                    {
+                      "label": "with salad",
+                      "type": "uri",
+                      "uri": "https://...",
+                    },
+                  ],
+                  "defaultAction": undefined,
+                  "imageBackgroundColor": undefined,
+                  "text": "Burger",
+                  "thumbnailImageUrl": undefined,
+                  "title": undefined,
                 },
-                "type": "message",
-              },
+                {
+                  "actions": [
+                    {
+                      "label": "with soup",
+                      "type": "uri",
+                      "uri": "https://...",
+                    },
+                    {
+                      "label": "with salad",
+                      "type": "uri",
+                      "uri": "https://...",
+                    },
+                  ],
+                  "defaultAction": undefined,
+                  "imageBackgroundColor": "#bbbbbb",
+                  "text": "Naporitan",
+                  "thumbnailImageUrl": "https://...",
+                  "title": "Pasta",
+                },
+              ],
+              "imageAspectRatio": "square",
+              "imageSize": "contain",
+              "type": "carousel",
             },
-          ]
-        `);
+            "type": "template",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });
 
 test('altText as function', async () => {

@@ -1,7 +1,7 @@
 import type { SociablyProfile } from '@sociably/core/base/Profiler';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import type { RawUserProfile } from './types';
-import { FACEBOOK } from './constant';
+import type { RawUserProfile } from './types.js';
+import { FACEBOOK } from './constant.js';
 
 class FacebookUserProfile
   implements SociablyProfile, MarshallableInstance<RawUserProfile>

@@ -2,8 +2,8 @@ import type { SociablyWorker } from '@sociably/core/engine';
 import SociablyQueue from '@sociably/core/queue';
 import type { JobResponse } from '@sociably/core/queue';
 
-import type { WebSocketServer } from './Server';
-import type { WebSocketJob, WebSocketResult } from './types';
+import type { WebSocketServer } from './Server.js';
+import type { WebSocketJob, WebSocketResult } from './types.js';
 
 class WebSocketWorker implements SociablyWorker<WebSocketJob, WebSocketResult> {
   _started: boolean;

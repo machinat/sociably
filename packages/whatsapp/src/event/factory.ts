@@ -1,4 +1,4 @@
-import UserProfile from '../UserProfile';
+import UserProfile from '../UserProfile.js';
 import {
   TextProto,
   AudioProto,
@@ -19,9 +19,9 @@ import {
   DeliveredProto,
   FailedProto,
   ErrorProto,
-} from './protos';
-import { ContactData } from '../types';
-import { WhatsAppEvent, MessageEvent } from './types';
+} from './protos.js';
+import { ContactData } from '../types.js';
+import { WhatsAppEvent, MessageEvent } from './types.js';
 
 const makeMessageEvent = (
   messageData,

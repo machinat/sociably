@@ -1,5 +1,5 @@
-export { default } from './module';
-export { WebviewBot } from './Bot';
-export { WebviewReceiver } from './Receiver';
-export { Event } from './component';
-export * from './types';
+export { default } from './module.js';
+export { WebviewBot } from './Bot.js';
+export { WebviewReceiver } from './Receiver.js';
+export { Event } from './component.js';
+export * from './types.js';

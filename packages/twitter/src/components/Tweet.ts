@@ -1,14 +1,14 @@
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeTwitterComponent from '../utils/makeTwitterComponent';
-import createTweetSegmentValue from '../utils/createTweetSegmentValue';
-import splitTweetText from '../utils/splitTweetText';
+import makeTwitterComponent from '../utils/makeTwitterComponent.js';
+import createTweetSegmentValue from '../utils/createTweetSegmentValue.js';
+import splitTweetText from '../utils/splitTweetText.js';
 import {
   TwitterSegmentValue,
   TwitterComponent,
   MediaAttachment,
-} from '../types';
+} from '../types.js';
 
 /**
  * @category Props

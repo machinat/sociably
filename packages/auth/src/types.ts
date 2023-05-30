@@ -9,8 +9,8 @@ import type {
   SociablyChannel,
 } from '@sociably/core';
 import type { RoutingInfo } from '@sociably/http';
-import type { CodeMessageComponent } from './basicAuth';
-import type AuthError from './error';
+import type { CodeMessageComponent } from './basicAuth/index.js';
+import type AuthError from './error.js';
 
 type TokenBase = {
   iat: number;

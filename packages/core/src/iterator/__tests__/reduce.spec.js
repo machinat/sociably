@@ -1,5 +1,5 @@
-import Sociably from '../..';
-import reduce from '../reduce';
+import Sociably from '../../index.js';
+import reduce from '../reduce.js';
 
 it('returns initial value if null or undefined passed', () => {
   const callback = jest.fn();

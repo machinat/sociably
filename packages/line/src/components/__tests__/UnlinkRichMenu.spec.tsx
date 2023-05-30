@@ -1,9 +1,9 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import LineChat from '../../Chat';
-import { ChatActionSegmentValue } from '../../types';
-import { UnlinkRichMenu } from '../UnlinkRichMenu';
-import { renderUnitElement } from './utils';
+import LineChat from '../../Chat.js';
+import { ChatActionSegmentValue } from '../../types.js';
+import { UnlinkRichMenu } from '../UnlinkRichMenu.js';
+import { renderUnitElement } from './utils.js';
 
 describe('<UnlinkRichMenu/>', () => {
   it('is valid native unit component with entry getter', () => {

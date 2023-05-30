@@ -4,9 +4,9 @@ import type {
   UniqueOmniIdentifier,
 } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { TELEGRAM, TG } from './constant';
-import UserProfile from './UserProfile';
-import type { RawUser } from './types';
+import { TELEGRAM, TG } from './constant.js';
+import UserProfile from './UserProfile.js';
+import type { RawUser } from './types.js';
 
 type TelegramUserValue = {
   id: number;

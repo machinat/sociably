@@ -1,13 +1,13 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { serviceProviderClass } from '@sociably/core/service';
 import { ServerAuthenticator, CheckDataResult } from '@sociably/auth';
-import { AgentSettingsAccessorI } from '../interface';
-import LineChannel from '../Channel';
-import LineChat from '../Chat';
-import BotP from '../Bot';
-import { LINE } from '../constant';
-import LineApiError from '../error';
-import { LineRawUserProfile } from '../types';
+import { AgentSettingsAccessorI } from '../interface.js';
+import LineChannel from '../Channel.js';
+import LineChat from '../Chat.js';
+import BotP from '../Bot.js';
+import { LINE } from '../constant.js';
+import LineApiError from '../error.js';
+import { LineRawUserProfile } from '../types.js';
 import {
   LiffOs,
   RefChatType,
@@ -15,14 +15,14 @@ import {
   LIFF_ID_QUERY_KEY,
   ROOM_ID_QUERY_KEY,
   GROUP_ID_QUERY_KEY,
-} from './constant';
-import { getAuthContextDetails } from './utils';
+} from './constant.js';
+import { getAuthContextDetails } from './utils.js';
 import {
   LineAuthCredential,
   LineAuthData,
   LineAuthContext,
   LineVerifyAuthResult,
-} from './types';
+} from './types.js';
 
 type VerifyTokenResult = {
   /* eslint-disable camelcase */

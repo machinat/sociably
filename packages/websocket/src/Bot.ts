@@ -10,12 +10,12 @@ import Queue from '@sociably/core/queue';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import { serviceProviderClass } from '@sociably/core/service';
 
-import { WEBSOCKET } from './constant';
-import { PlatformUtilitiesI } from './interface';
-import { ServerP } from './Server';
-import WebSocketConnection from './Connection';
-import createJobs from './utils/createJobs';
-import WebSocketWorker from './Worker';
+import { WEBSOCKET } from './constant.js';
+import { PlatformUtilitiesI } from './interface.js';
+import { ServerP } from './Server.js';
+import WebSocketConnection from './Connection.js';
+import createJobs from './utils/createJobs.js';
+import WebSocketWorker from './Worker.js';
 import type {
   EventInput,
   WebSocketJob,
@@ -24,7 +24,7 @@ import type {
   WebSocketDispatchFrame,
   ConnIdentifier,
   WebSocketDispatchResponse,
-} from './types';
+} from './types.js';
 
 type SendResult = {
   connections: WebSocketConnection[];

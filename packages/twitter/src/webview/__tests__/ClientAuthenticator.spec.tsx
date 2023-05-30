@@ -1,8 +1,8 @@
-import moxy from '@moxyjs/moxy';
-import TwitterUser from '../../User';
-import TwitterChat from '../../Chat';
-import UserProfile from '../../UserProfile';
-import ClientAuthenticator from '../ClientAuthenticator';
+import { moxy } from '@moxyjs/moxy';
+import TwitterUser from '../../User.js';
+import TwitterChat from '../../Chat.js';
+import UserProfile from '../../UserProfile.js';
+import ClientAuthenticator from '../ClientAuthenticator.js';
 
 const location = moxy({});
 const navigator = moxy({
@@ -36,12 +36,12 @@ it('.init() do nothing', async () => {
 
 it('.fetchCredential() always reject', async () => {
   await expect(authenticator.fetchCredential()).resolves.toMatchInlineSnapshot(`
-          Object {
-            "code": 400,
-            "ok": false,
-            "reason": "should only initiate from backend",
-          }
-        `);
+    {
+      "code": 400,
+      "ok": false,
+      "reason": "should only initiate from backend",
+    }
+  `);
 });
 
 it('.closeWebview() redirect to twitter chat deep link in mobile devices', () => {

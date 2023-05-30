@@ -1,3 +1,3 @@
-export { default } from './module';
-export { DialogflowIntentRecognizer } from './recognizer';
-export * from './types';
+export { default } from './module.js';
+export { DialogflowIntentRecognizer } from './recognizer.js';
+export * from './types.js';

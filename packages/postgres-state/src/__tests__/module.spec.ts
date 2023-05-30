@@ -2,13 +2,13 @@ import { Moxy } from '@moxyjs/moxy';
 import { Pool as _Pool } from 'pg';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
-import PostgresState from '../module';
-import { ControllerP as PostgresStateController } from '../Controller';
+import PostgresState from '../module.js';
+import { ControllerP as PostgresStateController } from '../Controller.js';
 
 const Pool = _Pool as Moxy<typeof _Pool>;
 
 jest.mock('pg', () =>
-  jest.requireActual('@moxyjs/moxy').default({
+  jest.requireActual('@moxyjs/moxy').moxy({
     Pool: function FakedPool() {},
   })
 );
@@ -16,7 +16,7 @@ jest.mock('pg', () =>
 test('export interfaces', () => {
   expect(PostgresState.Controller).toBe(PostgresStateController);
   expect(PostgresState.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "PostgresStateConfigs",
       "$$polymorphic": false,
@@ -24,7 +24,7 @@ test('export interfaces', () => {
     }
   `);
   expect(PostgresState.ConnectionPool).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "PostgresConnectionPool",
       "$$polymorphic": false,

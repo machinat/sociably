@@ -1,13 +1,15 @@
 import { createServer as _createServer } from 'http';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import { HttpConnector } from '../connector';
-import Http from '../module';
+import { HttpConnector } from '../connector.js';
+import Http from '../module.js';
 
 const createServer = _createServer as Moxy<typeof _createServer>;
 
 jest.mock('http', () =>
-  jest.requireActual('@moxyjs/moxy').default({ createServer() {} })
+  jest
+    .requireActual<{ moxy: typeof moxy }>('@moxyjs/moxy')
+    .moxy({ createServer() {} })
 );
 
 const mockServer = moxy({
@@ -30,7 +32,7 @@ test('exported interfaces', () => {
   expect(Http.Connector).toBe(HttpConnector);
 
   expect(Http.Server).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "HttpServer",
       "$$polymorphic": false,
@@ -39,7 +41,7 @@ test('exported interfaces', () => {
   `);
 
   expect(Http.RequestRouteList).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": true,
       "$$name": "HttpRequestRouteList",
       "$$polymorphic": false,
@@ -47,7 +49,7 @@ test('exported interfaces', () => {
     }
   `);
   expect(Http.UpgradeRouteList).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": true,
       "$$name": "HttpUpgradeRouteList",
       "$$polymorphic": false,
@@ -55,7 +57,7 @@ test('exported interfaces', () => {
     }
   `);
   expect(Http.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "HttpConfigs",
       "$$polymorphic": false,

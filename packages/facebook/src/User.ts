@@ -1,6 +1,6 @@
 import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { FACEBOOK, FB } from './constant';
+import { FACEBOOK, FB } from './constant.js';
 
 type FacebookUserValue = {
   page: string;

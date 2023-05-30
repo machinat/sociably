@@ -1,8 +1,8 @@
 import { formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
-import type { TelegramSegmentValue, TelegramJob } from './types';
-import type TelegramChat from './Chat';
-import type TelegramUser from './User';
+import type { TelegramSegmentValue, TelegramJob } from './types.js';
+import type TelegramChat from './Chat.js';
+import type TelegramUser from './User.js';
 
 export const createChatJob = (
   chat: TelegramChat,

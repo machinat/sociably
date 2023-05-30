@@ -1,9 +1,9 @@
-import { AgentSettingsAccessorI } from '../interface';
+import { AgentSettingsAccessorI } from '../interface.js';
 import {
   LineChatChannelSettings,
   LineLoginChannelSettings,
   LineProviderSettings,
-} from '../types';
+} from '../types.js';
 
 const getLoginChannelIdFromLiffId = (liffId: string): string =>
   liffId.split('-', 1)[0];

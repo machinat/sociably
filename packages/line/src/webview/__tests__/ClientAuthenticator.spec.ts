@@ -1,14 +1,14 @@
 import url from 'url';
 import { performance } from 'perf_hooks';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import { JSDOM } from 'jsdom';
-import ClientAuthenticator from '../ClientAuthenticator';
-import LineChannel from '../../Channel';
-import LineChat from '../../Chat';
-import LineUser from '../../User';
-import GroupProfile from '../../GroupProfile';
-import UserProfile from '../../UserProfile';
-import { LiffOs, RefChatType } from '../constant';
+import ClientAuthenticator from '../ClientAuthenticator.js';
+import LineChannel from '../../Channel.js';
+import LineChat from '../../Chat.js';
+import LineUser from '../../User.js';
+import GroupProfile from '../../GroupProfile.js';
+import UserProfile from '../../UserProfile.js';
+import { LiffOs, RefChatType } from '../constant.js';
 
 const liffContext = {
   type: 'utou',
@@ -147,7 +147,7 @@ describe('.init()', () => {
   });
 
   it('wait for redirect while in LIFF primary redirecting', async () => {
-    jest.useFakeTimers();
+    jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
 
     window.location.mock
       .getter('search')
@@ -166,6 +166,7 @@ describe('.init()', () => {
     );
     expect(liff.init).toHaveBeenCalledTimes(1);
 
+    jest.clearAllTimers();
     jest.useRealTimers();
   });
 });
@@ -286,7 +287,7 @@ describe('.fetchCredential()', () => {
   });
 
   it('call liff.login() if liff.isLoggedIn() is false', async () => {
-    jest.useFakeTimers();
+    jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
     liff.isLoggedIn.mock.fakeReturnValue(false);
 
     const authenticator = new ClientAuthenticator({
@@ -310,6 +311,7 @@ describe('.fetchCredential()', () => {
       `"redirect timeout"`
     );
 
+    jest.clearAllTimers();
     jest.useRealTimers();
   });
 });

@@ -1,5 +1,5 @@
-import { FacebookPageSettings } from '../types';
-import { AgentSettingsAccessorI } from '../interface';
+import { FacebookPageSettings } from '../types.js';
+import { AgentSettingsAccessorI } from '../interface.js';
 
 const createStaticAgentSettingsAccessor = (
   settings: FacebookPageSettings[]

@@ -1,8 +1,8 @@
 import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import UserProfile from './UserProfile';
-import { WHATSAPP, WA } from './constant';
-import { UserProfileData } from './types';
+import UserProfile from './UserProfile.js';
+import { WHATSAPP, WA } from './constant.js';
+import { UserProfileData } from './types.js';
 
 type WhatsAppUserValue = {
   id: string;

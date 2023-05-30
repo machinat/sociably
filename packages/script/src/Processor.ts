@@ -1,16 +1,16 @@
 import StateControllerI from '@sociably/core/base/StateController';
 import type { SociablyThread } from '@sociably/core';
 import { ServiceScope, serviceProviderClass } from '@sociably/core/service';
-import { SCRIPT_STATE_KEY } from './constant';
-import { LibraryAccessorI } from './interface';
-import ScriptRuntime from './Runtime';
+import { SCRIPT_STATE_KEY } from './constant.js';
+import { LibraryAccessorI } from './interface.js';
+import ScriptRuntime from './Runtime.js';
 import type {
   AnyScriptLibrary,
   CallStatus,
   ScriptProcessState,
   ParamsOfScript,
   InputOfScript,
-} from './types';
+} from './types.js';
 
 type StartRuntimeOptions<Params> = {
   params?: Params;

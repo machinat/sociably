@@ -1,14 +1,14 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import snakecaseKeys from 'snakecase-keys';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import getUnixTimestamp from '../utils/getUnixTimestamp';
-import { PATH_FEED, PATH_PHOTOS } from '../constant';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import getUnixTimestamp from '../utils/getUnixTimestamp.js';
+import { PATH_FEED, PATH_PHOTOS } from '../constant.js';
 import type {
   FacebookComponent,
   PagePostValue,
   FacebookSegmentValue,
-} from '../types';
+} from '../types.js';
 
 type GeoLocation = {
   /** An array of 2-digit ISO 3166 format codes. */

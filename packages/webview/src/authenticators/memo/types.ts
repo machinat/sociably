@@ -1,4 +1,4 @@
-import type MemoCacheTarget from './CacheTarget';
+import type MemoCacheTarget from './CacheTarget.js';
 
 export type MemoAuthData = {
   user: string;

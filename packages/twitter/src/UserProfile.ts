@@ -1,8 +1,8 @@
 import type { SociablyProfile } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import Tweet from './Tweet';
-import { TWITTER } from './constant';
-import type { RawUser, RawSettings } from './types';
+import Tweet from './Tweet.js';
+import { TWITTER } from './constant.js';
+import type { RawUser, RawSettings } from './types.js';
 
 type SerializedUserProfile = {
   user: RawUser;

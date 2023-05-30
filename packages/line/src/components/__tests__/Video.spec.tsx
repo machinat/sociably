@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { Video } from '../Video';
-import { renderUnitElement } from './utils';
+import { Video } from '../Video.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid native unit component', () => {
   expect(typeof Video).toBe('function');
@@ -15,24 +15,24 @@ it('%s render match snapshot', async () => {
       <Video originalContentUrl="https://..." previewImageUrl="https://..." />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Video
-                originalContentUrl="https://..."
-                previewImageUrl="https://..."
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "originalContentUrl": "https://...",
-                  "previewImageUrl": "https://...",
-                  "trackingId": undefined,
-                  "type": "video",
-                },
-                "type": "message",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Video
+          originalContentUrl="https://..."
+          previewImageUrl="https://..."
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "originalContentUrl": "https://...",
+            "previewImageUrl": "https://...",
+            "trackingId": undefined,
+            "type": "video",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

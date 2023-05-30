@@ -1,15 +1,15 @@
 import invariant from 'invariant';
-import { polishServiceRequirement, isServiceContainer } from './utils';
-import { SOCIABLY_SERVICE_INTERFACE } from '../symbol';
-import type ServiceMaker from './maker';
-import { ENUM_PHASE_INJECTION } from './maker';
+import { polishServiceRequirement, isServiceContainer } from './utils.js';
+import { SOCIABLY_SERVICE_INTERFACE } from '../symbol.js';
+import type ServiceMaker from './maker.js';
+import { ENUM_PHASE_INJECTION } from './maker.js';
 import type {
   ServiceCache,
   ServiceContainer,
   Interfaceable,
   ServiceDependency,
   ResolveDependencies,
-} from './types';
+} from './types.js';
 
 /**
  * ServiceScope hpld the scope cache for later injection, any container

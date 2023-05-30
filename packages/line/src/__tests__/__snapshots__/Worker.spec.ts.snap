@@ -1,167 +1,167 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`open requests up to maxConnections 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "foo",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 1,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "foo",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 2,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "bar",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 3,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "bar",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 4,
         },
         "url": "v2/bot/message/reply",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "2",
         "key": "baz",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 5,
         },
         "url": "v2/bot/message/reply",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "2",
         "key": "baz",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 6,
         },
         "url": "v2/bot/message/reply",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "foo",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 7,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "bar",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 8,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "2",
         "key": "baz",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 9,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
@@ -172,167 +172,167 @@ Object {
 `;
 
 exports[`sequently excute jobs within an identical thread 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "foo",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 1,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "foo",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 2,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "bar",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 3,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "bar",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 4,
         },
         "url": "v2/bot/message/reply",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "2",
         "key": "baz",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 5,
         },
         "url": "v2/bot/message/reply",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "2",
         "key": "baz",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 6,
         },
         "url": "v2/bot/message/reply",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "foo",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 7,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "1",
         "key": "bar",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 8,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
+      "job": {
         "chatChannelId": "2",
         "key": "baz",
         "method": "POST",
-        "params": Object {
+        "params": {
           "id": 9,
         },
         "url": "v2/bot/message/push",
       },
-      "result": Object {
-        "body": Object {},
+      "result": {
+        "body": {},
         "code": 200,
-        "headers": Object {},
+        "headers": {},
       },
       "success": true,
     },

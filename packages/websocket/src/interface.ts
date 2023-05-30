@@ -7,7 +7,7 @@ import type {
   WebSocketPlatformUtilities,
   WebSocketConfigs,
   WebSocketClusterBroker,
-} from './types';
+} from './types.js';
 
 /**
  * @category Interface

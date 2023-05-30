@@ -1,5 +1,5 @@
 import { serviceInterface } from '@sociably/core/service';
-import type { AnyServerAuthenticator, AuthConfigs } from './types';
+import type { AnyServerAuthenticator, AuthConfigs } from './types.js';
 
 /** @category Interface */
 export const AuthenticatorListI = serviceInterface<AnyServerAuthenticator>({

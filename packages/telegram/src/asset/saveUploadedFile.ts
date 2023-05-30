@@ -1,12 +1,12 @@
 import { serviceContainer } from '@sociably/core/service';
 import { DispatchError } from '@sociably/core/engine';
-import TelegramUser from '../User';
+import TelegramUser from '../User.js';
 import type {
   TelegramDispatchMiddleware,
   TelegramJob,
   TelegramResult,
-} from '../types';
-import AssetsManagerP from './AssetsManager';
+} from '../types.js';
+import AssetsManagerP from './AssetsManager.js';
 
 const SINGLE_MEDIA_MESSAGE_METHODS_PATTERN =
   /^send(Audio|Document|Animation|Video|VideoNote|Voice|Sticker)$/;

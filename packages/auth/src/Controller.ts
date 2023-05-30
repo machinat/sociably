@@ -4,22 +4,18 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { serviceProviderClass } from '@sociably/core/service';
 import { HttpRequestInfo, RoutingInfo } from '@sociably/http';
 import invariant from 'invariant';
-import {
-  verify as verifyJwt,
-  decode as decodeJwt,
-  VerifyOptions as JWTVerifyOptions,
-} from 'jsonwebtoken';
+import JsonWebToken from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
-import { SIGNATURE_COOKIE_KEY } from './constant';
-import { AuthenticatorListI } from './interface';
-import AuthError from './error';
+import { SIGNATURE_COOKIE_KEY } from './constant.js';
+import { AuthenticatorListI } from './interface.js';
+import AuthError from './error.js';
 import {
   getCookies,
   respondApiOk,
   respondApiError,
   parseJsonBody,
-} from './utils';
-import OperatorP from './HttpOperator';
+} from './utils.js';
+import OperatorP from './HttpOperator.js';
 import type {
   AnyServerAuthenticator,
   AuthTokenPayload,
@@ -28,7 +24,9 @@ import type {
   VerifyRequestBody,
   ContextOfAuthenticator,
   WithHeaders,
-} from './types';
+} from './types.js';
+
+const { verify: verifyJwt, decode: decodeJwt } = JsonWebToken;
 
 const getSignature = (req: WithHeaders) => {
   const cookies = getCookies(req);
@@ -375,7 +373,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
   private async _verifyToken(
     token: string,
     signature: string,
-    jwtVerifyOptions?: JWTVerifyOptions
+    jwtVerifyOptions?: JsonWebToken.VerifyOptions
   ): Promise<[null | AuthError, AuthTokenPayload<unknown>]> {
     try {
       const payload: AuthTokenPayload<unknown> = await thenifiedly.call(

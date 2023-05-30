@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
 import type { AuthContextBase } from '@sociably/auth';
-import type WhatsAppChat from '../Chat';
-import type WhatsAppUser from '../User';
-import type WhatsAppAgent from '../Agent';
-import type { WHATSAPP } from '../constant';
+import type WhatsAppChat from '../Chat.js';
+import type WhatsAppUser from '../User.js';
+import type WhatsAppAgent from '../Agent.js';
+import type { WHATSAPP } from '../constant.js';
 
 export type WhatsAppAuthData = {
   account: string;

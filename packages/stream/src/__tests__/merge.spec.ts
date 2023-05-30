@@ -1,8 +1,8 @@
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
-import moxy from '@moxyjs/moxy';
-import Stream from '../stream';
-import merge from '../merge';
-import { STREAMING_KEY_I } from '../interface';
+import { moxy } from '@moxyjs/moxy';
+import Stream from '../stream.js';
+import merge from '../merge.js';
+import { STREAMING_KEY_I } from '../interface.js';
 
 it('merge events form  streams', () => {
   const sourceA = new Stream();

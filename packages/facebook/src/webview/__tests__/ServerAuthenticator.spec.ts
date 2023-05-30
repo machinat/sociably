@@ -1,17 +1,17 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import BasicAuthenticator, {
   AuthDelegatorOptions,
 } from '@sociably/auth/basicAuth';
 import { MetaApiError } from '@sociably/meta-api';
-import FacebookBot from '../../Bot';
-import FacebookProfiler from '../../Profiler';
-import FacebookPage from '../../Page';
-import FacebookUser from '../../User';
-import FacebookChat from '../../Chat';
-import UserProfile from '../../UserProfile';
-import ServerAuthenticator from '../ServerAuthenticator';
-import { FacebookAuthCredential, FacebookAuthData } from '../types';
-import { FacebookThread } from '../../types';
+import FacebookBot from '../../Bot.js';
+import FacebookProfiler from '../../Profiler.js';
+import FacebookPage from '../../Page.js';
+import FacebookUser from '../../User.js';
+import FacebookChat from '../../Chat.js';
+import UserProfile from '../../UserProfile.js';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import { FacebookAuthCredential, FacebookAuthData } from '../types.js';
+import { FacebookThread } from '../../types.js';
 
 const bot = moxy<FacebookBot>({
   pageId: '12345',
@@ -90,19 +90,19 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     expect(basicAuthenticator.createRequestDelegator).toHaveReturnedTimes(1);
 
     expect(delegatorOptions).toMatchInlineSnapshot(`
-          Object {
-            "bot": Object {
-              "pageId": "12345",
-            },
-            "checkAuthData": [Function],
-            "getChatLink": [Function],
-            "platform": "facebook",
-            "platformColor": "#4B69FF",
-            "platformImageUrl": "https://sociably.js.org/img/icon/messenger.png",
-            "platformName": "Facebook",
-            "verifyCredential": [Function],
-          }
-      `);
+      {
+        "bot": {
+          "pageId": "12345",
+        },
+        "checkAuthData": [Function],
+        "getChatLink": [Function],
+        "platform": "facebook",
+        "platformColor": "#4B69FF",
+        "platformImageUrl": "https://sociably.js.org/img/icon/messenger.png",
+        "platformName": "Facebook",
+        "verifyCredential": [Function],
+      }
+    `);
 
     expect(
       delegatorOptions.getChatLink(new FacebookChat('12345', { id: '67890' }), {
@@ -150,12 +150,12 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       await expect(
         delegatorOptions.verifyCredential({ page: '12345', user: '67890' })
       ).resolves.toMatchInlineSnapshot(`
-              Object {
-                "code": 404,
-                "ok": false,
-                "reason": "page \\"12345\\" not registered",
-              }
-            `);
+        {
+          "code": 404,
+          "ok": false,
+          "reason": "page "12345" not registered",
+        }
+      `);
     });
 
     it('fail if fail to get user profile', async () => {
@@ -167,12 +167,12 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       await expect(
         delegatorOptions.verifyCredential({ page: '12345', user: '67890' })
       ).resolves.toMatchInlineSnapshot(`
-              Object {
-                "code": 404,
-                "ok": false,
-                "reason": "user \\"67890\\" not found or not authorized",
-              }
-            `);
+        {
+          "code": 404,
+          "ok": false,
+          "reason": "user "67890" not found or not authorized",
+        }
+      `);
     });
   });
 });
@@ -213,12 +213,12 @@ test('.verifyCredential() fails anyway', async () => {
   );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
-          Object {
-            "code": 403,
-            "ok": false,
-            "reason": "should use backend based flow only",
-          }
-        `);
+    {
+      "code": 403,
+      "ok": false,
+      "reason": "should use backend based flow only",
+    }
+  `);
 });
 
 describe('.verifyRefreshment(data)', () => {
@@ -254,12 +254,12 @@ describe('.verifyRefreshment(data)', () => {
     await expect(
       authenticator.verifyRefreshment({ page: '54321', user: '67890' })
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 404,
-              "ok": false,
-              "reason": "page \\"54321\\" not registered",
-            }
-          `);
+      {
+        "code": 404,
+        "ok": false,
+        "reason": "page "54321" not registered",
+      }
+    `);
   });
 });
 

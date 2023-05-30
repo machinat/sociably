@@ -1,35 +1,33 @@
-import moxy, { Moxy } from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
+import { moxy, Moxy } from '@moxyjs/moxy';
+import Sociably, { SociablyUser, SociablyThread } from '@sociably/core';
 import Queue from '@sociably/core/queue';
+import type { AnyServerAuthenticator } from '@sociably/auth';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
-import type { AnyServerAuthenticator } from '@sociably/auth';
 import { WebSocketWorker } from '@sociably/websocket';
-import WebviewConnection from '../Connection';
-import { Event } from '../component';
-import { WebviewBot } from '../Bot';
-import { WebviewSocketServer } from '../interface';
+import WebviewConnection from '../Connection.js';
+import { Event } from '../component.js';
+import { WebviewSocketServer } from '../interface.js';
+import { WebviewBot } from '../Bot.js';
 
-const Engine = _Engine as Moxy<typeof _Engine>;
-const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Worker = WebSocketWorker as Moxy<typeof WebSocketWorker>;
+const Renderer = _Renderer as Moxy<typeof _Renderer>;
+const Engine = _Engine as Moxy<typeof _Engine>;
 
 jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/engine'))
+    .moxy(jest.requireActual('@sociably/core/engine'))
 );
-
 jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/renderer'))
+    .moxy(jest.requireActual('@sociably/core/renderer'))
 );
-
 jest.mock('@sociably/websocket', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/websocket'))
+    .moxy(jest.requireActual('@sociably/websocket'))
 );
 
 const server = moxy<WebviewSocketServer<AnyServerAuthenticator>>({
@@ -180,13 +178,11 @@ test('#sendUser()', async () => {
   ];
   server.dispatch.mock.fake(async () => connections);
 
-  const user = {
+  const user: SociablyUser = {
+    $$typeofUser: true,
     platform: 'test',
     uid: 'test.jojo_doe',
-    uniqueIdentifier: {
-      platform: 'test',
-      id: 'jojo_doe',
-    },
+    uniqueIdentifier: { $$typeof: ['user'], platform: 'test', id: 'jojo_doe' },
   };
 
   await expect(bot.sendUser(user, { type: 'foo' })).resolves.toEqual({
@@ -204,31 +200,31 @@ test('#sendUser()', async () => {
 
   expect(server.dispatch).toHaveBeenCalledTimes(2);
   expect(server.dispatch.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-    Object {
-      "target": Object {
+    {
+      "target": {
         "key": "$user:test.jojo_doe",
         "type": "topic",
       },
-      "values": Array [
-        Object {
+      "values": [
+        {
           "type": "foo",
         },
       ],
     }
   `);
   expect(server.dispatch.mock.calls[1].args[0]).toMatchInlineSnapshot(`
-    Object {
-      "target": Object {
+    {
+      "target": {
         "key": "$user:test.jojo_doe",
         "type": "topic",
       },
-      "values": Array [
-        Object {
+      "values": [
+        {
           "category": "light",
           "payload": "🍺",
           "type": "bar",
         },
-        Object {
+        {
           "payload": "🍻",
           "type": "baz",
         },
@@ -247,10 +243,12 @@ test('#sendThread()', async () => {
   ];
   server.dispatch.mock.fake(async () => connections);
 
-  const thread = {
+  const thread: SociablyThread = {
+    $$typeofThread: true,
     platform: 'test',
     uid: 'test.me.jojo_doe',
     uniqueIdentifier: {
+      $$typeof: ['thread'],
       platform: 'test',
       id: 'me.jojo_doe',
     },
@@ -271,31 +269,31 @@ test('#sendThread()', async () => {
 
   expect(server.dispatch).toHaveBeenCalledTimes(2);
   expect(server.dispatch.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-    Object {
-      "target": Object {
+    {
+      "target": {
         "key": "$thread:test.me.jojo_doe",
         "type": "topic",
       },
-      "values": Array [
-        Object {
+      "values": [
+        {
           "type": "foo",
         },
       ],
     }
   `);
   expect(server.dispatch.mock.calls[1].args[0]).toMatchInlineSnapshot(`
-    Object {
-      "target": Object {
+    {
+      "target": {
         "key": "$thread:test.me.jojo_doe",
         "type": "topic",
       },
-      "values": Array [
-        Object {
+      "values": [
+        {
           "category": "light",
           "payload": "🍺",
           "type": "bar",
         },
-        Object {
+        {
           "payload": "🍻",
           "type": "baz",
         },

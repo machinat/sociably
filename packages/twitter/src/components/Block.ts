@@ -1,6 +1,6 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeTwitterComponent from '../utils/makeTwitterComponent';
-import { TwitterSegmentValue, TwitterComponent } from '../types';
+import makeTwitterComponent from '../utils/makeTwitterComponent.js';
+import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
 /**
  * @category Props

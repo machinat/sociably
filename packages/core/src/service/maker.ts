@@ -1,11 +1,11 @@
-import type ProvisionMap from './provisionMap';
+import type ProvisionMap from './provisionMap.js';
 import type {
   Interfaceable,
   ServiceProvider,
   ServiceRequirement,
   ServiceCache,
   ServiceBinding,
-} from './types';
+} from './types.js';
 
 export const ENUM_PHASE_BOOTSTRAP = 1;
 export const ENUM_PHASE_INIT_SCOPE = 2;

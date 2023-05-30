@@ -1,12 +1,12 @@
 import Sociably from '@sociably/core';
 import { InMemoryState } from '@sociably/dev-tools';
-import Script from '../module';
-import { ScriptProcessor } from '../Processor';
+import Script from '../module.js';
+import { ScriptProcessor } from '../Processor.js';
 
 it('exports interfaces', () => {
   expect(Script.Processor).toBe(ScriptProcessor);
   expect(Script.LibraryAccessor).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "ScriptLibraryAccessor",
       "$$polymorphic": false,

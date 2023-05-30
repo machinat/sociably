@@ -1,6 +1,6 @@
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import { FacebookComponent } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import { FacebookComponent } from '../types.js';
 
 /**
  * @category Props

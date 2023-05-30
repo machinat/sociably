@@ -1,5 +1,5 @@
-import LineUser from '../User';
-import LineChat from '../Chat';
+import LineUser from '../User.js';
+import LineChat from '../Chat.js';
 
 test('user chat', () => {
   const chat = new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_');
@@ -11,8 +11,8 @@ test('user chat', () => {
   expect(chat.platform).toBe('line');
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._USER_ID_"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "_USER_ID_",
@@ -23,7 +23,7 @@ test('user chat', () => {
 
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "channel": "_CHANNEL_ID_",
       "id": "_USER_ID_",
       "type": "user",
@@ -42,8 +42,8 @@ test('room chat', () => {
   expect(chat.platform).toBe('line');
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._ROOM_ID_"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "_ROOM_ID_",
@@ -54,7 +54,7 @@ test('room chat', () => {
 
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "channel": "_CHANNEL_ID_",
       "id": "_ROOM_ID_",
       "type": "room",
@@ -73,8 +73,8 @@ test('group chat', () => {
   expect(chat.platform).toBe('line');
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._GROUP_ID_"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "_GROUP_ID_",
@@ -85,7 +85,7 @@ test('group chat', () => {
 
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "channel": "_CHANNEL_ID_",
       "id": "_GROUP_ID_",
       "type": "group",

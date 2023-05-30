@@ -1,8 +1,8 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Queue from '@sociably/core/queue';
-import type { WebSocketServer } from '../Server';
-import Worker from '../Worker';
-import type { WebSocketJob, WebSocketResult } from '../types';
+import type { WebSocketServer } from '../Server.js';
+import Worker from '../Worker.js';
+import type { WebSocketJob, WebSocketResult } from '../types.js';
 
 const server = moxy<WebSocketServer<null, null>>({
   dispatch: () => Promise.resolve(null),

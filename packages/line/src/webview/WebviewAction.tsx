@@ -1,8 +1,8 @@
 import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
-import { UriAction } from '../components';
-import LineChannel from '../Channel';
-import LineChat from '../Chat';
-import ServerAuthenticator from './ServerAuthenticator';
+import { UriAction } from '../components/index.js';
+import LineChannel from '../Channel.js';
+import LineChat from '../Chat.js';
+import ServerAuthenticator from './ServerAuthenticator.js';
 
 type WebviewActionProps = {
   /** Label for the action */

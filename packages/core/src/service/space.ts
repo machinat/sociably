@@ -1,7 +1,7 @@
-import ServiceMaker, { ENUM_PHASE_BOOTSTRAP } from './maker';
-import ProvisionMap from './provisionMap';
-import ServiceScope from './scope';
-import { isServiceProvider, isInterfaceable } from './utils';
+import ServiceMaker, { ENUM_PHASE_BOOTSTRAP } from './maker.js';
+import ProvisionMap from './provisionMap.js';
+import ServiceScope from './scope.js';
+import { isServiceProvider, isInterfaceable } from './utils.js';
 import type {
   ServiceBinding,
   ServiceProvision,
@@ -10,7 +10,7 @@ import type {
   Interfaceable,
   PolymorphicProviderBinding,
   PolymorphicValueBinding,
-} from './types';
+} from './types.js';
 
 const hasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);

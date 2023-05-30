@@ -1,4 +1,4 @@
-import getObjectValueByPath from '../getObjectValueByPath';
+import getObjectValueByPath from '../getObjectValueByPath.js';
 
 test.each([
   [{ foo: 'bar' }, '$.foo', 'bar'],

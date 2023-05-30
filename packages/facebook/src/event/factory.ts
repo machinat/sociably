@@ -1,8 +1,8 @@
 import { mixin } from '@sociably/core/utils';
-import type { FacebookRawEvent, FacebookThread } from '../types';
-import FacebookChat from '../Chat';
-import FacebookUser from '../User';
-import FacebookPage from '../Page';
+import type { FacebookRawEvent, FacebookThread } from '../types.js';
+import FacebookChat from '../Chat.js';
+import FacebookUser from '../User.js';
+import FacebookPage from '../Page.js';
 import {
   EventBase as Base,
   Message,
@@ -30,8 +30,8 @@ import {
   PolicyEnforcement,
   Postback,
   Referral,
-} from './mixin';
-import type { FacebookEvent } from './types';
+} from './mixin.js';
+import type { FacebookEvent } from './types.js';
 
 const makeEvent = <
   Proto extends {},

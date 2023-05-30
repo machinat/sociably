@@ -6,8 +6,8 @@ exports[`login page render login page with state 3`] = `
 <html>
 <head>
 <title>Test Webview Login</title>
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1, user-scalable=no\\">
-<meta charset=\\"UTF-8\\">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta charset="UTF-8">
 <style>
 body {
   margin:0;
@@ -90,25 +90,25 @@ h1 {
 </head>
 <body>
 
-<div class=\\"flex center column container\\">
-  <div class=\\"flex center icons\\">
-    <img alt=\\"Test\\" src=\\"http://sociably.test/platform/img/icon.png\\" />
+<div class="flex center column container">
+  <div class="flex center icons">
+    <img alt="Test" src="http://sociably.test/platform/img/icon.png" />
   </div>
   <h1></h1>
-  <div class=\\"flex column\\">
-    <label for=\\"codeInput\\">Login code at Test chat:</label>
-    <input id=\\"codeInput\\" type=\\"text\\" pattern=\\"\\\\d*\\" />
-    <div id=\\"errorMsg\\"></div>
+  <div class="flex column">
+    <label for="codeInput">Login code at Test chat:</label>
+    <input id="codeInput" type="text" pattern="\\d*" />
+    <div id="errorMsg"></div>
   </div>
-  <div class=\\"flex center buttons\\">
-    <a href=\\"https://test.platform.com/foo.bar\\" class=\\"flex center button checkChat\\">
+  <div class="flex center buttons">
+    <a href="https://test.platform.com/foo.bar" class="flex center button checkChat">
       <span>CHECK CHAT</span>
-      <svg xmlns=\\"http://www.w3.org/2000/svg\\" height=\\"20\\" viewBox=\\"0 0 23 23\\" width=\\"20\\">
-        <path d=\\"M0 0h24v24H0z\\" fill=\\"none\\" />
-        <path d=\\"M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\\" />
+      <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 23 23" width="20">
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
       </svg>
     </a>
-    <button id=\\"login\\" class=\\"button\\">LOG IN</button>
+    <button id="login" class="button">LOG IN</button>
   </div>
 </div>
 
@@ -180,8 +180,8 @@ exports[`login page with customized options 2`] = `
 <html>
 <head>
 <title>Test Webview Login</title>
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1, user-scalable=no\\">
-<meta charset=\\"UTF-8\\">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta charset="UTF-8">
 <style>
 body {
   margin:0;
@@ -264,27 +264,27 @@ h1 {
 </head>
 <body>
 
-<div class=\\"flex center column container\\">
-  <div class=\\"flex center icons\\">
-    <img alt=\\"Test\\" src=\\"http://sociably.test/platform/img/icon.png\\" />
-    <div class=\\"x\\"></div>
-    <img alt=\\"My Test App\\" src=\\"https://sociably.io/myApp/img/icon.png\\" />
+<div class="flex center column container">
+  <div class="flex center icons">
+    <img alt="Test" src="http://sociably.test/platform/img/icon.png" />
+    <div class="x"></div>
+    <img alt="My Test App" src="https://sociably.io/myApp/img/icon.png" />
   </div>
   <h1>My Test App</h1>
-  <div class=\\"flex column\\">
-    <label for=\\"codeInput\\">Login code at Test chat:</label>
-    <input id=\\"codeInput\\" type=\\"text\\" pattern=\\"\\\\d*\\" />
-    <div id=\\"errorMsg\\"></div>
+  <div class="flex column">
+    <label for="codeInput">Login code at Test chat:</label>
+    <input id="codeInput" type="text" pattern="\\d*" />
+    <div id="errorMsg"></div>
   </div>
-  <div class=\\"flex center buttons\\">
-    <a href=\\"https://test.platform.com/foo.bar\\" class=\\"flex center button checkChat\\">
+  <div class="flex center buttons">
+    <a href="https://test.platform.com/foo.bar" class="flex center button checkChat">
       <span>CHECK CHAT</span>
-      <svg xmlns=\\"http://www.w3.org/2000/svg\\" height=\\"20\\" viewBox=\\"0 0 23 23\\" width=\\"20\\">
-        <path d=\\"M0 0h24v24H0z\\" fill=\\"none\\" />
-        <path d=\\"M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z\\" />
+      <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 23 23" width="20">
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
       </svg>
     </a>
-    <button id=\\"login\\" class=\\"button\\">LOG IN</button>
+    <button id="login" class="button">LOG IN</button>
   </div>
 </div>
 

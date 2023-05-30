@@ -3,11 +3,11 @@ import {
   createTweetJobs,
   createDirectMessageJobs,
   createWelcomeMessageJobs,
-} from '../job';
-import createTweetSegmentValue from '../utils/createTweetSegmentValue';
-import createDmSegmentValue from '../utils/createDmSegmentValue';
-import TweetTarget from '../TweetTarget';
-import TwitterChat from '../Chat';
+} from '../job.js';
+import createTweetSegmentValue from '../utils/createTweetSegmentValue.js';
+import createDmSegmentValue from '../utils/createDmSegmentValue.js';
+import TweetTarget from '../TweetTarget.js';
+import TwitterChat from '../Chat.js';
 
 describe('createTweetJobs(options)(tweetTarget, segments)', () => {
   test('with text and media', () => {
@@ -91,13 +91,13 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           : request
       )
     ).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "11111",
                 "22222",
               ],
@@ -108,12 +108,12 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
             "media": undefined,
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "45678",
             },
@@ -121,17 +121,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "33333",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "56789",
             },
@@ -139,17 +139,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "44444",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "67890",
             },
@@ -157,10 +157,10 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "href": "1.1/foo",
           "method": "POST",
-          "params": Object {},
+          "params": {},
         },
       ]
     `);
@@ -272,13 +272,13 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           : request
       )
     ).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "11111",
               ],
               "tagged_user_ids": undefined,
@@ -288,17 +288,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "22222",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "23456",
             },
@@ -306,17 +306,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "33333",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "34567",
             },
@@ -324,12 +324,12 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "44444",
                 "55555",
                 "66666",
@@ -337,7 +337,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "45678",
             },
@@ -345,17 +345,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "88888",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "56789",
             },
@@ -399,13 +399,13 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           : request
       )
     ).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
             "media": undefined,
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "56789",
             },
@@ -413,17 +413,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "11111",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "23456",
             },
@@ -515,15 +515,15 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           : request
       )
     ).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
             "media": undefined,
-            "poll": Object {
+            "poll": {
               "duration": 60,
-              "options": Array [
+              "options": [
                 "foo",
                 "bar",
               ],
@@ -533,17 +533,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "11111",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "23456",
             },
@@ -551,13 +551,13 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
             "media": undefined,
             "quote_tweet_id": "98765",
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "34567",
             },
@@ -565,17 +565,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "22222",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "45678",
             },
@@ -583,17 +583,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "33333",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "56789",
             },
@@ -601,17 +601,17 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           },
           "url": "2/tweets",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
+          "params": {
             "direct_message_deep_link": undefined,
-            "media": Object {
-              "media_ids": Array [
+            "media": {
+              "media_ids": [
                 "44444",
               ],
               "tagged_user_ids": undefined,
             },
-            "reply": Object {
+            "reply": {
               "exclude_reply_user_ids": undefined,
               "in_reply_to_tweet_id": "67890",
             },
@@ -697,17 +697,17 @@ describe('createDmSegmentValue(chat, segment)', () => {
           : request
       )
     ).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "method": "POST",
-          "params": Object {
-            "event": Object {
-              "message_create": Object {
-                "message_data": Object {
+          "params": {
+            "event": {
+              "message_create": {
+                "message_data": {
                   "attachment": undefined,
                   "text": "Hello",
                 },
-                "target": Object {
+                "target": {
                   "recipient_id": "67890",
                 },
               },
@@ -716,21 +716,21 @@ describe('createDmSegmentValue(chat, segment)', () => {
           },
           "url": "1.1/direct_messages/events/new.json",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
-            "event": Object {
-              "message_create": Object {
-                "message_data": Object {
-                  "attachment": Object {
-                    "media": Object {
+          "params": {
+            "event": {
+              "message_create": {
+                "message_data": {
+                  "attachment": {
+                    "media": {
                       "id": "11111",
                     },
                     "type": "media",
                   },
                   "text": undefined,
                 },
-                "target": Object {
+                "target": {
                   "recipient_id": "67890",
                 },
               },
@@ -739,21 +739,21 @@ describe('createDmSegmentValue(chat, segment)', () => {
           },
           "url": "1.1/direct_messages/events/new.json",
         },
-        Object {
+        {
           "method": "POST",
-          "params": Object {
-            "event": Object {
-              "message_create": Object {
-                "message_data": Object {
-                  "attachment": Object {
-                    "media": Object {
+          "params": {
+            "event": {
+              "message_create": {
+                "message_data": {
+                  "attachment": {
+                    "media": {
                       "id": "22222",
                     },
                     "type": "media",
                   },
                   "text": "World",
                 },
-                "target": Object {
+                "target": {
                   "recipient_id": "67890",
                 },
               },
@@ -762,10 +762,10 @@ describe('createDmSegmentValue(chat, segment)', () => {
           },
           "url": "1.1/direct_messages/events/new.json",
         },
-        Object {
+        {
           "href": "1.1/foo",
           "method": "POST",
-          "params": Object {},
+          "params": {},
         },
       ]
     `);
@@ -808,11 +808,11 @@ describe('createWelcomeMessageJobs', () => {
     const [job] = jobs;
     expect(job.accomplishRequest!(job.target!, job.request, null))
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "method": "POST",
-        "params": Object {
-          "welcome_message": Object {
-            "message_data": Object {
+        "params": {
+          "welcome_message": {
+            "message_data": {
               "attachment": undefined,
               "text": "Foo!",
             },
@@ -847,13 +847,13 @@ describe('createWelcomeMessageJobs', () => {
     const [job] = jobs;
     expect(job.accomplishRequest!(job.target!, job.request, ['1234567890']))
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "method": "POST",
-        "params": Object {
-          "welcome_message": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "media": Object {
+        "params": {
+          "welcome_message": {
+            "message_data": {
+              "attachment": {
+                "media": {
                   "id": "1234567890",
                 },
                 "type": "media",
@@ -888,13 +888,13 @@ describe('createWelcomeMessageJobs', () => {
     const [job] = jobs;
     expect(job.accomplishRequest!(job.target!, job.request, ['1234567890']))
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "method": "POST",
-        "params": Object {
-          "welcome_message": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "media": Object {
+        "params": {
+          "welcome_message": {
+            "message_data": {
+              "attachment": {
+                "media": {
                   "id": "1234567890",
                 },
                 "type": "media",

@@ -1,7 +1,7 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import TwitterChat from '../Chat';
-import makeTwitterComponent from '../utils/makeTwitterComponent';
-import { TwitterSegmentValue, TwitterComponent } from '../types';
+import TwitterChat from '../Chat.js';
+import makeTwitterComponent from '../utils/makeTwitterComponent.js';
+import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
 export type MarkReadProps = {
   /** The message ID of the most recent message to be marked read. All messages before it will be marked read as well */

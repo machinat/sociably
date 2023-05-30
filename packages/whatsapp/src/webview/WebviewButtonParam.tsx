@@ -1,9 +1,9 @@
 import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import { posix as posixPath } from 'path';
-import WhatsAppChat from '../Chat';
-import UserProfile from '../UserProfile';
-import { UrlButtonParam } from '../components';
-import ServerAuthenticator from './ServerAuthenticator';
+import WhatsAppChat from '../Chat.js';
+import UserProfile from '../UserProfile.js';
+import { UrlButtonParam } from '../components/index.js';
+import ServerAuthenticator from './ServerAuthenticator.js';
 
 type WebviewButtonParamProps = {
   /** The webview page to open */

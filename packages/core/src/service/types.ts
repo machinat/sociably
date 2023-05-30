@@ -2,8 +2,8 @@ import type {
   SOCIABLY_SERVICE_CONTAINER,
   SOCIABLY_SERVICE_PROVIDER,
   SOCIABLY_SERVICE_INTERFACE,
-} from '../symbol';
-import type ServiceScope from './scope';
+} from '../symbol.js';
+import type ServiceScope from './scope.js';
 
 export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 

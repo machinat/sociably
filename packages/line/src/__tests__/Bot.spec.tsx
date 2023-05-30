@@ -1,35 +1,40 @@
 import nock from 'nock';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
-import { LineBot } from '../Bot';
-import LineChannel from '../Channel';
-import LineChat from '../Chat';
-import LineWorker from '../Worker';
-import LineApiError from '../error';
+import { LineBot } from '../Bot.js';
+import LineChannel from '../Channel.js';
+import LineChat from '../Chat.js';
+import _Worker from '../Worker.js';
+import LineApiError from '../error.js';
 import {
   Expression,
   Image,
   QuickReply,
   MessageAction,
   LinkRichMenu,
-} from '../components';
+} from '../components/index.js';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
+const Worker = _Worker as Moxy<typeof _Worker>;
 
 jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/engine'))
+    .moxy(jest.requireActual('@sociably/core/engine'))
 );
-
 jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/renderer'))
+    .moxy(jest.requireActual('@sociably/core/renderer'))
+);
+jest.mock('../Worker.js', () =>
+  jest
+    .requireActual('@moxyjs/moxy')
+    .moxy(jest.requireActual('../Worker.js'), { mockNewInstance: false })
 );
 
 nock.disableNetConnect();
@@ -83,7 +88,7 @@ const message = (
 );
 
 describe('.constructor(options)', () => {
-  it('assemble engine', () => {
+  it('assemble components', () => {
     const bot = new LineBot({
       agentSettingsAccessor,
       maxRequestConnections: 999,
@@ -100,27 +105,27 @@ describe('.constructor(options)', () => {
       'line',
       expect.any(Renderer),
       expect.any(Queue),
-      expect.any(LineWorker),
+      expect.any(Worker),
       initScope,
       dispatchWrapper
     );
 
-    const worker = Engine.mock.calls[0].args[3];
-    expect(worker.maxConnections).toBe(999);
+    expect(Worker).toHaveBeenCalledTimes(1);
+    expect(Worker).toHaveBeenCalledWith(agentSettingsAccessor, 999);
   });
 });
 
 describe('.render(chat, node, options)', () => {
   it('make api calls', async () => {
+    jest.useRealTimers();
     const bot = new LineBot({ agentSettingsAccessor });
-
-    bot.start();
+    await bot.start();
 
     const apiCall1 = lineApi
       .post('/v2/bot/message/push', {
         to: 'john_doe',
         messages: [
-          { text: 'Hello LINE', type: 'text' },
+          { type: 'text', text: 'Hello LINE' },
           {
             type: 'image',
             originalContentUrl: 'https://...',
@@ -128,8 +133,8 @@ describe('.render(chat, node, options)', () => {
             quickReply: {
               items: [
                 {
-                  action: { label: 'HI', text: 'Hi!', type: 'message' },
                   type: 'action',
+                  action: { label: 'HI', text: 'Hi!', type: 'message' },
                 },
               ],
             },
@@ -153,7 +158,7 @@ describe('.render(chat, node, options)', () => {
 
   it('works with replyToken', async () => {
     const bot = new LineBot({ agentSettingsAccessor });
-    bot.start();
+    await bot.start();
 
     const apiCall1 = lineApi
       .post('/v2/bot/message/reply', {
@@ -194,6 +199,7 @@ describe('.render(chat, node, options)', () => {
 
   it('return null if message is empty', async () => {
     const bot = new LineBot({ agentSettingsAccessor });
+    await bot.start();
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
@@ -207,6 +213,7 @@ describe('.render(chat, node, options)', () => {
 describe('.renderMulticast(channel, userIds, message)', () => {
   it('return null if message is empty', async () => {
     const bot = new LineBot({ agentSettingsAccessor });
+    await bot.start();
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
@@ -218,7 +225,7 @@ describe('.renderMulticast(channel, userIds, message)', () => {
 
   it('make api call to message/mulitcast', async () => {
     const bot = new LineBot({ agentSettingsAccessor });
-    bot.start();
+    await bot.start();
 
     const apiCall1 = lineApi
       .post('/v2/bot/message/multicast', {
@@ -264,7 +271,7 @@ describe('.renderMulticast(channel, userIds, message)', () => {
 describe('.requestApi(options)', () => {
   it('call line REST api', async () => {
     const bot = new LineBot({ agentSettingsAccessor });
-    bot.start();
+    await bot.start();
 
     const apiCall = lineApi
       .post('/v2/bot/foo', { bar: 'baz' })
@@ -286,7 +293,7 @@ describe('.requestApi(options)', () => {
 
   it('throw LineApiError if api call fail', async () => {
     const bot = new LineBot({ agentSettingsAccessor });
-    bot.start();
+    await bot.start();
 
     const apiCall = lineApi
       .post('/v2/bot/foo', { bar: 'baz' })

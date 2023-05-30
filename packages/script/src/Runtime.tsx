@@ -2,9 +2,9 @@ import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
 import type { SociablyThread, SociablyNode } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
-import execute from './execute';
-import { SCRIPT_STATE_KEY } from './constant';
-import { serializeScriptStatus } from './utils';
+import execute from './execute.js';
+import { SCRIPT_STATE_KEY } from './constant.js';
+import { serializeScriptStatus } from './utils.js';
 import type {
   AnyScriptLibrary,
   CallStatus,
@@ -13,7 +13,7 @@ import type {
   ReturnOfScript,
   YieldOfScript,
   MetaOfScript,
-} from './types';
+} from './types.js';
 
 type RuntimeResult<Return, Yield> = {
   finished: boolean;

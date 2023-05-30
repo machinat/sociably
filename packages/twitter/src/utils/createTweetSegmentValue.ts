@@ -1,6 +1,6 @@
-import TweetTarget from '../TweetTarget';
-import type { MediaAttachment, TweetSegmentValue } from '../types';
-import annotateTweetMedia from './annotateTweetMedia';
+import TweetTarget from '../TweetTarget.js';
+import type { MediaAttachment, TweetSegmentValue } from '../types.js';
+import annotateTweetMedia from './annotateTweetMedia.js';
 
 const createTweetSegmentValue = (
   params: Record<string, any>,

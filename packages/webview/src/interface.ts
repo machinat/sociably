@@ -9,10 +9,10 @@ import type {
 import { BasicAuthenticator } from '@sociably/auth/basicAuth';
 import Next, { NextReceiver } from '@sociably/next';
 import WebSocket, { WebSocketServer } from '@sociably/websocket';
-import useAuthLogin from './utils/useAuthLogin';
-import verifyOrigin from './utils/verifyOrigin';
-import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant';
-import type { WebviewConfigs, WebviewPlatformUtilities } from './types';
+import useAuthLogin from './utils/useAuthLogin.js';
+import verifyOrigin from './utils/verifyOrigin.js';
+import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant.js';
+import type { WebviewConfigs, WebviewPlatformUtilities } from './types.js';
 
 export const ConfigsI = serviceInterface<WebviewConfigs>({
   name: 'WebviewConfigs',

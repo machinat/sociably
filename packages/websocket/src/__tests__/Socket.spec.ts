@@ -1,7 +1,7 @@
 import type Ws from 'ws';
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { EventEmitter } from 'events';
-import Socket from '../Socket';
+import Socket from '../Socket.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
@@ -158,7 +158,7 @@ describe('login', () => {
     const [frame, , body] = JSON.parse(clientWs.send.mock.calls[0].args[0]);
     expect(frame).toBe('reject');
     expect(body).toMatchInlineSnapshot(`
-      Object {
+      {
         "reason": "can't sign in to client",
         "seq": 1,
       }

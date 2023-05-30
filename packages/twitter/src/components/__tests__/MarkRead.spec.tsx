@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import TwitterChat from '../../Chat';
-import { MarkRead } from '../MarkRead';
-import { renderUnitElement } from './utils';
+import TwitterChat from '../../Chat.js';
+import { MarkRead } from '../MarkRead.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof MarkRead).toBe('function');
@@ -13,19 +13,19 @@ it('is a valid Component', () => {
 test('rendering', async () => {
   const segments = await renderUnitElement(<MarkRead messageId="12345" />);
   expect(segments).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": <MarkRead
           messageId="12345"
         />,
         "path": "$",
         "type": "unit",
-        "value": Object {
+        "value": {
           "accomplishRequest": [Function],
           "mediaSources": null,
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
+            "params": {
               "last_read_event_id": "12345",
               "recipient_id": "",
             },
@@ -39,9 +39,9 @@ test('rendering', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "last_read_event_id": "12345",
         "recipient_id": "67890",
       },

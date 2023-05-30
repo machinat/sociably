@@ -1,3 +1,3 @@
-export { default } from './module';
-export { NextReceiver } from './receiver';
-export * from './types';
+export { default } from './module.js';
+export { NextReceiver } from './receiver.js';
+export * from './types.js';

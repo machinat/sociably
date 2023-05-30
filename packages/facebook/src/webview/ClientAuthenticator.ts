@@ -4,13 +4,15 @@ import type {
   CheckDataResult,
 } from '@sociably/auth';
 import type { WebviewClientAuthenticator } from '@sociably/webview';
-import { parse as parseBrowser } from 'bowser';
-import { FACEBOOK } from '../constant';
-import FacebookChat from '../Chat';
-import FacebookUser from '../User';
-import FacebookUserProfile from '../UserProfile';
-import { getAuthContextDetails } from './utils';
-import type { FacebookAuthContext, FacebookAuthData } from './types';
+import Bowser from 'bowser';
+import { FACEBOOK } from '../constant.js';
+import FacebookChat from '../Chat.js';
+import FacebookUser from '../User.js';
+import FacebookUserProfile from '../UserProfile.js';
+import { getAuthContextDetails } from './utils.js';
+import type { FacebookAuthContext, FacebookAuthData } from './types.js';
+
+const { parse: parseBrowser } = Bowser;
 
 /* eslint-disable class-methods-use-this */
 export default class FacebookClientAuthenticator

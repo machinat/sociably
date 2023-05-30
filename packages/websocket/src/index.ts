@@ -1,7 +1,7 @@
-export { default } from './module';
-export { WebSocketBot } from './Bot';
-export { WebSocketReceiver } from './Receiver';
-export { WebSocketServer } from './Server';
-export { default as WebSocketWorker } from './Worker';
-export { Event } from './component';
-export * from './types';
+export { default } from './module.js';
+export { WebSocketBot } from './Bot.js';
+export { WebSocketReceiver } from './Receiver.js';
+export { WebSocketServer } from './Server.js';
+export { default as WebSocketWorker } from './Worker.js';
+export { Event } from './component.js';
+export * from './types.js';

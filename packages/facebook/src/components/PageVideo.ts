@@ -1,9 +1,9 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import snakecaseKeys from 'snakecase-keys';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import getUnixTimestamp from '../utils/getUnixTimestamp';
-import { PATH_VIDEOS } from '../constant';
-import type { FacebookComponent, PageVideoValue } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import getUnixTimestamp from '../utils/getUnixTimestamp.js';
+import { PATH_VIDEOS } from '../constant.js';
+import type { FacebookComponent, PageVideoValue } from '../types.js';
 
 export type PageVideoProps = {
   /** Accessible URL of a video file. Cannot be used with upload_phase. */
@@ -268,12 +268,7 @@ export const PageVideo: FacebookComponent<
           : undefined,
         ...snakecaseKeys(restParams, { deep: true }),
       },
-      attachFile: fileData
-        ? {
-            data: fileData,
-            info: { knownLength: fileSize },
-          }
-        : undefined,
+      attachFile: fileData ? { data: fileData } : undefined,
       thumbnailFile: thumbnailData ? { data: thumbnailData } : undefined,
     }),
   ];

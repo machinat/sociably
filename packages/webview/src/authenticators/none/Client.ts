@@ -5,10 +5,10 @@ import type {
   AuthenticatorCredentialResult,
   CheckDataResult,
 } from '@sociably/auth';
-import WebviewConnection from '../../Connection';
-import { WebviewClientAuthenticator } from '../../types';
-import type { NoneAuthData, NoneAuthContext } from './types';
-import { WEBVIEW } from '../../constant';
+import WebviewConnection from '../../Connection.js';
+import { WebviewClientAuthenticator } from '../../types.js';
+import type { NoneAuthData, NoneAuthContext } from './types.js';
+import { WEBVIEW } from '../../constant.js';
 
 const USER_KEY = 'none_user';
 const THREAD_KEY = 'none_thread';

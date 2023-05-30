@@ -1,8 +1,8 @@
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
-import moxy from '@moxyjs/moxy';
-import Stream from '../stream';
-import conditions from '../conditions';
-import { STREAMING_KEY_I } from '../interface';
+import { moxy } from '@moxyjs/moxy';
+import Stream from '../stream.js';
+import conditions from '../conditions.js';
+import { STREAMING_KEY_I } from '../interface.js';
 
 const nextTick = () => new Promise(process.nextTick);
 

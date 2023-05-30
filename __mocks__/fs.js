@@ -1,4 +1,4 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 
 module.exports = moxy({
   readFile(path, options, callback) {

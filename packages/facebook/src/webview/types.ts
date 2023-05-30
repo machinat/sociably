@@ -1,10 +1,10 @@
 import type { AuthContextBase } from '@sociably/auth';
-import type { FACEBOOK } from '../constant';
-import type FacebookChat from '../Chat';
-import type FacebookUser from '../User';
-import type FacebookPage from '../Page';
-import type UserProfile from '../UserProfile';
-import type { RawUserProfile } from '../types';
+import type { FACEBOOK } from '../constant.js';
+import type FacebookChat from '../Chat.js';
+import type FacebookUser from '../User.js';
+import type FacebookPage from '../Page.js';
+import type UserProfile from '../UserProfile.js';
+import type { RawUserProfile } from '../types.js';
 
 export type FacebookAuthCredential = {
   page: string;

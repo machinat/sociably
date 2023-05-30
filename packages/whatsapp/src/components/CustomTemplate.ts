@@ -5,8 +5,8 @@ import {
   IntermediateSegment,
 } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import makeWhatsAppComponent from '../utils/makeWhatsAppComponent';
-import { WhatsAppSegmentValue, WhatsAppComponent } from '../types';
+import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
+import { WhatsAppSegmentValue, WhatsAppComponent } from '../types.js';
 
 export type CustomTemplateProps = {
   /** Name of the template */

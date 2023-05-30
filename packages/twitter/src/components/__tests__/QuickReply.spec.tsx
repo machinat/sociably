@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { QuickReply } from '../QuickReply';
-import { renderPartElement } from './utils';
+import { QuickReply } from '../QuickReply.js';
+import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof QuickReply).toBe('function');
@@ -12,41 +12,41 @@ it('is a valid Component', () => {
 test('rendering', async () => {
   await expect(renderPartElement(<QuickReply label="Hi" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <QuickReply
-                label="Hi"
-              />,
-              "path": "$#p",
-              "type": "part",
-              "value": Object {
-                "description": undefined,
-                "label": "Hi",
-                "metadata": undefined,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <QuickReply
+          label="Hi"
+        />,
+        "path": "$#p",
+        "type": "part",
+        "value": {
+          "description": undefined,
+          "label": "Hi",
+          "metadata": undefined,
+        },
+      },
+    ]
+  `);
 
   await expect(
     renderPartElement(<QuickReply label="Hi" description="I'm friendly" />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <QuickReply
-                description="I'm friendly"
-                label="Hi"
-              />,
-              "path": "$#p",
-              "type": "part",
-              "value": Object {
-                "description": "I'm friendly",
-                "label": "Hi",
-                "metadata": undefined,
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <QuickReply
+          description="I'm friendly"
+          label="Hi"
+        />,
+        "path": "$#p",
+        "type": "part",
+        "value": {
+          "description": "I'm friendly",
+          "label": "Hi",
+          "metadata": undefined,
+        },
+      },
+    ]
+  `);
 
   await expect(
     renderPartElement(
@@ -57,21 +57,21 @@ test('rendering', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <QuickReply
-                description="I'm a friend"
-                label="Hi"
-                metadata="friendly handshake"
-              />,
-              "path": "$#p",
-              "type": "part",
-              "value": Object {
-                "description": "I'm a friend",
-                "label": "Hi",
-                "metadata": "friendly handshake",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <QuickReply
+          description="I'm a friend"
+          label="Hi"
+          metadata="friendly handshake"
+        />,
+        "path": "$#p",
+        "type": "part",
+        "value": {
+          "description": "I'm a friend",
+          "label": "Hi",
+          "metadata": "friendly handshake",
+        },
+      },
+    ]
+  `);
 });

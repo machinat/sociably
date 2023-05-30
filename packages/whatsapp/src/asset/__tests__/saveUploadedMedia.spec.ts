@@ -1,9 +1,9 @@
 import { DispatchError } from '@sociably/core/engine';
-import moxy from '@moxyjs/moxy';
-import WhatsAppAgent from '../../Agent';
-import WhatsAppChat from '../../Chat';
-import saveUploadedMedia from '../saveUploadedMedia';
-import AssetsManager from '../AssetsManager';
+import { moxy } from '@moxyjs/moxy';
+import WhatsAppAgent from '../../Agent.js';
+import WhatsAppChat from '../../Chat.js';
+import saveUploadedMedia from '../saveUploadedMedia.js';
+import AssetsManager from '../AssetsManager.js';
 
 const manager = moxy<AssetsManager>({
   saveMedia: async () => {},

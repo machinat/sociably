@@ -1,7 +1,7 @@
 import { mixin } from '@sociably/core/utils';
-import LineChannel from '../Channel';
-import LineUser from '../User';
-import LineChat from '../Chat';
+import LineChannel from '../Channel.js';
+import LineUser from '../User.js';
+import LineChat from '../Chat.js';
 import {
   EventBase,
   Message,
@@ -23,8 +23,8 @@ import {
   AccountLink,
   DeviceLink,
   ThingsScenarioExecution,
-} from './mixins';
-import { LineEvent, LineRawEvent } from './types';
+} from './mixins.js';
+import { LineEvent, LineRawEvent } from './types.js';
 
 export const makeEvent = <
   Proto extends object // eslint-disable-line @typescript-eslint/ban-types

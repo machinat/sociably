@@ -1,9 +1,9 @@
-import { SOCIABLY_ELEMENT_TYPE } from './symbol';
+import { SOCIABLY_ELEMENT_TYPE } from './symbol.js';
 import type {
   SociablyElementType,
   SociablyNode,
   SociablyElement,
-} from './types';
+} from './types.js';
 
 const createSociablyElement = (
   type: SociablyElementType,

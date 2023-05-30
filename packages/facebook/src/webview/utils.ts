@@ -1,10 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 import type { ContextDetails } from '@sociably/auth';
-import FacebookChat from '../Chat';
-import FacebookUser from '../User';
-import FacebookPage from '../Page';
-import UserProfile from '../UserProfile';
-import type { FacebookAuthContext, FacebookAuthData } from './types';
+import FacebookChat from '../Chat.js';
+import FacebookUser from '../User.js';
+import FacebookPage from '../Page.js';
+import UserProfile from '../UserProfile.js';
+import type { FacebookAuthContext, FacebookAuthData } from './types.js';
 
 export const getAuthContextDetails = (
   data: FacebookAuthData

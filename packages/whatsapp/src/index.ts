@@ -1,9 +1,12 @@
-export { default } from './module';
-export { default as WhatsAppChat } from './Chat';
-export { default as WhatsAppUser } from './User';
-export { default as WhatsAppUserProfile } from './UserProfile';
-export { WhatsAppBot } from './Bot';
-export { WhatsAppReceiver } from './Receiver';
-export { WhatsAppProfiler } from './Profiler';
-export { default as WhatsAppAssetsManager, saveUploadedMedia } from './asset';
-export * from './types';
+export { default } from './module.js';
+export { default as WhatsAppChat } from './Chat.js';
+export { default as WhatsAppUser } from './User.js';
+export { default as WhatsAppUserProfile } from './UserProfile.js';
+export { WhatsAppBot } from './Bot.js';
+export { WhatsAppReceiver } from './Receiver.js';
+export { WhatsAppProfiler } from './Profiler.js';
+export {
+  default as WhatsAppAssetsManager,
+  saveUploadedMedia,
+} from './asset/index.js';
+export * from './types.js';

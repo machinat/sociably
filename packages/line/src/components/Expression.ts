@@ -4,8 +4,12 @@ import {
   TextSegment,
   UnitSegment,
 } from '@sociably/core/renderer';
-import makeLineComponent from '../utils/makeLineComponent';
-import { LineComponent, MessageSegmentValue, LineSegmentValue } from '../types';
+import makeLineComponent from '../utils/makeLineComponent.js';
+import {
+  LineComponent,
+  MessageSegmentValue,
+  LineSegmentValue,
+} from '../types.js';
 
 /**
  * @category Props

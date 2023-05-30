@@ -5,8 +5,8 @@ import type {
   DetectIntentResult,
   DetectTextOptions,
 } from '@sociably/core/base/IntentRecognizer';
-import { ConfigsI } from './interface';
-import { RegexRecognitionConfigs } from './types';
+import { ConfigsI } from './interface.js';
+import { RegexRecognitionConfigs } from './types.js';
 
 const SPECIAL_CHARACTER = '&!?+\\-_.,;`\'"/';
 const specialCharacterMatcher = new RegExp(`[${SPECIAL_CHARACTER}]`, 'g');

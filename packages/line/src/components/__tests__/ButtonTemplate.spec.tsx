@@ -1,10 +1,10 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { MessageSegmentValue, TemplateMessageParams } from '../../types';
-import { ButtonTemplate } from '../ButtonTemplate';
-import { UriAction } from '../Action';
-import { renderUnitElement } from './utils';
+import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
+import { ButtonTemplate } from '../ButtonTemplate.js';
+import { UriAction } from '../Action.js';
+import { renderUnitElement } from './utils.js';
 
 test('is valid native component', () => {
   expect(typeof ButtonTemplate).toBe('function');
@@ -32,74 +32,74 @@ it('match snapshot', async () => {
       </ButtonTemplate>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ButtonTemplate
-                actions={
-                  Array [
-                    <UriAction
-                      label="foo"
-                      uri="https://..."
-                    />,
-                    <UriAction
-                      label="bar"
-                      uri="https://..."
-                    />,
-                  ]
-                }
-                altText="xxx"
-                defaultAction={
-                  <UriAction
-                    label="???"
-                    uri="https://..."
-                  />
-                }
-                imageAspectRatio="square"
-                imageBackgroundColor="#aaaaaa"
-                imageSize="contain"
-                thumbnailImageUrl="https://..."
-                title="HELLO"
-              >
-                world
-              </ButtonTemplate>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "altText": "xxx",
-                  "template": Object {
-                    "actions": Array [
-                      Object {
-                        "label": "foo",
-                        "type": "uri",
-                        "uri": "https://...",
-                      },
-                      Object {
-                        "label": "bar",
-                        "type": "uri",
-                        "uri": "https://...",
-                      },
-                    ],
-                    "defaultAction": Object {
-                      "label": "???",
-                      "type": "uri",
-                      "uri": "https://...",
-                    },
-                    "imageAspectRatio": "square",
-                    "imageBackgroundColor": "#aaaaaa",
-                    "imageSize": "contain",
-                    "text": "world",
-                    "thumbnailImageUrl": "https://...",
-                    "title": "HELLO",
-                    "type": "buttons",
-                  },
-                  "type": "template",
+    [
+      {
+        "node": <ButtonTemplate
+          actions={
+            [
+              <UriAction
+                label="foo"
+                uri="https://..."
+              />,
+              <UriAction
+                label="bar"
+                uri="https://..."
+              />,
+            ]
+          }
+          altText="xxx"
+          defaultAction={
+            <UriAction
+              label="???"
+              uri="https://..."
+            />
+          }
+          imageAspectRatio="square"
+          imageBackgroundColor="#aaaaaa"
+          imageSize="contain"
+          thumbnailImageUrl="https://..."
+          title="HELLO"
+        >
+          world
+        </ButtonTemplate>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "altText": "xxx",
+            "template": {
+              "actions": [
+                {
+                  "label": "foo",
+                  "type": "uri",
+                  "uri": "https://...",
                 },
-                "type": "message",
+                {
+                  "label": "bar",
+                  "type": "uri",
+                  "uri": "https://...",
+                },
+              ],
+              "defaultAction": {
+                "label": "???",
+                "type": "uri",
+                "uri": "https://...",
               },
+              "imageAspectRatio": "square",
+              "imageBackgroundColor": "#aaaaaa",
+              "imageSize": "contain",
+              "text": "world",
+              "thumbnailImageUrl": "https://...",
+              "title": "HELLO",
+              "type": "buttons",
             },
-          ]
-        `);
+            "type": "template",
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });
 
 test('altText as function', async () => {

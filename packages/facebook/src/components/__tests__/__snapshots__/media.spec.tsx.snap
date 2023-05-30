@@ -1,21 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`media Components match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Image
       reusable={true}
       url="http://this.is/a/picture"
     />,
     "path": "$::0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
       "attachFile": undefined,
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": undefined,
               "is_reusable": true,
               "url": "http://this.is/a/picture",
@@ -27,19 +27,19 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Image
       attachmentId="_I_am_Image_"
     />,
     "path": "$::1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
       "attachFile": undefined,
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": "_I_am_Image_",
               "is_reusable": undefined,
               "url": undefined,
@@ -51,23 +51,23 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Image
       fileData="_IMAGE_BINARY_DATA_"
     />,
     "path": "$::2",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "attachFile": Object {
+      "attachFile": {
         "assetTag": undefined,
         "data": "_IMAGE_BINARY_DATA_",
         "info": undefined,
       },
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": undefined,
               "is_reusable": undefined,
               "url": undefined,
@@ -79,20 +79,20 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Video
       reusable={true}
       url="http://this.is/a/video"
     />,
     "path": "$::3",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
       "attachFile": undefined,
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": undefined,
               "is_reusable": true,
               "url": "http://this.is/a/video",
@@ -104,19 +104,19 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Video
       attachmentId="_I_am_Video_"
     />,
     "path": "$::4",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
       "attachFile": undefined,
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": "_I_am_Video_",
               "is_reusable": undefined,
               "url": undefined,
@@ -128,30 +128,30 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Video
       fileData="_VIDEO_BINARY_DATA_"
       fileInfo={
-        Object {
+        {
           "filename": "foo.mp4",
         }
       }
     />,
     "path": "$::5",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "attachFile": Object {
+      "attachFile": {
         "assetTag": undefined,
         "data": "_VIDEO_BINARY_DATA_",
-        "info": Object {
+        "info": {
           "filename": "foo.mp4",
         },
       },
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": undefined,
               "is_reusable": undefined,
               "url": undefined,
@@ -163,20 +163,20 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Audio
       reusable={true}
       url="http://this.is/an/audio"
     />,
     "path": "$::6",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
       "attachFile": undefined,
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": undefined,
               "is_reusable": true,
               "url": "http://this.is/an/audio",
@@ -188,19 +188,19 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Audio
       attachmentId="_I_am_Audio_"
     />,
     "path": "$::7",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
       "attachFile": undefined,
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": "_I_am_Audio_",
               "is_reusable": undefined,
               "url": undefined,
@@ -212,7 +212,7 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Audio
       assetTag="foo_audio"
       fileData="_AUDIO_BINARY_DATA_"
@@ -220,17 +220,17 @@ Array [
     />,
     "path": "$::8",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "attachFile": Object {
+      "attachFile": {
         "assetTag": "foo_audio",
         "data": "_AUDIO_BINARY_DATA_",
         "info": undefined,
       },
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": undefined,
               "is_reusable": true,
               "url": undefined,
@@ -242,20 +242,20 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <File
       reusable={true}
       url="http://this.is/a/file"
     />,
     "path": "$::9",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
       "attachFile": undefined,
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": undefined,
               "is_reusable": true,
               "url": "http://this.is/a/file",
@@ -267,19 +267,19 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <File
       attachmentId="_I_am_File_"
     />,
     "path": "$::10",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
       "attachFile": undefined,
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": "_I_am_File_",
               "is_reusable": undefined,
               "url": undefined,
@@ -291,12 +291,12 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <File
       assetTag="foo_file"
       fileData="_FILE_BINARY_DATA_"
       fileInfo={
-        Object {
+        {
           "filename": "foo.pdf",
         }
       }
@@ -304,19 +304,19 @@ Array [
     />,
     "path": "$::11",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "attachFile": Object {
+      "attachFile": {
         "assetTag": "foo_file",
         "data": "_FILE_BINARY_DATA_",
-        "info": Object {
+        "info": {
           "filename": "foo.pdf",
         },
       },
-      "params": Object {
-        "message": Object {
-          "attachment": Object {
-            "payload": Object {
+      "params": {
+        "message": {
+          "attachment": {
+            "payload": {
               "attachment_id": undefined,
               "is_reusable": true,
               "url": undefined,

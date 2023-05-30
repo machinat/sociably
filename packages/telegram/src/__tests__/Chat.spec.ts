@@ -1,5 +1,5 @@
-import TelegramChat from '../Chat';
-import ChatProfile from '../ChatProfile';
+import TelegramChat from '../Chat.js';
+import ChatProfile from '../ChatProfile.js';
 
 test('marshallable type meta', () => {
   expect(TelegramChat.typeName).toBe('TgChat');
@@ -27,8 +27,8 @@ test('private chat', () => {
 
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": 67890,
@@ -39,7 +39,7 @@ test('private chat', () => {
 
   expect(chat.typeName()).toBe('TgChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "bot": 12345,
       "id": 67890,
     }
@@ -59,8 +59,8 @@ test('group chat', () => {
 
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": 67890,
@@ -71,7 +71,7 @@ test('group chat', () => {
 
   expect(chat.typeName()).toBe('TgChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "bot": 12345,
       "id": 67890,
     }
@@ -90,8 +90,8 @@ test('without raw data', () => {
 
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": 67890,
@@ -102,7 +102,7 @@ test('without raw data', () => {
 
   expect(chat.typeName()).toBe('TgChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "bot": 12345,
       "id": 67890,
     }
@@ -119,8 +119,8 @@ test('without raw data', () => {
 
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.@foo_channel"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "@foo_channel",
@@ -131,7 +131,7 @@ test('without raw data', () => {
 
   expect(chat.typeName()).toBe('TgChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "bot": 12345,
       "id": "@foo_channel",
     }

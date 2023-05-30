@@ -1,1 +1,1 @@
-export { default } from './ClientAuthenticator';
+export { default } from './ClientAuthenticator.js';

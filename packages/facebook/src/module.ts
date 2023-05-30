@@ -14,21 +14,21 @@ import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import { FACEBOOK } from './constant';
-import BotP from './Bot';
-import ReceiverP from './Receiver';
-import FacebookUserProfile from './UserProfile';
-import ProfilerP from './Profiler';
-import FacebookPage from './Page';
-import FacebookChat from './Chat';
-import FacebookUser from './User';
-import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor';
+} from './interface.js';
+import { FACEBOOK } from './constant.js';
+import BotP from './Bot.js';
+import ReceiverP from './Receiver.js';
+import FacebookUserProfile from './UserProfile.js';
+import ProfilerP from './Profiler.js';
+import FacebookPage from './Page.js';
+import FacebookChat from './Chat.js';
+import FacebookUser from './User.js';
+import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor.js';
 import type {
   FacebookConfigs,
   FacebookEventContext,
   FacebookDispatchFrame,
-} from './types';
+} from './types.js';
 
 /** @interanl */
 const webhookRouteFactory = serviceProviderFactory({

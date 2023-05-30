@@ -1,11 +1,11 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
-import moxy, { Mock } from '@moxyjs/moxy';
-import WhatsAppAgent from '../Agent';
-import WhatsAppChat from '../Chat';
-import WhatsAppUser from '../User';
-import { WhatsAppReceiver } from '../Receiver';
-import type { WhatsAppBot } from '../Bot';
+import { moxy, Mock } from '@moxyjs/moxy';
+import WhatsAppAgent from '../Agent.js';
+import WhatsAppChat from '../Chat.js';
+import WhatsAppUser from '../User.js';
+import { WhatsAppReceiver } from '../Receiver.js';
+import type { WhatsAppBot } from '../Bot.js';
 
 const bot = moxy<WhatsAppBot>({
   render: () => ({ jobs: [], results: [], tasks: [] }),
@@ -192,12 +192,12 @@ describe('handling POST', () => {
     expect(popEventMock).toHaveBeenCalledTimes(1);
     const { reply, event } = popEventMock.calls[0].args[0];
     await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
-            Object {
-              "jobs": Array [],
-              "results": Array [],
-              "tasks": Array [],
-            }
-          `);
+      {
+        "jobs": [],
+        "results": [],
+        "tasks": [],
+      }
+    `);
 
     expect(bot.render).toHaveBeenCalledTimes(1);
     expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');

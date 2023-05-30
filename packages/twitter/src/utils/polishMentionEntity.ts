@@ -1,5 +1,5 @@
-import TwitterUser from '../User';
-import type { RawEntities, MentionEntity } from '../types';
+import TwitterUser from '../User.js';
+import type { RawEntities, MentionEntity } from '../types.js';
 
 const polishMentionEntity = (
   raw: RawEntities['user_mentions'][number]

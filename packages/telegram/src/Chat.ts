@@ -1,8 +1,8 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { TELEGRAM, TG } from './constant';
-import ChatProfile from './ChatProfile';
-import type { TelegramChatType, RawChat, RawUser } from './types';
+import { TELEGRAM, TG } from './constant.js';
+import ChatProfile from './ChatProfile.js';
+import type { TelegramChatType, RawChat, RawUser } from './types.js';
 
 type TelegramChatValue = {
   bot: number;

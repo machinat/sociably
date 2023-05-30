@@ -1,8 +1,8 @@
 import { posix as posixPath } from 'path';
 import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
-import TwitterChat from '../Chat';
-import { UrlButton } from '../components';
-import ServerAuthenticator from './ServerAuthenticator';
+import TwitterChat from '../Chat.js';
+import { UrlButton } from '../components/index.js';
+import ServerAuthenticator from './ServerAuthenticator.js';
 
 type WebviewButtonProps = {
   /** The text that will be displayed to the user on each button. Max string length of 36 characters */

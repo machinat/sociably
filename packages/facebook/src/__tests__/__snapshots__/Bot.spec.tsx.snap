@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`.message(thread, message, options) message options 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
@@ -11,16 +11,16 @@ Object {
       },
       "file": undefined,
       "key": "fb.1234567890.9876543210",
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "message": Object {
+        "params": {
+          "message": {
             "text": "Hello World!",
           },
           "messaging_type": "MESSAGE_TAG",
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
-          "recipient": Object {
+          "recipient": {
             "id": "9876543210",
           },
           "tag": "TRANSPORTATION_UPDATE",
@@ -28,7 +28,7 @@ Object {
         "url": "me/messages",
       },
     },
-    Object {
+    {
       "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
@@ -36,12 +36,12 @@ Object {
       },
       "file": undefined,
       "key": "fb.1234567890.9876543210",
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "message": Object {
-            "attachment": Object {
-              "payload": Object {
+        "params": {
+          "message": {
+            "attachment": {
+              "payload": {
                 "attachment_id": undefined,
                 "is_reusable": undefined,
                 "url": "https://sociably.io/greeting.png",
@@ -49,8 +49,8 @@ Object {
               "type": "image",
             },
             "metadata": undefined,
-            "quick_replies": Array [
-              Object {
+            "quick_replies": [
+              {
                 "content_type": "text",
                 "image_url": undefined,
                 "payload": "👋",
@@ -61,7 +61,7 @@ Object {
           "messaging_type": "MESSAGE_TAG",
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
-          "recipient": Object {
+          "recipient": {
             "id": "9876543210",
           },
           "tag": "TRANSPORTATION_UPDATE",
@@ -70,26 +70,26 @@ Object {
       },
     },
   ],
-  "results": Array [
-    Object {
-      "body": Object {
+  "results": [
+    {
+      "body": {
         "message_id": "xxx",
         "recipient_id": "xxx",
       },
       "code": 200,
     },
-    Object {
-      "body": Object {
+    {
+      "body": {
         "message_id": "xxx",
         "recipient_id": "xxx",
       },
       "code": 200,
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "channel": FacebookPage {
             "$$typeofChannel": true,
             "id": "1234567890",
@@ -97,16 +97,16 @@ Object {
           },
           "file": undefined,
           "key": "fb.1234567890.9876543210",
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
-              "message": Object {
+            "params": {
+              "message": {
                 "text": "Hello World!",
               },
               "messaging_type": "MESSAGE_TAG",
               "notification_type": "SILENT_PUSH",
               "persona_id": "billy17",
-              "recipient": Object {
+              "recipient": {
                 "id": "9876543210",
               },
               "tag": "TRANSPORTATION_UPDATE",
@@ -114,7 +114,7 @@ Object {
             "url": "me/messages",
           },
         },
-        Object {
+        {
           "channel": FacebookPage {
             "$$typeofChannel": true,
             "id": "1234567890",
@@ -122,12 +122,12 @@ Object {
           },
           "file": undefined,
           "key": "fb.1234567890.9876543210",
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
-              "message": Object {
-                "attachment": Object {
-                  "payload": Object {
+            "params": {
+              "message": {
+                "attachment": {
+                  "payload": {
                     "attachment_id": undefined,
                     "is_reusable": undefined,
                     "url": "https://sociably.io/greeting.png",
@@ -135,8 +135,8 @@ Object {
                   "type": "image",
                 },
                 "metadata": undefined,
-                "quick_replies": Array [
-                  Object {
+                "quick_replies": [
+                  {
                     "content_type": "text",
                     "image_url": undefined,
                     "payload": "👋",
@@ -147,7 +147,7 @@ Object {
               "messaging_type": "MESSAGE_TAG",
               "notification_type": "SILENT_PUSH",
               "persona_id": "billy17",
-              "recipient": Object {
+              "recipient": {
                 "id": "9876543210",
               },
               "tag": "TRANSPORTATION_UPDATE",
@@ -163,17 +163,17 @@ Object {
 `;
 
 exports[`.message(thread, message, options) message options 2`] = `
-Object {
+{
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=_ACCESS_TOKEN_\\",\\"body\\":\\"message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D\\",\\"name\\":\\"fb.1234567890.9876543210-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=_ACCESS_TOKEN_\\",\\"body\\":\\"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D\\",\\"depends_on\\":\\"fb.1234567890.9876543210-1\\",\\"name\\":\\"fb.1234567890.9876543210-2\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"fb.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"fb.1234567890.9876543210-1","name":"fb.1234567890.9876543210-2","omit_response_on_success":false}]",
 }
 `;
 
 exports[`.message(thread, message, options) send messages to me/messages api 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
@@ -181,16 +181,16 @@ Object {
       },
       "file": undefined,
       "key": "fb.1234567890.9876543210",
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "message": Object {
+        "params": {
+          "message": {
             "text": "Hello World!",
           },
           "messaging_type": undefined,
           "notification_type": undefined,
           "persona_id": undefined,
-          "recipient": Object {
+          "recipient": {
             "id": "9876543210",
           },
           "tag": undefined,
@@ -198,7 +198,7 @@ Object {
         "url": "me/messages",
       },
     },
-    Object {
+    {
       "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
@@ -206,12 +206,12 @@ Object {
       },
       "file": undefined,
       "key": "fb.1234567890.9876543210",
-      "request": Object {
+      "request": {
         "method": "POST",
-        "params": Object {
-          "message": Object {
-            "attachment": Object {
-              "payload": Object {
+        "params": {
+          "message": {
+            "attachment": {
+              "payload": {
                 "attachment_id": undefined,
                 "is_reusable": undefined,
                 "url": "https://sociably.io/greeting.png",
@@ -219,8 +219,8 @@ Object {
               "type": "image",
             },
             "metadata": undefined,
-            "quick_replies": Array [
-              Object {
+            "quick_replies": [
+              {
                 "content_type": "text",
                 "image_url": undefined,
                 "payload": "👋",
@@ -231,7 +231,7 @@ Object {
           "messaging_type": undefined,
           "notification_type": undefined,
           "persona_id": undefined,
-          "recipient": Object {
+          "recipient": {
             "id": "9876543210",
           },
           "tag": undefined,
@@ -240,26 +240,26 @@ Object {
       },
     },
   ],
-  "results": Array [
-    Object {
-      "body": Object {
+  "results": [
+    {
+      "body": {
         "message_id": "xxx",
         "recipient_id": "xxx",
       },
       "code": 200,
     },
-    Object {
-      "body": Object {
+    {
+      "body": {
         "message_id": "xxx",
         "recipient_id": "xxx",
       },
       "code": 200,
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "channel": FacebookPage {
             "$$typeofChannel": true,
             "id": "1234567890",
@@ -267,16 +267,16 @@ Object {
           },
           "file": undefined,
           "key": "fb.1234567890.9876543210",
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
-              "message": Object {
+            "params": {
+              "message": {
                 "text": "Hello World!",
               },
               "messaging_type": undefined,
               "notification_type": undefined,
               "persona_id": undefined,
-              "recipient": Object {
+              "recipient": {
                 "id": "9876543210",
               },
               "tag": undefined,
@@ -284,7 +284,7 @@ Object {
             "url": "me/messages",
           },
         },
-        Object {
+        {
           "channel": FacebookPage {
             "$$typeofChannel": true,
             "id": "1234567890",
@@ -292,12 +292,12 @@ Object {
           },
           "file": undefined,
           "key": "fb.1234567890.9876543210",
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
-              "message": Object {
-                "attachment": Object {
-                  "payload": Object {
+            "params": {
+              "message": {
+                "attachment": {
+                  "payload": {
                     "attachment_id": undefined,
                     "is_reusable": undefined,
                     "url": "https://sociably.io/greeting.png",
@@ -305,8 +305,8 @@ Object {
                   "type": "image",
                 },
                 "metadata": undefined,
-                "quick_replies": Array [
-                  Object {
+                "quick_replies": [
+                  {
                     "content_type": "text",
                     "image_url": undefined,
                     "payload": "👋",
@@ -317,7 +317,7 @@ Object {
               "messaging_type": undefined,
               "notification_type": undefined,
               "persona_id": undefined,
-              "recipient": Object {
+              "recipient": {
                 "id": "9876543210",
               },
               "tag": undefined,
@@ -333,17 +333,17 @@ Object {
 `;
 
 exports[`.message(thread, message, options) send messages to me/messages api 2`] = `
-Object {
+{
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=_ACCESS_TOKEN_\\",\\"body\\":\\"message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%229876543210%22%7D\\",\\"name\\":\\"fb.1234567890.9876543210-1\\",\\"omit_response_on_success\\":false},{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/messages?access_token=_ACCESS_TOKEN_\\",\\"body\\":\\"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%229876543210%22%7D\\",\\"depends_on\\":\\"fb.1234567890.9876543210-1\\",\\"name\\":\\"fb.1234567890.9876543210-2\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"fb.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"fb.1234567890.9876543210-1","name":"fb.1234567890.9876543210-2","omit_response_on_success":false}]",
 }
 `;
 
 exports[`.uploadChatAttachment(page, message) call message_attachments api 1`] = `
-Object {
+{
   "access_token": "_ACCESS_TOKEN_",
   "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{\\"method\\":\\"POST\\",\\"relative_url\\":\\"me/message_attachments?access_token=_ACCESS_TOKEN_\\",\\"body\\":\\"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D\\",\\"omit_response_on_success\\":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/message_attachments?access_token=_ACCESS_TOKEN_","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D","omit_response_on_success":false}]",
 }
 `;

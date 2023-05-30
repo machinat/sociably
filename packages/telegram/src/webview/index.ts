@@ -1,3 +1,3 @@
-export { default, TelegramServerAuthenticator } from './ServerAuthenticator';
-export { default as TelegramClientAuthenticator } from './ClientAuthenticator';
-export { default as WebviewButton } from './WebviewButton';
+export { default, TelegramServerAuthenticator } from './ServerAuthenticator.js';
+export { default as TelegramClientAuthenticator } from './ClientAuthenticator.js';
+export { default as WebviewButton } from './WebviewButton.js';

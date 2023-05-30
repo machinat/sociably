@@ -1,11 +1,11 @@
 import type { PopEventWrapper } from '@sociably/core';
 import { MetaWebhookReceiver } from '@sociably/meta-api';
 import { serviceProviderClass } from '@sociably/core/service';
-import eventFactory from './event/factory';
-import BotP from './Bot';
-import { ConfigsI, PlatformUtilitiesI } from './interface';
-import { WHATSAPP } from './constant';
-import type { WhatsAppEventContext } from './types';
+import eventFactory from './event/factory.js';
+import BotP from './Bot.js';
+import { ConfigsI, PlatformUtilitiesI } from './interface.js';
+import { WHATSAPP } from './constant.js';
+import type { WhatsAppEventContext } from './types.js';
 
 type WhatsAppReceiverOptions = {
   bot: BotP;

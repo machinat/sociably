@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AnimatedGif rendering 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnimatedGif
       mediaId="12345"
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
+    "value": {
+      "attachment": {
+        "source": {
           "id": "12345",
-          "params": Object {
+          "params": {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
@@ -28,18 +28,18 @@ Array [
 `;
 
 exports[`AnimatedGif rendering 2`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnimatedGif
       shared={true}
       url="http://foo.io/bar.mp4"
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
-          "params": Object {
+    "value": {
+      "attachment": {
+        "source": {
+          "params": {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": "true",
@@ -56,18 +56,18 @@ Array [
 `;
 
 exports[`AnimatedGif rendering 3`] = `
-Array [
-  Object {
+[
+  {
     "node": <AnimatedGif
       additionalOwners={
-        Array [
+        [
           "12345",
         ]
       }
       assetTag="MyAnimatedGif"
       fileData={
-        Object {
-          "data": Array [
+        {
+          "data": [
             102,
             111,
             111,
@@ -82,19 +82,19 @@ Array [
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
+    "value": {
+      "attachment": {
+        "source": {
           "assetTag": "MyAnimatedGif",
-          "fileData": Object {
-            "data": Array [
+          "fileData": {
+            "data": [
               102,
               111,
               111,
             ],
             "type": "Buffer",
           },
-          "params": Object {
+          "params": {
             "additional_owners": "12345",
             "media_category": "dm_gif",
             "media_type": "image/gif",
@@ -112,18 +112,18 @@ Array [
 `;
 
 exports[`Photo rendering 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Photo
       mediaId="12345"
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
+    "value": {
+      "attachment": {
+        "source": {
           "id": "12345",
-          "params": Object {
+          "params": {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
@@ -139,18 +139,18 @@ Array [
 `;
 
 exports[`Photo rendering 2`] = `
-Array [
-  Object {
+[
+  {
     "node": <Photo
       shared={true}
       url="http://foo.io/bar.mp4"
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
-          "params": Object {
+    "value": {
+      "attachment": {
+        "source": {
+          "params": {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": "true",
@@ -167,18 +167,18 @@ Array [
 `;
 
 exports[`Photo rendering 3`] = `
-Array [
-  Object {
+[
+  {
     "node": <Photo
       additionalOwners={
-        Array [
+        [
           "12345",
         ]
       }
       assetTag="MyPhoto"
       fileData={
-        Object {
-          "data": Array [
+        {
+          "data": [
             102,
             111,
             111,
@@ -193,19 +193,19 @@ Array [
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
+    "value": {
+      "attachment": {
+        "source": {
           "assetTag": "MyPhoto",
-          "fileData": Object {
-            "data": Array [
+          "fileData": {
+            "data": [
               102,
               111,
               111,
             ],
             "type": "Buffer",
           },
-          "params": Object {
+          "params": {
             "additional_owners": "12345",
             "media_category": "dm_image",
             "media_type": "image/jpeg",
@@ -223,18 +223,18 @@ Array [
 `;
 
 exports[`Video rendering 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Video
       mediaId="12345"
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
+    "value": {
+      "attachment": {
+        "source": {
           "id": "12345",
-          "params": Object {
+          "params": {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": undefined,
@@ -250,18 +250,18 @@ Array [
 `;
 
 exports[`Video rendering 2`] = `
-Array [
-  Object {
+[
+  {
     "node": <Video
       shared={true}
       url="http://foo.io/bar.mp4"
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
-          "params": Object {
+    "value": {
+      "attachment": {
+        "source": {
+          "params": {
             "additional_owners": undefined,
             "media_category": undefined,
             "shared": "true",
@@ -278,18 +278,18 @@ Array [
 `;
 
 exports[`Video rendering 3`] = `
-Array [
-  Object {
+[
+  {
     "node": <Video
       additionalOwners={
-        Array [
+        [
           "12345",
         ]
       }
       assetTag="MyVideo"
       fileData={
-        Object {
-          "data": Array [
+        {
+          "data": [
             102,
             111,
             111,
@@ -304,19 +304,19 @@ Array [
     />,
     "path": "$",
     "type": "unit",
-    "value": Object {
-      "attachment": Object {
-        "source": Object {
+    "value": {
+      "attachment": {
+        "source": {
           "assetTag": "MyVideo",
-          "fileData": Object {
-            "data": Array [
+          "fileData": {
+            "data": [
               102,
               111,
               111,
             ],
             "type": "Buffer",
           },
-          "params": Object {
+          "params": {
             "additional_owners": "12345",
             "media_category": "dm_video",
             "media_type": "video/mp4",

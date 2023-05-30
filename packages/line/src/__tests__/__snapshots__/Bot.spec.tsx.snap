@@ -1,26 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`.render(chat, node, options) make api calls 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "accessToken": undefined,
       "chatChannelId": "_CHANNEL_ID_",
       "key": "line._CHANNEL_ID_.john_doe",
       "method": "POST",
-      "params": Object {
-        "messages": Array [
-          Object {
+      "params": {
+        "messages": [
+          {
             "text": "Hello LINE",
             "type": "text",
           },
-          Object {
+          {
             "originalContentUrl": "https://...",
             "previewImageUrl": "https://...",
-            "quickReply": Object {
-              "items": Array [
-                Object {
-                  "action": Object {
+            "quickReply": {
+              "items": [
+                {
+                  "action": {
                     "label": "HI",
                     "text": "Hi!",
                     "type": "message",
@@ -37,7 +37,7 @@ Object {
       },
       "url": "v2/bot/message/push",
     },
-    Object {
+    {
       "accessToken": undefined,
       "chatChannelId": "_CHANNEL_ID_",
       "key": "line._CHANNEL_ID_.john_doe",
@@ -46,39 +46,39 @@ Object {
       "url": "v2/bot/user/john_doe/richmenu/newbie",
     },
   ],
-  "results": Array [
-    Object {
-      "body": Object {},
+  "results": [
+    {
+      "body": {},
       "code": 200,
-      "headers": Object {},
+      "headers": {},
     },
-    Object {
-      "body": Object {},
+    {
+      "body": {},
       "code": 200,
-      "headers": Object {},
+      "headers": {},
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "accessToken": undefined,
           "chatChannelId": "_CHANNEL_ID_",
           "key": "line._CHANNEL_ID_.john_doe",
           "method": "POST",
-          "params": Object {
-            "messages": Array [
-              Object {
+          "params": {
+            "messages": [
+              {
                 "text": "Hello LINE",
                 "type": "text",
               },
-              Object {
+              {
                 "originalContentUrl": "https://...",
                 "previewImageUrl": "https://...",
-                "quickReply": Object {
-                  "items": Array [
-                    Object {
-                      "action": Object {
+                "quickReply": {
+                  "items": [
+                    {
+                      "action": {
                         "label": "HI",
                         "text": "Hi!",
                         "type": "message",
@@ -95,7 +95,7 @@ Object {
           },
           "url": "v2/bot/message/push",
         },
-        Object {
+        {
           "accessToken": undefined,
           "chatChannelId": "_CHANNEL_ID_",
           "key": "line._CHANNEL_ID_.john_doe",
@@ -111,26 +111,26 @@ Object {
 `;
 
 exports[`.render(chat, node, options) works with replyToken 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "accessToken": undefined,
       "chatChannelId": "_CHANNEL_ID_",
       "key": "line._CHANNEL_ID_.john_doe",
       "method": "POST",
-      "params": Object {
-        "messages": Array [
-          Object {
+      "params": {
+        "messages": [
+          {
             "text": "Hello LINE",
             "type": "text",
           },
-          Object {
+          {
             "originalContentUrl": "https://...",
             "previewImageUrl": "https://...",
-            "quickReply": Object {
-              "items": Array [
-                Object {
-                  "action": Object {
+            "quickReply": {
+              "items": [
+                {
+                  "action": {
                     "label": "HI",
                     "text": "Hi!",
                     "type": "message",
@@ -147,7 +147,7 @@ Object {
       },
       "url": "v2/bot/message/reply",
     },
-    Object {
+    {
       "accessToken": undefined,
       "chatChannelId": "_CHANNEL_ID_",
       "key": "line._CHANNEL_ID_.john_doe",
@@ -156,39 +156,39 @@ Object {
       "url": "v2/bot/user/john_doe/richmenu/newbie",
     },
   ],
-  "results": Array [
-    Object {
-      "body": Object {},
+  "results": [
+    {
+      "body": {},
       "code": 200,
-      "headers": Object {},
+      "headers": {},
     },
-    Object {
-      "body": Object {},
+    {
+      "body": {},
       "code": 200,
-      "headers": Object {},
+      "headers": {},
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "accessToken": undefined,
           "chatChannelId": "_CHANNEL_ID_",
           "key": "line._CHANNEL_ID_.john_doe",
           "method": "POST",
-          "params": Object {
-            "messages": Array [
-              Object {
+          "params": {
+            "messages": [
+              {
                 "text": "Hello LINE",
                 "type": "text",
               },
-              Object {
+              {
                 "originalContentUrl": "https://...",
                 "previewImageUrl": "https://...",
-                "quickReply": Object {
-                  "items": Array [
-                    Object {
-                      "action": Object {
+                "quickReply": {
+                  "items": [
+                    {
+                      "action": {
                         "label": "HI",
                         "text": "Hi!",
                         "type": "message",
@@ -205,7 +205,7 @@ Object {
           },
           "url": "v2/bot/message/reply",
         },
-        Object {
+        {
           "accessToken": undefined,
           "chatChannelId": "_CHANNEL_ID_",
           "key": "line._CHANNEL_ID_.john_doe",
@@ -221,26 +221,26 @@ Object {
 `;
 
 exports[`.renderMulticast(channel, userIds, message) make api call to message/mulitcast 1`] = `
-Object {
-  "jobs": Array [
-    Object {
+{
+  "jobs": [
+    {
       "accessToken": undefined,
       "chatChannelId": "_CHANNEL_ID_",
       "key": "line.multicast",
       "method": "POST",
-      "params": Object {
-        "messages": Array [
-          Object {
+      "params": {
+        "messages": [
+          {
             "text": "Hello LINE",
             "type": "text",
           },
-          Object {
+          {
             "originalContentUrl": "https://...",
             "previewImageUrl": "https://...",
-            "quickReply": Object {
-              "items": Array [
-                Object {
-                  "action": Object {
+            "quickReply": {
+              "items": [
+                {
+                  "action": {
                     "label": "HI",
                     "text": "Hi!",
                     "type": "message",
@@ -253,7 +253,7 @@ Object {
             "type": "image",
           },
         ],
-        "to": Array [
+        "to": [
           "john",
           "wick",
           "dog",
@@ -261,14 +261,14 @@ Object {
       },
       "url": "v2/bot/message/multicast",
     },
-    Object {
+    {
       "accessToken": undefined,
       "chatChannelId": "_CHANNEL_ID_",
       "key": "line.multicast",
       "method": "POST",
-      "params": Object {
+      "params": {
         "richMenuId": "newbie",
-        "userIds": Array [
+        "userIds": [
           "john",
           "wick",
           "dog",
@@ -277,39 +277,39 @@ Object {
       "url": "v2/bot/richmenu/bulk/link",
     },
   ],
-  "results": Array [
-    Object {
-      "body": Object {},
+  "results": [
+    {
+      "body": {},
       "code": 200,
-      "headers": Object {},
+      "headers": {},
     },
-    Object {
-      "body": Object {},
+    {
+      "body": {},
       "code": 200,
-      "headers": Object {},
+      "headers": {},
     },
   ],
-  "tasks": Array [
-    Object {
-      "payload": Array [
-        Object {
+  "tasks": [
+    {
+      "payload": [
+        {
           "accessToken": undefined,
           "chatChannelId": "_CHANNEL_ID_",
           "key": "line.multicast",
           "method": "POST",
-          "params": Object {
-            "messages": Array [
-              Object {
+          "params": {
+            "messages": [
+              {
                 "text": "Hello LINE",
                 "type": "text",
               },
-              Object {
+              {
                 "originalContentUrl": "https://...",
                 "previewImageUrl": "https://...",
-                "quickReply": Object {
-                  "items": Array [
-                    Object {
-                      "action": Object {
+                "quickReply": {
+                  "items": [
+                    {
+                      "action": {
                         "label": "HI",
                         "text": "Hi!",
                         "type": "message",
@@ -322,7 +322,7 @@ Object {
                 "type": "image",
               },
             ],
-            "to": Array [
+            "to": [
               "john",
               "wick",
               "dog",
@@ -330,14 +330,14 @@ Object {
           },
           "url": "v2/bot/message/multicast",
         },
-        Object {
+        {
           "accessToken": undefined,
           "chatChannelId": "_CHANNEL_ID_",
           "key": "line.multicast",
           "method": "POST",
-          "params": Object {
+          "params": {
             "richMenuId": "newbie",
-            "userIds": Array [
+            "userIds": [
               "john",
               "wick",
               "dog",

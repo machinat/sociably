@@ -1,13 +1,13 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { AuthHttpOperator } from '@sociably/auth';
-import moxy from '@moxyjs/moxy';
-import type { LineBot } from '../../Bot';
-import LineChannel from '../../Channel';
-import LineChat from '../../Chat';
-import LineUser from '../../User';
-import LineApiError from '../../error';
-import ServerAuthenticator from '../ServerAuthenticator';
-import { LiffOs, RefChatType } from '../constant';
+import { moxy } from '@moxyjs/moxy';
+import type { LineBot } from '../../Bot.js';
+import LineChannel from '../../Channel.js';
+import LineChat from '../../Chat.js';
+import LineUser from '../../User.js';
+import LineApiError from '../../error.js';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import { LiffOs, RefChatType } from '../constant.js';
 
 const providerId = '_PROVIDER_ID_';
 const botChannelId = '_BOT_CHAN_ID_';
@@ -124,7 +124,7 @@ describe('.getLiffUrl(channel, path, chat)', () => {
     await expect(
       authenticator.getLiffUrl(botChannel)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"liff setting for messaging channel \\"_BOT_CHAN_ID_\\" not found"`
+      `"liff setting for messaging channel "_BOT_CHAN_ID_" not found"`
     );
 
     agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue({
@@ -137,7 +137,7 @@ describe('.getLiffUrl(channel, path, chat)', () => {
     await expect(
       authenticator.getLiffUrl(botChannel)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"liff setting for messaging channel \\"_BOT_CHAN_ID_\\" not found"`
+      `"liff setting for messaging channel "_BOT_CHAN_ID_" not found"`
     );
   });
 });
@@ -294,12 +294,12 @@ describe('.verifyCredential(credential)', () => {
     const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
     await expect(authenticator.verifyCredential({} as never)).resolves
       .toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "access token is empty",
-            }
-          `);
+      {
+        "code": 400,
+        "ok": false,
+        "reason": "access token is empty",
+      }
+    `);
   });
 
   it('fail if token verify api respond error', async () => {
@@ -321,12 +321,12 @@ describe('.verifyCredential(credential)', () => {
 
     await expect(authenticator.verifyCredential(credential as never)).resolves
       .toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "invalid_request: The access token expired",
-            }
-          `);
+      {
+        "code": 400,
+        "ok": false,
+        "reason": "invalid_request: The access token expired",
+      }
+    `);
   });
 
   it('fail if login channel not registered', async () => {
@@ -338,12 +338,12 @@ describe('.verifyCredential(credential)', () => {
 
     await expect(authenticator.verifyCredential(credential)).resolves
       .toMatchInlineSnapshot(`
-            Object {
-              "code": 404,
-              "ok": false,
-              "reason": "login channel \\"_LOGIN_CHAN_ID_\\" not registered",
-            }
-          `);
+      {
+        "code": 404,
+        "ok": false,
+        "reason": "login channel "_LOGIN_CHAN_ID_" not registered",
+      }
+    `);
   });
 
   it('fail if messaging channel id not match', async () => {
@@ -355,12 +355,12 @@ describe('.verifyCredential(credential)', () => {
         chatChannelId: '_WRONG_CHANNEL_',
       })
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 403,
-              "ok": false,
-              "reason": "messaging channel \\"_WRONG_CHANNEL_\\" not match",
-            }
-          `);
+      {
+        "code": 403,
+        "ok": false,
+        "reason": "messaging channel "_WRONG_CHANNEL_" not match",
+      }
+    `);
   });
 
   it('fail if user id not match', async () => {
@@ -372,12 +372,12 @@ describe('.verifyCredential(credential)', () => {
         userId: '_WORNG_USER_',
       })
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 401,
-              "ok": false,
-              "reason": "user and access token not match",
-            }
-          `);
+      {
+        "code": 401,
+        "ok": false,
+        "reason": "user and access token not match",
+      }
+    `);
   });
 
   it('fail when chat user not found', async () => {
@@ -547,7 +547,7 @@ describe('.verifyRefreshment()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "channel": LineChannel {
           "$$typeofChannel": true,
           "id": "_BOT_CHAN_ID_",
@@ -577,7 +577,7 @@ describe('.verifyRefreshment()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "channel": LineChannel {
           "$$typeofChannel": true,
           "id": "_BOT_CHAN_ID_",
@@ -607,7 +607,7 @@ describe('.verifyRefreshment()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "channel": LineChannel {
           "$$typeofChannel": true,
           "id": "_BOT_CHAN_ID_",
@@ -628,12 +628,12 @@ describe('.verifyRefreshment()', () => {
         provider: '_WORNG_PROVIDER_',
       })
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 400,
-              "ok": false,
-              "reason": "provider not match",
-            }
-          `);
+      {
+        "code": 400,
+        "ok": false,
+        "reason": "provider not match",
+      }
+    `);
   });
 
   it('fail if user id not match', async () => {
@@ -645,18 +645,18 @@ describe('.verifyRefreshment()', () => {
         user: '_WORNG_USER_',
       })
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "data": Object {
-                "client": "_LOGIN_CHAN_ID_",
-                "lang": "zh-TW",
-                "os": 0,
-                "provider": "_PROVIDER_ID_",
-                "ref": 3,
-                "user": "_WORNG_USER_",
-              },
-              "ok": true,
-            }
-          `);
+      {
+        "data": {
+          "client": "_LOGIN_CHAN_ID_",
+          "lang": "zh-TW",
+          "os": 0,
+          "provider": "_PROVIDER_ID_",
+          "ref": 3,
+          "user": "_WORNG_USER_",
+        },
+        "ok": true,
+      }
+    `);
   });
 
   it('fail if messaging channel id not match', async () => {
@@ -665,12 +665,12 @@ describe('.verifyRefreshment()', () => {
     await expect(
       authenticator.verifyRefreshment({ ...authData, chan: '_WORNG_CHANNEL_' })
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 403,
-              "ok": false,
-              "reason": "messaging channel \\"_WORNG_CHANNEL_\\" not match",
-            }
-          `);
+      {
+        "code": 403,
+        "ok": false,
+        "reason": "messaging channel "_WORNG_CHANNEL_" not match",
+      }
+    `);
   });
 
   it('fail if login channel not registered', async () => {
@@ -686,12 +686,12 @@ describe('.verifyRefreshment()', () => {
         client: '_WORNG_CLIENT_',
       })
     ).resolves.toMatchInlineSnapshot(`
-            Object {
-              "code": 404,
-              "ok": false,
-              "reason": "login channel \\"_WORNG_CLIENT_\\" not registered",
-            }
-          `);
+      {
+        "code": 404,
+        "ok": false,
+        "reason": "login channel "_WORNG_CLIENT_" not registered",
+      }
+    `);
   });
 
   it('fail if chat type not match', async () => {
@@ -802,7 +802,7 @@ describe('.verifyRefreshment()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "channel": LineChannel {
           "$$typeofChannel": true,
           "id": "_BOT_CHAN_ID_",

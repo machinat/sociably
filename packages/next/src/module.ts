@@ -1,4 +1,4 @@
-import createNextServer from 'next';
+import NextJs from 'next';
 import type { ServiceModule } from '@sociably/core';
 import {
   serviceProviderFactory,
@@ -7,8 +7,10 @@ import {
 } from '@sociably/core/service';
 import Http from '@sociably/http';
 import type { RequestRoute, UpgradeRoute } from '@sociably/http';
-import { ReceiverP } from './receiver';
-import { ConfigsI, ServerI } from './interface';
+import { ReceiverP } from './receiver.js';
+import { ConfigsI, ServerI } from './interface.js';
+
+const createNextServer = NextJs.default;
 
 const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',

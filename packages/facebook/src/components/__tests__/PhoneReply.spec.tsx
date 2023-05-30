@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PhoneReply } from '../PhoneReply';
-import { renderPartElement } from './utils';
+import { PhoneReply } from '../PhoneReply.js';
+import { renderPartElement } from './utils.js';
 
 it('is valid Component', () => {
   expect(typeof PhoneReply).toBe('function');
@@ -11,12 +11,12 @@ it('is valid Component', () => {
 
 test('PhoneReply match snpshot', async () => {
   expect(renderPartElement(<PhoneReply />)).resolves.toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": <PhoneReply />,
         "path": "$#container",
         "type": "part",
-        "value": Object {
+        "value": {
           "content_type": "user_phone_number",
         },
       },

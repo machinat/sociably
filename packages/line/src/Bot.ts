@@ -10,17 +10,17 @@ import Engine, { DispatchError } from '@sociably/core/engine';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import { serviceProviderClass } from '@sociably/core/service';
 
-import { createChatJobs, createMulticastJobs } from './job';
-import generalElementDelegate from './components/general';
-import LineWorker from './Worker';
-import LineChannel from './Channel';
-import LineChat from './Chat';
+import { createChatJobs, createMulticastJobs } from './job.js';
+import generalElementDelegate from './components/general.js';
+import LineWorker from './Worker.js';
+import LineChannel from './Channel.js';
+import LineChat from './Chat.js';
 import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import { LINE } from './constant';
+} from './interface.js';
+import { LINE } from './constant.js';
 import type {
   LineSegmentValue,
   LineComponent,
@@ -29,7 +29,7 @@ import type {
   LineDispatchFrame,
   LineDispatchResponse,
   MessagingApiResult,
-} from './types';
+} from './types.js';
 
 type LineBotOptions = {
   agentSettingsAccessor: AgentSettingsAccessorI;

@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/no-use-before-define: ["error", { "variables": false }] */
 import invariant from 'invariant';
-import { createCounter } from './utils';
+import { createCounter } from './utils.js';
 import type {
   ConditionMatcher,
   ScriptSegment,
@@ -13,7 +13,7 @@ import type {
   CallCommand,
   ReturnCommand,
   ScriptCommand,
-} from './types';
+} from './types.js';
 
 type GotoIntermediate = {
   type: 'goto';

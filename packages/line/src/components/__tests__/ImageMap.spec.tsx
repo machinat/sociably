@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { ImageMap, ImageMapVideoArea, ImageMapArea } from '../ImageMap';
-import { UriAction, MessageAction } from '../Action';
-import { renderUnitElement } from './utils';
+import { ImageMap, ImageMapVideoArea, ImageMapArea } from '../ImageMap.js';
+import { UriAction, MessageAction } from '../Action.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid component', () => {
   expect(typeof ImageMap).toBe('function');
@@ -27,6 +27,7 @@ it('match snapshot', async () => {
           height={321}
           action={<MessageAction label="foo" text="bar" />}
         />
+
         <ImageMapArea
           x={978}
           y={654}
@@ -37,80 +38,80 @@ it('match snapshot', async () => {
       </ImageMap>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ImageMap
-                altText="..."
-                baseUrl="https://..."
-                height={999}
-              >
-                <ImageMapArea
-                  action={
-                    <MessageAction
-                      label="foo"
-                      text="bar"
-                    />
-                  }
-                  height={321}
-                  width={654}
-                  x={123}
-                  y={456}
-                />
-                <ImageMapArea
-                  action={
-                    <UriAction
-                      label="foo"
-                      uri="https://..."
-                    />
-                  }
-                  height={789}
-                  width={456}
-                  x={978}
-                  y={654}
-                />
-              </ImageMap>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "actions": Array [
-                    Object {
-                      "area": Object {
-                        "height": 321,
-                        "width": 654,
-                        "x": 123,
-                        "y": 456,
-                      },
-                      "label": "foo",
-                      "text": "bar",
-                      "type": "message",
-                    },
-                    Object {
-                      "area": Object {
-                        "height": 789,
-                        "width": 456,
-                        "x": 978,
-                        "y": 654,
-                      },
-                      "label": "foo",
-                      "linkUri": "https://...",
-                      "type": "uri",
-                    },
-                  ],
-                  "altText": "...",
-                  "baseSize": Object {
-                    "height": 999,
-                    "width": 1040,
-                  },
-                  "baseUrl": "https://...",
-                  "type": "imagemap",
-                  "video": undefined,
+    [
+      {
+        "node": <ImageMap
+          altText="..."
+          baseUrl="https://..."
+          height={999}
+        >
+          <ImageMapArea
+            action={
+              <MessageAction
+                label="foo"
+                text="bar"
+              />
+            }
+            height={321}
+            width={654}
+            x={123}
+            y={456}
+          />
+          <ImageMapArea
+            action={
+              <UriAction
+                label="foo"
+                uri="https://..."
+              />
+            }
+            height={789}
+            width={456}
+            x={978}
+            y={654}
+          />
+        </ImageMap>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "actions": [
+              {
+                "area": {
+                  "height": 321,
+                  "width": 654,
+                  "x": 123,
+                  "y": 456,
                 },
+                "label": "foo",
+                "text": "bar",
                 "type": "message",
               },
+              {
+                "area": {
+                  "height": 789,
+                  "width": 456,
+                  "x": 978,
+                  "y": 654,
+                },
+                "label": "foo",
+                "linkUri": "https://...",
+                "type": "uri",
+              },
+            ],
+            "altText": "...",
+            "baseSize": {
+              "height": 999,
+              "width": 1040,
             },
-          ]
-        `);
+            "baseUrl": "https://...",
+            "type": "imagemap",
+            "video": undefined,
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
   await expect(
     renderUnitElement(
       <ImageMap
@@ -138,77 +139,77 @@ it('match snapshot', async () => {
       </ImageMap>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ImageMap
-                altText="..."
-                baseUrl="https://..."
-                height={999}
-                video={
-                  <ImageMapVideoArea
-                    height={321}
-                    originalContentUrl="https://..."
-                    previewImageUrl="https://..."
-                    width={654}
-                    x={123}
-                    y={456}
-                  />
-                }
-              >
-                <ImageMapArea
-                  action={
-                    <MessageAction
-                      label="foo"
-                      text="bar"
-                    />
-                  }
-                  height={321}
-                  width={654}
-                  x={123}
-                  y={456}
-                />
-              </ImageMap>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "actions": Array [
-                    Object {
-                      "area": Object {
-                        "height": 321,
-                        "width": 654,
-                        "x": 123,
-                        "y": 456,
-                      },
-                      "label": "foo",
-                      "text": "bar",
-                      "type": "message",
-                    },
-                  ],
-                  "altText": "...",
-                  "baseSize": Object {
-                    "height": 999,
-                    "width": 1040,
-                  },
-                  "baseUrl": "https://...",
-                  "type": "imagemap",
-                  "video": Object {
-                    "area": Object {
-                      "height": 321,
-                      "width": 654,
-                      "x": 123,
-                      "y": 456,
-                    },
-                    "externalLink": undefined,
-                    "originalContentUrl": "https://...",
-                    "previewImageUrl": "https://...",
-                  },
+    [
+      {
+        "node": <ImageMap
+          altText="..."
+          baseUrl="https://..."
+          height={999}
+          video={
+            <ImageMapVideoArea
+              height={321}
+              originalContentUrl="https://..."
+              previewImageUrl="https://..."
+              width={654}
+              x={123}
+              y={456}
+            />
+          }
+        >
+          <ImageMapArea
+            action={
+              <MessageAction
+                label="foo"
+                text="bar"
+              />
+            }
+            height={321}
+            width={654}
+            x={123}
+            y={456}
+          />
+        </ImageMap>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "actions": [
+              {
+                "area": {
+                  "height": 321,
+                  "width": 654,
+                  "x": 123,
+                  "y": 456,
                 },
+                "label": "foo",
+                "text": "bar",
                 "type": "message",
               },
+            ],
+            "altText": "...",
+            "baseSize": {
+              "height": 999,
+              "width": 1040,
             },
-          ]
-        `);
+            "baseUrl": "https://...",
+            "type": "imagemap",
+            "video": {
+              "area": {
+                "height": 321,
+                "width": 654,
+                "x": 123,
+                "y": 456,
+              },
+              "externalLink": undefined,
+              "originalContentUrl": "https://...",
+              "previewImageUrl": "https://...",
+            },
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
   await expect(
     renderUnitElement(
       <ImageMap
@@ -237,84 +238,84 @@ it('match snapshot', async () => {
       </ImageMap>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ImageMap
-                altText="..."
-                baseUrl="https://..."
-                height={999}
-                video={
-                  <ImageMapVideoArea
-                    action={
-                      <UriAction
-                        label="foo"
-                        uri="https://..."
-                      />
-                    }
-                    height={321}
-                    originalContentUrl="https://..."
-                    previewImageUrl="https://..."
-                    width={654}
-                    x={123}
-                    y={456}
-                  />
-                }
-              >
-                <ImageMapArea
-                  action={
-                    <UriAction
-                      label="foo"
-                      uri="https://..."
-                    />
-                  }
-                  height={789}
-                  width={456}
-                  x={978}
-                  y={654}
+    [
+      {
+        "node": <ImageMap
+          altText="..."
+          baseUrl="https://..."
+          height={999}
+          video={
+            <ImageMapVideoArea
+              action={
+                <UriAction
+                  label="foo"
+                  uri="https://..."
                 />
-              </ImageMap>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "actions": Array [
-                    Object {
-                      "area": Object {
-                        "height": 789,
-                        "width": 456,
-                        "x": 978,
-                        "y": 654,
-                      },
-                      "label": "foo",
-                      "linkUri": "https://...",
-                      "type": "uri",
-                    },
-                  ],
-                  "altText": "...",
-                  "baseSize": Object {
-                    "height": 999,
-                    "width": 1040,
-                  },
-                  "baseUrl": "https://...",
-                  "type": "imagemap",
-                  "video": Object {
-                    "area": Object {
-                      "height": 321,
-                      "width": 654,
-                      "x": 123,
-                      "y": 456,
-                    },
-                    "externalLink": Object {
-                      "label": "foo",
-                      "linkUri": "https://...",
-                    },
-                    "originalContentUrl": "https://...",
-                    "previewImageUrl": "https://...",
-                  },
+              }
+              height={321}
+              originalContentUrl="https://..."
+              previewImageUrl="https://..."
+              width={654}
+              x={123}
+              y={456}
+            />
+          }
+        >
+          <ImageMapArea
+            action={
+              <UriAction
+                label="foo"
+                uri="https://..."
+              />
+            }
+            height={789}
+            width={456}
+            x={978}
+            y={654}
+          />
+        </ImageMap>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "actions": [
+              {
+                "area": {
+                  "height": 789,
+                  "width": 456,
+                  "x": 978,
+                  "y": 654,
                 },
-                "type": "message",
+                "label": "foo",
+                "linkUri": "https://...",
+                "type": "uri",
               },
+            ],
+            "altText": "...",
+            "baseSize": {
+              "height": 999,
+              "width": 1040,
             },
-          ]
-        `);
+            "baseUrl": "https://...",
+            "type": "imagemap",
+            "video": {
+              "area": {
+                "height": 321,
+                "width": 654,
+                "x": 123,
+                "y": 456,
+              },
+              "externalLink": {
+                "label": "foo",
+                "linkUri": "https://...",
+              },
+              "originalContentUrl": "https://...",
+              "previewImageUrl": "https://...",
+            },
+          },
+          "type": "message",
+        },
+      },
+    ]
+  `);
 });

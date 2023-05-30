@@ -1,6 +1,6 @@
 import type { SociablyApp } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
-import Stream from './stream';
+import Stream from './stream.js';
 
 export type StreamingFrame<T> = {
   key: undefined | string;

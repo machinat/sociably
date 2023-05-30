@@ -1,8 +1,8 @@
-import moxy from '@moxyjs/moxy';
-import FacebookChat from '../../Chat';
-import FacebookUser from '../../User';
-import ServerAuthenticator from '../ServerAuthenticator';
-import WebviewButton from '../WebviewButton';
+import { moxy } from '@moxyjs/moxy';
+import FacebookChat from '../../Chat.js';
+import FacebookUser from '../../User.js';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import WebviewButton from '../WebviewButton.js';
 
 const authenticator = moxy<ServerAuthenticator>({
   getAuthUrl: () =>

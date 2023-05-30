@@ -1,8 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import { PATH_MESSAGES } from '../constant';
-import type { FacebookComponent, SenderActionValue } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import { PATH_MESSAGES } from '../constant.js';
+import type { FacebookComponent, SenderActionValue } from '../types.js';
 
 const TYPING_OFF_VALUE = {
   type: 'message' as const,

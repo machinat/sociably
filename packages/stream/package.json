@@ -1,6 +1,7 @@
 {
   "name": "@sociably/stream",
   "version": "0.8.0-alpha.10",
+  "type": "module",
   "description": "Reactive programming library for Sociably.js",
   "main": "./lib/index.js",
   "exports": {
@@ -21,11 +22,9 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "polyfill-exports.js"
+    "README.md"
   ],
   "scripts": {
-    "postinstall": "node ./polyfill-exports.js",
     "prepack": "make -f ../../package.mk prepack"
   },
   "dependencies": {

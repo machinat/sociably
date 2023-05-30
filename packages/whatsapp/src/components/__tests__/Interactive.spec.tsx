@@ -1,11 +1,11 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { ListTemplate, ButtonsTemplate } from '../Interactive';
-import { Image, Audio } from '../Media';
-import { ListRow } from '../ListRow';
-import { ListSection } from '../ListSection';
-import { ReplyButton } from '../ReplyButton';
-import { renderUnitElement } from './utils';
+import { ListTemplate, ButtonsTemplate } from '../Interactive.js';
+import { Image, Audio } from '../Media.js';
+import { ListRow } from '../ListRow.js';
+import { ListSection } from '../ListSection.js';
+import { ReplyButton } from '../ReplyButton.js';
+import { renderUnitElement } from './utils.js';
 
 describe('ListTemplate', () => {
   it('is a valid Component', () => {
@@ -36,65 +36,65 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <ListTemplateProps
-                  buttonTitle="open"
-                  sections={
-                    <ListSection>
-                      <ListRow
-                        id="0"
-                        title="FOO"
-                      />
-                      <ListRow
-                        id="1"
-                        title="BAR"
-                      />
-                    </ListSection>
-                  }
-                >
-                  hello world
-                </ListTemplateProps>,
-                "path": "$",
-                "type": "unit",
-                "value": Object {
-                  "mediaFile": undefined,
-                  "message": Object {
-                    "context": undefined,
-                    "interactive": Object {
-                      "actions": Object {
-                        "button": "open",
-                        "sections": Array [
-                          Object {
-                            "rows": Array [
-                              Object {
-                                "description": undefined,
-                                "id": "0",
-                                "title": "FOO",
-                              },
-                              Object {
-                                "description": undefined,
-                                "id": "1",
-                                "title": "BAR",
-                              },
-                            ],
-                            "title": undefined,
-                          },
-                        ],
-                      },
-                      "body": Object {
-                        "text": "hello world",
-                      },
-                      "footer": undefined,
-                      "header": undefined,
-                      "type": "list",
+      [
+        {
+          "node": <ListTemplateProps
+            buttonTitle="open"
+            sections={
+              <ListSection>
+                <ListRow
+                  id="0"
+                  title="FOO"
+                />
+                <ListRow
+                  id="1"
+                  title="BAR"
+                />
+              </ListSection>
+            }
+          >
+            hello world
+          </ListTemplateProps>,
+          "path": "$",
+          "type": "unit",
+          "value": {
+            "mediaFile": undefined,
+            "message": {
+              "context": undefined,
+              "interactive": {
+                "actions": {
+                  "button": "open",
+                  "sections": [
+                    {
+                      "rows": [
+                        {
+                          "description": undefined,
+                          "id": "0",
+                          "title": "FOO",
+                        },
+                        {
+                          "description": undefined,
+                          "id": "1",
+                          "title": "BAR",
+                        },
+                      ],
+                      "title": undefined,
                     },
-                    "type": "interactive",
-                  },
+                  ],
                 },
+                "body": {
+                  "text": "hello world",
+                },
+                "footer": undefined,
+                "header": undefined,
+                "type": "list",
               },
-            ]
-          `);
+              "type": "interactive",
+            },
+          },
+        },
+      ]
+    `);
     await expect(
       renderUnitElement(
         <ListTemplate
@@ -118,106 +118,106 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <ListTemplateProps
-                  buttonTitle="open"
-                  footer="world"
-                  header={
-                    <Image
-                      url="http://foo.bar/baz.jpg"
-                    />
-                  }
-                  replyTo="REPLY_TO_MESSAGE_ID"
-                  sections={
-                    <Sociably.Fragment>
-                      <ListSection
-                        title="a"
-                      >
-                        <ListRow
-                          id="0"
-                          title="FOO"
-                        />
-                        <ListRow
-                          id="1"
-                          title="BAR"
-                        />
-                      </ListSection>
-                      <ListSection
-                        title="b"
-                      >
-                        <ListRow
-                          id="2"
-                          title="BAZ"
-                        />
-                      </ListSection>
-                    </Sociably.Fragment>
-                  }
+      [
+        {
+          "node": <ListTemplateProps
+            buttonTitle="open"
+            footer="world"
+            header={
+              <Image
+                url="http://foo.bar/baz.jpg"
+              />
+            }
+            replyTo="REPLY_TO_MESSAGE_ID"
+            sections={
+              <Sociably.Fragment>
+                <ListSection
+                  title="a"
                 >
-                  hello
-                </ListTemplateProps>,
-                "path": "$",
-                "type": "unit",
-                "value": Object {
-                  "mediaFile": undefined,
-                  "message": Object {
-                    "context": Object {
-                      "message_id": "REPLY_TO_MESSAGE_ID",
-                    },
-                    "interactive": Object {
-                      "actions": Object {
-                        "button": "open",
-                        "sections": Array [
-                          Object {
-                            "rows": Array [
-                              Object {
-                                "description": undefined,
-                                "id": "0",
-                                "title": "FOO",
-                              },
-                              Object {
-                                "description": undefined,
-                                "id": "1",
-                                "title": "BAR",
-                              },
-                            ],
-                            "title": "a",
-                          },
-                          Object {
-                            "rows": Array [
-                              Object {
-                                "description": undefined,
-                                "id": "2",
-                                "title": "BAZ",
-                              },
-                            ],
-                            "title": "b",
-                          },
-                        ],
-                      },
-                      "body": Object {
-                        "text": "hello",
-                      },
-                      "footer": Object {
-                        "text": "world",
-                      },
-                      "header": Object {
-                        "image": Object {
-                          "caption": undefined,
-                          "filename": undefined,
-                          "id": undefined,
-                          "link": "http://foo.bar/baz.jpg",
-                        },
-                        "type": "image",
-                      },
-                      "type": "list",
-                    },
-                    "type": "interactive",
-                  },
-                },
+                  <ListRow
+                    id="0"
+                    title="FOO"
+                  />
+                  <ListRow
+                    id="1"
+                    title="BAR"
+                  />
+                </ListSection>
+                <ListSection
+                  title="b"
+                >
+                  <ListRow
+                    id="2"
+                    title="BAZ"
+                  />
+                </ListSection>
+              </Sociably.Fragment>
+            }
+          >
+            hello
+          </ListTemplateProps>,
+          "path": "$",
+          "type": "unit",
+          "value": {
+            "mediaFile": undefined,
+            "message": {
+              "context": {
+                "message_id": "REPLY_TO_MESSAGE_ID",
               },
-            ]
-          `);
+              "interactive": {
+                "actions": {
+                  "button": "open",
+                  "sections": [
+                    {
+                      "rows": [
+                        {
+                          "description": undefined,
+                          "id": "0",
+                          "title": "FOO",
+                        },
+                        {
+                          "description": undefined,
+                          "id": "1",
+                          "title": "BAR",
+                        },
+                      ],
+                      "title": "a",
+                    },
+                    {
+                      "rows": [
+                        {
+                          "description": undefined,
+                          "id": "2",
+                          "title": "BAZ",
+                        },
+                      ],
+                      "title": "b",
+                    },
+                  ],
+                },
+                "body": {
+                  "text": "hello",
+                },
+                "footer": {
+                  "text": "world",
+                },
+                "header": {
+                  "image": {
+                    "caption": undefined,
+                    "filename": undefined,
+                    "id": undefined,
+                    "link": "http://foo.bar/baz.jpg",
+                  },
+                  "type": "image",
+                },
+                "type": "list",
+              },
+              "type": "interactive",
+            },
+          },
+        },
+      ]
+    `);
     await expect(
       renderUnitElement(
         <ListTemplate
@@ -243,118 +243,118 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <ListTemplateProps
-                  buttonTitle="open"
-                  footer={
-                    <Sociably.Fragment>
-                      FOO
-                      TER
-                    </Sociably.Fragment>
-                  }
-                  header={
-                    <Sociably.Fragment>
-                      HE
-                      AD
-                      ER
-                    </Sociably.Fragment>
-                  }
-                  replyTo="REPLY_TO_MESSAGE_ID"
-                  sections={
-                    <Sociably.Fragment>
-                      <ListSection
-                        title="a"
-                      >
-                        <ListRow
-                          id="0"
-                          title="FOO"
-                        />
-                      </ListSection>
-                      <ListSection
-                        title="b"
-                      >
-                        <ListRow
-                          id="1"
-                          title="BAR"
-                        />
-                      </ListSection>
-                      <ListSection
-                        title="c"
-                      >
-                        <ListRow
-                          id="2"
-                          title="BAZ"
-                        />
-                      </ListSection>
-                    </Sociably.Fragment>
-                  }
+      [
+        {
+          "node": <ListTemplateProps
+            buttonTitle="open"
+            footer={
+              <Sociably.Fragment>
+                FOO
+                TER
+              </Sociably.Fragment>
+            }
+            header={
+              <Sociably.Fragment>
+                HE
+                AD
+                ER
+              </Sociably.Fragment>
+            }
+            replyTo="REPLY_TO_MESSAGE_ID"
+            sections={
+              <Sociably.Fragment>
+                <ListSection
+                  title="a"
                 >
-                  BO
-                  DY
-                </ListTemplateProps>,
-                "path": "$",
-                "type": "unit",
-                "value": Object {
-                  "mediaFile": undefined,
-                  "message": Object {
-                    "context": Object {
-                      "message_id": "REPLY_TO_MESSAGE_ID",
-                    },
-                    "interactive": Object {
-                      "actions": Object {
-                        "button": "open",
-                        "sections": Array [
-                          Object {
-                            "rows": Array [
-                              Object {
-                                "description": undefined,
-                                "id": "0",
-                                "title": "FOO",
-                              },
-                            ],
-                            "title": "a",
-                          },
-                          Object {
-                            "rows": Array [
-                              Object {
-                                "description": undefined,
-                                "id": "1",
-                                "title": "BAR",
-                              },
-                            ],
-                            "title": "b",
-                          },
-                          Object {
-                            "rows": Array [
-                              Object {
-                                "description": undefined,
-                                "id": "2",
-                                "title": "BAZ",
-                              },
-                            ],
-                            "title": "c",
-                          },
-                        ],
-                      },
-                      "body": Object {
-                        "text": "BODY",
-                      },
-                      "footer": Object {
-                        "text": "FOOTER",
-                      },
-                      "header": Object {
-                        "text": "HEADER",
-                        "type": "text",
-                      },
-                      "type": "list",
-                    },
-                    "type": "interactive",
-                  },
-                },
+                  <ListRow
+                    id="0"
+                    title="FOO"
+                  />
+                </ListSection>
+                <ListSection
+                  title="b"
+                >
+                  <ListRow
+                    id="1"
+                    title="BAR"
+                  />
+                </ListSection>
+                <ListSection
+                  title="c"
+                >
+                  <ListRow
+                    id="2"
+                    title="BAZ"
+                  />
+                </ListSection>
+              </Sociably.Fragment>
+            }
+          >
+            BO
+            DY
+          </ListTemplateProps>,
+          "path": "$",
+          "type": "unit",
+          "value": {
+            "mediaFile": undefined,
+            "message": {
+              "context": {
+                "message_id": "REPLY_TO_MESSAGE_ID",
               },
-            ]
-          `);
+              "interactive": {
+                "actions": {
+                  "button": "open",
+                  "sections": [
+                    {
+                      "rows": [
+                        {
+                          "description": undefined,
+                          "id": "0",
+                          "title": "FOO",
+                        },
+                      ],
+                      "title": "a",
+                    },
+                    {
+                      "rows": [
+                        {
+                          "description": undefined,
+                          "id": "1",
+                          "title": "BAR",
+                        },
+                      ],
+                      "title": "b",
+                    },
+                    {
+                      "rows": [
+                        {
+                          "description": undefined,
+                          "id": "2",
+                          "title": "BAZ",
+                        },
+                      ],
+                      "title": "c",
+                    },
+                  ],
+                },
+                "body": {
+                  "text": "BODY",
+                },
+                "footer": {
+                  "text": "FOOTER",
+                },
+                "header": {
+                  "text": "HEADER",
+                  "type": "text",
+                },
+                "type": "list",
+              },
+              "type": "interactive",
+            },
+          },
+        },
+      ]
+    `);
   });
 
   it('throw if invalid props received', async () => {
@@ -365,7 +365,7 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"children\\" prop should contain only textual content"`
+      `""children" prop should contain only textual content"`
     );
     await expect(
       renderUnitElement(
@@ -378,7 +378,7 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"header\\" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
     );
     await expect(
       renderUnitElement(
@@ -396,7 +396,7 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"header\\" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
     );
     await expect(
       renderUnitElement(
@@ -409,7 +409,7 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"header\\" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
     );
     await expect(
       renderUnitElement(
@@ -418,7 +418,7 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"children\\" prop should not be empty"`
+      `""children" prop should not be empty"`
     );
     await expect(
       renderUnitElement(
@@ -427,7 +427,7 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"children\\" prop should contain only textual content"`
+      `""children" prop should contain only textual content"`
     );
     await expect(
       renderUnitElement(
@@ -440,7 +440,7 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"footer\\" prop should contain only textual content"`
+      `""footer" prop should contain only textual content"`
     );
     await expect(
       renderUnitElement(
@@ -449,7 +449,7 @@ describe('ListTemplate', () => {
         </ListTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"sections\\" prop should not be empty"`
+      `""sections" prop should not be empty"`
     );
   });
 });
@@ -471,47 +471,47 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <ButtonsTemplate
-                  buttons={
-                    <ReplyButton
-                      id="0"
-                      title="FOO"
-                    />
-                  }
-                >
-                  hello world
-                </ButtonsTemplate>,
-                "path": "$",
-                "type": "unit",
-                "value": Object {
-                  "mediaFile": undefined,
-                  "message": Object {
-                    "context": undefined,
-                    "interactive": Object {
-                      "actions": Object {
-                        "buttons": Array [
-                          Object {
-                            "id": "0",
-                            "title": "FOO",
-                            "type": "reply",
-                          },
-                        ],
-                      },
-                      "body": Object {
-                        "text": "hello world",
-                      },
-                      "footer": undefined,
-                      "header": undefined,
-                      "type": "buttons",
+      [
+        {
+          "node": <ButtonsTemplate
+            buttons={
+              <ReplyButton
+                id="0"
+                title="FOO"
+              />
+            }
+          >
+            hello world
+          </ButtonsTemplate>,
+          "path": "$",
+          "type": "unit",
+          "value": {
+            "mediaFile": undefined,
+            "message": {
+              "context": undefined,
+              "interactive": {
+                "actions": {
+                  "buttons": [
+                    {
+                      "id": "0",
+                      "title": "FOO",
+                      "type": "reply",
                     },
-                    "type": "interactive",
-                  },
+                  ],
                 },
+                "body": {
+                  "text": "hello world",
+                },
+                "footer": undefined,
+                "header": undefined,
+                "type": "buttons",
               },
-            ]
-          `);
+              "type": "interactive",
+            },
+          },
+        },
+      ]
+    `);
     await expect(
       renderUnitElement(
         <ButtonsTemplate
@@ -528,74 +528,74 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <ButtonsTemplate
-                  buttons={
-                    <Sociably.Fragment>
-                      <ReplyButton
-                        id="0"
-                        title="FOO"
-                      />
-                      <ReplyButton
-                        id="1"
-                        title="BAR"
-                      />
-                    </Sociably.Fragment>
-                  }
-                  footer="world"
-                  header={
-                    <Image
-                      url="http://foo.bar/baz.jpg"
-                    />
-                  }
-                >
-                  hello
-                </ButtonsTemplate>,
-                "path": "$",
-                "type": "unit",
-                "value": Object {
-                  "mediaFile": undefined,
-                  "message": Object {
-                    "context": undefined,
-                    "interactive": Object {
-                      "actions": Object {
-                        "buttons": Array [
-                          Object {
-                            "id": "0",
-                            "title": "FOO",
-                            "type": "reply",
-                          },
-                          Object {
-                            "id": "1",
-                            "title": "BAR",
-                            "type": "reply",
-                          },
-                        ],
-                      },
-                      "body": Object {
-                        "text": "hello",
-                      },
-                      "footer": Object {
-                        "text": "world",
-                      },
-                      "header": Object {
-                        "image": Object {
-                          "caption": undefined,
-                          "filename": undefined,
-                          "id": undefined,
-                          "link": "http://foo.bar/baz.jpg",
-                        },
-                        "type": "image",
-                      },
-                      "type": "buttons",
+      [
+        {
+          "node": <ButtonsTemplate
+            buttons={
+              <Sociably.Fragment>
+                <ReplyButton
+                  id="0"
+                  title="FOO"
+                />
+                <ReplyButton
+                  id="1"
+                  title="BAR"
+                />
+              </Sociably.Fragment>
+            }
+            footer="world"
+            header={
+              <Image
+                url="http://foo.bar/baz.jpg"
+              />
+            }
+          >
+            hello
+          </ButtonsTemplate>,
+          "path": "$",
+          "type": "unit",
+          "value": {
+            "mediaFile": undefined,
+            "message": {
+              "context": undefined,
+              "interactive": {
+                "actions": {
+                  "buttons": [
+                    {
+                      "id": "0",
+                      "title": "FOO",
+                      "type": "reply",
                     },
-                    "type": "interactive",
-                  },
+                    {
+                      "id": "1",
+                      "title": "BAR",
+                      "type": "reply",
+                    },
+                  ],
                 },
+                "body": {
+                  "text": "hello",
+                },
+                "footer": {
+                  "text": "world",
+                },
+                "header": {
+                  "image": {
+                    "caption": undefined,
+                    "filename": undefined,
+                    "id": undefined,
+                    "link": "http://foo.bar/baz.jpg",
+                  },
+                  "type": "image",
+                },
+                "type": "buttons",
               },
-            ]
-          `);
+              "type": "interactive",
+            },
+          },
+        },
+      ]
+    `);
     await expect(
       renderUnitElement(
         <ButtonsTemplate
@@ -614,89 +614,89 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <ButtonsTemplate
-                  buttons={
-                    <Sociably.Fragment>
-                      <ReplyButton
-                        id="0"
-                        title="FOO"
-                      />
-                      <ReplyButton
-                        id="1"
-                        title="BAR"
-                      />
-                      <ReplyButton
-                        id="2"
-                        title="BAZ"
-                      />
-                    </Sociably.Fragment>
-                  }
-                  footer={
-                    <Sociably.Fragment>
-                      FOO
-                      TER
-                    </Sociably.Fragment>
-                  }
-                  header={
-                    <Sociably.Fragment>
-                      HE
-                      AD
-                      ER
-                    </Sociably.Fragment>
-                  }
-                  replyTo="REPLY_TO_MESSAGE_ID"
-                >
-                  BO
-                  DY
-                </ButtonsTemplate>,
-                "path": "$",
-                "type": "unit",
-                "value": Object {
-                  "mediaFile": undefined,
-                  "message": Object {
-                    "context": Object {
-                      "message_id": "REPLY_TO_MESSAGE_ID",
-                    },
-                    "interactive": Object {
-                      "actions": Object {
-                        "buttons": Array [
-                          Object {
-                            "id": "0",
-                            "title": "FOO",
-                            "type": "reply",
-                          },
-                          Object {
-                            "id": "1",
-                            "title": "BAR",
-                            "type": "reply",
-                          },
-                          Object {
-                            "id": "2",
-                            "title": "BAZ",
-                            "type": "reply",
-                          },
-                        ],
-                      },
-                      "body": Object {
-                        "text": "BODY",
-                      },
-                      "footer": Object {
-                        "text": "FOOTER",
-                      },
-                      "header": Object {
-                        "text": "HEADER",
-                        "type": "text",
-                      },
-                      "type": "buttons",
-                    },
-                    "type": "interactive",
-                  },
-                },
+      [
+        {
+          "node": <ButtonsTemplate
+            buttons={
+              <Sociably.Fragment>
+                <ReplyButton
+                  id="0"
+                  title="FOO"
+                />
+                <ReplyButton
+                  id="1"
+                  title="BAR"
+                />
+                <ReplyButton
+                  id="2"
+                  title="BAZ"
+                />
+              </Sociably.Fragment>
+            }
+            footer={
+              <Sociably.Fragment>
+                FOO
+                TER
+              </Sociably.Fragment>
+            }
+            header={
+              <Sociably.Fragment>
+                HE
+                AD
+                ER
+              </Sociably.Fragment>
+            }
+            replyTo="REPLY_TO_MESSAGE_ID"
+          >
+            BO
+            DY
+          </ButtonsTemplate>,
+          "path": "$",
+          "type": "unit",
+          "value": {
+            "mediaFile": undefined,
+            "message": {
+              "context": {
+                "message_id": "REPLY_TO_MESSAGE_ID",
               },
-            ]
-          `);
+              "interactive": {
+                "actions": {
+                  "buttons": [
+                    {
+                      "id": "0",
+                      "title": "FOO",
+                      "type": "reply",
+                    },
+                    {
+                      "id": "1",
+                      "title": "BAR",
+                      "type": "reply",
+                    },
+                    {
+                      "id": "2",
+                      "title": "BAZ",
+                      "type": "reply",
+                    },
+                  ],
+                },
+                "body": {
+                  "text": "BODY",
+                },
+                "footer": {
+                  "text": "FOOTER",
+                },
+                "header": {
+                  "text": "HEADER",
+                  "type": "text",
+                },
+                "type": "buttons",
+              },
+              "type": "interactive",
+            },
+          },
+        },
+      ]
+    `);
   });
 
   it('throw if invalid props received', async () => {
@@ -707,7 +707,7 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"children\\" prop should contain only textual content"`
+      `""children" prop should contain only textual content"`
     );
     await expect(
       renderUnitElement(
@@ -716,7 +716,7 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"header\\" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
     );
     await expect(
       renderUnitElement(
@@ -733,7 +733,7 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"header\\" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
     );
     await expect(
       renderUnitElement(
@@ -742,12 +742,12 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"header\\" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
     );
     await expect(
       renderUnitElement(<ButtonsTemplate buttons={[]}>{null}</ButtonsTemplate>)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"children\\" prop should not be empty"`
+      `""children" prop should not be empty"`
     );
     await expect(
       renderUnitElement(
@@ -756,7 +756,7 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"children\\" prop should contain only textual content"`
+      `""children" prop should contain only textual content"`
     );
     await expect(
       renderUnitElement(
@@ -765,12 +765,12 @@ describe('ButtonsTemplate', () => {
         </ButtonsTemplate>
       )
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"footer\\" prop should contain only textual content"`
+      `""footer" prop should contain only textual content"`
     );
     await expect(
       renderUnitElement(<ButtonsTemplate buttons={[]}>FOO</ButtonsTemplate>)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"\\"buttons\\" prop should not be empty"`
+      `""buttons" prop should not be empty"`
     );
   });
 });

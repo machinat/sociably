@@ -1,8 +1,8 @@
 import { posix as posixPath } from 'path';
 import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
-import { UrlButton } from '../components';
-import TelegramChat from '../Chat';
-import ServerAuthenticator from './ServerAuthenticator';
+import { UrlButton } from '../components/index.js';
+import TelegramChat from '../Chat.js';
+import ServerAuthenticator from './ServerAuthenticator.js';
 
 type WebviewButtonProps = {
   /** Label text on the button. */

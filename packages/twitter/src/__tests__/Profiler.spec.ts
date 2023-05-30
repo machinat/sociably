@@ -1,9 +1,9 @@
-import moxy from '@moxyjs/moxy';
-import TwitterBot from '../Bot';
-import TwitterUser from '../User';
-import TwitterUserProfile from '../UserProfile';
-import TwitterProfiler from '../Profiler';
-import { RawUser } from '../types';
+import { moxy } from '@moxyjs/moxy';
+import TwitterBot from '../Bot.js';
+import TwitterUser from '../User.js';
+import TwitterUserProfile from '../UserProfile.js';
+import TwitterProfiler from '../Profiler.js';
+import { RawUser } from '../types.js';
 
 const bot = moxy<TwitterBot>({
   requestApi: () => ({}),

@@ -1,5 +1,5 @@
-import TelegramChatSender from '../ChatSender';
-import TelegramChatProfile from '../ChatProfile';
+import TelegramChatSender from '../ChatSender.js';
+import TelegramChatProfile from '../ChatProfile.js';
 
 test('marshallable type meta', () => {
   expect(TelegramChatSender.typeName).toBe('TgChatSender');
@@ -24,8 +24,8 @@ test('supergroup sender', () => {
 
   expect(sender.uid).toMatchInlineSnapshot(`"tg.12345"`);
   expect(sender.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
       ],
       "id": 12345,
@@ -35,9 +35,9 @@ test('supergroup sender', () => {
 
   expect(sender.typeName()).toBe('TgChatSender');
   expect(sender.toJSONValue()).toMatchInlineSnapshot(`
-      Object {
-        "id": 12345,
-        "type": "supergroup",
-      }
-    `);
+    {
+      "id": 12345,
+      "type": "supergroup",
+    }
+  `);
 });

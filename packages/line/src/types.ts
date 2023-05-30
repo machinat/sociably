@@ -9,12 +9,12 @@ import type { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
 import type { Interfaceable, MaybeContainer } from '@sociably/core/service';
 import type { IntermediateSegment } from '@sociably/core/renderer';
 import type { WebhookMetadata } from '@sociably/http/webhook';
-import { LineBot } from './Bot';
-import type LineChat from './Chat';
-import type { AgentSettingsAccessorI } from './interface';
-import type { LineEvent, LineRawEvent } from './event/types';
+import { LineBot } from './Bot.js';
+import type LineChat from './Chat.js';
+import type { AgentSettingsAccessorI } from './interface.js';
+import type { LineEvent, LineRawEvent } from './event/types.js';
 
-export * from './event/types';
+export * from './event/types.js';
 
 export type UserSource = {
   type: 'user';

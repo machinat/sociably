@@ -1,13 +1,13 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
-import BotP from './Bot';
-import type LineChnnel from './Channel';
-import type LineChat from './Chat';
-import type LineUser from './User';
-import LineUserProfile from './UserProfile';
-import { LINE } from './constant';
-import LineGroupProfile, { LineGroupData } from './GroupProfile';
-import type { LineRawUserProfile } from './types';
+import BotP from './Bot.js';
+import type LineChnnel from './Channel.js';
+import type LineChat from './Chat.js';
+import type LineUser from './User.js';
+import LineUserProfile from './UserProfile.js';
+import { LINE } from './constant.js';
+import LineGroupProfile, { LineGroupData } from './GroupProfile.js';
+import type { LineRawUserProfile } from './types.js';
 
 type GetUserProfileOptions = {
   inChat?: LineChat;

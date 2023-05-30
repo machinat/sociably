@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Readable } from 'stream';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Sociably from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
-import _Worker from '../Worker';
-import TelegramChat from '../Chat';
-import TelegramUser from '../User';
-import TelegramApiError from '../Error';
-import { TelegramBot } from '../Bot';
+import _Worker from '../Worker.js';
+import TelegramChat from '../Chat.js';
+import TelegramUser from '../User.js';
+import TelegramApiError from '../Error.js';
+import { TelegramBot } from '../Bot.js';
 import {
   Photo,
   Expression,
   ForceReply,
   EditText,
   EditMedia,
-} from '../components';
+} from '../components/index.js';
 
 const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
@@ -28,17 +28,15 @@ nock.disableNetConnect();
 jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/engine'))
+    .moxy(jest.requireActual('@sociably/core/engine'))
 );
-
 jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .default(jest.requireActual('@sociably/core/renderer'))
+    .moxy(jest.requireActual('@sociably/core/renderer'))
 );
-
-jest.mock('../Worker', () =>
-  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../Worker'), {
+jest.mock('../Worker.js', () =>
+  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../Worker.js'), {
     mockNewInstance: false,
   })
 );
@@ -116,8 +114,8 @@ describe('.constructor(options)', () => {
 
     expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker.mock.calls[0].args).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "getAgentSettings": [MockFunction moxy(getAgentSettings)],
           "getAgentSettingsBatch": [MockFunction moxy(getAgentSettingsBatch)],
         },
@@ -134,13 +132,11 @@ test('.start() and .stop() start/stop engine', () => {
     agentSettingsAccessor,
   });
 
-  type MockEngine = Moxy<TelegramBot['engine']>;
-
   bot.start();
-  expect((bot.engine as MockEngine).start).toHaveBeenCalledTimes(1);
+  expect(bot.engine.start).toHaveBeenCalledTimes(1);
 
   bot.stop();
-  expect((bot.engine as MockEngine).stop).toHaveBeenCalledTimes(1);
+  expect(bot.engine.stop).toHaveBeenCalledTimes(1);
 });
 
 describe('.render(thread, message, options)', () => {
@@ -182,18 +178,18 @@ describe('.render(thread, message, options)', () => {
 
     expect(bodySpy).toHaveBeenCalledTimes(2);
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "chat_id": 67890,
         "parse_mode": "HTML",
         "text": "Hello <b>World!</b>",
       }
     `);
     expect(bodySpy.mock.calls[1].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "chat_id": 67890,
         "parse_mode": "HTML",
         "photo": "https://sociably.io/greeting.png",
-        "reply_markup": Object {
+        "reply_markup": {
           "force_reply": true,
         },
       }
@@ -230,16 +226,16 @@ describe('.render(thread, message, options)', () => {
 
     expect(bodySpy).toHaveBeenCalledTimes(2);
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "inline_message_id": "1",
         "parse_mode": "HTML",
         "text": "foo <b>bar</b>",
       }
     `);
     expect(bodySpy.mock.calls[1].args[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "inline_message_id": "2",
-        "media": Object {
+        "media": {
           "media": "https://sociably.io/trollface.png",
           "parse_mode": "HTML",
           "type": "photo",
@@ -364,7 +360,7 @@ test('.fetchFile()', async () => {
   expect(response!.contentType).toBe('image/png');
   expect(response!.contentLength).toBe(777);
 
-  await new Promise(setImmediate);
+  await new Promise((resolve) => setTimeout(resolve, 10));
   expect(response!.content.read().toString()).toBe('__BINARY_DATA__');
 
   expect(getFileCall.isDone()).toBe(true);

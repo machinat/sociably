@@ -1,9 +1,9 @@
-import moxy from '@moxyjs/moxy';
-import FacebookPage from '../../Page';
-import FacebookUser from '../../User';
-import FacebookChat from '../../Chat';
-import UserProfile from '../../UserProfile';
-import ClientAuthenticator from '../ClientAuthenticator';
+import { moxy } from '@moxyjs/moxy';
+import FacebookPage from '../../Page.js';
+import FacebookUser from '../../User.js';
+import FacebookChat from '../../Chat.js';
+import UserProfile from '../../UserProfile.js';
+import ClientAuthenticator from '../ClientAuthenticator.js';
 
 const location = moxy({});
 const navigator = moxy({
@@ -31,12 +31,12 @@ it('.init() do nothing', async () => {
 
 it('.fetchCredential() always reject', async () => {
   await expect(authenticator.fetchCredential()).resolves.toMatchInlineSnapshot(`
-          Object {
-            "code": 400,
-            "ok": false,
-            "reason": "should only initiate from backend",
-          }
-        `);
+    {
+      "code": 400,
+      "ok": false,
+      "reason": "should only initiate from backend",
+    }
+  `);
 });
 
 describe('.closeWebview()', () => {

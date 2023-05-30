@@ -10,21 +10,21 @@ import Auth, {
   CheckDataResult,
 } from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
-import { TELEGRAM } from '../constant';
-import BotP from '../Bot';
-import TelegramUser from '../User';
-import { AgentSettingsAccessorI } from '../interface';
-import type TelegramApiError from '../Error';
-import type { RawChat, RawUser } from '../types';
-import { getAuthContextDetails } from './utils';
-import renderLoginPage from './renderLoginPage';
+import { TELEGRAM } from '../constant.js';
+import BotP from '../Bot.js';
+import TelegramUser from '../User.js';
+import { AgentSettingsAccessorI } from '../interface.js';
+import type TelegramApiError from '../Error.js';
+import type { RawChat, RawUser } from '../types.js';
+import { getAuthContextDetails } from './utils.js';
+import renderLoginPage from './renderLoginPage.js';
 import {
   REDIRECT_QUERY,
   CHAT_ID_QUERY,
   LOGIN_PARAMETERS,
   BOT_ID_QUERY,
-} from './constant';
-import type { TelegramAuthContext, TelegramAuthData } from './types';
+} from './constant.js';
+import type { TelegramAuthContext, TelegramAuthData } from './types.js';
 
 const verifyTelegramAuthQuery = (botToken: string, query: ParsedUrlQuery) => {
   const { hash } = query;

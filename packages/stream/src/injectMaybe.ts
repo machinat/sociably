@@ -1,6 +1,6 @@
 import { isServiceContainer, MaybeContainer } from '@sociably/core/service';
-import { StreamingFrame } from './types';
-import { STREAMING_KEY_I } from './interface';
+import { StreamingFrame } from './types.js';
+import { STREAMING_KEY_I } from './interface.js';
 
 type Fn<Args extends unknown[], Result> = (...args: Args) => Result;
 

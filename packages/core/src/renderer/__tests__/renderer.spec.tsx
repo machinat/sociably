@@ -1,13 +1,12 @@
-import moxy, { Mock } from '@moxyjs/moxy';
-import Sociably from '../..';
-import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
+import { moxy, Mock } from '@moxyjs/moxy';
+import Sociably from '../../index.js';
+import { SOCIABLY_NATIVE_TYPE } from '../../symbol.js';
 import {
-  ServiceSpace,
   createEmptyScope,
   serviceContainer,
   serviceInterface,
-} from '../../service';
-import Renderer from '../renderer';
+} from '../../service/index.js';
+import Renderer from '../renderer.js';
 
 const generalElementDelegate = moxy((node, path) =>
   Promise.resolve(
@@ -548,89 +547,89 @@ describe('.render()', () => {
         scope
       )
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <Sociably.Raw
-                  value="#1 foo:x bar:x baz:x"
-                />,
-                "path": "$::0#Container",
-                "type": "raw",
-                "value": "#1 foo:x bar:x baz:x",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#2 foo:1 bar:x baz:x"
-                />,
-                "path": "$::1.children:0#Container",
-                "type": "raw",
-                "value": "#2 foo:1 bar:x baz:x",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#3 foo:1 bar:1 baz:x"
-                />,
-                "path": "$::1.children:1#Wrapper.children:0#Container",
-                "type": "raw",
-                "value": "#3 foo:1 bar:1 baz:x",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#4 foo:1 bar:1 baz:1"
-                />,
-                "path": "$::1.children:1#Wrapper.children:1.children:0#Container",
-                "type": "raw",
-                "value": "#4 foo:1 bar:1 baz:1",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#5 foo:1 bar:1 baz:1"
-                />,
-                "path": "$::1.children:1#Wrapper.children:1.children:1#Native.children#Container",
-                "type": "raw",
-                "value": "#5 foo:1 bar:1 baz:1",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#6 foo:2 bar:1 baz:1"
-                />,
-                "path": "$::1.children:1#Wrapper.children:1.children:2.children:0#Container",
-                "type": "raw",
-                "value": "#6 foo:2 bar:1 baz:1",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#7 foo:2 bar:2 baz:2"
-                />,
-                "path": "$::1.children:1#Wrapper.children:1.children:2.children:1.children:0.children#Container",
-                "type": "raw",
-                "value": "#7 foo:2 bar:2 baz:2",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#8 foo:2 bar:2 baz:1"
-                />,
-                "path": "$::1.children:1#Wrapper.children:1.children:2.children:1.children:1#Container",
-                "type": "raw",
-                "value": "#8 foo:2 bar:2 baz:1",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#9 foo:1 bar:x baz:x"
-                />,
-                "path": "$::1.children:2#Container",
-                "type": "raw",
-                "value": "#9 foo:1 bar:x baz:x",
-              },
-              Object {
-                "node": <Sociably.Raw
-                  value="#10 foo:x bar:x baz:x"
-                />,
-                "path": "$::2#Container",
-                "type": "raw",
-                "value": "#10 foo:x bar:x baz:x",
-              },
-            ]
-          `);
+      [
+        {
+          "node": <Sociably.Raw
+            value="#1 foo:x bar:x baz:x"
+          />,
+          "path": "$::0#Container",
+          "type": "raw",
+          "value": "#1 foo:x bar:x baz:x",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#2 foo:1 bar:x baz:x"
+          />,
+          "path": "$::1.children:0#Container",
+          "type": "raw",
+          "value": "#2 foo:1 bar:x baz:x",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#3 foo:1 bar:1 baz:x"
+          />,
+          "path": "$::1.children:1#Wrapper.children:0#Container",
+          "type": "raw",
+          "value": "#3 foo:1 bar:1 baz:x",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#4 foo:1 bar:1 baz:1"
+          />,
+          "path": "$::1.children:1#Wrapper.children:1.children:0#Container",
+          "type": "raw",
+          "value": "#4 foo:1 bar:1 baz:1",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#5 foo:1 bar:1 baz:1"
+          />,
+          "path": "$::1.children:1#Wrapper.children:1.children:1#Native.children#Container",
+          "type": "raw",
+          "value": "#5 foo:1 bar:1 baz:1",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#6 foo:2 bar:1 baz:1"
+          />,
+          "path": "$::1.children:1#Wrapper.children:1.children:2.children:0#Container",
+          "type": "raw",
+          "value": "#6 foo:2 bar:1 baz:1",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#7 foo:2 bar:2 baz:2"
+          />,
+          "path": "$::1.children:1#Wrapper.children:1.children:2.children:1.children:0.children#Container",
+          "type": "raw",
+          "value": "#7 foo:2 bar:2 baz:2",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#8 foo:2 bar:2 baz:1"
+          />,
+          "path": "$::1.children:1#Wrapper.children:1.children:2.children:1.children:1#Container",
+          "type": "raw",
+          "value": "#8 foo:2 bar:2 baz:1",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#9 foo:1 bar:x baz:x"
+          />,
+          "path": "$::1.children:2#Container",
+          "type": "raw",
+          "value": "#9 foo:1 bar:x baz:x",
+        },
+        {
+          "node": <Sociably.Raw
+            value="#10 foo:x bar:x baz:x"
+          />,
+          "path": "$::2#Container",
+          "type": "raw",
+          "value": "#10 foo:x bar:x baz:x",
+        },
+      ]
+    `);
 
     expect(scope.injectContainer).toHaveBeenCalledTimes(10);
     expect(scope.injectContainer).toHaveBeenCalledWith(
@@ -670,15 +669,15 @@ describe('.render()', () => {
         [BarI, 2],
       ])
     ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": "foo:1 bar:2 baz:x",
-                "path": "$#Container",
-                "type": "text",
-                "value": "foo:1 bar:2 baz:x",
-              },
-            ]
-          `);
+      [
+        {
+          "node": "foo:1 bar:2 baz:x",
+          "path": "$#Container",
+          "type": "text",
+          "value": "foo:1 bar:2 baz:x",
+        },
+      ]
+    `);
 
     expect(Container.$$factory).toHaveBeenCalledTimes(1);
     expect(Container.$$factory).toHaveBeenCalledWith(1, 2, null);
@@ -755,7 +754,8 @@ describe('.render()', () => {
   });
 
   test('render <Pause/> with time/delay props', async () => {
-    jest.useFakeTimers();
+    jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
+
     const renderer = new Renderer('test', generalElementDelegate);
     const delayFn = moxy(() => Promise.resolve());
 

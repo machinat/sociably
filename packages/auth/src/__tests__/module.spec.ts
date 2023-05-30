@@ -1,11 +1,11 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
 import { InMemoryState } from '@sociably/dev-tools';
-import Auth from '../module';
-import BasicAuthenticator from '../basicAuth';
-import ControllerP from '../Controller';
-import HttpOperatorP from '../HttpOperator';
+import Auth from '../module.js';
+import BasicAuthenticator from '../basicAuth/index.js';
+import ControllerP from '../Controller.js';
+import HttpOperatorP from '../HttpOperator.js';
 
 const secret = '_SECRET_';
 const serverUrl = 'https://sociably.io';
@@ -15,7 +15,7 @@ test('interfaces', () => {
   expect(Auth.Controller).toBe(ControllerP);
   expect(Auth.HttpOperator).toBe(HttpOperatorP);
   expect(Auth.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "AuthConfigs",
       "$$polymorphic": false,
@@ -23,7 +23,7 @@ test('interfaces', () => {
     }
   `);
   expect(Auth.AuthenticatorList).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": true,
       "$$name": "AuthAuthenticatorList",
       "$$polymorphic": false,
@@ -53,8 +53,8 @@ describe('initModule()', () => {
     expect(operator).toBeInstanceOf(HttpOperatorP);
     expect(configs).toEqual({ secret, apiRoot, serverUrl });
     expect(routings).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "handler": [Function],
           "name": "auth",
           "path": "/auth",

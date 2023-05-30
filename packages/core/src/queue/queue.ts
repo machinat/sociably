@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import Denque from 'denque';
-import type { JobBatchResponse, JobResponse } from './types';
+import type { JobBatchResponse, JobResponse } from './types.js';
 
 type BatchResolveCallback<Job, Result> = (
   batch: JobBatchResponse<Job, Result>

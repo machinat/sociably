@@ -1,11 +1,11 @@
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
-import moxy, { Mock, Moxy } from '@moxyjs/moxy';
+import { moxy, Mock, Moxy } from '@moxyjs/moxy';
 
-import { TelegramReceiver } from '../Receiver';
-import TelegramChat from '../Chat';
-import TelegramUser from '../User';
-import type { TelegramBot } from '../Bot';
+import { TelegramReceiver } from '../Receiver.js';
+import TelegramChat from '../Chat.js';
+import TelegramUser from '../User.js';
+import type { TelegramBot } from '../Bot.js';
 
 const botId = 1111111;
 
@@ -301,12 +301,12 @@ describe('constext.reply(message)', () => {
     expect(popEventMock).toHaveBeenCalledTimes(1);
     const { reply, event } = popEventMock.calls[0].args[0];
     await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
-          Object {
-            "jobs": Array [],
-            "results": Array [],
-            "tasks": Array [],
-          }
-        `);
+      {
+        "jobs": [],
+        "results": [],
+        "tasks": [],
+      }
+    `);
 
     expect(bot.render).toHaveBeenCalledTimes(1);
     expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');

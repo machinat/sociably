@@ -8,7 +8,7 @@ import Sociably, {
 
 import type { MaybeContainer } from '@sociably/core/service';
 
-import { SOCIABLY_SCRIPT_TYPE } from './constant';
+import { SOCIABLY_SCRIPT_TYPE } from './constant.js';
 import type {
   IF,
   ELSE,
@@ -19,7 +19,7 @@ import type {
   CALL,
   EFFECT,
   RETURN,
-} from './keyword';
+} from './keyword.js';
 
 type StartScriptProps<Params> = {
   params?: Params;

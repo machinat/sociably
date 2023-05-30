@@ -1,4 +1,4 @@
-import LineUser from '../User';
+import LineUser from '../User.js';
 
 test('preperties', () => {
   const user = new LineUser('_PROVIDER_ID_', '_USER_ID_');
@@ -9,8 +9,8 @@ test('preperties', () => {
   expect(user.uid).toMatchInlineSnapshot(`"line._PROVIDER_ID_._USER_ID_"`);
 
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
       ],
       "id": "_USER_ID_",
@@ -25,7 +25,7 @@ test('marshallable', () => {
 
   expect(user.typeName()).toBe('LineUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": "_USER_ID_",
       "provider": "_PROVIDER_ID_",
     }

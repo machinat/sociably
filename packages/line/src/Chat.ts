@@ -1,9 +1,9 @@
 import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import { LINE } from './constant';
-import LineChannel from './Channel';
-import type LineUser from './User';
-import type { LineSource } from './types';
+import { LINE } from './constant.js';
+import LineChannel from './Channel.js';
+import type LineUser from './User.js';
+import type { LineSource } from './types.js';
 
 export type LineChatType = 'room' | 'group' | 'user';
 

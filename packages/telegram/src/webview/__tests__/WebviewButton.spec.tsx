@@ -1,8 +1,8 @@
-import moxy from '@moxyjs/moxy';
-import ServerAuthenticator from '../ServerAuthenticator';
-import TelegramChat from '../../Chat';
-import TelegramUser from '../../User';
-import WebviewButton from '../WebviewButton';
+import { moxy } from '@moxyjs/moxy';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import TelegramChat from '../../Chat.js';
+import TelegramUser from '../../User.js';
+import WebviewButton from '../WebviewButton.js';
 
 const authenticator = moxy<ServerAuthenticator>({
   getAuthUrl: () => 'https://sociably.io/foo/auth/telegram',

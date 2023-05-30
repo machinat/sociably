@@ -1,6 +1,7 @@
 {
   "name": "@sociably/telegram",
   "version": "0.8.0-alpha.23",
+  "type": "module",
   "description": "Telegram platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -19,11 +20,9 @@
   },
   "files": [
     "lib/*",
-    "README.md",
-    "polyfill-exports.js"
+    "README.md"
   ],
   "scripts": {
-    "postinstall": "node ./polyfill-exports.js",
     "prepack": "make -f ../../package.mk prepack"
   },
   "license": "MIT",
@@ -32,9 +31,9 @@
   },
   "dependencies": {
     "bowser": "^2.11.0",
-    "form-data": "^3.0.0",
+    "form-data": "^3.0.1",
     "invariant": "^2.2.4",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "2.6.7",
     "thenifiedly": "^0.2.1"
   },
   "peerDependencies": {

@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import TwitterChat from '../../Chat';
-import { Typing } from '../Typing';
-import { renderUnitElement } from './utils';
+import TwitterChat from '../../Chat.js';
+import { Typing } from '../Typing.js';
+import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(typeof Typing).toBe('function');
@@ -13,17 +13,17 @@ it('is a valid Component', () => {
 test('rendering', async () => {
   const segments = await renderUnitElement(<Typing />);
   expect(segments).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "node": <Typing />,
         "path": "$",
         "type": "unit",
-        "value": Object {
+        "value": {
           "accomplishRequest": [Function],
           "mediaSources": null,
-          "request": Object {
+          "request": {
             "method": "POST",
-            "params": Object {
+            "params": {
               "recipient_id": "",
             },
             "url": "1.1/direct_messages/indicate_typing.json",
@@ -37,9 +37,9 @@ test('rendering', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
+      "params": {
         "recipient_id": "67890",
       },
       "url": "1.1/direct_messages/indicate_typing.json",

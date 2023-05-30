@@ -1,5 +1,5 @@
 import type { DispatchableSegment } from '@sociably/core/engine';
-import { DispatchTarget, EventInput, WebSocketJob } from '../types';
+import { DispatchTarget, EventInput, WebSocketJob } from '../types.js';
 
 const createJobs = (
   thread: DispatchTarget,

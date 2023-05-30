@@ -41,9 +41,9 @@ import type {
   ChatMember,
   ChatMemberUpdated,
   Unknown,
-} from './mixins';
-import type TelegramUser from '../User';
-import type { TelegramRawEvent } from '../types';
+} from './mixins.js';
+import type TelegramUser from '../User.js';
+import type { TelegramRawEvent } from '../types.js';
 
 interface EventObject<Category extends string, Type extends string> {
   channel: TelegramUser;

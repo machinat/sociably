@@ -1,7 +1,7 @@
-import moxy from '@moxyjs/moxy';
-import ServerAuthenticator from '../ServerAuthenticator';
-import WebviewAction from '../WebviewAction';
-import LineChat from '../../Chat';
+import { moxy } from '@moxyjs/moxy';
+import ServerAuthenticator from '../ServerAuthenticator.js';
+import WebviewAction from '../WebviewAction.js';
+import LineChat from '../../Chat.js';
 
 const authenticator = moxy<ServerAuthenticator>({
   getLiffUrl: () => `https://liff.line.me/1234567890-AaBbCcDd/`,

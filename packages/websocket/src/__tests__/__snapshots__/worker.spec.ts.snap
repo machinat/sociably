@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`work 1`] = `
-Object {
-  "batch": Array [
-    Object {
+{
+  "batch": [
+    {
       "error": undefined,
-      "job": Object {
-        "target": Object {
+      "job": {
+        "target": {
           "id": "#conn1",
           "serverId": "#server",
           "type": "connection",
         },
-        "values": Array [
-          Object {
+        "values": [
+          {
             "payload": "1",
             "type": "foo",
           },
         ],
       },
-      "result": Object {
-        "connections": Array [
+      "result": {
+        "connections": [
           "A",
           "B",
           "C",
@@ -28,27 +28,27 @@ Object {
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "target": Object {
+      "job": {
+        "target": {
           "key": "somthing",
           "type": "topic",
         },
-        "values": Array [
-          Object {
+        "values": [
+          {
             "payload": "2",
             "type": "foo",
           },
-          Object {
+          {
             "category": "baz",
             "payload": "3",
             "type": "bar",
           },
         ],
       },
-      "result": Object {
-        "connections": Array [
+      "result": {
+        "connections": [
           "A",
           "B",
           "C",
@@ -57,23 +57,23 @@ Object {
       },
       "success": true,
     },
-    Object {
+    {
       "error": undefined,
-      "job": Object {
-        "target": Object {
+      "job": {
+        "target": {
           "id": "#conn2",
           "serverId": "#server",
           "type": "connection",
         },
-        "values": Array [
-          Object {
+        "values": [
+          {
             "payload": "4",
             "type": "foo",
           },
         ],
       },
-      "result": Object {
-        "connections": Array [
+      "result": {
+        "connections": [
           "A",
         ],
       },

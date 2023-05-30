@@ -1,12 +1,12 @@
 import Sociably from '@sociably/core';
 import IntentRecognizerI from '@sociably/core/base/IntentRecognizer';
-import Dialogflow from '../module';
-import { DialogflowIntentRecognizer as Recognizer } from '../recognizer';
+import Dialogflow from '../module.js';
+import { DialogflowIntentRecognizer as Recognizer } from '../recognizer.js';
 
 it('export interfaces', () => {
   expect(Dialogflow.Recognizer).toBe(Recognizer);
   expect(Dialogflow.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "DialogflowConfigs",
       "$$polymorphic": false,

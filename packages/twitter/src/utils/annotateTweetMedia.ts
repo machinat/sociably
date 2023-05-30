@@ -1,4 +1,4 @@
-import type { MediaSource, MediaType } from '../types';
+import type { MediaSource, MediaType } from '../types.js';
 
 const annotateTweetMedia = (
   mediaType: MediaType,

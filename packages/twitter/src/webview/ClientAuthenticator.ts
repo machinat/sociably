@@ -4,14 +4,16 @@ import type {
   CheckDataResult,
 } from '@sociably/auth';
 import type { WebviewClientAuthenticator } from '@sociably/webview';
-import { parse as parseBrowser } from 'bowser';
-import { TWITTER } from '../constant';
-import TwitterChat from '../Chat';
-import TwitterTweetTarget from '../TweetTarget';
-import TwitterUser from '../User';
-import TwitterUserProfile from '../UserProfile';
-import { getAuthContextDetails } from './utils';
-import type { TwitterAuthContext, TwitterAuthData } from './types';
+import Bowser from 'bowser';
+import { TWITTER } from '../constant.js';
+import TwitterChat from '../Chat.js';
+import TwitterTweetTarget from '../TweetTarget.js';
+import TwitterUser from '../User.js';
+import TwitterUserProfile from '../UserProfile.js';
+import { getAuthContextDetails } from './utils.js';
+import type { TwitterAuthContext, TwitterAuthData } from './types.js';
+
+const { parse: parseBrowser } = Bowser;
 
 /* eslint-disable class-methods-use-this */
 export default class TwitterClientAuthenticator

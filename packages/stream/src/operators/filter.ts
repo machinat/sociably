@@ -1,7 +1,7 @@
 import { MaybeContainer, ServiceContainer } from '@sociably/core/service';
-import { OperatorFunction } from '../types';
-import injectMaybe from '../injectMaybe';
-import doAsyncByKey from './doAsyncByKey';
+import { OperatorFunction } from '../types.js';
+import injectMaybe from '../injectMaybe.js';
+import doAsyncByKey from './doAsyncByKey.js';
 
 export type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 

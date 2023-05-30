@@ -14,8 +14,8 @@ import type {
   UpgradeHandler,
   RoutingInfo,
 } from '@sociably/http';
-import { ServerI, ConfigsI } from './interface';
-import type { NextServer, NextRequestHandler } from './types';
+import { ServerI, ConfigsI } from './interface.js';
+import type { NextServer, NextRequestHandler } from './types.js';
 
 type NextReceiverOptions = {
   entryPath?: string;

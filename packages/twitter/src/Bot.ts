@@ -16,19 +16,19 @@ import {
   createTweetJobs,
   createDirectMessageJobs,
   createWelcomeMessageJobs,
-} from './job';
-import generalElementDelegate from './components/general';
-import TwitterWorker from './Worker';
-import TweetTarget from './TweetTarget';
-import TwitterUser from './User';
-import DirectMessageChat from './Chat';
+} from './job.js';
+import generalElementDelegate from './components/general.js';
+import TwitterWorker from './Worker.js';
+import TweetTarget from './TweetTarget.js';
+import TwitterUser from './User.js';
+import DirectMessageChat from './Chat.js';
 import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import { TWITTER } from './constant';
-import TwitterApiError from './Error';
+} from './interface.js';
+import { TWITTER } from './constant.js';
+import TwitterApiError from './Error.js';
 import type {
   TwitterThread,
   TwitterSegmentValue,
@@ -39,7 +39,7 @@ import type {
   TwitterComponent,
   MediaAttachment,
   RenderMediaResponse,
-} from './types';
+} from './types.js';
 
 type TwitterBotOptions = {
   appKey: string;
@@ -268,7 +268,7 @@ export class TwitterBot
 
     const contentLength = response.headers.get('content-length');
     return {
-      content: response.body,
+      content: response.body as NodeJS.ReadableStream,
       contentType: response.headers.get('content-type') || undefined,
       contentLength: contentLength ? Number(contentLength) : undefined,
     };

@@ -1,20 +1,20 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
-import WhatsApp from '../module';
-import { AgentSettingsAccessorI } from '../interface';
-import WhatsAppAgent from '../Agent';
-import WhatsAppChat from '../Chat';
-import WhatsAppUser from '../User';
-import WhatsAppUserProfile from '../UserProfile';
-import { WhatsAppProfiler } from '../Profiler';
+import WhatsApp from '../module.js';
+import { AgentSettingsAccessorI } from '../interface.js';
+import WhatsAppAgent from '../Agent.js';
+import WhatsAppChat from '../Chat.js';
+import WhatsAppUser from '../User.js';
+import WhatsAppUserProfile from '../UserProfile.js';
+import { WhatsAppProfiler } from '../Profiler.js';
 
-import { WhatsAppReceiver } from '../Receiver';
-import { WhatsAppBot } from '../Bot';
+import { WhatsAppReceiver } from '../Receiver.js';
+import { WhatsAppBot } from '../Bot.js';
 
 const agentSettings = {
   phoneNumber: '+1234567890',
@@ -27,7 +27,7 @@ it('export interfaces', () => {
   expect(WhatsApp.Bot).toBe(WhatsAppBot);
   expect(WhatsApp.Profiler).toBe(WhatsAppProfiler);
   expect(WhatsApp.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "WhatsAppConfigs",
       "$$polymorphic": false,
@@ -53,7 +53,7 @@ describe('initModule(configs)', () => {
 
     expect(module.name).toBe('whatsapp');
     expect(module.utilitiesInterface).toMatchInlineSnapshot(`
-      Object {
+      {
         "$$multi": false,
         "$$name": "WhatsAppPlatformUtilities",
         "$$polymorphic": false,

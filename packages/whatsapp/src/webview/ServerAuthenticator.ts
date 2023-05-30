@@ -5,17 +5,17 @@ import {
   CheckDataResult,
 } from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
-import BotP from '../Bot';
-import { WHATSAPP } from '../constant';
-import { AgentSettingsAccessorI } from '../interface';
-import WhatsAppChat from '../Chat';
-import WhatsAppAgent from '../Agent';
-import { getAuthContextDetails, trimWaUrlNumber } from './utils';
+import BotP from '../Bot.js';
+import { WHATSAPP } from '../constant.js';
+import { AgentSettingsAccessorI } from '../interface.js';
+import WhatsAppChat from '../Chat.js';
+import WhatsAppAgent from '../Agent.js';
+import { getAuthContextDetails, trimWaUrlNumber } from './utils.js';
 import type {
   WhatsAppAuthContext,
   WhatsAppAuthData,
   WhatsAppAuthCrendential,
-} from './types';
+} from './types.js';
 
 /**
  * @category Provider

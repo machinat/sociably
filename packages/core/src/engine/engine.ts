@@ -1,7 +1,7 @@
-import RenderingTargetI from '../base/RenderingTarget';
-import SociablyQueue, { JobBatchResponse } from '../queue';
-import { createEmptyScope, ServiceScope } from '../service';
-import type SociablyRenderer from '../renderer';
+import RenderingTargetI from '../base/RenderingTarget.js';
+import SociablyQueue, { JobBatchResponse } from '../queue/index.js';
+import { createEmptyScope, ServiceScope } from '../service/index.js';
+import type SociablyRenderer from '../renderer/index.js';
 import type {
   SociablyNode,
   NativeComponent,
@@ -9,15 +9,15 @@ import type {
   DispatchWrapper,
   ThunkEffectFn,
   DispatchTarget,
-} from '../types';
-import DispatchError from './error';
+} from '../types.js';
+import DispatchError from './error.js';
 import {
   SociablyWorker,
   DispatchableSegment,
   SociablyTask,
   DispatchResponse,
   DispatchFrame,
-} from './types';
+} from './types.js';
 
 /**
  * SociablyEngine provide helpers to render element tree into tasks to execute,

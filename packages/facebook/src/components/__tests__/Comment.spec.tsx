@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PagePhoto } from '../PagePhoto';
-import { Comment } from '../Comment';
-import { renderUnitElement } from './utils';
+import { PagePhoto } from '../PagePhoto.js';
+import { Comment } from '../Comment.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
   expect(typeof Comment).toBe('function');
@@ -13,62 +13,62 @@ it('is valid root Component', () => {
 it('match snapshot', async () => {
   await expect(renderUnitElement(<Comment>hello world</Comment>)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Comment>
-                hello world
-              </Comment>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "attachment_share_url": undefined,
-                  "message": "hello world",
-                },
-                "photo": undefined,
-                "type": "comment",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Comment>
+          hello world
+        </Comment>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "attachment_share_url": undefined,
+            "message": "hello world",
+          },
+          "photo": undefined,
+          "type": "comment",
+        },
+      },
+    ]
+  `);
 
   await expect(
     renderUnitElement(
       <Comment photo={<PagePhoto url="http://sociably.js/good.jpg" />} />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Comment
-                photo={
-                  <PagePhoto
-                    url="http://sociably.js/good.jpg"
-                  />
-                }
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "attachment_share_url": undefined,
-                  "message": undefined,
-                },
-                "photo": Object {
-                  "apiPath": "me/photos",
-                  "attachFile": undefined,
-                  "params": Object {
-                    "backdated_time": undefined,
-                    "spherical_metadata": undefined,
-                    "url": "http://sociably.js/good.jpg",
-                    "vault_image_id": undefined,
-                  },
-                  "type": "page",
-                },
-                "type": "comment",
-              },
+    [
+      {
+        "node": <Comment
+          photo={
+            <PagePhoto
+              url="http://sociably.js/good.jpg"
+            />
+          }
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "attachment_share_url": undefined,
+            "message": undefined,
+          },
+          "photo": {
+            "apiPath": "me/photos",
+            "attachFile": undefined,
+            "params": {
+              "backdated_time": undefined,
+              "spherical_metadata": undefined,
+              "url": "http://sociably.js/good.jpg",
+              "vault_image_id": undefined,
             },
-          ]
-        `);
+            "type": "page",
+          },
+          "type": "comment",
+        },
+      },
+    ]
+  `);
 
   await expect(
     renderUnitElement(
@@ -77,33 +77,33 @@ it('match snapshot', async () => {
       </Comment>
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <Comment
-                gifShareUrl="http://sociably.js/cool.gif"
-              >
-                ハロー ワールド
-              </Comment>,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "params": Object {
-                  "attachment_share_url": "http://sociably.js/cool.gif",
-                  "message": "ハロー ワールド",
-                },
-                "photo": undefined,
-                "type": "comment",
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <Comment
+          gifShareUrl="http://sociably.js/cool.gif"
+        >
+          ハロー ワールド
+        </Comment>,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "params": {
+            "attachment_share_url": "http://sociably.js/cool.gif",
+            "message": "ハロー ワールド",
+          },
+          "photo": undefined,
+          "type": "comment",
+        },
+      },
+    ]
+  `);
 });
 
 it('throw if comment is empty', async () => {
   await expect(
     renderUnitElement(<Comment />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be at least one of \\"children\\", \\"photo\\" or \\"gifShareUrl\\" prop"`
+    `"there should be at least one of "children", "photo" or "gifShareUrl" prop"`
   );
 });
 
@@ -116,7 +116,7 @@ it('throw if gifShareUrl and photo props exist at the same time', async () => {
       />
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: \\"url\\", \\"fileData\\" or \\"vaultImageId\\""`
+    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
   );
 });
 
@@ -124,12 +124,12 @@ it('throw if photo prop contain non PagePhoto content', async () => {
   await expect(
     renderUnitElement(<Comment photo={<>foo</>} />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"\\"photo\\" should contain exactly one <PagePhoto/> element"`
+    `""photo" should contain exactly one <PagePhoto/> element"`
   );
 
   await expect(
     renderUnitElement(<Comment photo={<Sociably.Pause />} />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"\\"photo\\" should contain exactly one <PagePhoto/> element"`
+    `""photo" should contain exactly one <PagePhoto/> element"`
   );
 });

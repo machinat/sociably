@@ -1,3 +1,3 @@
-export { default } from './engine';
-export { default as DispatchError } from './error';
-export * from './types';
+export { default } from './engine.js';
+export { default as DispatchError } from './error.js';
+export * from './types.js';

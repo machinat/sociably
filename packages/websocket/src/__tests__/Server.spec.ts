@@ -1,13 +1,13 @@
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
-import moxy, { Moxy } from '@moxyjs/moxy';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import Ws from 'ws';
-import { WebSocketServer } from '../Server';
-import _Socket from '../Socket';
-import { LocalOnlyBroker } from '../broker/LocalOnlyBroker';
+import { WebSocketServer } from '../Server.js';
+import _Socket from '../Socket.js';
+import { LocalOnlyBroker } from '../broker/LocalOnlyBroker.js';
 
-jest.mock('../socket', () =>
-  jest.requireActual('@moxyjs/moxy').default(jest.requireActual('../socket'))
+jest.mock('../Socket.js', () =>
+  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../socket'))
 );
 
 const Socket = _Socket as Moxy<typeof _Socket>;
@@ -546,7 +546,9 @@ it('emit socket error', async () => {
 });
 
 test('ping socket per heartbeatInterval', async () => {
-  jest.useFakeTimers();
+  jest.useFakeTimers({
+    doNotFake: ['setImmediate', 'nextTick'],
+  });
 
   const serverWithOptions = new WebSocketServer({
     id: serverId,
@@ -583,6 +585,7 @@ test('ping socket per heartbeatInterval', async () => {
   expect(socket1.ping).toHaveBeenCalledTimes(3);
   expect(socket2.ping).toHaveBeenCalledTimes(3);
 
+  jest.clearAllTimers();
   jest.useRealTimers();
 });
 

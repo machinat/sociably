@@ -1,7 +1,7 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
-import MetaApiWorker from '../Worker';
+import MetaApiWorker from '../Worker.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
@@ -125,15 +125,15 @@ it('call to graph api', async () => {
 
   const batch = JSON.parse(body.batch);
   expect(batch).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=1",
         "method": "POST",
         "name": "facebook.id.foo.john-1",
         "omit_response_on_success": false,
         "relative_url": "me/messages?access_token=access_token_foo",
       },
-      Object {
+      {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
         "depends_on": "facebook.id.foo.john-1",
         "method": "POST",
@@ -141,14 +141,14 @@ it('call to graph api', async () => {
         "omit_response_on_success": false,
         "relative_url": "some/api?access_token=access_token_foo",
       },
-      Object {
+      {
         "body": "recipient=%7B%22id%22%3A%22jane%22%7D&id=3",
         "method": "POST",
         "name": "facebook.id.bar.jane-1",
         "omit_response_on_success": false,
         "relative_url": "me/messages?access_token=access_token_bar",
       },
-      Object {
+      {
         "body": "recipient=%7B%22id%22%3A%22jojo%22%7D&id=4",
         "method": "POST",
         "name": "facebook.id.baz.jojo-1",
@@ -224,7 +224,6 @@ it('upload files with form data if binary attached on job', async () => {
         info: {
           filename: 'YouDontSay.jpg',
           contentType: 'image/jpeg',
-          knownLength: 19806,
         },
       },
     },
@@ -235,7 +234,6 @@ it('upload files with form data if binary attached on job', async () => {
         info: {
           filename: 'Cage.gif',
           contentType: 'image/gif',
-          knownLength: 19806,
         },
       },
     },
@@ -296,8 +294,8 @@ it('upload files with form data if binary attached on job', async () => {
   expect(batch[3].attached_files).toBe(file2Field![1]);
 
   expect(batch).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "attached_files": "file_0",
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=1",
         "method": "POST",
@@ -305,7 +303,7 @@ it('upload files with form data if binary attached on job', async () => {
         "omit_response_on_success": false,
         "relative_url": "me/messages?access_token=access_token_foo",
       },
-      Object {
+      {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
         "depends_on": "facebook.id.foo.john-1",
         "method": "POST",
@@ -313,7 +311,7 @@ it('upload files with form data if binary attached on job', async () => {
         "omit_response_on_success": false,
         "relative_url": "some/api?access_token=access_token_foo",
       },
-      Object {
+      {
         "attached_files": "file_1",
         "body": "recipient=%7B%22id%22%3A%22jane%22%7D&id=3",
         "method": "POST",
@@ -321,7 +319,7 @@ it('upload files with form data if binary attached on job', async () => {
         "omit_response_on_success": false,
         "relative_url": "me/messages?access_token=access_token_bar",
       },
-      Object {
+      {
         "attached_files": "file_2",
         "body": "recipient=%7B%22id%22%3A%22jojo%22%7D&id=4",
         "method": "POST",
@@ -350,14 +348,14 @@ it('throw if connection error happen', async () => {
 
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
-              Object {
-                "batch": null,
-                "errors": Array [
-                  [FetchError: request to https://graph.facebook.com/v11.0/ failed, reason: something wrong like connection error],
-                ],
-                "success": false,
-              }
-          `);
+    {
+      "batch": null,
+      "errors": [
+        [FetchError: request to https://graph.facebook.com/v11.0/ failed, reason: something wrong like connection error],
+      ],
+      "success": false,
+    }
+  `);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -381,14 +379,14 @@ it('throw if api error happen', async () => {
 
   worker.start(queue);
   await expect(queue.executeJobs(jobs)).resolves.toMatchInlineSnapshot(`
-              Object {
-                "batch": null,
-                "errors": Array [
-                  [GraphAPIError (OAuthException): The access token could not be decrypted],
-                ],
-                "success": false,
-              }
-          `);
+    {
+      "batch": null,
+      "errors": [
+        [GraphAPIError (OAuthException): The access token could not be decrypted],
+      ],
+      "success": false,
+    }
+  `);
 
   expect(scope.isDone()).toBe(true);
 });
@@ -436,7 +434,7 @@ it('fail if one single job fail', async () => {
   expect(execRes.success).toBe(false);
   expect(execRes).toMatchSnapshot();
   expect(execRes.errors).toMatchInlineSnapshot(`
-    Array [
+    [
       [GraphAPIError (OAuthException): you should not passed!],
     ]
   `);
@@ -578,7 +576,7 @@ it('use querystring params for GET request', async () => {
   const [request] = JSON.parse(body.batch);
 
   expect(request).toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "GET",
       "omit_response_on_success": false,
       "relative_url": "1234567890?fields=%5B%22id%22%2C%22name%22%2C%22email%22%5D&access_token=access_token_foo",
@@ -638,7 +636,7 @@ it('use querystring params for DELETE request', async () => {
   const [request] = JSON.parse(body.batch);
 
   expect(request).toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "DELETE",
       "omit_response_on_success": false,
       "relative_url": "me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D&access_token=access_token_foo",
@@ -686,8 +684,8 @@ test('with asApplication job', async () => {
   const batch = JSON.parse(body.batch);
 
   expect(batch).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "body": "some=app%20settings",
         "method": "POST",
         "omit_response_on_success": false,
@@ -744,15 +742,15 @@ it('skip job when no access token available', async () => {
   const batch = JSON.parse(body.batch);
 
   expect(batch).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=1",
         "method": "POST",
         "name": "facebook.id.foo.john-1",
         "omit_response_on_success": false,
         "relative_url": "me/messages?access_token=access_token_foo",
       },
-      Object {
+      {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
         "depends_on": "facebook.id.foo.john-1",
         "method": "POST",
@@ -760,7 +758,7 @@ it('skip job when no access token available', async () => {
         "omit_response_on_success": false,
         "relative_url": "some/api?access_token=access_token_foo",
       },
-      Object {
+      {
         "body": "some=app%20settings",
         "method": "POST",
         "omit_response_on_success": false,
@@ -797,60 +795,60 @@ it('skip request when fail to get access token for all the jobs', async () => {
       },
     ])
   ).resolves.toMatchInlineSnapshot(`
-          Object {
-            "batch": Array [
-              Object {
-                "error": [Error: No access token available for channel foo],
-                "job": Object {
-                  "channel": Object {
-                    "platform": "test",
-                    "uid": "foo",
-                  },
-                  "key": "facebook.id.foo.john",
-                  "request": Object {
-                    "method": "POST",
-                    "params": Object {
-                      "id": 1,
-                      "recipient": Object {
-                        "id": "john",
-                      },
-                    },
-                    "url": "me/messages",
-                  },
+    {
+      "batch": [
+        {
+          "error": [Error: No access token available for channel foo],
+          "job": {
+            "channel": {
+              "platform": "test",
+              "uid": "foo",
+            },
+            "key": "facebook.id.foo.john",
+            "request": {
+              "method": "POST",
+              "params": {
+                "id": 1,
+                "recipient": {
+                  "id": "john",
                 },
-                "result": Object {
-                  "body": Object {},
-                  "code": 0,
-                  "headers": Object {},
-                },
-                "success": false,
               },
-              Object {
-                "error": [Error: No access token available for job],
-                "job": Object {
-                  "request": Object {
-                    "method": "POST",
-                    "params": Object {
-                      "some": "app settings",
-                    },
-                    "url": "settins/api",
-                  },
-                },
-                "result": Object {
-                  "body": Object {},
-                  "code": 0,
-                  "headers": Object {},
-                },
-                "success": false,
+              "url": "me/messages",
+            },
+          },
+          "result": {
+            "body": {},
+            "code": 0,
+            "headers": {},
+          },
+          "success": false,
+        },
+        {
+          "error": [Error: No access token available for job],
+          "job": {
+            "request": {
+              "method": "POST",
+              "params": {
+                "some": "app settings",
               },
-            ],
-            "errors": Array [
-              [Error: No access token available for channel foo],
-              [Error: No access token available for job],
-            ],
-            "success": false,
-          }
-        `);
+              "url": "settins/api",
+            },
+          },
+          "result": {
+            "body": {},
+            "code": 0,
+            "headers": {},
+          },
+          "success": false,
+        },
+      ],
+      "errors": [
+        [Error: No access token available for channel foo],
+        [Error: No access token available for job],
+      ],
+      "success": false,
+    }
+  `);
 
   expect(bodySpy).not.toHaveBeenCalled();
 });
@@ -902,15 +900,15 @@ test('with defaultAccessTokenOption', async () => {
   const batch = JSON.parse(body.batch);
 
   expect(batch).toMatchInlineSnapshot(`
-    Array [
-      Object {
+    [
+      {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=1",
         "method": "POST",
         "name": "facebook.id.foo.john-1",
         "omit_response_on_success": false,
         "relative_url": "me/messages?access_token=_DEFAULT_ACCESS_TOKEN_",
       },
-      Object {
+      {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
         "depends_on": "facebook.id.foo.john-1",
         "method": "POST",
@@ -918,21 +916,21 @@ test('with defaultAccessTokenOption', async () => {
         "omit_response_on_success": false,
         "relative_url": "some/api?access_token=_DEFAULT_ACCESS_TOKEN_",
       },
-      Object {
+      {
         "body": "recipient=%7B%22id%22%3A%22jane%22%7D&id=3",
         "method": "POST",
         "name": "facebook.id.bar.jane-1",
         "omit_response_on_success": false,
         "relative_url": "me/messages?access_token=access_token_bar",
       },
-      Object {
+      {
         "body": "recipient=%7B%22id%22%3A%22jojo%22%7D&id=4",
         "method": "POST",
         "name": "facebook.id.baz.jojo-1",
         "omit_response_on_success": false,
         "relative_url": "another/api?access_token=_DEFAULT_ACCESS_TOKEN_",
       },
-      Object {
+      {
         "body": "some=app%20settings",
         "method": "POST",
         "omit_response_on_success": false,
@@ -1039,15 +1037,15 @@ describe('using API result in following request', () => {
 
     expect(JSON.parse(body.batch).map(decodeBatchedRequest))
       .toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "body": "type=image/jpeg&file=@/pretend/to/upload/a/file.jpg",
           "method": "POST",
           "name": "foo_thread-1",
           "omit_response_on_success": false,
           "relative_url": "1234567890/media?access_token=access_token_foo",
         },
-        Object {
+        {
           "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
           "depends_on": "foo_thread-1",
           "method": "POST",
@@ -1055,8 +1053,8 @@ describe('using API result in following request', () => {
           "omit_response_on_success": false,
           "relative_url": "1234567890/media?access_token=access_token_foo",
         },
-        Object {
-          "body": "to=9876543210&type=image&images=[{\\"id\\":\\"{result=foo_thread-1:$.id}\\"},{\\"id\\":\\"{result=foo_thread-2:$.id}\\"}]",
+        {
+          "body": "to=9876543210&type=image&images=[{"id":"{result=foo_thread-1:$.id}"},{"id":"{result=foo_thread-2:$.id}"}]",
           "depends_on": "foo_thread-2",
           "method": "POST",
           "name": "foo_thread-3",
@@ -1098,23 +1096,23 @@ describe('using API result in following request', () => {
     const body = bodySpy.mock.calls[0].args[0];
     expect(JSON.parse(body.batch).map(decodeBatchedRequest))
       .toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "body": "type=image/jpeg&file=@/pretend/to/upload/a/file.jpg",
           "method": "POST",
           "name": "#request-0",
           "omit_response_on_success": false,
           "relative_url": "1234567890/media?access_token=access_token_foo",
         },
-        Object {
+        {
           "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
           "method": "POST",
           "name": "#request-1",
           "omit_response_on_success": false,
           "relative_url": "1234567890/media?access_token=access_token_foo",
         },
-        Object {
-          "body": "to=9876543210&type=image&images=[{\\"id\\":\\"{result=#request-0:$.id}\\"},{\\"id\\":\\"{result=#request-1:$.id}\\"}]",
+        {
+          "body": "to=9876543210&type=image&images=[{"id":"{result=#request-0:$.id}"},{"id":"{result=#request-1:$.id}"}]",
           "method": "POST",
           "omit_response_on_success": false,
           "relative_url": "1234567890/messages?access_token=access_token_foo",
@@ -1173,7 +1171,7 @@ describe('using API result in following request', () => {
 
     expect(decodeBatchedRequest(JSON.parse(body1.batch)[49]))
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "body": "type=image/jpeg&file=@/pretend/to/upload/a/file.jpg",
         "method": "POST",
         "name": "foo_thread-1",
@@ -1183,7 +1181,7 @@ describe('using API result in following request', () => {
     `);
     expect(decodeBatchedRequest(JSON.parse(body2.batch)[0]))
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
         "method": "POST",
         "name": "foo_thread-1",
@@ -1193,8 +1191,8 @@ describe('using API result in following request', () => {
     `);
     expect(decodeBatchedRequest(JSON.parse(body2.batch)[1]))
       .toMatchInlineSnapshot(`
-      Object {
-        "body": "to=9876543210&type=image&images=[{\\"id\\":\\"1111111111\\"},{\\"id\\":\\"{result=foo_thread-1:$.id}\\"}]",
+      {
+        "body": "to=9876543210&type=image&images=[{"id":"1111111111"},{"id":"{result=foo_thread-1:$.id}"}]",
         "depends_on": "foo_thread-1",
         "method": "POST",
         "name": "foo_thread-2",

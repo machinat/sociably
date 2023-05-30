@@ -1,18 +1,18 @@
 import { formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
-import TweetTarget from './TweetTarget';
-import TwitterChat from './Chat';
-import createDmSegmentValue from './utils/createDmSegmentValue';
-import createTweetSegmentValue from './utils/createTweetSegmentValue';
-import annotateTweetMedia from './utils/annotateTweetMedia';
-import splitTweetText from './utils/splitTweetText';
+import TweetTarget from './TweetTarget.js';
+import TwitterChat from './Chat.js';
+import createDmSegmentValue from './utils/createDmSegmentValue.js';
+import createTweetSegmentValue from './utils/createTweetSegmentValue.js';
+import annotateTweetMedia from './utils/annotateTweetMedia.js';
+import splitTweetText from './utils/splitTweetText.js';
 import type {
   MediaType,
   TwitterSegmentValue,
   DirectMessageSegmentValue,
   TwitterJob,
   TweetResult,
-} from './types';
+} from './types.js';
 
 const useCreatedTweetTarget = (agentId: string) => (_, result: TweetResult) => {
   return new TweetTarget(agentId, result.data.id);

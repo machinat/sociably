@@ -1,7 +1,7 @@
 import type { AuthContextBase } from '@sociably/auth';
-import type TelegramChat from '../Chat';
-import type TelegramUser from '../User';
-import type { RawChat, RawUser } from '../types';
+import type TelegramChat from '../Chat.js';
+import type TelegramUser from '../User.js';
+import type { RawChat, RawUser } from '../types.js';
 
 export type TelegramAuthData = {
   botId: number;

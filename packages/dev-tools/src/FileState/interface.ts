@@ -1,5 +1,5 @@
 import { serviceInterface } from '@sociably/core/service';
-import type { FileStateConfigs, FileStateSerializer } from './types';
+import type { FileStateConfigs, FileStateSerializer } from './types.js';
 
 /**
  * @category Interface

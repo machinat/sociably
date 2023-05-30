@@ -1,12 +1,12 @@
 import { Readable } from 'stream';
-import moxy from '@moxyjs/moxy';
-import type { TelegramBot } from '../Bot';
-import TelegramChat from '../Chat';
-import TelegramChatProfile from '../ChatProfile';
-import TelegramUser from '../User';
-import TelegramChatSender from '../ChatSender';
-import TelegramUserProfile from '../UserProfile';
-import { TelegramProfiler } from '../Profiler';
+import { moxy } from '@moxyjs/moxy';
+import type { TelegramBot } from '../Bot.js';
+import TelegramChat from '../Chat.js';
+import TelegramChatProfile from '../ChatProfile.js';
+import TelegramUser from '../User.js';
+import TelegramChatSender from '../ChatSender.js';
+import TelegramUserProfile from '../UserProfile.js';
+import { TelegramProfiler } from '../Profiler.js';
 
 const bot = moxy<TelegramBot>({
   async requestApi() {
@@ -193,9 +193,9 @@ describe('.getUserProfile(user)', () => {
 
     expect(profile.typeName()).toBe('TgUserProfile');
     expect(profile.toJSONValue()).toMatchInlineSnapshot(`
-      Object {
+      {
         "avatar": "http://jane.doe/avatar",
-        "data": Object {
+        "data": {
           "first_name": "Jane",
           "id": 12345,
           "is_bot": false,
@@ -385,9 +385,9 @@ describe('.getChatProfile(user)', () => {
 
     expect(profile.typeName()).toBe('TgChatProfile');
     expect(profile.toJSONValue()).toMatchInlineSnapshot(`
-      Object {
+      {
         "avatar": "http://jane.doe/avatar",
-        "data": Object {
+        "data": {
           "first_name": "Jane",
           "id": 67890,
           "last_name": "Doe",

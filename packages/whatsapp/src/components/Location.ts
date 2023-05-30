@@ -1,6 +1,6 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import makeWhatsAppComponent from '../utils/makeWhatsAppComponent';
-import { WhatsAppSegmentValue, WhatsAppComponent } from '../types';
+import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
+import { WhatsAppSegmentValue, WhatsAppComponent } from '../types.js';
 
 export type LocationProps = {
   /** Longitude of the location. */

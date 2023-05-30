@@ -14,24 +14,24 @@ import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import { WHATSAPP } from './constant';
-import BotP from './Bot';
-import ReceiverP from './Receiver';
-import ProfilerP from './Profiler';
-import WhatsAppAgent from './Agent';
-import WhatsAppChat from './Chat';
-import WhatsAppUser from './User';
-import WhatsAppUserProfile from './UserProfile';
+} from './interface.js';
+import { WHATSAPP } from './constant.js';
+import BotP from './Bot.js';
+import ReceiverP from './Receiver.js';
+import ProfilerP from './Profiler.js';
+import WhatsAppAgent from './Agent.js';
+import WhatsAppChat from './Chat.js';
+import WhatsAppUser from './User.js';
+import WhatsAppUserProfile from './UserProfile.js';
 import {
   singleStaticAgentSettingsAccessor,
   multiStaticAgentSettingsAccessor,
-} from './utils/createStaticAgentSettingsAccessor';
+} from './utils/createStaticAgentSettingsAccessor.js';
 import type {
   WhatsAppConfigs,
   WhatsAppEventContext,
   WhatsAppDispatchFrame,
-} from './types';
+} from './types.js';
 
 /** @interanl */
 const webhookRouteFactory = serviceProviderFactory({

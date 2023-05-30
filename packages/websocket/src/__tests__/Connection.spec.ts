@@ -1,4 +1,4 @@
-import WebSocketConnection from '../Connection';
+import WebSocketConnection from '../Connection.js';
 
 test('WebSocketConnection(serverId, connId)', () => {
   const thread = new WebSocketConnection('#server', '#conn');
@@ -10,8 +10,8 @@ test('WebSocketConnection(serverId, connId)', () => {
 
   expect(thread.uid).toMatchInlineSnapshot(`"websocket.#server.#conn"`);
   expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "#conn",
@@ -22,7 +22,7 @@ test('WebSocketConnection(serverId, connId)', () => {
 
   expect(thread.typeName()).toBe('WebSocketConnection');
   expect(thread.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": "#conn",
       "server": "#server",
     }

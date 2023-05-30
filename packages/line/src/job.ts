@@ -1,9 +1,9 @@
 import { formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
-import type LineChat from './Chat';
-import { PATH_PUSH, PATH_REPLY, PATH_MULTICAST } from './constant';
-import type { LineSegmentValue, LineJob, MessageParams } from './types';
-import LineChannel from './Channel';
+import type LineChat from './Chat.js';
+import { PATH_PUSH, PATH_REPLY, PATH_MULTICAST } from './constant.js';
+import type { LineSegmentValue, LineJob, MessageParams } from './types.js';
+import LineChannel from './Channel.js';
 
 const createMessageJob = (
   thread: LineChat,

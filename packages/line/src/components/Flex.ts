@@ -7,8 +7,8 @@ import {
   PartSegment,
 } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import makeLineComponent from '../utils/makeLineComponent';
-import type { LineComponent, MessageSegmentValue } from '../types';
+import makeLineComponent from '../utils/makeLineComponent.js';
+import type { LineComponent, MessageSegmentValue } from '../types.js';
 
 type FlexSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 type FlexFullSize = 'xxs' | FlexSize | '3xl' | '4xl' | '5xl';

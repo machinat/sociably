@@ -1,22 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`add replyMarkup to the last supported message 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Photo
       url="http://sociably.io/foo.jpg"
     />,
     "path": "$#Expression.children:0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "files": undefined,
       "method": "sendPhoto",
-      "params": Object {
+      "params": {
         "caption": undefined,
         "disable_notification": true,
         "parse_mode": "HTML",
         "photo": "http://sociably.io/foo.jpg",
-        "reply_markup": Object {
+        "reply_markup": {
           "force_reply": true,
           "selective": undefined,
         },
@@ -24,15 +24,15 @@ Array [
       },
     },
   },
-  Object {
+  {
     "node": <ChatAction
       action="upload_photo"
     />,
     "path": "$#Expression.children:1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "sendChatAction",
-      "params": Object {
+      "params": {
         "action": "upload_photo",
       },
     },
@@ -41,8 +41,8 @@ Array [
 `;
 
 exports[`add replyMarkup to the last supported message 3`] = `
-Array [
-  Object {
+[
+  {
     "node": <Expression
       disableNotification={true}
       replyMarkup={<ForceReply />}
@@ -55,12 +55,12 @@ Array [
     </Expression>,
     "path": "$",
     "type": "unit",
-    "value": Object {
+    "value": {
       "method": "sendMessage",
-      "params": Object {
+      "params": {
         "disable_notification": true,
         "parse_mode": "HTML",
-        "reply_markup": Object {
+        "reply_markup": {
           "force_reply": true,
           "selective": undefined,
         },
@@ -68,22 +68,22 @@ Array [
       },
     },
   },
-  Object {
+  {
     "node": <Photo
       replyMarkup={<ForceReply />}
       url="http://sociably.io/foo.jpg"
     />,
     "path": "$#Expression.children:1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "files": undefined,
       "method": "sendPhoto",
-      "params": Object {
+      "params": {
         "caption": undefined,
         "disable_notification": true,
         "parse_mode": "HTML",
         "photo": "http://sociably.io/foo.jpg",
-        "reply_markup": Object {
+        "reply_markup": {
           "force_reply": true,
           "selective": undefined,
         },
@@ -97,17 +97,17 @@ Array [
 exports[`hoist text value into message object 1`] = `undefined`;
 
 exports[`respect the original disableNotification setting set on the messgage 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <Photo
       url="http://sociably.io/bar.jpg"
     />,
     "path": "$#Expression.children:0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "files": undefined,
       "method": "sendPhoto",
-      "params": Object {
+      "params": {
         "caption": undefined,
         "disable_notification": true,
         "parse_mode": "HTML",
@@ -117,17 +117,17 @@ Array [
       },
     },
   },
-  Object {
+  {
     "node": <Photo
       disableNotification={false}
       url="http://sociably.io/baz.jpg"
     />,
     "path": "$#Expression.children:1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "files": undefined,
       "method": "sendPhoto",
-      "params": Object {
+      "params": {
         "caption": undefined,
         "disable_notification": false,
         "parse_mode": "HTML",

@@ -1,4 +1,4 @@
-import TweetTarget from '../TweetTarget';
+import TweetTarget from '../TweetTarget.js';
 
 test('with no reply tweet', () => {
   const user = new TweetTarget('1234567890');
@@ -7,8 +7,8 @@ test('with no reply tweet', () => {
   expect(user.tweetId).toBe(undefined);
   expect(user.uid).toBe('twtr.1234567890.-');
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "-",
@@ -28,8 +28,8 @@ test('with reply tweet id', () => {
   expect(user.tweetId).toBe('1111111111');
   expect(user.uid).toBe('twtr.1234567890.1111111111');
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "thread",
       ],
       "id": "1111111111",

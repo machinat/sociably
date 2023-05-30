@@ -1,5 +1,5 @@
-import Sociably from '../..';
-import map from '../map';
+import Sociably from '../../index.js';
+import map from '../map.js';
 
 it('maps all elements', () => {
   const callback = jest.fn((e) => ({ e }));

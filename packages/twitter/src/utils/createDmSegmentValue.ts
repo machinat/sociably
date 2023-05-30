@@ -1,6 +1,6 @@
-import TwitterChat from '../Chat';
-import type { MediaAttachment, DirectMessageSegmentValue } from '../types';
-import annotateDmMedia from './annotateDmMedia';
+import TwitterChat from '../Chat.js';
+import type { MediaAttachment, DirectMessageSegmentValue } from '../types.js';
+import annotateDmMedia from './annotateDmMedia.js';
 
 const createDmSegmentValue = (
   text?: string,

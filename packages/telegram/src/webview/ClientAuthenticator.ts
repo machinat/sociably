@@ -4,16 +4,18 @@ import type {
   CheckDataResult,
 } from '@sociably/auth';
 import type { WebviewClientAuthenticator } from '@sociably/webview';
-import { parse as parseBrowser } from 'bowser';
-import { TELEGRAM } from '../constant';
-import TelegramChat from '../Chat';
-import TelegramChatSender from '../ChatSender';
-import TelegramChatProfile from '../ChatProfile';
-import TelegramUser from '../User';
-import TelegramUserProfile from '../UserProfile';
-import { getAuthContextDetails } from './utils';
-import { REDIRECT_QUERY, BOT_ID_QUERY, CHAT_ID_QUERY } from './constant';
-import type { TelegramAuthContext, TelegramAuthData } from './types';
+import Bowser from 'bowser';
+import { TELEGRAM } from '../constant.js';
+import TelegramChat from '../Chat.js';
+import TelegramChatSender from '../ChatSender.js';
+import TelegramChatProfile from '../ChatProfile.js';
+import TelegramUser from '../User.js';
+import TelegramUserProfile from '../UserProfile.js';
+import { getAuthContextDetails } from './utils.js';
+import { REDIRECT_QUERY, BOT_ID_QUERY, CHAT_ID_QUERY } from './constant.js';
+import type { TelegramAuthContext, TelegramAuthData } from './types.js';
+
+const { parse: parseBrowser } = Bowser;
 
 type TelegramClientOptions = {
   /** The ID of the bot to login with. Default to `botId` query param */

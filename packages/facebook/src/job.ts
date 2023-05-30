@@ -5,17 +5,17 @@ import type {
   FacebookSegmentValue,
   MessagingOptions,
   AttachFileValue,
-} from './types';
-import type FacebookChat from './Chat';
-import FacebookPage from './Page';
-import type InteractTarget from './InteractTarget';
+} from './types.js';
+import type FacebookChat from './Chat.js';
+import FacebookPage from './Page.js';
+import type InteractTarget from './InteractTarget.js';
 import {
   PATH_MESSAGES,
   PATH_MESSAGE_ATTACHMENTS,
   PATH_FEED,
   PATH_PHOTOS,
   MESSENGER_MESSAGING_TYPE_RESPONSE,
-} from './constant';
+} from './constant.js';
 
 const POST = 'POST';
 

@@ -12,8 +12,8 @@ import {
   ConfigsI,
   RequestRouteListI,
   UpgradeRouteListI,
-} from './interface';
-import { ConnectorP } from './connector';
+} from './interface.js';
+import { ConnectorP } from './connector.js';
 
 const httpServerFactory = serviceProviderFactory({
   lifetime: 'singleton',

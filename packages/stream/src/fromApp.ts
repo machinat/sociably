@@ -1,7 +1,7 @@
 import { SociablyApp } from '@sociably/core';
 import { serviceContainer, ServiceScope } from '@sociably/core/service';
-import Stream from './stream';
-import { EventContextOfApp } from './types';
+import Stream from './stream.js';
+import { EventContextOfApp } from './types.js';
 
 const fromApp = <App extends SociablyApp<any>>(
   app: App

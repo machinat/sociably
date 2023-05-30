@@ -1,20 +1,20 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
-import WebSocketConnection from '../Connection';
-import { WebSocketServer } from '../Server';
-import { WebSocketReceiver } from '../Receiver';
-import { WebSocketBot } from '../Bot';
-import WebSocket from '../module';
+import WebSocketConnection from '../Connection.js';
+import { WebSocketServer } from '../Server.js';
+import { WebSocketReceiver } from '../Receiver.js';
+import { WebSocketBot } from '../Bot.js';
+import WebSocket from '../module.js';
 
 it('export interfaces', () => {
   expect(WebSocket.Bot).toBe(WebSocketBot);
   expect(WebSocket.Receiver).toBe(WebSocketReceiver);
   expect(WebSocket.Server).toBe(WebSocketServer);
   expect(WebSocket.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "WebSocketConfigs",
       "$$polymorphic": false,
@@ -22,7 +22,7 @@ it('export interfaces', () => {
     }
   `);
   expect(WebSocket.LoginVerifier).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "WebSocketLoginVerifier",
       "$$polymorphic": false,
@@ -30,7 +30,7 @@ it('export interfaces', () => {
     }
   `);
   expect(WebSocket.UpgradeVerifier).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "WebSocketUpgradeVerifier",
       "$$polymorphic": false,
@@ -38,7 +38,7 @@ it('export interfaces', () => {
     }
   `);
   expect(WebSocket.ServerId).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "WebSocketServerId",
       "$$polymorphic": false,
@@ -46,7 +46,7 @@ it('export interfaces', () => {
     }
   `);
   expect(WebSocket.WsServer).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "WebSocketWsServer",
       "$$polymorphic": false,
@@ -67,7 +67,7 @@ describe('initModule()', () => {
 
     expect(module.name).toBe('websocket');
     expect(module.utilitiesInterface).toMatchInlineSnapshot(`
-      Object {
+      {
         "$$multi": false,
         "$$name": "WebSocketPlatformUtilities",
         "$$polymorphic": false,

@@ -1,8 +1,8 @@
 import { DispatchError } from '@sociably/core/engine';
-import moxy, { Moxy } from '@moxyjs/moxy';
-import TwitterChat from '../../Chat';
-import type AssetsManagerP from '../AssetsManager';
-import saveUploadedMedia from '../saveUploadedMedia';
+import { moxy, Moxy } from '@moxyjs/moxy';
+import TwitterChat from '../../Chat.js';
+import type AssetsManagerP from '../AssetsManager.js';
+import saveUploadedMedia from '../saveUploadedMedia.js';
 
 const manager: Moxy<AssetsManagerP> = moxy({
   async saveMedia() {},

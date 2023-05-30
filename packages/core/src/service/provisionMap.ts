@@ -4,7 +4,7 @@ import type {
   MultiServiceInterface,
   PolymorphicServiceInterface,
   ServiceProvider,
-} from './types';
+} from './types.js';
 
 const mergeSingular = <T>(
   base: Map<Interfaceable<unknown>, T>,

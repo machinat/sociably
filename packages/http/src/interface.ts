@@ -6,7 +6,7 @@ import type {
   DefaultRequestRoute,
   UpgradeRoute,
   DefaultUpgradeRoute,
-} from './types';
+} from './types.js';
 
 export const ServerI = serviceInterface<Server>({
   name: 'HttpServer',

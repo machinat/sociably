@@ -1,7 +1,7 @@
 import { MaybeContainer, ServiceContainer } from '@sociably/core/service';
-import injectMaybe from '../injectMaybe';
-import { OperatorFunction } from '../types';
-import doAsyncByKey from './doAsyncByKey';
+import injectMaybe from '../injectMaybe.js';
+import { OperatorFunction } from '../types.js';
+import doAsyncByKey from './doAsyncByKey.js';
 
 export type MapFn<T, R> = (value: T) => R | Promise<R>;
 

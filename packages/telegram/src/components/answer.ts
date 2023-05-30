@@ -6,12 +6,12 @@ import {
   PartSegment,
 } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import makeTelegramComponent from '../utils/makeTelegramComponent';
+import makeTelegramComponent from '../utils/makeTelegramComponent.js';
 import {
   TelegramSegmentValue,
   TelegramComponent,
   TelegramParseMode,
-} from '../types';
+} from '../types.js';
 
 type UnionToIntersection<U> = (
   U extends unknown ? (k: U) => void : never

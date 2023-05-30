@@ -1,7 +1,7 @@
 import type { ServiceModule } from '@sociably/core';
-import ProcessorP from './Processor';
-import { LibraryAccessorI } from './interface';
-import type { AnyScriptLibrary } from './types';
+import ProcessorP from './Processor.js';
+import { LibraryAccessorI } from './interface.js';
+import type { AnyScriptLibrary } from './types.js';
 
 type ScriptModuleConfigs = {
   libs?: AnyScriptLibrary[];

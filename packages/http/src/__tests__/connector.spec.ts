@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import { EventEmitter } from 'events';
-import moxy from '@moxyjs/moxy';
-import { HttpConnector } from '../connector';
+import { moxy } from '@moxyjs/moxy';
+import { HttpConnector } from '../connector.js';
 
 const FakeServer = class FakeServer extends EventEmitter {
   // eslint-disable-next-line
@@ -262,7 +262,7 @@ describe('handling requests', () => {
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"request route [foo] \\"/foo\\" is conflicted with route [root] \\"/\\""`
+      `"request route [foo] "/foo" is conflicted with route [root] "/""`
     );
     expect(
       () =>
@@ -273,7 +273,7 @@ describe('handling requests', () => {
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"request route \\"/bar/baz\\" is conflicted with route [bar] \\"/bar\\""`
+      `"request route "/bar/baz" is conflicted with route [bar] "/bar""`
     );
   });
 
@@ -513,7 +513,7 @@ describe('handling upgrade', () => {
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"upgrade route [foo] \\"/foo\\" is conflicted with route [root] \\"/\\""`
+      `"upgrade route [foo] "/foo" is conflicted with route [root] "/""`
     );
     expect(
       () =>
@@ -524,7 +524,7 @@ describe('handling upgrade', () => {
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"upgrade route \\"/bar/baz\\" is conflicted with route [bar] \\"/bar\\""`
+      `"upgrade route "/bar/baz" is conflicted with route [bar] "/bar""`
     );
   });
 
@@ -539,7 +539,7 @@ describe('handling upgrade', () => {
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"multiple default upgrade routes received: \\"undefined\\", \\"undefined\\""`
+      `"multiple default upgrade routes received: "undefined", "undefined""`
     );
   });
 });

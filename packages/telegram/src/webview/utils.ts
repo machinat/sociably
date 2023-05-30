@@ -1,8 +1,8 @@
 import type { ContextDetails } from '@sociably/auth';
-import TelegramChat from '../Chat';
-import TelegramUser from '../User';
-import type { RawUser } from '../types';
-import type { TelegramAuthContext, TelegramAuthData } from './types';
+import TelegramChat from '../Chat.js';
+import TelegramUser from '../User.js';
+import type { RawUser } from '../types.js';
+import type { TelegramAuthContext, TelegramAuthData } from './types.js';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getAuthContextDetails = ({

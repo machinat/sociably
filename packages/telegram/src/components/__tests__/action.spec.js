@@ -53,210 +53,210 @@ test('ForwardMessage match snapshot', async () => {
   await expect(
     renderer.render(<ForwardMessage fromChatId={12345} messageId={6789} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ForwardMessage
-                fromChatId={12345}
-                messageId={6789}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "forwardMessage",
-                "params": Object {
-                  "disable_notification": undefined,
-                  "from_chat_id": 12345,
-                  "message_id": 6789,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <ForwardMessage
+          fromChatId={12345}
+          messageId={6789}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "forwardMessage",
+          "params": {
+            "disable_notification": undefined,
+            "from_chat_id": 12345,
+            "message_id": 6789,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <ForwardMessage fromChatId={54321} messageId={9876} disableNotification />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ForwardMessage
-                disableNotification={true}
-                fromChatId={54321}
-                messageId={9876}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "forwardMessage",
-                "params": Object {
-                  "disable_notification": true,
-                  "from_chat_id": 54321,
-                  "message_id": 9876,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <ForwardMessage
+          disableNotification={true}
+          fromChatId={54321}
+          messageId={9876}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "forwardMessage",
+          "params": {
+            "disable_notification": true,
+            "from_chat_id": 54321,
+            "message_id": 9876,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('ChatAction match snapshot', async () => {
   await expect(renderer.render(<ChatAction action="typing" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ChatAction
-                action="typing"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "sendChatAction",
-                "params": Object {
-                  "action": "typing",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <ChatAction
+          action="typing"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "sendChatAction",
+          "params": {
+            "action": "typing",
+          },
+        },
+      },
+    ]
+  `);
   await expect(renderer.render(<ChatAction action="upload_photo" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <ChatAction
-                action="upload_photo"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "sendChatAction",
-                "params": Object {
-                  "action": "upload_photo",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <ChatAction
+          action="upload_photo"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "sendChatAction",
+          "params": {
+            "action": "upload_photo",
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('KickChatMember match snapshot', async () => {
   await expect(renderer.render(<KickChatMember userId={123456} />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <KickChatMember
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "kickChatMember",
-                "params": Object {
-                  "until_date": undefined,
-                  "user_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <KickChatMember
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "kickChatMember",
+          "params": {
+            "until_date": undefined,
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(<KickChatMember userId={123456} untilDate={160077304} />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <KickChatMember
-                untilDate={160077304}
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "kickChatMember",
-                "params": Object {
-                  "until_date": 160077304,
-                  "user_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <KickChatMember
+          untilDate={160077304}
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "kickChatMember",
+          "params": {
+            "until_date": 160077304,
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <KickChatMember userId={123456} untilDate={new Date(160077304000)} />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <KickChatMember
-                untilDate={1975-01-27T17:55:04.000Z}
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "kickChatMember",
-                "params": Object {
-                  "until_date": 160077304,
-                  "user_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <KickChatMember
+          untilDate={1975-01-27T17:55:04.000Z}
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "kickChatMember",
+          "params": {
+            "until_date": 160077304,
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('UnbanChatMember match snapshot', async () => {
   await expect(renderer.render(<UnbanChatMember userId={123456} />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <UnbanChatMember
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "unbanChatMember",
-                "params": Object {
-                  "user_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <UnbanChatMember
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "unbanChatMember",
+          "params": {
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('RestrictChatMember match snapshot', async () => {
   await expect(
     renderer.render(<RestrictChatMember userId={123456} canSendMessages />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <RestrictChatMember
-                canSendMessages={true}
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "restrictChatMember",
-                "params": Object {
-                  "permisions": Object {
-                    "can_add_web_page_previews": undefined,
-                    "can_change_info": undefined,
-                    "can_invite_users": undefined,
-                    "can_pin_messages": undefined,
-                    "can_send_media_messages": undefined,
-                    "can_send_messages": true,
-                    "can_send_other_messages": undefined,
-                    "can_send_polls": undefined,
-                  },
-                  "until_date": undefined,
-                  "user_id": 123456,
-                },
-              },
+    [
+      {
+        "node": <RestrictChatMember
+          canSendMessages={true}
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "restrictChatMember",
+          "params": {
+            "permisions": {
+              "can_add_web_page_previews": undefined,
+              "can_change_info": undefined,
+              "can_invite_users": undefined,
+              "can_pin_messages": undefined,
+              "can_send_media_messages": undefined,
+              "can_send_messages": true,
+              "can_send_other_messages": undefined,
+              "can_send_polls": undefined,
             },
-          ]
-        `);
+            "until_date": undefined,
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <RestrictChatMember
@@ -269,38 +269,38 @@ test('RestrictChatMember match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <RestrictChatMember
-                canSendMediaMessages={true}
-                canSendMessages={true}
-                canSendOtherMessages={true}
-                canSendPolls={true}
-                untilDate={160077304}
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "restrictChatMember",
-                "params": Object {
-                  "permisions": Object {
-                    "can_add_web_page_previews": undefined,
-                    "can_change_info": undefined,
-                    "can_invite_users": undefined,
-                    "can_pin_messages": undefined,
-                    "can_send_media_messages": true,
-                    "can_send_messages": true,
-                    "can_send_other_messages": true,
-                    "can_send_polls": true,
-                  },
-                  "until_date": 160077304,
-                  "user_id": 123456,
-                },
-              },
+    [
+      {
+        "node": <RestrictChatMember
+          canSendMediaMessages={true}
+          canSendMessages={true}
+          canSendOtherMessages={true}
+          canSendPolls={true}
+          untilDate={160077304}
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "restrictChatMember",
+          "params": {
+            "permisions": {
+              "can_add_web_page_previews": undefined,
+              "can_change_info": undefined,
+              "can_invite_users": undefined,
+              "can_pin_messages": undefined,
+              "can_send_media_messages": true,
+              "can_send_messages": true,
+              "can_send_other_messages": true,
+              "can_send_polls": true,
             },
-          ]
-        `);
+            "until_date": 160077304,
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <RestrictChatMember
@@ -313,69 +313,69 @@ test('RestrictChatMember match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <RestrictChatMember
-                canAddWebPagePreviews={false}
-                canChangeInfo={false}
-                canInviteUsers={false}
-                canPinMessages={false}
-                untilDate={1975-01-27T17:55:04.000Z}
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "restrictChatMember",
-                "params": Object {
-                  "permisions": Object {
-                    "can_add_web_page_previews": false,
-                    "can_change_info": false,
-                    "can_invite_users": false,
-                    "can_pin_messages": false,
-                    "can_send_media_messages": undefined,
-                    "can_send_messages": undefined,
-                    "can_send_other_messages": undefined,
-                    "can_send_polls": undefined,
-                  },
-                  "until_date": 160077304,
-                  "user_id": 123456,
-                },
-              },
+    [
+      {
+        "node": <RestrictChatMember
+          canAddWebPagePreviews={false}
+          canChangeInfo={false}
+          canInviteUsers={false}
+          canPinMessages={false}
+          untilDate={1975-01-27T17:55:04.000Z}
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "restrictChatMember",
+          "params": {
+            "permisions": {
+              "can_add_web_page_previews": false,
+              "can_change_info": false,
+              "can_invite_users": false,
+              "can_pin_messages": false,
+              "can_send_media_messages": undefined,
+              "can_send_messages": undefined,
+              "can_send_other_messages": undefined,
+              "can_send_polls": undefined,
             },
-          ]
-        `);
+            "until_date": 160077304,
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('PromoteChatMember match snapshot', async () => {
   await expect(
     renderer.render(<PromoteChatMember userId={123456} canPostMessages />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PromoteChatMember
-                canPostMessages={true}
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "promoteChatMember",
-                "params": Object {
-                  "can_change_info": undefined,
-                  "can_delete_messages": undefined,
-                  "can_edit_messages": undefined,
-                  "can_invite_users": undefined,
-                  "can_pin_messages": undefined,
-                  "can_post_messages": true,
-                  "can_promote_members": undefined,
-                  "can_restrict_members": undefined,
-                  "user_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <PromoteChatMember
+          canPostMessages={true}
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "promoteChatMember",
+          "params": {
+            "can_change_info": undefined,
+            "can_delete_messages": undefined,
+            "can_edit_messages": undefined,
+            "can_invite_users": undefined,
+            "can_pin_messages": undefined,
+            "can_post_messages": true,
+            "can_promote_members": undefined,
+            "can_restrict_members": undefined,
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <PromoteChatMember
@@ -391,38 +391,38 @@ test('PromoteChatMember match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PromoteChatMember
-                canChangeInfo={true}
-                canDeleteMessages={false}
-                canEditMessages={true}
-                canInviteUsers={true}
-                canPinMessages={true}
-                canPostMessages={false}
-                canPromoteMembers={false}
-                canRestrictMembers={false}
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "promoteChatMember",
-                "params": Object {
-                  "can_change_info": true,
-                  "can_delete_messages": false,
-                  "can_edit_messages": true,
-                  "can_invite_users": true,
-                  "can_pin_messages": true,
-                  "can_post_messages": false,
-                  "can_promote_members": false,
-                  "can_restrict_members": false,
-                  "user_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <PromoteChatMember
+          canChangeInfo={true}
+          canDeleteMessages={false}
+          canEditMessages={true}
+          canInviteUsers={true}
+          canPinMessages={true}
+          canPostMessages={false}
+          canPromoteMembers={false}
+          canRestrictMembers={false}
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "promoteChatMember",
+          "params": {
+            "can_change_info": true,
+            "can_delete_messages": false,
+            "can_edit_messages": true,
+            "can_invite_users": true,
+            "can_pin_messages": true,
+            "can_post_messages": false,
+            "can_promote_members": false,
+            "can_restrict_members": false,
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('SetChatAdministratorCustomTitle match snapshot', async () => {
@@ -431,54 +431,54 @@ test('SetChatAdministratorCustomTitle match snapshot', async () => {
       <SetChatAdministratorCustomTitle userId={123456} customTitle="Big Boss" />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <SetChatAdministratorCustomTitle
-                customTitle="Big Boss"
-                userId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "setChatAdministratorCustomTitle",
-                "params": Object {
-                  "custom_title": "Big Boss",
-                  "user_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <SetChatAdministratorCustomTitle
+          customTitle="Big Boss"
+          userId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "setChatAdministratorCustomTitle",
+          "params": {
+            "custom_title": "Big Boss",
+            "user_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('SetChatPermissions match snapshot', async () => {
   await expect(renderer.render(<SetChatPermissions canSendMessages />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <SetChatPermissions
-                canSendMessages={true}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "setChatPermissions",
-                "params": Object {
-                  "permisions": Object {
-                    "can_add_web_page_previews": undefined,
-                    "can_change_info": undefined,
-                    "can_invite_users": undefined,
-                    "can_pin_messages": undefined,
-                    "can_send_media_messages": undefined,
-                    "can_send_messages": true,
-                    "can_send_other_messages": undefined,
-                    "can_send_polls": undefined,
-                  },
-                },
-              },
+    [
+      {
+        "node": <SetChatPermissions
+          canSendMessages={true}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "setChatPermissions",
+          "params": {
+            "permisions": {
+              "can_add_web_page_previews": undefined,
+              "can_change_info": undefined,
+              "can_invite_users": undefined,
+              "can_pin_messages": undefined,
+              "can_send_media_messages": undefined,
+              "can_send_messages": true,
+              "can_send_other_messages": undefined,
+              "can_send_polls": undefined,
             },
-          ]
-        `);
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <SetChatPermissions
@@ -493,288 +493,282 @@ test('SetChatPermissions match snapshot', async () => {
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <SetChatPermissions
-                canAddWebPagePreviews={false}
-                canChangeInfo={false}
-                canInviteUsers={false}
-                canPinMessages={false}
-                canSendMediaMessages={true}
-                canSendMessages={true}
-                canSendOtherMessages={true}
-                canSendPolls={true}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "setChatPermissions",
-                "params": Object {
-                  "permisions": Object {
-                    "can_add_web_page_previews": false,
-                    "can_change_info": false,
-                    "can_invite_users": false,
-                    "can_pin_messages": false,
-                    "can_send_media_messages": true,
-                    "can_send_messages": true,
-                    "can_send_other_messages": true,
-                    "can_send_polls": true,
-                  },
-                },
-              },
+    [
+      {
+        "node": <SetChatPermissions
+          canAddWebPagePreviews={false}
+          canChangeInfo={false}
+          canInviteUsers={false}
+          canPinMessages={false}
+          canSendMediaMessages={true}
+          canSendMessages={true}
+          canSendOtherMessages={true}
+          canSendPolls={true}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "setChatPermissions",
+          "params": {
+            "permisions": {
+              "can_add_web_page_previews": false,
+              "can_change_info": false,
+              "can_invite_users": false,
+              "can_pin_messages": false,
+              "can_send_media_messages": true,
+              "can_send_messages": true,
+              "can_send_other_messages": true,
+              "can_send_polls": true,
             },
-          ]
-        `);
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('SetChatPhoto match snapshot', async () => {
   await expect(renderer.render(<SetChatPhoto fileData="__DATA__" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <SetChatPhoto
-                fileData="__DATA__"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "setChatPhoto",
-                "params": Object {
-                  "photo": undefined,
-                },
-                "uploadingFiles": Array [
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "photo",
-                    "fileData": "__DATA__",
-                    "fileInfo": undefined,
-                  },
-                ],
-              },
+    [
+      {
+        "node": <SetChatPhoto
+          fileData="__DATA__"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "setChatPhoto",
+          "params": {
+            "photo": undefined,
+          },
+          "uploadingFiles": [
+            {
+              "assetTag": undefined,
+              "fieldName": "photo",
+              "fileData": "__DATA__",
+              "fileInfo": undefined,
             },
-          ]
-        `);
+          ],
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(
       <SetChatPhoto
         fileData="__DATA__"
         fileInfo={{
           filename: 'bar.jpg',
-          filepath: 'baz',
           contentType: 'image/jpeg',
-          knownLength: 7777,
         }}
       />
     )
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <SetChatPhoto
-                fileData="__DATA__"
-                fileInfo={
-                  Object {
-                    "contentType": "image/jpeg",
-                    "filename": "bar.jpg",
-                    "filepath": "baz",
-                    "knownLength": 7777,
-                  }
-                }
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "setChatPhoto",
-                "params": Object {
-                  "photo": undefined,
-                },
-                "uploadingFiles": Array [
-                  Object {
-                    "assetTag": undefined,
-                    "fieldName": "photo",
-                    "fileData": "__DATA__",
-                    "fileInfo": Object {
-                      "contentType": "image/jpeg",
-                      "filename": "bar.jpg",
-                      "filepath": "baz",
-                      "knownLength": 7777,
-                    },
-                  },
-                ],
+    [
+      {
+        "node": <SetChatPhoto
+          fileData="__DATA__"
+          fileInfo={
+            {
+              "contentType": "image/jpeg",
+              "filename": "bar.jpg",
+            }
+          }
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "setChatPhoto",
+          "params": {
+            "photo": undefined,
+          },
+          "uploadingFiles": [
+            {
+              "assetTag": undefined,
+              "fieldName": "photo",
+              "fileData": "__DATA__",
+              "fileInfo": {
+                "contentType": "image/jpeg",
+                "filename": "bar.jpg",
               },
             },
-          ]
-        `);
+          ],
+        },
+      },
+    ]
+  `);
 });
 
 test('DeleteChatPhoto match snapshot', async () => {
   await expect(renderer.render(<DeleteChatPhoto />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <DeleteChatPhoto />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "deleteChatPhoto",
-                "params": Object {},
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <DeleteChatPhoto />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "deleteChatPhoto",
+          "params": {},
+        },
+      },
+    ]
+  `);
 });
 
 test('SetChatTitle match snapshot', async () => {
   await expect(renderer.render(<SetChatTitle title="Foo" />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <SetChatTitle
-                title="Foo"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "setChatTitle",
-                "params": Object {
-                  "title": "Foo",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <SetChatTitle
+          title="Foo"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "setChatTitle",
+          "params": {
+            "title": "Foo",
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('SetChatDescription match snapshot', async () => {
   await expect(renderer.render(<SetChatDescription description="Bar" />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <SetChatDescription
-                description="Bar"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "setChatDescription",
-                "params": Object {
-                  "description": "Bar",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <SetChatDescription
+          description="Bar"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "setChatDescription",
+          "params": {
+            "description": "Bar",
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('PinChatMessage match snapshot', async () => {
   await expect(renderer.render(<PinChatMessage messageId={123456} />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PinChatMessage
-                messageId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "pinChatMessage",
-                "params": Object {
-                  "disable_notification": undefined,
-                  "message_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <PinChatMessage
+          messageId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "pinChatMessage",
+          "params": {
+            "disable_notification": undefined,
+            "message_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
   await expect(
     renderer.render(<PinChatMessage messageId={123456} disableNotification />)
   ).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <PinChatMessage
-                disableNotification={true}
-                messageId={123456}
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "pinChatMessage",
-                "params": Object {
-                  "disable_notification": true,
-                  "message_id": 123456,
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <PinChatMessage
+          disableNotification={true}
+          messageId={123456}
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "pinChatMessage",
+          "params": {
+            "disable_notification": true,
+            "message_id": 123456,
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('UnpinChatMessage match snapshot', async () => {
   await expect(renderer.render(<UnpinChatMessage />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <UnpinChatMessage />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "unpinChatMessage",
-                "params": Object {},
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <UnpinChatMessage />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "unpinChatMessage",
+          "params": {},
+        },
+      },
+    ]
+  `);
 });
 
 test('LeaveChat match snapshot', async () => {
   await expect(renderer.render(<LeaveChat />)).resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <LeaveChat />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "leaveChat",
-                "params": Object {},
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <LeaveChat />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "leaveChat",
+          "params": {},
+        },
+      },
+    ]
+  `);
 });
 
 test('SetChatStickerSet match snapshot', async () => {
   await expect(renderer.render(<SetChatStickerSet stickerSetName="Stitch" />))
     .resolves.toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <SetChatStickerSet
-                stickerSetName="Stitch"
-              />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "setChatStickerSet",
-                "params": Object {
-                  "sticker_set_name": "Stitch",
-                },
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <SetChatStickerSet
+          stickerSetName="Stitch"
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "setChatStickerSet",
+          "params": {
+            "sticker_set_name": "Stitch",
+          },
+        },
+      },
+    ]
+  `);
 });
 
 test('DeleteChatStickerSet match snapshot', async () => {
   await expect(renderer.render(<DeleteChatStickerSet />)).resolves
     .toMatchInlineSnapshot(`
-          Array [
-            Object {
-              "node": <DeleteChatStickerSet />,
-              "path": "$",
-              "type": "unit",
-              "value": Object {
-                "method": "deleteChatStickerSet",
-                "params": Object {},
-              },
-            },
-          ]
-        `);
+    [
+      {
+        "node": <DeleteChatStickerSet />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "method": "deleteChatStickerSet",
+          "params": {},
+        },
+      },
+    ]
+  `);
 });

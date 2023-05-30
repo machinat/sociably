@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderPartElement } from './utils';
-import { LogoutButton } from '../LogoutButton';
+import { renderPartElement } from './utils.js';
+import { LogoutButton } from '../LogoutButton.js';
 
 it('is valid Component', () => {
   expect(typeof LogoutButton).toBe('function');
@@ -12,15 +12,15 @@ it('is valid Component', () => {
 it('match snapshot', async () => {
   await expect(renderPartElement(<LogoutButton />)).resolves
     .toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <LogoutButton />,
-                "path": "$#container",
-                "type": "part",
-                "value": Object {
-                  "type": "account_unlink",
-                },
-              },
-            ]
-          `);
+    [
+      {
+        "node": <LogoutButton />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "type": "account_unlink",
+        },
+      },
+    ]
+  `);
 });

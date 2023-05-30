@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
-import moxy from '@moxyjs/moxy';
-import { createChatJobs, createUploadingMediaJobs } from '../job';
-import WhatsAppAgent from '../Agent';
-import WhatsAppChat from '../Chat';
+import { moxy } from '@moxyjs/moxy';
+import { createChatJobs, createUploadingMediaJobs } from '../job.js';
+import WhatsAppAgent from '../Agent.js';
+import WhatsAppChat from '../Chat.js';
 
 const agent = new WhatsAppAgent('1234567890');
 
@@ -353,7 +353,7 @@ describe('createUploadingMediaJobs', () => {
         { type: 'text', value: 'FOO', node: 'FOO', path: '$:0' },
       ])
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\\"FOO\\" is not a media with file data"`
+      `""FOO" is not a media with file data"`
     );
 
     expect(() =>

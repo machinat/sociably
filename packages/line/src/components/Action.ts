@@ -1,6 +1,6 @@
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
-import makeLineComponent from '../utils/makeLineComponent';
-import type { LineComponent } from '../types';
+import makeLineComponent from '../utils/makeLineComponent.js';
+import type { LineComponent } from '../types.js';
 
 /**
  * @category Props

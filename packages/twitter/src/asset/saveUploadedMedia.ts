@@ -4,8 +4,8 @@ import type {
   TwitterDispatchMiddleware,
   TwitterJob,
   TwitterApiResult,
-} from '../types';
-import AssetsManagerP from './AssetsManager';
+} from '../types.js';
+import AssetsManagerP from './AssetsManager.js';
 
 const updateAssetsFromSuccessfulJobs = async (
   manager: AssetsManagerP,

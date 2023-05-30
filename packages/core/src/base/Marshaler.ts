@@ -1,5 +1,5 @@
-import { createEJSON } from '@machinat/ejson';
-import { serviceInterface, serviceProviderClass } from '../service';
+import EJSON from '@machinat/ejson';
+import { serviceInterface, serviceProviderClass } from '../service/index.js';
 
 export interface MarshallableInstance<V> {
   typeName(): string;
@@ -27,7 +27,7 @@ export class BaseMarshaler {
   private _ejson: any;
 
   constructor(types: AnyMarshalType[]) {
-    this._ejson = createEJSON();
+    this._ejson = EJSON.createEJSON();
     types.forEach(({ typeName, fromJSONValue }) => {
       this._ejson.addType(typeName, fromJSONValue);
     });

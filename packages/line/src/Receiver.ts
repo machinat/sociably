@@ -4,19 +4,19 @@ import { serviceProviderClass } from '@sociably/core/service';
 import type { PopEventWrapper } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
 
-import eventFactory from './event/factory';
-import BotP from './Bot';
-import { LINE } from './constant';
+import eventFactory from './event/factory.js';
+import BotP from './Bot.js';
+import { LINE } from './constant.js';
 import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
+} from './interface.js';
 import type {
   LineWebhookRequestBody,
   LineEventContext,
   LineEvent,
-} from './types';
+} from './types.js';
 
 type LineReceiverOptions = {
   bot: BotP;

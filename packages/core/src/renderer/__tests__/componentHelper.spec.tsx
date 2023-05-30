@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import { SOCIABLY_NATIVE_TYPE } from '../../symbol';
+import { SOCIABLY_NATIVE_TYPE } from '../../symbol.js';
 import {
   makeNativeComponent,
   makeTextSegment,
@@ -7,7 +7,7 @@ import {
   makePartSegment,
   makeUnitSegment,
   makePauseSegment,
-} from '../componentHelper';
+} from '../componentHelper.js';
 
 describe('asNativeConponent(platform)(componentFn)', () => {
   it('define "$$native" and "$$platform" metadata property', () => {

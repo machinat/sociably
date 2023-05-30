@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { serviceInterface } from '@sociably/core/service';
-import type { AnyScriptLibrary } from './types';
+import type { AnyScriptLibrary } from './types.js';
 
 /**
  * @category Interface

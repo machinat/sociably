@@ -1,57 +1,57 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`throw when invalid props received 1`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 1`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 2`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 2`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 3`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 3`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 4`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 4`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 5`] = `"\\"fileType\\" prop is required when using \\"fileData\\" source"`;
+exports[`throw when invalid props received 5`] = `""fileType" prop is required when using "fileData" source"`;
 
-exports[`throw when invalid props received 6`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 6`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 7`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 7`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 8`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 8`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 9`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 9`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 10`] = `"\\"fileType\\" prop is required when using \\"fileData\\" source"`;
+exports[`throw when invalid props received 10`] = `""fileType" prop is required when using "fileData" source"`;
 
-exports[`throw when invalid props received 11`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 11`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 12`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 12`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 13`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 13`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 14`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 14`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 15`] = `"\\"fileType\\" prop is required when using \\"fileData\\" source"`;
+exports[`throw when invalid props received 15`] = `""fileType" prop is required when using "fileData" source"`;
 
-exports[`throw when invalid props received 16`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 16`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 17`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 17`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 18`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 18`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 19`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 19`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 20`] = `"\\"fileType\\" prop is required when using \\"fileData\\" source"`;
+exports[`throw when invalid props received 20`] = `""fileType" prop is required when using "fileData" source"`;
 
-exports[`throw when invalid props received 21`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 21`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 22`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 22`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 23`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 23`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 24`] = `"there should be exactly one of \\"url\\", \\"mediaId\\" or \\"fileData\\" prop"`;
+exports[`throw when invalid props received 24`] = `"there should be exactly one of "url", "mediaId" or "fileData" prop"`;
 
-exports[`throw when invalid props received 25`] = `"\\"fileType\\" prop is required when using \\"fileData\\" source"`;
+exports[`throw when invalid props received 25`] = `""fileType" prop is required when using "fileData" source"`;
 
-exports[`throw when invalid props received 26`] = `"\\"caption\\" prop should contain only textual content"`;
+exports[`throw when invalid props received 26`] = `""caption" prop should contain only textual content"`;
 
-exports[`throw when invalid props received 27`] = `"\\"caption\\" prop should contain only textual content"`;
+exports[`throw when invalid props received 27`] = `""caption" prop should contain only textual content"`;
 
-exports[`throw when invalid props received 28`] = `"\\"caption\\" prop should contain only textual content"`;
+exports[`throw when invalid props received 28`] = `""caption" prop should contain only textual content"`;

@@ -1,15 +1,15 @@
 import Sociably from '@sociably/core';
 import BaseStateControllerI from '@sociably/core/base/StateController';
 import { tmpNameSync } from 'tmp';
-import FileState from '../module';
-import { ControllerP as FileStateController } from '../controller';
+import FileState from '../module.js';
+import { ControllerP as FileStateController } from '../controller.js';
 
 const storageFilePath = tmpNameSync();
 
 test('export interfaces', () => {
   expect(FileState.Controller).toBe(FileStateController);
   expect(FileState.Configs).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "FileStateConfigs",
       "$$polymorphic": false,
@@ -19,7 +19,7 @@ test('export interfaces', () => {
 
   const { $$multi, $$name, $$typeof } = FileState.Serializer;
   expect({ $$multi, $$name, $$typeof }).toMatchInlineSnapshot(`
-    Object {
+    {
       "$$multi": false,
       "$$name": "FileStateSerializer",
       "$$typeof": Symbol(interface.service.sociably),
@@ -49,8 +49,8 @@ test('provisions', async () => {
   expect(defaultSerializer.stringify({ foo: { bar: 'baz' } }))
     .toMatchInlineSnapshot(`
     "{
-      \\"foo\\": {
-        \\"bar\\": \\"baz\\"
+      "foo": {
+        "bar": "baz"
       }
     }"
   `);

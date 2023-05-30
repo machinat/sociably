@@ -1,9 +1,9 @@
 import type { SociablyUser } from '@sociably/core';
 import { AnyMarshalType, BaseMarshaler } from '@sociably/core/base/Marshaler';
-import WebSocketConnection from '../Connection';
-import createEvent from '../utils/createEvent';
-import Connector from './Connector';
-import ClientEmitter from './ClientEmitter';
+import WebSocketConnection from '../Connection.js';
+import createEvent from '../utils/createEvent.js';
+import Connector from './Connector.js';
+import ClientEmitter from './ClientEmitter.js';
 import type {
   ClientLoginFn,
   EventInput,
@@ -11,7 +11,7 @@ import type {
   EventValue,
   ConnectEventValue,
   DisconnectEventValue,
-} from '../types';
+} from '../types.js';
 
 type ClientOptions<User extends null | SociablyUser, Credential> = {
   url?: string;

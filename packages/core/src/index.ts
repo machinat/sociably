@@ -4,9 +4,9 @@ import {
   SOCIABLY_PROVIDER_TYPE,
   SOCIABLY_THUNK_TYPE,
   SOCIABLY_RAW_TYPE,
-} from './symbol';
-import createSociablyElement from './createElement';
-import App from './app';
+} from './symbol.js';
+import createSociablyElement from './createElement.js';
+import App from './app.js';
 import type {
   AppConfig,
   SociablyElement,
@@ -18,21 +18,21 @@ import type {
   ProviderProps,
   ThunkProps,
   RawProps,
-} from './types';
+} from './types.js';
 
 export {
   serviceContainer,
   serviceInterface,
   serviceProviderClass,
   serviceProviderFactory,
-} from './service';
-export { default as BaseBot } from './base/Bot';
-export { default as BaseProfiler } from './base/Profiler';
-export { default as StateController } from './base/StateController';
-export { default as IntentRecognizer } from './base/IntentRecognizer';
-export { default as Marshaler } from './base/Marshaler';
-export { default as RenderingTarget } from './base/RenderingTarget';
-export * from './types';
+} from './service/index.js';
+export { default as BaseBot } from './base/Bot.js';
+export { default as BaseProfiler } from './base/Profiler.js';
+export { default as StateController } from './base/StateController.js';
+export { default as IntentRecognizer } from './base/IntentRecognizer.js';
+export { default as Marshaler } from './base/Marshaler.js';
+export { default as RenderingTarget } from './base/RenderingTarget.js';
+export * from './types.js';
 
 /**
  * @category Root

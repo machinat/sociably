@@ -1,5 +1,5 @@
-import WhatsAppUser from '../User';
-import UserProfile from '../UserProfile';
+import WhatsAppUser from '../User.js';
+import UserProfile from '../UserProfile.js';
 
 test('with profile', () => {
   const user = new WhatsAppUser('1234567890', { name: 'Jojo' });
@@ -12,8 +12,8 @@ test('with profile', () => {
   );
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
       ],
       "id": "1234567890",
@@ -31,8 +31,8 @@ test('with no profile', () => {
   expect(user.profile).toBe(null);
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    Object {
-      "$$typeof": Array [
+    {
+      "$$typeof": [
         "user",
       ],
       "id": "1234567890",
@@ -46,7 +46,7 @@ test('marshallable', () => {
 
   expect(user.typeName()).toBe('WaUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
-    Object {
+    {
       "id": "1234567890",
     }
   `);

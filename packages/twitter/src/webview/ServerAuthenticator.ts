@@ -5,18 +5,18 @@ import {
   CheckDataResult,
 } from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
-import TwitterApiError from '../Error';
-import BotP from '../Bot';
-import ProfilerP from '../Profiler';
-import { TWITTER } from '../constant';
-import TwitterChat from '../Chat';
-import TwitterUser from '../User';
-import { getAuthContextDetails } from './utils';
+import TwitterApiError from '../Error.js';
+import BotP from '../Bot.js';
+import ProfilerP from '../Profiler.js';
+import { TWITTER } from '../constant.js';
+import TwitterChat from '../Chat.js';
+import TwitterUser from '../User.js';
+import { getAuthContextDetails } from './utils.js';
 import type {
   TwitterAuthContext,
   TwitterAuthData,
   TwitterAuthCredential,
-} from './types';
+} from './types.js';
 
 /**
  * @category Provider

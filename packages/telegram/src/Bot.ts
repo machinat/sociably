@@ -10,18 +10,18 @@ import Queue from '@sociably/core/queue';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
 import { serviceProviderClass } from '@sociably/core/service';
-import { createChatJob, createBotScopeJobs } from './job';
-import generalElementDelegate from './components/general';
-import TelegramWorker from './Worker';
-import TelegramChat from './Chat';
-import TelegramUser from './User';
+import { createChatJob, createBotScopeJobs } from './job.js';
+import generalElementDelegate from './components/general.js';
+import TelegramWorker from './Worker.js';
+import TelegramChat from './Chat.js';
+import TelegramUser from './User.js';
 import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import { TELEGRAM } from './constant';
-import TelegramApiError from './Error';
+} from './interface.js';
+import { TELEGRAM } from './constant.js';
+import TelegramApiError from './Error.js';
 import type {
   TelegramSegmentValue,
   TelegramJob,
@@ -31,7 +31,7 @@ import type {
   TelegramDispatchResponse,
   UploadingFile,
   TelegramComponent,
-} from './types';
+} from './types.js';
 
 type TelegramBotOptions = {
   agentSettingsAccessor: AgentSettingsAccessorI;
@@ -170,7 +170,7 @@ export class TelegramBot
 
     const contentLength = fetchResponse.headers.get('content-length');
     return {
-      content: fetchResponse.body,
+      content: fetchResponse.body as NodeJS.ReadableStream,
       contentType: fetchResponse.headers.get('content-type') || undefined,
       contentLength: contentLength ? Number(contentLength) : undefined,
     };

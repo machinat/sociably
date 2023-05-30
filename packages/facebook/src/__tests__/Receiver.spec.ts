@@ -1,10 +1,10 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
-import moxy, { Mock } from '@moxyjs/moxy';
-import FacebookChat from '../Chat';
-import FacebookUser from '../User';
-import { FacebookReceiver } from '../Receiver';
-import type { FacebookBot } from '../Bot';
+import { moxy, Mock } from '@moxyjs/moxy';
+import FacebookChat from '../Chat.js';
+import FacebookUser from '../User.js';
+import { FacebookReceiver } from '../Receiver.js';
+import type { FacebookBot } from '../Bot.js';
 
 const bot = moxy<FacebookBot>({
   render: () => ({ jobs: [], results: [], tasks: [] }),
@@ -250,12 +250,12 @@ describe('handling POST', () => {
     expect(popEventMock).toHaveBeenCalledTimes(1);
     const { reply, event } = popEventMock.calls[0].args[0];
     await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
-            Object {
-              "jobs": Array [],
-              "results": Array [],
-              "tasks": Array [],
-            }
-          `);
+      {
+        "jobs": [],
+        "results": [],
+        "tasks": [],
+      }
+    `);
 
     expect(bot.render).toHaveBeenCalledTimes(1);
     expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');

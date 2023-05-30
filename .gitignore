@@ -2,7 +2,6 @@
 lib
 bin
 *.tsbuildinfo
-polyfill-exports.js
 website/static/api
 website/.docusaurus
 website/build

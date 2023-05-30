@@ -1,10 +1,10 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
-import type TwitterUser from './User';
-import TwitterUserProfile from './UserProfile';
-import BotP from './Bot';
-import { TWITTER } from './constant';
-import type { RawUser, RawSettings } from './types';
+import type TwitterUser from './User.js';
+import TwitterUserProfile from './UserProfile.js';
+import BotP from './Bot.js';
+import { TWITTER } from './constant.js';
+import type { RawUser, RawSettings } from './types.js';
 
 type GetUserProfileOptions = {
   withEntities?: boolean;

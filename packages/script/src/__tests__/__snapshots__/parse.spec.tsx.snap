@@ -1,20 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`parse <IF/> parse nested <IF/> 1`] = `
-Array [
-  Object {
-    "branches": Array [
-      Object {
-        "body": Array [
-          Object {
+[
+  {
+    "branches": [
+      {
+        "body": [
+          {
             "getContent": [Function],
             "type": "content",
           },
-          Object {
-            "branches": Array [
-              Object {
-                "body": Array [
-                  Object {
+          {
+            "branches": [
+              {
+                "body": [
+                  {
                     "getContent": [Function],
                     "type": "content",
                   },
@@ -25,33 +25,33 @@ Array [
             "fallbackBody": null,
             "type": "conditions",
           },
-          Object {
+          {
             "getContent": [Function],
             "type": "content",
           },
         ],
         "condition": [Function],
       },
-      Object {
-        "body": Array [
-          Object {
+      {
+        "body": [
+          {
             "getContent": [Function],
             "type": "content",
           },
-          Object {
-            "branches": Array [
-              Object {
-                "body": Array [
-                  Object {
+          {
+            "branches": [
+              {
+                "body": [
+                  {
                     "getContent": [Function],
                     "type": "content",
                   },
                 ],
                 "condition": [Function],
               },
-              Object {
-                "body": Array [
-                  Object {
+              {
+                "body": [
+                  {
                     "getContent": [Function],
                     "type": "content",
                   },
@@ -62,7 +62,7 @@ Array [
             "fallbackBody": null,
             "type": "conditions",
           },
-          Object {
+          {
             "getContent": [Function],
             "type": "content",
           },
@@ -70,16 +70,16 @@ Array [
         "condition": [Function],
       },
     ],
-    "fallbackBody": Array [
-      Object {
+    "fallbackBody": [
+      {
         "getContent": [Function],
         "type": "content",
       },
-      Object {
-        "branches": Array [
-          Object {
-            "body": Array [
-              Object {
+      {
+        "branches": [
+          {
+            "body": [
+              {
                 "getContent": [Function],
                 "type": "content",
               },
@@ -87,15 +87,15 @@ Array [
             "condition": [Function],
           },
         ],
-        "fallbackBody": Array [
-          Object {
+        "fallbackBody": [
+          {
             "getContent": [Function],
             "type": "content",
           },
         ],
         "type": "conditions",
       },
-      Object {
+      {
         "getContent": [Function],
         "type": "content",
       },
@@ -106,30 +106,30 @@ Array [
 `;
 
 exports[`parse whole script 1`] = `
-Array [
-  Object {
+[
+  {
     "key": "start",
     "type": "label",
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
-    "branches": Array [
-      Object {
-        "body": Array [
-          Object {
+  {
+    "branches": [
+      {
+        "body": [
+          {
             "key": "1st",
             "type": "label",
           },
-          Object {
-            "body": Array [
-              Object {
+          {
+            "body": [
+              {
                 "getContent": [Function],
                 "type": "content",
               },
-              Object {
+              {
                 "key": "ask_1",
                 "setVars": [Function],
                 "type": "prompt",
@@ -141,21 +141,21 @@ Array [
         ],
         "condition": [Function],
       },
-      Object {
-        "body": Array [
-          Object {
+      {
+        "body": [
+          {
             "getContent": [Function],
             "type": "content",
           },
-          Object {
-            "branches": Array [
-              Object {
-                "body": Array [
-                  Object {
+          {
+            "branches": [
+              {
+                "body": [
+                  {
                     "getContent": [Function],
                     "type": "content",
                   },
-                  Object {
+                  {
                     "key": "ask_2",
                     "setVars": [Function],
                     "type": "prompt",
@@ -164,8 +164,8 @@ Array [
                 "condition": [Function],
               },
             ],
-            "fallbackBody": Array [
-              Object {
+            "fallbackBody": [
+              {
                 "getContent": [Function],
                 "type": "content",
               },
@@ -176,23 +176,23 @@ Array [
         "condition": [Function],
       },
     ],
-    "fallbackBody": Array [
-      Object {
+    "fallbackBody": [
+      {
         "getContent": [Function],
         "type": "content",
       },
-      Object {
+      {
         "goto": "bar",
         "key": "call_1",
-        "script": Object {
+        "script": {
           "$$typeof": Symbol(lib.script.sociably),
           "Start": [Function],
-          "commands": Array [
-            Object {
+          "commands": [
+            {
               "getContent": [Function],
               "type": "content",
             },
-            Object {
+            {
               "key": "ask",
               "setVars": [Function],
               "type": "prompt",
@@ -213,51 +213,51 @@ Array [
     ],
     "type": "conditions",
   },
-  Object {
+  {
     "setVars": [Function],
     "type": "effect",
     "yieldValue": undefined,
   },
-  Object {
+  {
     "key": "2nd",
     "type": "label",
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
+  {
     "setVars": undefined,
     "type": "effect",
     "yieldValue": [Function],
   },
-  Object {
+  {
     "key": "3rd",
     "type": "label",
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
-    "body": Array [
-      Object {
+  {
+    "body": [
+      {
         "getContent": [Function],
         "type": "content",
       },
-      Object {
-        "branches": Array [
-          Object {
-            "body": Array [
-              Object {
+      {
+        "branches": [
+          {
+            "body": [
+              {
                 "key": "4th",
                 "type": "label",
               },
-              Object {
+              {
                 "getContent": [Function],
                 "type": "content",
               },
-              Object {
+              {
                 "key": "ask_3",
                 "setVars": [Function],
                 "type": "prompt",
@@ -266,8 +266,8 @@ Array [
             "condition": [Function],
           },
         ],
-        "fallbackBody": Array [
-          Object {
+        "fallbackBody": [
+          {
             "getValue": [Function],
             "type": "return",
           },
@@ -278,22 +278,22 @@ Array [
     "condition": [Function],
     "type": "while",
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },
-  Object {
+  {
     "goto": "foo",
     "key": "call_2",
-    "script": Object {
+    "script": {
       "$$typeof": Symbol(lib.script.sociably),
       "Start": [Function],
-      "commands": Array [
-        Object {
+      "commands": [
+        {
           "getContent": [Function],
           "type": "content",
         },
-        Object {
+        {
           "key": "ask",
           "setVars": [Function],
           "type": "prompt",
@@ -311,21 +311,21 @@ Array [
     "type": "call",
     "withParams": [Function],
   },
-  Object {
+  {
     "key": "end",
     "type": "label",
   },
-  Object {
+  {
     "key": "ask_4",
     "setVars": [Function],
     "type": "prompt",
   },
-  Object {
+  {
     "setVars": [Function],
     "type": "effect",
     "yieldValue": [Function],
   },
-  Object {
+  {
     "getContent": [Function],
     "type": "content",
   },

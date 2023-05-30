@@ -1,7 +1,7 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
-import Stream from '../stream';
-import { STREAMING_KEY_I } from '../interface';
+import Stream from '../stream.js';
+import { STREAMING_KEY_I } from '../interface.js';
 
 describe('#subscribe()', () => {
   it('emit event', () => {

@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
 import thenifiedly from 'thenifiedly';
 import type WsSocket from 'ws';
-import SocketError from './error';
-import type { UpgradeRequestInfo, EventInput } from './types';
+import SocketError from './error.js';
+import type { UpgradeRequestInfo, EventInput } from './types.js';
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 

@@ -1,11 +1,11 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
-import TwitterChat from '../../Chat';
-import { Photo } from '../Media';
-import { UrlButton } from '../UrlButton';
-import { QuickReply } from '../QuickReply';
-import { DirectMessage } from '../DirectMessage';
+import TwitterChat from '../../Chat.js';
+import { Photo } from '../Media.js';
+import { UrlButton } from '../UrlButton.js';
+import { QuickReply } from '../QuickReply.js';
+import { DirectMessage } from '../DirectMessage.js';
 
 const renderer = new Renderer('twitter', async (node, path) => [
   { type: 'text', path, node, value: node.type },
@@ -24,16 +24,16 @@ test('rendering with plain text', async () => {
   let { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
               "attachment": undefined,
               "text": "Hello World",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "67890",
             },
           },
@@ -52,17 +52,17 @@ test('rendering with plain text', async () => {
   ({ request, accomplishRequest } = (segments as any)[0].value);
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
+      "params": {
+        "event": {
+          "message_create": {
             "custom_profile_id": "11111",
-            "message_data": Object {
+            "message_data": {
               "attachment": undefined,
               "text": "foo",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "67890",
             },
           },
@@ -83,21 +83,21 @@ test('rendering with media', async () => {
   expect(
     accomplishRequest(new TwitterChat('12345', '67890'), request, ['11111'])
   ).toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "media": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
+              "attachment": {
+                "media": {
                   "id": "11111",
                 },
                 "type": "media",
               },
               "text": undefined,
             },
-            "target": Object {
+            "target": {
               "recipient_id": "67890",
             },
           },
@@ -127,25 +127,25 @@ test('rendering with buttons', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
               "attachment": undefined,
-              "ctas": Array [
-                Object {
+              "ctas": [
+                {
                   "label": "foo",
                   "type": "web_url",
                   "url": "http://sociably.io/foo",
                 },
-                Object {
+                {
                   "label": "bar",
                   "type": "web_url",
                   "url": "http://sociably.io/bar",
                 },
-                Object {
+                {
                   "label": "baz",
                   "type": "web_url",
                   "url": "http://sociably.io/baz",
@@ -153,7 +153,7 @@ test('rendering with buttons', async () => {
               ],
               "text": "Guess one",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "67890",
             },
           },
@@ -183,26 +183,26 @@ test('rendering with quick replies', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
               "attachment": undefined,
-              "quick_reply": Object {
-                "options": Array [
-                  Object {
+              "quick_reply": {
+                "options": [
+                  {
                     "description": "FOOOOOOO",
                     "label": "foo",
                     "metadata": "FOO",
                   },
-                  Object {
+                  {
                     "description": "BAAAAAAR",
                     "label": "bar",
                     "metadata": "BAR",
                   },
-                  Object {
+                  {
                     "description": "BAAAAAAZ",
                     "label": "baz",
                     "metadata": "BAZ",
@@ -212,7 +212,7 @@ test('rendering with quick replies', async () => {
               },
               "text": "Guess one",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "67890",
             },
           },
@@ -232,16 +232,16 @@ test('rendering with placeId', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "location": Object {
-                  "shared_place": Object {
-                    "place": Object {
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
+              "attachment": {
+                "location": {
+                  "shared_place": {
+                    "place": {
                       "id": "12345",
                     },
                   },
@@ -251,7 +251,7 @@ test('rendering with placeId', async () => {
               },
               "text": "Hello there",
             },
-            "target": Object {
+            "target": {
               "recipient_id": "67890",
             },
           },
@@ -271,17 +271,17 @@ test('rendering with coordinates', async () => {
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TwitterChat('12345', '67890'), request, null))
     .toMatchInlineSnapshot(`
-    Object {
+    {
       "method": "POST",
-      "params": Object {
-        "event": Object {
-          "message_create": Object {
-            "message_data": Object {
-              "attachment": Object {
-                "location": Object {
-                  "shared_coordinate": Object {
-                    "coordinates": Object {
-                      "coordinates": Array [
+      "params": {
+        "event": {
+          "message_create": {
+            "message_data": {
+              "attachment": {
+                "location": {
+                  "shared_coordinate": {
+                    "coordinates": {
+                      "coordinates": [
                         121.6,
                         25.1,
                       ],
@@ -294,7 +294,7 @@ test('rendering with coordinates', async () => {
               },
               "text": undefined,
             },
-            "target": Object {
+            "target": {
               "recipient_id": "67890",
             },
           },
@@ -323,12 +323,12 @@ it('throw if "media", "placeId" and "coordinates" are duplicated', async () => {
       />
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be exactly one of \\"media\\", \\"placeId\\" or \\"coordinates\\" prop"`
+    `"there should be exactly one of "media", "placeId" or "coordinates" prop"`
   );
   await expect(
     render(<DirectMessage placeId="12345" media={<Photo mediaId="11111" />} />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be exactly one of \\"media\\", \\"placeId\\" or \\"coordinates\\" prop"`
+    `"there should be exactly one of "media", "placeId" or "coordinates" prop"`
   );
 });
 
@@ -357,12 +357,12 @@ it('throw if invalid media received', async () => {
   await expect(
     render(<DirectMessage media="foo" />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"\\"media\\" prop should contain only 1 \\"Photo\\", \\"Video\\" or \\"AnimatedGif\\""`
+    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`
   );
   await expect(
     render(<DirectMessage media={<Sociably.Pause />} />)
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"\\"media\\" prop should contain only 1 \\"Photo\\", \\"Video\\" or \\"AnimatedGif\\""`
+    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`
   );
 });
 
@@ -379,6 +379,6 @@ it('throw if more than 1 media', async () => {
       />
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"\\"media\\" prop should contain only 1 \\"Photo\\", \\"Video\\" or \\"AnimatedGif\\""`
+    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`
   );
 });

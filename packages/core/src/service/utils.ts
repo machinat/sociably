@@ -3,17 +3,17 @@ import {
   SOCIABLY_SERVICE_CONTAINER,
   SOCIABLY_SERVICE_PROVIDER,
   SOCIABLY_SERVICE_INTERFACE,
-} from '../symbol';
-import ServiceScope from './scope';
-import ServiceMaker from './maker';
-import ProvisionMap from './provisionMap';
+} from '../symbol.js';
+import ServiceScope from './scope.js';
+import ServiceMaker from './maker.js';
+import ProvisionMap from './provisionMap.js';
 import type {
   Interfaceable,
   ServiceRequirement,
   ServiceContainer,
   ServiceProvider,
   MaybeContainer,
-} from './types';
+} from './types.js';
 
 export const isServiceContainer = <T>(
   target: MaybeContainer<T>

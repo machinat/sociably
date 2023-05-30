@@ -13,13 +13,13 @@ import WebSocket, {
   ConnectEventValue,
   DisconnectEventValue,
 } from '@sociably/websocket';
-import { WEBVIEW } from './constant';
-import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
-import { BotP } from './Bot';
-import WebviewConnection from './Connection';
-import createEvent from './utils/createEvent';
-import { createThreadTopicKey, createUserTopicKey } from './utils/topicKey';
-import type { WebviewEventContext } from './types';
+import { WEBVIEW } from './constant.js';
+import { WebviewSocketServer, PlatformUtilitiesI } from './interface.js';
+import { BotP } from './Bot.js';
+import WebviewConnection from './Connection.js';
+import createEvent from './utils/createEvent.js';
+import { createThreadTopicKey, createUserTopicKey } from './utils/topicKey.js';
+import type { WebviewEventContext } from './types.js';
 
 /**
  * @category Provider

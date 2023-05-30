@@ -1,6 +1,6 @@
-import type { SociablyNode, SociablyRenderable } from '../types';
-import type { NodeReducer } from './types';
-import traverse from './traverse';
+import type { SociablyNode, SociablyRenderable } from '../types.js';
+import type { NodeReducer } from './types.js';
+import traverse from './traverse.js';
 
 export type ReduceTraverseContext<Reduced, Payload> = {
   reduced: Reduced;

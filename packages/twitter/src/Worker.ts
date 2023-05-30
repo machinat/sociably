@@ -6,16 +6,16 @@ import _BigIntJSON from 'json-bigint';
 import { nanoid } from 'nanoid';
 import type { SociablyWorker } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
-import TwitterUser from './User';
-import TwitterApiError from './Error';
-import { AgentSettingsAccessorI } from './interface';
+import TwitterUser from './User.js';
+import TwitterApiError from './Error.js';
+import { AgentSettingsAccessorI } from './interface.js';
 import type {
   TwitterThread,
   TwitterJob,
   TwitterApiResult,
   MediaUploadResult,
   MediaSource,
-} from './types';
+} from './types.js';
 
 type TwitterJobQueue = Queue<TwitterJob, TwitterApiResult>;
 
@@ -136,7 +136,6 @@ export default class TwitterWorker
           const { params, fileData } = source;
           return this.uploadMediaFile(agent, fileData, params, {
             contentType: params.media_type as string | undefined,
-            knownLength: params.total_bytes as number | undefined,
           });
         }
         if (source.type === 'url') {
@@ -197,12 +196,9 @@ export default class TwitterWorker
 
     const uploadResult = await this.uploadMediaFile(
       agent,
-      downloadRes.body,
+      downloadRes.body as NodeJS.ReadableStream,
       updatedParams,
-      {
-        contentType: contentType || undefined,
-        knownLength: contentLength ? Number(contentLength) : undefined,
-      }
+      { contentType: contentType || undefined }
     );
     return uploadResult;
   }
@@ -211,7 +207,10 @@ export default class TwitterWorker
     agent: TwitterUser,
     fileData: Buffer | NodeJS.ReadableStream,
     params: Record<string, undefined | string | number>,
-    contentOptions: FormData.AppendOptions
+    fileMeta?: {
+      filename?: string;
+      contentType?: string;
+    }
   ): Promise<MediaUploadResult> {
     const initForm = new FormData();
     initForm.append('command', 'INIT');
@@ -226,7 +225,7 @@ export default class TwitterWorker
     const appendForm = new FormData();
     appendForm.append('command', 'APPEND');
     appendForm.append('media_id', mediaId);
-    appendForm.append('media', fileData, contentOptions);
+    appendForm.append('media', fileData, fileMeta);
     appendForm.append('segment_index', 0);
 
     await this._requestUpload(agent, appendForm);

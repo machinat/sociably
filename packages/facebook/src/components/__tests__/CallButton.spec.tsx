@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { renderPartElement } from './utils';
-import { CallButton } from '../CallButton';
+import { renderPartElement } from './utils.js';
+import { CallButton } from '../CallButton.js';
 
 it('is valid Component', () => {
   expect(typeof CallButton).toBe('function');
@@ -15,20 +15,20 @@ it('match snapshot', async () => {
       <CallButton title="call me maybe" number="+15105551234" />
     )
   ).resolves.toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "node": <CallButton
-                  number="+15105551234"
-                  title="call me maybe"
-                />,
-                "path": "$#container",
-                "type": "part",
-                "value": Object {
-                  "number": "+15105551234",
-                  "title": "call me maybe",
-                  "type": "phone_number",
-                },
-              },
-            ]
-          `);
+    [
+      {
+        "node": <CallButton
+          number="+15105551234"
+          title="call me maybe"
+        />,
+        "path": "$#container",
+        "type": "part",
+        "value": {
+          "number": "+15105551234",
+          "title": "call me maybe",
+          "type": "phone_number",
+        },
+      },
+    ]
+  `);
 });

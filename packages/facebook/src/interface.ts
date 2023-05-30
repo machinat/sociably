@@ -1,11 +1,11 @@
 import { AgentSettingsAccessor } from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
-import type FacebookPage from './Page';
+import type FacebookPage from './Page.js';
 import type {
   FacebookPlatformUtilities,
   FacebookConfigs,
   FacebookPageSettings,
-} from './types';
+} from './types.js';
 
 /**
  * @category Interface

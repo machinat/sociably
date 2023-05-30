@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { parse as parseUrl, URL } from 'url';
-import { parse as parseAgent } from 'bowser';
+import Bowser from 'bowser';
 import { getClientIp } from 'request-ip';
 import Sociably, {
   serviceProviderClass,
@@ -8,10 +8,10 @@ import Sociably, {
   StateController,
 } from '@sociably/core';
 import type { RoutingInfo } from '@sociably/http';
-import HttpOperator from '../HttpOperator';
-import { respondApiError, parseJsonBody } from '../utils';
-import { ConfigsI } from '../interface';
-import buildLoginPage from './buildLoginPage';
+import HttpOperator from '../HttpOperator.js';
+import { respondApiError, parseJsonBody } from '../utils.js';
+import { ConfigsI } from '../interface.js';
+import buildLoginPage from './buildLoginPage.js';
 import {
   BasicAuthLoginState,
   BasicAuthVerifyState,
@@ -21,7 +21,9 @@ import {
   AuthDelegatorOptions,
   VerifyCodeRequestBody,
   VerifyCodeResponseBody,
-} from './types';
+} from './types.js';
+
+const { parse: parseAgent } = Bowser;
 
 const VERIFY_RECORDS_SPACE = 'basic_auth_verify_records';
 const RECORDS_TIME_INDEX = '$time_index';

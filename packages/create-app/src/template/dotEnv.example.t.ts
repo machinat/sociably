@@ -1,5 +1,5 @@
-import { when } from '../utils';
-import type { CreateAppContext } from '../types';
+import { when } from '../utils.js';
+import type { CreateAppContext } from '../types.js';
 
 export const name = '.env.example';
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import type { InnerRenderFn, IntermediateSegment } from './renderer/types';
+import type { InnerRenderFn, IntermediateSegment } from './renderer/types.js';
 import type {
   Interfaceable,
   ServiceProvision,
@@ -7,8 +7,8 @@ import type {
   ServiceInterface,
   ServiceScope,
   MaybeContainer,
-} from './service';
-import type { DispatchResponse, AnyDispatchFrame } from './engine/types';
+} from './service/index.js';
+import type { DispatchResponse, AnyDispatchFrame } from './engine/types.js';
 import type {
   SOCIABLY_ELEMENT_TYPE,
   SOCIABLY_NATIVE_TYPE,
@@ -17,10 +17,10 @@ import type {
   SOCIABLY_PROVIDER_TYPE,
   SOCIABLY_THUNK_TYPE,
   SOCIABLY_RAW_TYPE,
-} from './symbol';
+} from './symbol.js';
 
-export type { default as SociablyApp } from './app';
-export type { SociablyProfile } from './base/Profiler';
+export type { default as SociablyApp } from './app.js';
+export type { SociablyProfile } from './base/Profiler.js';
 
 export type SociablyRenderable =
   | SociablyText

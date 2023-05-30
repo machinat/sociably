@@ -10,7 +10,7 @@ import type {
   WithHeaders,
   AuthApiResponseBody,
   AuthApiErrorBody,
-} from './types';
+} from './types.js';
 
 export const respondRedirect = (res: ServerResponse, url: string): void => {
   res.writeHead(302, { Location: url });

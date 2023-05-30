@@ -1,9 +1,9 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import snakecaseKeys from 'snakecase-keys';
-import makeFacebookComponent from '../utils/makeFacebookComponent';
-import getUnixTimestamp from '../utils/getUnixTimestamp';
-import { PATH_PHOTOS } from '../constant';
-import type { FacebookComponent, PagePhotoValue } from '../types';
+import makeFacebookComponent from '../utils/makeFacebookComponent.js';
+import getUnixTimestamp from '../utils/getUnixTimestamp.js';
+import { PATH_PHOTOS } from '../constant.js';
+import type { FacebookComponent, PagePhotoValue } from '../types.js';
 
 export type PagePhotoProps = {
   /**

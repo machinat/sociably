@@ -1,4 +1,4 @@
-import { REDIRECT_QUERY } from './constant';
+import { REDIRECT_QUERY } from './constant.js';
 
 type LoginPageOptions = {
   botName: string;

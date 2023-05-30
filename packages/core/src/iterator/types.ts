@@ -1,4 +1,4 @@
-import type { SociablyRenderable } from '../types';
+import type { SociablyRenderable } from '../types.js';
 
 export type TraverseNodeCallback<Context> = (
   node: SociablyRenderable,

@@ -21,11 +21,11 @@ import type {
   WebSocketResult,
   ConnIdentifier,
 } from '@sociably/websocket';
-import { WEBVIEW } from './constant';
-import { WebviewSocketServer, PlatformUtilitiesI } from './interface';
-import WebviewConnection from './Connection';
-import { createThreadTopicKey, createUserTopicKey } from './utils/topicKey';
-import type { WebviewDispatchFrame, WebviewComponent } from './types';
+import { WEBVIEW } from './constant.js';
+import { WebviewSocketServer, PlatformUtilitiesI } from './interface.js';
+import WebviewConnection from './Connection.js';
+import { createThreadTopicKey, createUserTopicKey } from './utils/topicKey.js';
+import type { WebviewDispatchFrame, WebviewComponent } from './types.js';
 
 type WebSocketDispatchResponse = DispatchResponse<
   WebSocketJob,

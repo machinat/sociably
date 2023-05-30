@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { serviceProviderClass } from '@sociably/core/service';
-import { BrokerI } from '../interface';
-import type { ConnIdentifier } from '../types';
+import { BrokerI } from '../interface.js';
+import type { ConnIdentifier } from '../types.js';
 
 /**
  * @category Provider

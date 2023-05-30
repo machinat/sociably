@@ -17,17 +17,17 @@ import {
   MetaApiDispatchResponse,
   MetaApiResponseBody,
 } from '@sociably/meta-api';
-import generalComponentDelegator from './components/general';
-import { WHATSAPP } from './constant';
-import { ConfigsI, PlatformUtilitiesI } from './interface';
-import WhatsAppChat from './Chat';
-import WhatsAppAgent from './Agent';
-import { createChatJobs, createUploadingMediaJobs } from './job';
+import generalComponentDelegator from './components/general.js';
+import { WHATSAPP } from './constant.js';
+import { ConfigsI, PlatformUtilitiesI } from './interface.js';
+import WhatsAppChat from './Chat.js';
+import WhatsAppAgent from './Agent.js';
+import { createChatJobs, createUploadingMediaJobs } from './job.js';
 import type {
   WhatsAppComponent,
   WhatsAppSegmentValue,
   WhatsAppDispatchFrame,
-} from './types';
+} from './types.js';
 
 type WhatsAppBotOptions = {
   accessToken: string;

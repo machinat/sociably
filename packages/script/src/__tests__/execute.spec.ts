@@ -1,6 +1,6 @@
-import moxy from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
 import { serviceContainer, ServiceScope } from '@sociably/core/service';
-import execute from '../execute';
+import execute from '../execute.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
@@ -1593,7 +1593,7 @@ it('throw if stopped point key not found', async () => {
   await expect(() =>
     execute(scope, thread, [{ script, vars: {}, stopAt: 'UNKNOWN' }], true, {})
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"key \\"UNKNOWN\\" not found in MyScript"`
+    `"key "UNKNOWN" not found in MyScript"`
   );
 });
 
@@ -1611,7 +1611,7 @@ it('throw if stopped point is not <Prompt/>', async () => {
       event: { text: 'yes' },
     })
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"stopped point \\"ask\\" is not a <Prompt/>, the key mapping of MyScript might have been changed"`
+    `"stopped point "ask" is not a <Prompt/>, the key mapping of MyScript might have been changed"`
   );
 });
 
@@ -1640,10 +1640,11 @@ it('throw if returned point is not <Call/>', async () => {
         { script, vars: {}, stopAt: 'greet' },
         { script: subScript, vars: {}, stopAt: 'prompt#0' },
       ],
+
       true,
       { event: { text: 'fine' } }
     )
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"returned point \\"greet\\" is not a <Call/>, the key mapping of MyScript might have been changed"`
+    `"returned point "greet" is not a <Call/>, the key mapping of MyScript might have been changed"`
   );
 });

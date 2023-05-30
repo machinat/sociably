@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import type { RedisClient } from 'redis';
-import moxy from '@moxyjs/moxy';
-import { RedisStateController } from '../controller';
+import { moxy } from '@moxyjs/moxy';
+import { RedisStateController } from '../controller.js';
 
 const resolveCallback =
   (result) =>

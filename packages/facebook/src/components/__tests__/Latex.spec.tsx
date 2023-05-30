@@ -1,8 +1,8 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { Latex } from '../Latex';
-import { Image } from '../Media';
-import { renderUnitElement } from './utils';
+import { Latex } from '../Latex.js';
+import { Image } from '../Media.js';
+import { renderUnitElement } from './utils.js';
 
 it('is valid Component', () => {
   expect(typeof Latex).toBe('function');

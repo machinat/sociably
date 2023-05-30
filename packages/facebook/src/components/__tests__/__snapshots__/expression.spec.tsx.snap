@@ -1,17 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Expression with all props match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
     "path": "$#Expression.children::0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "foo",
         },
         "messaging_type": "MESSAGE_TAG",
@@ -22,26 +22,26 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": "bar",
     "path": "$#Expression.children::1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": "_MY_METADATA_",
-          "quick_replies": Array [
-            Object {
+          "quick_replies": [
+            {
               "content_type": "text",
               "image_url": undefined,
               "payload": "bar",
               "title": "foo",
             },
-            Object {
+            {
               "content_type": "user_phone_number",
             },
-            Object {
+            {
               "content_type": "user_email",
             },
           ],
@@ -59,17 +59,17 @@ Array [
 `;
 
 exports[`Expression with break, pause and thunk in children match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
     "path": "$#Expression.children:0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "foo",
         },
         "messaging_type": undefined,
@@ -80,14 +80,14 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": "bar",
     "path": "$#Expression.children:1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "bar",
         },
         "messaging_type": undefined,
@@ -98,7 +98,7 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Sociably.Pause
       time={2000}
     />,
@@ -106,14 +106,14 @@ Array [
     "type": "pause",
     "value": [Function],
   },
-  Object {
+  {
     "node": "baz",
     "path": "$#Expression.children:3",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": undefined,
           "quick_replies": undefined,
           "text": "baz",
@@ -126,7 +126,7 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": <Sociably.Thunk
       effect={[Function]}
     />,
@@ -138,17 +138,17 @@ Array [
 `;
 
 exports[`Expression with metadata match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
     "path": "$#Expression.children::0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "foo",
         },
         "messaging_type": undefined,
@@ -159,14 +159,14 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": "bar",
     "path": "$#Expression.children::1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": "_SOME_METADATA_",
           "quick_replies": undefined,
           "text": "bar",
@@ -183,17 +183,17 @@ Array [
 `;
 
 exports[`Expression with notificationType match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
     "path": "$#Expression.children::0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "foo",
         },
         "messaging_type": undefined,
@@ -204,14 +204,14 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": "bar",
     "path": "$#Expression.children::1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": undefined,
           "quick_replies": undefined,
           "text": "bar",
@@ -228,17 +228,17 @@ Array [
 `;
 
 exports[`Expression with personaId match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
     "path": "$#Expression.children::0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "foo",
         },
         "messaging_type": undefined,
@@ -249,14 +249,14 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": "bar",
     "path": "$#Expression.children::1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": undefined,
           "quick_replies": undefined,
           "text": "bar",
@@ -273,17 +273,17 @@ Array [
 `;
 
 exports[`Expression with quickReplies match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
     "path": "$#Expression.children::0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "foo",
         },
         "messaging_type": undefined,
@@ -294,26 +294,26 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": "bar",
     "path": "$#Expression.children::1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": undefined,
-          "quick_replies": Array [
-            Object {
+          "quick_replies": [
+            {
               "content_type": "text",
               "image_url": undefined,
               "payload": "bar",
               "title": "foo",
             },
-            Object {
+            {
               "content_type": "user_phone_number",
             },
-            Object {
+            {
               "content_type": "user_email",
             },
           ],
@@ -331,17 +331,17 @@ Array [
 `;
 
 exports[`Expression with type and tag match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
     "path": "$#Expression.children::0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "foo",
         },
         "messaging_type": "MESSAGE_TAG",
@@ -352,14 +352,14 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": "bar",
     "path": "$#Expression.children::1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": undefined,
           "quick_replies": undefined,
           "text": "bar",
@@ -376,17 +376,17 @@ Array [
 `;
 
 exports[`Expression with type match snapshot 1`] = `
-Array [
-  Object {
+[
+  {
     "node": <p>
       foo
     </p>,
     "path": "$#Expression.children::0",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "text": "foo",
         },
         "messaging_type": "UPDATE",
@@ -397,14 +397,14 @@ Array [
       "type": "message",
     },
   },
-  Object {
+  {
     "node": "bar",
     "path": "$#Expression.children::1",
     "type": "unit",
-    "value": Object {
+    "value": {
       "apiPath": "me/messages",
-      "params": Object {
-        "message": Object {
+      "params": {
+        "message": {
           "metadata": undefined,
           "quick_replies": undefined,
           "text": "bar",

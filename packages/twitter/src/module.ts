@@ -13,22 +13,22 @@ import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
-} from './interface';
-import { TWITTER } from './constant';
-import BotP from './Bot';
-import ReceiverP from './Receiver';
-import ProfilerP from './Profiler';
-import TwitterUserProfile from './UserProfile';
-import TwitterChat from './Chat';
-import TweetTarget from './TweetTarget';
-import TwitterUser from './User';
-import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor';
+} from './interface.js';
+import { TWITTER } from './constant.js';
+import BotP from './Bot.js';
+import ReceiverP from './Receiver.js';
+import ProfilerP from './Profiler.js';
+import TwitterUserProfile from './UserProfile.js';
+import TwitterChat from './Chat.js';
+import TweetTarget from './TweetTarget.js';
+import TwitterUser from './User.js';
+import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor.js';
 import type {
   TwitterEventContext,
   TwitterJob,
   TwitterDispatchFrame,
   TwitterApiResult,
-} from './types';
+} from './types.js';
 
 /** @interanl */
 const webhookRouteFactory = serviceProviderFactory({

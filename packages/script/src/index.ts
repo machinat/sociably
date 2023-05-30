@@ -1,4 +1,4 @@
-export { default } from './module';
-export { ScriptProcessor } from './Processor';
-export { default as build } from './build';
-export * from './types';
+export { default } from './module.js';
+export { ScriptProcessor } from './Processor.js';
+export { default as build } from './build.js';
+export * from './types.js';
