@@ -22,6 +22,7 @@ export type MetaApiJob = {
   request: MetaApiJobRequest;
   channel?: SociablyChannel;
   asApplication?: boolean;
+  accessToken?: string;
   key?: string;
   file?: {
     data: string | Buffer | NodeJS.ReadableStream;

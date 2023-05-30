@@ -196,13 +196,14 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         registerResult,
         consumeResult,
         channel,
+        accessToken: accessTokenInput,
       } = job;
 
       const accessToken = job.asApplication
         ? `${this._appId}|${this._appSecret}`
         : channel
         ? channelTokenMap.get(channel.uid) || this.defaultAccessToken
-        : this.defaultAccessToken;
+        : accessTokenInput || this.defaultAccessToken;
       if (!rootAccessToken) {
         rootAccessToken = accessToken;
       }

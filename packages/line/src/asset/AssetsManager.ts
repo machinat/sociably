@@ -113,10 +113,11 @@ export class LineAssetsManager {
     name: string,
     content: NodeJS.ReadableStream | Buffer,
     params: Record<string, unknown>,
-    {
-      asDefault,
-      contentType,
-    }: { asDefault?: boolean; contentType?: string } = {}
+    options?: {
+      asDefault?: boolean;
+      contentType?: string;
+      accessToken?: string;
+    }
   ): Promise<{ richMenuId: string }> {
     const channel =
       typeof channelInput === 'string'
@@ -129,26 +130,33 @@ export class LineAssetsManager {
       throw new Error(`rich menu [ ${name} ] already exist`);
     }
 
+    // get access token to use
+    let accessToken = options?.accessToken;
+    if (!accessToken) {
+      const settings = await this._settingsAccessor.getAgentSettings(channel);
+      if (!settings) {
+        throw new Error(`Line channel "${channel.uid}" not registered`);
+      }
+      ({ accessToken } = settings);
+    }
+
     // create rich menu
     const { richMenuId } = await this._bot.requestApi<{ richMenuId: string }>({
       method: 'POST',
+      accessToken,
       url: PATH_RICHMENU,
       params,
       channel,
     });
 
     // upload rich menu image
-    const settings = await this._settingsAccessor.getAgentSettings(channel);
-    if (!settings) {
-      throw new Error(`Line channel "${channel.uid}" not registered`);
-    }
     const uploadRes = await fetch(
       `https://api-data.line.me/v2/bot/richmenu/${richMenuId}/content`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${settings.accessToken}`,
-          'Content-Type': contentType,
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': options?.contentType,
         } as Record<string, string>,
         body: content,
       }
@@ -163,9 +171,10 @@ export class LineAssetsManager {
     }
 
     // set to default rich menu if asDefault
-    if (asDefault) {
+    if (options?.asDefault) {
       await this._bot.requestApi({
         channel,
+        accessToken,
         method: 'POST',
         url: `/v2/bot/user/all/richmenu/${richMenuId}`,
       });
@@ -177,7 +186,8 @@ export class LineAssetsManager {
 
   async deleteRichMenu(
     channel: string | LineChannel,
-    name: string
+    name: string,
+    options?: { accessToken?: string }
   ): Promise<boolean> {
     const id = await this.getRichMenu(channel, name);
     if (id === undefined) {
@@ -186,6 +196,7 @@ export class LineAssetsManager {
 
     await this._bot.requestApi({
       method: 'DELETE',
+      accessToken: options?.accessToken,
       url: `${PATH_RICHMENU}/${id}`,
       channel,
     });
@@ -196,10 +207,12 @@ export class LineAssetsManager {
 
   async setChannelWebhook(
     channel: string | LineChannel,
-    { url: webhookUrl }: { url: string }
+    webhookUrl: string,
+    options?: { accessToken?: string }
   ): Promise<void> {
     await this._bot.requestApi({
       channel,
+      accessToken: options?.accessToken,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',
       params: {

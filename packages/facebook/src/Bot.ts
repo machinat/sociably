@@ -90,6 +90,8 @@ type ApiCallOptions = {
   params?: Record<string, unknown>;
   /** Make the API call as the FB app */
   asApplication?: boolean;
+  /** Force to use the access token */
+  accessToken?: string;
 };
 
 /**

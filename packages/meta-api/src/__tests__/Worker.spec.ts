@@ -646,7 +646,7 @@ it('use querystring params for DELETE request', async () => {
   expect(scope.isDone()).toBe(true);
 });
 
-test('with asApplication job', async () => {
+test('asApplication job', async () => {
   const worker = new MetaApiWorker({
     appId,
     appSecret,
@@ -696,6 +696,56 @@ test('with asApplication job', async () => {
   expect(scope.isDone()).toBe(true);
 });
 
+test('job with accessToken', async () => {
+  const worker = new MetaApiWorker({
+    appId,
+    appSecret,
+    agentSettingsAccessor,
+    graphApiVersion: 'v11.0',
+    consumeInterval: 0,
+  });
+  const scope = graphApi
+    .post('/v11.0/', bodySpy)
+    .reply(
+      200,
+      JSON.stringify([{ code: 200, body: JSON.stringify({ settings: 'ok' }) }])
+    );
+  worker.start(queue);
+
+  await expect(
+    queue.executeJobs([
+      {
+        request: {
+          method: 'POST',
+          url: 'settins/api',
+          params: { some: 'app settings' },
+        },
+        accessToken: '__MY_SPECIAL_ACCESS_TOKEN__',
+      },
+    ])
+  ).resolves.toMatchSnapshot();
+
+  expect(bodySpy).toHaveBeenCalledTimes(1);
+  const body = bodySpy.mock.calls[0].args[0];
+
+  expect(body.access_token).toBe('__MY_SPECIAL_ACCESS_TOKEN__');
+  expect(body).toMatchSnapshot();
+
+  const batch = JSON.parse(body.batch);
+
+  expect(batch).toMatchInlineSnapshot(`
+    [
+      {
+        "body": "some=app%20settings",
+        "method": "POST",
+        "omit_response_on_success": false,
+        "relative_url": "settins/api?access_token=__MY_SPECIAL_ACCESS_TOKEN__",
+      },
+    ]
+  `);
+  expect(scope.isDone()).toBe(true);
+});
+
 it('skip job when no access token available', async () => {
   const worker = new MetaApiWorker({
     appId,
@@ -720,7 +770,7 @@ it('skip job when no access token available', async () => {
 
   worker.start(queue);
 
-  const asApplicationJob = {
+  const jobAsApplication = {
     request: {
       method: 'POST',
       url: 'settins/api',
@@ -728,21 +778,35 @@ it('skip job when no access token available', async () => {
     },
     asApplication: true,
   };
+  const jobWithAccessToken = {
+    request: {
+      method: 'POST',
+      url: 'settins/api',
+      params: { some: 'app settings' },
+    },
+    accessToken: '__MY_ACCESS_TOKEN__',
+  };
 
   await expect(
-    queue.executeJobs([...jobs, asApplicationJob])
+    queue.executeJobs([jobWithAccessToken, ...jobs, jobAsApplication])
   ).resolves.toMatchSnapshot();
 
   expect(bodySpy).toHaveBeenCalledTimes(1);
   const body = bodySpy.mock.calls[0].args[0];
 
-  expect(body.access_token).toBe('access_token_foo');
+  expect(body.access_token).toBe('__MY_ACCESS_TOKEN__');
   expect(body).toMatchSnapshot();
 
   const batch = JSON.parse(body.batch);
 
   expect(batch).toMatchInlineSnapshot(`
     [
+      {
+        "body": "some=app%20settings",
+        "method": "POST",
+        "omit_response_on_success": false,
+        "relative_url": "settins/api?access_token=__MY_ACCESS_TOKEN__",
+      },
       {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=1",
         "method": "POST",

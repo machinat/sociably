@@ -1,5 +1,42 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`asApplication job 1`] = `
+{
+  "batch": [
+    {
+      "error": undefined,
+      "job": {
+        "asApplication": true,
+        "request": {
+          "method": "POST",
+          "params": {
+            "some": "app settings",
+          },
+          "url": "settins/api",
+        },
+      },
+      "result": {
+        "body": {
+          "settings": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+  ],
+  "errors": null,
+  "success": true,
+}
+`;
+
+exports[`asApplication job 2`] = `
+{
+  "access_token": "_APP_ID_|_APP_SECRET_",
+  "appsecret_proof": "b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b",
+  "batch": "[{"method":"POST","relative_url":"settins/api?access_token=_APP_ID_%7C_APP_SECRET_","body":"some=app%20settings","omit_response_on_success":false}]",
+}
+`;
+
 exports[`call to graph api 2`] = `
 {
   "access_token": "access_token_foo",
@@ -135,9 +172,66 @@ exports[`fail if one single job fail 1`] = `
 }
 `;
 
+exports[`job with accessToken 1`] = `
+{
+  "batch": [
+    {
+      "error": undefined,
+      "job": {
+        "accessToken": "__MY_SPECIAL_ACCESS_TOKEN__",
+        "request": {
+          "method": "POST",
+          "params": {
+            "some": "app settings",
+          },
+          "url": "settins/api",
+        },
+      },
+      "result": {
+        "body": {
+          "settings": "ok",
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
+  ],
+  "errors": null,
+  "success": true,
+}
+`;
+
+exports[`job with accessToken 2`] = `
+{
+  "access_token": "__MY_SPECIAL_ACCESS_TOKEN__",
+  "appsecret_proof": "3866a64f89c66f16f52e103e35941f98b78ca021b1b94baa853ed5a2175e9ccc",
+  "batch": "[{"method":"POST","relative_url":"settins/api?access_token=__MY_SPECIAL_ACCESS_TOKEN__","body":"some=app%20settings","omit_response_on_success":false}]",
+}
+`;
+
 exports[`skip job when no access token available 1`] = `
 {
   "batch": [
+    {
+      "error": undefined,
+      "job": {
+        "accessToken": "__MY_ACCESS_TOKEN__",
+        "request": {
+          "method": "POST",
+          "params": {
+            "some": "app settings",
+          },
+          "url": "settins/api",
+        },
+      },
+      "result": {
+        "body": {
+          "id": 1,
+        },
+        "code": 200,
+      },
+      "success": true,
+    },
     {
       "error": undefined,
       "job": {
@@ -159,7 +253,7 @@ exports[`skip job when no access token available 1`] = `
       },
       "result": {
         "body": {
-          "id": 1,
+          "id": 2,
         },
         "code": 200,
       },
@@ -186,7 +280,7 @@ exports[`skip job when no access token available 1`] = `
       },
       "result": {
         "body": {
-          "id": 2,
+          "id": 3,
         },
         "code": 200,
       },
@@ -258,7 +352,7 @@ exports[`skip job when no access token available 1`] = `
       },
       "result": {
         "body": {
-          "id": 3,
+          "id": 4,
         },
         "code": 200,
       },
@@ -275,9 +369,9 @@ exports[`skip job when no access token available 1`] = `
 
 exports[`skip job when no access token available 2`] = `
 {
-  "access_token": "access_token_foo",
-  "appsecret_proof": "c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
-  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=1","name":"facebook.id.foo.john-1","omit_response_on_success":false},{"method":"POST","relative_url":"some/api?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=2","depends_on":"facebook.id.foo.john-1","name":"facebook.id.foo.john-2","omit_response_on_success":false},{"method":"POST","relative_url":"settins/api?access_token=_APP_ID_%7C_APP_SECRET_","body":"some=app%20settings","omit_response_on_success":false}]",
+  "access_token": "__MY_ACCESS_TOKEN__",
+  "appsecret_proof": "eb72374e6ec5aca7b4d5007e01d6d86b57a89985573c2bf69c4a8dbdd80ec867",
+  "batch": "[{"method":"POST","relative_url":"settins/api?access_token=__MY_ACCESS_TOKEN__","body":"some=app%20settings","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=1","name":"facebook.id.foo.john-1","omit_response_on_success":false},{"method":"POST","relative_url":"some/api?access_token=access_token_foo","body":"recipient=%7B%22id%22%3A%22john%22%7D&id=2","depends_on":"facebook.id.foo.john-1","name":"facebook.id.foo.john-2","omit_response_on_success":false},{"method":"POST","relative_url":"settins/api?access_token=_APP_ID_%7C_APP_SECRET_","body":"some=app%20settings","omit_response_on_success":false}]",
 }
 `;
 
@@ -1685,43 +1779,6 @@ exports[`using API result in following request when job key is undeinfed 1`] = `
   ],
   "errors": null,
   "success": true,
-}
-`;
-
-exports[`with asApplication job 1`] = `
-{
-  "batch": [
-    {
-      "error": undefined,
-      "job": {
-        "asApplication": true,
-        "request": {
-          "method": "POST",
-          "params": {
-            "some": "app settings",
-          },
-          "url": "settins/api",
-        },
-      },
-      "result": {
-        "body": {
-          "settings": "ok",
-        },
-        "code": 200,
-      },
-      "success": true,
-    },
-  ],
-  "errors": null,
-  "success": true,
-}
-`;
-
-exports[`with asApplication job 2`] = `
-{
-  "access_token": "_APP_ID_|_APP_SECRET_",
-  "appsecret_proof": "b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b",
-  "batch": "[{"method":"POST","relative_url":"settins/api?access_token=_APP_ID_%7C_APP_SECRET_","body":"some=app%20settings","omit_response_on_success":false}]",
 }
 `;
 

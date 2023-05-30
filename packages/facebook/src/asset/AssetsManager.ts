@@ -49,7 +49,6 @@ export type DefaultAppSettings = {
 export type AppWebhookSubscriptionOptions = {
   appId?: string;
   verifyToken?: string;
-  url: string;
   fields?: string[];
   objectType?: 'user' | 'page' | 'permissions' | 'payments';
 };
@@ -74,13 +73,15 @@ export class FacebookAssetsManager {
     this.defaultAppSettings = defaultAppSettings;
   }
 
-  async setAppSubscriptionWebhook({
-    url: webhookUrl,
-    objectType = 'page',
-    fields: fieldsInput,
-    appId: appIdInput,
-    verifyToken: verifyTokenInput,
-  }: AppWebhookSubscriptionOptions): Promise<void> {
+  async setAppSubscriptionWebhook(
+    webhookUrl: string,
+    {
+      objectType = 'page',
+      fields: fieldsInput,
+      appId: appIdInput,
+      verifyToken: verifyTokenInput,
+    }: AppWebhookSubscriptionOptions = {}
+  ): Promise<void> {
     const appId = appIdInput || this.defaultAppSettings?.appId;
     const verifyToken =
       verifyTokenInput || this.defaultAppSettings?.verifyToken;
@@ -109,7 +110,7 @@ export class FacebookAssetsManager {
 
   async setPageSubscribedApp(
     page: string | FacebookPage,
-    options?: { fields?: string[] }
+    options?: { fields?: string[]; accessToken?: string }
   ): Promise<void> {
     const fields =
       options?.fields ||
@@ -118,6 +119,7 @@ export class FacebookAssetsManager {
 
     await this._bot.requestApi({
       page,
+      accessToken: options?.accessToken,
       method: 'POST',
       url: 'me/subscribed_apps',
       params: {
@@ -128,7 +130,8 @@ export class FacebookAssetsManager {
 
   async setPageMessengerProfile(
     page: string | FacebookPage,
-    settingsInput: Record<string, unknown>
+    settingsInput: Record<string, unknown>,
+    { accessToken }: { accessToken?: string } = {}
   ): Promise<void> {
     const newSettings = snakecaseKeys(settingsInput);
 
@@ -136,6 +139,7 @@ export class FacebookAssetsManager {
       data: [currentSettings],
     } = await this._bot.requestApi({
       page,
+      accessToken,
       method: 'GET',
       url: 'me/messenger_profile',
       params: {
@@ -162,6 +166,7 @@ export class FacebookAssetsManager {
     if (deletedKeys.length > 0) {
       await this._bot.requestApi({
         page,
+        accessToken,
         method: 'DELETE',
         url: 'me/messenger_profile',
         params: { fields: deletedKeys },
@@ -171,6 +176,7 @@ export class FacebookAssetsManager {
     if (Object.keys(changedSettings).length > 0) {
       await this._bot.requestApi({
         page,
+        accessToken,
         method: 'POST',
         url: 'me/messenger_profile',
         params: changedSettings,
@@ -305,7 +311,8 @@ export class FacebookAssetsManager {
     params: {
       name: string;
       profilePictureUrl?: string;
-    }
+    },
+    options?: { accessToken?: string }
   ): Promise<string> {
     const existed = await this.getPersona(page, assetName);
     if (existed !== undefined) {
@@ -314,6 +321,7 @@ export class FacebookAssetsManager {
 
     const { id: personaId } = await this._bot.requestApi<{ id: string }>({
       page,
+      accessToken: options?.accessToken,
       method: 'POST',
       url: PATH_PERSONAS,
       params: snakecaseKeys(params),
@@ -325,14 +333,20 @@ export class FacebookAssetsManager {
 
   async deletePersona(
     page: string | FacebookPage,
-    name: string
+    name: string,
+    options?: { accessToken?: string }
   ): Promise<boolean> {
     const personaId = await this.getPersona(page, name);
     if (!personaId) {
       return false;
     }
 
-    await this._bot.requestApi({ page, method: 'DELETE', url: personaId });
+    await this._bot.requestApi({
+      page,
+      accessToken: options?.accessToken,
+      method: 'DELETE',
+      url: personaId,
+    });
     await this.unsavePersona(page, name);
     return true;
   }

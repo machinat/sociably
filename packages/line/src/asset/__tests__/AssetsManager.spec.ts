@@ -228,6 +228,7 @@ describe('.createRichMenu()', () => {
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
       channel,
+      accessToken: '__ACCESS_TOKEN__',
       method: 'POST',
       url: 'v2/bot/richmenu',
       params: richMenuBody,
@@ -236,11 +237,11 @@ describe('.createRichMenu()', () => {
     expect(uploadApiCall.isDone()).toBe(true);
   });
 
-  test('with asDefault option', async () => {
+  test('with asDefault & accessToken option', async () => {
     bot.requestApi.mock.fake(async () => ({ richMenuId }));
     const uploadApiCall = nock('https://api-data.line.me', {
       reqheaders: {
-        authorization: 'Bearer __ACCESS_TOKEN__',
+        authorization: 'Bearer _MY_ACCESS_TOKEN_',
         'content-type': 'image/png',
       },
     })
@@ -253,13 +254,25 @@ describe('.createRichMenu()', () => {
         'my_rich_menu',
         Buffer.from('IMAGE'),
         richMenuBody,
-        { contentType: 'image/png', asDefault: true }
+        {
+          contentType: 'image/png',
+          asDefault: true,
+          accessToken: '_MY_ACCESS_TOKEN_',
+        }
       )
     ).resolves.toEqual({ richMenuId });
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+      channel,
+      accessToken: '_MY_ACCESS_TOKEN_',
+      method: 'POST',
+      url: 'v2/bot/richmenu',
+      params: richMenuBody,
+    });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
       channel,
+      accessToken: '_MY_ACCESS_TOKEN_',
       method: 'POST',
       url: `/v2/bot/user/all/richmenu/${richMenuId}`,
     });
@@ -361,12 +374,15 @@ test('.setChannelWebhook', async () => {
   bot.requestApi.mock.fake(async () => ({}));
 
   await expect(
-    manager.setChannelWebhook(channel, { url: 'https://example.com/webhook' })
+    manager.setChannelWebhook(channel, 'https://example.com/webhook', {
+      accessToken: '_ACCESS_TOKEN_',
+    })
   ).resolves.toBe(undefined);
 
   expect(bot.requestApi).toHaveBeenCalledTimes(1);
   expect(bot.requestApi).toHaveBeenCalledWith({
     channel,
+    accessToken: '_ACCESS_TOKEN_',
     method: 'PUT',
     url: 'v2/bot/channel/webhook/endpoint',
     params: { endpoint: 'https://example.com/webhook' },
