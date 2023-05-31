@@ -341,7 +341,7 @@ describe('.requestApi(options)', () => {
     `);
   });
 
-  test('with accessToken', async () => {
+  test('with accessToken option', async () => {
     const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
     await bot.start();
 
@@ -361,6 +361,30 @@ describe('.requestApi(options)', () => {
         "access_token": "_MY_ACCESS_TOKEN_",
         "appsecret_proof": "a2d4a2635b030a35c39f30231ffe768f18af5b034c7be4e095c48495341db374",
         "batch": "[{"method":"POST","relative_url":"foo?access_token=_MY_ACCESS_TOKEN_","body":"bar=baz","omit_response_on_success":false}]",
+      }
+    `);
+  });
+
+  test('with asApplication option', async () => {
+    const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
+    await bot.start();
+
+    graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
+    await expect(
+      bot.requestApi({
+        page,
+        method: 'POST',
+        url: 'foo',
+        params: { bar: 'baz' },
+        asApplication: true,
+      })
+    ).resolves.toEqual({ foo: 'bar' });
+
+    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+      {
+        "access_token": "_APP_ID_|_APP_SECRET_",
+        "appsecret_proof": "b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b",
+        "batch": "[{"method":"POST","relative_url":"foo?access_token=_APP_ID_%7C_APP_SECRET_","body":"bar=baz","omit_response_on_success":false}]",
       }
     `);
   });
