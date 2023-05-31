@@ -280,23 +280,6 @@ describe('.createRichMenu()', () => {
     expect(uploadApiCall.isDone()).toBe(true);
   });
 
-  it('throw if rich menu asset name already exist', async () => {
-    state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ID_');
-    await expect(
-      manager.createRichMenu(
-        channel,
-        'my_rich_menu',
-        Buffer.from('IMAGE'),
-        richMenuBody,
-        { contentType: 'image/png' }
-      )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"rich menu [ my_rich_menu ] already exist"`
-    );
-
-    expect(state.set).not.toHaveBeenCalled();
-  });
-
   it('throw if upload API call fail', async () => {
     bot.requestApi.mock.fake(async () => ({ richMenuId }));
     const uploadCall = nock('https://api-data.line.me', {

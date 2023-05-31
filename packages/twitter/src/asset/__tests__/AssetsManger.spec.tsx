@@ -280,20 +280,6 @@ describe('.uploadMedia(tag, media)', () => {
 
     expect(state.set).not.toHaveBeenCalled();
   });
-
-  it('throw if media already exist', async () => {
-    const manager = new TwitterAssetsManager(bot, stateController);
-
-    state.get.mock.fake(async () => '1234567890');
-    await expect(
-      manager.createWelcomeMessage(agent, 'my_welcome_message', 'foo')
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"welcome message [my_welcome_message] already exists"`
-    );
-
-    expect(state.set).not.toHaveBeenCalled();
-    expect(bot.uploadMedia).not.toHaveBeenCalled();
-  });
 });
 
 test('.createWelcomeMessage(name, message)', async () => {
@@ -331,13 +317,6 @@ test('.createWelcomeMessage(name, message)', async () => {
   await expect(
     manager.createWelcomeMessage(agent, 'my_welcome_message', null)
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"message content is empty"`);
-
-  state.get.mock.fake(async () => '1234567890');
-  await expect(
-    manager.createWelcomeMessage(agent, 'my_welcome_message', 'foo')
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"welcome message [my_welcome_message] already exists"`
-  );
 
   expect(state.set).toHaveBeenCalledTimes(1);
   expect(bot.createWelcomeMessage).toHaveBeenCalledTimes(2);
@@ -417,18 +396,6 @@ test('.createCustomProfile(tag, name, img)', async () => {
     stateController.globalState.mock.calls[0].args[0]
   ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_custom_profile', '1234567890');
-
-  state.get.mock.fake(async () => '1234567890');
-  await expect(
-    manager.createCustomProfile(
-      agent,
-      'my_custom_profile',
-      'Jon C, Partner Engineer',
-      '9876543210'
-    )
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"custom profile [my_custom_profile] already exists"`
-  );
 
   expect(bot.requestApi).toHaveBeenCalledTimes(1);
   expect(state.set).toHaveBeenCalledTimes(1);

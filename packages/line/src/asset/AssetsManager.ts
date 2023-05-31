@@ -46,13 +46,13 @@ export class LineAssetsManager {
   async saveAssetId(
     channel: string | LineChannel,
     resource: string,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
     const isUpdated = await this._stateController
       .globalState(resourceToken(channelId, resource))
-      .set<string>(name, id);
+      .set<string>(assetTag, id);
 
     return isUpdated;
   }
@@ -70,29 +70,29 @@ export class LineAssetsManager {
   async unsaveAssetId(
     channel: string | LineChannel,
     resource: string,
-    name: string
+    assetTag: string
   ): Promise<boolean> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
     const isDeleted = await this._stateController
       .globalState(resourceToken(channelId, resource))
-      .delete(name);
+      .delete(assetTag);
 
     return isDeleted;
   }
 
   getRichMenu(
     channel: string | LineChannel,
-    name: string
+    assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(channel, RICH_MENU, name);
+    return this.getAssetId(channel, RICH_MENU, assetTag);
   }
 
   saveRichMenu(
     channel: string | LineChannel,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(channel, RICH_MENU, name, id);
+    return this.saveAssetId(channel, RICH_MENU, assetTag, id);
   }
 
   getAllRichMenus(
@@ -103,14 +103,14 @@ export class LineAssetsManager {
 
   unsaveRichMenu(
     channel: string | LineChannel,
-    name: string
+    assetTag: string
   ): Promise<boolean> {
-    return this.unsaveAssetId(channel, RICH_MENU, name);
+    return this.unsaveAssetId(channel, RICH_MENU, assetTag);
   }
 
   async createRichMenu(
     channelInput: string | LineChannel,
-    name: string,
+    assetTag: string,
     content: NodeJS.ReadableStream | Buffer,
     params: Record<string, unknown>,
     options?: {
@@ -123,12 +123,6 @@ export class LineAssetsManager {
       typeof channelInput === 'string'
         ? new LineChannel(channelInput)
         : channelInput;
-
-    // check if rich menu already exist
-    const existed = await this.getRichMenu(channel, name);
-    if (existed) {
-      throw new Error(`rich menu [ ${name} ] already exist`);
-    }
 
     // get access token to use
     let accessToken = options?.accessToken;
@@ -180,16 +174,16 @@ export class LineAssetsManager {
       });
     }
 
-    await this.saveAssetId(channel, RICH_MENU, name, richMenuId);
+    await this.saveAssetId(channel, RICH_MENU, assetTag, richMenuId);
     return { richMenuId };
   }
 
   async deleteRichMenu(
     channel: string | LineChannel,
-    name: string,
+    assetTag: string,
     options?: { accessToken?: string }
   ): Promise<boolean> {
-    const id = await this.getRichMenu(channel, name);
+    const id = await this.getRichMenu(channel, assetTag);
     if (id === undefined) {
       return false;
     }
@@ -201,7 +195,7 @@ export class LineAssetsManager {
       channel,
     });
 
-    await this.unsaveAssetId(channel, RICH_MENU, name);
+    await this.unsaveAssetId(channel, RICH_MENU, assetTag);
     return true;
   }
 

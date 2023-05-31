@@ -23,25 +23,25 @@ export class TelegramAssetsManager {
   async getAssetId(
     agent: number | TelegramUser,
     resource: string,
-    name: string
+    assetTag: string
   ): Promise<undefined | string> {
     const agentId = typeof agent === 'number' ? agent : agent.id;
     const existed = await this._stateController
       .globalState(makeResourceToken(agentId, resource))
-      .get<string>(name);
+      .get<string>(assetTag);
     return existed || undefined;
   }
 
   async saveAssetId(
     agent: number | TelegramUser,
     resource: string,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
     const agentId = typeof agent === 'number' ? agent : agent.id;
     const isUpdated = await this._stateController
       .globalState(makeResourceToken(agentId, resource))
-      .set<string>(name, id);
+      .set<string>(assetTag, id);
     return isUpdated;
   }
 
@@ -58,29 +58,29 @@ export class TelegramAssetsManager {
   async unsaveAssetId(
     agent: number | TelegramUser,
     resource: string,
-    name: string
+    assetTag: string
   ): Promise<boolean> {
     const agentId = typeof agent === 'number' ? agent : agent.id;
 
     const isDeleted = await this._stateController
       .globalState(makeResourceToken(agentId, resource))
-      .delete(name);
+      .delete(assetTag);
     return isDeleted;
   }
 
   getFile(
     agent: number | TelegramUser,
-    name: string
+    assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(agent, FILE, name);
+    return this.getAssetId(agent, FILE, assetTag);
   }
 
   saveFile(
     agent: number | TelegramUser,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(agent, FILE, name, id);
+    return this.saveAssetId(agent, FILE, assetTag, id);
   }
 
   getAllFiles(
@@ -89,8 +89,8 @@ export class TelegramAssetsManager {
     return this.getAllAssets(agent, FILE);
   }
 
-  unsaveFile(agent: number | TelegramUser, name: string): Promise<boolean> {
-    return this.unsaveAssetId(agent, FILE, name);
+  unsaveFile(agent: number | TelegramUser, assetTag: string): Promise<boolean> {
+    return this.unsaveAssetId(agent, FILE, assetTag);
   }
 }
 

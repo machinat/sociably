@@ -171,17 +171,6 @@ test('#uploadMedia()', async () => {
     <Image fileData={Buffer.from('')} />
   );
 
-  state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ATTACHMENT_');
-  await expect(
-    manager.uploadMedia(
-      agent,
-      'my_avatar',
-      <Image fileData={Buffer.from('')} />
-    )
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"attachment [ my_avatar ] already exist"`
-  );
-
   expect(state.set).toHaveBeenCalledTimes(1);
   expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');
 });

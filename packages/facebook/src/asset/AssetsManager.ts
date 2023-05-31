@@ -187,25 +187,25 @@ export class FacebookAssetsManager {
   async getAssetId(
     page: string | FacebookPage,
     resource: string,
-    name: string
+    assetTag: string
   ): Promise<undefined | string> {
     const pageId = typeof page === 'string' ? page : page.id;
     const existed = await this._stateController
       .globalState(makeResourceKey(pageId, resource))
-      .get<string>(name);
+      .get<string>(assetTag);
     return existed || undefined;
   }
 
   async saveAssetId(
     page: string | FacebookPage,
     resource: string,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
     const pageId = typeof page === 'string' ? page : page.id;
     const isUpdated = await this._stateController
       .globalState(makeResourceKey(pageId, resource))
-      .set<string>(name, id);
+      .set<string>(assetTag, id);
     return isUpdated;
   }
 
@@ -222,29 +222,29 @@ export class FacebookAssetsManager {
   async unsaveAssetId(
     page: string | FacebookPage,
     resource: string,
-    name: string
+    assetTag: string
   ): Promise<boolean> {
     const pageId = typeof page === 'string' ? page : page.id;
 
     const isDeleted = await this._stateController
       .globalState(makeResourceKey(pageId, resource))
-      .delete(name);
+      .delete(assetTag);
     return isDeleted;
   }
 
   getAttachment(
     page: string | FacebookPage,
-    name: string
+    assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(page, ATTACHMENT, name);
+    return this.getAssetId(page, ATTACHMENT, assetTag);
   }
 
   saveAttachment(
     page: string | FacebookPage,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(page, ATTACHMENT, name, id);
+    return this.saveAssetId(page, ATTACHMENT, assetTag, id);
   }
 
   getAllAttachments(
@@ -255,36 +255,31 @@ export class FacebookAssetsManager {
 
   unsaveAttachment(
     page: string | FacebookPage,
-    name: string
+    assetTag: string
   ): Promise<boolean> {
-    return this.unsaveAssetId(page, ATTACHMENT, name);
+    return this.unsaveAssetId(page, ATTACHMENT, assetTag);
   }
 
   async uploadChatAttachment(
     page: string | FacebookPage,
-    name: string,
+    assetTag: string,
     node: SociablyNode
   ): Promise<string> {
-    const existed = await this.getAttachment(page, name);
-    if (existed !== undefined) {
-      throw new Error(`attachment [ ${name} ] already exist`);
-    }
-
     const result = await this._bot.uploadChatAttachment(page, node);
     if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
     const { attachmentId } = result;
-    await this.saveAssetId(page, ATTACHMENT, name, attachmentId);
+    await this.saveAssetId(page, ATTACHMENT, assetTag, attachmentId);
     return attachmentId;
   }
 
   getPersona(
     page: string | FacebookPage,
-    name: string
+    assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(page, PERSONA, name);
+    return this.getAssetId(page, PERSONA, assetTag);
   }
 
   getAllPersonas(
@@ -295,30 +290,28 @@ export class FacebookAssetsManager {
 
   savePersona(
     page: string | FacebookPage,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(page, PERSONA, name, id);
+    return this.saveAssetId(page, PERSONA, assetTag, id);
   }
 
-  unsavePersona(page: string | FacebookPage, name: string): Promise<boolean> {
-    return this.unsaveAssetId(page, PERSONA, name);
+  unsavePersona(
+    page: string | FacebookPage,
+    assetTag: string
+  ): Promise<boolean> {
+    return this.unsaveAssetId(page, PERSONA, assetTag);
   }
 
   async createPersona(
     page: string | FacebookPage,
-    assetName: string,
+    assetTag: string,
     params: {
       name: string;
       profilePictureUrl?: string;
     },
     options?: { accessToken?: string }
   ): Promise<string> {
-    const existed = await this.getPersona(page, assetName);
-    if (existed !== undefined) {
-      throw new Error(`persona [ ${assetName} ] already exist`);
-    }
-
     const { id: personaId } = await this._bot.requestApi<{ id: string }>({
       page,
       accessToken: options?.accessToken,
@@ -327,16 +320,16 @@ export class FacebookAssetsManager {
       params: snakecaseKeys(params),
     });
 
-    await this.saveAssetId(page, PERSONA, assetName, personaId);
+    await this.saveAssetId(page, PERSONA, assetTag, personaId);
     return personaId;
   }
 
   async deletePersona(
     page: string | FacebookPage,
-    name: string,
+    assetTag: string,
     options?: { accessToken?: string }
   ): Promise<boolean> {
-    const personaId = await this.getPersona(page, name);
+    const personaId = await this.getPersona(page, assetTag);
     if (!personaId) {
       return false;
     }
@@ -347,7 +340,7 @@ export class FacebookAssetsManager {
       method: 'DELETE',
       url: personaId,
     });
-    await this.unsavePersona(page, name);
+    await this.unsavePersona(page, assetTag);
     return true;
   }
 }

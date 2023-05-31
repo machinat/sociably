@@ -42,25 +42,25 @@ export class TwitterAssetsManager {
   async getAssetId(
     agent: string | TwitterUser,
     resource: string,
-    tag: string
+    assetTag: string
   ): Promise<undefined | string> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
     const existed = await this._stateController
       .globalState(makeResourceToken(agentId, resource))
-      .get<string>(tag);
+      .get<string>(assetTag);
     return existed || undefined;
   }
 
   async saveAssetId(
     agent: string | TwitterUser,
     resource: string,
-    tag: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
     const isUpdated = await this._stateController
       .globalState(makeResourceToken(agentId, resource))
-      .set<string>(tag, id);
+      .set<string>(assetTag, id);
     return isUpdated;
   }
 
@@ -77,12 +77,12 @@ export class TwitterAssetsManager {
   async unsaveAssetId(
     agent: string | TwitterUser,
     resource: string,
-    tag: string
+    assetTag: string
   ): Promise<boolean> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
     const isDeleted = await this._stateController
       .globalState(makeResourceToken(agentId, resource))
-      .delete(tag);
+      .delete(assetTag);
 
     return isDeleted;
   }
@@ -90,17 +90,17 @@ export class TwitterAssetsManager {
   // media
   getMedia(
     agent: string | TwitterUser,
-    tag: string
+    assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(agent, MEDIA, tag);
+    return this.getAssetId(agent, MEDIA, assetTag);
   }
 
   saveMedia(
     agent: string | TwitterUser,
-    tag: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(agent, MEDIA, tag, id);
+    return this.saveAssetId(agent, MEDIA, assetTag, id);
   }
 
   getAllMedia(
@@ -109,27 +109,22 @@ export class TwitterAssetsManager {
     return this.getAllAssets(agent, MEDIA);
   }
 
-  unsaveMedia(agent: string | TwitterUser, tag: string): Promise<boolean> {
-    return this.unsaveAssetId(agent, MEDIA, tag);
+  unsaveMedia(agent: string | TwitterUser, assetTag: string): Promise<boolean> {
+    return this.unsaveAssetId(agent, MEDIA, assetTag);
   }
 
   async uploadMedia(
     agent: string | TwitterUser,
-    tag: string,
+    assetTag: string,
     media: SociablyNode
   ): Promise<RenderMediaResponse> {
-    const existedId = await this.getMedia(agent, tag);
-    if (existedId) {
-      throw new Error(`media [${tag}] already exists`);
-    }
-
     const results = await this._bot.uploadMedia(agent, media);
     if (!results) {
       throw new Error('media content is empty');
     }
 
     const result = results[0];
-    this.saveMedia(agent, tag, result.id);
+    this.saveMedia(agent, assetTag, result.id);
 
     return result;
   }
@@ -137,17 +132,17 @@ export class TwitterAssetsManager {
   // welcome message
   getWelcomeMessage(
     agent: string | TwitterUser,
-    tag: string
+    assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(agent, WELCOME_MESSAGE, tag);
+    return this.getAssetId(agent, WELCOME_MESSAGE, assetTag);
   }
 
   saveWelcomeMessage(
     agent: string | TwitterUser,
-    tag: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(agent, WELCOME_MESSAGE, tag, id);
+    return this.saveAssetId(agent, WELCOME_MESSAGE, assetTag, id);
   }
 
   getAllWelcomeMessages(
@@ -158,38 +153,37 @@ export class TwitterAssetsManager {
 
   unsaveWelcomeMessage(
     agent: string | TwitterUser,
-    tag: string
+    assetTag: string
   ): Promise<boolean> {
-    return this.unsaveAssetId(agent, WELCOME_MESSAGE, tag);
+    return this.unsaveAssetId(agent, WELCOME_MESSAGE, assetTag);
   }
 
   async createWelcomeMessage(
     agent: string | TwitterUser,
-    tag: string,
+    assetTag: string,
     message: SociablyNode
   ): Promise<undefined | string> {
-    const existedId = await this.getWelcomeMessage(agent, tag);
-    if (existedId) {
-      throw new Error(`welcome message [${tag}] already exists`);
-    }
-
-    const result = await this._bot.createWelcomeMessage(agent, tag, message);
+    const result = await this._bot.createWelcomeMessage(
+      agent,
+      assetTag,
+      message
+    );
     if (!result) {
       throw new Error('message content is empty');
     }
 
     const { id: welcomeId } = result.welcome_message;
-    await this.saveAssetId(agent, WELCOME_MESSAGE, tag, welcomeId);
+    await this.saveAssetId(agent, WELCOME_MESSAGE, assetTag, welcomeId);
     return welcomeId;
   }
 
   async deleteWelcomeMessage(
     agent: string | TwitterUser,
-    tag: string
+    assetTag: string
   ): Promise<string> {
-    const welcomeId = await this.getWelcomeMessage(agent, tag);
+    const welcomeId = await this.getWelcomeMessage(agent, assetTag);
     if (!welcomeId) {
-      throw new Error(`welcome message [${tag}] doesn't exist`);
+      throw new Error(`welcome message [${assetTag}] doesn't exist`);
     }
 
     await this._bot.requestApi({
@@ -198,24 +192,24 @@ export class TwitterAssetsManager {
       url: `1.1/direct_messages/welcome_messages/destroy.json`,
       params: { id: welcomeId },
     });
-    await this.unsaveWelcomeMessage(agent, tag);
+    await this.unsaveWelcomeMessage(agent, assetTag);
     return welcomeId;
   }
 
   // custome profile
   getCustomProfile(
     agent: string | TwitterUser,
-    tag: string
+    assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(agent, CUSTOM_PROFILE, tag);
+    return this.getAssetId(agent, CUSTOM_PROFILE, assetTag);
   }
 
   saveCustomProfile(
     agent: string | TwitterUser,
-    tag: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(agent, CUSTOM_PROFILE, tag, id);
+    return this.saveAssetId(agent, CUSTOM_PROFILE, assetTag, id);
   }
 
   getAllCustomProfiles(
@@ -226,22 +220,17 @@ export class TwitterAssetsManager {
 
   unsaveCustomProfile(
     agent: string | TwitterUser,
-    tag: string
+    assetTag: string
   ): Promise<boolean> {
-    return this.unsaveAssetId(agent, CUSTOM_PROFILE, tag);
+    return this.unsaveAssetId(agent, CUSTOM_PROFILE, assetTag);
   }
 
   async createCustomProfile(
     agent: string | TwitterUser,
-    tag: string,
+    assetTag: string,
     name: string,
     mediaId: string
   ): Promise<string> {
-    const existedId = await this.getCustomProfile(agent, tag);
-    if (existedId) {
-      throw new Error(`custom profile [${tag}] already exists`);
-    }
-
     const {
       custom_profile: { id: customProfileId },
     } = await this._bot.requestApi<CreateCustomProfileResult>({
@@ -256,17 +245,17 @@ export class TwitterAssetsManager {
       },
     });
 
-    await this.saveCustomProfile(agent, tag, customProfileId);
+    await this.saveCustomProfile(agent, assetTag, customProfileId);
     return customProfileId;
   }
 
   async deleteCustomProfile(
     agent: string | TwitterUser,
-    tag: string
+    assetTag: string
   ): Promise<string> {
-    const customProfileId = await this.getCustomProfile(agent, tag);
+    const customProfileId = await this.getCustomProfile(agent, assetTag);
     if (!customProfileId) {
-      throw new Error(`custom profile [${tag}] doesn't exist`);
+      throw new Error(`custom profile [${assetTag}] doesn't exist`);
     }
 
     await this._bot.requestApi({
@@ -275,7 +264,7 @@ export class TwitterAssetsManager {
       url: `1.1/custom_profiles/destroy.json`,
       params: { id: customProfileId },
     });
-    await this.unsaveCustomProfile(agent, tag);
+    await this.unsaveCustomProfile(agent, assetTag);
     return customProfileId;
   }
 }

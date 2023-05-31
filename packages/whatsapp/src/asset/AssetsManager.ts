@@ -28,25 +28,25 @@ export class WhatsAppAssetsManager {
   async getAssetId(
     agent: string | WhatsAppAgent,
     resource: string,
-    name: string
+    assetTag: string
   ): Promise<undefined | string> {
     const numberId = typeof agent === 'string' ? agent : agent.numberId;
     const existed = await this._stateController
       .globalState(makeResourceToken(numberId, resource))
-      .get<string>(name);
+      .get<string>(assetTag);
     return existed || undefined;
   }
 
   async saveAssetId(
     agent: string | WhatsAppAgent,
     resource: string,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
     const numberId = typeof agent === 'string' ? agent : agent.numberId;
     const isUpdated = await this._stateController
       .globalState(makeResourceToken(numberId, resource))
-      .set<string>(name, id);
+      .set<string>(assetTag, id);
     return isUpdated;
   }
 
@@ -63,29 +63,29 @@ export class WhatsAppAssetsManager {
   async unsaveAssetId(
     agent: string | WhatsAppAgent,
     resource: string,
-    name: string
+    assetTag: string
   ): Promise<boolean> {
     const numberId = typeof agent === 'string' ? agent : agent.numberId;
     const isDeleted = await this._stateController
       .globalState(makeResourceToken(numberId, resource))
-      .delete(name);
+      .delete(assetTag);
 
     return isDeleted;
   }
 
   getMedia(
     agent: string | WhatsAppAgent,
-    name: string
+    assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(agent, MEDIA, name);
+    return this.getAssetId(agent, MEDIA, assetTag);
   }
 
   saveMedia(
     agent: string | WhatsAppAgent,
-    name: string,
+    assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(agent, MEDIA, name, id);
+    return this.saveAssetId(agent, MEDIA, assetTag, id);
   }
 
   getAllMedias(
@@ -94,27 +94,25 @@ export class WhatsAppAssetsManager {
     return this.getAllAssets(agent, MEDIA);
   }
 
-  unsaveMedia(agent: string | WhatsAppAgent, name: string): Promise<boolean> {
-    return this.unsaveAssetId(agent, MEDIA, name);
+  unsaveMedia(
+    agent: string | WhatsAppAgent,
+    assetTag: string
+  ): Promise<boolean> {
+    return this.unsaveAssetId(agent, MEDIA, assetTag);
   }
 
   async uploadMedia(
     agent: string | WhatsAppAgent,
-    name: string,
+    assetTag: string,
     node: SociablyNode
   ): Promise<string> {
-    const existed = await this.getMedia(agent, name);
-    if (existed !== undefined) {
-      throw new Error(`attachment [ ${name} ] already exist`);
-    }
-
     const result = await this._bot.uploadMedia(agent, node);
     if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
     const id = result.id as string;
-    await this.saveMedia(agent, name, id);
+    await this.saveMedia(agent, assetTag, id);
     return id;
   }
 }

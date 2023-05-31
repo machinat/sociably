@@ -562,17 +562,6 @@ describe('assets management', () => {
       <img src="http://foo.bar/avatar" />
     );
 
-    state.get.mock.fakeReturnValue('_ALREADY_EXISTED_ATTACHMENT_');
-    await expect(
-      manager.uploadChatAttachment(
-        page,
-        'my_avatar',
-        <img src="http://foo.bar/avatar" />
-      )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"attachment [ my_avatar ] already exist"`
-    );
-
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');
   });
@@ -606,16 +595,6 @@ describe('assets management', () => {
         profile_picture_url: '_URL_',
       },
     });
-
-    state.get.mock.fake(async () => '_ALREADY_EXISTED_PERSONA_');
-    await expect(
-      manager.createPersona(page, 'cute_persona', {
-        name: 'BB8',
-        profilePictureUrl: '_URL_',
-      })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"persona [ cute_persona ] already exist"`
-    );
 
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('cute_persona', '_PERSONA_ID_');
