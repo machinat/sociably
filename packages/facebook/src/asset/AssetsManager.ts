@@ -73,6 +73,10 @@ export class FacebookAssetsManager {
     this.defaultAppSettings = defaultAppSettings;
   }
 
+  /**
+   * Set webhook subscription of an app. Check https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge/
+   * for references
+   */
   async setAppSubscriptionWebhook(
     webhookUrl: string,
     {
@@ -108,6 +112,10 @@ export class FacebookAssetsManager {
     });
   }
 
+  /**
+   * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
+   * for references.
+   */
   async setPageSubscribedApp(
     page: string | FacebookPage,
     options?: { fields?: string[]; accessToken?: string }
@@ -128,6 +136,10 @@ export class FacebookAssetsManager {
     });
   }
 
+  /**
+   * Set Messenger profile of a page. Check https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/
+   * for references.
+   */
   async setPageMessengerProfile(
     page: string | FacebookPage,
     settingsInput: Record<string, unknown>,
@@ -260,6 +272,7 @@ export class FacebookAssetsManager {
     return this.unsaveAssetId(page, ATTACHMENT, assetTag);
   }
 
+  /** Upload and save a Messenger chat attachment */
   async uploadChatAttachment(
     page: string | FacebookPage,
     assetTag: string,
@@ -303,6 +316,7 @@ export class FacebookAssetsManager {
     return this.unsaveAssetId(page, PERSONA, assetTag);
   }
 
+  /** Create and save a Messenger persona */
   async createPersona(
     page: string | FacebookPage,
     assetTag: string,
@@ -324,6 +338,7 @@ export class FacebookAssetsManager {
     return personaId;
   }
 
+  /** Delete and unsave a Messenger persona */
   async deletePersona(
     page: string | FacebookPage,
     assetTag: string,
