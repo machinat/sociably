@@ -265,6 +265,7 @@ export class FacebookBot
     method = 'GET',
     url,
     params,
+    accessToken,
   }: ApiCallOptions): Promise<ResBody> {
     const page =
       typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
@@ -273,6 +274,7 @@ export class FacebookBot
         {
           channel: page,
           request: { method, url, params },
+          accessToken,
         },
       ]);
 

@@ -328,11 +328,41 @@ describe('.requestApi(options)', () => {
         url: 'foo',
         params: { bar: 'baz' },
       })
-    ).resolves.toEqual({
-      foo: 'bar',
-    });
+    ).resolves.toEqual({ foo: 'bar' });
 
     expect(apiCall.isDone()).toBe(true);
+    expect(bodySpy).toHaveBeenCalledTimes(1);
+    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+      {
+        "access_token": "_ACCESS_TOKEN_",
+        "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
+        "batch": "[{"method":"POST","relative_url":"foo?access_token=_ACCESS_TOKEN_","body":"bar=baz","omit_response_on_success":false}]",
+      }
+    `);
+  });
+
+  test('with accessToken', async () => {
+    const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
+    await bot.start();
+
+    graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
+    await expect(
+      bot.requestApi({
+        page,
+        method: 'POST',
+        url: 'foo',
+        params: { bar: 'baz' },
+        accessToken: '_MY_ACCESS_TOKEN_',
+      })
+    ).resolves.toEqual({ foo: 'bar' });
+
+    expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+      {
+        "access_token": "_MY_ACCESS_TOKEN_",
+        "appsecret_proof": "a2d4a2635b030a35c39f30231ffe768f18af5b034c7be4e095c48495341db374",
+        "batch": "[{"method":"POST","relative_url":"foo?access_token=_MY_ACCESS_TOKEN_","body":"bar=baz","omit_response_on_success":false}]",
+      }
+    `);
   });
 
   it('throw MetaApiError if api call fail', async () => {
