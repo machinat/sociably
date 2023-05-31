@@ -91,25 +91,6 @@ describe('.constructor()', () => {
       ])
     );
   });
-
-  test('use "liffId" querystring if not given in options', () => {
-    window.mock
-      .getter('location')
-      .fakeReturnValue(
-        url.parse('https://sociably.io/foo?bar=baz&liffId=_LIFF_ID_')
-      );
-
-    const authenticator = new ClientAuthenticator();
-    expect(authenticator.liffId).toBe('_LIFF_ID_');
-  });
-
-  it('throw if liffId is empty', () => {
-    expect(
-      () => new ClientAuthenticator({} as never)
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"liff id is required on either \`options.liffId\` or \`liffId\` query param"`
-    );
-  });
 });
 
 describe('.init()', () => {
@@ -131,6 +112,7 @@ describe('.init()', () => {
 
     await expect(promise).resolves.toBe(undefined);
     expect(liff.init).toHaveBeenCalledTimes(1);
+    expect(liff.init).toHaveBeenCalledWith({ liffId: '_LIFF_ID_' });
     expect(liff.login).not.toHaveBeenCalled();
   });
 
@@ -144,6 +126,38 @@ describe('.init()', () => {
 
     expect(document.getElementById('LIFF')).toBe(null);
     expect(liff.init).toHaveBeenCalledTimes(1);
+  });
+
+  test('use "liffId" querystring if not given in contructor options', async () => {
+    window.mock
+      .getter('location')
+      .fakeReturnValue(
+        url.parse('https://sociably.io/foo?bar=baz&liffId=_LIFF_ID_')
+      );
+
+    const authenticator = new ClientAuthenticator({
+      shouldLoadLiffSDK: false,
+    });
+
+    await expect(
+      authenticator.init()
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"liff id is required on either \`options.liffId\` or \`liffId\` query param"`
+    );
+    expect(authenticator.liffId).toBe('');
+    expect(liff.init).not.toHaveBeenCalled();
+  });
+
+  it('throw if liffId is empty', async () => {
+    const authenticator = new ClientAuthenticator({
+      shouldLoadLiffSDK: false,
+    });
+
+    await expect(
+      authenticator.init()
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"liff id is required on either \`options.liffId\` or \`liffId\` query param"`
+    );
   });
 
   it('wait for redirect while in LIFF primary redirecting', async () => {

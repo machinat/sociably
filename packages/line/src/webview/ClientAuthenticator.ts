@@ -58,19 +58,20 @@ class LineClientAuthenticator
   readonly platform = LINE;
 
   constructor(options?: ClientAuthenticatorOptions) {
+    this.liffId = options?.liffId || '';
+    this.shouldLoadLiffSDK = options?.shouldLoadLiffSDK ?? true;
+  }
+
+  async init(): Promise<void> {
     const searchParams = new URLSearchParams(window.location.search);
-    const liffId = options?.liffId ?? searchParams.get(LIFF_ID_QUERY_KEY);
+    const liffId = this.liffId ?? searchParams.get(LIFF_ID_QUERY_KEY);
     if (!liffId) {
       throw new Error(
         'liff id is required on either `options.liffId` or `liffId` query param'
       );
     }
-
     this.liffId = liffId;
-    this.shouldLoadLiffSDK = options?.shouldLoadLiffSDK ?? true;
-  }
 
-  async init(): Promise<void> {
     if (this.shouldLoadLiffSDK) {
       const SCRIPT = 'script';
       const js = document.createElement(SCRIPT);
@@ -89,7 +90,6 @@ class LineClientAuthenticator
     this.liff = (window as any).liff;
     await this.liff.init({ liffId: this.liffId });
 
-    const searchParams = new URLSearchParams(window.location.search);
     if (typeof searchParams.get('liff.state') === 'string') {
       // wait for secondary redirecting during primary redirecting from LIFF
       await waitingForRedirecting();
