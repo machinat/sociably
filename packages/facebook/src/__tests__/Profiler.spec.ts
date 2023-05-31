@@ -51,7 +51,10 @@ test('fetch profile from api', async () => {
         "id": "1234567890",
         "platform": "facebook",
       },
-      "url": "_USER_ID_?fields=id,name,first_name,last_name,profile_pic",
+      "params": {
+        "fields": "id,name,first_name,last_name,profile_pic",
+      },
+      "url": "_USER_ID_",
     }
   `);
 
@@ -103,7 +106,10 @@ it('query additional optionalProfileFields if given', async () => {
         "id": "1234567890",
         "platform": "facebook",
       },
-      "url": "_USER_ID_?fields=locale,timezone,gender,id,name,first_name,last_name,profile_pic",
+      "params": {
+        "fields": "locale,timezone,gender,id,name,first_name,last_name,profile_pic",
+      },
+      "url": "_USER_ID_",
     }
   `);
 

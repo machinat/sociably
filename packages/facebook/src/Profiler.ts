@@ -28,13 +28,13 @@ type ProfilerOptions = {
 export class FacebookProfiler
   implements UserProfiler<FacebookPage, FacebookUser>
 {
-  profileFields: string;
-  private _bot: BotP;
+  private profileFieldsStr: string;
+  private bot: BotP;
   platform = FACEBOOK;
 
   constructor(bot: BotP, { optionalProfileFields = [] }: ProfilerOptions = {}) {
-    this._bot = bot;
-    this.profileFields = [
+    this.bot = bot;
+    this.profileFieldsStr = [
       ...optionalProfileFields,
       ...DEFAULT_PROFILE_FIELDS,
     ].join(',');
@@ -48,10 +48,11 @@ export class FacebookProfiler
     let rawProfile: RawUserProfile;
 
     try {
-      rawProfile = await this._bot.requestApi({
+      rawProfile = await this.bot.requestApi({
         page,
         method: 'GET',
-        url: `${userId}?fields=${this.profileFields}`,
+        url: `${userId}`,
+        params: { fields: this.profileFieldsStr },
       });
     } catch (err) {
       if (err instanceof MetaApiError) {
