@@ -715,12 +715,13 @@ test('job with accessToken', async () => {
   await expect(
     queue.executeJobs([
       {
+        channel: { platform: 'test', uid: 'foo' },
+        accessToken: '__MY_SPECIAL_ACCESS_TOKEN__',
         request: {
           method: 'POST',
           url: 'settins/api',
           params: { some: 'app settings' },
         },
-        accessToken: '__MY_SPECIAL_ACCESS_TOKEN__',
       },
     ])
   ).resolves.toMatchSnapshot();

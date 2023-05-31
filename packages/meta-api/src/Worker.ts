@@ -199,11 +199,13 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         accessToken: accessTokenInput,
       } = job;
 
-      const accessToken = job.asApplication
-        ? `${this._appId}|${this._appSecret}`
-        : channel
-        ? channelTokenMap.get(channel.uid) || this.defaultAccessToken
-        : accessTokenInput || this.defaultAccessToken;
+      const accessToken =
+        accessTokenInput ||
+        (job.asApplication
+          ? `${this._appId}|${this._appSecret}`
+          : channel
+          ? channelTokenMap.get(channel.uid) || this.defaultAccessToken
+          : this.defaultAccessToken);
       if (!rootAccessToken) {
         rootAccessToken = accessToken;
       }

@@ -179,6 +179,10 @@ exports[`job with accessToken 1`] = `
       "error": undefined,
       "job": {
         "accessToken": "__MY_SPECIAL_ACCESS_TOKEN__",
+        "channel": {
+          "platform": "test",
+          "uid": "foo",
+        },
         "request": {
           "method": "POST",
           "params": {
