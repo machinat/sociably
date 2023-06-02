@@ -21,7 +21,8 @@ const plainJob = { channel: page, request: { method: 'GET', url: 'foo' } };
 const jobWithFileAndAssetTag = (assetTag?: string) => ({
   channel: page,
   request: { method: 'POST', url: 'foo' },
-  file: { data: '__FILE_DATA__', assetTag },
+  file: { data: '__FILE_DATA__' },
+  assetTag,
 });
 
 const apiResult = {

@@ -40,6 +40,7 @@ describe('media Components', () => {
       [
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": undefined,
           "params": {
             "message": {
@@ -57,6 +58,7 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": undefined,
           "params": {
             "message": {
@@ -74,8 +76,8 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": {
-            "assetTag": undefined,
             "data": "_IMAGE_BINARY_DATA_",
             "info": undefined,
           },
@@ -95,6 +97,7 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": undefined,
           "params": {
             "message": {
@@ -112,6 +115,7 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": undefined,
           "params": {
             "message": {
@@ -129,8 +133,8 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": {
-            "assetTag": undefined,
             "data": "_VIDEO_BINARY_DATA_",
             "info": {
               "filename": "foo.mp4",
@@ -152,6 +156,7 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": undefined,
           "params": {
             "message": {
@@ -169,6 +174,7 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": undefined,
           "params": {
             "message": {
@@ -186,8 +192,8 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": "foo_audio",
           "attachFile": {
-            "assetTag": "foo_audio",
             "data": "_AUDIO_BINARY_DATA_",
             "info": undefined,
           },
@@ -207,6 +213,7 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": undefined,
           "params": {
             "message": {
@@ -224,6 +231,7 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": undefined,
           "attachFile": undefined,
           "params": {
             "message": {
@@ -241,8 +249,8 @@ describe('media Components', () => {
         },
         {
           "apiPath": "me/messages",
+          "assetTag": "foo_file",
           "attachFile": {
-            "assetTag": "foo_file",
             "data": "_FILE_BINARY_DATA_",
             "info": {
               "filename": "foo.pdf",

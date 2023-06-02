@@ -48,17 +48,20 @@ it('save created assets', async () => {
   const jobs = [
     {
       ...plainJob,
-      file: { data: 'FOO', assetTag: 'foo' },
+      file: { data: 'FOO' },
+      assetTag: 'foo',
     },
     { ...plainJob },
     {
       ...plainJob,
-      file: { data: 'BAR', assetTag: 'bar' },
+      file: { data: 'BAR' },
+      assetTag: 'bar',
     },
     { ...plainJob, file: { data: 'XXX' } },
     {
       ...plainJob,
-      file: { data: 'BAZ', assetTag: 'baz' },
+      file: { data: 'BAZ' },
+      assetTag: 'baz',
     },
   ];
   const response = {
@@ -118,17 +121,20 @@ it('save created assets when partial success', async () => {
   const jobs = [
     {
       ...plainJob,
-      file: { data: 'FOO', assetTag: 'foo' },
+      file: { data: 'FOO' },
+      assetTag: 'foo',
     },
     { ...plainJob },
     {
       ...plainJob,
-      file: { data: 'BAR', assetTag: 'bar' },
+      file: { data: 'BAR' },
+      assetTag: 'bar',
     },
     { ...plainJob, file: { data: 'XXX' } },
     {
       ...plainJob,
-      file: { data: 'BAZ', assetTag: 'baz' },
+      file: { data: 'BAZ' },
+      assetTag: 'baz',
     },
   ];
   const results = [

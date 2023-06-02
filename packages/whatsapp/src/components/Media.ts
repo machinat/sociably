@@ -100,9 +100,9 @@ const makeMediaComponent = (componentName: string, mediaType: string) => {
                 data: fileData,
                 type: fileType as string,
                 info: { contentType: fileType, filename: fileName },
-                assetTag,
               }
             : undefined,
+          assetTag,
         }),
       ];
     },

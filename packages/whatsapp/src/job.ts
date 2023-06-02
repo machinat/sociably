@@ -28,16 +28,11 @@ export const createChatJobs = (
         },
       });
     } else {
-      const { message, mediaFile } = segment.value;
+      const { message, mediaFile, assetTag } = segment.value;
       const mediaResultKey = mediaFile ? getTimeId() : undefined;
 
       if (mediaFile) {
-        const {
-          type: fileType,
-          data: fileData,
-          info: fileInfo,
-          assetTag,
-        } = mediaFile;
+        const { type: fileType, data: fileData, info: fileInfo } = mediaFile;
 
         jobs.push({
           key: chat.uid,
@@ -47,7 +42,8 @@ export const createChatJobs = (
             url: `${chat.agentNumberId}/media`,
             params: { type: fileType, messaging_product: 'whatsapp' },
           },
-          file: { data: fileData, info: fileInfo, assetTag },
+          file: { data: fileData, info: fileInfo },
+          assetTag,
           registerResult: mediaResultKey,
         });
       }
@@ -103,7 +99,8 @@ export const createUploadingMediaJobs = (
   }
 
   const {
-    mediaFile: { type: fileType, data: fileData, info: fileInfo, assetTag },
+    mediaFile: { type: fileType, data: fileData, info: fileInfo },
+    assetTag,
   } = segments[0].value;
   return [
     {
@@ -114,7 +111,8 @@ export const createUploadingMediaJobs = (
         url: `${agent.numberId}/media`,
         params: { type: fileType, messaging_product: 'whatsapp' },
       },
-      file: { data: fileData, info: fileInfo, assetTag },
+      file: { data: fileData, info: fileInfo },
+      assetTag,
     },
   ];
 };

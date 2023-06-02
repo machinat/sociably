@@ -64,6 +64,13 @@ type MessageTags =
 export type AttachFileValue = {
   data: string | Buffer | NodeJS.ReadableStream;
   info?: FileInfo;
+};
+
+export type BaseSegmentValue = {
+  type: string;
+  apiPath: string;
+  params: Record<string, unknown>;
+  attachFile?: AttachFileValue;
   assetTag?: string;
 };
 
@@ -78,6 +85,7 @@ export type MessageValue = {
     persona_id?: string;
   };
   attachFile?: AttachFileValue;
+  assetTag?: string;
 };
 
 export type SenderActionValue = {

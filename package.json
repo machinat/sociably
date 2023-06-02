@@ -1,6 +1,6 @@
 {
   "private": true,
-  "exports": false,
+  "exports": null,
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "make",

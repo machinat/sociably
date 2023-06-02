@@ -4,6 +4,7 @@ exports[`.message(thread, message, options) message options 1`] = `
 {
   "jobs": [
     {
+      "assetTag": undefined,
       "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
@@ -29,6 +30,7 @@ exports[`.message(thread, message, options) message options 1`] = `
       },
     },
     {
+      "assetTag": undefined,
       "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
@@ -90,6 +92,7 @@ exports[`.message(thread, message, options) message options 1`] = `
     {
       "payload": [
         {
+          "assetTag": undefined,
           "channel": FacebookPage {
             "$$typeofChannel": true,
             "id": "1234567890",
@@ -115,6 +118,7 @@ exports[`.message(thread, message, options) message options 1`] = `
           },
         },
         {
+          "assetTag": undefined,
           "channel": FacebookPage {
             "$$typeofChannel": true,
             "id": "1234567890",
@@ -174,6 +178,7 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
 {
   "jobs": [
     {
+      "assetTag": undefined,
       "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
@@ -199,6 +204,7 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
       },
     },
     {
+      "assetTag": undefined,
       "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
@@ -260,6 +266,7 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
     {
       "payload": [
         {
+          "assetTag": undefined,
           "channel": FacebookPage {
             "$$typeofChannel": true,
             "id": "1234567890",
@@ -285,6 +292,7 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
           },
         },
         {
+          "assetTag": undefined,
           "channel": FacebookPage {
             "$$typeofChannel": true,
             "id": "1234567890",

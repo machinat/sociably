@@ -125,8 +125,8 @@ describe('createChatJobs', () => {
             type: 'audio/mp3',
             data: '_AUDIO_BLOB_DATA_',
             info: { filename: 'meow.mp3' },
-            assetTag: 'foo_mp3',
           },
+          assetTag: 'foo_mp3',
         },
         node: <audio />,
         path: '$:1',
@@ -174,8 +174,8 @@ describe('createChatJobs', () => {
         file: {
           data: '_AUDIO_BLOB_DATA_',
           info: { filename: 'meow.mp3' },
-          assetTag: 'foo_mp3',
         },
+        assetTag: 'foo_mp3',
         registerResult: expect.any(String),
       },
       {
@@ -288,8 +288,8 @@ describe('createUploadingMediaJobs', () => {
               type: 'audio/mp3',
               data: '_AUDIO_BLOB_DATA_',
               info: { filename: 'foo.mp3' },
-              assetTag: 'foo_mp3',
             },
+            assetTag: 'foo_mp3',
           },
           node: <audio />,
           path: '$:0',
@@ -306,8 +306,8 @@ describe('createUploadingMediaJobs', () => {
         file: {
           data: '_AUDIO_BLOB_DATA_',
           info: { filename: 'foo.mp3' },
-          assetTag: 'foo_mp3',
         },
+        assetTag: 'foo_mp3',
       },
     ]);
   });

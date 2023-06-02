@@ -18,17 +18,17 @@ test.each([
   ['video', Video],
   ['sticker', Sticker],
 ])('rendering %s value', async (type, Media) => {
-  await expect(renderUnitElement(<Media mediaId="123" />)).resolves.toEqual([
+  let mediaElement = <Media mediaId="123" />;
+  await expect(renderUnitElement(mediaElement)).resolves.toEqual([
     {
       type: 'unit',
-      node: <Media mediaId="123" />,
+      node: mediaElement,
       path: '$',
       value: { message: { type, [type]: { id: '123' } } },
     },
   ]);
-  await expect(
-    renderUnitElement(<Media url="http://foo.bar/baz" replyTo="MESSAGE_ID" />)
-  ).resolves.toEqual([
+  mediaElement = <Media url="http://foo.bar/baz" replyTo="MESSAGE_ID" />;
+  await expect(renderUnitElement(mediaElement)).resolves.toEqual([
     {
       type: 'unit',
       node: <Media url="http://foo.bar/baz" replyTo="MESSAGE_ID" />,
@@ -43,12 +43,13 @@ test.each([
     },
   ]);
   const fileData = Buffer.from('_BINARY_DATA_');
-  await expect(
-    renderUnitElement(<Media fileType="foo/bar" fileData={fileData} />)
-  ).resolves.toEqual([
+  mediaElement = (
+    <Media fileType="foo/bar" fileData={fileData} assetTag="_ASSET_TAG_" />
+  );
+  await expect(renderUnitElement(mediaElement)).resolves.toEqual([
     {
       type: 'unit',
-      node: <Media fileType="foo/bar" fileData={fileData} />,
+      node: mediaElement,
       path: '$',
       value: {
         message: { type, [type]: {} },
@@ -57,6 +58,7 @@ test.each([
           data: fileData,
           info: { contentType: 'foo/bar' },
         },
+        assetTag: '_ASSET_TAG_',
       },
     },
   ]);
@@ -67,20 +69,21 @@ test.each([
   ['document', Document],
   ['video', Video],
 ])('rendering %s value with caption', async (type, Media) => {
-  let node = <Media mediaId="123" caption="FOO" />;
-  await expect(renderUnitElement(node)).resolves.toEqual([
+  let mediaElement = <Media mediaId="123" caption="FOO" />;
+  await expect(renderUnitElement(mediaElement)).resolves.toEqual([
     {
       type: 'unit',
-      node,
+      node: mediaElement,
       path: '$',
       value: {
         message: { type, [type]: { id: '123', caption: 'FOO' } },
       },
     },
   ]);
-  node = (
+  mediaElement = (
     <Media
       url="http://foo.bar/baz"
+      assetTag="_ASSET_TAG_"
       caption={
         <>
           FOO {'BAR'} <>BAZ</>
@@ -88,16 +91,17 @@ test.each([
       }
     />
   );
-  await expect(renderUnitElement(node)).resolves.toEqual([
+  await expect(renderUnitElement(mediaElement)).resolves.toEqual([
     {
       type: 'unit',
-      node,
+      node: mediaElement,
       path: '$',
       value: {
         message: {
           type,
           [type]: { link: 'http://foo.bar/baz', caption: 'FOO BAR BAZ' },
         },
+        assetTag: '_ASSET_TAG_',
       },
     },
   ]);

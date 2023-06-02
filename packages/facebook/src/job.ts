@@ -1,11 +1,6 @@
 import { formatNode, getTimeId } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
 import type { MetaApiJob, MetaApiJobRequest } from '@sociably/meta-api';
-import type {
-  FacebookSegmentValue,
-  MessagingOptions,
-  AttachFileValue,
-} from './types.js';
 import type FacebookChat from './Chat.js';
 import FacebookPage from './Page.js';
 import type InteractTarget from './InteractTarget.js';
@@ -16,6 +11,12 @@ import {
   PATH_PHOTOS,
   MESSENGER_MESSAGING_TYPE_RESPONSE,
 } from './constant.js';
+import type {
+  FacebookSegmentValue,
+  MessagingOptions,
+  AttachFileValue,
+  BaseSegmentValue,
+} from './types.js';
 
 const POST = 'POST';
 
@@ -34,12 +35,13 @@ export const createChatJobs = (options?: MessagingOptions) => {
       let params: { [k: string]: unknown };
       let apiUrl: string;
       let file: undefined | AttachFileValue;
+      let assetTag: undefined | string;
 
       if (typeof value === 'string') {
         apiUrl = PATH_MESSAGES;
         params = { message: { text: value } };
       } else if (typeof value === 'object' && value.type === 'message') {
-        ({ params } = value);
+        ({ params, assetTag } = value as BaseSegmentValue);
         apiUrl = value.apiPath;
         file = value.attachFile;
       } else {
@@ -92,6 +94,7 @@ export const createChatJobs = (options?: MessagingOptions) => {
         key: chat.uid,
         channel: chat.page,
         file,
+        assetTag,
       };
     }
 

@@ -15,14 +15,14 @@ const updateAssetsFromSuccessfulJobs = async (
   for (let i = 0; i < jobs.length; i += 1) {
     const result = results[i];
     if (result) {
-      const { file, channel } = jobs[i];
+      const { channel, assetTag } = jobs[i];
       const { body } = result;
 
-      if (file?.assetTag && body.attachment_id) {
+      if (assetTag && body.attachment_id) {
         updatingAssets.push(
           manager.saveAttachment(
             channel as FacebookPage,
-            file.assetTag,
+            assetTag,
             body.attachment_id
           )
         );

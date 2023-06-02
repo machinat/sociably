@@ -27,8 +27,8 @@ export type MetaApiJob = {
   file?: {
     data: string | Buffer | NodeJS.ReadableStream;
     info?: FileInfo;
-    assetTag?: string;
   };
+  assetTag?: string;
   registerResult?: string;
   consumeResult?: {
     keys: string[];

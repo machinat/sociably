@@ -28,8 +28,8 @@ export type WhatsAppSegmentValue = {
     type: string;
     data: string | Buffer | NodeJS.ReadableStream;
     info?: FileInfo;
-    assetTag?: string;
   };
+  assetTag?: string;
 };
 
 export type WhatsAppComponent<
