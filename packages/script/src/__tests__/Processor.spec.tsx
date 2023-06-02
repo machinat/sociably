@@ -5,7 +5,7 @@ import { traverse as traverseMessage } from '@sociably/core/iterator';
 import { InMemoryStateController } from '@sociably/dev-tools/InMemoryState';
 import { ScriptProcessor } from '../Processor.js';
 import build from '../build.js';
-import { SCRIPT_STATE_KEY } from '../constant.js';
+import { SCRIPT_RUNTIME_STATE_KEY } from '../constant.js';
 import {
   IF,
   ELSE,
@@ -170,7 +170,7 @@ describe('.start(thread, Script)', () => {
 
     expect(runtime.requireSaving).toBe(false);
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -236,7 +236,7 @@ describe('.start(thread, Script)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -303,7 +303,7 @@ describe('.start(thread, Script)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -343,7 +343,7 @@ describe('.start(thread, Script)', () => {
 
   it('throw if there is already script processing in the thread', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -366,7 +366,7 @@ describe('.start(thread, Script)', () => {
 describe('.continue(thread, input)', () => {
   it('continue from prompt point', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -411,7 +411,7 @@ describe('.continue(thread, input)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -450,7 +450,7 @@ describe('.continue(thread, input)', () => {
 
   it('continue under subscript', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'call_1' },
@@ -498,7 +498,7 @@ describe('.continue(thread, input)', () => {
 
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -545,7 +545,7 @@ describe('.continue(thread, input)', () => {
 
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
@@ -567,7 +567,7 @@ describe('.continue(thread, input)', () => {
 describe('.getRuntime(thread)', () => {
   test('manually call runtime.run()', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -665,7 +665,7 @@ describe('.getRuntime(thread)', () => {
 
   it('throw if unknown script name received', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
@@ -687,7 +687,7 @@ describe('.getRuntime(thread)', () => {
 describe('Runtime.exit(thread)', () => {
   it('delete saved runtime state', async () => {
     const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
@@ -703,7 +703,7 @@ describe('Runtime.exit(thread)', () => {
     await expect(runtime.exit()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 
@@ -719,7 +719,7 @@ describe('Runtime.exit(thread)', () => {
     await expect(runtime.exit()).resolves.toBe(false);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 });
@@ -739,7 +739,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toEqual({
       callStack: [{ name: 'MyScript', stopAt: 'ask_2', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
@@ -755,7 +755,7 @@ describe('Runtime.save(runtime)', () => {
       scriptAccessor
     );
 
-    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       callStack: [{ name: 'MyScript', stopAt: 'ask_3', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
       version: '0',
@@ -766,7 +766,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toEqual({
       callStack: [
         { name: 'MyScript', stopAt: 'call_1', vars: { foo: 'bar' } },
@@ -795,7 +795,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(false);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
     ).resolves.toBe(undefined);
   });
 
@@ -811,7 +811,7 @@ describe('Runtime.save(runtime)', () => {
       goto: '#3',
     });
 
-    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
@@ -826,7 +826,7 @@ describe('Runtime.save(runtime)', () => {
 
   test('throw if continued runtime save while no runtime state existing', async () => {
     const stateController = new InMemoryStateController();
-    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -841,7 +841,7 @@ describe('Runtime.save(runtime)', () => {
     );
     const runtime = (await processor.getRuntime(thread))!;
 
-    stateController.threadState(thread).delete(SCRIPT_STATE_KEY);
+    stateController.threadState(thread).delete(SCRIPT_RUNTIME_STATE_KEY);
     await runtime.run();
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
@@ -851,7 +851,7 @@ describe('Runtime.save(runtime)', () => {
 
   test('throw if saveTimestamp not match', async () => {
     const stateController = new InMemoryStateController();
-    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -866,7 +866,7 @@ describe('Runtime.save(runtime)', () => {
     );
     const runtime = (await processor.getRuntime(thread))!;
 
-    stateController.threadState(thread).set(SCRIPT_STATE_KEY, {
+    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },

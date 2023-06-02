@@ -3,12 +3,12 @@ import StateControllerI from '@sociably/core/base/StateController';
 import type { SociablyThread, SociablyNode } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
 import execute from './execute.js';
-import { SCRIPT_STATE_KEY } from './constant.js';
+import { SCRIPT_RUNTIME_STATE_KEY } from './constant.js';
 import { serializeScriptStatus } from './utils.js';
 import type {
   AnyScriptLibrary,
   CallStatus,
-  ScriptProcessState,
+  ScriptRuntimeState,
   InputOfScript,
   ReturnOfScript,
   YieldOfScript,
@@ -154,7 +154,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     const timestamp = Date.now();
     await this._stateContoller
       .threadState(this.thread)
-      .update<ScriptProcessState>(SCRIPT_STATE_KEY, (lastState) => {
+      .update<ScriptRuntimeState>(SCRIPT_RUNTIME_STATE_KEY, (lastState) => {
         if (
           saveTimestamp
             ? !lastState || lastState.timestamp !== saveTimestamp
@@ -184,7 +184,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   async exit(): Promise<boolean> {
     const isDeleted = await this._stateContoller
       .threadState(this.thread)
-      .delete(SCRIPT_STATE_KEY);
+      .delete(SCRIPT_RUNTIME_STATE_KEY);
     return isDeleted;
   }
 }

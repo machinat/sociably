@@ -1,13 +1,13 @@
 import StateControllerI from '@sociably/core/base/StateController';
 import type { SociablyThread } from '@sociably/core';
 import { ServiceScope, serviceProviderClass } from '@sociably/core/service';
-import { SCRIPT_STATE_KEY } from './constant.js';
+import { SCRIPT_RUNTIME_STATE_KEY } from './constant.js';
 import { LibraryAccessorI } from './interface.js';
 import ScriptRuntime from './Runtime.js';
 import type {
   AnyScriptLibrary,
   CallStatus,
-  ScriptProcessState,
+  ScriptRuntimeState,
   ParamsOfScript,
   InputOfScript,
 } from './types.js';
@@ -50,7 +50,7 @@ export class ScriptProcessor<
 
     const state = await this._stateContoller
       .threadState(thread)
-      .get<ScriptProcessState>(SCRIPT_STATE_KEY);
+      .get<ScriptRuntimeState>(SCRIPT_RUNTIME_STATE_KEY);
 
     if (state) {
       const scriptName = state.callStack[0].name;
@@ -83,7 +83,7 @@ export class ScriptProcessor<
   ): Promise<null | ScriptRuntime<Script>> {
     const state = await this._stateContoller
       .threadState(thread)
-      .get<ScriptProcessState>(SCRIPT_STATE_KEY);
+      .get<ScriptRuntimeState>(SCRIPT_RUNTIME_STATE_KEY);
 
     if (!state) {
       return null;
