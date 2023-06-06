@@ -139,13 +139,10 @@ describe('.init()', () => {
       shouldLoadLiffSDK: false,
     });
 
-    await expect(
-      authenticator.init()
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"liff id is required on either \`options.liffId\` or \`liffId\` query param"`
-    );
-    expect(authenticator.liffId).toBe('');
-    expect(liff.init).not.toHaveBeenCalled();
+    await authenticator.init();
+    expect(authenticator.liffId).toBe('_LIFF_ID_');
+    expect(liff.init).toHaveBeenCalledTimes(1);
+    expect(liff.init).toHaveBeenCalledWith({ liffId: '_LIFF_ID_' });
   });
 
   it('throw if liffId is empty', async () => {

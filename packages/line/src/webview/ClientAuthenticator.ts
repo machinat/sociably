@@ -45,7 +45,7 @@ class LineClientAuthenticator
     >
 {
   liff: any;
-  liffId: string;
+  liffId?: string;
   shouldLoadLiffSDK: boolean;
   marshalTypes = [
     LineChannel,
@@ -58,13 +58,13 @@ class LineClientAuthenticator
   readonly platform = LINE;
 
   constructor(options?: ClientAuthenticatorOptions) {
-    this.liffId = options?.liffId || '';
+    this.liffId = options?.liffId;
     this.shouldLoadLiffSDK = options?.shouldLoadLiffSDK ?? true;
   }
 
   async init(): Promise<void> {
     const searchParams = new URLSearchParams(window.location.search);
-    const liffId = this.liffId ?? searchParams.get(LIFF_ID_QUERY_KEY);
+    const liffId = this.liffId || searchParams.get(LIFF_ID_QUERY_KEY);
     if (!liffId) {
       throw new Error(
         'liff id is required on either `options.liffId` or `liffId` query param'
