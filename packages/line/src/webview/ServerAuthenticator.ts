@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { join as joinPath } from 'path/posix';
 import { serviceProviderClass } from '@sociably/core/service';
 import { ServerAuthenticator, CheckDataResult } from '@sociably/auth';
 import { AgentSettingsAccessorI } from '../interface.js';
@@ -61,7 +62,10 @@ export class LineServerAuthenticator
     }
 
     const liffId = setting.liff.default;
-    const liffUrl = new URL(`${liffId}/${path || ''}`, 'https://liff.line.me');
+    const liffUrl = new URL(
+      joinPath(liffId, path || ''),
+      'https://liff.line.me'
+    );
 
     liffUrl.searchParams.set(CHAT_CHANNEL_QUERY_KEY, channel.id);
     liffUrl.searchParams.set(LIFF_ID_QUERY_KEY, liffId);

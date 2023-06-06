@@ -81,7 +81,12 @@ describe('.getLiffUrl(channel, path, chat)', () => {
     await expect(
       authenticator.getLiffUrl(botChannel)
     ).resolves.toMatchInlineSnapshot(
-      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`
+    );
+    await expect(
+      authenticator.getLiffUrl(botChannel, '/foo')
+    ).resolves.toMatchInlineSnapshot(
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`
     );
     await expect(
       authenticator.getLiffUrl(botChannel, 'foo?bar=baz')
