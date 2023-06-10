@@ -148,7 +148,7 @@ export class FacebookAssetsManager {
     const newSettings = snakecaseKeys(settingsInput);
 
     const {
-      data: [currentSettings],
+      data: [currentSettings = {}],
     } = await this._bot.requestApi({
       page,
       accessToken,

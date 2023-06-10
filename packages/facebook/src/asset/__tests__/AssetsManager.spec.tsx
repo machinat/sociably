@@ -219,7 +219,7 @@ describe('subscription management', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
       bot.requestApi.mock.fake(async ({ method }) =>
-        method === 'GET' ? { data: [{}] } : {}
+        method === 'GET' ? { data: [] } : {}
       );
 
       await expect(
