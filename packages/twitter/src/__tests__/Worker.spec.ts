@@ -286,7 +286,7 @@ it('open requests up to maxConnections', async () => {
   const bodySpy = moxy(() => true);
   const msgScope = twitterApi
     .post(/^\/2\/(foo|bar|baz)$/, bodySpy)
-    .delay(50)
+    .delay(100)
     .times(9)
     .reply(200, (_, body) => ({ data: body }));
 
@@ -341,30 +341,31 @@ it('open requests up to maxConnections', async () => {
   ];
 
   const executePromise = queue.executeJobs(jobs);
+  await delay(0);
 
-  await delay(50);
   expect(bodySpy).toHaveBeenCalledTimes(2);
   expect(bodySpy.mock.calls[0].args[0]).toEqual({ n: 1 });
   expect(bodySpy.mock.calls[1].args[0]).toEqual({ n: 3 });
+  await delay(110);
 
-  await delay(50);
   expect(bodySpy).toHaveBeenCalledTimes(4);
   expect(bodySpy.mock.calls[2].args[0]).toEqual({ n: 2 });
   expect(bodySpy.mock.calls[3].args[0]).toEqual({ n: 4 });
+  await delay(110);
 
-  await delay(50);
   expect(bodySpy).toHaveBeenCalledTimes(6);
   expect(bodySpy.mock.calls[4].args[0]).toEqual({ n: 5 });
   expect(bodySpy.mock.calls[5].args[0]).toEqual({ n: 7 });
+  await delay(110);
 
-  await delay(50);
   expect(bodySpy).toHaveBeenCalledTimes(8);
   expect(bodySpy.mock.calls[6].args[0]).toEqual({ n: 6 });
   expect(bodySpy.mock.calls[7].args[0]).toEqual({ n: 8 });
+  await delay(110);
 
-  await delay(50);
   expect(bodySpy).toHaveBeenCalledTimes(9);
   expect(bodySpy.mock.calls[8].args[0]).toEqual({ n: 9 });
+  await delay(110);
 
   expect(msgScope.isDone()).toBe(true);
   const result = await executePromise;

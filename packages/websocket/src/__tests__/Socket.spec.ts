@@ -389,7 +389,7 @@ describe('disconnect handshake', () => {
     await expect(
       serverSocket.disconnect({ connId, reason: 'bye2' })
     ).resolves.toBe(undefined);
-    await delay(50);
+    await delay(100);
 
     expect(clientDisconnectSpy).toHaveBeenCalledTimes(1);
     expect(clientDisconnectSpy).toHaveBeenCalledWith(

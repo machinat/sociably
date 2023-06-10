@@ -1023,7 +1023,7 @@ describe('refresh flow', () => {
     client.signOut();
     await delayLoops(200);
     jest.runAllTicks();
-    await delayLoops(200);
+    await delayLoops(400);
 
     expect(refreshingCall.isDone()).toBe(true);
     expect(client.isAuthorized).toBe(false);

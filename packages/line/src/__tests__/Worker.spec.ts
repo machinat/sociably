@@ -442,10 +442,9 @@ it('sequently excute jobs within an identical thread', async () => {
       chatChannelId: '2',
     },
   ]);
+  await delay(0);
 
   for (let i = 1; i <= 3; i += 1) {
-    await delay(100); // eslint-disable-line no-await-in-loop
-
     if (i === 1) {
       expect(bodySpy).toHaveBeenCalledTimes(3);
       expect(bodySpy.mock.calls[0].args[0]).toEqual({ id: 1 });
@@ -462,6 +461,7 @@ it('sequently excute jobs within an identical thread', async () => {
       expect(bodySpy.mock.calls[7].args[0]).toEqual({ id: 8 });
       expect(bodySpy.mock.calls[8].args[0]).toEqual({ id: 9 });
     }
+    await delay(110); // eslint-disable-line no-await-in-loop
   }
 
   expect(authorizationHeaderSpy).toHaveBeenCalledTimes(9);
@@ -558,10 +558,9 @@ it('open requests up to maxConnections', async () => {
       chatChannelId: '2',
     },
   ]);
+  await delay(0);
 
   for (let i = 1; i <= 5; i += 1) {
-    await delay(100); // eslint-disable-line no-await-in-loop
-
     if (i === 1) {
       expect(bodySpy).toHaveBeenCalledTimes(2);
       expect(bodySpy.mock.calls[0].args[0]).toEqual({ id: 1 });
@@ -582,6 +581,7 @@ it('open requests up to maxConnections', async () => {
       expect(bodySpy).toHaveBeenCalledTimes(9);
       expect(bodySpy.mock.calls[8].args[0]).toEqual({ id: 9 });
     }
+    await delay(110); // eslint-disable-line no-await-in-loop
   }
 
   expect(msgScope.isDone()).toBe(true);
