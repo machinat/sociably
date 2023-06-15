@@ -95,11 +95,9 @@ describe('.constructor()', () => {
 
 describe('.init()', () => {
   it('add liff sdk and call liff.init() after loaded', async () => {
-    const authenticator = new ClientAuthenticator({
-      liffId: '_LIFF_ID_',
-    });
+    const authenticator = new ClientAuthenticator({ liffId: '_LIFF_ID_' });
 
-    const promise = authenticator.init();
+    const promise = authenticator.init('https://...', null, null);
 
     const liffScriptEle: any = window.document.getElementById('LIFF');
     expect(liffScriptEle.tagName).toBe('SCRIPT');
@@ -110,7 +108,7 @@ describe('.init()', () => {
 
     liffScriptEle.onload();
 
-    await expect(promise).resolves.toBe(undefined);
+    await expect(promise).resolves.toEqual({ forceSignIn: false });
     expect(liff.init).toHaveBeenCalledTimes(1);
     expect(liff.init).toHaveBeenCalledWith({ liffId: '_LIFF_ID_' });
     expect(liff.login).not.toHaveBeenCalled();
@@ -122,7 +120,9 @@ describe('.init()', () => {
       shouldLoadLiffSDK: false,
     });
 
-    await expect(authenticator.init()).resolves.toBe(undefined);
+    await expect(
+      authenticator.init('https://...', null, null)
+    ).resolves.toEqual({ forceSignIn: false });
 
     expect(document.getElementById('LIFF')).toBe(null);
     expect(liff.init).toHaveBeenCalledTimes(1);
@@ -139,7 +139,7 @@ describe('.init()', () => {
       shouldLoadLiffSDK: false,
     });
 
-    await authenticator.init();
+    await authenticator.init('https://...', null, null);
     expect(authenticator.liffId).toBe('_LIFF_ID_');
     expect(liff.init).toHaveBeenCalledTimes(1);
     expect(liff.init).toHaveBeenCalledWith({ liffId: '_LIFF_ID_' });
@@ -151,7 +151,7 @@ describe('.init()', () => {
     });
 
     await expect(
-      authenticator.init()
+      authenticator.init('https://...', null, null)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"liff id is required on either \`options.liffId\` or \`liffId\` query param"`
     );
@@ -169,7 +169,7 @@ describe('.init()', () => {
       shouldLoadLiffSDK: false,
     });
 
-    const promise = authenticator.init();
+    const promise = authenticator.init('https://...', null, null);
     setImmediate(jest.runAllTimers);
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -180,6 +180,48 @@ describe('.init()', () => {
     jest.clearAllTimers();
     jest.useRealTimers();
   });
+
+  it.each`
+    authDataAttrs               | querystring                       | shouldForceSignIn
+    ${{}}                       | ${''}                             | ${false}
+    ${{ chan: '_CHANNEL_ID_' }} | ${''}                             | ${false}
+    ${{ room: '_ROOM_ID_' }}    | ${''}                             | ${false}
+    ${{ chan: '_GROUP_ID_' }}   | ${''}                             | ${false}
+    ${{}}                       | ${'chatChannelId=_CHANNEL_ID_'}   | ${true}
+    ${{}}                       | ${'roomId=_ROOM_ID_'}             | ${true}
+    ${{}}                       | ${'groupId=_GROUP_ID_'}           | ${true}
+    ${{ chan: '_CHANNEL_ID_' }} | ${'chatChannelId=_CHANNEL_2_ID_'} | ${true}
+    ${{ chan: '_CHANNEL_ID_' }} | ${'roomId=_ROOM_ID_'}             | ${true}
+    ${{ room: '_ROOM_ID_' }}    | ${'roomId=_ROOM_ID_2_'}           | ${true}
+    ${{ room: '_ROOM_ID_' }}    | ${'groupId=_GROUP_ID_'}           | ${true}
+    ${{ group: '_GROUP_ID_' }}  | ${'groupId=_GROUP_ID_2_'}         | ${true}
+    ${{ group: '_GROUP_ID_' }}  | ${'chatChannelId=_CHANNEL_ID_'}   | ${true}
+  `(
+    'return `forceSignIn` if current auth data ($authDataAttrs) is different from querystring ($querystring)',
+    async ({ authDataAttrs, querystring, shouldForceSignIn }) => {
+      if (querystring) {
+        window.mock
+          .getter('location')
+          .fakeReturnValue(url.parse(`https://sociably.io/foo?${querystring}`));
+      }
+      const authenticator = new ClientAuthenticator({
+        liffId: '_LIFF_ID_',
+        shouldLoadLiffSDK: false,
+      });
+
+      await expect(
+        authenticator.init('https://...', null, {
+          provider: '_PROVIDER_ID_',
+          client: '1234567890',
+          ref: RefChatType.External,
+          os: LiffOs.Web,
+          lang: 'en-US',
+          user: '_USER_ID_',
+          ...authDataAttrs,
+        })
+      ).resolves.toEqual({ forceSignIn: shouldForceSignIn });
+    }
+  );
 });
 
 describe('.fetchCredential()', () => {
@@ -190,7 +232,7 @@ describe('.fetchCredential()', () => {
       liffId: '_LIFF_ID_',
       shouldLoadLiffSDK: false,
     });
-    await authenticator.init();
+    await authenticator.init('https://...', null, null);
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
       ok: true,
@@ -220,7 +262,7 @@ describe('.fetchCredential()', () => {
       liffId: '_LIFF_ID_',
       shouldLoadLiffSDK: false,
     });
-    await authenticator.init();
+    await authenticator.init('https://...', null, null);
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
       ok: true,
@@ -249,7 +291,7 @@ describe('.fetchCredential()', () => {
       liffId: '_LIFF_ID_',
       shouldLoadLiffSDK: false,
     });
-    await authenticator.init();
+    await authenticator.init('https://...', null, null);
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
       ok: true,
@@ -279,7 +321,7 @@ describe('.fetchCredential()', () => {
       liffId: '_LIFF_ID_',
       shouldLoadLiffSDK: false,
     });
-    await authenticator.init();
+    await authenticator.init('https://...', null, null);
 
     await expect(authenticator.fetchCredential()).resolves.toEqual({
       ok: true,
@@ -308,7 +350,7 @@ describe('.fetchCredential()', () => {
 
     expect(liff.login).not.toHaveBeenCalled();
 
-    await authenticator.init();
+    await authenticator.init('https://...', null, null);
     const promise = authenticator.fetchCredential();
     setImmediate(jest.runAllTimers);
 
@@ -330,7 +372,6 @@ describe('.fetchCredential()', () => {
 describe('.checkAuthData(data)', () => {
   const authData = {
     provider: '_PROVIDER_ID_',
-    channel: '_CHANNEL_ID_',
     client: '1234567890',
     ref: RefChatType.External,
     os: LiffOs.Web,
@@ -454,7 +495,7 @@ test('.closeWebview', async () => {
     liffId: '_LIFF_ID_',
     shouldLoadLiffSDK: false,
   });
-  await authenticator.init();
+  await authenticator.init('https://...', null, null);
 
   expect(authenticator.closeWebview()).toBe(true);
   expect(liff.closeWindow).toHaveBeenCalledTimes(1);

@@ -39,9 +39,10 @@ const bot = moxy<SociablyBot<SociablyThread, unknown, unknown>>({
 } as never);
 
 const thread = {
+  $$typeofThread: true as const,
   platform: 'test',
   uid: 'test.foo',
-  uniqueIdentifier: { platform: 'test', id: 'foo' },
+  uniqueIdentifier: { $$typeof: [], platform: 'test', id: 'foo' },
 };
 
 const delegateOptions = moxy({
@@ -50,6 +51,7 @@ const delegateOptions = moxy({
   platformName: 'Test',
   platformColor: '#009',
   platformImageUrl: 'http://sociably.test/platform/img/icon.png',
+  checkCurrentAuthUsability: () => ({ ok: true }),
   verifyCredential: async (credential) => ({
     ok: true as const,
     data: { verified: credential },
@@ -58,8 +60,8 @@ const delegateOptions = moxy({
     ok: true as const,
     data,
     thread,
+    chatLinkUrl: 'https://test.platform.com/foo.bar',
   }),
-  getChatLink: () => 'https://test.platform.com/foo.bar',
 });
 
 const createReq = (url, header = {}) => {
@@ -193,14 +195,21 @@ describe('init login flow', () => {
 
     expect(res.setHeader).toHaveBeenCalledWith('X-Robots-Tag', 'none');
 
+    expect(delegateOptions.checkCurrentAuthUsability).not.toHaveBeenCalled();
     expect(operator.issueError).not.toHaveBeenCalled();
     expect(operator.issueAuth).not.toHaveBeenCalled();
   });
 
   test('redirect to webview if alredy logged in', async () => {
-    operator.getAuth.mock.fake(async () => ({ foo: 'bar' }));
+    operator.getAuth.mock.fake(async () => ({ foo: 'baz' }));
 
     await delegateRequest(req, res, routing);
+
+    expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledTimes(1);
+    expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledWith(
+      { foo: 'bar' },
+      { foo: 'baz' }
+    );
 
     expect(operator.redirect).toHaveBeenCalledTimes(1);
     expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
@@ -208,7 +217,7 @@ describe('init login flow', () => {
     });
 
     operator.verifyToken.mock.fakeReturnValue({
-      data: { foo: 'bar' },
+      credential: { foo: 'bae' },
       redirectUrl: '/foo?bar=baz',
     });
 
@@ -219,9 +228,51 @@ describe('init login flow', () => {
       assertInternal: true,
     });
 
+    expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledTimes(2);
+    expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledWith(
+      { foo: 'bae' },
+      { foo: 'baz' }
+    );
+
     expect(delegateOptions.verifyCredential).not.toHaveBeenCalled();
     expect(delegateOptions.checkAuthData).not.toHaveBeenCalled();
     expect(operator.issueState).not.toHaveBeenCalled();
+    expect(operator.issueError).not.toHaveBeenCalled();
+    expect(operator.issueAuth).not.toHaveBeenCalled();
+  });
+
+  test('ignore current auth if options.checkCurrentAuthUsabilty() not ok', async () => {
+    operator.getAuth.mock.fake(async () => ({ foo: 'baz' }));
+    delegateOptions.checkCurrentAuthUsability.mock.fakeReturnValue({
+      ok: false,
+    });
+
+    await delegateRequest(req, res, routing);
+
+    expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledTimes(1);
+    expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledWith(
+      { foo: 'bar' },
+      { foo: 'baz' }
+    );
+
+    expect(delegateOptions.verifyCredential).toHaveBeenCalledTimes(1);
+    expect(delegateOptions.verifyCredential).toHaveBeenCalledWith({
+      foo: 'bar',
+    });
+
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(1);
+    expect(delegateOptions.checkAuthData).toHaveBeenCalledWith({
+      verified: { foo: 'bar' },
+    });
+
+    expect(operator.issueState).toHaveBeenCalledTimes(1);
+    expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
+      status: 'login',
+      ch: 'test.foo',
+      data: { verified: { foo: 'bar' } },
+    });
+
+    expect(operator.redirect).toHaveBeenCalledTimes(1);
     expect(operator.issueError).not.toHaveBeenCalled();
     expect(operator.issueAuth).not.toHaveBeenCalled();
   });

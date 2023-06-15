@@ -50,7 +50,7 @@ export default class TelegramClientAuthenticator
     authEntry: string,
     errorFromServer: null | Error,
     dataFromServer: null | TelegramAuthData
-  ): Promise<void> {
+  ): Promise<{ forceSignIn: boolean }> {
     const searchParams = new URLSearchParams(window.location.search);
     if (!this.botId) {
       const botIdQuery = searchParams.get(BOT_ID_QUERY);
@@ -76,7 +76,9 @@ export default class TelegramClientAuthenticator
 
     if (
       (!errorFromServer && !dataFromServer) ||
-      (dataFromServer && dataFromServer.botId !== this.botId)
+      (dataFromServer &&
+        (dataFromServer.botId !== this.botId ||
+          dataFromServer.chat?.id !== this.chatId))
     ) {
       const authUrl = new URL('login', authEntry);
       authUrl.searchParams.set(BOT_ID_QUERY, this.botId.toString());
@@ -90,6 +92,8 @@ export default class TelegramClientAuthenticator
         setTimeout(() => reject(new Error('redirect timeout')), 5000)
       );
     }
+
+    return { forceSignIn: false };
   }
 
   async fetchCredential(): Promise<AuthenticatorCredentialResult<void>> {

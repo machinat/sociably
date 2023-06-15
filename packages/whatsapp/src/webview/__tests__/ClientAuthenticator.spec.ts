@@ -38,7 +38,7 @@ test('attributes', () => {
 });
 
 it('.init() do nothing', async () => {
-  await expect(authenticator.init()).resolves.toBe(undefined);
+  await expect(authenticator.init()).resolves.toEqual({ forceSignIn: false });
 });
 
 it('.fetchCredential() always reject', async () => {

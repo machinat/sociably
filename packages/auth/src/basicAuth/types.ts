@@ -29,16 +29,6 @@ export type CodeMessageComponent =
   | FunctionalComponent<CodeMessageComponentProps>
   | ContainerComponent<CodeMessageComponentProps>;
 
-type ErrorResult = { ok: false; code: number; reason: string };
-
-export type VerifyCredentialFn<Credential, Data> = (
-  credential: Credential
-) => Promise<{ ok: true; data: Data } | ErrorResult>;
-
-export type CheckAuthDataFn<Data, Thread extends SociablyThread> = (
-  data: Data
-) => { ok: true; thread: Thread; data: Data } | ErrorResult;
-
 export type BasicAuthOptions = {
   codeMessageComponent?: CodeMessageComponent;
   loginCodeDigits?: number;
@@ -69,6 +59,29 @@ export type BasicAuthState<Data> =
   | BasicAuthLoginState<Data>
   | BasicAuthVerifyState<Data>;
 
+type ErrorResult = { ok: false; code: number; reason: string };
+
+export type CheckCurrentAuthUsabilityFn<Credential, Data> = (
+  credential: Credential,
+  data: Data
+) => { ok: boolean };
+
+export type VerifyCredentialFn<Credential, Data> = (
+  credential: Credential
+) => Promise<{ ok: true; data: Data } | ErrorResult>;
+
+export type CheckAuthDataFn<Data, Thread extends SociablyThread> = (
+  /** The auth data to be checked */
+  data: Data
+) =>
+  | {
+      ok: true;
+      thread: Thread;
+      data: Data;
+      chatLinkUrl: string;
+    }
+  | ErrorResult;
+
 export type AuthDelegatorOptions<
   Credential,
   Data,
@@ -79,7 +92,7 @@ export type AuthDelegatorOptions<
   platformName: string;
   platformImageUrl: string;
   platformColor: string;
+  checkCurrentAuthUsability: CheckCurrentAuthUsabilityFn<Credential, Data>;
   verifyCredential: VerifyCredentialFn<Credential, Data>;
   checkAuthData: CheckAuthDataFn<Data, Thread>;
-  getChatLink: (thread: Thread, data: Data) => string;
 };

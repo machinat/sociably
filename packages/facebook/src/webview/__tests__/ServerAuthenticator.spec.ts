@@ -95,7 +95,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
           "pageId": "12345",
         },
         "checkAuthData": [Function],
-        "getChatLink": [Function],
+        "checkCurrentAuthUsability": [Function],
         "platform": "facebook",
         "platformColor": "#4B69FF",
         "platformImageUrl": "https://sociably.js.org/img/icon/messenger.png",
@@ -103,13 +103,6 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         "verifyCredential": [Function],
       }
     `);
-
-    expect(
-      delegatorOptions.getChatLink(new FacebookChat('12345', { id: '67890' }), {
-        page: '12345',
-        user: '67890',
-      })
-    ).toBe('https://m.me/12345');
 
     expect(
       delegatorOptions.checkAuthData({
@@ -121,7 +114,29 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       ok: true,
       thread: new FacebookChat('12345', { id: '67890' }),
       data: { page: '12345', user: '67890', profile: profileData },
+      chatLinkUrl: 'https://m.me/12345',
     });
+  });
+
+  test('options.checkCurrentAuthUsability(credential, data)', () => {
+    expect(
+      delegatorOptions.checkCurrentAuthUsability(
+        { page: '12345', user: '67890' },
+        { page: '12345', user: '67890' }
+      )
+    ).toEqual({ ok: true });
+    expect(
+      delegatorOptions.checkCurrentAuthUsability(
+        { page: '11111', user: '67890' },
+        { page: '12345', user: '67890' }
+      )
+    ).toEqual({ ok: false });
+    expect(
+      delegatorOptions.checkCurrentAuthUsability(
+        { page: '12345', user: '66666' },
+        { page: '12345', user: '67890' }
+      )
+    ).toEqual({ ok: false });
   });
 
   describe('options.verifyCredential', () => {

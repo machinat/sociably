@@ -21,7 +21,9 @@ class MemoClientAuthenticator
   readonly platform = WEBVIEW;
   readonly marshalTypes = [WebviewConnection, MemoCacheTarget];
 
-  async init(): Promise<void> {}
+  async init(): Promise<{ forceSignIn: boolean }> {
+    return { forceSignIn: true };
+  }
 
   async fetchCredential(): Promise<
     AuthenticatorCredentialResult<MemoAuthData>

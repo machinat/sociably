@@ -22,25 +22,40 @@ const serverEntry = nock('https://sociably.io');
 const makeToken = (payload) =>
   jwt.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
 
-const fooUser = { platform: 'foo', uid: 'john_doe' };
-const fooThread = { platform: 'foo', uid: 'foo.thread' };
+const fooChannel = {
+  $$typeofChannel: true as const,
+  platform: 'foo',
+  uid: 'foo.my_agent',
+  uniqueIdentifier: { $$typeof: [], platform: 'foo', id: 'my_agent' },
+};
+const fooUser = {
+  $$typeofUser: true as const,
+  platform: 'foo',
+  uid: 'foo.john_doe',
+  uniqueIdentifier: { $$typeof: [], platform: 'foo', id: 'john_doe' },
+};
+const fooThread = {
+  $$typeofThread: true as const,
+  platform: 'foo',
+  uid: 'foo.chat.john_doe',
+  uniqueIdentifier: { $$typeof: [], platform: 'foo', id: 'john_doe' },
+};
 const fooData = 'foo.data';
+const fooCredential = { foo: 'credential' };
 
 const fooAuthenticator = moxy<AnyClientAuthenticator>({
   platform: 'foo',
   async init() {
-    return undefined;
+    return { forceSignIn: false };
   },
   async fetchCredential() {
-    return {
-      ok: true,
-      credential: { foo: 'credential' },
-    };
+    return { ok: true, credential: fooCredential };
   },
   checkAuthData() {
     return {
       ok: true,
       contextDetails: {
+        channel: fooChannel,
         user: fooUser,
         thread: fooThread,
         foo: fooData,
@@ -52,7 +67,7 @@ const fooAuthenticator = moxy<AnyClientAuthenticator>({
 const barAuthenticator = moxy<AnyClientAuthenticator>({
   platform: 'bar',
   async init() {
-    return undefined;
+    return { forceSignIn: false };
   },
   async fetchCredential() {
     return {
@@ -65,8 +80,9 @@ const barAuthenticator = moxy<AnyClientAuthenticator>({
     return {
       ok: true,
       contextDetails: {
-        user: { platform: 'bar', uid: 'jojo_doe' },
-        thread: { platform: 'bar', uid: 'bar.thread' },
+        channel: { platform: 'bar', uid: 'bar.my_agent' },
+        user: { platform: 'bar', uid: 'bar.jojo_doe' },
+        thread: { platform: 'bar', uid: 'bar.chat.jojo_doe' },
         bar: 'bar.data',
       },
     };
@@ -272,9 +288,7 @@ describe('bootstraping phase', () => {
     expect(fooAuthenticator.init).toHaveBeenCalledWith(
       'https://sociably.io/auth/foo/',
       null,
-      {
-        foo: 'data',
-      }
+      { foo: 'data' }
     );
 
     expect(barAuthenticator.init).not.toHaveBeenCalled();
@@ -439,6 +453,7 @@ describe('.signIn()', () => {
 
   const expectedContext = {
     platform: 'foo',
+    channel: fooChannel,
     user: fooUser,
     thread: fooThread,
     foo: fooData,
@@ -497,7 +512,7 @@ describe('.signIn()', () => {
     const signingCall = serverEntry
       .post('/auth/_sign', {
         platform: 'foo',
-        credential: { foo: 'credential' },
+        credential: fooCredential,
       })
       .reply(200, { platform: 'foo', token });
 
@@ -521,12 +536,9 @@ describe('.signIn()', () => {
     client.signOut();
   });
 
-  it('return current auth if available', async () => {
+  test('if an auth job is now executing, return the executing job result', async () => {
     const signingCall = serverEntry
-      .post('/auth/_sign', {
-        platform: 'foo',
-        credential: { foo: 'credential' },
-      })
+      .post('/auth/_sign', { platform: 'foo', credential: fooCredential })
       .reply(200, { platform: 'foo', token });
 
     const client = new AuthClient({ authenticators, serverUrl });
@@ -623,6 +635,80 @@ describe('.signIn()', () => {
     });
     expect(refreshingCall.isDone()).toBe(true);
     expect(signingCall.isDone()).toBe(true);
+    client.signOut();
+  });
+
+  it('omit current auth if authenticator.init() return true `forceSignIn`', async () => {
+    setCookieAuth(authPayload);
+    fooAuthenticator.init.mock.fakeResolvedValue({ forceSignIn: true });
+
+    const signingCall = serverEntry
+      .post('/auth/_sign', { platform: 'foo', credential: fooCredential })
+      .reply(200, { platform: 'foo', token });
+
+    const client = new AuthClient({ authenticators, serverUrl });
+    await expect(client.signIn()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
+
+    expect(signingCall.isDone()).toBe(true);
+    expect(client.isAuthorized).toBe(true);
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    client.signOut();
+  });
+
+  it('omit current error if authenticator.init() return true `forceSignIn`', async () => {
+    setCookieError({
+      platform: 'foo',
+      error: { code: 418, reason: "I'm a teapot" },
+      scope: { domain: 'sociably.io', path: '/api' },
+    });
+    fooAuthenticator.init.mock.fakeResolvedValue({ forceSignIn: true });
+
+    const signingCall = serverEntry
+      .post('/auth/_sign', { platform: 'foo', credential: fooCredential })
+      .reply(200, { platform: 'foo', token });
+
+    const client = new AuthClient({ authenticators, serverUrl });
+    await expect(client.signIn()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
+
+    expect(signingCall.isDone()).toBe(true);
+    expect(client.isAuthorized).toBe(true);
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
+    client.signOut();
+  });
+
+  it('omit current refreshable token if authenticator.init() return true `forceSignIn`', async () => {
+    setCookieAuth({
+      platform: 'foo',
+      data: { foo: 'data' },
+      scope: { path: '/' },
+      exp: SEC_NOW - 99,
+      iat: SEC_NOW - 999,
+      init: SEC_NOW - 9999,
+    });
+    fooAuthenticator.init.mock.fakeResolvedValue({ forceSignIn: true });
+
+    const signingCall = serverEntry
+      .post('/auth/_sign', { platform: 'foo', credential: fooCredential })
+      .reply(200, { platform: 'foo', token });
+
+    const client = new AuthClient({ authenticators, serverUrl });
+    await expect(client.signIn()).resolves.toEqual({
+      token,
+      context: expectedContext,
+    });
+
+    expect(signingCall.isDone()).toBe(true);
+    expect(client.isAuthorized).toBe(true);
+    expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
+    expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
     client.signOut();
   });
 
@@ -772,6 +858,7 @@ describe('refresh flow', () => {
         token: newToken,
         context: {
           platform: 'foo',
+          channel: fooChannel,
           user: fooUser,
           thread: fooThread,
           foo: fooData,
@@ -846,6 +933,7 @@ describe('refresh flow', () => {
         token: newToken,
         context: {
           platform: 'foo',
+          channel: fooChannel,
           user: fooUser,
           thread: fooThread,
           foo: fooData,

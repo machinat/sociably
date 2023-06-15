@@ -20,7 +20,9 @@ class NoneClientAuthenticator
   readonly platform = WEBVIEW;
   readonly marshalTypes = [WebviewConnection];
 
-  async init(): Promise<void> {}
+  async init(): Promise<{ forceSignIn: boolean }> {
+    return { forceSignIn: true };
+  }
 
   async fetchCredential(): Promise<
     AuthenticatorCredentialResult<NoneAuthData>

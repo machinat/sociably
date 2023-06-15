@@ -78,7 +78,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
           "requestApi": [MockFunction moxy(requestApi)],
         },
         "checkAuthData": [Function],
-        "getChatLink": [Function],
+        "checkCurrentAuthUsability": [Function],
         "platform": "twitter",
         "platformColor": "#1D9BF0",
         "platformImageUrl": "https://sociably.js.org/img/icon/twitter.png",
@@ -86,12 +86,6 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         "verifyCredential": [Function],
       }
     `);
-
-    expect(
-      delegatorOptions.getChatLink(new TwitterChat('1234567890', '9876543210'))
-    ).toMatchInlineSnapshot(
-      `"https://twitter.com/messages/compose?recipient_id=1234567890"`
-    );
 
     expect(
       delegatorOptions.checkAuthData({
@@ -105,7 +99,35 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         agent: '1234567890',
         user: { id: '9876543210', data: rawUserData },
       },
+      chatLinkUrl:
+        'https://twitter.com/messages/compose?recipient_id=1234567890',
     });
+  });
+
+  test('option.checkCurrentAuthUsability() check if auth is still valid', () => {
+    (() => new ServerAuthenticator(bot, profiler, basicAuthenticator))();
+
+    const { checkCurrentAuthUsability } =
+      basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
+
+    expect(
+      checkCurrentAuthUsability(
+        { agent: '1234567890', user: '9876543210' },
+        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } }
+      )
+    ).toEqual({ ok: true });
+    expect(
+      checkCurrentAuthUsability(
+        { agent: '1111111111', user: '9876543210' },
+        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } }
+      )
+    ).toEqual({ ok: false });
+    expect(
+      checkCurrentAuthUsability(
+        { agent: '1234567890', user: '9999999999' },
+        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } }
+      )
+    ).toEqual({ ok: false });
   });
 
   test('options.verifyCredential() verify user by profiler.getUserProfiler()', async () => {

@@ -52,6 +52,9 @@ export class FacebookServerAuthenticator
       platformName: 'Facebook',
       platformColor: '#4B69FF',
       platformImageUrl: 'https://sociably.js.org/img/icon/messenger.png',
+      checkCurrentAuthUsability: (credential, data) => ({
+        ok: credential.page === data.page && credential.user === data.user,
+      }),
       verifyCredential: async (credential) => {
         const { page: pageId, user: userId } = credential;
         return this._verifyUser(pageId, userId);
@@ -65,9 +68,9 @@ export class FacebookServerAuthenticator
           ok: true,
           data,
           thread: result.contextDetails.thread,
+          chatLinkUrl: `https://m.me/${data.page}`,
         };
       },
-      getChatLink: (chat) => `https://m.me/${chat.pageId}`,
     });
   }
 

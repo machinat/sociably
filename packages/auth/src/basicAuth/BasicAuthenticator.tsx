@@ -124,6 +124,7 @@ export class BasicAuthenticator {
     res: ServerResponse,
     {
       platform,
+      checkCurrentAuthUsability,
       verifyCredential,
       checkAuthData,
     }: AuthDelegatorOptions<Credential, Data, Thread>
@@ -133,22 +134,24 @@ export class BasicAuthenticator {
     } = parseUrl(req.url as string, true);
 
     // check the login query
-    let payload: null | InitPayload<Credential>;
-    if (
-      typeof loginToken !== 'string' ||
-      !(payload = this.operator.verifyToken(platform, loginToken))
-    ) {
+    const payload =
+      typeof loginToken === 'string'
+        ? this.operator.verifyToken<InitPayload<Credential>>(
+            platform,
+            loginToken
+          )
+        : null;
+    if (!payload) {
       await this._redirectError(res, platform, 400, 'invalid login param');
       return;
     }
-
     const { credential, redirectUrl } = payload;
 
     // redirect if user is already logged in
     const currentAuth = await this.operator.getAuth<Data>(req, platform, {
       acceptRefreshable: true,
     });
-    if (currentAuth) {
+    if (currentAuth && checkCurrentAuthUsability(credential, currentAuth).ok) {
       this.operator.redirect(res, redirectUrl, { assertInternal: true });
       return;
     }
@@ -207,7 +210,6 @@ export class BasicAuthenticator {
       platformColor,
       platformImageUrl,
       checkAuthData,
-      getChatLink,
     }: AuthDelegatorOptions<unknown, Data, Thread>
   ) {
     const now = Date.now();
@@ -226,7 +228,7 @@ export class BasicAuthenticator {
       await this._redirectError(res, platform, code, reason, state.redirect);
       return;
     }
-    const { data: checkedData, thread } = checkResult;
+    const { data: checkedData, thread, chatLinkUrl } = checkResult;
 
     let shouldIssueCode = true;
     if (state.status === 'verify' && now - state.ts < this.loginDurationTime) {
@@ -304,7 +306,7 @@ export class BasicAuthenticator {
         platformName,
         platformColor,
         platformImageUrl,
-        chatLinkUrl: getChatLink(thread, state.data),
+        chatLinkUrl,
       })
     );
   }

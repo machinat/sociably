@@ -260,6 +260,7 @@ class AuthClient<
     }
 
     // init authenticator if needed
+    let forceSignIn = false;
     if (
       !this._initiatedPlatforms.has(authenticator.platform) &&
       !this._initiatingPlatforms.has(authenticator.platform)
@@ -270,11 +271,11 @@ class AuthClient<
       this._initiatingPlatforms.add(authenticator.platform);
 
       try {
-        await authenticator.init(
+        ({ forceSignIn } = await authenticator.init(
           platformAuthEntry,
           existedErr,
           existedAuth?.payload.data || null
-        );
+        ));
       } finally {
         this._initiatingPlatforms.delete(authenticator.platform);
       }
@@ -284,17 +285,21 @@ class AuthClient<
     let token: string;
     let payload: AuthTokenPayload<unknown>;
 
-    if (existedErr) {
+    if (!forceSignIn && existedErr) {
       // got error from back-end
       throw existedErr;
-    } else if (existedAuth && existedAuth.payload.exp * 1000 > Date.now()) {
+    } else if (
+      !forceSignIn &&
+      existedAuth &&
+      existedAuth.payload.exp * 1000 > Date.now()
+    ) {
       // use existed auth in the cookie
       ({ token, payload } = existedAuth);
     } else {
       let newToken: undefined | string;
 
       // refresh existed token if possible
-      if (existedAuth) {
+      if (!forceSignIn && existedAuth) {
         const [refreshErr, body] = await this._callAuthPrivateApi('_refresh', {
           token: existedAuth.token,
         });
@@ -305,7 +310,7 @@ class AuthClient<
 
       if (!newToken) {
         // start front-end flow
-        const [signErr, signedToken] = await this._signToken(authenticator);
+        const [signErr, signedToken] = await this._authenticate(authenticator);
         if (signErr) {
           throw signErr;
         }
@@ -341,7 +346,7 @@ class AuthClient<
     };
   }
 
-  private async _signToken(
+  private async _authenticate(
     authenticator: AnyClientAuthenticator
   ): Promise<[Error | null, string]> {
     const { platform } = authenticator;
@@ -405,7 +410,7 @@ class AuthClient<
     let newToken = refreshErr ? undefined : body.token;
 
     if (!newToken) {
-      const [signErr, signedToken] = await this._signToken(authenticator);
+      const [signErr, signedToken] = await this._authenticate(authenticator);
       if (signErr) {
         throw signErr;
       }
@@ -547,8 +552,8 @@ class AuthClient<
     try {
       this.emit('error', err, context);
     } catch {
-      // do not throw if no error handler, since the error can also be received
-      // by #signIn() call
+      // NOTE: do not throw if no error handler, since the error can also be received
+      //       by .signIn() call
     }
   }
 }

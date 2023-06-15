@@ -25,11 +25,11 @@ beforeEach(() => {
 
 const authenticator = new ClientAuthenticator();
 
-it('.init() do nothing', async () => {
-  await expect(authenticator.init()).resolves.toBe(undefined);
+test('.init() do nothing', async () => {
+  await expect(authenticator.init()).resolves.toEqual({ forceSignIn: false });
 });
 
-it('.fetchCredential() always reject', async () => {
+test('.fetchCredential() always reject', async () => {
   await expect(authenticator.fetchCredential()).resolves.toMatchInlineSnapshot(`
     {
       "code": 400,

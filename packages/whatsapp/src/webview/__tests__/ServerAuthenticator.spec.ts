@@ -9,6 +9,12 @@ import ServerAuthenticator from '../ServerAuthenticator.js';
 import WhatsAppAgent from '../../Agent.js';
 import { WhatsAppAuthCrendential, WhatsAppAuthData } from '../types.js';
 
+type WhatsAppDelegatorOption = AuthDelegatorOptions<
+  WhatsAppAuthCrendential,
+  WhatsAppAuthData,
+  WhatsAppChat
+>;
+
 const bot = moxy<WhatsAppBot>({ platform: 'whatsapp', a: 'bot' } as never);
 
 const requestDelegator = moxy(async () => {});
@@ -80,7 +86,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
           "platform": "whatsapp",
         },
         "checkAuthData": [Function],
-        "getChatLink": [Function],
+        "checkCurrentAuthUsability": [Function],
         "platform": "whatsapp",
         "platformColor": "#31BA45",
         "platformImageUrl": "https://sociably.js.org/img/icon/whatsapp.png",
@@ -94,31 +100,58 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       agent: { id: '1111111111', num: '+1234567890' },
       user: '9876543210',
     };
-    expect(
-      delegatorOptions.getChatLink(
-        new WhatsAppChat('1111111111', '9876543210'),
-        authData
-      )
-    ).toBe('https://wa.me/1234567890');
 
     expect(delegatorOptions.checkAuthData(authData)).toEqual({
       ok: true,
       thread: new WhatsAppChat('1111111111', '9876543210'),
       data: authData,
+      chatLinkUrl: 'https://wa.me/1234567890',
     });
+  });
+
+  test('options.checkCurrentAuthUsability', () => {
+    // eslint-disable-next-line no-new
+    new ServerAuthenticator(bot, basicAuthenticator, agentSettingsAccessor);
+    const { checkCurrentAuthUsability }: WhatsAppDelegatorOption =
+      basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
+
+    expect(
+      checkCurrentAuthUsability(
+        { agent: '2222222222', user: '9876543210' },
+        {
+          account: '1111111111',
+          agent: { id: '2222222222', num: '+1234567890' },
+          user: '9876543210',
+        }
+      )
+    ).toEqual({ ok: true });
+    expect(
+      checkCurrentAuthUsability(
+        { agent: '3333333333', user: '9876543210' },
+        {
+          account: '1111111111',
+          agent: { id: '2222222222', num: '+1234567890' },
+          user: '9876543210',
+        }
+      )
+    ).toEqual({ ok: false });
+    expect(
+      checkCurrentAuthUsability(
+        { agent: '2222222222', user: '9999999999' },
+        {
+          account: '1111111111',
+          agent: { id: '2222222222', num: '+1234567890' },
+          user: '9876543210',
+        }
+      )
+    ).toEqual({ ok: false });
   });
 
   test('options.verifyCrecential', async () => {
     // eslint-disable-next-line no-new
     new ServerAuthenticator(bot, basicAuthenticator, agentSettingsAccessor);
-
-    const {
-      verifyCredential,
-    }: AuthDelegatorOptions<
-      WhatsAppAuthCrendential,
-      WhatsAppAuthData,
-      WhatsAppChat
-    > = basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
+    const { verifyCredential }: WhatsAppDelegatorOption =
+      basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
 
     await expect(
       verifyCredential({ agent: '2222222222', user: '9876543210' })

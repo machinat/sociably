@@ -28,8 +28,9 @@ export default class WhatsAppClientAuthenticator
     WhatsAppUserProfile,
   ];
 
-  async init(): Promise<void> {
+  async init(): Promise<{ forceSignIn: boolean }> {
     // do nothing
+    return { forceSignIn: false };
   }
 
   async fetchCredential(): Promise<AuthenticatorCredentialResult<void>> {

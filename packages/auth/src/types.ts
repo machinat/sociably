@@ -133,6 +133,13 @@ export type AuthenticatorCredentialResult<Credential> =
   | { ok: true; credential: Credential }
   | ErrorResult;
 
+export type AuthenticatorInitResult = {
+  /**
+   * Force to start sign in flow even when there is error or auth data already.
+   */
+  forceSignIn: boolean;
+};
+
 export interface ClientAuthenticator<
   Credential,
   Data,
@@ -147,9 +154,9 @@ export interface ClientAuthenticator<
    */
   init(
     authEntry: string,
-    errorFromServer: null | AuthError,
-    dataFromServer: null | Data
-  ): Promise<void>;
+    currentError: null | AuthError,
+    currentAuthData: null | Data
+  ): Promise<AuthenticatorInitResult>;
 
   /**
    * Start work flow from client side and resolve the auth data which would be

@@ -22,8 +22,8 @@ export default class FacebookClientAuthenticator
   platform = FACEBOOK;
   marshalTypes = [FacebookChat, FacebookUser, FacebookUserProfile];
 
-  async init(): Promise<void> {
-    // do nothing
+  async init(): Promise<{ forceSignIn: boolean }> {
+    return { forceSignIn: false };
   }
 
   async fetchCredential(): Promise<AuthenticatorCredentialResult<void>> {

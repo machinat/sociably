@@ -133,11 +133,11 @@ describe('.init()', () => {
         new Error('boom'),
         null
       )
-    ).resolves.toBe(undefined);
+    ).resolves.toEqual({ forceSignIn: false });
 
     await expect(
       authenticator.init('https://sociably.io/auth/telegram/', null, authData)
-    ).resolves.toBe(undefined);
+    ).resolves.toEqual({ forceSignIn: false });
   });
 
   it('redirect to login page if specified `botId` is different from auth data', async () => {

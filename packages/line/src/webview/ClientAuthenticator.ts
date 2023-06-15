@@ -9,8 +9,8 @@ import LineUser from '../User.js';
 import LineUserProfile from '../UserProfile.js';
 import LineGroupProfile from '../GroupProfile.js';
 import {
-  CHAT_CHANNEL_QUERY_KEY,
   LIFF_ID_QUERY_KEY,
+  CHAT_CHANNEL_QUERY_KEY,
   ROOM_ID_QUERY_KEY,
   GROUP_ID_QUERY_KEY,
 } from './constant.js';
@@ -46,6 +46,9 @@ class LineClientAuthenticator
 {
   liff: any;
   liffId?: string;
+  chatChannelId?: string;
+  groupId?: string;
+  roomId?: string;
   shouldLoadLiffSDK: boolean;
   marshalTypes = [
     LineChannel,
@@ -59,18 +62,27 @@ class LineClientAuthenticator
 
   constructor(options?: ClientAuthenticatorOptions) {
     this.liffId = options?.liffId;
+    this.liff = null;
     this.shouldLoadLiffSDK = options?.shouldLoadLiffSDK ?? true;
   }
 
-  async init(): Promise<void> {
+  async init(
+    _url: string,
+    _err: null | Error,
+    data: null | LineAuthData
+  ): Promise<{ forceSignIn: boolean }> {
     const searchParams = new URLSearchParams(window.location.search);
-    const liffId = this.liffId || searchParams.get(LIFF_ID_QUERY_KEY);
-    if (!liffId) {
+    this.liffId =
+      this.liffId || searchParams.get(LIFF_ID_QUERY_KEY) || undefined;
+    this.chatChannelId = searchParams.get(CHAT_CHANNEL_QUERY_KEY) || undefined;
+    this.groupId = searchParams.get(GROUP_ID_QUERY_KEY) || undefined;
+    this.roomId = searchParams.get(ROOM_ID_QUERY_KEY) || undefined;
+
+    if (!this.liffId) {
       throw new Error(
         'liff id is required on either `options.liffId` or `liffId` query param'
       );
     }
-    this.liffId = liffId;
 
     if (this.shouldLoadLiffSDK) {
       const SCRIPT = 'script';
@@ -94,6 +106,13 @@ class LineClientAuthenticator
       // wait for secondary redirecting during primary redirecting from LIFF
       await waitingForRedirecting();
     }
+
+    return {
+      forceSignIn:
+        (!!this.chatChannelId && this.chatChannelId !== data?.chan) ||
+        (!!this.groupId && this.groupId !== data?.group) ||
+        (!!this.roomId && this.roomId !== data?.room),
+    };
   }
 
   async fetchCredential(): Promise<LineCredentialResult> {
@@ -112,14 +131,13 @@ class LineClientAuthenticator
       };
     }
 
-    const searchParams = new URLSearchParams(window.location.search);
     const { type: contextType, userId } = context;
     return {
       ok: true,
       credential: {
-        chatChannelId: searchParams.get(CHAT_CHANNEL_QUERY_KEY) || undefined,
-        groupId: searchParams.get(GROUP_ID_QUERY_KEY) || undefined,
-        roomId: searchParams.get(ROOM_ID_QUERY_KEY) || undefined,
+        chatChannelId: this.chatChannelId,
+        groupId: this.groupId,
+        roomId: this.roomId,
         accessToken,
         userId,
         contextType: contextType as LiffRefChatType,

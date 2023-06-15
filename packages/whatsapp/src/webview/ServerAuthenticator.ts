@@ -53,6 +53,9 @@ export class WhatsAppServerAuthenticator
       platformName: 'WhatsApp',
       platformColor: '#31BA45',
       platformImageUrl: 'https://sociably.js.org/img/icon/whatsapp.png',
+      checkCurrentAuthUsability: (credential, data) => ({
+        ok: credential.agent === data.agent.id && credential.user === data.user,
+      }),
       verifyCredential: async ({
         agent: agentNumberId,
         user: userNumberId,
@@ -85,10 +88,9 @@ export class WhatsAppServerAuthenticator
           ok: true,
           data,
           thread: result.contextDetails.thread,
+          chatLinkUrl: `https://wa.me/${trimWaUrlNumber(data.agent.num)}`,
         };
       },
-      getChatLink: (chat, data) =>
-        `https://wa.me/${trimWaUrlNumber(data.agent.num)}`,
     });
   }
 

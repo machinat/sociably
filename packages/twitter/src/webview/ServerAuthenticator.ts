@@ -51,6 +51,9 @@ export class TwitterServerAuthenticator
       platformName: 'Twitter',
       platformColor: '#1D9BF0',
       platformImageUrl: 'https://sociably.js.org/img/icon/twitter.png',
+      checkCurrentAuthUsability: (credential, data) => ({
+        ok: credential.agent === data.agent && credential.user === data.user.id,
+      }),
       verifyCredential: (credential) =>
         this._verifyUserProfilePermission(credential),
       checkAuthData: (data) => {
@@ -63,10 +66,9 @@ export class TwitterServerAuthenticator
           ok: true,
           data,
           thread: result.contextDetails.thread,
+          chatLinkUrl: `https://twitter.com/messages/compose?recipient_id=${data.agent}`,
         };
       },
-      getChatLink: (chat) =>
-        `https://twitter.com/messages/compose?recipient_id=${chat.agentId}`,
     });
   }
 
