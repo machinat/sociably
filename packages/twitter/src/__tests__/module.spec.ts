@@ -5,6 +5,7 @@ import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
+import { InMemoryState } from '@sociably/dev-tools';
 import Twitter from '../module.js';
 import TwitterChat from '../Chat.js';
 import TweetTarget from '../TweetTarget.js';
@@ -14,6 +15,7 @@ import TwitterUserProfile from '../UserProfile.js';
 import { TwitterProfiler } from '../Profiler.js';
 import { TwitterBot } from '../Bot.js';
 import { AgentSettingsAccessorI } from '../interface.js';
+import { TwitterAssetsManager, saveUploadedMedia } from '../asset/index.js';
 
 const basicConfigs = {
   agentSettings: {
@@ -42,15 +44,15 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddlewares = [(ctx, next) => next(ctx)];
-    const dispatchMiddlewares = [(ctx, next) => next(ctx)];
+    const eventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware = (ctx, next) => next(ctx);
 
     const module = Twitter.initModule({
       ...basicConfigs,
       webhookPath: '/webhook/twitter',
       maxRequestConnections: 999,
-      eventMiddlewares,
-      dispatchMiddlewares,
+      eventMiddlewares: [eventMiddleware],
+      dispatchMiddlewares: [dispatchMiddleware],
     });
 
     expect(module.name).toBe('twitter');
@@ -64,8 +66,10 @@ describe('initModule(configs)', () => {
     `);
     expect(module.provisions).toBeInstanceOf(Array);
     expect(typeof module.startHook).toBe('function');
-    expect(module.eventMiddlewares).toEqual(eventMiddlewares);
-    expect(module.dispatchMiddlewares).toEqual(dispatchMiddlewares);
+    expect(module.eventMiddlewares).toEqual([eventMiddleware]);
+    expect(module.dispatchMiddlewares).toEqual(
+      expect.arrayContaining([dispatchMiddleware, saveUploadedMedia])
+    );
   });
 
   test('provisions', async () => {
@@ -77,22 +81,25 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Twitter.initModule(configs)],
     });
     await app.start();
 
-    const [bot, receiver, configsProvided, profiler, routings] =
+    const [bot, receiver, configsProvided, profiler, assetsManager, routings] =
       app.useServices([
         Twitter.Bot,
         Twitter.Receiver,
         Twitter.Configs,
         Twitter.Profiler,
+        Twitter.AssetsManager,
         Http.RequestRouteList,
       ]);
 
     expect(bot).toBeInstanceOf(TwitterBot);
     expect(receiver).toBeInstanceOf(TwitterReceiver);
     expect(profiler).toBeInstanceOf(TwitterProfiler);
+    expect(assetsManager).toBeInstanceOf(TwitterAssetsManager);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       {
@@ -105,6 +112,7 @@ describe('initModule(configs)', () => {
 
   test('provide base interface', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Twitter.initModule(basicConfigs)],
     });
     await app.start();
@@ -129,6 +137,7 @@ describe('initModule(configs)', () => {
 
   test('default webhookPath to "/"', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Twitter.initModule(basicConfigs)],
     });
     await app.start();
@@ -142,6 +151,7 @@ describe('initModule(configs)', () => {
   describe('provide AgentSettingsAccessor interface', () => {
     test('with options.agentSettings', async () => {
       const app = Sociably.createApp({
+        modules: [InMemoryState.initModule()],
         platforms: [
           Twitter.initModule({
             agentSettings: {
@@ -201,6 +211,7 @@ describe('initModule(configs)', () => {
       };
 
       const app = Sociably.createApp({
+        modules: [InMemoryState.initModule()],
         platforms: [
           Twitter.initModule({
             multiAgentSettings: [agentSettings1, agentSettings2],
@@ -243,6 +254,7 @@ describe('initModule(configs)', () => {
       };
 
       const app = Sociably.createApp({
+        modules: [InMemoryState.initModule()],
         platforms: [
           Twitter.initModule({
             agentSettingsService: MyAgentSettingsServiceI,

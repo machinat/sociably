@@ -9,12 +9,15 @@ import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
-
 import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
 } from './interface.js';
+import {
+  default as TelegramAssetsManager,
+  saveUploadedFile,
+} from './asset/index.js';
 import { TELEGRAM } from './constant.js';
 import BotP from './Bot.js';
 import ReceiverP from './Receiver.js';
@@ -60,6 +63,9 @@ namespace Telegram {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
+  export const AssetsManager = TelegramAssetsManager;
+  export type AssetsManager = TelegramAssetsManager;
+
   export const AgentSettingsAccessor = AgentSettingsAccessorI;
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
@@ -74,6 +80,7 @@ namespace Telegram {
   > => {
     const provisions: ServiceProvision<unknown>[] = [
       { provide: ConfigsI, withValue: configs },
+
       BotP,
       {
         provide: BaseBot.PlatformMap,
@@ -90,6 +97,8 @@ namespace Telegram {
         withProvider: ProfilerP,
         platform: TELEGRAM,
       },
+
+      TelegramAssetsManager,
 
       { provide: BaseMarshaler.TypeList, withValue: TelegramChat },
       { provide: BaseMarshaler.TypeList, withValue: TelegramUser },
@@ -134,7 +143,10 @@ namespace Telegram {
       provisions,
       utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
-      dispatchMiddlewares: configs.dispatchMiddlewares,
+      dispatchMiddlewares: [
+        ...(configs.dispatchMiddlewares ?? []),
+        saveUploadedFile,
+      ],
 
       startHook: serviceContainer({ deps: [BotP] })((bot: BotP) => bot.start()),
       stopHook: serviceContainer({ deps: [BotP] })((bot: BotP) => bot.stop()),

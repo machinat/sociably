@@ -5,8 +5,13 @@ import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
+import { InMemoryState } from '@sociably/dev-tools';
 import Facebook from '../module.js';
 import { AgentSettingsAccessorI } from '../interface.js';
+import {
+  FacebookAssetsManager,
+  saveReusableAttachments,
+} from '../asset/index.js';
 import FacebookPage from '../Page.js';
 import FacebookChat from '../Chat.js';
 import FacebookUser from '../User.js';
@@ -31,8 +36,8 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddlewares = [(ctx, next) => next(ctx)];
-    const dispatchMiddlewares = [(ctx, next) => next(ctx)];
+    const eventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware = (ctx, next) => next(ctx);
 
     const module = Facebook.initModule({
       agentSettings: {
@@ -42,8 +47,8 @@ describe('initModule(configs)', () => {
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
-      eventMiddlewares,
-      dispatchMiddlewares,
+      eventMiddlewares: [eventMiddleware],
+      dispatchMiddlewares: [dispatchMiddleware],
     });
 
     expect(module.name).toBe('facebook');
@@ -57,8 +62,10 @@ describe('initModule(configs)', () => {
     `);
     expect(module.provisions).toBeInstanceOf(Array);
     expect(typeof module.startHook).toBe('function');
-    expect(module.eventMiddlewares).toEqual(eventMiddlewares);
-    expect(module.dispatchMiddlewares).toEqual(dispatchMiddlewares);
+    expect(module.eventMiddlewares).toEqual([eventMiddleware]);
+    expect(module.dispatchMiddlewares).toEqual(
+      expect.arrayContaining([dispatchMiddleware, saveReusableAttachments])
+    );
   });
 
   test('provisions', async () => {
@@ -75,6 +82,7 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Facebook.initModule(configs)],
     });
     await app.start();
@@ -84,6 +92,7 @@ describe('initModule(configs)', () => {
       receiver,
       profiler,
       configsProvided,
+      assetManager,
       routings,
       agentSettingsAccessor,
     ] = app.useServices([
@@ -91,6 +100,7 @@ describe('initModule(configs)', () => {
       Facebook.Receiver,
       Facebook.Profiler,
       Facebook.Configs,
+      Facebook.AssetsManager,
       Http.RequestRouteList,
       AgentSettingsAccessorI,
     ]);
@@ -98,6 +108,7 @@ describe('initModule(configs)', () => {
     expect(bot).toBeInstanceOf(FacebookBot);
     expect(receiver).toBeInstanceOf(FacebookReceiver);
     expect(profiler).toBeInstanceOf(FacebookProfiler);
+    expect(assetManager).toBeInstanceOf(FacebookAssetsManager);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       {
@@ -116,6 +127,7 @@ describe('initModule(configs)', () => {
 
   test('provide base interfaces', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Facebook.initModule({
           agentSettings: {
@@ -154,6 +166,7 @@ describe('initModule(configs)', () => {
 
   test('default webhookPath to "/"', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Facebook.initModule({
           agentSettings: {
@@ -184,6 +197,7 @@ describe('initModule(configs)', () => {
       accessToken: '_ACCESS_TOKEN_',
     };
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Facebook.initModule({
           agentSettings,
@@ -215,6 +229,7 @@ describe('initModule(configs)', () => {
 
   test('with configs.multiAgentSettings', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Facebook.initModule({
           multiAgentSettings: [
@@ -281,6 +296,7 @@ describe('initModule(configs)', () => {
     );
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Facebook.initModule({
           agentSettingsService: myPageSettingsService,

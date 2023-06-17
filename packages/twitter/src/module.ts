@@ -14,6 +14,10 @@ import {
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
 } from './interface.js';
+import {
+  default as TwitterAssetsManager,
+  saveUploadedMedia,
+} from './asset/index.js';
 import { TWITTER } from './constant.js';
 import BotP from './Bot.js';
 import ReceiverP from './Receiver.js';
@@ -58,6 +62,9 @@ namespace Twitter {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
+  export const AssetsManager = TwitterAssetsManager;
+  export type AssetsManager = TwitterAssetsManager;
+
   export const AgentSettingsAccessor = AgentSettingsAccessorI;
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
@@ -88,6 +95,8 @@ namespace Twitter {
         withProvider: ProfilerP,
         platform: TWITTER,
       },
+
+      TwitterAssetsManager,
 
       { provide: BaseMarshaler.TypeList, withValue: TwitterChat },
       { provide: BaseMarshaler.TypeList, withValue: TweetTarget },
@@ -131,7 +140,10 @@ namespace Twitter {
       provisions,
       utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
-      dispatchMiddlewares: configs.dispatchMiddlewares,
+      dispatchMiddlewares: [
+        ...(configs.dispatchMiddlewares ?? []),
+        saveUploadedMedia,
+      ],
 
       startHook: serviceContainer({ deps: [BotP] })((bot: BotP) => bot.start()),
       stopHook: serviceContainer({ deps: [BotP] })((bot: BotP) => bot.stop()),

@@ -5,14 +5,15 @@ import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
+import { InMemoryState } from '@sociably/dev-tools';
 import WhatsApp from '../module.js';
 import { AgentSettingsAccessorI } from '../interface.js';
+import { WhatsAppAssetsManager, saveUploadedMedia } from '../asset/index.js';
 import WhatsAppAgent from '../Agent.js';
 import WhatsAppChat from '../Chat.js';
 import WhatsAppUser from '../User.js';
 import WhatsAppUserProfile from '../UserProfile.js';
 import { WhatsAppProfiler } from '../Profiler.js';
-
 import { WhatsAppReceiver } from '../Receiver.js';
 import { WhatsAppBot } from '../Bot.js';
 
@@ -38,8 +39,8 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddlewares = [(ctx, next) => next(ctx)];
-    const dispatchMiddlewares = [(ctx, next) => next(ctx)];
+    const eventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware = (ctx, next) => next(ctx);
 
     const module = WhatsApp.initModule({
       agentSettings,
@@ -47,8 +48,8 @@ describe('initModule(configs)', () => {
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
-      eventMiddlewares,
-      dispatchMiddlewares,
+      eventMiddlewares: [eventMiddleware],
+      dispatchMiddlewares: [dispatchMiddleware],
     });
 
     expect(module.name).toBe('whatsapp');
@@ -62,8 +63,10 @@ describe('initModule(configs)', () => {
     `);
     expect(module.provisions).toBeInstanceOf(Array);
     expect(typeof module.startHook).toBe('function');
-    expect(module.eventMiddlewares).toEqual(eventMiddlewares);
-    expect(module.dispatchMiddlewares).toEqual(dispatchMiddlewares);
+    expect(module.eventMiddlewares).toEqual([eventMiddleware]);
+    expect(module.dispatchMiddlewares).toEqual(
+      expect.arrayContaining([dispatchMiddleware, saveUploadedMedia])
+    );
   });
 
   test('provisions', async () => {
@@ -78,15 +81,17 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [WhatsApp.initModule(configs)],
     });
     await app.start();
 
-    const [bot, receiver, profiler, configsProvided, routings] =
+    const [bot, receiver, profiler, assetsManager, configsProvided, routings] =
       app.useServices([
         WhatsApp.Bot,
         WhatsApp.Receiver,
         WhatsApp.Profiler,
+        WhatsApp.AssetsManager,
         WhatsApp.Configs,
         Http.RequestRouteList,
       ]);
@@ -94,6 +99,7 @@ describe('initModule(configs)', () => {
     expect(bot).toBeInstanceOf(WhatsAppBot);
     expect(receiver).toBeInstanceOf(WhatsAppReceiver);
     expect(profiler).toBeInstanceOf(WhatsAppProfiler);
+    expect(assetsManager).toBeInstanceOf(WhatsAppAssetsManager);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       {
@@ -108,6 +114,7 @@ describe('initModule(configs)', () => {
 
   test('provide base interfaces', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         WhatsApp.initModule({
           agentSettings,
@@ -144,6 +151,7 @@ describe('initModule(configs)', () => {
 
   test('with configs.agentSettings', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         WhatsApp.initModule({
           agentSettings,
@@ -189,6 +197,7 @@ describe('initModule(configs)', () => {
       },
     ];
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         WhatsApp.initModule({
           multiAgentSettings: businessAccountSettings,
@@ -256,6 +265,7 @@ describe('initModule(configs)', () => {
     );
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         WhatsApp.initModule({
           agentSettingsService: myAgentSettingsService,
@@ -276,6 +286,7 @@ describe('initModule(configs)', () => {
 
   test('default webhookPath to "/"', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         WhatsApp.initModule({
           agentSettings,

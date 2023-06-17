@@ -5,12 +5,14 @@ import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
+import { InMemoryState } from '@sociably/dev-tools';
 import Line from '../module.js';
 import { LineReceiver } from '../Receiver.js';
 import LineUserProfile from '../UserProfile.js';
 import LineGroupProfile from '../GroupProfile.js';
 import { LineProfiler } from '../Profiler.js';
 import { AgentSettingsAccessorI } from '../interface.js';
+import { LineAssetsManager } from '../asset/index.js';
 import { LineBot } from '../Bot.js';
 import LineChannel from '../Channel.js';
 import LineUser from '../User.js';
@@ -32,8 +34,8 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddlewares = [(ctx, next) => next(ctx)];
-    const dispatchMiddlewares = [(ctx, next) => next(ctx)];
+    const eventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware = (ctx, next) => next(ctx);
 
     const module = Line.initModule({
       agentSettings: {
@@ -42,8 +44,8 @@ describe('initModule(configs)', () => {
         channelSecret: '_CHANNEL_SECRET_',
         accessToken: '_ACCESS_TOKEN_',
       },
-      eventMiddlewares,
-      dispatchMiddlewares,
+      eventMiddlewares: [eventMiddleware],
+      dispatchMiddlewares: [dispatchMiddleware],
     });
 
     expect(module.name).toBe('line');
@@ -57,8 +59,8 @@ describe('initModule(configs)', () => {
     `);
     expect(module.provisions).toBeInstanceOf(Array);
     expect(typeof module.startHook).toBe('function');
-    expect(module.eventMiddlewares).toEqual(eventMiddlewares);
-    expect(module.dispatchMiddlewares).toEqual(dispatchMiddlewares);
+    expect(module.eventMiddlewares).toEqual([eventMiddleware]);
+    expect(module.dispatchMiddlewares).toEqual([dispatchMiddleware]);
   });
 
   test('provisions', async () => {
@@ -74,22 +76,25 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Line.initModule(configs)],
     });
     await app.start();
 
-    const [bot, receiver, configsProvided, profiler, routings] =
+    const [bot, receiver, configsProvided, profiler, assetManager, routings] =
       app.useServices([
         Line.Bot,
         Line.Receiver,
         Line.Configs,
         Line.Profiler,
+        Line.AssetsManager,
         Http.RequestRouteList,
       ]);
 
     expect(bot).toBeInstanceOf(LineBot);
     expect(receiver).toBeInstanceOf(LineReceiver);
     expect(profiler).toBeInstanceOf(LineProfiler);
+    expect(assetManager).toBeInstanceOf(LineAssetsManager);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       { name: 'line', path: '/webhook/line', handler: expect.any(Function) },
@@ -108,6 +113,7 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Line.initModule(configs)],
     });
     await app.start();
@@ -152,6 +158,7 @@ describe('initModule(configs)', () => {
 
   test('with options.multiAgentSettings', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Line.initModule({
           multiAgentSettings: [
@@ -290,6 +297,7 @@ describe('initModule(configs)', () => {
     );
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Line.initModule({ agentSettingsService })],
       services: [agentSettingsService],
     });
@@ -310,6 +318,7 @@ describe('initModule(configs)', () => {
 
   test('provide base interfaces', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Line.initModule({
           agentSettings: {
@@ -354,6 +363,7 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Line.initModule(configs)],
     });
     await app.start();

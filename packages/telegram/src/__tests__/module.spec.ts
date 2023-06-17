@@ -4,6 +4,7 @@ import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
+import { InMemoryState } from '@sociably/dev-tools';
 import Http from '@sociably/http';
 import Telegram from '../module.js';
 import TelegramChat from '../Chat.js';
@@ -15,6 +16,7 @@ import TelegramUserProfile from '../UserProfile.js';
 import { TelegramProfiler } from '../Profiler.js';
 import { TelegramBot } from '../Bot.js';
 import { AgentSettingsAccessorI } from '../interface.js';
+import { TelegramAssetsManager, saveUploadedFile } from '../asset/index.js';
 
 it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);
@@ -32,8 +34,8 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddlewares = [(ctx, next) => next(ctx)];
-    const dispatchMiddlewares = [(ctx, next) => next(ctx)];
+    const eventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware = (ctx, next) => next(ctx);
 
     const module = Telegram.initModule({
       agentSettings: {
@@ -43,8 +45,8 @@ describe('initModule(configs)', () => {
       },
       webhookPath: '/webhook/telegram',
       maxRequestConnections: 999,
-      eventMiddlewares,
-      dispatchMiddlewares,
+      eventMiddlewares: [eventMiddleware],
+      dispatchMiddlewares: [dispatchMiddleware],
     });
 
     expect(module.name).toBe('telegram');
@@ -58,8 +60,10 @@ describe('initModule(configs)', () => {
     `);
     expect(module.provisions).toBeInstanceOf(Array);
     expect(typeof module.startHook).toBe('function');
-    expect(module.eventMiddlewares).toEqual(eventMiddlewares);
-    expect(module.dispatchMiddlewares).toEqual(dispatchMiddlewares);
+    expect(module.eventMiddlewares).toEqual([eventMiddleware]);
+    expect(module.dispatchMiddlewares).toEqual(
+      expect.arrayContaining([dispatchMiddleware, saveUploadedFile])
+    );
   });
 
   test('provisions', async () => {
@@ -76,22 +80,25 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Telegram.initModule(configs)],
     });
     await app.start();
 
-    const [bot, receiver, configsProvided, profiler, routings] =
+    const [bot, receiver, configsProvided, profiler, assetsManager, routings] =
       app.useServices([
         Telegram.Bot,
         Telegram.Receiver,
         Telegram.Configs,
         Telegram.Profiler,
+        Telegram.AssetsManager,
         Http.RequestRouteList,
       ]);
 
     expect(bot).toBeInstanceOf(TelegramBot);
     expect(receiver).toBeInstanceOf(TelegramReceiver);
     expect(profiler).toBeInstanceOf(TelegramProfiler);
+    expect(assetsManager).toBeInstanceOf(TelegramAssetsManager);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
       {
@@ -104,6 +111,7 @@ describe('initModule(configs)', () => {
 
   test('provide base interface', async () => {
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Telegram.initModule({
           agentSettings: {
@@ -145,6 +153,7 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Telegram.initModule(configs)],
     });
     await app.start();
@@ -163,6 +172,7 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Telegram.initModule({ agentSettings })],
     });
     await app.start();
@@ -193,6 +203,7 @@ describe('initModule(configs)', () => {
     ];
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [Telegram.initModule({ multiAgentSettings })],
     });
     await app.start();
@@ -229,6 +240,7 @@ describe('initModule(configs)', () => {
     );
 
     const app = Sociably.createApp({
+      modules: [InMemoryState.initModule()],
       platforms: [
         Telegram.initModule({
           agentSettingsService: myAgentSettingsService,

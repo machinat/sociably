@@ -15,6 +15,10 @@ import {
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
 } from './interface.js';
+import {
+  default as WhatsAppAssetsManager,
+  saveUploadedMedia,
+} from './asset/index.js';
 import { WHATSAPP } from './constant.js';
 import BotP from './Bot.js';
 import ReceiverP from './Receiver.js';
@@ -61,6 +65,9 @@ namespace WhatsApp {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
+  export const AssetsManager = WhatsAppAssetsManager;
+  export type AssetsManager = WhatsAppAssetsManager;
+
   export const AgentSettingsAccessor = AgentSettingsAccessorI;
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
@@ -90,6 +97,8 @@ namespace WhatsApp {
         withProvider: ProfilerP,
         platform: WHATSAPP,
       },
+
+      WhatsAppAssetsManager,
 
       { provide: ConfigsI, withValue: configs },
       { provide: BaseMarshaler.TypeList, withValue: WhatsAppAgent },
@@ -130,7 +139,10 @@ namespace WhatsApp {
       provisions,
       utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
-      dispatchMiddlewares: configs.dispatchMiddlewares,
+      dispatchMiddlewares: [
+        ...(configs.dispatchMiddlewares ?? []),
+        saveUploadedMedia,
+      ],
 
       startHook: serviceContainer({ deps: [BotP] })(async (bot) => bot.start()),
       stopHook: serviceContainer({ deps: [BotP] })(async (bot) => bot.stop()),

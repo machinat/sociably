@@ -15,6 +15,10 @@ import {
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
 } from './interface.js';
+import {
+  default as FacebookAssetsManager,
+  saveReusableAttachments,
+} from './asset/index.js';
 import { FACEBOOK } from './constant.js';
 import BotP from './Bot.js';
 import ReceiverP from './Receiver.js';
@@ -58,6 +62,9 @@ namespace Facebook {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
+  export const AssetsManager = FacebookAssetsManager;
+  export type AssetsManager = FacebookAssetsManager;
+
   export const AgentSettingsAccessor = AgentSettingsAccessorI;
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
@@ -71,6 +78,8 @@ namespace Facebook {
     MetaApiResult
   > => {
     const provisions: ServiceProvision<unknown>[] = [
+      { provide: ConfigsI, withValue: configs },
+
       BotP,
       {
         provide: BaseBot.PlatformMap,
@@ -88,7 +97,8 @@ namespace Facebook {
         platform: FACEBOOK,
       },
 
-      { provide: ConfigsI, withValue: configs },
+      FacebookAssetsManager,
+
       { provide: BaseMarshaler.TypeList, withValue: FacebookChat },
       { provide: BaseMarshaler.TypeList, withValue: FacebookUser },
       { provide: BaseMarshaler.TypeList, withValue: FacebookPage },
@@ -131,7 +141,10 @@ namespace Facebook {
       provisions,
       utilitiesInterface: PlatformUtilitiesI,
       eventMiddlewares: configs.eventMiddlewares,
-      dispatchMiddlewares: configs.dispatchMiddlewares,
+      dispatchMiddlewares: [
+        ...(configs.dispatchMiddlewares ?? []),
+        saveReusableAttachments,
+      ],
 
       startHook: serviceContainer({ deps: [BotP] })(async (bot) => bot.start()),
       stopHook: serviceContainer({ deps: [BotP] })(async (bot) => bot.stop()),

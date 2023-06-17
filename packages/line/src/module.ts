@@ -8,12 +8,12 @@ import BaseBot from '@sociably/core/base/Bot';
 import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http, { RequestRoute } from '@sociably/http';
-
 import {
   ConfigsI,
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
 } from './interface.js';
+import { default as LineAssetsManager } from './asset/index.js';
 import { LINE } from './constant.js';
 import ReceiverP from './Receiver.js';
 import BotP from './Bot.js';
@@ -61,6 +61,9 @@ namespace Line {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;
 
+  export const AssetsManager = LineAssetsManager;
+  export type AssetsManager = LineAssetsManager;
+
   export const AgentSettingsAccessor = AgentSettingsAccessorI;
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
@@ -90,6 +93,8 @@ namespace Line {
         withProvider: ProfilerP,
         platform: LINE,
       },
+
+      LineAssetsManager,
 
       { provide: ConfigsI, withValue: configs },
       { provide: BaseMarshaler.TypeList, withValue: LineChannel },
