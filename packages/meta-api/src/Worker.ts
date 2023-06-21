@@ -4,6 +4,7 @@ import FormData from 'form-data';
 import type { AgentSettingsAccessor, SociablyChannel } from '@sociably/core';
 import type { SociablyWorker } from '@sociably/core/engine';
 import SociablyQueue, { JobResponse } from '@sociably/core/queue';
+import { LRUCache } from 'lru-cache';
 import GraphAPIError from './Error.js';
 import formatBatchRequest from './utils/formatBatchRequest.js';
 import appendFormFields from './utils/appendFormFields.js';
@@ -37,6 +38,7 @@ type MetaApiWorkerOptions = {
 
 const POST = 'POST';
 const REQEST_JSON_HEADERS = { 'Content-Type': 'application/json' };
+const APP_SECRET_PROOF_CACHE_SIZE = 100;
 
 const makeRequestName = (key: string, count: number) => `${key}-${count}`;
 const makeFileName = (num: number) => `file_${num}`;
@@ -55,6 +57,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
   private _consumptionTimeoutId: TimeoutID | null;
 
   private _resultCache: Map<string, MetaApiResult>;
+  private _appSecretProofCache: LRUCache<string, string>;
 
   constructor({
     agentSettingsAccessor,
@@ -78,6 +81,9 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     this._started = false;
     this._consumptionTimeoutId = null;
     this._resultCache = new Map();
+    this._appSecretProofCache = new LRUCache({
+      max: APP_SECRET_PROOF_CACHE_SIZE,
+    });
   }
 
   get started(): boolean {
@@ -114,11 +120,19 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     return true;
   }
 
-  private _createAppSecretProof(accessToken: string) {
-    const appSecret = this._appSecret;
-    return appSecret
-      ? crypto.createHmac('sha256', appSecret).update(accessToken).digest('hex')
-      : undefined;
+  private _getAppSecretProof(accessToken: string) {
+    const cached = this._appSecretProofCache.get(accessToken);
+    if (cached) {
+      return cached;
+    }
+
+    const appSecretProof = crypto
+      .createHmac('sha256', this._appSecret)
+      .update(accessToken)
+      .digest('hex');
+
+    this._appSecretProofCache.set(accessToken, appSecretProof);
+    return appSecretProof;
   }
 
   private _listenJobCallback = this._listenJob.bind(this);
@@ -246,7 +260,11 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
           );
         }
 
-        const batchRequest = formatBatchRequest(request, accessToken);
+        const batchRequest = formatBatchRequest(
+          request,
+          accessToken,
+          this._getAppSecretProof(accessToken)
+        );
 
         // to keep the order of requests with the same key
         if (key) {
@@ -297,7 +315,6 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     }
     const batchBody = {
       access_token: rootAccessToken,
-      appsecret_proof: this._createAppSecretProof(rootAccessToken),
       batch: JSON.stringify(batchRequests),
     };
 

@@ -169,8 +169,7 @@ exports[`.message(thread, message, options) message options 1`] = `
 exports[`.message(thread, message, options) message options 2`] = `
 {
   "access_token": "_ACCESS_TOKEN_",
-  "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"fb.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"fb.1234567890.9876543210-1","name":"fb.1234567890.9876543210-2","omit_response_on_success":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"fb.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=TRANSPORTATION_UPDATE&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"fb.1234567890.9876543210-1","name":"fb.1234567890.9876543210-2","omit_response_on_success":false}]",
 }
 `;
 
@@ -343,15 +342,13 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
 exports[`.message(thread, message, options) send messages to me/messages api 2`] = `
 {
   "access_token": "_ACCESS_TOKEN_",
-  "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"fb.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"fb.1234567890.9876543210-1","name":"fb.1234567890.9876543210-2","omit_response_on_success":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"fb.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"fb.1234567890.9876543210-1","name":"fb.1234567890.9876543210-2","omit_response_on_success":false}]",
 }
 `;
 
 exports[`.uploadChatAttachment(page, message) call message_attachments api 1`] = `
 {
   "access_token": "_ACCESS_TOKEN_",
-  "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{"method":"POST","relative_url":"me/message_attachments?access_token=_ACCESS_TOKEN_","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D","omit_response_on_success":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/message_attachments?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D","omit_response_on_success":false}]",
 }
 `;

@@ -22,7 +22,8 @@ const encodeParams = (fields: { [key: string]: unknown }): string => {
 
 const formatRequestParams = (
   { method, url, params }: MetaApiJobRequest,
-  accessToken: string
+  accessToken: string,
+  appSecretProof: string
 ): MetaBatchRequest =>
   method === 'GET' || method === 'DELETE'
     ? {
@@ -30,6 +31,7 @@ const formatRequestParams = (
         relative_url: `${url}?${encodeParams({
           ...params,
           access_token: accessToken,
+          appsecret_proof: appSecretProof,
         })}`,
         body: undefined,
       }
@@ -37,6 +39,7 @@ const formatRequestParams = (
         method,
         relative_url: `${url}?${encodeParams({
           access_token: accessToken,
+          appsecret_proof: appSecretProof,
         })}`,
         body: params ? encodeParams(params) : undefined,
       };

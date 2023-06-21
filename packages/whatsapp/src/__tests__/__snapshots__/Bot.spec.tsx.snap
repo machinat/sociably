@@ -121,11 +121,10 @@ exports[`#render(thread, message, options) post to NUMBER/messages api 1`] = `
 }
 `;
 
-exports[`#render(thread, message, options) post to NUMBER/messages api 2`] = `
+exports[`#render(thread, message, options) post to NUMBER/messages api 3`] = `
 {
   "access_token": "_ACCESS_TOKEN_",
-  "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-  "batch": "[{"method":"POST","relative_url":"1234567890/messages?access_token=_ACCESS_TOKEN_","body":"type=interactive&interactive=%7B%22type%22%3A%22buttons%22%2C%22body%22%3A%7B%22text%22%3A%22Hello%20*World!*%22%7D%2C%22header%22%3A%7B%22type%22%3A%22image%22%2C%22image%22%3A%7B%22link%22%3A%22http%3A%2F%2Fsociably.com%2Ffoo.jpg%22%7D%7D%2C%22actions%22%3A%7B%22buttons%22%3A%5B%7B%22type%22%3A%22reply%22%2C%22title%22%3A%22BAR%22%2C%22id%22%3A%22BAZ%22%7D%5D%7D%7D&to=9876543210&messaging_product=whatsapp","name":"wa.1234567890.9876543210-1","omit_response_on_success":false}]",
+  "batch": "[{"method":"POST","relative_url":"1234567890/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"type=interactive&interactive=%7B%22type%22%3A%22buttons%22%2C%22body%22%3A%7B%22text%22%3A%22Hello%20*World!*%22%7D%2C%22header%22%3A%7B%22type%22%3A%22image%22%2C%22image%22%3A%7B%22link%22%3A%22http%3A%2F%2Fsociably.com%2Ffoo.jpg%22%7D%7D%2C%22actions%22%3A%7B%22buttons%22%3A%5B%7B%22type%22%3A%22reply%22%2C%22title%22%3A%22BAR%22%2C%22id%22%3A%22BAZ%22%7D%5D%7D%7D&to=9876543210&messaging_product=whatsapp","name":"wa.1234567890.9876543210-1","omit_response_on_success":false}]",
 }
 `;
 
@@ -140,13 +139,9 @@ Content-Disposition: form-data; name="access_token"
 
 _ACCESS_TOKEN_
 ----------------------------SEPERATOR
-Content-Disposition: form-data; name="appsecret_proof"
-
-932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f
-----------------------------SEPERATOR
 Content-Disposition: form-data; name="batch"
 
-[{"method":"POST","relative_url":"1234567890/media?access_token=_ACCESS_TOKEN_","body":"type=image%2Fpng&messaging_product=whatsapp","attached_files":"file_0","omit_response_on_success":false}]
+[{"method":"POST","relative_url":"1234567890/media?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"type=image%2Fpng&messaging_product=whatsapp","attached_files":"file_0","omit_response_on_success":false}]
 ----------------------------SEPERATOR--
 "
 `;

@@ -197,7 +197,7 @@ describe('.message(thread, message, options)', () => {
     for (const request of JSON.parse(body.batch)) {
       expect(request.method).toBe('POST');
       expect(request.relative_url).toBe(
-        'me/messages?access_token=_ACCESS_TOKEN_'
+        'me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f'
       );
     }
 
@@ -301,8 +301,9 @@ describe('.uploadChatAttachment(page, message)', () => {
     expect(body).toMatchSnapshot();
     const reqest = JSON.parse(body.batch)[0];
     expect(reqest.method).toBe('POST');
-    expect(reqest.relative_url).toBe(
-      'me/message_attachments?access_token=_ACCESS_TOKEN_'
+
+    expect(reqest.relative_url).toMatchInlineSnapshot(
+      `"me/message_attachments?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f"`
     );
     expect(querystring.decode(reqest.body)).toMatchInlineSnapshot(`
       {
@@ -335,8 +336,7 @@ describe('.requestApi(options)', () => {
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "access_token": "_ACCESS_TOKEN_",
-        "appsecret_proof": "932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f",
-        "batch": "[{"method":"POST","relative_url":"foo?access_token=_ACCESS_TOKEN_","body":"bar=baz","omit_response_on_success":false}]",
+        "batch": "[{"method":"POST","relative_url":"foo?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"bar=baz","omit_response_on_success":false}]",
       }
     `);
   });
@@ -359,8 +359,7 @@ describe('.requestApi(options)', () => {
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "access_token": "_MY_ACCESS_TOKEN_",
-        "appsecret_proof": "a2d4a2635b030a35c39f30231ffe768f18af5b034c7be4e095c48495341db374",
-        "batch": "[{"method":"POST","relative_url":"foo?access_token=_MY_ACCESS_TOKEN_","body":"bar=baz","omit_response_on_success":false}]",
+        "batch": "[{"method":"POST","relative_url":"foo?access_token=_MY_ACCESS_TOKEN_&appsecret_proof=a2d4a2635b030a35c39f30231ffe768f18af5b034c7be4e095c48495341db374","body":"bar=baz","omit_response_on_success":false}]",
       }
     `);
   });
@@ -383,8 +382,7 @@ describe('.requestApi(options)', () => {
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "access_token": "_APP_ID_|_APP_SECRET_",
-        "appsecret_proof": "b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b",
-        "batch": "[{"method":"POST","relative_url":"foo?access_token=_APP_ID_%7C_APP_SECRET_","body":"bar=baz","omit_response_on_success":false}]",
+        "batch": "[{"method":"POST","relative_url":"foo?access_token=_APP_ID_%7C_APP_SECRET_&appsecret_proof=b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b","body":"bar=baz","omit_response_on_success":false}]",
       }
     `);
   });

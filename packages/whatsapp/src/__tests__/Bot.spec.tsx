@@ -204,8 +204,8 @@ describe('#render(thread, message, options)', () => {
 
     for (const request of JSON.parse(body.batch)) {
       expect(request.method).toBe('POST');
-      expect(request.relative_url).toBe(
-        '1234567890/messages?access_token=_ACCESS_TOKEN_'
+      expect(request.relative_url).toMatchInlineSnapshot(
+        `"1234567890/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f"`
       );
     }
 

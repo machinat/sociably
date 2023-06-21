@@ -117,10 +117,6 @@ it('call to graph api', async () => {
   expect(body.access_token).toBe('access_token_foo');
   expect(body.include_headers).toBe(undefined);
 
-  expect(body.appsecret_proof).toMatchInlineSnapshot(
-    `"c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e"`
-  );
-
   expect(body).toMatchSnapshot();
 
   const batch = JSON.parse(body.batch);
@@ -131,7 +127,7 @@ it('call to graph api', async () => {
         "method": "POST",
         "name": "facebook.id.foo.john-1",
         "omit_response_on_success": false,
-        "relative_url": "me/messages?access_token=access_token_foo",
+        "relative_url": "me/messages?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
@@ -139,21 +135,21 @@ it('call to graph api', async () => {
         "method": "POST",
         "name": "facebook.id.foo.john-2",
         "omit_response_on_success": false,
-        "relative_url": "some/api?access_token=access_token_foo",
+        "relative_url": "some/api?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22jane%22%7D&id=3",
         "method": "POST",
         "name": "facebook.id.bar.jane-1",
         "omit_response_on_success": false,
-        "relative_url": "me/messages?access_token=access_token_bar",
+        "relative_url": "me/messages?access_token=access_token_bar&appsecret_proof=814fa9c737db6bf26b8d91139db95cb36f9248521852eaad447a93ac079f6bca",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22jojo%22%7D&id=4",
         "method": "POST",
         "name": "facebook.id.baz.jojo-1",
         "omit_response_on_success": false,
-        "relative_url": "another/api?access_token=access_token_baz",
+        "relative_url": "another/api?access_token=access_token_baz&appsecret_proof=b0c8d9ea3d72eacab94cd4f1389f27d608b56230df45deac816f164bac03cc80",
       },
     ]
   `);
@@ -301,7 +297,7 @@ it('upload files with form data if binary attached on job', async () => {
         "method": "POST",
         "name": "facebook.id.foo.john-1",
         "omit_response_on_success": false,
-        "relative_url": "me/messages?access_token=access_token_foo",
+        "relative_url": "me/messages?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
@@ -309,7 +305,7 @@ it('upload files with form data if binary attached on job', async () => {
         "method": "POST",
         "name": "facebook.id.foo.john-2",
         "omit_response_on_success": false,
-        "relative_url": "some/api?access_token=access_token_foo",
+        "relative_url": "some/api?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       },
       {
         "attached_files": "file_1",
@@ -317,7 +313,7 @@ it('upload files with form data if binary attached on job', async () => {
         "method": "POST",
         "name": "facebook.id.bar.jane-1",
         "omit_response_on_success": false,
-        "relative_url": "me/messages?access_token=access_token_bar",
+        "relative_url": "me/messages?access_token=access_token_bar&appsecret_proof=814fa9c737db6bf26b8d91139db95cb36f9248521852eaad447a93ac079f6bca",
       },
       {
         "attached_files": "file_2",
@@ -325,7 +321,7 @@ it('upload files with form data if binary attached on job', async () => {
         "method": "POST",
         "name": "facebook.id.baz.jojo-1",
         "omit_response_on_success": false,
-        "relative_url": "another/api?access_token=access_token_baz",
+        "relative_url": "another/api?access_token=access_token_baz&appsecret_proof=b0c8d9ea3d72eacab94cd4f1389f27d608b56230df45deac816f164bac03cc80",
       },
     ]
   `);
@@ -579,7 +575,7 @@ it('use querystring params for GET request', async () => {
     {
       "method": "GET",
       "omit_response_on_success": false,
-      "relative_url": "1234567890?fields=%5B%22id%22%2C%22name%22%2C%22email%22%5D&access_token=access_token_foo",
+      "relative_url": "1234567890?fields=%5B%22id%22%2C%22name%22%2C%22email%22%5D&access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
     }
   `);
 
@@ -639,7 +635,7 @@ it('use querystring params for DELETE request', async () => {
     {
       "method": "DELETE",
       "omit_response_on_success": false,
-      "relative_url": "me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D&access_token=access_token_foo",
+      "relative_url": "me/messenger_profile?fields=%5B%22whitelisted_domains%22%5D&access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
     }
   `);
 
@@ -689,7 +685,7 @@ test('asApplication job', async () => {
         "body": "some=app%20settings",
         "method": "POST",
         "omit_response_on_success": false,
-        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_",
+        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_&appsecret_proof=b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b",
       },
     ]
   `);
@@ -740,7 +736,7 @@ test('job with accessToken', async () => {
         "body": "some=app%20settings",
         "method": "POST",
         "omit_response_on_success": false,
-        "relative_url": "settins/api?access_token=__MY_SPECIAL_ACCESS_TOKEN__",
+        "relative_url": "settins/api?access_token=__MY_SPECIAL_ACCESS_TOKEN__&appsecret_proof=3866a64f89c66f16f52e103e35941f98b78ca021b1b94baa853ed5a2175e9ccc",
       },
     ]
   `);
@@ -806,14 +802,14 @@ it('skip job when no access token available', async () => {
         "body": "some=app%20settings",
         "method": "POST",
         "omit_response_on_success": false,
-        "relative_url": "settins/api?access_token=__MY_ACCESS_TOKEN__",
+        "relative_url": "settins/api?access_token=__MY_ACCESS_TOKEN__&appsecret_proof=eb72374e6ec5aca7b4d5007e01d6d86b57a89985573c2bf69c4a8dbdd80ec867",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=1",
         "method": "POST",
         "name": "facebook.id.foo.john-1",
         "omit_response_on_success": false,
-        "relative_url": "me/messages?access_token=access_token_foo",
+        "relative_url": "me/messages?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
@@ -821,13 +817,13 @@ it('skip job when no access token available', async () => {
         "method": "POST",
         "name": "facebook.id.foo.john-2",
         "omit_response_on_success": false,
-        "relative_url": "some/api?access_token=access_token_foo",
+        "relative_url": "some/api?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       },
       {
         "body": "some=app%20settings",
         "method": "POST",
         "omit_response_on_success": false,
-        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_",
+        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_&appsecret_proof=b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b",
       },
     ]
   `);
@@ -971,7 +967,7 @@ test('with defaultAccessTokenOption', async () => {
         "method": "POST",
         "name": "facebook.id.foo.john-1",
         "omit_response_on_success": false,
-        "relative_url": "me/messages?access_token=_DEFAULT_ACCESS_TOKEN_",
+        "relative_url": "me/messages?access_token=_DEFAULT_ACCESS_TOKEN_&appsecret_proof=f7ae03d1c98e64204c11200c5da487d46eba9d6608fb5054d60a5075c3782404",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22john%22%7D&id=2",
@@ -979,27 +975,27 @@ test('with defaultAccessTokenOption', async () => {
         "method": "POST",
         "name": "facebook.id.foo.john-2",
         "omit_response_on_success": false,
-        "relative_url": "some/api?access_token=_DEFAULT_ACCESS_TOKEN_",
+        "relative_url": "some/api?access_token=_DEFAULT_ACCESS_TOKEN_&appsecret_proof=f7ae03d1c98e64204c11200c5da487d46eba9d6608fb5054d60a5075c3782404",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22jane%22%7D&id=3",
         "method": "POST",
         "name": "facebook.id.bar.jane-1",
         "omit_response_on_success": false,
-        "relative_url": "me/messages?access_token=access_token_bar",
+        "relative_url": "me/messages?access_token=access_token_bar&appsecret_proof=814fa9c737db6bf26b8d91139db95cb36f9248521852eaad447a93ac079f6bca",
       },
       {
         "body": "recipient=%7B%22id%22%3A%22jojo%22%7D&id=4",
         "method": "POST",
         "name": "facebook.id.baz.jojo-1",
         "omit_response_on_success": false,
-        "relative_url": "another/api?access_token=_DEFAULT_ACCESS_TOKEN_",
+        "relative_url": "another/api?access_token=_DEFAULT_ACCESS_TOKEN_&appsecret_proof=f7ae03d1c98e64204c11200c5da487d46eba9d6608fb5054d60a5075c3782404",
       },
       {
         "body": "some=app%20settings",
         "method": "POST",
         "omit_response_on_success": false,
-        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_",
+        "relative_url": "settins/api?access_token=_APP_ID_%7C_APP_SECRET_&appsecret_proof=b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b",
       },
     ]
   `);
@@ -1108,7 +1104,7 @@ describe('using API result in following request', () => {
           "method": "POST",
           "name": "foo_thread-1",
           "omit_response_on_success": false,
-          "relative_url": "1234567890/media?access_token=access_token_foo",
+          "relative_url": "1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
         },
         {
           "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
@@ -1116,7 +1112,7 @@ describe('using API result in following request', () => {
           "method": "POST",
           "name": "foo_thread-2",
           "omit_response_on_success": false,
-          "relative_url": "1234567890/media?access_token=access_token_foo",
+          "relative_url": "1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
         },
         {
           "body": "to=9876543210&type=image&images=[{"id":"{result=foo_thread-1:$.id}"},{"id":"{result=foo_thread-2:$.id}"}]",
@@ -1124,7 +1120,7 @@ describe('using API result in following request', () => {
           "method": "POST",
           "name": "foo_thread-3",
           "omit_response_on_success": false,
-          "relative_url": "1234567890/messages?access_token=access_token_foo",
+          "relative_url": "1234567890/messages?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
         },
       ]
     `);
@@ -1167,20 +1163,20 @@ describe('using API result in following request', () => {
           "method": "POST",
           "name": "#request-0",
           "omit_response_on_success": false,
-          "relative_url": "1234567890/media?access_token=access_token_foo",
+          "relative_url": "1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
         },
         {
           "body": "type=image/jpeg&file=@/pretend/to/upload/b/file.jpg",
           "method": "POST",
           "name": "#request-1",
           "omit_response_on_success": false,
-          "relative_url": "1234567890/media?access_token=access_token_foo",
+          "relative_url": "1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
         },
         {
           "body": "to=9876543210&type=image&images=[{"id":"{result=#request-0:$.id}"},{"id":"{result=#request-1:$.id}"}]",
           "method": "POST",
           "omit_response_on_success": false,
-          "relative_url": "1234567890/messages?access_token=access_token_foo",
+          "relative_url": "1234567890/messages?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
         },
       ]
     `);
@@ -1241,7 +1237,7 @@ describe('using API result in following request', () => {
         "method": "POST",
         "name": "foo_thread-1",
         "omit_response_on_success": false,
-        "relative_url": "1234567890/media?access_token=access_token_foo",
+        "relative_url": "1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       }
     `);
     expect(decodeBatchedRequest(JSON.parse(body2.batch)[0]))
@@ -1251,7 +1247,7 @@ describe('using API result in following request', () => {
         "method": "POST",
         "name": "foo_thread-1",
         "omit_response_on_success": false,
-        "relative_url": "1234567890/media?access_token=access_token_foo",
+        "relative_url": "1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       }
     `);
     expect(decodeBatchedRequest(JSON.parse(body2.batch)[1]))
@@ -1262,7 +1258,7 @@ describe('using API result in following request', () => {
         "method": "POST",
         "name": "foo_thread-2",
         "omit_response_on_success": false,
-        "relative_url": "1234567890/messages?access_token=access_token_foo",
+        "relative_url": "1234567890/messages?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e",
       }
     `);
 
