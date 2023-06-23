@@ -36,12 +36,13 @@ beforeEach(() => {
 });
 
 describe('subscription management', () => {
-  describe('.setAppSubscriptionWebhook(options)', () => {
+  describe('.setAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
 
       await expect(
-        manager.setAppSubscriptionWebhook('https://foo.bar/baz/', {
+        manager.setAppSubscription({
+          webhookUrl: 'https://foo.bar/baz/',
           appId: '_APP_ID_',
           verifyToken: '_VERIFY_TOKEN_',
           objectType: 'user',
@@ -72,7 +73,7 @@ describe('subscription management', () => {
       });
 
       await expect(
-        manager.setAppSubscriptionWebhook('https://foo.bar/baz/')
+        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' })
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -97,7 +98,7 @@ describe('subscription management', () => {
       });
 
       await expect(
-        manager.setAppSubscriptionWebhook('https://foo.bar/baz/')
+        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' })
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -120,7 +121,8 @@ describe('subscription management', () => {
       const manager = new FacebookAssetsManager(stateController, bot);
 
       await expect(
-        manager.setAppSubscriptionWebhook('https://foo.bar/baz/', {
+        manager.setAppSubscription({
+          webhookUrl: 'https://foo.bar/baz/',
           verifyToken: '_VERIFY_TOKEN_',
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -134,7 +136,8 @@ describe('subscription management', () => {
       const manager = new FacebookAssetsManager(stateController, bot);
 
       await expect(
-        manager.setAppSubscriptionWebhook('https://foo.bar/baz/', {
+        manager.setAppSubscription({
+          webhookUrl: 'https://foo.bar/baz/',
           appId: '_APP_ID_',
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -145,7 +148,54 @@ describe('subscription management', () => {
     });
   });
 
-  describe('.setPageSubscriptionWebhook(options)', () => {
+  describe('.deleteAppSubscription(options)', () => {
+    it('call subscription API as application', async () => {
+      const manager = new FacebookAssetsManager(stateController, bot, {
+        appId: '_APP_ID_',
+      });
+
+      await expect(manager.deleteAppSubscription()).resolves.toBe(undefined);
+
+      expect(bot.requestApi).toHaveBeenCalledTimes(1);
+      expect(bot.requestApi).toHaveBeenCalledWith({
+        asApplication: true,
+        method: 'DELETE',
+        url: '_APP_ID_/subscriptions',
+        params: {},
+      });
+
+      await expect(
+        manager.deleteAppSubscription({
+          objectType: 'user',
+          fields: ['foo_field', 'bar_field'],
+          appId: '_ANOTHER_APP_ID_',
+        })
+      ).resolves.toBe(undefined);
+
+      expect(bot.requestApi).toHaveBeenCalledTimes(2);
+      expect(bot.requestApi).toHaveBeenCalledWith({
+        asApplication: true,
+        method: 'DELETE',
+        url: '_ANOTHER_APP_ID_/subscriptions',
+        params: {
+          object: 'user',
+          fields: ['foo_field', 'bar_field'],
+        },
+      });
+    });
+
+    it('throw if no appId available', async () => {
+      const manager = new FacebookAssetsManager(stateController, bot);
+
+      await expect(
+        manager.deleteAppSubscription()
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`"appId is empty"`);
+
+      expect(bot.requestApi).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('.setPageSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
 
@@ -212,6 +262,23 @@ describe('subscription management', () => {
           "messaging_referrals",
         ]
       `);
+    });
+  });
+
+  describe('.deletePageSubscribedApp(options)', () => {
+    it('call subscribed_apps API as page', async () => {
+      const manager = new FacebookAssetsManager(stateController, bot);
+
+      await expect(manager.deletePageSubscribedApp(page)).resolves.toBe(
+        undefined
+      );
+
+      expect(bot.requestApi).toHaveBeenCalledTimes(1);
+      expect(bot.requestApi).toHaveBeenCalledWith({
+        page,
+        method: 'DELETE',
+        url: 'me/subscribed_apps',
+      });
     });
   });
 
@@ -568,36 +635,46 @@ describe('assets management', () => {
 
   test('.createPersona()', async () => {
     const manager = new FacebookAssetsManager(stateController, bot);
-    bot.requestApi.mock.fake(() => ({
-      id: '_PERSONA_ID_',
-    }));
+    bot.requestApi.mock.fake(() => ({ id: '_PERSONA_ID_' }));
 
     await expect(
-      manager.createPersona(
-        page,
-        'cute_persona',
-        {
-          name: 'Baby Yoda',
-          profilePictureUrl: '_URL_',
-        },
-        { accessToken: '_ACCESS_TOKEN_' }
-      )
+      manager.createPersona(page, 'cute_persona', {
+        name: 'Baby Yoda',
+        profilePictureUrl: '_URL_',
+      })
     ).resolves.toBe('_PERSONA_ID_');
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
       page,
-      accessToken: '_ACCESS_TOKEN_',
       method: 'POST',
       url: 'me/personas',
-      params: {
-        name: 'Baby Yoda',
-        profile_picture_url: '_URL_',
-      },
+      params: { name: 'Baby Yoda', profile_picture_url: '_URL_' },
     });
 
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('cute_persona', '_PERSONA_ID_');
+
+    bot.requestApi.mock.fake(() => ({ id: '_PERSONA_ID_2_' }));
+    await expect(
+      manager.createPersona(page, 'mean_persona', {
+        name: 'Boba Fett',
+        profilePictureUrl: '_URL_2_',
+        accessToken: '_MY_ACCESS_TOKEN_',
+      })
+    ).resolves.toBe('_PERSONA_ID_2_');
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      page,
+      accessToken: '_MY_ACCESS_TOKEN_',
+      method: 'POST',
+      url: 'me/personas',
+      params: { name: 'Boba Fett', profile_picture_url: '_URL_2_' },
+    });
+
+    expect(state.set).toHaveBeenCalledTimes(2);
+    expect(state.set).toHaveBeenCalledWith('mean_persona', '_PERSONA_ID_2_');
   });
 
   test('.deletePersona()', async () => {

@@ -46,13 +46,6 @@ export type DefaultAppSettings = {
   pageSubscriptionFields?: string[];
 };
 
-export type AppWebhookSubscriptionOptions = {
-  appId?: string;
-  verifyToken?: string;
-  fields?: string[];
-  objectType?: 'user' | 'page' | 'permissions' | 'payments';
-};
-
 /**
  * FacebookAssetsManager stores name-to-id mapping for assets created in
  * Facebook platform.
@@ -77,15 +70,24 @@ export class FacebookAssetsManager {
    * Set webhook subscription of an app. Check https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge/
    * for references
    */
-  async setAppSubscriptionWebhook(
-    webhookUrl: string,
-    {
-      objectType = 'page',
-      fields: fieldsInput,
-      appId: appIdInput,
-      verifyToken: verifyTokenInput,
-    }: AppWebhookSubscriptionOptions = {}
-  ): Promise<void> {
+  async setAppSubscription({
+    webhookUrl,
+    objectType = 'page',
+    fields: fieldsInput,
+    appId: appIdInput,
+    verifyToken: verifyTokenInput,
+  }: {
+    /** The URL to receive the webhook */
+    webhookUrl: string;
+    /** Indicates the object type that this subscription applies to. Default to `page` */
+    objectType?: 'user' | 'page' | 'permissions' | 'payments';
+    /** One or more of the set of valid fields in this object to subscribe to */
+    fields?: string[];
+    /** Specify the verify token to confirm the webhook with */
+    verifyToken?: string;
+    /** Specify the app to remove subscriptions for */
+    appId?: string;
+  }): Promise<void> {
     const appId = appIdInput || this.defaultAppSettings?.appId;
     const verifyToken =
       verifyTokenInput || this.defaultAppSettings?.verifyToken;
@@ -112,6 +114,40 @@ export class FacebookAssetsManager {
     });
   }
 
+  async deleteAppSubscription({
+    appId: appIdInput,
+    objectType,
+    fields,
+  }: {
+    /**
+     * One or more of the set of valid fields in this object to subscribe to.
+     * If not specified, subscriptios of all the fields is removed.
+     */
+    fields?: string[];
+    /**
+     * A specific object type to remove subscriptions for. If this optional
+     * field is not included, all subscriptions for this app will be removed.
+     */
+    objectType?: 'user' | 'page' | 'permissions' | 'payments';
+    /** Specify the app to remove subscriptions for */
+    appId?: string;
+  } = {}): Promise<void> {
+    const appId = appIdInput || this.defaultAppSettings?.appId;
+    if (!appId) {
+      throw new Error('appId is empty');
+    }
+
+    await this._bot.requestApi({
+      asApplication: true,
+      method: 'DELETE',
+      url: `${appId}/subscriptions`,
+      params: {
+        object: objectType,
+        fields,
+      },
+    });
+  }
+
   /**
    * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
@@ -133,6 +169,22 @@ export class FacebookAssetsManager {
       params: {
         subscribed_fields: fields,
       },
+    });
+  }
+
+  /**
+   * Delete app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
+   * for references.
+   */
+  async deletePageSubscribedApp(
+    page: string | FacebookPage,
+    options?: { accessToken?: string }
+  ): Promise<void> {
+    await this._bot.requestApi({
+      page,
+      accessToken: options?.accessToken,
+      method: 'DELETE',
+      url: 'me/subscribed_apps',
     });
   }
 
@@ -316,22 +368,32 @@ export class FacebookAssetsManager {
     return this.unsaveAssetId(page, PERSONA, assetTag);
   }
 
-  /** Create and save a Messenger persona */
+  /**
+   * Create and save a Messenger persona. Check https://developers.facebook.com/docs/messenger-platform/reference/personas-api
+   * for details
+   */
   async createPersona(
     page: string | FacebookPage,
     assetTag: string,
-    params: {
+    {
+      name,
+      profilePictureUrl,
+      accessToken,
+    }: {
+      /** The display name of the persona */
       name: string;
+      /** The URL of the user icon associated with the persona */
       profilePictureUrl?: string;
-    },
-    options?: { accessToken?: string }
+      /** Specify the access token to be used on the API call */
+      accessToken?: string;
+    }
   ): Promise<string> {
     const { id: personaId } = await this._bot.requestApi<{ id: string }>({
       page,
-      accessToken: options?.accessToken,
+      accessToken,
       method: 'POST',
       url: PATH_PERSONAS,
-      params: snakecaseKeys(params),
+      params: snakecaseKeys({ name, profilePictureUrl }),
     });
 
     await this.saveAssetId(page, PERSONA, assetTag, personaId);
