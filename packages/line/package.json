@@ -1,6 +1,6 @@
 {
   "name": "@sociably/line",
-  "version": "0.8.0-alpha.45",
+  "version": "0.8.0",
   "type": "module",
   "description": "LINE platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
