@@ -38,10 +38,10 @@
     "warning": "^4.0.2"
   },
   "peerDependencies": {
-    "@sociably/auth": "^0.8.0-alpha",
-    "@sociably/core": "^0.8.0-alpha",
-    "@sociably/http": "^0.8.0-alpha",
-    "@sociably/webview": "^0.8.0-alpha"
+    "@sociably/auth": "^0.8.0",
+    "@sociably/core": "^0.8.0",
+    "@sociably/http": "^0.8.0",
+    "@sociably/webview": "^0.8.0"
   },
   "peerDependenciesMeta": {
     "@sociably/auth": {

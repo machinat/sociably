@@ -31,6 +31,6 @@
     "rxjs": "^6.5.5"
   },
   "peerDependencies": {
-    "@sociably/core": "^0.8.0-alpha"
+    "@sociably/core": "^0.8.0"
   }
 }
