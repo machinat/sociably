@@ -217,8 +217,6 @@ For now, Sociably supports the platforms below. Check the readme of the package 
 To enable Sociably JSX syntax, you need to configure the transpiling environment.
 You can choose either [Babel.js](https://babeljs.io/) or [TypeScript](https://www.typescriptlang.org/).
 
-### With TypeScript
-
 Add the following `compilerOptions` settings in your `tsconfig.json`:
 
 ```js
@@ -230,29 +228,6 @@ Add the following `compilerOptions` settings in your `tsconfig.json`:
     // ...
   }
 }
-```
-
-### With Babel
-
-Install `@sociably/babel-preset` package:
-
-```bash
-npm install -D @sociably/babel-preset
-# or using yarn
-yarn add --dev @sociably/babel-preset
-```
-
-Then add it into `babel.config.js` like this:
-
-```js
-module.exports = {
-  presets: [
-    ['@babel/preset-env', {
-      //...
-    }],
-    '@sociably/babel-preset',
-  ],
-};
 ```
 
 ### Import `Sociably`

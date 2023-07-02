@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import { EventEmitter } from 'events';
 import { moxy } from '@moxyjs/moxy';
-import { HttpConnector } from '../connector.js';
+import { HttpConnector } from '../Connector.js';
 
 const FakeServer = class FakeServer extends EventEmitter {
   // eslint-disable-next-line

@@ -8,7 +8,7 @@ module.exports = {
       onlyRemoveTypeImports: true,
     }],
     ['@babel/preset-env', {
-        targets: { node: 10 },
+        targets: { node: 16 },
         loose: true,
     }],
   ],

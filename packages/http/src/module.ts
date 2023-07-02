@@ -6,14 +6,13 @@ import {
   serviceContainer,
   serviceProviderFactory,
 } from '@sociably/core/service';
-
+import ConnectorP from './Connector.js';
 import {
   ServerI,
   ConfigsI,
   RequestRouteListI,
   UpgradeRouteListI,
 } from './interface.js';
-import { ConnectorP } from './connector.js';
 
 const httpServerFactory = serviceProviderFactory({
   lifetime: 'singleton',

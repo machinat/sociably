@@ -1,7 +1,7 @@
 import { createServer as _createServer } from 'http';
 import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import { HttpConnector } from '../connector.js';
+import { HttpConnector } from '../Connector.js';
 import Http from '../module.js';
 
 const createServer = _createServer as Moxy<typeof _createServer>;

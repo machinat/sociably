@@ -190,11 +190,13 @@ export class HttpConnector {
   }
 }
 
-export const ConnectorP = serviceProviderClass({
+const ConnectorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConfigsI, RequestRouteListI, UpgradeRouteListI],
   factory: ({ entryUrl }, requestRoutes, upgradeRoutes) =>
     new HttpConnector({ entryUrl, requestRoutes, upgradeRoutes }),
 })(HttpConnector);
 
-export type ConnectorP = HttpConnector;
+type ConnectorP = HttpConnector;
+
+export default ConnectorP;
