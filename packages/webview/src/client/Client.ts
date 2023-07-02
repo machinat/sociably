@@ -6,7 +6,7 @@ import type {
   ContextOfAuthenticator,
 } from '@sociably/auth';
 import { Connector, ClientEmitter } from '@sociably/websocket/client';
-import { DEFAULT_AUTH_PATH, DEFAULT_WEBSOCKET_PATH } from '../constant.js';
+import { DEFAULT_AUTH_ROUTE, DEFAULT_WEBSOCKET_ROUTE } from '../constant.js';
 import WebviewConnection from '../Connection.js';
 import createEvent from '../utils/createEvent.js';
 import type {
@@ -76,7 +76,7 @@ class WebviewClient<
 
     this._authClient = new AuthClient({
       authenticators: authPlatforms,
-      serverUrl: authApiUrl || DEFAULT_AUTH_PATH,
+      serverUrl: authApiUrl || `/${DEFAULT_AUTH_ROUTE}`,
     });
 
     const marshalTypes = authPlatforms.reduce((types, authenticator) => {
@@ -87,7 +87,7 @@ class WebviewClient<
     }, [] as AnyMarshalType[]);
 
     this._connector = new Connector<UserOfAuthenticator<Authenticator>>(
-      webSocketUrl || DEFAULT_WEBSOCKET_PATH,
+      webSocketUrl || `/${DEFAULT_WEBSOCKET_ROUTE}`,
       this._getLoginAuth.bind(this),
       new BaseMarshaler(marshalTypes)
     )

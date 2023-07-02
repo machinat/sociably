@@ -15,21 +15,6 @@ export const getTrailingPath = (
 
 type Routing = { name?: string; path: string };
 
-export const checkRoutesConfliction = (
-  existedRoutings: ReadonlyArray<Routing>,
-  newRoute: Routing
-): [boolean, Routing] => {
-  for (const route of existedRoutings) {
-    if (
-      getTrailingPath(route.path, newRoute.path) ||
-      getTrailingPath(newRoute.path, route.path)
-    ) {
-      return [false, route];
-    }
-  }
-  return [true, null as never];
-};
-
 export const endRes = (res: ServerResponse, code: number): void => {
   res.statusCode = code;
   res.end(STATUS_CODES[code]);
@@ -49,3 +34,29 @@ export const respondUpgrade = (socket: Socket, code: number): void => {
 
 export const formatRoute = ({ name, path }: Routing): string =>
   `${name ? `[${name}] ` : ''}"${path}"`;
+
+export const checkRoutePath = (
+  existedRoutings: ReadonlyArray<Routing>,
+  newRoute: Routing
+): null | Error => {
+  if (newRoute.path.startsWith('/')) {
+    return new Error('route path should be a relative path');
+  }
+  if (newRoute.path.startsWith('..')) {
+    return new Error('route path should be under entryUrl');
+  }
+
+  for (const route of existedRoutings) {
+    if (
+      getTrailingPath(route.path, newRoute.path) ||
+      getTrailingPath(newRoute.path, route.path)
+    ) {
+      return new Error(
+        `route ${formatRoute(newRoute)} is conflicted with route ${formatRoute(
+          route
+        )}`
+      );
+    }
+  }
+  return null;
+};

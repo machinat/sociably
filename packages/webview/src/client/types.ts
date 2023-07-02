@@ -25,10 +25,10 @@ export type EventContextOfClient<
   : never;
 
 export type ClientOptions<Authenticator extends AnyClientAuthenticator> = {
-  /** URL string to connect WebSocket backend. Default to `"/websocket"` */
-  webSocketUrl?: string;
   /** Secify the platform to login. Default to the value of `platform` querystring */
   platform?: string;
+  /** URL string to connect WebSocket backend. Default to `"/websocket"` */
+  webSocketUrl?: string;
   /** URL of the auth backend API. Default to `"/auth"` */
   authApiUrl?: string;
   /** Authenticators of the platforms. */

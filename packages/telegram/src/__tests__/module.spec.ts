@@ -43,7 +43,7 @@ describe('initModule(configs)', () => {
         botName: 'FooBot',
         secretToken: '_SECRET_',
       },
-      webhookPath: '/webhook/telegram',
+      webhookPath: 'webhook/telegram',
       maxRequestConnections: 999,
       eventMiddlewares: [eventMiddleware],
       dispatchMiddlewares: [dispatchMiddleware],
@@ -73,14 +73,17 @@ describe('initModule(configs)', () => {
         botName: 'FooBot',
         secretToken: '_SECRET_',
       },
-      webhookPath: '/webhook/telegram',
+      webhookPath: 'webhook/telegram',
       authRedirectUrl: '/webview/index.html',
       maxRequestConnections: 999,
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Telegram.initModule(configs)],
     });
     await app.start();
@@ -103,7 +106,7 @@ describe('initModule(configs)', () => {
     expect(routings).toEqual([
       {
         name: 'telegram',
-        path: '/webhook/telegram',
+        path: 'webhook/telegram',
         handler: expect.any(Function),
       },
     ]);
@@ -111,7 +114,10 @@ describe('initModule(configs)', () => {
 
   test('provide base interface', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Telegram.initModule({
           agentSettings: {
@@ -143,7 +149,7 @@ describe('initModule(configs)', () => {
     );
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default webhookPath to "."', async () => {
     const configs = {
       agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
@@ -153,14 +159,17 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Telegram.initModule(configs)],
     });
     await app.start();
 
     const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
-      { name: 'telegram', path: '/', handler: expect.any(Function) },
+      { name: 'telegram', path: '.', handler: expect.any(Function) },
     ]);
   });
 
@@ -172,7 +181,10 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Telegram.initModule({ agentSettings })],
     });
     await app.start();
@@ -203,7 +215,10 @@ describe('initModule(configs)', () => {
     ];
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Telegram.initModule({ multiAgentSettings })],
     });
     await app.start();
@@ -240,7 +255,10 @@ describe('initModule(configs)', () => {
     );
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Telegram.initModule({
           agentSettingsService: myAgentSettingsService,

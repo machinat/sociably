@@ -284,7 +284,7 @@ describe('initModule(configs)', () => {
     await app.stop();
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default webhookPath to "."', async () => {
     const app = Sociably.createApp({
       modules: [InMemoryState.initModule()],
       platforms: [
@@ -303,7 +303,7 @@ describe('initModule(configs)', () => {
 
     const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
-      { name: 'whatsapp', path: '/', handler: expect.any(Function) },
+      { name: 'whatsapp', path: '.', handler: expect.any(Function) },
     ]);
 
     app.useServices([WhatsApp.Bot])[0].stop();

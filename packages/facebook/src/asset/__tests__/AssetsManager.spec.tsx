@@ -69,12 +69,11 @@ describe('subscription management', () => {
       const manager = new FacebookAssetsManager(stateController, bot, {
         appId: '_APP_ID_',
         verifyToken: '_VERIFY_TOKEN_',
+        webhookUrl: 'https://foo.bar/baz/',
         pageSubscriptionFields: ['messages', 'messaging_postbacks'],
       });
 
-      await expect(
-        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' })
-      ).resolves.toBe(undefined);
+      await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
@@ -119,31 +118,40 @@ describe('subscription management', () => {
 
     it('throw if no appId available', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
-
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           verifyToken: '_VERIFY_TOKEN_',
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, url, verifyToken or fields is empty"`
+        `"appId, webhookUrl, verifyToken or fields is empty"`
       );
+      expect(bot.requestApi).not.toHaveBeenCalled();
+    });
 
+    it('throw if no webhookUrl available', async () => {
+      const manager = new FacebookAssetsManager(stateController, bot);
+      await expect(
+        manager.setAppSubscription({
+          appId: '_APP_ID_',
+          verifyToken: '_VERIFY_TOKEN_',
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"appId, webhookUrl, verifyToken or fields is empty"`
+      );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
 
     it('throw if no verifyToken available', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
-
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           appId: '_APP_ID_',
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, url, verifyToken or fields is empty"`
+        `"appId, webhookUrl, verifyToken or fields is empty"`
       );
-
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
   });
@@ -290,15 +298,12 @@ describe('subscription management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(
-          page,
-          {
-            whitelistedDomains: ['https://foo.bar'],
-            getStarted: { payload: 'GO!' },
-            greeting: [{ locale: 'default', text: 'Hello World!' }],
-          },
-          { accessToken: '_ACCESS_TOKEN_' }
-        )
+        manager.setPageMessengerProfile(page, {
+          whitelistedDomains: ['https://foo.bar'],
+          getStarted: { payload: 'GO!' },
+          greeting: [{ locale: 'default', text: 'Hello World!' }],
+          accessToken: '_ACCESS_TOKEN_',
+        })
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -416,11 +421,11 @@ describe('subscription management', () => {
           getStarted: { payload: 'GO!' },
           iceBreakers: [
             {
-              call_to_actions: [{ question: 'Yo?', payload: 'yo' }],
+              callToActions: [{ question: 'Yo?', payload: 'yo' }],
               locale: 'default',
             },
             {
-              call_to_actions: [{ question: '喲?', payload: '唷' }],
+              callToActions: [{ question: '喲?', payload: '唷' }],
               locale: 'zh_TW',
             },
           ],

@@ -1,7 +1,8 @@
-import { serviceProviderClass } from '@sociably/core/service';
-import StateControllerI from '@sociably/core/base/StateController';
+import { serviceProviderClass, StateController } from '@sociably/core';
+import Http from '@sociably/http';
 import BotP from '../Bot.js';
 import TelegramUser from '../User.js';
+import { ConfigsI } from '../interface.js';
 import { TG } from '../constant.js';
 
 const FILE = 'file';
@@ -9,18 +10,28 @@ const FILE = 'file';
 const makeResourceToken = (botId: number, resource: string): string =>
   `$${TG}.${resource}.${botId}`;
 
+type DefaultSettings = {
+  webhookUrl?: string;
+};
+
 /**
  * TelegramAssetsManager stores name-to-id mapping for assets created in
  * Telegram platform.
  * @category Provider
  */
 export class TelegramAssetsManager {
-  private stateController: StateControllerI;
+  private stateController: StateController;
   private bot: BotP;
+  defaultSettings: DefaultSettings;
 
-  constructor(bot: BotP, stateController: StateControllerI) {
+  constructor(
+    bot: BotP,
+    stateController: StateController,
+    defaultSettings: DefaultSettings = {}
+  ) {
     this.bot = bot;
     this.stateController = stateController;
+    this.defaultSettings = defaultSettings;
   }
 
   async getAssetId(
@@ -109,7 +120,7 @@ export class TelegramAssetsManager {
     agent: number | TelegramUser,
     params: {
       /** HTTPS URL to send updates to. Use an empty string to remove webhook integration */
-      url: string;
+      url?: string;
       /**
        * The fixed IP address which will be used to send webhook requests instead of the IP
        * address resolved through DNS
@@ -137,13 +148,19 @@ export class TelegramAssetsManager {
        * is useful to ensure that the request comes from a webhook set by you.
        */
       secretToken?: string;
-    }
+    } = {}
   ): Promise<void> {
+    const webhookUrl = params.url || this.defaultSettings.webhookUrl;
+    if (!webhookUrl) {
+      throw new Error('Webhook url is required');
+    }
+    const agentId = typeof agent === 'number' ? agent : agent.id;
+
     await this.bot.requestApi({
       agent,
       method: 'setWebhook',
       params: {
-        url: params.url,
+        url: `${webhookUrl}/${agentId}`,
         ip_address: params.ipAddress,
         max_connections: params.maxConnections,
         allowed_updates: params.allowedUpdates,
@@ -173,7 +190,11 @@ export class TelegramAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI],
+  deps: [BotP, StateController, Http.Configs, ConfigsI],
+  factory: (bot, stateController, { entryUrl }, { webhookPath }) =>
+    new TelegramAssetsManager(bot, stateController, {
+      webhookUrl: new URL(webhookPath ?? '', entryUrl).href,
+    }),
 })(TelegramAssetsManager);
 
 type AssetsManagerP = TelegramAssetsManager;

@@ -51,7 +51,6 @@ test('module object', () => {
   const dispatchMiddlewares = [moxy((ctx, next) => next(ctx))];
 
   const module = Webview.initModule({
-    webviewHost: 'sociably.io',
     authSecret: '_SECRET_',
     authPlatforms: [NoneAuthenticator],
     eventMiddlewares,
@@ -76,15 +75,18 @@ test('module object', () => {
 test('service provisions', async () => {
   const configsInput = {
     authPlatforms: [NoneAuthenticator],
-    webviewPath: '/myView',
-    authApiPath: '/myAuth',
-    webSocketPath: '/mySocket',
+    webviewPath: 'myView',
+    authApiPath: 'myAuth',
+    webSocketPath: 'mySocket',
     webviewHost: 'sociably.io',
     authSecret: '_SECRET_',
     nextServerOptions: { dir: './webview', conf: { dist: '../../' } },
   };
 
   const app = Sociably.createApp({
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+    ],
     platforms: [Webview.initModule(configsInput)],
   });
   await app.start();
@@ -130,12 +132,12 @@ test('service provisions', async () => {
 
   expect(requestRoutes).toEqual(
     expect.arrayContaining([
-      { name: 'auth', path: '/myAuth', handler: expect.any(Function) },
-      { name: 'next', path: '/myView', handler: expect.any(Function) },
+      { name: 'auth', path: 'myAuth', handler: expect.any(Function) },
+      { name: 'next', path: 'myView', handler: expect.any(Function) },
     ])
   );
   expect(upgradeRoutes).toEqual([
-    { name: 'websocket', path: '/mySocket', handler: expect.any(Function) },
+    { name: 'websocket', path: 'mySocket', handler: expect.any(Function) },
   ]);
   expect(basicAuthenticator).toBe(null);
   await app.stop();
@@ -150,12 +152,14 @@ test('with basicAuth', async () => {
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
         basicAuth: basicAuthOptions,
       }),
     ],
-    modules: [InMemoryState.initModule()],
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+      InMemoryState.initModule(),
+    ],
     services: [{ provide: Auth.AuthenticatorList, withValue: moxy() }],
   });
   await app.start();
@@ -171,14 +175,17 @@ test('with basicAuth', async () => {
 test('with noNextServer option', async () => {
   const configsInput = {
     authPlatforms: [NoneAuthenticator],
-    webviewPath: '/myView',
-    authApiPath: '/myAuth',
-    webSocketPath: '/mySocket',
+    webviewPath: 'myView',
+    authApiPath: 'myAuth',
+    webSocketPath: 'mySocket',
     webviewHost: 'sociably.io',
     authSecret: '_SECRET_',
     noNextServer: true,
   };
   const app = Sociably.createApp({
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+    ],
     platforms: [Webview.initModule(configsInput)],
   });
   await app.start();
@@ -203,17 +210,19 @@ test('with noNextServer option', async () => {
   expect(createNextServer).not.toHaveBeenCalled();
 
   expect(requestRoutes).toEqual([
-    { name: 'auth', path: '/myAuth', handler: expect.any(Function) },
+    { name: 'auth', path: 'myAuth', handler: expect.any(Function) },
   ]);
   await app.stop();
 });
 
 test('default routing paths', async () => {
   const app = Sociably.createApp({
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+    ],
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
       }),
     ],
@@ -227,7 +236,7 @@ test('default routing paths', async () => {
   expect(requestRoutes).toEqual([
     {
       name: 'auth',
-      path: '/auth',
+      path: 'auth',
       handler: expect.any(Function),
     },
     {
@@ -239,7 +248,7 @@ test('default routing paths', async () => {
   expect(upgradeRoutes).toEqual([
     {
       name: 'websocket',
-      path: '/websocket',
+      path: 'websocket',
       handler: expect.any(Function),
     },
   ]);
@@ -248,10 +257,12 @@ test('default routing paths', async () => {
 
 test('provide base interfaces', async () => {
   const app = Sociably.createApp({
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+    ],
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
       }),
     ],
@@ -272,10 +283,12 @@ test('provide base interfaces', async () => {
 
 test('register hmr route when dev', async () => {
   let app = Sociably.createApp({
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+    ],
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: true },
       }),
@@ -288,7 +301,7 @@ test('register hmr route when dev', async () => {
       {
         "handler": [Function],
         "name": "websocket",
-        "path": "/websocket",
+        "path": "websocket",
       },
       {
         "default": true,
@@ -299,11 +312,13 @@ test('register hmr route when dev', async () => {
   `);
 
   app = Sociably.createApp({
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+    ],
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'sociably.io',
-        webviewPath: '/webview',
+        webviewPath: 'webview',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: true },
       }),
@@ -316,21 +331,23 @@ test('register hmr route when dev', async () => {
       {
         "handler": [Function],
         "name": "websocket",
-        "path": "/websocket",
+        "path": "websocket",
       },
       {
         "handler": [Function],
         "name": "webpack-hmr",
-        "path": "/webview",
+        "path": "webview",
       },
     ]
   `);
 
   app = Sociably.createApp({
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+    ],
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: false },
       }),
@@ -346,10 +363,12 @@ test('startHook & stopHook', async () => {
   const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
 
   const app = Sociably.createApp({
+    modules: [
+      Http.initModule({ entryUrl: 'https://sociably.io/foo/', noServer: true }),
+    ],
     platforms: [
       Webview.initModule({
         authPlatforms: [NoneAuthenticator],
-        webviewHost: 'sociably.io',
         authSecret: '_SECRET_',
         nextServerOptions: { dev: true, conf: { dist: '../../' } },
       }),

@@ -353,21 +353,73 @@ test('.deleteRichMenu()', async () => {
   expect(state.delete).toHaveBeenCalledWith('my_rich_menu');
 });
 
-test('.setChannelWebhook', async () => {
-  bot.requestApi.mock.fake(async () => ({}));
+describe('.setChannelWebhook', () => {
+  it('call v2/bot/channel/webhook/endpoint API', async () => {
+    bot.requestApi.mock.fake(async () => ({}));
 
-  await expect(
-    manager.setChannelWebhook(channel, 'https://example.com/webhook', {
+    await expect(
+      manager.setChannelWebhook(channel, {
+        webhookUrl: 'https://example.com/foo',
+      })
+    ).resolves.toBe(undefined);
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      channel,
+      method: 'PUT',
+      url: 'v2/bot/channel/webhook/endpoint',
+      params: { endpoint: 'https://example.com/foo' },
+    });
+
+    await expect(
+      manager.setChannelWebhook(channel, {
+        webhookUrl: 'https://example.com/bar',
+        accessToken: '_ACCESS_TOKEN_',
+      })
+    ).resolves.toBe(undefined);
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      channel,
       accessToken: '_ACCESS_TOKEN_',
-    })
-  ).resolves.toBe(undefined);
+      method: 'PUT',
+      url: 'v2/bot/channel/webhook/endpoint',
+      params: { endpoint: 'https://example.com/bar' },
+    });
+  });
 
-  expect(bot.requestApi).toHaveBeenCalledTimes(1);
-  expect(bot.requestApi).toHaveBeenCalledWith({
-    channel,
-    accessToken: '_ACCESS_TOKEN_',
-    method: 'PUT',
-    url: 'v2/bot/channel/webhook/endpoint',
-    params: { endpoint: 'https://example.com/webhook' },
+  test('with default webhookUrl', async () => {
+    bot.requestApi.mock.fake(async () => ({}));
+
+    const managerWithDefaultWebhookUrl = new LineAssetsManager(
+      stateController,
+      bot,
+      agentSettingsAccessor,
+      { webhookUrl: 'https://example.com/baz' }
+    );
+
+    await expect(
+      managerWithDefaultWebhookUrl.setChannelWebhook(channel)
+    ).resolves.toBe(undefined);
+    await expect(
+      managerWithDefaultWebhookUrl.setChannelWebhook(channel, {
+        accessToken: '_ACCESS_TOKEN_',
+      })
+    ).resolves.toBe(undefined);
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+      channel,
+      method: 'PUT',
+      url: 'v2/bot/channel/webhook/endpoint',
+      params: { endpoint: 'https://example.com/baz' },
+    });
+    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      channel,
+      method: 'PUT',
+      url: 'v2/bot/channel/webhook/endpoint',
+      params: { endpoint: 'https://example.com/baz' },
+      accessToken: '_ACCESS_TOKEN_',
+    });
   });
 });

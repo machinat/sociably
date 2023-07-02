@@ -168,45 +168,64 @@ test('remove asset id', async () => {
   expect(state.delete).toHaveBeenNthCalledWith(4, 'my_file');
 });
 
-test('.setBotWebhook(bot, options)', async () => {
-  const manager = new TelegramAssetsManager(bot, stateController);
+describe('.setBotWebhook(bot, options)', () => {
+  it('call setWebhook API', async () => {
+    const manager = new TelegramAssetsManager(bot, stateController);
 
-  await expect(
-    manager.setBotWebhook(botUser, { url: 'https://example.com' })
-  ).resolves.toBe(undefined);
+    await expect(
+      manager.setBotWebhook(botUser, { url: 'https://sociably.io/foo' })
+    ).resolves.toBe(undefined);
 
-  expect(bot.requestApi).toHaveBeenCalledTimes(1);
-  expect(bot.requestApi).toHaveBeenCalledWith({
-    agent: botUser,
-    method: 'setWebhook',
-    params: {
-      url: 'https://example.com',
-    },
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      agent: botUser,
+      method: 'setWebhook',
+      params: {
+        url: 'https://sociably.io/foo/12345',
+      },
+    });
+
+    await expect(
+      manager.setBotWebhook(67890, {
+        url: 'https://sociably.io/bar',
+        ipAddress: '123.0.0.0',
+        maxConnections: 100,
+        allowedUpdates: ['message', 'callback_query'],
+        dropPendingUpdates: true,
+        secretToken: '__SECRET_TOKEN__',
+      })
+    ).resolves.toBe(undefined);
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      agent: 67890,
+      method: 'setWebhook',
+      params: {
+        url: 'https://sociably.io/bar/67890',
+        ip_address: '123.0.0.0',
+        max_connections: 100,
+        allowed_updates: ['message', 'callback_query'],
+        drop_pending_updates: true,
+        secret_token: '__SECRET_TOKEN__',
+      },
+    });
   });
 
-  await expect(
-    manager.setBotWebhook(botUser, {
-      url: 'https://example.com',
-      ipAddress: '123.0.0.0',
-      maxConnections: 100,
-      allowedUpdates: ['message', 'callback_query'],
-      dropPendingUpdates: true,
-      secretToken: '__SECRET_TOKEN__',
-    })
-  ).resolves.toBe(undefined);
+  test('with default options', async () => {
+    const manager = new TelegramAssetsManager(bot, stateController, {
+      webhookUrl: 'https://sociably.io/foo',
+    });
 
-  expect(bot.requestApi).toHaveBeenCalledTimes(2);
-  expect(bot.requestApi).toHaveBeenCalledWith({
-    agent: botUser,
-    method: 'setWebhook',
-    params: {
-      url: 'https://example.com',
-      ip_address: '123.0.0.0',
-      max_connections: 100,
-      allowed_updates: ['message', 'callback_query'],
-      drop_pending_updates: true,
-      secret_token: '__SECRET_TOKEN__',
-    },
+    await expect(manager.setBotWebhook(botUser)).resolves.toBe(undefined);
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      agent: botUser,
+      method: 'setWebhook',
+      params: {
+        url: 'https://sociably.io/foo/12345',
+      },
+    });
   });
 });
 

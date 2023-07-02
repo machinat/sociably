@@ -1,5 +1,5 @@
 import { parse as parseUrl } from 'url';
-import { posix as posixPath } from 'path';
+import { join as joinPath, relative as getRelativePath } from 'path/posix';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { serviceProviderClass } from '@sociably/core/service';
 import { HttpRequestInfo, RoutingInfo } from '@sociably/http';
@@ -59,10 +59,10 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     this.operator = operator;
     this.secret = operator.secret;
     this.authenticators = authenticators;
-    this.apiPathname = operator.apiRootUrl.pathname;
+    this.apiPathname = operator.apiUrl.pathname;
   }
 
-  async delegateAuthRequest(
+  async handleRequest(
     req: IncomingMessage,
     res: ServerResponse,
     routingInfo?: RoutingInfo
@@ -70,7 +70,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     const { pathname } = parseUrl(req.url as string);
     const subpath =
       routingInfo?.trailingPath ||
-      posixPath.relative(this.apiPathname, pathname || '/');
+      getRelativePath(this.apiPathname, pathname || '/');
 
     if (subpath === '' || subpath.slice(0, 2) === '..') {
       respondApiError(res, undefined, 403, 'path forbidden');
@@ -101,7 +101,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       return;
     }
 
-    const [platform] = subpath.split('/');
+    const [platform] = subpath.split('/', 1);
 
     const authenticator = this._getAuthenticatorOf(platform);
     if (!authenticator) {
@@ -112,11 +112,12 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     try {
       await authenticator.delegateAuthRequest(req, res, {
         originalPath: pathname || '/',
-        matchedPath: posixPath.join(
-          routingInfo?.matchedPath || this.apiPathname,
+        basePath: routingInfo?.basePath || '/',
+        matchedPath: joinPath(
+          routingInfo?.matchedPath || this.apiPathname.slice(1),
           platform
         ),
-        trailingPath: posixPath.relative(platform, subpath),
+        trailingPath: getRelativePath(platform, subpath),
       });
     } catch (err) {
       if (!res.writableEnded) {

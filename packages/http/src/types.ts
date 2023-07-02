@@ -7,6 +7,7 @@ import type { Socket, ListenOptions } from 'net';
 
 export type RoutingInfo = {
   originalPath: string;
+  basePath: string;
   matchedPath?: string;
   trailingPath: string;
 };
@@ -62,6 +63,8 @@ export type HttpRequestInfo = {
 export type HttpConfigs = {
   /** The options passed to `http.Server.listen()` method */
   listenOptions?: ServerListenOptions;
-  /** Set to `true` to stop HTTP server listening when app start  */
+  /** Set to `true` to prevent listening HTTP request when app start */
   noServer?: boolean;
+  /** The external entry point URL of the server */
+  entryUrl: string;
 };

@@ -38,7 +38,7 @@ export type TwitterPlatformConfigs = {
   appSecret: string;
   /** The bearer token of Twitter app */
   bearerToken: string;
-  /** The webhook path to receive events. Default to `/` */
+  /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
   /** The max API request connections at the same time */
   maxRequestConnections?: number;

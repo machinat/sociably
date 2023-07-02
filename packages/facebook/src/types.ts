@@ -231,7 +231,7 @@ export type FacebookConfigs = {
   shouldHandleChallenge?: boolean;
   /** The secret string to verify the webhook challenge request */
   verifyToken: string;
-  /** The webhook path to receive events. Default to `/` */
+  /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
   /**
    * The webhook subscription fields. Default to `['messages', 'messaging_postbacks', 'messaging_optins',

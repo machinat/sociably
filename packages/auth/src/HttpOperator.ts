@@ -1,7 +1,8 @@
 import { serviceProviderClass } from '@sociably/core';
+import Http from '@sociably/http';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
-import { posix as posixPath } from 'path';
+import { join as joinPath } from 'path/posix';
 import invariant from 'invariant';
 import JsonWebToken from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';
@@ -27,8 +28,8 @@ const { sign: signJwt, verify: verifyJWT } = JsonWebToken;
 
 type OperatorOptions = {
   serverUrl: string;
-  apiRoot?: string;
-  redirectRoot?: string;
+  apiPath?: string;
+  redirectUrl?: string;
   secret: string;
   tokenCookieMaxAge?: number;
   dataCookieMaxAge?: number;
@@ -43,8 +44,8 @@ type OperatorOptions = {
 const getSecondNow = () => Math.floor(Date.now() / 1000);
 
 export class AuthHttpOperator {
-  apiRootUrl: URL;
-  redirectRootUrl: URL;
+  apiUrl: URL;
+  redirectUrl: URL;
 
   secret: string;
   tokenLifetime: number;
@@ -62,8 +63,8 @@ export class AuthHttpOperator {
   constructor(options: OperatorOptions) {
     const {
       serverUrl,
-      apiRoot,
-      redirectRoot,
+      apiPath,
+      redirectUrl,
       secret,
       tokenLifetime = 3600, // 1 hr
       dataCookieMaxAge = 300, // 5 min
@@ -76,36 +77,33 @@ export class AuthHttpOperator {
     invariant(secret, 'options.secret must not be empty');
     invariant(serverUrl, 'options.serverUrl must not be empty');
 
-    const apiUrl = new URL(apiRoot || '', serverUrl);
+    this.apiUrl = new URL(apiPath || '', serverUrl);
     invariant(
-      !secure || apiUrl.protocol === 'https:',
+      !secure || this.apiUrl.protocol === 'https:',
       'protocol of options.serverUrl should be "https" when options.secure is set to true'
     );
     invariant(
-      !cookieDomain || isSubdomain(cookieDomain, apiUrl.hostname),
+      !cookieDomain || isSubdomain(cookieDomain, this.apiUrl.hostname),
       'options.serverUrl should be under a subdomain of options.cookieDomain'
     );
     invariant(
-      isSubpath(cookiePath, apiUrl.pathname),
-      'options.apiRoot should be a subpath of options.cookiePath'
+      isSubpath(cookiePath, this.apiUrl.pathname),
+      'options.apiPath should be a subpath of options.cookiePath'
     );
 
-    const redirectUrl = new URL(redirectRoot || '', serverUrl);
+    this.redirectUrl = new URL(redirectUrl || '', serverUrl);
     invariant(
-      !secure || redirectUrl.protocol === 'https:',
-      'protocol of options.redirectRoot should be "https" when options.secure is set to true'
+      !secure || this.redirectUrl.protocol === 'https:',
+      'protocol of options.redirectUrl should be "https" when options.secure is set to true'
     );
     invariant(
-      !cookieDomain || isSubdomain(cookieDomain, redirectUrl.hostname),
-      'options.redirectRoot should be under a subdomain of options.cookieDomain'
+      !cookieDomain || isSubdomain(cookieDomain, this.redirectUrl.hostname),
+      'options.redirectUrl should be under a subdomain of options.cookieDomain'
     );
     invariant(
-      isSubpath(cookiePath, redirectUrl.pathname),
-      'options.redirectRoot should be under a subpath of options.cookiePath'
+      isSubpath(cookiePath, this.redirectUrl.pathname),
+      'options.redirectUrl should be under a subpath of options.cookiePath'
     );
-
-    this.apiRootUrl = apiUrl;
-    this.redirectRootUrl = redirectUrl;
 
     this.secret = secret;
     this.tokenLifetime = tokenLifetime;
@@ -154,7 +152,7 @@ export class AuthHttpOperator {
 
     setCookie(res, STATE_COOKIE_KEY, encodedState, {
       ...this.baseCookieOptions,
-      path: this.apiRootUrl.pathname,
+      path: this.apiUrl.pathname,
       maxAge: this.dataCookieMaxAge,
       httpOnly: true,
     });
@@ -164,7 +162,7 @@ export class AuthHttpOperator {
   deleteState(res: ServerResponse): void {
     setCookie(res, STATE_COOKIE_KEY, '', {
       ...this.baseCookieOptions,
-      path: this.apiRootUrl.pathname,
+      path: this.apiUrl.pathname,
       expires: new Date(0),
     });
   }
@@ -318,14 +316,13 @@ export class AuthHttpOperator {
 
   getAuthUrl(platform: string, subpath?: string): string {
     return new URL(
-      posixPath.join(this.apiRootUrl.pathname, platform, subpath || '/'),
-      this.apiRootUrl
+      joinPath(this.apiUrl.pathname, platform, subpath ?? ''),
+      this.apiUrl
     ).href;
   }
 
-  getRedirectUrl(path?: string): string {
-    return new URL(path || '', posixPath.join(this.redirectRootUrl.href, '/'))
-      .href;
+  getRedirectUrl(url?: string): string {
+    return new URL(url ?? '', this.redirectUrl).href;
   }
 
   redirect(
@@ -333,19 +330,15 @@ export class AuthHttpOperator {
     url?: string,
     { assertInternal }: { assertInternal?: boolean } = {}
   ): boolean {
-    const redirectRoot = this.redirectRootUrl;
-    const redirectTarget = new URL(
-      url || '',
-      posixPath.join(redirectRoot.href, '/')
-    );
+    const redirectTarget = new URL(url ?? '', this.redirectUrl);
 
     if (assertInternal) {
       const { protocol, host, pathname } = redirectTarget;
 
       if (
         (this.secure && protocol && protocol !== 'https:') ||
-        host !== redirectRoot.host ||
-        !isSubpath(redirectRoot.pathname, pathname)
+        host !== this.redirectUrl.host ||
+        !isSubpath(this.redirectUrl.pathname, pathname)
       ) {
         res.writeHead(400);
         res.end('invalid redirect url');
@@ -386,8 +379,9 @@ export class AuthHttpOperator {
 }
 
 const OperatorP = serviceProviderClass({
-  deps: [ConfigsI],
-  factory: (configs) => new AuthHttpOperator(configs),
+  deps: [ConfigsI, Http.Configs],
+  factory: (authConfigs, { entryUrl }) =>
+    new AuthHttpOperator({ ...authConfigs, serverUrl: entryUrl }),
 })(AuthHttpOperator);
 type OperatorP = AuthHttpOperator;
 

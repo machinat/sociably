@@ -42,7 +42,7 @@ const upgradeRouteFactory = serviceProviderFactory({
 })(
   (configs, server): UpgradeRoute => ({
     name: WEBSOCKET,
-    path: configs.entryPath || '/',
+    path: configs.entryPath || '.',
     handler: (req, ns, head) => server.handleUpgrade(req, ns, head),
   })
 );

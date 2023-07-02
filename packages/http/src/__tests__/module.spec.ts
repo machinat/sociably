@@ -70,6 +70,7 @@ test('default provisions', async () => {
   const app = Sociably.createApp({
     modules: [
       Http.initModule({
+        entryUrl: 'https://sociably.io/foo/',
         listenOptions: {
           host: 'localhost',
           port: 8888,
@@ -85,7 +86,10 @@ test('default provisions', async () => {
     Http.Server,
   ]);
 
-  expect(configs).toEqual({ listenOptions: { host: 'localhost', port: 8888 } });
+  expect(configs).toEqual({
+    entryUrl: 'https://sociably.io/foo/',
+    listenOptions: { host: 'localhost', port: 8888 },
+  });
   expect(connector).toBeInstanceOf(HttpConnector);
   expect(server).toBe(mockServer);
 });
@@ -94,7 +98,10 @@ test('startHook', async () => {
   const connector = moxy({ connect: async () => {} });
   const app = Sociably.createApp({
     modules: [
-      Http.initModule({ listenOptions: { host: 'localhost', port: 8888 } }),
+      Http.initModule({
+        entryUrl: 'https://sociably.io/foo/',
+        listenOptions: { host: 'localhost', port: 8888 },
+      }),
     ],
     services: [{ provide: Http.Connector, withValue: connector }],
   });
@@ -112,7 +119,10 @@ test('startHook', async () => {
 test('stopHook', async () => {
   const app = Sociably.createApp({
     modules: [
-      Http.initModule({ listenOptions: { host: 'localhost', port: 8888 } }),
+      Http.initModule({
+        entryUrl: 'https://sociably.io/foo/',
+        listenOptions: { host: 'localhost', port: 8888 },
+      }),
     ],
   });
 
@@ -128,6 +138,7 @@ test('noServer mode', async () => {
   const app = Sociably.createApp({
     modules: [
       Http.initModule({
+        entryUrl: 'https://sociably.io/foo/',
         noServer: true,
         listenOptions: { host: 'localhost', port: 8888 },
       }),
@@ -152,6 +163,7 @@ test('change http server', async () => {
   const app = Sociably.createApp({
     modules: [
       Http.initModule({
+        entryUrl: 'https://sociably.io/foo/',
         listenOptions: {
           host: 'localhost',
           port: 8888,

@@ -17,9 +17,9 @@ const authRouteFactory = serviceProviderFactory({
 })(
   (controller, configs): RequestRoute => ({
     name: 'auth',
-    path: configs.apiRoot || '/',
+    path: configs.apiPath || '.',
     handler: (req, res, routingInfo) => {
-      controller.delegateAuthRequest(req, res, routingInfo);
+      controller.handleRequest(req, res, routingInfo);
     },
   })
 );

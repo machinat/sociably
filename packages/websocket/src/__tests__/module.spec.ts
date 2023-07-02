@@ -123,7 +123,7 @@ describe('initModule()', () => {
     expect(upgradeRoutings).toEqual([
       {
         name: 'websocket',
-        path: '/',
+        path: '.',
         handler: expect.any(Function),
       },
     ]);

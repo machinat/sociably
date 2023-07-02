@@ -1,4 +1,6 @@
+import { join as joinPath } from 'path';
 import { Marshaler, StateController } from '@sociably/core';
+import Http from '@sociably/http';
 import { serviceInterface, serviceProviderClass } from '@sociably/core/service';
 import Auth, { AuthController, AuthHttpOperator } from '@sociably/auth';
 import type {
@@ -11,7 +13,7 @@ import Next, { NextReceiver } from '@sociably/next';
 import WebSocket, { WebSocketServer } from '@sociably/websocket';
 import useAuthLogin from './utils/useAuthLogin.js';
 import verifyOrigin from './utils/verifyOrigin.js';
-import { DEFAULT_AUTH_PATH, DEFAULT_NEXT_PATH } from './constant.js';
+import { DEFAULT_AUTH_ROUTE } from './constant.js';
 import type { WebviewConfigs, WebviewPlatformUtilities } from './types.js';
 
 export const ConfigsI = serviceInterface<WebviewConfigs>({
@@ -39,20 +41,23 @@ export class WebviewAuthHttpOperator extends AuthHttpOperator {}
 
 export const AuthHttpOperatorP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [ConfigsI],
-  factory: ({
-    authSecret,
-    authApiPath = DEFAULT_AUTH_PATH,
-    webviewHost,
-    webviewPath = DEFAULT_NEXT_PATH,
-    ...otherOptions
-  }) => {
+  deps: [ConfigsI, Http.Configs],
+  factory: (
+    {
+      authSecret,
+      authApiPath = DEFAULT_AUTH_ROUTE,
+      webviewPath,
+      ...otherOptions
+    },
+    { entryUrl }
+  ) => {
     return new AuthHttpOperator({
       ...otherOptions,
-      serverUrl: `https://${webviewHost}`,
+      serverUrl: entryUrl,
       secret: authSecret,
-      apiRoot: authApiPath,
-      redirectRoot: webviewPath,
+      apiPath: authApiPath,
+      // NOTE: set redirectUrl to the root pages directory
+      redirectUrl: joinPath(webviewPath ?? '.', '/'),
     });
   },
 })(WebviewAuthHttpOperator);
@@ -78,10 +83,7 @@ export class WebviewNextReceiver extends NextReceiver {}
 export const NextReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [Next.Server, ConfigsI],
-  factory: (
-    server,
-    { noPrepareNext, nextRequestHandler, webviewPath = DEFAULT_NEXT_PATH }
-  ) =>
+  factory: (server, { noPrepareNext, nextRequestHandler, webviewPath }) =>
     new WebviewNextReceiver(server, {
       entryPath: webviewPath,
       noPrepare: noPrepareNext,
@@ -107,6 +109,7 @@ export const SocketServerP = serviceProviderClass({
     Auth.Controller,
     Marshaler,
     ConfigsI,
+    Http.Configs,
   ],
   factory: (
     serverId,
@@ -114,18 +117,21 @@ export const SocketServerP = serviceProviderClass({
     broker,
     authController,
     marshaler,
-    { secure = true, webviewHost, heartbeatInterval }
-  ) =>
-    new WebviewSocketServer({
+    { secure = true, heartbeatInterval },
+    { entryUrl }
+  ) => {
+    const serverHost = new URL(entryUrl).host;
+    return new WebviewSocketServer({
       id: serverId || undefined,
       wsServer,
       broker,
       marshaler,
       verifyUpgrade: ({ headers }) =>
-        !!headers.origin && verifyOrigin(secure, headers.origin, webviewHost),
+        !!headers.origin && verifyOrigin(secure, headers.origin, serverHost),
       verifyLogin: useAuthLogin(authController),
       heartbeatInterval,
-    }),
+    });
+  },
 })(WebviewSocketServer);
 
 export const PlatformUtilitiesI = serviceInterface<

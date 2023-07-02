@@ -274,7 +274,7 @@ export type LineConfigs = {
   agentSettings?: Omit<LineChatChannelSettings, 'botUserId'>;
   multiAgentSettings?: LineProviderSettings[];
   agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;
-  /** The webhook path to receive events. Default to `/` */
+  /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
   /** To verify the webhook request by the signature or not. Default to `true` */
   shouldVerifyRequest?: boolean;

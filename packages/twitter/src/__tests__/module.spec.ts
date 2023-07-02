@@ -135,7 +135,7 @@ describe('initModule(configs)', () => {
     );
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default webhookPath to "."', async () => {
     const app = Sociably.createApp({
       modules: [InMemoryState.initModule()],
       platforms: [Twitter.initModule(basicConfigs)],
@@ -144,7 +144,7 @@ describe('initModule(configs)', () => {
 
     const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
-      { name: 'twitter', path: '/', handler: expect.any(Function) },
+      { name: 'twitter', path: '.', handler: expect.any(Function) },
     ]);
   });
 

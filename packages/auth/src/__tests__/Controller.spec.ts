@@ -128,14 +128,14 @@ describe('#delegateAuthRequest(req, res)', () => {
       res = moxy(new ServerResponse({} as never));
     });
 
-    it('respond 403 if being called outside fo apiRoot scope', async () => {
+    it('respond 403 if being called outside fo apiPath scope', async () => {
       const controller = new AuthController(
-        new HttpOperator({ secret, serverUrl, apiRoot: '/auth' }),
+        new HttpOperator({ secret, serverUrl, apiPath: '/auth' }),
         authenticators
       );
 
       let req = prepareReq('GET', 'https://auth.sociably.io', {}, '');
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
       expect(res.statusCode).toBe(403);
       expect(res.end).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -149,7 +149,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       res = moxy(new ServerResponse({} as never));
       req = prepareReq('GET', 'https://sociably.io/someWhereElse', {}, '');
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
       expect(res.statusCode).toBe(403);
       expect(res.end).toHaveBeenCalled();
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -162,14 +162,14 @@ describe('#delegateAuthRequest(req, res)', () => {
       `);
     });
 
-    it('respond 403 if being called on apiRoot directly', async () => {
+    it('respond 403 if being called on apiPath directly', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
       const req = prepareReq('GET', 'https://auth.sociably.io', {}, '');
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(403);
       expect(res.end).toHaveBeenCalled();
@@ -191,23 +191,33 @@ describe('#delegateAuthRequest(req, res)', () => {
       res.mock.getter('finished').fakeReturnValue(true);
 
       let req = prepareReq('GET', 'https://auth.sociably.io/foo', {}, '');
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(fooAuthenticator.delegateAuthRequest).toHaveBeenCalledTimes(1);
       expect(fooAuthenticator.delegateAuthRequest).toHaveBeenCalledWith(
         req,
         res,
-        { originalPath: '/foo', matchedPath: '/foo', trailingPath: '' }
+        {
+          originalPath: '/foo',
+          basePath: '/',
+          matchedPath: 'foo',
+          trailingPath: '',
+        }
       );
 
       req = prepareReq('GET', 'https://auth.sociably.io/bar/baz', {}, '');
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(barAuthenticator.delegateAuthRequest).toHaveBeenCalledTimes(1);
       expect(barAuthenticator.delegateAuthRequest).toHaveBeenCalledWith(
         req,
         res,
-        { originalPath: '/bar/baz', matchedPath: '/bar', trailingPath: 'baz' }
+        {
+          originalPath: '/bar/baz',
+          basePath: '/',
+          matchedPath: 'bar',
+          trailingPath: 'baz',
+        }
       );
 
       expect(res.end).not.toHaveBeenCalled();
@@ -220,7 +230,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       const req = prepareReq('GET', 'https://auth.sociably.io/foo', {}, '');
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(fooAuthenticator.delegateAuthRequest).toHaveBeenCalledTimes(1);
 
@@ -244,7 +254,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       const req = prepareReq('GET', 'https://auth.sociably.io/baz', {}, '');
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(fooAuthenticator.delegateAuthRequest).not.toHaveBeenCalled();
       expect(barAuthenticator.delegateAuthRequest).not.toHaveBeenCalled();
@@ -268,7 +278,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(fooAuthenticator.delegateAuthRequest).not.toHaveBeenCalled();
       expect(barAuthenticator.delegateAuthRequest).not.toHaveBeenCalled();
@@ -304,7 +314,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(fooAuthenticator.verifyCredential).toHaveBeenCalledTimes(1);
       expect(fooAuthenticator.verifyCredential).toHaveBeenCalledWith({
@@ -372,8 +382,8 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({
           secret,
           serverUrl,
-          redirectRoot: '/app/pages',
-          apiRoot: '/app/auth',
+          redirectUrl: '/app/pages',
+          apiPath: '/app/auth',
           tokenCookieMaxAge: 999,
           tokenLifetime: 9999,
           refreshDuration: 99999,
@@ -385,7 +395,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         authenticators
       );
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(fooAuthenticator.verifyCredential).toHaveBeenCalledTimes(1);
       expect(fooAuthenticator.verifyCredential).toHaveBeenCalledWith({
@@ -449,7 +459,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(fooAuthenticator.verifyCredential).not.toHaveBeenCalled();
       expect(res.statusCode).toBe(404);
@@ -479,7 +489,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(418);
       expect(res.end).toHaveBeenCalledTimes(1);
@@ -504,7 +514,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       const url = 'http://auth.sociably.io/_sign';
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, {}, '"Woooof"'),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -518,7 +528,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         }
       `);
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, {}, 'Prrrrrrr'),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -532,7 +542,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         }
       `);
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, {}, { hey: 'Roarrrr' }),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -556,7 +566,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(500);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -574,7 +584,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('GET', 'https://auth.sociably.io/_sign', {}, ''),
         res
       );
@@ -617,7 +627,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(200);
       expect(res.end).toHaveBeenCalledTimes(1);
@@ -679,8 +689,8 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({
           secret,
           serverUrl,
-          redirectRoot: '/app/pages',
-          apiRoot: '/app/auth',
+          redirectUrl: '/app/pages',
+          apiPath: '/app/auth',
           tokenCookieMaxAge: 999,
           tokenLifetime: 9999,
           refreshDuration: 99999,
@@ -692,7 +702,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         authenticators
       );
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(200);
       const resBody = JSON.parse(res.end.mock.calls[0].args[0]);
@@ -761,7 +771,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(404);
 
@@ -789,7 +799,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(418);
 
@@ -813,7 +823,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(401);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -830,7 +840,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         cookie: 'sociably_auth_signature=INVALID_SIGNATURE',
       });
       res = moxy(new ServerResponse({} as never));
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -866,7 +876,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         { token }
       );
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(401);
 
@@ -891,7 +901,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const url = 'http://auth.sociably.io/_refresh';
       const header = { cookie: `sociably_auth_signature=SOMETHING_WHATEVER` };
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, header, '"Woooof"'),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -905,7 +915,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         }
       `);
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, header, 'Prrrrrrr'),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -919,7 +929,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         }
       `);
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, header, { hey: 'Roarrrr' }),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -942,7 +952,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(500);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -960,7 +970,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('get', 'https://auth.sociably.io/_refresh', {}, ''),
         res
       );
@@ -1004,7 +1014,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       const res = moxy(new ServerResponse({} as never));
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.end.mock.calls[0].args[0]);
@@ -1035,7 +1045,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       const res = moxy(new ServerResponse({} as never));
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(401);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1073,7 +1083,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       const res = moxy(new ServerResponse({} as never));
 
-      await controller.delegateAuthRequest(req, res);
+      await controller.handleRequest(req, res);
 
       expect(res.statusCode).toBe(404);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1095,7 +1105,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       let res;
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', 'http://auth.sociably.io/_verify', {}, { token }),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -1111,7 +1121,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       `);
       expect(res.getHeader('Set-Cookie')).toBe(undefined);
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq(
           'POST',
           'http://auth.sociably.io/_verify',
@@ -1142,7 +1152,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const header = { cookie: `sociably_auth_signature=SOMETHING_WHATEVER` };
       let res;
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, header, '"Woooof"'),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -1156,7 +1166,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         }
       `);
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, header, 'Prrrrrrr'),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -1170,7 +1180,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         }
       `);
 
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('POST', url, header, { hey: 'Roarrrr' }),
         (res = moxy(new ServerResponse({} as never)))
       );
@@ -1191,7 +1201,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators
       );
-      await controller.delegateAuthRequest(
+      await controller.handleRequest(
         prepareReq('GET', 'https://auth.sociably.io/_verify', {}, ''),
         res
       );

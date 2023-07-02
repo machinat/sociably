@@ -71,12 +71,15 @@ describe('initModule(configs)', () => {
         channelSecret: '_CHANNEL_SECRET_',
         accessToken: '_ACCESS_TOKEN_',
       },
-      webhookPath: '/webhook/line',
+      webhookPath: 'webhook/line',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Line.initModule(configs)],
     });
     await app.start();
@@ -97,7 +100,7 @@ describe('initModule(configs)', () => {
     expect(assetManager).toBeInstanceOf(LineAssetsManager);
     expect(configsProvided).toEqual(configs);
     expect(routings).toEqual([
-      { name: 'line', path: '/webhook/line', handler: expect.any(Function) },
+      { name: 'line', path: 'webhook/line', handler: expect.any(Function) },
     ]);
   });
 
@@ -113,7 +116,10 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Line.initModule(configs)],
     });
     await app.start();
@@ -158,7 +164,10 @@ describe('initModule(configs)', () => {
 
   test('with options.multiAgentSettings', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Line.initModule({
           multiAgentSettings: [
@@ -297,7 +306,10 @@ describe('initModule(configs)', () => {
     );
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Line.initModule({ agentSettingsService })],
       services: [agentSettingsService],
     });
@@ -318,7 +330,10 @@ describe('initModule(configs)', () => {
 
   test('provide base interfaces', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Line.initModule({
           agentSettings: {
@@ -351,7 +366,7 @@ describe('initModule(configs)', () => {
     );
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default webhookPath to "."', async () => {
     const configs = {
       agentSettings: {
         providerId: '_PROVIDER_ID_',
@@ -363,14 +378,17 @@ describe('initModule(configs)', () => {
     };
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Line.initModule(configs)],
     });
     await app.start();
 
     const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
-      { name: 'line', path: '/', handler: expect.any(Function) },
+      { name: 'line', path: '.', handler: expect.any(Function) },
     ]);
   });
 

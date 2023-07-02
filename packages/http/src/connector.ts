@@ -1,15 +1,21 @@
 import { parse as parseUrl } from 'url';
+import { resolve as resolvePath } from 'path/posix';
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 import thenifiedly from 'thenifiedly';
 import { serviceProviderClass } from '@sociably/core/service';
-import { ServerI, RequestRouteListI, UpgradeRouteListI } from './interface.js';
+import { RoutingInfo } from '@sociably/http';
+import {
+  ServerI,
+  ConfigsI,
+  RequestRouteListI,
+  UpgradeRouteListI,
+} from './interface.js';
 import {
   endRes,
   respondUpgrade,
   getTrailingPath,
-  checkRoutesConfliction,
-  formatRoute,
+  checkRoutePath,
 } from './utils.js';
 import type {
   ServerListenOptions,
@@ -20,6 +26,7 @@ import type {
 } from './types.js';
 
 type ConnectorOptions = {
+  entryUrl: string;
   requestRoutes?: (RequestRoute | DefaultRequestRoute)[];
   upgradeRoutes?: (UpgradeRoute | DefaultUpgradeRoute)[];
 };
@@ -28,16 +35,23 @@ type ConnectorOptions = {
  * @category Provider
  */
 export class HttpConnector {
+  basePath: string;
   private _requestRoutes: RequestRoute[];
   private _defaultRequestRoute: null | DefaultRequestRoute;
   private _upgradeRoutes: UpgradeRoute[];
   private _defaultUpgradeRoute: null | DefaultUpgradeRoute;
 
-  constructor({ requestRoutes, upgradeRoutes }: ConnectorOptions) {
+  constructor({ entryUrl, requestRoutes, upgradeRoutes }: ConnectorOptions) {
     this._requestRoutes = [];
     this._upgradeRoutes = [];
     this._defaultRequestRoute = null;
     this._defaultUpgradeRoute = null;
+
+    const { pathname: basePath } = new URL(entryUrl);
+    if (!basePath.endsWith('/')) {
+      throw new Error('entryUrl must be a directory which ends with "/"');
+    }
+    this.basePath = basePath;
 
     if (requestRoutes) {
       for (const route of requestRoutes) {
@@ -52,19 +66,10 @@ export class HttpConnector {
 
           this._defaultRequestRoute = route;
         } else {
-          const [ok, conflictedRoute] = checkRoutesConfliction(
-            this._requestRoutes,
-            route
-          );
-
-          if (!ok) {
-            throw new Error(
-              `request route ${formatRoute(
-                route
-              )} is conflicted with route ${formatRoute(conflictedRoute)}`
-            );
+          const err = checkRoutePath(this._requestRoutes, route);
+          if (err) {
+            throw err;
           }
-
           this._requestRoutes.push(route);
         }
       }
@@ -81,19 +86,10 @@ export class HttpConnector {
 
           this._defaultUpgradeRoute = route;
         } else {
-          const [ok, conflictedRoute] = checkRoutesConfliction(
-            this._upgradeRoutes,
-            route
-          );
-
-          if (!ok) {
-            throw new Error(
-              `upgrade route ${formatRoute(
-                route
-              )} is conflicted with route ${formatRoute(conflictedRoute)}`
-            );
+          const err = checkRoutePath(this._upgradeRoutes, route);
+          if (err) {
+            throw err;
           }
-
           this._upgradeRoutes.push(route);
         }
       }
@@ -119,14 +115,12 @@ export class HttpConnector {
     }
 
     for (const { path: routePath, handler } of this._requestRoutes) {
-      const trailingPath = getTrailingPath(routePath, pathname);
-
-      if (trailingPath !== undefined) {
-        handler(req, res, {
-          originalPath: pathname,
-          matchedPath: routePath,
-          trailingPath,
-        });
+      const matchedRoutingInfo = this._getMatchedRoutingInfo(
+        pathname,
+        routePath
+      );
+      if (matchedRoutingInfo) {
+        handler(req, res, matchedRoutingInfo);
         return;
       }
     }
@@ -138,6 +132,7 @@ export class HttpConnector {
 
     this._defaultRequestRoute.handler(req, res, {
       originalPath: pathname,
+      basePath: this.basePath,
       matchedPath: undefined,
       trailingPath: pathname.slice(1),
     });
@@ -153,13 +148,12 @@ export class HttpConnector {
     }
 
     for (const { path: routePath, handler } of this._upgradeRoutes) {
-      const trailingPath = getTrailingPath(routePath, pathname);
-      if (trailingPath !== undefined) {
-        handler(req, socket, head, {
-          originalPath: pathname,
-          matchedPath: routePath,
-          trailingPath,
-        });
+      const matchedRoutingInfo = this._getMatchedRoutingInfo(
+        pathname,
+        routePath
+      );
+      if (matchedRoutingInfo) {
+        handler(req, socket, head, matchedRoutingInfo);
         return;
       }
     }
@@ -171,17 +165,36 @@ export class HttpConnector {
 
     this._defaultUpgradeRoute.handler(req, socket, head, {
       originalPath: pathname,
+      basePath: this.basePath,
       matchedPath: undefined,
       trailingPath: pathname.slice(1),
     });
+  }
+
+  private _getMatchedRoutingInfo(
+    pathname: string,
+    routePath: string
+  ): null | RoutingInfo {
+    const trailingPath = getTrailingPath(
+      resolvePath(this.basePath, routePath),
+      pathname
+    );
+    return trailingPath === undefined
+      ? null
+      : {
+          originalPath: pathname,
+          basePath: this.basePath,
+          matchedPath: routePath,
+          trailingPath,
+        };
   }
 }
 
 export const ConnectorP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [RequestRouteListI, UpgradeRouteListI],
-  factory: (requestRoutes, upgradeRoutes) =>
-    new HttpConnector({ requestRoutes, upgradeRoutes }),
+  deps: [ConfigsI, RequestRouteListI, UpgradeRouteListI],
+  factory: ({ entryUrl }, requestRoutes, upgradeRoutes) =>
+    new HttpConnector({ entryUrl, requestRoutes, upgradeRoutes }),
 })(HttpConnector);
 
 export type ConnectorP = HttpConnector;

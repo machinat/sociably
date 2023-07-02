@@ -1,9 +1,9 @@
-import { serviceProviderClass } from '@sociably/core/service';
-import StateControllerI from '@sociably/core/base/StateController';
+import { serviceProviderClass, StateController } from '@sociably/core';
+import Http from '@sociably/http';
 import fetch from 'node-fetch';
 import LineChannel from '../Channel.js';
 import BotP from '../Bot.js';
-import { AgentSettingsAccessorI } from '../interface.js';
+import { AgentSettingsAccessorI, ConfigsI } from '../interface.js';
 import { PATH_RICHMENU, LINE } from '../constant.js';
 import LineApiError from '../error.js';
 
@@ -12,22 +12,29 @@ const RICH_MENU = 'rich_menu';
 const resourceToken = (channelId: string, resource: string) =>
   `$${LINE}.${resource}.${channelId}`;
 
+type DefaultSettings = {
+  webhookUrl?: string;
+};
+
 /**
  * @category Provider
  */
 export class LineAssetsManager {
-  private _stateController: StateControllerI;
+  private _stateController: StateController;
   private _settingsAccessor: AgentSettingsAccessorI;
   private _bot: BotP;
+  defaultSettings: DefaultSettings;
 
   constructor(
-    stateManger: StateControllerI,
+    stateManger: StateController,
     bot: BotP,
-    settingsAccessor: AgentSettingsAccessorI
+    settingsAccessor: AgentSettingsAccessorI,
+    defaultSettings: DefaultSettings = {}
   ) {
     this._stateController = stateManger;
     this._settingsAccessor = settingsAccessor;
     this._bot = bot;
+    this.defaultSettings = defaultSettings;
   }
 
   async getAssetId(
@@ -201,12 +208,19 @@ export class LineAssetsManager {
 
   async setChannelWebhook(
     channel: string | LineChannel,
-    webhookUrl: string,
-    options?: { accessToken?: string }
+    {
+      webhookUrl: webhookUrlInput,
+      accessToken,
+    }: { webhookUrl?: string; accessToken?: string } = {}
   ): Promise<void> {
+    const webhookUrl = webhookUrlInput || this.defaultSettings.webhookUrl;
+    if (!webhookUrl) {
+      throw new Error('webhookUrl is required');
+    }
+
     await this._bot.requestApi({
       channel,
-      accessToken: options?.accessToken,
+      accessToken,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',
       params: {
@@ -218,7 +232,17 @@ export class LineAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP],
+  deps: [StateController, BotP, AgentSettingsAccessorI, Http.Configs, ConfigsI],
+  factory: (
+    stateController,
+    bot,
+    agentSettingsAccessor,
+    { entryUrl },
+    { webhookPath }
+  ) =>
+    new LineAssetsManager(stateController, bot, agentSettingsAccessor, {
+      webhookUrl: new URL(webhookPath ?? '', entryUrl).href,
+    }),
 })(LineAssetsManager);
 
 type AssetsManagerP = LineAssetsManager;

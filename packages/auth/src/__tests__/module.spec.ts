@@ -8,8 +8,8 @@ import ControllerP from '../Controller.js';
 import HttpOperatorP from '../HttpOperator.js';
 
 const secret = '_SECRET_';
-const serverUrl = 'https://sociably.io';
-const apiRoot = '/auth';
+const serverUrl = 'https://sociably.io/hello/';
+const apiPath = './auth';
 
 test('interfaces', () => {
   expect(Auth.Controller).toBe(ControllerP);
@@ -35,7 +35,10 @@ test('interfaces', () => {
 describe('initModule()', () => {
   test('provisions', async () => {
     const app = Sociably.createApp({
-      modules: [Auth.initModule({ secret, apiRoot, serverUrl })],
+      modules: [
+        Http.initModule({ entryUrl: serverUrl, noServer: true }),
+        Auth.initModule({ secret, apiPath }),
+      ],
       services: [{ provide: Auth.AuthenticatorList, withValue: moxy() }],
     });
     await app.start();
@@ -51,13 +54,13 @@ describe('initModule()', () => {
 
     expect(controller).toBeInstanceOf(ControllerP);
     expect(operator).toBeInstanceOf(HttpOperatorP);
-    expect(configs).toEqual({ secret, apiRoot, serverUrl });
+    expect(configs).toEqual({ secret, apiPath });
     expect(routings).toMatchInlineSnapshot(`
       [
         {
           "handler": [Function],
           "name": "auth",
-          "path": "/auth",
+          "path": "./auth",
         },
       ]
     `);
@@ -71,13 +74,9 @@ describe('initModule()', () => {
     };
     const app = Sociably.createApp({
       modules: [
+        Http.initModule({ entryUrl: serverUrl, noServer: true }),
         InMemoryState.initModule(),
-        Auth.initModule({
-          secret,
-          apiRoot,
-          serverUrl,
-          basicAuth: basicAuthOptions,
-        }),
+        Auth.initModule({ secret, apiPath, basicAuth: basicAuthOptions }),
       ],
       services: [{ provide: Auth.AuthenticatorList, withValue: moxy() }],
     });
@@ -96,7 +95,10 @@ describe('initModule()', () => {
     const barAuthenticator = moxy();
     const ControllerSpy = moxy(ControllerP);
     const app = Sociably.createApp({
-      modules: [Auth.initModule({ secret, apiRoot, serverUrl })],
+      modules: [
+        Http.initModule({ entryUrl: serverUrl, noServer: true }),
+        Auth.initModule({ secret, apiPath }),
+      ],
       services: [
         { provide: Auth.AuthenticatorList, withValue: fooAuthenticator },
         { provide: Auth.AuthenticatorList, withValue: barAuthenticator },
@@ -116,9 +118,12 @@ describe('initModule()', () => {
   });
 
   it('register auth api entry', async () => {
-    const fakeController = moxy({ delegateAuthRequest: async () => {} });
+    const fakeController = moxy({ handleRequest: async () => {} });
     const app = Sociably.createApp({
-      modules: [Auth.initModule({ secret, serverUrl, apiRoot })],
+      modules: [
+        Http.initModule({ entryUrl: serverUrl, noServer: true }),
+        Auth.initModule({ secret, apiPath }),
+      ],
       services: [
         {
           provide: Auth.Controller,
@@ -130,19 +135,22 @@ describe('initModule()', () => {
 
     const [[{ handler }]] = app.useServices([Http.RequestRouteList]);
 
+    const routingInfo = {
+      originalPath: '/hello/auth/foo',
+      basePath: '/hello',
+      matchedPath: 'auth',
+      trailingPath: 'foo',
+    };
+
     const req = moxy();
     const res = moxy();
-    handler(req, res, {
-      originalPath: '/auth/foo',
-      matchedPath: '/auth',
-      trailingPath: 'foo',
-    });
+    handler(req, res, routingInfo);
 
-    expect(fakeController.delegateAuthRequest).toHaveBeenCalledTimes(1);
-    expect(fakeController.delegateAuthRequest).toHaveBeenCalledWith(req, res, {
-      originalPath: '/auth/foo',
-      matchedPath: '/auth',
-      trailingPath: 'foo',
-    });
+    expect(fakeController.handleRequest).toHaveBeenCalledTimes(1);
+    expect(fakeController.handleRequest).toHaveBeenCalledWith(
+      req,
+      res,
+      routingInfo
+    );
   });
 });

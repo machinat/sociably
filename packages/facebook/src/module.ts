@@ -41,7 +41,7 @@ const webhookRouteFactory = serviceProviderFactory({
 })(
   (configs, receiver): RequestRoute => ({
     name: FACEBOOK,
-    path: configs.webhookPath || '/',
+    path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
   })
 );

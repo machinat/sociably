@@ -41,7 +41,7 @@ const webhookRouteFactory = serviceProviderFactory({
 })(
   (configs, receiver): RequestRoute => ({
     name: TWITTER,
-    path: configs.webhookPath || '/',
+    path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
   })
 );

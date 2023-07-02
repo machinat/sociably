@@ -27,9 +27,8 @@ import type {
 } from '@sociably/websocket';
 import {
   WEBVIEW,
-  DEFAULT_AUTH_PATH,
-  DEFAULT_WEBSOCKET_PATH,
-  DEFAULT_NEXT_PATH,
+  DEFAULT_AUTH_ROUTE,
+  DEFAULT_WEBSOCKET_ROUTE,
 } from './constant.js';
 import {
   WebviewSocketServer,
@@ -70,7 +69,7 @@ const webSocketRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [WebSocket.Server, ConfigsI],
 })(
-  (server, { webSocketPath = DEFAULT_WEBSOCKET_PATH }): UpgradeRoute => ({
+  (server, { webSocketPath = DEFAULT_WEBSOCKET_ROUTE }): UpgradeRoute => ({
     name: 'websocket',
     path: webSocketPath,
     handler: (req, ns, head) => server.handleUpgrade(req, ns, head),
@@ -81,11 +80,11 @@ const authRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [Auth.Controller, ConfigsI],
 })(
-  (controller, { authApiPath = DEFAULT_AUTH_PATH }): RequestRoute => ({
+  (controller, { authApiPath = DEFAULT_AUTH_ROUTE }): RequestRoute => ({
     name: 'auth',
     path: authApiPath,
     handler: (req, res, routingInfo) => {
-      controller.delegateAuthRequest(req, res, routingInfo);
+      controller.handleRequest(req, res, routingInfo);
     },
   })
 );
@@ -93,43 +92,35 @@ const authRouteFactory = serviceProviderFactory({
 const nextRequestRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [Next.Receiver, ConfigsI],
-})(
-  (
-    receiver,
-    { webviewPath = DEFAULT_NEXT_PATH }
-  ): RequestRoute | DefaultRequestRoute =>
-    webviewPath === '/'
-      ? {
-          name: 'next',
-          default: true,
-          handler: receiver.handleRequestCallback(),
-        }
-      : {
-          name: 'next',
-          path: webviewPath,
-          handler: receiver.handleRequestCallback(),
-        }
+})((receiver, { webviewPath }): RequestRoute | DefaultRequestRoute =>
+  webviewPath
+    ? {
+        name: 'next',
+        path: webviewPath,
+        handler: receiver.handleRequestCallback(),
+      }
+    : {
+        name: 'next',
+        default: true,
+        handler: receiver.handleRequestCallback(),
+      }
 );
 
 const hmrRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [Next.Receiver, ConfigsI],
-})(
-  (
-    receiver,
-    { webviewPath = DEFAULT_NEXT_PATH }
-  ): UpgradeRoute | DefaultUpgradeRoute =>
-    webviewPath === '/'
-      ? {
-          name: 'webpack-hmr',
-          default: true,
-          handler: receiver.handleHmrUpgradeCallback(),
-        }
-      : {
-          name: 'webpack-hmr',
-          path: webviewPath,
-          handler: receiver.handleHmrUpgradeCallback(),
-        }
+})((receiver, { webviewPath }): UpgradeRoute | DefaultUpgradeRoute =>
+  webviewPath
+    ? {
+        name: 'webpack-hmr',
+        path: webviewPath,
+        handler: receiver.handleHmrUpgradeCallback(),
+      }
+    : {
+        name: 'webpack-hmr',
+        default: true,
+        handler: receiver.handleHmrUpgradeCallback(),
+      }
 );
 
 /**

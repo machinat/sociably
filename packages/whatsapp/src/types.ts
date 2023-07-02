@@ -97,7 +97,7 @@ export type WhatsAppConfigs = {
   shouldHandleChallenge?: boolean;
   /** The secret string to verify the webhook challenge request */
   verifyToken: string;
-  /** The webhook path to receive events. Default to `/` */
+  /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
   /** The graph API version to make API calls */
   graphApiVersion?: string;

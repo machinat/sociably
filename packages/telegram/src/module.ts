@@ -42,7 +42,7 @@ const webhookRouteFactory = serviceProviderFactory({
 })(
   (configs, receiver): RequestRoute => ({
     name: TELEGRAM,
-    path: configs.webhookPath || '/',
+    path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
   })
 );

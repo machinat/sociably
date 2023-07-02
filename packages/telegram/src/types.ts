@@ -201,7 +201,7 @@ export type TelegramConfigs = {
   agentSettings?: TelegramAgentSettings;
   multiAgentSettings?: TelegramAgentSettings[];
   agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;
-  /** The webhook path to receive events. Default to `/` */
+  /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
   /** The max API request connections at the same time */
   maxRequestConnections?: number;

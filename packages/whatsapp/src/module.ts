@@ -44,7 +44,7 @@ const webhookRouteFactory = serviceProviderFactory({
 })(
   (configs, receiver): RequestRoute => ({
     name: WHATSAPP,
-    path: configs.webhookPath || '/',
+    path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
   })
 );

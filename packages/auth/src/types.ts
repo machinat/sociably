@@ -206,10 +206,8 @@ export type AuthApiErrorBody = {
 export type AuthConfigs = {
   /** The secret for signing auth token */
   secret: string;
-  /** The complete server entry point URL */
-  serverUrl: string;
-  /** The path to the auth api. Default to `/` */
-  apiRoot?: string;
+  /** The path to the auth api. Default to `.` */
+  apiPath?: string;
   /** The web page entry point to redirect the authorized users to. Can be absolute or relative to `serverUrl` */
   redirectRoot?: string;
   /** The lifetime of the token in seconds. Default to an hour */

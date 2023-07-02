@@ -27,12 +27,32 @@ const createRes = () =>
     },
   });
 
+it('throw if entryUrl is not a directory', () => {
+  expect(
+    () =>
+      new HttpConnector({
+        entryUrl: 'https://sociably.io/foo',
+      })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"entryUrl must be a directory which ends with "/""`
+  );
+  expect(
+    () =>
+      new HttpConnector({
+        entryUrl: 'https://sociably.io/foo/bar.baz',
+      })
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"entryUrl must be a directory which ends with "/""`
+  );
+});
+
 describe('handling requests', () => {
   test('register only root path', () => {
     const handler = moxy();
 
     const connector = new HttpConnector({
-      requestRoutes: [{ path: '/', handler }],
+      entryUrl: 'https://sociably.io',
+      requestRoutes: [{ path: '.', handler }],
     });
 
     const server = moxy(new FakeServer());
@@ -54,7 +74,8 @@ describe('handling requests', () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler).toHaveBeenCalledWith(req, res, {
       originalPath: '/',
-      matchedPath: '/',
+      basePath: '/',
+      matchedPath: '.',
       trailingPath: '',
     });
 
@@ -63,7 +84,8 @@ describe('handling requests', () => {
     expect(handler).toHaveBeenCalledTimes(2);
     expect(handler).toHaveBeenCalledWith(fooReq, res, {
       originalPath: '/foo',
-      matchedPath: '/',
+      basePath: '/',
+      matchedPath: '.',
       trailingPath: 'foo',
     });
 
@@ -75,9 +97,10 @@ describe('handling requests', () => {
     const barHandler = moxy();
 
     const connector = new HttpConnector({
+      entryUrl: 'https://sociably.io',
       requestRoutes: [
-        { path: '/foo', handler: fooHandler },
-        { path: '/bar', handler: barHandler },
+        { path: 'foo', handler: fooHandler },
+        { path: 'bar/baz', handler: barHandler },
       ],
     });
 
@@ -94,31 +117,41 @@ describe('handling requests', () => {
     expect(fooHandler).toHaveBeenCalledTimes(1);
     expect(fooHandler).toHaveBeenCalledWith(fooReq, res, {
       originalPath: '/foo',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: '',
     });
     expect(barHandler).not.toHaveBeenCalled();
-
-    const barReq = moxy({ url: '/bar' });
-    server.emit('request', barReq, res);
-    expect(fooHandler).toHaveBeenCalledTimes(1);
-    expect(barHandler).toHaveBeenCalledTimes(1);
-    expect(barHandler).toHaveBeenCalledWith(barReq, res, {
-      originalPath: '/bar',
-      matchedPath: '/bar',
-      trailingPath: '',
-    });
 
     const fooBarReq = moxy({ url: '/foo/bar' });
     server.emit('request', fooBarReq, res);
     expect(fooHandler).toHaveBeenCalledTimes(2);
     expect(fooHandler).toHaveBeenCalledWith(fooBarReq, res, {
       originalPath: '/foo/bar',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: 'bar',
     });
+
+    const barReq = moxy({ url: '/bar/baz' });
+    server.emit('request', barReq, res);
     expect(barHandler).toHaveBeenCalledTimes(1);
-    expect(res.end).not.toHaveBeenCalled();
+    expect(barHandler).toHaveBeenCalledWith(barReq, res, {
+      originalPath: '/bar/baz',
+      basePath: '/',
+      matchedPath: 'bar/baz',
+      trailingPath: '',
+    });
+
+    const barBaeReq = moxy({ url: '/bar/baz/bae' });
+    server.emit('request', barBaeReq, res);
+    expect(barHandler).toHaveBeenCalledTimes(2);
+    expect(barHandler).toHaveBeenCalledWith(barBaeReq, res, {
+      originalPath: '/bar/baz/bae',
+      basePath: '/',
+      matchedPath: 'bar/baz',
+      trailingPath: 'bae',
+    });
 
     server.emit('request', moxy({ url: '/' }), res);
     expect(res.end).toHaveBeenCalledTimes(1);
@@ -130,7 +163,7 @@ describe('handling requests', () => {
     expect(res.statusCode).toBe(404);
 
     expect(fooHandler).toHaveBeenCalledTimes(2);
-    expect(barHandler).toHaveBeenCalledTimes(1);
+    expect(barHandler).toHaveBeenCalledTimes(2);
   });
 
   test('register with default route', () => {
@@ -138,8 +171,9 @@ describe('handling requests', () => {
     const defaultHandler = moxy();
 
     const connector = new HttpConnector({
+      entryUrl: 'https://sociably.io',
       requestRoutes: [
-        { path: '/foo', handler: fooHandler },
+        { path: 'foo', handler: fooHandler },
         { default: true, handler: defaultHandler },
       ],
     });
@@ -163,7 +197,8 @@ describe('handling requests', () => {
     expect(fooHandler).toHaveBeenCalledTimes(1);
     expect(fooHandler).toHaveBeenCalledWith(fooReq, res, {
       originalPath: '/foo',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: '',
     });
 
@@ -173,7 +208,8 @@ describe('handling requests', () => {
     expect(fooHandler).toHaveBeenCalledTimes(2);
     expect(fooHandler).toHaveBeenCalledWith(fooBarReq, res, {
       originalPath: '/foo/bar',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: 'bar',
     });
 
@@ -183,6 +219,7 @@ describe('handling requests', () => {
     expect(defaultHandler).toHaveBeenCalledTimes(1);
     expect(defaultHandler).toHaveBeenCalledWith(rootReq, res, {
       originalPath: '/',
+      basePath: '/',
       matchedPath: undefined,
       trailingPath: '',
     });
@@ -193,6 +230,7 @@ describe('handling requests', () => {
     expect(defaultHandler).toHaveBeenCalledTimes(2);
     expect(defaultHandler).toHaveBeenCalledWith(barReq, res, {
       originalPath: '/bar',
+      basePath: '/',
       matchedPath: undefined,
       trailingPath: 'bar',
     });
@@ -200,10 +238,16 @@ describe('handling requests', () => {
     expect(res.end).not.toHaveBeenCalled();
   });
 
-  test('register with deeper route path', () => {
-    const handler = moxy();
+  test('register with base path', () => {
+    const fooHandler = moxy();
+    const barHandler = moxy();
+
     const connector = new HttpConnector({
-      requestRoutes: [{ path: '/foo/bar', handler }],
+      entryUrl: 'https://sociably.io/hello/world/',
+      requestRoutes: [
+        { path: 'foo', handler: fooHandler },
+        { path: 'bar/baz', handler: barHandler },
+      ],
     });
 
     const server = moxy(new FakeServer());
@@ -212,32 +256,64 @@ describe('handling requests', () => {
     expect(server.listen).toHaveBeenCalledTimes(1);
     expect(server.on).toHaveBeenCalledTimes(1);
 
-    const fooBarReq = moxy({ url: '/foo/bar' });
-    const res = createRes();
+    let res = createRes();
+
+    const fooReq = moxy({ url: '/hello/world/foo' });
+    server.emit('request', fooReq, res);
+    expect(fooHandler).toHaveBeenCalledTimes(1);
+    expect(fooHandler).toHaveBeenCalledWith(fooReq, res, {
+      originalPath: '/hello/world/foo',
+      basePath: '/hello/world/',
+      matchedPath: 'foo',
+      trailingPath: '',
+    });
+    expect(barHandler).not.toHaveBeenCalled();
+
+    const fooBarReq = moxy({ url: '/hello/world/foo/bar' });
     server.emit('request', fooBarReq, res);
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenCalledWith(fooBarReq, res, {
-      originalPath: '/foo/bar',
-      matchedPath: '/foo/bar',
+    expect(fooHandler).toHaveBeenCalledTimes(2);
+    expect(fooHandler).toHaveBeenCalledWith(fooBarReq, res, {
+      originalPath: '/hello/world/foo/bar',
+      basePath: '/hello/world/',
+      matchedPath: 'foo',
+      trailingPath: 'bar',
+    });
+
+    const barReq = moxy({ url: '/hello/world/bar/baz' });
+    server.emit('request', barReq, res);
+    expect(barHandler).toHaveBeenCalledTimes(1);
+    expect(barHandler).toHaveBeenCalledWith(barReq, res, {
+      originalPath: '/hello/world/bar/baz',
+      basePath: '/hello/world/',
+      matchedPath: 'bar/baz',
       trailingPath: '',
     });
 
-    const fooBarBazReq = moxy({ url: '/foo/bar/baz' });
-    server.emit('request', fooBarBazReq, res);
-    expect(handler).toHaveBeenCalledTimes(2);
-    expect(handler).toHaveBeenCalledWith(fooBarBazReq, res, {
-      originalPath: '/foo/bar/baz',
-      matchedPath: '/foo/bar',
-      trailingPath: 'baz',
+    const barBaeReq = moxy({ url: '/hello/world/bar/baz/bae' });
+    server.emit('request', barBaeReq, res);
+    expect(barHandler).toHaveBeenCalledTimes(2);
+    expect(barHandler).toHaveBeenCalledWith(barBaeReq, res, {
+      originalPath: '/hello/world/bar/baz/bae',
+      basePath: '/hello/world/',
+      matchedPath: 'bar/baz',
+      trailingPath: 'bae',
     });
 
+    server.emit('request', moxy({ url: '/' }), res);
+    expect(res.end).toHaveBeenCalledTimes(1);
+    expect(res.statusCode).toBe(404);
+
+    res = createRes();
     server.emit('request', moxy({ url: '/foo' }), res);
     expect(res.end).toHaveBeenCalledTimes(1);
     expect(res.statusCode).toBe(404);
+
+    expect(fooHandler).toHaveBeenCalledTimes(2);
+    expect(barHandler).toHaveBeenCalledTimes(2);
   });
 
   test('register no route', () => {
-    const connector = new HttpConnector({});
+    const connector = new HttpConnector({ entryUrl: 'https://sociably.io' });
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
@@ -256,24 +332,47 @@ describe('handling requests', () => {
     expect(
       () =>
         new HttpConnector({
+          entryUrl: 'https://sociably.io',
           requestRoutes: [
-            { name: 'root', path: '/', handler: moxy() },
-            { name: 'foo', path: '/foo', handler: moxy() },
+            { name: 'root', path: '.', handler: moxy() },
+            { name: 'foo', path: './foo', handler: moxy() },
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"request route [foo] "/foo" is conflicted with route [root] "/""`
+      `"route [foo] "./foo" is conflicted with route [root] ".""`
     );
     expect(
       () =>
         new HttpConnector({
+          entryUrl: 'https://sociably.io',
           requestRoutes: [
-            { name: 'bar', path: '/bar', handler: moxy() },
-            { path: '/bar/baz', handler: moxy() },
+            { name: 'bar', path: './bar', handler: moxy() },
+            { path: './bar/baz', handler: moxy() },
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"request route "/bar/baz" is conflicted with route [bar] "/bar""`
+      `"route "./bar/baz" is conflicted with route [bar] "./bar""`
+    );
+  });
+
+  it('throw if request route is not relative under entryUrl', () => {
+    expect(
+      () =>
+        new HttpConnector({
+          entryUrl: 'https://sociably.io',
+          requestRoutes: [{ name: 'foo', path: '/foo', handler: moxy() }],
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"route path should be a relative path"`
+    );
+    expect(
+      () =>
+        new HttpConnector({
+          entryUrl: 'https://sociably.io',
+          requestRoutes: [{ name: 'foo', path: '../foo', handler: moxy() }],
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"route path should be under entryUrl"`
     );
   });
 
@@ -281,8 +380,9 @@ describe('handling requests', () => {
     expect(
       () =>
         new HttpConnector({
+          entryUrl: 'https://sociably.io',
           requestRoutes: [
-            { name: 'foo', path: '/foo', handler: moxy() },
+            { name: 'foo', path: 'foo', handler: moxy() },
             { name: 'bar', default: true, handler: moxy() },
             { name: 'baz', default: true, handler: moxy() },
           ],
@@ -308,7 +408,8 @@ describe('handling upgrade', () => {
   test('register only root path', () => {
     const handler = moxy();
     const connector = new HttpConnector({
-      upgradeRoutes: [{ path: '/', handler }],
+      entryUrl: 'https://sociably.io',
+      upgradeRoutes: [{ path: '.', handler }],
     });
 
     const server = moxy(new FakeServer());
@@ -330,7 +431,8 @@ describe('handling upgrade', () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler).toHaveBeenCalledWith(req, socket, head, {
       originalPath: '/',
-      matchedPath: '/',
+      basePath: '/',
+      matchedPath: '.',
       trailingPath: '',
     });
 
@@ -339,7 +441,8 @@ describe('handling upgrade', () => {
     expect(handler).toHaveBeenCalledTimes(2);
     expect(handler).toHaveBeenCalledWith(fooReq, socket, head, {
       originalPath: '/foo',
-      matchedPath: '/',
+      basePath: '/',
+      matchedPath: '.',
       trailingPath: 'foo',
     });
 
@@ -351,9 +454,10 @@ describe('handling upgrade', () => {
     const barHandler = moxy();
 
     const connector = new HttpConnector({
+      entryUrl: 'https://sociably.io',
       upgradeRoutes: [
-        { path: '/foo', handler: fooHandler },
-        { path: '/bar', handler: barHandler },
+        { path: 'foo', handler: fooHandler },
+        { path: 'bar/baz', handler: barHandler },
       ],
     });
 
@@ -367,31 +471,41 @@ describe('handling upgrade', () => {
     expect(fooHandler).toHaveBeenCalledTimes(1);
     expect(fooHandler).toHaveBeenCalledWith(fooReq, socket, head, {
       originalPath: '/foo',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: '',
     });
     expect(barHandler).not.toHaveBeenCalled();
-
-    const barReq = moxy({ url: '/bar' });
-    server.emit('upgrade', barReq, socket, head);
-    expect(fooHandler).toHaveBeenCalledTimes(1);
-    expect(barHandler).toHaveBeenCalledTimes(1);
-    expect(barHandler).toHaveBeenCalledWith(barReq, socket, head, {
-      originalPath: '/bar',
-      matchedPath: '/bar',
-      trailingPath: '',
-    });
 
     const fooBarReq = moxy({ url: '/foo/bar' });
     server.emit('upgrade', fooBarReq, socket, head);
     expect(fooHandler).toHaveBeenCalledTimes(2);
     expect(fooHandler).toHaveBeenCalledWith(fooBarReq, socket, head, {
       originalPath: '/foo/bar',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: 'bar',
     });
+
+    const barReq = moxy({ url: '/bar/baz' });
+    server.emit('upgrade', barReq, socket, head);
     expect(barHandler).toHaveBeenCalledTimes(1);
-    expect(socket.write).not.toHaveBeenCalled();
+    expect(barHandler).toHaveBeenCalledWith(barReq, socket, head, {
+      originalPath: '/bar/baz',
+      basePath: '/',
+      matchedPath: 'bar/baz',
+      trailingPath: '',
+    });
+
+    const barBaeReq = moxy({ url: '/bar/baz/bae' });
+    server.emit('upgrade', barBaeReq, socket, head);
+    expect(barHandler).toHaveBeenCalledTimes(2);
+    expect(barHandler).toHaveBeenCalledWith(barBaeReq, socket, head, {
+      originalPath: '/bar/baz/bae',
+      basePath: '/',
+      matchedPath: 'bar/baz',
+      trailingPath: 'bae',
+    });
 
     server.emit('upgrade', moxy({ url: '/' }), socket, head);
     expect(socket.write).toHaveBeenCalledTimes(1);
@@ -410,7 +524,7 @@ describe('handling upgrade', () => {
     expect(socket.destroy).toHaveBeenCalledTimes(2);
 
     expect(fooHandler).toHaveBeenCalledTimes(2);
-    expect(barHandler).toHaveBeenCalledTimes(1);
+    expect(barHandler).toHaveBeenCalledTimes(2);
   });
 
   test('register with default route', () => {
@@ -418,8 +532,9 @@ describe('handling upgrade', () => {
     const defaultHandler = moxy();
 
     const connector = new HttpConnector({
+      entryUrl: 'https://sociably.io',
       upgradeRoutes: [
-        { path: '/foo', handler: fooHandler },
+        { path: 'foo', handler: fooHandler },
         { default: true, handler: defaultHandler },
       ],
     });
@@ -433,7 +548,8 @@ describe('handling upgrade', () => {
     expect(fooHandler).toHaveBeenCalledTimes(1);
     expect(fooHandler).toHaveBeenCalledWith(fooReq, socket, head, {
       originalPath: '/foo',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: '',
     });
 
@@ -443,7 +559,8 @@ describe('handling upgrade', () => {
     expect(fooHandler).toHaveBeenCalledTimes(2);
     expect(fooHandler).toHaveBeenCalledWith(fooBarReq, socket, head, {
       originalPath: '/foo/bar',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: 'bar',
     });
 
@@ -453,6 +570,7 @@ describe('handling upgrade', () => {
     expect(defaultHandler).toHaveBeenCalledTimes(1);
     expect(defaultHandler).toHaveBeenCalledWith(rootReq, socket, head, {
       originalPath: '/',
+      basePath: '/',
       matchedPath: undefined,
       trailingPath: '',
     });
@@ -463,6 +581,7 @@ describe('handling upgrade', () => {
     expect(defaultHandler).toHaveBeenCalledTimes(2);
     expect(defaultHandler).toHaveBeenCalledWith(barReq, socket, head, {
       originalPath: '/bar',
+      basePath: '/',
       matchedPath: undefined,
       trailingPath: 'bar',
     });
@@ -470,61 +589,135 @@ describe('handling upgrade', () => {
     expect(socket.write).not.toHaveBeenCalled();
   });
 
-  test('register with deeper route path', () => {
-    const handler = moxy();
+  test('register with base path', () => {
+    const fooHandler = moxy();
+    const barHandler = moxy();
+
     const connector = new HttpConnector({
-      upgradeRoutes: [{ path: '/foo/bar', handler }],
+      entryUrl: 'https://sociably.io/hello/world/',
+      upgradeRoutes: [
+        { path: 'foo', handler: fooHandler },
+        { path: 'bar/baz', handler: barHandler },
+      ],
     });
 
     const server = moxy(new FakeServer());
     connector.connect(server, { port: 8888 });
     expect(server.listen).toHaveBeenCalledTimes(1);
 
-    const fooBarReq = moxy({ url: '/foo/bar' });
-    server.emit('upgrade', fooBarReq, socket, head);
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenCalledWith(fooBarReq, socket, head, {
-      originalPath: '/foo/bar',
-      matchedPath: '/foo/bar',
+    const fooReq = moxy({ url: '/hello/world/foo' });
+    server.emit('upgrade', fooReq, socket, head);
+    expect(fooHandler).toHaveBeenCalledTimes(1);
+    expect(fooHandler).toHaveBeenCalledWith(fooReq, socket, head, {
+      originalPath: '/hello/world/foo',
+      basePath: '/hello/world/',
+      matchedPath: 'foo',
       trailingPath: '',
     });
 
-    const fooBarBazReq = moxy({ url: '/foo/bar/baz' });
-    server.emit('upgrade', fooBarBazReq, socket, head);
-    expect(handler).toHaveBeenCalledTimes(2);
-    expect(handler).toHaveBeenCalledWith(fooBarBazReq, socket, head, {
-      originalPath: '/foo/bar/baz',
-      matchedPath: '/foo/bar',
-      trailingPath: 'baz',
+    const fooBarReq = moxy({ url: '/hello/world/foo/bar' });
+    server.emit('upgrade', fooBarReq, socket, head);
+    expect(fooHandler).toHaveBeenCalledTimes(2);
+    expect(fooHandler).toHaveBeenCalledWith(fooBarReq, socket, head, {
+      originalPath: '/hello/world/foo/bar',
+      basePath: '/hello/world/',
+      matchedPath: 'foo',
+      trailingPath: 'bar',
     });
 
-    server.emit('upgrade', moxy({ url: '/foo' }), socket, head);
+    const barReq = moxy({ url: '/hello/world/bar/baz' });
+    server.emit('upgrade', barReq, socket, head);
+    expect(barHandler).toHaveBeenCalledTimes(1);
+    expect(barHandler).toHaveBeenCalledWith(barReq, socket, head, {
+      originalPath: '/hello/world/bar/baz',
+      basePath: '/hello/world/',
+      matchedPath: 'bar/baz',
+      trailingPath: '',
+    });
+
+    const barBaeReq = moxy({ url: '/hello/world/bar/baz/bae' });
+    server.emit('upgrade', barBaeReq, socket, head);
+    expect(barHandler).toHaveBeenCalledTimes(2);
+    expect(barHandler).toHaveBeenCalledWith(barBaeReq, socket, head, {
+      originalPath: '/hello/world/bar/baz/bae',
+      basePath: '/hello/world/',
+      matchedPath: 'bar/baz',
+      trailingPath: 'bae',
+    });
+
+    server.emit('upgrade', moxy({ url: '/' }), socket, head);
     expect(socket.write).toHaveBeenCalledTimes(1);
     expect(socket.destroy).toHaveBeenCalledTimes(1);
+    expect(socket.write.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+      "HTTP/1.1 404 Not Found
+      Connection: close
+      Content-Type: text/html
+      Content-Length: 9
+
+      Not Found"
+    `);
+
+    server.emit('upgrade', moxy({ url: '/foo' }), socket, head);
+    expect(socket.write).toHaveBeenCalledTimes(2);
+    expect(socket.destroy).toHaveBeenCalledTimes(2);
+    expect(socket.write.mock.calls[1].args[0]).toMatchInlineSnapshot(`
+      "HTTP/1.1 404 Not Found
+      Connection: close
+      Content-Type: text/html
+      Content-Length: 9
+
+      Not Found"
+    `);
+
+    expect(fooHandler).toHaveBeenCalledTimes(2);
+    expect(barHandler).toHaveBeenCalledTimes(2);
   });
 
   it('throw if upgrade routes conflict', () => {
     expect(
       () =>
         new HttpConnector({
+          entryUrl: 'https://sociably.io',
           upgradeRoutes: [
-            { name: 'root', path: '/', handler: moxy() },
-            { name: 'foo', path: '/foo', handler: moxy() },
+            { name: 'root', path: './', handler: moxy() },
+            { name: 'foo', path: './foo', handler: moxy() },
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"upgrade route [foo] "/foo" is conflicted with route [root] "/""`
+      `"route [foo] "./foo" is conflicted with route [root] "./""`
     );
     expect(
       () =>
         new HttpConnector({
+          entryUrl: 'https://sociably.io',
           upgradeRoutes: [
-            { name: 'bar', path: '/bar', handler: moxy() },
-            { path: '/bar/baz', handler: moxy() },
+            { name: 'bar', path: './bar', handler: moxy() },
+            { path: './bar/baz', handler: moxy() },
           ],
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"upgrade route "/bar/baz" is conflicted with route [bar] "/bar""`
+      `"route "./bar/baz" is conflicted with route [bar] "./bar""`
+    );
+  });
+
+  it('throw if request route is not relative under entryUrl', () => {
+    expect(
+      () =>
+        new HttpConnector({
+          entryUrl: 'https://sociably.io',
+          upgradeRoutes: [{ name: 'foo', path: '/foo', handler: moxy() }],
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"route path should be a relative path"`
+    );
+    expect(
+      () =>
+        new HttpConnector({
+          entryUrl: 'https://sociably.io',
+          upgradeRoutes: [{ name: 'foo', path: '../foo', handler: moxy() }],
+        })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"route path should be under entryUrl"`
     );
   });
 
@@ -532,8 +725,9 @@ describe('handling upgrade', () => {
     expect(
       () =>
         new HttpConnector({
+          entryUrl: 'https://sociably.io',
           upgradeRoutes: [
-            { name: 'foo', path: '/foo', handler: moxy() },
+            { name: 'foo', path: 'foo', handler: moxy() },
             { default: true, handler: moxy() },
             { default: true, handler: moxy() },
           ],

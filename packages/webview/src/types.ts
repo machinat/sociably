@@ -105,9 +105,7 @@ export type WebviewConfigs<
   Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
   Value extends EventValue = EventValue
 > = {
-  /** Host of the webview. */
-  webviewHost: string;
-  /** Route path to the webview pages, default to `"/"`. */
+  /** Route path to the webview pages, default to `"."`. */
   webviewPath?: string;
   /** Set to `true` for not running NextJS server. */
   noNextServer?: boolean;
@@ -117,7 +115,7 @@ export type WebviewConfigs<
   nextServerOptions?: NextServerOptions;
   nextRequestHandler?: HandleNextRequestFn;
 
-  /** Route path to the web socket server. Default to `"/websocket"` */
+  /** Route path to the web socket server. Default to `"./websocket"` */
   webSocketPath?: string;
   heartbeatInterval?: number;
 
@@ -142,7 +140,7 @@ export type WebviewConfigs<
     /** Login session duration in seconds. Default to 10 min */
     loginDuration?: number;
   };
-  /** Route path to the auth api. Default to `"/auth"` */
+  /** Route path to the auth api. Default to `"./auth"` */
   authApiPath?: string;
   /** The lifetime of the token in seconds. Default to an hour */
   tokenLifetime?: number;

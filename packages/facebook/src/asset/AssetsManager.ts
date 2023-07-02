@@ -1,5 +1,6 @@
 import deepEqual from 'fast-deep-equal';
 import type { SociablyNode } from '@sociably/core';
+import Http from '@sociably/http';
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
@@ -40,10 +41,11 @@ const DEFAULT_PAGE_SUBSCRIPTION_FIELDS = [
   'messaging_referrals',
 ];
 
-export type DefaultAppSettings = {
+export type DefaultSettings = {
   appId?: string;
   verifyToken?: string;
   pageSubscriptionFields?: string[];
+  webhookUrl?: string;
 };
 
 /**
@@ -54,12 +56,12 @@ export type DefaultAppSettings = {
 export class FacebookAssetsManager {
   private _bot: BotP;
   private _stateController: StateControllerI;
-  defaultAppSettings?: DefaultAppSettings;
+  defaultAppSettings?: DefaultSettings;
 
   constructor(
     stateManager: StateControllerI,
     bot: BotP,
-    defaultAppSettings?: DefaultAppSettings
+    defaultAppSettings?: DefaultSettings
   ) {
     this._stateController = stateManager;
     this._bot = bot;
@@ -71,14 +73,14 @@ export class FacebookAssetsManager {
    * for references
    */
   async setAppSubscription({
-    webhookUrl,
     objectType = 'page',
+    webhookUrl: webhookUrlInput,
     fields: fieldsInput,
     appId: appIdInput,
     verifyToken: verifyTokenInput,
   }: {
     /** The URL to receive the webhook */
-    webhookUrl: string;
+    webhookUrl?: string;
     /** Indicates the object type that this subscription applies to. Default to `page` */
     objectType?: 'user' | 'page' | 'permissions' | 'payments';
     /** One or more of the set of valid fields in this object to subscribe to */
@@ -89,6 +91,7 @@ export class FacebookAssetsManager {
     appId?: string;
   }): Promise<void> {
     const appId = appIdInput || this.defaultAppSettings?.appId;
+    const webhookUrl = webhookUrlInput || this.defaultAppSettings?.webhookUrl;
     const verifyToken =
       verifyTokenInput || this.defaultAppSettings?.verifyToken;
     const fields =
@@ -97,7 +100,7 @@ export class FacebookAssetsManager {
       DEFAULT_PAGE_SUBSCRIPTION_FIELDS;
 
     if (!appId || !verifyToken || !webhookUrl || !fields?.length) {
-      throw new Error('appId, url, verifyToken or fields is empty');
+      throw new Error('appId, webhookUrl, verifyToken or fields is empty');
     }
 
     await this._bot.requestApi({
@@ -194,10 +197,57 @@ export class FacebookAssetsManager {
    */
   async setPageMessengerProfile(
     page: string | FacebookPage,
-    settingsInput: Record<string, unknown>,
-    { accessToken }: { accessToken?: string } = {}
+    {
+      accessToken,
+      ...profileFields
+    }: {
+      /**
+       * The payload that will be sent as a `messaging_postbacks` event when someone
+       * taps the 'get started' button on your Page Messenger welcome screen.
+       */
+      getStarted?: { payload: string };
+      /**
+       * An array of locale-specific greeting messages to display on your Page
+       * Messenger welcome screen.
+       */
+      greeting?: { locale: string; text: string }[];
+      /** An array with an ice breaker object. */
+      iceBreakers?: {
+        locale: string;
+        callToActions: { question: string; payload: string }[];
+      }[];
+      /**
+       * An array of call-to-action buttons to include in the persistent menu.
+       */
+      persistentMenu?: {
+        locale: string;
+        composerInputDisabled: boolean;
+        callToActions: {
+          type: 'postback' | 'web_url';
+          title: string;
+          payload?: string;
+          url?: string;
+          webviewHeightRatio?: 'compact' | 'tall' | 'full';
+          messengerExtensions?: boolean;
+          fallbackUrl?: string;
+          webviewShareButton?: 'hide';
+        }[];
+        disabledSurfaces?: 'customer_chat_plugin'[];
+      }[];
+      /**
+       * A list of whitelisted domains. Required for Pages that use the Messenger
+       * Extensions SDK and the checkbox plugin.
+       */
+      whitelistedDomains?: string[];
+      /**
+       * Authentication callback URL. Must use https protocol.
+       */
+      accountLinkingUrl?: string;
+      /** Specify the access token to be used on the API call */
+      accessToken?: string;
+    }
   ): Promise<void> {
-    const newSettings = snakecaseKeys(settingsInput);
+    const newSettings = snakecaseKeys(profileFields);
 
     const {
       data: [currentSettings = {}],
@@ -424,11 +474,17 @@ export class FacebookAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP, ConfigsI],
-  factory: (stateController, bot, fbConfigs) =>
+  deps: [StateControllerI, BotP, Http.Configs, ConfigsI],
+  factory: (
+    stateController,
+    bot,
+    { entryUrl },
+    { appId, verifyToken, webhookPath }
+  ) =>
     new FacebookAssetsManager(stateController, bot, {
-      appId: fbConfigs.appId,
-      verifyToken: fbConfigs.verifyToken,
+      appId,
+      verifyToken,
+      webhookUrl: new URL(webhookPath ?? '', entryUrl).href,
     }),
 })(FacebookAssetsManager);
 

@@ -77,12 +77,15 @@ describe('initModule(configs)', () => {
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
-      webhookPath: '/webhook/facebook',
+      webhookPath: 'webhook/facebook',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [Facebook.initModule(configs)],
     });
     await app.start();
@@ -113,7 +116,7 @@ describe('initModule(configs)', () => {
     expect(routings).toEqual([
       {
         name: 'facebook',
-        path: '/webhook/facebook',
+        path: 'webhook/facebook',
         handler: expect.any(Function),
       },
     ]);
@@ -127,7 +130,10 @@ describe('initModule(configs)', () => {
 
   test('provide base interfaces', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Facebook.initModule({
           agentSettings: {
@@ -164,9 +170,12 @@ describe('initModule(configs)', () => {
     bot.stop();
   });
 
-  test('default webhookPath to "/"', async () => {
+  test('default webhookPath to "."', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Facebook.initModule({
           agentSettings: {
@@ -185,7 +194,11 @@ describe('initModule(configs)', () => {
 
     const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
-      { name: 'facebook', path: '/', handler: expect.any(Function) },
+      {
+        name: 'facebook',
+        path: '.',
+        handler: expect.any(Function),
+      },
     ]);
 
     app.useServices([Facebook.Bot])[0].stop();
@@ -197,7 +210,10 @@ describe('initModule(configs)', () => {
       accessToken: '_ACCESS_TOKEN_',
     };
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Facebook.initModule({
           agentSettings,
@@ -229,7 +245,10 @@ describe('initModule(configs)', () => {
 
   test('with configs.multiAgentSettings', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Facebook.initModule({
           multiAgentSettings: [
@@ -296,7 +315,10 @@ describe('initModule(configs)', () => {
     );
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         Facebook.initModule({
           agentSettingsService: myPageSettingsService,

@@ -5,9 +5,9 @@ import HttpOperator from '../HttpOperator.js';
 import { getCookies } from './utils.js';
 
 const secret = '__SECRET__';
-const serverUrl = 'https://sociably.io';
-const apiRoot = '/auth';
-const redirectRoot = '/webview';
+const serverUrl = 'https://sociably.io/myApp/';
+const apiPath = '/auth';
+const redirectUrl = '/webview';
 
 const _DateNow = Date.now;
 const FAKE_NOW = 1570000000000;
@@ -25,24 +25,24 @@ describe('#constructor()', () => {
     const operator = new HttpOperator({
       secret,
       serverUrl,
-      apiRoot,
-      redirectRoot,
+      apiPath,
+      redirectUrl,
     });
     expect(operator.secret).toBe(secret);
-    expect(operator.apiRootUrl.href).toBe('https://sociably.io/auth');
-    expect(operator.redirectRootUrl.href).toBe('https://sociably.io/webview');
+    expect(operator.apiUrl.href).toBe('https://sociably.io/auth');
+    expect(operator.redirectUrl.href).toBe('https://sociably.io/webview');
   });
 
   it('throw if options.secret is empty', () => {
     expect(
-      () => new HttpOperator({ redirectRoot } as any)
+      () => new HttpOperator({ redirectUrl } as any)
     ).toThrowErrorMatchingInlineSnapshot(`"options.secret must not be empty"`);
     expect(
       () => new HttpOperator({ secret: '', serverUrl })
     ).toThrowErrorMatchingInlineSnapshot(`"options.secret must not be empty"`);
   });
 
-  it('throw if options.redirectRoot is empty', () => {
+  it('throw if options.redirectUrl is empty', () => {
     expect(
       () => new HttpOperator({ secret } as any)
     ).toThrowErrorMatchingInlineSnapshot(
@@ -55,43 +55,43 @@ describe('#constructor()', () => {
     );
   });
 
-  it("throw if apiRoot isn't a subpath of cookiePath when both given", () => {
+  it("throw if apiPath isn't a subpath of cookiePath when both given", () => {
     expect(
       () =>
         new HttpOperator({
           secret,
           serverUrl,
-          apiRoot: '/auth',
+          apiPath: '/auth',
           cookiePath: '/app',
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.apiRoot should be a subpath of options.cookiePath"`
+      `"options.apiPath should be a subpath of options.cookiePath"`
     );
   });
 
-  it("throw if redirectRoot isn't under subpath of cookiePath", () => {
+  it("throw if redirectUrl isn't under subpath of cookiePath", () => {
     expect(
       () =>
         new HttpOperator({
           secret,
           serverUrl,
-          redirectRoot: '/webview',
-          apiRoot: '/app/auth',
+          redirectUrl: '/webview',
+          apiPath: '/app/auth',
           cookiePath: '/app',
         })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.redirectRoot should be under a subpath of options.cookiePath"`
+      `"options.redirectUrl should be under a subpath of options.cookiePath"`
     );
   });
 
-  it("throw if redirectRoot isn't under subdomain of cookieDomain", () => {
+  it("throw if redirectUrl isn't under subdomain of cookieDomain", () => {
     expect(
       () =>
         new HttpOperator({
           secret,
           serverUrl,
-          redirectRoot: '//view.sociably.io',
-          apiRoot: '/auth',
+          redirectUrl: '//view.sociably.io',
+          apiPath: '/auth',
           cookieDomain: 'api.sociably.io',
         })
     ).toThrowErrorMatchingInlineSnapshot(
@@ -131,7 +131,7 @@ test('.issueState(res, data)', async () => {
     return [cookies, payload];
   }
 
-  const operator = new HttpOperator({ secret, serverUrl, apiRoot: '/auth' });
+  const operator = new HttpOperator({ secret, serverUrl, apiPath: '/auth' });
 
   let [cookies, payload] = await testIssueState(operator);
   expect(cookies).toMatchInlineSnapshot(`
@@ -156,8 +156,8 @@ test('.issueState(res, data)', async () => {
     new HttpOperator({
       secret,
       serverUrl,
-      redirectRoot: '/app/pages',
-      apiRoot: '/app/auth',
+      redirectUrl: '/app/pages',
+      apiPath: '/app/auth',
       dataCookieMaxAge: 999,
       cookieDomain: 'sociably.io',
       cookiePath: '/app',
@@ -217,7 +217,7 @@ test('.issueAuth(data, options)', async () => {
         "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsImRhdGEiOnsiZm9vIjoiZGF0YSJ9LCJpbml0IjoxNTcwMDAwMDAwLCJzY29wZSI6eyJwYXRoIjoiLyJ9LCJpYXQiOjE1NzAwMDAwMDAsImV4cCI6MTU3MDAwMzYwMH0",
       },
       "sociably_auth_state" => {
-        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax; Secure",
+        "directives": "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/myApp/; SameSite=Lax; Secure",
         "value": "",
       },
       "sociably_auth_error" => {
@@ -244,8 +244,8 @@ test('.issueAuth(data, options)', async () => {
   const customizedOperator = new HttpOperator({
     secret,
     serverUrl,
-    redirectRoot: '/app/pages',
-    apiRoot: '/app/auth',
+    redirectUrl: '/app/pages',
+    apiPath: '/app/auth',
     tokenCookieMaxAge: 999,
     tokenLifetime: 9999,
     refreshDuration: 99999,
@@ -351,7 +351,7 @@ test('.issueError(code, reason)', async () => {
   const operator = new HttpOperator({
     secret,
     serverUrl,
-    apiRoot: '/auth',
+    apiPath: '/auth',
   });
 
   let [cookies, payload] = await testIssueError(operator);
@@ -393,8 +393,8 @@ test('.issueError(code, reason)', async () => {
     new HttpOperator({
       secret,
       serverUrl,
-      redirectRoot: '/app/pages',
-      apiRoot: '/app/auth',
+      redirectUrl: '/app/pages',
+      apiPath: '/app/auth',
       dataCookieMaxAge: 999,
       cookieDomain: 'sociably.io',
       cookiePath: '/app',
@@ -439,7 +439,7 @@ test('.issueError(code, reason)', async () => {
 });
 
 test('.getState()', async () => {
-  const operator = new HttpOperator({ secret, serverUrl, apiRoot: '/auth' });
+  const operator = new HttpOperator({ secret, serverUrl, apiPath: '/auth' });
   const req = moxy(new IncomingMessage({} as never));
 
   const platform = 'foo';
@@ -498,7 +498,7 @@ test('.getAuth()', async () => {
     return [`${headerEncoded}.${payloadEncoded}`, signature];
   }
 
-  const operator = new HttpOperator({ secret, serverUrl, apiRoot: '/auth' });
+  const operator = new HttpOperator({ secret, serverUrl, apiPath: '/auth' });
   const req = moxy(new IncomingMessage({} as never));
 
   const platform = 'foo';
@@ -623,7 +623,7 @@ test('.getAuth()', async () => {
 });
 
 test('.getError()', async () => {
-  const operator = new HttpOperator({ secret, serverUrl, apiRoot: '/auth' });
+  const operator = new HttpOperator({ secret, serverUrl, apiPath: '/auth' });
   const req = moxy(new IncomingMessage({} as never));
 
   const platform = 'foo';
@@ -663,107 +663,152 @@ test('.getError()', async () => {
   await expect(operator.getError(req, 'foo')).resolves.toBe(null);
 });
 
-test('.redirect(url, options)', () => {
-  const operator = new HttpOperator({
-    secret,
-    serverUrl,
-    apiRoot: '/auth',
-    redirectRoot: '/hello/world',
-  });
-  const res = moxy(new ServerResponse({} as never));
-  res.end.mock.fake(() => {});
+describe('.redirect(url, options)', () => {
+  test('with relative redirectUrl', () => {
+    const operator = new HttpOperator({
+      secret,
+      serverUrl,
+      apiPath: '/auth',
+      redirectUrl: './webview/',
+    });
+    const res = moxy(new ServerResponse({} as never));
+    res.end.mock.fake(() => {});
 
-  expect(operator.redirect(res)).toBe(true);
-  expect(res.end).toHaveBeenCalledTimes(1);
-  expect(res.writeHead).toHaveBeenCalledTimes(1);
-  expect(res.writeHead).toHaveBeenCalledWith(302, {
-    Location: 'https://sociably.io/hello/world/',
-  });
+    expect(operator.redirect(res)).toBe(true);
+    expect(res.end).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledWith(302, {
+      Location: 'https://sociably.io/myApp/webview/',
+    });
 
-  expect(operator.redirect(res, 'foo?bar=baz')).toBe(true);
-  expect(res.end).toHaveBeenCalledTimes(2);
-  expect(res.writeHead).toHaveBeenCalledTimes(2);
-  expect(res.writeHead).toHaveBeenCalledWith(302, {
-    Location: 'https://sociably.io/hello/world/foo?bar=baz',
-  });
+    expect(operator.redirect(res, 'foo?bar=baz')).toBe(true);
+    expect(res.end).toHaveBeenCalledTimes(2);
+    expect(res.writeHead).toHaveBeenCalledTimes(2);
+    expect(res.writeHead).toHaveBeenCalledWith(302, {
+      Location: 'https://sociably.io/myApp/webview/foo?bar=baz',
+    });
 
-  expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
-    true
-  );
-  expect(res.end).toHaveBeenCalledTimes(3);
-  expect(res.writeHead).toHaveBeenCalledTimes(3);
-  expect(res.writeHead).toHaveBeenCalledWith(302, {
-    Location: 'http://api.sociably.io/foo?bar=baz',
-  });
-});
-
-test('.redirect(url, options) with assertInternal set to true', () => {
-  const operator = new HttpOperator({
-    secret,
-    serverUrl,
-    apiRoot: '/auth',
-    redirectRoot: '/webview',
-  });
-  const res = moxy(new ServerResponse({} as never));
-  res.end.mock.fake(() => {});
-
-  expect(operator.redirect(res, '/webview', { assertInternal: true })).toBe(
-    true
-  );
-  expect(res.end).toHaveBeenCalledTimes(1);
-  expect(res.writeHead).toHaveBeenCalledTimes(1);
-  expect(res.writeHead).toHaveBeenCalledWith(302, {
-    Location: 'https://sociably.io/webview',
+    expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
+      true
+    );
+    expect(res.end).toHaveBeenCalledTimes(3);
+    expect(res.writeHead).toHaveBeenCalledTimes(3);
+    expect(res.writeHead).toHaveBeenCalledWith(302, {
+      Location: 'http://api.sociably.io/foo?bar=baz',
+    });
   });
 
-  expect(operator.redirect(res, 'foo?a=b', { assertInternal: true })).toBe(
-    true
-  );
-  expect(res.end).toHaveBeenCalledTimes(2);
-  expect(res.writeHead).toHaveBeenCalledTimes(2);
-  expect(res.writeHead).toHaveBeenNthCalledWith(2, 302, {
-    Location: 'https://sociably.io/webview/foo?a=b',
+  test('with absolute redirectUrl', () => {
+    const operator = new HttpOperator({
+      secret,
+      serverUrl,
+      apiPath: '/auth',
+      redirectUrl: '/hello/world/',
+    });
+    const res = moxy(new ServerResponse({} as never));
+    res.end.mock.fake(() => {});
+
+    expect(operator.redirect(res)).toBe(true);
+    expect(res.end).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledWith(302, {
+      Location: 'https://sociably.io/hello/world/',
+    });
+
+    expect(operator.redirect(res, 'foo?bar=baz')).toBe(true);
+    expect(res.end).toHaveBeenCalledTimes(2);
+    expect(res.writeHead).toHaveBeenCalledTimes(2);
+    expect(res.writeHead).toHaveBeenCalledWith(302, {
+      Location: 'https://sociably.io/hello/world/foo?bar=baz',
+    });
+
+    expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
+      true
+    );
+    expect(res.end).toHaveBeenCalledTimes(3);
+    expect(res.writeHead).toHaveBeenCalledTimes(3);
+    expect(res.writeHead).toHaveBeenCalledWith(302, {
+      Location: 'http://api.sociably.io/foo?bar=baz',
+    });
   });
 
-  expect(operator.redirect(res, '/foo', { assertInternal: true })).toBe(false);
-  expect(res.end).toHaveBeenCalledTimes(3);
-  expect(res.writeHead).toHaveBeenCalledTimes(3);
-  expect(res.writeHead).toHaveBeenNthCalledWith(3, 400);
+  test('with assertInternal set to true', () => {
+    const operator = new HttpOperator({
+      secret,
+      serverUrl,
+      apiPath: '/auth',
+      redirectUrl: './webview/',
+    });
+    const res = moxy(new ServerResponse({} as never));
+    res.end.mock.fake(() => {});
 
-  expect(operator.redirect(res, undefined, { assertInternal: true })).toBe(
-    true
-  );
-  expect(res.end).toHaveBeenCalledTimes(4);
-  expect(res.writeHead).toHaveBeenCalledTimes(4);
-  expect(res.writeHead).toHaveBeenNthCalledWith(4, 302, {
-    Location: 'https://sociably.io/webview/',
+    expect(operator.redirect(res, undefined, { assertInternal: true })).toBe(
+      true
+    );
+    expect(res.end).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledTimes(1);
+    expect(res.writeHead).toHaveBeenCalledWith(302, {
+      Location: 'https://sociably.io/myApp/webview/',
+    });
+
+    expect(operator.redirect(res, 'foo?a=b', { assertInternal: true })).toBe(
+      true
+    );
+    expect(res.end).toHaveBeenCalledTimes(2);
+    expect(res.writeHead).toHaveBeenCalledTimes(2);
+    expect(res.writeHead).toHaveBeenNthCalledWith(2, 302, {
+      Location: 'https://sociably.io/myApp/webview/foo?a=b',
+    });
+
+    expect(operator.redirect(res, '/foo', { assertInternal: true })).toBe(
+      false
+    );
+    expect(res.end).toHaveBeenCalledTimes(3);
+    expect(res.writeHead).toHaveBeenCalledTimes(3);
+    expect(res.writeHead).toHaveBeenNthCalledWith(3, 400);
+
+    expect(operator.redirect(res, undefined, { assertInternal: true })).toBe(
+      true
+    );
+    expect(res.end).toHaveBeenCalledTimes(4);
+    expect(res.writeHead).toHaveBeenCalledTimes(4);
+    expect(res.writeHead).toHaveBeenNthCalledWith(4, 302, {
+      Location: 'https://sociably.io/myApp/webview/',
+    });
+
+    expect(
+      operator.redirect(res, 'https://sociably.io/foo', {
+        assertInternal: true,
+      })
+    ).toBe(false);
+    expect(res.end).toHaveBeenCalledTimes(5);
+    expect(res.writeHead).toHaveBeenCalledTimes(5);
+    expect(res.writeHead).toHaveBeenNthCalledWith(5, 400);
+
+    expect(
+      operator.redirect(res, 'http://sociably.io/myApp/webview/', {
+        assertInternal: true,
+      })
+    ).toBe(false);
+    expect(res.end).toHaveBeenCalledTimes(6);
+    expect(res.writeHead).toHaveBeenCalledTimes(6);
+    expect(res.writeHead).toHaveBeenNthCalledWith(6, 400);
+
+    expect(
+      operator.redirect(res, 'https://sociably.app/myApp/webview/', {
+        assertInternal: true,
+      })
+    ).toBe(false);
+    expect(res.end).toHaveBeenCalledTimes(7);
+    expect(res.writeHead).toHaveBeenCalledTimes(7);
+    expect(res.writeHead).toHaveBeenNthCalledWith(7, 400);
   });
-
-  expect(
-    operator.redirect(res, 'https://sociably.io/webview', {
-      assertInternal: true,
-    })
-  ).toBe(true);
-  expect(res.end).toHaveBeenCalledTimes(5);
-  expect(res.writeHead).toHaveBeenCalledTimes(5);
-  expect(res.writeHead).toHaveBeenNthCalledWith(5, 302, {
-    Location: 'https://sociably.io/webview',
-  });
-
-  expect(
-    operator.redirect(res, 'http://sociably.io/webview', {
-      assertInternal: true,
-    })
-  ).toBe(false);
-  expect(res.end).toHaveBeenCalledTimes(6);
-  expect(res.writeHead).toHaveBeenCalledTimes(6);
-  expect(res.writeHead).toHaveBeenNthCalledWith(6, 400);
 });
 
 test('.getAuthUrl(url, options)', () => {
-  const operator = new HttpOperator({ secret, serverUrl, apiRoot: '/auth' });
+  const operator = new HttpOperator({ secret, serverUrl, apiPath: '/auth' });
 
-  expect(operator.getAuthUrl('test')).toBe('https://sociably.io/auth/test/');
+  expect(operator.getAuthUrl('test')).toBe('https://sociably.io/auth/test');
   expect(operator.getAuthUrl('test', 'foo?bar=baz')).toBe(
     'https://sociably.io/auth/test/foo?bar=baz'
   );
@@ -776,15 +821,15 @@ test('.getRedirectUrl(url, options)', () => {
   const operator = new HttpOperator({
     secret,
     serverUrl,
-    redirectRoot: '/webview',
+    redirectUrl: './webview/',
   });
 
-  expect(operator.getRedirectUrl()).toBe('https://sociably.io/webview/');
+  expect(operator.getRedirectUrl()).toBe('https://sociably.io/myApp/webview/');
   expect(operator.getRedirectUrl('foo?bar=baz')).toBe(
-    'https://sociably.io/webview/foo?bar=baz'
+    'https://sociably.io/myApp/webview/foo?bar=baz'
   );
   expect(operator.getRedirectUrl('foo/bar/baz')).toBe(
-    'https://sociably.io/webview/foo/bar/baz'
+    'https://sociably.io/myApp/webview/foo/bar/baz'
   );
 });
 
