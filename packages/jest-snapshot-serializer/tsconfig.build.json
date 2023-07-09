@@ -6,7 +6,11 @@
     "types": ["jest"],
     "rootDir": "./src",
     "outDir": "./lib",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@sociably/core": ["../core/src/index.js"],
+      "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"]
+    }
   },
   "references": [
     { "path": "../core/tsconfig.build.json" }

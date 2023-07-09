@@ -4,12 +4,27 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@sociably/auth": ["../auth/src/index.js"],
+      "@sociably/auth/*": ["../auth/src/*/index.js", "../auth/src/*.js"],
+      "@sociably/core": ["../core/src/index.js"],
+      "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"],
+      "@sociably/http": ["../http/src/index.js"],
+      "@sociably/http/*": ["../http/src/*/index.js", "../http/src/*.js"],
+      "@sociably/messenger": ["../messenger/src/index.js"],
+      "@sociably/messenger/*": ["../messenger/src/*/index.js", "../messenger/src/*.js"],
+      "@sociably/meta-api": ["../meta-api/src/index.js"],
+      "@sociably/meta-api/*": ["../meta-api/src/*/index.js", "../meta-api/src/*.js"],
+      "@sociably/webview": ["../webview/src/index.js"],
+      "@sociably/webview/*": ["../webview/src/*/index.js", "../webview/src/*.js"]
+    }
   },
   "references": [
     { "path": "../auth/tsconfig.build.json" },
     { "path": "../core/tsconfig.build.json" },
     { "path": "../http/tsconfig.build.json" },
+    { "path": "../messenger/tsconfig.build.json" },
     { "path": "../meta-api/tsconfig.build.json" },
     { "path": "../webview/tsconfig.build.json" }
   ]

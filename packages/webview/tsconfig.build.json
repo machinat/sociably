@@ -4,7 +4,19 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@sociably/auth": ["../auth/src/index.js"],
+      "@sociably/auth/*": ["../auth/src/*/index.js", "../auth/src/*.js"],
+      "@sociably/core": ["../core/src/index.js"],
+      "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"],
+      "@sociably/http": ["../http/src/index.js"],
+      "@sociably/http/*": ["../http/src/*/index.js", "../http/src/*.js"],
+      "@sociably/next": ["../next/src/index.js"],
+      "@sociably/next/*": ["../next/src/*/index.js", "../next/src/*.js"],
+      "@sociably/websocket": ["../websocket/src/index.js"],
+      "@sociably/websocket/*": ["../websocket/src/*/index.js", "../websocket/src/*.js"]
+    }
   },
   "references": [
     { "path": "../auth/tsconfig.build.json" },
