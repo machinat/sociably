@@ -1,33 +1,40 @@
 import type {
-  EventBase,
-  Message,
-  Text,
-  QuickReply,
-  Nlp,
-  Media,
-  Sticker,
-  Location,
-  Fallback,
-  Echo,
-  TemplateProduct,
-  Reaction,
-  Read,
-  Delivery,
-  AccountLinking,
-  GamePlay,
-  PassThreadControl,
-  TakeThreadControl,
-  RequestThreadControl,
-  AppRoles,
-  OneTimeNotifOptin,
-  Optin,
-  PolicyEnforcement,
-  Postback,
-  Referral,
-} from './mixin.js';
+  TextEventProto,
+  TextEchoEventProto,
+  ImageEventProto,
+  ImageEchoEventProto,
+  VideoEventProto,
+  VideoEchoEventProto,
+  AudioEventProto,
+  AudioEchoEventProto,
+  FileEventProto,
+  FileEchoEventProto,
+  LocationEventProto,
+  ProductTemplateEventProto,
+  TemplateEchoEventProto,
+  FallbackEventProto,
+  FallbackEchoEventProto,
+  ReactionEventProto,
+  QuickReplyEventProto,
+  PostbackEventProto,
+  ReferralEventProto,
+  ReadEventProto,
+  DeliveryEventProto,
+  AccountLinkingEventProto,
+  GamePlayEventProto,
+  PassThreadControlEventProto,
+  TakeThreadControlEventProto,
+  RequestThreadControlEventProto,
+  AppRolesEventProto,
+  OptinEventProto,
+  OneTimeNotifOptinEventProto,
+  PolicyEnforcementEventProto,
+  UnknownEventProto,
+} from '@sociably/messenger';
 import type FacebookChat from '../Chat.js';
 import type FacebookUser from '../User.js';
 import type FacebookPage from '../Page.js';
+import { FACEBOOK } from '../constant.js';
 import type { FacebookThread, FacebookRawEvent } from '../types.js';
 
 interface EventObject<
@@ -36,6 +43,7 @@ interface EventObject<
   Thread extends null | FacebookThread = FacebookChat,
   User extends null | FacebookUser = FacebookUser
 > {
+  platform: typeof FACEBOOK;
   category: Category;
   type: Type;
   thread: Thread;
@@ -52,11 +60,7 @@ interface EventObject<
  */
 export interface TextEvent
   extends EventObject<'message' | 'standby', 'text'>,
-    EventBase,
-    Message,
-    Text,
-    Fallback,
-    Nlp {}
+    TextEventProto {}
 
 /**
  * TextEchoEvent will occur when a text message has been sent by your page.
@@ -66,11 +70,7 @@ export interface TextEvent
  */
 export interface TextEchoEvent
   extends EventObject<'echo', 'text'>,
-    EventBase,
-    Message,
-    Text,
-    Fallback,
-    Echo {}
+    TextEchoEventProto {}
 
 /**
  * This callback will occur when an image message has been sent to your Page.
@@ -80,10 +80,7 @@ export interface TextEchoEvent
  */
 export interface ImageEvent
   extends EventObject<'message' | 'standby', 'image'>,
-    EventBase,
-    Message,
-    Media,
-    Sticker {}
+    ImageEventProto {}
 
 /**
  * ImageEchoEvent will occur when a image message has been sent by your page.
@@ -93,10 +90,7 @@ export interface ImageEvent
  */
 export interface ImageEchoEvent
   extends EventObject<'echo', 'image'>,
-    EventBase,
-    Message,
-    Media,
-    Echo {}
+    ImageEchoEventProto {}
 
 /**
  * This callback will occur when a video message has been sent to your Page.
@@ -106,9 +100,7 @@ export interface ImageEchoEvent
  */
 export interface VideoEvent
   extends EventObject<'message' | 'standby', 'video'>,
-    EventBase,
-    Message,
-    Media {}
+    VideoEventProto {}
 
 /**
  * VideoEchoEvent will occur when a video message has been sent by your page.
@@ -118,10 +110,7 @@ export interface VideoEvent
  */
 export interface VideoEchoEvent
   extends EventObject<'echo', 'video'>,
-    EventBase,
-    Message,
-    Media,
-    Echo {}
+    VideoEchoEventProto {}
 
 /**
  * This callback will occur when an audio message has been sent to your Page.
@@ -131,9 +120,7 @@ export interface VideoEchoEvent
  */
 export interface AudioEvent
   extends EventObject<'message' | 'standby', 'audio'>,
-    EventBase,
-    Message,
-    Media {}
+    AudioEventProto {}
 
 /**
  * AudioEchoEvent will occur when a text message has been sent by your page.
@@ -143,10 +130,7 @@ export interface AudioEvent
  */
 export interface AudioEchoEvent
   extends EventObject<'echo', 'audio'>,
-    EventBase,
-    Message,
-    Media,
-    Echo {}
+    AudioEchoEventProto {}
 
 /**
  * This callback will occur when a file message has been sent to your Page.
@@ -156,9 +140,7 @@ export interface AudioEchoEvent
  */
 export interface FileEvent
   extends EventObject<'message' | 'standby', 'file'>,
-    EventBase,
-    Message,
-    Media {}
+    FileEventProto {}
 
 /**
  * FileEchoEvent will occur when a text message has been sent by your page.
@@ -168,10 +150,7 @@ export interface FileEvent
  */
 export interface FileEchoEvent
   extends EventObject<'echo', 'file'>,
-    EventBase,
-    Message,
-    Media,
-    Echo {}
+    FileEchoEventProto {}
 
 /**
  * This callback will occur when a location message has been sent to your Page.
@@ -181,9 +160,7 @@ export interface FileEchoEvent
  */
 export interface LocationEvent
   extends EventObject<'message' | 'standby', 'location'>,
-    EventBase,
-    Message,
-    Location {}
+    LocationEventProto {}
 
 /**
  * @category Event
@@ -192,9 +169,7 @@ export interface LocationEvent
  */
 export interface ProductTemplateEvent
   extends EventObject<'message' | 'standby', 'product_template'>,
-    EventBase,
-    Message,
-    TemplateProduct {}
+    ProductTemplateEventProto {}
 
 /**
  * TemplateEchoEvent will occur when a template message has been sent by your
@@ -205,9 +180,7 @@ export interface ProductTemplateEvent
  */
 export interface TemplateEchoEvent
   extends EventObject<'echo', 'template'>,
-    EventBase,
-    Message,
-    Echo {}
+    TemplateEchoEventProto {}
 
 /**
  * FallbackMessageEvent will occur when an unsupported message shared by user
@@ -218,9 +191,7 @@ export interface TemplateEchoEvent
  */
 export interface FallbackEvent
   extends EventObject<'message' | 'standby', 'fallback'>,
-    EventBase,
-    Message,
-    Fallback {}
+    FallbackEventProto {}
 
 /**
  * FallbackEchoEvent will occur when a message not supporeted by echo feature
@@ -231,10 +202,7 @@ export interface FallbackEvent
  */
 export interface FallbackEchoEvent
   extends EventObject<'echo', 'fallback'>,
-    EventBase,
-    Message,
-    Fallback,
-    Echo {}
+    FallbackEchoEventProto {}
 
 /**
  * ReactionEvent will be sent to your webhook when a user reacts to a message.
@@ -244,8 +212,7 @@ export interface FallbackEchoEvent
  */
 export interface ReactionEvent
   extends EventObject<'action', 'reaction'>,
-    EventBase,
-    Reaction {}
+    ReactionEventProto {}
 
 /**
  * QuickReplyEvent occur when a {@link QuickReply} button is tapped.
@@ -256,10 +223,7 @@ export interface ReactionEvent
  */
 export interface QuickReplyEvent
   extends EventObject<'postback' | 'standby', 'quick_reply'>,
-    EventBase,
-    Message,
-    Text,
-    QuickReply {}
+    QuickReplyEventProto {}
 
 /**
  * PostbackEvent occur when a [postback button](https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button),
@@ -279,8 +243,7 @@ export interface PostbackEvent
       FacebookChat<'user' | 'user_ref'>,
       FacebookUser | null
     >,
-    EventBase,
-    Postback {}
+    PostbackEventProto {}
 
 /**
  * This callback will occur when the user already has a thread with the bot and
@@ -302,8 +265,7 @@ export interface ReferralEvent
       FacebookChat<'user' | 'user_ref'>,
       null | FacebookUser
     >,
-    EventBase,
-    Referral {}
+    ReferralEventProto {}
 
 /**
  * ReadEvent will be sent to your webhook when a message a Page has sent has
@@ -314,8 +276,7 @@ export interface ReferralEvent
  */
 export interface ReadEvent
   extends EventObject<'action' | 'standby', 'read'>,
-    EventBase,
-    Read {}
+    ReadEventProto {}
 
 /**
  * DeliveryEvent will occur when a message a Page has sent has been delivered.
@@ -325,8 +286,7 @@ export interface ReadEvent
  */
 export interface DeliveryEvent
   extends EventObject<'system' | 'standby', 'delivery'>,
-    EventBase,
-    Delivery {}
+    DeliveryEventProto {}
 
 /**
  * AccountLinkingEvent will occur when the Link Account or Unlink Account button
@@ -338,8 +298,7 @@ export interface DeliveryEvent
  */
 export interface AccountLinkingEvent
   extends EventObject<'action', 'account_linking'>,
-    EventBase,
-    AccountLinking {}
+    AccountLinkingEventProto {}
 
 /**
  * GamePlayEvent occurs after a person played a round of Instant Games.
@@ -349,8 +308,7 @@ export interface AccountLinkingEvent
  */
 export interface GamePlayEvent
   extends EventObject<'action', 'game_play'>,
-    EventBase,
-    GamePlay {}
+    GamePlayEventProto {}
 
 /**
  * PassThreadControlEvent occurs when the thread ownership for a user has been
@@ -362,8 +320,7 @@ export interface GamePlayEvent
  */
 export interface PassThreadControlEvent
   extends EventObject<'handover_protocol', 'pass_thread_control'>,
-    EventBase,
-    PassThreadControl {}
+    PassThreadControlEventProto {}
 
 /**
  * TakeThreadControlEvent occurs when the thread ownership for a user has been
@@ -375,8 +332,7 @@ export interface PassThreadControlEvent
  */
 export interface TakeThreadControlEvent
   extends EventObject<'handover_protocol', 'take_thread_control'>,
-    EventBase,
-    TakeThreadControl {}
+    TakeThreadControlEventProto {}
 
 /**
  * RequestThreadControlEvent is sent to the Primary Receiver app when a
@@ -390,8 +346,7 @@ export interface TakeThreadControlEvent
  */
 export interface RequestThreadControlEvent
   extends EventObject<'handover_protocol', 'request_thread_control'>,
-    EventBase,
-    RequestThreadControl {}
+    RequestThreadControlEventProto {}
 
 /**
  * AppRolesEvent occurs when a page admin changes the role of your
@@ -404,8 +359,7 @@ export interface RequestThreadControlEvent
  */
 export interface AppRolesEvent
   extends EventObject<'handover_protocol', 'app_roles'>,
-    EventBase,
-    AppRoles {}
+    AppRolesEventProto {}
 
 /**
  * OptinEvent occurs when the [send to Messenger](https://developers.facebook.com/docs/messenger-platform/discovery/send-to-messenger-plugin)
@@ -423,8 +377,7 @@ export interface OptinEvent
       FacebookChat<'user' | 'user_ref'>,
       null | FacebookUser
     >,
-    EventBase,
-    Optin {}
+    OptinEventProto {}
 
 /**
  * OneTimeNotifOptinEvent occurs when the user consents to be notified on a
@@ -435,8 +388,7 @@ export interface OptinEvent
  */
 export interface OneTimeNotifOptinEvent
   extends EventObject<'postback', 'one_time_notif_optin'>,
-    EventBase,
-    OneTimeNotifOptin {}
+    OneTimeNotifOptinEventProto {}
 
 /**
  * PolicyEnforcementEvent will be sent to an app if the page it manages does not
@@ -447,15 +399,14 @@ export interface OneTimeNotifOptinEvent
  */
 export interface PolicyEnforcementEvent
   extends EventObject<'system', 'policy_enforcement', null, null>,
-    EventBase,
-    PolicyEnforcement {}
+    PolicyEnforcementEventProto {}
 
 /**
  * @category Event
  */
 export interface UnknownEvent
   extends EventObject<'unknown', 'unknown'>,
-    EventBase {}
+    UnknownEventProto {}
 
 /**
  * @category Event

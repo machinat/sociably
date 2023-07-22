@@ -108,6 +108,11 @@ export type NativeComponent<
   new (): NativeComponent<Props, Segment>;
 };
 
+export type AnyNativeComponent = NativeComponent<
+  unknown,
+  IntermediateSegment<unknown>
+>;
+
 export type NativeElement<
   Props,
   Component extends NativeComponent<Props, IntermediateSegment<unknown>>

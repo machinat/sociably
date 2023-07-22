@@ -4,7 +4,7 @@ import { createEmptyScope, ServiceScope } from '../service/index.js';
 import type SociablyRenderer from '../renderer/index.js';
 import type {
   SociablyNode,
-  NativeComponent,
+  AnyNativeComponent,
   InitScopeFn,
   DispatchWrapper,
   ThunkEffectFn,
@@ -27,7 +27,7 @@ import {
 export default class SociablyEngine<
   Target extends DispatchTarget,
   SegmentValue,
-  Component extends NativeComponent<unknown, any>,
+  Component extends AnyNativeComponent,
   Job,
   Result
 > {

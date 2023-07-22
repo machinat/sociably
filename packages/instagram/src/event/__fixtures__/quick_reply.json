@@ -1,0 +1,50 @@
+[
+  {
+    "sender": {
+      "id": "1254459154682919"
+    },
+    "recipient": {
+      "id": "682498171943165"
+    },
+    "timestamp": 1502905976377,
+    "message": {
+      "quick_reply": {
+        "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
+      },
+      "mid": "m_AG5Hz2Uq7tuwNEhXfYYKj8mJEM_QPpz5jdCK48PnKAjSdjfipqxqMvK8ma6AC8fplwlqLP_5cgXIbu7I3rBN0P",
+      "text": "Green"
+    }
+  },
+  {
+    "sender": {
+      "id": "1254459154682919"
+    },
+    "recipient": {
+      "id": "682498171943165"
+    },
+    "timestamp": 1502905976377,
+    "message": {
+      "quick_reply": {
+        "payload": "<PHONE_NUMBER>"
+      },
+      "mid": "m_AG5Hz2Uq7tuwNEhXfYYKj8mJEM_QPpz5jdCK48PnKAjSdjfipqxqMvK8ma6AC8fplwlqLP_5cgXIbu7I3rBN0P",
+      "text": "<PHONE_NUMBER>"
+    }
+  },
+  {
+    "sender": {
+      "id": "1254459154682919"
+    },
+    "recipient": {
+      "id": "682498171943165"
+    },
+    "timestamp": 1502905976377,
+    "message": {
+      "quick_reply": {
+        "payload": "<EMAIL_ADDRESS>"
+      },
+      "mid": "m_AG5Hz2Uq7tuwNEhXfYYKj8mJEM_QPpz5jdCK48PnKAjSdjfipqxqMvK8ma6AC8fplwlqLP_5cgXIbu7I3rBN0P",
+      "text": "<EMAIL_ADDRESS>"
+    }
+  }
+]

@@ -1,6 +1,6 @@
 import Sociably from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
-import renderGeneralComponents from '../general.js';
+import { renderGeneralComponents } from '@sociably/messenger/components';
 
 export const renderPartElement = (element) =>
   new Promise((resolve) => {

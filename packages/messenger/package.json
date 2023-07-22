@@ -1,0 +1,41 @@
+{
+  "name": "@sociably/messenger",
+  "version": "0.8.0",
+  "type": "module",
+  "description": "Facebook Messenger utilities of Sociably.js",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/sociably.git",
+    "directory": "packages/messenger"
+  },
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./components": "./lib/components/index.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
+  "scripts": {
+    "prepack": "make -f ../../package.mk prepack"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "camelcase-keys": "^8.0.2",
+    "fast-deep-equal": "^3.1.3",
+    "invariant": "^2.2.4",
+    "snakecase-keys": "^5.4.4",
+    "warning": "^4.0.2"
+  },
+  "peerDependencies": {
+    "@sociably/core": "^0.8.0",
+    "@sociably/meta-api": "^0.8.0"
+  }
+}

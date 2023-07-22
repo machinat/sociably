@@ -1,0 +1,362 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.message(thread, message, options) message options 1`] = `
+{
+  "jobs": [
+    {
+      "assetTag": undefined,
+      "channel": InstagramPage {
+        "$$typeofChannel": true,
+        "id": "1234567890",
+        "platform": "instagram",
+        "username": undefined,
+      },
+      "file": undefined,
+      "key": "ig.1234567890.9876543210",
+      "request": {
+        "method": "POST",
+        "params": {
+          "message": {
+            "text": "Hello World!",
+          },
+          "messaging_type": "MESSAGE_TAG",
+          "notification_type": "SILENT_PUSH",
+          "persona_id": "billy17",
+          "recipient": {
+            "id": "9876543210",
+          },
+          "tag": "HUMAN_AGENT",
+        },
+        "url": "me/messages",
+      },
+    },
+    {
+      "assetTag": undefined,
+      "channel": InstagramPage {
+        "$$typeofChannel": true,
+        "id": "1234567890",
+        "platform": "instagram",
+        "username": undefined,
+      },
+      "file": undefined,
+      "key": "ig.1234567890.9876543210",
+      "request": {
+        "method": "POST",
+        "params": {
+          "message": {
+            "attachment": {
+              "payload": {
+                "attachment_id": undefined,
+                "is_reusable": undefined,
+                "url": "https://sociably.io/greeting.png",
+              },
+              "type": "image",
+            },
+            "metadata": undefined,
+            "quick_replies": [
+              {
+                "content_type": "text",
+                "image_url": undefined,
+                "payload": "👋",
+                "title": "Hi!",
+              },
+            ],
+          },
+          "messaging_type": "MESSAGE_TAG",
+          "notification_type": "SILENT_PUSH",
+          "persona_id": "billy17",
+          "recipient": {
+            "id": "9876543210",
+          },
+          "tag": "HUMAN_AGENT",
+        },
+        "url": "me/messages",
+      },
+    },
+  ],
+  "results": [
+    {
+      "body": {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+    {
+      "body": {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+  ],
+  "tasks": [
+    {
+      "payload": [
+        {
+          "assetTag": undefined,
+          "channel": InstagramPage {
+            "$$typeofChannel": true,
+            "id": "1234567890",
+            "platform": "instagram",
+            "username": undefined,
+          },
+          "file": undefined,
+          "key": "ig.1234567890.9876543210",
+          "request": {
+            "method": "POST",
+            "params": {
+              "message": {
+                "text": "Hello World!",
+              },
+              "messaging_type": "MESSAGE_TAG",
+              "notification_type": "SILENT_PUSH",
+              "persona_id": "billy17",
+              "recipient": {
+                "id": "9876543210",
+              },
+              "tag": "HUMAN_AGENT",
+            },
+            "url": "me/messages",
+          },
+        },
+        {
+          "assetTag": undefined,
+          "channel": InstagramPage {
+            "$$typeofChannel": true,
+            "id": "1234567890",
+            "platform": "instagram",
+            "username": undefined,
+          },
+          "file": undefined,
+          "key": "ig.1234567890.9876543210",
+          "request": {
+            "method": "POST",
+            "params": {
+              "message": {
+                "attachment": {
+                  "payload": {
+                    "attachment_id": undefined,
+                    "is_reusable": undefined,
+                    "url": "https://sociably.io/greeting.png",
+                  },
+                  "type": "image",
+                },
+                "metadata": undefined,
+                "quick_replies": [
+                  {
+                    "content_type": "text",
+                    "image_url": undefined,
+                    "payload": "👋",
+                    "title": "Hi!",
+                  },
+                ],
+              },
+              "messaging_type": "MESSAGE_TAG",
+              "notification_type": "SILENT_PUSH",
+              "persona_id": "billy17",
+              "recipient": {
+                "id": "9876543210",
+              },
+              "tag": "HUMAN_AGENT",
+            },
+            "url": "me/messages",
+          },
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
+
+exports[`.message(thread, message, options) message options 2`] = `
+{
+  "access_token": "_ACCESS_TOKEN_",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=HUMAN_AGENT&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"ig.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=HUMAN_AGENT&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"ig.1234567890.9876543210-1","name":"ig.1234567890.9876543210-2","omit_response_on_success":false}]",
+}
+`;
+
+exports[`.message(thread, message, options) send messages to me/messages api 1`] = `
+{
+  "jobs": [
+    {
+      "assetTag": undefined,
+      "channel": InstagramPage {
+        "$$typeofChannel": true,
+        "id": "1234567890",
+        "platform": "instagram",
+        "username": undefined,
+      },
+      "file": undefined,
+      "key": "ig.1234567890.9876543210",
+      "request": {
+        "method": "POST",
+        "params": {
+          "message": {
+            "text": "Hello World!",
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "recipient": {
+            "id": "9876543210",
+          },
+          "tag": undefined,
+        },
+        "url": "me/messages",
+      },
+    },
+    {
+      "assetTag": undefined,
+      "channel": InstagramPage {
+        "$$typeofChannel": true,
+        "id": "1234567890",
+        "platform": "instagram",
+        "username": undefined,
+      },
+      "file": undefined,
+      "key": "ig.1234567890.9876543210",
+      "request": {
+        "method": "POST",
+        "params": {
+          "message": {
+            "attachment": {
+              "payload": {
+                "attachment_id": undefined,
+                "is_reusable": undefined,
+                "url": "https://sociably.io/greeting.png",
+              },
+              "type": "image",
+            },
+            "metadata": undefined,
+            "quick_replies": [
+              {
+                "content_type": "text",
+                "image_url": undefined,
+                "payload": "👋",
+                "title": "Hi!",
+              },
+            ],
+          },
+          "messaging_type": undefined,
+          "notification_type": undefined,
+          "persona_id": undefined,
+          "recipient": {
+            "id": "9876543210",
+          },
+          "tag": undefined,
+        },
+        "url": "me/messages",
+      },
+    },
+  ],
+  "results": [
+    {
+      "body": {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+    {
+      "body": {
+        "message_id": "xxx",
+        "recipient_id": "xxx",
+      },
+      "code": 200,
+    },
+  ],
+  "tasks": [
+    {
+      "payload": [
+        {
+          "assetTag": undefined,
+          "channel": InstagramPage {
+            "$$typeofChannel": true,
+            "id": "1234567890",
+            "platform": "instagram",
+            "username": undefined,
+          },
+          "file": undefined,
+          "key": "ig.1234567890.9876543210",
+          "request": {
+            "method": "POST",
+            "params": {
+              "message": {
+                "text": "Hello World!",
+              },
+              "messaging_type": undefined,
+              "notification_type": undefined,
+              "persona_id": undefined,
+              "recipient": {
+                "id": "9876543210",
+              },
+              "tag": undefined,
+            },
+            "url": "me/messages",
+          },
+        },
+        {
+          "assetTag": undefined,
+          "channel": InstagramPage {
+            "$$typeofChannel": true,
+            "id": "1234567890",
+            "platform": "instagram",
+            "username": undefined,
+          },
+          "file": undefined,
+          "key": "ig.1234567890.9876543210",
+          "request": {
+            "method": "POST",
+            "params": {
+              "message": {
+                "attachment": {
+                  "payload": {
+                    "attachment_id": undefined,
+                    "is_reusable": undefined,
+                    "url": "https://sociably.io/greeting.png",
+                  },
+                  "type": "image",
+                },
+                "metadata": undefined,
+                "quick_replies": [
+                  {
+                    "content_type": "text",
+                    "image_url": undefined,
+                    "payload": "👋",
+                    "title": "Hi!",
+                  },
+                ],
+              },
+              "messaging_type": undefined,
+              "notification_type": undefined,
+              "persona_id": undefined,
+              "recipient": {
+                "id": "9876543210",
+              },
+              "tag": undefined,
+            },
+            "url": "me/messages",
+          },
+        },
+      ],
+      "type": "dispatch",
+    },
+  ],
+}
+`;
+
+exports[`.message(thread, message, options) send messages to me/messages api 2`] = `
+{
+  "access_token": "_ACCESS_TOKEN_",
+  "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"ig.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"ig.1234567890.9876543210-1","name":"ig.1234567890.9876543210-2","omit_response_on_success":false}]",
+}
+`;
+
+exports[`.uploadChatAttachment(page, message) call message_attachments api 1`] = `
+{
+  "access_token": "_ACCESS_TOKEN_",
+  "batch": "[{"method":"POST","relative_url":"me/message_attachments?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D","omit_response_on_success":false}]",
+}
+`;

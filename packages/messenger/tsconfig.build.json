@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "baseUrl": ".",
+    "paths": {
+      "@sociably/core": ["../core/src/index.js"],
+      "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"],
+      "@sociably/meta-api": ["../meta-api/src/index.js"],
+      "@sociably/meta-api/*": ["../meta-api/src/*/index.js", "../meta-api/src/*.js"]
+    }
+  },
+  "references": [
+    { "path": "../core/tsconfig.build.json" },
+    { "path": "../meta-api/tsconfig.build.json" }
+  ]
+}

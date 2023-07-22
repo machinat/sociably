@@ -1,0 +1,273 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createChatJobs(options)(chat, segments) add attached file data and info 1`] = `
+[
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": {
+      "data": "_FOO_",
+    },
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "message": {
+          "attachment": {
+            "type": "image",
+          },
+        },
+        "recipient": {
+          "id": "67890",
+        },
+      },
+      "url": "me/messages",
+    },
+  },
+  {
+    "assetTag": "BAR!",
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": {
+      "data": "_BAR_",
+      "info": {
+        "contentType": "image/jpeg",
+        "filename": "deathangel.jpg",
+      },
+    },
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "message": {
+          "attachment": {
+            "type": "file",
+          },
+        },
+        "recipient": {
+          "id": "67890",
+        },
+      },
+      "url": "bar/baz",
+    },
+  },
+]
+`;
+
+exports[`createChatJobs(options)(chat, segments) respect options set in job value 1`] = `
+[
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": undefined,
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "message": {
+          "text": "bibiboo",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "astromech-droid",
+        "recipient": {
+          "id": "67890",
+        },
+        "tag": "POST_PURCHASE_UPDATE",
+      },
+      "url": "me/messages",
+    },
+  },
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": undefined,
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "message": {
+          "text": "Oh! I apologize.",
+        },
+        "messaging_type": "UPDATE",
+        "notification_type": "REGULAR",
+        "persona_id": "protocol-droid",
+        "recipient": {
+          "id": "67890",
+        },
+        "tag": undefined,
+      },
+      "url": "me/messages",
+    },
+  },
+]
+`;
+
+exports[`createChatJobs(options)(chat, segments) respect the empty tag if messaging_type has already been set 1`] = `
+[
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": undefined,
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "message": {
+          "text": "bibibooboobibooboo",
+        },
+        "messaging_type": "RESPONSE",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "astromech-droid",
+        "recipient": {
+          "id": "67890",
+        },
+      },
+      "url": "me/messages",
+    },
+  },
+]
+`;
+
+exports[`createChatJobs(options)(chat, segments) with message metadata 1`] = `
+[
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": undefined,
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "persona_id": "your-dearest-friend",
+        "recipient": {
+          "id": "67890",
+        },
+        "sender_action": "typing_on",
+      },
+      "url": "me/messages",
+    },
+  },
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": undefined,
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "message": {
+          "id": 1,
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": {
+          "id": "67890",
+        },
+        "tag": "PAYMENT_UPDATE",
+      },
+      "url": "me/messages",
+    },
+  },
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": undefined,
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "id": 2,
+        "recipient": {
+          "id": "67890",
+        },
+      },
+      "url": "bar/baz",
+    },
+  },
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": undefined,
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "message": {
+          "text": "id:3",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": {
+          "id": "67890",
+        },
+        "tag": "PAYMENT_UPDATE",
+      },
+      "url": "me/messages",
+    },
+  },
+  {
+    "assetTag": undefined,
+    "channel": {
+      "id": 12345,
+      "platform": "test",
+      "uid": "test.12345",
+    },
+    "file": undefined,
+    "key": "test.12345.67890",
+    "request": {
+      "method": "POST",
+      "params": {
+        "message": {
+          "text": "4",
+        },
+        "messaging_type": "MESSAGE_TAG",
+        "notification_type": "SILENT_PUSH",
+        "persona_id": "your-dearest-friend",
+        "recipient": {
+          "id": "67890",
+        },
+        "tag": "PAYMENT_UPDATE",
+      },
+      "url": "me/messages",
+    },
+  },
+]
+`;

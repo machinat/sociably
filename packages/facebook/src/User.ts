@@ -1,5 +1,7 @@
-import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
+import type { UniqueOmniIdentifier } from '@sociably/core';
+import { MessengerUser } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import FacebookPage from './Page.js';
 import { FACEBOOK, FB } from './constant.js';
 
 type FacebookUserValue = {
@@ -8,7 +10,7 @@ type FacebookUserValue = {
 };
 
 export default class FacebookUser
-  implements SociablyUser, MarshallableInstance<FacebookUserValue>
+  implements MessengerUser, MarshallableInstance<FacebookUserValue>
 {
   static typeName = 'FbUser';
 
@@ -38,6 +40,10 @@ export default class FacebookUser
 
   get uid(): string {
     return `${FB}.${this.pageId}.${this.id}`;
+  }
+
+  get page(): FacebookPage {
+    return new FacebookPage(this.pageId);
   }
 
   toJSONValue(): FacebookUserValue {

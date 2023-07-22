@@ -16,6 +16,13 @@ import type {
   MetaApiDispatchResponse,
   FileInfo,
 } from '@sociably/meta-api';
+import {
+  MessageValue,
+  SenderActionValue,
+  PassThreadControlValue,
+  TakeThreadControlValue,
+  RequestThreadControlValue,
+} from '@sociably/messenger';
 import type { FacebookBot } from './Bot.js';
 import type FacebookChat from './Chat.js';
 import FacebookInteractTarget from './InteractTarget.js';
@@ -23,10 +30,6 @@ import { AgentSettingsAccessorI } from './interface.js';
 import type { FacebookEvent } from './event/types.js';
 import type {
   FACEBOOK,
-  PATH_MESSAGES,
-  PATH_PASS_THREAD_CONTROL,
-  PATH_TAKE_THREAD_CONTROL,
-  PATH_REQUEST_THREAD_CONTROL,
   PATH_FEED,
   PATH_PHOTOS,
   PATH_VIDEOS,
@@ -50,17 +53,6 @@ export type MessagingTarget =
 // TODO: type the raw event object
 export type FacebookRawEvent = any;
 
-// TODO: detailed message type
-export type RawMessage = any;
-
-type MessagingType = 'RESPONSE' | 'UPDATE' | 'MESSAGE_TAG';
-type NotificationType = 'REGULAR' | 'SILENT_PUSH' | 'NO_PUSH';
-type MessageTags =
-  | 'CONFIRMED_EVENT_UPDATE'
-  | 'POST_PURCHASE_UPDATE'
-  | 'ACCOUNT_UPDATE'
-  | 'HUMAN_AGENT';
-
 export type AttachFileValue = {
   data: string | Buffer | NodeJS.ReadableStream;
   info?: FileInfo;
@@ -72,58 +64,6 @@ export type BaseSegmentValue = {
   params: Record<string, unknown>;
   attachFile?: AttachFileValue;
   assetTag?: string;
-};
-
-export type MessageValue = {
-  type: 'message';
-  apiPath: typeof PATH_MESSAGES;
-  params: {
-    message: RawMessage;
-    messaging_type?: MessagingType;
-    notification_type?: NotificationType;
-    tag?: MessageTags;
-    persona_id?: string;
-  };
-  attachFile?: AttachFileValue;
-  assetTag?: string;
-};
-
-export type SenderActionValue = {
-  type: 'message';
-  apiPath: typeof PATH_MESSAGES;
-  params: {
-    sender_action: 'mark_seen' | 'typing_on' | 'typing_off';
-    persona_id?: string;
-  };
-  attachFile?: undefined;
-};
-
-export type PassThreadControlValue = {
-  type: 'message';
-  apiPath: typeof PATH_PASS_THREAD_CONTROL;
-  params: {
-    target_app_id: number;
-    metadata?: string;
-  };
-  attachFile?: undefined;
-};
-
-export type RequestThreadControlValue = {
-  type: 'message';
-  apiPath: typeof PATH_REQUEST_THREAD_CONTROL;
-  params: {
-    metadata?: string;
-  };
-  attachFile?: undefined;
-};
-
-export type TakeThreadControlValue = {
-  type: 'message';
-  apiPath: typeof PATH_TAKE_THREAD_CONTROL;
-  params: {
-    metadata?: string;
-  };
-  attachFile?: undefined;
 };
 
 export type CommentValue = {
@@ -246,14 +186,6 @@ export type FacebookConfigs = {
   apiBatchRequestInterval?: number;
   eventMiddlewares?: MaybeContainer<FacebookEventMiddleware>[];
   dispatchMiddlewares?: MaybeContainer<FacebookDispatchMiddleware>[];
-};
-
-export type MessagingOptions = {
-  messagingType?: MessagingType;
-  tag?: string;
-  notificationType?: NotificationType;
-  personaId?: string;
-  oneTimeNotifToken?: string;
 };
 
 export type FacebookPlatformUtilities = PlatformUtilities<

@@ -14,6 +14,8 @@
       "@sociably/http": ["./packages/http/src/index.js"],
       "@sociably/http/*": ["./packages/http/src/*/index.js", "./packages/http/src/*.js"],
       "@sociably/meta-api": ["./packages/meta-api/src/index.js"],
+      "@sociably/messenger": ["./packages/messenger/src/index.js"],
+      "@sociably/messenger/*": ["./packages/messenger/src/*/index.js", "./packages/messenger/src/*.js"],
       "@sociably/next": ["./packages/next/src/index.js"],
       "@sociably/websocket": ["./packages/websocket/src/index.js"],
       "@sociably/websocket/*": ["./packages/websocket/src/*/index.js", "./packages/websocket/src/*.js"],

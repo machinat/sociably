@@ -58,7 +58,8 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
   const res = moxy();
   const routing = {
     originalPath: '/auth/facebook/login',
-    matchedPath: '/auth/facebook',
+    basePath: '/',
+    matchedPath: 'auth/facebook',
     trailingPath: 'login',
   };
 

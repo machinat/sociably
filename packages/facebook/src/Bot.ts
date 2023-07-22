@@ -17,7 +17,12 @@ import {
   MetaApiDispatchResponse,
   MetaApiResponseBody,
 } from '@sociably/meta-api';
-import generalComponentDelegator from './components/general.js';
+import {
+  createChatJobs,
+  createChatAttachmentJobs,
+  MessagingOptions,
+} from '@sociably/messenger';
+import { renderGeneralComponents } from '@sociably/messenger/components';
 import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant.js';
 import {
   ConfigsI,
@@ -27,18 +32,12 @@ import {
 import FacebookPage from './Page.js';
 import FacebookChat from './Chat.js';
 import InteractTarget from './InteractTarget.js';
-import {
-  createChatJobs,
-  createChatAttachmentJobs,
-  createPostJobs,
-  createInteractJobs,
-} from './job.js';
+import { createPostJobs, createInteractJobs } from './job.js';
 import type {
   FacebookThread,
   FacebookComponent,
   FacebookSegmentValue,
   FacebookDispatchFrame,
-  MessagingOptions,
   FacebookPageSettings,
 } from './types.js';
 
@@ -124,7 +123,7 @@ export class FacebookBot
     const renderer = new Renderer<
       FacebookSegmentValue,
       FacebookComponent<unknown>
-    >(FACEBOOK, generalComponentDelegator);
+    >(FACEBOOK, renderGeneralComponents);
 
     const queue = new Queue<MetaApiJob, MetaApiResult>();
     const worker = new MetaApiWorker({
@@ -158,7 +157,7 @@ export class FacebookBot
     node: SociablyNode
   ): Promise<null | MetaApiDispatchResponse> {
     if (target instanceof FacebookChat) {
-      return this.engine.render(target, node, createChatJobs());
+      return this.engine.render(target, node, createChatJobs<FacebookChat>());
     }
     if (target instanceof FacebookPage) {
       return this.engine.render(target, node, createPostJobs);
@@ -175,7 +174,11 @@ export class FacebookBot
     messages: SociablyNode,
     options?: MessagingOptions
   ): Promise<null | MetaApiDispatchResponse> {
-    return this.engine.render(chat, messages, createChatJobs(options));
+    return this.engine.render(
+      chat,
+      messages,
+      createChatJobs<FacebookChat>(options)
+    );
   }
 
   /** Upload a media chat attachment for later use */

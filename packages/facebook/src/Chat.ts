@@ -1,4 +1,5 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { UniqueOmniIdentifier } from '@sociably/core';
+import { MessengerChat } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import FacebookPage from './Page.js';
 import { FACEBOOK, FB } from './constant.js';
@@ -12,7 +13,7 @@ type ChatValue = {
 type ChatType = 'user' | 'user_ref' | 'comment' | 'post';
 
 class FacebookChat<Type extends ChatType = ChatType>
-  implements SociablyThread, MarshallableInstance<ChatValue>
+  implements MessengerChat, MarshallableInstance<ChatValue>
 {
   static typeName = 'FbChat';
   static fromJSONValue<Type extends ChatType = ChatType>(

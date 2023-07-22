@@ -1,0 +1,23 @@
+[
+  {
+    "sender": {
+      "id": "<PSID>"
+    },
+    "recipient": {
+      "id": "<PAGE_ID>"
+    },
+    "timestamp": 1518479195308,
+    "message": {
+      "mid": "mid.$cAAJdkrCd2ORnva8ErFhjGm0X_Q_c",
+      "seq": 42181,
+      "attachments": [
+        {
+          "type": "image",
+          "payload": {
+            "url": "<ATTACHMENT_URL>"
+          }
+        }
+      ]
+    }
+  }
+]

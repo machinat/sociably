@@ -40,7 +40,7 @@
     "prettier": "^2.3.1",
     "ts-jest": "^29.1.0",
     "typedoc": "^0.24.7",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.6"
   },
   "workspaces": [
     "packages/auth",
@@ -53,6 +53,7 @@
     "packages/line",
     "packages/dev-tools",
     "packages/facebook",
+    "packages/messenger",
     "packages/meta-api",
     "packages/next",
     "packages/redis-state",
