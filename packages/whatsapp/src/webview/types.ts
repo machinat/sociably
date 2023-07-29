@@ -6,7 +6,6 @@ import type WhatsAppAgent from '../Agent.js';
 import type { WHATSAPP } from '../constant.js';
 
 export type WhatsAppAuthData = {
-  account: string;
   agent: { id: string; num: string };
   user: string;
 };
@@ -17,7 +16,6 @@ export type WhatsAppAuthContext = {
   thread: WhatsAppChat;
   user: WhatsAppUser;
   agentNumber: string;
-  businessAccountId: string;
 } & AuthContextBase;
 
 export type WhatsAppAuthCrendential = {

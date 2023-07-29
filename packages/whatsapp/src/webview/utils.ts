@@ -9,7 +9,6 @@ export const getAuthContextDetails = (
   data: WhatsAppAuthData
 ): ContextDetails<WhatsAppAuthContext> => {
   const {
-    account,
     agent: { id: agentNumberId, num: agentNumber },
     user: userNumberId,
   } = data;
@@ -18,7 +17,6 @@ export const getAuthContextDetails = (
     thread: new WhatsAppChat(agentNumberId, userNumberId),
     channel: new WhatsAppAgent(agentNumberId),
     agentNumber,
-    businessAccountId: account,
   };
 };
 

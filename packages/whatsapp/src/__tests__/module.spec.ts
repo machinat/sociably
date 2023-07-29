@@ -20,7 +20,6 @@ import { WhatsAppBot } from '../Bot.js';
 const agentSettings = {
   phoneNumber: '+1234567890',
   numberId: '1111111111',
-  accountId: '2222222222',
 };
 
 it('export interfaces', () => {
@@ -214,19 +213,16 @@ describe('initModule(configs)', () => {
     const agent1 = new WhatsAppAgent('1111111111');
     const agentSettings1 = {
       numberId: '1111111111',
-      accountId: '9999999999',
       phoneNumber: '+1234567890',
     };
     const agent2 = new WhatsAppAgent('2222222222');
     const agentSettings2 = {
       numberId: '2222222222',
-      accountId: '9999999999',
       phoneNumber: '+9876543210',
     };
     const agent3 = new WhatsAppAgent('3333333333');
     const agentSettings3 = {
       numberId: '3333333333',
-      accountId: '8888888888',
       phoneNumber: '+1111111111',
     };
     const unknownAgent = new WhatsAppAgent('4444444444');

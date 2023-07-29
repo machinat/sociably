@@ -73,7 +73,6 @@ export class WhatsAppServerAuthenticator
         return {
           ok: true,
           data: {
-            account: settings.accountId,
             agent: { id: agentNumberId, num: settings.phoneNumber },
             user: userNumberId,
           },

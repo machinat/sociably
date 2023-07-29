@@ -39,7 +39,6 @@ const app = Sociably.createApp({
     WhatsApp.intiModule({
       entryPath: '/webhook/whatsapp',
       agentSettings: {
-        accountId: WHATS_APP_ACCOUNT_ID,
         numberId: WHATS_APP_NUMBER_ID,
         phoneNumber: WHATS_APP_PHONE_NUMBER,
       },

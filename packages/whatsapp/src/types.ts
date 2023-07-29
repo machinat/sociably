@@ -63,8 +63,6 @@ export type WhatsAppAgentSettings = {
   phoneNumber: string;
   /** Phone number ID */
   numberId: string;
-  /** Business account ID that the number belongs to */
-  accountId: string;
 };
 
 export type WhatsAppBusinessAccountSettings = {

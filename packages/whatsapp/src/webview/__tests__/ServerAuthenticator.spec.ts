@@ -30,7 +30,6 @@ const basicAuthenticator = moxy<BasicAuthenticator>({
 } as never);
 
 const agentSettings = {
-  accountId: '1111111111',
   numberId: '2222222222',
   phoneNumber: '+1234567890',
 };
@@ -56,7 +55,8 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     const res = moxy();
     const routing = {
       originalPath: '/auth/whatsapp/login',
-      matchedPath: '/auth/whatsapp',
+      basePath: '/',
+      matchedPath: 'auth/whatsapp',
       trailingPath: 'login',
     };
 
@@ -119,7 +119,6 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       checkCurrentAuthUsability(
         { agent: '2222222222', user: '9876543210' },
         {
-          account: '1111111111',
           agent: { id: '2222222222', num: '+1234567890' },
           user: '9876543210',
         }
@@ -129,7 +128,6 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       checkCurrentAuthUsability(
         { agent: '3333333333', user: '9876543210' },
         {
-          account: '1111111111',
           agent: { id: '2222222222', num: '+1234567890' },
           user: '9876543210',
         }
@@ -139,7 +137,6 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       checkCurrentAuthUsability(
         { agent: '2222222222', user: '9999999999' },
         {
-          account: '1111111111',
           agent: { id: '2222222222', num: '+1234567890' },
           user: '9876543210',
         }
@@ -158,7 +155,6 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     ).resolves.toEqual({
       ok: true,
       data: {
-        account: '1111111111',
         agent: { id: '2222222222', num: '+1234567890' },
         user: '9876543210',
       },
@@ -235,14 +231,12 @@ test('.verifyRefreshment(data)', async () => {
   );
   await expect(
     authenticator.verifyRefreshment({
-      account: '1111111111',
       agent: { id: '2222222222', num: '+1234567890' },
       user: '9876543210',
     })
   ).resolves.toEqual({
     ok: true,
     data: {
-      account: '1111111111',
       agent: { id: '2222222222', num: '+1234567890' },
       user: '9876543210',
     },
@@ -251,7 +245,6 @@ test('.verifyRefreshment(data)', async () => {
   agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
   await expect(
     authenticator.verifyRefreshment({
-      account: '1111111111',
       agent: { id: '2222222222', num: '+1234567890' },
       user: '9876543210',
     })
@@ -272,14 +265,12 @@ test('.checkAuthData(data)', () => {
   );
   expect(
     authenticator.checkAuthData({
-      account: '2222222222',
       agent: { id: '1111111111', num: '+1234567890' },
       user: '9876543210',
     })
   ).toEqual({
     ok: true,
     contextDetails: {
-      businessAccountId: '2222222222',
       agentNumber: '+1234567890',
       channel: new WhatsAppAgent('1111111111'),
       thread: new WhatsAppChat('1111111111', '9876543210'),

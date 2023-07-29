@@ -54,7 +54,6 @@ it('.fetchCredential() always reject', async () => {
 describe('.closeWebview()', () => {
   const authContext = {
     platform: 'whatsapp' as const,
-    businessAccountId: '1111111111',
     agentNumber: '+1234567890',
     channel: new WhatsAppAgent('1111111111'),
     thread: new WhatsAppChat('1111111111', '9876543210'),
@@ -97,14 +96,12 @@ describe('.closeWebview()', () => {
 test('.checkAuthData(data)', () => {
   expect(
     authenticator.checkAuthData({
-      account: '2222222222',
       agent: { id: '1111111111', num: '+1234567890' },
       user: '9876543210',
     })
   ).toEqual({
     ok: true,
     contextDetails: {
-      businessAccountId: '2222222222',
       agentNumber: '+1234567890',
       channel: new WhatsAppAgent('1111111111'),
       thread: new WhatsAppChat('1111111111', '9876543210'),
