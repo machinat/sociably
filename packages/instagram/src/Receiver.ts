@@ -1,10 +1,9 @@
 import type { PopEventWrapper } from '@sociably/core';
 import { MetaWebhookReceiver } from '@sociably/meta-api';
 import { serviceProviderClass } from '@sociably/core/service';
-import eventFactory from './event/factory.js';
 import BotP from './Bot.js';
 import { ConfigsI, PlatformUtilitiesI } from './interface.js';
-import { INSTAGRAM } from './constant.js';
+import createMetaReceiverListeningOptions from './utils/createMetaReceiverListeningOptions.js';
 import type { InstagramEventContext } from './types.js';
 
 type InstagramReceiverOptions = {
@@ -25,28 +24,18 @@ export class InstagramReceiver extends MetaWebhookReceiver<InstagramEventContext
     bot,
     appSecret,
     verifyToken,
-    shouldHandleChallenge,
-    shouldVerifyRequest,
+    shouldHandleChallenge = true,
+    shouldVerifyRequest = true,
     popEventWrapper,
   }: InstagramReceiverOptions) {
     super({
-      platform: INSTAGRAM,
-      bot,
-      objectType: 'instagram',
-      makeEventsFromUpdate: (updateData) => {
-        const { id: pageId, messaging, stanby } = updateData;
-        const isStandby = stanby !== undefined;
-        const rawEvents = isStandby ? stanby : messaging;
-
-        return rawEvents.map((rawEvent) =>
-          eventFactory(pageId, isStandby, rawEvent)
-        );
-      },
-      popEventWrapper,
-      shouldHandleChallenge,
-      verifyToken,
-      shouldVerifyRequest,
       appSecret,
+      verifyToken,
+      shouldHandleChallenge,
+      shouldVerifyRequest,
+      listeningPlatforms: [
+        createMetaReceiverListeningOptions(bot, popEventWrapper),
+      ],
     });
   }
 }

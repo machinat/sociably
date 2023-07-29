@@ -239,7 +239,7 @@ export interface PostbackEvent
   extends EventObject<
       'postback' | 'standby',
       'postback',
-      InstagramChat<'user' | 'user_ref'>,
+      InstagramChat,
       InstagramUser | null
     >,
     PostbackEventProto {}
@@ -261,7 +261,7 @@ export interface ReferralEvent
   extends EventObject<
       'action',
       'referral',
-      InstagramChat<'user' | 'user_ref'>,
+      InstagramChat,
       null | InstagramUser
     >,
     ReferralEventProto {}
@@ -360,12 +360,7 @@ export interface AppRolesEvent
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_optins).
  */
 export interface OptinEvent
-  extends EventObject<
-      'postback',
-      'optin',
-      InstagramChat<'user' | 'user_ref'>,
-      null | InstagramUser
-    >,
+  extends EventObject<'postback', 'optin', InstagramChat, null | InstagramUser>,
     OptinEventProto {}
 
 /**

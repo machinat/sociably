@@ -1,5 +1,11 @@
-import type { SociablyChannel } from '@sociably/core';
+import type {
+  SociablyChannel,
+  EventContext,
+  SociablyEvent,
+  AnySociablyBot,
+} from '@sociably/core';
 import type { DispatchResponse } from '@sociably/core/engine';
+import { WebhookMetadata } from '@sociably/http/webhook';
 
 export type FileInfo = {
   filename?: string;
@@ -70,4 +76,31 @@ export type MetaApiErrorInfo = {
 
 export type GraphApiErrorBody = {
   error: MetaApiErrorInfo;
+};
+
+export type MetaApiEventContext = EventContext<
+  SociablyEvent<unknown>,
+  WebhookMetadata,
+  AnySociablyBot
+>;
+
+export type ListeningPlatformOptions<Context extends MetaApiEventContext> = {
+  bot: Context['bot'];
+  platform: Context['platform'];
+  objectType: string;
+  makeEventsFromUpdate: (raw) => Context['event'][];
+  popEvent: (ctx: Context) => Promise<null>;
+};
+
+export type MetaApiModuleConfigs = {
+  /** The webhook path to receive events. Default to `.` */
+  webhookPath?: string;
+  /** The Facebook app secret */
+  appSecret: string;
+  /** To verify the webhook request by the signature or not. Default to `true` */
+  shouldVerifyRequest?: boolean;
+  /** The secret string to verify the webhook challenge request */
+  verifyToken: string;
+  /** To handle the webhook challenge request or not. Default to `true` */
+  shouldHandleChallenge?: boolean;
 };

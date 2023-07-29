@@ -1,27 +1,42 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
-import { moxy, Mock } from '@moxyjs/moxy';
+import { moxy } from '@moxyjs/moxy';
+import { SociablyEvent } from '@sociably/core';
 import MetaWebhookReceiver from '../Receiver.js';
 
 const bot = moxy({
-  render: () => ({ jobs: [], results: [], tasks: [] }),
+  render: async () => ({ jobs: [], results: [], tasks: [] }),
 });
 
-const defaultEvent = {
+const fooEvent = {
   platform: 'test',
   category: 'foo',
-  type: 'baz',
+  type: 'message',
+  channel: { platform: 'test', uid: 'foo:123' },
   thread: { platform: 'test', uid: 'foo:123' },
   user: { platform: 'test', uid: 'foo:123' },
   payload: { id: '1234567890' },
 };
 
-const makeEventsFromUpdate = moxy(() => [defaultEvent]);
+const makeEventsFromUpdate = moxy(() => [fooEvent as SociablyEvent<unknown>]);
+const popFooEvent = moxy(async () => null);
 
-const popEventMock = new Mock();
-const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify((ctx) => finalHandler(ctx))
-);
+const fooListeningPlatformOptions = {
+  platform: 'test',
+  bot,
+  objectType: 'foo',
+  makeEventsFromUpdate,
+  popEvent: popFooEvent,
+};
+
+const popBarEvent = moxy(async () => null);
+const barListeningPlatformOptions = {
+  platform: 'test2',
+  bot,
+  objectType: 'bar',
+  makeEventsFromUpdate,
+  popEvent: popBarEvent,
+};
 
 const createReq = ({
   method,
@@ -55,8 +70,7 @@ const createRes = () =>
 
 beforeEach(() => {
   bot.mock.reset();
-  popEventMock.clear();
-  popEventWrapper.mock.clear();
+  popFooEvent.mock.clear();
   makeEventsFromUpdate.mock.reset();
 });
 
@@ -64,13 +78,14 @@ it('throw if appSecret not given', () => {
   expect(
     () =>
       new MetaWebhookReceiver({
+        verifyTokenL: '_VERIFY_TOKEN_',
         shouldHandleChallenge: false,
-        platform: 'test',
-        bot,
-        objectType: 'foo',
-        makeEventsFromUpdate,
-        popEventWrapper,
-      })
+        shouldVerifyRequest: true,
+        listeningPlatforms: [
+          fooListeningPlatformOptions,
+          barListeningPlatformOptions,
+        ],
+      } as never)
   ).toThrowErrorMatchingInlineSnapshot(
     `"appSecret should not be empty if shouldVerifyRequest set to true"`
   );
@@ -80,13 +95,14 @@ it('throw if verifyToken not given', () => {
   expect(
     () =>
       new MetaWebhookReceiver({
+        appSecret: '_APP_SECRET_',
+        shouldHandleChallenge: true,
         shouldVerifyRequest: false,
-        platform: 'test',
-        bot,
-        objectType: 'foo',
-        makeEventsFromUpdate,
-        popEventWrapper,
-      })
+        listeningPlatforms: [
+          fooListeningPlatformOptions,
+          barListeningPlatformOptions,
+        ],
+      } as never)
   ).toThrowErrorMatchingInlineSnapshot(
     `"verifyToken should not be empty if shouldHandleChallenge set to true"`
   );
@@ -95,13 +111,14 @@ it('throw if verifyToken not given', () => {
 describe('handling GET', () => {
   it('respond 403 if shouldHandleChallenge set to false', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
-      shouldHandleChallenge: false,
       appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: true,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const req = createReq({ method: 'GET' });
@@ -112,20 +129,22 @@ describe('handling GET', () => {
     expect(res.statusCode).toBe(403);
     expect(res.finished).toBe(true);
 
-    expect(popEventMock).not.toHaveBeenCalled();
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   it.each(['', 'xxx', 'non_subscribe'])(
     'respond 400 if hub.mode param is not "subscribe"',
     async (mode) => {
       const receiver = new MetaWebhookReceiver({
-        bot,
-        platform: 'test',
-        objectType: 'foo',
-        makeEventsFromUpdate,
-        popEventWrapper,
-        verifyToken: '_MY_TOKEN_',
-        shouldVerifyRequest: false,
+        appSecret: '_APP_SECRET_',
+        verifyToken: '_VERIFY_TOKEN_',
+        shouldHandleChallenge: true,
+        shouldVerifyRequest: true,
+        listeningPlatforms: [
+          fooListeningPlatformOptions,
+          barListeningPlatformOptions,
+        ],
       });
 
       const req = createReq({
@@ -139,19 +158,21 @@ describe('handling GET', () => {
       expect(res.statusCode).toBe(400);
       expect(res.finished).toBe(true);
 
-      expect(popEventMock).not.toHaveBeenCalled();
+      expect(popFooEvent).not.toHaveBeenCalled();
+      expect(popBarEvent).not.toHaveBeenCalled();
     }
   );
 
   it('respond 400 if hub.verify_token param not matched', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
-      verifyToken: '_MY_TOKEN_',
-      shouldVerifyRequest: false,
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
+      shouldHandleChallenge: true,
+      shouldVerifyRequest: true,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const req = createReq({
@@ -165,18 +186,20 @@ describe('handling GET', () => {
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
 
-    expect(popEventMock).not.toHaveBeenCalled();
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   it('respond 200 and hub.challenge within body', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
+      appSecret: '_APP_SECRET_',
       verifyToken: '_MY_TOKEN_',
-      shouldVerifyRequest: false,
+      shouldHandleChallenge: true,
+      shouldVerifyRequest: true,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const req = createReq({
@@ -191,20 +214,22 @@ describe('handling GET', () => {
     expect(res.finished).toBe(true);
     expect(res.end.mock.calls[0].args[0]).toBe('FooBarBazHub');
 
-    expect(popEventMock).not.toHaveBeenCalled();
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 });
 
 describe('handling POST', () => {
   it('respond 400 if body is empty', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const req = createReq({ method: 'POST' });
@@ -215,18 +240,20 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
 
-    expect(popEventMock).not.toHaveBeenCalled();
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   it('respond 400 if body is not in valid JSON format', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const req = createReq({ method: 'POST', body: 'I am Jason' });
@@ -237,23 +264,25 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
 
-    expect(popEventMock).not.toHaveBeenCalled();
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
-  it('respond 404 if "object" field does not match "objectType"', async () => {
+  it('respond 404 if "object" type is not listened', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const req = createReq({
       method: 'POST',
-      body: '{"object":"bar","entry":[]}',
+      body: '{"object":"some_other_object_type","entry":[]}',
     });
     const res = createRes();
 
@@ -262,18 +291,20 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(404);
     expect(res.finished).toBe(true);
 
-    expect(popEventMock).not.toHaveBeenCalled();
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   it('respond 400 if body is empty', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
     const req = createReq({ method: 'POST' });
     const res = createRes();
@@ -282,17 +313,21 @@ describe('handling POST', () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
+
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   it('respond 400 if "entry" field is not an array', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const req = createReq({
@@ -306,18 +341,20 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
 
-    expect(popEventMock).not.toHaveBeenCalled();
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
-  it('respond 200 and popEvents', async () => {
+  it('respond 200 and pop events', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const bodyStr = JSON.stringify({
@@ -344,14 +381,14 @@ describe('handling POST', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
-    expect(popEventMock).toHaveBeenCalledTimes(6);
+    expect(popFooEvent).toHaveBeenCalledTimes(6);
 
     const metadata = {
       source: 'webhook',
       request: { url: '/test', headers: {}, method: 'POST', body: bodyStr },
     };
 
-    popEventMock.calls.forEach(({ args: [context] }, i) => {
+    popFooEvent.mock.calls.forEach(({ args: [context] }, i) => {
       expect(context).toEqual({
         platform: 'test',
         bot,
@@ -372,18 +409,20 @@ describe('handling POST', () => {
     expect(makeEventsFromUpdate).toHaveBeenNthCalledWith(1, { id: '123' });
     expect(makeEventsFromUpdate).toHaveBeenNthCalledWith(2, { id: '456' });
     expect(makeEventsFromUpdate).toHaveBeenNthCalledWith(3, { id: '789' });
+
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   test('passing signature validation', async () => {
-    const appSecret = '_MY_SECRET_';
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
-      appSecret,
+      appSecret: '_MY_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
+      shouldVerifyRequest: true,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const body = '{"object":"foo","entry":[{"id":"1234567890"}]}';
@@ -401,20 +440,22 @@ describe('handling POST', () => {
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
 
-    const { event } = popEventMock.calls[0].args[0];
-    expect(event).toEqual(defaultEvent);
+    const { event } = popFooEvent.mock.calls[0].args[0];
+    expect(event).toEqual(fooEvent);
+
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   it('respond 401 if signature is invalid', async () => {
-    const appSecret = '_MY_SECRET_';
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
-      appSecret,
+      appSecret: '_MY_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
+      shouldVerifyRequest: true,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
     const body = '{"some":"body"}';
@@ -431,18 +472,76 @@ describe('handling POST', () => {
 
     expect(res.statusCode).toBe(401);
     expect(res.finished).toBe(true);
+
+    expect(popFooEvent).not.toHaveBeenCalled();
+    expect(popBarEvent).not.toHaveBeenCalled();
+  });
+
+  test('with 2 listening platform on a object type', async () => {
+    const popFooEvent2 = moxy(async () => null);
+    const receiver = new MetaWebhookReceiver({
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
+      shouldHandleChallenge: false,
+      shouldVerifyRequest: false,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+        {
+          ...fooListeningPlatformOptions,
+          platform: 'test3',
+          objectType: 'foo',
+          popEvent: popFooEvent2,
+        },
+      ],
+    });
+
+    await receiver.handleRequest(
+      createReq({
+        method: 'POST',
+        url: '/test',
+        body: '{"object": "foo", "entry": [{ "id": "123" }]}',
+      }),
+      createRes()
+    );
+
+    const expectedFooEventContext = {
+      platform: 'test',
+      bot,
+      event: fooEvent,
+      metadata: {
+        source: 'webhook',
+        request: {
+          url: '/test',
+          headers: {},
+          method: 'POST',
+          body: '{"object": "foo", "entry": [{ "id": "123" }]}',
+        },
+      },
+      reply: expect.any(Function),
+    };
+
+    expect(popFooEvent).toHaveBeenCalledTimes(1);
+    expect(popFooEvent).toHaveBeenCalledWith(expectedFooEventContext);
+    expect(popFooEvent2).toHaveBeenCalledTimes(1);
+    expect(popFooEvent2).toHaveBeenCalledWith({
+      ...expectedFooEventContext,
+      platform: 'test3',
+    });
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   describe('context.reply(message)', () => {
     test('call bot.render(event.thread, message)', async () => {
       const receiver = new MetaWebhookReceiver({
-        bot,
-        platform: 'test',
-        objectType: 'foo',
-        makeEventsFromUpdate,
-        popEventWrapper,
+        appSecret: '_APP_SECRET_',
+        verifyToken: '_VERIFY_TOKEN_',
         shouldHandleChallenge: false,
         shouldVerifyRequest: false,
+        listeningPlatforms: [
+          fooListeningPlatformOptions,
+          barListeningPlatformOptions,
+        ],
       });
 
       await receiver.handleRequest(
@@ -453,8 +552,8 @@ describe('handling POST', () => {
         createRes()
       );
 
-      expect(popEventMock).toHaveBeenCalledTimes(1);
-      const { reply, event } = popEventMock.calls[0].args[0];
+      expect(popFooEvent).toHaveBeenCalledTimes(1);
+      const { reply, event } = popFooEvent.mock.calls[0].args[0];
       await expect(reply('hello world')).resolves.toMatchInlineSnapshot(`
         {
           "jobs": [],
@@ -471,22 +570,23 @@ describe('handling POST', () => {
         id: 1234567890,
       });
     });
+
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 
   test('do nothing when event.thread is null', async () => {
     const receiver = new MetaWebhookReceiver({
-      bot,
-      platform: 'test',
-      objectType: 'foo',
-      makeEventsFromUpdate,
-      popEventWrapper,
+      appSecret: '_APP_SECRET_',
+      verifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
+      listeningPlatforms: [
+        fooListeningPlatformOptions,
+        barListeningPlatformOptions,
+      ],
     });
 
-    makeEventsFromUpdate.mock.fakeReturnValue([
-      { ...defaultEvent, thread: null },
-    ]);
+    makeEventsFromUpdate.mock.fakeReturnValue([{ ...fooEvent, thread: null }]);
 
     await receiver.handleRequest(
       createReq({
@@ -496,10 +596,12 @@ describe('handling POST', () => {
       createRes()
     );
 
-    expect(popEventMock).toHaveBeenCalledTimes(1);
-    const { reply } = popEventMock.calls[0].args[0];
+    expect(popFooEvent).toHaveBeenCalledTimes(1);
+    const { reply } = popFooEvent.mock.calls[0].args[0];
 
     await expect(reply('hello world')).resolves.toBe(null);
     expect(bot.render).not.toHaveBeenCalled();
+
+    expect(popBarEvent).not.toHaveBeenCalled();
   });
 });

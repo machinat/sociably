@@ -1,44 +1,40 @@
 import { parse as parseUrl } from 'url';
 import crypto from 'crypto';
 import invariant from 'invariant';
-import type {
-  SociablyEvent,
-  PopEventWrapper,
-  EventContext,
-} from '@sociably/core';
-import type { WebhookMetadata } from '@sociably/http/webhook';
+import { serviceProviderClass, serviceInterface } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
+import { ConfigsI } from './interface.js';
+import { ListeningPlatformOptions, MetaApiEventContext } from './types.js';
 
-type MetaApiEventContext = EventContext<
-  SociablyEvent<unknown>,
-  WebhookMetadata,
-  any
->;
-
-type MetaWebhookReceiverOptions<Context extends MetaApiEventContext> = {
-  bot: Context['bot'];
-  platform: Context['platform'];
-  makeEventsFromUpdate: (raw) => Context['event'][];
-  objectType: string;
+export type MetaWebhookReceiverOptions<Context extends MetaApiEventContext> = {
+  listeningPlatforms: ListeningPlatformOptions<Context>[];
   appSecret: string;
   verifyToken: string;
-  shouldVerifyRequest?: boolean;
-  shouldHandleChallenge?: boolean;
-  popEventWrapper: PopEventWrapper<Context, null>;
+  shouldHandleChallenge: boolean;
+  shouldVerifyRequest: boolean;
 };
 
 const handleWebhook = <Context extends MetaApiEventContext>({
-  bot,
-  platform,
-  makeEventsFromUpdate,
-  objectType,
+  listeningPlatforms,
   appSecret,
   verifyToken,
-  shouldVerifyRequest,
   shouldHandleChallenge,
-  popEventWrapper,
+  shouldVerifyRequest,
 }: MetaWebhookReceiverOptions<Context>): WebhookHandler => {
-  const popEvent = popEventWrapper(() => Promise.resolve(null));
+  const platformOptionsByObjectType = new Map<
+    string,
+    ListeningPlatformOptions<Context>[]
+  >();
+  for (const platform of listeningPlatforms) {
+    const { objectType } = platform;
+    const registeredPlatform = platformOptionsByObjectType.get(objectType);
+
+    if (registeredPlatform) {
+      registeredPlatform.push(platform);
+    } else {
+      platformOptionsByObjectType.set(objectType, [platform]);
+    }
+  }
 
   return async (metadata) => {
     const { method, url, headers, body: rawBody } = metadata.request;
@@ -87,37 +83,46 @@ const handleWebhook = <Context extends MetaApiEventContext>({
     } catch (e) {
       return { code: 400 };
     }
-
     if (!Array.isArray(body.entry)) {
       return { code: 400 };
     }
 
-    // verify object type
-    if (body.object !== objectType) {
+    const platformOptions = platformOptionsByObjectType.get(body.object);
+    if (!platformOptions) {
       return { code: 404 };
     }
 
     const issuingEvents: Promise<null>[] = [];
 
-    // parse and pop event context
-    const events: Context['event'][] = [];
-    for (const updateData of body.entry as unknown[]) {
-      events.push(...makeEventsFromUpdate(updateData));
-    }
+    for (const {
+      platform,
+      bot,
+      objectType,
+      makeEventsFromUpdate,
+      popEvent,
+    } of platformOptions) {
+      if (body.object === objectType) {
+        // parse and pop event context
+        const events: Context['event'][] = [];
+        for (const updateData of body.entry as unknown[]) {
+          events.push(...makeEventsFromUpdate(updateData));
+        }
 
-    for (const event of events) {
-      issuingEvents.push(
-        popEvent({
-          platform,
-          bot,
-          event,
-          metadata,
-          reply: async (message) =>
-            event.thread
-              ? bot.render(event.thread, message)
-              : Promise.resolve(null),
-        } as Context)
-      );
+        for (const event of events) {
+          issuingEvents.push(
+            popEvent({
+              platform,
+              bot,
+              event,
+              metadata,
+              reply: async (message) =>
+                event.thread
+                  ? bot.render(event.thread, message)
+                  : Promise.resolve(null),
+            } as Context)
+          );
+        }
+      }
     }
 
     await Promise.all(issuingEvents);
@@ -125,19 +130,28 @@ const handleWebhook = <Context extends MetaApiEventContext>({
   };
 };
 
+const MetaListeningPlatformsI = serviceInterface<
+  ListeningPlatformOptions<MetaApiEventContext>
+>({
+  name: 'MetaListeningPlatforms',
+  multi: true,
+});
+
 /**
  * MetaWebhookReceiver receive and pop events from Meta platforms.
  * @category Provider
  */
-class MetaWebhookReceiver<
+export class MetaWebhookReceiver<
   Context extends MetaApiEventContext
 > extends WebhookReceiver {
+  static ListeningPlatforms = MetaListeningPlatformsI;
+
   constructor({
     appSecret,
     verifyToken,
-    shouldHandleChallenge = true,
-    shouldVerifyRequest = true,
-    ...restOptions
+    shouldHandleChallenge,
+    shouldVerifyRequest,
+    listeningPlatforms,
   }: MetaWebhookReceiverOptions<Context>) {
     invariant(
       !shouldVerifyRequest || appSecret,
@@ -152,13 +166,35 @@ class MetaWebhookReceiver<
     super(
       handleWebhook<Context>({
         shouldHandleChallenge,
-        verifyToken,
         shouldVerifyRequest,
+        verifyToken,
         appSecret,
-        ...restOptions,
+        listeningPlatforms,
       })
     );
   }
 }
 
-export default MetaWebhookReceiver;
+const ReceiverP = serviceProviderClass({
+  deps: [ConfigsI, MetaListeningPlatformsI],
+  factory: (
+    {
+      appSecret,
+      verifyToken,
+      shouldHandleChallenge = true,
+      shouldVerifyRequest = true,
+    },
+    listeningPlatforms
+  ) =>
+    new MetaWebhookReceiver({
+      appSecret,
+      verifyToken,
+      shouldHandleChallenge,
+      shouldVerifyRequest,
+      listeningPlatforms,
+    }),
+})(MetaWebhookReceiver);
+
+type ReceiverP = MetaWebhookReceiver<MetaApiEventContext>;
+
+export default ReceiverP;

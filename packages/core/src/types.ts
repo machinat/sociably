@@ -262,6 +262,8 @@ export interface SociablyBot<Target extends DispatchTarget, Job, Result> {
   ): Promise<null | DispatchResponse<Job, Result>>;
 }
 
+export type AnySociablyBot = SociablyBot<DispatchTarget, unknown, unknown>;
+
 export type EventContext<
   Event extends SociablyEvent<unknown>,
   Metadata extends SociablyMetadata,

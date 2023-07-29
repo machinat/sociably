@@ -129,14 +129,19 @@ export type InstagramConfigs = {
   appId: string;
   /** The Facebook app secret */
   appSecret: string;
-  /** To verify the webhook request by the signature or not. Default to `true` */
-  shouldVerifyRequest?: boolean;
-  /** To handle the webhook challenge request or not. Default to `true` */
-  shouldHandleChallenge?: boolean;
   /** The secret string to verify the webhook challenge request */
   verifyToken: string;
   /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
+  /** To verify the webhook request by the signature or not. Default to `true` */
+  shouldVerifyRequest?: boolean;
+  /** To handle the webhook challenge request or not. Default to `true` */
+  shouldHandleChallenge?: boolean;
+  /**
+   * Use the webhook settings defined by `MetaApi` module to receive webhooks. If set to true, `webhookPath`,
+   * `verifyToken`, `shouldVerifyRequest` and `shouldHandleChallenge` options are ignored. Default to `false`
+   */
+  useMetaApiReceiver?: boolean;
   /**
    * The webhook subscription fields. Default to `['messages', 'messaging_postbacks',
    * 'messaging_handovers', 'messaging_policy_enforcement', 'messaging_referrals']`

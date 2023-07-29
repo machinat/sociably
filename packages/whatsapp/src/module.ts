@@ -9,7 +9,12 @@ import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
-import type { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
+import {
+  MetaApiJob,
+  MetaApiResult,
+  MetaWebhookReceiver,
+  ListeningPlatformOptions,
+} from '@sociably/meta-api';
 import {
   ConfigsI,
   PlatformUtilitiesI,
@@ -31,13 +36,13 @@ import {
   singleStaticAgentSettingsAccessor,
   multiStaticAgentSettingsAccessor,
 } from './utils/createStaticAgentSettingsAccessor.js';
+import createMetaReceiverListeningOptions from './utils/createMetaReceiverListeningOptions.js';
 import type {
   WhatsAppConfigs,
   WhatsAppEventContext,
   WhatsAppDispatchFrame,
 } from './types.js';
 
-/** @interanl */
 const webhookRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
   deps: [ConfigsI, ReceiverP],
@@ -47,6 +52,14 @@ const webhookRouteFactory = serviceProviderFactory({
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
   })
+);
+
+const metaReceiverListeningPlatformsFactory = serviceProviderFactory({
+  lifetime: 'transient',
+  deps: [BotP, PlatformUtilitiesI],
+})(
+  (bot, { popEventWrapper }): ListeningPlatformOptions<WhatsAppEventContext> =>
+    createMetaReceiverListeningOptions(bot, popEventWrapper)
 );
 
 /**
@@ -87,9 +100,6 @@ namespace WhatsApp {
         withProvider: BotP,
         platform: WHATSAPP,
       },
-
-      ReceiverP,
-      { provide: Http.RequestRouteList, withProvider: webhookRouteFactory },
 
       ProfilerP,
       {
@@ -132,6 +142,18 @@ namespace WhatsApp {
       throw new Error(
         'WhatsApp platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
       );
+    }
+
+    if (configs.useMetaApiReceiver) {
+      provisions.push({
+        provide: MetaWebhookReceiver.ListeningPlatforms,
+        withProvider: metaReceiverListeningPlatformsFactory,
+      });
+    } else {
+      provisions.push(ReceiverP, {
+        provide: Http.RequestRouteList,
+        withProvider: webhookRouteFactory,
+      });
     }
 
     return {

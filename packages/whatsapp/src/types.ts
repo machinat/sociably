@@ -99,6 +99,11 @@ export type WhatsAppConfigs = {
   verifyToken: string;
   /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
+  /**
+   * Use the webhook settings defined by `MetaApi` module to receive webhooks. If set to true, `webhookPath`,
+   * `verifyToken`, `shouldVerifyRequest` and `shouldHandleChallenge` options are ignored. Default to `false`
+   */
+  useMetaApiReceiver?: boolean;
   /** The graph API version to make API calls */
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;
