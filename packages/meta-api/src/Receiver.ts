@@ -1,9 +1,8 @@
 import { parse as parseUrl } from 'url';
 import crypto from 'crypto';
 import invariant from 'invariant';
-import { serviceProviderClass, serviceInterface } from '@sociably/core';
+import { serviceInterface } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
-import { ConfigsI } from './interface.js';
 import { ListeningPlatformOptions, MetaApiEventContext } from './types.js';
 
 export type MetaWebhookReceiverOptions<Context extends MetaApiEventContext> = {
@@ -175,26 +174,4 @@ export class MetaWebhookReceiver<
   }
 }
 
-const ReceiverP = serviceProviderClass({
-  deps: [ConfigsI, MetaListeningPlatformsI],
-  factory: (
-    {
-      appSecret,
-      verifyToken,
-      shouldHandleChallenge = true,
-      shouldVerifyRequest = true,
-    },
-    listeningPlatforms
-  ) =>
-    new MetaWebhookReceiver({
-      appSecret,
-      verifyToken,
-      shouldHandleChallenge,
-      shouldVerifyRequest,
-      listeningPlatforms,
-    }),
-})(MetaWebhookReceiver);
-
-type ReceiverP = MetaWebhookReceiver<MetaApiEventContext>;
-
-export default ReceiverP;
+export default MetaWebhookReceiver;

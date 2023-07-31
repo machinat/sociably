@@ -174,16 +174,11 @@ export type FacebookConfigs = {
   /** To handle the webhook challenge request or not. Default to `true` */
   shouldHandleChallenge?: boolean;
   /**
-   * Use the webhook settings defined by `MetaApi` module to receive webhooks. If set to true, `webhookPath`,
-   * `verifyToken`, `shouldVerifyRequest` and `shouldHandleChallenge` options are ignored. Default to `false`
+   * The webhook subscription fields for the pages. Default to `['messages', 'messaging_postbacks',
+   * 'messaging_optins', 'messaging_handovers', 'messaging_policy_enforcement', 'messaging_account_linking',
+   * 'messaging_game_plays', 'messaging_referrals']`
    */
-  useMetaApiReceiver?: boolean;
-  /**
-   * The webhook subscription fields. Default to `['messages', 'messaging_postbacks', 'messaging_optins',
-   * 'messaging_handovers', 'messaging_policy_enforcement', 'messaging_account_linking', 'messaging_game_plays',
-   * 'messaging_referrals']`
-   * */
-  webhookSubscriptionFields?: string[];
+  subscriptionFields?: string[];
   /** The graph API version to make API calls */
   graphApiVersion?: string;
   /** Request additional info of user profile. This requires addtional permisions of your app */

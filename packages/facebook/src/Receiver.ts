@@ -2,8 +2,9 @@ import type { PopEventWrapper } from '@sociably/core';
 import { MetaWebhookReceiver } from '@sociably/meta-api';
 import { serviceProviderClass } from '@sociably/core/service';
 import BotP from './Bot.js';
+import eventFactory from './event/factory.js';
 import { ConfigsI, PlatformUtilitiesI } from './interface.js';
-import createMetaReceiverListeningOptions from './utils/createMetaReceiverListeningOptions.js';
+import { FACEBOOK } from './constant.js';
 import type { FacebookEventContext } from './types.js';
 
 type FacebookReceiverOptions = {
@@ -34,7 +35,21 @@ export class FacebookReceiver extends MetaWebhookReceiver<FacebookEventContext> 
       shouldHandleChallenge,
       shouldVerifyRequest,
       listeningPlatforms: [
-        createMetaReceiverListeningOptions(bot, popEventWrapper),
+        {
+          platform: FACEBOOK,
+          bot,
+          objectType: 'page',
+          makeEventsFromUpdate: (updateData) => {
+            const { id: pageId, messaging, stanby } = updateData;
+            const isStandby = stanby !== undefined;
+            const rawEvents = isStandby ? stanby : messaging;
+
+            return rawEvents.map((rawEvent) =>
+              eventFactory(pageId, isStandby, rawEvent)
+            );
+          },
+          popEvent: popEventWrapper(async () => null),
+        },
       ],
     });
   }

@@ -70,7 +70,7 @@ describe('subscription management', () => {
         appId: '_APP_ID_',
         verifyToken: '_VERIFY_TOKEN_',
         webhookUrl: 'https://foo.bar/baz/',
-        pageSubscriptionFields: ['messages', 'messaging_postbacks'],
+        subscriptionFields: ['messages', 'messaging_postbacks'],
       });
 
       await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
@@ -228,7 +228,7 @@ describe('subscription management', () => {
 
     test('with constructor app settings options', async () => {
       const manager = new FacebookAssetsManager(stateController, bot, {
-        pageSubscriptionFields: [
+        subscriptionFields: [
           'messages',
           'messaging_postbacks',
           'messaging_optins',

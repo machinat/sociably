@@ -9,12 +9,7 @@ import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
-import {
-  MetaApiJob,
-  MetaApiResult,
-  MetaWebhookReceiver,
-  ListeningPlatformOptions,
-} from '@sociably/meta-api';
+import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import {
   ConfigsI,
   PlatformUtilitiesI,
@@ -33,7 +28,6 @@ import InstagramPage from './Page.js';
 import InstagramChat from './Chat.js';
 import InstagramUser from './User.js';
 import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor.js';
-import createMetaReceiverListeningOptions from './utils/createMetaReceiverListeningOptions.js';
 import type {
   InstagramConfigs,
   InstagramEventContext,
@@ -49,14 +43,6 @@ const webhookRouteFactory = serviceProviderFactory({
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
   })
-);
-
-const metaReceiverListeningPlatformsFactory = serviceProviderFactory({
-  lifetime: 'transient',
-  deps: [BotP, PlatformUtilitiesI],
-})(
-  (bot, { popEventWrapper }): ListeningPlatformOptions<InstagramEventContext> =>
-    createMetaReceiverListeningOptions(bot, popEventWrapper)
 );
 
 /**
@@ -99,6 +85,9 @@ namespace Instagram {
         withProvider: BotP,
         platform: INSTAGRAM,
       },
+
+      ReceiverP,
+      { provide: Http.RequestRouteList, withProvider: webhookRouteFactory },
 
       ProfilerP,
       {
@@ -144,18 +133,6 @@ namespace Instagram {
       throw new Error(
         'Instagram platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
       );
-    }
-
-    if (configs.useMetaApiReceiver) {
-      provisions.push({
-        provide: MetaWebhookReceiver.ListeningPlatforms,
-        withProvider: metaReceiverListeningPlatformsFactory,
-      });
-    } else {
-      provisions.push(ReceiverP, {
-        provide: Http.RequestRouteList,
-        withProvider: webhookRouteFactory,
-      });
     }
 
     return {

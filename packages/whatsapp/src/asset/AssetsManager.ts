@@ -2,52 +2,94 @@ import type { SociablyNode } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
+import {
+  MetaAssetsManager,
+  SetMetaAppSubscriptionOptions,
+  DeleteMetaAppSubscriptionOptions,
+} from '@sociably/meta-api';
 import BotP from '../Bot.js';
 import WhatsAppAgent from '../Agent.js';
 import { WA } from '../constant.js';
 
 const MEDIA = 'media';
 
-const makeResourceToken = (numberId: string, resource: string): string =>
-  `$${WA}.${resource}.${numberId}`;
+export type DefaultSettings = {
+  appId?: string;
+  verifyToken?: string;
+  subscriptionFields?: string[];
+  webhookUrl?: string;
+};
+
+const DEFAULT_SUBSCRIPTION_FIELDS = ['messages'];
 
 /**
  * WhatsAppAssetsManager manage name-to-id mapping for assets in WhatsApp
  * platform.
  * @category Provider
  */
-export class WhatsAppAssetsManager {
-  private _bot: BotP;
-  private _stateController: StateControllerI;
+export class WhatsAppAssetsManager extends MetaAssetsManager {
+  protected bot: BotP;
+  defaultSettings: DefaultSettings;
 
-  constructor(bot: BotP, stateController: StateControllerI) {
-    this._bot = bot;
-    this._stateController = stateController;
+  constructor(
+    stateController: StateControllerI,
+    bot: BotP,
+    defaultSettings: DefaultSettings = {}
+  ) {
+    super(stateController, bot, WA);
+    this.defaultSettings = {
+      ...defaultSettings,
+      subscriptionFields:
+        defaultSettings.subscriptionFields ?? DEFAULT_SUBSCRIPTION_FIELDS,
+    };
   }
 
-  async getAssetId(
+  /**
+   * Set webhook subscription of an app. Check https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge/
+   * for references
+   */
+  async setAppSubscription({
+    objectType = 'whatsapp_business_account',
+    appId = this.defaultSettings.appId,
+    webhookUrl = this.defaultSettings.webhookUrl,
+    fields = this.defaultSettings.subscriptionFields,
+    verifyToken = this.defaultSettings.verifyToken,
+  }: Partial<SetMetaAppSubscriptionOptions>): Promise<void> {
+    if (!appId || !verifyToken || !webhookUrl || !fields?.length) {
+      throw new Error('appId, webhookUrl, verifyToken or fields is empty');
+    }
+    const options = { appId, objectType, webhookUrl, verifyToken, fields };
+    return super.setAppSubscription(options);
+  }
+
+  async deleteAppSubscription({
+    appId = this.defaultSettings.appId,
+    objectType,
+    fields,
+  }: Partial<DeleteMetaAppSubscriptionOptions> = {}): Promise<void> {
+    if (!appId) {
+      throw new Error('appId is empty');
+    }
+    return super.deleteAppSubscription({ appId, objectType, fields });
+  }
+
+  getAssetId(
     agent: string | WhatsAppAgent,
     resource: string,
     assetTag: string
   ): Promise<undefined | string> {
     const numberId = typeof agent === 'string' ? agent : agent.numberId;
-    const existed = await this._stateController
-      .globalState(makeResourceToken(numberId, resource))
-      .get<string>(assetTag);
-    return existed || undefined;
+    return super.getAssetId(numberId, resource, assetTag);
   }
 
-  async saveAssetId(
+  saveAssetId(
     agent: string | WhatsAppAgent,
     resource: string,
     assetTag: string,
     id: string
   ): Promise<boolean> {
     const numberId = typeof agent === 'string' ? agent : agent.numberId;
-    const isUpdated = await this._stateController
-      .globalState(makeResourceToken(numberId, resource))
-      .set<string>(assetTag, id);
-    return isUpdated;
+    return super.saveAssetId(numberId, resource, assetTag, id);
   }
 
   getAllAssets(
@@ -55,22 +97,16 @@ export class WhatsAppAssetsManager {
     resource: string
   ): Promise<null | Map<string, string>> {
     const numberId = typeof agent === 'string' ? agent : agent.numberId;
-    return this._stateController
-      .globalState(makeResourceToken(numberId, resource))
-      .getAll();
+    return super.getAllAssets(numberId, resource);
   }
 
-  async unsaveAssetId(
+  unsaveAssetId(
     agent: string | WhatsAppAgent,
     resource: string,
     assetTag: string
   ): Promise<boolean> {
     const numberId = typeof agent === 'string' ? agent : agent.numberId;
-    const isDeleted = await this._stateController
-      .globalState(makeResourceToken(numberId, resource))
-      .delete(assetTag);
-
-    return isDeleted;
+    return super.unsaveAssetId(numberId, resource, assetTag);
   }
 
   getMedia(
@@ -106,7 +142,7 @@ export class WhatsAppAssetsManager {
     assetTag: string,
     node: SociablyNode
   ): Promise<string> {
-    const result = await this._bot.uploadMedia(agent, node);
+    const result = await this.bot.uploadMedia(agent, node);
     if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
@@ -119,7 +155,7 @@ export class WhatsAppAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP, StateControllerI],
+  deps: [StateControllerI, BotP],
 })(WhatsAppAssetsManager);
 
 type AssetsManagerP = WhatsAppAssetsManager;

@@ -138,15 +138,10 @@ export type InstagramConfigs = {
   /** To handle the webhook challenge request or not. Default to `true` */
   shouldHandleChallenge?: boolean;
   /**
-   * Use the webhook settings defined by `MetaApi` module to receive webhooks. If set to true, `webhookPath`,
-   * `verifyToken`, `shouldVerifyRequest` and `shouldHandleChallenge` options are ignored. Default to `false`
-   */
-  useMetaApiReceiver?: boolean;
-  /**
-   * The webhook subscription fields. Default to `['messages', 'messaging_postbacks',
+   * The webhook subscription fields for instagram. Default to `['messages', 'messaging_postbacks',
    * 'messaging_handovers', 'messaging_policy_enforcement', 'messaging_referrals']`
    * */
-  webhookSubscriptionFields?: string[];
+  subscriptionFields?: string[];
   /** The graph API version to make API calls */
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;

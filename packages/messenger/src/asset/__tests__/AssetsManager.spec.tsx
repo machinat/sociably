@@ -38,150 +38,6 @@ beforeEach(() => {
 });
 
 describe('page/app management', () => {
-  describe('.setAppSubscription(options)', () => {
-    it('call subscription API as application', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
-
-      await expect(
-        manager.setAppSubscription({
-          webhookUrl: 'https://foo.bar/baz/',
-          appId: '_APP_ID_',
-          verifyToken: '_VERIFY_TOKEN_',
-          objectType: 'user',
-          fields: ['foo_field', 'bar_field'],
-        })
-      ).resolves.toBe(undefined);
-
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
-        method: 'POST',
-        url: '_APP_ID_/subscriptions',
-        params: {
-          object: 'user',
-          callback_url: 'https://foo.bar/baz/',
-          verify_token: '_VERIFY_TOKEN_',
-          fields: ['foo_field', 'bar_field'],
-          include_values: true,
-        },
-      });
-    });
-
-    test('with constructor app settings options', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test', {
-        appId: '_APP_ID_',
-        verifyToken: '_VERIFY_TOKEN_',
-        webhookUrl: 'https://foo.bar/baz/',
-        pageSubscriptionFields: ['messages', 'messaging_postbacks'],
-      });
-
-      await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
-
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
-        method: 'POST',
-        url: '_APP_ID_/subscriptions',
-        params: {
-          object: 'page',
-          callback_url: 'https://foo.bar/baz/',
-          verify_token: '_VERIFY_TOKEN_',
-          fields: ['messages', 'messaging_postbacks'],
-          include_values: true,
-        },
-      });
-    });
-
-    it('throw if appId, webhookUrl, verifyToken or fields is empty', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
-      await expect(
-        manager.setAppSubscription({
-          webhookUrl: 'https://foo.bar/baz/',
-          verifyToken: '_VERIFY_TOKEN_',
-          fields: ['foo_field', 'bar_field'],
-        })
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, verifyToken or fields is empty"`
-      );
-      await expect(
-        manager.setAppSubscription({
-          appId: '_APP_ID_',
-          verifyToken: '_VERIFY_TOKEN_',
-          fields: ['foo_field', 'bar_field'],
-        })
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, verifyToken or fields is empty"`
-      );
-      await expect(
-        manager.setAppSubscription({
-          webhookUrl: 'https://foo.bar/baz/',
-          appId: '_APP_ID_',
-          fields: ['foo_field', 'bar_field'],
-        })
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, verifyToken or fields is empty"`
-      );
-      await expect(
-        manager.setAppSubscription({
-          webhookUrl: 'https://foo.bar/baz/',
-          appId: '_APP_ID_',
-          verifyToken: '_VERIFY_TOKEN_',
-        })
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, verifyToken or fields is empty"`
-      );
-
-      expect(bot.requestApi).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('.deleteAppSubscription(options)', () => {
-    it('call subscription API as application', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test', {
-        appId: '_APP_ID_',
-      });
-
-      await expect(manager.deleteAppSubscription()).resolves.toBe(undefined);
-
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
-        method: 'DELETE',
-        url: '_APP_ID_/subscriptions',
-        params: {},
-      });
-
-      await expect(
-        manager.deleteAppSubscription({
-          objectType: 'user',
-          fields: ['foo_field', 'bar_field'],
-          appId: '_ANOTHER_APP_ID_',
-        })
-      ).resolves.toBe(undefined);
-
-      expect(bot.requestApi).toHaveBeenCalledTimes(2);
-      expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
-        method: 'DELETE',
-        url: '_ANOTHER_APP_ID_/subscriptions',
-        params: {
-          object: 'user',
-          fields: ['foo_field', 'bar_field'],
-        },
-      });
-    });
-
-    it('throw if no appId available', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
-
-      await expect(
-        manager.deleteAppSubscription()
-      ).rejects.toThrowErrorMatchingInlineSnapshot(`"appId is empty"`);
-
-      expect(bot.requestApi).not.toHaveBeenCalled();
-    });
-  });
-
   describe('.setPageSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new MessengerAssetsManager(stateController, bot, 'test');
@@ -201,32 +57,6 @@ describe('page/app management', () => {
         url: 'me/subscribed_apps',
         params: {
           subscribed_fields: ['messages', 'messaging_postbacks'],
-        },
-      });
-    });
-
-    test('with constructor app settings options', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test', {
-        pageSubscriptionFields: [
-          'messages',
-          'messaging_postbacks',
-          'messaging_optins',
-        ],
-      });
-
-      await expect(manager.setPageSubscribedApp(page)).resolves.toBe(undefined);
-
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
-        method: 'POST',
-        url: 'me/subscribed_apps',
-        params: {
-          subscribed_fields: [
-            'messages',
-            'messaging_postbacks',
-            'messaging_optins',
-          ],
         },
       });
     });
@@ -415,39 +245,8 @@ describe('page/app management', () => {
       });
     });
 
-    test.each([
-      [
-        'platform option on method',
-        new MessengerAssetsManager(stateController, bot, 'test'),
-        {
-          platform: 'instagram',
-          persistentMenu: [
-            {
-              locale: 'default',
-              callToActions: [
-                { type: 'postback' as const, title: 'Yo!', payload: 'yo' },
-              ],
-            },
-          ],
-        },
-      ],
-      [
-        'messengerPlatform option on constructor',
-        new MessengerAssetsManager(stateController, bot, 'test', {
-          messengerPlatform: 'instagram',
-        }),
-        {
-          persistentMenu: [
-            {
-              locale: 'default',
-              callToActions: [
-                { type: 'postback' as const, title: 'Yo!', payload: 'yo' },
-              ],
-            },
-          ],
-        },
-      ],
-    ])('%s', async (_, manager, options) => {
+    test('platform option on method', async () => {
+      const manager = new MessengerAssetsManager(stateController, bot, 'test');
       bot.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
@@ -466,7 +265,17 @@ describe('page/app management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, options)
+        manager.setPageMessengerProfile(page, {
+          platform: 'instagram',
+          persistentMenu: [
+            {
+              locale: 'default',
+              callToActions: [
+                { type: 'postback' as const, title: 'Yo!', payload: 'yo' },
+              ],
+            },
+          ],
+        })
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
@@ -547,9 +356,7 @@ describe('assets management', () => {
   });
 
   test('set asset id', async () => {
-    const manager = new MessengerAssetsManager(stateController, bot, 'test', {
-      pageSubscriptionFields: ['messages', 'messaging_postbacks'],
-    });
+    const manager = new MessengerAssetsManager(stateController, bot, 'test');
 
     await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
       false

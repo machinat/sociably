@@ -9,12 +9,7 @@ import BaseProfiler from '@sociably/core/base/Profiler';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
-import {
-  MetaApiJob,
-  MetaApiResult,
-  MetaWebhookReceiver,
-  ListeningPlatformOptions,
-} from '@sociably/meta-api';
+import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';
 import {
   ConfigsI,
   PlatformUtilitiesI,
@@ -33,7 +28,6 @@ import FacebookPage from './Page.js';
 import FacebookChat from './Chat.js';
 import FacebookUser from './User.js';
 import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor.js';
-import createMetaReceiverListeningOptions from './utils/createMetaReceiverListeningOptions.js';
 import type {
   FacebookConfigs,
   FacebookEventContext,
@@ -49,14 +43,6 @@ const webhookRouteFactory = serviceProviderFactory({
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
   })
-);
-
-const metaReceiverListeningPlatformsFactory = serviceProviderFactory({
-  lifetime: 'transient',
-  deps: [BotP, PlatformUtilitiesI],
-})(
-  (bot, { popEventWrapper }): ListeningPlatformOptions<FacebookEventContext> =>
-    createMetaReceiverListeningOptions(bot, popEventWrapper)
 );
 
 /**
@@ -100,6 +86,9 @@ namespace Facebook {
         platform: FACEBOOK,
       },
 
+      ReceiverP,
+      { provide: Http.RequestRouteList, withProvider: webhookRouteFactory },
+
       ProfilerP,
       {
         provide: BaseProfiler.PlatformMap,
@@ -114,18 +103,6 @@ namespace Facebook {
       { provide: BaseMarshaler.TypeList, withValue: FacebookPage },
       { provide: BaseMarshaler.TypeList, withValue: FacebookUserProfile },
     ];
-
-    if (configs.useMetaApiReceiver) {
-      provisions.push({
-        provide: MetaWebhookReceiver.ListeningPlatforms,
-        withProvider: metaReceiverListeningPlatformsFactory,
-      });
-    } else {
-      provisions.push(ReceiverP, {
-        provide: Http.RequestRouteList,
-        withProvider: webhookRouteFactory,
-      });
-    }
 
     if (configs.agentSettingsService) {
       provisions.push({

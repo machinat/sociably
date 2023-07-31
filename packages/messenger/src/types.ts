@@ -173,3 +173,52 @@ export interface MessengerBot<Page extends MessengerPage> {
     node: SociablyNode
   ): Promise<null | { attachmentId: string }>;
 }
+
+export type SetPageMessengerProfileOptions = {
+  /** Specify the access token to be used on the API call */
+  accessToken?: string;
+  /** Specify the platform option */
+  platform?: string;
+  /**
+   * The payload that will be sent as a `messaging_postbacks` event when someone
+   * taps the 'get started' button on your Page Messenger welcome screen.
+   */
+  getStarted?: { payload: string };
+  /**
+   * An array of locale-specific greeting messages to display on your Page
+   * Messenger welcome screen.
+   */
+  greeting?: { locale: string; text: string }[];
+  /** An array with an ice breaker object. */
+  iceBreakers?: {
+    locale: string;
+    callToActions: { question: string; payload: string }[];
+  }[];
+  /**
+   * An array of call-to-action buttons to include in the persistent menu.
+   */
+  persistentMenu?: {
+    locale: string;
+    composerInputDisabled?: boolean;
+    callToActions: {
+      type: 'postback' | 'web_url';
+      title: string;
+      payload?: string;
+      url?: string;
+      webviewHeightRatio?: 'compact' | 'tall' | 'full';
+      messengerExtensions?: boolean;
+      fallbackUrl?: string;
+      webviewShareButton?: 'hide';
+    }[];
+    disabledSurfaces?: 'customer_chat_plugin'[];
+  }[];
+  /**
+   * A list of whitelisted domains. Required for Pages that use the Messenger
+   * Extensions SDK and the checkbox plugin.
+   */
+  whitelistedDomains?: string[];
+  /**
+   * Authentication callback URL. Must use https protocol.
+   */
+  accountLinkingUrl?: string;
+};

@@ -70,7 +70,7 @@ describe('subscription management', () => {
         appId: '_APP_ID_',
         verifyToken: '_VERIFY_TOKEN_',
         webhookUrl: 'https://foo.bar/baz/',
-        pageSubscriptionFields: ['messages', 'messaging_postbacks'],
+        subscriptionFields: ['messages', 'messaging_postbacks'],
       });
 
       await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
@@ -81,7 +81,7 @@ describe('subscription management', () => {
         method: 'POST',
         url: '_APP_ID_/subscriptions',
         params: {
-          object: 'page',
+          object: 'instagram',
           callback_url: 'https://foo.bar/baz/',
           verify_token: '_VERIFY_TOKEN_',
           fields: ['messages', 'messaging_postbacks'],
@@ -225,7 +225,7 @@ describe('subscription management', () => {
 
     test('with constructor app settings options', async () => {
       const manager = new InstagramAssetsManager(stateController, bot, {
-        pageSubscriptionFields: [
+        subscriptionFields: [
           'messages',
           'messaging_postbacks',
           'messaging_optins',

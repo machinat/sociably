@@ -2,8 +2,9 @@ import type { PopEventWrapper } from '@sociably/core';
 import { MetaWebhookReceiver } from '@sociably/meta-api';
 import { serviceProviderClass } from '@sociably/core/service';
 import BotP from './Bot.js';
+import eventFactory from './event/factory.js';
 import { ConfigsI, PlatformUtilitiesI } from './interface.js';
-import createMetaReceiverListeningOptions from './utils/createMetaReceiverListeningOptions.js';
+import { WHATSAPP } from './constant.js';
 import type { WhatsAppEventContext } from './types.js';
 
 type WhatsAppReceiverOptions = {
@@ -34,7 +35,13 @@ export class WhatsAppReceiver extends MetaWebhookReceiver<WhatsAppEventContext> 
       shouldHandleChallenge,
       shouldVerifyRequest,
       listeningPlatforms: [
-        createMetaReceiverListeningOptions(bot, popEventWrapper),
+        {
+          platform: WHATSAPP,
+          bot,
+          objectType: 'whatsapp_business_account',
+          makeEventsFromUpdate: eventFactory,
+          popEvent: popEventWrapper(async () => null),
+        },
       ],
     });
   }

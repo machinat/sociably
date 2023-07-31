@@ -37,140 +37,312 @@ beforeEach(() => {
   bot.mock.reset();
 });
 
-test('get asset id', async () => {
-  const manager = new WhatsAppAssetsManager(bot, stateController);
+describe('subscription management', () => {
+  describe('.setAppSubscription(options)', () => {
+    it('call subscription API as application', async () => {
+      const manager = new WhatsAppAssetsManager(stateController, bot);
 
-  await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe(
-    undefined
-  );
-  await expect(manager.getMedia(agent, 'my_media')).resolves.toBe(undefined);
+      await expect(
+        manager.setAppSubscription({
+          webhookUrl: 'https://foo.bar/baz/',
+          appId: '_APP_ID_',
+          verifyToken: '_VERIFY_TOKEN_',
+          objectType: 'user',
+          fields: ['foo_field', 'bar_field'],
+        })
+      ).resolves.toBe(undefined);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
-    .toMatchInlineSnapshot(`
-    [
-      "$wa.foo.1111111111",
-      "$wa.media.1111111111",
-    ]
-  `);
+      expect(bot.requestApi).toHaveBeenCalledTimes(1);
+      expect(bot.requestApi).toHaveBeenCalledWith({
+        asApplication: true,
+        method: 'POST',
+        url: '_APP_ID_/subscriptions',
+        params: {
+          object: 'user',
+          callback_url: 'https://foo.bar/baz/',
+          verify_token: '_VERIFY_TOKEN_',
+          fields: ['foo_field', 'bar_field'],
+          include_values: true,
+        },
+      });
+    });
 
-  expect(state.get).toHaveBeenCalledTimes(2);
-  expect(state.get).toHaveBeenNthCalledWith(1, 'bar');
-  expect(state.get).toHaveBeenNthCalledWith(2, 'my_media');
+    test('with constructor app settings options', async () => {
+      const manager = new WhatsAppAssetsManager(stateController, bot, {
+        appId: '_APP_ID_',
+        verifyToken: '_VERIFY_TOKEN_',
+        webhookUrl: 'https://foo.bar/baz/',
+        subscriptionFields: ['messages', 'messaging_postbacks'],
+      });
 
-  state.get.mock.fakeReturnValue('baz');
-  await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe('baz');
+      await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
 
-  state.get.mock.fakeReturnValue('_MEDIA_ID_');
-  await expect(manager.getMedia(agent, 'my_media')).resolves.toBe('_MEDIA_ID_');
+      expect(bot.requestApi).toHaveBeenCalledTimes(1);
+      expect(bot.requestApi).toHaveBeenCalledWith({
+        asApplication: true,
+        method: 'POST',
+        url: '_APP_ID_/subscriptions',
+        params: {
+          object: 'whatsapp_business_account',
+          callback_url: 'https://foo.bar/baz/',
+          verify_token: '_VERIFY_TOKEN_',
+          fields: ['messages', 'messaging_postbacks'],
+          include_values: true,
+        },
+      });
+    });
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
-  expect(state.get).toHaveBeenCalledTimes(4);
+    test('default subscription fields', async () => {
+      const manager = new WhatsAppAssetsManager(stateController, bot, {
+        appId: '_APP_ID_',
+        verifyToken: '_VERIFY_TOKEN_',
+      });
+
+      await expect(
+        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' })
+      ).resolves.toBe(undefined);
+
+      expect(bot.requestApi).toHaveBeenCalledTimes(1);
+      expect(bot.requestApi.mock.calls[0].args[0].params.fields)
+        .toMatchInlineSnapshot(`
+        [
+          "messages",
+        ]
+      `);
+    });
+
+    it('throw if no appId available', async () => {
+      const manager = new WhatsAppAssetsManager(stateController, bot);
+      await expect(
+        manager.setAppSubscription({
+          webhookUrl: 'https://foo.bar/baz/',
+          verifyToken: '_VERIFY_TOKEN_',
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"appId, webhookUrl, verifyToken or fields is empty"`
+      );
+      expect(bot.requestApi).not.toHaveBeenCalled();
+    });
+
+    it('throw if no webhookUrl available', async () => {
+      const manager = new WhatsAppAssetsManager(stateController, bot);
+      await expect(
+        manager.setAppSubscription({
+          appId: '_APP_ID_',
+          verifyToken: '_VERIFY_TOKEN_',
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"appId, webhookUrl, verifyToken or fields is empty"`
+      );
+      expect(bot.requestApi).not.toHaveBeenCalled();
+    });
+
+    it('throw if no verifyToken available', async () => {
+      const manager = new WhatsAppAssetsManager(stateController, bot);
+      await expect(
+        manager.setAppSubscription({
+          webhookUrl: 'https://foo.bar/baz/',
+          appId: '_APP_ID_',
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"appId, webhookUrl, verifyToken or fields is empty"`
+      );
+      expect(bot.requestApi).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('.deleteAppSubscription(options)', () => {
+    it('call subscription API as application', async () => {
+      const manager = new WhatsAppAssetsManager(stateController, bot, {
+        appId: '_APP_ID_',
+      });
+
+      await expect(manager.deleteAppSubscription()).resolves.toBe(undefined);
+
+      expect(bot.requestApi).toHaveBeenCalledTimes(1);
+      expect(bot.requestApi).toHaveBeenCalledWith({
+        asApplication: true,
+        method: 'DELETE',
+        url: '_APP_ID_/subscriptions',
+        params: {},
+      });
+
+      await expect(
+        manager.deleteAppSubscription({
+          objectType: 'user',
+          fields: ['foo_field', 'bar_field'],
+          appId: '_ANOTHER_APP_ID_',
+        })
+      ).resolves.toBe(undefined);
+
+      expect(bot.requestApi).toHaveBeenCalledTimes(2);
+      expect(bot.requestApi).toHaveBeenCalledWith({
+        asApplication: true,
+        method: 'DELETE',
+        url: '_ANOTHER_APP_ID_/subscriptions',
+        params: {
+          object: 'user',
+          fields: ['foo_field', 'bar_field'],
+        },
+      });
+    });
+
+    it('throw if no appId available', async () => {
+      const manager = new WhatsAppAssetsManager(stateController, bot);
+
+      await expect(
+        manager.deleteAppSubscription()
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`"appId is empty"`);
+
+      expect(bot.requestApi).not.toHaveBeenCalled();
+    });
+  });
 });
 
-test('set asset id', async () => {
-  const manager = new WhatsAppAssetsManager(bot, stateController);
+describe('assets management', () => {
+  test('get asset id', async () => {
+    const manager = new WhatsAppAssetsManager(stateController, bot);
 
-  await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
-    false
-  );
-  await expect(
-    manager.saveMedia(agent, 'my_media', '_MEDIA_ID_')
-  ).resolves.toBe(false);
+    await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe(
+      undefined
+    );
+    await expect(manager.getMedia(agent, 'my_media')).resolves.toBe(undefined);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
-    .toMatchInlineSnapshot(`
-    [
-      "$wa.foo.1111111111",
-      "$wa.media.1111111111",
-    ]
-  `);
+    expect(stateController.globalState).toHaveBeenCalledTimes(2);
+    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+      .toMatchInlineSnapshot(`
+          [
+            "$wa.foo.1111111111",
+            "$wa.media.1111111111",
+          ]
+      `);
 
-  expect(state.set).toHaveBeenCalledTimes(2);
-  expect(state.set).toHaveBeenNthCalledWith(1, 'bar', 'baz');
-  expect(state.set).toHaveBeenNthCalledWith(2, 'my_media', '_MEDIA_ID_');
+    expect(state.get).toHaveBeenCalledTimes(2);
+    expect(state.get).toHaveBeenNthCalledWith(1, 'bar');
+    expect(state.get).toHaveBeenNthCalledWith(2, 'my_media');
 
-  state.set.mock.fake(async () => true);
-  await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
-    true
-  );
-  await expect(
-    manager.saveMedia(agent, 'my_media', '_MEDIA_ID_')
-  ).resolves.toBe(true);
-  expect(state.set).toHaveBeenCalledTimes(4);
-});
+    state.get.mock.fakeReturnValue('baz');
+    await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe('baz');
 
-test('get all assets', async () => {
-  const manager = new WhatsAppAssetsManager(bot, stateController);
+    state.get.mock.fakeReturnValue('_MEDIA_ID_');
+    await expect(manager.getMedia(agent, 'my_media')).resolves.toBe(
+      '_MEDIA_ID_'
+    );
 
-  await expect(manager.getAllAssets(agent, 'foo')).resolves.toBe(null);
-  await expect(manager.getAllMedias(agent)).resolves.toBe(null);
+    expect(stateController.globalState).toHaveBeenCalledTimes(4);
+    expect(state.get).toHaveBeenCalledTimes(4);
+  });
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
-    .toMatchInlineSnapshot(`
-    [
-      "$wa.foo.1111111111",
-      "$wa.media.1111111111",
-    ]
-  `);
+  test('set asset id', async () => {
+    const manager = new WhatsAppAssetsManager(stateController, bot);
 
-  expect(state.getAll).toHaveBeenCalledTimes(2);
+    await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
+      false
+    );
+    await expect(
+      manager.saveMedia(agent, 'my_media', '_MEDIA_ID_')
+    ).resolves.toBe(false);
 
-  const resources = new Map([
-    ['bar', '1'],
-    ['baz', '2'],
-  ]);
-  state.getAll.mock.fake(async () => resources);
+    expect(stateController.globalState).toHaveBeenCalledTimes(2);
+    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+      .toMatchInlineSnapshot(`
+          [
+            "$wa.foo.1111111111",
+            "$wa.media.1111111111",
+          ]
+      `);
 
-  await expect(manager.getAllAssets(agent, 'foo')).resolves.toEqual(resources);
-  await expect(manager.getAllMedias(agent)).resolves.toEqual(resources);
-});
+    expect(state.set).toHaveBeenCalledTimes(2);
+    expect(state.set).toHaveBeenNthCalledWith(1, 'bar', 'baz');
+    expect(state.set).toHaveBeenNthCalledWith(2, 'my_media', '_MEDIA_ID_');
 
-test('remove asset id', async () => {
-  const manager = new WhatsAppAssetsManager(bot, stateController);
+    state.set.mock.fake(async () => true);
+    await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
+      true
+    );
+    await expect(
+      manager.saveMedia(agent, 'my_media', '_MEDIA_ID_')
+    ).resolves.toBe(true);
+    expect(state.set).toHaveBeenCalledTimes(4);
+  });
 
-  await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(true);
-  await expect(manager.unsaveMedia(agent, 'my_media')).resolves.toBe(true);
+  test('get all assets', async () => {
+    const manager = new WhatsAppAssetsManager(stateController, bot);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
-    .toMatchInlineSnapshot(`
-    [
-      "$wa.foo.1111111111",
-      "$wa.media.1111111111",
-    ]
-  `);
+    await expect(manager.getAllAssets(agent, 'foo')).resolves.toBe(null);
+    await expect(manager.getAllMedias(agent)).resolves.toBe(null);
 
-  expect(state.delete).toHaveBeenCalledTimes(2);
-  expect(state.delete).toHaveBeenNthCalledWith(1, 'bar');
-  expect(state.delete).toHaveBeenNthCalledWith(2, 'my_media');
+    expect(stateController.globalState).toHaveBeenCalledTimes(2);
+    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+      .toMatchInlineSnapshot(`
+          [
+            "$wa.foo.1111111111",
+            "$wa.media.1111111111",
+          ]
+      `);
 
-  state.delete.mock.fake(async () => false);
-  await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(false);
-  await expect(manager.unsaveMedia(agent, 'my_media')).resolves.toBe(false);
-  expect(state.delete).toHaveBeenCalledTimes(4);
-});
+    expect(state.getAll).toHaveBeenCalledTimes(2);
 
-test('#uploadMedia()', async () => {
-  const manager = new WhatsAppAssetsManager(bot, stateController);
-  bot.uploadMedia.mock.fake(async () => ({ id: '1857777774821032' }));
+    const resources = new Map([
+      ['bar', '1'],
+      ['baz', '2'],
+    ]);
+    state.getAll.mock.fake(async () => resources);
 
-  await expect(
-    manager.uploadMedia(
+    await expect(manager.getAllAssets(agent, 'foo')).resolves.toEqual(
+      resources
+    );
+    await expect(manager.getAllMedias(agent)).resolves.toEqual(resources);
+  });
+
+  test('remove asset id', async () => {
+    const manager = new WhatsAppAssetsManager(stateController, bot);
+
+    await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
+      true
+    );
+    await expect(manager.unsaveMedia(agent, 'my_media')).resolves.toBe(true);
+
+    expect(stateController.globalState).toHaveBeenCalledTimes(2);
+    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+      .toMatchInlineSnapshot(`
+          [
+            "$wa.foo.1111111111",
+            "$wa.media.1111111111",
+          ]
+      `);
+
+    expect(state.delete).toHaveBeenCalledTimes(2);
+    expect(state.delete).toHaveBeenNthCalledWith(1, 'bar');
+    expect(state.delete).toHaveBeenNthCalledWith(2, 'my_media');
+
+    state.delete.mock.fake(async () => false);
+    await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
+      false
+    );
+    await expect(manager.unsaveMedia(agent, 'my_media')).resolves.toBe(false);
+    expect(state.delete).toHaveBeenCalledTimes(4);
+  });
+
+  test('#uploadMedia()', async () => {
+    const manager = new WhatsAppAssetsManager(stateController, bot);
+    bot.uploadMedia.mock.fake(async () => ({ id: '1857777774821032' }));
+
+    await expect(
+      manager.uploadMedia(
+        agent,
+        'my_avatar',
+        <Image fileData={Buffer.from('')} />
+      )
+    ).resolves.toBe('1857777774821032');
+
+    expect(bot.uploadMedia).toHaveBeenCalledTimes(1);
+    expect(bot.uploadMedia).toHaveBeenCalledWith(
       agent,
-      'my_avatar',
       <Image fileData={Buffer.from('')} />
-    )
-  ).resolves.toBe('1857777774821032');
+    );
 
-  expect(bot.uploadMedia).toHaveBeenCalledTimes(1);
-  expect(bot.uploadMedia).toHaveBeenCalledWith(
-    agent,
-    <Image fileData={Buffer.from('')} />
-  );
-
-  expect(state.set).toHaveBeenCalledTimes(1);
-  expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');
+    expect(state.set).toHaveBeenCalledTimes(1);
+    expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');
+  });
 });

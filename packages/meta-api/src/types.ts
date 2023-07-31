@@ -92,15 +92,57 @@ export type ListeningPlatformOptions<Context extends MetaApiEventContext> = {
   popEvent: (ctx: Context) => Promise<null>;
 };
 
-export type MetaApiModuleConfigs = {
-  /** The webhook path to receive events. Default to `.` */
-  webhookPath?: string;
-  /** The Facebook app secret */
-  appSecret: string;
-  /** To verify the webhook request by the signature or not. Default to `true` */
-  shouldVerifyRequest?: boolean;
-  /** The secret string to verify the webhook challenge request */
+export type MetaApiBotRequestApiOptions = {
+  /** HTTP method */
+  method?: string;
+  /** API request URL relative to https://graph.facebook.com/{version}/ */
+  url: string;
+  /** API request parameters */
+  params?: Record<string, unknown>;
+  /** Make the API call as the FB app */
+  asApplication?: boolean;
+  /** Force to use the access token */
+  accessToken?: string;
+};
+
+export interface MetaApiBot {
+  requestApi<ResBody extends MetaApiResponseBody>(
+    options: MetaApiBotRequestApiOptions
+  ): Promise<ResBody>;
+}
+
+export type MetaWebhookObjectType =
+  | 'user'
+  | 'page'
+  | 'permissions'
+  | 'payments'
+  | 'instagram'
+  | 'whatsapp_business_account';
+
+export type SetMetaAppSubscriptionOptions = {
+  /** The URL to receive the webhook */
+  webhookUrl: string;
+  /** Indicates the object type that this subscription applies to. Default to `page` */
+  objectType: MetaWebhookObjectType;
+  /** One or more of the set of valid fields in this object to subscribe to */
+  fields: string[];
+  /** Specify the verify token to confirm the webhook with */
   verifyToken: string;
-  /** To handle the webhook challenge request or not. Default to `true` */
-  shouldHandleChallenge?: boolean;
+  /** Specify the app to remove subscriptions for */
+  appId: string;
+};
+
+export type DeleteMetaAppSubscriptionOptions = {
+  /** Specify the app to remove subscriptions for */
+  appId: string;
+  /**
+   * One or more of the set of valid fields in this object to subscribe to.
+   * If not specified, subscriptios of all the fields is removed.
+   */
+  fields?: string[];
+  /**
+   * A specific object type to remove subscriptions for. If this optional
+   * field is not included, all subscriptions for this app will be removed.
+   */
+  objectType?: MetaWebhookObjectType;
 };

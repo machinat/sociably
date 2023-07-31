@@ -1,6 +1,10 @@
 import Http from '@sociably/http';
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
+import {
+  SetMetaAppSubscriptionOptions,
+  DeleteMetaAppSubscriptionOptions,
+} from '@sociably/meta-api';
 import { MessengerAssetsManager } from '@sociably/messenger';
 import snakecaseKeys from 'snakecase-keys';
 import BotP from '../Bot.js';
@@ -10,7 +14,7 @@ import { ConfigsI } from '../interface.js';
 
 const PERSONA = 'persona';
 
-const DEFAULT_PAGE_SUBSCRIPTION_FIELDS = [
+const DEFAULT_SUBSCRIPTION_FIELDS = [
   'messages',
   'messaging_postbacks',
   'messaging_optins',
@@ -24,7 +28,7 @@ const DEFAULT_PAGE_SUBSCRIPTION_FIELDS = [
 export type DefaultSettings = {
   appId?: string;
   verifyToken?: string;
-  pageSubscriptionFields?: string[];
+  subscriptionFields?: string[];
   webhookUrl?: string;
 };
 
@@ -34,17 +38,66 @@ export type DefaultSettings = {
  * @category Provider
  */
 export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> {
+  defaultSettings: DefaultSettings;
+
   constructor(
     stateManager: StateControllerI,
     bot: BotP,
-    defaultAppSettings: DefaultSettings = {}
+    defaultSettings: DefaultSettings = {}
   ) {
-    super(stateManager, bot, FB, {
-      ...defaultAppSettings,
-      pageSubscriptionFields:
-        defaultAppSettings.pageSubscriptionFields ??
-        DEFAULT_PAGE_SUBSCRIPTION_FIELDS,
-    });
+    super(stateManager, bot, FB);
+    this.defaultSettings = {
+      ...defaultSettings,
+      subscriptionFields:
+        defaultSettings.subscriptionFields ?? DEFAULT_SUBSCRIPTION_FIELDS,
+    };
+  }
+
+  /**
+   * Set webhook subscription of an app. Check https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge/
+   * for references
+   */
+  async setAppSubscription({
+    objectType = 'page',
+    appId = this.defaultSettings.appId,
+    webhookUrl = this.defaultSettings.webhookUrl,
+    fields = this.defaultSettings.subscriptionFields,
+    verifyToken = this.defaultSettings.verifyToken,
+  }: Partial<SetMetaAppSubscriptionOptions>): Promise<void> {
+    if (!appId || !verifyToken || !webhookUrl || !fields?.length) {
+      throw new Error('appId, webhookUrl, verifyToken or fields is empty');
+    }
+    const options = { appId, objectType, webhookUrl, verifyToken, fields };
+    return super.setAppSubscription(options);
+  }
+
+  async deleteAppSubscription({
+    appId = this.defaultSettings.appId,
+    objectType,
+    fields,
+  }: Partial<DeleteMetaAppSubscriptionOptions> = {}): Promise<void> {
+    if (!appId) {
+      throw new Error('appId is empty');
+    }
+    return super.deleteAppSubscription({ appId, objectType, fields });
+  }
+
+  /**
+   * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
+   * for references.
+   */
+  async setPageSubscribedApp(
+    page: string | FacebookPage,
+    {
+      fields: fieldInput,
+      accessToken,
+    }: { fields?: string[]; accessToken?: string } = {}
+  ): Promise<void> {
+    const fields = fieldInput || this.defaultSettings.subscriptionFields;
+    if (!fields?.length) {
+      throw new Error('subscription fields is empty');
+    }
+    return super.setPageSubscribedApp(page, { fields, accessToken });
   }
 
   getPersona(
@@ -136,11 +189,12 @@ const AssetsManagerP = serviceProviderClass({
     stateController,
     bot,
     { entryUrl },
-    { appId, verifyToken, webhookPath }
+    { appId, verifyToken, webhookPath, subscriptionFields }
   ) =>
     new FacebookAssetsManager(stateController, bot, {
       appId,
       verifyToken,
+      subscriptionFields,
       webhookUrl: new URL(webhookPath ?? '', entryUrl).href,
     }),
 })(FacebookAssetsManager);
