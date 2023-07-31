@@ -1,6 +1,6 @@
 {
   "name": "@sociably/jest-snapshot-serializer",
-  "version": "0.8.0",
+  "version": "0.9.0-alpha.0",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
     "type": "git",

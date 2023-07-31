@@ -1,6 +1,6 @@
 {
   "name": "@sociably/stream",
-  "version": "0.8.0",
+  "version": "0.9.0-alpha.0",
   "type": "module",
   "description": "Reactive programming library for Sociably.js",
   "main": "./lib/index.js",
