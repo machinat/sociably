@@ -36,8 +36,8 @@
     "ws": "^7.2.5"
   },
   "peerDependencies": {
-    "@sociably/core": "^0.8.0",
-    "@sociably/http": "^0.8.0"
+    "@sociably/core": "^0.9.0-alpha",
+    "@sociably/http": "^0.9.0-alpha"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",

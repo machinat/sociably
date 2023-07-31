@@ -30,9 +30,9 @@
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
-    "@sociably/core": "^0.8.0"
+    "@sociably/core": "^0.9.0-alpha"
   },
   "devDependencies": {
-    "@sociably/dev-tools": "^0.8.0"
+    "@sociably/dev-tools": "^0.9.0-alpha"
   }
 }
