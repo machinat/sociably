@@ -20,5 +20,6 @@ export const getAuthContextDetails = (
     user: new InstagramUser(pageId, userId),
     userProfile: profileData ? new UserProfile(profileData) : null,
     pageId,
+    agentUsername,
   };
 };

@@ -51,7 +51,7 @@ export default class InstagramClientAuthenticator
       return false;
     }
 
-    window.location.href = `https://ig.me/m/${ctx.channel.username}`;
+    window.location.href = `https://ig.me/m/${ctx.agentUsername}`;
     return true;
   }
 }

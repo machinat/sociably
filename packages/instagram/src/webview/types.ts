@@ -30,4 +30,5 @@ export type InstagramAuthContext = {
   user: null | InstagramUser;
   userProfile: null | UserProfile;
   pageId: string;
+  agentUsername: string;
 } & AuthContextBase;

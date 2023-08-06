@@ -43,6 +43,7 @@ describe('.closeWebview()', () => {
   const authContext = {
     platform: 'instagram' as const,
     pageId: '12345',
+    agentUsername: 'jojodoe123',
     channel: new InstagramPage('12345', 'jojodoe123'),
     thread: new InstagramChat('12345', { id: '67890' }),
     user: new InstagramUser('12345', '67890'),
@@ -95,6 +96,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       pageId: '12345',
+      agentUsername: 'jojodoe123',
       channel: new InstagramPage('12345', 'jojodoe123'),
       thread: new InstagramChat('12345', { id: '67890' }),
       user: new InstagramUser('12345', '67890'),
@@ -122,6 +124,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       pageId: '98765',
+      agentUsername: 'janedoe123',
       channel: new InstagramPage('98765', 'janedoe123'),
       thread: new InstagramChat('98765', { id: '43210' }),
       user: new InstagramUser('98765', '43210'),
