@@ -63,7 +63,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     webhookUrl = this.defaultSettings.webhookUrl,
     fields = this.defaultSettings.subscriptionFields,
     verifyToken = this.defaultSettings.verifyToken,
-  }: Partial<SetMetaAppSubscriptionOptions>): Promise<void> {
+  }: Partial<SetMetaAppSubscriptionOptions> = {}): Promise<void> {
     if (!appId || !verifyToken || !webhookUrl || !fields?.length) {
       throw new Error('appId, webhookUrl, verifyToken or fields is empty');
     }
