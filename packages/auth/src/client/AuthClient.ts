@@ -532,7 +532,7 @@ class AuthClient<
         platform: authenticator.platform,
         loginAt: new Date(iat * 1000),
         expireAt: new Date(exp * 1000),
-      },
+      } as AnyAuthContext,
     ];
   }
 

@@ -126,7 +126,7 @@ export interface ServerAuthenticator<
 export type AnyServerAuthenticator = ServerAuthenticator<
   unknown,
   unknown,
-  AnyAuthContext
+  AnyAuthContext & { [k: string]: unknown }
 >;
 
 export type AuthenticatorCredentialResult<Credential> =
@@ -177,7 +177,7 @@ export interface ClientAuthenticator<
 export type AnyClientAuthenticator = ClientAuthenticator<
   unknown,
   unknown,
-  AnyAuthContext
+  AnyAuthContext & { [k: string]: unknown }
 >;
 
 export type SignRequestBody<Credential> = {
