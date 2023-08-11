@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { moxy } from '@moxyjs/moxy';
-import WebhookReceiver from '../receiver';
+import WebhookReceiver from '../Receiver';
 
 const createReq = ({ method, url = '/', body = '', headers = {} }) => {
   const req = new Readable({
@@ -144,7 +144,8 @@ it('pass routing info down to the handler if received', async () => {
   const receiver = new WebhookReceiver(webhookHandler);
   await receiver.handleRequest(req, res, {
     originalPath: '/foo/bar/baz',
-    matchedPath: '/foo',
+    basePath: '/',
+    matchedPath: 'foo',
     trailingPath: 'bar/baz',
   });
 
@@ -161,7 +162,8 @@ it('pass routing info down to the handler if received', async () => {
     },
     {
       originalPath: '/foo/bar/baz',
-      matchedPath: '/foo',
+      basePath: '/',
+      matchedPath: 'foo',
       trailingPath: 'bar/baz',
     }
   );

@@ -18,7 +18,6 @@ import { ServerI, ConfigsI } from './interface.js';
 import type { NextServer, NextRequestHandler } from './types.js';
 
 type NextReceiverOptions = {
-  entryPath?: string;
   noPrepare?: boolean;
   handleRequest?: NextRequestHandler;
   initScope?: () => ServiceScope;
@@ -29,35 +28,27 @@ type NextReceiverOptions = {
  * @category Provider
  */
 export class NextReceiver {
-  private _next: NextServer;
-  private _defaultNextHandler: ReturnType<NextServer['getRequestHandler']>;
+  private nextServer: NextServer;
+  private defaultNextHandler: ReturnType<NextServer['getRequestHandler']>;
 
-  private _pathPrefix: string;
-  private _shouldPrepare: boolean;
-  private _prepared: boolean;
+  private shouldPrepare: boolean;
+  private isPrepared: boolean;
 
-  private _requestHandler: NextRequestHandler;
-  private _initScope: () => ServiceScope;
-  private _popError: (err: Error) => void;
+  private requestHandler: NextRequestHandler;
+  private initScope: () => ServiceScope;
+  private popError: (err: Error) => void;
 
   constructor(
     nextApp: NextServer,
-    {
-      noPrepare,
-      entryPath,
-      handleRequest,
-      initScope,
-      popError,
-    }: NextReceiverOptions = {}
+    { noPrepare, handleRequest, initScope, popError }: NextReceiverOptions = {}
   ) {
-    this._next = nextApp;
-    this._defaultNextHandler = nextApp.getRequestHandler();
-    this._pathPrefix = entryPath ? entryPath.replace(/\/$/, '') : '';
-    this._shouldPrepare = !noPrepare;
+    this.nextServer = nextApp;
+    this.defaultNextHandler = nextApp.getRequestHandler();
+    this.shouldPrepare = !noPrepare;
 
-    this._requestHandler = handleRequest || (() => ({ ok: true }));
-    this._initScope = initScope || createEmptyScope;
-    this._popError =
+    this.requestHandler = handleRequest || (() => ({ ok: true }));
+    this.initScope = initScope || createEmptyScope;
+    this.popError =
       popError ||
       (() => {
         // do nothing
@@ -65,18 +56,22 @@ export class NextReceiver {
   }
 
   async prepare(): Promise<void> {
-    if (this._shouldPrepare) {
-      await this._next.prepare();
+    if (this.shouldPrepare) {
+      await this.nextServer.prepare();
     }
-    this._prepared = true;
+    this.isPrepared = true;
   }
 
   async close(): Promise<void> {
-    await this._next.close();
+    await this.nextServer.close();
   }
 
-  handleRequest(req: IncomingMessage, res: ServerResponse): void {
-    this._handleRequestImpl(req, res).catch(this._popError);
+  handleRequest(
+    req: IncomingMessage,
+    res: ServerResponse,
+    routing: RoutingInfo
+  ): void {
+    this.handleRequestImpl(req, res, routing).catch(this.popError);
   }
 
   handleRequestCallback(): RequestHandler {
@@ -99,8 +94,8 @@ export class NextReceiver {
       );
       socket.destroy();
     } else {
-      this._defaultNextHandler(req, new ServerResponse(req)).catch(
-        this._popError
+      this.defaultNextHandler(req, new ServerResponse(req)).catch(
+        this.popError
       );
     }
   }
@@ -109,39 +104,21 @@ export class NextReceiver {
     return this.handleHmrUpgrade.bind(this);
   }
 
-  private async _handleRequestImpl(req: IncomingMessage, res: ServerResponse) {
-    if (!this._prepared) {
+  private async handleRequestImpl(
+    req: IncomingMessage,
+    res: ServerResponse,
+    { trailingPath }: RoutingInfo
+  ) {
+    if (!this.isPrepared) {
       res.writeHead(503);
       res.end(STATUS_CODES[503]);
       return;
     }
 
     const parsedUrl = parseUrl(req.url as string, true);
-    const pathPrefix = this._pathPrefix;
 
-    const { pathname } = parsedUrl;
-    const trimedRoute = !pathname
-      ? undefined
-      : pathPrefix === ''
-      ? pathname
-      : pathname.indexOf(pathPrefix) === 0
-      ? pathname.slice(pathPrefix.length) || '/'
-      : undefined;
-
-    if (!trimedRoute) {
-      res.statusCode = 404;
-      await this._next.renderError(
-        null,
-        req,
-        res,
-        pathname as string,
-        parsedUrl.query
-      );
-      return;
-    }
-
-    if (trimedRoute.slice(1, 6) === '_next') {
-      this._defaultNextHandler(req, res, parsedUrl);
+    if (trailingPath.slice(0, 5) === '_next') {
+      this.defaultNextHandler(req, res, parsedUrl);
       return;
     }
 
@@ -149,13 +126,13 @@ export class NextReceiver {
       const request = {
         method: req.method as string,
         url: req.url as string,
-        route: trimedRoute,
+        route: trailingPath,
         headers: req.headers,
       };
 
       const response = await maybeInjectContainer(
-        this._initScope(),
-        this._requestHandler
+        this.initScope(),
+        this.requestHandler
       )(request);
 
       if (response.ok) {
@@ -167,15 +144,15 @@ export class NextReceiver {
         }
 
         if (page || query) {
-          await this._next.render(
+          await this.nextServer.render(
             req,
             res,
-            page || trimedRoute,
+            page || trailingPath,
             query || parsedUrl.query,
             parsedUrl
           );
         } else {
-          this._defaultNextHandler(req, res, parsedUrl);
+          this.defaultNextHandler(req, res, parsedUrl);
         }
       } else {
         const { code, reason, headers } = response;
@@ -189,19 +166,25 @@ export class NextReceiver {
           }
         }
 
-        await this._next.renderError(
+        await this.nextServer.renderError(
           reason ? new Error(reason) : null,
           req,
           res,
-          trimedRoute,
+          trailingPath,
           parsedUrl.query
         );
       }
     } catch (err) {
-      this._popError(err);
+      this.popError(err);
 
       res.statusCode = 500;
-      await this._next.renderError(err, req, res, trimedRoute, parsedUrl.query);
+      await this.nextServer.renderError(
+        err,
+        req,
+        res,
+        trailingPath,
+        parsedUrl.query
+      );
     }
   }
 }
@@ -209,9 +192,8 @@ export class NextReceiver {
 export const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ServerI, ConfigsI, { require: ModuleUtilitiesI, optional: true }],
-  factory: (nextApp, { entryPath, noPrepare, handleRequest }, moduleUtils) =>
+  factory: (nextApp, { noPrepare, handleRequest }, moduleUtils) =>
     new NextReceiver(nextApp, {
-      entryPath,
       noPrepare,
       handleRequest,
       initScope: moduleUtils?.initScope,

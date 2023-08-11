@@ -79,6 +79,13 @@ const agentSettingsAccessor = moxy({
   getAgentSettingsBatch: async () => [],
 });
 
+const validRoutingInfo = {
+  originalPath: '/telegram/1111111',
+  basePath: '/',
+  matchedPath: 'telegram',
+  trailingPath: '1111111',
+};
+
 beforeEach(() => {
   bot.mock.reset();
   popEventMock.reset();
@@ -99,7 +106,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
     const req = createReq({ method });
     const res = createRes();
 
-    await receiver.handleRequest(req as never, res);
+    await receiver.handleRequest(req as never, res, validRoutingInfo);
 
     expect(res.statusCode).toBe(405);
     expect(res.finished).toBe(true);
@@ -119,37 +126,14 @@ it('respond 404 if bot ID entry path is invalid', async () => {
   await receiver.handleRequest(
     createReq({
       method: 'POST',
-      url: `/telegram`,
-      body: JSON.stringify(updateBody),
-    }),
-    res
-  );
-  expect(res.statusCode).toBe(404);
-  expect(res.finished).toBe(true);
-
-  res = createRes();
-  await receiver.handleRequest(
-    createReq({
-      method: 'POST',
-      url: `/telegram/foo`,
-      body: JSON.stringify(updateBody),
-    }),
-    res
-  );
-  expect(res.statusCode).toBe(404);
-  expect(res.finished).toBe(true);
-
-  res = createRes();
-  await receiver.handleRequest(
-    createReq({
-      method: 'POST',
       url: `/foo`,
       body: JSON.stringify(updateBody),
     }),
     res,
     {
       originalPath: '/telegram',
-      matchedPath: '/telegram',
+      basePath: '/',
+      matchedPath: 'telegram',
       trailingPath: '',
     }
   );
@@ -166,7 +150,8 @@ it('respond 404 if bot ID entry path is invalid', async () => {
     res,
     {
       originalPath: '/telegram/foo',
-      matchedPath: '/telegram',
+      basePath: '/',
+      matchedPath: 'telegram',
       trailingPath: 'foo',
     }
   );
@@ -191,7 +176,7 @@ it('respond 404 if bot settings not found', async () => {
   });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, validRoutingInfo);
 
   expect(res.statusCode).toBe(404);
   expect(res.finished).toBe(true);
@@ -208,7 +193,7 @@ it('respond 400 if body is empty', async () => {
   const req = createReq({ method: 'POST', url: `/${botId}` });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, validRoutingInfo);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -229,7 +214,7 @@ it('respond 400 if body is not in valid json format', async () => {
   });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, validRoutingInfo);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -248,7 +233,7 @@ it('respond 200 and pop events received', async () => {
   const req = createReq({ method: 'POST', url: `/${botId}`, body: bodyStr });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, validRoutingInfo);
 
   expect(res.statusCode).toBe(200);
   expect(res.finished).toBe(true);
@@ -295,7 +280,8 @@ describe('constext.reply(message)', () => {
         url: `/${botId}`,
         body: JSON.stringify(updateBody),
       }),
-      createRes()
+      createRes(),
+      validRoutingInfo
     );
 
     expect(popEventMock).toHaveBeenCalledTimes(1);
@@ -327,7 +313,8 @@ describe('constext.reply(message)', () => {
           },
         }),
       }),
-      createRes()
+      createRes(),
+      validRoutingInfo
     );
     expect(popEventMock).toHaveBeenCalledTimes(1);
     const [{ reply, event }] = popEventMock.calls[0].args;
@@ -355,7 +342,7 @@ it('verify "x-telegram-bot-api-secret-token" header matching options.secretToken
     body: JSON.stringify(updateBody),
   });
   const res1 = createRes();
-  await receiver.handleRequest(req1, res1);
+  await receiver.handleRequest(req1, res1, validRoutingInfo);
 
   expect(res1.statusCode).toBe(401);
   expect(res1.finished).toBe(true);
@@ -367,7 +354,12 @@ it('verify "x-telegram-bot-api-secret-token" header matching options.secretToken
     body: JSON.stringify(updateBody),
   });
   const res2 = createRes();
-  await receiver.handleRequest(req2, res2);
+  await receiver.handleRequest(req2, res2, {
+    originalPath: '/telegram/123',
+    basePath: '/',
+    matchedPath: 'telegram',
+    trailingPath: '123',
+  });
 
   expect(res2.statusCode).toBe(401);
   expect(res2.finished).toBe(true);
@@ -381,7 +373,7 @@ it('verify "x-telegram-bot-api-secret-token" header matching options.secretToken
     body: JSON.stringify(updateBody),
   });
   const res3 = createRes();
-  await receiver.handleRequest(req3, res3);
+  await receiver.handleRequest(req3, res3, validRoutingInfo);
 
   expect(res3.statusCode).toBe(200);
   expect(res3.finished).toBe(true);

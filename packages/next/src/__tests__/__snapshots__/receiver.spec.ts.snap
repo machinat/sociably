@@ -6,7 +6,7 @@ exports[`call next.render() with page/query returned by handleRequest 1`] = `
     "x-y-z": "abc",
   },
   "method": "GET",
-  "route": "/hello",
+  "route": "hello",
   "url": "http://sociably.io/hello?foo=bar",
 }
 `;
@@ -17,7 +17,7 @@ exports[`call next.renderError() handleRequest return not ok 1`] = `
     "x-y-z": "abc",
   },
   "method": "GET",
-  "route": "/hello",
+  "route": "hello",
   "url": "http://sociably.io/hello?foo=bar",
 }
 `;

@@ -19,7 +19,7 @@ class WebhookReceiver {
   async handleRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    routingInfo?: RoutingInfo
+    routingInfo: RoutingInfo
   ): Promise<void> {
     try {
       let body: undefined | string;

@@ -232,16 +232,22 @@ export class LineAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateController, BotP, AgentSettingsAccessorI, Http.Configs, ConfigsI],
+  deps: [
+    StateController,
+    BotP,
+    AgentSettingsAccessorI,
+    Http.Connector,
+    ConfigsI,
+  ],
   factory: (
     stateController,
     bot,
     agentSettingsAccessor,
-    { entryUrl },
+    connector,
     { webhookPath }
   ) =>
     new LineAssetsManager(stateController, bot, agentSettingsAccessor, {
-      webhookUrl: new URL(webhookPath ?? '', entryUrl).href,
+      webhookUrl: connector.getServerUrl(webhookPath),
     }),
 })(LineAssetsManager);
 

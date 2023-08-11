@@ -7,11 +7,11 @@ import {
 import { moxy } from '@moxyjs/moxy';
 import type createNextApp from 'next';
 import { IncomingMessage, ServerResponse } from 'http';
-import { NextReceiver } from '../receiver.js';
+import { NextReceiver } from '../Receiver.js';
 
 const nextDefaultHandler = moxy(async () => {});
 
-const nextApp = moxy<ReturnType<typeof createNextApp>>({
+const nextApp = moxy<ReturnType<typeof createNextApp.default>>({
   getRequestHandler: () => nextDefaultHandler,
   prepare: async () => {},
   close: async () => {},
@@ -32,6 +32,12 @@ const req = moxy<IncomingMessage>({
   url: 'http://sociably.io/hello?foo=bar',
   headers: { 'x-y-z': 'abc' },
 } as never);
+const routing = {
+  originalPath: '/hello',
+  basePath: '/',
+  matchedPath: '',
+  trailingPath: 'hello',
+};
 let res;
 
 beforeEach(() => {
@@ -51,7 +57,7 @@ it('respond 503 if request received before prepared', async () => {
     handleRequest,
   });
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(receiver.handleRequest(req, res, routing)).toBe(undefined);
   await nextTick();
 
   expect(res.statusCode).toBe(503);
@@ -94,7 +100,7 @@ test('handle http request', async () => {
   });
   await receiver.prepare();
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(receiver.handleRequest(req, res, routing)).toBe(undefined);
   await nextTick();
 
   expect(res.statusCode).toBe(200);
@@ -127,7 +133,7 @@ test('handle http request', async () => {
   expect(handleRequest).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello?foo=bar',
-    route: '/hello',
+    route: 'hello',
     headers: { 'x-y-z': 'abc' },
   });
 });
@@ -135,14 +141,18 @@ test('handle http request', async () => {
 test('with entryPath', async () => {
   const receiver = new NextReceiver(nextApp, {
     noPrepare: true,
-    entryPath: '/hello',
     popError,
     handleRequest,
   });
   await receiver.prepare();
 
   req.mock.getter('url').fakeReturnValue('http://sociably.io/hello/world');
-  receiver.handleRequest(req, res);
+  receiver.handleRequest(req, res, {
+    originalPath: '/hello/world',
+    basePath: '/',
+    matchedPath: 'hello',
+    trailingPath: 'world',
+  });
   await nextTick();
 
   expect(nextApp.renderError).not.toHaveBeenCalled();
@@ -159,41 +169,9 @@ test('with entryPath', async () => {
   expect(handleRequest).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello/world',
-    route: '/world',
+    route: 'world',
     headers: { 'x-y-z': 'abc' },
   });
-});
-
-it('respond 404 if entryPath not match', async () => {
-  const receiver = new NextReceiver(nextApp, {
-    noPrepare: true,
-    entryPath: '/hello',
-    popError,
-    handleRequest,
-  });
-  await receiver.prepare();
-
-  req.mock.getter('url').fakeReturnValue('http://sociably.io/foo/world');
-
-  receiver.handleRequest(req, res);
-  await nextTick();
-
-  expect(handleRequest).not.toHaveBeenCalled();
-  expect(nextApp.render).not.toHaveBeenCalled();
-  expect(nextDefaultHandler).not.toHaveBeenCalled();
-
-  expect(nextApp.render).not.toHaveBeenCalled();
-  expect(nextApp.renderError).toHaveBeenCalledTimes(1);
-  expect(nextApp.renderError).toHaveBeenCalledWith(
-    null,
-    req,
-    res,
-    '/foo/world',
-    {}
-  );
-
-  expect(res.mock.setter('statusCode')).toHaveBeenCalledTimes(1);
-  expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(404);
 });
 
 test('customized headers returned by handleRequest', async () => {
@@ -209,14 +187,14 @@ test('customized headers returned by handleRequest', async () => {
   });
   await receiver.prepare();
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(receiver.handleRequest(req, res, routing)).toBe(undefined);
   await nextTick();
 
   expect(handleRequest).toHaveBeenCalledTimes(1);
   expect(handleRequest).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello?foo=bar',
-    route: '/hello',
+    route: 'hello',
     headers: { 'x-y-z': 'abc' },
   });
 
@@ -239,7 +217,7 @@ it('call next.render() with page/query returned by handleRequest', async () => {
     headers: { 'x-y-z': 'a_b_c' },
   }));
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(receiver.handleRequest(req, res, routing)).toBe(undefined);
   await nextTick();
 
   expect(handleRequest).toHaveReturnedTimes(1);
@@ -280,7 +258,7 @@ it('call next.render() with page/query returned by handleRequest', async () => {
   expect(handleRequest).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello?foo=bar',
-    route: '/hello',
+    route: 'hello',
     headers: { 'x-y-z': 'abc' },
   });
 
@@ -302,7 +280,7 @@ test('use service container for handleRequest', async () => {
   });
   await receiver.prepare();
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(receiver.handleRequest(req, res, routing)).toBe(undefined);
   await nextTick();
 
   expect(initScope).toHaveBeenCalledTimes(1);
@@ -327,7 +305,7 @@ test('use service container for handleRequest', async () => {
   expect(handleRequestFn).toHaveBeenCalledWith({
     method: 'GET',
     url: 'http://sociably.io/hello?foo=bar',
-    route: '/hello',
+    route: 'hello',
     headers: { 'x-y-z': 'abc' },
   });
 
@@ -348,7 +326,7 @@ it('call next.renderError() handleRequest return not ok', async () => {
     reason: "I'm a teapot",
   }));
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(receiver.handleRequest(req, res, routing)).toBe(undefined);
   await nextTick();
 
   expect(handleRequest).toHaveBeenCalledTimes(1);
@@ -362,7 +340,7 @@ it('call next.renderError() handleRequest return not ok', async () => {
     new Error("I'm a teapot"),
     req,
     res,
-    '/hello',
+    'hello',
     { foo: 'bar' }
   );
 
@@ -385,14 +363,14 @@ it('call next.renderError() with customized headers return by handleRequest', as
     headers: { 'x-x-x': 't-e-a-p-o-t' },
   }));
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(receiver.handleRequest(req, res, routing)).toBe(undefined);
   await nextTick();
 
   expect(nextApp.renderError).toHaveBeenCalledWith(
     new Error("I'm a teapot"),
     req,
     res,
-    '/hello',
+    'hello',
     { foo: 'bar' }
   );
 
@@ -405,7 +383,6 @@ it('call next.renderError() with customized headers return by handleRequest', as
 it('pass "_next" api calls to next directly', async () => {
   const receiver = new NextReceiver(nextApp, {
     noPrepare: true,
-    entryPath: '/hello',
     popError,
     handleRequest,
   });
@@ -413,7 +390,12 @@ it('pass "_next" api calls to next directly', async () => {
 
   req.mock.getter('url').fakeReturnValue('http://sociably.io/hello/_next/xxx');
 
-  receiver.handleRequest(req, res);
+  receiver.handleRequest(req, res, {
+    originalPath: '/hello/_next/xxx',
+    basePath: '/',
+    matchedPath: 'hello',
+    trailingPath: '_next/xxx',
+  });
   await nextTick();
 
   expect(handleRequest).not.toHaveBeenCalled();
@@ -427,10 +409,9 @@ it('pass "_next" api calls to next directly', async () => {
   expect(parsedUrl.pathname).toBe('/hello/_next/xxx');
 });
 
-test('entryPath does not affect page params from middlewares', async () => {
+test('page returned by handleRequest prioritized than routing', async () => {
   const receiver = new NextReceiver(nextApp, {
     noPrepare: true,
-    entryPath: '/hello',
     popError,
     handleRequest,
   });
@@ -442,7 +423,14 @@ test('entryPath does not affect page params from middlewares', async () => {
     query: { foo: 'bar' },
   }));
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(
+    receiver.handleRequest(req, res, {
+      originalPath: '/hello/world',
+      basePath: '/',
+      matchedPath: 'hello',
+      trailingPath: 'world',
+    })
+  ).toBe(undefined);
   await nextTick();
 
   expect(nextApp.render).toHaveBeenCalledTimes(1);
@@ -467,7 +455,7 @@ it('call next.renderError() if middlewares reject', async () => {
     throw new Error("I'm a teapot");
   });
 
-  expect(receiver.handleRequest(req, res)).toBe(undefined);
+  expect(receiver.handleRequest(req, res, routing)).toBe(undefined);
   await nextTick();
 
   expect(handleRequest).toHaveBeenCalledTimes(1);
@@ -480,7 +468,7 @@ it('call next.renderError() if middlewares reject', async () => {
     new Error("I'm a teapot"),
     req,
     res,
-    '/hello',
+    'hello',
     { foo: 'bar' }
   );
 
@@ -493,7 +481,6 @@ it('call next.renderError() if middlewares reject', async () => {
 it('pass hmr upgrade request to next server', async () => {
   const receiver = new NextReceiver(nextApp, {
     noPrepare: true,
-    entryPath: '/hello',
     popError,
     handleRequest,
   });
@@ -503,7 +490,8 @@ it('pass hmr upgrade request to next server', async () => {
 
   receiver.handleHmrUpgrade(req, socket as never, Buffer.from(''), {
     originalPath: '/hello/_next/webpack-hmr',
-    matchedPath: '/hello',
+    basePath: '/',
+    matchedPath: 'hello',
     trailingPath: '_next/webpack-hmr',
   });
   await nextTick();
@@ -517,7 +505,8 @@ it('pass hmr upgrade request to next server', async () => {
 
   receiver.handleHmrUpgrade(req, socket as never, Buffer.from(''), {
     originalPath: '/hello/_next/wrong-path',
-    matchedPath: '/hello',
+    basePath: '/',
+    matchedPath: 'hello',
     trailingPath: '_next/wrong-path',
   });
   await nextTick();

@@ -1,5 +1,3 @@
-import { parse as parseUrl } from 'url';
-import { posix as posixPath } from 'path';
 import type { PopEventWrapper } from '@sociably/core';
 import { WebhookReceiver } from '@sociably/http/webhook';
 import type { WebhookHandler } from '@sociably/http/webhook';
@@ -28,12 +26,11 @@ const handleWebhook = ({
   popEventWrapper,
   agentSettingsAccessor,
   shouldVerifySecretToken = true,
-  webhookPath = '/',
 }: TelegramReceiverOptions): WebhookHandler => {
   const popEvent = popEventWrapper(async () => null);
 
-  return async (metadata, routingInfo) => {
-    const { method, url, body: rawBody, headers } = metadata.request;
+  return async (metadata, { trailingPath }) => {
+    const { method, body: rawBody, headers } = metadata.request;
 
     // method not allowed
     if (method !== 'POST') {
@@ -42,19 +39,6 @@ const handleWebhook = ({
 
     if (!rawBody) {
       return { code: 400 };
-    }
-
-    let trailingPath = routingInfo?.trailingPath;
-    if (!trailingPath) {
-      const { pathname } = parseUrl(url);
-      trailingPath = posixPath.relative(
-        posixPath.join('/', webhookPath),
-        posixPath.normalize(pathname as string)
-      );
-
-      if (trailingPath === '' || trailingPath[0] === '.') {
-        return { code: 404 };
-      }
     }
 
     const botId = parseInt(trailingPath, 10);

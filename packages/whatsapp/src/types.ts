@@ -97,6 +97,10 @@ export type WhatsAppConfigs = {
   verifyToken: string;
   /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
+  /**
+   * The webhook subscription fields for WhatsApp account. Default to `['messages']`
+   */
+  subscriptionFields?: string[];
   /** The graph API version to make API calls */
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;

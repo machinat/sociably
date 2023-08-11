@@ -46,6 +46,24 @@ it('throw if entryUrl is not a directory', () => {
   );
 });
 
+test('.getServerUrl(subpath) return the url of the server', () => {
+  let connector = new HttpConnector({
+    entryUrl: 'https://sociably.io',
+  });
+  expect(connector.getServerUrl()).toBe('https://sociably.io/');
+  expect(connector.getServerUrl('foo')).toBe('https://sociably.io/foo');
+  expect(connector.getServerUrl('foo/bar')).toBe('https://sociably.io/foo/bar');
+
+  connector = new HttpConnector({
+    entryUrl: 'https://sociably.io/foo/',
+  });
+  expect(connector.getServerUrl()).toBe('https://sociably.io/foo/');
+  expect(connector.getServerUrl('bar')).toBe('https://sociably.io/foo/bar');
+  expect(connector.getServerUrl('bar/baz')).toBe(
+    'https://sociably.io/foo/bar/baz'
+  );
+});
+
 describe('handling requests', () => {
   test('register only root path', () => {
     const handler = moxy();

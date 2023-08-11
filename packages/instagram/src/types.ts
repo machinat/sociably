@@ -140,7 +140,7 @@ export type InstagramConfigs = {
   /**
    * The webhook subscription fields for instagram. Default to `['messages', 'messaging_postbacks',
    * 'messaging_handovers', 'messaging_policy_enforcement', 'messaging_referrals']`
-   * */
+   */
   subscriptionFields?: string[];
   /** The graph API version to make API calls */
   graphApiVersion?: string;

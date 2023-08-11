@@ -2,6 +2,7 @@ import type { SociablyNode } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import StateControllerI from '@sociably/core/base/StateController';
 import { formatNode } from '@sociably/core/utils';
+import Http from '@sociably/http';
 import {
   MetaAssetsManager,
   SetMetaAppSubscriptionOptions,
@@ -9,6 +10,7 @@ import {
 } from '@sociably/meta-api';
 import BotP from '../Bot.js';
 import WhatsAppAgent from '../Agent.js';
+import { ConfigsI } from '../interface.js';
 import { WA } from '../constant.js';
 
 const MEDIA = 'media';
@@ -155,7 +157,19 @@ export class WhatsAppAssetsManager extends MetaAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP],
+  deps: [StateControllerI, BotP, Http.Connector, ConfigsI],
+  factory: (
+    stateController,
+    bot,
+    connector,
+    { appId, webhookPath, verifyToken, subscriptionFields }
+  ) =>
+    new WhatsAppAssetsManager(stateController, bot, {
+      appId,
+      verifyToken,
+      subscriptionFields,
+      webhookUrl: connector.getServerUrl(webhookPath),
+    }),
 })(WhatsAppAssetsManager);
 
 type AssetsManagerP = WhatsAppAssetsManager;

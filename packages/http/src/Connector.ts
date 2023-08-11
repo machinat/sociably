@@ -36,41 +36,42 @@ type ConnectorOptions = {
  */
 export class HttpConnector {
   basePath: string;
-  private _requestRoutes: RequestRoute[];
-  private _defaultRequestRoute: null | DefaultRequestRoute;
-  private _upgradeRoutes: UpgradeRoute[];
-  private _defaultUpgradeRoute: null | DefaultUpgradeRoute;
+  entryUrl: string;
+  private requestRoutes: RequestRoute[];
+  private defaultRequestRoute: null | DefaultRequestRoute;
+  private upgradeRoutes: UpgradeRoute[];
+  private defaultUpgradeRoute: null | DefaultUpgradeRoute;
 
   constructor({ entryUrl, requestRoutes, upgradeRoutes }: ConnectorOptions) {
-    this._requestRoutes = [];
-    this._upgradeRoutes = [];
-    this._defaultRequestRoute = null;
-    this._defaultUpgradeRoute = null;
+    this.requestRoutes = [];
+    this.upgradeRoutes = [];
+    this.defaultRequestRoute = null;
+    this.defaultUpgradeRoute = null;
 
-    const { pathname: basePath } = new URL(entryUrl);
-    if (!basePath.endsWith('/')) {
+    this.entryUrl = entryUrl;
+    this.basePath = new URL(entryUrl).pathname;
+    if (!this.basePath.endsWith('/')) {
       throw new Error('entryUrl must be a directory which ends with "/"');
     }
-    this.basePath = basePath;
 
     if (requestRoutes) {
       for (const route of requestRoutes) {
         if (route.default) {
-          if (this._defaultRequestRoute) {
+          if (this.defaultRequestRoute) {
             throw new Error(
               `multiple default request routes received: ${
-                this._defaultRequestRoute.name || 'unknown'
+                this.defaultRequestRoute.name || 'unknown'
               }, ${route.name || 'unknown'}`
             );
           }
 
-          this._defaultRequestRoute = route;
+          this.defaultRequestRoute = route;
         } else {
-          const err = checkRoutePath(this._requestRoutes, route);
+          const err = checkRoutePath(this.requestRoutes, route);
           if (err) {
             throw err;
           }
-          this._requestRoutes.push(route);
+          this.requestRoutes.push(route);
         }
       }
     }
@@ -78,19 +79,19 @@ export class HttpConnector {
     if (upgradeRoutes) {
       for (const route of upgradeRoutes) {
         if (route.default) {
-          if (this._defaultUpgradeRoute) {
+          if (this.defaultUpgradeRoute) {
             throw new Error(
-              `multiple default upgrade routes received: "${this._defaultUpgradeRoute.name}", "${route.name}"`
+              `multiple default upgrade routes received: "${this.defaultUpgradeRoute.name}", "${route.name}"`
             );
           }
 
-          this._defaultUpgradeRoute = route;
+          this.defaultUpgradeRoute = route;
         } else {
-          const err = checkRoutePath(this._upgradeRoutes, route);
+          const err = checkRoutePath(this.upgradeRoutes, route);
           if (err) {
             throw err;
           }
-          this._upgradeRoutes.push(route);
+          this.upgradeRoutes.push(route);
         }
       }
     }
@@ -98,7 +99,7 @@ export class HttpConnector {
 
   async connect(server: ServerI, options?: ServerListenOptions): Promise<void> {
     server.addListener('request', this._handleRequestCallback);
-    if (this._upgradeRoutes.length > 0) {
+    if (this.upgradeRoutes.length > 0) {
       server.addListener('upgrade', this._handleUpgradeCallback);
     }
 
@@ -114,7 +115,7 @@ export class HttpConnector {
       return;
     }
 
-    for (const { path: routePath, handler } of this._requestRoutes) {
+    for (const { path: routePath, handler } of this.requestRoutes) {
       const matchedRoutingInfo = this._getMatchedRoutingInfo(
         pathname,
         routePath
@@ -125,12 +126,12 @@ export class HttpConnector {
       }
     }
 
-    if (!this._defaultRequestRoute) {
+    if (!this.defaultRequestRoute) {
       endRes(res, 404);
       return;
     }
 
-    this._defaultRequestRoute.handler(req, res, {
+    this.defaultRequestRoute.handler(req, res, {
       originalPath: pathname,
       basePath: this.basePath,
       matchedPath: undefined,
@@ -147,7 +148,7 @@ export class HttpConnector {
       return;
     }
 
-    for (const { path: routePath, handler } of this._upgradeRoutes) {
+    for (const { path: routePath, handler } of this.upgradeRoutes) {
       const matchedRoutingInfo = this._getMatchedRoutingInfo(
         pathname,
         routePath
@@ -158,17 +159,21 @@ export class HttpConnector {
       }
     }
 
-    if (!this._defaultUpgradeRoute) {
+    if (!this.defaultUpgradeRoute) {
       respondUpgrade(socket, 404);
       return;
     }
 
-    this._defaultUpgradeRoute.handler(req, socket, head, {
+    this.defaultUpgradeRoute.handler(req, socket, head, {
       originalPath: pathname,
       basePath: this.basePath,
       matchedPath: undefined,
       trailingPath: pathname.slice(1),
     });
+  }
+
+  getServerUrl(subpath?: string): string {
+    return new URL(subpath || '', this.entryUrl).href;
   }
 
   private _getMatchedRoutingInfo(

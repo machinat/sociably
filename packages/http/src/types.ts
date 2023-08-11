@@ -65,6 +65,6 @@ export type HttpConfigs = {
   listenOptions?: ServerListenOptions;
   /** Set to `true` to prevent listening HTTP request when app start */
   noServer?: boolean;
-  /** The external entry point URL of the server */
+  /** The external entry point URL of the server. If the URL contain a pathname, it must be a directory ends with `/` */
   entryUrl: string;
 };

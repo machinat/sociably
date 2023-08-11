@@ -190,10 +190,10 @@ export class TelegramAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP, StateController, Http.Configs, ConfigsI],
-  factory: (bot, stateController, { entryUrl }, { webhookPath }) =>
+  deps: [BotP, StateController, Http.Connector, ConfigsI],
+  factory: (bot, stateController, connector, { webhookPath }) =>
     new TelegramAssetsManager(bot, stateController, {
-      webhookUrl: new URL(webhookPath ?? '', entryUrl).href,
+      webhookUrl: connector.getServerUrl(webhookPath),
     }),
 })(TelegramAssetsManager);
 

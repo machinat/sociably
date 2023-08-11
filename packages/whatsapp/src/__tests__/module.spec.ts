@@ -75,12 +75,15 @@ describe('initModule(configs)', () => {
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
       verifyToken: '_VERIFY_TOKEN_',
-      webhookPath: '/webhook/whatsapp',
+      webhookPath: 'webhook/whatsapp',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
+        InMemoryState.initModule(),
+      ],
       platforms: [WhatsApp.initModule(configs)],
     });
     await app.start();
@@ -103,7 +106,7 @@ describe('initModule(configs)', () => {
     expect(routings).toEqual([
       {
         name: 'whatsapp',
-        path: '/webhook/whatsapp',
+        path: 'webhook/whatsapp',
         handler: expect.any(Function),
       },
     ]);
@@ -113,7 +116,10 @@ describe('initModule(configs)', () => {
 
   test('provide base interfaces', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         WhatsApp.initModule({
           agentSettings,
@@ -150,7 +156,10 @@ describe('initModule(configs)', () => {
 
   test('with configs.agentSettings', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         WhatsApp.initModule({
           agentSettings,
@@ -196,7 +205,10 @@ describe('initModule(configs)', () => {
       },
     ];
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         WhatsApp.initModule({
           multiAgentSettings: businessAccountSettings,
@@ -261,7 +273,10 @@ describe('initModule(configs)', () => {
     );
 
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         WhatsApp.initModule({
           agentSettingsService: myAgentSettingsService,
@@ -282,7 +297,10 @@ describe('initModule(configs)', () => {
 
   test('default webhookPath to "."', async () => {
     const app = Sociably.createApp({
-      modules: [InMemoryState.initModule()],
+      modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
+        InMemoryState.initModule(),
+      ],
       platforms: [
         WhatsApp.initModule({
           agentSettings,

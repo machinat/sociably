@@ -2,7 +2,7 @@ import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
 import NextJs from 'next';
-import { NextReceiver } from '../receiver.js';
+import { NextReceiver } from '../Receiver.js';
 import Next from '../module.js';
 
 const createNextApp = NextJs as unknown as Moxy<typeof NextJs.default>;
@@ -84,8 +84,9 @@ describe('initModule()', () => {
   test('provisions', async () => {
     const app = Sociably.createApp({
       modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
         Next.initModule({
-          entryPath: '/webview',
+          entryPath: 'webview',
           noPrepare: false,
           serverOptions: { dev: true },
         }),
@@ -102,7 +103,7 @@ describe('initModule()', () => {
 
     expect(receiver).toBeInstanceOf(NextReceiver);
     expect(configs).toEqual({
-      entryPath: '/webview',
+      entryPath: 'webview',
       noPrepare: false,
       serverOptions: { dev: true },
     });
@@ -116,7 +117,7 @@ describe('initModule()', () => {
         {
           "handler": [Function],
           "name": "next",
-          "path": "/webview",
+          "path": "webview",
         },
       ]
     `);
@@ -125,8 +126,9 @@ describe('initModule()', () => {
   test('register hmr route when dev', async () => {
     let app = Sociably.createApp({
       modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
         Next.initModule({
-          entryPath: '/webview',
+          entryPath: 'webview',
           noPrepare: false,
           serverOptions: { dev: true },
         }),
@@ -140,15 +142,16 @@ describe('initModule()', () => {
         {
           "handler": [Function],
           "name": "webpack-hmr",
-          "path": "/webview",
+          "path": "webview",
         },
       ]
     `);
 
     app = Sociably.createApp({
       modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
         Next.initModule({
-          entryPath: '/webview',
+          entryPath: 'webview',
           noPrepare: false,
           serverOptions: { dev: false },
         }),
@@ -162,7 +165,7 @@ describe('initModule()', () => {
 
   test('startHook() call receiver.prepare()', async () => {
     const { startHook } = Next.initModule({
-      entryPath: '/webview',
+      entryPath: 'webview',
       noPrepare: false,
       serverOptions: { dev: true },
     });
@@ -177,7 +180,7 @@ describe('initModule()', () => {
 
   test('stopHook() call receiver.close()', async () => {
     const { stopHook } = Next.initModule({
-      entryPath: '/webview',
+      entryPath: 'webview',
       noPrepare: false,
       serverOptions: { dev: true },
     });
@@ -190,9 +193,10 @@ describe('initModule()', () => {
     expect(receiver.close).toHaveBeenCalledWith();
   });
 
-  test('default entryPath to "/"', async () => {
+  test('default entryPath to "."', async () => {
     const app = Sociably.createApp({
       modules: [
+        Http.initModule({ noServer: true, entryUrl: 'http://sociably.io' }),
         Next.initModule({ noPrepare: false, serverOptions: { dev: true } }),
       ],
     });
@@ -200,7 +204,7 @@ describe('initModule()', () => {
 
     const [routings] = app.useServices([Http.RequestRouteList]);
     expect(routings).toEqual([
-      { name: 'next', path: '/', handler: expect.any(Function) },
+      { name: 'next', path: '.', handler: expect.any(Function) },
     ]);
   });
 });

@@ -7,7 +7,7 @@ import {
 } from '@sociably/core/service';
 import Http from '@sociably/http';
 import type { RequestRoute, UpgradeRoute } from '@sociably/http';
-import { ReceiverP } from './receiver.js';
+import { ReceiverP } from './Receiver.js';
 import { ConfigsI, ServerI } from './interface.js';
 
 // HACK: NextJs type is not compatible with moduleResolution: Node16
@@ -24,7 +24,7 @@ const requestRouteFactory = serviceProviderFactory({
 })(
   (receiver, configs): RequestRoute => ({
     name: 'next',
-    path: configs.entryPath || '/',
+    path: configs.entryPath || '.',
     handler: receiver.handleRequestCallback(),
   })
 );
@@ -35,7 +35,7 @@ const hmrRouteFactory = serviceProviderFactory({
 })(
   (receiver, configs): UpgradeRoute => ({
     name: 'webpack-hmr',
-    path: configs.entryPath || '/',
+    path: configs.entryPath || '.',
     handler: receiver.handleHmrUpgradeCallback(),
   })
 );

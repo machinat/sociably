@@ -1,89 +1,9 @@
-import type {
-  IncomingMessage,
-  ServerResponse,
-  IncomingHttpHeaders,
-  OutgoingHttpHeaders,
-} from 'http';
-import type { ParsedUrlQuery } from 'querystring';
-import type { UrlWithParsedQuery } from 'url';
+import type NextJs from 'next';
+import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http';
 import { MaybeContainer } from '@sociably/core/service';
 
-export interface NextServer {
-  options: NextServerOptions;
-  readonly hostname?: string;
-  readonly port?: number;
-  getRequestHandler(): (
-    req: IncomingMessage,
-    res: ServerResponse,
-    parsedUrl?: UrlWithParsedQuery
-  ) => Promise<void>;
-  getUpgradeHandler(): (
-    req: IncomingMessage,
-    socket: any,
-    head: any
-  ) => Promise<void>;
-  setAssetPrefix(assetPrefix: string): void;
-  logError(error: Error): void;
-  render(
-    eq: IncomingMessage,
-    res: ServerResponse,
-    pathname: string,
-    query?: ParsedUrlQuery,
-    parsedUrl?: UrlWithParsedQuery,
-    internal?: boolean
-  ): Promise<void>;
-  renderToHTML(
-    req: IncomingMessage,
-    res: ServerResponse,
-    pathname: string,
-    query?: ParsedUrlQuery
-  ): Promise<string | null>;
-  renderError(
-    err: Error | null,
-    req: IncomingMessage,
-    res: ServerResponse,
-    pathname: string,
-    query?: ParsedUrlQuery,
-    setHeaders?: boolean
-  ): Promise<void>;
-  renderErrorToHTML(
-    err: Error | null,
-    req: IncomingMessage,
-    res: ServerResponse,
-    pathname: string,
-    query?: ParsedUrlQuery
-  ): Promise<string | null>;
-  render404(
-    req: IncomingMessage,
-    res: ServerResponse,
-    parsedUrl?: UrlWithParsedQuery,
-    setHeaders?: boolean
-  ): Promise<void>;
-  serveStatic(
-    req: IncomingMessage,
-    res: ServerResponse,
-    path: string,
-    parsedUrl?: UrlWithParsedQuery
-  ): Promise<void>;
-  prepare(): Promise<void>;
-  close(): Promise<any>;
-}
-
-export type NextServerOptions = {
-  /**
-   * Where the Next project is located - @default '.'
-   */
-  dir?: string;
-  /**
-   * Hide error messages containing server information - @default false
-   */
-  quiet?: boolean;
-  /**
-   * Object what you would use in next.config.js - @default {}
-   */
-  conf?: null | { [key: string]: any };
-  dev?: boolean;
-};
+export type NextServer = ReturnType<typeof NextJs.default>;
+export type NextServerOptions = Parameters<typeof NextJs.default>[0];
 
 export type RequestInfo = {
   /** method of the HTTP request */

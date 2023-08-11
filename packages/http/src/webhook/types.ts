@@ -7,7 +7,7 @@ export interface WebhookMetadata {
 
 export type WebhookHandler = (
   metadata: WebhookMetadata,
-  routingInfo?: RoutingInfo
+  routingInfo: RoutingInfo
 ) => Promise<{
   code: number;
   headers?: {

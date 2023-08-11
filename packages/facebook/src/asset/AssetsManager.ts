@@ -184,18 +184,18 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP, Http.Configs, ConfigsI],
+  deps: [StateControllerI, BotP, Http.Connector, ConfigsI],
   factory: (
     stateController,
     bot,
-    { entryUrl },
+    connector,
     { appId, verifyToken, webhookPath, subscriptionFields }
   ) =>
     new FacebookAssetsManager(stateController, bot, {
       appId,
       verifyToken,
       subscriptionFields,
-      webhookUrl: new URL(webhookPath ?? '', entryUrl).href,
+      webhookUrl: connector.getServerUrl(webhookPath),
     }),
 })(FacebookAssetsManager);
 

@@ -1,7 +1,8 @@
 import { join as joinPath } from 'path';
 import { Marshaler, StateController } from '@sociably/core';
-import Http from '@sociably/http';
+import ModuleUtilities from '@sociably/core/base/ModuleUtilities';
 import { serviceInterface, serviceProviderClass } from '@sociably/core/service';
+import Http from '@sociably/http';
 import Auth, { AuthController, AuthHttpOperator } from '@sociably/auth';
 import type {
   AnyServerAuthenticator,
@@ -18,6 +19,12 @@ import type { WebviewConfigs, WebviewPlatformUtilities } from './types.js';
 
 export const ConfigsI = serviceInterface<WebviewConfigs>({
   name: 'WebviewConfigs',
+});
+
+export const PlatformUtilitiesI = serviceInterface<
+  WebviewPlatformUtilities<AnyServerAuthenticator>
+>({
+  name: 'WebviewPlatformUtilities',
 });
 
 // auth
@@ -82,12 +89,17 @@ export class WebviewNextReceiver extends NextReceiver {}
 
 export const NextReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [Next.Server, ConfigsI],
-  factory: (server, { noPrepareNext, nextRequestHandler, webviewPath }) =>
+  deps: [Next.Server, ConfigsI, ModuleUtilities],
+  factory: (
+    server,
+    { noPrepareNext, nextRequestHandler },
+    { initScope, popError }
+  ) =>
     new WebviewNextReceiver(server, {
-      entryPath: webviewPath,
       noPrepare: noPrepareNext,
       handleRequest: nextRequestHandler,
+      initScope,
+      popError,
     }),
 })(WebviewNextReceiver);
 
@@ -133,9 +145,3 @@ export const SocketServerP = serviceProviderClass({
     });
   },
 })(WebviewSocketServer);
-
-export const PlatformUtilitiesI = serviceInterface<
-  WebviewPlatformUtilities<AnyServerAuthenticator>
->({
-  name: 'WebviewPlatformUtilities',
-});
