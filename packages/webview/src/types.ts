@@ -71,7 +71,7 @@ export interface WebviewClientAuthenticator<
 export type AnyClientAuthenticator = WebviewClientAuthenticator<
   unknown,
   unknown,
-  AnyAuthContext
+  any
 >;
 
 export type WebviewEventContext<
