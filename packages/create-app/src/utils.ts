@@ -26,10 +26,10 @@ export const polishFileContent = (
 
   let content = input;
 
-  if (content[0] === '\n') {
+  if (content.startsWith('\n')) {
     content = content.slice(1);
   }
-  if (content[content.length - 1] !== '\n') {
+  if (!content.endsWith('\n')) {
     content = `${content}\n`;
   }
 

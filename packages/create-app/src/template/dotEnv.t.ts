@@ -21,14 +21,33 @@ NODE_ENV=development
 DEV_TUNNEL_SUBDOMAIN=${localTunnelSubDomain}
 DOMAIN=${localTunnelSubDomain}.t.machinat.dev
 PORT=8080
-${when(platforms.includes('facebook'))`
+${when(
+  platforms.includes('facebook') ||
+    platforms.includes('instagram') ||
+    platforms.includes('whatsapp')
+)`
+# Meta App
+
+META_APP_ID=
+META_APP_SECRET=
+META_WEBHOOK_VERIFY_TOKEN=${nanoid(16)}
+`}${when(platforms.includes('facebook'))`
 # Facebook
 
 FACEBOOK_PAGE_ID=
-FACEBOOK_APP_ID=
-FACEBOOK_APP_SECRET=
 FACEBOOK_ACCESS_TOKEN=
-FACEBOOK_VERIFY_TOKEN=${nanoid(16)}
+`}${when(platforms.includes('instagram'))`
+# Instagram
+
+INSTAGRAM_PAGE_ID=
+INSTAGRAM_ACCESS_TOKEN=
+INSTAGRAM_AGENT_USERNAME=
+`}${when(platforms.includes('whatsapp'))`
+# WhatsApp
+
+WHATSAPP_PHONE_NUMBER=
+WHATSAPP_NUMBER_ID=
+WHATSAPP_ACCESS_TOKEN=
 `}${when(platforms.includes('twitter'))`
 # Twitter
 
@@ -37,14 +56,14 @@ TWITTER_APP_KEY=
 TWITTER_APP_SECRET=
 TWITTER_BEARER_TOKEN=
 TWITTER_ACCESS_TOKEN=
-TWITTER_ACCESS_SECRET=
+TWITTER_TOKEN_SECRET=
 TWITTER_WEBHOOK_ENV= default
 `}${when(platforms.includes('telegram'))`
 # Telegram
 
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_BOT_NAME=
-TELEGRAM_SECRET_PATH=${nanoid(32)}
+TELEGRAM_SECRET_TOKEN=${nanoid(32)}
 `}${when(platforms.includes('line'))`
 # Line
 

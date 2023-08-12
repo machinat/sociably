@@ -10,7 +10,7 @@ Usage
   $ npm init @sociably/app -- -p <platform> [-p <platform> ...] <project-path>
 
 Options
-  -p, --platform   platform adaptors to install; supported: facebook, telegram, line, twitter
+  -p, --platform   platform adaptors to install; supported: facebook, instagram, whatsapp, telegram, line
   -n, --name,      the app name (default: project dir name)
   -r, --recognizer the intent recognition provider; regex or dialogflow (default: regex)
   -w, --webview    install webview modules
@@ -23,28 +23,29 @@ Example
     flags: {
       platform: {
         type: 'string',
-        alias: 'p',
+        shortFlag: 'p',
         isRequired: true,
         isMultiple: true,
       },
       name: {
         type: 'string',
-        alias: 'n',
+        shortFlag: 'n',
       },
       webview: {
         type: 'boolean',
-        alias: 'w',
+        shortFlag: 'w',
         default: false,
       },
       recognizer: {
         type: 'string',
-        alias: 'r',
+        shortFlag: 'r',
         default: 'regex',
       },
       npmTag: {
         type: 'string',
       },
     },
+    importMeta: import.meta,
   }
 );
 

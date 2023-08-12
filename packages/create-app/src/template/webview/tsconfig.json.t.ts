@@ -5,31 +5,24 @@ export default ({ withWebview }: CreateAppContext): string => when(withWebview)`
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es2018"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
-    "strictNullChecks": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "noEmit": true,
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }
 `;

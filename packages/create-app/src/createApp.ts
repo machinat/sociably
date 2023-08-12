@@ -12,7 +12,7 @@ import { spawn as spawnChildProcess } from 'child_process';
 import glob from 'glob';
 import chalk from 'chalk';
 import thenifiedly from 'thenifiedly';
-import { format as prettierFormat, Options as PrettierOptions } from 'prettier';
+import prettier, { Options as PrettierOptions } from 'prettier';
 import { polishFileContent } from './utils.js';
 import type { CreateAppContext, PlatformType } from './types.js';
 
@@ -25,9 +25,17 @@ type CreateAppOptions = {
 };
 
 const formatCode = (code: string, parser: PrettierOptions['parser']) =>
-  prettierFormat(code, { parser, singleQuote: true });
+  prettier.format(code, { parser, singleQuote: true });
 
-const supportedPlatforms = ['facebook', 'twitter', 'telegram', 'line'];
+const supportedPlatforms: PlatformType[] = [
+  'facebook',
+  'instagram',
+  'whatsapp',
+  // NOTE: close twitter until Account Activity API support is back
+  // 'twitter',
+  'telegram',
+  'line',
+];
 
 const createSociablyApp = async ({
   platforms,
@@ -108,7 +116,15 @@ const createSociablyApp = async ({
         )
       );
 
-      const { default: buildContent, mode, name, binary } = await import(file);
+      const templateJsName = file.replace(/\.ts$/, '.js');
+      console.log(templateJsName);
+
+      const {
+        default: buildContent,
+        mode,
+        name,
+        binary,
+      } = await import(templateJsName);
       const targetName = name || basename(file).replace(/\.t\.[t|j]s$/, '');
       const targetPath = joinPath(targetDir, targetName);
 
@@ -139,20 +155,18 @@ const createSociablyApp = async ({
         );
       } else if (typeof content === 'string') {
         const ext = extname(targetPath);
-        await thenifiedly.call(
-          writeFile,
-          targetPath,
-          ext === '.ts' || ext === '.tsx'
-            ? formatCode(content, 'typescript')
-            : ext === '.js' || ext === '.jsx'
-            ? formatCode(content, 'babel')
-            : ext === '.json'
-            ? formatCode(content, 'json-stringify')
-            : ext === '.md'
-            ? formatCode(content, 'markdown')
-            : content,
-          { mode }
-        );
+        const prettifiedContent = await (ext === '.ts' || ext === '.tsx'
+          ? formatCode(content, 'typescript')
+          : ext === '.js' || ext === '.jsx'
+          ? formatCode(content, 'babel')
+          : ext === '.json'
+          ? formatCode(content, 'json-stringify')
+          : ext === '.md'
+          ? formatCode(content, 'markdown')
+          : content);
+        await thenifiedly.call(writeFile, targetPath, prettifiedContent, {
+          mode,
+        });
       }
     })
   );
@@ -170,7 +184,8 @@ const createSociablyApp = async ({
     '@sociably/script',
     withWebview ? '@sociably/webview' : undefined,
     platforms.includes('facebook') ? '@sociably/facebook' : undefined,
-    platforms.includes('twitter') ? '@sociably/twitter' : undefined,
+    platforms.includes('instagram') ? '@sociably/instagram' : undefined,
+    platforms.includes('whatsapp') ? '@sociably/whatsapp' : undefined,
     platforms.includes('telegram') ? '@sociably/telegram' : undefined,
     platforms.includes('line') ? '@sociably/line' : undefined,
     recognizer === 'dialogflow' ? '@sociably/dialogflow' : undefined,

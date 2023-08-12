@@ -1,15 +1,20 @@
 import { when } from '../../../utils.js';
 import { CreateAppContext } from '../../../types.js';
 
-export default ({ platforms, withWebview }: CreateAppContext): string => `
+export default ({ platforms }: CreateAppContext): string => `
 import { serviceContainer } from '@sociably/core';${when(
   platforms.includes('facebook')
 )`
 import Facebook from '@sociably/facebook';`}${when(
+  platforms.includes('instagram')
+)`
+import Instagram from '@sociably/instagram';`}${when(
+  platforms.includes('whatsapp')
+)`
+import WhatsApp from '@sociably/whatsapp';`}${when(
   platforms.includes('twitter')
 )`
-import Twitter from '@sociably/twitter';
-import TwitterAssetManager from '@sociably/twitter/asset';`}${when(
+import Twitter from '@sociably/twitter';`}${when(
   platforms.includes('telegram')
 )`
 import Telegram from '@sociably/telegram';`}${when(platforms.includes('line'))`
@@ -17,127 +22,104 @@ import Line from '@sociably/line';`}
 
 const {
   DOMAIN,${when(platforms.includes('facebook'))`
-  FACEBOOK_PAGE_ID,
-  FACEBOOK_APP_ID,
-  FACEBOOK_APP_SECRET,
-  FACEBOOK_VERIFY_TOKEN,`}${when(platforms.includes('twitter'))`
+  FACEBOOK_PAGE_ID,`}${when(platforms.includes('instagram'))`
+  INSTAGRAM_PAGE_ID,`}${when(platforms.includes('twitter'))`
   TWITTER_WEBHOOK_ENV,`}${when(platforms.includes('telegram'))`
-  TELEGRAM_SECRET_PATH,`}
+  TELEGRAM_BOT_TOKEN,
+  TELEGRAM_SECRET_PATH,`}${when(platforms.includes('line'))`
+  LINE_CHANNEL_ID,`}
 } = process.env as Record<string, string>;
 
+${when(platforms.includes('telegram'))`
+const TELEGRAM_BOT_ID = Number(TELEGRAM_BOT_TOKEN.split(':')[0])`}
 const ENTRY_URL = \`https://\${DOMAIN}\`;
 
 export const up = serviceContainer({
   deps: [${when(platforms.includes('facebook'))`
-    Facebook.Bot,`}${when(platforms.includes('twitter'))`
-    Twitter.Bot,
-    TwitterAssetManager,`}${when(platforms.includes('telegram'))`
-    Telegram.Bot,`}${when(platforms.includes('line'))`
-    Line.Bot,`}
+    Facebook.AssetsManager,`}${when(platforms.includes('instagram'))`
+    Instagram.AssetsManager,`}${when(platforms.includes('whatsapp'))`
+    WhatsApp.AssetsManager,`}${when(platforms.includes('twitter'))`
+    Twitter.AssetsManager,`}${when(platforms.includes('telegram'))`
+    Telegram.AssetsManager,`}${when(platforms.includes('line'))`
+    Line.AssetsManager,`}
   ],
 })(async (${when(platforms.includes('facebook'))`
-  facebookBot,`}${when(platforms.includes('twitter'))`
-  twitterBot,
-  twitterAssetManager,`}${when(platforms.includes('telegram'))`
-  telegramBot,`}${when(platforms.includes('line'))`
-  lineBot`}
-) => {${when(platforms.includes('facebook'))`
-  // setup page profile in Messenger
-  await facebookBot.requestApi('POST', 'me/messenger_profile', {
+  facebookManager,`}${when(platforms.includes('instagram'))`
+  instagramManager,`}${when(platforms.includes('whatsapp'))`
+  whatsappManager,`}${when(platforms.includes('twitter'))`
+  twitterManager,`}${when(platforms.includes('telegram'))`
+  telegramManager,`}${when(platforms.includes('line'))`
+  lineManager`}
+) => {
+${when(platforms.includes('facebook'))`
+  // Facebook
+  await facebookManager.setAppSubscription();
+  await facebookManager.setPageSubscribedApp(FACEBOOK_PAGE_ID);
+  await facebookManager.setPageMessengerProfile(FACEBOOK_PAGE_ID, {
     greeting: [
       { locale: 'default', text: 'Hello World!' },
-    ],${when(withWebview)`
-    whitelisted_domains: [ENTRY_URL],`}
-  });
-  
-  // create Facebook webhook subscription, require running server in advance
-  await facebookBot.requestApi(
-    'POST',
-    \`\${FACEBOOK_APP_ID}/subscriptions\`,
-    {
-      access_token: \`\${FACEBOOK_APP_ID}|\${FACEBOOK_APP_SECRET}\`,
-      object: 'page',
-      callback_url: \`\${ENTRY_URL}/webhook/facebook\`,
-      fields: ['messages', 'messaging_postbacks'],
-      include_values: true,
-      verify_token: FACEBOOK_VERIFY_TOKEN
-    }
-  );
-
-  // add page to Facebook webhook
-  await facebookBot.requestApi('POST', 'me/subscribed_apps', {
-      subscribed_fields: ['messages', 'messaging_postbacks'],
-  });`}${when(platforms.includes('twitter'))`
-
-  // register webhook on Twitter
-  await twitterAssetManager.setUpWebhook(
-    'default',
-    TWITTER_WEBHOOK_ENV,
-    \`\${ENTRY_URL}/webhook/twitter\`
-  );
-
-  // subscribe to Twitter agent user
-  await twitterBot.requestApi(
-    'POST',
-    \`1.1/account_activity/all/\${TWITTER_WEBHOOK_ENV}/subscriptions.json\`
-  );`}${when(platforms.includes('telegram'))`
-
-  // setup webhook of the Telegram bot
-  await telegramBot.requestApi('setWebhook', {
-    url: \`\${ENTRY_URL}/webhook/telegram/\${TELEGRAM_SECRET_PATH}\`,
-  });`}${when(platforms.includes('line'))`
-
-  // setup webhook of the LINE channel
-  await lineBot.requestApi('PUT', 'v2/bot/channel/webhook/endpoint', {
-    endpoint: \`\${ENTRY_URL}/webhook/line\`,
+    ],
+    whitelistedDomains: [ENTRY_URL],
   });`}
+
+${when(platforms.includes('instagram'))`
+  // Instagram
+  await instagramManager.setAppSubscription();
+  await instagramManager.setPageSubscribedApp(INSTAGRAM_PAGE_ID)
+  await instagramManager.setPageMessengerProfile(INSTAGRAM_PAGE_ID, {
+    greeting: [{ locale: 'default', text: 'Hello Instagram!' }],
+  });`}
+
+${when(platforms.includes('whatsapp'))`
+  // WhatsApp
+  await whatsappManager.setAppSubscription();`}
+
+${when(platforms.includes('twitter'))``}
+
+${when(platforms.includes('telegram'))`
+  // Telegram
+  await telegramManager.setBotWebhook(TELEGRAM_BOT_ID);`}
+
+${when(platforms.includes('line'))`
+  // LINE
+  await lineManager.setChannelWebhook(LINE_CHANNEL_ID);`}
 });
 
 export const down = serviceContainer({
   deps: [${when(platforms.includes('facebook'))`
-    Facebook.Bot,`}${when(platforms.includes('twitter'))`
-    TwitterAssetManager,`}${when(platforms.includes('telegram'))`
-    Telegram.Bot,`}
+    Facebook.AssetsManager,`}${when(platforms.includes('instagram'))`
+    Instagram.AssetsManager,`}${when(platforms.includes('whatsapp'))`
+    WhatsApp.AssetsManager,`}${when(platforms.includes('twitter'))`
+    Twitter.AssetsManager,`}${when(platforms.includes('telegram'))`
+    Telegram.AssetsManager,`}
   ],
 })(async (${when(platforms.includes('facebook'))`
-  facebookBot,`}${when(platforms.includes('twitter'))`
-  twitterAssetManager,`}${when(platforms.includes('telegram'))`
-  telegramBot,`}
+  facebookManager,`}${when(platforms.includes('instagram'))`
+  instagramManager,`}${when(platforms.includes('whatsapp'))`
+  whatsappManager,`}${when(platforms.includes('twitter'))`
+  twitterManager,`}${when(platforms.includes('telegram'))`
+  telegramManager,`}
 ) => {
 ${when(platforms.includes('facebook'))`
-  // clear page profile in Messenger
-  await facebookBot.requestApi('DELETE', 'me/messenger_profile', {
-    fields: [
-      'get_started',
-      'greeting',
-      'persistent_menu',
-      'whitelisted_domains',
-    ],
-  });
+  // Facebook
+  await facebookManager.deleteAppSubscription();
+  await facebookManager.deletePageSubscribedApp(FACEBOOK_PAGE_ID);
+  await facebookManager.setPageMessengerProfile(FACEBOOK_PAGE_ID, {});`}
 
-  // delete app subscriptions
-  await facebookBot.requestApi(
-    'DELETE',
-    \`\${FACEBOOK_PAGE_ID}/subscribed_apps\`,
-    { access_token: \`\${FACEBOOK_APP_ID}|\${FACEBOOK_APP_SECRET}\` }
-  );
-  
-  // remove page from webhook subscription
-  await facebookBot.requestApi(
-    'DELETE',
-    \`\${FACEBOOK_APP_ID}/subscriptions\`,
-    {
-      access_token: \`\${FACEBOOK_APP_ID}|\${FACEBOOK_APP_SECRET}\`,
-      object: 'page',
-    }
-  );`}
-${when(platforms.includes('twitter'))`
+${when(platforms.includes('instagram'))`
+  // Instagram
+  await instagramManager.deleteAppSubscription();
+  await instagramManager.deletePageSubscribedApp(INSTAGRAM_PAGE_ID);
+  await instagramManager.setPageMessengerProfile(INSTAGRAM_PAGE_ID, {});`}
 
-  // delete Twitter webhook
-  await twitterAssetManager.deleteWebhook('default', TWITTER_WEBHOOK_ENV);`}
+${when(platforms.includes('whatsapp'))`
+  // WhatsApp
+  await whatsappManager.deleteAppSubscription();`}
+
+${when(platforms.includes('twitter'))``}
+
 ${when(platforms.includes('telegram'))`
-
-  // delete Telegram webhook
-  await telegramBot.requestApi('deleteWebhook');`}
+  // Telegram
+  await telegramManager.deleteBotWebhook(TELEGRAM_BOT_ID);`}
 });
 `;

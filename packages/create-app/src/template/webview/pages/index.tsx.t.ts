@@ -5,27 +5,31 @@ export default ({ platforms, withWebview }: CreateAppContext): string => when(
   withWebview
 )`
 import React from 'react';
-import Head from 'next/head';
-import getConfig from 'next/config';
+import { default as Head } from 'next/head.js';
+import { default as getConfig } from 'next/config.js';
 import { useClient, useEventReducer } from '@sociably/webview/client';${when(
   platforms.includes('facebook')
 )`
-import FacebookAuth from '@sociably/facebook/webview/client';`}${when(
+import FacebookWebview from '@sociably/facebook/webview/client';`}${when(
+  platforms.includes('instagram')
+)`
+import InstagramWebview from '@sociably/instagram/webview/client';`}${when(
+  platforms.includes('whatsapp')
+)`
+import WhatsAppWebview from '@sociably/whatsapp/webview/client';`}${when(
   platforms.includes('twitter')
 )`
-import TwitterAuth from '@sociably/twitter/webview/client';`}${when(
+import TwitterWebview from '@sociably/twitter/webview/client';`}${when(
   platforms.includes('telegram')
 )`
-import TelegramAuth from '@sociably/telegram/webview/client';`}${when(
+import TelegramWebview from '@sociably/telegram/webview/client';`}${when(
   platforms.includes('line')
 )`
-import LineAuth from '@sociably/line/webview/client';`}
+import LineWebview from '@sociably/line/webview/client';`}
 
 const {
-  publicRuntimeConfig: {${when(platforms.includes('facebook'))`
-    FACEBOOK_PAGE_ID,`}${when(platforms.includes('twitter'))`
-    TWITTER_AGENT_ID,`}${when(platforms.includes('telegram'))`
-    TELEGRAM_BOT_NAME,`}${when(platforms.includes('line'))`
+  publicRuntimeConfig: {${when(platforms.includes('telegram'))`
+    TELEGRAM_BOT_ID,`}${when(platforms.includes('line'))`
     LINE_LIFF_ID,`}
   },
 } = getConfig();
@@ -34,23 +38,21 @@ const WebAppHome = () => {
   const client = useClient({
     mockupMode: typeof window === 'undefined',
     authPlatforms: [${when(platforms.includes('facebook'))`
-      new FacebookAuth({ pageId: FACEBOOK_PAGE_ID }),`}${when(
-  platforms.includes('twitter')
-)`
-      new TwitterAuth({ agentId: TWITTER_AGENT_ID }),`}${when(
-  platforms.includes('telegram')
-)`
-      new TelegramAuth({ botName: TELEGRAM_BOT_NAME }),`}${when(
-  platforms.includes('line')
-)`
-      new LineAuth({ liffId: LINE_LIFF_ID }),`}
+      new FacebookWebview(),`}${when(platforms.includes('instagram'))`
+      new InstagramWebview(),`}${when(platforms.includes('whatsapp'))`
+      new WhatsAppWebview(),`}${when(platforms.includes('twitter'))`
+      new TwitterWebview(),`}${when(platforms.includes('telegram'))`
+      new TelegramWebview({ botId: TELEGRAM_BOT_ID }),`}${when(
+      platforms.includes('line')
+    )`
+      new LineWebview({ liffId: LINE_LIFF_ID }),`}
     ],
   });
   const { hello } = useEventReducer(
     client,
     (data, { event }) => {
       if (event.type === 'hello') {
-        return { hello: event.payload };
+        return { hello: event.payload as string };
       }
       return data;
     },
@@ -59,16 +61,20 @@ const WebAppHome = () => {
 
   const [isButtonTapped, setButtonTapped] = React.useState(false);
 
-  const Button = ({ payload }) => (
+  const Button = (props: { payload: string }) => (
     <button
       disabled={!client.isConnected}
       onClick={() => {
-        client.send({ category: 'greeting', type: 'hello', payload });
+        client.send({
+          category: 'greeting',
+          type: 'hello',
+          payload: props.payload,
+        });
         client.closeWebview();
         setButtonTapped(true);
       }}
     >
-      {payload}
+      {props.payload}
     </button>
   );
 

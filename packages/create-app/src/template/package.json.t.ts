@@ -7,9 +7,11 @@ export default ({
   platforms,
   withWebview,
 }: CreateAppContext): string => {
+  // NOTE: @sociably deps are installed at runtime through `npm install`
   const packageConfigs = {
     name: projectName,
     private: true,
+    type: 'module',
     scripts: {
       clean: 'rm -rf ./lib ./dist && rm -f tsconfig.tsbuildinfo',
 
@@ -29,7 +31,7 @@ export default ({
       'start:development': 'dotenv -- ts-node ./src/index.ts',
       'start:production': 'node ./lib/index.js',
 
-      dev: 'dotenv -- ts-node ./src/cli/dev.ts',
+      dev: 'nodemon ./src/index.ts',
     },
     dependencies: {
       '@machinat/per-env': '^1.1.0',
@@ -37,12 +39,19 @@ export default ({
       umzug: '^3.0.0',
     },
     devDependencies: {
-      '@types/node': '^17.0.10',
-      typescript: '^4.5.5',
-      'ts-node': '^10.4.0',
-      'dotenv-cli': '^4.1.1',
-      nodemon: '^2.0.15',
+      '@types/node': '^20.4.5',
+      'dotenv-cli': '^7.2.1',
       localtunnel: '^2.0.2',
+      nodemon: '^3.0.1',
+      'ts-node': '^10.9.1',
+      typescript: '^5.1.3',
+    },
+    nodemonConfig: {
+      exec: './node_modules/.bin/ts-node-esm -r dotenv/config',
+      watch: './src',
+      ext: 'ts,tsx',
+      verbose: true,
+      delay: 2000,
     },
   };
 
@@ -50,12 +59,12 @@ export default ({
     packageConfigs.dependencies = {
       ...packageConfigs.dependencies,
       ...{
-        next: '^12.1.4',
-        react: '^17.0.2',
-        'react-dom': '^17.0.2',
+        next: '^13.4.0',
+        react: '^18.0.0',
+        'react-dom': '^18.0.0',
       },
     };
-    packageConfigs.devDependencies['@types/react'] = '^17.0.38';
+    packageConfigs.devDependencies['@types/react'] = '^18.0.0';
   }
 
   if (platforms.includes('twitter')) {

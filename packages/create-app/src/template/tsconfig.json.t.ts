@@ -4,10 +4,10 @@ export default (): string => `
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
-    "lib": ["es2018"],
+    "lib": ["es2020"],
     "types": ["node"],
-    "module": "commonjs",
-    "target": "es2018",
+    "module": "Node16",
+    "target": "es2020",
     "jsx": "react",
     "jsxFactory": "Sociably.createElement",
     "jsxFragmentFactory": "Sociably.Fragment",

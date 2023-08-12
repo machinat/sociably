@@ -1,13 +1,11 @@
 export default (): string => `
 import { fromApp } from '@sociably/stream';
-import main from './main';
-import createApp from './app'
+import main from './main.js';
+import createApp from './app.js'
 
 const app = createApp();
-app
-  .start()
-  .then(() => {
-    main(fromApp(app));
-  })
-  .catch(console.error)
+await app.start();
+
+const event$ = fromApp(app);
+main(event$);
 `;

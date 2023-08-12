@@ -11,7 +11,7 @@ import { resolve as resolvePath } from 'path';${when(
 import DialogFlow from '@sociably/dialogflow';`}
 import { Umzug, JSONStorage } from 'umzug';
 import { program } from 'commander';
-import createApp from '../app';
+import createApp from '../app.js';
 
 const app = createApp({ noServer: true });
 

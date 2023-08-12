@@ -3,11 +3,11 @@ import { when } from '../../../utils.js';
 
 export default ({ platforms }: CreateAppContext): string => `
 import Sociably, { serviceContainer } from '@sociably/core';
-import About from '../scenes/About';
-import WithMenu from '../components/WithMenu';
-import useIntent from '../services/useIntent';
-import useUserProfile from '../services/useUserProfile';
-import { ChatEventContext } from '../types';
+import About from '../scenes/About.js';
+import WithMenu from '../components/WithMenu.js';
+import useIntent from '../services/useIntent.js';
+import useUserProfile from '../services/useUserProfile.js';
+import { ChatEventContext } from '../types.js';
 
 const handleChat = serviceContainer({
   deps: [useIntent, useUserProfile],
@@ -23,7 +23,7 @@ const handleChat = serviceContainer({
       const intent = await getIntent(event);
 
       if (intent.type === 'greeting') {
-        const profile = await getUserProfile(event.user);
+        const profile = await getUserProfile(event.channel, event.user);
         return reply(
           <WithMenu>Hello {profile?.name || 'there'}!</WithMenu>
         );

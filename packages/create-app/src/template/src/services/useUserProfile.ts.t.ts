@@ -3,6 +3,7 @@ import {
   serviceProviderFactory,
   BaseProfiler,
   StateController,
+  SociablyChannel,
   SociablyUser,
   SociablyProfile
  } from '@sociably/core';
@@ -13,7 +14,7 @@ type ProfileCache = {
 
 const useUserProfile =
   (profiler: BaseProfiler, stateController: StateController) =>
-  async (user: SociablyUser | null) => {
+  async (channel: SociablyChannel, user: SociablyUser | null) => {
     if (!user) {
       return null;
     }
@@ -26,7 +27,7 @@ const useUserProfile =
       return cached.profile;
     }
 
-    const profile = await profiler.getUserProfile(user);
+    const profile = await profiler.getUserProfile(channel, user);
     if (profile) {
       await userState.set<ProfileCache>('profile_cache', { profile });
     }

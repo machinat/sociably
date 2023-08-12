@@ -9,9 +9,9 @@ import { AnswerCallbackQuery } from '@sociably/telegram/components';`}
 import { Stream } from '@sociably/stream';
 import { filter } from '@sociably/stream/operators';
 import Script from '@sociably/script';
-import handleChat from './handlers/handleChat';${when(withWebview)`
-import handleWebview from './handlers/handleWebview';`}
-import { AppEventContext, ChatEventContext } from './types';
+import handleChat from './handlers/handleChat.js';${when(withWebview)`
+import handleWebview from './handlers/handleWebview.js';`}
+import { AppEventContext, ChatEventContext } from './types.js';
 
 const main = (event$: Stream<AppEventContext>): void => {
   // continue running scripts

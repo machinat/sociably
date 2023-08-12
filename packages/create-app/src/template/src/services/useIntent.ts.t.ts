@@ -1,6 +1,6 @@
 export default (): string => `
 import { serviceProviderFactory, IntentRecognizer } from '@sociably/core';
-import { ChatEventContext } from '../types';
+import { ChatEventContext } from '../types.js';
 
 const useIntent =
   (recognizer: IntentRecognizer) =>

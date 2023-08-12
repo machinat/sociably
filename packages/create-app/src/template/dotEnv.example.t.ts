@@ -29,33 +29,70 @@ DOMAIN= your-special-subdomain.t.machinat.dev
 
 # local server port
 PORT=8080
+${when(
+  platforms.includes('facebook') ||
+    platforms.includes('instagram') ||
+    platforms.includes('whatsapp')
+)`
 
-${when(platforms.includes('facebook'))`
-# Facebook Settings
-#   Create a Facebook app and a Facebook page for your bot:
-#   1. Visit https://developers.facebook.com/apps and create an app.
-#   2. Use Messenger in you app, go to:
-#     App Dashboard Page > Add a Product > Messenger > Set Up
-#   3. If you don't have a page ready to use, create one at:
-#     Messenger Setting Page > Access Tokens > Create New Page
-#   4. Connect your page to the app at:
-#     Messenger Setting Page > Access Tokens > Add or Remove Pages
-#   5. Press "Generate Token" at the connected page to get the token
-
-# page access token, available at: Messenger Setting Page > Access Tokens > Tokens
-FACEBOOK_ACCESS_TOKEN= AaBbCcDdEe12345...
-
-# page id, available at: Messenger Setting Page > Access Tokens > Pages
-FACEBOOK_PAGE_ID= 1234567890
+# Meta App Settings
+#   Create a Facebook app for Meta platforms at https://developers.facebook.com/apps
 
 # app id, available at: App Dashboard > Settings > Basic > App ID
-FACEBOOK_APP_ID= 1234567890
+META_APP_ID= 1234567890
 
 # app secret, available at: App Dashboard > Settings > Basic > App Secret
-FACEBOOK_APP_SECRET= abcde12345...
+META_APP_SECRET= abcde12345...
 
 # random token for webhook verification
-FACEBOOK_VERIFY_TOKEN= <random secret string>
+META_WEBHOOK_VERIFY_TOKEN= <random secret string>
+`}${when(platforms.includes('facebook'))`
+
+# Facebook Settings
+#   1. Choose the app ot use at https://developers.facebook.com/apps
+#   2. Enable Messenger in you app, go to:
+#     App Dashboard Page > Add a Product > Messenger > Set Up
+#   3. If you don't have a page ready to use, create one at:
+#     "Messenger" > "Settings" > "Access Tokens" > "Create New Page"
+#   4. Connect your page to the app at:
+#     "Messenger" > Access Tokens > Add or Remove Pages
+#   5. Press "Generate Token" at the connected page to get the token
+
+# page id, available at: "Messenger" > "Setting" > "Access Tokens" > "Pages"
+FACEBOOK_PAGE_ID=
+
+# page access token, available at: "Messenger" > "Setting" > "Access Tokens" > "Tokens"
+FACEBOOK_ACCESS_TOKEN=
+`}${when(platforms.includes('instagram'))`
+
+# Instagram Settings
+#   1. Choose the app ot use at https://developers.facebook.com/apps
+#   2. Enable Instagram in you app, go to:
+#     App Dashboard Page > Add a Product > Messenger > Set Up
+#   3. Connect your page to the app at:
+#     "Messenger" > "Instagram setting" > "Access Tokens" > "Add or Remove Pages"
+#   4. Press "Generate Token" at the connected page to get the token
+
+# page id, available at: "Messenger" > "Instagram settings" > "Access Tokens" > "Pages"
+INSTAGRAM_PAGE_ID=
+
+# page access token, available at: "Messenger" > "Instagram settings" > "Access Tokens" > "Tokens"
+INSTAGRAM_ACCESS_TOKEN=
+
+# the username of the Instagram account
+INSTAGRAM_AGENT_USERNAME=
+`}${when(platforms.includes('whatsapp'))`
+
+# WhatsApp Settings
+
+#
+WHATSAPP_PHONE_NUMBER=
+
+#
+WHATSAPP_NUMBER_ID=
+
+#
+WHATSAPP_ACCESS_TOKEN=
 `}${when(platforms.includes('twitter'))`
 
 # Twitter Settings
@@ -86,7 +123,7 @@ TWITTER_ACCESS_TOKEN= 09876543210123456789-Aa1Bb2Cc3Dd4Ee5Ff6Gg7Hh8Ii9Jj0
 
 # user access token secret, available at:
 #   App Page > Keys and tokens > Authentication Tokens > Authentication Tokens
-TWITTER_ACCESS_SECRET= Aa1Bb2Cc3Dd4Ee5Ff6Gg7Hh8Ii9Jj0Kk1Ll2Mm3Nn4Oo5Pp6
+TWITTER_TOKEN_SECRET= Aa1Bb2Cc3Dd4Ee5Ff6Gg7Hh8Ii9Jj0Kk1Ll2Mm3Nn4Oo5Pp6
 
 # env label for account activity API, available at:
 #   Products > Premium > Dev Environments > Account Activity API
@@ -102,8 +139,8 @@ TELEGRAM_BOT_TOKEN= 123456:AaBbCc12345...
 # bot username
 TELEGRAM_BOT_NAME= my_bot
 
-# a secret string to protect webhook
-TELEGRAM_SECRET_PATH= <random secret string>
+# a secret token to protect webhook
+TELEGRAM_SECRET_TOKEN= <random secret string>
 `}${when(platforms.includes('line'))`
 
 # LINE Settings

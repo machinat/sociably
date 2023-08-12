@@ -1,12 +1,10 @@
 import { CreateAppContext } from '../../../types.js';
 import { when } from '../../../utils.js';
 
-export default ({ platforms, withWebview }: CreateAppContext): string => when(
-  withWebview
-)`
+export default ({ withWebview }: CreateAppContext): string => when(withWebview)`
 import Sociably, { serviceContainer, BaseBot } from '@sociably/core';
-import WithMenu from '../components/WithMenu';
-import { WebAppEventContext } from '../types';
+import WithMenu from '../components/WithMenu.js';
+import { WebAppEventContext } from '../types.js';
 
 const handleWebview = serviceContainer({ deps: [BaseBot] })(
   (baseBot) =>
@@ -20,12 +18,12 @@ const handleWebview = serviceContainer({ deps: [BaseBot] })(
           type: 'hello',
           payload: \`Hello, user from \${auth.platform}!\`,
         });
-      } else if (event.type === 'hello') {
+      } else if (auth.thread && event.type === 'hello') {
         // reflect hello to chatroom
         await baseBot.render(
           auth.thread,
-          <WithMenu>Hello {event.payload}!</WithMenu>
-        );
+          <WithMenu>Hello {event.payload as string}!</WithMenu>
+          );
       }
     }
 );

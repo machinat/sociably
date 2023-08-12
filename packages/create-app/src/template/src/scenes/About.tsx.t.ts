@@ -2,8 +2,8 @@ export default (): string => `
 import Sociably, { serviceContainer } from '@sociably/core';
 import { build } from '@sociably/script';
 import * as $ from '@sociably/script/keywords';
-import WithYesNoReplies from '../components/WithYesNoReplies'
-import useIntent from '../services/useIntent'
+import WithYesNoReplies from '../components/WithYesNoReplies.js'
+import useIntent from '../services/useIntent.js'
 
 type AboutVars = {
   isOk: boolean;
@@ -42,11 +42,9 @@ export default build<AboutVars>(
 
     {ASK_YES_OR_NO('ask-more-info')}
 
-    <$.IF<AboutVars> condition={({ vars }) => !vars.isOk }>
-      <$.THEN>
-        {() => <p>Ask me anytime!</p>}
-        <$.RETURN />
-      </$.THEN>
+    <$.IF<AboutVars> condition={({ vars }) => !vars.isOk}>
+      {() => <p>Ask me anytime!</p>}
+      <$.RETURN />
     </$.IF>
     
     {() => (
