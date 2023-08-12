@@ -26,7 +26,7 @@
     "prepack": "make -f ../../package.mk prepack"
   },
   "dependencies": {
-    "@google-cloud/dialogflow": "^4.6.0",
+    "@google-cloud/dialogflow": "^6.0.0",
     "invariant": "^2.2.4",
     "object-hash": "^2.2.0"
   },
