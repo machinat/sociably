@@ -1,6 +1,6 @@
+import { EventEmitter } from 'events';
 import { moxy, Moxy } from '@moxyjs/moxy';
 import _redis, { RedisClient } from 'redis';
-import { EventEmitter } from 'events';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
 import RedisState from '../module.js';

@@ -14,7 +14,7 @@ namespace RegexIntentRecognition {
     Recognition extends RecognitionData<string, string> = RecognitionData<
       string,
       string
-    >
+    >,
   > = RegexIntentRecognizer<Recognition>;
 
   export const Configs = ConfigsI;

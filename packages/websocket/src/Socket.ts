@@ -6,7 +6,9 @@ import type { UpgradeRequestInfo, EventInput } from './types.js';
 
 type TimeoutID = ReturnType<typeof setTimeout>;
 
-type WithSocket = { socket: Socket };
+type WithSocket = {
+  socket: Socket;
+};
 
 export const SOCKET_CONNECTING = 0;
 export const SOCKET_OPEN = 1;

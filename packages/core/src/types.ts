@@ -36,7 +36,7 @@ export type SociablyNode =
   | SociablyEmpty
   | SociablyRenderable
   | ThunkElement
-  | Array<SociablyNode>;
+  | SociablyNode[];
 
 export type SociablyElementType =
   | string
@@ -58,10 +58,7 @@ export type SociablyElement<P, T> = {
 export type SociablyText = string | number;
 export type SociablyEmpty = null | undefined | boolean;
 
-export type GeneralElement = SociablyElement<
-  { [key: string]: unknown },
-  string
->;
+export type GeneralElement = SociablyElement<Record<string, unknown>, string>;
 
 type RenderEnv = {
   path: string;
@@ -75,7 +72,7 @@ export type FunctionalComponent<Props> = (
 
 export type FunctionalElement<
   Props,
-  Component extends FunctionalComponent<Props>
+  Component extends FunctionalComponent<Props>,
 > = SociablyElement<Props, Component>;
 
 type ContainerComponentFn<Props> = (
@@ -90,12 +87,12 @@ export type ContainerComponent<Props> = ServiceContainer<
 
 export type ContainerElement<
   Props,
-  Component extends ContainerComponent<Props>
+  Component extends ContainerComponent<Props>,
 > = SociablyElement<Props, Component>;
 
 export type NativeComponent<
   Props,
-  Segment extends IntermediateSegment<unknown>
+  Segment extends IntermediateSegment<unknown>,
 > = {
   (
     element: NativeElement<Props, NativeComponent<Props, Segment>>,
@@ -105,7 +102,7 @@ export type NativeComponent<
   $$typeof: typeof SOCIABLY_NATIVE_TYPE;
   $$platform: string;
   // HACK: make ts accept it as class component
-  new (): NativeComponent<Props, Segment>;
+  new (): NativeComponent<Props, Segment>; // eslint-disable-line @typescript-eslint/no-misused-new
 };
 
 export type AnyNativeComponent = NativeComponent<
@@ -115,10 +112,12 @@ export type AnyNativeComponent = NativeComponent<
 
 export type NativeElement<
   Props,
-  Component extends NativeComponent<Props, IntermediateSegment<unknown>>
+  Component extends NativeComponent<Props, IntermediateSegment<unknown>>,
 > = SociablyElement<Props, Component>;
 
-export type FragmentProps = { children: SociablyNode };
+export type FragmentProps = {
+  children: SociablyNode;
+};
 export type FragmentElement = SociablyElement<
   FragmentProps,
   typeof SOCIABLY_FRAGMENT_TYPE
@@ -136,35 +135,42 @@ export type ProviderElement<T> = SociablyElement<
 >;
 
 export type PauseDelayFn = () => Promise<unknown>;
-export type PauseProps = { time?: number; delay?: PauseDelayFn };
+export type PauseProps = {
+  time?: number;
+  delay?: PauseDelayFn;
+};
 export type PauseElement = SociablyElement<
   PauseProps,
   typeof SOCIABLY_PAUSE_TYPE
 >;
 
 export type ThunkEffectFn = () => unknown | Promise<unknown>;
-export type ThunkProps = { effect: ThunkEffectFn };
+export type ThunkProps = {
+  effect: ThunkEffectFn;
+};
 export type ThunkElement = SociablyElement<
   ThunkProps,
   typeof SOCIABLY_THUNK_TYPE
 >;
 
-export type RawProps = { value: unknown };
+export type RawProps = {
+  value: unknown;
+};
 export type RawElement = SociablyElement<RawProps, typeof SOCIABLY_RAW_TYPE>;
 
-export interface UniqueOmniIdentifier {
+export type UniqueOmniIdentifier = {
   readonly $$typeof: ('channel' | 'user' | 'thread')[];
   readonly platform: string;
   readonly scopeId?: string | number;
   readonly id: string | number;
-}
+};
 
 /**
  * A channel represents an instance that user can communicate with.
  * It could be a phone number, an email address, an account on social
  * media, etc. depending on which commnication platform.
  */
-export interface SociablyChannel {
+export type SociablyChannel = {
   readonly $$typeofChannel: true;
   readonly platform: string;
   /**
@@ -177,13 +183,13 @@ export interface SociablyChannel {
    * while using Sociably
    */
   readonly uid: string;
-}
+};
 
 /**
  * A thread represents a conversation between two or more users.
  * It's where a communication event happened in Sociably.
  */
-export interface SociablyThread {
+export type SociablyThread = {
   readonly $$typeofThread: true;
   readonly platform: string;
   /**
@@ -196,12 +202,12 @@ export interface SociablyThread {
    * while using Sociably
    */
   readonly uid: string;
-}
+};
 
 /**
  * An user who communicates through a social platform.
  */
-export interface SociablyUser {
+export type SociablyUser = {
   readonly $$typeofUser: true;
   readonly platform: string;
   /**
@@ -214,9 +220,9 @@ export interface SociablyUser {
    * while using Sociably
    */
   readonly uid: string;
-}
+};
 
-export interface SociablyEvent<Payload> {
+export type SociablyEvent<Payload> = {
   readonly platform: string;
   readonly category: string;
   readonly type: string;
@@ -224,50 +230,50 @@ export interface SociablyEvent<Payload> {
   readonly thread: null | SociablyThread;
   readonly user: null | SociablyUser;
   readonly channel: null | SociablyChannel;
-}
+};
 
-export interface TextMessageMixin {
+export type TextMessageMixin = {
   readonly category: 'message';
   readonly type: 'text';
   readonly text: string;
-}
+};
 
-export interface MediaMessageMixin {
+export type MediaMessageMixin = {
   readonly category: 'message';
   readonly type: 'image' | 'video' | 'audio' | 'file';
   readonly url?: string;
-}
+};
 
-export interface LocationMessageMixin {
+export type LocationMessageMixin = {
   readonly category: 'message';
   readonly type: 'location';
   readonly latitude: number;
   readonly longitude: number;
-}
+};
 
-export interface PostbackMixin {
+export type PostbackMixin = {
   readonly category: 'postback';
   readonly type: string;
   readonly data: string;
-}
+};
 
-export interface SociablyMetadata {
+export type SociablyMetadata = {
   source: string;
-}
+};
 
-export interface SociablyBot<Target extends DispatchTarget, Job, Result> {
+export type SociablyBot<Target extends DispatchTarget, Job, Result> = {
   render(
     target: Target,
     message: SociablyNode
   ): Promise<null | DispatchResponse<Job, Result>>;
-}
+};
 
 export type AnySociablyBot = SociablyBot<DispatchTarget, unknown, unknown>;
 
 export type EventContext<
   Event extends SociablyEvent<unknown>,
   Metadata extends SociablyMetadata,
-  Bot extends SociablyBot<SociablyThread, unknown, unknown>
+  Bot extends SociablyBot<SociablyThread, unknown, unknown>,
 > = {
   platform: string;
   event: Event;
@@ -289,13 +295,13 @@ export type Middleware<Input, Output> = (
 
 export type EventMiddleware<
   Context extends AnyEventContext,
-  Response
+  Response,
 > = Middleware<Context, Response>;
 
 export type DispatchMiddleware<
   Job,
   Frame extends AnyDispatchFrame,
-  Result
+  Result,
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {
@@ -309,7 +315,7 @@ export type SociablyPlatform<
   EventResp,
   Job,
   Frame extends AnyDispatchFrame,
-  Result
+  Result,
 > = {
   name: string;
   utilitiesInterface: ServiceInterface<
@@ -383,16 +389,13 @@ export type PlatformUtilities<
   EventResponse,
   Job,
   Frame extends AnyDispatchFrame,
-  Result
+  Result,
 > = {
   popEventWrapper: PopEventWrapper<Context, EventResponse>;
   dispatchWrapper: DispatchWrapper<Job, Frame, Result>;
 };
 
-export interface AgentSettingsAccessor<
-  Agent extends SociablyChannel,
-  Settings
-> {
+export type AgentSettingsAccessor<Agent extends SociablyChannel, Settings> = {
   getAgentSettings(agent: Agent): Promise<null | Settings>;
   getAgentSettingsBatch(agents: Agent[]): Promise<(null | Settings)[]>;
-}
+};

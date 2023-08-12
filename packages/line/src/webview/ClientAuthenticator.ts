@@ -123,7 +123,7 @@ class LineClientAuthenticator
 
     const context = this.liff.getContext();
     const accessToken = this.liff.getAccessToken();
-    if (!accessToken || !context || !context.userId) {
+    if (!accessToken || !context?.userId) {
       return {
         ok: false,
         code: 401,

@@ -26,7 +26,7 @@ import type { WebviewEventContext } from './types.js';
  */
 export class WebviewReceiver<
   Authenticator extends AnyServerAuthenticator,
-  Value extends EventValue
+  Value extends EventValue,
 > {
   private _bot: BotP;
   private _server: WebviewSocketServer<Authenticator>;
@@ -138,5 +138,5 @@ export const ReceiverP = serviceProviderClass({
 
 export type ReceiverP<
   Authenticator extends AnyServerAuthenticator,
-  Value extends EventValue
+  Value extends EventValue,
 > = WebviewReceiver<Authenticator, Value>;

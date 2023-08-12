@@ -44,18 +44,18 @@ export type PagePostProps = {
   /** Facebook ID for an existing picture in the person's photo albums to use as the thumbnail image. They must be the owner of the photo, and the photo cannot be part of a message attachment. */
   objectAttachment?: string;
   /** The action links attached to the post. */
-  actions?: Array<{
+  actions?: {
     /** The URL of the action link itself. */
     link: string;
     /** The name or label of the action link. */
     name: string;
-  }>;
+  }[];
   /** Specifies a time in the past to backdate this post to. */
   backdatedTime?: number | Date;
   /** Controls the display of how a backdated post appears. For example, if you pick month posts will be displayed as 2 months ago instead of an exact date. */
   backdatedTimeGranularity?: 'year' | 'month' | 'day' | 'hour' | 'minute';
   /** Use to specify multiple links in the post. Minimum 2 and maximum of 5 objects. If you set `multiShareOptimized` to true, you can upload a maximum of 10 objects but Facebook will display the top 5. */
-  childAttachments?: Array<{
+  childAttachments?: {
     /** The URL of a link to attach to the post. This field is required. */
     link: string;
     /** Used to show either a price, discount or website domain. If not specified, the content of the linked page will be extracted and used. This field will typically be truncated after 30 characters. */
@@ -66,7 +66,7 @@ export type PagePostProps = {
     name?: string;
     /** A URL that determines the preview image associated with the link (1:1 aspect ratio and a minimum of 458 x 458 px for best display). Either picture or imageHash must be specified. */
     picture?: string;
-  }>;
+  }[];
   /** Object that controls [Feed Targeting](https://www.facebook.com/help/352402648173466) for this content. Anyone in these groups will be more likely to see this content, those not will be less likely, but may still see it anyway. Any of the targeting fields shown here can be used, none are required. */
   feedTargeting?: {
     /** Maximum age. Must be 65 or lower. */

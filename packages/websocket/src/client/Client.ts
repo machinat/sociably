@@ -21,7 +21,7 @@ type ClientOptions<User extends null | SociablyUser, Credential> = {
 
 type WebSocketClientContext<
   User extends null | SociablyUser,
-  Value extends EventValue
+  Value extends EventValue,
 > = {
   event: WebSocketEvent<Value, User>;
 };
@@ -29,7 +29,7 @@ type WebSocketClientContext<
 class WebScoketClient<
   User extends null | SociablyUser = null,
   Value extends EventValue = EventValue,
-  Credential = null
+  Credential = null,
 > extends ClientEmitter<WebSocketClientContext<User, Value>> {
   private _connector: Connector<User>;
 
@@ -106,11 +106,7 @@ class WebScoketClient<
       .on('events', (values) => {
         for (const value of values) {
           this._emitEvent({
-            event: createEvent(
-              value,
-              this._thread as WebSocketConnection,
-              this._user as User
-            ),
+            event: createEvent(value, this._thread!, this._user as User),
           });
         }
       })
@@ -124,11 +120,7 @@ class WebScoketClient<
           payload: { reason },
         };
         this._emitEvent({
-          event: createEvent(
-            disconnectValue,
-            thread as WebSocketConnection,
-            this._user as User
-          ),
+          event: createEvent(disconnectValue, thread!, this._user as User),
         });
       })
       .on('error', this._emitError.bind(this));

@@ -22,7 +22,7 @@ const build = <
   Params = {},
   Return = void,
   Yield = void,
-  Meta = void
+  Meta = void,
 >(
   { name: scriptName, initVars, meta }: ScriptBuildOtions<Params, Vars, Meta>,
   src: SociablyElement<unknown, unknown>
@@ -36,7 +36,7 @@ const build = <
     $$typeof: SOCIABLY_SCRIPT_TYPE,
     Start: null as never,
     name: scriptName,
-    initVars: initVars || (() => ({} as Vars)),
+    initVars: initVars || (() => ({}) as Vars),
     stopPointIndex: compiled.stopPointIndex,
     commands: compiled.commands,
     meta: meta as Meta,

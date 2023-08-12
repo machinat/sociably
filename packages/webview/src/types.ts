@@ -45,7 +45,7 @@ export type WebviewComponent = NativeComponent<
 
 export type WebviewEvent<
   Value extends EventValue,
-  User extends null | SociablyUser
+  User extends null | SociablyUser,
 > = Value & {
   platform: 'webview';
   // TODO: channel field is left for potential namespace feature
@@ -59,14 +59,14 @@ export type WebviewMetadata<Context extends AnyAuthContext> = Omit<
   'connection'
 > & { connection: WebviewConnection };
 
-export interface WebviewClientAuthenticator<
+export type WebviewClientAuthenticator<
   Credential,
   Data,
-  Context extends AnyAuthContext
-> extends ClientAuthenticator<Credential, Data, Context> {
+  Context extends AnyAuthContext,
+> = {
   closeWebview: (ctx: null | Context) => boolean;
   marshalTypes: null | AnyMarshalType[];
-}
+} & ClientAuthenticator<Credential, Data, Context>;
 
 export type AnyClientAuthenticator = WebviewClientAuthenticator<
   unknown,
@@ -76,7 +76,7 @@ export type AnyClientAuthenticator = WebviewClientAuthenticator<
 
 export type WebviewEventContext<
   Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
-  Value extends EventValue = EventValue
+  Value extends EventValue = EventValue,
 > = {
   platform: 'webview';
   event: WebviewEvent<Value, UserOfAuthenticator<Authenticator>>;
@@ -87,7 +87,7 @@ export type WebviewEventContext<
 
 export type WebviewEventMiddleware<
   Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
-  Value extends EventValue = EventValue
+  Value extends EventValue = EventValue,
 > = EventMiddleware<WebviewEventContext<Authenticator, Value>, null>;
 
 export type WebviewDispatchFrame = DispatchFrame<
@@ -103,7 +103,7 @@ export type WebviewDispatchMiddleware = DispatchMiddleware<
 
 export type WebviewConfigs<
   Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
-  Value extends EventValue = EventValue
+  Value extends EventValue = EventValue,
 > = {
   /** Route path to the webview pages, default to `"."`. */
   webviewPath?: string;
@@ -164,7 +164,7 @@ export type WebviewConfigs<
 };
 
 export type WebviewPlatformUtilities<
-  Authenticator extends AnyServerAuthenticator
+  Authenticator extends AnyServerAuthenticator,
 > = PlatformUtilities<
   WebviewEventContext<Authenticator, EventValue>,
   null,

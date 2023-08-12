@@ -52,8 +52,9 @@ test('getChatRequest throw if type of thread is user', async () => {
   const segemnts = await renderUnitElement(<Leave />);
   const { getChatRequest } = segemnts?.[0].value as ChatActionSegmentValue;
 
-  expect(() =>
-    getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'))
+  expect(
+    () =>
+      getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'))
   ).toThrowErrorMatchingInlineSnapshot(
     `"<Leave /> cannot be used within an user thread"`
   );

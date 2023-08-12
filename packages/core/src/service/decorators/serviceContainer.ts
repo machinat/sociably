@@ -10,7 +10,7 @@ import { polishServiceRequirement } from '../utils.js';
 type AnyDep = ServiceDependency<Interfaceable<unknown>>;
 
 type ContainerOptions<
-  Deps extends ServiceDependency<Interfaceable<unknown>>[]
+  Deps extends ServiceDependency<Interfaceable<unknown>>[],
 > = {
   /** The container name for debugging purpose */
   name?: string;
@@ -44,7 +44,7 @@ function serviceContainer<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
-  D extends AnyDep
+  D extends AnyDep,
 >(
   opts: ContainerOptions<[A, B, C, D]>
 ): <T>(fn: FactoryFn<T, [A, B, C, D]>) => ContainerFn<T, [A, B, C, D]>;
@@ -54,7 +54,7 @@ function serviceContainer<
   B extends AnyDep,
   C extends AnyDep,
   D extends AnyDep,
-  E extends AnyDep
+  E extends AnyDep,
 >(
   opts: ContainerOptions<[A, B, C, D, E]>
 ): <T>(fn: FactoryFn<T, [A, B, C, D, E]>) => ContainerFn<T, [A, B, C, D, E]>;
@@ -65,7 +65,7 @@ function serviceContainer<
   C extends AnyDep,
   D extends AnyDep,
   E extends AnyDep,
-  F extends AnyDep
+  F extends AnyDep,
 >(
   opts: ContainerOptions<[A, B, C, D, E, F]>
 ): <T>(
@@ -79,7 +79,7 @@ function serviceContainer<
   D extends AnyDep,
   E extends AnyDep,
   F extends AnyDep,
-  G extends AnyDep
+  G extends AnyDep,
 >(
   opts: ContainerOptions<[A, B, C, D, E, F, G]>
 ): <T>(
@@ -94,7 +94,7 @@ function serviceContainer<
   E extends AnyDep,
   F extends AnyDep,
   G extends AnyDep,
-  H extends AnyDep
+  H extends AnyDep,
 >(
   opts: ContainerOptions<[A, B, C, D, E, F, G, H]>
 ): <T>(
@@ -110,7 +110,7 @@ function serviceContainer<
   F extends AnyDep,
   G extends AnyDep,
   H extends AnyDep,
-  I extends AnyDep
+  I extends AnyDep,
 >(
   opts: ContainerOptions<[A, B, C, D, E, F, G, H, I]>
 ): <T>(
@@ -127,7 +127,7 @@ function serviceContainer<
   G extends AnyDep,
   H extends AnyDep,
   I extends AnyDep,
-  J extends AnyDep
+  J extends AnyDep,
 >(
   opts: ContainerOptions<[A, B, C, D, E, F, G, H, I, J]>
 ): <T>(

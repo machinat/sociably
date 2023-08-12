@@ -17,11 +17,7 @@ export const respondRedirect = (res: ServerResponse, url: string): void => {
   res.end();
 };
 
-export const getCookies = (
-  req: WithHeaders
-): null | {
-  [key: string]: string;
-} => {
+export const getCookies = (req: WithHeaders): null | Record<string, string> => {
   if (!req.headers.cookie) {
     return null;
   }
@@ -50,7 +46,7 @@ export const setCookie = (
 };
 
 export const isSubdomain = (domain: string, subdomain: string): boolean =>
-  subdomain.slice(-domain.length) === domain &&
+  subdomain.endsWith(domain) &&
   (subdomain.length === domain.length ||
     subdomain[subdomain.length - domain.length - 1] === '.');
 
@@ -58,7 +54,7 @@ export const isSubpath = (
   path: null | string,
   subpath: null | string
 ): boolean =>
-  !!(path && subpath) && posixPath.relative(path, subpath).slice(0, 2) !== '..';
+  !!(path && subpath) && !posixPath.relative(path, subpath).startsWith('..');
 
 const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 

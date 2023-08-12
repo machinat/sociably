@@ -86,7 +86,7 @@ const renderContents = async (
     };
   } else if (headerSegments) {
     const segValue: WhatsAppSegmentValue = headerSegments[0].value;
-    const headerType = segValue.message.type as string;
+    const headerType = segValue.message.type!;
     headerValue = {
       type: headerType,
       [headerType]: segValue.message[headerType],

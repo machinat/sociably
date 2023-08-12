@@ -209,7 +209,7 @@ describe('createChatJobs', () => {
     expect(
       jobs[1].consumeResult?.accomplishRequest(
         jobs[1].request,
-        [jobs[0].registerResult as string],
+        [jobs[0].registerResult!],
         getResultValue
       )
     ).toEqual({
@@ -225,7 +225,7 @@ describe('createChatJobs', () => {
     expect(
       jobs[3].consumeResult?.accomplishRequest(
         jobs[3].request,
-        [jobs[2].registerResult as string],
+        [jobs[2].registerResult!],
         getResultValue
       )
     ).toEqual({

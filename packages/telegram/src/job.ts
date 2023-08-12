@@ -56,7 +56,7 @@ export const createBotScopeJobs = (
 
       if (!toNonChatTarget) {
         throw new TypeError(
-          method.slice(0, 4) === 'edit'
+          method.startsWith('edit')
             ? 'inlineMessageId is required to edit an inline message'
             : `${formatNode(
                 segment.node

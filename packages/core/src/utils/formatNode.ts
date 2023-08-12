@@ -6,18 +6,14 @@ import {
   SOCIABLY_RAW_TYPE,
 } from '../symbol.js';
 
-const formatProps = (props) => {
-  const keys = Object.keys(props);
+const formatProps = (props: Record<string, unknown>) => {
   let formated = '';
 
-  for (let i = 0; i < keys.length; i += 1) {
-    const key = keys[i];
-    const value = props[key];
+  for (const [key, value] of Object.entries(props)) {
     formated += `${key}=${
       typeof value === 'string' ? `"${value}"` : `{${String(value)}}`
     } `;
   }
-
   return formated;
 };
 

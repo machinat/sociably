@@ -27,7 +27,7 @@ import {
 import { LineEvent, LineRawEvent } from './types.js';
 
 export const makeEvent = <
-  Proto extends object // eslint-disable-line @typescript-eslint/ban-types
+  Proto extends object, // eslint-disable-line @typescript-eslint/ban-types
 >(
   payload: LineRawEvent,
   channel: LineChannel,

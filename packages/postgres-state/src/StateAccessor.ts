@@ -138,7 +138,7 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
 
     return {
       text: keyFieldPairs.map(([k], i) => `"${k}" = $${i + 1}`).join(' AND '),
-      params: keyFieldPairs.map(([_, v]) => v),
+      params: keyFieldPairs.map(([, v]) => v),
     };
   }
 
@@ -179,7 +179,7 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
           "${FIELD_UPDATED_AT}" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       `,
-      values: [{ value }, ...keyFieldPairs.map(([_, v]) => v)],
+      values: [{ value }, ...keyFieldPairs.map(([, v]) => v)],
     };
   }
 

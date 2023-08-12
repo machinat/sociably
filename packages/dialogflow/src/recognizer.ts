@@ -48,7 +48,7 @@ export class DialogflowIntentRecognizer<
   Recognition extends RecognitionData<string, string> = RecognitionData<
     string,
     string
-  >
+  >,
 > implements IntentRecognizer<Recognition, DetactIntentPayload>
 {
   projectId: string;
@@ -258,7 +258,7 @@ export class DialogflowIntentRecognizer<
     await deleteOperation.promise();
 
     // update current intents
-    const intentsDataByLangs: Map<string, Map<string, string[]>> = new Map();
+    const intentsDataByLangs = new Map<string, Map<string, string[]>>();
     Object.entries(agentData.intents).forEach(([name, { trainingPhrases }]) => {
       Object.entries(trainingPhrases).forEach(([lang, phrases]) => {
         let intentsOfLang = intentsDataByLangs.get(lang);

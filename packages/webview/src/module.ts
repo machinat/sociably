@@ -130,7 +130,7 @@ namespace Webview {
   export const Configs = ConfigsI;
   export type Configs<
     Authenticator extends AnyServerAuthenticator = AnyServerAuthenticator,
-    Value extends EventValue = EventValue
+    Value extends EventValue = EventValue,
   > = WebviewConfigs<Authenticator, Value>;
 
   export const Bot = BotP;
@@ -143,7 +143,7 @@ namespace Webview {
   export const Receiver = ReceiverP;
   export type Receiver<
     Authenticator extends AnyServerAuthenticator,
-    Value extends EventValue
+    Value extends EventValue,
   > = ReceiverP<Authenticator, Value>;
   export const SocketBroker = WebSocket.Broker;
   export type SocketBroker = WebSocket.Broker;
@@ -169,7 +169,7 @@ namespace Webview {
 
   export const initModule = <
     Authenticator extends AnyServerAuthenticator,
-    Value extends EventValue = EventValue
+    Value extends EventValue = EventValue,
   >(
     configs: WebviewConfigs<Authenticator, Value>
   ): SociablyPlatform<

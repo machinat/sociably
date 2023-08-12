@@ -136,11 +136,11 @@ export type PageVideoProps = {
   /** is_voice_clip, used to indicate that if a video is used as audio record */
   isVoiceClip?: boolean;
   /** The data of multilingual messages and their dialects */
-  multilingualData?: Array<{
+  multilingualData?: {
     multilingualStatusLang: string;
     /** Supports Emoji */
     multilingualStatus: string;
-  }>;
+  }[];
   /** If set to true, this will suppress feed and timeline story. */
   noStory?: boolean;
   /** Original field of view of the source camera */

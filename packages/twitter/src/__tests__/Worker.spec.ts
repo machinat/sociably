@@ -17,7 +17,7 @@ const appKey = '__APP_KEY__';
 const appSecret = '__APP_SECRET__';
 const bearerToken = '__BEARER_TOKEN__';
 
-const authorizationSpy = moxy((x) => true);
+const authorizationSpy = moxy(() => true);
 const twitterApi = nock(`https://api.twitter.com`, {
   reqheaders: {
     'content-type': 'application/json',

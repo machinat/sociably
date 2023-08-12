@@ -1,17 +1,18 @@
+import { EventEmitter } from 'events';
 import type Ws from 'ws';
 import { moxy } from '@moxyjs/moxy';
-import { EventEmitter } from 'events';
 import Socket from '../Socket.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const connId = 'conn#id';
 
-const _ws = new EventEmitter() as Ws;
-_ws.readyState = 1;
+const _ws = Object.defineProperty(new EventEmitter(), 'readyState', {
+  value: 1,
+});
 
-const clientWs = moxy(_ws);
-const serverWs = moxy(_ws);
+const clientWs = moxy(_ws as Ws);
+const serverWs = moxy(_ws as Ws);
 
 let clientTimeoutId;
 let serverTimeoutId;

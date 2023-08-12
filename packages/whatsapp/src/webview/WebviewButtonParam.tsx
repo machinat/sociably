@@ -1,5 +1,5 @@
-import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import { posix as posixPath } from 'path';
+import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import WhatsAppChat from '../Chat.js';
 import UserProfile from '../UserProfile.js';
 import { UrlButtonParam } from '../components/index.js';

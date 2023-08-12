@@ -3,7 +3,7 @@ import { serviceInterface } from '../service/index.js';
 
 export type RecognitionData<
   Language extends string = string,
-  Intent extends string = string
+  Intent extends string = string,
 > = {
   defaultLanguage: Language;
   languages: Language[];
@@ -18,7 +18,7 @@ export type RecognitionData<
 
 export type DetectIntentResult<
   Recognition extends RecognitionData<string, string>,
-  Payload
+  Payload,
 > = Recognition extends RecognitionData<infer Language, infer Intent>
   ? {
       type: undefined | Intent;
@@ -35,19 +35,19 @@ export type DetectTextOptions = {
 /**
  * @category Base
  */
-export interface IntentRecognizer<
+export type IntentRecognizer<
   Recognition extends RecognitionData<string, string> = RecognitionData<
     string,
     string
   >,
-  Payload = unknown
-> {
+  Payload = unknown,
+> = {
   detectText(
     thread: SociablyThread,
     text: string,
     options?: DetectTextOptions
   ): Promise<DetectIntentResult<Recognition, Payload>>;
-}
+};
 
 const IntentRecognizerI = serviceInterface<IntentRecognizer>({
   name: 'IntentRecognizer',
@@ -58,7 +58,7 @@ type IntentRecognizerI<
     string,
     string
   >,
-  Payload = unknown
+  Payload = unknown,
 > = IntentRecognizer<Recognition, Payload>;
 
 export default IntentRecognizerI;

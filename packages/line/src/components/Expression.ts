@@ -9,6 +9,7 @@ import {
   LineComponent,
   MessageSegmentValue,
   LineSegmentValue,
+  QuickReplyPartValue,
 } from '../types.js';
 
 /**
@@ -86,7 +87,9 @@ export const Expression: LineComponent<ExpressionProps> = makeLineComponent(
           params: {
             ...messageSegment.value.params,
             quickReply: {
-              items: replySegments.map((segment) => segment.value),
+              items: replySegments.map(
+                (segment) => segment.value as QuickReplyPartValue
+              ),
             },
           },
         },

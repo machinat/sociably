@@ -8,7 +8,7 @@ import type {
 const createSociablyElement = (
   type: SociablyElementType,
   config: any,
-  ...children: Array<SociablyNode>
+  ...children: SociablyNode[]
 ): SociablyElement<unknown, unknown> => {
   const childrenLen = children.length;
 

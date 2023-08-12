@@ -8,7 +8,7 @@ const WebviewEventProto = { platform: WEBVIEW };
 
 const createEvent = <
   User extends null | SociablyUser,
-  Value extends EventValue
+  Value extends EventValue,
 >(
   value: EventInput,
   connection: WebviewConnection,

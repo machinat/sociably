@@ -20,7 +20,7 @@ import type { ClientEventContext, ClientOptions } from './types.js';
 
 class WebviewClient<
   Authenticator extends AnyClientAuthenticator = AnyClientAuthenticator,
-  Value extends EventValue = EventValue
+  Value extends EventValue = EventValue,
 > extends ClientEmitter<
   ClientEventContext<
     Authenticator,
@@ -155,20 +155,16 @@ class WebviewClient<
         user
       ),
       auth: this.authContext as ContextOfAuthenticator<Authenticator>,
-      authenticator: this._authClient.getAuthenticator() as Authenticator,
+      authenticator: this._authClient.getAuthenticator()!,
     });
   }
 
   private _handleEvent(values: Value[]) {
     for (const value of values) {
       this._emitEvent({
-        event: createEvent(
-          value,
-          this._thread as WebviewConnection,
-          this._user as UserOfAuthenticator<Authenticator>
-        ),
+        event: createEvent(value, this._thread!, this._user!),
         auth: this.authContext as ContextOfAuthenticator<Authenticator>,
-        authenticator: this._authClient.getAuthenticator() as Authenticator,
+        authenticator: this._authClient.getAuthenticator()!,
       });
     }
   }
@@ -184,11 +180,11 @@ class WebviewClient<
           type: 'disconnect',
           payload: { reason },
         },
-        thread as WebviewConnection,
-        this._user as UserOfAuthenticator<Authenticator>
+        thread!,
+        this._user!
       ),
       auth: this.authContext as ContextOfAuthenticator<Authenticator>,
-      authenticator: this._authClient.getAuthenticator() as Authenticator,
+      authenticator: this._authClient.getAuthenticator()!,
     });
   }
 }

@@ -37,7 +37,7 @@ class LineApiError extends Error {
     }
 
     this.code = code;
-    this.status = STATUS_CODES[code] as string;
+    this.status = STATUS_CODES[code]!;
     this.name = `LineAPIError (${this.status})`;
   }
 }

@@ -107,7 +107,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
     return this.engine.render(
       chat,
       message,
-      createChatJobs(options && options.replyToken)
+      createChatJobs(options?.replyToken)
     );
   }
 

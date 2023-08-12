@@ -15,13 +15,13 @@ beforeEach(() => {
 });
 
 it('inject container with frame.scope', () => {
-  const containedFn = moxy((...args) => 'baz');
+  const containedFn = moxy((..._args) => 'baz');
   const myContainer = moxy(
     serviceContainer({
       deps: [
         /* FooProvider */
       ],
-    })((...args) => containedFn)
+    })((..._args) => containedFn)
   );
 
   expect(injectMaybe(myContainer)(frame)('bar')).toBe('baz');

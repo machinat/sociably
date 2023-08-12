@@ -32,7 +32,7 @@ const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
  * @category Provider
  */
 export class MessengerAssetsManager<
-  Page extends MessengerPage
+  Page extends MessengerPage,
 > extends MetaAssetsManager {
   protected bot: MessengerBot<Page>;
 

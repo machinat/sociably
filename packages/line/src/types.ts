@@ -56,14 +56,15 @@ export type LineWebhookRequestBody = {
   events: LineRawEvent[];
 };
 
+export type QuickReplyPartValue = {
+  type: 'action';
+  imageUrl: string;
+  action: any;
+};
+
 export type QuickRepliable = {
   quickReply?: {
-    // TODO: type the action object
-    items: {
-      type: 'action';
-      imageUrl: string;
-      action: any;
-    }[];
+    items: QuickReplyPartValue[];
   };
 };
 
@@ -176,7 +177,8 @@ export type LineSegmentValue = MessageSegmentValue | ChatActionSegmentValue;
 
 export type LineComponent<
   Props,
-  Segment extends IntermediateSegment<LineSegmentValue> = IntermediateSegment<LineSegmentValue>
+  Segment extends
+    IntermediateSegment<LineSegmentValue> = IntermediateSegment<LineSegmentValue>,
 > = NativeComponent<Props, Segment>;
 
 type ReplyRequestBody = {

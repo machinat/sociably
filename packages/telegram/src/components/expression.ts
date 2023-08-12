@@ -10,12 +10,12 @@ import {
 /**
  * @category Props
  */
-export interface ExpressionProps {
+export type ExpressionProps = {
   children: SociablyNode;
   disableNotification?: boolean;
   parseMode?: TelegramParseMode;
   replyMarkup?: SociablyNode;
-}
+};
 
 /**
  * Control options including disableNotification, parseMode of a group of
@@ -63,7 +63,7 @@ export const Expression: TelegramComponent<
     } else if (segment.type === 'unit' || segment.type === 'raw') {
       const { method } = segment.value;
 
-      if (method.slice(0, 4) === 'send' && method !== 'sendChatAction') {
+      if (method.startsWith('send') && method !== 'sendChatAction') {
         const { params } = segment.value;
         if (!params.reply_markup) {
           lastEmptyMarkupSlot = outputSegments.length;

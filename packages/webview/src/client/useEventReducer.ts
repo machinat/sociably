@@ -8,7 +8,7 @@ function useEventReducer<
   Client extends WebviewClient<
     AnyClientAuthenticator,
     EventValue
-  > = WebviewClient<AnyClientAuthenticator, EventValue>
+  > = WebviewClient<AnyClientAuthenticator, EventValue>,
 >(
   client: Client,
   reducer: (value: T, context: EventContextOfClient<Client>) => T,

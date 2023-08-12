@@ -149,7 +149,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
-    const id = result.id as string;
+    const { id } = result;
     await this.saveMedia(agent, assetTag, id);
     return id;
   }

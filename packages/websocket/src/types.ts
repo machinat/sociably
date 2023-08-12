@@ -26,7 +26,7 @@ export type UpgradeRequestInfo = Omit<HttpRequestInfo, 'body'>;
 export type EventValue<
   Category extends string = string,
   Type extends string = string,
-  Payload = unknown
+  Payload = unknown,
 > = {
   category: Category;
   type: Type;
@@ -45,7 +45,7 @@ export type ConnectionEventValue = ConnectEventValue | DisconnectEventValue;
 
 export type WebSocketEvent<
   Value extends EventValue,
-  User extends null | SociablyUser
+  User extends null | SociablyUser,
 > = Value & {
   platform: 'websokcet';
   thread: WebSocketConnection;
@@ -60,16 +60,16 @@ export type EventInput = {
   payload?: unknown;
 };
 
-export interface ConnectionTarget {
+export type ConnectionTarget = {
   type: 'connection';
   serverId: string;
   id: string;
-}
+};
 
-export interface TopicTarget {
+export type TopicTarget = {
   type: 'topic';
   key: string;
-}
+};
 
 export type DispatchTarget = ConnectionTarget | TopicTarget;
 
@@ -107,7 +107,7 @@ export type WebSocketDispatchResponse = DispatchResponse<
 export type WebSocketEventContext<
   User extends null | SociablyUser,
   AuthContext,
-  Value extends EventValue = EventValue
+  Value extends EventValue = EventValue,
 > = {
   platform: 'websocket';
   event: WebSocketEvent<Value, User>;
@@ -132,7 +132,7 @@ type FailVerifyLoginResult = {
 export type VerifyLoginFn<
   User extends null | SociablyUser,
   AuthContext,
-  Credential
+  Credential,
 > = (
   request: UpgradeRequestInfo,
   credential: Credential
@@ -146,7 +146,7 @@ export type VerifyUpgradeFn = (
 
 export type ClientLoginFn<
   User extends null | SociablyUser,
-  Credential
+  Credential,
 > = () => Promise<{
   user: User;
   credential: Credential;
@@ -154,7 +154,7 @@ export type ClientLoginFn<
 
 export type WebSocketEventMiddleware<
   User extends null | SociablyUser,
-  Auth
+  Auth,
 > = EventMiddleware<WebSocketEventContext<User, Auth>, null>;
 
 export type WebSocketDispatchMiddleware = DispatchMiddleware<
@@ -165,7 +165,7 @@ export type WebSocketDispatchMiddleware = DispatchMiddleware<
 
 export type WebSocketConfigs<
   User extends null | SociablyUser = null,
-  Auth = null
+  Auth = null,
 > = {
   entryPath?: string;
   heartbeatInterval?: number;
@@ -175,7 +175,7 @@ export type WebSocketConfigs<
 
 export type WebSocketPlatformUtilities<
   User extends null | SociablyUser,
-  Auth
+  Auth,
 > = PlatformUtilities<
   WebSocketEventContext<User, Auth>,
   null,
@@ -184,7 +184,7 @@ export type WebSocketPlatformUtilities<
   WebSocketResult
 >;
 
-export interface WebSocketClusterBroker {
+export type WebSocketClusterBroker = {
   start(): Promise<void>;
   stop(): Promise<void>;
   dispatchRemote(job: WebSocketJob): Promise<ConnIdentifier[]>;
@@ -194,4 +194,4 @@ export interface WebSocketClusterBroker {
 
   disconnectRemote(conn: ConnIdentifier): Promise<boolean>;
   onRemoteEvent(handler: (job: WebSocketJob) => void): void;
-}
+};

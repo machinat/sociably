@@ -6,7 +6,11 @@ import {
   PartSegment,
 } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
-import { LineComponent, MessageSegmentValue } from '../types.js';
+import {
+  LineComponent,
+  MessageSegmentValue,
+  ImagemapMessageParams,
+} from '../types.js';
 
 /**
  * @category Props
@@ -45,7 +49,7 @@ export const ImageMapArea: LineComponent<
 > = makeLineComponent(async function ImageMapArea(node, path, render) {
   const { action, x, y, width, height } = node.props;
   const actionSegments = await render(action, '.action');
-  const actionValue = actionSegments?.[0].value;
+  const actionValue = actionSegments?.[0].value as Record<string, string>;
 
   return [
     makePartSegment(
@@ -113,13 +117,13 @@ export type ImageMapVideoAreaProps = {
  */
 export const ImageMapVideoArea: LineComponent<
   ImageMapVideoAreaProps,
-  PartSegment<any>
+  PartSegment<{}>
 > = makeLineComponent(async function ImageMapVideoArea(node, path, render) {
   const { originalContentUrl, previewImageUrl, x, y, width, height, action } =
     node.props;
 
   const actionSegments = await render(action, '.action');
-  const actionValue = actionSegments?.[0].value;
+  const actionValue = actionSegments?.[0].value as Record<string, string>;
 
   return [
     makePartSegment(node, path, {
@@ -174,7 +178,7 @@ export const ImageMap: LineComponent<
   const { baseUrl, altText, height, children, video } = node.props;
 
   const videoSegments = await render(video, '.video');
-  const videoValue = videoSegments?.[0].value;
+  const videoValue = videoSegments?.[0].value as ImagemapMessageParams['video'];
 
   const actionSegments = await render(children, '.children');
   const actionValues = actionSegments?.map((segment) => segment.value);

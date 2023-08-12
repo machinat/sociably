@@ -1,10 +1,10 @@
 import RenderingTargetI from '../base/RenderingTarget.js';
 import SociablyQueue, { JobBatchResponse } from '../queue/index.js';
 import { createEmptyScope, ServiceScope } from '../service/index.js';
-import type SociablyRenderer from '../renderer/index.js';
+import SociablyRenderer, { IntermediateSegment } from '../renderer/index.js';
 import type {
   SociablyNode,
-  AnyNativeComponent,
+  NativeComponent,
   InitScopeFn,
   DispatchWrapper,
   ThunkEffectFn,
@@ -27,9 +27,9 @@ import {
 export default class SociablyEngine<
   Target extends DispatchTarget,
   SegmentValue,
-  Component extends AnyNativeComponent,
+  Component extends NativeComponent<unknown, IntermediateSegment<SegmentValue>>,
   Job,
-  Result
+  Result,
 > {
   platform: string;
   renderer: SociablyRenderer<SegmentValue, Component>;
@@ -99,8 +99,7 @@ export default class SociablyEngine<
     let thunks: ThunkEffectFn[] = [];
     let dispatchables: DispatchableSegment<SegmentValue>[] = [];
 
-    for (let i = 0; i < segments.length; i += 1) {
-      const segment = segments[i];
+    for (const segment of segments) {
       if (segment.type === 'thunk') {
         // collect thunk
         thunks.push(segment.value);

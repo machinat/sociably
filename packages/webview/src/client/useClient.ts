@@ -5,7 +5,7 @@ import type { ClientOptions } from './types.js';
 
 function useClient<
   Authenticator extends AnyClientAuthenticator,
-  Value extends EventValue = EventValue
+  Value extends EventValue = EventValue,
 >(options: ClientOptions<Authenticator>): WebviewClient<Authenticator, Value> {
   const [client, setClient] = useState(() => new WebviewClient(options));
   const [isInitial, setIsInitial] = useState(true);

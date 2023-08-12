@@ -6,7 +6,7 @@ import type { TelegramComponent } from '../types.js';
 /**
  * @category Props
  */
-export interface UrlButtonProps {
+export type UrlButtonProps = {
   /** Label text on the button. */
   text: string;
   /** HTTP or tg:// url to be opened. */
@@ -19,7 +19,7 @@ export interface UrlButtonProps {
   botUserName?: string;
   /** Login mode only. Pass True to request the permission for your bot to send messages to the user. */
   requestWriteAccess?: boolean;
-}
+};
 
 /**
  * The url will be opened by the client when button is pressed. If `login` is
@@ -58,12 +58,12 @@ export const UrlButton: TelegramComponent<
 /**
  * @category Props
  */
-export interface CallbackButtonProps {
+export type CallbackButtonProps = {
   /** Label text on the button. */
   text: string;
   /** Data to be sent in a callback query, 1-64 bytes */
   data: string;
-}
+};
 
 /**
  * A {@link CallbackQueryEvent} will be triggered when button is pressed.
@@ -83,14 +83,14 @@ export const CallbackButton: TelegramComponent<
 /**
  * @category Props
  */
-export interface SwitchQueryButtonProps {
+export type SwitchQueryButtonProps = {
   /** Label text on the button. */
   text: string;
   /** The inline query to be inserted in the input field after the bot's username. Default to empty string. */
   query?: string;
   /** If set to true, the query will be inserted in the current chat's input field. Default to false. */
   currentChat?: boolean;
-}
+};
 
 /**
  * Pressing the button will prompt the user to select one of their chats, open
@@ -120,10 +120,10 @@ export const SwitchQueryButton: TelegramComponent<
 /**
  * @category Props
  */
-export interface GameButtonProps {
+export type GameButtonProps = {
   /** Label text on the button. */
   text: string;
-}
+};
 
 /**
  * Description of the game that will be launched when the user presses the button. This type of button must always be the **first button** in the first row.
@@ -147,10 +147,10 @@ export const GameButton: TelegramComponent<
 /**
  * @category Props
  */
-export interface PayButtonProps {
+export type PayButtonProps = {
   /** Label text on the button. */
   text: string;
-}
+};
 
 /**
  * Description of the game that will be launched when the user presses the button. This type of button must always be the **first button** in the first row.
@@ -181,10 +181,10 @@ export type InlineButton =
 /**
  * @category Props
  */
-export interface KeyboardRowProps {
+export type KeyboardRowProps = {
   /**	Button elements contained by the row. */
   children: SociablyNode;
-}
+};
 
 /**
  * Represent a row of buttons within {@link InlineKeyboard} or {@link ReplyKeyboard}.
@@ -215,14 +215,14 @@ export const KeyboardRow: TelegramComponent<
 /**
  * @category Props
  */
-export interface InlineKeyboardProps {
+export type InlineKeyboardProps = {
   /**
    * {@link InlineButton} elements within the keyboard. By default a button take
    * a row, wrap the buttons within {@link KeyboardRow} to display multiple
    * buttons in a row.
    */
   children: SociablyNode;
-}
+};
 
 /**
  *
@@ -253,10 +253,10 @@ export const InlineKeyboard: TelegramComponent<
 /**
  * @category Props
  */
-export interface TextReplyProps {
+export type TextReplyProps = {
   /**	Text of the button */
   text: string;
-}
+};
 
 /**
  * Text of button will be sent as a message by the user when the button is pressed
@@ -275,10 +275,10 @@ export const TextReply: TelegramComponent<
 /**
  * @category Props
  */
-export interface ContactReplyProps {
+export type ContactReplyProps = {
   /**	Text of the button. */
   text: string;
-}
+};
 
 /**
  * The user's phone number will be sent as a contact when the button is pressed. Available in private chats only
@@ -297,10 +297,10 @@ export const ContactReply: TelegramComponent<
 /**
  * @category Props
  */
-export interface LocationReplyProps {
+export type LocationReplyProps = {
   /**	Text of the button. */
   text: string;
-}
+};
 
 /**
  * The user's current location will be sent when the button is pressed. Available in private chats only
@@ -319,12 +319,12 @@ export const LocationReply: TelegramComponent<
 /**
  * @category Props
  */
-export interface PollReplyProps {
+export type PollReplyProps = {
   /**	Text of the button */
   text: string;
   /** If quiz is passed, the user will be allowed to create only polls in the quiz mode. If regular is passed, only regular polls will be allowed. Otherwise, the user will be allowed to create a poll of any type. */
   type?: 'regular' | 'quiz';
-}
+};
 
 /**
  * The user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only
@@ -349,7 +349,7 @@ export type ReplyButton =
 /**
  * @category Props
  */
-export interface ReplyKeyboardProps {
+export type ReplyKeyboardProps = {
   /**
    * {@link ReplyButton} elements within the keyboard. By default a button take
    * a row, wrap the buttons with {@link KeyboardRow} to display multiple
@@ -362,7 +362,7 @@ export interface ReplyKeyboardProps {
   oneTimeKeyboard?: boolean;
   /** Use this parameter if you want to show the keyboard to specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
   selective?: boolean;
-}
+};
 
 /**
  *
@@ -396,10 +396,10 @@ export const ReplyKeyboard: TelegramComponent<
 /**
  * @category Props
  */
-export interface RemoveReplyKeyboardProps {
+export type RemoveReplyKeyboardProps = {
   /**	Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
   selective?: boolean;
-}
+};
 
 /**
  * Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use `oneTimeBeyboard` in {@link ReplyKeyboard})
@@ -418,10 +418,10 @@ export const RemoveReplyKeyboard: TelegramComponent<
 /**
  * @category Props
  */
-export interface ForceReplyProps {
+export type ForceReplyProps = {
   /**	Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
   selective?: boolean;
-}
+};
 
 /**
  * Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use `oneTimeBeyboard` in {@link ReplyKeyboard})

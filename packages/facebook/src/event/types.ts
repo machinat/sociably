@@ -41,7 +41,7 @@ interface EventObject<
   Category extends string,
   Type extends string,
   Thread extends null | FacebookThread = FacebookChat,
-  User extends null | FacebookUser = FacebookUser
+  User extends null | FacebookUser = FacebookUser,
 > {
   platform: typeof FACEBOOK;
   category: Category;

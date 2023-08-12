@@ -118,7 +118,7 @@ export const Tweet: TwitterComponent<
     throw new TypeError(`no text or media in <Tweet/>`);
   }
 
-  const content = contentSegments?.[0].value;
+  const content = contentSegments?.[0].value as string;
   const splitedContent = splitTweetText(content);
 
   const segments = [

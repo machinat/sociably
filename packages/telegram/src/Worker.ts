@@ -21,7 +21,7 @@ const makeBotApiEntry = (botToken: string) => `${API_HOST}/bot${botToken}`;
 const requestBotApi = async (
   botToken: string,
   method: string,
-  parameters: { [k: string]: unknown },
+  parameters: Record<string, unknown>,
   files: undefined | UploadingFile[]
 ): Promise<TelegramResult> => {
   const botApiEntry = makeBotApiEntry(botToken);
@@ -115,7 +115,7 @@ export default class TelegramWorker
         break;
       }
 
-      const { key } = queue.peekAt(i) as TelegramJob;
+      const { key } = queue.peekAt(i)!;
       if (key !== undefined && lockedIds.has(key)) {
         i += 1;
       } else {

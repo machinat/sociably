@@ -52,7 +52,10 @@ export type FailedLineVerifyAuthResult = {
   reason: string;
 };
 
-export type OkLineVerifyAuthResult = { ok: true; data: LineAuthData };
+export type OkLineVerifyAuthResult = {
+  ok: true;
+  data: LineAuthData;
+};
 
 export type LineVerifyAuthResult =
   | OkLineVerifyAuthResult

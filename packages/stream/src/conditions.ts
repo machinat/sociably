@@ -6,7 +6,7 @@ type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 
 function conditions<
   T,
-  Predicators extends readonly MaybeContainer<PredicateFn<T>>[]
+  Predicators extends readonly MaybeContainer<PredicateFn<T>>[],
 >(
   source: Stream<T>,
   predicators: Predicators
@@ -26,7 +26,7 @@ function conditions<T>(
 function conditions<T>(
   source: Stream<T>,
   predicators: MaybeContainer<PredicateFn<T>>[]
-): { [k: number]: Stream<T> } {
+): Record<number, Stream<T>> {
   const destinations = predicators.map(() => new Stream<T>());
 
   const injectablePredicators = predicators.map((predicateFnOrContainer) =>

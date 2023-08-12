@@ -118,20 +118,21 @@ export type UploadingFile = {
 
 export type TelegramSegmentValue = {
   method: string;
-  params: { [k: string]: unknown };
+  params: Record<string, unknown>;
   toNonChatTarget?: boolean;
   files?: UploadingFile[];
 };
 
 export type TelegramComponent<
   Props,
-  Segment extends IntermediateSegment<TelegramSegmentValue> = UnitSegment<TelegramSegmentValue>
+  Segment extends
+    IntermediateSegment<TelegramSegmentValue> = UnitSegment<TelegramSegmentValue>,
 > = NativeComponent<Props, Segment>;
 
 export type TelegramJob = {
   agentId: number;
   method: string;
-  params: { [k: string]: any };
+  params: Record<string, any>;
   key: undefined | string;
   files?: UploadingFile[];
 };

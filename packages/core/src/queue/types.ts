@@ -19,13 +19,13 @@ export type JobResponse<Job, Result> =
 export type SuccessJobBatchResponse<Job, Result> = {
   success: true;
   errors: null;
-  batch: ReadonlyArray<SuccessJobResponse<Job, Result>>;
+  batch: readonly SuccessJobResponse<Job, Result>[];
 };
 
 export type FailedJobBatchResponse<Job, Result> = {
   success: false;
-  errors: Array<Error>;
-  batch: null | Array<void | JobResponse<Job, Result>>;
+  errors: Error[];
+  batch: null | (void | JobResponse<Job, Result>)[];
 };
 
 export type JobBatchResponse<Job, Result> =

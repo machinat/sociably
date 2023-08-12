@@ -24,15 +24,14 @@ export const PlatformUtilitiesI = serviceInterface<LinePlatformUtilities>({
   name: 'LinePlatformUtilities',
 });
 
-export interface AgentSettingsAccessorI
-  extends AgentSettingsAccessor<LineChannel, LineChatChannelSettings> {
+export type AgentSettingsAccessorI = {
   getLineChatChannelSettingsByBotUserId(
     botUserId: string
   ): Promise<null | LineChatChannelSettings>;
   getLineLoginChannelSettings(
     channelId: string
   ): Promise<null | LineLoginChannelSettings>;
-}
+} & AgentSettingsAccessor<LineChannel, LineChatChannelSettings>;
 
 /**
  * @category Interface

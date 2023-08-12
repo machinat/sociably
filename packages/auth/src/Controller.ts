@@ -67,18 +67,18 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     res: ServerResponse,
     routingInfo?: RoutingInfo
   ): Promise<void> {
-    const { pathname } = parseUrl(req.url as string);
+    const { pathname } = parseUrl(req.url!);
     const subpath =
       routingInfo?.trailingPath ||
       getRelativePath(this.apiPathname, pathname || '/');
 
-    if (subpath === '' || subpath.slice(0, 2) === '..') {
+    if (subpath === '' || subpath.startsWith('..')) {
       respondApiError(res, undefined, 403, 'path forbidden');
       return;
     }
 
     // inner auth api for client controller
-    if (subpath[0] === '_') {
+    if (subpath.startsWith('_')) {
       if (req.method !== 'POST') {
         respondApiError(res, undefined, 405, 'method not allowed');
         return;

@@ -20,9 +20,9 @@ export const BLOCK = Sociably.Fragment as unknown as <
   Input = any,
   Return = any,
   Yield = any,
-  Meta = any
+  Meta = any,
 >(
-  props: BlockProps<Vars, Input, Return, Yield, Meta>
+  _props: BlockProps<Vars, Input, Return, Yield, Meta>
 ) => null;
 
 /**
@@ -33,9 +33,9 @@ export const IF = <
   Input = any,
   Return = any,
   Yield = any,
-  Meta = any
+  Meta = any,
 >(
-  props: IfProps<Vars, Input, Return, Yield, Meta>
+  _props: IfProps<Vars, Input, Return, Yield, Meta>
 ): null => null;
 
 /**
@@ -46,9 +46,9 @@ export const ELSE_IF = <
   Input = any,
   Return = any,
   Yield = any,
-  Meta = any
+  Meta = any,
 >(
-  props: IfProps<Vars, Input, Return, Yield, Meta>
+  _props: IfProps<Vars, Input, Return, Yield, Meta>
 ): null => null;
 
 /**
@@ -59,9 +59,9 @@ export const ELSE = <
   Input = any,
   Return = any,
   Yield = any,
-  Meta = any
+  Meta = any,
 >(
-  props: BlockProps<Vars, Input, Return, Yield, Meta>
+  _props: BlockProps<Vars, Input, Return, Yield, Meta>
 ): null => null;
 
 /**
@@ -72,40 +72,40 @@ export const WHILE = <
   Input = any,
   Return = any,
   Yield = any,
-  Meta = any
+  Meta = any,
 >(
-  props: WhileProps<Vars, Input, Return, Yield, Meta>
+  _props: WhileProps<Vars, Input, Return, Yield, Meta>
 ): null => null;
 
 /**
  * @category Keyword
  */
 export const PROMPT = <Vars = any, Input = any, Meta = any>(
-  props: PromptProps<Vars, Input, Meta>
+  _props: PromptProps<Vars, Input, Meta>
 ): null => null;
 
 /**
  * @category Keyword
  */
-export const LABEL = (props: LabelProps): null => null;
+export const LABEL = (_props: LabelProps): null => null;
 
 /**
  * @category Keyword
  */
 export const CALL = <Vars = any, Script extends AnyScriptLibrary = any>(
-  props: CallProps<Vars, Script>
+  _props: CallProps<Vars, Script>
 ): null => null;
 
 /**
  * @category Keyword
  */
 export const EFFECT = <Vars = any, Yield = any, Meta = any>(
-  props: EffectProps<Vars, Yield, Meta>
+  _props: EffectProps<Vars, Yield, Meta>
 ): null => null;
 
 /**
  * @category Keyword
  */
 export const RETURN = <Vars = any, Return = any, Meta = any>(
-  props: ReturnProps<Vars, Return, Meta>
+  _props: ReturnProps<Vars, Return, Meta>
 ): null => null;

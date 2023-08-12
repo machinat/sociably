@@ -37,7 +37,7 @@ function serviceProviderFactory<A extends AnyDep, B extends AnyDep>(
 function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
-  C extends AnyDep
+  C extends AnyDep,
 >(
   opts: FactoryProviderOptions<[A, B, C]>
 ): <T>(factory: FactoryFn<T, [A, B, C]>) => ProviderFn<T, [A, B, C]>;
@@ -46,7 +46,7 @@ function serviceProviderFactory<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
-  D extends AnyDep
+  D extends AnyDep,
 >(
   opts: FactoryProviderOptions<[A, B, C, D]>
 ): <T>(factory: FactoryFn<T, [A, B, C, D]>) => ProviderFn<T, [A, B, C, D]>;
@@ -56,7 +56,7 @@ function serviceProviderFactory<
   B extends AnyDep,
   C extends AnyDep,
   D extends AnyDep,
-  E extends AnyDep
+  E extends AnyDep,
 >(
   opts: FactoryProviderOptions<[A, B, C, D, E]>
 ): <T>(
@@ -69,7 +69,7 @@ function serviceProviderFactory<
   C extends AnyDep,
   D extends AnyDep,
   E extends AnyDep,
-  F extends AnyDep
+  F extends AnyDep,
 >(
   opts: FactoryProviderOptions<[A, B, C, D, E, F]>
 ): <T>(
@@ -83,7 +83,7 @@ function serviceProviderFactory<
   D extends AnyDep,
   E extends AnyDep,
   F extends AnyDep,
-  G extends AnyDep
+  G extends AnyDep,
 >(
   opts: FactoryProviderOptions<[A, B, C, D, E, F, G]>
 ): <T>(
@@ -98,7 +98,7 @@ function serviceProviderFactory<
   E extends AnyDep,
   F extends AnyDep,
   G extends AnyDep,
-  H extends AnyDep
+  H extends AnyDep,
 >(
   opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H]>
 ): <T>(
@@ -114,7 +114,7 @@ function serviceProviderFactory<
   F extends AnyDep,
   G extends AnyDep,
   H extends AnyDep,
-  I extends AnyDep
+  I extends AnyDep,
 >(
   opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H, I]>
 ): <T>(
@@ -131,7 +131,7 @@ function serviceProviderFactory<
   G extends AnyDep,
   H extends AnyDep,
   I extends AnyDep,
-  J extends AnyDep
+  J extends AnyDep,
 >(
   opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H, I, J]>
 ): <T>(

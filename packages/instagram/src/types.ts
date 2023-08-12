@@ -35,10 +35,18 @@ export * from './event/types.js';
 
 export type InstagramThread = InstagramChat | InstagramPage;
 
-export type PsidTarget = { id: string };
-export type UserRefTarget = { user_ref: string };
-export type PostPrivateReplyTarget = { post_id: string };
-export type CommentPrivateReplyTarget = { comment_id: string };
+export type PsidTarget = {
+  id: string;
+};
+export type UserRefTarget = {
+  user_ref: string;
+};
+export type PostPrivateReplyTarget = {
+  post_id: string;
+};
+export type CommentPrivateReplyTarget = {
+  comment_id: string;
+};
 
 export type MessagingTarget =
   | PsidTarget
@@ -74,7 +82,8 @@ export type InstagramSegmentValue =
 
 export type InstagramComponent<
   Props,
-  Segment extends IntermediateSegment<InstagramSegmentValue> = IntermediateSegment<InstagramSegmentValue>
+  Segment extends
+    IntermediateSegment<InstagramSegmentValue> = IntermediateSegment<InstagramSegmentValue>,
 > = NativeComponent<Props, Segment>;
 
 export type RawUserProfile = {

@@ -164,8 +164,8 @@ export default class Tweet {
       return null;
     }
 
-    const userId = this.data.in_reply_to_user_id_str as string;
-    const screenName = this.data.in_reply_to_screen_name as string;
+    const userId = this.data.in_reply_to_user_id_str!;
+    const screenName = this.data.in_reply_to_screen_name!;
     return {
       tweetId,
       userId,

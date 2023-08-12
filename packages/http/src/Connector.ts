@@ -109,7 +109,7 @@ export class HttpConnector {
   private _handleRequestCallback = this.handleRequest.bind(this);
 
   handleRequest(req: IncomingMessage, res: ServerResponse): void {
-    const { pathname } = parseUrl(req.url as string);
+    const { pathname } = parseUrl(req.url!);
     if (!pathname) {
       endRes(res, 400);
       return;
@@ -142,7 +142,7 @@ export class HttpConnector {
   private _handleUpgradeCallback = this.handleUpgrade.bind(this);
 
   handleUpgrade(req: IncomingMessage, socket: Socket, head: Buffer): void {
-    const { pathname } = parseUrl(req.url as string);
+    const { pathname } = parseUrl(req.url!);
     if (!pathname) {
       respondUpgrade(socket, 403);
       return;

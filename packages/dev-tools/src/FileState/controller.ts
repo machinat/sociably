@@ -101,11 +101,7 @@ export class FileStateAccessor implements StateAccessor {
   }
 }
 
-type StorageObj = {
-  [key: string]: {
-    [key: string]: unknown;
-  };
-};
+type StorageObj = Record<string, Record<string, unknown>>;
 
 type StorageData = {
   threadStates: StorageObj;

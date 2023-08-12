@@ -18,7 +18,7 @@ export type VerifyCodeResponseBody = {
 export type CodeMessageComponentProps = {
   code: string;
   domain: string;
-  ip: string;
+  ip?: string;
   osName?: string;
   deviceModel?: string;
   deviceType?: string;
@@ -59,7 +59,11 @@ export type BasicAuthState<Data> =
   | BasicAuthLoginState<Data>
   | BasicAuthVerifyState<Data>;
 
-type ErrorResult = { ok: false; code: number; reason: string };
+type ErrorResult = {
+  ok: false;
+  code: number;
+  reason: string;
+};
 
 export type CheckCurrentAuthUsabilityFn<Credential, Data> = (
   credential: Credential,
@@ -85,7 +89,7 @@ export type CheckAuthDataFn<Data, Thread extends SociablyThread> = (
 export type AuthDelegatorOptions<
   Credential,
   Data,
-  Thread extends SociablyThread
+  Thread extends SociablyThread,
 > = {
   platform: string;
   bot: SociablyBot<Thread, unknown, unknown>;

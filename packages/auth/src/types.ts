@@ -33,7 +33,10 @@ export type StatePayload<State> = {
 
 export type StateTokenPayload<State> = TokenBase & StatePayload<State>;
 
-export type ErrorMessage = { code: number; reason: string };
+export type ErrorMessage = {
+  code: number;
+  reason: string;
+};
 
 export type ErrorPayload = {
   platform: string;
@@ -51,7 +54,7 @@ export type AuthContextBase = {
 export type AuthContext<
   User extends null | SociablyUser,
   Thread extends null | SociablyThread,
-  Channel extends null | SociablyChannel
+  Channel extends null | SociablyChannel,
 > = {
   platform: string;
   user: User;
@@ -84,11 +87,11 @@ export type CheckDataResult<Context extends AnyAuthContext> =
 
 export type DelegateRoutingInfo = Required<RoutingInfo>;
 
-export interface ServerAuthenticator<
+export type ServerAuthenticator<
   Credential,
   Data,
-  Context extends AnyAuthContext
-> {
+  Context extends AnyAuthContext,
+> = {
   platform: string;
 
   /**
@@ -121,7 +124,7 @@ export interface ServerAuthenticator<
    * final checks. Return the auth context details if success.
    */
   checkAuthData(data: Data): CheckDataResult<Context>;
-}
+};
 
 export type AnyServerAuthenticator = ServerAuthenticator<
   unknown,
@@ -140,11 +143,11 @@ export type AuthenticatorInitResult = {
   forceSignIn: boolean;
 };
 
-export interface ClientAuthenticator<
+export type ClientAuthenticator<
   Credential,
   Data,
-  Context extends AnyAuthContext
-> {
+  Context extends AnyAuthContext,
+> = {
   platform: string;
 
   /**
@@ -172,7 +175,7 @@ export interface ClientAuthenticator<
    * final checks. Return the auth context details if success.
    */
   checkAuthData(data: Data): CheckDataResult<Context>;
-}
+};
 
 export type AnyClientAuthenticator = ClientAuthenticator<
   unknown,
@@ -248,7 +251,7 @@ export type WithHeaders = {
 };
 
 export type ContextOfAuthenticator<
-  Authenticator extends AnyServerAuthenticator | AnyClientAuthenticator
+  Authenticator extends AnyServerAuthenticator | AnyClientAuthenticator,
 > = Authenticator extends ServerAuthenticator<unknown, unknown, infer Context>
   ? Context
   : Authenticator extends ClientAuthenticator<unknown, unknown, infer Context>
@@ -259,5 +262,5 @@ type UserOfContext<Context extends AnyAuthContext> =
   Context extends AuthContext<infer User, any, any> ? User : never;
 
 export type UserOfAuthenticator<
-  Authenticator extends AnyServerAuthenticator | AnyClientAuthenticator
+  Authenticator extends AnyServerAuthenticator | AnyClientAuthenticator,
 > = UserOfContext<ContextOfAuthenticator<Authenticator>>;

@@ -17,10 +17,10 @@ type BatchRequest<Job, Result> = {
   responses: null | (undefined | JobResponse<Job, Result>)[];
 };
 
-type JobBox<Job> = {
+type JobBox<Job, Result> = {
   seq: number;
   job: Job;
-  request: BatchRequest<Job, any>;
+  request: BatchRequest<Job, Result>;
 };
 
 type ConsumeJobsFn<Job, Result> = (
@@ -28,11 +28,11 @@ type ConsumeJobsFn<Job, Result> = (
 ) => Promise<JobResponse<Job, Result>[]>;
 
 const reduceRequestsOfBoxes = <Job, Result, Acc>(
-  boxes: JobBox<Job>[],
+  boxes: JobBox<Job, Result>[],
   reducer: (
     reduced: Acc,
     request: BatchRequest<Job, Result>,
-    boxes: JobBox<Job>[],
+    boxes: JobBox<Job, Result>[],
     begin: number,
     count: number
   ) => Acc,
@@ -66,21 +66,21 @@ const addAcquireCountReducer = <Job, Result>(
   request.acquiredCount += 1;
 };
 
-const addAcquireCountOfJobs = <Job>(boxes: JobBox<Job>[]) => {
+const addAcquireCountOfJobs = <Job, Result>(boxes: JobBox<Job, Result>[]) => {
   reduceRequestsOfBoxes(boxes, addAcquireCountReducer, undefined as void);
 };
 
 export default class SociablyQueue<Job, Result> {
   currentSeq: number;
 
-  private _queuedJobs: Denque<JobBox<Job>>;
+  private _queuedJobs: Denque<JobBox<Job, Result>>;
   private _waitingRequets: Set<BatchRequest<Job, Result>>;
   private _jobListeners: ((queue: SociablyQueue<Job, Result>) => void)[];
 
   private _finishJobsReducerCallback: (
     jobResps: JobResponse<Job, Result>[],
     request: BatchRequest<Job, Result>,
-    boxes: JobBox<Job>[],
+    boxes: JobBox<Job, Result>[],
     begin: number,
     count: number
   ) => JobResponse<Job, Result>[];
@@ -88,7 +88,7 @@ export default class SociablyQueue<Job, Result> {
   private _failJobsReducerCallback: (
     reason: Error,
     request: BatchRequest<Job, Result>,
-    boxes: JobBox<Job>[],
+    boxes: JobBox<Job, Result>[],
     begin: number,
     count: number
   ) => Error;
@@ -122,8 +122,8 @@ export default class SociablyQueue<Job, Result> {
 
   private _emitJobEvent(): void {
     const listeners = this._jobListeners;
-    for (let i = 0; i < listeners.length; i += 1) {
-      listeners[i](this);
+    for (const listener of listeners) {
+      listener(this);
     }
   }
 
@@ -203,7 +203,7 @@ export default class SociablyQueue<Job, Result> {
   }
 
   private _finishJobs(
-    boxes: JobBox<Job>[],
+    boxes: JobBox<Job, Result>[],
     jobResps: JobResponse<Job, Result>[]
   ) {
     reduceRequestsOfBoxes(boxes, this._finishJobsReducerCallback, jobResps);
@@ -212,7 +212,7 @@ export default class SociablyQueue<Job, Result> {
   private _finishJobsReducer(
     jobResps: JobResponse<Job, Result>[],
     request: BatchRequest<Job, Result>,
-    boxes: JobBox<Job>[],
+    boxes: JobBox<Job, Result>[],
     begin: number,
     count: number
   ) {
@@ -267,14 +267,14 @@ export default class SociablyQueue<Job, Result> {
     return jobResps;
   }
 
-  private _failJobs(boxes: JobBox<Job>[], reason: Error) {
+  private _failJobs(boxes: JobBox<Job, Result>[], reason: Error) {
     reduceRequestsOfBoxes(boxes, this._failJobsReducerCallback, reason);
   }
 
   private _failJobsReducer(
     reason: Error,
     request: BatchRequest<Job, Result>,
-    boxes: JobBox<Job>[],
+    boxes: JobBox<Job, Result>[],
     begin: number,
     count: number
   ) {
@@ -308,7 +308,7 @@ export default class SociablyQueue<Job, Result> {
     let removeBegin = -1;
 
     for (let i = 0; i < jobLength; i += 1) {
-      const { request } = this._queuedJobs.peekAt(i) as JobBox<Job>;
+      const { request } = this._queuedJobs.peekAt(i)!;
 
       if (request === requestToClear) {
         if (removeBegin === -1) {

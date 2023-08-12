@@ -40,7 +40,7 @@ interface EventObject<
   Category extends string,
   Type extends string,
   Thread extends null | InstagramThread = InstagramChat,
-  User extends null | InstagramUser = InstagramUser
+  User extends null | InstagramUser = InstagramUser,
 > {
   platform: typeof INSTAGRAM;
   category: Category;

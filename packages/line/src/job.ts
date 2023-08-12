@@ -15,9 +15,7 @@ const createMessageJob = (
   key: thread.uid,
   chatChannelId: thread.channelId,
   accessToken: undefined,
-  params: replyToken
-    ? { replyToken: replyToken as string, messages }
-    : { to: thread.id, messages },
+  params: replyToken ? { replyToken, messages } : { to: thread.id, messages },
 });
 
 export const createChatJobs = (replyToken: undefined | string) => {

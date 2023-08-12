@@ -1,5 +1,4 @@
 import { moxy } from '@moxyjs/moxy';
-import { MetaApiError } from '@sociably/meta-api';
 import type { InstagramBot } from '../Bot.js';
 import InstagramPage from '../Page.js';
 import InstagramUser from '../User.js';
@@ -79,7 +78,7 @@ test('fetch profile from api', async () => {
       "username": "peter.chang.3975",
     }
   `);
-  expect(
-    UserProfile.fromJSONValue((profile as UserProfile)?.toJSONValue())
-  ).toStrictEqual(profile);
+  expect(UserProfile.fromJSONValue(profile?.toJSONValue())).toStrictEqual(
+    profile
+  );
 });

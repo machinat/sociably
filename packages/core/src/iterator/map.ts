@@ -3,7 +3,7 @@ import type { NodeMapper } from './types.js';
 import traverse from './traverse.js';
 
 type MapTraverseContext<Mapped, Payload> = {
-  mappedArray: Array<Mapped>;
+  mappedArray: Mapped[];
   mapper: NodeMapper<Mapped, Payload>;
   payload: Payload;
 };

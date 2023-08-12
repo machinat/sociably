@@ -429,7 +429,7 @@ export const RequestThreadControl: RequestThreadControl = {
  */
 export interface AppRoles {
   /** The app id and roles mapping object. */
-  readonly appRoles: { [id: string]: string[] };
+  readonly appRoles: Record<string, string[]>;
 }
 
 export const AppRoles: AppRoles = {

@@ -1,7 +1,4 @@
-export type NoneAuthData = {
-  user: string;
-  thread: string;
-};
+export type NoneAuthData = {};
 
 export type NoneAuthContext = {
   platform: 'none';

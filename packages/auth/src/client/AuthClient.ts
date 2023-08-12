@@ -64,7 +64,7 @@ const getAuthPayload = (
 
 const getExistedAuthResult = (): [
   null | AuthError,
-  null | { payload: AuthTokenPayload<unknown>; token: string }
+  null | { payload: AuthTokenPayload<unknown>; token: string },
 ] => {
   try {
     const cookies = parseCookie(document.cookie);
@@ -104,7 +104,7 @@ const getExistedAuthResult = (): [
 };
 
 class AuthClient<
-  Authenticator extends AnyClientAuthenticator
+  Authenticator extends AnyClientAuthenticator,
 > extends EventEmitter {
   authenticators: Authenticator[];
   refreshLeadTime: number;

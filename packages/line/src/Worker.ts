@@ -118,7 +118,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
         break;
       }
 
-      const { key: executionKey } = queue.peekAt(i) as LineJob;
+      const { key: executionKey } = queue.peekAt(i)!;
       if (executionKey !== undefined && lockedIds.has(executionKey)) {
         i += 1;
       } else {

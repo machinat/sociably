@@ -3,7 +3,7 @@ import { MetaBatchRequest, MetaApiJobRequest } from '../types.js';
 const appendField = (body: string, key: string, value: string) =>
   `${body.length === 0 ? '' : `${body}&`}${key}=${encodeURIComponent(value)}`;
 
-const encodeParams = (fields: { [key: string]: unknown }): string => {
+const encodeParams = (fields: Record<string, unknown>): string => {
   let body = '';
 
   for (const key of Object.keys(fields)) {

@@ -354,7 +354,7 @@ export default class TwitterWorker
         break;
       }
 
-      const { key: executeKey } = queue.peekAt(i) as TwitterJob;
+      const { key: executeKey } = queue.peekAt(i)!;
       if (executeKey !== undefined && lockedKeys.has(executeKey)) {
         i += 1;
       } else {

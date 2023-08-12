@@ -131,7 +131,7 @@ export class BasicAuthenticator {
   ) {
     const {
       query: { [LOGIN_QUERY]: loginToken },
-    } = parseUrl(req.url as string, true);
+    } = parseUrl(req.url!, true);
 
     // check the login query
     const payload =
@@ -258,7 +258,7 @@ export class BasicAuthenticator {
           <CodeMessage
             code={code}
             domain={domain}
-            ip={getClientIp(req)}
+            ip={getClientIp(req) ?? undefined}
             osName={agent?.os.name}
             deviceModel={agent?.platform.model}
             deviceType={agent?.platform.type}
@@ -317,7 +317,7 @@ export class BasicAuthenticator {
     { platform }: AuthDelegatorOptions<unknown, Data, Thread>
   ) {
     const body: VerifyCodeRequestBody = await parseJsonBody(req);
-    if (!body || !body.code) {
+    if (!body?.code) {
       respondApiError(res, platform, 400, 'invalid request');
       return;
     }

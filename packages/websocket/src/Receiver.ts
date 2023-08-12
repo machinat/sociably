@@ -116,5 +116,5 @@ export const ReceiverP = serviceProviderClass({
 
 export type ReceiverP<
   User extends null | SociablyUser,
-  Auth
+  Auth,
 > = WebSocketReceiver<User, Auth>;

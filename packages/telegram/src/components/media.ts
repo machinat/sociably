@@ -11,7 +11,7 @@ import {
 } from '../types.js';
 import { MessageProps } from './types.js';
 
-export interface FileProps {
+export type FileProps = {
   /** The file id already stored somewhere on the Telegram servers. */
   fileId?: string;
   /** HTTP URL for the file to be sent. */
@@ -26,26 +26,26 @@ export interface FileProps {
    * {@link saveUplodedFile} middleware to make automatical saving happen.
    */
   assetTag?: string;
-}
+};
 
-export interface CaptionProps {
+export type CaptionProps = {
   /** File caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing */
   caption?: SociablyNode;
   /** Mode for parsing entities in the `caption`. Default to `'HTML'`.  */
   parseMode?: TelegramParseMode;
-}
+};
 
-export interface ThumbnailProps {
+export type ThumbnailProps = {
   /** Thumbnail file data. Can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. */
   thumbnailFileData?: Buffer | NodeJS.ReadableStream;
   /** Metadata about the uploading `thumbnailFileData` if needed (while using Buffer). */
   thumbnailFileInfo?: UploadingFileInfo;
-}
+};
 
 /**
  * @category Props
  */
-export interface PhotoProps extends MessageProps, FileProps, CaptionProps {}
+export type PhotoProps = {} & MessageProps & FileProps & CaptionProps;
 
 /**
  * Send a photo by a `file_id` alreay uploaded, a external url or uploading a new file.
@@ -100,18 +100,17 @@ export const Photo: TelegramComponent<
 /**
  * @category Props
  */
-export interface AudioProps
-  extends MessageProps,
-    FileProps,
-    CaptionProps,
-    ThumbnailProps {
+export type AudioProps = {
   /** Duration of the audio in seconds */
   duration?: number;
   /** Performer */
   performer?: string;
   /** Track name */
   title?: string;
-}
+} & MessageProps &
+  FileProps &
+  CaptionProps &
+  ThumbnailProps;
 
 /**
  * Send a audio by a `file_id` alreay uploaded, a external url or uploading a new file.
@@ -185,11 +184,10 @@ export const Audio: TelegramComponent<
 /**
  * @category Props
  */
-export interface DocumentProps
-  extends MessageProps,
-    FileProps,
-    CaptionProps,
-    ThumbnailProps {}
+export type DocumentProps = {} & MessageProps &
+  FileProps &
+  CaptionProps &
+  ThumbnailProps;
 
 /**
  * Send a document by a `file_id` alreay uploaded, a external url or uploading a new file.
@@ -257,11 +255,7 @@ export const Document: TelegramComponent<
 /**
  * @category Props
  */
-export interface VideoProps
-  extends MessageProps,
-    FileProps,
-    CaptionProps,
-    ThumbnailProps {
+export type VideoProps = {
   /** Duration of sent video in seconds */
   duration?: number;
   /** Video width */
@@ -270,7 +264,10 @@ export interface VideoProps
   height?: number;
   /** Pass True, if the uploaded video is suitable for streaming */
   supportsStreaming?: boolean;
-}
+} & MessageProps &
+  FileProps &
+  CaptionProps &
+  ThumbnailProps;
 
 /**
  * Send a video by a `file_id` alreay uploaded, a external url or uploading a new file.
@@ -346,18 +343,17 @@ export const Video: TelegramComponent<
 /**
  * @category Props
  */
-export interface AnimationProps
-  extends MessageProps,
-    FileProps,
-    CaptionProps,
-    ThumbnailProps {
+export type AnimationProps = {
   /** Duration of sent animation in seconds */
   duration?: number;
   /** Animation width */
   width?: number;
   /** Animation height */
   height?: number;
-}
+} & MessageProps &
+  FileProps &
+  CaptionProps &
+  ThumbnailProps;
 
 /**
  * Send a animation by a `file_id` alreay uploaded, a external url or uploading a new file.
@@ -431,10 +427,12 @@ export const Animation: TelegramComponent<
 /**
  * @category Props
  */
-export interface VoiceProps extends MessageProps, FileProps, CaptionProps {
+export type VoiceProps = {
   /** Duration of sent voice in seconds */
   duration?: number;
-}
+} & MessageProps &
+  FileProps &
+  CaptionProps;
 
 /**
  * Send a voice by a `file_id` alreay uploaded, a external url or uploading a new file.
@@ -491,16 +489,15 @@ export const Voice: TelegramComponent<
 /**
  * @category Props
  */
-export interface VideoNoteProps
-  extends MessageProps,
-    FileProps,
-    CaptionProps,
-    ThumbnailProps {
+export type VideoNoteProps = {
   /** Duration of sent video note in seconds */
   duration?: number;
   /** Video width and height, i.e. diameter of the video message */
   length?: number;
-}
+} & MessageProps &
+  FileProps &
+  CaptionProps &
+  ThumbnailProps;
 
 /**
  * Send a video note by a `file_id` alreay uploaded, a external url or uploading a new file.
@@ -569,7 +566,7 @@ export const VideoNote: TelegramComponent<
   ];
 });
 
-export interface MediaGroupProps {
+export type MediaGroupProps = {
   /**
    * {@link Photo} and {@link Video} elements to be presented in the group.
    * Please note that {@link MessageProps} of the children are ignored.
@@ -579,7 +576,7 @@ export interface MediaGroupProps {
   disableNotification?: boolean;
   /** If the message is a reply, ID of the original message */
   replyToMessageId?: number;
-}
+};
 
 /**
  * Send a video note by a `file_id` alreay uploaded, a external url or uploading a new file.
@@ -600,10 +597,10 @@ export const MediaGroup: TelegramComponent<
 
   let fileCount = 0;
   const mediaFiles: UploadingFile[] = [];
-  const inputMedia: any[] = [];
+  const inputMedia: Record<string, unknown>[] = [];
 
   mediaSegments.forEach(({ node: inputNode, value }) => {
-    const { params, files } = value;
+    const { params, files } = value as TelegramSegmentValue;
 
     let inputType;
     if ('video' in params) {
@@ -637,7 +634,7 @@ export const MediaGroup: TelegramComponent<
           };
 
     if (files) {
-      files.forEach(({ fieldName, fileData, fileInfo, assetTag }) => {
+      files.forEach(({ fieldName, data, info, assetTag }) => {
         const fileName = `file_${fileCount}`;
         fileCount += 1;
 
@@ -649,8 +646,8 @@ export const MediaGroup: TelegramComponent<
 
         mediaFiles.push({
           fieldName: fileName,
-          data: fileData,
-          info: fileInfo,
+          data,
+          info,
           assetTag,
         });
       });
@@ -675,7 +672,7 @@ export const MediaGroup: TelegramComponent<
 /**
  * @category Props
  */
-export interface StickerProps extends MessageProps, FileProps {}
+export type StickerProps = {} & MessageProps & FileProps;
 
 /**
  * Send static .WEBP or animated .TGS stickers

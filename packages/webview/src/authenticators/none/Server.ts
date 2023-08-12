@@ -40,10 +40,7 @@ export class NoneServerAuthenticator
     };
   }
 
-  checkAuthData({
-    user: userId,
-    thread: threadId,
-  }: NoneAuthData): CheckDataResult<NoneAuthContext> {
+  checkAuthData(): CheckDataResult<NoneAuthContext> {
     return {
       ok: true,
       contextDetails: {

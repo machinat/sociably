@@ -1,6 +1,6 @@
-import { moxy, Moxy } from '@moxyjs/moxy';
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
+import { moxy, Moxy } from '@moxyjs/moxy';
 import Sociably, {
   StateController,
   SociablyBot,

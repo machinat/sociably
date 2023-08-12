@@ -28,9 +28,7 @@ const traverse = <Context>(
   } else if (!isEmpty(children)) {
     callback(
       children,
-      prefix.charAt(prefix.length - 1) === ':'
-        ? `${prefix + ITER_SEPARATOR}0`
-        : prefix,
+      prefix.endsWith(':') ? `${prefix + ITER_SEPARATOR}0` : prefix,
       context
     );
     return 1;

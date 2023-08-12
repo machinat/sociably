@@ -258,9 +258,10 @@ it('upload files with form data if binary attached on job', async () => {
     body.replace(/-----+[0-9]+/g, '-----MULTIPART_SEPARATOR-----')
   ).toMatchSnapshot();
 
-  const file0Field = new RegExp(
-    'Content-Disposition: form-data; name="(?<name>.+)"[\\n\\r\\s]+_file0_'
-  ).exec(body);
+  const file0Field =
+    /Content-Disposition: form-data; name="(?<name>.+)"[\n\r\s]+_file0_/.exec(
+      body
+    );
   const file1Field = new RegExp(
     'Content-Disposition: form-data; name="(?<name>.+)"; filename="YouDontSay.jpg"' +
       '[\\n\\r\\s]+Content-Type: image/jpeg' +

@@ -2,7 +2,7 @@ import { STATUS_CODES } from 'http';
 import type { Socket as NetSocket } from 'net';
 
 const rejectUpgrade = (ns: NetSocket, code: number, message?: string): void => {
-  const codeName = STATUS_CODES[code] as string;
+  const codeName = STATUS_CODES[code]!;
   const body = message || codeName;
 
   ns.write(

@@ -12,14 +12,14 @@ import { MessageProps } from './types.js';
 /**
  * @category Props
  */
-export interface TextProps extends MessageProps {
+export type TextProps = {
   /** Texual content of the message to be sent, 1-4096 characters after entities parsing */
   children: SociablyNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
   disableWebPagePreview?: boolean;
-}
+} & MessageProps;
 
 /**
  * Send a location point on the map.
@@ -72,7 +72,7 @@ export const Text: TelegramComponent<
 /**
  * @category Props
  */
-export interface ContactProps extends MessageProps {
+export type ContactProps = {
   /** Contact's phone number */
   phoneNumber: string;
   /** Contact's first name */
@@ -81,7 +81,7 @@ export interface ContactProps extends MessageProps {
   lastName?: string;
   /** Additional data about the contact in the form of a vCard, 0-2048 bytes */
   vcard?: string;
-}
+} & MessageProps;
 
 /**
  * Send a location point on the map.
@@ -123,7 +123,7 @@ export const Contact: TelegramComponent<
 /**
  * @category Props
  */
-export interface PollProps extends MessageProps {
+export type PollProps = {
   /** Poll question, 1-255 characters */
   question: string;
   /** A JSON-serialized list of answer options, 2-10 strings 1-100 characters each */
@@ -146,7 +146,7 @@ export interface PollProps extends MessageProps {
   closeDate?: number | Date;
   /** Pass True, if the poll needs to be immediately closed. This can be useful for poll preview. */
   isClosed?: boolean;
-}
+} & MessageProps;
 
 /**
  * Send a location point on the map.
@@ -207,10 +207,10 @@ export const Poll: TelegramComponent<
 /**
  * @category Props
  */
-export interface DiceProps extends MessageProps {
+export type DiceProps = {
   /** Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, or “🏀”. Dice can have values 1-6 for “🎲” and “🎯”, and values 1-5 for “🏀”. Defaults to “🎲” */
   emoji?: string;
-}
+} & MessageProps;
 
 /**
  * Send a location point on the map.
@@ -242,7 +242,7 @@ export const Dice: TelegramComponent<
 /**
  * @category Props
  */
-export interface InvoiceProps extends MessageProps {
+export type InvoiceProps = {
   /** Product name, 1-32 characters */
   title: string;
   /** Product description, 1-255 characters */
@@ -281,7 +281,7 @@ export interface InvoiceProps extends MessageProps {
   sendEmailToProvider?: boolean;
   /** Pass True, if the final price depends on the shipping method */
   isFlexible?: boolean;
-}
+} & MessageProps;
 
 /**
  * Send a location point on the map.
@@ -353,10 +353,10 @@ export const Invoice: TelegramComponent<
 /**
  * @category Props
  */
-export interface GameProps extends MessageProps {
+export type GameProps = {
   /** Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather. */
   gameShortName: string;
-}
+} & MessageProps;
 
 /**
  * Send a location point on the map.

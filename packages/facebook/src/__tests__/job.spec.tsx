@@ -1,16 +1,10 @@
 import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import { UnitSegment, TextSegment } from '@sociably/core/renderer';
 import { createPostJobs, createInteractJobs } from '../job.js';
 import { PATH_FEED, PATH_PHOTOS } from '../constant.js';
-import FacebookChat from '../Chat.js';
 import FacebookPage from '../Page.js';
 import FacebookInteractTarget from '../InteractTarget.js';
-import {
-  FacebookSegmentValue,
-  PagePhotoValue,
-  PagePostValue,
-} from '../types.js';
+import { PagePhotoValue, PagePostValue } from '../types.js';
 
 const _Date = Date;
 const timeNow = 1667114251924;
@@ -27,7 +21,6 @@ afterAll(() => {
 });
 
 const Foo = () => null;
-const Bar = () => null;
 
 const getRegisteredResult = moxy(() => '');
 

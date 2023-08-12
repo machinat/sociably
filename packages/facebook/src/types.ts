@@ -39,10 +39,18 @@ export * from './event/types.js';
 
 export type FacebookThread = FacebookChat | FacebookInteractTarget;
 
-export type PsidTarget = { id: string };
-export type UserRefTarget = { user_ref: string };
-export type PostPrivateReplyTarget = { post_id: string };
-export type CommentPrivateReplyTarget = { comment_id: string };
+export type PsidTarget = {
+  id: string;
+};
+export type UserRefTarget = {
+  user_ref: string;
+};
+export type PostPrivateReplyTarget = {
+  post_id: string;
+};
+export type CommentPrivateReplyTarget = {
+  comment_id: string;
+};
 
 export type MessagingTarget =
   | PsidTarget
@@ -112,7 +120,8 @@ export type FacebookSegmentValue =
 
 export type FacebookComponent<
   Props,
-  Segment extends IntermediateSegment<FacebookSegmentValue> = IntermediateSegment<FacebookSegmentValue>
+  Segment extends
+    IntermediateSegment<FacebookSegmentValue> = IntermediateSegment<FacebookSegmentValue>,
 > = NativeComponent<Props, Segment>;
 
 export type RawUserProfile = {

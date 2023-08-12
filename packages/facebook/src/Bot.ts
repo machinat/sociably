@@ -252,7 +252,7 @@ export class FacebookBot
     for (const [i, { request }] of response.jobs.entries()) {
       if (request.url === PATH_PHOTOS) {
         photo = { photoId: response.results[i].body.id };
-      } else if (request.url === PATH_PHOTOS) {
+      } else {
         results.push({
           commentId: response.results[i].body.id,
           photo,

@@ -1,6 +1,6 @@
-import type Ws from 'ws';
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
+import type Ws from 'ws';
 import thenifiedly from 'thenifiedly';
 
 const createWsSocket: (

@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import jwt from 'jsonwebtoken';
 import { Readable } from 'stream';
+import jwt from 'jsonwebtoken';
 import { moxy, Moxy } from '@moxyjs/moxy';
 import { AuthController } from '../Controller.js';
 import { AnyServerAuthenticator } from '../types.js';

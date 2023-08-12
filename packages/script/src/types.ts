@@ -142,7 +142,9 @@ export type PromptElement<Vars, Input, Meta> = SociablyElement<
 /**
  * @category Keyword Props
  */
-export type LabelProps = { key: string };
+export type LabelProps = {
+  key: string;
+};
 
 /**
  * @category Keyword Element
@@ -171,7 +173,7 @@ export type CallReturnSetter<Vars, Return, Meta> = MaybeContainer<
  */
 export type CallProps<
   Vars,
-  Script extends AnyScriptLibrary
+  Script extends AnyScriptLibrary,
 > = Script extends ScriptLibrary<
   unknown,
   unknown,
@@ -194,7 +196,7 @@ export type CallProps<
  */
 export type CallElement<
   Vars,
-  Script extends AnyScriptLibrary
+  Script extends AnyScriptLibrary,
 > = SociablyElement<CallProps<Vars, Script>, typeof CALL>;
 
 export type EffectSetFn<Vars, Meta> = (

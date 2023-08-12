@@ -107,7 +107,7 @@ describe.each<[string, Record<string, string>]>([
       string, // test name
       StateAccessor, // state accessor object
       string, // table name
-      Record<string, unknown> // identifier fields in DB
+      Record<string, unknown>, // identifier fields in DB
     ]
   >([
     [
@@ -324,7 +324,7 @@ describe.each<[string, Record<string, string>]>([
         expect(allQueryValues).toMatchSnapshot();
 
         await expect(getStateEntities()).resolves.toEqual(
-          cases.map(([key, _originalValue, newValue]) => ({
+          cases.map(([key, , newValue]) => ({
             ...idFields,
             [FIELD_STATE_KEY]: key,
             [FIELD_STATE_DATA]: { value: newValue },

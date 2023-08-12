@@ -21,6 +21,7 @@ import {
 import type {
   SociablyNode,
   SociablyRenderable,
+  SociablyElement,
   PauseElement,
   ThunkElement,
   RawElement,
@@ -61,7 +62,7 @@ type GeneralComponentDelegate<Value> = (
 
 export default class SociablyRenderer<
   Value,
-  Component extends NativeComponent<unknown, any>
+  Component extends NativeComponent<unknown, IntermediateSegment<Value>>,
 > {
   platform: string;
   generalComponentDelegator: GeneralComponentDelegate<Value>;
@@ -95,9 +96,7 @@ export default class SociablyRenderer<
 
     const segments: OutputSegment<Value>[] = [];
 
-    for (let i = 0; i < intermediates.length; i += 1) {
-      const segment = intermediates[i];
-
+    for (const segment of intermediates) {
       invariant(
         segment.type !== 'part',
         `${formatNode(
@@ -114,7 +113,7 @@ export default class SociablyRenderer<
   }
 
   private _checkNativeComponentPlatform(
-    Component: NativeComponent<unknown, any>
+    Component: NativeComponent<unknown, IntermediateSegment<Value>>
   ) {
     return Component.$$platform === this.platform;
   }
@@ -144,13 +143,9 @@ export default class SociablyRenderer<
     const results: IntermediateSegment<Value>[] = [];
     let textSlot: undefined | TextSegment;
 
-    for (let r = 0; r < rendered.length; r += 1) {
-      const segments = rendered[r];
-
+    for (const segments of rendered) {
       if (segments !== null) {
-        for (let s = 0; s < segments.length; s += 1) {
-          const segment = segments[s];
-
+        for (const segment of segments) {
           if (segment.type === 'text') {
             textSlot =
               textSlot === undefined
@@ -346,7 +341,7 @@ export default class SociablyRenderer<
       invariant(
         false,
         `${String(
-          (node as any).type
+          (node as SociablyElement<unknown, unknown>).type
         )} at poistion '${path}' is not valid element type`
       );
     }

@@ -7,14 +7,14 @@ import { MessageProps } from './types.js';
 /**
  * @category Props
  */
-export interface LocationProps extends MessageProps {
+export type LocationProps = {
   /** Latitude of the location */
   latitude: number;
   /** Longitude of the location */
   longitude: number;
   /** Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400. */
   livePeriod?: number;
-}
+} & MessageProps;
 
 /**
  * Send a location point on the map.
@@ -54,7 +54,7 @@ export const Location: TelegramComponent<
 /**
  * @category Props
  */
-export interface EditLiveLocationProps {
+export type EditLiveLocationProps = {
   /** Required if `inlineMessageId` is not specified. Identifier of the message to edit */
   messageId?: number;
   /** Required if `messageId` are not specified. Identifier of the inline message */
@@ -65,7 +65,7 @@ export interface EditLiveLocationProps {
   longitude: number;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
   replyMarkup?: SociablyNode;
-}
+};
 
 /**
  * Edit a sent live location messages. A location can be edited until its `live_period` expires or editing is explicitly disabled by {@link StopLiveLocation}.
@@ -98,14 +98,14 @@ export const EditLiveLocation: TelegramComponent<
 /**
  * @category Props
  */
-export interface StopLiveLocationProps {
+export type StopLiveLocationProps = {
   /** Required if `inlineMessageId` is not specified. Identifier of the message to edit */
   messageId?: number;
   /** Required if `messageId` are not specified. Identifier of the inline message */
   inlineMessageId?: string;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
   replyMarkup?: SociablyNode;
-}
+};
 
 /**
  * Stop a sent live location messages. A location can be edited until its `live_period` expires or editing is explicitly disabled by {@link StopLiveLocation}.
@@ -135,7 +135,7 @@ export const StopLiveLocation: TelegramComponent<
 /**
  * @category Props
  */
-export interface VenueProps extends MessageProps {
+export type VenueProps = {
   /** Latitude of the location */
   latitude: number;
   /** Longitude of the location */
@@ -148,7 +148,7 @@ export interface VenueProps extends MessageProps {
   foursquareId?: string;
   /** Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.) */
   foursquareType?: string;
-}
+} & MessageProps;
 
 /**
  * Send a location point on the map.

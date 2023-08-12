@@ -1,15 +1,15 @@
 import EJSON from '@machinat/ejson';
 import { serviceInterface, serviceProviderClass } from '../service/index.js';
 
-export interface MarshallableInstance<V> {
+export type MarshallableInstance<V> = {
   typeName(): string;
   toJSONValue(): V;
-}
+};
 
-export interface Marshaler {
+export type Marshaler = {
   marshal(obj: any): any;
   unmarshal(value: any): any;
-}
+};
 
 export type MarshalType<V, T extends MarshallableInstance<V>> = {
   typeName: string;

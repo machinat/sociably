@@ -70,12 +70,12 @@ namespace Sociably {
       | NativeComponent<any, any>
       | ContainerComponent<any>;
 
-    export interface ElementAttributesProperty {
+    export type ElementAttributesProperty = {
       $$typeof: {};
-    }
-    export interface ElementChildrenAttribute {
+    };
+    export type ElementChildrenAttribute = {
       children: {};
-    }
+    };
 
     export type LibraryManagedAttributes<C, P> = C extends NativeComponent<
       infer T,

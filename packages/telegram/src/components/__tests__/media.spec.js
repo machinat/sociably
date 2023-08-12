@@ -1307,21 +1307,27 @@ test('MediaGroup match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_photo",
-              "data": undefined,
+              "data": "__DATA__",
               "fieldName": "file_0",
-              "info": undefined,
+              "info": {
+                "fileName": "baz.jpg",
+              },
             },
             {
               "assetTag": "my_video",
-              "data": undefined,
+              "data": "__DATA__",
               "fieldName": "file_1",
-              "info": undefined,
+              "info": {
+                "fileName": "baz.mpeg",
+              },
             },
             {
               "assetTag": undefined,
-              "data": undefined,
+              "data": "__THUMB_DATA__",
               "fieldName": "file_2",
-              "info": undefined,
+              "info": {
+                "fileName": "baz.jpg",
+              },
             },
           ],
           "method": "sendMediaGroup",

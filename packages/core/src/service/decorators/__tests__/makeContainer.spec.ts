@@ -1,4 +1,3 @@
-import { moxy } from '@moxyjs/moxy';
 import {
   SOCIABLY_SERVICE_PROVIDER,
   SOCIABLY_SERVICE_CONTAINER,

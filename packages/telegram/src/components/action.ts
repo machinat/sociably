@@ -9,14 +9,14 @@ import {
 /**
  * @category Props
  */
-export interface ForwardMessageProps {
+export type ForwardMessageProps = {
   /** Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername) */
   fromChatId: number | string;
   /** Message identifier in the chat specified in fromChatId */
   messageId: number;
   /** Sends the message silently. Users will receive a notification with no sound. */
   disableNotification?: boolean;
-}
+};
 
 /**
  * Forward messages of any kind
@@ -45,7 +45,7 @@ export const ForwardMessage: TelegramComponent<
 /**
  * @category Props
  */
-export interface ChatActionProps {
+export type ChatActionProps = {
   /** Type of action to broadcast depending on what the user is about to receive. */
   action:
     | 'typing'
@@ -58,7 +58,7 @@ export interface ChatActionProps {
     | 'find_location'
     | 'record_video_note'
     | 'upload_video_note';
-}
+};
 
 /**
  * Inform user that something is happening on the bot's side. The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
@@ -83,12 +83,12 @@ export const ChatAction: TelegramComponent<
 /**
  * @category Props
  */
-export interface KickChatMemberProps {
+export type KickChatMemberProps = {
   /** Unique identifier of the target user */
   userId: number;
   /** Date when the user will be unbanned, unix time. If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever */
   untilDate?: number | Date;
-}
+};
 
 /**
  * Kick a user from a group, a supergroup or a channel. In the case of supergroups and channels, the user will not be able to return to the group on their own using invite links, etc., unless unbanned first. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -119,10 +119,10 @@ export const KickChatMember: TelegramComponent<
 /**
  * @category Props
  */
-export interface UnbanChatMemberProps {
+export type UnbanChatMemberProps = {
   /** Unique identifier of the target user */
   userId: number;
-}
+};
 
 /**
  * Unban a previously kicked user in a supergroup or channel. The user will not return to the group or channel automatically, but will be able to join via link, etc. The bot must be an administrator for this to work.
@@ -149,7 +149,7 @@ export const UnbanChatMember: TelegramComponent<
 /**
  * @category Props
  */
-export interface ChatPromotionProps {
+export type ChatPromotionProps = {
   /** True, if the user is allowed to send text messages, contacts, locations and venues */
   canSendMessages?: boolean;
   /** True, if the user is allowed to send audios, documents, photos, videos, video notes and voice notes, implies canSendMessages */
@@ -168,15 +168,15 @@ export interface ChatPromotionProps {
   canPinMessages?: boolean;
   /** Date when restrictions will be lifted for the user, unix time. If user is restricted for more than 366 days or less than 30 seconds from the current time, they are considered to be restricted forever */
   untilDate?: number | Date;
-}
+};
 
 /**
  * @category Props
  */
-export interface RestrictChatMemberProps extends ChatPromotionProps {
+export type RestrictChatMemberProps = {
   /** Unique identifier of the target user */
   userId: number;
-}
+} & ChatPromotionProps;
 
 /**
  * Restrict a user in a supergroup. The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights. Pass True for all permissions to lift restrictions from a user.
@@ -228,7 +228,7 @@ export const RestrictChatMember: TelegramComponent<
 /**
  * @category Props
  */
-export interface PromoteChatMemberProps {
+export type PromoteChatMemberProps = {
   /** Unique identifier of the target user */
   userId: number;
   /** Pass True, if the administrator can change chat title, photo and other settings */
@@ -247,7 +247,7 @@ export interface PromoteChatMemberProps {
   canPinMessages?: boolean;
   /** Pass True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by him) */
   canPromoteMembers?: boolean;
-}
+};
 
 /**
  * Promote or demote a user in a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Pass False for all boolean params to demote a user.
@@ -292,12 +292,12 @@ export const PromoteChatMember: TelegramComponent<
 /**
  * @category Props
  */
-export interface SetChatAdministratorCustomTitleProps {
+export type SetChatAdministratorCustomTitleProps = {
   /** Unique identifier of the target user */
   userId: number;
   /** New custom title for the administrator; 0-16 characters, emoji are not allowed */
   customTitle: string;
-}
+};
 
 /**
  * Set a custom title for an administrator in a supergroup promoted by the bot.
@@ -365,12 +365,12 @@ export const SetChatPermissions: TelegramComponent<
 /**
  * @category Props
  */
-export interface SetChatPhotoProps {
+export type SetChatPhotoProps = {
   /** The file content data. */
   fileData: Buffer | NodeJS.ReadableStream;
   /** Metadata about the uploading `fileData` if needed (while using Buffer). */
   fileInfo?: UploadingFileInfo;
-}
+};
 
 /**
  * Set a new profile photo for the chat. Photos can't be changed for private chats. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -418,10 +418,10 @@ export const DeleteChatPhoto: TelegramComponent<
 /**
  * @category Props
  */
-export interface SetChatTitleProps {
+export type SetChatTitleProps = {
   /** New chat title, 1-255 characters */
   title: string;
-}
+};
 
 /**
  *  Change the title of a chat. Titles can't be changed for private chats. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -446,10 +446,10 @@ export const SetChatTitle: TelegramComponent<
 /**
  * @category Props
  */
-export interface SetChatDescriptionProps {
+export type SetChatDescriptionProps = {
   /** New chat title, 1-255 characters */
   description: string;
-}
+};
 
 /**
  * Change the description of a group, a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -474,12 +474,12 @@ export const SetChatDescription: TelegramComponent<
 /**
  * @category Props
  */
-export interface PinChatMessageProps {
+export type PinChatMessageProps = {
   /** Identifier of a message to pin */
   messageId: number;
   /** Pass True, if it is not necessary to send a notification to all chat members about the new pinned message. Notifications are always disabled in channels. */
   disableNotification?: boolean;
-}
+};
 
 /**
  * Pin a message in a group, a supergroup, or a channel. The bot must be an administrator in the chat for this to work and must have the 'can_pin_messages' admin right in the supergroup or 'can_edit_messages' admin right in the channel.
@@ -543,10 +543,10 @@ export const LeaveChat: TelegramComponent<
 /**
  * @category Props
  */
-export interface SetChatStickerSetProps {
+export type SetChatStickerSetProps = {
   /** Name of the sticker set to be set as the group sticker set */
   stickerSetName: string;
-}
+};
 
 /**
  * Change the description of a group, a supergroup or a channel. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.

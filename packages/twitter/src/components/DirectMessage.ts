@@ -93,7 +93,7 @@ export const DirectMessage: TwitterComponent<
   }
 
   const dmSegmentValue = createDmSegmentValue(
-    contentSegments?.[0].value,
+    contentSegments?.[0].value as string,
     mediaSegments?.[0].value.attachment
   );
 

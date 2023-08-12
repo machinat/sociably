@@ -21,9 +21,7 @@ type ClassProviderOptions<T, Deps extends AnyDep[]> = {
   lifetime?: ServiceLifetime;
 };
 
-type Constructor<T> = {
-  new (...args: any[]): T;
-};
+type Constructor<T> = new (...args: any[]) => T;
 
 function serviceProviderClass<_T, A extends AnyDep>(
   opts: ClassProviderOptions<_T, [A]>
@@ -41,7 +39,7 @@ function serviceProviderClass<
   _T,
   A extends AnyDep,
   B extends AnyDep,
-  C extends AnyDep
+  C extends AnyDep,
 >(
   opts: ClassProviderOptions<_T, [A, B, C]>
 ): <T extends _T, Klazz extends Constructor<T>>(
@@ -53,7 +51,7 @@ function serviceProviderClass<
   A extends AnyDep,
   B extends AnyDep,
   C extends AnyDep,
-  D extends AnyDep
+  D extends AnyDep,
 >(
   opts: ClassProviderOptions<_T, [A, B, C, D]>
 ): <T extends _T, Klazz extends Constructor<T>>(
@@ -66,7 +64,7 @@ function serviceProviderClass<
   B extends AnyDep,
   C extends AnyDep,
   D extends AnyDep,
-  E extends AnyDep
+  E extends AnyDep,
 >(
   opts: ClassProviderOptions<_T, [A, B, C, D, E]>
 ): <T extends _T, Klazz extends Constructor<T>>(
@@ -80,7 +78,7 @@ function serviceProviderClass<
   C extends AnyDep,
   D extends AnyDep,
   E extends AnyDep,
-  F extends AnyDep
+  F extends AnyDep,
 >(
   opts: ClassProviderOptions<_T, [A, B, C, D, E, F]>
 ): <T extends _T, Klazz extends Constructor<T>>(
@@ -95,7 +93,7 @@ function serviceProviderClass<
   D extends AnyDep,
   E extends AnyDep,
   F extends AnyDep,
-  G extends AnyDep
+  G extends AnyDep,
 >(
   opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G]>
 ): <T extends _T, Klazz extends Constructor<T>>(
@@ -111,7 +109,7 @@ function serviceProviderClass<
   E extends AnyDep,
   F extends AnyDep,
   G extends AnyDep,
-  H extends AnyDep
+  H extends AnyDep,
 >(
   opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H]>
 ): <T extends _T, Klazz extends Constructor<T>>(
@@ -128,7 +126,7 @@ function serviceProviderClass<
   F extends AnyDep,
   G extends AnyDep,
   H extends AnyDep,
-  I extends AnyDep
+  I extends AnyDep,
 >(
   opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H, I]>
 ): <T extends _T, Klazz extends Constructor<T>>(
@@ -147,7 +145,7 @@ function serviceProviderClass<
   G extends AnyDep,
   H extends AnyDep,
   I extends AnyDep,
-  J extends AnyDep
+  J extends AnyDep,
 >(
   opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H, I, J]>
 ): <T extends _T, Klazz extends Constructor<T>>(

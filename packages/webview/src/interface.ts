@@ -29,7 +29,7 @@ export const PlatformUtilitiesI = serviceInterface<
 
 // auth
 export class WebviewAuthController<
-  Authenticator extends AnyServerAuthenticator
+  Authenticator extends AnyServerAuthenticator,
 > extends AuthController<Authenticator> {}
 
 export const AuthControllerP = serviceProviderClass({
@@ -106,7 +106,7 @@ export const NextReceiverP = serviceProviderClass({
 // websocket interfaces
 
 export class WebviewSocketServer<
-  Authenticator extends AnyServerAuthenticator
+  Authenticator extends AnyServerAuthenticator,
 > extends WebSocketServer<
   UserOfAuthenticator<Authenticator>,
   ContextOfAuthenticator<Authenticator>

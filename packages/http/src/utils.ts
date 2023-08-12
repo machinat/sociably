@@ -8,12 +8,15 @@ export const getTrailingPath = (
   child: string
 ): string | undefined => {
   const relativePath = posixPath.relative(parent, child);
-  return relativePath === '' || relativePath.slice(0, 2) !== '..'
+  return relativePath === '' || !relativePath.startsWith('..')
     ? relativePath
     : undefined;
 };
 
-type Routing = { name?: string; path: string };
+type Routing = {
+  name?: string;
+  path: string;
+};
 
 export const endRes = (res: ServerResponse, code: number): void => {
   res.statusCode = code;
@@ -21,7 +24,7 @@ export const endRes = (res: ServerResponse, code: number): void => {
 };
 
 export const respondUpgrade = (socket: Socket, code: number): void => {
-  const codeName = STATUS_CODES[code] as string;
+  const codeName = STATUS_CODES[code]!;
   socket.write(
     `HTTP/1.1 ${code} ${codeName}\r\n` +
       'Connection: close\r\n' +
@@ -36,7 +39,7 @@ export const formatRoute = ({ name, path }: Routing): string =>
   `${name ? `[${name}] ` : ''}"${path}"`;
 
 export const checkRoutePath = (
-  existedRoutings: ReadonlyArray<Routing>,
+  existedRoutings: readonly Routing[],
   newRoute: Routing
 ): null | Error => {
   if (newRoute.path.startsWith('/')) {

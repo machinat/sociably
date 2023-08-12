@@ -120,7 +120,7 @@ export default class ServiceSpace {
   }
 
   bootstrap(
-    bootstrapTimeProvisions: Map<Interfaceable<unknown>, unknown> = new Map()
+    bootstrapTimeProvisions = new Map<Interfaceable<unknown>, unknown>()
   ): ServiceScope {
     const singletonCache = new Map();
     const scopedCache = new Map();

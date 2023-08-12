@@ -30,7 +30,7 @@ const getObjectValueByRoutes = (object, routes: string[]) => {
 };
 
 const getObjectValueByPath = (object, path: string): string | null => {
-  if (!object || path[0] !== '$') {
+  if (!object || !path.startsWith('$')) {
     return null;
   }
 

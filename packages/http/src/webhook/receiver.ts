@@ -35,8 +35,8 @@ class WebhookReceiver {
       const metadata = {
         source: 'webhook' as const,
         request: {
-          method: req.method as string,
-          url: req.url as string,
+          method: req.method!,
+          url: req.url!,
           headers: req.headers,
           body,
         },

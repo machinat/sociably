@@ -1,5 +1,5 @@
-import type NextJs from 'next';
 import type { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http';
+import type NextJs from 'next';
 import { MaybeContainer } from '@sociably/core/service';
 
 export type NextServer = ReturnType<typeof NextJs.default>;
@@ -20,9 +20,7 @@ type OkHandlerResponse = {
   ok: true;
   headers?: OutgoingHttpHeaders;
   page?: string;
-  query?: {
-    [key: string]: any;
-  };
+  query?: Record<string, any>;
 };
 
 type ErrorHandlerResponse = {

@@ -58,13 +58,13 @@ export type IdMediaSource = {
 export type UrlMediaSource = {
   type: 'url';
   url: string;
-  params: { [k: string]: undefined | string | number };
+  params: Record<string, undefined | string | number>;
   assetTag?: string;
 };
 
 export type FileMediaSource = {
   type: 'file';
-  params: { [k: string]: undefined | string | number };
+  params: Record<string, undefined | string | number>;
   fileData: Buffer | NodeJS.ReadableStream;
   assetTag?: string;
 };
@@ -134,7 +134,8 @@ export type TwitterSegmentValue =
 
 export type TwitterComponent<
   Props,
-  Segment extends IntermediateSegment<TwitterSegmentValue> = UnitSegment<TwitterSegmentValue>
+  Segment extends
+    IntermediateSegment<TwitterSegmentValue> = UnitSegment<TwitterSegmentValue>,
 > = NativeComponent<Props, Segment>;
 
 export type TwitterApiResult = {
@@ -335,7 +336,7 @@ export type FailApiResult = {
 };
 
 export type MediaUploadResult = {
-  media_id: number | BigInt;
+  media_id: number | bigint;
   media_id_string: string;
   expires_after_secs: number;
   size: number;
@@ -356,13 +357,13 @@ export type TweetResult = {
 };
 
 export type RawUser = {
-  id: number | BigInt;
+  id: number | bigint;
   id_str: string;
   name: string;
   screen_name: string;
   location?: string;
   derived?: {
-    location: { [k: string]: string };
+    location: Record<string, string>;
   };
   status?: RawTweet;
   entities?: {
@@ -417,7 +418,7 @@ export type RawSettings = {
       };
       url: string;
       woeid: number;
-    }
+    },
   ];
   use_cookie_personalization: boolean;
   allow_contributor_request: string;
@@ -453,7 +454,7 @@ export type RawEntities = {
   media: RawMedia[];
   urls: RawUrlEntity[];
   user_mentions: {
-    id: number | BigInt;
+    id: number | bigint;
     id_str: string;
     name: string;
     screen_name: string;
@@ -476,13 +477,13 @@ export type RawEntities = {
 export type RawMedia = {
   display_url: string;
   expanded_url: string;
-  id: number | BigInt;
+  id: number | bigint;
   id_str: string;
   indices: NumberPairs;
   media_url: string;
   media_url_https: string;
   sizes: RawMediaSizeChoices;
-  source_status_id?: number | BigInt;
+  source_status_id?: number | bigint;
   source_status_id_str?: string;
   type: MediaType;
   url: string;
@@ -518,14 +519,14 @@ export type RawMediaSizeChoices = {
 
 export type RawTweet = {
   created_at: string;
-  id: number | BigInt;
+  id: number | bigint;
   id_str: string;
   text: string;
   source: string;
   truncated: boolean;
-  in_reply_to_status_id?: number | BigInt;
+  in_reply_to_status_id?: number | bigint;
   in_reply_to_status_id_str?: string;
-  in_reply_to_user_id?: number | BigInt;
+  in_reply_to_user_id?: number | bigint;
   in_reply_to_user_id_str?: string;
   in_reply_to_screen_name?: string;
   user: RawUser;
@@ -534,7 +535,7 @@ export type RawTweet = {
     coordinates: NumberPairs;
   };
   place?: RawPlace;
-  quoted_status_id: number | BigInt;
+  quoted_status_id: number | bigint;
   quoted_status_id_str: string;
   is_quote_status: boolean;
   quoted_status?: RawTweet;
@@ -646,8 +647,8 @@ export type RawApp = {
 export type RawDirectMessageEvent = {
   for_user_id: string;
   direct_message_events: RawDirectMessage[];
-  apps: { [id: string]: RawApp };
-  users: { [id: string]: RawUser };
+  apps: Record<string, RawApp>;
+  users: Record<string, RawUser>;
 };
 
 export type RawDirectMessageAction = {
@@ -656,13 +657,13 @@ export type RawDirectMessageAction = {
   target: {
     recipient_id: string;
   };
-  users: { [id: string]: RawUser };
+  users: Record<string, RawUser>;
 };
 
 export type RawDirectMessageIndicateTypingEvent = {
   for_user_id: string;
   direct_message_indicate_typing_events: RawDirectMessageAction[];
-  users: { [id: string]: RawUser };
+  users: Record<string, RawUser>;
 };
 
 export type RawDirectMessageMarkRead = RawDirectMessageAction & {
@@ -672,9 +673,7 @@ export type RawDirectMessageMarkRead = RawDirectMessageAction & {
 export type RawDirectMessageMarkReadEvent = {
   for_user_id: string;
   direct_message_mark_read_events: RawDirectMessageMarkRead[];
-  users: {
-    [id: string]: RawUser;
-  };
+  users: Record<string, RawUser>;
 };
 
 export type RawTweetDelete = {

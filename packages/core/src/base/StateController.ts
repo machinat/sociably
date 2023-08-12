@@ -5,7 +5,7 @@ import type {
 } from '../types.js';
 import { serviceInterface } from '../service/index.js';
 
-export interface StateAccessor {
+export type StateAccessor = {
   /**
    * Fetch the value of a specific key. Return `undefined` if no value is
    * stored.
@@ -33,12 +33,12 @@ export interface StateAccessor {
   keys(): Promise<string[]>;
   getAll<T>(): Promise<Map<string, T>>;
   clear(): Promise<undefined | number>;
-}
+};
 
 /**
  * @category Base
  */
-export interface BaseStateController {
+export type BaseStateController = {
   /**
    * Return the {@link StateAccessor} for a SociablyChannel
    */
@@ -67,7 +67,7 @@ export interface BaseStateController {
    * Return the {@link StateAccessor} for a global name
    */
   globalState(name: string): StateAccessor;
-}
+};
 
 const StateControllerI = serviceInterface<BaseStateController>({
   name: 'BaseStateController',

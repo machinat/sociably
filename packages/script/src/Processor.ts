@@ -19,7 +19,7 @@ type StartRuntimeOptions<Params> = {
 };
 
 export class ScriptProcessor<
-  Script extends AnyScriptLibrary = AnyScriptLibrary
+  Script extends AnyScriptLibrary = AnyScriptLibrary,
 > {
   private _stateContoller: StateControllerI;
   private _serviceScope: ServiceScope;

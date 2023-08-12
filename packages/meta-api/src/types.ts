@@ -105,11 +105,11 @@ export type MetaApiBotRequestApiOptions = {
   accessToken?: string;
 };
 
-export interface MetaApiBot {
+export type MetaApiBot = {
   requestApi<ResBody extends MetaApiResponseBody>(
     options: MetaApiBotRequestApiOptions
   ): Promise<ResBody>;
-}
+};
 
 export type MetaWebhookObjectType =
   | 'user'

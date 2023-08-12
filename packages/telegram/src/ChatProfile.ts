@@ -40,8 +40,7 @@ class TelegramChatProfile
   /** Display name of the chat */
   get name(): string {
     const { title, first_name: firstName, last_name: lastName } = this.data;
-    return (title ||
-      (lastName ? `${firstName} ${lastName}` : firstName)) as string;
+    return title || (lastName ? `${firstName} ${lastName}` : firstName)!;
   }
 
   /** Title, for supergroups, channels and group chats */

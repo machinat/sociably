@@ -34,7 +34,8 @@ export type WhatsAppSegmentValue = {
 
 export type WhatsAppComponent<
   Props,
-  Segment extends IntermediateSegment<WhatsAppSegmentValue> = IntermediateSegment<WhatsAppSegmentValue>
+  Segment extends
+    IntermediateSegment<WhatsAppSegmentValue> = IntermediateSegment<WhatsAppSegmentValue>,
 > = NativeComponent<Props, Segment>;
 
 export type WhatsAppEventContext = {
@@ -118,7 +119,9 @@ export type WhatsAppPlatformUtilities = PlatformUtilities<
 
 /* eslint-disable camelcase */
 
-export type UserProfileData = { name: string };
+export type UserProfileData = {
+  name: string;
+};
 
 export type ContactData = {
   wa_id: string;

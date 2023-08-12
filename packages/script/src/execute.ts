@@ -307,7 +307,7 @@ const executeScript = async <Vars, Return, Yield, Meta>(
   };
 };
 
-const resolveYieldValue = async <Vars, Yield, Meta>(
+const resolveYieldValue = async <Yield, Meta>(
   thread: SociablyThread,
   scope: ServiceScope,
   yields: PendingYields<Yield, Meta>[]

@@ -141,7 +141,7 @@ const MetaListeningPlatformsI = serviceInterface<
  * @category Provider
  */
 export class MetaWebhookReceiver<
-  Context extends MetaApiEventContext
+  Context extends MetaApiEventContext,
 > extends WebhookReceiver {
   static ListeningPlatforms = MetaListeningPlatformsI;
 

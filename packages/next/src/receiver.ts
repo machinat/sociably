@@ -115,17 +115,17 @@ export class NextReceiver {
       return;
     }
 
-    const parsedUrl = parseUrl(req.url as string, true);
+    const parsedUrl = parseUrl(req.url!, true);
 
-    if (trailingPath.slice(0, 5) === '_next') {
+    if (trailingPath.startsWith('_next')) {
       this.defaultNextHandler(req, res, parsedUrl);
       return;
     }
 
     try {
       const request = {
-        method: req.method as string,
-        url: req.url as string,
+        method: req.method!,
+        url: req.url!,
         route: trailingPath,
         headers: req.headers,
       };

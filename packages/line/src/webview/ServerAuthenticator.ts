@@ -55,7 +55,7 @@ export class LineServerAuthenticator
     chat?: LineChat
   ): Promise<string> {
     const setting = await this.agentSettingsAccessor.getAgentSettings(channel);
-    if (!setting || !setting.liff) {
+    if (!setting?.liff) {
       throw new Error(
         `liff setting for messaging channel "${channel.id}" not found`
       );

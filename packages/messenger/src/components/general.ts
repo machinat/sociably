@@ -58,19 +58,18 @@ const code = transormText('code', (v) => `\`${v}\``);
 
 const pre = transormText('pre', (v) => `\`\`\`\n${v}\n\`\`\``);
 
-const generalMediaFactory = (type) => (node, path) =>
-  [
-    makeUnitSegment(node, path, {
-      message: {
-        attachment: {
-          type,
-          payload: {
-            url: node.props.src,
-          },
+const generalMediaFactory = (type) => (node, path) => [
+  makeUnitSegment(node, path, {
+    message: {
+      attachment: {
+        type,
+        payload: {
+          url: node.props.src,
         },
       },
-    }),
-  ];
+    },
+  }),
+];
 
 const img = generalMediaFactory('image');
 const video = generalMediaFactory('video');

@@ -108,12 +108,12 @@ h1 {
 <div class="flex center column container">
   <div class="flex center icons">
     <img alt="${platformName}" src="${platformImageUrl}" />${
-  appIconUrl
-    ? `
+      appIconUrl
+        ? `
     <div class="x"></div>
     <img alt="${appName}" src="${appIconUrl}" />`
-    : ''
-}
+        : ''
+    }
   </div>
   <h1>${appName || ''}</h1>
   <div class="flex column">

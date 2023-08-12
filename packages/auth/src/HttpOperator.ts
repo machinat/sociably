@@ -1,8 +1,8 @@
-import { serviceProviderClass } from '@sociably/core';
-import Http from '@sociably/http';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import { join as joinPath } from 'path/posix';
+import Http from '@sociably/http';
+import { serviceProviderClass } from '@sociably/core';
 import invariant from 'invariant';
 import JsonWebToken from 'jsonwebtoken';
 import thenifiedly from 'thenifiedly';

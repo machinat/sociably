@@ -7,7 +7,7 @@ const fooProfiler = moxy({
       platform: 'test',
       name: 'FOO',
       avatarUrl: 'http://foo...',
-    } as SociablyProfile),
+    }) as SociablyProfile,
 });
 const barProfiler = moxy({
   getUserProfile: async () =>
@@ -15,7 +15,7 @@ const barProfiler = moxy({
       platform: 'test',
       name: 'BAR',
       avatarUrl: 'http://bar...',
-    } as SociablyProfile),
+    }) as SociablyProfile,
 });
 
 const fooChannel = {

@@ -1,7 +1,7 @@
 import type { SociablyUser, SociablyChannel } from '../types.js';
 import { serviceInterface, serviceProviderClass } from '../service/index.js';
 
-export interface SociablyProfile {
+export type SociablyProfile = {
   readonly platform: string;
   readonly name: string;
   readonly avatarUrl: undefined | string;
@@ -10,14 +10,14 @@ export interface SociablyProfile {
   readonly languageCode: undefined | string;
   readonly timeZone: undefined | number;
   data: any;
-}
+};
 
-export interface UserProfiler<
+export type UserProfiler<
   Channel extends SociablyChannel,
-  User extends SociablyUser
-> {
+  User extends SociablyUser,
+> = {
   getUserProfile(channel: Channel, user: User): Promise<null | SociablyProfile>;
-}
+};
 
 type AnyUserProfiler = UserProfiler<SociablyChannel, SociablyUser>;
 

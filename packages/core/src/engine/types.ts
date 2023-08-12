@@ -16,9 +16,18 @@ export type DispatchableSegment<SegmentValue> =
   | RawSegment<SegmentValue>
   | UnitSegment<SegmentValue>;
 
-type DispatchTask<Job> = { type: 'dispatch'; payload: Job[] };
-type PauseTask = { type: 'pause'; payload: null | PauseDelayFn };
-type ThunkTask = { type: 'thunk'; payload: ThunkEffectFn };
+type DispatchTask<Job> = {
+  type: 'dispatch';
+  payload: Job[];
+};
+type PauseTask = {
+  type: 'pause';
+  payload: null | PauseDelayFn;
+};
+type ThunkTask = {
+  type: 'thunk';
+  payload: ThunkEffectFn;
+};
 
 export type SociablyTask<Job> = DispatchTask<Job> | PauseTask | ThunkTask;
 
@@ -37,7 +46,7 @@ export type DispatchResponse<Job, Result> = {
   results: Result[];
 };
 
-export interface SociablyWorker<Job, Result> {
+export type SociablyWorker<Job, Result> = {
   start(queue: SociablyQueue<Job, Result>): boolean;
   stop(queue: SociablyQueue<Job, Result>): boolean;
-}
+};

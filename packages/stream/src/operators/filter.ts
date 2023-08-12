@@ -8,7 +8,7 @@ export type PredicateFn<T> = (value: T) => boolean | Promise<boolean>;
 /** @category Operator */
 function filter<
   T,
-  Predicator extends ServiceContainer<PredicateFn<T>, unknown[]>
+  Predicator extends ServiceContainer<PredicateFn<T>, unknown[]>,
 >(
   predicator: Predicator
 ): Predicator extends ServiceContainer<(v: any) => v is infer U, unknown[]>

@@ -2,17 +2,11 @@ import type FormData from 'form-data';
 
 const appendFormFields = (
   form: FormData,
-  body: { [key: string]: string | null | undefined }
+  body: Record<string, string | null | undefined>
 ): FormData => {
-  const fields = Object.keys(body);
-
-  for (let k = 0; k < fields.length; k += 1) {
-    const field = fields[k];
-    const value = body[field];
-
+  for (const [field, value] of Object.entries(body)) {
     if (value) form.append(field, value);
   }
-
   return form;
 };
 

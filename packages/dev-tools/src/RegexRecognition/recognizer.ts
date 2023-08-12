@@ -15,7 +15,7 @@ export class RegexIntentRecognizer<
   Recognition extends RecognitionData<string, string> = RecognitionData<
     string,
     string
-  >
+  >,
 > implements IntentRecognizer<Recognition, null>
 {
   defaultLanguage: string;

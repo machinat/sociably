@@ -6,7 +6,7 @@ export type { ClientOptions } from 'google-gax'; // eslint-disable-line import/n
 
 export type DialogflowConfigs<
   Language extends string,
-  Intent extends string
+  Intent extends string,
 > = {
   /** The id of dialogflow project */
   projectId: string;

@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
-import type TypedEmitter from 'typed-emitter';
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
+import type TypedEmitter from 'typed-emitter';
 import type { Server as WsServer } from 'ws';
 import uniqid from 'uniqid';
 import type { SociablyUser } from '@sociably/core';
@@ -58,9 +58,9 @@ type SocketState = {
   lostHeartbeat: number;
 };
 
-const Emitter = EventEmitter as {
-  new <T extends TypedEmitter.EventMap>(): TypedEmitter.default<T>;
-};
+const Emitter = EventEmitter as new <
+  T extends TypedEmitter.EventMap,
+>() => TypedEmitter.default<T>;
 
 type ServerEvents<User extends null | SociablyUser, Auth> = {
   connect: (conn: ConnectionInfo<User, Auth>) => void;
@@ -87,7 +87,7 @@ type ServerOptions<User extends null | SociablyUser, Auth> = {
  */
 export class WebSocketServer<
   User extends null | SociablyUser,
-  Auth
+  Auth,
 > extends Emitter<ServerEvents<User, Auth>> {
   id: string;
   marshaler: Marshaler;
@@ -151,8 +151,8 @@ export class WebSocketServer<
     head: Buffer
   ): Promise<void> {
     const requestInfo: UpgradeRequestInfo = {
-      method: req.method as string,
-      url: req.url as string,
+      method: req.method!,
+      url: req.url!,
       headers: req.headers,
     };
 
@@ -392,7 +392,7 @@ export class WebSocketServer<
       );
     } else {
       throw new Error(
-        `unknown target received ${(target as any).type || String(target)}`
+        `unknown target received ${(target as any)?.type || String(target)}`
       );
     }
   }

@@ -7,6 +7,7 @@ import type ServiceScope from './scope.js';
 
 export type ServiceLifetime = 'singleton' | 'scoped' | 'transient';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type SingularServiceInterface<T> = {
   $$name: string;
   $$typeof: typeof SOCIABLY_SERVICE_INTERFACE;
@@ -14,6 +15,7 @@ export type SingularServiceInterface<T> = {
   $$polymorphic: false;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type MultiServiceInterface<T> = {
   $$name: string;
   $$typeof: typeof SOCIABLY_SERVICE_INTERFACE;
@@ -21,6 +23,7 @@ export type MultiServiceInterface<T> = {
   $$polymorphic: false;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type PolymorphicServiceInterface<T> = {
   $$name: string;
   $$typeof: typeof SOCIABLY_SERVICE_INTERFACE;
@@ -33,7 +36,7 @@ export type ServiceInterface<T> =
   | MultiServiceInterface<T>
   | PolymorphicServiceInterface<T>;
 
-export interface ServiceProvider<T, Args extends unknown[]> {
+export type ServiceProvider<T, Args extends unknown[]> = {
   $$name: string;
   $$typeof: typeof SOCIABLY_SERVICE_PROVIDER;
   $$multi: false;
@@ -41,7 +44,7 @@ export interface ServiceProvider<T, Args extends unknown[]> {
   $$lifetime: ServiceLifetime;
   $$deps: ServiceRequirement<Interfaceable<Args[number]>>[];
   $$factory(...args: Args): T;
-}
+};
 
 export type Interfaceable<T> =
   | ServiceInterface<T>
@@ -89,7 +92,7 @@ export type ResolveDependency<Dep extends ServiceDependency<any>> =
     : never;
 
 export type ResolveDependencies<
-  Deps extends ServiceDependency<Interfaceable<unknown>>[]
+  Deps extends ServiceDependency<Interfaceable<unknown>>[],
 > = {
   [Idx in keyof Deps]: ResolveDependency<Deps[Idx]>;
 };
@@ -100,7 +103,7 @@ export type ServiceContainer<T, Args extends unknown[]> = {
   $$deps: ServiceRequirement<Interfaceable<Args[number]>>[];
   $$factory(...args: Args): T;
   // HACK: make ts compiler accept it as class component
-  new (): ServiceContainer<T, Args>;
+  new (): ServiceContainer<T, Args>; // eslint-disable-line @typescript-eslint/no-misused-new
 };
 
 export type MaybeContainer<T> = ServiceContainer<T, unknown[]> | T;

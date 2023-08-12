@@ -61,101 +61,99 @@ const getValue = ({ value }: IntermediateSegment<unknown>) => value;
 export const CustomTemplate: WhatsAppComponent<
   CustomTemplateProps,
   UnitSegment<WhatsAppSegmentValue>
-> = makeWhatsAppComponent(async function CustomTemplateProps(
-  node,
-  path,
-  render
-) {
-  const {
-    name,
-    languageCode,
-    headerParams,
-    bodyParams,
-    buttonParams,
-    replyTo,
-  } = node.props;
+> = makeWhatsAppComponent(
+  async function CustomTemplateProps(node, path, render) {
+    const {
+      name,
+      languageCode,
+      headerParams,
+      bodyParams,
+      buttonParams,
+      replyTo,
+    } = node.props;
 
-  const [headerSegments, bodySegments, buttonsSegments] = await Promise.all([
-    render(headerParams, '.headerParams'),
-    render(bodyParams, '.bodyParams'),
-    render(buttonParams, '.buttonParams'),
-  ]);
+    const [headerSegments, bodySegments, buttonsSegments] = await Promise.all([
+      render(headerParams, '.headerParams'),
+      render(bodyParams, '.bodyParams'),
+      render(buttonParams, '.buttonParams'),
+    ]);
 
-  const components: unknown[] = [];
+    const components: unknown[] = [];
 
-  if (headerSegments) {
-    if ('message' in headerSegments[0].value) {
-      // media based header
-      const messageValue = headerSegments[0].value.message;
-      const messageType = messageValue.type;
+    if (headerSegments) {
+      if ('message' in headerSegments[0].value) {
+        // media based header
+        const messageValue = headerSegments[0].value.message;
+        const messageType = messageValue.type;
 
-      if (!HEADER_MEDIA_TYPES.includes(messageType)) {
-        throw new TypeError(
-          `${formatNode(headerSegments[0].node)} is not a valid parameter`
-        );
+        if (!HEADER_MEDIA_TYPES.includes(messageType)) {
+          throw new TypeError(
+            `${formatNode(headerSegments[0].node)} is not a valid parameter`
+          );
+        }
+        if (headerSegments.length > 1) {
+          throw new TypeError(`"headerParams" prop contain more than 1 media`);
+        }
+
+        components.push({
+          type: 'header',
+          parameters: [
+            {
+              type: messageType,
+              [messageType]: messageValue[messageType],
+            },
+          ],
+        });
+      } else {
+        // text based header
+        checkTextParams(headerSegments);
+
+        components.push({
+          type: 'header',
+          parameters: headerSegments.map(getValue),
+        });
       }
-      if (headerSegments.length > 1) {
-        throw new TypeError(`"headerParams" prop contain more than 1 media`);
-      }
+    }
+    if (bodySegments) {
+      checkTextParams(bodySegments);
 
       components.push({
-        type: 'header',
-        parameters: [
-          {
-            type: messageType,
-            [messageType]: messageValue[messageType],
-          },
-        ],
-      });
-    } else {
-      // text based header
-      checkTextParams(headerSegments);
-
-      components.push({
-        type: 'header',
-        parameters: headerSegments.map(getValue),
+        type: 'body',
+        parameters: bodySegments.map(getValue),
       });
     }
-  }
-  if (bodySegments) {
-    checkTextParams(bodySegments);
+    if (buttonsSegments) {
+      buttonsSegments.forEach(({ node: buttonNode, value }, idx) => {
+        if (!BUTTON_PARAM_TYPES.includes(value.type)) {
+          throw new TypeError(
+            `${formatNode(buttonNode)} is not a valid button parameter`
+          );
+        }
 
-    components.push({
-      type: 'body',
-      parameters: bodySegments.map(getValue),
-    });
-  }
-  if (buttonsSegments) {
-    buttonsSegments.forEach(({ node: buttonNode, value }, idx) => {
-      if (!BUTTON_PARAM_TYPES.includes(value.type)) {
-        throw new TypeError(
-          `${formatNode(buttonNode)} is not a valid button parameter`
-        );
-      }
-
-      components.push({
-        type: 'button',
-        sub_type: value.type,
-        index: typeof value.index === 'undefined' ? idx : value.index,
-        parameters: [value.parameter],
+        components.push({
+          type: 'button',
+          sub_type: value.type,
+          index: typeof value.index === 'undefined' ? idx : value.index,
+          parameters: [value.parameter],
+        });
       });
-    });
-  }
+    }
 
-  return [
-    makeUnitSegment(node, path, {
-      message: {
-        type: 'template',
-        template: {
-          name,
-          language: {
-            policy: 'deterministic',
-            code: languageCode,
+    return [
+      makeUnitSegment(node, path, {
+        message: {
+          type: 'template',
+          template: {
+            name,
+            language: {
+              policy: 'deterministic',
+              code: languageCode,
+            },
+            components,
           },
-          components,
+          context: replyTo ? { message_id: replyTo } : undefined,
         },
-        context: replyTo ? { message_id: replyTo } : undefined,
-      },
-    }),
-  ];
-});
+      }),
+    ];
+  }
+);

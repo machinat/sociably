@@ -58,8 +58,9 @@ export async function GenericItem(
   );
 
   let defaultAction;
-  if (defaultActionSegments !== null) {
-    const { title: _, ...restOfUrlButton } = defaultActionSegments[0].value;
+  if (defaultActionSegments) {
+    const { title: _, ...restOfUrlButton } = defaultActionSegments[0]
+      .value as Record<string, string>;
     defaultAction = restOfUrlButton;
   }
 

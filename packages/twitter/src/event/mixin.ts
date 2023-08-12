@@ -251,8 +251,8 @@ export interface DirectMessageCreate {
   userMentions: MentionEntity[];
   /** The media object */
   media: null | Media;
-  usersMapping: { [id: string]: RawUser };
-  appsMapping: { [id: string]: RawApp };
+  usersMapping: Record<string, RawUser>;
+  appsMapping: Record<string, RawApp>;
 }
 
 export const DirectMessageCreate: DirectMessageCreate = {
@@ -397,7 +397,7 @@ export interface DirectMessageAction {
   user: TwitterUser;
   recipient: TwitterUser;
   time: Date;
-  usersMapping: { [id: string]: RawUser };
+  usersMapping: Record<string, RawUser>;
 }
 
 export const DirectMessageAction: DirectMessageAction = {

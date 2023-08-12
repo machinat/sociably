@@ -26,6 +26,7 @@ const baseConfigs = {
   transformIgnorePatterns: [
     '<rootDir>/node_modules/(?!camelcase-keys|camelcase|node-fetch)',
   ],
+  prettierPath: require.resolve('prettier-2'),
 };
 
 module.exports = {

@@ -22,7 +22,7 @@ type UnionToIntersection<U> = (
 /**
  * @category Props
  */
-export interface AnswerCallbackQueryProps {
+export type AnswerCallbackQueryProps = {
   /** Unique identifier for the query to be answered */
   queryId: string;
   /** Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters */
@@ -33,7 +33,7 @@ export interface AnswerCallbackQueryProps {
   url?: string;
   /** The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0. */
   cacheTime?: number;
-}
+};
 
 /**
  * Send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert.
@@ -62,14 +62,14 @@ export const AnswerCallbackQuery: TelegramComponent<
   ];
 });
 
-export interface InlineQueryResultProps {
+export type InlineQueryResultProps = {
   /** Unique identifier for this result, 1-64 bytes */
   id: string;
   /** One {@link InlineKeyboardMarkup} element attached to the message */
   replyMarkup?: SociablyNode;
   /** One {@link Text}, {@link Location}, {@link Venue} or {@link Contact} element as the replacement of message content to be sent */
   inputMessageContent?: SociablyNode;
-}
+};
 
 const renderInputMessageContent = async (node, render) => {
   const segments = await render(node, '.inputMessageContent');
@@ -154,47 +154,44 @@ type InlineQueryResultArticleProps = InlineQueryResultProps & {
 export const InlineQueryResultArticle: TelegramComponent<
   InlineQueryResultArticleProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultArticle(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    replyMarkup,
-    inputMessageContent,
-    title,
-    url,
-    hideUrl,
-    description,
-    thumbUrl,
-    thumbWidth,
-    thumbHeight,
-  } = node.props;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
-    [
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-    ]
-  );
-
-  return [
-    makePartSegment(node, path, {
-      type: 'article',
+> = makeTelegramComponent(
+  async function InlineQueryResultArticle(node, path, render) {
+    const {
       id,
+      replyMarkup,
+      inputMessageContent,
       title,
       url,
-      hide_url: hideUrl,
+      hideUrl,
       description,
-      thumb_url: thumbUrl,
-      thumb_width: thumbWidth,
-      thumb_height: thumbHeight,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      thumbUrl,
+      thumbWidth,
+      thumbHeight,
+    } = node.props;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'article',
+        id,
+        title,
+        url,
+        hide_url: hideUrl,
+        description,
+        thumb_url: thumbUrl,
+        thumb_width: thumbWidth,
+        thumb_height: thumbHeight,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -237,51 +234,49 @@ type InlineQueryResultPhotoProps = InlineQueryResultProps &
 export const InlineQueryResultPhoto: TelegramComponent<
   InlineQueryResultPhotoProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultPhoto(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    title,
-    fileId,
-    url,
-    width,
-    height,
-    description,
-    thumbUrl,
-    caption,
-    parseMode = 'HTML',
-    replyMarkup,
-    inputMessageContent,
-  } = node.props as UnionToIntersection<InlineQueryResultPhotoProps>;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
-    await Promise.all([
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-      render(caption, '.caption'),
-    ]);
-
-  return [
-    makePartSegment(node, path, {
-      type: 'photo',
+> = makeTelegramComponent(
+  async function InlineQueryResultPhoto(node, path, render) {
+    const {
       id,
-      photo_file_id: fileId,
-      photo_url: url,
-      photo_width: width,
-      photo_height: height,
       title,
+      fileId,
+      url,
+      width,
+      height,
       description,
-      caption: captionSegments?.[0].value,
-      parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbUrl,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      thumbUrl,
+      caption,
+      parseMode = 'HTML',
+      replyMarkup,
+      inputMessageContent,
+    } = node.props as UnionToIntersection<InlineQueryResultPhotoProps>;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+        render(caption, '.caption'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'photo',
+        id,
+        photo_file_id: fileId,
+        photo_url: url,
+        photo_width: width,
+        photo_height: height,
+        title,
+        description,
+        caption: captionSegments?.[0].value,
+        parse_mode: parseMode === 'None' ? undefined : parseMode,
+        thumb_url: thumbUrl,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -326,53 +321,51 @@ type InlineQueryResultGifProps = InlineQueryResultProps &
 export const InlineQueryResultGif: TelegramComponent<
   InlineQueryResultGifProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultGif(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    fileId,
-    url,
-    width,
-    height,
-    duration,
-    thumbUrl,
-    thumbMimeType,
-    title,
-    caption,
-    parseMode = 'HTML',
-    replyMarkup,
-    inputMessageContent,
-  } = node.props as UnionToIntersection<InlineQueryResultGifProps>;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
-    await Promise.all([
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-      render(caption, '.caption'),
-    ]);
-
-  return [
-    makePartSegment(node, path, {
-      type: 'gif',
+> = makeTelegramComponent(
+  async function InlineQueryResultGif(node, path, render) {
+    const {
       id,
-      gif_file_id: fileId,
-      gif_url: url,
-      gif_width: width,
-      gif_height: height,
-      gif_duration: duration,
+      fileId,
+      url,
+      width,
+      height,
+      duration,
+      thumbUrl,
+      thumbMimeType,
       title,
-      caption: captionSegments?.[0].value,
-      parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbUrl,
-      thumb_mime_type: thumbMimeType,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      caption,
+      parseMode = 'HTML',
+      replyMarkup,
+      inputMessageContent,
+    } = node.props as UnionToIntersection<InlineQueryResultGifProps>;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+        render(caption, '.caption'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'gif',
+        id,
+        gif_file_id: fileId,
+        gif_url: url,
+        gif_width: width,
+        gif_height: height,
+        gif_duration: duration,
+        title,
+        caption: captionSegments?.[0].value,
+        parse_mode: parseMode === 'None' ? undefined : parseMode,
+        thumb_url: thumbUrl,
+        thumb_mime_type: thumbMimeType,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -417,53 +410,51 @@ type InlineQueryResultMpeg4GifProps = InlineQueryResultProps &
 export const InlineQueryResultMpeg4Gif: TelegramComponent<
   InlineQueryResultMpeg4GifProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultMpeg4Gif(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    fileId,
-    url,
-    width,
-    height,
-    duration,
-    thumbUrl,
-    thumbMimeType,
-    title,
-    caption,
-    parseMode = 'HTML',
-    replyMarkup,
-    inputMessageContent,
-  } = node.props as UnionToIntersection<InlineQueryResultMpeg4GifProps>;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
-    await Promise.all([
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-      render(caption, '.caption'),
-    ]);
-
-  return [
-    makePartSegment(node, path, {
-      type: 'mpeg4_gif',
+> = makeTelegramComponent(
+  async function InlineQueryResultMpeg4Gif(node, path, render) {
+    const {
       id,
-      mpeg4_file_id: fileId,
-      mpeg4_url: url,
-      mpeg4_width: width,
-      mpeg4_height: height,
-      mpeg4_duration: duration,
+      fileId,
+      url,
+      width,
+      height,
+      duration,
+      thumbUrl,
+      thumbMimeType,
       title,
-      caption: captionSegments?.[0].value,
-      parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbUrl,
-      thumb_mime_type: thumbMimeType,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      caption,
+      parseMode = 'HTML',
+      replyMarkup,
+      inputMessageContent,
+    } = node.props as UnionToIntersection<InlineQueryResultMpeg4GifProps>;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+        render(caption, '.caption'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'mpeg4_gif',
+        id,
+        mpeg4_file_id: fileId,
+        mpeg4_url: url,
+        mpeg4_width: width,
+        mpeg4_height: height,
+        mpeg4_duration: duration,
+        title,
+        caption: captionSegments?.[0].value,
+        parse_mode: parseMode === 'None' ? undefined : parseMode,
+        thumb_url: thumbUrl,
+        thumb_mime_type: thumbMimeType,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -509,55 +500,53 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
 export const InlineQueryResultVideo: TelegramComponent<
   InlineQueryResultVideoProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultVideo(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    fileId,
-    url,
-    title,
-    description,
-    caption,
-    parseMode = 'HTML',
-    mimeType,
-    width,
-    height,
-    duration,
-    thumbUrl,
-    replyMarkup,
-    inputMessageContent,
-  } = node.props as UnionToIntersection<InlineQueryResultVideoProps>;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
-    await Promise.all([
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-      render(caption, '.caption'),
-    ]);
-
-  return [
-    makePartSegment(node, path, {
-      type: 'video',
+> = makeTelegramComponent(
+  async function InlineQueryResultVideo(node, path, render) {
+    const {
       id,
-      video_file_id: fileId,
-      video_url: url,
-      video_width: width,
-      video_height: height,
-      video_duration: duration,
-      mime_type: mimeType,
+      fileId,
+      url,
       title,
       description,
-      caption: captionSegments?.[0].value,
-      parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbUrl,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      caption,
+      parseMode = 'HTML',
+      mimeType,
+      width,
+      height,
+      duration,
+      thumbUrl,
+      replyMarkup,
+      inputMessageContent,
+    } = node.props as UnionToIntersection<InlineQueryResultVideoProps>;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+        render(caption, '.caption'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'video',
+        id,
+        video_file_id: fileId,
+        video_url: url,
+        video_width: width,
+        video_height: height,
+        video_duration: duration,
+        mime_type: mimeType,
+        title,
+        description,
+        caption: captionSegments?.[0].value,
+        parse_mode: parseMode === 'None' ? undefined : parseMode,
+        thumb_url: thumbUrl,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -595,47 +584,45 @@ type InlineQueryResultAudioProps = InlineQueryResultProps &
 export const InlineQueryResultAudio: TelegramComponent<
   InlineQueryResultAudioProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultAudio(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    fileId,
-    url,
-    title,
-    performer,
-    caption,
-    parseMode = 'HTML',
-    duration,
-    replyMarkup,
-    inputMessageContent,
-  } = node.props as UnionToIntersection<InlineQueryResultAudioProps>;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
-    await Promise.all([
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-      render(caption, '.caption'),
-    ]);
-
-  return [
-    makePartSegment(node, path, {
-      type: 'audio',
+> = makeTelegramComponent(
+  async function InlineQueryResultAudio(node, path, render) {
+    const {
       id,
-      audio_file_id: fileId,
-      audio_url: url,
-      audio_duration: duration,
+      fileId,
+      url,
       title,
       performer,
-      caption: captionSegments?.[0].value,
-      parse_mode: parseMode === 'None' ? undefined : parseMode,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      caption,
+      parseMode = 'HTML',
+      duration,
+      replyMarkup,
+      inputMessageContent,
+    } = node.props as UnionToIntersection<InlineQueryResultAudioProps>;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+        render(caption, '.caption'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'audio',
+        id,
+        audio_file_id: fileId,
+        audio_url: url,
+        audio_duration: duration,
+        title,
+        performer,
+        caption: captionSegments?.[0].value,
+        parse_mode: parseMode === 'None' ? undefined : parseMode,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -671,45 +658,43 @@ type InlineQueryResultVoiceProps = InlineQueryResultProps &
 export const InlineQueryResultVoice: TelegramComponent<
   InlineQueryResultVoiceProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultVoice(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    fileId,
-    url,
-    title,
-    caption,
-    parseMode = 'HTML',
-    duration,
-    replyMarkup,
-    inputMessageContent,
-  } = node.props as UnionToIntersection<InlineQueryResultVoiceProps>;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
-    await Promise.all([
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-      render(caption, '.caption'),
-    ]);
-
-  return [
-    makePartSegment(node, path, {
-      type: 'voice',
+> = makeTelegramComponent(
+  async function InlineQueryResultVoice(node, path, render) {
+    const {
       id,
-      voice_file_id: fileId,
-      voice_url: url,
-      voice_duration: duration,
+      fileId,
+      url,
       title,
-      caption: captionSegments?.[0].value,
-      parse_mode: parseMode === 'None' ? undefined : parseMode,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      caption,
+      parseMode = 'HTML',
+      duration,
+      replyMarkup,
+      inputMessageContent,
+    } = node.props as UnionToIntersection<InlineQueryResultVoiceProps>;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+        render(caption, '.caption'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'voice',
+        id,
+        voice_file_id: fileId,
+        voice_url: url,
+        voice_duration: duration,
+        title,
+        caption: captionSegments?.[0].value,
+        parse_mode: parseMode === 'None' ? undefined : parseMode,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -753,53 +738,51 @@ type InlineQueryResultDocumentProps = InlineQueryResultProps &
 export const InlineQueryResultDocument: TelegramComponent<
   InlineQueryResultDocumentProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultDocument(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    fileId,
-    url,
-    mimeType,
-    thumbWidth,
-    thumbHeight,
-    thumbUrl,
-    title,
-    description,
-    caption,
-    parseMode = 'HTML',
-    replyMarkup,
-    inputMessageContent,
-  } = node.props as UnionToIntersection<InlineQueryResultDocumentProps>;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
-    await Promise.all([
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-      render(caption, '.caption'),
-    ]);
-
-  return [
-    makePartSegment(node, path, {
-      type: 'document',
+> = makeTelegramComponent(
+  async function InlineQueryResultDocument(node, path, render) {
+    const {
       id,
-      document_file_id: fileId,
-      document_url: url,
+      fileId,
+      url,
       mimeType,
+      thumbWidth,
+      thumbHeight,
+      thumbUrl,
       title,
       description,
-      caption: captionSegments?.[0].value,
-      parse_mode: parseMode === 'None' ? undefined : parseMode,
-      thumb_url: thumbUrl,
-      thumb_width: thumbWidth,
-      thumb_height: thumbHeight,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      caption,
+      parseMode = 'HTML',
+      replyMarkup,
+      inputMessageContent,
+    } = node.props as UnionToIntersection<InlineQueryResultDocumentProps>;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts, captionSegments] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+        render(caption, '.caption'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'document',
+        id,
+        document_file_id: fileId,
+        document_url: url,
+        mimeType,
+        title,
+        description,
+        caption: captionSegments?.[0].value,
+        parse_mode: parseMode === 'None' ? undefined : parseMode,
+        thumb_url: thumbUrl,
+        thumb_width: thumbWidth,
+        thumb_height: thumbHeight,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -818,30 +801,27 @@ type InlineQueryResultStickerProps = InlineQueryResultProps & {
 export const InlineQueryResultSticker: TelegramComponent<
   InlineQueryResultStickerProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultSticker(
-  node,
-  path,
-  render
-) {
-  const { id, fileId, replyMarkup, inputMessageContent } = node.props;
+> = makeTelegramComponent(
+  async function InlineQueryResultSticker(node, path, render) {
+    const { id, fileId, replyMarkup, inputMessageContent } = node.props;
 
-  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
-    [
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-    ]
-  );
+    const [inputMessageContentObject, inlineKeyboardSegemnts] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+      ]);
 
-  return [
-    makePartSegment(node, path, {
-      type: 'sticker',
-      id,
-      sticker_file_id: fileId,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+    return [
+      makePartSegment(node, path, {
+        type: 'sticker',
+        id,
+        sticker_file_id: fileId,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -872,47 +852,44 @@ type InlineQueryResultLocationProps = InlineQueryResultProps & {
 export const InlineQueryResultLocation: TelegramComponent<
   InlineQueryResultLocationProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultLocation(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    replyMarkup,
-    inputMessageContent,
-    latitude,
-    longitude,
-    livePeriod,
-    title,
-    thumbUrl,
-    thumbWidth,
-    thumbHeight,
-  } = node.props;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
-    [
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-    ]
-  );
-
-  return [
-    makePartSegment(node, path, {
-      type: 'location',
+> = makeTelegramComponent(
+  async function InlineQueryResultLocation(node, path, render) {
+    const {
       id,
+      replyMarkup,
+      inputMessageContent,
       latitude,
       longitude,
-      live_period: livePeriod,
+      livePeriod,
       title,
-      thumb_url: thumbUrl,
-      thumb_width: thumbWidth,
-      thumb_height: thumbHeight,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      thumbUrl,
+      thumbWidth,
+      thumbHeight,
+    } = node.props;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'location',
+        id,
+        latitude,
+        longitude,
+        live_period: livePeriod,
+        title,
+        thumb_url: thumbUrl,
+        thumb_width: thumbWidth,
+        thumb_height: thumbHeight,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -947,51 +924,48 @@ type InlineQueryResultVenueProps = InlineQueryResultProps & {
 export const InlineQueryResultVenue: TelegramComponent<
   InlineQueryResultVenueProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultVenue(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    replyMarkup,
-    inputMessageContent,
-    latitude,
-    longitude,
-    address,
-    foursquareId,
-    foursquareType,
-    title,
-    thumbUrl,
-    thumbWidth,
-    thumbHeight,
-  } = node.props;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
-    [
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-    ]
-  );
-
-  return [
-    makePartSegment(node, path, {
-      type: 'venue',
+> = makeTelegramComponent(
+  async function InlineQueryResultVenue(node, path, render) {
+    const {
       id,
+      replyMarkup,
+      inputMessageContent,
       latitude,
       longitude,
       address,
-      foursquare_id: foursquareId,
-      foursquare_type: foursquareType,
+      foursquareId,
+      foursquareType,
       title,
-      thumb_url: thumbUrl,
-      thumb_width: thumbWidth,
-      thumb_height: thumbHeight,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      thumbUrl,
+      thumbWidth,
+      thumbHeight,
+    } = node.props;
+
+    const [inputMessageContentObject, inlineKeyboardSegemnts] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'venue',
+        id,
+        latitude,
+        longitude,
+        address,
+        foursquare_id: foursquareId,
+        foursquare_type: foursquareType,
+        title,
+        thumb_url: thumbUrl,
+        thumb_width: thumbWidth,
+        thumb_height: thumbHeight,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
 
 /**
  * @category Props
@@ -1022,56 +996,53 @@ type InlineQueryResultContactProps = InlineQueryResultProps & {
 export const InlineQueryResultContact: TelegramComponent<
   InlineQueryResultContactProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultContact(
-  node,
-  path,
-  render
-) {
-  const {
-    id,
-    phoneNumber,
-    firstName,
-    lastName,
-    vcard,
-    thumbUrl,
-    thumbWidth,
-    thumbHeight,
-    replyMarkup,
-    inputMessageContent,
-  } = node.props;
-
-  const [inputMessageContentObject, inlineKeyboardSegemnts] = await Promise.all(
-    [
-      renderInputMessageContent(inputMessageContent, render),
-      render(replyMarkup, '.replyMarkup'),
-    ]
-  );
-
-  return [
-    makePartSegment(node, path, {
-      type: 'contact',
+> = makeTelegramComponent(
+  async function InlineQueryResultContact(node, path, render) {
+    const {
       id,
-      phone_number: phoneNumber,
-      first_name: firstName,
-      last_name: lastName,
+      phoneNumber,
+      firstName,
+      lastName,
       vcard,
-      thumb_url: thumbUrl,
-      thumb_width: thumbWidth,
-      thumb_height: thumbHeight,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-      input_message_content: inputMessageContentObject,
-    }),
-  ];
-});
+      thumbUrl,
+      thumbWidth,
+      thumbHeight,
+      replyMarkup,
+      inputMessageContent,
+    } = node.props;
 
-export interface InlineQueryResultGameProps {
+    const [inputMessageContentObject, inlineKeyboardSegemnts] =
+      await Promise.all([
+        renderInputMessageContent(inputMessageContent, render),
+        render(replyMarkup, '.replyMarkup'),
+      ]);
+
+    return [
+      makePartSegment(node, path, {
+        type: 'contact',
+        id,
+        phone_number: phoneNumber,
+        first_name: firstName,
+        last_name: lastName,
+        vcard,
+        thumb_url: thumbUrl,
+        thumb_width: thumbWidth,
+        thumb_height: thumbHeight,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+        input_message_content: inputMessageContentObject,
+      }),
+    ];
+  }
+);
+
+export type InlineQueryResultGameProps = {
   /** Unique identifier for this result, 1-64 bytes */
   id: string;
   /** Short name of the game */
   gameShortName: string;
   /** One {@link InlineKeyboardMarkup} element attached to the message */
   replyMarkup?: SociablyNode;
-}
+};
 
 /**
  * Represents a Game.
@@ -1082,23 +1053,21 @@ export interface InlineQueryResultGameProps {
 export const InlineQueryResultGame: TelegramComponent<
   InlineQueryResultGameProps,
   PartSegment<unknown>
-> = makeTelegramComponent(async function InlineQueryResultGame(
-  node,
-  path,
-  render
-) {
-  const { id, gameShortName, replyMarkup } = node.props;
-  const inlineKeyboardSegemnts = await render(replyMarkup, '.replyMarkup');
+> = makeTelegramComponent(
+  async function InlineQueryResultGame(node, path, render) {
+    const { id, gameShortName, replyMarkup } = node.props;
+    const inlineKeyboardSegemnts = await render(replyMarkup, '.replyMarkup');
 
-  return [
-    makePartSegment(node, path, {
-      type: 'contact',
-      id,
-      game_short_name: gameShortName,
-      reply_markup: inlineKeyboardSegemnts?.[0].value,
-    }),
-  ];
-});
+    return [
+      makePartSegment(node, path, {
+        type: 'contact',
+        id,
+        game_short_name: gameShortName,
+        reply_markup: inlineKeyboardSegemnts?.[0].value,
+      }),
+    ];
+  }
+);
 
 export type InlineQueryResult =
   | typeof InlineQueryResultArticle
@@ -1118,7 +1087,7 @@ export type InlineQueryResult =
 /**
  * @category Props
  */
-export interface AnswerInlineQueryProps {
+export type AnswerInlineQueryProps = {
   /** Unique identifier for the answered query */
   queryId: string;
   /** {@link InlineQueryResult} elements as the results to be displayed */
@@ -1133,7 +1102,7 @@ export interface AnswerInlineQueryProps {
   switchPmText?: string;
   /** Deep-linking parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed. */
   switchPmParameter?: string;
-}
+};
 
 /**
  * Send answers to an inline query
@@ -1195,7 +1164,7 @@ type ShippingOption = {
 /**
  * @category Props
  */
-export interface AnswerShippingQueryProps {
+export type AnswerShippingQueryProps = {
   /** Unique identifier for the query to be answered */
   queryId: string;
   /** Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible) */
@@ -1204,7 +1173,7 @@ export interface AnswerShippingQueryProps {
   shippingOptions?: ShippingOption[];
   /** Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user. */
   errorMessage?: string;
-}
+};
 
 /**
  * Send answers to an inline query
@@ -1235,14 +1204,14 @@ export const AnswerShippingQuery: TelegramComponent<
 /**
  * @category Props
  */
-export interface AnswerPreCheckoutQueryProps {
+export type AnswerPreCheckoutQueryProps = {
   /** Unique identifier for the query to be answered */
   queryId: string;
   /** Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible) */
   ok: boolean;
   /** Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user. */
   errorMessage?: string;
-}
+};
 
 /**
  * Send answers to an inline query

@@ -49,14 +49,14 @@ test('getChatRequest throw if type of thread is not user', async () => {
   );
   const { getChatRequest } = segments?.[0].value as ChatActionSegmentValue;
 
-  expect(() =>
-    getChatRequest?.(new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'))
+  expect(
+    () => getChatRequest?.(new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'))
   ).toThrowErrorMatchingInlineSnapshot(
     `"<LinkRichMenu /> can only be sent to an user chat"`
   );
 
-  expect(() =>
-    getChatRequest?.(new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'))
+  expect(
+    () => getChatRequest?.(new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'))
   ).toThrowErrorMatchingInlineSnapshot(
     `"<LinkRichMenu /> can only be sent to an user chat"`
   );

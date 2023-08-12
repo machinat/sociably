@@ -8,26 +8,26 @@ import {
   TelegramParseMode,
 } from '../types.js';
 
-export interface EditMessageProps {
+export type EditMessageProps = {
   /** Required if inlineMessageId is not specified. Identifier of the message to edit */
   messageId?: number;
   /** Required if messageId are not specified. Identifier of the inline message */
   inlineMessageId?: string;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
   replyMarkup?: SociablyNode;
-}
+};
 
 /**
  * @category Props
  */
-export interface EditTextProps extends EditMessageProps {
+export type EditTextProps = {
   /** Texual content for the new text of the message, 1-4096 characters after entities parsing */
   children: SociablyNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
   disableWebPagePreview?: boolean;
-}
+} & EditMessageProps;
 
 /**
  * Edit a text and game message
@@ -81,12 +81,12 @@ export const EditText: TelegramComponent<
 /**
  * @category Props
  */
-export interface EditCaptionProps extends EditMessageProps {
+export type EditCaptionProps = {
   /** Texual content for the new caption of the message, 1-1024 characters after entities parsing */
   children: SociablyNode;
   /** Mode for parsing entities in the message text. See formatting options for more details. */
   parseMode: TelegramParseMode;
-}
+} & EditMessageProps;
 
 /**
  * Edit captions of a media messages
@@ -140,14 +140,14 @@ export const EditCaption: TelegramComponent<
 /**
  * @category Props
  */
-export interface EditMediaProps extends EditMessageProps {
+export type EditMediaProps = {
   /**
    * An {@link Animation}, {@link Audio}, {@link Document}, {@link Photo} or
    * {@link Video} element as the new media of the message. Please note that the
    * {@link MessageProps} of the children are ignored.
    */
   children: SociablyNode;
-}
+} & EditMessageProps;
 
 /**
  * Edit a animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL.
@@ -166,8 +166,7 @@ export const EditMedia: TelegramComponent<
     return null;
   }
 
-  const { method, params, files }: TelegramSegmentValue =
-    mediaSegments[0].value;
+  const { method, params, files } = mediaSegments[0].value;
   let mediaInput;
 
   if (method === 'sendPhoto') {
@@ -250,12 +249,12 @@ export const EditMedia: TelegramComponent<
 /**
  * @category Props
  */
-export interface StopPollProps {
+export type StopPollProps = {
   /**  	Identifier of the original message with the poll */
   messageId: number;
   /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
   replyMarkup?: SociablyNode;
-}
+};
 
 /**
  * Edit a text and game message
@@ -284,10 +283,10 @@ export const StopPoll: TelegramComponent<
 /**
  * @category Props
  */
-export interface DeleteMessageProps {
+export type DeleteMessageProps = {
   /**	Identifier of the original message with the poll */
   messageId: number;
-}
+};
 
 /**
  * Edit a text and game message

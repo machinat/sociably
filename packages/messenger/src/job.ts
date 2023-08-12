@@ -31,7 +31,7 @@ export const createChatJobs = <Chat extends MessengerChat>(
     for (let i = 0; i < segments.length; i += 1) {
       const { node, value } = segments[i];
 
-      let params: { [k: string]: unknown };
+      let params: Record<string, unknown>;
       let apiUrl: string;
       let file: undefined | AttachFileValue;
       let assetTag: undefined | string;

@@ -11,7 +11,7 @@ import type WebviewClient from './Client.js';
 
 export type ClientEventContext<
   Authenticator extends AnyClientAuthenticator = AnyClientAuthenticator,
-  Value extends EventValue = EventValue
+  Value extends EventValue = EventValue,
 > = {
   event: WebviewEvent<Value, UserOfAuthenticator<Authenticator>>;
   authenticator: Authenticator;
@@ -19,7 +19,7 @@ export type ClientEventContext<
 };
 
 export type EventContextOfClient<
-  Client extends WebviewClient<AnyClientAuthenticator, EventValue>
+  Client extends WebviewClient<AnyClientAuthenticator, EventValue>,
 > = Client extends WebviewClient<infer Authenticator, infer Value>
   ? ClientEventContext<Authenticator, Value>
   : never;

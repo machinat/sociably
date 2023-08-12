@@ -39,7 +39,7 @@ const makeEvent = <
   Proto extends {},
   Page extends MessengerPage,
   Thread extends null | MessengerChat,
-  User extends null | SociablyUser
+  User extends null | SociablyUser,
 >(
   payload: MessengerRawEvent,
   page: Page,
@@ -281,7 +281,7 @@ const createEventFactory =
   <
     Page extends MessengerPage,
     Chat extends MessengerChat,
-    User extends SociablyUser
+    User extends SociablyUser,
   >({
     createPage,
     createChat,

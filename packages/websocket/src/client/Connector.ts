@@ -20,9 +20,9 @@ type PendingEvent = {
   reject: (err: Error) => void;
 };
 
-const Emitter = EventEmitter as {
-  new <T extends TypedEmitter.EventMap>(): TypedEmitter.default<T>;
-};
+const Emitter = EventEmitter as new <
+  T extends TypedEmitter.EventMap,
+>() => TypedEmitter.default<T>;
 
 export type ConnectorContext<User extends null | SociablyUser> = {
   connId: string;
@@ -84,11 +84,17 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
     const tryAgain = (err: Error) => {
       this._emitError(err);
 
-      setTimeout(() => {
-        if (!this.isClosed) {
-          promise = this._open().catch(tryAgain);
-        }
-      }, Math.min(this._reconnectCount * RECONNECT_INTERVAL_BASE, MAX_RECONNECT_INTERVAL));
+      setTimeout(
+        () => {
+          if (!this.isClosed) {
+            promise = this._open().catch(tryAgain);
+          }
+        },
+        Math.min(
+          this._reconnectCount * RECONNECT_INTERVAL_BASE,
+          MAX_RECONNECT_INTERVAL
+        )
+      );
 
       this._reconnectCount += 1;
     };

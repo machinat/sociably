@@ -15,10 +15,18 @@ import type {
   PATH_REQUEST_THREAD_CONTROL,
 } from './constant.js';
 
-export type PsidTarget = { id: string };
-export type UserRefTarget = { user_ref: string };
-export type PostPrivateReplyTarget = { post_id: string };
-export type CommentPrivateReplyTarget = { comment_id: string };
+export type PsidTarget = {
+  id: string;
+};
+export type UserRefTarget = {
+  user_ref: string;
+};
+export type PostPrivateReplyTarget = {
+  post_id: string;
+};
+export type CommentPrivateReplyTarget = {
+  comment_id: string;
+};
 
 export type MessagingTarget =
   | PsidTarget
@@ -121,7 +129,8 @@ export type MessengerSegmentValue =
 
 export type MessengerComponent<
   Props,
-  Segment extends IntermediateSegment<MessengerSegmentValue> = IntermediateSegment<MessengerSegmentValue>
+  Segment extends
+    IntermediateSegment<MessengerSegmentValue> = IntermediateSegment<MessengerSegmentValue>,
 > = NativeComponent<Props, Segment>;
 
 export type MessagingOptions = {
@@ -132,21 +141,21 @@ export type MessagingOptions = {
   oneTimeNotifToken?: string;
 };
 
-export interface MessengerPage extends SociablyChannel {
+export type MessengerPage = {
   id: string;
-}
+} & SociablyChannel;
 
-export interface MessengerChat extends SociablyThread {
+export type MessengerChat = {
   pageId: string;
   page: MessengerPage;
   target: MessagingTarget;
-}
+} & SociablyThread;
 
-export interface MessengerUser extends SociablyUser {
+export type MessengerUser = {
   pageId: string;
   page: MessengerPage;
   id: string;
-}
+} & SociablyUser;
 
 export type MessengerBotRequestApiOptions<Page extends MessengerPage> = {
   /** The page to make the API call */
@@ -163,7 +172,7 @@ export type MessengerBotRequestApiOptions<Page extends MessengerPage> = {
   accessToken?: string;
 };
 
-export interface MessengerBot<Page extends MessengerPage> {
+export type MessengerBot<Page extends MessengerPage> = {
   requestApi<ResBody extends MetaApiResponseBody>(
     options: MessengerBotRequestApiOptions<Page>
   ): Promise<ResBody>;
@@ -172,7 +181,7 @@ export interface MessengerBot<Page extends MessengerPage> {
     page: string | Page,
     node: SociablyNode
   ): Promise<null | { attachmentId: string }>;
-}
+};
 
 export type SetPageMessengerProfileOptions = {
   /** Specify the access token to be used on the API call */

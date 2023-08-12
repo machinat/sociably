@@ -46,7 +46,7 @@ const ENUM_STARTED = 2;
 
 export default class SociablyApp<
   Platform extends AnySociablyPlatform,
-  Context extends AnyEventContext = EventContextOfPlatform<Platform>
+  Context extends AnyEventContext = EventContextOfPlatform<Platform>,
 > {
   config: AppConfig<Platform>;
   serviceSpace: ServiceSpace;

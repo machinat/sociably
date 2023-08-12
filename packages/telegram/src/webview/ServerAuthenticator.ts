@@ -262,7 +262,7 @@ export class TelegramServerAuthenticator
     const chatId =
       typeof chatIdQuery !== 'string'
         ? undefined
-        : chatIdQuery[0] === '@'
+        : chatIdQuery.startsWith('@')
         ? chatIdQuery
         : parseInt(chatIdQuery, 10);
 
