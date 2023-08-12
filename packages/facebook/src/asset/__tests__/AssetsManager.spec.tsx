@@ -44,7 +44,7 @@ describe('subscription management', () => {
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           appId: '_APP_ID_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
           objectType: 'user',
           fields: ['foo_field', 'bar_field'],
         })
@@ -68,7 +68,7 @@ describe('subscription management', () => {
     test('with constructor app settings options', async () => {
       const manager = new FacebookAssetsManager(stateController, bot, {
         appId: '_APP_ID_',
-        verifyToken: '_VERIFY_TOKEN_',
+        webhookVerifyToken: '_VERIFY_TOKEN_',
         webhookUrl: 'https://foo.bar/baz/',
         subscriptionFields: ['messages', 'messaging_postbacks'],
       });
@@ -93,7 +93,7 @@ describe('subscription management', () => {
     test('default subscription fields', async () => {
       const manager = new FacebookAssetsManager(stateController, bot, {
         appId: '_APP_ID_',
-        verifyToken: '_VERIFY_TOKEN_',
+        webhookVerifyToken: '_VERIFY_TOKEN_',
       });
 
       await expect(
@@ -121,10 +121,10 @@ describe('subscription management', () => {
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, verifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -134,15 +134,15 @@ describe('subscription management', () => {
       await expect(
         manager.setAppSubscription({
           appId: '_APP_ID_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, verifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
 
-    it('throw if no verifyToken available', async () => {
+    it('throw if no webhookVerifyToken available', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
       await expect(
         manager.setAppSubscription({
@@ -150,7 +150,7 @@ describe('subscription management', () => {
           appId: '_APP_ID_',
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, verifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });

@@ -46,7 +46,7 @@ describe('initModule(configs)', () => {
       accessToken: '_ACCESS_TOKEN_',
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       eventMiddlewares: [eventMiddleware],
       dispatchMiddlewares: [dispatchMiddleware],
     });
@@ -74,7 +74,7 @@ describe('initModule(configs)', () => {
       accessToken: '_ACCESS_TOKEN_',
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       webhookPath: 'webhook/whatsapp',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
@@ -126,7 +126,7 @@ describe('initModule(configs)', () => {
           accessToken: '_ACCESS_TOKEN_',
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
     });
@@ -166,7 +166,7 @@ describe('initModule(configs)', () => {
           accessToken: '_ACCESS_TOKEN_',
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
     });
@@ -215,7 +215,7 @@ describe('initModule(configs)', () => {
           accessToken: '_ACCESS_TOKEN_',
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
     });
@@ -283,7 +283,7 @@ describe('initModule(configs)', () => {
           accessToken: '_ACCESS_TOKEN_',
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
       services: [myAgentSettingsService],
@@ -306,7 +306,7 @@ describe('initModule(configs)', () => {
           agentSettings,
           accessToken: '_ACCESS_TOKEN_',
           shouldHandleChallenge: false,
-          verifyToken: '',
+          webhookVerifyToken: '',
           shouldVerifyRequest: false,
           appId: '',
           appSecret: '',
@@ -330,7 +330,7 @@ describe('initModule(configs)', () => {
       accessToken: '_ACCESS_TOKEN_',
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
     });
 
     await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
@@ -344,7 +344,7 @@ describe('initModule(configs)', () => {
       accessToken: '_ACCESS_TOKEN_',
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
     });
 
     await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);

@@ -25,7 +25,7 @@ export class MetaAssetsManager {
     webhookUrl,
     fields,
     appId,
-    verifyToken,
+    webhookVerifyToken,
   }: SetMetaAppSubscriptionOptions): Promise<void> {
     await this.bot.requestApi({
       asApplication: true,
@@ -36,7 +36,7 @@ export class MetaAssetsManager {
         callback_url: webhookUrl,
         fields,
         include_values: true,
-        verify_token: verifyToken,
+        verify_token: webhookVerifyToken,
       },
     });
   }

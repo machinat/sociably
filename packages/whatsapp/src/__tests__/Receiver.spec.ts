@@ -46,6 +46,13 @@ const createRes = () =>
     },
   } as never);
 
+const routingInfo = {
+  originalPath: '/webhook/whatsapp',
+  basePath: '/',
+  matchedPath: 'webhook/whatsapp',
+  trailingPath: '',
+};
+
 beforeEach(() => {
   popEventMock.clear();
   popEventWrapper.mock.clear();
@@ -57,7 +64,7 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
-      verifyToken: '',
+      webhookVerifyToken: '',
       shouldVerifyRequest: false,
       appSecret: '',
     });
@@ -68,7 +75,7 @@ describe('handling POST', () => {
     });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(404);
     expect(res.finished).toBe(true);
@@ -81,7 +88,7 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
-      verifyToken: '',
+      webhookVerifyToken: '',
       shouldVerifyRequest: false,
       appSecret: '',
     });
@@ -133,7 +140,7 @@ describe('handling POST', () => {
     const req = createReq({ method: 'POST', body: bodyStr });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
@@ -176,7 +183,7 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
-      verifyToken: '',
+      webhookVerifyToken: '',
       shouldVerifyRequest: false,
       appSecret: '',
     });
@@ -186,7 +193,8 @@ describe('handling POST', () => {
         method: 'POST',
         body: '{"object":"whatsapp_business_account","entry":[{"id":"WHATSAPP_BUSINESS_ACCOUNT_ID","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"+1 234567890","phone_number_id":"1234567890"},"contacts":[{"profile":{"name":"NAME"},"wa_id":"9876543210"}],"messages":[{"from":"9876543210","id":"wamid.ID1","timestamp":1661242706857,"text":{"body":"MESSAGE_BODY"},"type":"text"}]},"field":"messages"}]}]}',
       }),
-      createRes()
+      createRes(),
+      routingInfo
     );
 
     expect(popEventMock).toHaveBeenCalledTimes(1);

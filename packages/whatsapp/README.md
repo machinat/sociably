@@ -1,6 +1,6 @@
 # WhatsApp Platform
 
-Receive events and send messages on WhatsApp through [Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api).
+Receive events and send messages on WhatsApp through [WhatsApp Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api).
 
 ## Install
 
@@ -37,14 +37,14 @@ const app = Sociably.createApp({
   ],
   platforms: [
     WhatsApp.intiModule({
-      entryPath: '/webhook/whatsapp',
+      webhookPath: 'webhook/whatsapp',
       agentSettings: {
         numberId: WHATS_APP_NUMBER_ID,
         phoneNumber: WHATS_APP_PHONE_NUMBER,
       },
       appSecret: WHATS_APP_APP_SECRET,
       accessToken: WHATS_APP_ACCESS_TOKEN,
-      verifyToken: WHATS_APP_VERIFY_TOKEN,
+      webhookVerifyToken: WHATS_APP_VERIFY_TOKEN,
     }),
   ],
 });

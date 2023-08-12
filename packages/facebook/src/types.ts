@@ -176,8 +176,8 @@ export type FacebookConfigs = {
   appSecret: string;
   /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
-  /** The secret string to verify the webhook challenge request */
-  verifyToken: string;
+  /** The verify token for registering webhook */
+  webhookVerifyToken: string;
   /** To verify the webhook request by the signature or not. Default to `true` */
   shouldVerifyRequest?: boolean;
   /** To handle the webhook challenge request or not. Default to `true` */

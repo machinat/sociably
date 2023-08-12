@@ -45,6 +45,13 @@ const createRes = () =>
     },
   } as never);
 
+const routingInfo = {
+  originalPath: '/webhook/instagram',
+  basePath: '/',
+  matchedPath: 'webhook/instagram',
+  trailingPath: '',
+};
+
 beforeEach(() => {
   popEventMock.clear();
   popEventWrapper.mock.clear();
@@ -57,7 +64,7 @@ describe('handling POST', () => {
       shouldVerifyRequest: false,
       appSecret: '...',
       shouldHandleChallenge: false,
-      verifyToken: '...',
+      webhookVerifyToken: '...',
       popEventWrapper,
     });
 
@@ -67,7 +74,7 @@ describe('handling POST', () => {
     });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(404);
     expect(res.finished).toBe(true);
@@ -82,7 +89,7 @@ describe('handling POST', () => {
       shouldVerifyRequest: false,
       appSecret: '...',
       shouldHandleChallenge: false,
-      verifyToken: '...',
+      webhookVerifyToken: '...',
     });
 
     const body = {
@@ -122,7 +129,7 @@ describe('handling POST', () => {
     const req = createReq({ method: 'POST', body: bodyStr });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
@@ -162,7 +169,7 @@ describe('handling POST', () => {
       bot,
       popEventWrapper,
       shouldHandleChallenge: false,
-      verifyToken: '...',
+      webhookVerifyToken: '...',
       shouldVerifyRequest: false,
       appSecret: '...',
     });
@@ -197,7 +204,7 @@ describe('handling POST', () => {
     const req = createReq({ method: 'POST', body: bodyStr });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
@@ -236,7 +243,7 @@ describe('handling POST', () => {
       shouldHandleChallenge: false,
       appSecret: '...',
       shouldVerifyRequest: false,
-      verifyToken: '...',
+      webhookVerifyToken: '...',
     });
 
     await receiver.handleRequest(
@@ -244,7 +251,8 @@ describe('handling POST', () => {
         method: 'POST',
         body: '{"object":"instagram","entry":[{"id":1234567890,"time":1458692752478,"messaging":[{"sender":{"id":"_PSID_"},"recipient":{"id":1234567890},"message":{"mid":"xxx","text":"foo"}}]}]}',
       }),
-      createRes()
+      createRes(),
+      routingInfo
     );
 
     expect(popEventMock).toHaveBeenCalledTimes(1);

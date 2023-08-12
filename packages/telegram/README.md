@@ -34,7 +34,7 @@ const app = Sociably.createApp({
   ],
   platforms: [
     Telegram.intiModule({
-      webhookPath: '/webhook/telegram',
+      webhookPath: 'webhook/telegram',
       agentSettings: {
         botName: TELEGRAM_BOT_NAME,
         botToken: TELEGRAM_BOT_TOKEN,

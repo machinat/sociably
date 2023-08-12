@@ -84,7 +84,7 @@ describe('initModule()', () => {
     const app = Sociably.createApp({
       platforms: [
         WebSocket.initModule({
-          entryPath: '/my_web_socket_server',
+          entryPath: 'my_web_socket_server',
           heartbeatInterval: 999,
         }),
       ],
@@ -103,13 +103,13 @@ describe('initModule()', () => {
     expect(receiver).toBeInstanceOf(WebSocketReceiver);
     expect(server).toBeInstanceOf(WebSocketServer);
     expect(configs).toEqual({
-      entryPath: '/my_web_socket_server',
+      entryPath: 'my_web_socket_server',
       heartbeatInterval: 999,
     });
     expect(upgradeRoutings).toEqual([
       {
         name: 'websocket',
-        path: '/my_web_socket_server',
+        path: 'my_web_socket_server',
         handler: expect.any(Function),
       },
     ]);

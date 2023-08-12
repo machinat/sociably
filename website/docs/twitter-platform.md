@@ -41,7 +41,7 @@ const app = Sociably.createApp({
   ],
   platforms: [
     Twitter.intiModule({
-      webhookPath: '/webhook/twitter',
+      webhookPath: 'webhook/twitter',
       agentSettings: {
         userId: TWITTER_AGENT_ID,            // id of agent user
         accessToken: TWITTER_ACCESS_TOKEN,   // access token of agent user

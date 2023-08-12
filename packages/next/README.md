@@ -33,7 +33,7 @@ const app = Sociably.createApp({
   modules: [
     Http.initModule({ /* ... */ }),
     Next.initModule({
-      entryPath: '/webview',   // have to match bastPath in next configs
+      entryPath: 'webview',    // have to match bastPath in next configs
       serverOptions: {
         dev: DEV,              // start with dev mode or not
         dir: '../webview',     // next.js app project dir

@@ -176,11 +176,14 @@ Sociably.createApp({
   ],
   platforms: [
     Facebook.initModule({
-      webhookPath: '/webhook/facebook',
-      pageId: ENV.FACEBOOK_PAGE_ID,
-      accessToken: ENV.FACEBOOK_ACCESS_TOKEN,
-      appSecret: ENV.FACEBOOK_APP_SECRET,
-      verifyToken: ENV.FACEBOOK_VERIFY_TOKEN,
+      webhookPath: 'webhook/facebook',
+      appId: ENV.META_APP_ID,
+      appSecret: ENV.META_APP_SECRET,
+      webhookVerifyToken: ENV.META_WEBHOOK_VERIFY_TOKEN,
+      agentSetting: {
+        pageId: ENV.FACEBOOK_PAGE_ID,
+        accessToken: ENV.FACEBOOK_ACCESS_TOKEN,
+      },
     }),
   ],
 })
@@ -268,11 +271,11 @@ set the route path for each platform. Like:
 Sociably.createApp({
   platforms: [
     Facebook.initModule({
-      webhookPath: '/webhook/facebook',
+      webhookPath: 'webhook/facebook',
       //...
     }),
     Telegram.initModule({
-      webhookPath: '/webhook/telegram',
+      webhookPath: 'webhook/telegram',
       //...
     }),
   ],

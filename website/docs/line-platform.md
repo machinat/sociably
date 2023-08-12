@@ -45,7 +45,7 @@ const app = Sociably.createApp({
   ],
   platforms: [
     Line.intiModule({
-      webhookPath: '/webhook/line',       // webhook path
+      webhookPath: 'webhook/line',       // webhook path
       agentSettings: {
         providerId: LINE_PROVIDER_ID,       // provider id of the channel
         channelId: LINE_CHANNEL_ID,         // messaging API channel id

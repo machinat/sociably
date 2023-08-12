@@ -11,7 +11,7 @@ type WhatsAppReceiverOptions = {
   bot: BotP;
   popEventWrapper: PopEventWrapper<WhatsAppEventContext, null>;
   appSecret: string;
-  verifyToken: string;
+  webhookVerifyToken: string;
   shouldVerifyRequest?: boolean;
   shouldHandleChallenge?: boolean;
 };
@@ -24,14 +24,14 @@ export class WhatsAppReceiver extends MetaWebhookReceiver<WhatsAppEventContext> 
   constructor({
     bot,
     appSecret,
-    verifyToken,
+    webhookVerifyToken,
     shouldHandleChallenge = true,
     shouldVerifyRequest = true,
     popEventWrapper,
   }: WhatsAppReceiverOptions) {
     super({
       appSecret,
-      verifyToken,
+      webhookVerifyToken,
       shouldHandleChallenge,
       shouldVerifyRequest,
       listeningPlatforms: [
@@ -51,7 +51,12 @@ const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, PlatformUtilitiesI],
   factory: (
-    { shouldHandleChallenge, verifyToken, shouldVerifyRequest, appSecret },
+    {
+      shouldHandleChallenge,
+      webhookVerifyToken,
+      shouldVerifyRequest,
+      appSecret,
+    },
     bot,
     { popEventWrapper }
   ) =>
@@ -59,7 +64,7 @@ const ReceiverP = serviceProviderClass({
       bot,
       popEventWrapper,
       shouldHandleChallenge,
-      verifyToken,
+      webhookVerifyToken,
       shouldVerifyRequest,
       appSecret,
     }),

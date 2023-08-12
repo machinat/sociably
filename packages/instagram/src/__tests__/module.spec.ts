@@ -49,7 +49,7 @@ describe('initModule(configs)', () => {
       agentSettings,
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       eventMiddlewares: [eventMiddleware],
       dispatchMiddlewares: [dispatchMiddleware],
     });
@@ -76,7 +76,7 @@ describe('initModule(configs)', () => {
       agentSettings,
       appId: '_APP_ID_',
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       webhookPath: 'webhook/instagram',
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
@@ -139,7 +139,7 @@ describe('initModule(configs)', () => {
           agentSettings,
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
     });
@@ -178,7 +178,7 @@ describe('initModule(configs)', () => {
           agentSettings,
           appId: '...',
           appSecret: '...',
-          verifyToken: '...',
+          webhookVerifyToken: '...',
           shouldHandleChallenge: false,
           shouldVerifyRequest: false,
         }),
@@ -209,7 +209,7 @@ describe('initModule(configs)', () => {
           agentSettings,
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
     });
@@ -256,7 +256,7 @@ describe('initModule(configs)', () => {
           multiAgentSettings,
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
     });
@@ -303,7 +303,7 @@ describe('initModule(configs)', () => {
           agentSettingsService: myPageSettingsService,
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
       services: [myPageSettingsService],
@@ -320,7 +320,7 @@ describe('initModule(configs)', () => {
       Instagram.initModule({
         appId: '...',
         appSecret: '...',
-        verifyToken: '...',
+        webhookVerifyToken: '...',
       })
     ).toThrowErrorMatchingInlineSnapshot(
       `"Instagram platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
@@ -333,7 +333,7 @@ describe('initModule(configs)', () => {
       agentSettings,
       appId: '...',
       appSecret: '...',
-      verifyToken: '...',
+      webhookVerifyToken: '...',
     });
 
     await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
@@ -346,7 +346,7 @@ describe('initModule(configs)', () => {
       agentSettings,
       appId: '...',
       appSecret: '...',
-      verifyToken: '...',
+      webhookVerifyToken: '...',
     });
 
     await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);

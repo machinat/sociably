@@ -68,6 +68,13 @@ const createRes = () =>
     },
   } as never);
 
+const routingInfo = {
+  originalPath: '/webhook/facebook',
+  basePath: '/',
+  matchedPath: '/webhook/facebook',
+  trailingPath: '',
+};
+
 beforeEach(() => {
   bot.mock.reset();
   popFooEvent.mock.clear();
@@ -78,7 +85,7 @@ it('throw if appSecret not given', () => {
   expect(
     () =>
       new MetaWebhookReceiver({
-        verifyTokenL: '_VERIFY_TOKEN_',
+        webhookVerifyTokenL: '_VERIFY_TOKEN_',
         shouldHandleChallenge: false,
         shouldVerifyRequest: true,
         listeningPlatforms: [
@@ -91,7 +98,7 @@ it('throw if appSecret not given', () => {
   );
 });
 
-it('throw if verifyToken not given', () => {
+it('throw if webhookVerifyToken not given', () => {
   expect(
     () =>
       new MetaWebhookReceiver({
@@ -104,7 +111,7 @@ it('throw if verifyToken not given', () => {
         ],
       } as never)
   ).toThrowErrorMatchingInlineSnapshot(
-    `"verifyToken should not be empty if shouldHandleChallenge set to true"`
+    `"webhookVerifyToken should not be empty if shouldHandleChallenge set to true"`
   );
 });
 
@@ -112,7 +119,7 @@ describe('handling GET', () => {
   it('respond 403 if shouldHandleChallenge set to false', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: true,
       listeningPlatforms: [
@@ -124,7 +131,7 @@ describe('handling GET', () => {
     const req = createReq({ method: 'GET' });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(403);
     expect(res.finished).toBe(true);
@@ -138,7 +145,7 @@ describe('handling GET', () => {
     async (mode) => {
       const receiver = new MetaWebhookReceiver({
         appSecret: '_APP_SECRET_',
-        verifyToken: '_VERIFY_TOKEN_',
+        webhookVerifyToken: '_VERIFY_TOKEN_',
         shouldHandleChallenge: true,
         shouldVerifyRequest: true,
         listeningPlatforms: [
@@ -153,7 +160,7 @@ describe('handling GET', () => {
       });
       const res = createRes();
 
-      await receiver.handleRequest(req, res);
+      await receiver.handleRequest(req, res, routingInfo);
 
       expect(res.statusCode).toBe(400);
       expect(res.finished).toBe(true);
@@ -166,7 +173,7 @@ describe('handling GET', () => {
   it('respond 400 if hub.verify_token param not matched', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: true,
       shouldVerifyRequest: true,
       listeningPlatforms: [
@@ -181,7 +188,7 @@ describe('handling GET', () => {
     });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -193,7 +200,7 @@ describe('handling GET', () => {
   it('respond 200 and hub.challenge within body', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_MY_TOKEN_',
+      webhookVerifyToken: '_MY_TOKEN_',
       shouldHandleChallenge: true,
       shouldVerifyRequest: true,
       listeningPlatforms: [
@@ -208,7 +215,7 @@ describe('handling GET', () => {
     });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
@@ -223,7 +230,7 @@ describe('handling POST', () => {
   it('respond 400 if body is empty', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
       listeningPlatforms: [
@@ -235,7 +242,7 @@ describe('handling POST', () => {
     const req = createReq({ method: 'POST' });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -247,7 +254,7 @@ describe('handling POST', () => {
   it('respond 400 if body is not in valid JSON format', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
       listeningPlatforms: [
@@ -259,7 +266,7 @@ describe('handling POST', () => {
     const req = createReq({ method: 'POST', body: 'I am Jason' });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -271,7 +278,7 @@ describe('handling POST', () => {
   it('respond 404 if "object" type is not listened', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
       listeningPlatforms: [
@@ -286,7 +293,7 @@ describe('handling POST', () => {
     });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(404);
     expect(res.finished).toBe(true);
@@ -298,7 +305,7 @@ describe('handling POST', () => {
   it('respond 400 if body is empty', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
       listeningPlatforms: [
@@ -309,7 +316,7 @@ describe('handling POST', () => {
     const req = createReq({ method: 'POST' });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -321,7 +328,7 @@ describe('handling POST', () => {
   it('respond 400 if "entry" field is not an array', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
       listeningPlatforms: [
@@ -336,7 +343,7 @@ describe('handling POST', () => {
     });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(400);
     expect(res.finished).toBe(true);
@@ -348,7 +355,7 @@ describe('handling POST', () => {
   it('respond 200 and pop events', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
       listeningPlatforms: [
@@ -377,7 +384,7 @@ describe('handling POST', () => {
     makeEventsFromUpdate.mock.fakeReturnValueOnce(events.slice(1, 3));
     makeEventsFromUpdate.mock.fakeReturnValueOnce(events.slice(3, 6));
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
@@ -416,7 +423,7 @@ describe('handling POST', () => {
   test('passing signature validation', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_MY_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: true,
       listeningPlatforms: [
@@ -435,7 +442,7 @@ describe('handling POST', () => {
     });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(200);
     expect(res.finished).toBe(true);
@@ -449,7 +456,7 @@ describe('handling POST', () => {
   it('respond 401 if signature is invalid', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_MY_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: true,
       listeningPlatforms: [
@@ -468,7 +475,7 @@ describe('handling POST', () => {
     });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routingInfo);
 
     expect(res.statusCode).toBe(401);
     expect(res.finished).toBe(true);
@@ -481,7 +488,7 @@ describe('handling POST', () => {
     const popFooEvent2 = moxy(async () => null);
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
       listeningPlatforms: [
@@ -502,7 +509,8 @@ describe('handling POST', () => {
         url: '/test',
         body: '{"object": "foo", "entry": [{ "id": "123" }]}',
       }),
-      createRes()
+      createRes(),
+      routingInfo
     );
 
     const expectedFooEventContext = {
@@ -535,7 +543,7 @@ describe('handling POST', () => {
     test('call bot.render(event.thread, message)', async () => {
       const receiver = new MetaWebhookReceiver({
         appSecret: '_APP_SECRET_',
-        verifyToken: '_VERIFY_TOKEN_',
+        webhookVerifyToken: '_VERIFY_TOKEN_',
         shouldHandleChallenge: false,
         shouldVerifyRequest: false,
         listeningPlatforms: [
@@ -549,7 +557,8 @@ describe('handling POST', () => {
           method: 'POST',
           body: '{"object":"foo","entry":[{"id":1234567890}]}',
         }),
-        createRes()
+        createRes(),
+        routingInfo
       );
 
       expect(popFooEvent).toHaveBeenCalledTimes(1);
@@ -577,7 +586,7 @@ describe('handling POST', () => {
   test('do nothing when event.thread is null', async () => {
     const receiver = new MetaWebhookReceiver({
       appSecret: '_APP_SECRET_',
-      verifyToken: '_VERIFY_TOKEN_',
+      webhookVerifyToken: '_VERIFY_TOKEN_',
       shouldHandleChallenge: false,
       shouldVerifyRequest: false,
       listeningPlatforms: [
@@ -593,7 +602,8 @@ describe('handling POST', () => {
         method: 'POST',
         body: '{"object":"foo","entry":[{"id":1234567890}]}',
       }),
-      createRes()
+      createRes(),
+      routingInfo
     );
 
     expect(popFooEvent).toHaveBeenCalledTimes(1);

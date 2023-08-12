@@ -138,8 +138,8 @@ export type InstagramConfigs = {
   appId: string;
   /** The Facebook app secret */
   appSecret: string;
-  /** The secret string to verify the webhook challenge request */
-  verifyToken: string;
+  /** The verify token for registering webhook */
+  webhookVerifyToken: string;
   /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
   /** To verify the webhook request by the signature or not. Default to `true` */

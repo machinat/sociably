@@ -40,7 +40,7 @@ describe('page/app management', () => {
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           appId: '_APP_ID_',
-          verifyToken: '_VERIFY_TOKEN_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
           objectType: 'user',
           fields: ['foo_field', 'bar_field'],
         })

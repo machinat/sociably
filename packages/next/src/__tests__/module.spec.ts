@@ -31,7 +31,7 @@ describe('initModule()', () => {
   test('module object', () => {
     expect(
       Next.initModule({
-        entryPath: '/webview',
+        entryPath: 'webview',
         noPrepare: false,
         serverOptions: { dir: './webview' },
         handleRequest: () => ({ ok: true }),
@@ -48,7 +48,7 @@ describe('initModule()', () => {
               "$$typeof": Symbol(interface.service.sociably),
             },
             "withValue": {
-              "entryPath": "/webview",
+              "entryPath": "webview",
               "handleRequest": [Function],
               "noPrepare": false,
               "serverOptions": {

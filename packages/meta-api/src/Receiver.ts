@@ -8,7 +8,7 @@ import { ListeningPlatformOptions, MetaApiEventContext } from './types.js';
 export type MetaWebhookReceiverOptions<Context extends MetaApiEventContext> = {
   listeningPlatforms: ListeningPlatformOptions<Context>[];
   appSecret: string;
-  verifyToken: string;
+  webhookVerifyToken: string;
   shouldHandleChallenge: boolean;
   shouldVerifyRequest: boolean;
 };
@@ -16,7 +16,7 @@ export type MetaWebhookReceiverOptions<Context extends MetaApiEventContext> = {
 const handleWebhook = <Context extends MetaApiEventContext>({
   listeningPlatforms,
   appSecret,
-  verifyToken,
+  webhookVerifyToken,
   shouldHandleChallenge,
   shouldVerifyRequest,
 }: MetaWebhookReceiverOptions<Context>): WebhookHandler => {
@@ -47,7 +47,7 @@ const handleWebhook = <Context extends MetaApiEventContext>({
       const { query } = parseUrl(url, true);
       if (
         query['hub.mode'] !== 'subscribe' ||
-        query['hub.verify_token'] !== verifyToken
+        query['hub.verify_token'] !== webhookVerifyToken
       ) {
         return { code: 400 };
       }
@@ -147,7 +147,7 @@ export class MetaWebhookReceiver<
 
   constructor({
     appSecret,
-    verifyToken,
+    webhookVerifyToken,
     shouldHandleChallenge,
     shouldVerifyRequest,
     listeningPlatforms,
@@ -158,15 +158,15 @@ export class MetaWebhookReceiver<
     );
 
     invariant(
-      !shouldHandleChallenge || verifyToken,
-      'verifyToken should not be empty if shouldHandleChallenge set to true'
+      !shouldHandleChallenge || webhookVerifyToken,
+      'webhookVerifyToken should not be empty if shouldHandleChallenge set to true'
     );
 
     super(
       handleWebhook<Context>({
         shouldHandleChallenge,
         shouldVerifyRequest,
-        verifyToken,
+        webhookVerifyToken,
         appSecret,
         listeningPlatforms,
       })

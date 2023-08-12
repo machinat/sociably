@@ -50,7 +50,7 @@ const app = Sociably.createApp({
     Facebook.initModule({/* ... */}),
     Webview.intiModule({
       webviewHost: DOMAIN,
-      webviewPath: '/webview', // have to match `basePath` in next.config.js
+      webviewPath: 'webview', // have to match `basePath` in next.config.js
       authSecret: WEBVIEW_AUTH_SECRET,
       authPlatforms: [
         // auth providers from platforms

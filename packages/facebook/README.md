@@ -1,6 +1,6 @@
 # Facebook Platform
 
-Receive events and send messages through [Facebook platform](https://developers.facebook.com/docs/facebook-platform/).
+Receive events and send messages through [Facebook platform](https://developers.facebook.com/docs/messenger-platform/).
 
 ## Install
 
@@ -23,11 +23,11 @@ import Http from '@sociably/http';
 import Facebook from '@sociably/facebook';
 
 const {
+  META_APP_ID,
+  META_APP_SECRET,
+  META_WEBHOOK_VERIFY_TOKEN,
   FACEBOOK_PAGE_ID,
-  FACEBOOK_APP_ID,
   FACEBOOK_ACCESS_TOKEN,
-  FACEBOOK_APP_SECRET,
-  FACEBOOK_VERIFY_TOKEN,
 } = process.env;
 
 const app = Sociably.createApp({
@@ -36,9 +36,10 @@ const app = Sociably.createApp({
   ],
   platforms: [
     Facebook.intiModule({
-      entryPath: '/webhook/facebook',
-      appSecret: FACEBOOK_APP_SECRET,
-      verifyToken: FACEBOOK_VERIFY_TOKEN,
+      webhookPath: 'webhook/facebook',
+      appId: META_APP_ID,
+      appSecret: META_APP_SECRET,
+      webhookVerifyToken: META_WEBHOOK_VERIFY_TOKEN,
       agentSettings: {
         pageId: FACEBOOK_PAGE_ID,
         accessToken: FACEBOOK_ACCESS_TOKEN,

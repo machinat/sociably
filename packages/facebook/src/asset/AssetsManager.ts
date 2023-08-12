@@ -27,7 +27,7 @@ const DEFAULT_SUBSCRIPTION_FIELDS = [
 
 export type DefaultSettings = {
   appId?: string;
-  verifyToken?: string;
+  webhookVerifyToken?: string;
   subscriptionFields?: string[];
   webhookUrl?: string;
 };
@@ -60,14 +60,22 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   async setAppSubscription({
     objectType = 'page',
     appId = this.defaultSettings.appId,
-    webhookUrl = this.defaultSettings.webhookUrl,
     fields = this.defaultSettings.subscriptionFields,
-    verifyToken = this.defaultSettings.verifyToken,
+    webhookUrl = this.defaultSettings.webhookUrl,
+    webhookVerifyToken = this.defaultSettings.webhookVerifyToken,
   }: Partial<SetMetaAppSubscriptionOptions> = {}): Promise<void> {
-    if (!appId || !verifyToken || !webhookUrl || !fields?.length) {
-      throw new Error('appId, webhookUrl, verifyToken or fields is empty');
+    if (!appId || !webhookVerifyToken || !webhookUrl || !fields?.length) {
+      throw new Error(
+        'appId, webhookUrl, webhookVerifyToken or fields is empty'
+      );
     }
-    const options = { appId, objectType, webhookUrl, verifyToken, fields };
+    const options = {
+      appId,
+      objectType,
+      webhookUrl,
+      webhookVerifyToken,
+      fields,
+    };
     return super.setAppSubscription(options);
   }
 
@@ -189,11 +197,11 @@ const AssetsManagerP = serviceProviderClass({
     stateController,
     bot,
     connector,
-    { appId, verifyToken, webhookPath, subscriptionFields }
+    { appId, webhookVerifyToken, webhookPath, subscriptionFields }
   ) =>
     new FacebookAssetsManager(stateController, bot, {
       appId,
-      verifyToken,
+      webhookVerifyToken,
       subscriptionFields,
       webhookUrl: connector.getServerUrl(webhookPath),
     }),

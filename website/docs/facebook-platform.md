@@ -33,11 +33,11 @@ import Http from '@sociably/http';
 import Facebook from '@sociably/facebook';
 
 const {
+  META_APP_ID,
+  META_APP_SECRET,
+  META_WEBHOOK_VERIFY_TOKEN,
   FACEBOOK_PAGE_ID,
-  FACEBOOK_APP_ID,
   FACEBOOK_ACCESS_TOKEN,
-  FACEBOOK_APP_SECRET,
-  FACEBOOK_VERIFY_TOKEN,
 } = process.env;
 
 const app = Sociably.createApp({
@@ -46,13 +46,14 @@ const app = Sociably.createApp({
   ],
   platforms: [
     Facebook.intiModule({
-      entryPath: '/webhook/facebook',     // webhook path
+      entryPath: 'webhook/facebook',                // webhook path
+      appId: META_APP_ID,                            // Facebook page id
+      appSecret: META_APP_SECRET,                    // Facebook app secret
+      webhookVerifyToken: META_WEBHOOK_VERIFY_TOKEN, // token for webhook verification
       agentSettings: {
-        accessToken: FACEBOOK_ACCESS_TOKEN, // page access token
-        verifyToken: FACEBOOK_VERIFY_TOKEN, // token for webhook verification
+        pageId: FACEBOOK_PAGE_ID,                    // Facebook page id
+        accessToken: FACEBOOK_ACCESS_TOKEN,          // page access token
       },
-      pageId: FACEBOOK_PAGE_ID,           // Facebook page id
-      appSecret: FACEBOOK_APP_SECRET,     // Facebook app secret
     }),
   ],
 });

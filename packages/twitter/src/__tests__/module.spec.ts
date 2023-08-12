@@ -49,7 +49,7 @@ describe('initModule(configs)', () => {
 
     const module = Twitter.initModule({
       ...basicConfigs,
-      webhookPath: '/webhook/twitter',
+      webhookPath: 'webhook/twitter',
       maxRequestConnections: 999,
       eventMiddlewares: [eventMiddleware],
       dispatchMiddlewares: [dispatchMiddleware],
@@ -75,7 +75,7 @@ describe('initModule(configs)', () => {
   test('provisions', async () => {
     const configs = {
       ...basicConfigs,
-      webhookPath: '/webhook/twitter',
+      webhookPath: 'webhook/twitter',
       maxRequestConnections: 999,
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
@@ -104,7 +104,7 @@ describe('initModule(configs)', () => {
     expect(routings).toEqual([
       {
         name: 'twitter',
-        path: '/webhook/twitter',
+        path: 'webhook/twitter',
         handler: expect.any(Function),
       },
     ]);

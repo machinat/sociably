@@ -120,14 +120,14 @@ export type MetaWebhookObjectType =
   | 'whatsapp_business_account';
 
 export type SetMetaAppSubscriptionOptions = {
-  /** The URL to receive the webhook */
-  webhookUrl: string;
   /** Indicates the object type that this subscription applies to. Default to `page` */
   objectType: MetaWebhookObjectType;
   /** One or more of the set of valid fields in this object to subscribe to */
   fields: string[];
-  /** Specify the verify token to confirm the webhook with */
-  verifyToken: string;
+  /** The URL to receive the webhook */
+  webhookUrl: string;
+  /** Specify the verify token for registering the webhook */
+  webhookVerifyToken: string;
   /** Specify the app to remove subscriptions for */
   appId: string;
 };

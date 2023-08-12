@@ -116,7 +116,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 it('respond 404 if bot ID entry path is invalid', async () => {
   const receiver = new TelegramReceiver({
     bot,
-    webhookPath: '/telegram',
+    webhookPath: 'telegram',
     agentSettingsAccessor,
     shouldVerifySecretToken: false,
     popEventWrapper,

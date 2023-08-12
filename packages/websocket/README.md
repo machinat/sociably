@@ -31,7 +31,7 @@ const app = Sociably.createApp({
     Http.initModule({ /* ... */ }),
   ],
   platforms: [
-    WebSocket.initModule({ entryPath: '/websocket' }),
+    WebSocket.initModule({ entryPath: 'websocket' }),
   ],
   service: [
     { // same origin policy
