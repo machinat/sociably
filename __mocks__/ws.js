@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
-import { moxy } from '@moxyjs/moxy';
 import EventEmitter from 'events';
+import { moxy } from '@moxyjs/moxy';
 
 class WebSocket extends EventEmitter {
   readyState = 1;
@@ -23,7 +23,7 @@ Object.assign(WebSocket, {
   OPEN: 1,
   CLOSING: 2,
   CLOSED: 3,
-  Server: class WebSocketServer {},
+  WebSocketServer: class WebSocketServer {},
 });
 
 module.exports = moxy(WebSocket);

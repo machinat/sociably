@@ -1,5 +1,5 @@
-import Ws from 'ws';
+import { WebSocketServer as WsServer } from 'ws';
 
-const createWsServer = (): Ws.Server => new Ws.Server({ noServer: true });
+const createWsServer = (): WsServer => new WsServer({ noServer: true });
 
 export default createWsServer;
