@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
 import type TypedEmitter from 'typed-emitter';
-import type { Server as WsServer } from 'ws';
+import type { WebSocketServer as WsServer } from 'ws';
 import uniqid from 'uniqid';
 import type { SociablyUser } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';

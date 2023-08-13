@@ -13,7 +13,7 @@ import type { HttpRequestInfo } from '@sociably/http';
 import type { WebSocketBot } from './Bot.js';
 import type WebSocketConnection from './Connection.js';
 
-export type { Server as WsServer } from 'ws';
+export type { WebSocketServer as WsServer } from 'ws';
 export type { HttpRequestInfo } from '@sociably/http';
 
 export type ConnIdentifier = {
