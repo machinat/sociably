@@ -282,8 +282,6 @@ export type LineConfigs = {
   shouldVerifyRequest?: boolean;
   /** The max API request connections at the same time */
   maxRequestConnections?: number;
-  /** The LIFF app id. This is required when using webview */
-  liffId?: string;
   eventMiddlewares?: MaybeContainer<LineEventMiddleware>[];
   dispatchMiddlewares?: MaybeContainer<LineDispatchMiddleware>[];
 };
