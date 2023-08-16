@@ -73,8 +73,9 @@ describe('page/app management', () => {
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
         page,
+        asApplication: true,
         method: 'DELETE',
-        url: 'me/subscribed_apps',
+        url: '12345/subscribed_apps',
       });
     });
   });

@@ -60,15 +60,12 @@ export class MessengerAssetsManager<
    * Delete app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
-  async deletePageSubscribedApp(
-    page: string | Page,
-    options?: { accessToken?: string }
-  ): Promise<void> {
+  async deletePageSubscribedApp(page: string | Page): Promise<void> {
     await this.bot.requestApi({
       page,
-      accessToken: options?.accessToken,
+      asApplication: true,
       method: 'DELETE',
-      url: 'me/subscribed_apps',
+      url: `${typeof page === 'string' ? page : page.id}/subscribed_apps`,
     });
   }
 

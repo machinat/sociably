@@ -276,8 +276,9 @@ describe('subscription management', () => {
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
         page,
+        asApplication: true,
         method: 'DELETE',
-        url: 'me/subscribed_apps',
+        url: '1234567890/subscribed_apps',
       });
     });
   });
