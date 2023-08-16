@@ -364,7 +364,7 @@ describe('.requestApi(options)', () => {
     `);
   });
 
-  test('with asApplication option', async () => {
+  test('with asApp option', async () => {
     const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
     await bot.start();
 
@@ -375,7 +375,7 @@ describe('.requestApi(options)', () => {
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
-        asApplication: true,
+        asApp: true,
       })
     ).resolves.toEqual({ foo: 'bar' });
 

@@ -88,7 +88,7 @@ type ApiCallOptions = {
   /** API request parameters */
   params?: Record<string, unknown>;
   /** Make the API call as the Meta app */
-  asApplication?: boolean;
+  asApp?: boolean;
   /** Force to use the access token */
   accessToken?: string;
 };
@@ -269,7 +269,7 @@ export class FacebookBot
     url,
     params,
     accessToken,
-    asApplication,
+    asApp,
   }: ApiCallOptions): Promise<ResBody> {
     const page =
       typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
@@ -279,7 +279,7 @@ export class FacebookBot
           channel: page,
           request: { method, url, params },
           accessToken,
-          asApplication,
+          asApp,
         },
       ]);
 

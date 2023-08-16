@@ -28,7 +28,7 @@ export class MetaAssetsManager {
     webhookVerifyToken,
   }: SetMetaAppSubscriptionOptions): Promise<void> {
     await this.bot.requestApi({
-      asApplication: true,
+      asApp: true,
       method: 'POST',
       url: `${appId}/subscriptions`,
       params: {
@@ -47,7 +47,7 @@ export class MetaAssetsManager {
     fields,
   }: DeleteMetaAppSubscriptionOptions): Promise<void> {
     await this.bot.requestApi({
-      asApplication: true,
+      asApp: true,
       method: 'DELETE',
       url: `${appId}/subscriptions`,
       params: {

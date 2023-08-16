@@ -27,7 +27,7 @@ type AccomplishRequestFn = (
 export type MetaApiJob = {
   request: MetaApiJobRequest;
   channel?: SociablyChannel;
-  asApplication?: boolean;
+  asApp?: boolean;
   accessToken?: string;
   key?: string;
   file?: {
@@ -100,7 +100,7 @@ export type MetaApiBotRequestApiOptions = {
   /** API request parameters */
   params?: Record<string, unknown>;
   /** Make the API call as the FB app */
-  asApplication?: boolean;
+  asApp?: boolean;
   /** Force to use the access token */
   accessToken?: string;
 };

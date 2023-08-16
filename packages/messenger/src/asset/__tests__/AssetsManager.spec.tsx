@@ -73,7 +73,7 @@ describe('page/app management', () => {
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
         page,
-        asApplication: true,
+        asApp: true,
         method: 'DELETE',
         url: '12345/subscribed_apps',
       });

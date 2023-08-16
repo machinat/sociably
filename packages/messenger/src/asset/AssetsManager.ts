@@ -63,7 +63,7 @@ export class MessengerAssetsManager<
   async deletePageSubscribedApp(page: string | Page): Promise<void> {
     await this.bot.requestApi({
       page,
-      asApplication: true,
+      asApp: true,
       method: 'DELETE',
       url: `${typeof page === 'string' ? page : page.id}/subscribed_apps`,
     });

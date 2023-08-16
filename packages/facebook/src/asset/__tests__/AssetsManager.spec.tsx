@@ -52,7 +52,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
+        asApp: true,
         method: 'POST',
         url: '_APP_ID_/subscriptions',
         params: {
@@ -77,7 +77,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
+        asApp: true,
         method: 'POST',
         url: '_APP_ID_/subscriptions',
         params: {
@@ -166,7 +166,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
+        asApp: true,
         method: 'DELETE',
         url: '_APP_ID_/subscriptions',
         params: {},
@@ -182,7 +182,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
+        asApp: true,
         method: 'DELETE',
         url: '_ANOTHER_APP_ID_/subscriptions',
         params: {
@@ -284,7 +284,7 @@ describe('subscription management', () => {
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
         page,
-        asApplication: true,
+        asApp: true,
         method: 'DELETE',
         url: '1234567890/subscribed_apps',
       });

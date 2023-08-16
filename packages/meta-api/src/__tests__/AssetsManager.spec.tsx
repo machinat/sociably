@@ -48,7 +48,7 @@ describe('page/app management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
+        asApp: true,
         method: 'POST',
         url: '_APP_ID_/subscriptions',
         params: {
@@ -74,7 +74,7 @@ describe('page/app management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
+        asApp: true,
         method: 'DELETE',
         url: '_APP_ID_/subscriptions',
         params: {},
@@ -90,7 +90,7 @@ describe('page/app management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        asApplication: true,
+        asApp: true,
         method: 'DELETE',
         url: '_ANOTHER_APP_ID_/subscriptions',
         params: {

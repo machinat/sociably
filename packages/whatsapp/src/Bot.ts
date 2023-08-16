@@ -51,7 +51,7 @@ type ApiCallOptions = {
   /** API request parameters */
   params?: Record<string, unknown>;
   /** Make the API call as the Meta app */
-  asApplication?: boolean;
+  asApp?: boolean;
 };
 
 /**
@@ -147,11 +147,11 @@ export class WhatsAppBot
     method,
     url,
     params,
-    asApplication,
+    asApp,
   }: ApiCallOptions): Promise<ResBody> {
     try {
       const { results } = await this.engine.dispatchJobs(null, [
-        { request: { method, url, params }, asApplication },
+        { request: { method, url, params }, asApp },
       ]);
 
       return results[0].body as ResBody;

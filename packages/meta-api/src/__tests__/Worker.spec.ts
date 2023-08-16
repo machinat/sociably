@@ -643,7 +643,7 @@ it('use querystring params for DELETE request', async () => {
   expect(scope.isDone()).toBe(true);
 });
 
-test('asApplication job', async () => {
+test('asApp job', async () => {
   const worker = new MetaApiWorker({
     appId,
     appSecret,
@@ -667,7 +667,7 @@ test('asApplication job', async () => {
           url: 'settins/api',
           params: { some: 'app settings' },
         },
-        asApplication: true,
+        asApp: true,
       },
     ])
   ).resolves.toMatchSnapshot();
@@ -768,13 +768,13 @@ it('skip job when no access token available', async () => {
 
   worker.start(queue);
 
-  const jobAsApplication = {
+  const jobasApp = {
     request: {
       method: 'POST',
       url: 'settins/api',
       params: { some: 'app settings' },
     },
-    asApplication: true,
+    asApp: true,
   };
   const jobWithAccessToken = {
     request: {
@@ -786,7 +786,7 @@ it('skip job when no access token available', async () => {
   };
 
   await expect(
-    queue.executeJobs([jobWithAccessToken, ...jobs, jobAsApplication])
+    queue.executeJobs([jobWithAccessToken, ...jobs, jobasApp])
   ).resolves.toMatchSnapshot();
 
   expect(bodySpy).toHaveBeenCalledTimes(1);
@@ -940,17 +940,17 @@ test('with defaultAccessTokenOption', async () => {
 
   worker.start(queue);
 
-  const asApplicationJob = {
+  const asAppJob = {
     request: {
       method: 'POST',
       url: 'settins/api',
       params: { some: 'app settings' },
     },
-    asApplication: true,
+    asApp: true,
   };
 
   await expect(
-    queue.executeJobs([...jobs, asApplicationJob])
+    queue.executeJobs([...jobs, asAppJob])
   ).resolves.toMatchSnapshot();
 
   expect(bodySpy).toHaveBeenCalledTimes(1);

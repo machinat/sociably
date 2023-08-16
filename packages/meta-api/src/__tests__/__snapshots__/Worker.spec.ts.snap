@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`asApplication job 1`] = `
+exports[`asApp job 1`] = `
 {
   "batch": [
     {
       "error": undefined,
       "job": {
-        "asApplication": true,
+        "asApp": true,
         "request": {
           "method": "POST",
           "params": {
@@ -29,7 +29,7 @@ exports[`asApplication job 1`] = `
 }
 `;
 
-exports[`asApplication job 2`] = `
+exports[`asApp job 2`] = `
 {
   "access_token": "_APP_ID_|_APP_SECRET_",
   "batch": "[{"method":"POST","relative_url":"settins/api?access_token=_APP_ID_%7C_APP_SECRET_&appsecret_proof=b345404c0883034d5e07120293737f58fc94529813075bd0ddb69dc0f0cd4e1b","body":"some=app%20settings","omit_response_on_success":false}]",
@@ -342,7 +342,7 @@ exports[`skip job when no access token available 1`] = `
     {
       "error": undefined,
       "job": {
-        "asApplication": true,
+        "asApp": true,
         "request": {
           "method": "POST",
           "params": {
@@ -1887,7 +1887,7 @@ exports[`with defaultAccessTokenOption 1`] = `
     {
       "error": undefined,
       "job": {
-        "asApplication": true,
+        "asApp": true,
         "request": {
           "method": "POST",
           "params": {
