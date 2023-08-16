@@ -258,8 +258,8 @@ describe('subscription management', () => {
         [
           "messages",
           "messaging_postbacks",
-          "messaging_handover",
-          "messaging_referral",
+          "messaging_handovers",
+          "messaging_referrals",
         ]
       `);
     });

@@ -5,7 +5,10 @@ import {
   SetMetaAppSubscriptionOptions,
   DeleteMetaAppSubscriptionOptions,
 } from '@sociably/meta-api';
-import { MessengerAssetsManager } from '@sociably/messenger';
+import {
+  MessengerAssetsManager,
+  SetPageSubscribedAppOptions,
+} from '@sociably/messenger';
 import snakecaseKeys from 'snakecase-keys';
 import BotP from '../Bot.js';
 import FacebookPage from '../Page.js';
@@ -46,11 +49,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     defaultSettings: DefaultSettings = {}
   ) {
     super(stateManager, bot, FB);
-    this.defaultSettings = {
-      ...defaultSettings,
-      subscriptionFields:
-        defaultSettings.subscriptionFields ?? DEFAULT_SUBSCRIPTION_FIELDS,
-    };
+    this.defaultSettings = defaultSettings;
   }
 
   /**
@@ -60,7 +59,8 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   async setAppSubscription({
     objectType = 'page',
     appId = this.defaultSettings.appId,
-    fields = this.defaultSettings.subscriptionFields,
+    fields = this.defaultSettings.subscriptionFields ??
+      DEFAULT_SUBSCRIPTION_FIELDS,
     webhookUrl = this.defaultSettings.webhookUrl,
     webhookVerifyToken = this.defaultSettings.webhookVerifyToken,
   }: Partial<SetMetaAppSubscriptionOptions> = {}): Promise<void> {
@@ -96,11 +96,11 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   async setPageSubscribedApp(
     page: string | FacebookPage,
     {
-      fields: fieldInput,
+      fields = this.defaultSettings.subscriptionFields ??
+        DEFAULT_SUBSCRIPTION_FIELDS,
       accessToken,
-    }: { fields?: string[]; accessToken?: string } = {}
+    }: SetPageSubscribedAppOptions = {}
   ): Promise<void> {
-    const fields = fieldInput || this.defaultSettings.subscriptionFields;
     if (!fields?.length) {
       throw new Error('subscription fields is empty');
     }

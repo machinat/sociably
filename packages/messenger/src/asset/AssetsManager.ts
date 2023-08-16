@@ -6,6 +6,7 @@ import snakecaseKeys from 'snakecase-keys';
 import {
   MessengerBot,
   MessengerPage,
+  SetPageSubscribedAppOptions,
   SetPageMessengerProfileOptions,
 } from '../types.js';
 
@@ -42,7 +43,7 @@ export class MessengerAssetsManager<
    */
   async setPageSubscribedApp(
     page: string | Page,
-    { fields, accessToken }: { fields: string[]; accessToken?: string }
+    { fields, accessToken }: SetPageSubscribedAppOptions
   ): Promise<void> {
     await this.bot.requestApi({
       page,

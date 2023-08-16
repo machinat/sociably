@@ -183,6 +183,13 @@ export type MessengerBot<Page extends MessengerPage> = {
   ): Promise<null | { attachmentId: string }>;
 };
 
+export type SetPageSubscribedAppOptions = {
+  /** The page object fields to be subscribed */
+  fields?: string[];
+  /** Specify the access token to be used on the API call */
+  accessToken?: string;
+};
+
 export type SetPageMessengerProfileOptions = {
   /** Specify the access token to be used on the API call */
   accessToken?: string;

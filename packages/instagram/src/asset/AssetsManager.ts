@@ -7,6 +7,7 @@ import {
 } from '@sociably/meta-api';
 import {
   MessengerAssetsManager,
+  SetPageSubscribedAppOptions,
   SetPageMessengerProfileOptions,
 } from '@sociably/messenger';
 import BotP from '../Bot.js';
@@ -14,11 +15,18 @@ import InstagramPage from '../Page.js';
 import { IG } from '../constant.js';
 import { ConfigsI } from '../interface.js';
 
-const DEFAULT_SUBSCRIPTION_FIELDS = [
+// NOTE: instagram subscription fields are not aligned between app and page API
+const DEFAULT_APP_SUBSCRIPTION_FIELDS = [
   'messages',
   'messaging_postbacks',
   'messaging_handover',
   'messaging_referral',
+];
+const DEFAULT_PAGE_SUBSCRIPTION_FIELDS = [
+  'messages',
+  'messaging_postbacks',
+  'messaging_handovers',
+  'messaging_referrals',
 ];
 
 export type DefaultSettings = {
@@ -42,11 +50,7 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramPage
     defaultSettings: DefaultSettings = {}
   ) {
     super(stateManager, bot, IG);
-    this.defaultSettings = {
-      ...defaultSettings,
-      subscriptionFields:
-        defaultSettings.subscriptionFields ?? DEFAULT_SUBSCRIPTION_FIELDS,
-    };
+    this.defaultSettings = defaultSettings;
   }
 
   /**
@@ -57,7 +61,8 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramPage
     objectType = 'instagram',
     appId = this.defaultSettings.appId,
     webhookUrl = this.defaultSettings.webhookUrl,
-    fields = this.defaultSettings.subscriptionFields,
+    fields = this.defaultSettings.subscriptionFields ??
+      DEFAULT_APP_SUBSCRIPTION_FIELDS,
     webhookVerifyToken = this.defaultSettings.webhookVerifyToken,
   }: Partial<SetMetaAppSubscriptionOptions> = {}): Promise<void> {
     if (!appId || !webhookVerifyToken || !webhookUrl || !fields?.length) {
@@ -92,11 +97,11 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramPage
   async setPageSubscribedApp(
     page: string | InstagramPage,
     {
-      fields: fieldInput,
+      fields = this.defaultSettings.subscriptionFields ??
+        DEFAULT_PAGE_SUBSCRIPTION_FIELDS,
       accessToken,
-    }: { fields?: string[]; accessToken?: string } = {}
+    }: SetPageSubscribedAppOptions = {}
   ): Promise<void> {
-    const fields = fieldInput || this.defaultSettings.subscriptionFields;
     if (!fields?.length) {
       throw new Error('subscription fields is empty');
     }
