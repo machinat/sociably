@@ -18,7 +18,6 @@ const DEFAULT_SUBSCRIPTION_FIELDS = [
   'messages',
   'messaging_postbacks',
   'messaging_handover',
-  'messaging_policy_enforcement',
   'messaging_referral',
 ];
 
