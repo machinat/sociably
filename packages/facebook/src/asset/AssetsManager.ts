@@ -69,14 +69,13 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
         'appId, webhookUrl, webhookVerifyToken or fields is empty'
       );
     }
-    const options = {
+    return super.setAppSubscription({
       appId,
       objectType,
       webhookUrl,
       webhookVerifyToken,
       fields,
-    };
-    return super.setAppSubscription(options);
+    });
   }
 
   async deleteAppSubscription({

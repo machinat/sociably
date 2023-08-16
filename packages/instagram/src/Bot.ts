@@ -66,7 +66,7 @@ type ApiCallOptions = {
   url: string;
   /** API request parameters */
   params?: Record<string, unknown>;
-  /** Make the API call as the FB app */
+  /** Make the API call as the Meta app */
   asApplication?: boolean;
   /** Force to use the access token */
   accessToken?: string;
