@@ -106,9 +106,9 @@ describe('subscription management', () => {
         [
           "messages",
           "messaging_postbacks",
-          "messaging_handovers",
+          "messaging_handover",
           "messaging_policy_enforcement",
-          "messaging_referrals",
+          "messaging_referral",
         ]
       `);
     });
@@ -259,9 +259,9 @@ describe('subscription management', () => {
         [
           "messages",
           "messaging_postbacks",
-          "messaging_handovers",
+          "messaging_handover",
           "messaging_policy_enforcement",
-          "messaging_referrals",
+          "messaging_referral",
         ]
       `);
     });

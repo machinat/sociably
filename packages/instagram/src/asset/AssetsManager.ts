@@ -17,9 +17,9 @@ import { ConfigsI } from '../interface.js';
 const DEFAULT_SUBSCRIPTION_FIELDS = [
   'messages',
   'messaging_postbacks',
-  'messaging_handovers',
+  'messaging_handover',
   'messaging_policy_enforcement',
-  'messaging_referrals',
+  'messaging_referral',
 ];
 
 export type DefaultSettings = {
@@ -66,14 +66,13 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramPage
         'appId, webhookUrl, webhookVerifyToken or fields is empty'
       );
     }
-    const options = {
+    return super.setAppSubscription({
       appId,
       objectType,
       webhookUrl,
       webhookVerifyToken,
       fields,
-    };
-    return super.setAppSubscription(options);
+    });
   }
 
   async deleteAppSubscription({
