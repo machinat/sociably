@@ -214,6 +214,7 @@ describe('.setBotWebhook(bot, options)', () => {
   test('with default options', async () => {
     const manager = new TelegramAssetsManager(bot, stateController, {
       webhookUrl: 'https://sociably.io/foo',
+      secretToken: '_SECRET_',
     });
 
     await expect(manager.setBotWebhook(botUser)).resolves.toBe(undefined);
@@ -224,6 +225,7 @@ describe('.setBotWebhook(bot, options)', () => {
       method: 'setWebhook',
       params: {
         url: 'https://sociably.io/foo/12345',
+        secret_token: '_SECRET_',
       },
     });
   });

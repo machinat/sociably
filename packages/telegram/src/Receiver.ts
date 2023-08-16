@@ -16,16 +16,17 @@ import type { TelegramEventContext, TelegramRawEvent } from './types.js';
 type TelegramReceiverOptions = {
   bot: BotP;
   agentSettingsAccessor: AgentSettingsAccessorI;
-  popEventWrapper: PopEventWrapper<TelegramEventContext, null>;
+  secretToken: string;
   shouldVerifySecretToken?: boolean;
-  webhookPath?: string;
+  popEventWrapper: PopEventWrapper<TelegramEventContext, null>;
 };
 
 const handleWebhook = ({
   bot,
-  popEventWrapper,
   agentSettingsAccessor,
+  secretToken,
   shouldVerifySecretToken = true,
+  popEventWrapper,
 }: TelegramReceiverOptions): WebhookHandler => {
   const popEvent = popEventWrapper(async () => null);
 
@@ -56,7 +57,7 @@ const handleWebhook = ({
     // validate secret token header
     if (
       shouldVerifySecretToken &&
-      headers['x-telegram-bot-api-secret-token'] !== agentSettings.secretToken
+      headers['x-telegram-bot-api-secret-token'] !== secretToken
     ) {
       return { code: 401 };
     }
@@ -96,14 +97,14 @@ const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConfigsI, BotP, AgentSettingsAccessorI, PlatformUtilitiesI],
   factory: (
-    { webhookPath, shouldVerifySecretToken },
+    { secretToken, shouldVerifySecretToken },
     bot,
     agentSettingsAccessor,
     { popEventWrapper }
   ) => {
     return new TelegramReceiver({
       bot,
-      webhookPath,
+      secretToken,
       agentSettingsAccessor,
       shouldVerifySecretToken,
       popEventWrapper,

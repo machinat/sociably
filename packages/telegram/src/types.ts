@@ -194,8 +194,6 @@ export type TelegramAgentSettings = {
   botToken: string;
   /** The username of the bot without the prefixing `@`. Like `MyBot` */
   botName: string;
-  /** Secret token to be verified on `X-Telegram-Bot-Api-Secret-Token` header */
-  secretToken: string;
 };
 
 export type TelegramConfigs = {
@@ -206,6 +204,8 @@ export type TelegramConfigs = {
   webhookPath?: string;
   /** The max API request connections at the same time */
   maxRequestConnections?: number;
+  /** Secret token to be verified on `X-Telegram-Bot-Api-Secret-Token` header */
+  secretToken: string;
   /**
    * Whether to verify `X-Telegram-Bot-Api-Secret-Token` header on webhook
    * request. Default to `true`

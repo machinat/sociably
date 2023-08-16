@@ -38,12 +38,12 @@ describe('initModule(configs)', () => {
     const dispatchMiddleware = (ctx, next) => next(ctx);
 
     const module = Telegram.initModule({
+      webhookPath: 'webhook/telegram',
       agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
-        secretToken: '_SECRET_',
       },
-      webhookPath: 'webhook/telegram',
+      secretToken: '_SECRET_',
       maxRequestConnections: 999,
       eventMiddlewares: [eventMiddleware],
       dispatchMiddlewares: [dispatchMiddleware],
@@ -68,13 +68,12 @@ describe('initModule(configs)', () => {
 
   test('provisions', async () => {
     const configs = {
+      webhookPath: 'webhook/telegram',
       agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
-        secretToken: '_SECRET_',
       },
-      webhookPath: 'webhook/telegram',
-      authRedirectUrl: '/webview/index.html',
+      secretToken: '_SECRET_',
       maxRequestConnections: 999,
       eventMiddlewares: [(ctx, next) => next(ctx)],
     };
@@ -123,8 +122,8 @@ describe('initModule(configs)', () => {
           agentSettings: {
             botToken: '12345:_BOT_TOKEN_',
             botName: 'FooBot',
-            secretToken: '_SECRET_',
           },
+          secretToken: '_SECRET_',
         }),
       ],
     });
@@ -154,8 +153,8 @@ describe('initModule(configs)', () => {
       agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
-        secretToken: '_SECRET_',
       },
+      secretToken: '_SECRET_',
     };
 
     const app = Sociably.createApp({
@@ -177,7 +176,6 @@ describe('initModule(configs)', () => {
     const agentSettings = {
       botName: 'MyBot',
       botToken: '12345:_ACCESS_TOKEN_',
-      secretToken: '_SECRET_',
     };
 
     const app = Sociably.createApp({
@@ -185,7 +183,9 @@ describe('initModule(configs)', () => {
         Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
         InMemoryState.initModule(),
       ],
-      platforms: [Telegram.initModule({ agentSettings })],
+      platforms: [
+        Telegram.initModule({ agentSettings, secretToken: '_SECRET_' }),
+      ],
     });
     await app.start();
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
@@ -219,7 +219,9 @@ describe('initModule(configs)', () => {
         Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
         InMemoryState.initModule(),
       ],
-      platforms: [Telegram.initModule({ multiAgentSettings })],
+      platforms: [
+        Telegram.initModule({ multiAgentSettings, secretToken: '_SECRET_' }),
+      ],
     });
     await app.start();
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
@@ -262,6 +264,7 @@ describe('initModule(configs)', () => {
       platforms: [
         Telegram.initModule({
           agentSettingsService: myAgentSettingsService,
+          secretToken: '_SECRET_',
         }),
       ],
       services: [myAgentSettingsService],
@@ -274,7 +277,9 @@ describe('initModule(configs)', () => {
   });
 
   it('throw if no bot settings source provided', () => {
-    expect(() => Telegram.initModule({})).toThrowErrorMatchingInlineSnapshot(
+    expect(() =>
+      Telegram.initModule({ secretToken: '_SECRET_' })
+    ).toThrowErrorMatchingInlineSnapshot(
       `"Telegram platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
     );
   });
@@ -285,8 +290,8 @@ describe('initModule(configs)', () => {
       agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
-        secretToken: '_SECRET_',
       },
+      secretToken: '_SECRET_',
     });
 
     const { startHook } = module;
@@ -300,8 +305,8 @@ describe('initModule(configs)', () => {
       agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
         botName: 'FooBot',
-        secretToken: '_SECRET_',
       },
+      secretToken: '_SECRET_',
     });
 
     const { stopHook } = module;

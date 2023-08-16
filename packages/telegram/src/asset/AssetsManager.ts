@@ -11,6 +11,7 @@ const makeResourceToken = (botId: number, resource: string): string =>
   `$${TG}.${resource}.${botId}`;
 
 type DefaultSettings = {
+  secretToken?: string;
   webhookUrl?: string;
 };
 
@@ -165,7 +166,7 @@ export class TelegramAssetsManager {
         max_connections: params.maxConnections,
         allowed_updates: params.allowedUpdates,
         drop_pending_updates: params.dropPendingUpdates,
-        secret_token: params.secretToken,
+        secret_token: params.secretToken || this.defaultSettings.secretToken,
       },
     });
   }
@@ -191,9 +192,10 @@ export class TelegramAssetsManager {
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [BotP, StateController, Http.Connector, ConfigsI],
-  factory: (bot, stateController, connector, { webhookPath }) =>
+  factory: (bot, stateController, connector, { webhookPath, secretToken }) =>
     new TelegramAssetsManager(bot, stateController, {
       webhookUrl: connector.getServerUrl(webhookPath),
+      secretToken,
     }),
 })(TelegramAssetsManager);
 

@@ -8,6 +8,7 @@ import TelegramUser from '../User.js';
 import type { TelegramBot } from '../Bot.js';
 
 const botId = 1111111;
+const secretToken = '_SECRET_TOKEN_';
 
 const bot = moxy<TelegramBot>({
   render: async () => ({ tasks: [], results: [], jobs: [] }),
@@ -74,7 +75,6 @@ const agentSettingsAccessor = moxy({
   getAgentSettings: async () => ({
     botToken: '_BOT_TOKEN_',
     botName: 'MyBot',
-    secretToken: '_SECRET_TOKEN_',
   }),
   getAgentSettingsBatch: async () => [],
 });
@@ -100,6 +100,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
       bot,
       agentSettingsAccessor,
       shouldVerifySecretToken: false,
+      secretToken,
       popEventWrapper,
     });
 
@@ -116,8 +117,8 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 it('respond 404 if bot ID entry path is invalid', async () => {
   const receiver = new TelegramReceiver({
     bot,
-    webhookPath: 'telegram',
     agentSettingsAccessor,
+    secretToken,
     shouldVerifySecretToken: false,
     popEventWrapper,
   });
@@ -163,6 +164,7 @@ it('respond 404 if bot settings not found', async () => {
   const receiver = new TelegramReceiver({
     bot,
     agentSettingsAccessor,
+    secretToken,
     shouldVerifySecretToken: false,
     popEventWrapper,
   });
@@ -186,6 +188,7 @@ it('respond 400 if body is empty', async () => {
   const receiver = new TelegramReceiver({
     bot,
     agentSettingsAccessor,
+    secretToken,
     shouldVerifySecretToken: false,
     popEventWrapper,
   });
@@ -203,6 +206,7 @@ it('respond 400 if body is not in valid json format', async () => {
   const receiver = new TelegramReceiver({
     bot,
     agentSettingsAccessor,
+    secretToken,
     shouldVerifySecretToken: false,
     popEventWrapper,
   });
@@ -224,6 +228,7 @@ it('respond 200 and pop events received', async () => {
   const receiver = new TelegramReceiver({
     bot,
     agentSettingsAccessor,
+    secretToken,
     shouldVerifySecretToken: false,
     popEventWrapper,
   });
@@ -269,6 +274,7 @@ describe('constext.reply(message)', () => {
   const receiver = new TelegramReceiver({
     bot,
     agentSettingsAccessor,
+    secretToken,
     shouldVerifySecretToken: false,
     popEventWrapper,
   });
@@ -331,6 +337,7 @@ describe('constext.reply(message)', () => {
 it('verify "x-telegram-bot-api-secret-token" header matching options.secretToken', async () => {
   const receiver = new TelegramReceiver({
     bot,
+    secretToken,
     agentSettingsAccessor,
     popEventWrapper,
   });
