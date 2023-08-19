@@ -4,9 +4,9 @@ import { QuickReplyParam } from '../QuickReplyParam.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof QuickReplyParam).toBe('function');
   expect(isNativeType(<QuickReplyParam payload="" />)).toBe(true);
   expect(QuickReplyParam.$$platform).toBe('whatsapp');
+  expect(QuickReplyParam.$$name).toBe('QuickReplyParam');
 });
 
 test('rendering value', async () => {

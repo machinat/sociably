@@ -5,9 +5,9 @@ import { CancelRetweet } from '../CancelRetweet.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof CancelRetweet).toBe('function');
   expect(isNativeType(<CancelRetweet tweetId="12345" />)).toBe(true);
   expect(CancelRetweet.$$platform).toBe('twitter');
+  expect(CancelRetweet.$$name).toBe('CancelRetweet');
 });
 
 test('rendering', async () => {

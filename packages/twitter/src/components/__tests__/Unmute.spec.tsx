@@ -5,9 +5,9 @@ import { Unmute } from '../Unmute.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Unmute).toBe('function');
   expect(isNativeType(<Unmute userId="12345" />)).toBe(true);
   expect(Unmute.$$platform).toBe('twitter');
+  expect(Unmute.$$name).toBe('Unmute');
 });
 
 test('rendering', async () => {

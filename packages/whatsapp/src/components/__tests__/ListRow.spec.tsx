@@ -4,9 +4,9 @@ import { ListRow } from '../ListRow.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof ListRow).toBe('function');
   expect(isNativeType(<ListRow title="" id="" />)).toBe(true);
   expect(ListRow.$$platform).toBe('whatsapp');
+  expect(ListRow.$$name).toBe('ListRow');
 });
 
 test('rendering value', async () => {

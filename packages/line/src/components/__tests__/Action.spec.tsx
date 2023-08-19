@@ -23,9 +23,9 @@ test.each(
     LocationAction,
   ].map((C) => [C.name, C])
 )('%s is valid native Component', (_, Action: any) => {
-  expect(typeof Action).toBe('function');
   expect(isNativeType(<Action />)).toBe(true);
   expect(Action.$$platform).toBe('line');
+  expect(Action.$$name).toEqual(expect.stringMatching(/Action$/));
 });
 
 test('<PostbackAction/>', async () => {

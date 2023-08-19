@@ -4,11 +4,11 @@ import { Image } from '../Image.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid component', () => {
-  expect(typeof Image).toBe('function');
   expect(isNativeType(<Image originalContentUrl="" previewImageUrl="" />)).toBe(
     true
   );
   expect(Image.$$platform).toBe('line');
+  expect(Image.$$name).toBe('Image');
 });
 
 it('match snapshot', async () => {

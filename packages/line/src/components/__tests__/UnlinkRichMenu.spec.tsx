@@ -7,9 +7,9 @@ import { renderUnitElement } from './utils.js';
 
 describe('<UnlinkRichMenu/>', () => {
   it('is valid native unit component with entry getter', () => {
-    expect(typeof UnlinkRichMenu).toBe('function');
     expect(isNativeType(<UnlinkRichMenu />)).toBe(true);
     expect(UnlinkRichMenu.$$platform).toBe('line');
+    expect(UnlinkRichMenu.$$name).toBe('UnlinkRichMenu');
   });
 
   it('render ok', async () => {

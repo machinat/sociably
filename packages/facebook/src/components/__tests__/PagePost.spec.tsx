@@ -6,9 +6,9 @@ import { PagePost } from '../PagePost.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
-  expect(typeof PagePost).toBe('function');
   expect(isNativeType(<PagePost />)).toBe(true);
   expect(PagePost.$$platform).toBe('facebook');
+  expect(PagePost.$$name).toBe('PagePost');
 });
 
 it('match snapshot', async () => {

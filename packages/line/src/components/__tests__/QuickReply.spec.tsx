@@ -5,10 +5,9 @@ import { UriAction } from '../Action.js';
 import { renderPartElement } from './utils.js';
 
 it('is valid native component', () => {
-  expect(typeof QuickReply).toBe('function');
-
   expect(isNativeType(<QuickReply>{null}</QuickReply>)).toBe(true);
   expect(QuickReply.$$platform).toBe('line');
+  expect(QuickReply.$$name).toBe('QuickReply');
 });
 
 it('match snapshot', async () => {

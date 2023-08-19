@@ -9,15 +9,19 @@ import {
   makePauseSegment,
 } from '../componentHelper.js';
 
-describe('asNativeConponent(platform)(componentFn)', () => {
-  it('define "$$native" and "$$platform" metadata property', () => {
-    const _component = () => {};
+describe('makeNativeComponent(platform)(componentOrFn)', () => {
+  function ComponentImpl() {
+    return null;
+  }
 
-    const Component = makeNativeComponent('foo')(_component);
+  it('make native component object with implementation function', () => {
+    const Component = makeNativeComponent('foo')(ComponentImpl);
 
-    expect(Component).toBe(_component);
+    expect(typeof Component).toBe('object');
+    expect(Component.$$render).toBe(ComponentImpl);
     expect(Component.$$platform).toBe('foo');
     expect(Component.$$typeof).toBe(SOCIABLY_NATIVE_TYPE);
+    expect(Component.$$name).toBe('ComponentImpl');
   });
 });
 

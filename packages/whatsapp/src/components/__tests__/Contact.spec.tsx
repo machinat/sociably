@@ -4,9 +4,9 @@ import { Contact } from '../Contact.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Contact).toBe('function');
   expect(isNativeType(<Contact name={{ formattedName: 'John' }} />)).toBe(true);
   expect(Contact.$$platform).toBe('whatsapp');
+  expect(Contact.$$name).toBe('Contact');
 });
 
 test('rendering value', async () => {
@@ -14,7 +14,7 @@ test('rendering value', async () => {
     .resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <ContactProps
+        "node": <Contact
           name={
             {
               "formattedName": "Jane",
@@ -99,7 +99,7 @@ test('rendering value', async () => {
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <ContactProps
+        "node": <Contact
           addresses={
             [
               {

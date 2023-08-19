@@ -26,7 +26,7 @@ const render = async (node) => {
     return null;
   });
 
-  await renderer.render(<container />, null as never);
+  await renderer.render(<container />, null, []);
   return rendered;
 };
 
@@ -46,7 +46,6 @@ test.each([
   RemoveReplyKeyboard,
   ForceReply,
 ])('is valid Component', (Component: any) => {
-  expect(typeof Component).toBe('function');
   expect(isNativeType(<Component />)).toBe(true);
   expect(Component.$$platform).toBe('telegram');
 });

@@ -751,7 +751,7 @@ export type FlexBlockProps = {
 };
 
 const createBlockComponent = (section, _childrenType) => {
-  const tagName = `LineFlex${section[0].toUpperCase()}${section.slice(1)}`;
+  const tagName = `Flex${section[0].toUpperCase()}${section.slice(1)}`;
 
   const wrapper = {
     [tagName]: async (node, path, render) => {

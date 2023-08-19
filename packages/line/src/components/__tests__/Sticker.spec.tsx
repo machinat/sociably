@@ -4,9 +4,9 @@ import { Sticker } from '../Sticker.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid component', () => {
-  expect(typeof Sticker).toBe('function');
-  expect(isNativeType(<Sticker {...({} as never)} />)).toBe(true);
+  expect(isNativeType(<Sticker packageId="" stickerId="" />)).toBe(true);
   expect(Sticker.$$platform).toBe('line');
+  expect(Sticker.$$name).toBe('Sticker');
 });
 
 it('match snapshot', async () => {

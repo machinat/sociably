@@ -10,9 +10,9 @@ import { Expression } from '../expression';
 const renderer = new Renderer('telegram', renderGeneralType);
 
 it('is valid unit Component', () => {
-  expect(typeof Expression).toBe('function');
   expect(isNativeType(<Expression />)).toBe(true);
   expect(Expression.$$platform).toBe('telegram');
+  expect(Expression.$$name).toBe('Expression');
 });
 
 it('hoist text value into message object', async () => {

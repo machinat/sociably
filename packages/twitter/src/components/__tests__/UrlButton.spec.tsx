@@ -4,11 +4,11 @@ import { UrlButton } from '../UrlButton.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof UrlButton).toBe('function');
   expect(isNativeType(<UrlButton label="foo" url="http://bar.baz" />)).toBe(
     true
   );
   expect(UrlButton.$$platform).toBe('twitter');
+  expect(UrlButton.$$name).toBe('UrlButton');
 });
 
 test('rendering', async () => {

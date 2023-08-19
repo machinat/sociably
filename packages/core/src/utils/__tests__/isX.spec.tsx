@@ -1,6 +1,6 @@
 import Sociably, { RenderingTarget } from '../../index.js';
-import { SOCIABLY_NATIVE_TYPE } from '../../symbol.js';
 import { serviceInterface, serviceContainer } from '../../service/index.js';
+import { makeNativeComponent } from '../../renderer/componentHelper.js';
 import {
   isEmpty,
   isElement,
@@ -16,9 +16,9 @@ import {
   isElementTypeValid,
 } from '../isX.js';
 
-const Native = () => null;
-Native.$$typeof = SOCIABLY_NATIVE_TYPE;
-Native.$$platform = test;
+const Native = makeNativeComponent('test')(function Native() {
+  return null;
+});
 
 const fooInterface = serviceInterface({ name: 'Foo' });
 

@@ -4,9 +4,9 @@ import { TextParam } from '../TextParam.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof TextParam).toBe('function');
   expect(isNativeType(<TextParam>_</TextParam>)).toBe(true);
   expect(TextParam.$$platform).toBe('whatsapp');
+  expect(TextParam.$$name).toBe('TextParam');
 });
 
 test('rendering value', async () => {

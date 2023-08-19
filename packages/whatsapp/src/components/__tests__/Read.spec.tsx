@@ -4,9 +4,9 @@ import { Read } from '../Read.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Read).toBe('function');
   expect(isNativeType(<Read messageId="..." />)).toBe(true);
   expect(Read.$$platform).toBe('whatsapp');
+  expect(Read.$$name).toBe('Read');
 });
 
 test('rendering value', async () => {
@@ -14,7 +14,7 @@ test('rendering value', async () => {
     .resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <ReadProps
+        "node": <Read
           messageId="MESSAGE_ID_TO_READ"
         />,
         "path": "$",

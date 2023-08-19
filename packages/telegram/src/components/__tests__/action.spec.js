@@ -43,7 +43,6 @@ describe.each([
   DeleteChatStickerSet,
 ])('%p', (Action) => {
   it('is valid unit Component', () => {
-    expect(typeof Action).toBe('function');
     expect(isNativeType(<Action />)).toBe(true);
     expect(Action.$$platform).toBe('telegram');
   });

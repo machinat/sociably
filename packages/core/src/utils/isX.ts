@@ -73,8 +73,7 @@ export const isGeneralType = (
 export const isNativeType = <Component extends NativeComponent<unknown, any>>(
   node: SociablyElement<unknown, any>
 ): node is NativeElement<unknown, Component> =>
-  typeof node.type === 'function' &&
-  node.type.$$typeof === SOCIABLY_NATIVE_TYPE;
+  typeof node.type === 'object' && node.type.$$typeof === SOCIABLY_NATIVE_TYPE;
 
 export const isElementTypeValid = (
   node: SociablyElement<unknown, unknown>
@@ -83,6 +82,9 @@ export const isElementTypeValid = (
   return (
     typeof type === 'string' ||
     typeof type === 'function' ||
+    (typeof type === 'object' &&
+      type !== null &&
+      (type as Record<string, unknown>).$$typeof === SOCIABLY_NATIVE_TYPE) ||
     type === SOCIABLY_FRAGMENT_TYPE ||
     type === SOCIABLY_PAUSE_TYPE ||
     type === SOCIABLY_PROVIDER_TYPE ||

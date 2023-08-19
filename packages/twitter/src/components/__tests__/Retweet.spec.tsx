@@ -5,9 +5,9 @@ import { Retweet } from '../Retweet.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Retweet).toBe('function');
   expect(isNativeType(<Retweet tweetId="12345" />)).toBe(true);
   expect(Retweet.$$platform).toBe('twitter');
+  expect(Retweet.$$name).toBe('Retweet');
 });
 
 test('rendering', async () => {

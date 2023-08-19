@@ -23,7 +23,7 @@ export type LocationProps = {
 export const Location: WhatsAppComponent<
   LocationProps,
   UnitSegment<WhatsAppSegmentValue>
-> = makeWhatsAppComponent(function LocationProps(node, path) {
+> = makeWhatsAppComponent(function Location(node, path) {
   const { latitude, longitude, name, address, replyTo } = node.props;
 
   return [

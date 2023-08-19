@@ -5,9 +5,9 @@ import { Unblock } from '../Unblock.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Unblock).toBe('function');
   expect(isNativeType(<Unblock userId="12345" />)).toBe(true);
   expect(Unblock.$$platform).toBe('twitter');
+  expect(Unblock.$$name).toBe('Unblock');
 });
 
 test('rendering', async () => {

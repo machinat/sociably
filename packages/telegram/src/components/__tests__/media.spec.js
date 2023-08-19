@@ -35,7 +35,6 @@ describe.each([
   Sticker,
 ])('%p', (LocationAction) => {
   it('is valid unit Component', () => {
-    expect(typeof LocationAction).toBe('function');
     expect(isNativeType(<LocationAction />)).toBe(true);
     expect(LocationAction.$$platform).toBe('telegram');
   });

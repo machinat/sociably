@@ -5,9 +5,9 @@ import { PageVideo } from '../PageVideo.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
-  expect(typeof PageVideo).toBe('function');
   expect(isNativeType(<PageVideo />)).toBe(true);
   expect(PageVideo.$$platform).toBe('facebook');
+  expect(PageVideo.$$name).toBe('PageVideo');
 });
 
 it('match snapshot', async () => {

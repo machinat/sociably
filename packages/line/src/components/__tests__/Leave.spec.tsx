@@ -6,10 +6,9 @@ import { ChatActionSegmentValue } from '../../types.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid native unit component with entry getter', () => {
-  expect(typeof Leave).toBe('function');
-
   expect(isNativeType(<Leave />)).toBe(true);
   expect(Leave.$$platform).toBe('line');
+  expect(Leave.$$name).toBe('Leave');
 });
 
 it('render ok with entry getter', async () => {

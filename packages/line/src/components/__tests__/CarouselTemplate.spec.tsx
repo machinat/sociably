@@ -2,17 +2,26 @@ import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
-import { CarouselTemplate, CarouselItem } from '../CarouselTemplate.js';
+import {
+  CarouselTemplate,
+  CarouselItem,
+  CarouselItemProps,
+  CarouselTemplateProps,
+} from '../CarouselTemplate.js';
 import { UriAction } from '../Action.js';
 import { renderUnitElement } from './utils.js';
 
 test('is valid native component', () => {
-  expect(typeof CarouselItem).toBe('function');
-  expect(typeof CarouselTemplate).toBe('function');
-  expect(isNativeType(<CarouselItem {...({} as never)} />)).toBe(true);
-  expect(isNativeType(<CarouselTemplate {...({} as never)} />)).toBe(true);
+  expect(isNativeType(<CarouselItem {...({} as CarouselItemProps)} />)).toBe(
+    true
+  );
+  expect(
+    isNativeType(<CarouselTemplate {...({} as CarouselTemplateProps)} />)
+  ).toBe(true);
   expect(CarouselItem.$$platform).toBe('line');
   expect(CarouselTemplate.$$platform).toBe('line');
+  expect(CarouselItem.$$name).toBe('CarouselItem');
+  expect(CarouselTemplate.$$name).toBe('CarouselTemplate');
 });
 
 it('match snapshot', async () => {

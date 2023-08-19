@@ -5,9 +5,9 @@ import { Typing } from '../Typing.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Typing).toBe('function');
   expect(isNativeType(<Typing />)).toBe(true);
   expect(Typing.$$platform).toBe('twitter');
+  expect(Typing.$$name).toBe('Typing');
 });
 
 test('rendering', async () => {

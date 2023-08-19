@@ -94,13 +94,14 @@ export type NativeComponent<
   Props,
   Segment extends IntermediateSegment<unknown>,
 > = {
-  (
+  $$platform: string;
+  $$name: string;
+  $$typeof: typeof SOCIABLY_NATIVE_TYPE;
+  $$render(
     element: NativeElement<Props, NativeComponent<Props, Segment>>,
     path: string,
     render: InnerRenderFn
   ): null | Segment[] | Promise<null | Segment[]>;
-  $$typeof: typeof SOCIABLY_NATIVE_TYPE;
-  $$platform: string;
   // HACK: make ts accept it as class component
   new (): NativeComponent<Props, Segment>; // eslint-disable-line @typescript-eslint/no-misused-new
 };

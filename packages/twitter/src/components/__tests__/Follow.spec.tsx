@@ -5,9 +5,9 @@ import { Follow } from '../Follow.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Follow).toBe('function');
   expect(isNativeType(<Follow userId="12345" />)).toBe(true);
   expect(Follow.$$platform).toBe('twitter');
+  expect(Follow.$$name).toBe('Follow');
 });
 
 test('rendering', async () => {

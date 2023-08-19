@@ -5,9 +5,9 @@ import { PagePhoto } from '../PagePhoto.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
-  expect(typeof PagePhoto).toBe('function');
   expect(isNativeType(<PagePhoto />)).toBe(true);
   expect(PagePhoto.$$platform).toBe('facebook');
+  expect(PagePhoto.$$name).toBe('PagePhoto');
 });
 
 it('match snapshot', async () => {

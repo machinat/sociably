@@ -9,7 +9,6 @@ import { renderUnitElement } from './utils.js';
 
 describe('ListTemplate', () => {
   it('is a valid Component', () => {
-    expect(typeof ListTemplate).toBe('function');
     expect(
       isNativeType(
         <ListTemplate buttonTitle="" sections={[]}>
@@ -18,6 +17,7 @@ describe('ListTemplate', () => {
       )
     ).toBe(true);
     expect(ListTemplate.$$platform).toBe('whatsapp');
+    expect(ListTemplate.$$name).toBe('ListTemplate');
   });
 
   test('rendering value', async () => {
@@ -38,7 +38,7 @@ describe('ListTemplate', () => {
     ).resolves.toMatchInlineSnapshot(`
       [
         {
-          "node": <ListTemplateProps
+          "node": <ListTemplate
             buttonTitle="open"
             sections={
               <ListSection>
@@ -54,7 +54,7 @@ describe('ListTemplate', () => {
             }
           >
             hello world
-          </ListTemplateProps>,
+          </ListTemplate>,
           "path": "$",
           "type": "unit",
           "value": {
@@ -120,7 +120,7 @@ describe('ListTemplate', () => {
     ).resolves.toMatchInlineSnapshot(`
       [
         {
-          "node": <ListTemplateProps
+          "node": <ListTemplate
             buttonTitle="open"
             footer="world"
             header={
@@ -155,7 +155,7 @@ describe('ListTemplate', () => {
             }
           >
             hello
-          </ListTemplateProps>,
+          </ListTemplate>,
           "path": "$",
           "type": "unit",
           "value": {
@@ -245,7 +245,7 @@ describe('ListTemplate', () => {
     ).resolves.toMatchInlineSnapshot(`
       [
         {
-          "node": <ListTemplateProps
+          "node": <ListTemplate
             buttonTitle="open"
             footer={
               <Sociably.Fragment>
@@ -292,7 +292,7 @@ describe('ListTemplate', () => {
           >
             BO
             DY
-          </ListTemplateProps>,
+          </ListTemplate>,
           "path": "$",
           "type": "unit",
           "value": {
@@ -456,11 +456,11 @@ describe('ListTemplate', () => {
 
 describe('ButtonsTemplate', () => {
   it('is a valid Component', () => {
-    expect(typeof ButtonsTemplate).toBe('function');
     expect(
       isNativeType(<ButtonsTemplate buttons={[]}>FOO</ButtonsTemplate>)
     ).toBe(true);
     expect(ButtonsTemplate.$$platform).toBe('whatsapp');
+    expect(ButtonsTemplate.$$name).toBe('ButtonsTemplate');
   });
 
   test('rendering value', async () => {

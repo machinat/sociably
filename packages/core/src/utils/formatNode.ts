@@ -1,4 +1,5 @@
 import {
+  SOCIABLY_NATIVE_TYPE,
   SOCIABLY_PAUSE_TYPE,
   SOCIABLY_FRAGMENT_TYPE,
   SOCIABLY_PROVIDER_TYPE,
@@ -45,7 +46,11 @@ const formatNode = (element: any, withProps = false): string =>
           withProps ? formatProps(element.props) : ''
         }/>`
     : typeof element.type === 'object'
-    ? Object.prototype.toString.call(element)
+    ? element.type.$$typeof === SOCIABLY_NATIVE_TYPE
+      ? `<${element.type.$$name} ${
+          withProps ? formatProps(element.props) : ''
+        }/>`
+      : Object.prototype.toString.call(element)
     : String(element);
 
 export default formatNode;

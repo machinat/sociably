@@ -13,23 +13,23 @@ import type {
   PauseSegment,
 } from './types.js';
 
-type FunctionOf<Fn extends (...args: unknown[]) => unknown> = (
-  ...args: Parameters<Fn>
-) => ReturnType<Fn>;
-
 export const makeNativeComponent =
   (platform: string) =>
   <Component extends NativeComponent<unknown, any>>(
-    componentFn: FunctionOf<Component>
+    componentFn: Component['$$render']
   ): Component =>
-    Object.defineProperties(componentFn as unknown as Component, {
+    Object.defineProperties({} as Component, {
       $$typeof: {
         value: SOCIABLY_NATIVE_TYPE,
-        configurable: true,
+      },
+      $$name: {
+        value: componentFn.name,
       },
       $$platform: {
         value: platform,
-        configurable: true,
+      },
+      $$render: {
+        value: componentFn,
       },
     });
 

@@ -5,9 +5,9 @@ import { Comment } from '../Comment.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
-  expect(typeof Comment).toBe('function');
   expect(isNativeType(<Comment />)).toBe(true);
   expect(Comment.$$platform).toBe('facebook');
+  expect(Comment.$$name).toBe('Comment');
 });
 
 it('match snapshot', async () => {

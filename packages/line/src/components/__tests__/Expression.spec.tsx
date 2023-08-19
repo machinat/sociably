@@ -7,9 +7,9 @@ import { LinkRichMenu } from '../LinkRichMenu.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid native component', () => {
-  expect(typeof Expression).toBe('function');
   expect(isNativeType(<Expression>foo</Expression>)).toBe(true);
   expect(Expression.$$platform).toBe('line');
+  expect(Expression.$$name).toBe('Expression');
 });
 
 it('return segments from children', async () => {

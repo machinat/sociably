@@ -1,12 +1,13 @@
 import Sociably from '@sociably/core';
-
+import { isNativeType } from '@sociably/core/utils';
 import { Event } from '../component.js';
 
-const render = (element) => element.type(element, '$', () => null);
+const render = (element) => element.type.$$render(element, '$', () => null);
 
 it('is valid Component', () => {
+  expect(isNativeType(<Event type="foo" />)).toBe(true);
   expect(Event.$$platform).toBe('websocket');
-  expect(typeof Event).toBe('function');
+  expect(Event.$$name).toBe('Event');
 });
 
 it('render to valid value', () => {

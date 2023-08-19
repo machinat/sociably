@@ -29,15 +29,6 @@ describe.each([
   AnswerInlineQuery,
   AnswerShippingQuery,
   AnswerPreCheckoutQuery,
-])('%p is valid unit Component', (Action: any) => {
-  expect(typeof Action).toBe('function');
-  expect(isNativeType(<Action />)).toBe(true);
-  expect(Action.$$platform).toBe('telegram');
-});
-
-const renderer = new Renderer('telegram', async () => null);
-
-test.each([
   AnswerCallbackQuery,
   AnswerInlineQuery,
   AnswerShippingQuery,
@@ -55,11 +46,12 @@ test.each([
   InlineQueryResultVenue,
   InlineQueryResultVideo,
   InlineQueryResultVoice,
-])('%p is valid unit Component', (Action: any) => {
-  expect(typeof Action).toBe('function');
+])('%p is valid Component', (Action: any) => {
   expect(isNativeType(<Action />)).toBe(true);
   expect(Action.$$platform).toBe('telegram');
 });
+
+const renderer = new Renderer('telegram', async () => null);
 
 test('AnswerCallbackQuery match snapshot', async () => {
   await expect(

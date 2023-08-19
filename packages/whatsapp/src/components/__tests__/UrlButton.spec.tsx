@@ -4,9 +4,9 @@ import { UrlButtonParam } from '../UrlButtonParam.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof UrlButtonParam).toBe('function');
   expect(isNativeType(<UrlButtonParam urlPostfix="" />)).toBe(true);
   expect(UrlButtonParam.$$platform).toBe('whatsapp');
+  expect(UrlButtonParam.$$name).toBe('UrlButtonParam');
 });
 
 test('rendering value', async () => {

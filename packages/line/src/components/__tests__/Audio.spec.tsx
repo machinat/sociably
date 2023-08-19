@@ -4,9 +4,9 @@ import { Audio } from '../Audio.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid native unit component', () => {
-  expect(typeof Audio).toBe('function');
   expect(isNativeType(<Audio originalContentUrl="" duration={0} />)).toBe(true);
   expect(Audio.$$platform).toBe('line');
+  expect(Audio.$$name).toBe('Audio');
 });
 
 it('%s render match snapshot', async () => {

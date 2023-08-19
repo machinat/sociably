@@ -8,15 +8,15 @@ import { QuickReply } from '../QuickReply.js';
 import { Expression } from '../Expression.js';
 
 const renderer = new Renderer('twitter', async (node, path) => [
-  { type: 'text', path, node, value: node.props.children },
+  { type: 'text', path, node, value: node.props.children as string },
   { type: 'break', path, node, value: null },
 ]);
 const render = (element) => renderer.render(element, null, null);
 
 it('is a valid Component', () => {
-  expect(typeof Expression).toBe('function');
   expect(isNativeType(<Expression>foo</Expression>)).toBe(true);
   expect(Expression.$$platform).toBe('twitter');
+  expect(Expression.$$name).toBe('Expression');
 });
 
 test('rendering', async () => {

@@ -6,16 +6,24 @@ import { UriAction } from '../Action.js';
 import { renderUnitElement } from './utils.js';
 import {
   ImageCarouselItem,
+  ImageCarouselItemProps,
   ImageCarouselTemplate,
+  ImageCarouselTemplateProps,
 } from '../ImageCarouselTemplate.js';
 
 test('is valid native component', () => {
-  expect(typeof ImageCarouselItem).toBe('function');
-  expect(typeof ImageCarouselTemplate).toBe('function');
-  expect(isNativeType(<ImageCarouselItem {...({} as never)} />)).toBe(true);
-  expect(isNativeType(<ImageCarouselTemplate {...({} as never)} />)).toBe(true);
+  expect(
+    isNativeType(<ImageCarouselItem {...({} as ImageCarouselItemProps)} />)
+  ).toBe(true);
+  expect(
+    isNativeType(
+      <ImageCarouselTemplate {...({} as ImageCarouselTemplateProps)} />
+    )
+  ).toBe(true);
   expect(ImageCarouselItem.$$platform).toBe('line');
   expect(ImageCarouselTemplate.$$platform).toBe('line');
+  expect(ImageCarouselItem.$$name).toBe('ImageCarouselItem');
+  expect(ImageCarouselTemplate.$$name).toBe('ImageCarouselTemplate');
 });
 
 it('match snapshot', async () => {

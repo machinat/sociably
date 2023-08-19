@@ -9,9 +9,9 @@ import { UrlButtonParam } from '../UrlButtonParam.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof CustomTemplate).toBe('function');
   expect(isNativeType(<CustomTemplate name="" languageCode="" />)).toBe(true);
   expect(CustomTemplate.$$platform).toBe('whatsapp');
+  expect(CustomTemplate.$$name).toBe('CustomTemplate');
 });
 
 test('rendering value', async () => {
@@ -20,7 +20,7 @@ test('rendering value', async () => {
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <CustomTemplateProps
+        "node": <CustomTemplate
           languageCode="en"
           name="FOO"
         />,
@@ -66,7 +66,7 @@ test('rendering value', async () => {
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <CustomTemplateProps
+        "node": <CustomTemplate
           bodyParams={
             <Sociably.Fragment>
               <TextParam>
@@ -184,7 +184,7 @@ test('rendering value', async () => {
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <CustomTemplateProps
+        "node": <CustomTemplate
           bodyParams={
             <Sociably.Fragment>
               <TextParam>

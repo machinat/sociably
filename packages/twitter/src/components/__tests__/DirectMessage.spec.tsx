@@ -13,9 +13,9 @@ const renderer = new Renderer('twitter', async (node, path) => [
 const render = (element) => renderer.render(element, null, null);
 
 it('is a valid Component', () => {
-  expect(typeof DirectMessage).toBe('function');
   expect(isNativeType(<DirectMessage placeId="12345" />)).toBe(true);
   expect(DirectMessage.$$platform).toBe('twitter');
+  expect(DirectMessage.$$name).toBe('DirectMessage');
 });
 
 test('rendering with plain text', async () => {

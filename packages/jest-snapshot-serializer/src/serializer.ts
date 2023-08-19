@@ -1,6 +1,10 @@
 const sociablyElementSerializer = {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  print(element: { type?: symbol | Function }, serialize, indent) {
+  print(
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    element: { type?: symbol | Function | Record<string, unknown> },
+    serialize,
+    indent
+  ) {
     const type =
       element.type === Symbol.for('fragment.element.sociably')
         ? 'Sociably.Fragment'
@@ -14,6 +18,10 @@ const sociablyElementSerializer = {
         ? 'Sociably.Pause'
         : typeof element.type === 'function'
         ? element.type.name || element.type
+        : typeof element.type === 'symbol'
+        ? element.type.toString()
+        : typeof element.type === 'object'
+        ? element.type.$$name || element.type.name || element.type
         : element.type;
 
     return serialize(

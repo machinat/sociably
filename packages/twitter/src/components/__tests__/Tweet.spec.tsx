@@ -6,9 +6,9 @@ import { Photo } from '../Media.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Tweet).toBe('function');
   expect(isNativeType(<Tweet />)).toBe(true);
   expect(Tweet.$$platform).toBe('twitter');
+  expect(Tweet.$$name).toBe('Tweet');
 });
 
 test("rendering to agent's page", async () => {

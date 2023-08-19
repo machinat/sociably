@@ -1,13 +1,12 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { Location } from '../Location.js';
+import { Location, LocationProps } from '../Location.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid native unit component', () => {
-  expect(typeof Location).toBe('function');
-
-  expect(isNativeType(<Location {...({} as never)} />)).toBe(true);
+  expect(isNativeType(<Location {...({} as LocationProps)} />)).toBe(true);
   expect(Location.$$platform).toBe('line');
+  expect(Location.$$name).toBe('Location');
 });
 
 it('render match snapshot', async () => {

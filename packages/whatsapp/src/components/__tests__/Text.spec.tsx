@@ -4,9 +4,9 @@ import { Text } from '../Text.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Text).toBe('function');
   expect(isNativeType(<Text> </Text>)).toBe(true);
   expect(Text.$$platform).toBe('whatsapp');
+  expect(Text.$$name).toBe('Text');
 });
 
 test('rendering value', async () => {

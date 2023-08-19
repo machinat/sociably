@@ -5,7 +5,6 @@ import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
   for (const Media of [Audio, Image, Document, Video, Sticker]) {
-    expect(typeof Media).toBe('function');
     expect(isNativeType(<Media mediaId="123" />)).toBe(true);
     expect(Media.$$platform).toBe('whatsapp');
   }

@@ -2,14 +2,16 @@ import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
-import { ButtonTemplate } from '../ButtonTemplate.js';
+import { ButtonTemplate, ButtonTemplateProps } from '../ButtonTemplate.js';
 import { UriAction } from '../Action.js';
 import { renderUnitElement } from './utils.js';
 
 test('is valid native component', () => {
-  expect(typeof ButtonTemplate).toBe('function');
-  expect(isNativeType(<ButtonTemplate {...({} as never)} />)).toBe(true);
+  expect(
+    isNativeType(<ButtonTemplate {...({} as ButtonTemplateProps)} />)
+  ).toBe(true);
   expect(ButtonTemplate.$$platform).toBe('line');
+  expect(ButtonTemplate.$$name).toBe('ButtonTemplate');
 });
 
 it('match snapshot', async () => {

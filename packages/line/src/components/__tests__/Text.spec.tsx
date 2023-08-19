@@ -7,9 +7,9 @@ import { renderPartElement, renderUnitElement } from './utils.js';
 
 describe('Emoji', () => {
   it('is valid native unit component', () => {
-    expect(typeof Emoji).toBe('function');
     expect(isNativeType(<Emoji productId="" emojiId="" />)).toBe(true);
     expect(Emoji.$$platform).toBe('line');
+    expect(Emoji.$$name).toBe('Emoji');
   });
 
   it('renders to corespond unicode char', async () => {
@@ -36,9 +36,9 @@ describe('Emoji', () => {
 
 describe('Text', () => {
   it('is valid native unit component', () => {
-    expect(typeof Text).toBe('function');
-    expect(isNativeType(<Text> </Text>)).toBe(true);
+    expect(isNativeType(<Text>x</Text>)).toBe(true);
     expect(Text.$$platform).toBe('line');
+    expect(Text.$$name).toBe('Text');
   });
 
   test('matching snpshot', async () => {

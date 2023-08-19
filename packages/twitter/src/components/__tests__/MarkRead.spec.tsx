@@ -5,9 +5,9 @@ import { MarkRead } from '../MarkRead.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof MarkRead).toBe('function');
   expect(isNativeType(<MarkRead messageId="12345" />)).toBe(true);
   expect(MarkRead.$$platform).toBe('twitter');
+  expect(MarkRead.$$name).toBe('MarkRead');
 });
 
 test('rendering', async () => {

@@ -5,9 +5,9 @@ import { Unlike } from '../Unlike.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Unlike).toBe('function');
   expect(isNativeType(<Unlike tweetId="12345" />)).toBe(true);
   expect(Unlike.$$platform).toBe('twitter');
+  expect(Unlike.$$name).toBe('Unlike');
 });
 
 test('rendering', async () => {

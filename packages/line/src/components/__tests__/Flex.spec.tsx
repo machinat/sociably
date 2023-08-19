@@ -39,9 +39,9 @@ test.each(
     FlexCarouselContainer,
   ].map((C) => [C.name, C] as const)
 )('%s is valid native Component', (_, FlexComponent) => {
-  expect(typeof FlexComponent).toBe('function');
   expect(isNativeType(<FlexComponent />)).toBe(true);
   expect(FlexComponent.$$platform).toBe('line');
+  expect(FlexComponent.$$name).toEqual(expect.stringMatching(/^Flex/));
 });
 
 test('Flex as a alias for flex components', () => {

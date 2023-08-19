@@ -298,9 +298,9 @@ export default class SociablyRenderer<
         )} at '${path}' is not supported by ${this.platform}`
       );
 
-      const pathInner = `${path}#${nativeComponent.name}`;
+      const pathInner = `${path}#${nativeComponent.$$name}`;
 
-      const renderPromise = nativeComponent(
+      const renderPromise = nativeComponent.$$render(
         node,
         path,
         this._renderImpl.bind(this, scope, servicesProvided, pathInner)

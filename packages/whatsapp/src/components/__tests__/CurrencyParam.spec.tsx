@@ -4,7 +4,6 @@ import { CurrencyParam } from '../CurrencyParam.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof CurrencyParam).toBe('function');
   expect(
     isNativeType(
       <CurrencyParam
@@ -15,6 +14,7 @@ it('is a valid Component', () => {
     )
   ).toBe(true);
   expect(CurrencyParam.$$platform).toBe('whatsapp');
+  expect(CurrencyParam.$$name).toBe('CurrencyParam');
 });
 
 test('rendering value', async () => {

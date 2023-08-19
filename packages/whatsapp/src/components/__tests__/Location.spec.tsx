@@ -4,9 +4,9 @@ import { Location } from '../Location.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Location).toBe('function');
   expect(isNativeType(<Location latitude={0} longitude={0} />)).toBe(true);
   expect(Location.$$platform).toBe('whatsapp');
+  expect(Location.$$name).toBe('Location');
 });
 
 test('rendering value', async () => {
@@ -14,7 +14,7 @@ test('rendering value', async () => {
     .resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <LocationProps
+        "node": <Location
           latitude={120}
           longitude={25}
         />,
@@ -43,7 +43,7 @@ test('rendering value', async () => {
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <LocationProps
+        "node": <Location
           latitude={0}
           longitude={90}
           name="North Pole"
@@ -79,7 +79,7 @@ test('rendering value', async () => {
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <LocationProps
+        "node": <Location
           address="over the rainbow"
           latitude={123}
           longitude={45}

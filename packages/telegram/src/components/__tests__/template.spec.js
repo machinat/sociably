@@ -15,7 +15,6 @@ const renderer = new Renderer('telegram', (node, path) => [
 
 describe.each([Text, Contact, Poll, Dice, Invoice, Game])('%p', (Template) => {
   it('is valid unit Component', () => {
-    expect(typeof Template).toBe('function');
     expect(isNativeType(<Template />)).toBe(true);
     expect(Template.$$platform).toBe('telegram');
   });

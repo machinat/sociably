@@ -5,9 +5,9 @@ import { Block } from '../Block.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Block).toBe('function');
   expect(isNativeType(<Block userId="12345" />)).toBe(true);
   expect(Block.$$platform).toBe('twitter');
+  expect(Block.$$name).toBe('Block');
 });
 
 test('rendering', async () => {

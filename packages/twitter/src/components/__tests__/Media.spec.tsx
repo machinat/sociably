@@ -4,11 +4,10 @@ import { Photo, Video, AnimatedGif } from '../Media.js';
 import { renderUnitElement } from './utils.js';
 
 const mediaNameComponentPairs = [Photo, Video, AnimatedGif].map(
-  (Media): [string, typeof Photo] => [Media.name, Media]
+  (Media): [string, typeof Photo] => [Media.$$name, Media]
 );
 
-test.each(mediaNameComponentPairs)('%s is a valid Component', (_, Media) => {
-  expect(typeof Media).toBe('function');
+test.each(mediaNameComponentPairs)('is a valid Component', (_, Media) => {
   expect(isNativeType(<Media />)).toBe(true);
   expect(Media.$$platform).toBe('twitter');
 });

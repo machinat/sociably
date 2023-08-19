@@ -5,9 +5,9 @@ import { ListSection } from '../ListSection.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof ListSection).toBe('function');
   expect(isNativeType(<ListSection>{[]}</ListSection>)).toBe(true);
   expect(ListSection.$$platform).toBe('whatsapp');
+  expect(ListSection.$$name).toBe('ListSection');
 });
 
 test('rendering value', async () => {

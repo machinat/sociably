@@ -6,9 +6,9 @@ import { LinkRichMenu } from '../LinkRichMenu.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid native unit component with entry getter', () => {
-  expect(typeof LinkRichMenu).toBe('function');
   expect(isNativeType(<LinkRichMenu id="" />)).toBe(true);
   expect(LinkRichMenu.$$platform).toBe('line');
+  expect(LinkRichMenu.$$name).toBe('LinkRichMenu');
 });
 
 it('render ok', async () => {

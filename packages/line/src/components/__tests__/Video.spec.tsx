@@ -1,12 +1,12 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { Video } from '../Video.js';
+import { Video, VideoProps } from '../Video.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid native unit component', () => {
-  expect(typeof Video).toBe('function');
-  expect(isNativeType(<Video {...({} as never)} />)).toBe(true);
+  expect(isNativeType(<Video {...({} as VideoProps)} />)).toBe(true);
   expect(Video.$$platform).toBe('line');
+  expect(Video.$$name).toBe('Video');
 });
 
 it('%s render match snapshot', async () => {

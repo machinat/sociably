@@ -5,9 +5,9 @@ import { Unfollow } from '../Unfollow.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Unfollow).toBe('function');
   expect(isNativeType(<Unfollow userId="12345" />)).toBe(true);
   expect(Unfollow.$$platform).toBe('twitter');
+  expect(Unfollow.$$name).toBe('Unfollow');
 });
 
 test('rendering', async () => {

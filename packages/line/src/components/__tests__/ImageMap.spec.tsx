@@ -1,19 +1,30 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { ImageMap, ImageMapVideoArea, ImageMapArea } from '../ImageMap.js';
+import {
+  ImageMap,
+  ImageMapProps,
+  ImageMapArea,
+  ImageMapAreaProps,
+  ImageMapVideoArea,
+  ImageMapVideoAreaProps,
+} from '../ImageMap.js';
 import { UriAction, MessageAction } from '../Action.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid component', () => {
-  expect(typeof ImageMap).toBe('function');
-  expect(typeof ImageMapArea).toBe('function');
-  expect(typeof ImageMapVideoArea).toBe('function');
-  expect(isNativeType(<ImageMap {...({} as never)} />)).toBe(true);
-  expect(isNativeType(<ImageMapArea {...({} as never)} />)).toBe(true);
-  expect(isNativeType(<ImageMapVideoArea {...({} as never)} />)).toBe(true);
+  expect(isNativeType(<ImageMap {...({} as ImageMapProps)} />)).toBe(true);
+  expect(isNativeType(<ImageMapArea {...({} as ImageMapAreaProps)} />)).toBe(
+    true
+  );
+  expect(
+    isNativeType(<ImageMapVideoArea {...({} as ImageMapVideoAreaProps)} />)
+  ).toBe(true);
   expect(ImageMap.$$platform).toBe('line');
   expect(ImageMapArea.$$platform).toBe('line');
   expect(ImageMapVideoArea.$$platform).toBe('line');
+  expect(ImageMap.$$name).toBe('ImageMap');
+  expect(ImageMapArea.$$name).toBe('ImageMapArea');
+  expect(ImageMapVideoArea.$$name).toBe('ImageMapVideoArea');
 });
 
 it('match snapshot', async () => {

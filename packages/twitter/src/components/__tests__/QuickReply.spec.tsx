@@ -4,9 +4,9 @@ import { QuickReply } from '../QuickReply.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof QuickReply).toBe('function');
   expect(isNativeType(<QuickReply label="Hi" />)).toBe(true);
   expect(QuickReply.$$platform).toBe('twitter');
+  expect(QuickReply.$$name).toBe('QuickReply');
 });
 
 test('rendering', async () => {

@@ -1,23 +1,32 @@
 import { moxy, Mock } from '@moxyjs/moxy';
 import Sociably from '../../index.js';
-import { SOCIABLY_NATIVE_TYPE } from '../../symbol.js';
 import {
   createEmptyScope,
   serviceContainer,
   serviceInterface,
 } from '../../service/index.js';
 import Renderer from '../renderer.js';
+import { makeNativeComponent } from '../componentHelper.js';
+import { IntermediateSegment } from '../types.js';
 
-const generalElementDelegate = moxy((node, path) =>
-  Promise.resolve(
-    node.type === 'a'
-      ? [
-          { type: 'text', node, value: `${node.props.children}1`, path },
-          { type: 'break', node, value: undefined, path },
-          { type: 'text', node, value: `${node.props.children}2`, path },
-        ]
-      : [{ type: 'unit', node, value: { letters: node.props.children }, path }]
-  )
+const generalElementDelegate = moxy(
+  (node, path): Promise<IntermediateSegment<unknown, unknown>[]> =>
+    Promise.resolve(
+      node.type === 'a'
+        ? [
+            { type: 'text', node, value: `${node.props.children}1`, path },
+            { type: 'break', node, value: null, path },
+            { type: 'text', node, value: `${node.props.children}2`, path },
+          ]
+        : [
+            {
+              type: 'unit',
+              node,
+              value: { letters: node.props.children },
+              path,
+            },
+          ]
+    )
 );
 
 beforeEach(() => {
@@ -32,11 +41,13 @@ describe('.render()', () => {
     const sideEffect1 = moxy();
     const sideEffect2 = moxy();
 
-    const NativeUnit1 = moxy(function NativeUnit1(node, path) {
-      return Promise.resolve([{ type: 'unit', node, value: node.props, path }]);
-    });
-    NativeUnit1.$$typeof = SOCIABLY_NATIVE_TYPE;
-    NativeUnit1.$$platform = 'test';
+    const NativeUnit1 = moxy(
+      makeNativeComponent('test')(function NativeUnit1(node, path) {
+        return Promise.resolve([
+          { type: 'unit', node, value: node.props, path },
+        ]);
+      })
+    );
 
     const Custom = moxy(function Custom(props) {
       return (
@@ -49,30 +60,30 @@ describe('.render()', () => {
       );
     });
 
-    const NativeUnit2 = moxy(function NativeUnit2(node, path) {
-      return Promise.resolve([
-        {
-          type: 'pause',
-          node: <Sociably.Pause />,
-          value: undefined,
-          path: `${path}.propA`,
-        },
-        {
-          type: 'text',
-          node: 'somewhere in container',
-          value: 'somewhere over the rainbow',
-          path: `${path}.children`,
-        },
-        {
-          type: 'unit',
-          node: <c />,
-          value: { rendered: 'by other' },
-          path: `${path}.propB`,
-        },
-      ]);
-    });
-    NativeUnit2.$$typeof = SOCIABLY_NATIVE_TYPE;
-    NativeUnit2.$$platform = 'test';
+    const NativeUnit2 = moxy(
+      makeNativeComponent('test')(function NativeUnit2(node, path) {
+        return Promise.resolve([
+          {
+            type: 'pause',
+            node: <Sociably.Pause />,
+            value: undefined,
+            path: `${path}.propA`,
+          },
+          {
+            type: 'text',
+            node: 'somewhere in container',
+            value: 'somewhere over the rainbow',
+            path: `${path}.children`,
+          },
+          {
+            type: 'unit',
+            node: <c />,
+            value: { rendered: 'by other' },
+            path: `${path}.propB`,
+          },
+        ]);
+      })
+    );
 
     const message = (
       <>
@@ -91,7 +102,7 @@ describe('.render()', () => {
     );
 
     const renderer = new Renderer('test', generalElementDelegate);
-    const renderPromise = renderer.render(message, null);
+    const renderPromise = renderer.render(message, null, []);
 
     await expect(renderPromise).resolves.toEqual([
       {
@@ -222,21 +233,21 @@ describe('.render()', () => {
       { type: 'text', node: 'foo', value: 'foo', path: `$::4#b.children:0` },
     ]);
 
-    expect(NativeUnit1).toHaveBeenCalledTimes(2);
-    expect(NativeUnit1).toHaveBeenNthCalledWith(
+    expect(NativeUnit1.$$render).toHaveBeenCalledTimes(2);
+    expect(NativeUnit1.$$render).toHaveBeenNthCalledWith(
       1,
       <NativeUnit1 x="true" y={false} />,
       '$::6',
       expect.any(Function)
     );
-    expect(NativeUnit1).toHaveBeenNthCalledWith(
+    expect(NativeUnit1.$$render).toHaveBeenNthCalledWith(
       2,
       <NativeUnit1 a="A" b={2} />,
       '$::7#Custom::1',
       expect.any(Function)
     );
 
-    [, , renderInner] = NativeUnit1.mock.calls[0].args;
+    [, , renderInner] = NativeUnit1.$$render.mock.calls[0].args;
     await expect(renderInner(['bar'], '.children')).resolves.toEqual([
       {
         type: 'text',
@@ -245,7 +256,7 @@ describe('.render()', () => {
         path: `$::6#NativeUnit1.children:0`,
       },
     ]);
-    [, , renderInner] = NativeUnit1.mock.calls[1].args;
+    [, , renderInner] = NativeUnit1.$$render.mock.calls[1].args;
     await expect(renderInner(['bar'], '.children')).resolves.toEqual([
       {
         type: 'text',
@@ -255,14 +266,14 @@ describe('.render()', () => {
       },
     ]);
 
-    expect(NativeUnit2).toHaveBeenCalledTimes(1);
-    expect(NativeUnit2).toHaveBeenCalledWith(
+    expect(NativeUnit2.$$render).toHaveBeenCalledTimes(1);
+    expect(NativeUnit2.$$render).toHaveBeenCalledWith(
       <NativeUnit2>somthing wrapped</NativeUnit2>,
       '$::9',
       expect.any(Function)
     );
 
-    [, , renderInner] = NativeUnit2.mock.calls[0].args;
+    [, , renderInner] = NativeUnit2.$$render.mock.calls[0].args;
     await expect(renderInner(['baz'], '.children')).resolves.toEqual([
       {
         type: 'text',
@@ -274,23 +285,21 @@ describe('.render()', () => {
   });
 
   it('join continuous text segments', async () => {
-    const renderer = new Renderer('test', (node, path) => [
+    const renderer = new Renderer('test', async (node, path) => [
       node.type === 'br'
-        ? { type: 'break', node, path }
+        ? { type: 'break', node, path, value: null }
         : { type: 'text', value: node.type, node, path },
     ]);
 
-    const Vestibulum = (node, path) => [
-      { type: 'text', value: 'Vestibulum', node, path },
-    ];
-    Vestibulum.$$typeof = SOCIABLY_NATIVE_TYPE;
-    Vestibulum.$$platform = 'test';
+    const Vestibulum = makeNativeComponent('test')(
+      function Vestibulum(node, path) {
+        return [{ type: 'text', value: 'Vestibulum', node, path }];
+      }
+    );
 
-    const Unit = (node, path) => [
-      { type: 'unit', value: { foo: 'bar' }, node, path },
-    ];
-    Unit.$$typeof = SOCIABLY_NATIVE_TYPE;
-    Unit.$$platform = 'test';
+    const Unit = makeNativeComponent('test')(function Unit(node, path) {
+      return [{ type: 'unit', value: { foo: 'bar' }, node, path }];
+    });
 
     const message = (
       <>
@@ -306,7 +315,7 @@ describe('.render()', () => {
       </>
     );
 
-    await expect(renderer.render(message)).resolves.toEqual([
+    await expect(renderer.render(message, null, [])).resolves.toEqual([
       {
         type: 'text',
         value: 'Lorem ipsum dolor sit amet,',
@@ -361,16 +370,13 @@ describe('.render()', () => {
   it('return null if no renderable element in the node', async () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
-    const None = () => Promise.resolve(null);
-    None.$$typeof = SOCIABLY_NATIVE_TYPE;
-    None.$$platform = 'test';
+    const None = makeNativeComponent('test')(async function None() {
+      return null;
+    });
 
-    const Break = () =>
-      Promise.resolve([
-        { type: 'break', node: <br />, value: undefined, path: '$:0' },
-      ]);
-    Break.$$typeof = SOCIABLY_NATIVE_TYPE;
-    Break.$$platform = 'test';
+    const Break = makeNativeComponent('test')(async function Break() {
+      return [{ type: 'break', node: <br />, value: undefined, path: '$:0' }];
+    });
 
     const Empty = () => (
       <>
@@ -404,30 +410,29 @@ describe('.render()', () => {
 
     for (const node of emptyNodes) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(renderer.render(node, null)).resolves.toBe(null);
+      await expect(renderer.render(node, null, [])).resolves.toBe(null);
     }
   });
 
   it('filter break segment at outside of native component, keep it at inside', async () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
-    const Section = moxy(() =>
-      Promise.resolve([
-        { type: 'text', node: 'head', value: 'head', path: '$' },
-        { type: 'break', node: <br />, value: undefined, path: '$' },
-        { type: 'text', node: 'foot', value: 'foot', path: '$' },
-      ])
+    const Section = moxy(
+      makeNativeComponent('test')(async function Section() {
+        return [
+          { type: 'text', node: 'head', value: 'head', path: '$' },
+          { type: 'break', node: <br />, value: undefined, path: '$' },
+          { type: 'text', node: 'foot', value: 'foot', path: '$' },
+        ];
+      })
     );
-    Section.mock.getter('name').fakeReturnValue('Section');
-    Section.$$typeof = SOCIABLY_NATIVE_TYPE;
-    Section.$$platform = 'test';
 
-    await expect(renderer.render(<Section />, null)).resolves.toEqual([
+    await expect(renderer.render(<Section />, null, [])).resolves.toEqual([
       { type: 'text', node: 'head', value: 'head', path: '$' },
       { type: 'text', node: 'foot', value: 'foot', path: '$' },
     ]);
 
-    const renderInner = Section.mock.calls[0].args[2];
+    const renderInner = Section.$$render.mock.calls[0].args[2];
 
     await expect(renderInner(<Section />, '.children')).resolves.toEqual([
       { type: 'text', node: 'head', value: 'head', path: '$' },
@@ -437,43 +442,40 @@ describe('.render()', () => {
   });
 
   it('render part segment but throws if placed at surface', async () => {
-    const Unit = moxy(function Unit(node) {
-      return Promise.resolve([
-        { type: 'unit', node, value: { root: true }, path: '$' },
-      ]);
-    });
-    Unit.$$typeof = SOCIABLY_NATIVE_TYPE;
-    Unit.$$platform = 'test';
+    const Unit = moxy(
+      makeNativeComponent('test')(async function Unit(node) {
+        return [{ type: 'unit', node, value: { root: true }, path: '$' }];
+      })
+    );
 
-    const Part = () =>
-      Promise.resolve([
-        { type: 'part', node: <Part />, value: { root: false }, path: '$' },
-      ]);
-    Part.$$typeof = SOCIABLY_NATIVE_TYPE;
-    Part.$$platform = 'test';
+    const Part = moxy(
+      makeNativeComponent('test')(async function Part(node) {
+        return [{ type: 'part', node, value: { root: false }, path: '$' }];
+      })
+    );
 
     const renderer = new Renderer('test', generalElementDelegate);
 
-    await expect(renderer.render(<Unit />, null)).resolves.toEqual([
+    await expect(renderer.render(<Unit />, null, [])).resolves.toEqual([
       { type: 'unit', node: <Unit />, value: { root: true }, path: '$' },
     ]);
 
-    const [, , renderInner] = Unit.mock.calls[0].args;
+    const [, , renderInner] = Unit.$$render.mock.calls[0].args;
     await expect(renderInner(<Part />)).resolves.toEqual([
       { type: 'part', node: <Part />, value: { root: false }, path: '$' },
     ]);
 
     await expect(
-      renderer.render(<Part />, null)
+      renderer.render(<Part />, null, [])
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"<Part /> is a part element and should not be placed at surface level"`
     );
   });
 
   it('provide services with Sociably.Provider', async () => {
-    const FooI = serviceInterface('Foo');
-    const BarI = serviceInterface('Bar');
-    const BazI = serviceInterface('Baz');
+    const FooI = serviceInterface({ name: 'Foo' });
+    const BarI = serviceInterface({ name: 'Bar' });
+    const BazI = serviceInterface({ name: 'Baz' });
     const scope = moxy(createEmptyScope());
 
     const componentMock = new Mock();
@@ -497,10 +499,13 @@ describe('.render()', () => {
 
     const renderer = new Renderer('test', generalElementDelegate);
 
-    const Native = ({ props: { children } }, path, render) =>
-      render(children, '.children');
-    Native.$$typeof = SOCIABLY_NATIVE_TYPE;
-    Native.$$platform = 'test';
+    const Native = makeNativeComponent('test')(function Native(
+      { props }: any,
+      path,
+      render
+    ) {
+      return render(props.children, '.children');
+    });
 
     const Wrapper = ({ children }) => (
       <Sociably.Provider provide={BarI} value={1}>
@@ -544,7 +549,8 @@ describe('.render()', () => {
 
           <Container n={10} />
         </>,
-        scope
+        scope,
+        []
       )
     ).resolves.toMatchInlineSnapshot(`
       [
@@ -646,9 +652,9 @@ describe('.render()', () => {
   });
 
   test('with runtime provisions', async () => {
-    const FooI = serviceInterface('Foo');
-    const BarI = serviceInterface('Bar');
-    const BazI = serviceInterface('Baz');
+    const FooI = serviceInterface({ name: 'Foo' });
+    const BarI = serviceInterface({ name: 'Bar' });
+    const BazI = serviceInterface({ name: 'Baz' });
     const renderer = new Renderer('test', generalElementDelegate);
 
     const Container = moxy(
@@ -689,30 +695,28 @@ describe('.render()', () => {
     };
 
     const renderer = new Renderer('test', generalElementDelegate);
-    expect(renderer.render(<FunctionalComponent />, null)).rejects.toThrow(
+    expect(renderer.render(<FunctionalComponent />, null, [])).rejects.toThrow(
       'オラオラオラ'
     );
   });
 
   it('reject when container component fail', async () => {
-    const ContainerFailWhenInject = serviceContainer({ deps: [] })(() => {
+    const ContainerFailWhenInject = serviceContainer({})(() => {
       throw new Error('無駄無駄無駄');
     });
 
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<ContainerFailWhenInject />, null)
+      renderer.render(<ContainerFailWhenInject />, null, [])
     ).rejects.toThrow(new Error('無駄無駄無駄'));
 
-    const ContainerFailAtComponent = serviceContainer({ deps: [] })(
-      () => async () => {
-        throw new Error('オラオラオラ');
-      }
-    );
+    const ContainerFailAtComponent = serviceContainer({})(() => async () => {
+      throw new Error('オラオラオラ');
+    });
 
     await expect(
-      renderer.render(<ContainerFailAtComponent />, null)
+      renderer.render(<ContainerFailAtComponent />, null, [])
     ).rejects.toThrow(new Error('オラオラオラ'));
   });
 
@@ -723,31 +727,33 @@ describe('.render()', () => {
     });
 
     await expect(
-      renderer.render(<invalid />, null)
+      renderer.render(<invalid />, null, [])
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<invalid /> is not good"`);
   });
 
   it('throw if non renderalbe passed', async () => {
-    const IllegalComponent = { foo: 'bar' };
+    const IllegalComponent = { foo: 'bar' } as any;
 
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<IllegalComponent />, null)
+      renderer.render(<IllegalComponent />, null, [])
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"[object Object] at poistion '$' is not valid element type"`
     );
   });
 
   it('throw if native component of other platform received', async () => {
-    const AnotherPlatformUnit = () => {};
-    AnotherPlatformUnit.$$typeof = SOCIABLY_NATIVE_TYPE;
-    AnotherPlatformUnit.$$native = Symbol('some other platform');
+    const AnotherPlatformUnit = makeNativeComponent('another')(
+      function AnotherPlatformUnit() {
+        return null;
+      }
+    );
 
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<AnotherPlatformUnit />, null)
+      renderer.render(<AnotherPlatformUnit />, null, [])
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"native component <AnotherPlatformUnit /> at '$' is not supported by test"`
     );
@@ -766,7 +772,8 @@ describe('.render()', () => {
         <Sociably.Pause time={1000} />
         <Sociably.Pause time={1000} delay={delayFn} />
       </>,
-      null
+      null,
+      []
     );
 
     expect(segments).toEqual([
@@ -799,7 +806,7 @@ describe('.render()', () => {
     const spy = moxy();
 
     // time prop only
-    segments[2].value().then(spy);
+    (segments?.[2].value as () => Promise<unknown>)().then(spy);
     await new Promise(process.nextTick);
     expect(spy).not.toHaveBeenCalled();
 
@@ -808,7 +815,7 @@ describe('.render()', () => {
     expect(spy).toHaveBeenCalledTimes(1);
 
     // time + delay prop only
-    segments[3].value().then(spy);
+    (segments?.[3].value as () => Promise<unknown>)().then(spy);
     expect(delayFn).toHaveBeenCalledTimes(1);
     await new Promise(process.nextTick);
     expect(spy).toHaveBeenCalledTimes(1);

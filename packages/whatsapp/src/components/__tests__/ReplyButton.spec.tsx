@@ -4,9 +4,9 @@ import { ReplyButton } from '../ReplyButton.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof ReplyButton).toBe('function');
   expect(isNativeType(<ReplyButton id="" title="" />)).toBe(true);
   expect(ReplyButton.$$platform).toBe('whatsapp');
+  expect(ReplyButton.$$name).toBe('ReplyButton');
 });
 
 test('rendering value', async () => {

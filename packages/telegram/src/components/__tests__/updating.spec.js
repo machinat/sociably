@@ -24,7 +24,6 @@ describe.each([EditText, EditCaption, EditMedia, StopPoll, DeleteMessage])(
   '%p',
   (Updating) => {
     it('is valid unit Component', () => {
-      expect(typeof Updating).toBe('function');
       expect(isNativeType(<Updating />)).toBe(true);
       expect(Updating.$$platform).toBe('telegram');
     });

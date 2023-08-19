@@ -15,7 +15,7 @@ export type ReadProps = {
 export const Read: WhatsAppComponent<
   ReadProps,
   UnitSegment<WhatsAppSegmentValue>
-> = makeWhatsAppComponent(function ReadProps(node, path) {
+> = makeWhatsAppComponent(function Read(node, path) {
   const { messageId } = node.props;
 
   return [

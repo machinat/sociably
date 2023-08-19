@@ -121,7 +121,7 @@ export type ListTemplateProps = InteractiveProps & {
 export const ListTemplate: WhatsAppComponent<
   ListTemplateProps,
   UnitSegment<WhatsAppSegmentValue>
-> = makeWhatsAppComponent(async function ListTemplateProps(node, path, render) {
+> = makeWhatsAppComponent(async function ListTemplate(node, path, render) {
   const { buttonTitle, sections, replyTo } = node.props;
 
   const [

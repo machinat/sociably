@@ -5,9 +5,9 @@ import { Mute } from '../Mute.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(typeof Mute).toBe('function');
   expect(isNativeType(<Mute userId="12345" />)).toBe(true);
   expect(Mute.$$platform).toBe('twitter');
+  expect(Mute.$$name).toBe('Mute');
 });
 
 test('rendering', async () => {

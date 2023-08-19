@@ -89,7 +89,7 @@ const transformSnakeCaseKeys = (obj: Record<string, unknown>) =>
 export const Contact: WhatsAppComponent<
   ContactProps,
   UnitSegment<WhatsAppSegmentValue>
-> = makeWhatsAppComponent(function ContactProps(node, path) {
+> = makeWhatsAppComponent(function Contact(node, path) {
   const { addresses, birthday, emails, name, org, phones, urls, replyTo } =
     node.props;
 
