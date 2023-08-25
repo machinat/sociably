@@ -7,26 +7,16 @@ import {
 } from '@sociably/meta-api';
 import {
   MessengerAssetsManager,
-  SetPageSubscribedAppOptions,
+  SetSubscribedAppOptions,
+  MESSENGER_PAGE_SUBSCRIPTION_FIELDS,
 } from '@sociably/messenger';
 import snakecaseKeys from 'snakecase-keys';
-import BotP from '../Bot.js';
+import BotP, { FacebookBot } from '../Bot.js';
 import FacebookPage from '../Page.js';
 import { PATH_PERSONAS, FB } from '../constant.js';
 import { ConfigsI } from '../interface.js';
 
 const PERSONA = 'persona';
-
-const DEFAULT_SUBSCRIPTION_FIELDS = [
-  'messages',
-  'messaging_postbacks',
-  'messaging_optins',
-  'messaging_handovers',
-  'messaging_policy_enforcement',
-  'messaging_account_linking',
-  'messaging_game_plays',
-  'messaging_referrals',
-];
 
 export type DefaultSettings = {
   appId?: string;
@@ -42,6 +32,7 @@ export type DefaultSettings = {
  */
 export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> {
   defaultSettings: DefaultSettings;
+  bot: FacebookBot;
 
   constructor(
     stateManager: StateControllerI,
@@ -60,10 +51,10 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     objectType = 'page',
     appId = this.defaultSettings.appId,
     fields = this.defaultSettings.subscriptionFields ??
-      DEFAULT_SUBSCRIPTION_FIELDS,
+      MESSENGER_PAGE_SUBSCRIPTION_FIELDS,
     webhookUrl = this.defaultSettings.webhookUrl,
     webhookVerifyToken = this.defaultSettings.webhookVerifyToken,
-  }: Partial<SetMetaAppSubscriptionOptions> = {}): Promise<void> {
+  }: Partial<SetMetaAppSubscriptionOptions> = {}) {
     if (!appId || !webhookVerifyToken || !webhookUrl || !fields?.length) {
       throw new Error(
         'appId, webhookUrl, webhookVerifyToken or fields is empty'
@@ -82,7 +73,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     appId = this.defaultSettings.appId,
     objectType,
     fields,
-  }: Partial<DeleteMetaAppSubscriptionOptions> = {}): Promise<void> {
+  }: Partial<DeleteMetaAppSubscriptionOptions> = {}) {
     if (!appId) {
       throw new Error('appId is empty');
     }
@@ -93,18 +84,17 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
    * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
-  async setPageSubscribedApp(
+  async setSubscribedApp(
     page: string | FacebookPage,
     {
-      fields = this.defaultSettings.subscriptionFields ??
-        DEFAULT_SUBSCRIPTION_FIELDS,
+      fields = this.defaultSettings.subscriptionFields,
       accessToken,
-    }: SetPageSubscribedAppOptions = {}
-  ): Promise<void> {
-    if (!fields?.length) {
-      throw new Error('subscription fields is empty');
-    }
-    return super.setPageSubscribedApp(page, { fields, accessToken });
+    }: SetSubscribedAppOptions = {}
+  ) {
+    return super.setSubscribedApp(page, {
+      fields,
+      accessToken,
+    });
   }
 
   getPersona(
@@ -156,7 +146,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     }
   ): Promise<string> {
     const { id: personaId } = await this.bot.requestApi<{ id: string }>({
-      page,
+      channel: page,
       accessToken,
       method: 'POST',
       url: PATH_PERSONAS,
@@ -179,7 +169,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     }
 
     await this.bot.requestApi({
-      page,
+      channel: page,
       accessToken: options?.accessToken,
       method: 'DELETE',
       url: personaId,

@@ -45,12 +45,12 @@ test('fetch profile from api', async () => {
   expect(bot.requestApi).toHaveReturnedTimes(1);
   expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
-      "method": "GET",
-      "page": FacebookPage {
+      "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "facebook",
       },
+      "method": "GET",
       "params": {
         "fields": "id,name,first_name,last_name,profile_pic",
       },
@@ -100,12 +100,12 @@ it('query additional optionalProfileFields if given', async () => {
   expect(bot.requestApi).toHaveReturnedTimes(1);
   expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
-      "method": "GET",
-      "page": FacebookPage {
+      "channel": FacebookPage {
         "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "facebook",
       },
+      "method": "GET",
       "params": {
         "fields": "locale,timezone,gender,id,name,first_name,last_name,profile_pic",
       },

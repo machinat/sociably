@@ -39,7 +39,6 @@ class TelegramChatSender
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['user'],
       platform: TELEGRAM,
       id: this.id,
     };

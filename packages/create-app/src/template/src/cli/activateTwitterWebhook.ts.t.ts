@@ -6,7 +6,6 @@ export default ({ platforms }: CreateAppContext): string => when(
 )`
 #!/usr/bin/env node
 import Twitter from '@sociably/twitter';
-import TwitterAssetManager from '@sociably/twitter/asset';
 import createApp from '../app.js';
 
 const { TWITTER_WEBHOOK_ENV } = process.env;
@@ -15,7 +14,7 @@ const app = createApp({ noServer: true });
 app.start().then(async () => {
   const [twitterBot, twitterAssetManager] = app.useServices([
     Twitter.Bot,
-    TwitterAssetManager,
+    Twitter.AssetManager,
   ]);
   const webhookId = await twitterAssetManager.getWebhook('default');
   await twitterBot.requestApi(

@@ -1,5 +1,5 @@
 import { moxy } from '@moxyjs/moxy';
-import InstagramPage from '../../Page.js';
+import InstagramAgent from '../../Agent.js';
 import InstagramUser from '../../User.js';
 import InstagramChat from '../../Chat.js';
 import UserProfile from '../../UserProfile.js';
@@ -42,9 +42,8 @@ test('.fetchCredential() always reject', async () => {
 describe('.closeWebview()', () => {
   const authContext = {
     platform: 'instagram' as const,
-    pageId: '12345',
     agentUsername: 'jojodoe123',
-    channel: new InstagramPage('12345', 'jojodoe123'),
+    channel: new InstagramAgent('12345', 'jojodoe123'),
     thread: new InstagramChat('12345', { id: '67890' }),
     user: new InstagramUser('12345', '67890'),
     userProfile: null,
@@ -89,23 +88,22 @@ describe('.closeWebview()', () => {
 test('.checkAuthData(data)', () => {
   expect(
     authenticator.checkAuthData({
-      agent: { page: '12345', name: 'jojodoe123' },
-      user: '67890',
+      agent: { id: '1234567890', name: 'jojodoe123' },
+      user: '9876543210',
     })
   ).toEqual({
     ok: true,
     contextDetails: {
-      pageId: '12345',
       agentUsername: 'jojodoe123',
-      channel: new InstagramPage('12345', 'jojodoe123'),
-      thread: new InstagramChat('12345', { id: '67890' }),
-      user: new InstagramUser('12345', '67890'),
+      channel: new InstagramAgent('1234567890', 'jojodoe123'),
+      thread: new InstagramChat('1234567890', { id: '9876543210' }),
+      user: new InstagramUser('1234567890', '9876543210'),
       userProfile: null,
     },
   });
 
   const profileData = {
-    id: '43210',
+    id: '1234567890',
     name: 'John Doe',
     username: 'john.doe.1234',
     profile_pic: 'https://...',
@@ -116,18 +114,17 @@ test('.checkAuthData(data)', () => {
   };
   expect(
     authenticator.checkAuthData({
-      agent: { page: '98765', name: 'janedoe123' },
-      user: '43210',
+      agent: { id: '7777777777', name: 'janedoe123' },
+      user: '8888888888',
       profile: profileData,
     })
   ).toEqual({
     ok: true,
     contextDetails: {
-      pageId: '98765',
       agentUsername: 'janedoe123',
-      channel: new InstagramPage('98765', 'janedoe123'),
-      thread: new InstagramChat('98765', { id: '43210' }),
-      user: new InstagramUser('98765', '43210'),
+      channel: new InstagramAgent('7777777777', 'janedoe123'),
+      thread: new InstagramChat('7777777777', { id: '8888888888' }),
+      user: new InstagramUser('7777777777', '8888888888'),
       userProfile: new UserProfile(profileData),
     },
   });

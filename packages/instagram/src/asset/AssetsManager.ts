@@ -7,13 +7,13 @@ import {
 } from '@sociably/meta-api';
 import {
   MessengerAssetsManager,
-  SetPageSubscribedAppOptions,
-  SetPageMessengerProfileOptions,
+  SetSubscribedAppOptions,
+  SetMessengerProfileOptions,
 } from '@sociably/messenger';
 import BotP from '../Bot.js';
-import InstagramPage from '../Page.js';
+import InstagramAgent from '../Agent.js';
 import { IG } from '../constant.js';
-import { ConfigsI } from '../interface.js';
+import { ConfigsI, AgentSettingsAccessorI } from '../interface.js';
 
 // NOTE: instagram subscription fields are not aligned between app and page API
 const DEFAULT_APP_SUBSCRIPTION_FIELDS = [
@@ -21,12 +21,6 @@ const DEFAULT_APP_SUBSCRIPTION_FIELDS = [
   'messaging_postbacks',
   'messaging_handover',
   'messaging_referral',
-];
-const DEFAULT_PAGE_SUBSCRIPTION_FIELDS = [
-  'messages',
-  'messaging_postbacks',
-  'messaging_handovers',
-  'messaging_referrals',
 ];
 
 export type DefaultSettings = {
@@ -41,16 +35,64 @@ export type DefaultSettings = {
  * Meta platform.
  * @category Provider
  */
-export class InstagramAssetsManager extends MessengerAssetsManager<InstagramPage> {
+export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgent> {
   defaultSettings: DefaultSettings;
+  private agentSettingsAccessor: AgentSettingsAccessorI;
 
   constructor(
     stateManager: StateControllerI,
     bot: BotP,
+    agentSettingsAccessor: AgentSettingsAccessorI,
     defaultSettings: DefaultSettings = {}
   ) {
     super(stateManager, bot, IG);
     this.defaultSettings = defaultSettings;
+    this.agentSettingsAccessor = agentSettingsAccessor;
+  }
+
+  private async getBoundPageIdOfAgent(agentInput: string | InstagramAgent) {
+    const agent =
+      typeof agentInput === 'string'
+        ? new InstagramAgent(agentInput)
+        : agentInput;
+    const settings = await this.agentSettingsAccessor.getAgentSettings(agent);
+    if (!settings) {
+      throw new Error(`Instagram agent ${agent.id} not found`);
+    }
+    return settings.pageId;
+  }
+
+  async getAssetId(
+    agent: string | InstagramAgent,
+    resource: string,
+    assetTag: string
+  ): Promise<string | undefined> {
+    const pageId = await this.getBoundPageIdOfAgent(agent);
+    return super.getAssetId(pageId, resource, assetTag);
+  }
+
+  async saveAssetId(
+    agent: string | InstagramAgent,
+    resource: string,
+    assetTag: string,
+    assetId: string
+  ) {
+    const pageId = await this.getBoundPageIdOfAgent(agent);
+    return super.saveAssetId(pageId, resource, assetTag, assetId);
+  }
+
+  async unsaveAssetId(
+    agent: string | InstagramAgent,
+    resource: string,
+    assetTag: string
+  ) {
+    const pageId = await this.getBoundPageIdOfAgent(agent);
+    return super.unsaveAssetId(pageId, resource, assetTag);
+  }
+
+  async getAllAssets(agent: string | InstagramAgent, resource: string) {
+    const pageId = await this.getBoundPageIdOfAgent(agent);
+    return super.getAllAssets(pageId, resource);
   }
 
   /**
@@ -91,45 +133,48 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramPage
   }
 
   /**
-   * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
+   * Set app subscription of a instagram account. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
-  async setPageSubscribedApp(
-    page: string | InstagramPage,
+  async setSubscribedApp(
+    agent: string | InstagramAgent,
     {
-      fields = this.defaultSettings.subscriptionFields ??
-        DEFAULT_PAGE_SUBSCRIPTION_FIELDS,
+      fields = this.defaultSettings.subscriptionFields,
       accessToken,
-    }: SetPageSubscribedAppOptions = {}
+    }: SetSubscribedAppOptions = {}
   ): Promise<void> {
-    if (!fields?.length) {
-      throw new Error('subscription fields is empty');
-    }
-    return super.setPageSubscribedApp(page, { fields, accessToken });
+    return super.setSubscribedApp(agent, { fields, accessToken });
   }
 
   /**
    * Set Messenger profile of an Instagram account. Check https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/
    * for references.
    */
-  async setPageMessengerProfile(
-    page: string | InstagramPage,
-    { platform = 'instagram', ...profileData }: SetPageMessengerProfileOptions
+  async setMessengerProfile(
+    agent: string | InstagramAgent,
+    { platform = 'instagram', ...profileData }: SetMessengerProfileOptions
   ): Promise<void> {
-    return super.setPageMessengerProfile(page, { platform, ...profileData });
+    return super.setMessengerProfile(agent, { platform, ...profileData });
   }
 }
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP, Http.Connector, ConfigsI],
+  deps: [
+    StateControllerI,
+    BotP,
+    Http.Connector,
+    AgentSettingsAccessorI,
+    ConfigsI,
+  ],
   factory: (
     stateController,
     bot,
     connector,
+    agentSettingsAccessor,
     { appId, webhookVerifyToken, webhookPath, subscriptionFields }
   ) =>
-    new InstagramAssetsManager(stateController, bot, {
+    new InstagramAssetsManager(stateController, bot, agentSettingsAccessor, {
       appId,
       webhookVerifyToken,
       subscriptionFields,

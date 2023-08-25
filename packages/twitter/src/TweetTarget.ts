@@ -33,7 +33,6 @@ export default class TwitterTweetTarget
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: TWITTER,
       scopeId: this.agentId,
       id: this.tweetId || DEFAULT_FEED_SIGN,

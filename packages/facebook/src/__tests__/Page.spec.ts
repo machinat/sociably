@@ -11,9 +11,6 @@ test('attributes', () => {
 
   expect(page.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "channel",
-      ],
       "id": "12345",
       "platform": "facebook",
     }

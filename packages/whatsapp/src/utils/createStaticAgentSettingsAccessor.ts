@@ -25,11 +25,11 @@ export const singleStaticAgentSettingsAccessor = (
   const normalizedSettings = normalizePhoneNumber(settings);
 
   return {
-    getAgentSettings: async ({ numberId }) =>
-      numberId === normalizedSettings.numberId ? normalizedSettings : null,
+    getAgentSettings: async (agent) =>
+      agent.id === normalizedSettings.numberId ? normalizedSettings : null,
     getAgentSettingsBatch: async (numbers) =>
-      numbers.map(({ numberId }) =>
-        numberId === normalizedSettings.numberId ? normalizedSettings : null
+      numbers.map((agent) =>
+        agent.id === normalizedSettings.numberId ? normalizedSettings : null
       ),
   };
 };
@@ -51,9 +51,8 @@ export const multiStaticAgentSettingsAccessor = (
   }
 
   return {
-    getAgentSettings: async ({ numberId }) =>
-      settingsMapping.get(numberId) || null,
+    getAgentSettings: async (agent) => settingsMapping.get(agent.id) || null,
     getAgentSettingsBatch: async (numbers) =>
-      numbers.map(({ numberId }) => settingsMapping.get(numberId) || null),
+      numbers.map((agent) => settingsMapping.get(agent.id) || null),
   };
 };

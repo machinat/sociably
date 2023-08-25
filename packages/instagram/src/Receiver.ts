@@ -40,12 +40,12 @@ export class InstagramReceiver extends MetaWebhookReceiver<InstagramEventContext
           bot,
           objectType: 'instagram',
           makeEventsFromUpdate: (updateData) => {
-            const { id: pageId, messaging, stanby } = updateData;
+            const { id: agentId, messaging, stanby } = updateData;
             const isStandby = stanby !== undefined;
             const rawEvents = isStandby ? stanby : messaging;
 
             return rawEvents.map((rawEvent) =>
-              eventFactory(pageId, isStandby, rawEvent)
+              eventFactory(agentId, isStandby, rawEvent)
             );
           },
           popEvent: popEventWrapper(async () => null),

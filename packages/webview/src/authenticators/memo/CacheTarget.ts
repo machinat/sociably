@@ -47,7 +47,6 @@ class MemoCacheTarget
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread', 'user'],
       platform: WEBVIEW,
       scopeId: this.scope,
       id: this.id,

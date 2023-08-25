@@ -35,7 +35,6 @@ class WhatsAppChat
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: WHATSAPP,
       scopeId: this.agentNumberId,
       id: this.userNumberId,

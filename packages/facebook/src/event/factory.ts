@@ -9,7 +9,7 @@ const createMessengerEvent = createEventFactory<
   FacebookChat,
   FacebookUser
 >({
-  createPage: (pageId) => new FacebookPage(pageId),
+  createChannel: (pageId) => new FacebookPage(pageId),
   createChat: (pageId, target) => new FacebookChat(pageId, target),
   createUser: (pageId, userId) => new FacebookUser(pageId, userId),
 });

@@ -160,7 +160,6 @@ export type RawProps = {
 export type RawElement = SociablyElement<RawProps, typeof SOCIABLY_RAW_TYPE>;
 
 export type UniqueOmniIdentifier = {
-  readonly $$typeof: ('channel' | 'user' | 'thread')[];
   readonly platform: string;
   readonly scopeId?: string | number;
   readonly id: string | number;

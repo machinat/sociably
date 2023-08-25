@@ -1,26 +1,20 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import BotP from './Bot.js';
-import type InstagramPage from './Page.js';
+import type InstagramAgent from './Agent.js';
 import type InstagramUser from './User.js';
 import type { RawUserProfile } from './types.js';
 import { INSTAGRAM } from './constant.js';
 import InstagramUserProfile from './UserProfile.js';
 
-const DEFAULT_PROFILE_FIELDS = [
-  'id',
-  'name',
-  'first_name',
-  'last_name',
-  'profile_pic',
-];
+const PROFILE_FIELDS = ['id', 'name', 'first_name', 'last_name', 'profile_pic'];
 
 /**
  * InstagramProfiler fetch user profile from Meta API.
  * @category Provider
  */
 export class InstagramProfiler
-  implements UserProfiler<InstagramPage, InstagramUser>
+  implements UserProfiler<InstagramAgent, InstagramUser>
 {
   private profileFieldsStr: string;
   private bot: BotP;
@@ -28,19 +22,19 @@ export class InstagramProfiler
 
   constructor(bot: BotP) {
     this.bot = bot;
-    this.profileFieldsStr = DEFAULT_PROFILE_FIELDS.join(',');
+    this.profileFieldsStr = PROFILE_FIELDS.join(',');
   }
 
   async getUserProfile(
-    page: string | InstagramPage,
+    agent: string | InstagramAgent,
     user: string | InstagramUser
   ): Promise<null | InstagramUserProfile> {
     const userId = typeof user === 'string' ? user : user.id;
 
     const rawProfile = await this.bot.requestApi<RawUserProfile>({
-      page,
+      channel: agent,
       method: 'GET',
-      url: `${userId}`,
+      url: userId,
       params: { fields: this.profileFieldsStr },
     });
 

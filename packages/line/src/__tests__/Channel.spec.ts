@@ -9,9 +9,6 @@ test('preperties', () => {
 
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "channel",
-      ],
       "id": "_CHANNEL_ID_",
       "platform": "line",
     }

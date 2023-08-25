@@ -79,6 +79,9 @@ INSTAGRAM_PAGE_ID=
 # page access token, available at: "Messenger" > "Instagram settings" > "Access Tokens" > "Tokens"
 INSTAGRAM_ACCESS_TOKEN=
 
+#
+INSTAGRAM_AGENT_ID=
+
 # the username of the Instagram account
 INSTAGRAM_AGENT_USERNAME=
 `}${when(platforms.includes('whatsapp'))`

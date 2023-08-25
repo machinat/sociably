@@ -1,10 +1,11 @@
 import { moxy } from '@moxyjs/moxy';
 import { DispatchError } from '@sociably/core/engine';
+import { MetaApiChannel } from '@sociably/meta-api';
 import saveReusableAttachments from '../saveReusableAttachments.js';
 import AssetsManager from '../AssetsManager.js';
-import { MessengerPage, MessengerChat } from '../../types.js';
+import { MessengerChat } from '../../types.js';
 
-const manager = moxy<AssetsManager<MessengerPage>>({
+const manager = moxy<AssetsManager<MetaApiChannel>>({
   saveAttachment: async () => {},
 } as never);
 
@@ -12,22 +13,20 @@ beforeEach(() => {
   manager.mock.clear();
 });
 
-const page = {
+const channel = {
   platform: 'test',
   id: '12345',
-} as MessengerPage;
+} as MetaApiChannel;
 const chat = {
   platform: 'test',
-  page,
-  pageId: '12345',
   id: '67890',
   target: { id: '67890' },
 } as unknown as MessengerChat;
 
-const plainJob = { channel: page, request: { method: 'GET', url: 'foo' } };
+const plainJob = { channel, request: { method: 'GET', url: 'foo' } };
 
 const jobWithFileAndAssetTag = (assetTag?: string) => ({
-  channel: page,
+  channel,
   request: { method: 'POST', url: 'foo' },
   file: { data: '__FILE_DATA__' },
   assetTag,
@@ -98,19 +97,19 @@ it('save attachment id created with send api', async () => {
   expect(manager.saveAttachment).toHaveBeenCalledTimes(3);
   expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     1,
-    page,
+    channel.id,
     'foo',
     '_ATTACHMENT_1_'
   );
   expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     2,
-    page,
+    channel.id,
     'bar',
     '_ATTACHMENT_2_'
   );
   expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     3,
-    page,
+    channel.id,
     'baz',
     '_ATTACHMENT_3_'
   );
@@ -157,13 +156,13 @@ it('save attachment id when partial success', async () => {
   expect(manager.saveAttachment).toHaveBeenCalledTimes(2);
   expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     1,
-    page,
+    channel.id,
     'foo',
     '_ATTACHMENT_1_'
   );
   expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     2,
-    page,
+    channel.id,
     'bar',
     '_ATTACHMENT_2_'
   );

@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises'; // eslint-disable-line import/no-unresolved
 import createEvent from '../factory';
 
-const pageId = '__PAGE_ID__';
+const agentId = '__AGENT_IGID__';
 
 const getFixtures = async (fileName) => {
   const file = `${__dirname}/../__fixtures__/${fileName}.json`;
@@ -11,7 +11,7 @@ const getFixtures = async (fileName) => {
 
 test('text message event', async () => {
   for (const rawEvent of await getFixtures('text')) {
-    const event = createEvent(pageId, false, rawEvent);
+    const event = createEvent(agentId, false, rawEvent);
 
     expect(event.platform).toBe('instagram');
     expect(event.isStandby).toBe(false);
@@ -30,7 +30,7 @@ test('text message event', async () => {
 
 test('quick_reply postback event', async () => {
   for (const rawEvent of await getFixtures('quick_reply')) {
-    const event = createEvent(pageId, false, rawEvent);
+    const event = createEvent(agentId, false, rawEvent);
 
     expect(event.platform).toBe('instagram');
     expect(event.isStandby).toBe(false);
@@ -47,7 +47,7 @@ test('quick_reply postback event', async () => {
 
 test('image message event', async () => {
   for (const rawEvent of await getFixtures('image')) {
-    const event = createEvent(pageId, false, rawEvent);
+    const event = createEvent(agentId, false, rawEvent);
 
     expect(event.platform).toBe('instagram');
     expect(event.isStandby).toBe(false);

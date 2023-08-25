@@ -64,6 +64,7 @@ const {
   FACEBOOK_PAGE_ID,
   FACEBOOK_ACCESS_TOKEN,`}${when(platforms.includes('instagram'))`
   // instagram
+  INSTAGRAM_AGENT_ID,
   INSTAGRAM_PAGE_ID,
   INSTAGRAM_ACCESS_TOKEN,
   INSTAGRAM_AGENT_USERNAME,`}${when(platforms.includes('whatsapp'))`
@@ -152,6 +153,7 @@ ${when(recognizer === 'dialogflow')`
         appSecret: META_APP_SECRET,
         webhookVerifyToken: META_WEBHOOK_VERIFY_TOKEN,
         agentSettings: {
+          accountId: INSTAGRAM_AGENT_ID,
           pageId: INSTAGRAM_PAGE_ID,
           accessToken: INSTAGRAM_ACCESS_TOKEN,
           username: INSTAGRAM_AGENT_USERNAME,

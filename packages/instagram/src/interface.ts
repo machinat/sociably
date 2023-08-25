@@ -1,6 +1,6 @@
 import { AgentSettingsAccessor } from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
-import type InstagramPage from './Page.js';
+import type InstagramAgent from './Agent.js';
 import type {
   InstagramPlatformUtilities,
   InstagramConfigs,
@@ -24,7 +24,7 @@ export const PlatformUtilitiesI = serviceInterface<InstagramPlatformUtilities>({
 });
 
 export type AgentSettingsAccessorI = AgentSettingsAccessor<
-  InstagramPage,
+  InstagramAgent,
   InstagramAgentSettings
 >;
 
@@ -32,7 +32,7 @@ export type AgentSettingsAccessorI = AgentSettingsAccessor<
  * @category Interface
  */
 export const AgentSettingsAccessorI = serviceInterface<
-  AgentSettingsAccessor<InstagramPage, InstagramAgentSettings>
+  AgentSettingsAccessor<InstagramAgent, InstagramAgentSettings>
 >({
   name: 'InstagramAgentSettingsAccessor',
 });

@@ -324,7 +324,7 @@ describe('.requestApi(options)', () => {
 
     await expect(
       bot.requestApi({
-        page,
+        channel: page,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -348,7 +348,7 @@ describe('.requestApi(options)', () => {
     graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
     await expect(
       bot.requestApi({
-        page,
+        channel: page,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -371,7 +371,7 @@ describe('.requestApi(options)', () => {
     graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
     await expect(
       bot.requestApi({
-        page,
+        channel: page,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -408,7 +408,7 @@ describe('.requestApi(options)', () => {
 
     try {
       await bot.requestApi({
-        page,
+        channel: page,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },

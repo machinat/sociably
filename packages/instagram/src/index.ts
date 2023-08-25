@@ -1,5 +1,5 @@
 export { default } from './module.js';
-export { default as InstagramPage } from './Page.js';
+export { default as InstagramAgent } from './Agent.js';
 export { default as InstagramChat } from './Chat.js';
 export { default as InstagramUser } from './User.js';
 export { default as InstagramUserProfile } from './UserProfile.js';

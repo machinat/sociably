@@ -31,7 +31,6 @@ export default class FacebookUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['user'],
       platform: FACEBOOK,
       scopeId: this.pageId,
       id: this.id,

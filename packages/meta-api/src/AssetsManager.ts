@@ -1,18 +1,22 @@
 import StateControllerI from '@sociably/core/base/StateController';
 import {
   MetaApiBot,
+  MetaApiChannel,
   SetMetaAppSubscriptionOptions,
   DeleteMetaAppSubscriptionOptions,
 } from './types.js';
 
-export class MetaAssetsManager {
-  protected bot: MetaApiBot;
+const channelInputId = (channel: string | MetaApiChannel): string =>
+  typeof channel === 'string' ? channel : channel.id;
+
+export class MetaAssetsManager<Channel extends MetaApiChannel> {
+  protected bot: MetaApiBot<Channel>;
   private stateController: StateControllerI;
   private platformShortId: string;
 
   constructor(
     stateManager: StateControllerI,
-    bot: MetaApiBot,
+    bot: MetaApiBot<Channel>,
     platformShortId: string
   ) {
     this.stateController = stateManager;
@@ -58,50 +62,50 @@ export class MetaAssetsManager {
   }
 
   async getAssetId(
-    agentId: string,
+    channel: string | Channel,
     resource: string,
     assetTag: string
   ): Promise<undefined | string> {
     const existed = await this.stateController
-      .globalState(this.makeResourceKey(agentId, resource))
+      .globalState(this.makeResourceKey(channelInputId(channel), resource))
       .get<string>(assetTag);
     return existed || undefined;
   }
 
   async saveAssetId(
-    agentId: string,
+    channel: string | Channel,
     resource: string,
     assetTag: string,
     id: string
   ): Promise<boolean> {
     const isUpdated = await this.stateController
-      .globalState(this.makeResourceKey(agentId, resource))
+      .globalState(this.makeResourceKey(channelInputId(channel), resource))
       .set<string>(assetTag, id);
     return isUpdated;
   }
 
   getAllAssets(
-    agentId: string,
+    channel: string | Channel,
     resource: string
   ): Promise<null | Map<string, string>> {
     return this.stateController
-      .globalState(this.makeResourceKey(agentId, resource))
+      .globalState(this.makeResourceKey(channelInputId(channel), resource))
       .getAll();
   }
 
   async unsaveAssetId(
-    agentId: string,
+    channel: string | Channel,
     resource: string,
     assetTag: string
   ): Promise<boolean> {
     const isDeleted = await this.stateController
-      .globalState(this.makeResourceKey(agentId, resource))
+      .globalState(this.makeResourceKey(channelInputId(channel), resource))
       .delete(assetTag);
     return isDeleted;
   }
 
-  private makeResourceKey(agentId: string, resource: string): string {
-    return `$${this.platformShortId}.${resource}.${agentId}`;
+  private makeResourceKey(channel: string | Channel, resource: string): string {
+    return `$${this.platformShortId}.${resource}.${channelInputId(channel)}`;
   }
 }
 

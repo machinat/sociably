@@ -59,7 +59,6 @@ class TelegramUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['user', 'channel'],
       platform: TELEGRAM,
       id: this.id,
     };

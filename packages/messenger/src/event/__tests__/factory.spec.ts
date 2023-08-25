@@ -1,20 +1,21 @@
 import { readFile } from 'fs/promises';
 import { moxy } from '@moxyjs/moxy';
+import { MetaApiChannel } from '@sociably/meta-api';
 import createEventFactory from '../factory.js';
 import {
   TextEventProto,
   QuickReplyEventProto,
   ImageEventProto,
 } from '../types.js';
-import { MessengerPage, MessengerChat, MessengerUser } from '../../types.js';
+import { MessengerChat, MessengerUser } from '../../types.js';
 
 const pageId = '__PAGE_ID__';
 
 const page = {
   platform: 'test',
   id: pageId,
-} as MessengerPage;
-const createPage = moxy(() => page);
+} as MetaApiChannel;
+const createChannel = moxy(() => page);
 
 const chat = {
   platform: 'test',
@@ -27,19 +28,18 @@ const createChat = moxy(() => chat);
 
 const user = {
   platform: 'test',
-  pageId: '12345',
   id: '67890',
 } as MessengerUser;
 const createUser = moxy(() => user);
 
 afterEach(() => {
-  createPage.mock.clear();
+  createChannel.mock.clear();
   createChat.mock.clear();
   createUser.mock.clear();
 });
 
 const createEvent = createEventFactory({
-  createPage,
+  createChannel,
   createChat,
   createUser,
 });

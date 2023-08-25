@@ -1,11 +1,11 @@
 import type { UniqueOmniIdentifier } from '@sociably/core';
 import { MessengerUser } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import InstagramPage from './Page.js';
+import InstagramAgent from './Agent.js';
 import { INSTAGRAM, IG } from './constant.js';
 
 type InstagramUserValue = {
-  page: string;
+  agent: string;
   id: string;
 };
 
@@ -15,40 +15,39 @@ export default class InstagramUser
   static typeName = 'IgUser';
 
   static fromJSONValue(value: InstagramUserValue): InstagramUser {
-    const { page, id } = value;
-    return new InstagramUser(page, id);
+    const { agent, id } = value;
+    return new InstagramUser(agent, id);
   }
 
   readonly platform = INSTAGRAM;
   readonly $$typeofUser = true;
-  pageId: string;
+  agentId: string;
   id: string;
 
-  constructor(pageId: string, id: string) {
-    this.pageId = pageId;
+  constructor(agentId: string, id: string) {
+    this.agentId = agentId;
     this.id = id;
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['user'],
       platform: INSTAGRAM,
-      scopeId: this.pageId,
+      scopeId: this.agentId,
       id: this.id,
     };
   }
 
   get uid(): string {
-    return `${IG}.${this.pageId}.${this.id}`;
+    return `${IG}.${this.agentId}.${this.id}`;
   }
 
-  get page(): InstagramPage {
-    return new InstagramPage(this.pageId);
+  get agent(): InstagramAgent {
+    return new InstagramAgent(this.agentId);
   }
 
   toJSONValue(): InstagramUserValue {
-    const { pageId, id } = this;
-    return { page: pageId, id };
+    const { agentId, id } = this;
+    return { agent: agentId, id };
   }
 
   // eslint-disable-next-line class-methods-use-this

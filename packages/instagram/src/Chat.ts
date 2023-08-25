@@ -1,32 +1,32 @@
 import type { UniqueOmniIdentifier } from '@sociably/core';
 import { MessengerChat } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
-import InstagramPage from './Page.js';
+import InstagramAgent from './Agent.js';
 import { INSTAGRAM, IG } from './constant.js';
 import type { MessagingTarget } from './types.js';
 
 type InstagramChatType = 'user' | 'comment' | 'unknown';
 
 type ChatValue = {
-  page: string;
+  agent: string;
   target: MessagingTarget;
 };
 
 class InstagramChat implements MessengerChat, MarshallableInstance<ChatValue> {
   static typeName = 'IgChat';
   static fromJSONValue(value: ChatValue): InstagramChat {
-    const { page, target } = value;
-    return new InstagramChat(page, target);
+    const { agent, target } = value;
+    return new InstagramChat(agent, target);
   }
 
-  pageId: string;
+  agentId: string;
   target: MessagingTarget;
 
   readonly platform = INSTAGRAM;
   readonly $$typeofThread = true;
 
-  constructor(pageId: string, target: MessagingTarget) {
-    this.pageId = pageId;
+  constructor(agentId: string, target: MessagingTarget) {
+    this.agentId = agentId;
     this.target = target;
   }
 
@@ -47,30 +47,25 @@ class InstagramChat implements MessengerChat, MarshallableInstance<ChatValue> {
     );
   }
 
-  get page(): InstagramPage {
-    return new InstagramPage(this.pageId);
-  }
-
-  get agent(): InstagramPage {
-    return this.page;
+  get agent(): InstagramAgent {
+    return new InstagramAgent(this.agentId);
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: INSTAGRAM,
-      scopeId: this.pageId,
+      scopeId: this.agentId,
       id: this.id,
     };
   }
 
   get uid(): string {
-    return `${IG}.${this.pageId}.${this.id}`;
+    return `${IG}.${this.agentId}.${this.id}`;
   }
 
   toJSONValue(): ChatValue {
-    const { pageId, target } = this;
-    return { page: pageId, target };
+    const { agentId, target } = this;
+    return { agent: agentId, target };
   }
 
   // eslint-disable-next-line class-methods-use-this

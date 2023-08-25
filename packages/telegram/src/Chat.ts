@@ -48,7 +48,6 @@ class TelegramChat
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: TELEGRAM,
       scopeId: this.botId,
       id: this.id,

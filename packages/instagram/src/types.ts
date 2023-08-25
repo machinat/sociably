@@ -25,7 +25,7 @@ import {
   MessagingOptions,
 } from '@sociably/messenger';
 import InstagramChat from './Chat.js';
-import InstagramPage from './Page.js';
+import InstagramAgent from './Agent.js';
 import type { InstagramBot } from './Bot.js';
 import { AgentSettingsAccessorI } from './interface.js';
 import type { InstagramEvent } from './event/types.js';
@@ -33,7 +33,7 @@ import type { INSTAGRAM } from './constant.js';
 
 export * from './event/types.js';
 
-export type InstagramThread = InstagramChat | InstagramPage;
+export type InstagramThread = InstagramChat | InstagramAgent;
 
 export type PsidTarget = {
   id: string;
@@ -119,18 +119,20 @@ export type InstagramDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type InstagramAgentSettings = {
-  /** The Instagram page id */
+  /** The Instagram business account ID */
+  accountId: string;
+  /** The bound Facbebook page ID */
   pageId: string;
-  /** The page access token for the app */
+  /** The access token of the bound page */
   accessToken: string;
   /** The username of Instagram account */
   username: string;
 };
 
 export type InstagramConfigs = {
-  /** Page integration settings in single agent mode */
+  /** Instagram integration settings in single agent mode */
   agentSettings?: InstagramAgentSettings;
-  /** Page integration settings in multi agent mode */
+  /** Instagram integration settings in multi agent mode */
   multiAgentSettings?: InstagramAgentSettings[];
   /** Host integration settings with your own service */
   agentSettingsService?: Interfaceable<AgentSettingsAccessorI>;

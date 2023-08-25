@@ -12,7 +12,7 @@ import {
   InstagramAssetsManager,
   saveReusableAttachments,
 } from '../asset/index.js';
-import InstagramPage from '../Page.js';
+import InstagramAgent from '../Agent.js';
 import InstagramChat from '../Chat.js';
 import InstagramUser from '../User.js';
 import InstagramUserProfile from '../UserProfile.js';
@@ -35,7 +35,8 @@ it('export interfaces', () => {
 });
 
 const agentSettings = {
-  pageId: '1234567890',
+  accountId: '1234567890',
+  pageId: '9876543210',
   accessToken: '_ACCESS_TOKEN_',
   username: 'janedoe777',
 };
@@ -157,7 +158,7 @@ describe('initModule(configs)', () => {
     expect(profilers.get('instagram')).toBeInstanceOf(InstagramProfiler);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
-        InstagramPage,
+        InstagramAgent,
         InstagramChat,
         InstagramUser,
         InstagramUserProfile,
@@ -217,16 +218,16 @@ describe('initModule(configs)', () => {
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramPage('1234567890'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('1234567890'))
     ).resolves.toEqual(agentSettings);
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramPage('9876543210'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('9876543210'))
     ).resolves.toEqual(null);
 
     await expect(
       agentSettingsAccessor.getAgentSettingsBatch([
-        new InstagramPage('1234567890'),
-        new InstagramPage('9876543210'),
+        new InstagramAgent('1234567890'),
+        new InstagramAgent('9876543210'),
       ])
     ).resolves.toEqual([agentSettings, null]);
 
@@ -236,12 +237,14 @@ describe('initModule(configs)', () => {
   test('with configs.multiAgentSettings', async () => {
     const multiAgentSettings = [
       {
-        pageId: '1234567890',
+        accountId: '1234567890',
+        pageId: '5555555555',
         accessToken: '_ACCESS_TOKEN_1_',
         username: 'johndoe321',
       },
       {
-        pageId: '9876543210',
+        accountId: '9876543210',
+        pageId: '6666666666',
         accessToken: '_ACCESS_TOKEN_2_',
         username: 'janedoe777',
       },
@@ -264,20 +267,20 @@ describe('initModule(configs)', () => {
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramPage('1234567890'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('1234567890'))
     ).resolves.toEqual(multiAgentSettings[0]);
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramPage('9876543210'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('9876543210'))
     ).resolves.toEqual(multiAgentSettings[1]);
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramPage('8888888888'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('8888888888'))
     ).resolves.toBe(null);
 
     await expect(
       agentSettingsAccessor.getAgentSettingsBatch([
-        new InstagramPage('9876543210'),
-        new InstagramPage('1234567890'),
-        new InstagramPage('8888888888'),
+        new InstagramAgent('9876543210'),
+        new InstagramAgent('1234567890'),
+        new InstagramAgent('8888888888'),
       ])
     ).resolves.toEqual([multiAgentSettings[1], multiAgentSettings[0], null]);
 
@@ -289,7 +292,7 @@ describe('initModule(configs)', () => {
       getAgentSettings: async () => agentSettings,
       getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
-    const myPageSettingsService = serviceProviderFactory({})(
+    const mySettingsService = serviceProviderFactory({})(
       () => settingsAccessor
     );
 
@@ -300,13 +303,13 @@ describe('initModule(configs)', () => {
       ],
       platforms: [
         Instagram.initModule({
-          agentSettingsService: myPageSettingsService,
+          agentSettingsService: mySettingsService,
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
-      services: [myPageSettingsService],
+      services: [mySettingsService],
     });
     await app.start();
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);

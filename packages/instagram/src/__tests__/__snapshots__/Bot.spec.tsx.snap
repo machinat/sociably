@@ -5,7 +5,7 @@ exports[`.message(thread, message, options) message options 1`] = `
   "jobs": [
     {
       "assetTag": undefined,
-      "channel": InstagramPage {
+      "channel": InstagramAgent {
         "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "instagram",
@@ -32,7 +32,7 @@ exports[`.message(thread, message, options) message options 1`] = `
     },
     {
       "assetTag": undefined,
-      "channel": InstagramPage {
+      "channel": InstagramAgent {
         "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "instagram",
@@ -95,7 +95,7 @@ exports[`.message(thread, message, options) message options 1`] = `
       "payload": [
         {
           "assetTag": undefined,
-          "channel": InstagramPage {
+          "channel": InstagramAgent {
             "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "instagram",
@@ -122,7 +122,7 @@ exports[`.message(thread, message, options) message options 1`] = `
         },
         {
           "assetTag": undefined,
-          "channel": InstagramPage {
+          "channel": InstagramAgent {
             "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "instagram",
@@ -182,7 +182,7 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
   "jobs": [
     {
       "assetTag": undefined,
-      "channel": InstagramPage {
+      "channel": InstagramAgent {
         "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "instagram",
@@ -209,7 +209,7 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
     },
     {
       "assetTag": undefined,
-      "channel": InstagramPage {
+      "channel": InstagramAgent {
         "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "instagram",
@@ -272,7 +272,7 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
       "payload": [
         {
           "assetTag": undefined,
-          "channel": InstagramPage {
+          "channel": InstagramAgent {
             "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "instagram",
@@ -299,7 +299,7 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
         },
         {
           "assetTag": undefined,
-          "channel": InstagramPage {
+          "channel": InstagramAgent {
             "$$typeofChannel": true,
             "id": "1234567890",
             "platform": "instagram",
@@ -354,9 +354,9 @@ exports[`.message(thread, message, options) send messages to me/messages api 2`]
 }
 `;
 
-exports[`.uploadChatAttachment(page, message) call message_attachments api 1`] = `
+exports[`.uploadChatAttachment(agent, message) call message_attachments api 1`] = `
 {
   "access_token": "_ACCESS_TOKEN_",
-  "batch": "[{"method":"POST","relative_url":"me/message_attachments?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D","omit_response_on_success":false}]",
+  "batch": "[{"method":"POST","relative_url":"me/message_attachments?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Ftrollface.png%22%7D%7D%7D&platform=instagram","omit_response_on_success":false}]",
 }
 `;

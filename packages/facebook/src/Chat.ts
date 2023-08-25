@@ -67,7 +67,6 @@ class FacebookChat<Type extends ChatType = ChatType>
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: FACEBOOK,
       scopeId: this.pageId,
       id: this.id,

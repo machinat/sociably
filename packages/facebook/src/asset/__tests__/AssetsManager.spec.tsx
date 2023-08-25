@@ -203,12 +203,12 @@ describe('subscription management', () => {
     });
   });
 
-  describe('.setPageSubscribedApp(options)', () => {
+  describe('.setSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
 
       await expect(
-        manager.setPageSubscribedApp(page, {
+        manager.setSubscribedApp(page, {
           fields: ['messages', 'messaging_postbacks'],
           accessToken: '_ACCESS_TOKEN_',
         })
@@ -216,7 +216,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
+        channel: page,
         accessToken: '_ACCESS_TOKEN_',
         method: 'POST',
         url: 'me/subscribed_apps',
@@ -235,11 +235,11 @@ describe('subscription management', () => {
         ],
       });
 
-      await expect(manager.setPageSubscribedApp(page)).resolves.toBe(undefined);
+      await expect(manager.setSubscribedApp(page)).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
+        channel: page,
         method: 'POST',
         url: 'me/subscribed_apps',
         params: {
@@ -254,7 +254,7 @@ describe('subscription management', () => {
 
     test('default subscribed fields', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
-      await expect(manager.setPageSubscribedApp(page)).resolves.toBe(undefined);
+      await expect(manager.setSubscribedApp(page)).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi.mock.calls[0].args[0].params.subscribed_fields)
@@ -273,25 +273,23 @@ describe('subscription management', () => {
     });
   });
 
-  describe('.deletePageSubscribedApp(options)', () => {
+  describe('.deleteSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
 
-      await expect(manager.deletePageSubscribedApp(page)).resolves.toBe(
-        undefined
-      );
+      await expect(manager.deleteSubscribedApp(page)).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
+        channel: page,
         asApp: true,
         method: 'DELETE',
-        url: '1234567890/subscribed_apps',
+        url: 'me/subscribed_apps',
       });
     });
   });
 
-  describe('.setPageMessengerProfile(page, settings)', () => {
+  describe('.setMessengerProfile(page, settings)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
       bot.requestApi.mock.fake(async ({ method }) =>
@@ -299,7 +297,7 @@ describe('subscription management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
+        manager.setMessengerProfile(page, {
           whitelistedDomains: ['https://foo.bar'],
           getStarted: { payload: 'GO!' },
           greeting: [{ locale: 'default', text: 'Hello World!' }],
@@ -309,7 +307,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-        page,
+        channel: page,
         method: 'GET',
         url: 'me/messenger_profile',
         params: {
@@ -325,7 +323,7 @@ describe('subscription management', () => {
         accessToken: '_ACCESS_TOKEN_',
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel: page,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -359,7 +357,7 @@ describe('subscription management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
+        manager.setMessengerProfile(page, {
           whitelistedDomains: ['https://foo.com', 'https://bar.com'],
           greeting: [
             { locale: 'zh_TW', text: '哈囉！' },
@@ -370,7 +368,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel: page,
         method: 'DELETE',
         url: 'me/messenger_profile',
         params: {
@@ -378,7 +376,7 @@ describe('subscription management', () => {
         },
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
-        page,
+        channel: page,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -416,7 +414,7 @@ describe('subscription management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
+        manager.setMessengerProfile(page, {
           whitelistedDomains: ['https://baz.com', 'https://foo.com'],
           greeting: [{ locale: 'default', text: 'Hello World!' }],
           getStarted: { payload: 'GO!' },
@@ -435,7 +433,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel: page,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -652,7 +650,7 @@ describe('assets management', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      page,
+      channel: page,
       method: 'POST',
       url: 'me/personas',
       params: { name: 'Baby Yoda', profile_picture_url: '_URL_' },
@@ -672,7 +670,7 @@ describe('assets management', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      page,
+      channel: page,
       accessToken: '_MY_ACCESS_TOKEN_',
       method: 'POST',
       url: 'me/personas',
@@ -703,7 +701,7 @@ describe('assets management', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      page,
+      channel: page,
       accessToken: '_ACCESS_TOKEN_',
       method: 'DELETE',
       url: '_PERSONA_ID_',

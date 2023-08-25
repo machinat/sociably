@@ -34,7 +34,6 @@ class WebSocketConnection
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: WEBSOCKET,
       scopeId: this.serverId,
       id: this.id,

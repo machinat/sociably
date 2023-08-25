@@ -127,7 +127,11 @@ export class FacebookServerAuthenticator
               profile: userProfile?.data,
             },
           }
-        : { ok: false, code: 404, reason: `page "${pageId}" not registered` };
+        : {
+            ok: false,
+            code: 404,
+            reason: `Facebook page "${pageId}" not registered`,
+          };
     } catch (err) {
       return err instanceof MetaApiError && err.code === 404
         ? {

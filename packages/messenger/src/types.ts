@@ -1,13 +1,12 @@
 /* eslint-disable camelcase */
 import type {
   NativeComponent,
-  SociablyChannel,
   SociablyNode,
   SociablyThread,
   SociablyUser,
 } from '@sociably/core';
 import type { IntermediateSegment } from '@sociably/core/renderer';
-import type { FileInfo, MetaApiResponseBody } from '@sociably/meta-api';
+import type { FileInfo, MetaApiChannel, MetaApiBot } from '@sociably/meta-api';
 import type {
   PATH_MESSAGES,
   PATH_PASS_THREAD_CONTROL,
@@ -141,56 +140,30 @@ export type MessagingOptions = {
   oneTimeNotifToken?: string;
 };
 
-export type MessengerPage = {
-  id: string;
-} & SociablyChannel;
-
 export type MessengerChat = {
-  pageId: string;
-  page: MessengerPage;
   target: MessagingTarget;
 } & SociablyThread;
 
 export type MessengerUser = {
-  pageId: string;
-  page: MessengerPage;
   id: string;
 } & SociablyUser;
 
-export type MessengerBotRequestApiOptions<Page extends MessengerPage> = {
-  /** The page to make the API call */
-  page?: string | Page;
-  /** HTTP method */
-  method?: string;
-  /** API request URL relative to https://graph.facebook.com/{version}/ */
-  url: string;
-  /** API request parameters */
-  params?: Record<string, unknown>;
-  /** Make the API call as the FB app */
-  asApp?: boolean;
-  /** Force to use the access token */
-  accessToken?: string;
-};
+export type MessengerBot<Channel extends MetaApiChannel> =
+  MetaApiBot<Channel> & {
+    uploadChatAttachment(
+      channel: string | Channel,
+      node: SociablyNode
+    ): Promise<null | { attachmentId: string }>;
+  };
 
-export type MessengerBot<Page extends MessengerPage> = {
-  requestApi<ResBody extends MetaApiResponseBody>(
-    options: MessengerBotRequestApiOptions<Page>
-  ): Promise<ResBody>;
-
-  uploadChatAttachment(
-    page: string | Page,
-    node: SociablyNode
-  ): Promise<null | { attachmentId: string }>;
-};
-
-export type SetPageSubscribedAppOptions = {
+export type SetSubscribedAppOptions = {
   /** The page object fields to be subscribed */
   fields?: string[];
   /** Specify the access token to be used on the API call */
   accessToken?: string;
 };
 
-export type SetPageMessengerProfileOptions = {
+export type SetMessengerProfileOptions = {
   /** Specify the access token to be used on the API call */
   accessToken?: string;
   /** Specify the platform option */

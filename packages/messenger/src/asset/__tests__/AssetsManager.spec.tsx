@@ -1,8 +1,9 @@
 import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
+import { MetaApiChannel } from '@sociably/meta-api';
 import { MessengerAssetsManager } from '../AssetsManager.js';
-import { MessengerBot, MessengerPage } from '../../types.js';
+import { MessengerBot } from '../../types.js';
 
 const state = moxy({
   get: async () => null,
@@ -13,18 +14,13 @@ const state = moxy({
   clear: () => {},
 });
 
-const page = {
-  platform: 'test',
-  id: '12345',
-} as MessengerPage;
-
 const stateController = moxy<StateControllerI>({
   globalState() {
     return state;
   },
 } as never);
 
-const bot = moxy<MessengerBot<MessengerPage>>({
+const bot = moxy<MessengerBot<MetaApiChannel>>({
   uploadChatAttachment() {
     return {};
   },
@@ -37,13 +33,19 @@ beforeEach(() => {
   bot.mock.reset();
 });
 
+const channelId = '12345';
+const channel = {
+  platform: 'test',
+  id: channelId,
+} as MetaApiChannel;
+
 describe('page/app management', () => {
-  describe('.setPageSubscribedApp(options)', () => {
+  describe('.setSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new MessengerAssetsManager(stateController, bot, 'test');
 
       await expect(
-        manager.setPageSubscribedApp(page, {
+        manager.setSubscribedApp(channel, {
           fields: ['messages', 'messaging_postbacks'],
           accessToken: '_ACCESS_TOKEN_',
         })
@@ -51,7 +53,7 @@ describe('page/app management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
+        channel,
         accessToken: '_ACCESS_TOKEN_',
         method: 'POST',
         url: 'me/subscribed_apps',
@@ -62,25 +64,25 @@ describe('page/app management', () => {
     });
   });
 
-  describe('.deletePageSubscribedApp(options)', () => {
+  describe('.deleteSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new MessengerAssetsManager(stateController, bot, 'test');
 
-      await expect(manager.deletePageSubscribedApp(page)).resolves.toBe(
+      await expect(manager.deleteSubscribedApp(channel)).resolves.toBe(
         undefined
       );
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
+        channel,
         asApp: true,
         method: 'DELETE',
-        url: '12345/subscribed_apps',
+        url: 'me/subscribed_apps',
       });
     });
   });
 
-  describe('.setPageMessengerProfile(page, settings)', () => {
+  describe('.setMessengerProfile(page, settings)', () => {
     const messengerProfileFields = [
       'whitelisted_domains',
       'get_started',
@@ -97,7 +99,7 @@ describe('page/app management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
+        manager.setMessengerProfile(channel, {
           whitelistedDomains: ['https://foo.bar'],
           getStarted: { payload: 'GO!' },
           greeting: [{ locale: 'default', text: 'Hello World!' }],
@@ -107,7 +109,7 @@ describe('page/app management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-        page,
+        channel,
         method: 'GET',
         url: 'me/messenger_profile',
         params: {
@@ -116,7 +118,7 @@ describe('page/app management', () => {
         accessToken: '_ACCESS_TOKEN_',
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -150,7 +152,7 @@ describe('page/app management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
+        manager.setMessengerProfile(channel, {
           whitelistedDomains: ['https://foo.com', 'https://bar.com'],
           greeting: [
             { locale: 'zh_TW', text: '哈囉！' },
@@ -161,7 +163,7 @@ describe('page/app management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel,
         method: 'DELETE',
         url: 'me/messenger_profile',
         params: {
@@ -169,7 +171,7 @@ describe('page/app management', () => {
         },
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
-        page,
+        channel,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -207,7 +209,7 @@ describe('page/app management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
+        manager.setMessengerProfile(channel, {
           whitelistedDomains: ['https://baz.com', 'https://foo.com'],
           greeting: [{ locale: 'default', text: 'Hello World!' }],
           getStarted: { payload: 'GO!' },
@@ -226,7 +228,7 @@ describe('page/app management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -266,7 +268,7 @@ describe('page/app management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
+        manager.setMessengerProfile(channel, {
           platform: 'instagram',
           persistentMenu: [
             {
@@ -281,7 +283,7 @@ describe('page/app management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
       expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-        page,
+        channel,
         method: 'GET',
         url: 'me/messenger_profile',
         params: {
@@ -290,7 +292,7 @@ describe('page/app management', () => {
         },
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel,
         method: 'DELETE',
         url: 'me/messenger_profile',
         params: {
@@ -299,7 +301,7 @@ describe('page/app management', () => {
         },
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
-        page,
+        channel,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -322,10 +324,10 @@ describe('assets management', () => {
   test('get asset id', async () => {
     const manager = new MessengerAssetsManager(stateController, bot, 'test');
 
-    await expect(manager.getAssetId(page, 'foo', 'bar')).resolves.toBe(
+    await expect(manager.getAssetId(channel, 'foo', 'bar')).resolves.toBe(
       undefined
     );
-    await expect(manager.getAttachment(page, 'my_attachment')).resolves.toBe(
+    await expect(manager.getAttachment(channel, 'my_attachment')).resolves.toBe(
       undefined
     );
 
@@ -343,10 +345,12 @@ describe('assets management', () => {
     expect(state.get).toHaveBeenNthCalledWith(2, 'my_attachment');
 
     state.get.mock.fakeReturnValue('baz');
-    await expect(manager.getAssetId(page, 'foo', 'bar')).resolves.toBe('baz');
+    await expect(manager.getAssetId(channel, 'foo', 'bar')).resolves.toBe(
+      'baz'
+    );
 
     state.get.mock.fakeReturnValue('_ATTACHMENT_ID_');
-    await expect(manager.getAttachment(page, 'my_attachment')).resolves.toBe(
+    await expect(manager.getAttachment(channel, 'my_attachment')).resolves.toBe(
       '_ATTACHMENT_ID_'
     );
 
@@ -359,11 +363,11 @@ describe('assets management', () => {
   test('set asset id', async () => {
     const manager = new MessengerAssetsManager(stateController, bot, 'test');
 
-    await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
-      false
-    );
     await expect(
-      manager.saveAttachment(page, 'my_attachment', '_ATTACHMENT_ID_')
+      manager.saveAssetId(channel, 'foo', 'bar', 'baz')
+    ).resolves.toBe(false);
+    await expect(
+      manager.saveAttachment(channel, 'my_attachment', '_ATTACHMENT_ID_')
     ).resolves.toBe(false);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -384,11 +388,11 @@ describe('assets management', () => {
     );
 
     state.set.mock.fake(async () => true);
-    await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
-      true
-    );
     await expect(
-      manager.saveAttachment(page, 'my_attachment', '_ATTACHMENT_ID_')
+      manager.saveAssetId(channel, 'foo', 'bar', 'baz')
+    ).resolves.toBe(true);
+    await expect(
+      manager.saveAttachment(channel, 'my_attachment', '_ATTACHMENT_ID_')
     ).resolves.toBe(true);
     expect(state.set).toHaveBeenCalledTimes(4);
   });
@@ -396,8 +400,8 @@ describe('assets management', () => {
   test('get all assets', async () => {
     const manager = new MessengerAssetsManager(stateController, bot, 'test');
 
-    await expect(manager.getAllAssets(page, 'foo')).resolves.toBe(null);
-    await expect(manager.getAllAttachments(page)).resolves.toBe(null);
+    await expect(manager.getAllAssets(channel, 'foo')).resolves.toBe(null);
+    await expect(manager.getAllAttachments(channel)).resolves.toBe(null);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
@@ -416,17 +420,23 @@ describe('assets management', () => {
     ]);
     state.getAll.mock.fake(async () => resources);
 
-    await expect(manager.getAllAssets(page, 'foo')).resolves.toEqual(resources);
-    await expect(manager.getAllAttachments(page)).resolves.toEqual(resources);
+    await expect(manager.getAllAssets(channel, 'foo')).resolves.toEqual(
+      resources
+    );
+    await expect(manager.getAllAttachments(channel)).resolves.toEqual(
+      resources
+    );
   });
 
   test('remove asset id', async () => {
     const manager = new MessengerAssetsManager(stateController, bot, 'test');
 
-    await expect(manager.unsaveAssetId(page, 'foo', 'bar')).resolves.toBe(true);
-    await expect(manager.unsaveAttachment(page, 'my_attachment')).resolves.toBe(
+    await expect(manager.unsaveAssetId(channel, 'foo', 'bar')).resolves.toBe(
       true
     );
+    await expect(
+      manager.unsaveAttachment(channel, 'my_attachment')
+    ).resolves.toBe(true);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
@@ -442,12 +452,12 @@ describe('assets management', () => {
     expect(state.delete).toHaveBeenNthCalledWith(2, 'my_attachment');
 
     state.delete.mock.fake(async () => false);
-    await expect(manager.unsaveAssetId(page, 'foo', 'bar')).resolves.toBe(
+    await expect(manager.unsaveAssetId(channel, 'foo', 'bar')).resolves.toBe(
       false
     );
-    await expect(manager.unsaveAttachment(page, 'my_attachment')).resolves.toBe(
-      false
-    );
+    await expect(
+      manager.unsaveAttachment(channel, 'my_attachment')
+    ).resolves.toBe(false);
     expect(state.delete).toHaveBeenCalledTimes(4);
   });
 
@@ -459,7 +469,7 @@ describe('assets management', () => {
 
     await expect(
       manager.uploadChatAttachment(
-        page,
+        channel,
         'my_avatar',
         <img src="http://foo.bar/avatar" />
       )
@@ -467,7 +477,7 @@ describe('assets management', () => {
 
     expect(bot.uploadChatAttachment).toHaveBeenCalledTimes(1);
     expect(bot.uploadChatAttachment).toHaveBeenCalledWith(
-      page,
+      channel,
       <img src="http://foo.bar/avatar" />
     );
 

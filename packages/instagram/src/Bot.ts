@@ -12,12 +12,18 @@ import type {
 } from '@sociably/core';
 import {
   MetaApiWorker,
+  MetaApiChannel,
   MetaApiJob,
   MetaApiResult,
   MetaApiDispatchResponse,
   MetaApiResponseBody,
+  MetaRequestApiOptions,
 } from '@sociably/meta-api';
-import { createChatJobs, createChatAttachmentJobs } from '@sociably/messenger';
+import {
+  createChatJobs,
+  createUploadChatAttachmentJobs,
+  MessengerBot,
+} from '@sociably/messenger';
 import { renderGeneralComponents } from '@sociably/messenger/components';
 import { INSTAGRAM } from './constant.js';
 import {
@@ -25,7 +31,7 @@ import {
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
 } from './interface.js';
-import InstagramPage from './Page.js';
+import InstagramAgent from './Agent.js';
 import InstagramChat from './Chat.js';
 import type {
   InstagramComponent,
@@ -42,7 +48,7 @@ type InstagramBotOptions = {
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;
   agentSettingsAccessor: AgentSettingsAccessor<
-    InstagramPage,
+    InstagramAgent,
     InstagramAgentSettings
   >;
   initScope?: InitScopeFn;
@@ -57,27 +63,14 @@ type UploadAttachmentResult = {
   attachmentId: string;
 };
 
-type ApiCallOptions = {
-  /** The page to make the API call */
-  page?: string | InstagramPage;
-  /** HTTP method */
-  method?: string;
-  /** API request URL relative to https://graph.facebook.com/{version}/ */
-  url: string;
-  /** API request parameters */
-  params?: Record<string, unknown>;
-  /** Make the API call as the Meta app */
-  asApp?: boolean;
-  /** Force to use the access token */
-  accessToken?: string;
-};
-
 /**
  * InstagramBot render messages and make API call to Instagram platform.
  * @category Provider
  */
 export class InstagramBot
-  implements SociablyBot<InstagramChat, MetaApiJob, MetaApiResult>
+  implements
+    MessengerBot<MetaApiChannel>,
+    SociablyBot<InstagramChat, MetaApiJob, MetaApiResult>
 {
   worker: MetaApiWorker;
   engine: Engine<
@@ -136,7 +129,11 @@ export class InstagramBot
     node: SociablyNode
   ): Promise<null | MetaApiDispatchResponse> {
     if (target instanceof InstagramChat) {
-      return this.engine.render(target, node, createChatJobs<InstagramChat>());
+      return this.engine.render(
+        target,
+        node,
+        createChatJobs<InstagramAgent, InstagramChat>(target.agent)
+      );
     }
 
     throw new TypeError('invalid rendering target');
@@ -151,41 +148,45 @@ export class InstagramBot
     return this.engine.render(
       chat,
       messages,
-      createChatJobs<InstagramChat>(options)
+      createChatJobs<InstagramAgent, InstagramChat>(chat.agent, options)
     );
   }
 
   /** Upload a media chat attachment for later use */
   async uploadChatAttachment(
-    /** The {@link InstagramPage} that owns the attachment */
-    pageInput: string | InstagramPage,
+    /** The {@link InstagramAgent} that owns the attachment */
+    agentInput: string | InstagramAgent,
     /** An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be uploaded */ node: SociablyNode
   ): Promise<null | UploadAttachmentResult> {
-    const page =
-      typeof pageInput === 'string' ? new InstagramPage(pageInput) : pageInput;
+    const agent =
+      typeof agentInput === 'string'
+        ? new InstagramAgent(agentInput)
+        : agentInput;
     const response = await this.engine.render(
-      page,
+      agent,
       node,
-      createChatAttachmentJobs
+      createUploadChatAttachmentJobs({ platform: 'instagram' })
     );
     const result = response?.results[0].body;
     return result ? { attachmentId: result.attachment_id } : null;
   }
 
   async requestApi<ResBody extends MetaApiResponseBody>({
-    page: pageInput,
+    channel: agentInput,
     method = 'GET',
     url,
     params,
     accessToken,
     asApp,
-  }: ApiCallOptions): Promise<ResBody> {
-    const page =
-      typeof pageInput === 'string' ? new InstagramPage(pageInput) : pageInput;
+  }: MetaRequestApiOptions<InstagramAgent>): Promise<ResBody> {
+    const account =
+      typeof agentInput === 'string'
+        ? new InstagramAgent(agentInput)
+        : agentInput;
     try {
-      const { results } = await this.engine.dispatchJobs(page || null, [
+      const { results } = await this.engine.dispatchJobs(account || null, [
         {
-          channel: page,
+          channel: account,
           request: { method, url, params },
           accessToken,
           asApp,

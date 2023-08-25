@@ -1,5 +1,5 @@
 import { moxy } from '@moxyjs/moxy';
-import InstagramPage from '../../Page.js';
+import InstagramAgent from '../../Agent.js';
 import InstagramChat from '../../Chat.js';
 import InstagramUser from '../../User.js';
 import ServerAuthenticator from '../ServerAuthenticator.js';
@@ -75,7 +75,7 @@ test('throw if thread is not a InstagramChat', () => {
   expect(() =>
     WebviewButton(
       authenticator,
-      new InstagramPage('1234567890', '9876543210')
+      new InstagramAgent('1234567890', '9876543210')
     )({ title: 'Foo' })
   ).toThrowErrorMatchingInlineSnapshot(
     `"WebviewButton can only be used in the InstagramChat with a user ID"`

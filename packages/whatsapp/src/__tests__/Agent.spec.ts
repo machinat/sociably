@@ -4,14 +4,11 @@ test('attributes', () => {
   const user = new WhatsAppAgent('1234567890');
 
   expect(user.platform).toBe('whatsapp');
-  expect(user.numberId).toBe('1234567890');
+  expect(user.id).toBe('1234567890');
 
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "channel",
-      ],
       "id": "1234567890",
       "platform": "whatsapp",
     }

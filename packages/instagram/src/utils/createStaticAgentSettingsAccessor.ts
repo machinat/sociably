@@ -4,11 +4,12 @@ import { AgentSettingsAccessorI } from '../interface.js';
 const createStaticAgentSettingsAccessor = (
   settings: InstagramAgentSettings[]
 ): AgentSettingsAccessorI => ({
-  getAgentSettings: async (page) =>
-    settings.find(({ pageId }) => pageId === page.id) || null,
-  getAgentSettingsBatch: async (pages) =>
-    pages.map(
-      (page) => settings.find(({ pageId }) => pageId === page.id) || null
+  getAgentSettings: async (agent) =>
+    settings.find(({ accountId }) => accountId === agent.id) || null,
+  getAgentSettingsBatch: async (agents) =>
+    agents.map(
+      (agent) =>
+        settings.find(({ accountId }) => accountId === agent.id) || null
     ),
 });
 

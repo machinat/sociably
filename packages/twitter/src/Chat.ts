@@ -31,7 +31,6 @@ export default class TwitterChat
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: TWITTER,
       scopeId: this.agentId,
       id: this.userId,

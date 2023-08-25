@@ -8,7 +8,7 @@ import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { MetaApiError } from '@sociably/meta-api';
 import BotP from '../Bot.js';
 import ProfilerP from '../Profiler.js';
-import InstagramPage from '../Page.js';
+import InstagramAgent from '../Agent.js';
 import InstagramChat from '../Chat.js';
 import InstagramUser from '../User.js';
 import { INSTAGRAM } from '../constant.js';
@@ -55,15 +55,15 @@ export class InstagramServerAuthenticator
       platformImageUrl: 'https://sociably.js.org/img/icon/messenger.png',
       checkCurrentAuthUsability: (credential, data) => ({
         ok:
-          credential.agent.page === data.agent.page &&
+          credential.agent.id === data.agent.id &&
           credential.user === data.user,
       }),
       verifyCredential: async (credential) => {
         const {
-          agent: { page: pageId },
+          agent: { id: agentId },
           user: userId,
         } = credential;
-        return this._verifyUser(pageId, userId);
+        return this.verifyUser(agentId, userId);
       },
       checkAuthData: (data) => {
         const result = this.checkAuthData(data);
@@ -81,17 +81,19 @@ export class InstagramServerAuthenticator
   }
 
   async getAuthUrl(user: InstagramUser, redirectUrl?: string): Promise<string> {
-    const page = new InstagramPage(user.pageId);
-    const settings = await this.settingsAccessor.getAgentSettings(page);
+    const agent = new InstagramAgent(user.agentId);
+    const settings = await this.settingsAccessor.getAgentSettings(agent);
     if (!settings) {
-      throw new Error(`page "${page.username}" not registered`);
+      throw new Error(
+        `instagram agent account "${agent.username}" not registered`
+      );
     }
 
     return this.basicAuthenticator.getAuthUrl<InstagramAuthData>(
       INSTAGRAM,
       {
         agent: {
-          page: user.pageId,
+          id: user.agentId,
           name: settings.username,
         },
         user: user.id,
@@ -109,10 +111,11 @@ export class InstagramServerAuthenticator
     };
   }
 
-  async verifyRefreshment(
-    data: InstagramAuthData
-  ): Promise<VerifyResult<InstagramAuthData>> {
-    return this._verifyUser(data.agent.page, data.user);
+  async verifyRefreshment({
+    agent: { id: agentId },
+    user: userId,
+  }: InstagramAuthData): Promise<VerifyResult<InstagramAuthData>> {
+    return this.verifyUser(agentId, userId);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -125,29 +128,30 @@ export class InstagramServerAuthenticator
     };
   }
 
-  private async _verifyUser(
-    pageId: string,
+  private async verifyUser(
+    agentId: string,
     userId: string
   ): Promise<VerifyResult<InstagramAuthData>> {
     try {
       const [settings, userProfile] = await Promise.all([
-        this.settingsAccessor.getAgentSettings(new InstagramPage(pageId)),
-        this.profiler.getUserProfile(
-          new InstagramPage(pageId),
-          new InstagramUser(pageId, userId)
-        ),
+        this.settingsAccessor.getAgentSettings(new InstagramAgent(agentId)),
+        this.profiler.getUserProfile(agentId, userId),
       ]);
 
       return settings
         ? {
             ok: true,
             data: {
-              agent: { page: pageId, name: settings.username },
+              agent: { id: agentId, name: settings.username },
               user: userId,
               profile: userProfile?.data,
             },
           }
-        : { ok: false, code: 404, reason: `page "${pageId}" not registered` };
+        : {
+            ok: false,
+            code: 404,
+            reason: `instagram agent account "${agentId}" not registered`,
+          };
     } catch (err) {
       return err instanceof MetaApiError && err.code === 404
         ? {

@@ -108,7 +108,7 @@ export const createUploadingMediaJobs = (
       channel: agent,
       request: {
         method: 'POST',
-        url: `${agent.numberId}/media`,
+        url: `${agent.id}/media`,
         params: { type: fileType, messaging_product: 'whatsapp' },
       },
       file: { data: fileData, info: fileInfo },

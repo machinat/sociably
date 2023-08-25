@@ -1,6 +1,6 @@
 import { formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
-import type { MetaApiJob } from '@sociably/meta-api';
+import type { MetaApiJob, MetaApiChannel } from '@sociably/meta-api';
 import {
   PATH_MESSAGES,
   PATH_MESSAGE_ATTACHMENTS,
@@ -11,13 +11,16 @@ import type {
   MessagingOptions,
   AttachFileValue,
   BaseSegmentValue,
-  MessengerPage,
   MessengerChat,
 } from './types.js';
 
 const POST = 'POST';
 
-export const createChatJobs = <Chat extends MessengerChat>(
+export const createChatJobs = <
+  Channel extends MetaApiChannel,
+  Chat extends MessengerChat,
+>(
+  channel: Channel,
   options?: MessagingOptions
 ) => {
   let isOneTimeTokenUsed = false;
@@ -91,7 +94,7 @@ export const createChatJobs = <Chat extends MessengerChat>(
           params,
         },
         key: chat.uid,
-        channel: chat.page,
+        channel,
         file,
         assetTag,
       };
@@ -101,50 +104,52 @@ export const createChatJobs = <Chat extends MessengerChat>(
   };
 };
 
-export const createChatAttachmentJobs = <Page extends MessengerPage>(
-  page: Page,
-  segments: DispatchableSegment<MessengerSegmentValue>[]
-): MetaApiJob[] => {
-  if (segments.length !== 1) {
-    throw new TypeError('more than 1 message received');
-  }
+export const createUploadChatAttachmentJobs =
+  <Channel extends MetaApiChannel>({ platform }: { platform?: string } = {}) =>
+  (
+    channel: Channel,
+    segments: DispatchableSegment<MessengerSegmentValue>[]
+  ): MetaApiJob[] => {
+    if (segments.length !== 1) {
+      throw new TypeError('more than 1 message received');
+    }
 
-  const [segment] = segments;
-  const { type: segType, value, node } = segment;
-  if (
-    (segType !== 'unit' && segType !== 'raw') ||
-    value.type !== 'message' ||
-    !('message' in value.params) ||
-    !value.params.message.attachment
-  ) {
-    throw new TypeError(
-      `${formatNode(node || value)} is not valid attachment message`
-    );
-  }
+    const [segment] = segments;
+    const { type: segType, value, node } = segment;
+    if (
+      (segType !== 'unit' && segType !== 'raw') ||
+      value.type !== 'message' ||
+      !('message' in value.params) ||
+      !value.params.message.attachment
+    ) {
+      throw new TypeError(
+        `${formatNode(node || value)} is not valid attachment message`
+      );
+    }
 
-  const { params, attachFile, assetTag } = value;
-  const attachmentType = params.message.attachment.type;
-  if (
-    attachmentType !== 'image' &&
-    attachmentType !== 'video' &&
-    attachmentType !== 'audio' &&
-    attachmentType !== 'file'
-  ) {
-    throw new TypeError(
-      `invalid attachment type "${attachmentType}" to be uploaded`
-    );
-  }
+    const { params, attachFile, assetTag } = value;
+    const attachmentType = params.message.attachment.type;
+    if (
+      attachmentType !== 'image' &&
+      attachmentType !== 'video' &&
+      attachmentType !== 'audio' &&
+      attachmentType !== 'file'
+    ) {
+      throw new TypeError(
+        `invalid attachment type "${attachmentType}" to be uploaded`
+      );
+    }
 
-  return [
-    {
-      channel: page,
-      file: attachFile,
-      request: {
-        method: POST,
-        url: PATH_MESSAGE_ATTACHMENTS,
-        params,
+    return [
+      {
+        channel,
+        file: attachFile,
+        request: {
+          method: POST,
+          url: PATH_MESSAGE_ATTACHMENTS,
+          params: { ...params, platform },
+        },
+        assetTag,
       },
-      assetTag,
-    },
-  ];
-};
+    ];
+  };

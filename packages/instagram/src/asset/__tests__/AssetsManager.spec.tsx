@@ -2,7 +2,7 @@ import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
 import type { InstagramBot } from '../../Bot.js';
-import InstagramPage from '../../Page.js';
+import InstagramAgent from '../../Agent.js';
 import { InstagramAssetsManager } from '../AssetsManager.js';
 
 const state = moxy({
@@ -14,7 +14,17 @@ const state = moxy({
   clear: () => {},
 });
 
-const page = new InstagramPage('1234567890');
+const accountId = '__ACCOUNT_ID__';
+const pageId = '__PAGE_ID__';
+const accessToken = '__ACCESS_TOKEN__';
+const username = '@agent.smith';
+
+const agent = new InstagramAgent(accountId);
+const agentSettings = { accountId, pageId, accessToken, username };
+const agentSettingsAccessor = moxy({
+  getAgentSettings: async () => agentSettings,
+  getAgentSettingsBatch: async () => [agentSettings],
+});
 
 const stateController = moxy<StateControllerI>({
   globalState() {
@@ -38,7 +48,11 @@ beforeEach(() => {
 describe('subscription management', () => {
   describe('.setAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
 
       await expect(
         manager.setAppSubscription({
@@ -66,12 +80,17 @@ describe('subscription management', () => {
     });
 
     test('with constructor app settings options', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot, {
-        appId: '_APP_ID_',
-        webhookVerifyToken: '_VERIFY_TOKEN_',
-        webhookUrl: 'https://foo.bar/baz/',
-        subscriptionFields: ['messages', 'messaging_postbacks'],
-      });
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor,
+        {
+          appId: '_APP_ID_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
+          webhookUrl: 'https://foo.bar/baz/',
+          subscriptionFields: ['messages', 'messaging_postbacks'],
+        }
+      );
 
       await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
 
@@ -91,10 +110,15 @@ describe('subscription management', () => {
     });
 
     test('default subscription fields', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot, {
-        appId: '_APP_ID_',
-        webhookVerifyToken: '_VERIFY_TOKEN_',
-      });
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor,
+        {
+          appId: '_APP_ID_',
+          webhookVerifyToken: '_VERIFY_TOKEN_',
+        }
+      );
 
       await expect(
         manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' })
@@ -113,7 +137,11 @@ describe('subscription management', () => {
     });
 
     it('throw if no appId available', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
@@ -126,7 +154,11 @@ describe('subscription management', () => {
     });
 
     it('throw if no webhookUrl available', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
       await expect(
         manager.setAppSubscription({
           appId: '_APP_ID_',
@@ -139,7 +171,11 @@ describe('subscription management', () => {
     });
 
     it('throw if no webhookVerifyToken available', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
@@ -154,9 +190,14 @@ describe('subscription management', () => {
 
   describe('.deleteAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot, {
-        appId: '_APP_ID_',
-      });
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor,
+        {
+          appId: '_APP_ID_',
+        }
+      );
 
       await expect(manager.deleteAppSubscription()).resolves.toBe(undefined);
 
@@ -189,7 +230,11 @@ describe('subscription management', () => {
     });
 
     it('throw if no appId available', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
 
       await expect(
         manager.deleteAppSubscription()
@@ -199,12 +244,16 @@ describe('subscription management', () => {
     });
   });
 
-  describe('.setPageSubscribedApp(options)', () => {
+  describe('.setSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
 
       await expect(
-        manager.setPageSubscribedApp(page, {
+        manager.setSubscribedApp(agent, {
           fields: ['messages', 'messaging_postbacks'],
           accessToken: '_ACCESS_TOKEN_',
         })
@@ -212,7 +261,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
+        channel: agent,
         accessToken: '_ACCESS_TOKEN_',
         method: 'POST',
         url: 'me/subscribed_apps',
@@ -223,19 +272,24 @@ describe('subscription management', () => {
     });
 
     test('with constructor app settings options', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot, {
-        subscriptionFields: [
-          'messages',
-          'messaging_postbacks',
-          'messaging_optins',
-        ],
-      });
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor,
+        {
+          subscriptionFields: [
+            'messages',
+            'messaging_postbacks',
+            'messaging_optins',
+          ],
+        }
+      );
 
-      await expect(manager.setPageSubscribedApp(page)).resolves.toBe(undefined);
+      await expect(manager.setSubscribedApp(agent)).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
+        channel: agent,
         method: 'POST',
         url: 'me/subscribed_apps',
         params: {
@@ -249,8 +303,12 @@ describe('subscription management', () => {
     });
 
     test('default subscribed fields', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
-      await expect(manager.setPageSubscribedApp(page)).resolves.toBe(undefined);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
+      await expect(manager.setSubscribedApp(agent)).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi.mock.calls[0].args[0].params.subscribed_fields)
@@ -258,50 +316,109 @@ describe('subscription management', () => {
         [
           "messages",
           "messaging_postbacks",
+          "messaging_optins",
           "messaging_handovers",
+          "messaging_policy_enforcement",
+          "messaging_account_linking",
+          "messaging_game_plays",
           "messaging_referrals",
         ]
       `);
     });
   });
 
-  describe('.deletePageSubscribedApp(options)', () => {
+  describe('.deleteSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
-
-      await expect(manager.deletePageSubscribedApp(page)).resolves.toBe(
-        undefined
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
       );
+
+      await expect(manager.deleteSubscribedApp(agent)).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        page,
+        channel: agent,
         asApp: true,
         method: 'DELETE',
-        url: '1234567890/subscribed_apps',
+        url: 'me/subscribed_apps',
       });
     });
   });
 
-  describe('.setPageMessengerProfile(page, settings)', () => {
+  describe('.setMessengerProfile(agent, settings)', () => {
+    const messengerProfileParams = {
+      iceBreakers: [
+        {
+          callToActions: [{ question: 'Yo?', payload: 'yo' }],
+          locale: 'default',
+        },
+      ],
+      persistentMenu: [
+        {
+          locale: 'default',
+          callToActions: [
+            {
+              type: 'postback' as const,
+              title: 'Talk to an agent',
+              payload: 'CARE_HELP',
+            },
+            {
+              type: 'web_url' as const,
+              title: 'Shop now',
+              url: 'https://www.originalcoastclothing.com/',
+            },
+          ],
+        },
+      ],
+    };
+    const messengerProfileRawData = {
+      ice_breakers: [
+        {
+          call_to_actions: [{ question: 'Yo?', payload: 'yo' }],
+          locale: 'default',
+        },
+      ],
+      persistent_menu: [
+        {
+          locale: 'default',
+          call_to_actions: [
+            {
+              type: 'postback',
+              title: 'Talk to an agent',
+              payload: 'CARE_HELP',
+            },
+            {
+              type: 'web_url',
+              title: 'Shop now',
+              url: 'https://www.originalcoastclothing.com/',
+            },
+          ],
+        },
+      ],
+    };
+
     it('call subscribed_apps API as page', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
       bot.requestApi.mock.fake(async ({ method }) =>
         method === 'GET' ? { data: [] } : {}
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
-          whitelistedDomains: ['https://foo.bar'],
-          getStarted: { payload: 'GO!' },
-          greeting: [{ locale: 'default', text: 'Hello World!' }],
+        manager.setMessengerProfile(agent, {
+          ...messengerProfileParams,
           accessToken: '_ACCESS_TOKEN_',
         })
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-        page,
+        channel: agent,
         method: 'GET',
         url: 'me/messenger_profile',
         params: {
@@ -318,34 +435,29 @@ describe('subscription management', () => {
         accessToken: '_ACCESS_TOKEN_',
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel: agent,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
+          ...messengerProfileRawData,
           platform: 'instagram',
-          whitelisted_domains: ['https://foo.bar'],
-          get_started: { payload: 'GO!' },
-          greeting: [{ locale: 'default', text: 'Hello World!' }],
         },
         accessToken: '_ACCESS_TOKEN_',
       });
     });
 
     it('remove current fields if not exist on new settings', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
       bot.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
               data: [
                 {
-                  whitelisted_domains: ['https://bar.com', 'https://foo.com'],
-                  get_started: { payload: 'GO!' },
-                  ice_breakers: [
-                    {
-                      call_to_actions: [{ question: 'Yo?', payload: 'yo' }],
-                      locale: 'default',
-                    },
-                  ],
+                  ice_breakers: messengerProfileRawData.ice_breakers,
                 },
               ],
             }
@@ -353,71 +465,45 @@ describe('subscription management', () => {
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
-          platform: 'instagram',
-          whitelistedDomains: ['https://foo.com', 'https://bar.com'],
-          greeting: [
-            { locale: 'zh_TW', text: '哈囉！' },
-            { locale: 'default', text: 'Hello World!' },
-          ],
+        manager.setMessengerProfile(agent, {
+          persistentMenu: messengerProfileParams.persistentMenu,
         })
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel: agent,
         method: 'DELETE',
         url: 'me/messenger_profile',
         params: {
           platform: 'instagram',
-          fields: ['get_started', 'ice_breakers'],
+          fields: ['ice_breakers'],
         },
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
-        page,
+        channel: agent,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
           platform: 'instagram',
-          greeting: [
-            { locale: 'zh_TW', text: '哈囉！' },
-            { locale: 'default', text: 'Hello World!' },
-          ],
+          persistent_menu: messengerProfileRawData.persistent_menu,
         },
       });
     });
 
     it('set fields if value has change', async () => {
-      const manager = new InstagramAssetsManager(stateController, bot);
+      const manager = new InstagramAssetsManager(
+        stateController,
+        bot,
+        agentSettingsAccessor
+      );
       bot.requestApi.mock.fake(async ({ method }) =>
-        method === 'GET'
-          ? {
-              data: [
-                {
-                  whitelisted_domains: ['https://bar.com', 'https://foo.com'],
-                  greeting: [
-                    { locale: 'default', text: 'Hello World!' },
-                    { locale: 'zh_TW', text: '哈囉！' },
-                  ],
-                  get_started: { payload: 'GO!' },
-                  ice_breakers: [
-                    {
-                      call_to_actions: [{ question: 'Yo?', payload: 'yo' }],
-                      locale: 'default',
-                    },
-                  ],
-                },
-              ],
-            }
-          : {}
+        method === 'GET' ? { data: [messengerProfileRawData] } : {}
       );
 
       await expect(
-        manager.setPageMessengerProfile(page, {
-          platform: 'instagram',
-          whitelistedDomains: ['https://baz.com', 'https://foo.com'],
-          greeting: [{ locale: 'default', text: 'Hello World!' }],
-          getStarted: { payload: 'GO!' },
+        manager.setMessengerProfile(agent, {
+          persistentMenu: messengerProfileParams.persistentMenu,
           iceBreakers: [
             {
               callToActions: [{ question: 'Yo?', payload: 'yo' }],
@@ -433,13 +519,11 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        page,
+        channel: agent,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
           platform: 'instagram',
-          whitelisted_domains: ['https://baz.com', 'https://foo.com'],
-          greeting: [{ locale: 'default', text: 'Hello World!' }],
           ice_breakers: [
             {
               call_to_actions: [{ question: 'Yo?', payload: 'yo' }],
@@ -458,12 +542,16 @@ describe('subscription management', () => {
 
 describe('assets management', () => {
   test('get asset id', async () => {
-    const manager = new InstagramAssetsManager(stateController, bot);
+    const manager = new InstagramAssetsManager(
+      stateController,
+      bot,
+      agentSettingsAccessor
+    );
 
-    await expect(manager.getAssetId(page, 'foo', 'bar')).resolves.toBe(
+    await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe(
       undefined
     );
-    await expect(manager.getAttachment(page, 'my_attachment')).resolves.toBe(
+    await expect(manager.getAttachment(agent, 'my_attachment')).resolves.toBe(
       undefined
     );
 
@@ -471,8 +559,8 @@ describe('assets management', () => {
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$ig.foo.1234567890",
-        "$ig.attachment.1234567890",
+        "$ig.foo.__PAGE_ID__",
+        "$ig.attachment.__PAGE_ID__",
       ]
     `);
 
@@ -481,10 +569,10 @@ describe('assets management', () => {
     expect(state.get).toHaveBeenNthCalledWith(2, 'my_attachment');
 
     state.get.mock.fakeReturnValue('baz');
-    await expect(manager.getAssetId(page, 'foo', 'bar')).resolves.toBe('baz');
+    await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe('baz');
 
     state.get.mock.fakeReturnValue('_ATTACHMENT_ID_');
-    await expect(manager.getAttachment(page, 'my_attachment')).resolves.toBe(
+    await expect(manager.getAttachment(agent, 'my_attachment')).resolves.toBe(
       '_ATTACHMENT_ID_'
     );
 
@@ -495,21 +583,25 @@ describe('assets management', () => {
   });
 
   test('set asset id', async () => {
-    const manager = new InstagramAssetsManager(stateController, bot);
+    const manager = new InstagramAssetsManager(
+      stateController,
+      bot,
+      agentSettingsAccessor
+    );
 
-    await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
+    await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
       false
     );
     await expect(
-      manager.saveAttachment(page, 'my_attachment', '_ATTACHMENT_ID_')
+      manager.saveAttachment(agent, 'my_attachment', '_ATTACHMENT_ID_')
     ).resolves.toBe(false);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$ig.foo.1234567890",
-        "$ig.attachment.1234567890",
+        "$ig.foo.__PAGE_ID__",
+        "$ig.attachment.__PAGE_ID__",
       ]
     `);
 
@@ -522,27 +614,31 @@ describe('assets management', () => {
     );
 
     state.set.mock.fake(async () => true);
-    await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
+    await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
       true
     );
     await expect(
-      manager.saveAttachment(page, 'my_attachment', '_ATTACHMENT_ID_')
+      manager.saveAttachment(agent, 'my_attachment', '_ATTACHMENT_ID_')
     ).resolves.toBe(true);
     expect(state.set).toHaveBeenCalledTimes(4);
   });
 
   test('get all assets', async () => {
-    const manager = new InstagramAssetsManager(stateController, bot);
+    const manager = new InstagramAssetsManager(
+      stateController,
+      bot,
+      agentSettingsAccessor
+    );
 
-    await expect(manager.getAllAssets(page, 'foo')).resolves.toBe(null);
-    await expect(manager.getAllAttachments(page)).resolves.toBe(null);
+    await expect(manager.getAllAssets(agent, 'foo')).resolves.toBe(null);
+    await expect(manager.getAllAttachments(agent)).resolves.toBe(null);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$ig.foo.1234567890",
-        "$ig.attachment.1234567890",
+        "$ig.foo.__PAGE_ID__",
+        "$ig.attachment.__PAGE_ID__",
       ]
     `);
 
@@ -554,24 +650,32 @@ describe('assets management', () => {
     ]);
     state.getAll.mock.fake(async () => resources);
 
-    await expect(manager.getAllAssets(page, 'foo')).resolves.toEqual(resources);
-    await expect(manager.getAllAttachments(page)).resolves.toEqual(resources);
+    await expect(manager.getAllAssets(agent, 'foo')).resolves.toEqual(
+      resources
+    );
+    await expect(manager.getAllAttachments(agent)).resolves.toEqual(resources);
   });
 
   test('remove asset id', async () => {
-    const manager = new InstagramAssetsManager(stateController, bot);
+    const manager = new InstagramAssetsManager(
+      stateController,
+      bot,
+      agentSettingsAccessor
+    );
 
-    await expect(manager.unsaveAssetId(page, 'foo', 'bar')).resolves.toBe(true);
-    await expect(manager.unsaveAttachment(page, 'my_attachment')).resolves.toBe(
+    await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
       true
     );
+    await expect(
+      manager.unsaveAttachment(agent, 'my_attachment')
+    ).resolves.toBe(true);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
     expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$ig.foo.1234567890",
-        "$ig.attachment.1234567890",
+        "$ig.foo.__PAGE_ID__",
+        "$ig.attachment.__PAGE_ID__",
       ]
     `);
 
@@ -580,24 +684,28 @@ describe('assets management', () => {
     expect(state.delete).toHaveBeenNthCalledWith(2, 'my_attachment');
 
     state.delete.mock.fake(async () => false);
-    await expect(manager.unsaveAssetId(page, 'foo', 'bar')).resolves.toBe(
+    await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
       false
     );
-    await expect(manager.unsaveAttachment(page, 'my_attachment')).resolves.toBe(
-      false
-    );
+    await expect(
+      manager.unsaveAttachment(agent, 'my_attachment')
+    ).resolves.toBe(false);
     expect(state.delete).toHaveBeenCalledTimes(4);
   });
 
   test('.uploadChatAttachment()', async () => {
-    const manager = new InstagramAssetsManager(stateController, bot);
+    const manager = new InstagramAssetsManager(
+      stateController,
+      bot,
+      agentSettingsAccessor
+    );
     bot.uploadChatAttachment.mock.fake(async () => ({
       attachmentId: '1857777774821032',
     }));
 
     await expect(
       manager.uploadChatAttachment(
-        page,
+        agent,
         'my_avatar',
         <img src="http://foo.bar/avatar" />
       )
@@ -605,7 +713,7 @@ describe('assets management', () => {
 
     expect(bot.uploadChatAttachment).toHaveBeenCalledTimes(1);
     expect(bot.uploadChatAttachment).toHaveBeenCalledWith(
-      page,
+      agent,
       <img src="http://foo.bar/avatar" />
     );
 

@@ -1,10 +1,10 @@
 [
   {
     "sender": {
-      "id": "<PSID>"
+      "id": "<IGID>"
     },
     "recipient": {
-      "id": "<PAGE_ID>"
+      "id": "<IGSID>"
     },
     "timestamp": 1518479195308,
     "message": {

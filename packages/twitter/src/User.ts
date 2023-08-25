@@ -37,7 +37,6 @@ export default class TwitterUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['channel', 'user'],
       platform: TWITTER,
       id: this.id,
     };

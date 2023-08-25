@@ -1,19 +1,18 @@
 import type { UniqueOmniIdentifier } from '@sociably/core';
-import type { MessengerPage } from '@sociably/messenger';
+import type { MetaApiChannel } from '@sociably/meta-api';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { INSTAGRAM, IG } from './constant.js';
 
-type InstagramPageValue = {
-  page: string;
+type InstagramAgentValue = {
+  id: string;
 };
 
-class InstagramPage
-  implements MessengerPage, MarshallableInstance<InstagramPageValue>
+class InstagramAgent
+  implements MetaApiChannel, MarshallableInstance<InstagramAgentValue>
 {
-  static typeName = 'IgPage';
-  static fromJSONValue(value: InstagramPageValue): InstagramPage {
-    const { page } = value;
-    return new InstagramPage(page);
+  static typeName = 'IgAgent';
+  static fromJSONValue({ id }: InstagramAgentValue): InstagramAgent {
+    return new InstagramAgent(id);
   }
 
   id: string;
@@ -21,14 +20,13 @@ class InstagramPage
   readonly platform = INSTAGRAM;
   readonly $$typeofChannel = true;
 
-  constructor(pageId: string, username?: string) {
-    this.id = pageId;
+  constructor(id: string, username?: string) {
+    this.id = id;
     this.username = username;
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['channel'],
       platform: INSTAGRAM,
       id: this.id,
     };
@@ -38,14 +36,14 @@ class InstagramPage
     return `${IG}.${this.id}`;
   }
 
-  toJSONValue(): InstagramPageValue {
-    return { page: this.id };
+  toJSONValue(): InstagramAgentValue {
+    return { id: this.id };
   }
 
   // eslint-disable-next-line class-methods-use-this
   typeName(): string {
-    return InstagramPage.typeName;
+    return InstagramAgent.typeName;
   }
 }
 
-export default InstagramPage;
+export default InstagramAgent;

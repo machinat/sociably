@@ -35,7 +35,7 @@ const WebviewButton =
     }
 
     const url = authenticator.getAuthUrl(
-      new InstagramUser(thread.pageId, thread.target.id),
+      new InstagramUser(thread.agent.id, thread.target.id),
       page ? posixPath.join('.', page) : undefined
     );
     return (

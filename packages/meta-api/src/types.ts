@@ -92,7 +92,13 @@ export type ListeningPlatformOptions<Context extends MetaApiEventContext> = {
   popEvent: (ctx: Context) => Promise<null>;
 };
 
-export type MetaApiBotRequestApiOptions = {
+export type MetaApiChannel = SociablyChannel & {
+  id: string;
+};
+
+export type MetaRequestApiOptions<Channel extends MetaApiChannel> = {
+  /** The channel to execute the operation with */
+  channel?: string | Channel;
   /** HTTP method */
   method?: string;
   /** API request URL relative to https://graph.facebook.com/{version}/ */
@@ -105,9 +111,9 @@ export type MetaApiBotRequestApiOptions = {
   accessToken?: string;
 };
 
-export type MetaApiBot = {
+export type MetaApiBot<Channel extends MetaApiChannel> = {
   requestApi<ResBody extends MetaApiResponseBody>(
-    options: MetaApiBotRequestApiOptions
+    options: MetaRequestApiOptions<Channel>
   ): Promise<ResBody>;
 };
 

@@ -1,30 +1,27 @@
-import InstagramPage from '../Page.js';
+import InstagramAgent from '../Agent.js';
 
 test('attributes', () => {
-  const page = new InstagramPage('12345', 'jojodoe123');
+  const agent = new InstagramAgent('12345', 'jojodoe123');
 
-  expect(page.platform).toBe('instagram');
-  expect(page.typeName()).toMatchInlineSnapshot(`"IgPage"`);
-  expect(page.uid).toMatchInlineSnapshot(`"ig.12345"`);
+  expect(agent.platform).toBe('instagram');
+  expect(agent.typeName()).toMatchInlineSnapshot(`"IgAgent"`);
+  expect(agent.uid).toMatchInlineSnapshot(`"ig.12345"`);
 
-  expect(page.id).toBe('12345');
-  expect(page.username).toBe('jojodoe123');
+  expect(agent.id).toBe('12345');
+  expect(agent.username).toBe('jojodoe123');
 
-  expect(page.uniqueIdentifier).toMatchInlineSnapshot(`
+  expect(agent.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "channel",
-      ],
       "id": "12345",
       "platform": "instagram",
     }
   `);
-  expect(page.toJSONValue()).toMatchInlineSnapshot(`
+  expect(agent.toJSONValue()).toMatchInlineSnapshot(`
     {
-      "page": "12345",
+      "id": "12345",
     }
   `);
-  expect(InstagramPage.fromJSONValue(page.toJSONValue())).toStrictEqual(
-    new InstagramPage('12345')
+  expect(InstagramAgent.fromJSONValue(agent.toJSONValue())).toStrictEqual(
+    new InstagramAgent('12345')
   );
 });

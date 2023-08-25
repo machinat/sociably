@@ -22,7 +22,7 @@ export type AudioProps = Messenger.MediaProps;
 // buttons
 
 /**
- * The URL Button opens a webpage in the Messenger webview. This button can be
+ * The URL Button opens a web page in the Messenger webview. This button can be
  * used with the Button and Generic Templates.
  * @category Component
  * @props {@link UrlButtonProps}
@@ -273,6 +273,3 @@ export type ReceiptTemplateProps = Messenger.ReceiptTemplateProps;
 export const RequestOneTimeNotif = makeInstagramComponent(
   Messenger.RequestOneTimeNotif
 );
-
-// page
-// comment

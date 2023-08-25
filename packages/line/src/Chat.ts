@@ -53,7 +53,6 @@ class LineChat implements SociablyThread, MarshallableInstance<LineChatValue> {
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: LINE,
       scopeId: this.channelId,
       id: this.id,

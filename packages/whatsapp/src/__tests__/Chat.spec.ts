@@ -10,9 +10,6 @@ test('constructing', () => {
   expect(chat.uid).toMatchInlineSnapshot(`"wa.1234567890.9876543210"`);
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "thread",
-      ],
       "id": "9876543210",
       "platform": "whatsapp",
       "scopeId": "1234567890",

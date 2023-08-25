@@ -32,7 +32,7 @@ import type {
 } from '@sociably/messenger';
 import type InstagramChat from '../Chat.js';
 import type InstagramUser from '../User.js';
-import type InstagramPage from '../Page.js';
+import type InstagramAgent from '../Agent.js';
 import { INSTAGRAM } from '../constant.js';
 import type { InstagramThread, InstagramRawEvent } from '../types.js';
 
@@ -47,12 +47,12 @@ interface EventObject<
   type: Type;
   thread: Thread;
   user: User;
-  channel: InstagramPage;
+  channel: InstagramAgent;
   payload: InstagramRawEvent;
 }
 
 /**
- * This callback will occur when a text message has been sent to your Page.
+ * This callback will occur when a text message has been sent to your agent account.
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -62,7 +62,7 @@ export interface TextEvent
     TextEventProto {}
 
 /**
- * TextEchoEvent will occur when a text message has been sent by your page.
+ * TextEchoEvent will occur when a text message has been sent by your agent account.
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -72,7 +72,7 @@ export interface TextEchoEvent
     TextEchoEventProto {}
 
 /**
- * This callback will occur when an image message has been sent to your Page.
+ * This callback will occur when an image message has been sent to your agent account.
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -82,7 +82,7 @@ export interface ImageEvent
     ImageEventProto {}
 
 /**
- * ImageEchoEvent will occur when a image message has been sent by your page.
+ * ImageEchoEvent will occur when a image message has been sent by your agent account.
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -92,7 +92,7 @@ export interface ImageEchoEvent
     ImageEchoEventProto {}
 
 /**
- * This callback will occur when a video message has been sent to your Page.
+ * This callback will occur when a video message has been sent to your agent account.
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -102,7 +102,7 @@ export interface VideoEvent
     VideoEventProto {}
 
 /**
- * VideoEchoEvent will occur when a video message has been sent by your page.
+ * VideoEchoEvent will occur when a video message has been sent by your agent account.
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -112,7 +112,7 @@ export interface VideoEchoEvent
     VideoEchoEventProto {}
 
 /**
- * This callback will occur when an audio message has been sent to your Page.
+ * This callback will occur when an audio message has been sent to your agent account.
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -122,7 +122,7 @@ export interface AudioEvent
     AudioEventProto {}
 
 /**
- * AudioEchoEvent will occur when a text message has been sent by your page.
+ * AudioEchoEvent will occur when a text message has been sent by your agent account.
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -132,7 +132,7 @@ export interface AudioEchoEvent
     AudioEchoEventProto {}
 
 /**
- * This callback will occur when a file message has been sent to your Page.
+ * This callback will occur when a file message has been sent to your agent account.
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -142,7 +142,7 @@ export interface FileEvent
     FileEventProto {}
 
 /**
- * FileEchoEvent will occur when a text message has been sent by your page.
+ * FileEchoEvent will occur when a text message has been sent by your agent account.
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -152,7 +152,7 @@ export interface FileEchoEvent
     FileEchoEventProto {}
 
 /**
- * This callback will occur when a location message has been sent to your Page.
+ * This callback will occur when a location message has been sent to your agent account.
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -183,7 +183,7 @@ export interface TemplateEchoEvent
 
 /**
  * FallbackMessageEvent will occur when an unsupported message shared by user
- * has been sent to your Page.
+ * has been sent to your agent account.
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -194,7 +194,7 @@ export interface FallbackEvent
 
 /**
  * FallbackEchoEvent will occur when a message not supporeted by echo feature
- * has been sent by your page.
+ * has been sent by your agent account.
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -267,7 +267,7 @@ export interface ReferralEvent
     ReferralEventProto {}
 
 /**
- * ReadEvent will be sent to your webhook when a message a Page has sent has
+ * ReadEvent will be sent to your webhook when a message an agent account has sent has
  * been read by the user.
  * @category Event
  * @subscription `message_reads`
@@ -278,7 +278,7 @@ export interface ReadEvent
     ReadEventProto {}
 
 /**
- * DeliveryEvent will occur when a message a Page has sent has been delivered.
+ * DeliveryEvent will occur when a message an agent account has sent has been delivered.
  * @category Event
  * @subscription `message_deliveries`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-deliveries).

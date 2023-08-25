@@ -29,7 +29,7 @@ const DEFAULT_SUBSCRIPTION_FIELDS = ['messages'];
  * platform.
  * @category Provider
  */
-export class WhatsAppAssetsManager extends MetaAssetsManager {
+export class WhatsAppAssetsManager extends MetaAssetsManager<WhatsAppAgent> {
   protected bot: BotP;
   defaultSettings: DefaultSettings;
 
@@ -80,42 +80,6 @@ export class WhatsAppAssetsManager extends MetaAssetsManager {
       throw new Error('appId is empty');
     }
     return super.deleteAppSubscription({ appId, objectType, fields });
-  }
-
-  getAssetId(
-    agent: string | WhatsAppAgent,
-    resource: string,
-    assetTag: string
-  ): Promise<undefined | string> {
-    const numberId = typeof agent === 'string' ? agent : agent.numberId;
-    return super.getAssetId(numberId, resource, assetTag);
-  }
-
-  saveAssetId(
-    agent: string | WhatsAppAgent,
-    resource: string,
-    assetTag: string,
-    id: string
-  ): Promise<boolean> {
-    const numberId = typeof agent === 'string' ? agent : agent.numberId;
-    return super.saveAssetId(numberId, resource, assetTag, id);
-  }
-
-  getAllAssets(
-    agent: string | WhatsAppAgent,
-    resource: string
-  ): Promise<null | Map<string, string>> {
-    const numberId = typeof agent === 'string' ? agent : agent.numberId;
-    return super.getAllAssets(numberId, resource);
-  }
-
-  unsaveAssetId(
-    agent: string | WhatsAppAgent,
-    resource: string,
-    assetTag: string
-  ): Promise<boolean> {
-    const numberId = typeof agent === 'string' ? agent : agent.numberId;
-    return super.unsaveAssetId(numberId, resource, assetTag);
   }
 
   getMedia(

@@ -1,13 +1,13 @@
 import deepEqual from 'fast-deep-equal';
 import { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
-import { MetaAssetsManager } from '@sociably/meta-api';
+import { MetaAssetsManager, MetaApiChannel } from '@sociably/meta-api';
 import snakecaseKeys from 'snakecase-keys';
+import { MESSENGER_PAGE_SUBSCRIPTION_FIELDS } from '../constant.js';
 import {
   MessengerBot,
-  MessengerPage,
-  SetPageSubscribedAppOptions,
-  SetPageMessengerProfileOptions,
+  SetSubscribedAppOptions,
+  SetMessengerProfileOptions,
 } from '../types.js';
 
 const ATTACHMENT = 'attachment';
@@ -33,20 +33,23 @@ const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
  * @category Provider
  */
 export class MessengerAssetsManager<
-  Page extends MessengerPage,
-> extends MetaAssetsManager {
-  protected bot: MessengerBot<Page>;
+  Channel extends MetaApiChannel,
+> extends MetaAssetsManager<Channel> {
+  protected bot: MessengerBot<Channel>;
 
   /**
    * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
-  async setPageSubscribedApp(
-    page: string | Page,
-    { fields, accessToken }: SetPageSubscribedAppOptions
+  async setSubscribedApp(
+    channel: string | Channel,
+    {
+      fields = MESSENGER_PAGE_SUBSCRIPTION_FIELDS,
+      accessToken,
+    }: SetSubscribedAppOptions
   ): Promise<void> {
     await this.bot.requestApi({
-      page,
+      channel,
       accessToken,
       method: 'POST',
       url: 'me/subscribed_apps',
@@ -60,12 +63,12 @@ export class MessengerAssetsManager<
    * Delete app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
-  async deletePageSubscribedApp(page: string | Page): Promise<void> {
+  async deleteSubscribedApp(channel: string | Channel): Promise<void> {
     await this.bot.requestApi({
-      page,
+      channel,
       asApp: true,
       method: 'DELETE',
-      url: `${typeof page === 'string' ? page : page.id}/subscribed_apps`,
+      url: 'me/subscribed_apps',
     });
   }
 
@@ -73,16 +76,16 @@ export class MessengerAssetsManager<
    * Set Messenger profile of a page. Check https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/
    * for references.
    */
-  async setPageMessengerProfile(
-    page: string | Page,
-    { platform, accessToken, ...profileData }: SetPageMessengerProfileOptions
+  async setMessengerProfile(
+    channel: string | Channel,
+    { platform, accessToken, ...profileData }: SetMessengerProfileOptions
   ): Promise<void> {
     const newSettings = snakecaseKeys(profileData);
 
     const {
       data: [currentSettings = {}],
     } = await this.bot.requestApi({
-      page,
+      channel,
       accessToken,
       method: 'GET',
       url: 'me/messenger_profile',
@@ -110,7 +113,7 @@ export class MessengerAssetsManager<
 
     if (deletedKeys.length > 0) {
       await this.bot.requestApi({
-        page,
+        channel,
         accessToken,
         method: 'DELETE',
         url: 'me/messenger_profile',
@@ -123,7 +126,7 @@ export class MessengerAssetsManager<
 
     if (Object.keys(changedSettings).length > 0) {
       await this.bot.requestApi({
-        page,
+        channel,
         accessToken,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -135,78 +138,47 @@ export class MessengerAssetsManager<
     }
   }
 
-  async getAssetId(
-    page: string | Page,
-    resource: string,
-    assetTag: string
-  ): Promise<undefined | string> {
-    const pageId = typeof page === 'string' ? page : page.id;
-    return super.getAssetId(pageId, resource, assetTag);
-  }
-
-  async saveAssetId(
-    page: string | Page,
-    resource: string,
-    assetTag: string,
-    id: string
-  ): Promise<boolean> {
-    const pageId = typeof page === 'string' ? page : page.id;
-    return super.saveAssetId(pageId, resource, assetTag, id);
-  }
-
-  getAllAssets(
-    page: string | Page,
-    resource: string
-  ): Promise<null | Map<string, string>> {
-    const pageId = typeof page === 'string' ? page : page.id;
-    return super.getAllAssets(pageId, resource);
-  }
-
-  async unsaveAssetId(
-    page: string | Page,
-    resource: string,
-    assetTag: string
-  ): Promise<boolean> {
-    const pageId = typeof page === 'string' ? page : page.id;
-    return super.unsaveAssetId(pageId, resource, assetTag);
-  }
-
   getAttachment(
-    page: string | Page,
+    channel: string | Channel,
     assetTag: string
   ): Promise<undefined | string> {
-    return this.getAssetId(page, ATTACHMENT, assetTag);
+    return this.getAssetId(channel, ATTACHMENT, assetTag);
   }
 
   saveAttachment(
-    page: string | Page,
+    channel: string | Channel,
     assetTag: string,
     id: string
   ): Promise<boolean> {
-    return this.saveAssetId(page, ATTACHMENT, assetTag, id);
+    return this.saveAssetId(channel, ATTACHMENT, assetTag, id);
   }
 
-  getAllAttachments(page: string | Page): Promise<null | Map<string, string>> {
-    return this.getAllAssets(page, ATTACHMENT);
+  getAllAttachments(
+    channel: string | Channel
+  ): Promise<null | Map<string, string>> {
+    return this.getAllAssets(channel, ATTACHMENT);
   }
 
-  unsaveAttachment(page: string | Page, assetTag: string): Promise<boolean> {
-    return this.unsaveAssetId(page, ATTACHMENT, assetTag);
+  unsaveAttachment(
+    channel: string | Channel,
+    assetTag: string
+  ): Promise<boolean> {
+    return this.unsaveAssetId(channel, ATTACHMENT, assetTag);
   }
 
   /** Upload and save a Messenger chat attachment */
   async uploadChatAttachment(
-    page: string | Page,
+    channel: string | Channel,
     assetTag: string,
     node: SociablyNode
   ): Promise<string> {
-    const result = await this.bot.uploadChatAttachment(page, node);
+    const result = await this.bot.uploadChatAttachment(channel, node);
     if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
     const { attachmentId } = result;
-    await this.saveAssetId(page, ATTACHMENT, assetTag, attachmentId);
+    await this.saveAssetId(channel, ATTACHMENT, assetTag, attachmentId);
     return attachmentId;
   }
 }

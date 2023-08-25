@@ -6,7 +6,7 @@ exports[`#render(thread, message, options) post to NUMBER/messages api 1`] = `
     {
       "channel": WhatsAppAgent {
         "$$typeofChannel": true,
-        "numberId": "1234567890",
+        "id": "1234567890",
         "platform": "whatsapp",
       },
       "consumeResult": undefined,
@@ -73,7 +73,7 @@ exports[`#render(thread, message, options) post to NUMBER/messages api 1`] = `
         {
           "channel": WhatsAppAgent {
             "$$typeofChannel": true,
-            "numberId": "1234567890",
+            "id": "1234567890",
             "platform": "whatsapp",
           },
           "consumeResult": undefined,

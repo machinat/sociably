@@ -1,9 +1,8 @@
-import { SociablyUser } from '@sociably/core';
+import { SociablyUser, SociablyChannel } from '@sociably/core';
 import { mixin } from '@sociably/core/utils';
 import type {
   MessengerRawEvent,
   MessagingTarget,
-  MessengerPage,
   MessengerChat,
 } from '../types.js';
 import {
@@ -37,28 +36,28 @@ import {
 
 const makeEvent = <
   Proto extends {},
-  Page extends MessengerPage,
+  Channel extends SociablyChannel,
   Thread extends null | MessengerChat,
   User extends null | SociablyUser,
 >(
   payload: MessengerRawEvent,
-  page: Page,
+  channel: Channel,
   chat: Thread,
   user: User,
   proto: Proto
 ): {
-  platform: Page['platform'];
-  channel: Page;
+  platform: Channel['platform'];
+  channel: Channel;
   thread: Thread;
   user: User;
   payload: MessengerRawEvent;
 } & Proto => {
   const event = Object.create(proto);
 
-  event.platform = page.platform;
+  event.platform = channel.platform;
   event.payload = payload;
   event.thread = chat;
-  event.channel = page;
+  event.channel = channel;
   event.user = user;
 
   return event;
@@ -279,21 +278,21 @@ const hasOwnProperty = (obj, prop) =>
 
 const createEventFactory =
   <
-    Page extends MessengerPage,
+    Channel extends SociablyChannel,
     Chat extends MessengerChat,
     User extends SociablyUser,
   >({
-    createPage,
+    createChannel,
     createChat,
     createUser,
   }: {
-    createPage: (pageId: string) => Page;
+    createChannel: (pageId: string) => Channel;
     createChat: (pageId: string, target: MessagingTarget) => Chat;
     createUser: (pageId: string, userId: string) => User;
   }) =>
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   (pageId: string, isStandby: boolean, payload: MessengerRawEvent) => {
-    const page = createPage(pageId);
+    const page = createChannel(pageId);
 
     if (hasOwnProperty(payload, 'message')) {
       const { message, sender, recepient } = payload;

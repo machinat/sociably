@@ -1,6 +1,6 @@
 import { moxy } from '@moxyjs/moxy';
 import type { InstagramBot } from '../Bot.js';
-import InstagramPage from '../Page.js';
+import InstagramAgent from '../Agent.js';
 import InstagramUser from '../User.js';
 import UserProfile from '../UserProfile.js';
 import { InstagramProfiler } from '../Profiler.js';
@@ -21,7 +21,7 @@ const bot = moxy<InstagramBot>({
   requestApi: async () => rawProfileData,
 } as never);
 
-const page = new InstagramPage('1234567890');
+const agent = new InstagramAgent('1234567890');
 const user = new InstagramUser('1234567890', '_USER_ID_');
 
 beforeEach(() => {
@@ -30,7 +30,7 @@ beforeEach(() => {
 
 test('fetch profile from api', async () => {
   const profiler = new InstagramProfiler(bot);
-  const profile = await profiler.getUserProfile(page, user);
+  const profile = await profiler.getUserProfile(agent, user);
 
   expect(profile?.id).toBe('xxxxxxxxx');
   expect(profile?.name).toBe('Peter Chang');
@@ -51,13 +51,13 @@ test('fetch profile from api', async () => {
   expect(bot.requestApi).toHaveReturnedTimes(1);
   expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
-      "method": "GET",
-      "page": InstagramPage {
+      "channel": InstagramAgent {
         "$$typeofChannel": true,
         "id": "1234567890",
         "platform": "instagram",
         "username": undefined,
       },
+      "method": "GET",
       "params": {
         "fields": "id,name,first_name,last_name,profile_pic",
       },
@@ -78,7 +78,7 @@ test('fetch profile from api', async () => {
       "username": "peter.chang.3975",
     }
   `);
-  expect(UserProfile.fromJSONValue(profile?.toJSONValue())).toStrictEqual(
+  expect(UserProfile.fromJSONValue(profile!.toJSONValue())).toStrictEqual(
     profile
   );
 });

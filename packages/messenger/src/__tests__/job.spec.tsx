@@ -1,13 +1,10 @@
 import { moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { UnitSegment, TextSegment } from '@sociably/core/renderer';
-import { createChatJobs, createChatAttachmentJobs } from '../job.js';
+import { MetaApiChannel } from '@sociably/meta-api';
+import { createChatJobs, createUploadChatAttachmentJobs } from '../job.js';
 import { PATH_MESSAGES } from '../constant.js';
-import {
-  MessengerSegmentValue,
-  MessengerChat,
-  MessengerPage,
-} from '../types.js';
+import { MessengerSegmentValue, MessengerChat } from '../types.js';
 
 const _Date = Date;
 const timeNow = 1667114251924;
@@ -32,16 +29,14 @@ beforeEach(() => {
   getRegisteredResult.mock.reset();
 });
 
-const page = {
+const channel = {
   platform: 'test',
   id: 12345,
   uid: 'test.12345',
-} as unknown as MessengerPage;
+} as unknown as MetaApiChannel;
 
 const chat = {
   platform: 'test',
-  pageId: '12345',
-  page,
   target: { id: '67890' },
   uid: 'test.12345.67890',
 } as MessengerChat;
@@ -91,12 +86,12 @@ describe('createChatJobs(options)(chat, segments)', () => {
   ];
 
   it('create jobs to be sent', () => {
-    const jobs = createChatJobs()(chat, segments);
+    const jobs = createChatJobs(channel)(chat, segments);
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
         key: 'test.12345.67890',
-        channel: page,
+        channel,
         request: {
           method: 'POST',
           url: i === 2 ? 'bar/baz' : 'me/messages',
@@ -110,7 +105,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   test('with message metadata', () => {
-    const jobs = createChatJobs({
+    const jobs = createChatJobs(channel, {
       messagingType: 'MESSAGE_TAG',
       tag: 'PAYMENT_UPDATE',
       notificationType: 'SILENT_PUSH',
@@ -144,7 +139,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   it('set persona_id message and typing_on/typeing_off action', () => {
-    const jobs = createChatJobs({ personaId: 'droid' })(chat, [
+    const jobs = createChatJobs(channel, { personaId: 'droid' })(chat, [
       {
         type: 'unit',
         path: '?',
@@ -195,7 +190,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   it('respect options set in job value', () => {
-    const jobs = createChatJobs({
+    const jobs = createChatJobs(channel, {
       messagingType: 'UPDATE',
       tag: undefined,
       notificationType: 'SILENT_PUSH',
@@ -252,7 +247,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   it('respect the empty tag if messaging_type has already been set', () => {
-    const jobs = createChatJobs({
+    const jobs = createChatJobs(channel, {
       messagingType: 'MESSAGE_TAG',
       tag: 'FEATURE_FUNCTIONALITY_UPDATE',
       notificationType: 'SILENT_PUSH',
@@ -296,7 +291,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
       },
     };
 
-    const jobs = createChatJobs({
+    const jobs = createChatJobs(channel, {
       oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
     })(chat, [helloSegment]);
 
@@ -305,7 +300,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
     });
 
     expect(() =>
-      createChatJobs({
+      createChatJobs(channel, {
         oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
       })(chat, [
         helloSegment,
@@ -331,7 +326,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
       contentType: 'image/jpeg',
     };
 
-    const jobs = createChatJobs()(chat, [
+    const jobs = createChatJobs(channel)(chat, [
       {
         type: 'unit',
         path: '?',
@@ -375,10 +370,10 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 });
 
-describe('createChatAttachmentJobs()', () => {
+describe('createUploadChatAttachmentJobs()', () => {
   it('create upload job with url', () => {
     expect(
-      createChatAttachmentJobs(page, [
+      createUploadChatAttachmentJobs()(channel, [
         {
           type: 'unit' as const,
           path: '?',
@@ -400,7 +395,7 @@ describe('createChatAttachmentJobs()', () => {
       ])
     ).toEqual([
       {
-        channel: page,
+        channel,
         request: {
           method: 'POST',
           url: 'me/message_attachments',
@@ -427,7 +422,7 @@ describe('createChatAttachmentJobs()', () => {
     const fileData = '_FILE_CONTENT_DATA_';
 
     expect(
-      createChatAttachmentJobs(page, [
+      createUploadChatAttachmentJobs()(channel, [
         {
           type: 'unit',
           path: '?',
@@ -450,7 +445,7 @@ describe('createChatAttachmentJobs()', () => {
       ])
     ).toEqual([
       {
-        channel: page,
+        channel,
         request: {
           method: 'POST',
           url: 'me/message_attachments',
@@ -490,13 +485,13 @@ describe('createChatAttachmentJobs()', () => {
     };
 
     expect(() =>
-      createChatAttachmentJobs(page, [segment, segment])
+      createUploadChatAttachmentJobs()(channel, [segment, segment])
     ).toThrowErrorMatchingInlineSnapshot(`"more than 1 message received"`);
   });
 
   it('throw if non media message received', () => {
     expect(() =>
-      createChatAttachmentJobs(page, [
+      createUploadChatAttachmentJobs()(channel, [
         {
           type: 'unit',
           path: '?',
@@ -513,7 +508,7 @@ describe('createChatAttachmentJobs()', () => {
     );
 
     expect(() =>
-      createChatAttachmentJobs(page, [
+      createUploadChatAttachmentJobs()(channel, [
         {
           type: 'unit',
           path: '?',

@@ -169,7 +169,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         {
           "code": 404,
           "ok": false,
-          "reason": "page "12345" not registered",
+          "reason": "Facebook page "12345" not registered",
         }
       `);
     });
@@ -273,7 +273,7 @@ describe('.verifyRefreshment(data)', () => {
       {
         "code": 404,
         "ok": false,
-        "reason": "page "54321" not registered",
+        "reason": "Facebook page "54321" not registered",
       }
     `);
   });

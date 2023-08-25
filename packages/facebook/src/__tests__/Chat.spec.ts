@@ -13,9 +13,6 @@ test('from id', () => {
 
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "thread",
-      ],
       "id": "67890",
       "platform": "facebook",
       "scopeId": "12345",
@@ -45,9 +42,6 @@ test('from user_ref', () => {
 
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "thread",
-      ],
       "id": "_USER_REF_",
       "platform": "facebook",
       "scopeId": "12345",
@@ -77,9 +71,6 @@ test('from post', () => {
 
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "thread",
-      ],
       "id": "_POST_ID_",
       "platform": "facebook",
       "scopeId": "12345",
@@ -111,9 +102,6 @@ test('from comment', () => {
 
   expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
     {
-      "$$typeof": [
-        "thread",
-      ],
       "id": "_COMMENT_ID_",
       "platform": "facebook",
       "scopeId": "12345",

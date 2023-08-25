@@ -28,7 +28,6 @@ export default class LineUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['user'],
       platform: LINE,
       scopeId: this.providerId,
       id: this.id,

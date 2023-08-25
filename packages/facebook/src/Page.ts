@@ -1,6 +1,6 @@
 import type { UniqueOmniIdentifier } from '@sociably/core';
-import type { MessengerPage } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import { MetaApiChannel } from '@sociably/meta-api';
 import { FACEBOOK, FB } from './constant.js';
 
 type FacebookPageValue = {
@@ -8,7 +8,7 @@ type FacebookPageValue = {
 };
 
 class FacebookPage
-  implements MessengerPage, MarshallableInstance<FacebookPageValue>
+  implements MetaApiChannel, MarshallableInstance<FacebookPageValue>
 {
   static typeName = 'FbPage';
   static fromJSONValue(value: FacebookPageValue): FacebookPage {
@@ -26,7 +26,6 @@ class FacebookPage
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['channel'],
       platform: FACEBOOK,
       id: this.id,
     };

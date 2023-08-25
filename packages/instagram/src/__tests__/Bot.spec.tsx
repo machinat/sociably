@@ -10,7 +10,7 @@ import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
 import { InstagramBot } from '../Bot.js';
 import { Image, Expression, TextReply } from '../components/index.js';
 import InstagramChat from '../Chat.js';
-import InstagramPage from '../Page.js';
+import InstagramAgent from '../Agent.js';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
@@ -43,18 +43,21 @@ jest.mock('@sociably/meta-api', () => {
 const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
 
-const pageId = '1234567890';
+const accountId = '1234567890';
+const pageId = '1111111111';
 const accessToken = '_ACCESS_TOKEN_';
 const appId = '_APP_ID_';
 const appSecret = '_APP_SECRET_';
 const username = 'jojodoe666';
 
 const agentSettingsAccessor = {
-  getAgentSettings: async () => ({ pageId, accessToken, username }),
-  getAgentSettingsBatch: async () => [{ pageId, accessToken, username }],
+  getAgentSettings: async () => ({ accountId, pageId, accessToken, username }),
+  getAgentSettingsBatch: async () => [
+    { accountId, pageId, accessToken, username },
+  ],
 };
 
-const page = new InstagramPage(pageId);
+const agent = new InstagramAgent(accountId);
 
 const message = (
   <Expression quickReplies={<TextReply title="Hi!" payload="👋" />}>
@@ -266,7 +269,7 @@ describe('.message(thread, message, options)', () => {
   });
 });
 
-describe('.uploadChatAttachment(page, message)', () => {
+describe('.uploadChatAttachment(agent, message)', () => {
   const bot = new InstagramBot({ agentSettingsAccessor, appId, appSecret });
 
   beforeEach(() => {
@@ -280,7 +283,7 @@ describe('.uploadChatAttachment(page, message)', () => {
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
-      await expect(bot.uploadChatAttachment(page, empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+      await expect(bot.uploadChatAttachment(agent, empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
     }
   });
 
@@ -291,7 +294,7 @@ describe('.uploadChatAttachment(page, message)', () => {
 
     await expect(
       bot.uploadChatAttachment(
-        page,
+        agent,
         <Image url="https://sociably.io/trollface.png" />
       )
     ).resolves.toEqual({ attachmentId: 401759795 });
@@ -309,6 +312,7 @@ describe('.uploadChatAttachment(page, message)', () => {
     expect(querystring.decode(reqest.body)).toMatchInlineSnapshot(`
       {
         "message": "{"attachment":{"type":"image","payload":{"url":"https://sociably.io/trollface.png"}}}",
+        "platform": "instagram",
       }
     `);
 
@@ -325,7 +329,7 @@ describe('.requestApi(options)', () => {
 
     await expect(
       bot.requestApi({
-        page,
+        channel: agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -349,7 +353,7 @@ describe('.requestApi(options)', () => {
     graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
     await expect(
       bot.requestApi({
-        page,
+        channel: agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -372,7 +376,7 @@ describe('.requestApi(options)', () => {
     graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
     await expect(
       bot.requestApi({
-        page,
+        channel: agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -409,7 +413,7 @@ describe('.requestApi(options)', () => {
 
     try {
       await bot.requestApi({
-        page,
+        channel: agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },

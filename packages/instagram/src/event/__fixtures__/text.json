@@ -1,10 +1,10 @@
 [
   {
     "sender":{
-      "id":"<PSID>"
+      "id":"<IGSID>"
     },
     "recipient":{
-      "id":"<PAGE_ID>"
+      "id":"<IGID>"
     },
     "timestamp":1458692752478,
     "message":{
@@ -22,10 +22,10 @@
   },
   {
     "sender":{
-      "id":"<PSID>"
+      "id":"<IDSID>"
     },
     "recipient":{
-      "id":"<PAGE_ID>"
+      "id":"<IGID>"
     },
     "timestamp":1458692752478,
     "message": {

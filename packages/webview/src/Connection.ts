@@ -33,7 +33,6 @@ class WebviewConnection
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['thread'],
       platform: WEBVIEW,
       scopeId: this.serverId,
       id: this.id,

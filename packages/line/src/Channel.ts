@@ -25,7 +25,6 @@ class LineChannel
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['channel'],
       platform: LINE,
       id: this.id,
     };

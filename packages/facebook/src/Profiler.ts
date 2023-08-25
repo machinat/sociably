@@ -49,7 +49,7 @@ export class FacebookProfiler
 
     try {
       rawProfile = await this.bot.requestApi({
-        page,
+        channel: page,
         method: 'GET',
         url: `${userId}`,
         params: { fields: this.profileFieldsStr },

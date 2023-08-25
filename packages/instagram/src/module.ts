@@ -24,7 +24,7 @@ import BotP from './Bot.js';
 import ReceiverP from './Receiver.js';
 import InstagramUserProfile from './UserProfile.js';
 import ProfilerP from './Profiler.js';
-import InstagramPage from './Page.js';
+import InstagramAgent from './Agent.js';
 import InstagramChat from './Chat.js';
 import InstagramUser from './User.js';
 import createStaticAgentSettingsAccessor from './utils/createStaticAgentSettingsAccessor.js';
@@ -100,7 +100,7 @@ namespace Instagram {
 
       { provide: BaseMarshaler.TypeList, withValue: InstagramChat },
       { provide: BaseMarshaler.TypeList, withValue: InstagramUser },
-      { provide: BaseMarshaler.TypeList, withValue: InstagramPage },
+      { provide: BaseMarshaler.TypeList, withValue: InstagramAgent },
       { provide: BaseMarshaler.TypeList, withValue: InstagramUserProfile },
     ];
 
@@ -119,7 +119,7 @@ namespace Instagram {
     } else if (configs.multiAgentSettings) {
       if (configs.multiAgentSettings.length === 0) {
         throw new Error(
-          'configs.multiAgentSettings must have at least one page settings'
+          'configs.multiAgentSettings must have at least one agent settings'
         );
       }
 

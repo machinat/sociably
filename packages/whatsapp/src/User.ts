@@ -36,7 +36,6 @@ class WhatsAppUser
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['user'],
       platform: WHATSAPP,
       id: this.numberId,
     };

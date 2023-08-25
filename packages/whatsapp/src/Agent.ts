@@ -15,29 +15,28 @@ class WhatsAppAgent
     return new WhatsAppAgent(id);
   }
 
-  numberId: string;
+  id: string;
 
   readonly platform = WHATSAPP;
   readonly $$typeofChannel = true;
 
-  constructor(numberId: string) {
-    this.numberId = numberId;
+  constructor(id: string) {
+    this.id = id;
   }
 
   get uniqueIdentifier(): UniqueOmniIdentifier {
     return {
-      $$typeof: ['channel'],
       platform: WHATSAPP,
-      id: this.numberId,
+      id: this.id,
     };
   }
 
   get uid(): string {
-    return `${WA}.${this.numberId}`;
+    return `${WA}.${this.id}`;
   }
 
   toJSONValue(): WhatsAppAgentValue {
-    return { id: this.numberId };
+    return { id: this.id };
   }
 
   // eslint-disable-next-line class-methods-use-this

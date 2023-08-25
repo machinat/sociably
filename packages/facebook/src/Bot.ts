@@ -16,11 +16,13 @@ import {
   MetaApiResult,
   MetaApiDispatchResponse,
   MetaApiResponseBody,
+  MetaRequestApiOptions,
 } from '@sociably/meta-api';
 import {
   createChatJobs,
-  createChatAttachmentJobs,
+  createUploadChatAttachmentJobs,
   MessagingOptions,
+  MessengerBot,
 } from '@sociably/messenger';
 import { renderGeneralComponents } from '@sociably/messenger/components';
 import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant.js';
@@ -78,27 +80,14 @@ type CommentResult = {
   photo: null | PagePhotoResult;
 };
 
-type ApiCallOptions = {
-  /** The page to make the API call */
-  page?: string | FacebookPage;
-  /** HTTP method */
-  method?: string;
-  /** API request URL relative to https://graph.facebook.com/{version}/ */
-  url: string;
-  /** API request parameters */
-  params?: Record<string, unknown>;
-  /** Make the API call as the Meta app */
-  asApp?: boolean;
-  /** Force to use the access token */
-  accessToken?: string;
-};
-
 /**
  * FacebookBot render messages and make API call to Facebook platform.
  * @category Provider
  */
 export class FacebookBot
-  implements SociablyBot<FacebookThread, MetaApiJob, MetaApiResult>
+  implements
+    MessengerBot<FacebookPage>,
+    SociablyBot<FacebookThread, MetaApiJob, MetaApiResult>
 {
   worker: MetaApiWorker;
   engine: Engine<
@@ -157,7 +146,11 @@ export class FacebookBot
     node: SociablyNode
   ): Promise<null | MetaApiDispatchResponse> {
     if (target instanceof FacebookChat) {
-      return this.engine.render(target, node, createChatJobs<FacebookChat>());
+      return this.engine.render(
+        target,
+        node,
+        createChatJobs<FacebookPage, FacebookChat>(target.page)
+      );
     }
     if (target instanceof FacebookPage) {
       return this.engine.render(target, node, createPostJobs);
@@ -177,7 +170,7 @@ export class FacebookBot
     return this.engine.render(
       chat,
       messages,
-      createChatJobs<FacebookChat>(options)
+      createChatJobs<FacebookPage, FacebookChat>(chat.page, options)
     );
   }
 
@@ -192,7 +185,7 @@ export class FacebookBot
     const response = await this.engine.render(
       page,
       node,
-      createChatAttachmentJobs
+      createUploadChatAttachmentJobs()
     );
     const result = response?.results[0].body;
     return result ? { attachmentId: result.attachment_id } : null;
@@ -264,13 +257,13 @@ export class FacebookBot
   }
 
   async requestApi<ResBody extends MetaApiResponseBody>({
-    page: pageInput,
+    channel: pageInput,
     method = 'GET',
     url,
     params,
     accessToken,
     asApp,
-  }: ApiCallOptions): Promise<ResBody> {
+  }: MetaRequestApiOptions<FacebookPage>): Promise<ResBody> {
     const page =
       typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
     try {
