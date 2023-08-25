@@ -44,7 +44,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
 
     if (fromApi || !rawUser) {
       rawUser = await this.bot.requestApi<RawUser>({
-        agent,
+        channel: agent,
         method: 'GET',
         url: '1.1/users/show.json',
         params: { user_id: userId, include_entities: withEntities },
@@ -54,7 +54,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
     let rawSettings: undefined | RawSettings;
     if (withSettings) {
       rawSettings = await this.bot.requestApi({
-        agent,
+        channel: agent,
         method: 'GET',
         url: '1.1/account/settings.json',
       });

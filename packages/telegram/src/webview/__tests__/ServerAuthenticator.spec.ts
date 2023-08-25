@@ -90,7 +90,8 @@ describe('.delegateAuthRequest() on root route', () => {
     const req = createReq({ url: `/auth/telegram?${search}` });
     await authenticator.delegateAuthRequest(req, res, {
       originalPath: '/auth/telegram',
-      matchedPath: '/auth/telegram',
+      basePath: '/',
+      matchedPath: 'auth/telegram',
       trailingPath: '',
     });
 
@@ -145,13 +146,14 @@ describe('.delegateAuthRequest() on root route', () => {
 
     await authenticator.delegateAuthRequest(req, res, {
       originalPath: '/auth/telegram',
-      matchedPath: '/auth/telegram',
+      basePath: '/',
+      matchedPath: 'auth/telegram',
       trailingPath: '',
     });
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-      agent: botUser,
+      channel: botUser,
       method: 'getChatMember',
       params: {
         user_id: 67890,
@@ -159,7 +161,7 @@ describe('.delegateAuthRequest() on root route', () => {
       },
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      agent: botUser,
+      channel: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
     });
@@ -195,7 +197,8 @@ describe('.delegateAuthRequest() on root route', () => {
     const req = createReq({ url: `/auth/telegram?${search}` });
     await authenticator.delegateAuthRequest(req, res, {
       originalPath: '/auth/telegram',
-      matchedPath: '/auth/telegram',
+      basePath: '/',
+      matchedPath: 'auth/telegram',
       trailingPath: '',
     });
 
@@ -232,7 +235,8 @@ describe('.delegateAuthRequest() on root route', () => {
 
     await authenticator.delegateAuthRequest(req, res, {
       originalPath: '/auth/telegram',
-      matchedPath: '/auth/telegram',
+      basePath: '/',
+      matchedPath: 'auth/telegram',
       trailingPath: '',
     });
 
@@ -260,7 +264,8 @@ describe('.delegateAuthRequest() on root route', () => {
     const req = createReq({ url: `/auth/telegram?${search}` });
     await authenticator.delegateAuthRequest(req, res, {
       originalPath: '/auth/telegram',
-      matchedPath: '/auth/telegram',
+      basePath: '/',
+      matchedPath: 'auth/telegram',
       trailingPath: '',
     });
 
@@ -285,7 +290,8 @@ describe('.delegateAuthRequest() on root route', () => {
     const req = createReq({ url: `/auth/telegram?${search}` });
     await authenticator.delegateAuthRequest(req, res, {
       originalPath: '/auth/telegram',
-      matchedPath: '/auth/telegram',
+      basePath: '/',
+      matchedPath: 'auth/telegram',
       trailingPath: '',
     });
 
@@ -318,7 +324,8 @@ describe('.delegateAuthRequest() on root route', () => {
     });
     await authenticator.delegateAuthRequest(req, res, {
       originalPath: '/auth/telegram',
-      matchedPath: '/auth/telegram',
+      basePath: '/',
+      matchedPath: 'auth/telegram',
       trailingPath: '',
     });
 
@@ -343,7 +350,8 @@ describe('.delegateAuthRequest() on root route', () => {
 describe('.delegateAuthRequest() on login route', () => {
   const loginRoute = {
     originalPath: '/auth/telegram/login',
-    matchedPath: '/auth/telegram',
+    basePath: '/',
+    matchedPath: 'auth/telegram',
     trailingPath: 'login',
   };
 
@@ -465,7 +473,8 @@ test('.delegateAuthRequest() on unknown route', async () => {
   const req = createReq({ url: `/auth/telegram/unknown` });
   await authenticator.delegateAuthRequest(req, res, {
     originalPath: '/auth/telegram/unknown',
-    matchedPath: '/auth/telegram',
+    basePath: '/',
+    matchedPath: 'auth/telegram',
     trailingPath: 'unknown',
   });
 
@@ -566,7 +575,7 @@ describe('.verifyRefreshment()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-      agent: botUser,
+      channel: botUser,
       method: 'getChatMember',
       params: {
         user_id: 67890,
@@ -574,7 +583,7 @@ describe('.verifyRefreshment()', () => {
       },
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      agent: botUser,
+      channel: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
     });

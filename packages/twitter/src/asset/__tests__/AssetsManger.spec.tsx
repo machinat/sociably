@@ -333,7 +333,7 @@ test('.deleteWelcomeMessage(name)', async () => {
   ).resolves.toBe('1234567890');
 
   expect(bot.requestApi).toHaveBeenCalledWith({
-    agent,
+    channel: agent,
     method: 'DELETE',
     url: '1.1/direct_messages/welcome_messages/destroy.json',
     params: { id: '1234567890' },
@@ -381,7 +381,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
   ).resolves.toBe('1234567890');
 
   expect(bot.requestApi).toHaveBeenCalledWith({
-    agent,
+    channel: agent,
     method: 'POST',
     url: '1.1/custom_profiles/new.json',
     params: {
@@ -412,7 +412,7 @@ test('.deleteCustomProfile(name)', async () => {
   ).resolves.toBe('1234567890');
 
   expect(bot.requestApi).toHaveBeenCalledWith({
-    agent,
+    channel: agent,
     method: 'DELETE',
     url: '1.1/custom_profiles/destroy.json',
     params: { id: '1234567890' },

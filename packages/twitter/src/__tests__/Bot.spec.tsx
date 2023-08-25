@@ -343,7 +343,7 @@ describe('.requestApi(method, uri, params)', () => {
 
     await expect(
       bot.requestApi({
-        agent,
+        channel: agent,
         method: 'GET',
         url: '2/foo',
         params: { a: 0, b: 1 },
@@ -363,7 +363,7 @@ describe('.requestApi(method, uri, params)', () => {
 
     await expect(
       bot.requestApi({
-        agent,
+        channel: agent,
         method: 'POST',
         url: '2/foo',
         params: { a: 0, b: 1 },
@@ -387,7 +387,7 @@ describe('.requestApi(method, uri, params)', () => {
 
     await expect(
       bot.requestApi({
-        agent,
+        channel: agent,
         method: 'POST',
         url: '2/foo',
         params: { a: 0, b: 1 },

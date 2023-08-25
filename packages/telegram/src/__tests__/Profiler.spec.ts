@@ -94,7 +94,7 @@ describe('.getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChatMember',
       params: {
         chat_id: 12345,
@@ -125,7 +125,7 @@ describe('.getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChatMember',
       params: {
         user_id: 12345,
@@ -168,7 +168,7 @@ describe('.getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChatMember',
       params: {
         chat_id: 12345,
@@ -301,7 +301,7 @@ describe('.getChatProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChat',
       params: { chat_id: 67890 },
     });
@@ -363,7 +363,7 @@ describe('.getChatProfile(user)', () => {
 
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChat',
       params: { chat_id: 67890 },
     });
@@ -446,7 +446,7 @@ describe('.fetchUserPhoto(user)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getUserProfilePhotos',
       params: { user_id: 12345 },
     });
@@ -545,7 +545,7 @@ describe('.fetchChatPhoto(user)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChat',
       params: { chat_id: 12345 },
     });
@@ -577,7 +577,7 @@ describe('.fetchChatPhoto(user)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChat',
       params: { chat_id: 12345 },
     });
@@ -606,12 +606,12 @@ describe('.fetchChatPhoto(user)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChat',
       params: { chat_id: 67890 },
     });
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'getChat',
       params: { chat_id: '@foo_channel' },
     });

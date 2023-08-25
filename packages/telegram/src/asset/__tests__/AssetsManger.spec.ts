@@ -178,7 +178,7 @@ describe('.setBotWebhook(bot, options)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'setWebhook',
       params: {
         url: 'https://sociably.io/foo/12345',
@@ -198,7 +198,7 @@ describe('.setBotWebhook(bot, options)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: 67890,
+      channel: 67890,
       method: 'setWebhook',
       params: {
         url: 'https://sociably.io/bar/67890',
@@ -221,7 +221,7 @@ describe('.setBotWebhook(bot, options)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      agent: botUser,
+      channel: botUser,
       method: 'setWebhook',
       params: {
         url: 'https://sociably.io/foo/12345',
@@ -238,7 +238,7 @@ test('.deleteBotWebhook(bot, options)', async () => {
 
   expect(bot.requestApi).toHaveBeenCalledTimes(1);
   expect(bot.requestApi).toHaveBeenCalledWith({
-    agent: botUser,
+    channel: botUser,
     method: 'deleteWebhook',
     params: { drop_pending_updates: false },
   });
@@ -249,7 +249,7 @@ test('.deleteBotWebhook(bot, options)', async () => {
 
   expect(bot.requestApi).toHaveBeenCalledTimes(2);
   expect(bot.requestApi).toHaveBeenCalledWith({
-    agent: botUser,
+    channel: botUser,
     method: 'deleteWebhook',
     params: { drop_pending_updates: true },
   });
