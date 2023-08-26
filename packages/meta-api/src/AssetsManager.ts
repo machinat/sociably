@@ -9,14 +9,17 @@ import {
 const channelInputId = (channel: string | MetaApiChannel): string =>
   typeof channel === 'string' ? channel : channel.id;
 
-export class MetaAssetsManager<Channel extends MetaApiChannel> {
-  protected bot: MetaApiBot<Channel>;
+export class MetaAssetsManager<
+  Channel extends MetaApiChannel,
+  Bot extends MetaApiBot<Channel>,
+> {
+  protected bot: Bot;
   private stateController: StateControllerI;
   private platformShortId: string;
 
   constructor(
     stateManager: StateControllerI,
-    bot: MetaApiBot<Channel>,
+    bot: Bot,
     platformShortId: string
   ) {
     this.stateController = stateManager;

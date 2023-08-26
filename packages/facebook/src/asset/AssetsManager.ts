@@ -11,7 +11,7 @@ import {
   MESSENGER_PAGE_SUBSCRIPTION_FIELDS,
 } from '@sociably/messenger';
 import snakecaseKeys from 'snakecase-keys';
-import BotP, { FacebookBot } from '../Bot.js';
+import BotP from '../Bot.js';
 import FacebookPage from '../Page.js';
 import { PATH_PERSONAS, FB } from '../constant.js';
 import { ConfigsI } from '../interface.js';
@@ -32,7 +32,6 @@ export type DefaultSettings = {
  */
 export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> {
   defaultSettings: DefaultSettings;
-  bot: FacebookBot;
 
   constructor(
     stateManager: StateControllerI,

@@ -29,8 +29,10 @@ const DEFAULT_SUBSCRIPTION_FIELDS = ['messages'];
  * platform.
  * @category Provider
  */
-export class WhatsAppAssetsManager extends MetaAssetsManager<WhatsAppAgent> {
-  protected bot: BotP;
+export class WhatsAppAssetsManager extends MetaAssetsManager<
+  WhatsAppAgent,
+  BotP
+> {
   defaultSettings: DefaultSettings;
 
   constructor(

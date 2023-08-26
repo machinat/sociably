@@ -1,15 +1,23 @@
-const fs = require('fs');
+import fs from 'fs';
+import { createRequire } from 'node:module';
 
+const require = createRequire(import.meta.url);
 const pkgNamesMatcher = `(${fs.readdirSync('./packages').join('|')})`;
 
 const baseConfigs = {
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   transform: {
     '\\.tsx?$': [
-      'ts-jest',
+      '@swc/jest',
       {
-        // TODO: remove this & fix test files types
-        diagnostics: false,
+        jsc: {
+          transform: {
+            react: {
+              pragma: 'Sociably.createElement',
+              pragmaFrag: 'Sociably.Fragment',
+            },
+          },
+        },
       },
     ],
     '\\.jsx?$': 'babel-jest',
@@ -29,7 +37,7 @@ const baseConfigs = {
   prettierPath: require.resolve('prettier-2'),
 };
 
-module.exports = {
+export default {
   projects: [
     {
       ...baseConfigs,

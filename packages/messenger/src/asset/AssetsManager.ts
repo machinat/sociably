@@ -34,9 +34,7 @@ const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
  */
 export class MessengerAssetsManager<
   Channel extends MetaApiChannel,
-> extends MetaAssetsManager<Channel> {
-  protected bot: MessengerBot<Channel>;
-
+> extends MetaAssetsManager<Channel, MessengerBot<Channel>> {
   /**
    * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.

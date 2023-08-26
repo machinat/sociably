@@ -316,7 +316,7 @@ it('throw if bindings conflicted on specified platform', () => {
       { provide: polymorphicMammal, platform: 'cat', withValue: blackCat },
     ]).bootstrap()
   ).toThrowErrorMatchingInlineSnapshot(
-    `"FooMammal is already bound to () => whiteCat on 'cat' platform"`
+    `"FooMammal is already bound to ()=>whiteCat on 'cat' platform"`
   );
 });
 
