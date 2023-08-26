@@ -103,6 +103,10 @@ exports[`Script object 1`] = `
     "getContent": [Function],
     "type": "content",
   },
+  {
+    "offset": -17,
+    "type": "jump",
+  },
 ]
 `;
 

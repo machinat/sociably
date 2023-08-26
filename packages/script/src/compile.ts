@@ -3,10 +3,11 @@ import invariant from 'invariant';
 import { createCounter } from './utils.js';
 import type {
   ConditionMatcher,
-  ScriptSegment,
-  ConditionsSegment,
-  WhileSegment,
-  LabelSegment,
+  ScriptAstNode,
+  ConditionsAstNode,
+  WhileAstNode,
+  LabelAstNode,
+  GotoAstNode,
   ContentCommand,
   PromptCommand,
   EffectCommand,
@@ -15,33 +16,28 @@ import type {
   ScriptCommand,
 } from './types.js';
 
-type GotoIntermediate = {
-  type: 'goto';
-  to: string;
-};
-
-type GotoCondIntermediate<Vars, Meta> = {
+type GotoCondMediateNode<Vars, Meta> = {
   type: 'goto_cond';
   to: string;
   condition: ConditionMatcher<Vars, Meta>;
   isNot: boolean;
 };
 
-type TagIntermediate = {
+type TagMediateNode = {
   type: 'tag';
   key: string;
   isEntryPoint: boolean;
 };
 
-type CompileIntermediate =
+type CompileMediateNode =
+  | GotoAstNode
+  | TagMediateNode
+  | GotoCondMediateNode<unknown, unknown>
   | ContentCommand<unknown, unknown>
   | PromptCommand<unknown, unknown, unknown>
   | EffectCommand<unknown, unknown, unknown>
   | CallCommand<unknown, unknown, unknown, unknown, unknown>
-  | ReturnCommand<unknown, unknown, unknown>
-  | GotoIntermediate
-  | GotoCondIntermediate<unknown, unknown>
-  | TagIntermediate;
+  | ReturnCommand<unknown, unknown, unknown>;
 
 type CompileResult<Vars, Input, Retrun, Yield, Meta> = {
   commands: ScriptCommand<Vars, Input, Retrun, Yield, Meta>[];
@@ -50,13 +46,13 @@ type CompileResult<Vars, Input, Retrun, Yield, Meta> = {
 
 const compileContentCommand = (
   command: ContentCommand<unknown, unknown>
-): CompileIntermediate[] => [command];
+): CompileMediateNode[] => [command];
 
-const compileConditionsSegment = (
-  { branches, fallbackBody }: ConditionsSegment<unknown, unknown>,
-  uniqCounter: () => number
-): CompileIntermediate[] => {
-  const n: number = uniqCounter();
+const compileConditionsAstNode = (
+  { branches, fallbackBody }: ConditionsAstNode<unknown, unknown>,
+  uniqIndexCounter: () => number
+): CompileMediateNode[] => {
+  const n: number = uniqIndexCounter();
 
   const endTag = {
     type: 'tag' as const,
@@ -66,11 +62,11 @@ const compileConditionsSegment = (
 
   const jumpToEnd = {
     type: 'goto' as const,
-    to: endTag.key,
+    key: endTag.key,
   };
 
-  const conditionsSection: CompileIntermediate[] = [];
-  const bodiesSections: CompileIntermediate[] = [];
+  const conditionsSection: CompileMediateNode[] = [];
+  const bodiesSections: CompileMediateNode[] = [];
 
   for (const [i, { condition, body }] of branches.entries()) {
     const bodyBeginTag = {
@@ -88,25 +84,25 @@ const compileConditionsSegment = (
 
     bodiesSections.push(
       bodyBeginTag,
-      ...compileSegments(body, uniqCounter),
+      ...compileAstNodes(body, uniqIndexCounter),
       jumpToEnd
     );
   }
 
-  const commands: CompileIntermediate[] = [...conditionsSection];
+  const commands: CompileMediateNode[] = [...conditionsSection];
   if (fallbackBody) {
-    commands.push(...compileSegments(fallbackBody, uniqCounter));
+    commands.push(...compileAstNodes(fallbackBody, uniqIndexCounter));
   }
 
   commands.push(jumpToEnd, ...bodiesSections, endTag);
   return commands;
 };
 
-const compileWhileSegment = (
-  { condition, body }: WhileSegment<unknown, unknown>,
-  uniqCounter: () => number
-): CompileIntermediate[] => {
-  const n: number = uniqCounter();
+const compileWhileAstNode = (
+  { condition, body }: WhileAstNode<unknown, unknown>,
+  uniqIndexCounter: () => number
+): CompileMediateNode[] => {
+  const n: number = uniqIndexCounter();
 
   const startTag = {
     type: 'tag' as const,
@@ -128,10 +124,10 @@ const compileWhileSegment = (
       isNot: true,
       to: endTag.key,
     },
-    ...compileSegments(body, uniqCounter),
+    ...compileAstNodes(body, uniqIndexCounter),
     {
       type: 'goto',
-      to: startTag.key,
+      key: startTag.key,
     },
     endTag,
   ];
@@ -140,7 +136,7 @@ const compileWhileSegment = (
 const compilePromptCommand = ({
   setVars,
   key,
-}: PromptCommand<unknown, unknown, unknown>): CompileIntermediate[] => {
+}: PromptCommand<unknown, unknown, unknown>): CompileMediateNode[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
     { type: 'prompt', setVars, key },
@@ -159,7 +155,7 @@ const compileCallCommand = ({
   unknown,
   unknown,
   unknown
->): CompileIntermediate[] => {
+>): CompileMediateNode[] => {
   return [
     { type: 'tag', key, isEntryPoint: true },
     { type: 'call', script, withParams, setVars, goto, key },
@@ -168,74 +164,80 @@ const compileCallCommand = ({
 
 const compileEffectCommand = (
   command: EffectCommand<unknown, unknown, unknown>
-): CompileIntermediate[] => [command];
+): CompileMediateNode[] => [command];
 
-const compileLabelSegment = ({ key }: LabelSegment): CompileIntermediate[] => {
+const compileLabelAstNode = ({ key }: LabelAstNode): CompileMediateNode[] => {
   return [{ type: 'tag', key, isEntryPoint: true }];
+};
+
+const compileGotoAstNode = ({ key }: GotoAstNode): CompileMediateNode[] => {
+  return [{ type: 'goto', key }];
 };
 
 const compileReturnCommand = ({
   getValue,
-}: ReturnCommand<unknown, unknown, unknown>): CompileIntermediate[] => {
+}: ReturnCommand<unknown, unknown, unknown>): CompileMediateNode[] => {
   return [{ type: 'return', getValue }];
 };
 
-const compileSegment = <Vars, Input, Retrun, Yield, Meta>(
-  segment: ScriptSegment<Vars, Input, Retrun, Yield, Meta>,
-  uniqCounter: () => number
-): CompileIntermediate[] => {
+const compileAstNode = <Vars, Input, Retrun, Yield, Meta>(
+  segment: ScriptAstNode<Vars, Input, Retrun, Yield, Meta>,
+  uniqIndexCounter: () => number
+): CompileMediateNode[] => {
   switch (segment.type) {
     case 'content':
       return compileContentCommand(segment);
     case 'conditions':
-      return compileConditionsSegment(segment, uniqCounter);
+      return compileConditionsAstNode(segment, uniqIndexCounter);
     case 'while':
-      return compileWhileSegment(segment, uniqCounter);
+      return compileWhileAstNode(segment, uniqIndexCounter);
     case 'prompt':
       return compilePromptCommand(segment);
     case 'call':
       return compileCallCommand(segment);
     case 'effect':
       return compileEffectCommand(segment);
+    case 'goto':
+      return compileGotoAstNode(segment);
     case 'label':
-      return compileLabelSegment(segment);
+      return compileLabelAstNode(segment);
     case 'return':
       return compileReturnCommand(segment);
     default:
       throw new TypeError(
         `unknown segment type: ${
-          (segment as ScriptSegment<Vars, Input, Retrun, Yield, Meta>).type
+          (segment as ScriptAstNode<Vars, Input, Retrun, Yield, Meta>).type
         }`
       );
   }
 };
 
-const compileSegments = <Vars, Input, Retrun, Yield, Meta>(
-  segments: ScriptSegment<Vars, Input, Retrun, Yield, Meta>[],
+const compileAstNodes = <Vars, Input, Retrun, Yield, Meta>(
+  segments: ScriptAstNode<Vars, Input, Retrun, Yield, Meta>[],
   counter: () => number
 ) =>
   segments.reduce(
     (compilingArray, segment) => [
       ...compilingArray,
-      ...compileSegment(segment, counter),
+      ...compileAstNode(segment, counter),
     ],
     []
   );
 
 const compile = <Vars, Input, Return, Yield, Meta>(
-  segments: ScriptSegment<Vars, Input, Return, Yield, Meta>[],
+  segments: ScriptAstNode<Vars, Input, Return, Yield, Meta>[],
   meta: { scriptName: string }
 ): CompileResult<Vars, Input, Return, Yield, Meta> => {
   const keyIndex = new Map();
   const stopPointIndex = new Map();
 
-  // remove tags and store their indexes
-  const mediateCommands: Exclude<CompileIntermediate, TagIntermediate>[] = [];
-  const compiledIntermediates = compileSegments(segments, createCounter());
+  // remove tags and save indexes
+  const mediateNodesWithTags = compileAstNodes(segments, createCounter());
+  const mediateCommands: Exclude<CompileMediateNode, TagMediateNode>[] = [];
 
-  for (const intermediate of compiledIntermediates) {
-    if (intermediate.type === 'tag') {
-      const { isEntryPoint, key } = intermediate;
+  for (const mediateNode of mediateNodesWithTags) {
+    if (mediateNode.type === 'tag') {
+      const { isEntryPoint, key } = mediateNode;
 
       invariant(
         !keyIndex.has(key),
@@ -247,18 +249,18 @@ const compile = <Vars, Input, Return, Yield, Meta>(
         stopPointIndex.set(key, mediateCommands.length);
       }
     } else {
-      mediateCommands.push(intermediate);
+      mediateCommands.push(mediateNode);
     }
   }
 
-  // translate "goto tag" to "jump index"
+  // translate "goto" node to "jump" command
   const commands: ScriptCommand<unknown, unknown, unknown, unknown, unknown>[] =
     [];
 
   for (const [idx, command] of mediateCommands.entries()) {
     if (command.type === 'goto') {
-      const targetIdx = keyIndex.get(command.to);
-      invariant(targetIdx !== undefined, `label "${command.to}" not found`);
+      const targetIdx = keyIndex.get(command.key);
+      invariant(targetIdx !== undefined, `label "${command.key}" not found`);
 
       commands.push({
         type: 'jump',

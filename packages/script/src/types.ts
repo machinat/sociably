@@ -147,6 +147,13 @@ export type LabelProps = {
 };
 
 /**
+ * @category Keyword Props
+ */
+export type GotoProps = {
+  key: string;
+};
+
+/**
  * @category Keyword Element
  */
 export type LabelElement = SociablyElement<LabelProps, typeof LABEL>;
@@ -271,23 +278,28 @@ export type ScriptNode<Vars, Input, Return, Yield, Meta> =
       typeof Sociably.Fragment
     >;
 
-export type ConditionsSegment<Vars, Meta> = {
+export type ConditionsAstNode<Vars, Meta> = {
   type: 'conditions';
   branches: {
     condition: ConditionMatcher<Vars, Meta>;
-    body: ScriptSegment<Vars, unknown, unknown, unknown, Meta>[];
+    body: ScriptAstNode<Vars, unknown, unknown, unknown, Meta>[];
   }[];
-  fallbackBody: null | ScriptSegment<Vars, unknown, unknown, unknown, Meta>[];
+  fallbackBody: null | ScriptAstNode<Vars, unknown, unknown, unknown, Meta>[];
 };
 
-export type WhileSegment<Vars, Meta> = {
+export type WhileAstNode<Vars, Meta> = {
   type: 'while';
   condition: ConditionMatcher<Vars, Meta>;
-  body: ScriptSegment<Vars, unknown, unknown, unknown, Meta>[];
+  body: ScriptAstNode<Vars, unknown, unknown, unknown, Meta>[];
 };
 
-export type LabelSegment = {
+export type LabelAstNode = {
   type: 'label';
+  key: string;
+};
+
+export type GotoAstNode = {
+  type: 'goto';
   key: string;
 };
 
@@ -334,14 +346,15 @@ export type ReturnCommand<Vars, Return, Meta> = {
   getValue?: ReturnValueGetter<Vars, Return, Meta>;
 };
 
-export type ScriptSegment<Vars, Input, Return, Yield, Meta> =
+export type ScriptAstNode<Vars, Input, Return, Yield, Meta> =
+  | ConditionsAstNode<Vars, Meta>
+  | WhileAstNode<Vars, Meta>
+  | LabelAstNode
+  | GotoAstNode
   | ContentCommand<Vars, Meta>
-  | ConditionsSegment<Vars, Meta>
-  | WhileSegment<Vars, Meta>
   | PromptCommand<Vars, Input, Meta>
   | CallCommand<Vars, unknown, unknown, Yield, Meta>
   | EffectCommand<Vars, Yield, Meta>
-  | LabelSegment
   | ReturnCommand<Vars, Return, Meta>;
 
 export type ScriptCommand<Vars, Input, Return, Yield, Meta> =

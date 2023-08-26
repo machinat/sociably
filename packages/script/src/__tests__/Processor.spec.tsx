@@ -26,6 +26,16 @@ const scope = moxy<ServiceScope>({
 const promptSetFn = moxy(({ vars }) => vars);
 const effectYieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
 
+const findThunkElementInMessage = (message) => {
+  let thunk;
+  traverseMessage(message, '$', {}, (node) => {
+    if (typeof node === 'object' && node.type === (Sociably.Thunk as unknown)) {
+      thunk = node;
+    }
+  });
+  return thunk;
+};
+
 const AnotherScript = moxy(
   build<{}, {}, {}, void, void, { hello: string }>(
     {
@@ -106,11 +116,9 @@ const scriptAccessor = moxy({
 });
 
 const thread: SociablyThread = {
-  $$typeofThread: true,
   platform: 'test',
   uid: 'test.thread',
-  uniqueIdentifier: { $$typeof: ['thread'], platform: 'test', id: 'thread' },
-};
+} as SociablyThread;
 
 beforeEach(() => {
   MyScript.mock.clear();
@@ -159,13 +167,7 @@ describe('.start(thread, Script)', () => {
       </Sociably.Fragment>
     `);
 
-    let thunk;
-    traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Sociably.Thunk) {
-        thunk = node;
-      }
-    });
-
+    const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
 
     expect(runtime.requireSaving).toBe(false);
@@ -227,13 +229,7 @@ describe('.start(thread, Script)', () => {
       </Sociably.Fragment>
     `);
 
-    let thunk;
-    traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Sociably.Thunk) {
-        thunk = node;
-      }
-    });
-
+    const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
       stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
@@ -294,13 +290,7 @@ describe('.start(thread, Script)', () => {
       </Sociably.Fragment>
     `);
 
-    let thunk;
-    traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Sociably.Thunk) {
-        thunk = node;
-      }
-    });
-
+    const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
       stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
@@ -402,13 +392,7 @@ describe('.continue(thread, input)', () => {
       </Sociably.Fragment>
     `);
 
-    let thunk;
-    traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Sociably.Thunk) {
-        thunk = node;
-      }
-    });
-
+    const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
       stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
@@ -489,13 +473,7 @@ describe('.continue(thread, input)', () => {
       </Sociably.Fragment>
     `);
 
-    let thunk;
-    traverseMessage(message, '$', {}, (node) => {
-      if (typeof node === 'object' && node.type === Sociably.Thunk) {
-        thunk = node;
-      }
-    });
-
+    const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
       stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)

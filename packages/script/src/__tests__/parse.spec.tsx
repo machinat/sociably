@@ -7,6 +7,7 @@ import {
   WHILE,
   PROMPT,
   LABEL,
+  GOTO,
   CALL,
   EFFECT,
   RETURN,
@@ -310,41 +311,47 @@ describe('parse <PROMPT/>', () => {
     expect(() =>
       parse(<PROMPT key={undefined as never} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <PROMPT/> should not be empty"`
+      `"prop "key" of <PROMPT/> cannot be empty"`
     );
     expect(() => parse(<PROMPT key="" />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <PROMPT/> should not be empty"`
+      `"prop "key" of <PROMPT/> cannot be empty"`
     );
   });
 });
 
-describe('parse <LABEL/>', () => {
+describe('parse <LABEL/> & <GOTO/>', () => {
   it('parse ok', () => {
     expect(
       parse(
         <>
           <LABEL key="foo" />
           {() => 'foo'}
+          <GOTO key="foo" />
         </>
       )
     ).toEqual([
       { type: 'label', key: 'foo' },
       { type: 'content', getContent: expect.any(Function) },
+      { type: 'goto', key: 'foo' },
     ]);
 
     expect(
       parse(
         <>
           <LABEL key="bar" />
+          <GOTO key="baz" />
           {() => 'bar'}
           <LABEL key="baz" />
+          <GOTO key="bar" />
           {() => 'baz'}
         </>
       )
     ).toEqual([
       { type: 'label', key: 'bar' },
+      { type: 'goto', key: 'baz' },
       { type: 'content', getContent: expect.any(Function) },
       { type: 'label', key: 'baz' },
+      { type: 'goto', key: 'bar' },
       { type: 'content', getContent: expect.any(Function) },
     ]);
   });
@@ -353,15 +360,18 @@ describe('parse <LABEL/>', () => {
     expect(() =>
       parse(<LABEL key={undefined as never} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <LABEL/> should not be empty"`
+      `"prop "key" of <LABEL/> cannot be empty"`
     );
     expect(() => parse(<LABEL key="" />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <LABEL/> should not be empty"`
+      `"prop "key" of <LABEL/> cannot be empty"`
     );
     expect(() =>
-      parse(<LABEL key={null as never} />)
+      parse(<GOTO key={undefined as never} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <LABEL/> should not be empty"`
+      `"prop "key" of <GOTO/> cannot be empty"`
+    );
+    expect(() => parse(<GOTO key="" />)).toThrowErrorMatchingInlineSnapshot(
+      `"prop "key" of <GOTO/> cannot be empty"`
     );
   });
 });
@@ -428,7 +438,7 @@ describe('parse <CALL/>', () => {
     expect(() =>
       parse(<CALL key={undefined as never} script={AnotherScript} />)
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <CALL/> should not be empty"`
+      `"prop "key" of <CALL/> cannot be empty"`
     );
   });
 

@@ -8,6 +8,7 @@ import type {
   CallProps,
   EffectProps,
   ReturnProps,
+  GotoProps,
   AnyScriptLibrary,
 } from './types.js';
 
@@ -109,3 +110,8 @@ export const EFFECT = <Vars = any, Yield = any, Meta = any>(
 export const RETURN = <Vars = any, Return = any, Meta = any>(
   _props: ReturnProps<Vars, Return, Meta>
 ): null => null;
+
+/**
+ * @category Keyword
+ */
+export const GOTO = (_props: GotoProps): null => null;

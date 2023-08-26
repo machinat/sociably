@@ -172,6 +172,7 @@ it('compile other segments type', () => {
     unknown,
     unknown,
     unknown,
+    unknown,
     unknown
   >(
     [
@@ -192,6 +193,7 @@ it('compile other segments type', () => {
         setVars: () => ({ drink: 'coffee' }),
         goto: 'ordering',
       },
+      { type: 'goto', key: 'end' },
       { type: 'effect', yieldValue: () => ({ ordered: true }) },
       { type: 'label', key: 'end' },
       { type: 'content', getContent: () => 'enjoy ur meal' },
@@ -213,6 +215,7 @@ it('compile other segments type', () => {
       key: 'order_something',
       goto: 'ordering',
     },
+    { type: 'jump', offset: 2 },
     { type: 'effect', yieldValue: expect.any(Function) },
     { type: 'content', getContent: expect.any(Function) },
     { type: 'effect', setVars: expect.any(Function) },
@@ -223,7 +226,7 @@ it('compile other segments type', () => {
       ['begin', 1],
       ['ask_something', 2],
       ['order_something', 4],
-      ['end', 6],
+      ['end', 7],
     ])
   );
   expect(commands[0].getContent({})).toBe('hello');
@@ -231,10 +234,10 @@ it('compile other segments type', () => {
   expect(commands[2].setVars({})).toEqual({ name: 'Jojo' });
   expect(commands[3].getContent({})).toBe('hi Jojo, order ur meal');
   expect(commands[4].withParams({})).toEqual({ foo: 'bar' });
-  expect(commands[5].yieldValue({})).toEqual({ ordered: true });
-  expect(commands[6].getContent({})).toBe('enjoy ur meal');
-  expect(commands[7].setVars({})).toEqual({ foo: 'baz' });
-  expect(commands[8].getValue({})).toBe('foo');
+  expect(commands[6].yieldValue({})).toEqual({ ordered: true });
+  expect(commands[7].getContent({})).toBe('enjoy ur meal');
+  expect(commands[8].setVars({})).toEqual({ foo: 'baz' });
+  expect(commands[9].getValue({})).toBe('foo');
 });
 
 it('throw if conditions key duplicated', () => {

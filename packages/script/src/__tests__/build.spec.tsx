@@ -12,6 +12,7 @@ import {
   PROMPT,
   EFFECT,
   LABEL,
+  GOTO,
   CALL,
   RETURN,
 } from '../keyword.js';
@@ -68,6 +69,7 @@ const MyScript = build(
     <LABEL key="end" />
     <EFFECT set={() => ({ foo: 'bar' })} />
     {() => 'ad minim veniam'}
+    <GOTO key="start" />
   </>
 );
 
