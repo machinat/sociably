@@ -26,19 +26,19 @@ const fooChannel = {
   $$typeofChannel: true as const,
   platform: 'foo',
   uid: 'foo.my_agent',
-  uniqueIdentifier: { $$typeof: [], platform: 'foo', id: 'my_agent' },
+  uniqueIdentifier: { platform: 'foo', id: 'my_agent' },
 };
 const fooUser = {
   $$typeofUser: true as const,
   platform: 'foo',
   uid: 'foo.john_doe',
-  uniqueIdentifier: { $$typeof: [], platform: 'foo', id: 'john_doe' },
+  uniqueIdentifier: { platform: 'foo', id: 'john_doe' },
 };
 const fooThread = {
   $$typeofThread: true as const,
   platform: 'foo',
   uid: 'foo.chat.john_doe',
-  uniqueIdentifier: { $$typeof: [], platform: 'foo', id: 'john_doe' },
+  uniqueIdentifier: { platform: 'foo', id: 'john_doe' },
 };
 const fooData = 'foo.data';
 const fooCredential = { foo: 'credential' };

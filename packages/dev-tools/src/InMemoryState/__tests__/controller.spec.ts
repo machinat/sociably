@@ -10,7 +10,6 @@ const fooInstance = {
   platform: 'test',
   uid: 'test.foo',
   uniqueIdentifier: {
-    $$typeof: ['channel' as const, 'thread' as const, 'user' as const],
     platform: 'test',
     id: 'foo',
   },

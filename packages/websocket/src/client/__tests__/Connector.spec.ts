@@ -21,7 +21,7 @@ const user: SociablyUser = {
   $$typeofUser: true,
   platform: 'test',
   uid: 'john_doe',
-  uniqueIdentifier: { $$typeof: ['user'], platform: 'test', id: 'john_doe' },
+  uniqueIdentifier: { platform: 'test', id: 'john_doe' },
 };
 
 const login = moxy(async () => ({

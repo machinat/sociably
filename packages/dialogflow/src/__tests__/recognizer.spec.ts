@@ -62,7 +62,6 @@ const thread: SociablyThread = {
   platform: 'test',
   uid: 'foo.chat',
   uniqueIdentifier: {
-    $$typeof: ['thread'],
     platform: 'test',
     id: 'foo',
   },
