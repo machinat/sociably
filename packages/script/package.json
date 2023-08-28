@@ -1,6 +1,6 @@
 {
   "name": "@sociably/script",
-  "version": "0.9.0-alpha.4",
+  "version": "0.9.0-alpha.13",
   "type": "module",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
   "repository": {
@@ -33,6 +33,6 @@
     "@sociably/core": "^0.9.0-alpha"
   },
   "devDependencies": {
-    "@sociably/dev-tools": "^0.9.0-alpha.4"
+    "@sociably/dev-tools": "^0.9.0-alpha.13"
   }
 }
