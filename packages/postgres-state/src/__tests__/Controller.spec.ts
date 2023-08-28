@@ -1,6 +1,6 @@
-/* eslint-disable no-await-in-loop */
 import { Pool } from 'pg';
-import { moxy, Mock, isMoxy } from '@moxyjs/moxy';
+import { moxy, isMoxy } from '@moxyjs/moxy';
+import { SociablyThread, SociablyChannel, SociablyUser } from '@sociably/core';
 import { StateAccessor } from '@sociably/core/base/StateController';
 import {
   DEFAULT_GLOBAL_STATE_TABLE_NAME,
@@ -25,7 +25,7 @@ afterAll(async () => {
   await pgPool.end();
 });
 
-const clientQueryMock = new Mock();
+let usedClients: any[] = [];
 pgPool.connect.mock.wrap(
   (connect) =>
     async function connectWithMoxiedClient(callback) {
@@ -34,8 +34,11 @@ pgPool.connect.mock.wrap(
       }
       const client = await connect.call(this);
       if (!isMoxy(client.query)) {
-        client.query = clientQueryMock.proxify(client.query);
+        client.query = moxy(client.query);
+      } else {
+        client.query.mock.reset();
       }
+      usedClients.push(client);
       return client;
     }
 );
@@ -116,7 +119,7 @@ describe.each<[string, Record<string, string>]>([
         platform: 'test',
         uid: 'test.foo',
         uniqueIdentifier: { platform: 'test', id: 'foo' },
-      }),
+      } as SociablyChannel),
       `${schemaPrefix}"${channelStateTableName}"`,
       {
         [FIELD_STATE_PLATFORM]: 'test',
@@ -130,7 +133,7 @@ describe.each<[string, Record<string, string>]>([
         platform: 'test',
         uid: 'test.foo.1',
         uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
-      }),
+      } as SociablyChannel),
       `${schemaPrefix}"${channelStateTableName}"`,
       {
         [FIELD_STATE_PLATFORM]: 'test',
@@ -144,7 +147,7 @@ describe.each<[string, Record<string, string>]>([
         platform: 'test',
         uid: 'test.foo',
         uniqueIdentifier: { platform: 'test', id: 'foo' },
-      }),
+      } as SociablyThread),
       `${schemaPrefix}"${threadStateTableName}"`,
       {
         [FIELD_STATE_PLATFORM]: 'test',
@@ -158,7 +161,7 @@ describe.each<[string, Record<string, string>]>([
         platform: 'test',
         uid: 'test.foo.1',
         uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
-      }),
+      } as SociablyThread),
       `${schemaPrefix}"${threadStateTableName}"`,
       {
         [FIELD_STATE_PLATFORM]: 'test',
@@ -172,7 +175,7 @@ describe.each<[string, Record<string, string>]>([
         platform: 'test',
         uid: 'test.foo',
         uniqueIdentifier: { platform: 'test', id: 'foo' },
-      }),
+      } as SociablyUser),
       `${schemaPrefix}"${userStateTableName}"`,
       {
         [FIELD_STATE_PLATFORM]: 'test',
@@ -186,7 +189,7 @@ describe.each<[string, Record<string, string>]>([
         platform: 'test',
         uid: 'test.foo.1',
         uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
-      }),
+      } as SociablyUser),
       `${schemaPrefix}"${userStateTableName}"`,
       {
         [FIELD_STATE_PLATFORM]: 'test',
@@ -204,17 +207,27 @@ describe.each<[string, Record<string, string>]>([
     ],
   ])('%s', (__, state, tableId, idFields) => {
     const idKeys = Object.keys(idFields);
-    const insertStateEntity = (key, value) =>
-      pgPool.query({
+    const insertStateEntities = (pairs) => {
+      const w = 2 + idKeys.length;
+      return pgPool.query({
         text: `
           INSERT INTO ${tableId} (
             "${FIELD_STATE_KEY}",
             "${FIELD_STATE_DATA}",
             ${idKeys.map((name) => `"${name}"`).join(', ')}
-          ) VALUES ($1, $2, ${idKeys.map((_n, i) => `$${i + 3}`).join(', ')})
+          ) VALUES ${pairs
+            .map((_p, i) => {
+              return `($${i * w + 1}, $${i * w + 2}, ${idKeys
+                .map((_n, j) => `$${i * w + j + 3}`)
+                .join(', ')})`;
+            })
+            .join(', ')};
         `,
-        values: [key, { value }, ...Object.values(idFields)],
+        values: pairs
+          .map(([key, value]) => [key, { value }, ...Object.values(idFields)])
+          .flat(),
       });
+    };
 
     const getStateEntities = async () => {
       const result = await pgPool.query({
@@ -236,14 +249,16 @@ describe.each<[string, Record<string, string>]>([
     };
 
     beforeEach(async () => {
-      await insertStateEntity('key2', 'foo');
-      await insertStateEntity('key3', 123);
-      await insertStateEntity('key4', { bar: 'baz' });
-      await insertStateEntity('key5', [{ a: 0 }, { b: 1 }, { c: 2 }]);
-      await insertStateEntity('key6', null);
+      await insertStateEntities([
+        ['key2', 'foo'],
+        ['key3', 123],
+        ['key4', { bar: 'baz' }],
+        ['key5', [{ a: 0 }, { b: 1 }, { c: 2 }]],
+        ['key6', null],
+      ]);
 
+      usedClients = [];
       pgPool.mock.clear();
-      clientQueryMock.clear();
       marshaler.mock.reset();
     });
     afterEach(async () => {
@@ -251,16 +266,20 @@ describe.each<[string, Record<string, string>]>([
     });
 
     test('.get()', async () => {
-      for (const [key, value] of [
-        ['key1', undefined],
-        ['key2', 'foo'],
-        ['key3', 123],
-        ['key4', { bar: 'baz' }],
-        ['key5', [{ a: 0 }, { b: 1 }, { c: 2 }]],
-        ['key6', null],
-      ] as const) {
-        await expect(state.get(key)).resolves.toEqual(value);
-      }
+      await Promise.all(
+        (
+          [
+            ['key1', undefined],
+            ['key2', 'foo'],
+            ['key3', 123],
+            ['key4', { bar: 'baz' }],
+            ['key5', [{ a: 0 }, { b: 1 }, { c: 2 }]],
+            ['key6', null],
+          ] as const
+        ).map(async ([key, value]) => {
+          await expect(state.get(key)).resolves.toEqual(value);
+        })
+      );
 
       expect(
         getIdenticalQueryCallsText(pgPool.query.mock.calls)
@@ -269,17 +288,20 @@ describe.each<[string, Record<string, string>]>([
     });
 
     test('.set()', async () => {
-      const cases = [
-        ['key1', 'foo', false],
-        ['key2', 'bar', true],
-        ['key3', 456, true],
-        ['key4', { bar: 'bae' }, true],
-        ['key5', [1, 2, 3], true],
-        ['key6', {}, true],
-      ] as const;
-      for (const [key, value, isUpdated] of cases) {
-        await expect(state.set(key, value)).resolves.toBe(isUpdated);
-      }
+      await Promise.all(
+        (
+          [
+            ['key1', 'foo', false],
+            ['key2', 'bar', true],
+            ['key3', 456, true],
+            ['key4', { bar: 'bae' }, true],
+            ['key5', [1, 2, 3], true],
+            ['key6', {}, true],
+          ] as const
+        ).map(async ([key, value, isUpdated]) => {
+          await expect(state.set(key, value)).resolves.toBe(isUpdated);
+        })
+      );
 
       expect(
         getIdenticalQueryCallsText(pgPool.query.mock.calls)
@@ -289,9 +311,6 @@ describe.each<[string, Record<string, string>]>([
 
     describe('.update()', () => {
       it('update value', async () => {
-        let lastQueryTexts;
-        const allQueryValues: unknown[] = [];
-
         const cases = [
           ['key1', undefined, 'foo'],
           ['key2', 'foo', 'bar'],
@@ -300,37 +319,43 @@ describe.each<[string, Record<string, string>]>([
           ['key5', [{ a: 0 }, { b: 1 }, { c: 2 }], [1, 2, 3]],
           ['key6', null, {}],
         ] as const;
-        for (const [key, originalValue, newValue] of cases) {
-          const updator = moxy(() => newValue);
-          await expect(state.update(key, updator)).resolves.toEqual(newValue);
+        await Promise.all(
+          cases.map(async ([key, originalValue, newValue]) => {
+            const updator = moxy(() => newValue);
+            await expect(state.update(key, updator)).resolves.toEqual(newValue);
 
-          expect(updator.mock).toHaveBeenCalledTimes(1);
-          expect(updator.mock).toHaveBeenCalledWith(originalValue);
+            expect(updator.mock).toHaveBeenCalledTimes(1);
+            expect(updator.mock).toHaveBeenCalledWith(originalValue);
+          })
+        );
 
-          const queryTexts = getQueryCallsText(clientQueryMock.calls);
-          if (lastQueryTexts) {
-            expect(queryTexts).toEqual(lastQueryTexts);
-          } else {
-            expect(queryTexts).toMatchSnapshot();
-            lastQueryTexts = queryTexts;
-          }
-          allQueryValues.push(
-            ...getQueryCallsValues(clientQueryMock.calls).filter(
-              (values) => !!values
-            )
+        const queryTexts = getQueryCallsText(usedClients[0].query.mock.calls);
+        expect(queryTexts).toMatchSnapshot();
+
+        for (const client of usedClients) {
+          expect(getQueryCallsText(client.query.mock.calls)).toEqual(
+            queryTexts
           );
-          clientQueryMock.clear();
         }
-        expect(allQueryValues).toMatchSnapshot();
+
+        expect(
+          usedClients.map((client) =>
+            getQueryCallsValues(client.query.mock.calls).filter(
+              (value) => value
+            )
+          )
+        ).toMatchSnapshot();
 
         await expect(getStateEntities()).resolves.toEqual(
-          cases.map(([key, , newValue]) => ({
-            ...idFields,
-            [FIELD_STATE_KEY]: key,
-            [FIELD_STATE_DATA]: { value: newValue },
-            [FIELD_CREATED_AT]: expect.any(Date),
-            [FIELD_UPDATED_AT]: expect.any(Date),
-          }))
+          expect.arrayContaining(
+            cases.map(([key, , newValue]) => ({
+              ...idFields,
+              [FIELD_STATE_KEY]: key,
+              [FIELD_STATE_DATA]: { value: newValue },
+              [FIELD_CREATED_AT]: expect.any(Date),
+              [FIELD_UPDATED_AT]: expect.any(Date),
+            }))
+          )
         );
       });
 
@@ -341,20 +366,16 @@ describe.each<[string, Record<string, string>]>([
         expect(updater.mock).toHaveBeenCalledTimes(1);
         expect(updater.mock).toHaveBeenCalledWith('foo');
 
-        expect(getQueryCallsText(clientQueryMock.calls)).toMatchSnapshot();
+        const queryCalls = usedClients[0].query.mock.calls;
+        expect(getQueryCallsText(queryCalls)).toMatchSnapshot();
         expect(
-          getQueryCallsValues(clientQueryMock.calls).filter(
-            (values) => !!values
-          )
+          getQueryCallsValues(queryCalls).filter((value) => value)
         ).toMatchSnapshot();
 
         await expect(getStateEntityOfKey('key2')).resolves.toBe(undefined);
       });
 
-      it('make no change if the new value is the same as old value by shallow comparison', async () => {
-        let lastQueryTexts;
-        const allQueryValues: unknown[] = [];
-
+      it('make no change if the new value is identical with old value', async () => {
         const cases = [
           ['key2', 'foo'],
           ['key3', 123],
@@ -362,53 +383,62 @@ describe.each<[string, Record<string, string>]>([
           ['key5', [{ a: 0 }, { b: 1 }, { c: 2 }]],
           ['key6', null],
         ] as const;
+        await Promise.all(
+          cases.map(async ([key, value]) => {
+            const updater = moxy((x) => x);
+            await expect(state.update(key, updater)).resolves.toEqual(value);
 
-        for (const [key, value] of cases) {
-          const updater = moxy((x) => x);
-          await expect(state.update(key, updater)).resolves.toEqual(value);
+            expect(updater.mock).toHaveBeenCalledTimes(1);
+            expect(updater.mock).toHaveBeenCalledWith(value);
+          })
+        );
 
-          expect(updater.mock).toHaveBeenCalledTimes(1);
-          expect(updater.mock).toHaveBeenCalledWith(value);
+        const queryCalls = usedClients[0].query.mock.calls;
+        expect(getQueryCallsText(queryCalls)).toMatchSnapshot();
 
-          const queryTexts = getQueryCallsText(clientQueryMock.calls);
-          if (lastQueryTexts) {
-            expect(queryTexts).toEqual(lastQueryTexts);
-          } else {
-            expect(queryTexts).toMatchSnapshot();
-            lastQueryTexts = queryTexts;
-          }
-          allQueryValues.push(
-            ...getQueryCallsValues(clientQueryMock.calls).filter(
-              (values) => !!values
-            )
+        for (const client of usedClients) {
+          expect(getQueryCallsText(client.query.mock.calls)).toEqual(
+            getQueryCallsText(queryCalls)
           );
-          clientQueryMock.clear();
         }
-        expect(allQueryValues).toMatchSnapshot();
+
+        expect(
+          usedClients.map((client) =>
+            getQueryCallsValues(client.query.mock.calls).filter(
+              (value) => value
+            )
+          )
+        ).toMatchSnapshot();
 
         await expect(getStateEntities()).resolves.toEqual(
-          cases.map(([key, value]) => ({
-            ...idFields,
-            [FIELD_STATE_KEY]: key,
-            [FIELD_STATE_DATA]: { value },
-            [FIELD_CREATED_AT]: expect.any(Date),
-            [FIELD_UPDATED_AT]: expect.any(Date),
-          }))
+          expect.arrayContaining(
+            cases.map(([key, value]) => ({
+              ...idFields,
+              [FIELD_STATE_KEY]: key,
+              [FIELD_STATE_DATA]: { value },
+              [FIELD_CREATED_AT]: expect.any(Date),
+              [FIELD_UPDATED_AT]: expect.any(Date),
+            }))
+          )
         );
       });
     });
 
     test('.delete()', async () => {
-      for (const [key, isDeleted] of [
-        ['key1', false],
-        ['key2', true],
-        ['key3', true],
-        ['key4', true],
-        ['key5', true],
-        ['key6', true],
-      ] as const) {
-        await expect(state.delete(key)).resolves.toBe(isDeleted);
-      }
+      await Promise.all(
+        (
+          [
+            ['key1', false],
+            ['key2', true],
+            ['key3', true],
+            ['key4', true],
+            ['key5', true],
+            ['key6', true],
+          ] as const
+        ).map(async ([key, isDeleted]) => {
+          await expect(state.delete(key)).resolves.toBe(isDeleted);
+        })
+      );
 
       expect(
         getIdenticalQueryCallsText(pgPool.query.mock.calls)
@@ -430,13 +460,9 @@ describe.each<[string, Record<string, string>]>([
     });
 
     test('.keys()', async () => {
-      await expect(state.keys()).resolves.toEqual([
-        'key2',
-        'key3',
-        'key4',
-        'key5',
-        'key6',
-      ]);
+      await expect(state.keys()).resolves.toEqual(
+        expect.arrayContaining(['key2', 'key3', 'key4', 'key5', 'key6'])
+      );
 
       expect(
         getIdenticalQueryCallsText(pgPool.query.mock.calls)

@@ -262,7 +262,7 @@ exports[`default table channel state .update() delete entity if updater returns 
 ]
 `;
 
-exports[`default table channel state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`default table channel state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -273,37 +273,47 @@ exports[`default table channel state .update() make no change if the new value i
 ]
 `;
 
-exports[`default table channel state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`default table channel state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -337,100 +347,112 @@ exports[`default table channel state .update() update value 1`] = `
 exports[`default table channel state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -697,7 +719,7 @@ exports[`default table channel state with scope id .update() delete entity if up
 ]
 `;
 
-exports[`default table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`default table channel state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -708,37 +730,47 @@ exports[`default table channel state with scope id .update() make no change if t
 ]
 `;
 
-exports[`default table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`default table channel state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -772,100 +804,112 @@ exports[`default table channel state with scope id .update() update value 1`] = 
 exports[`default table channel state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -1086,7 +1130,7 @@ exports[`default table global state .update() delete entity if updater returns \
 ]
 `;
 
-exports[`default table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`default table global state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -1097,27 +1141,37 @@ exports[`default table global state .update() make no change if the new value is
 ]
 `;
 
-exports[`default table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`default table global state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "MY_SUPER_STATE",
-    "key2",
+    [
+      "MY_SUPER_STATE",
+      "key2",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key3",
+    [
+      "MY_SUPER_STATE",
+      "key3",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key4",
+    [
+      "MY_SUPER_STATE",
+      "key4",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key5",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -1151,76 +1205,88 @@ exports[`default table global state .update() update value 1`] = `
 exports[`default table global state .update() update value 2`] = `
 [
   [
-    "MY_SUPER_STATE",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "MY_SUPER_STATE",
-    "key1",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "MY_SUPER_STATE",
-    "key2",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "MY_SUPER_STATE",
-    "key3",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "MY_SUPER_STATE",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "MY_SUPER_STATE",
-    "key4",
+      "MY_SUPER_STATE",
+      "key1",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "MY_SUPER_STATE",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "MY_SUPER_STATE",
+      "key3",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "MY_SUPER_STATE",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "MY_SUPER_STATE",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "MY_SUPER_STATE",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "MY_SUPER_STATE",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -1487,7 +1553,7 @@ exports[`default table thread state .update() delete entity if updater returns \
 ]
 `;
 
-exports[`default table thread state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`default table thread state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -1498,37 +1564,47 @@ exports[`default table thread state .update() make no change if the new value is
 ]
 `;
 
-exports[`default table thread state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`default table thread state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -1562,100 +1638,112 @@ exports[`default table thread state .update() update value 1`] = `
 exports[`default table thread state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -1922,7 +2010,7 @@ exports[`default table thread state with scope id .update() delete entity if upd
 ]
 `;
 
-exports[`default table thread state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`default table thread state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -1933,37 +2021,47 @@ exports[`default table thread state with scope id .update() make no change if th
 ]
 `;
 
-exports[`default table thread state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`default table thread state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -1997,100 +2095,112 @@ exports[`default table thread state with scope id .update() update value 1`] = `
 exports[`default table thread state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -2357,7 +2467,7 @@ exports[`default table user state .update() delete entity if updater returns \`u
 ]
 `;
 
-exports[`default table user state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`default table user state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -2368,37 +2478,47 @@ exports[`default table user state .update() make no change if the new value is t
 ]
 `;
 
-exports[`default table user state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`default table user state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -2432,100 +2552,112 @@ exports[`default table user state .update() update value 1`] = `
 exports[`default table user state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -2792,7 +2924,7 @@ exports[`default table user state with scope id .update() delete entity if updat
 ]
 `;
 
-exports[`default table user state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`default table user state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -2803,37 +2935,47 @@ exports[`default table user state with scope id .update() make no change if the 
 ]
 `;
 
-exports[`default table user state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`default table user state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -2867,100 +3009,112 @@ exports[`default table user state with scope id .update() update value 1`] = `
 exports[`default table user state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -3227,7 +3381,7 @@ exports[`specified schema & table channel state .update() delete entity if updat
 ]
 `;
 
-exports[`specified schema & table channel state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified schema & table channel state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -3238,37 +3392,47 @@ exports[`specified schema & table channel state .update() make no change if the 
 ]
 `;
 
-exports[`specified schema & table channel state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified schema & table channel state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -3302,100 +3466,112 @@ exports[`specified schema & table channel state .update() update value 1`] = `
 exports[`specified schema & table channel state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -3662,7 +3838,7 @@ exports[`specified schema & table channel state with scope id .update() delete e
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified schema & table channel state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -3673,37 +3849,47 @@ exports[`specified schema & table channel state with scope id .update() make no 
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified schema & table channel state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -3737,100 +3923,112 @@ exports[`specified schema & table channel state with scope id .update() update v
 exports[`specified schema & table channel state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -4051,7 +4249,7 @@ exports[`specified schema & table global state .update() delete entity if update
 ]
 `;
 
-exports[`specified schema & table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified schema & table global state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -4062,27 +4260,37 @@ exports[`specified schema & table global state .update() make no change if the n
 ]
 `;
 
-exports[`specified schema & table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified schema & table global state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "MY_SUPER_STATE",
-    "key2",
+    [
+      "MY_SUPER_STATE",
+      "key2",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key3",
+    [
+      "MY_SUPER_STATE",
+      "key3",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key4",
+    [
+      "MY_SUPER_STATE",
+      "key4",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key5",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -4116,76 +4324,88 @@ exports[`specified schema & table global state .update() update value 1`] = `
 exports[`specified schema & table global state .update() update value 2`] = `
 [
   [
-    "MY_SUPER_STATE",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "MY_SUPER_STATE",
-    "key1",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "MY_SUPER_STATE",
-    "key2",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "MY_SUPER_STATE",
-    "key3",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "MY_SUPER_STATE",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "MY_SUPER_STATE",
-    "key4",
+      "MY_SUPER_STATE",
+      "key1",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "MY_SUPER_STATE",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "MY_SUPER_STATE",
+      "key3",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "MY_SUPER_STATE",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "MY_SUPER_STATE",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "MY_SUPER_STATE",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "MY_SUPER_STATE",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -4452,7 +4672,7 @@ exports[`specified schema & table thread state .update() delete entity if update
 ]
 `;
 
-exports[`specified schema & table thread state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified schema & table thread state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -4463,37 +4683,47 @@ exports[`specified schema & table thread state .update() make no change if the n
 ]
 `;
 
-exports[`specified schema & table thread state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified schema & table thread state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -4527,100 +4757,112 @@ exports[`specified schema & table thread state .update() update value 1`] = `
 exports[`specified schema & table thread state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -4887,7 +5129,7 @@ exports[`specified schema & table thread state with scope id .update() delete en
 ]
 `;
 
-exports[`specified schema & table thread state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified schema & table thread state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -4898,37 +5140,47 @@ exports[`specified schema & table thread state with scope id .update() make no c
 ]
 `;
 
-exports[`specified schema & table thread state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified schema & table thread state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -4962,100 +5214,112 @@ exports[`specified schema & table thread state with scope id .update() update va
 exports[`specified schema & table thread state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -5322,7 +5586,7 @@ exports[`specified schema & table user state .update() delete entity if updater 
 ]
 `;
 
-exports[`specified schema & table user state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified schema & table user state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -5333,37 +5597,47 @@ exports[`specified schema & table user state .update() make no change if the new
 ]
 `;
 
-exports[`specified schema & table user state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified schema & table user state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -5397,100 +5671,112 @@ exports[`specified schema & table user state .update() update value 1`] = `
 exports[`specified schema & table user state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -5757,7 +6043,7 @@ exports[`specified schema & table user state with scope id .update() delete enti
 ]
 `;
 
-exports[`specified schema & table user state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified schema & table user state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -5768,37 +6054,47 @@ exports[`specified schema & table user state with scope id .update() make no cha
 ]
 `;
 
-exports[`specified schema & table user state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified schema & table user state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -5832,100 +6128,112 @@ exports[`specified schema & table user state with scope id .update() update valu
 exports[`specified schema & table user state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -6192,7 +6500,7 @@ exports[`specified table channel state .update() delete entity if updater return
 ]
 `;
 
-exports[`specified table channel state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified table channel state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -6203,37 +6511,47 @@ exports[`specified table channel state .update() make no change if the new value
 ]
 `;
 
-exports[`specified table channel state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified table channel state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -6267,100 +6585,112 @@ exports[`specified table channel state .update() update value 1`] = `
 exports[`specified table channel state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -6627,7 +6957,7 @@ exports[`specified table channel state with scope id .update() delete entity if 
 ]
 `;
 
-exports[`specified table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified table channel state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -6638,37 +6968,47 @@ exports[`specified table channel state with scope id .update() make no change if
 ]
 `;
 
-exports[`specified table channel state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified table channel state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -6702,100 +7042,112 @@ exports[`specified table channel state with scope id .update() update value 1`] 
 exports[`specified table channel state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -7016,7 +7368,7 @@ exports[`specified table global state .update() delete entity if updater returns
 ]
 `;
 
-exports[`specified table global state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified table global state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -7027,27 +7379,37 @@ exports[`specified table global state .update() make no change if the new value 
 ]
 `;
 
-exports[`specified table global state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified table global state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "MY_SUPER_STATE",
-    "key2",
+    [
+      "MY_SUPER_STATE",
+      "key2",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key3",
+    [
+      "MY_SUPER_STATE",
+      "key3",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key4",
+    [
+      "MY_SUPER_STATE",
+      "key4",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key5",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -7081,76 +7443,88 @@ exports[`specified table global state .update() update value 1`] = `
 exports[`specified table global state .update() update value 2`] = `
 [
   [
-    "MY_SUPER_STATE",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "MY_SUPER_STATE",
-    "key1",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "MY_SUPER_STATE",
-    "key2",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "MY_SUPER_STATE",
-    "key3",
-  ],
-  [
-    "MY_SUPER_STATE",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "MY_SUPER_STATE",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "MY_SUPER_STATE",
-    "key4",
+      "MY_SUPER_STATE",
+      "key1",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "MY_SUPER_STATE",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "MY_SUPER_STATE",
-    "key5",
+    [
+      "MY_SUPER_STATE",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "MY_SUPER_STATE",
+      "key3",
+    ],
   ],
   [
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "MY_SUPER_STATE",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "MY_SUPER_STATE",
-    "key6",
+    [
+      "MY_SUPER_STATE",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "MY_SUPER_STATE",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "MY_SUPER_STATE",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "MY_SUPER_STATE",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -7417,7 +7791,7 @@ exports[`specified table thread state .update() delete entity if updater returns
 ]
 `;
 
-exports[`specified table thread state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified table thread state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -7428,37 +7802,47 @@ exports[`specified table thread state .update() make no change if the new value 
 ]
 `;
 
-exports[`specified table thread state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified table thread state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -7492,100 +7876,112 @@ exports[`specified table thread state .update() update value 1`] = `
 exports[`specified table thread state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -7852,7 +8248,7 @@ exports[`specified table thread state with scope id .update() delete entity if u
 ]
 `;
 
-exports[`specified table thread state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified table thread state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -7863,37 +8259,47 @@ exports[`specified table thread state with scope id .update() make no change if 
 ]
 `;
 
-exports[`specified table thread state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified table thread state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -7927,100 +8333,112 @@ exports[`specified table thread state with scope id .update() update value 1`] =
 exports[`specified table thread state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -8287,7 +8705,7 @@ exports[`specified table user state .update() delete entity if updater returns \
 ]
 `;
 
-exports[`specified table user state .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified table user state .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -8298,37 +8716,47 @@ exports[`specified table user state .update() make no change if the new value is
 ]
 `;
 
-exports[`specified table user state .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified table user state .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key2",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key3",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key4",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -8362,100 +8790,112 @@ exports[`specified table user state .update() update value 1`] = `
 exports[`specified table user state .update() update value 2`] = `
 [
   [
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "",
-    "foo",
-    "key1",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "",
-    "foo",
-    "key2",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "",
-    "foo",
-    "key3",
-  ],
-  [
-    "test",
-    "",
-    "foo",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "",
-    "foo",
-    "key4",
+      "test",
+      "",
+      "foo",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "",
+      "foo",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "",
-    "foo",
-    "key5",
+    [
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "",
+      "foo",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "",
+      "foo",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "",
-    "foo",
-    "key6",
+    [
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "",
+      "foo",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "",
+      "foo",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -8722,7 +9162,7 @@ exports[`specified table user state with scope id .update() delete entity if upd
 ]
 `;
 
-exports[`specified table user state with scope id .update() make no change if the new value is the same as old value by shallow comparison 1`] = `
+exports[`specified table user state with scope id .update() make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
@@ -8733,37 +9173,47 @@ exports[`specified table user state with scope id .update() make no change if th
 ]
 `;
 
-exports[`specified table user state with scope id .update() make no change if the new value is the same as old value by shallow comparison 2`] = `
+exports[`specified table user state with scope id .update() make no change if the new value is identical with old value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key2",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key3",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key4",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
@@ -8797,100 +9247,112 @@ exports[`specified table user state with scope id .update() update value 1`] = `
 exports[`specified table user state with scope id .update() update value 2`] = `
 [
   [
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    {
-      "value": "foo",
-    },
-    "test",
-    "foo",
-    "1",
-    "key1",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    {
-      "value": "bar",
-    },
-    "test",
-    "foo",
-    "1",
-    "key2",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    {
-      "value": 456,
-    },
-    "test",
-    "foo",
-    "1",
-    "key3",
-  ],
-  [
-    "test",
-    "foo",
-    "1",
-    "key4",
-  ],
-  [
-    {
-      "value": {
-        "bar": "bae",
+    [
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
+    [
+      {
+        "value": "foo",
       },
-    },
-    "test",
-    "foo",
-    "1",
-    "key4",
+      "test",
+      "foo",
+      "1",
+      "key1",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
+    [
+      {
+        "value": "bar",
+      },
+      "test",
+      "foo",
+      "1",
+      "key2",
+    ],
   ],
   [
-    {
-      "value": [
-        1,
-        2,
-        3,
-      ],
-    },
-    "test",
-    "foo",
-    "1",
-    "key5",
+    [
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
+    [
+      {
+        "value": 456,
+      },
+      "test",
+      "foo",
+      "1",
+      "key3",
+    ],
   ],
   [
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
+    [
+      {
+        "value": {
+          "bar": "bae",
+        },
+      },
+      "test",
+      "foo",
+      "1",
+      "key4",
+    ],
   ],
   [
-    {
-      "value": {},
-    },
-    "test",
-    "foo",
-    "1",
-    "key6",
+    [
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+    [
+      {
+        "value": [
+          1,
+          2,
+          3,
+        ],
+      },
+      "test",
+      "foo",
+      "1",
+      "key5",
+    ],
+  ],
+  [
+    [
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
+    [
+      {
+        "value": {},
+      },
+      "test",
+      "foo",
+      "1",
+      "key6",
+    ],
   ],
 ]
 `;
