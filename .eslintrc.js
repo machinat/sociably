@@ -3,14 +3,14 @@ module.exports = {
   env: {
     jest: true,
   },
-  plugins: ['prettier', '@typescript-eslint'],
+  plugins: ['@typescript-eslint'],
   extends: [
     'airbnb-base',
     'plugin:react/recommended',
-    'plugin:prettier/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/stylistic',
     'plugin:import/typescript',
+    'prettier',
   ],
   rules: {
     strict: 'off',

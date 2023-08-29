@@ -32,7 +32,6 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-import-resolver-typescript": "^3.6.0",
     "eslint-plugin-import": "^2.28.0",
-    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.32.2",
     "husky": "^6.0.0",
     "jest": "^29.6.2",
@@ -70,6 +69,10 @@
     "packages/webview"
   ],
   "lint-staged": {
-    "*.{js,ts,tsx}": "eslint --fix"
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "jest --passWithNoTests --findRelatedTests"
+    ]
   }
 }
