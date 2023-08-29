@@ -1,6 +1,6 @@
 {
   "name": "@sociably/messenger",
-  "version": "0.9.0-alpha.13",
+  "version": "0.9.0-alpha.14",
   "type": "module",
   "description": "Facebook Messenger utilities of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
