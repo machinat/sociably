@@ -7,7 +7,7 @@ export { FacebookBot } from './Bot.js';
 export { FacebookReceiver } from './Receiver.js';
 export { FacebookProfiler } from './Profiler.js';
 export {
-  default as FacebookAssetsManager,
+  FacebookAssetsManager,
   saveReusableAttachments,
 } from './asset/index.js';
 export * from './types.js';

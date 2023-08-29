@@ -6,8 +6,5 @@ export { default as TelegramUserProfile } from './UserProfile.js';
 export { TelegramBot } from './Bot.js';
 export { TelegramReceiver } from './Receiver.js';
 export { TelegramProfiler } from './Profiler.js';
-export {
-  default as TelegramAssetsManager,
-  saveUploadedFile,
-} from './asset/index.js';
+export { TelegramAssetsManager, saveUploadedFile } from './asset/index.js';
 export * from './types.js';

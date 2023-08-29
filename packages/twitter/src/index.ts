@@ -6,8 +6,5 @@ export { default as TwitterUserProfile } from './UserProfile.js';
 export { TwitterBot } from './Bot.js';
 export { TwitterReceiver } from './Receiver.js';
 export { TwitterProfiler } from './Profiler.js';
-export {
-  default as TwitterAssetsManager,
-  saveUploadedMedia,
-} from './asset/index.js';
+export { TwitterAssetsManager, saveUploadedMedia } from './asset/index.js';
 export * from './types.js';

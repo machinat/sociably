@@ -7,7 +7,7 @@ export { InstagramBot } from './Bot.js';
 export { InstagramReceiver } from './Receiver.js';
 export { InstagramProfiler } from './Profiler.js';
 export {
-  default as InstagramAssetsManager,
+  InstagramAssetsManager,
   saveReusableAttachments,
 } from './asset/index.js';
 export * from './types.js';

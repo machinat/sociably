@@ -6,6 +6,6 @@ export { default as LineChat } from './Chat.js';
 export { default as LineUser } from './User.js';
 export { default as LineUserProfile } from './UserProfile.js';
 export { default as LineGroupProfile } from './GroupProfile.js';
-export { default as LineAssetsManager } from './asset/index.js';
+export { LineAssetsManager } from './asset/index.js';
 export { AgentSettingsAccessorI as LineAgentSettingsAccessor } from './interface.js';
 export * from './types.js';
