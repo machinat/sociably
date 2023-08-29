@@ -33,7 +33,7 @@ const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
  * @category Provider
  */
 export class MessengerAssetsManager<
-  Channel extends MetaApiChannel,
+  Channel extends MetaApiChannel
 > extends MetaAssetsManager<Channel, MessengerBot<Channel>> {
   /**
    * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
@@ -61,10 +61,13 @@ export class MessengerAssetsManager<
    * Delete app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
-  async deleteSubscribedApp(channel: string | Channel): Promise<void> {
+  async deleteSubscribedApp(
+    channel: string | Channel,
+    { accessToken }: { accessToken?: string } = {}
+  ): Promise<void> {
     await this.bot.requestApi({
       channel,
-      asApp: true,
+      accessToken,
       method: 'DELETE',
       url: 'me/subscribed_apps',
     });

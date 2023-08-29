@@ -24,7 +24,6 @@ const stateController = moxy<StateControllerI>({
 } as never);
 
 const bot = moxy<WhatsAppBot>({
-  pageId: '_PAGE_ID_',
   uploadMedia() {
     return { jobs: [{}], results: [{}] };
   },

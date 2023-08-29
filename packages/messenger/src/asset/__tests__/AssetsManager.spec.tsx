@@ -67,7 +67,6 @@ describe('page/app management', () => {
   describe('.deleteSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new MessengerAssetsManager(stateController, bot, 'test');
-
       await expect(manager.deleteSubscribedApp(channel)).resolves.toBe(
         undefined
       );
@@ -75,7 +74,21 @@ describe('page/app management', () => {
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
         channel,
-        asApp: true,
+        method: 'DELETE',
+        url: 'me/subscribed_apps',
+      });
+    });
+
+    test('with specified accessToken', async () => {
+      const manager = new MessengerAssetsManager(stateController, bot, 'test');
+      await expect(
+        manager.deleteSubscribedApp(channel, { accessToken: '_ACCESS_TOKEN_' })
+      ).resolves.toBe(undefined);
+
+      expect(bot.requestApi).toHaveBeenCalledTimes(1);
+      expect(bot.requestApi).toHaveBeenCalledWith({
+        channel,
+        accessToken: '_ACCESS_TOKEN_',
         method: 'DELETE',
         url: 'me/subscribed_apps',
       });

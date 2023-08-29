@@ -282,7 +282,6 @@ describe('subscription management', () => {
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
         channel: page,
-        asApp: true,
         method: 'DELETE',
         url: 'me/subscribed_apps',
       });
