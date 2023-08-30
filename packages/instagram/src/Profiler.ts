@@ -7,7 +7,16 @@ import type { RawUserProfile } from './types.js';
 import { INSTAGRAM } from './constant.js';
 import InstagramUserProfile from './UserProfile.js';
 
-const PROFILE_FIELDS = ['id', 'name', 'first_name', 'last_name', 'profile_pic'];
+const PROFILE_FIELDS = [
+  'id',
+  'name',
+  'profile_pic',
+  'username',
+  'is_verified_user',
+  'follower_count',
+  'is_user_follow_business',
+  'is_business_follow_user',
+];
 
 /**
  * InstagramProfiler fetch user profile from Meta API.

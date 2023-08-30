@@ -59,7 +59,7 @@ test('fetch profile from api', async () => {
       },
       "method": "GET",
       "params": {
-        "fields": "id,name,first_name,last_name,profile_pic",
+        "fields": "id,name,profile_pic,username,is_verified_user,follower_count,is_user_follow_business,is_business_follow_user",
       },
       "url": "_USER_ID_",
     }
