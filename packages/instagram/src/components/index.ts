@@ -1,3 +1,5 @@
+import { NativeComponent } from '@sociably/core';
+import { MessengerIntermediateSegment } from '@sociably/messenger';
 import * as Messenger from '@sociably/messenger/components';
 import makeInstagramComponent from '../utils/makeInstagramComponent.js';
 
@@ -16,7 +18,10 @@ export * from './Image.js';
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
  */
-export const Audio = makeInstagramComponent(Messenger.Audio);
+export const Audio: NativeComponent<
+  Messenger.MediaProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.Audio);
 export type AudioProps = Messenger.MediaProps;
 
 // buttons
@@ -29,7 +34,10 @@ export type AudioProps = Messenger.MediaProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/reference/buttons/url)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#url).
  */
-export const UrlButton = makeInstagramComponent(Messenger.UrlButton);
+export const UrlButton: NativeComponent<
+  UrlButtonProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.UrlButton);
 export type UrlButtonProps = Messenger.UrlButtonProps;
 
 /**
@@ -42,7 +50,10 @@ export type UrlButtonProps = Messenger.UrlButtonProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/postback).
  */
-export const PostbackButton = makeInstagramComponent(Messenger.PostbackButton);
+export const PostbackButton: NativeComponent<
+  PostbackButtonProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.PostbackButton);
 export type PostbackButtonProps = Messenger.PostbackButtonProps;
 
 /**
@@ -53,7 +64,10 @@ export type PostbackButtonProps = Messenger.PostbackButtonProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#call)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/call).
  */
-export const CallButton = makeInstagramComponent(Messenger.CallButton);
+export const CallButton: NativeComponent<
+  CallButtonProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.CallButton);
 export type CallButtonProps = Messenger.CallButtonProps;
 
 /**
@@ -63,7 +77,10 @@ export type CallButtonProps = Messenger.CallButtonProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#login)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/login).
  */
-export const LoginButton = makeInstagramComponent(Messenger.LoginButton);
+export const LoginButton: NativeComponent<
+  LoginButtonProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.LoginButton);
 export type LoginButtonProps = Messenger.LoginButtonProps;
 
 /**
@@ -73,7 +90,8 @@ export type LoginButtonProps = Messenger.LoginButtonProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#game_play)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/game-play).
  */
-export const LogoutButton = makeInstagramComponent(Messenger.LogoutButton);
+export const LogoutButton: NativeComponent<{}, MessengerIntermediateSegment> =
+  makeInstagramComponent(Messenger.LogoutButton);
 
 /**
  * The game play button launches an Instant Game that is associated with the bot
@@ -83,7 +101,10 @@ export const LogoutButton = makeInstagramComponent(Messenger.LogoutButton);
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#game_play)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/game-play).
  */
-export const GamePlayButton = makeInstagramComponent(Messenger.GamePlayButton);
+export const GamePlayButton: NativeComponent<
+  GamePlayButtonProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.GamePlayButton);
 export type GamePlayButtonProps = Messenger.GamePlayButtonProps;
 
 // quick replies
@@ -96,7 +117,10 @@ export type GamePlayButtonProps = Messenger.GamePlayButtonProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const TextReply = makeInstagramComponent(Messenger.TextReply);
+export const TextReply: NativeComponent<
+  TextReplyProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.TextReply);
 export type TextReplyProps = Messenger.TextReplyProps;
 
 /**
@@ -106,7 +130,8 @@ export type TextReplyProps = Messenger.TextReplyProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const EmailReply = makeInstagramComponent(Messenger.EmailReply);
+export const EmailReply: NativeComponent<{}, MessengerIntermediateSegment> =
+  makeInstagramComponent(Messenger.EmailReply);
 
 /**
  * Add an phone quick reply button after an {@link Expression}
@@ -115,7 +140,8 @@ export const EmailReply = makeInstagramComponent(Messenger.EmailReply);
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const PhoneReply = makeInstagramComponent(Messenger.PhoneReply);
+export const PhoneReply: NativeComponent<{}, MessengerIntermediateSegment> =
+  makeInstagramComponent(Messenger.PhoneReply);
 
 // handover protocols
 
@@ -127,9 +153,10 @@ export const PhoneReply = makeInstagramComponent(Messenger.PhoneReply);
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/pass-thread-control).
  */
-export const PassThreadControl = makeInstagramComponent(
-  Messenger.PassThreadControl
-);
+export const PassThreadControl: NativeComponent<
+  PassThreadControlProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.PassThreadControl);
 export type PassThreadControlProps = Messenger.PassThreadControlProps;
 
 /**
@@ -141,9 +168,10 @@ export type PassThreadControlProps = Messenger.PassThreadControlProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/request-thread-control).
  */
-export const RequestThreadControl = makeInstagramComponent(
-  Messenger.RequestThreadControl
-);
+export const RequestThreadControl: NativeComponent<
+  {},
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.RequestThreadControl);
 
 /**
  * Take control of a specific thread from a Secondary Receiver app as the
@@ -154,9 +182,11 @@ export const RequestThreadControl = makeInstagramComponent(
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/take-thread-control).
  */
-export const TakeThreadContorl = makeInstagramComponent(
-  Messenger.TakeThreadContorl
-);
+export const TakeThreadContorl: NativeComponent<
+  TakeThreadContorlProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.TakeThreadContorl);
+export type TakeThreadContorlProps = Messenger.TakeThreadContorlProps;
 
 // sender actions
 
@@ -167,7 +197,8 @@ export const TakeThreadContorl = makeInstagramComponent(
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const MarkSeen = makeInstagramComponent(Messenger.MarkSeen);
+export const MarkSeen: NativeComponent<{}, MessengerIntermediateSegment> =
+  makeInstagramComponent(Messenger.MarkSeen);
 
 /**
  * Display the typing bubble.
@@ -176,7 +207,8 @@ export const MarkSeen = makeInstagramComponent(Messenger.MarkSeen);
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const TypingOn = makeInstagramComponent(Messenger.TypingOn);
+export const TypingOn: NativeComponent<{}, MessengerIntermediateSegment> =
+  makeInstagramComponent(Messenger.TypingOn);
 
 /**
  * Remove the typing bubble.
@@ -185,7 +217,8 @@ export const TypingOn = makeInstagramComponent(Messenger.TypingOn);
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const TypingOff = makeInstagramComponent(Messenger.TypingOff);
+export const TypingOff: NativeComponent<{}, MessengerIntermediateSegment> =
+  makeInstagramComponent(Messenger.TypingOff);
 
 // templates
 
@@ -196,7 +229,10 @@ export const TypingOff = makeInstagramComponent(Messenger.TypingOff);
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/generic).
  */
-export const GenericItem = makeInstagramComponent(Messenger.GenericItem);
+export const GenericItem: NativeComponent<
+  GenericItemProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.GenericItem);
 export type GenericItemProps = Messenger.GenericItemProps;
 
 /**
@@ -209,9 +245,10 @@ export type GenericItemProps = Messenger.GenericItemProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/generic).
  */
-export const GenericTemplate = makeInstagramComponent(
-  Messenger.GenericTemplate
-);
+export const GenericTemplate: NativeComponent<
+  GenericTemplateProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.GenericTemplate);
 export type GenericTemplateProps = Messenger.GenericTemplateProps;
 
 /**
@@ -222,7 +259,10 @@ export type GenericTemplateProps = Messenger.GenericTemplateProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/button)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/button).
  */
-export const ButtonTemplate = makeInstagramComponent(Messenger.ButtonTemplate);
+export const ButtonTemplate: NativeComponent<
+  ButtonTemplateProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.ButtonTemplate);
 export type ButtonTemplateProps = Messenger.ButtonTemplateProps;
 
 /**
@@ -233,7 +273,10 @@ export type ButtonTemplateProps = Messenger.ButtonTemplateProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/media)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/media).
  */
-export const MediaTemplate = makeInstagramComponent(Messenger.MediaTemplate);
+export const MediaTemplate: NativeComponent<
+  MediaTemplateProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.MediaTemplate);
 export type MediaTemplateProps = Messenger.MediaTemplateProps;
 
 /**
@@ -243,7 +286,10 @@ export type MediaTemplateProps = Messenger.MediaTemplateProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/receipt)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/receipt).
  */
-export const ReceiptItem = makeInstagramComponent(Messenger.ReceiptItem);
+export const ReceiptItem: NativeComponent<
+  ReceiptItemProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.ReceiptItem);
 export type ReceiptItemProps = Messenger.ReceiptItemProps;
 
 /**
@@ -254,9 +300,10 @@ export type ReceiptItemProps = Messenger.ReceiptItemProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/template/receipt)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/templates/receipt).
  */
-export const ReceiptTemplate = makeInstagramComponent(
-  Messenger.ReceiptTemplate
-);
+export const ReceiptTemplate: NativeComponent<
+  ReceiptTemplateProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.ReceiptTemplate);
 export type ReceiptTemplateProps = Messenger.ReceiptTemplateProps;
 
 /**
@@ -270,6 +317,8 @@ export type ReceiptTemplateProps = Messenger.ReceiptTemplateProps;
  * @props {@link RequestOneTimeNotifProps}
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/one-time-notification).
  */
-export const RequestOneTimeNotif = makeInstagramComponent(
-  Messenger.RequestOneTimeNotif
-);
+export const RequestOneTimeNotif: NativeComponent<
+  RequestOneTimeNotifProps,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.RequestOneTimeNotif);
+export type RequestOneTimeNotifProps = Messenger.RequestOneTimeNotifProps;

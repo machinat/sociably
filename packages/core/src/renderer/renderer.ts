@@ -62,7 +62,7 @@ type GeneralComponentDelegate<Value> = (
 
 export default class SociablyRenderer<
   Value,
-  Component extends NativeComponent<unknown, IntermediateSegment<Value>>,
+  Component extends NativeComponent<unknown, IntermediateSegment<Value>>
 > {
   platform: string;
   generalComponentDelegator: GeneralComponentDelegate<Value>;
@@ -323,10 +323,10 @@ export default class SociablyRenderer<
       );
     } else if (typeof node.type === 'function') {
       // handle element with custom functional component type
-      const functionEle: FunctionalElement<
+      const functionEle = node as FunctionalElement<
         unknown,
         FunctionalComponent<unknown>
-      > = node;
+      >;
 
       renderings.push(
         this._renderFunctionalElement(

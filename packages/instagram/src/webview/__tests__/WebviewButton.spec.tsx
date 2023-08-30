@@ -6,7 +6,7 @@ import ServerAuthenticator from '../ServerAuthenticator.js';
 import WebviewButton from '../WebviewButton.js';
 
 const authenticator = moxy<ServerAuthenticator>({
-  getAuthUrl: () =>
+  getAuthUrl: async () =>
     'https://sociably.io/foo/auth/facebook?login=__LOGIN_TOKEN__',
 } as never);
 
@@ -14,25 +14,25 @@ beforeEach(() => {
   authenticator.mock.reset();
 });
 
-test('rendering to UrlButton', () => {
-  expect(
+test('rendering to UrlButton', async () => {
+  await expect(
     WebviewButton(
       authenticator,
       new InstagramChat('12345', { id: '67890' })
     )({ title: 'Foo' })
-  ).toMatchInlineSnapshot(`
+  ).resolves.toMatchInlineSnapshot(`
     <UrlButton
       title="Foo"
       url="https://sociably.io/foo/auth/facebook?login=__LOGIN_TOKEN__"
     />
   `);
 
-  expect(
+  await expect(
     WebviewButton(
       authenticator,
       new InstagramChat('12345', { id: '67890' })
     )({ title: 'Foo', webviewHeightRatio: 'compact', hideShareButton: true })
-  ).toMatchInlineSnapshot(`
+  ).resolves.toMatchInlineSnapshot(`
     <UrlButton
       hideShareButton={true}
       title="Foo"
@@ -41,12 +41,12 @@ test('rendering to UrlButton', () => {
     />
   `);
 
-  expect(
+  await expect(
     WebviewButton(
       authenticator,
       new InstagramChat('12345', { id: '67890' })
     )({ title: 'Foo', page: '/foo?bar=baz' })
-  ).toMatchInlineSnapshot(`
+  ).resolves.toMatchInlineSnapshot(`
     <UrlButton
       title="Foo"
       url="https://sociably.io/foo/auth/facebook?login=__LOGIN_TOKEN__"
@@ -71,31 +71,31 @@ test('rendering to UrlButton', () => {
   );
 });
 
-test('throw if thread is not a InstagramChat', () => {
-  expect(() =>
+test('throw if thread is not a InstagramChat', async () => {
+  await expect(
     WebviewButton(
       authenticator,
       new InstagramAgent('1234567890', '9876543210')
     )({ title: 'Foo' })
-  ).toThrowErrorMatchingInlineSnapshot(
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"WebviewButton can only be used in the InstagramChat with a user ID"`
   );
-  expect(() =>
+  await expect(
     WebviewButton(
       authenticator,
       new InstagramUser('1234567890', '9876543210') as never
     )({ title: 'Foo', page: '/foo' })
-  ).toThrowErrorMatchingInlineSnapshot(
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"WebviewButton can only be used in the InstagramChat with a user ID"`
   );
-  expect(() =>
+  await expect(
     WebviewButton(authenticator, {
       platform: 'test',
       uid: 'test.foo',
     } as never)({
       title: 'Foo',
     })
-  ).toThrowErrorMatchingInlineSnapshot(
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"WebviewButton can only be used in the InstagramChat with a user ID"`
   );
 

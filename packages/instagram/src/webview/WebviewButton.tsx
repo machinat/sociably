@@ -18,7 +18,7 @@ type WebviewButtonProps = {
 
 const WebviewButton =
   (authenticator: ServerAuthenticator, thread: RenderingTarget) =>
-  ({
+  async ({
     title,
     page,
     webviewHeightRatio,
@@ -34,7 +34,7 @@ const WebviewButton =
       );
     }
 
-    const url = authenticator.getAuthUrl(
+    const url = await authenticator.getAuthUrl(
       new InstagramUser(thread.agent.id, thread.target.id),
       page ? posixPath.join('.', page) : undefined
     );

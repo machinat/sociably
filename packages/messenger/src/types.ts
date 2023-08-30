@@ -126,10 +126,12 @@ export type MessengerSegmentValue =
   | SenderActionValue
   | HandoverProtocolValue;
 
+export type MessengerIntermediateSegment =
+  IntermediateSegment<MessengerSegmentValue>;
+
 export type MessengerComponent<
   Props,
-  Segment extends
-    IntermediateSegment<MessengerSegmentValue> = IntermediateSegment<MessengerSegmentValue>,
+  Segment extends MessengerIntermediateSegment = MessengerIntermediateSegment
 > = NativeComponent<Props, Segment>;
 
 export type MessagingOptions = {
@@ -140,13 +142,13 @@ export type MessagingOptions = {
   oneTimeNotifToken?: string;
 };
 
-export type MessengerChat = {
+export type MessengerChat = SociablyThread & {
   target: MessagingTarget;
-} & SociablyThread;
+};
 
-export type MessengerUser = {
+export type MessengerUser = SociablyUser & {
   id: string;
-} & SociablyUser;
+};
 
 export type MessengerBot<Channel extends MetaApiChannel> =
   MetaApiBot<Channel> & {

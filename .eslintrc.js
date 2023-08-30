@@ -34,6 +34,7 @@ module.exports = {
       'LabeledStatement',
       'WithStatement',
     ],
+    'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
     'lines-between-class-members': [
       'error',
       'always',

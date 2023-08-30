@@ -25,6 +25,7 @@ export type { SociablyProfile } from './base/Profiler.js';
 export type SociablyRenderable =
   | SociablyText
   | GeneralElement
+  | NativeElement<unknown, AnyNativeComponent>
   | PauseElement
   | ProviderElement<unknown>
   | RawElement
@@ -72,7 +73,7 @@ export type FunctionalComponent<Props> = (
 
 export type FunctionalElement<
   Props,
-  Component extends FunctionalComponent<Props>,
+  Component extends FunctionalComponent<Props>
 > = SociablyElement<Props, Component>;
 
 type ContainerComponentFn<Props> = (
@@ -87,21 +88,26 @@ export type ContainerComponent<Props> = ServiceContainer<
 
 export type ContainerElement<
   Props,
-  Component extends ContainerComponent<Props>,
+  Component extends ContainerComponent<Props>
 > = SociablyElement<Props, Component>;
+
+export type NativeComponentFn<
+  Props,
+  Segment extends IntermediateSegment<unknown>
+> = (
+  element: NativeElement<Props, NativeComponent<Props, Segment>>,
+  path: string,
+  render: InnerRenderFn
+) => null | Segment[] | Promise<null | Segment[]>;
 
 export type NativeComponent<
   Props,
-  Segment extends IntermediateSegment<unknown>,
+  Segment extends IntermediateSegment<unknown>
 > = {
   $$platform: string;
   $$name: string;
   $$typeof: typeof SOCIABLY_NATIVE_TYPE;
-  $$render(
-    element: NativeElement<Props, NativeComponent<Props, Segment>>,
-    path: string,
-    render: InnerRenderFn
-  ): null | Segment[] | Promise<null | Segment[]>;
+  $$render: NativeComponentFn<Props, Segment>;
   // HACK: make ts accept it as class component
   new (): NativeComponent<Props, Segment>; // eslint-disable-line @typescript-eslint/no-misused-new
 };
@@ -113,7 +119,7 @@ export type AnyNativeComponent = NativeComponent<
 
 export type NativeElement<
   Props,
-  Component extends NativeComponent<Props, IntermediateSegment<unknown>>,
+  Component extends NativeComponent<Props, IntermediateSegment<unknown>>
 > = SociablyElement<Props, Component>;
 
 export type FragmentProps = {
@@ -273,7 +279,7 @@ export type AnySociablyBot = SociablyBot<DispatchTarget, unknown, unknown>;
 export type EventContext<
   Event extends SociablyEvent<unknown>,
   Metadata extends SociablyMetadata,
-  Bot extends SociablyBot<SociablyThread, unknown, unknown>,
+  Bot extends SociablyBot<SociablyThread, unknown, unknown>
 > = {
   platform: string;
   event: Event;
@@ -295,13 +301,13 @@ export type Middleware<Input, Output> = (
 
 export type EventMiddleware<
   Context extends AnyEventContext,
-  Response,
+  Response
 > = Middleware<Context, Response>;
 
 export type DispatchMiddleware<
   Job,
   Frame extends AnyDispatchFrame,
-  Result,
+  Result
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {
@@ -315,7 +321,7 @@ export type SociablyPlatform<
   EventResp,
   Job,
   Frame extends AnyDispatchFrame,
-  Result,
+  Result
 > = {
   name: string;
   utilitiesInterface: ServiceInterface<
@@ -389,7 +395,7 @@ export type PlatformUtilities<
   EventResponse,
   Job,
   Frame extends AnyDispatchFrame,
-  Result,
+  Result
 > = {
   popEventWrapper: PopEventWrapper<Context, EventResponse>;
   dispatchWrapper: DispatchWrapper<Job, Frame, Result>;

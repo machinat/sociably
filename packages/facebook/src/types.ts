@@ -66,14 +66,6 @@ export type AttachFileValue = {
   info?: FileInfo;
 };
 
-export type BaseSegmentValue = {
-  type: string;
-  apiPath: string;
-  params: Record<string, unknown>;
-  attachFile?: AttachFileValue;
-  assetTag?: string;
-};
-
 export type CommentValue = {
   type: 'comment';
   params: Record<string, unknown>;
@@ -118,10 +110,12 @@ export type FacebookSegmentValue =
   | PageVideoValue
   | CommentValue;
 
+export type FacebookIntermediateSegment =
+  IntermediateSegment<FacebookSegmentValue>;
+
 export type FacebookComponent<
   Props,
-  Segment extends
-    IntermediateSegment<FacebookSegmentValue> = IntermediateSegment<FacebookSegmentValue>,
+  Segment extends FacebookIntermediateSegment = FacebookIntermediateSegment
 > = NativeComponent<Props, Segment>;
 
 export type RawUserProfile = {
