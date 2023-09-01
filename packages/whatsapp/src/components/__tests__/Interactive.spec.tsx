@@ -493,8 +493,10 @@ describe('ButtonsTemplate', () => {
                 "action": {
                   "buttons": [
                     {
-                      "id": "0",
-                      "title": "FOO",
+                      "reply": {
+                        "id": "0",
+                        "title": "FOO",
+                      },
                       "type": "reply",
                     },
                   ],
@@ -562,13 +564,17 @@ describe('ButtonsTemplate', () => {
                 "action": {
                   "buttons": [
                     {
-                      "id": "0",
-                      "title": "FOO",
+                      "reply": {
+                        "id": "0",
+                        "title": "FOO",
+                      },
                       "type": "reply",
                     },
                     {
-                      "id": "1",
-                      "title": "BAR",
+                      "reply": {
+                        "id": "1",
+                        "title": "BAR",
+                      },
                       "type": "reply",
                     },
                   ],
@@ -663,18 +669,24 @@ describe('ButtonsTemplate', () => {
                 "action": {
                   "buttons": [
                     {
-                      "id": "0",
-                      "title": "FOO",
+                      "reply": {
+                        "id": "0",
+                        "title": "FOO",
+                      },
                       "type": "reply",
                     },
                     {
-                      "id": "1",
-                      "title": "BAR",
+                      "reply": {
+                        "id": "1",
+                        "title": "BAR",
+                      },
                       "type": "reply",
                     },
                     {
-                      "id": "2",
-                      "title": "BAZ",
+                      "reply": {
+                        "id": "2",
+                        "title": "BAZ",
+                      },
                       "type": "reply",
                     },
                   ],

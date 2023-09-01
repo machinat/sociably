@@ -19,14 +19,13 @@ export type ReplyButtonProps = {
  */
 export const ReplyButton: WhatsAppComponent<
   ReplyButtonProps,
-  PartSegment<{ type: 'reply'; title: string; id: string }>
+  PartSegment<{ type: 'reply'; reply: { title: string; id: string } }>
 > = makeWhatsAppComponent(function ReplyButton(node, path) {
   const { title, id } = node.props;
   return [
     makePartSegment(node, path, {
       type: 'reply',
-      title,
-      id,
+      reply: { title, id },
     }),
   ];
 });

@@ -21,8 +21,10 @@ test('rendering value', async () => {
         "path": "$#p",
         "type": "part",
         "value": {
-          "id": "0",
-          "title": "FOO",
+          "reply": {
+            "id": "0",
+            "title": "FOO",
+          },
           "type": "reply",
         },
       },
