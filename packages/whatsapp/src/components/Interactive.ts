@@ -194,7 +194,7 @@ export const ButtonsTemplate: WhatsAppComponent<
           body: bodyValue,
           footer: footerValue,
           header: headerValue,
-          actions: {
+          action: {
             buttons: buttonsSegments.map(({ value }) => value),
           },
         },

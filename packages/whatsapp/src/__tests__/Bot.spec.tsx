@@ -213,7 +213,7 @@ describe('#render(thread, message, options)', () => {
     expect(querystring.decode(JSON.parse(body.batch)[0].body))
       .toMatchInlineSnapshot(`
       {
-        "interactive": "{"type":"buttons","body":{"text":"Hello *World!*"},"header":{"type":"image","image":{"link":"http://sociably.com/foo.jpg"}},"actions":{"buttons":[{"type":"reply","title":"BAR","id":"BAZ"}]}}",
+        "interactive": "{"type":"buttons","body":{"text":"Hello *World!*"},"header":{"type":"image","image":{"link":"http://sociably.com/foo.jpg"}},"action":{"buttons":[{"type":"reply","title":"BAR","id":"BAZ"}]}}",
         "messaging_product": "whatsapp",
         "to": "9876543210",
         "type": "interactive",

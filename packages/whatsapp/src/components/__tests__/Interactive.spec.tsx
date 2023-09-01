@@ -490,7 +490,7 @@ describe('ButtonsTemplate', () => {
             "message": {
               "context": undefined,
               "interactive": {
-                "actions": {
+                "action": {
                   "buttons": [
                     {
                       "id": "0",
@@ -559,7 +559,7 @@ describe('ButtonsTemplate', () => {
             "message": {
               "context": undefined,
               "interactive": {
-                "actions": {
+                "action": {
                   "buttons": [
                     {
                       "id": "0",
@@ -660,7 +660,7 @@ describe('ButtonsTemplate', () => {
                 "message_id": "REPLY_TO_MESSAGE_ID",
               },
               "interactive": {
-                "actions": {
+                "action": {
                   "buttons": [
                     {
                       "id": "0",
