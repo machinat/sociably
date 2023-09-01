@@ -190,7 +190,7 @@ export const ButtonsTemplate: WhatsAppComponent<
       message: {
         type: 'interactive',
         interactive: {
-          type: 'buttons',
+          type: 'button',
           body: bodyValue,
           footer: footerValue,
           header: headerValue,
