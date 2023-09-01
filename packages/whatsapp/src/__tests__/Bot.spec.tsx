@@ -58,7 +58,7 @@ let graphApi;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
-  graphApi = nock('https://graph.facebook.com').post('/v11.0/', bodySpy);
+  graphApi = nock('https://graph.facebook.com').post('/v17.0/', bodySpy);
   bodySpy.mock.clear();
   Engine.mock.clear();
   Renderer.mock.clear();
@@ -107,7 +107,7 @@ describe('#constructor(options)', () => {
       appId,
       appSecret,
       defaultAccessToken: accessToken,
-      graphApiVersion: 'v11.0',
+      graphApiVersion: 'v17.0',
       consumeInterval: 500,
     });
   });

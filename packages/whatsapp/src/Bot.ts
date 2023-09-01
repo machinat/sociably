@@ -76,7 +76,7 @@ export class WhatsAppBot
     accessToken,
     appId,
     appSecret,
-    graphApiVersion = 'v11.0',
+    graphApiVersion = 'v17.0',
     apiBatchRequestInterval = 500,
     initScope,
     dispatchWrapper,

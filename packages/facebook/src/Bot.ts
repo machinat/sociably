@@ -103,7 +103,7 @@ export class FacebookBot
   constructor({
     appId,
     appSecret,
-    graphApiVersion = 'v11.0',
+    graphApiVersion = 'v17.0',
     apiBatchRequestInterval = 500,
     agentSettingsAccessor,
     initScope,

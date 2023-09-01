@@ -14,11 +14,10 @@ const agentSettingsAccessor = moxy({
   getAgentSettings: async (channel) => ({
     accessToken: `access_token_${channel.uid}`,
   }),
-  getAgentSettingsBatch: async (channels) => {
-    return channels.map((channel) => ({
+  getAgentSettingsBatch: async (channels) =>
+    channels.map((channel) => ({
       accessToken: `access_token_${channel.uid}`,
-    }));
-  },
+    })),
 });
 
 const jobs = [
@@ -80,11 +79,11 @@ it('call to graph api', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
 
-  const scope = graphApi.post('/v11.0/', bodySpy).reply(
+  const scope = graphApi.post('/v17.0/', bodySpy).reply(
     200,
     JSON.stringify(
       new Array(4).fill({
@@ -191,13 +190,13 @@ it('upload files with form data if binary attached on job', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
 
   const scope = graphApi
     .matchHeader('content-type', /multipart\/form-data.*/)
-    .post('/v11.0/', bodySpy)
+    .post('/v17.0/', bodySpy)
     .reply(
       200,
       JSON.stringify(
@@ -335,12 +334,12 @@ it('throw if connection error happen', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
 
   const scope = graphApi
-    .post('/v11.0/')
+    .post('/v17.0/')
     .replyWithError('something wrong like connection error');
 
   worker.start(queue);
@@ -348,7 +347,7 @@ it('throw if connection error happen', async () => {
     {
       "batch": null,
       "errors": [
-        [FetchError: request to https://graph.facebook.com/v11.0/ failed, reason: something wrong like connection error],
+        [FetchError: request to https://graph.facebook.com/v17.0/ failed, reason: something wrong like connection error],
       ],
       "success": false,
     }
@@ -362,10 +361,10 @@ it('throw if api error happen', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  const scope = graphApi.post('/v11.0/').reply(400, {
+  const scope = graphApi.post('/v17.0/').reply(400, {
     error: {
       message: 'The access token could not be decrypted',
       type: 'OAuthException',
@@ -393,11 +392,11 @@ it('fail if one single job fail', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
 
-  const scope = graphApi.post('/v11.0/').reply(
+  const scope = graphApi.post('/v17.0/').reply(
     200,
     JSON.stringify([
       {
@@ -444,10 +443,10 @@ it('waits consumeInterval for jobs to execute if set', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 300,
   });
-  const scope = graphApi.post('/v11.0/', bodySpy).reply(
+  const scope = graphApi.post('/v17.0/', bodySpy).reply(
     200,
     JSON.stringify(
       new Array(9).fill({
@@ -484,11 +483,11 @@ it('execute immediatly if consumeInterval is 0', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
   const scope = graphApi
-    .post('/v11.0/', bodySpy)
+    .post('/v17.0/', bodySpy)
     .times(3)
     .delay(50)
     .reply(
@@ -528,11 +527,11 @@ it('use querystring params for GET request', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
   const scope = graphApi
-    .post('/v11.0/', bodySpy)
+    .post('/v17.0/', bodySpy)
     .reply(
       200,
       JSON.stringify([
@@ -588,11 +587,11 @@ it('use querystring params for DELETE request', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
   const scope = graphApi
-    .post('/v11.0/', bodySpy)
+    .post('/v17.0/', bodySpy)
     .reply(
       200,
       JSON.stringify([
@@ -648,11 +647,11 @@ test('asApp job', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
   const scope = graphApi
-    .post('/v11.0/', bodySpy)
+    .post('/v17.0/', bodySpy)
     .reply(
       200,
       JSON.stringify([{ code: 200, body: JSON.stringify({ settings: 'ok' }) }])
@@ -698,11 +697,11 @@ test('job with accessToken', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
   const scope = graphApi
-    .post('/v11.0/', bodySpy)
+    .post('/v17.0/', bodySpy)
     .reply(
       200,
       JSON.stringify([{ code: 200, body: JSON.stringify({ settings: 'ok' }) }])
@@ -749,15 +748,15 @@ it('skip job when no access token available', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) => {
-    return channels.map((channel) =>
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
+    channels.map((channel) =>
       channel.uid === 'foo' ? { accessToken: `access_token_foo` } : null
-    );
-  });
-  const scope = graphApi.post('/v11.0/', bodySpy).reply(200, (_, { batch }) =>
+    )
+  );
+  const scope = graphApi.post('/v17.0/', bodySpy).reply(200, (_, { batch }) =>
     JSON.stringify(
       JSON.parse(batch).map((_r, i) => ({
         code: 200,
@@ -836,12 +835,12 @@ it('skip request when fail to get access token for all the jobs', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) => {
-    return channels.map(() => null);
-  });
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
+    channels.map(() => null)
+  );
 
   worker.start(queue);
 
@@ -921,15 +920,15 @@ test('with defaultAccessTokenOption', async () => {
     appId,
     appSecret,
     agentSettingsAccessor,
-    graphApiVersion: 'v11.0',
+    graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) => {
-    return channels.map((channel) =>
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
+    channels.map((channel) =>
       channel.uid === 'bar' ? { accessToken: `access_token_bar` } : null
-    );
-  });
-  const scope = graphApi.post('/v11.0/', bodySpy).reply(200, (_, { batch }) =>
+    )
+  );
+  const scope = graphApi.post('/v17.0/', bodySpy).reply(200, (_, { batch }) =>
     JSON.stringify(
       JSON.parse(batch).map((_r, i) => ({
         code: 200,
@@ -1083,11 +1082,11 @@ describe('using API result in following request', () => {
       appId,
       appSecret,
       agentSettingsAccessor,
-      graphApiVersion: 'v11.0',
+      graphApiVersion: 'v17.0',
       consumeInterval: 0,
     });
     const apiCall = graphApi
-      .post('/v11.0/', bodySpy)
+      .post('/v17.0/', bodySpy)
       .reply(200, JSON.stringify(continuousApiResults));
 
     worker.start(queue);
@@ -1141,11 +1140,11 @@ describe('using API result in following request', () => {
       appId,
       appSecret,
       agentSettingsAccessor,
-      graphApiVersion: 'v11.0',
+      graphApiVersion: 'v17.0',
       consumeInterval: 0,
     });
     const apiCall = graphApi
-      .post('/v11.0/', bodySpy)
+      .post('/v17.0/', bodySpy)
       .reply(200, JSON.stringify(continuousApiResults));
 
     worker.start(queue);
@@ -1197,10 +1196,10 @@ describe('using API result in following request', () => {
       appId,
       appSecret,
       agentSettingsAccessor,
-      graphApiVersion: 'v11.0',
+      graphApiVersion: 'v17.0',
       consumeInterval: 0,
     });
-    const apiCall1 = graphApi.post('/v11.0/', bodySpy).reply(
+    const apiCall1 = graphApi.post('/v17.0/', bodySpy).reply(
       200,
       JSON.stringify([
         ...new Array(49).fill({
@@ -1211,7 +1210,7 @@ describe('using API result in following request', () => {
       ])
     );
     const apiCall2 = graphApi
-      .post('/v11.0/', bodySpy)
+      .post('/v17.0/', bodySpy)
       .reply(200, JSON.stringify(continuousApiResults.slice(1)));
 
     worker.start(queue);
