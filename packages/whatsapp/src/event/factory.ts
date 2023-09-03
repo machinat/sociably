@@ -8,8 +8,8 @@ import {
   StickerProto,
   UnknownProto,
   ReferralProto,
-  InteractiveListProto,
-  InteractiveButtonProto,
+  ListInteractiveProto,
+  ButtonInteractiveProto,
   QuickReplyProto,
   UserNumberChangeProto,
   UserIdentityChangeProto,
@@ -28,7 +28,7 @@ const makeMessageEvent = (
   businessAccountId: string,
   agentNumberId: string,
   agentNumberDisplay: string,
-  contacts: ContactData[]
+  contacts: ContactData[],
 ): MessageEvent => {
   const messageType = messageData.type;
   const messageProto =
@@ -48,9 +48,9 @@ const makeMessageEvent = (
       ? ReferralProto
       : messageType === 'interactive'
       ? messageData.interactive.type === 'button_reply'
-        ? InteractiveButtonProto
+        ? ButtonInteractiveProto
         : messageData.interactive.type === 'list_reply'
-        ? InteractiveListProto
+        ? ListInteractiveProto
         : UnknownProto
       : messageType === 'button'
       ? QuickReplyProto
@@ -73,7 +73,7 @@ const makeMessageEvent = (
 
   const userNumber = messageData.from;
   const contact = contacts.find(
-    ({ wa_id: numberId }) => numberId === userNumber
+    ({ wa_id: numberId }) => numberId === userNumber,
   );
   if (contact) {
     event.userProfile = new UserProfile(userNumber, contact.profile);
@@ -86,7 +86,7 @@ const makeStatusEvent = (
   statusData,
   businessAccountId: string,
   agentNumberId: string,
-  agentNumberDisplay: string
+  agentNumberDisplay: string,
 ): MessageEvent => {
   const statusType = statusData.type;
   const statusProto =
@@ -114,7 +114,7 @@ const makeErrorEvent = (
   errorData,
   businessAccountId: string,
   agentNumberId: string,
-  agentNumberDisplay: string
+  agentNumberDisplay: string,
 ): MessageEvent => {
   const event: MessageEvent = Object.create(ErrorProto);
 
@@ -145,8 +145,8 @@ const eventFactory = (updataData): WhatsAppEvent[] => {
             businessAccountId,
             agentNumber,
             agentNumberDisplay,
-            contacts
-          )
+            contacts,
+          ),
         );
       }
     }
@@ -158,8 +158,8 @@ const eventFactory = (updataData): WhatsAppEvent[] => {
             status,
             businessAccountId,
             agentNumber,
-            agentNumberDisplay
-          )
+            agentNumberDisplay,
+          ),
         );
       }
     }
@@ -171,8 +171,8 @@ const eventFactory = (updataData): WhatsAppEvent[] => {
             error,
             businessAccountId,
             agentNumber,
-            agentNumberDisplay
-          )
+            agentNumberDisplay,
+          ),
         );
       }
     }

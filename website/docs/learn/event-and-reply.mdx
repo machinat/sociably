@@ -15,7 +15,7 @@ and edit the handler function to this:
 ```tsx {5-7} title="src/handlers/handleChat.tsx"
 // ...
     async (
-      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+      ctx: ChatEventContext & { event: { category: 'message' | 'callback' } }
     ) => {
       const { event, reply } = ctx;
 
@@ -84,7 +84,7 @@ Edit the `handleChat` function like this:
 ```tsx {7-14} title="src/handlers/handleChat.tsx"
 // ...
     async (
-      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+      ctx: ChatEventContext & { event: { category: 'message' | 'callback' } }
     ) => {
       const { event, reply } = ctx;
 

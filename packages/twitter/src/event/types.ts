@@ -28,6 +28,7 @@ interface EventObject<Category extends string, Type extends string> {
 
 /**
  * The subscribing user's tweet is quoted
+ *
  * @category Event
  * @eventCategory `'tweet'`
  * @eventType `'reply_tweet'`
@@ -40,6 +41,7 @@ export interface ReplyTweetEvent
 
 /**
  * The subscribing user's tweet is quoted
+ *
  * @category Event
  * @eventCategory `'tweet'`
  * @eventType `'quote_tweet'`
@@ -52,6 +54,7 @@ export interface QuotedTweetEvent
 
 /**
  * The subscribing user's tweet is retweeted
+ *
  * @category Event
  * @eventCategory `'tweet'`
  * @eventType `'retweet'`
@@ -64,6 +67,7 @@ export interface RetweetEvent
 
 /**
  * The subscribing user is mentioned in a tweet
+ *
  * @category Event
  * @eventCategory `'tweet'`
  * @eventType `'mention'`
@@ -76,6 +80,7 @@ export interface MentionedTweetEvent
 
 /**
  * The subscribing user receives a text message
+ *
  * @category Event
  * @eventCategory `'message'`
  * @eventType `'text'`
@@ -87,6 +92,7 @@ export interface TextMessageEvent
 
 /**
  * The subscribing user receives a image message
+ *
  * @category Event
  * @eventCategory `'message'`
  * @eventType `'image'`
@@ -100,6 +106,7 @@ export interface ImageMessageEvent
 
 /**
  * The subscribing user receives a video message
+ *
  * @category Event
  * @eventCategory `'message'`
  * @eventType `'video'`
@@ -113,6 +120,7 @@ export interface VideoMessageEvent
 
 /**
  * The subscribing user receives am animated gif message
+ *
  * @category Event
  * @eventCategory `'message'`
  * @eventType `'animated_gif'`
@@ -126,18 +134,20 @@ export interface AnimatedGifMessageEvent
 
 /**
  * The subscribing user tap a quick reply button
+ *
  * @category Event
  * @eventCategory `'message'`
  * @eventType `'quick_reply'`
  */
 export interface QuickReplyMessageEvent
-  extends EventObject<'postback', 'quick_reply'>,
+  extends EventObject<'callback', 'quick_reply'>,
     EventBase,
     DirectMessageCreate,
     QuickReply {}
 
 /**
  * A user likes a tweet of the subscribing user
+ *
  * @category Event
  * @eventCategory `'action'`
  * @eventType `'like'`
@@ -149,6 +159,7 @@ export interface LikeEvent
 
 /**
  * A user follows the subscribing user
+ *
  * @category Event
  * @eventCategory `'action'`
  * @eventType `'follow'`
@@ -160,6 +171,7 @@ export interface FollowEvent
 
 /**
  * A user is typing in the direct message chat
+ *
  * @category Event
  * @eventCategory `'action'`
  * @eventType `'typing'`
@@ -172,6 +184,7 @@ export interface TypingEvent
 
 /**
  * A user is typing in the direct message chat
+ *
  * @category Event
  * @eventCategory `'action'`
  * @eventType `'read'`
@@ -184,6 +197,7 @@ export interface ReadEvent
 
 /**
  * The subscribing user creates a tweet
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'tweet'`
@@ -196,6 +210,7 @@ export interface TweetEchoEvent
 
 /**
  * The subscribing user deletes a tweet
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'delete_tweet'`
@@ -207,6 +222,7 @@ export interface DeleteTweetEchoEvent
 
 /**
  * The subscribing user likes a tweet
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'like'`
@@ -218,6 +234,7 @@ export interface LikeEchoEvent
 
 /**
  * The subscribing user follows a user
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'follow'`
@@ -229,6 +246,7 @@ export interface FollowEchoEvent
 
 /**
  * The subscribing user unfollows a user
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'unfollow'`
@@ -240,6 +258,7 @@ export interface UnfollowEchoEvent
 
 /**
  * The subscribing user blocks a user
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'block'`
@@ -251,6 +270,7 @@ export interface BlockEchoEvent
 
 /**
  * The subscribing user unblocks a user
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'unblock'`
@@ -262,6 +282,7 @@ export interface UnblockEchoEvent
 
 /**
  * The subscribing user mutes a user
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'mute'`
@@ -273,6 +294,7 @@ export interface MuteEchoEvent
 
 /**
  * The subscribing user unmutes a user
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'unmute'`
@@ -284,6 +306,7 @@ export interface UnmuteEchoEvent
 
 /**
  * The subscribing user sent a direct message
+ *
  * @category Event
  * @eventCategory `'echo'`
  * @eventType `'message'`
@@ -295,6 +318,7 @@ export interface MessageEchoEvent
 
 /**
  * The subscribing user revokes the app subscription
+ *
  * @category Event
  * @eventCategory `'system'`
  * @eventType `'subscription_revoke'`
@@ -306,6 +330,7 @@ export interface UserRevokeEvent
 
 /**
  * Unknown
+ *
  * @category Event
  * @eventCategory `'unknown'`
  * @eventType `'unknown'`

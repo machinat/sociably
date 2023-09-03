@@ -44,7 +44,7 @@ const makeEvent = <
   channel: Channel,
   chat: Thread,
   user: User,
-  proto: Proto
+  proto: Proto,
 ): {
   platform: Channel['platform'];
   channel: Channel;
@@ -180,7 +180,7 @@ const ReactionProto = mixin(Base, Reaction, {
 });
 
 const QuickReplyProto = mixin(Base, Message, Text, QuickReply, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'quick_reply' as const,
 });
 
@@ -190,7 +190,7 @@ const StandbyQuickReplyProto = mixin(QuickReplyProto, Standby, {
 });
 
 const PostbackProto = mixin(Base, Postback, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'postback' as const,
 });
 
@@ -205,12 +205,12 @@ const ReferralProto = mixin(Base, Referral, {
 });
 
 const OptinProto = mixin(Base, Optin, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'optin' as const,
 });
 
 const OneTimeNotifOptinProto = mixin(Base, OneTimeNotifOptin, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'one_time_notif_optin' as const,
 });
 
@@ -357,7 +357,7 @@ const createEventFactory =
                   page,
                   chat,
                   user,
-                  StandbyProductTemplateProto
+                  StandbyProductTemplateProto,
                 )
               : makeEvent(payload, page, chat, user, ProductTemplateProto)
             : makeEvent(payload, page, chat, user, UnknownProto);
@@ -385,7 +385,7 @@ const createEventFactory =
           page,
           createChat(pageId, sender),
           createUser(pageId, sender.id),
-          OneTimeNotifOptinProto
+          OneTimeNotifOptinProto,
         );
       }
 

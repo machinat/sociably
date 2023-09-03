@@ -33,7 +33,7 @@ export const makeEvent = <
   channel: LineChannel,
   thread: LineChat,
   user: LineUser,
-  proto: Proto
+  proto: Proto,
 ): {
   payload: LineRawEvent;
   channel: LineChannel;
@@ -124,21 +124,21 @@ const MemberLeaveProto = mixin(EventBase, Repliable, MemberLeft, {
 const PostbackBase = mixin(EventBase, Repliable, Postback);
 
 const PostbackProto = mixin(PostbackBase, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'postback' as const,
 });
 
 const PostbackDateProto = mixin(PostbackBase, DateParam, {
-  category: 'postback' as const,
-  type: 'date' as const,
+  category: 'callback' as const,
+  type: 'date_postback' as const,
 });
 const PostbackTimeProto = mixin(PostbackBase, TimeParam, {
-  category: 'postback' as const,
-  type: 'time' as const,
+  category: 'callback' as const,
+  type: 'time_postback' as const,
 });
 const PostbackDatetimeProto = mixin(PostbackBase, DatetimeParam, {
-  category: 'postback' as const,
-  type: 'datetime' as const,
+  category: 'callback' as const,
+  type: 'datetime_postback' as const,
 });
 
 const BeaconProto = mixin(EventBase, Repliable, Beacon, {
@@ -174,7 +174,7 @@ const UnknownProto = mixin(EventBase, {
 const eventFactory = (
   providerId: string,
   channelId: string,
-  payload: LineRawEvent
+  payload: LineRawEvent,
 ): LineEvent => {
   const { type: eventType, source } = payload;
   const channel = new LineChannel(channelId);

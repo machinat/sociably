@@ -68,17 +68,17 @@ type RenderEnv = {
 
 export type FunctionalComponent<Props> = (
   props: Props,
-  circs: RenderEnv
+  circs: RenderEnv,
 ) => SociablyElement<unknown, unknown>;
 
 export type FunctionalElement<
   Props,
-  Component extends FunctionalComponent<Props>
+  Component extends FunctionalComponent<Props>,
 > = SociablyElement<Props, Component>;
 
 type ContainerComponentFn<Props> = (
   props: Props,
-  circs: RenderEnv
+  circs: RenderEnv,
 ) => SociablyNode | Promise<SociablyNode>;
 
 export type ContainerComponent<Props> = ServiceContainer<
@@ -88,21 +88,21 @@ export type ContainerComponent<Props> = ServiceContainer<
 
 export type ContainerElement<
   Props,
-  Component extends ContainerComponent<Props>
+  Component extends ContainerComponent<Props>,
 > = SociablyElement<Props, Component>;
 
 export type NativeComponentFn<
   Props,
-  Segment extends IntermediateSegment<unknown>
+  Segment extends IntermediateSegment<unknown>,
 > = (
   element: NativeElement<Props, NativeComponent<Props, Segment>>,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ) => null | Segment[] | Promise<null | Segment[]>;
 
 export type NativeComponent<
   Props,
-  Segment extends IntermediateSegment<unknown>
+  Segment extends IntermediateSegment<unknown>,
 > = {
   $$platform: string;
   $$name: string;
@@ -119,7 +119,7 @@ export type AnyNativeComponent = NativeComponent<
 
 export type NativeElement<
   Props,
-  Component extends NativeComponent<Props, IntermediateSegment<unknown>>
+  Component extends NativeComponent<Props, IntermediateSegment<unknown>>,
 > = SociablyElement<Props, Component>;
 
 export type FragmentProps = {
@@ -172,58 +172,56 @@ export type UniqueOmniIdentifier = {
 };
 
 /**
- * A channel represents an instance that user can communicate with.
- * It could be a phone number, an email address, an account on social
- * media, etc. depending on which commnication platform.
+ * A channel represents an instance that user can communicate with. It could be
+ * a phone number, an email address, an account on social media, etc. depending
+ * on which commnication platform.
  */
 export type SociablyChannel = {
   readonly $$typeofChannel: true;
   readonly platform: string;
   /**
-   * A set of attributes to identify the channel. All the attributes
-   * together can be used as an unique key of the channel
+   * A set of attributes to identify the channel. All the attributes together
+   * can be used as an unique key of the channel
    */
   readonly uniqueIdentifier: UniqueOmniIdentifier;
   /**
-   * The unique string id of the channel. It's promised to be unique
-   * while using Sociably
+   * The unique string id of the channel. It's promised to be unique while using
+   * Sociably
    */
   readonly uid: string;
 };
 
 /**
- * A thread represents a conversation between two or more users.
- * It's where a communication event happened in Sociably.
+ * A thread represents a conversation between two or more users. It's where a
+ * communication event happened in Sociably.
  */
 export type SociablyThread = {
   readonly $$typeofThread: true;
   readonly platform: string;
   /**
-   * A set of attributes to identify the thread. All the attributes
-   * together can be used as an unique key of the thread
+   * A set of attributes to identify the thread. All the attributes together can
+   * be used as an unique key of the thread
    */
   readonly uniqueIdentifier: UniqueOmniIdentifier;
   /**
-   * The unique string id of the thread. It's promised to be unique
-   * while using Sociably
+   * The unique string id of the thread. It's promised to be unique while using
+   * Sociably
    */
   readonly uid: string;
 };
 
-/**
- * An user who communicates through a social platform.
- */
+/** An user who communicates through a social platform. */
 export type SociablyUser = {
   readonly $$typeofUser: true;
   readonly platform: string;
   /**
-   * A set of attributes to identify the user. All the attributes
-   * together can be used as an unique key of the user
+   * A set of attributes to identify the user. All the attributes together can
+   * be used as an unique key of the user
    */
   readonly uniqueIdentifier: UniqueOmniIdentifier;
   /**
-   * The unique string id of the user. It's promised to be unique
-   * while using Sociably
+   * The unique string id of the user. It's promised to be unique while using
+   * Sociably
    */
   readonly uid: string;
 };
@@ -257,10 +255,10 @@ export type LocationMessageMixin = {
   readonly longitude: number;
 };
 
-export type PostbackMixin = {
-  readonly category: 'postback';
+export type CallbackMixin = {
+  readonly category: 'callback';
   readonly type: string;
-  readonly data: string;
+  readonly callbackData?: string;
 };
 
 export type SociablyMetadata = {
@@ -270,7 +268,7 @@ export type SociablyMetadata = {
 export type SociablyBot<Target extends DispatchTarget, Job, Result> = {
   render(
     target: Target,
-    message: SociablyNode
+    message: SociablyNode,
   ): Promise<null | DispatchResponse<Job, Result>>;
 };
 
@@ -279,7 +277,7 @@ export type AnySociablyBot = SociablyBot<DispatchTarget, unknown, unknown>;
 export type EventContext<
   Event extends SociablyEvent<unknown>,
   Metadata extends SociablyMetadata,
-  Bot extends SociablyBot<SociablyThread, unknown, unknown>
+  Bot extends SociablyBot<SociablyThread, unknown, unknown>,
 > = {
   platform: string;
   event: Event;
@@ -296,18 +294,18 @@ export type AnyEventContext = EventContext<
 
 export type Middleware<Input, Output> = (
   input: Input,
-  next: (input: Input) => Promise<Output>
+  next: (input: Input) => Promise<Output>,
 ) => Promise<Output>;
 
 export type EventMiddleware<
   Context extends AnyEventContext,
-  Response
+  Response,
 > = Middleware<Context, Response>;
 
 export type DispatchMiddleware<
   Job,
   Frame extends AnyDispatchFrame,
-  Result
+  Result,
 > = Middleware<Frame, DispatchResponse<Job, Result>>;
 
 export type ServiceModule = {
@@ -321,7 +319,7 @@ export type SociablyPlatform<
   EventResp,
   Job,
   Frame extends AnyDispatchFrame,
-  Result
+  Result,
 > = {
   name: string;
   utilitiesInterface: ServiceInterface<
@@ -365,11 +363,11 @@ export type InitScopeFn = () => ServiceScope;
 
 export type PopEventFn<Context extends AnyEventContext, Response> = (
   context: Context,
-  scope?: ServiceScope
+  scope?: ServiceScope,
 ) => Promise<Response>;
 
 export type PopEventWrapper<Context extends AnyEventContext, Response> = (
-  finalHandler: (ctx: Context) => Promise<Response>
+  finalHandler: (ctx: Context) => Promise<Response>,
 ) => PopEventFn<Context, Response>;
 
 export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
@@ -378,11 +376,11 @@ export type DispatchTarget = SociablyChannel | SociablyThread;
 
 export type DispatchFn<Job, Frame extends AnyDispatchFrame, Result> = (
   frame: Frame,
-  scope?: ServiceScope
+  scope?: ServiceScope,
 ) => Promise<DispatchResponse<Job, Result>>;
 
 export type DispatchWrapper<Job, Frame extends AnyDispatchFrame, Result> = (
-  dispatch: (frame: Frame) => Promise<DispatchResponse<Job, Result>>
+  dispatch: (frame: Frame) => Promise<DispatchResponse<Job, Result>>,
 ) => DispatchFn<Job, Frame, Result>;
 
 export type ModuleUtilities = {
@@ -395,7 +393,7 @@ export type PlatformUtilities<
   EventResponse,
   Job,
   Frame extends AnyDispatchFrame,
-  Result
+  Result,
 > = {
   popEventWrapper: PopEventWrapper<Context, EventResponse>;
   dispatchWrapper: DispatchWrapper<Job, Frame, Result>;

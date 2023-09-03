@@ -4,25 +4,25 @@ import { ReplyButton } from '../ReplyButton.js';
 import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(isNativeType(<ReplyButton id="" title="" />)).toBe(true);
+  expect(isNativeType(<ReplyButton data="" title="" />)).toBe(true);
   expect(ReplyButton.$$platform).toBe('whatsapp');
   expect(ReplyButton.$$name).toBe('ReplyButton');
 });
 
 test('rendering value', async () => {
-  await expect(renderPartElement(<ReplyButton id="0" title="FOO" />)).resolves
-    .toMatchInlineSnapshot(`
+  await expect(renderPartElement(<ReplyButton data="foo" title="FOO" />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <ReplyButton
-          id="0"
+          data="foo"
           title="FOO"
         />,
         "path": "$#p",
         "type": "part",
         "value": {
           "reply": {
-            "id": "0",
+            "id": "foo",
             "title": "FOO",
           },
           "type": "reply",

@@ -6,7 +6,10 @@ import type UserProfile from '../UserProfile.js';
 
 export interface EventBaseMixin {
   readonly platform: typeof WHATSAPP;
-  /** The WhatsApp Business Account ID for the business that is subscribed to the webhook. */
+  /**
+   * The WhatsApp Business Account ID for the business that is subscribed to the
+   * webhook.
+   */
   businessAccountId: string;
   /** Unique ID for the receiving agent phone number. */
   agentNumberId: string;
@@ -31,8 +34,8 @@ export interface MessageMixin extends EventBaseMixin {
   /** The time when the customer sent the message to the business. */
   readonly time: Date;
   /**
-   * State of acknowledgment for the system customer_identity_change event.
-   * The value is undeinfed if no identity change has ocurred.
+   * State of acknowledgment for the system customer_identity_change event. The
+   * value is undeinfed if no identity change has ocurred.
    */
   readonly isIdentityAcknowledged?: boolean;
   /**
@@ -72,8 +75,8 @@ export interface WithFilenameMixin {
 }
 
 export interface InteractiveMixin extends MessageMixin {
-  /** Unique ID of the selcted item */
-  readonly replyId: string;
+  /** Attached callback data of the selcted item */
+  readonly callbackData: string;
   /** Title of the selcted item */
   readonly title: string;
 }

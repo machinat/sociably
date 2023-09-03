@@ -41,7 +41,14 @@ import type {
 export interface EventBase {
   platform: typeof TELEGRAM;
   channel: TelegramUser;
-  /** The update's unique identifier. Update identifiers start from a certain positive number and increase sequentially. This ID becomes especially handy if you're using Webhooks, since it allows you to ignore repeated updates or to restore the correct update sequence, should they get out of order. If there are no new updates for at least a week, then identifier of the next update will be chosen randomly instead of sequentially. */
+  /**
+   * The update's unique identifier. Update identifiers start from a certain
+   * positive number and increase sequentially. This ID becomes especially handy
+   * if you're using Webhooks, since it allows you to ignore repeated updates or
+   * to restore the correct update sequence, should they get out of order. If
+   * there are no new updates for at least a week, then identifier of the next
+   * update will be chosen randomly instead of sequentially.
+   */
   updateId: string;
 }
 
@@ -111,7 +118,7 @@ export const EditedChannelPost: ChannelPost = {
 
 export interface MessageDetail {
   thread: TelegramChat;
-  /**	Unique message identifier inside this chat */
+  /** Unique message identifier inside this chat */
   messageId: number;
   /** Raw user object represent the sender, empty for messages sent to channels */
   from?: RawUser;
@@ -121,17 +128,32 @@ export interface MessageDetail {
   chat: RawChat;
   /** For forwarded messages, sender of the original message */
   forwardFrom?: RawUser;
-  /** For messages forwarded from channels, information about the original channel */
+  /**
+   * For messages forwarded from channels, information about the original
+   * channel
+   */
   forwardFromChat?: RawChat;
-  /** For messages forwarded from channels, identifier of the original message in the channel */
+  /**
+   * For messages forwarded from channels, identifier of the original message in
+   * the channel
+   */
   forwardFromMessageId?: number;
-  /** For messages forwarded from channels, signature of the post author if present */
+  /**
+   * For messages forwarded from channels, signature of the post author if
+   * present
+   */
   forwardSignature?: string;
-  /** Sender's name for messages forwarded from users who disallow adding a link to their account in forwarded messages */
+  /**
+   * Sender's name for messages forwarded from users who disallow adding a link
+   * to their account in forwarded messages
+   */
   forwardSenderName?: string;
   /** For forwarded messages, date the original message was sent in Unix time */
   forwardDate?: number;
-  /** For replies, the original message. Note that the Message object in this field will not contain furth */
+  /**
+   * For replies, the original message. Note that the Message object in this
+   * field will not contain furth
+   */
   replyToMessage?: RawMessage;
   /** Bot through which the message was sent */
   viaBot?: RawUser;
@@ -145,7 +167,10 @@ export interface MessageDetail {
   connectedWebsite?: string;
   /** Telegram Passport data */
   passportData?: RawPassportData;
-  /** Inline keyboard attached to the message. login_url buttons are represented as ordinary url buttons. */
+  /**
+   * Inline keyboard attached to the message. login_url buttons are represented
+   * as ordinary url buttons.
+   */
   replyMarkup?: RawInlineKeyboardMarkup;
 }
 
@@ -213,7 +238,10 @@ export const MessageDetail: MessageDetail = {
 export interface Text {
   /** The actual UTF-8 text of the message, 0-4096 characters */
   text: string;
-  /** For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text */
+  /**
+   * For text messages, special entities like usernames, URLs, bot commands,
+   * etc. that appear in the text
+   */
   entities?: RawMessageEntity[];
 }
 
@@ -233,7 +261,10 @@ export interface File {
 export interface FileDetail {
   /** Identifier for this file, which can be used to download or reuse the file */
   fileId: string;
-  /** Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file. */
+  /**
+   * Unique identifier for this file, which is supposed to be the same over time
+   * and for different bots. Can't be used to download or reuse the file.
+   */
   fileUniqueId: string;
   /** MIME type of the file as defined by sender */
   mimeType?: string;
@@ -269,11 +300,11 @@ export const FileDetail: FileDetail = {
 export interface Animation extends File {
   /** Animation object. */
   animation: RawAnimation;
-  /**	Video width as defined by sender */
+  /** Video width as defined by sender */
   width: number;
-  /**	Video height as defined by sender */
+  /** Video height as defined by sender */
   height: number;
-  /**	Duration of the video in seconds as defined by sender */
+  /** Duration of the video in seconds as defined by sender */
   duration: number;
 }
 
@@ -466,9 +497,15 @@ export const Voice: Voice = {
 };
 
 export interface Caption {
-  /** Caption for the animation, audio, document, photo, video or voice, 0-1024 characters */
+  /**
+   * Caption for the animation, audio, document, photo, video or voice, 0-1024
+   * characters
+   */
   caption?: string;
-  /** For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption */
+  /**
+   * For messages with a caption, special entities like usernames, URLs, bot
+   * commands, etc. that appear in the caption
+   */
   cationEntities?: RawMessageEntity[];
 }
 
@@ -522,7 +559,10 @@ export interface Dice {
   dice: RawDice;
   /** Emoji on which the dice throw animation is based */
   emoji: string;
-  /** Value of the dice, 1-6 for “🎲” and “🎯” base emoji, 1-5 for “🏀” base emoji */
+  /**
+   * Value of the dice, 1-6 for “🎲” and “🎯” base emoji, 1-5 for “🏀” base
+   * emoji
+   */
   value: number;
 }
 
@@ -547,11 +587,22 @@ export interface Game {
   description: string;
   /** Photo that will be displayed in the game message in chats. */
   photo: RawPhotoSize[];
-  /** Brief description of the game or high scores included in the game message. Can be automatically edited to include current high scores for the game when the bot calls setGameScore, or manually edited using editMessageText. 0-4096 characters. */
+  /**
+   * Brief description of the game or high scores included in the game message.
+   * Can be automatically edited to include current high scores for the game
+   * when the bot calls setGameScore, or manually edited using editMessageText.
+   * 0-4096 characters.
+   */
   text?: string;
-  /** Special entities that appear in text, such as usernames, URLs, bot commands, etc. */
+  /**
+   * Special entities that appear in text, such as usernames, URLs, bot
+   * commands, etc.
+   */
   textEntities?: RawMessageEntity[];
-  /** Animation that will be displayed in the game message in chats. Upload via BotFather */
+  /**
+   * Animation that will be displayed in the game message in chats. Upload via
+   * BotFather
+   */
   animation?: Animation;
 }
 
@@ -607,11 +658,21 @@ export interface PollDetail {
   pollType: string;
   /** True, if the poll allows multiple answers */
   allowsMultipleAnswers: boolean;
-  /** 0-based identifier of the correct answer option. Available only for polls in the quiz mode, which are closed, or was sent (not forwarded) by the bot or to the private chat with the bot. */
+  /**
+   * 0-based identifier of the correct answer option. Available only for polls
+   * in the quiz mode, which are closed, or was sent (not forwarded) by the bot
+   * or to the private chat with the bot.
+   */
   correctOptionId?: number;
-  /** Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters */
+  /**
+   * Text that is shown when a user chooses an incorrect answer or taps on the
+   * lamp icon in a quiz-style poll, 0-200 characters
+   */
   explanation?: string;
-  /** Special entities like usernames, URLs, bot commands, etc. that appear in the explanation */
+  /**
+   * Special entities like usernames, URLs, bot commands, etc. that appear in
+   * the explanation
+   */
   explanationEntities?: RawMessageEntity[];
   /** Amount of time in seconds the poll will be active after creation */
   openPeriod?: number;
@@ -672,7 +733,10 @@ export interface Venue {
   address: string;
   /** Foursquare identifier of the venue */
   foursquareId?: string;
-  /** Foursquare type of the venue. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.) */
+  /**
+   * Foursquare type of the venue. (For example, “arts_entertainment/default”,
+   * “arts_entertainment/aquarium” or “food/icecream”.)
+   */
   foursquareType?: string;
 }
 
@@ -719,20 +783,26 @@ export const Location: Location = {
 };
 
 export interface NewChatMembers {
-  /** New members that were added to the group or supergroup and information about them (the bot itself may be one of these members) */
+  /**
+   * New members that were added to the group or supergroup and information
+   * about them (the bot itself may be one of these members)
+   */
   newChatMembers: TelegramUser[];
 }
 
 export const NewChatMembers: NewChatMembers = {
   get newChatMembers() {
     return this.message.new_chat_members.map(
-      (rawUser: RawUser) => new TelegramUser(rawUser.id, undefined, rawUser)
+      (rawUser: RawUser) => new TelegramUser(rawUser.id, undefined, rawUser),
     );
   },
 };
 
 export interface LeftChatMember {
-  /** A member was removed from the group, information about them (this member may be the bot itself) */
+  /**
+   * A member was removed from the group, information about them (this member
+   * may be the bot itself)
+   */
   leftChatMember: TelegramUser;
 }
 
@@ -766,7 +836,12 @@ export const NewChatPhoto: NewChatPhoto = {
 };
 
 export interface MigrateToChatId {
-  /** This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */
+  /**
+   * This number may be greater than 32 bits and some programming languages may
+   * have difficulty/silent defects in interpreting it. But it is smaller than
+   * 52 bits, so a signed 64 bit integer or double-precision float type are safe
+   * for storing this identifier.
+   */
   migrateToChatId: number;
 }
 
@@ -777,7 +852,12 @@ export const MigrateToChatId: MigrateToChatId = {
 };
 
 export interface MigrateFromChatId {
-  /** This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. */
+  /**
+   * This number may be greater than 32 bits and some programming languages may
+   * have difficulty/silent defects in interpreting it. But it is smaller than
+   * 52 bits, so a signed 64 bit integer or double-precision float type are safe
+   * for storing this identifier.
+   */
   migrateFromChatId: number;
 }
 
@@ -788,7 +868,10 @@ export const MigrateFromChatId: MigrateFromChatId = {
 };
 
 export interface PinnedMessage {
-  /** Pinned message object. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply. */
+  /**
+   * Pinned message object. Note that the Message object in this field will not
+   * contain further reply_to_message fields even if it is itself a reply.
+   */
   pinnedMessage: RawMessage;
 }
 
@@ -803,7 +886,12 @@ export interface SuccessfulPayment {
   successfulPayment: RawSuccessfulPayment;
   /** Three-letter ISO 4217 currency code */
   currency: string;
-  /** Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
+  /**
+   * Total price in the smallest units of the currency (integer, not
+   * float/double). For example, for a price of US$ 1.45 pass amount = 145. See
+   * the exp parameter in currencies.json, it shows the number of digits past
+   * the decimal point for each currency (2 for the majority of currencies).
+   */
   totalAmount: number;
   /** Bot specified invoice payload */
   invoicePayload: string;
@@ -851,13 +939,13 @@ export interface InlineQuery {
   user: TelegramUser;
   /** Inline query object. */
   inlineQuery: RawInlineQuery;
-  /**	Unique identifier for this query */
+  /** Unique identifier for this query */
   queryId: string;
   /** Sender location, only for bots that request user location */
   location?: RawLocation;
   /** Text of the query (up to 256 characters) */
   query: string;
-  /**	Offset of the results to be returned, can be controlled by the bot */
+  /** Offset of the results to be returned, can be controlled by the bot */
   offset?: string;
 }
 
@@ -887,17 +975,21 @@ export const InlineQuery: InlineQuery = {
 
 export interface ChosenInlineResult {
   thread: null;
-  /**	The user that chose the result */
+  /** The user that chose the result */
   user: TelegramUser;
   /** Inline result object. */
   chosenInlineResult: RawChosenInlineResult;
-  /**	The unique identifier for the result that was chosen */
+  /** The unique identifier for the result that was chosen */
   resultId: string;
   /** Sender location, only for bots that require user location */
   location?: RawLocation;
-  /** Identifier of the sent inline message. Available only if there is an inline keyboard attached to the message. Will be also received in callback queries and can be used to edit the message. */
+  /**
+   * Identifier of the sent inline message. Available only if there is an inline
+   * keyboard attached to the message. Will be also received in callback queries
+   * and can be used to edit the message.
+   */
   inlineMessageId?: string;
-  /**	The query that was used to obtain the result */
+  /** The query that was used to obtain the result */
   query: string;
 }
 
@@ -926,7 +1018,10 @@ export const ChosenInlineResult: ChosenInlineResult = {
 };
 
 export interface CallbackBase {
-  /** The chat thread. If the callback is triggered by an inline message, it's a bot scoped thread */
+  /**
+   * The chat thread. If the callback is triggered by an inline message, it's a
+   * bot scoped thread
+   */
   thread: TelegramChat | null;
   /** Sender */
   user: TelegramUser;
@@ -934,11 +1029,21 @@ export interface CallbackBase {
   callbackQuery: RawCallbackQuery;
   /** Unique identifier for this query */
   queryId: string;
-  /** Message with the callback button that originated the query. Note that message content and message date will not be available if the message is too old */
+  /**
+   * Message with the callback button that originated the query. Note that
+   * message content and message date will not be available if the message is
+   * too old
+   */
   message?: RawMessage;
-  /** Identifier of the message sent via the bot in inline mode, that originated the query. */
+  /**
+   * Identifier of the message sent via the bot in inline mode, that originated
+   * the query.
+   */
   inlineMessageId?: string;
-  /** Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games. */
+  /**
+   * Global identifier, uniquely corresponding to the chat to which the message
+   * with the callback button was sent. Useful for high scores in games.
+   */
   chatInstanceId: string;
 }
 
@@ -970,18 +1075,24 @@ export const CallbackBase: CallbackBase = {
 };
 
 export interface CallbackQuery {
-  /** Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field. */
-  data: string;
+  /**
+   * Data associated with the callback button. Be aware that a bad client can
+   * send arbitrary data in this field.
+   */
+  callbackData: string;
 }
 
 export const CallbackQuery: CallbackQuery = {
-  get data() {
+  get callbackData() {
     return this.payload.callback_query.data;
   },
 };
 
 export interface CallbackGame {
-  /** Short name of a Game to be returned, serves as the unique identifier for the game */
+  /**
+   * Short name of a Game to be returned, serves as the unique identifier for
+   * the game
+   */
   gameShortName: string;
 }
 
@@ -1038,13 +1149,18 @@ export interface PreCheckoutQuery {
   queryId: string;
   /** Three-letter ISO 4217 currency code */
   currency: string;
-  /** Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
+  /**
+   * Total price in the smallest units of the currency (integer, not
+   * float/double). For example, for a price of US$ 1.45 pass amount = 145. See
+   * the exp parameter in currencies.json, it shows the number of digits past
+   * the decimal point for each currency (2 for the majority of currencies).
+   */
   totalAmount: number;
   /** Bot specified invoice payload */
   invoicePayload?: string;
-  /**  Identifier of the shipping option chosen by the user */
+  /** Identifier of the shipping option chosen by the user */
   shippingOptionId?: string;
-  /**  Order info provided by the user */
+  /** Order info provided by the user */
   orderInfo?: RawOrderInfo;
 }
 
@@ -1052,7 +1168,7 @@ export const PreCheckoutQuery: PreCheckoutQuery = {
   get thread() {
     return TelegramChat.fromUser(
       this.botId,
-      this.payload.pre_checkout_query.from
+      this.payload.pre_checkout_query.from,
     );
   },
   get user() {
@@ -1105,7 +1221,10 @@ export interface PollAnswer {
   pollAnswer: RawPollAnswer;
   /** Unique poll identifier */
   pollId: string;
-  /**	0-based identifiers of answer options, chosen by the user. May be empty if the user retracted their vote. */
+  /**
+   * 0-based identifiers of answer options, chosen by the user. May be empty if
+   * the user retracted their vote.
+   */
   optionIds: number[];
 }
 

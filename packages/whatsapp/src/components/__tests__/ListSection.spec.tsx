@@ -14,20 +14,20 @@ test('rendering value', async () => {
   await expect(
     renderPartElement(
       <ListSection>
-        <ListRow id="0" title="FOO" />
-        <ListRow id="1" title="BAR" />
-      </ListSection>
-    )
+        <ListRow data="foo" title="FOO" />
+        <ListRow data="bar" title="BAR" />
+      </ListSection>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <ListSection>
           <ListRow
-            id="0"
+            data="foo"
             title="FOO"
           />
           <ListRow
-            id="1"
+            data="bar"
             title="BAR"
           />
         </ListSection>,
@@ -37,12 +37,12 @@ test('rendering value', async () => {
           "rows": [
             {
               "description": undefined,
-              "id": "0",
+              "id": "foo",
               "title": "FOO",
             },
             {
               "description": undefined,
-              "id": "1",
+              "id": "bar",
               "title": "BAR",
             },
           ],
@@ -54,9 +54,9 @@ test('rendering value', async () => {
   await expect(
     renderPartElement(
       <ListSection title="HELLO">
-        <ListRow id="0" title="FOO" />
-      </ListSection>
-    )
+        <ListRow data="foo" title="FOO" />
+      </ListSection>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -64,7 +64,7 @@ test('rendering value', async () => {
           title="HELLO"
         >
           <ListRow
-            id="0"
+            data="foo"
             title="FOO"
           />
         </ListSection>,
@@ -74,7 +74,7 @@ test('rendering value', async () => {
           "rows": [
             {
               "description": undefined,
-              "id": "0",
+              "id": "foo",
               "title": "FOO",
             },
           ],

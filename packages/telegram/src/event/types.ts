@@ -55,6 +55,7 @@ interface EventObject<Category extends string, Type extends string> {
 
 /**
  * A text message.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -69,6 +70,7 @@ export interface TextMessageEvent
 
 /**
  * A text message.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -83,6 +85,7 @@ export interface TextChannelPostEvent
 
 /**
  * Message is an animation.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -99,6 +102,7 @@ export interface AnimationMessageEvent
 
 /**
  * Message is an animation.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -115,6 +119,7 @@ export interface AnimationChannelPostEvent
 
 /**
  * Message is an audio file.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -131,6 +136,7 @@ export interface AudioMessageEvent
 
 /**
  * Message is an audio file.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -147,6 +153,7 @@ export interface AudioChannelPostEvent
 
 /**
  * Message is a general file.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -163,6 +170,7 @@ export interface DocumentMessageEvent
 
 /**
  * Message is a general file.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -179,6 +187,7 @@ export interface DocumentChannelPostEvent
 
 /**
  * Message is a photo.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -195,6 +204,7 @@ export interface PhotoMessageEvent
 
 /**
  * Message is a photo.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -211,6 +221,7 @@ export interface PhotoChannelPostEvent
 
 /**
  * Message is a sticker.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -226,6 +237,7 @@ export interface StickerMessageEvent
 
 /**
  * Message is a sticker.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -241,6 +253,7 @@ export interface StickerChannelPostEvent
 
 /**
  * Message is a video.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -257,6 +270,7 @@ export interface VideoMessageEvent
 
 /**
  * Message is a video.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -273,6 +287,7 @@ export interface VideoChannelPostEvent
 
 /**
  * Message is a video note.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -288,6 +303,7 @@ export interface VideoNoteMessageEvent
 
 /**
  * Message is a video note.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -303,6 +319,7 @@ export interface VideoNoteChannelPostEvent
 
 /**
  * Message is a voice message.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -319,6 +336,7 @@ export interface VoiceMessageEvent
 
 /**
  * Message is a voice message.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post' | 'edit_channel_post'`
@@ -335,6 +353,7 @@ export interface VoiceChannelPostEvent
 
 /**
  * Message is a shared contact.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message'`
@@ -349,6 +368,7 @@ export interface ContactMessageEvent
 
 /**
  * Message is a shared contact.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post'`
@@ -363,6 +383,7 @@ export interface ContactChannelPostEvent
 
 /**
  * Message is a dice with random value from 1 to 6.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message'`
@@ -377,6 +398,7 @@ export interface DiceMessageEvent
 
 /**
  * Message is a dice with random value from 1 to 6.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post'`
@@ -391,6 +413,7 @@ export interface DiceChannelPostEvent
 
 /**
  * Message is a game.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message' | 'edit_message'`
@@ -405,6 +428,7 @@ export interface GameMessageEvent
 
 /**
  * Message is a native poll.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message'`
@@ -420,6 +444,7 @@ export interface PollMessageEvent
 
 /**
  * Message is a native poll.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post'`
@@ -435,6 +460,7 @@ export interface PollChannelPostEvent
 
 /**
  * Message is a venue.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message'`
@@ -449,6 +475,7 @@ export interface VenueMessageEvent
 
 /**
  * Message is a venue.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post'`
@@ -463,6 +490,7 @@ export interface VenueChannelPostEvent
 
 /**
  * Message is a shared location.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'message'`
@@ -477,6 +505,7 @@ export interface LocationMessageEvent
 
 /**
  * Message is a shared location.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'channel_post'`
@@ -491,6 +520,7 @@ export interface LocationChannelPostEvent
 
 /**
  * New members were added to the group or supergroup.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -505,6 +535,7 @@ export interface NewChatMembersEvent
 
 /**
  * A member was removed from the group.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -519,6 +550,7 @@ export interface LeftChatMemberEvent
 
 /**
  * The chat title was changed
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -533,6 +565,7 @@ export interface NewChatTitleEvent
 
 /**
  * The chat photo was changed.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -547,6 +580,7 @@ export interface NewChatPhotoEvent
 
 /**
  * The chat photo was deleted.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -560,6 +594,7 @@ export interface DeleteChatPhotoEvent
 
 /**
  * The group has been created.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -573,6 +608,7 @@ export interface CreatGroupChatEvent
 
 /**
  * The group has been migrated to a supergroup with the specified identifier.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -587,6 +623,7 @@ export interface MigrateToChatEvent
 
 /**
  * The supergroup has been migrated from a group with the specified identifier.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -601,6 +638,7 @@ export interface MigrateFromChatEvent
 
 /**
  * Specified message was pinned.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'action'`
@@ -615,13 +653,14 @@ export interface PinMessageEvent
 
 /**
  * Message is a service message about a successful payment.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'successful_payment'`
  */
 export interface SuccessfulPaymentEvent
-  extends EventObject<'postback', 'successful_payment'>,
+  extends EventObject<'callback', 'successful_payment'>,
     EventBase,
     Message,
     MessageDetail,
@@ -629,105 +668,118 @@ export interface SuccessfulPaymentEvent
 
 /**
  * New incoming inline query.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequery).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'inline_query'`
  */
 export interface InlineQueryEvent
-  extends EventObject<'postback', 'inline_query'>,
+  extends EventObject<'callback', 'inline_query'>,
     EventBase,
     InlineQuery {}
 
 /**
- * The result of an inline query that was chosen by a user and sent to their chat partner.
+ * The result of an inline query that was chosen by a user and sent to their
+ * chat partner.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#choseninlineresult).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'choose_inline_result'`
  */
 export interface ChooseInlineResultEvent
-  extends EventObject<'postback', 'choose_inline_result'>,
+  extends EventObject<'callback', 'choose_inline_result'>,
     EventBase,
     ChosenInlineResult {}
 
 /**
  * New incoming callback query from a callback button
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#callbackquery).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'callback_query'`
  */
 export interface CallbackQueryEvent
-  extends EventObject<'postback', 'callback_query'>,
+  extends EventObject<'callback', 'callback_query'>,
     EventBase,
     CallbackBase,
     CallbackQuery {}
 
 /**
  * New incoming callback query from a game button
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#callbackquery).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'callback_query'`
  */
 export interface CallbackGameEvent
-  extends EventObject<'postback', 'callback_game'>,
+  extends EventObject<'callback', 'callback_game'>,
     EventBase,
     CallbackBase,
     CallbackGame {}
 
 /**
  * New incoming shipping query. Only for invoices with flexible price.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#shippingquery).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'shipping_query'`
  */
 export interface ShippingQueryEvent
-  extends EventObject<'postback', 'shipping_query'>,
+  extends EventObject<'callback', 'shipping_query'>,
     EventBase,
     ShippingQuery {}
 
 /**
  * New incoming pre-checkout query. Contains full information about checkout.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#precheckoutquery).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'pre_checkout_query'`
  */
 export interface PreCheckoutQueryEvent
-  extends EventObject<'postback', 'pre_checkout_query'>,
+  extends EventObject<'callback', 'pre_checkout_query'>,
     EventBase,
     PreCheckoutQuery {}
 
 /**
- * New poll state. Bots receive only updates about stopped polls and polls, which are sent by the bot.
+ * New poll state. Bots receive only updates about stopped polls and polls,
+ * which are sent by the bot.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#poll).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'poll_change'`
  */
 export interface PollChangeEvent
-  extends EventObject<'postback', 'poll_change'>,
+  extends EventObject<'callback', 'poll_change'>,
     EventBase,
     PollChange,
     PollDetail {}
 
 /**
- * A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself.
+ * A user changed their answer in a non-anonymous poll. Bots receive new votes
+ * only in polls that were sent by the bot itself.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#pollanswer).
- * @eventCategory `'postback'`
+ * @eventCategory `'callback'`
  * @eventType `'poll_answer_change'`
  */
 export interface PollAnswerChangeEvent
-  extends EventObject<'postback', 'poll_answer_change'>,
+  extends EventObject<'callback', 'poll_answer_change'>,
     EventBase,
     PollAnswer {}
 
 /**
- * The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
+ * The bot's chat member status was updated in a chat. For private chats, this
+ * update is received only when the bot is blocked or unblocked by the user.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#update).
  * @eventCategory `'action'`
@@ -740,7 +792,10 @@ export interface BotMemberUpdatedEvent
     ChatMemberUpdated {}
 
 /**
- * A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
+ * A chat member's status was updated in a chat. The bot must be an
+ * administrator in the chat and must explicitly specify “chat_member” in the
+ * list of allowed_updates to receive these updates.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#update).
  * @eventCategory `'action'`
@@ -754,6 +809,7 @@ export interface ChatMemberUpdatedEvent
 
 /**
  * An unknown message met.
+ *
  * @category Event
  * @guides Check official [reference](https://core.telegram.org/bots/api#message).
  * @eventCategory `'unknown'`
@@ -764,9 +820,7 @@ export interface UnknownEvent
     EventBase,
     Unknown {}
 
-/**
- * @category Event
- */
+/** @category Event */
 export type TelegramEvent =
   | TextMessageEvent
   | TextChannelPostEvent

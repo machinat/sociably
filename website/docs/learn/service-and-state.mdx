@@ -25,7 +25,7 @@ const handleChat = serviceContainer({
 })(
   (getIntent, getUserProfile) =>
     async (
-      ctx: ChatEventContext & { event: { category: 'message'| 'postback' } }
+      ctx: ChatEventContext & { event: { category: 'message'| 'callback' } }
     ) => {
       const { event, reply } = ctx;
       const intent = await getIntent(event);${platform === 'telegram' ? `
@@ -300,7 +300,7 @@ const handleChat = serviceContainer({
   // highlight-next-line
   (getIntent, getUserProfile, todoController) =>
   async (
-    ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+    ctx: ChatEventContext & { event: { category: 'message' | 'callback' } }
   ) => {
       const { event, reply } = ctx;
       const intent = await getIntent(event);${ platform === 'telegram' ? `

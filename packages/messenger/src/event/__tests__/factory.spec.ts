@@ -78,7 +78,7 @@ test('quick_reply postback event', async () => {
     const event = createEvent(
       pageId,
       false,
-      rawEvent
+      rawEvent,
     ) as QuickReplyEventProto & {
       platform: string;
       category: string;
@@ -89,10 +89,10 @@ test('quick_reply postback event', async () => {
     expect(event.isStandby).toBe(false);
     expect(event.sender).toBe(rawEvent.sender);
 
-    expect(event.category).toBe('postback');
+    expect(event.category).toBe('callback');
     expect(event.type).toBe('quick_reply');
 
-    expect(event.data).toBe(rawEvent.message.quick_reply.payload);
+    expect(event.callbackData).toBe(rawEvent.message.quick_reply.payload);
     expect(event.messageId).toBe(rawEvent.message.mid);
     expect(event.text).toBe(rawEvent.message.text);
   }

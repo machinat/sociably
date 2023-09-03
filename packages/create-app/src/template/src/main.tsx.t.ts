@@ -20,7 +20,7 @@ const main = (event$: Stream<AppEventContext>): void => {
       filter((ctx) => ctx.event.platform !== 'webview'),`}
       filter(
         (ctx) =>
-          ctx.event.category === 'message' || ctx.event.category === 'postback'
+          ctx.event.category === 'message' || ctx.event.category === 'callback'
       ),
       filter(
         serviceContainer({ deps: [Script.Processor] })(

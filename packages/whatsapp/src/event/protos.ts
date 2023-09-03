@@ -18,8 +18,8 @@ import {
   VideoEvent,
   StickerEvent,
   QuickReplyEvent,
-  InteractiveListEvent,
-  InteractiveButtonEvent,
+  ListInteractiveEvent,
+  ButtonInteractiveEvent,
   UserNumberChangeEvent,
   UserIdentityChangeEvent,
   ReferralEvent,
@@ -166,9 +166,9 @@ export const VideoProto: VideoEvent = mixin(MessageProto, {
 });
 
 export const QuickReplyProto: QuickReplyEvent = mixin(MessageProto, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'quick_reply' as const,
-  get data() {
+  get callbackData() {
     return this.payload.button.payload;
   },
   get text() {
@@ -185,24 +185,24 @@ export const QuickReplyProto: QuickReplyEvent = mixin(MessageProto, {
   },
 });
 
-export const InteractiveButtonProto: InteractiveButtonEvent = mixin(
+export const ButtonInteractiveProto: ButtonInteractiveEvent = mixin(
   MessageProto,
   {
-    category: 'postback' as const,
-    type: 'interactive_button' as const,
-    get replyId() {
+    category: 'callback' as const,
+    type: 'button_interactive' as const,
+    get callbackData() {
       return this.payload.interactive.button_reply.id;
     },
     get title() {
       return this.payload.interactive.button_reply.title;
     },
-  }
+  },
 );
 
-export const InteractiveListProto: InteractiveListEvent = mixin(MessageProto, {
-  category: 'postback' as const,
-  type: 'interactive_list' as const,
-  get replyId() {
+export const ListInteractiveProto: ListInteractiveEvent = mixin(MessageProto, {
+  category: 'callback' as const,
+  type: 'list_interactive' as const,
+  get callbackData() {
     return this.payload.interactive.list_reply.id;
   },
   get title() {
@@ -230,7 +230,7 @@ export const UserNumberChangeProto: UserNumberChangeEvent = mixin(
     get newNumber() {
       return this.payload.system.wa_id;
     },
-  }
+  },
 );
 
 export const UserIdentityChangeProto: UserIdentityChangeEvent = mixin(
@@ -241,7 +241,7 @@ export const UserIdentityChangeProto: UserIdentityChangeEvent = mixin(
     get changeId() {
       return this.payload.system.identity;
     },
-  }
+  },
 );
 
 export const ReferralProto: ReferralEvent = mixin(MessageProto, WithTextProto, {

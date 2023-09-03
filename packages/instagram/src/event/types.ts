@@ -52,7 +52,9 @@ interface EventObject<
 }
 
 /**
- * This callback will occur when a text message has been sent to your agent account.
+ * This callback will occur when a text message has been sent to your agent
+ * account.
+ *
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -62,7 +64,9 @@ export interface TextEvent
     TextEventProto {}
 
 /**
- * TextEchoEvent will occur when a text message has been sent by your agent account.
+ * TextEchoEvent will occur when a text message has been sent by your agent
+ * account.
+ *
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -72,7 +76,9 @@ export interface TextEchoEvent
     TextEchoEventProto {}
 
 /**
- * This callback will occur when an image message has been sent to your agent account.
+ * This callback will occur when an image message has been sent to your agent
+ * account.
+ *
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -82,7 +88,9 @@ export interface ImageEvent
     ImageEventProto {}
 
 /**
- * ImageEchoEvent will occur when a image message has been sent by your agent account.
+ * ImageEchoEvent will occur when a image message has been sent by your agent
+ * account.
+ *
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -92,7 +100,9 @@ export interface ImageEchoEvent
     ImageEchoEventProto {}
 
 /**
- * This callback will occur when a video message has been sent to your agent account.
+ * This callback will occur when a video message has been sent to your agent
+ * account.
+ *
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -102,7 +112,9 @@ export interface VideoEvent
     VideoEventProto {}
 
 /**
- * VideoEchoEvent will occur when a video message has been sent by your agent account.
+ * VideoEchoEvent will occur when a video message has been sent by your agent
+ * account.
+ *
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -112,7 +124,9 @@ export interface VideoEchoEvent
     VideoEchoEventProto {}
 
 /**
- * This callback will occur when an audio message has been sent to your agent account.
+ * This callback will occur when an audio message has been sent to your agent
+ * account.
+ *
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -122,7 +136,9 @@ export interface AudioEvent
     AudioEventProto {}
 
 /**
- * AudioEchoEvent will occur when a text message has been sent by your agent account.
+ * AudioEchoEvent will occur when a text message has been sent by your agent
+ * account.
+ *
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -132,7 +148,9 @@ export interface AudioEchoEvent
     AudioEchoEventProto {}
 
 /**
- * This callback will occur when a file message has been sent to your agent account.
+ * This callback will occur when a file message has been sent to your agent
+ * account.
+ *
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -142,7 +160,9 @@ export interface FileEvent
     FileEventProto {}
 
 /**
- * FileEchoEvent will occur when a text message has been sent by your agent account.
+ * FileEchoEvent will occur when a text message has been sent by your agent
+ * account.
+ *
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -152,7 +172,9 @@ export interface FileEchoEvent
     FileEchoEventProto {}
 
 /**
- * This callback will occur when a location message has been sent to your agent account.
+ * This callback will occur when a location message has been sent to your agent
+ * account.
+ *
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -173,6 +195,7 @@ export interface ProductTemplateEvent
 /**
  * TemplateEchoEvent will occur when a template message has been sent by your
  * page.
+ *
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -184,6 +207,7 @@ export interface TemplateEchoEvent
 /**
  * FallbackMessageEvent will occur when an unsupported message shared by user
  * has been sent to your agent account.
+ *
  * @category Event
  * @subscription `messages`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
@@ -195,6 +219,7 @@ export interface FallbackEvent
 /**
  * FallbackEchoEvent will occur when a message not supporeted by echo feature
  * has been sent by your agent account.
+ *
  * @category Event
  * @subscription `message_echoes`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-echoes).
@@ -205,6 +230,7 @@ export interface FallbackEchoEvent
 
 /**
  * ReactionEvent will be sent to your webhook when a user reacts to a message.
+ *
  * @category Event
  * @subscription `message_reactions`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-reactions).
@@ -215,29 +241,34 @@ export interface ReactionEvent
 
 /**
  * QuickReplyEvent occur when a {@link QuickReply} button is tapped.
+ *
  * @category Event
  * @subscription `messages`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messages).
  */
 export interface QuickReplyEvent
-  extends EventObject<'postback' | 'standby', 'quick_reply'>,
+  extends EventObject<'callback' | 'standby', 'quick_reply'>,
     QuickReplyEventProto {}
 
 /**
- * PostbackEvent occur when a [postback button](https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button),
- * [Get Started button](https://developers.facebook.com/docs/messenger-platform/messenger-profile/get-started-button),
- * or [persistent menu item](https://developers.facebook.com/docs/messenger-platform/messenger-profile/persistent-menu)
- * is tapped. Note that if the event is standby it will not include the postback data.
- * Only the app that originally sent the postback button will receive the normal webhook
- * event that includes the postback data.
+ * PostbackEvent occur when a [postback
+ * button](https://developers.facebook.com/docs/messenger-platform/send-api-reference/postback-button),
+ * [Get Started
+ * button](https://developers.facebook.com/docs/messenger-platform/messenger-profile/get-started-button),
+ * or [persistent menu
+ * item](https://developers.facebook.com/docs/messenger-platform/messenger-profile/persistent-menu)
+ * is tapped. Note that if the event is standby it will not include the postback
+ * data. Only the app that originally sent the postback button will receive the
+ * normal webhook event that includes the postback data.
+ *
  * @category Event
  * @subscription `messaging_postbacks`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_postbacks).
  */
 export interface PostbackEvent
   extends EventObject<
-      'postback' | 'standby',
+      'callback' | 'standby',
       'postback',
       InstagramChat,
       InstagramUser | null
@@ -253,6 +284,7 @@ export interface PostbackEvent
  * - Starting or resuming a conversation from the customer chat plugin.
  *
  * For tracking referrals in new threads, refer to {@link PostbackEvent}.
+ *
  * @category Event
  * @subscription `messaging_referrals`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_referrals).
@@ -267,8 +299,9 @@ export interface ReferralEvent
     ReferralEventProto {}
 
 /**
- * ReadEvent will be sent to your webhook when a message an agent account has sent has
- * been read by the user.
+ * ReadEvent will be sent to your webhook when a message an agent account has
+ * sent has been read by the user.
+ *
  * @category Event
  * @subscription `message_reads`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-reads).
@@ -278,7 +311,9 @@ export interface ReadEvent
     ReadEventProto {}
 
 /**
- * DeliveryEvent will occur when a message an agent account has sent has been delivered.
+ * DeliveryEvent will occur when a message an agent account has sent has been
+ * delivered.
+ *
  * @category Event
  * @subscription `message_deliveries`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/message-deliveries).
@@ -290,6 +325,7 @@ export interface DeliveryEvent
 /**
  * AccountLinkingEvent will occur when the Link Account or Unlink Account button
  * have been tapped when using Account Linking.
+ *
  * @category Event
  * @subscription `messaging_account_linking`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/account-linking)
@@ -302,6 +338,7 @@ export interface AccountLinkingEvent
 /**
  * PassThreadControlEvent occurs when the thread ownership for a user has been
  * passed to your application.
+ *
  * @category Event
  * @subscription `messaging_handovers`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/pass-thread-control)
@@ -314,6 +351,7 @@ export interface PassThreadControlEvent
 /**
  * TakeThreadControlEvent occurs when the thread ownership for a user has been
  * taken away from your application.
+ *
  * @category Event
  * @subscription `messaging_handovers`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/take-thread-control)
@@ -328,6 +366,7 @@ export interface TakeThreadControlEvent
  * Secondary Receiver app calls the Request Thread Control API. The Primary
  * Receiver may then choose to honor the request and pass thread control, or
  * ignore the request.
+ *
  * @category Event
  * @subscription `messaging_handovers`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/request-thread-control)
@@ -338,9 +377,10 @@ export interface RequestThreadControlEvent
     RequestThreadControlEventProto {}
 
 /**
- * AppRolesEvent occurs when a page admin changes the role of your
- * application. An app can be assigned the roles of _primary_receiver_ or
+ * AppRolesEvent occurs when a page admin changes the role of your application.
+ * An app can be assigned the roles of _primary_receiver_ or
  * _secondary_receiver_.
+ *
  * @category Event
  * @subscription `messaging_handovers`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/handover-protocol/assign-app-roles)
@@ -351,32 +391,37 @@ export interface AppRolesEvent
     AppRolesEventProto {}
 
 /**
- * OptinEvent occurs when the [send to Messenger](https://developers.facebook.com/docs/messenger-platform/discovery/send-to-messenger-plugin)
- * plugin has been tapped, a user has accepted a message request using
- * [customer matching](https://developers.facebook.com/docs/messenger-platform/guides/customer-matching),
- * or a user has opted in to receive messages via the [checkbox plugin](https://developers.facebook.com/docs/messenger-platform/discovery/checkbox-plugin).
+ * OptinEvent occurs when the [send to
+ * Messenger](https://developers.facebook.com/docs/messenger-platform/discovery/send-to-messenger-plugin)
+ * plugin has been tapped, a user has accepted a message request using [customer
+ * matching](https://developers.facebook.com/docs/messenger-platform/guides/customer-matching),
+ * or a user has opted in to receive messages via the [checkbox
+ * plugin](https://developers.facebook.com/docs/messenger-platform/discovery/checkbox-plugin).
+ *
  * @category Event
  * @subscription `messaging_optins`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_optins).
  */
 export interface OptinEvent
-  extends EventObject<'postback', 'optin', InstagramChat, null | InstagramUser>,
+  extends EventObject<'callback', 'optin', InstagramChat, null | InstagramUser>,
     OptinEventProto {}
 
 /**
  * OneTimeNotifOptinEvent occurs when the user consents to be notified on a
  * specific update.
+ *
  * @category Event
  * @subscription `messaging_optins`
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/one-time-notification).
  */
 export interface OneTimeNotifOptinEvent
-  extends EventObject<'postback', 'one_time_notif_optin'>,
+  extends EventObject<'callback', 'one_time_notif_optin'>,
     OneTimeNotifOptinEventProto {}
 
 /**
  * PolicyEnforcementEvent will be sent to an app if the page it manages does not
  * conform to Messenger Platform policy.
+ *
  * @category Event
  * @subscription `messaging_policy_enforcement`
  * @guides Check official [reference](https://developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_policy_enforcement).
@@ -385,16 +430,12 @@ export interface PolicyEnforcementEvent
   extends EventObject<'system', 'policy_enforcement', null, null>,
     PolicyEnforcementEventProto {}
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface UnknownEvent
   extends EventObject<'unknown', 'unknown'>,
     UnknownEventProto {}
 
-/**
- * @category Event
- */
+/** @category Event */
 export type InstagramEvent =
   | TextEvent
   | TextEchoEvent

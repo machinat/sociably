@@ -28,7 +28,7 @@ const makeEvent = <Proto extends TwitterEvent>(
   forUserId: string,
   userHasBlocked: undefined | boolean,
   payload: Proto['payload'],
-  proto: Proto
+  proto: Proto,
 ): Proto => {
   const event: Proto = Object.create(proto);
 
@@ -145,7 +145,7 @@ const GifMessageProto = mixin(MediaProto, AnimatedGifAttachment, {
 });
 
 const QuickReplyProto = mixin(DirectMessageProto, QuickReply, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'quick_reply' as const,
 });
 
@@ -161,7 +161,7 @@ const ActionTypingProto = mixin(
   {
     category: 'action' as const,
     type: 'typing' as const,
-  }
+  },
 );
 
 const ActionReadProto = mixin(
@@ -171,7 +171,7 @@ const ActionReadProto = mixin(
   {
     category: 'action' as const,
     type: 'read' as const,
-  }
+  },
 );
 
 const SubscriptionRevokeProto = mixin(EventBase, UserRevoke, {
@@ -292,7 +292,7 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
         forUserId,
         undefined,
         rawMessage,
-        ActionTypingProto
+        ActionTypingProto,
       );
       event.usersMapping = users;
       return event;
@@ -310,14 +310,9 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
   }
 
   if ('tweet_delete_events' in body) {
-    return body.tweet_delete_events.map((rawMessage) => {
-      return makeEvent(
-        body.for_user_id,
-        undefined,
-        rawMessage,
-        EchoDeleteTweetProto
-      );
-    });
+    return body.tweet_delete_events.map((rawMessage) =>
+      makeEvent(body.for_user_id, undefined, rawMessage, EchoDeleteTweetProto),
+    );
   }
 
   const { for_user_id: forUserId } = body;

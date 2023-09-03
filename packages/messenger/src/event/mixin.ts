@@ -1,9 +1,7 @@
 import camelcaseKeys from 'camelcase-keys';
 import type { PsidTarget, UserRefTarget } from '../types.js';
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface EventBase {
   /** Indicate whether the event is sent to a standby thread. */
   readonly isStandby: boolean;
@@ -29,9 +27,7 @@ export const EventBase: EventBase = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Message {
   /** Message ID. */
   readonly messageId: string;
@@ -58,9 +54,7 @@ export const Message: Message = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Text {
   /** Text of message. */
   readonly text: string;
@@ -72,9 +66,7 @@ export const Text: Text = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Fallback {
   /** The fallback payload. */
   readonly fallback: undefined | { title: string; url: string };
@@ -86,9 +78,7 @@ export const Fallback: Fallback = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Media {
   /** URL of the attachment type. */
   readonly url: string;
@@ -100,9 +90,7 @@ export const Media: Media = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Sticker {
   /** Persistent id of the sticker if a sticker is sent. */
   readonly stickerId: undefined | number;
@@ -114,23 +102,19 @@ export const Sticker: Sticker = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface QuickReply {
   /** Custom data provided by the app with the quick_reply. */
-  readonly data: string;
+  readonly callbackData: string;
 }
 
 export const QuickReply: QuickReply = {
-  get data() {
+  get callbackData() {
     return this.payload.message.quick_reply.payload;
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Nlp {
   /** The raw nlp object. */
   readonly nlp?: any;
@@ -142,9 +126,7 @@ export const Nlp: Nlp = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Location {
   readonly latitude: number;
   readonly longitude: number;
@@ -170,9 +152,7 @@ type ReactionType =
   | 'dislike'
   | 'other';
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Reaction {
   /** Text description of the reaction. */
   readonly reactionType: ReactionType;
@@ -202,9 +182,7 @@ export const Reaction: Reaction = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface TemplateProduct {
   readonly products: {
     id: string;
@@ -222,14 +200,12 @@ export const TemplateProduct: TemplateProduct = {
         ...restElement,
         retailerId,
         imageUrl,
-      })
+      }),
     );
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Delivery {
   /**
    * Array containing message IDs of messages that were delivered. Field may not
@@ -250,9 +226,7 @@ export const Delivery: Delivery = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Read {
   /** All messages that were sent before or at this timestamp were read. */
   readonly watermark: number;
@@ -264,17 +238,15 @@ export const Read: Read = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Echo {
   /** Indicate whether the event is an echo. */
   readonly isEcho: boolean;
   /** ID of the app from which the message was sent. */
   readonly appId: string;
   /**
-   * Custom string passed to the Send API as the metadata field. Only present
-   * if the metadata property was set in the original message.
+   * Custom string passed to the Send API as the metadata field. Only present if
+   * the metadata property was set in the original message.
    */
   readonly metadata: undefined | string;
 }
@@ -290,9 +262,7 @@ export const Echo: Echo = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Standby {
   /** Indicate whether the event is sent to a standby thread. */
   readonly isStandby: boolean;
@@ -302,9 +272,7 @@ export const Standby: Standby = {
   isStandby: true,
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface AccountLinking {
   /** Indicate whether the user linked or unlinked their account. */
   readonly status: 'linked' | 'unlinked';
@@ -325,22 +293,33 @@ export const AccountLinking: AccountLinking = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface GamePlay {
   /** App ID of the game */
   readonly gameId: string;
-  /** ID of the user in the Instant Game name-space. By linking this ID to the PSID received in the sender field, the bot can send messages to a user after a game play */
+  /**
+   * ID of the user in the Instant Game name-space. By linking this ID to the
+   * PSID received in the sender field, the bot can send messages to a user
+   * after a game play
+   */
   readonly playerId: string;
   /** Type of the social context a game is played in */
   readonly contextType: 'SOLO' | 'THREAD' | 'GROUP';
-  /** ID of the context if not a SOLO type. This ID is in the Instant Game name-space */
+  /**
+   * ID of the context if not a SOLO type. This ID is in the Instant Game
+   * name-space
+   */
   readonly contextId: string;
-  /** Best score achieved by this user in this game round. Only available to Classic score based games */
+  /**
+   * Best score achieved by this user in this game round. Only available to
+   * Classic score based games
+   */
   readonly score: undefined | number;
-  /** JSON encoded payload data, set using FBInstant.setSessionData(). Only available to game with Rich Games Feature enabled */
-  readonly data: undefined | string;
+  /**
+   * JSON encoded payload data, set using FBInstant.setSessionData(). Only
+   * available to game with Rich Games Feature enabled
+   */
+  readonly callbackData: undefined | string;
 }
 
 export const GamePlay: GamePlay = {
@@ -359,14 +338,12 @@ export const GamePlay: GamePlay = {
   get score() {
     return this.payload.game_play.score;
   },
-  get data() {
+  get callbackData() {
     return this.payload.game_play.payload;
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface PassThreadControl {
   /** App ID that thread control is passed to. */
   readonly newOwnerAppId: string;
@@ -384,9 +361,7 @@ export const PassThreadControl: PassThreadControl = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface TakeThreadControl {
   /** App ID that thread control was taken from. */
   readonly previousOwnerAppId: string;
@@ -404,9 +379,7 @@ export const TakeThreadControl: TakeThreadControl = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface RequestThreadControl {
   /** App ID of the Secondary Receiver that is requesting thread control. */
   readonly requestedOwnerAppId: string;
@@ -424,9 +397,7 @@ export const RequestThreadControl: RequestThreadControl = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface AppRoles {
   /** The app id and roles mapping object. */
   readonly appRoles: Record<string, string[]>;
@@ -438,14 +409,13 @@ export const AppRoles: AppRoles = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Optin {
   /** The `data-ref` attribute that was defined with the entry point. */
   readonly dataRef: string;
   /**
-   * [Checkbox plugin](https://developers.facebook.com/docs/messenger-platform/discovery/checkbox-plugin)
+   * [Checkbox
+   * plugin](https://developers.facebook.com/docs/messenger-platform/discovery/checkbox-plugin)
    * only. user_ref attribute that was defined in the checkbox plugin include.
    */
   readonly userRef: undefined | string;
@@ -461,18 +431,16 @@ export const Optin: Optin = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface OneTimeNotifOptin {
   /** The payload attached with the request message */
-  readonly data: string;
+  readonly callbackData: string;
   /** The token to send one time notification with */
   readonly token: string;
 }
 
 export const OneTimeNotifOptin: OneTimeNotifOptin = {
-  get data() {
+  get callbackData() {
     return this.payload.optin.payload;
   },
 
@@ -481,9 +449,7 @@ export const OneTimeNotifOptin: OneTimeNotifOptin = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface PolicyEnforcement {
   readonly action: 'warning' | 'block' | 'unblock';
   /**
@@ -510,9 +476,7 @@ type ReferralSource =
   | 'SHORTLINK'
   | 'CUSTOMER_CHAT_PLUGIN';
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Referral {
   /** The source of the referral. */
   readonly source: ReferralSource;
@@ -520,9 +484,7 @@ export interface Referral {
   readonly ref: string;
   /** Id of ad if `source` is `'ADS'` */
   readonly adId?: string;
-  /**
-   * The URI of the site where the message was sent in the Facebook chat plugin.
-   */
+  /** The URI of the site where the message was sent in the Facebook chat plugin. */
   readonly refererUri?: string;
   /**
    * A flag indicating whether the user is a guest user from Facebook Chat
@@ -574,9 +536,7 @@ export const Referral: Referral = {
   },
 };
 
-/**
- * @category Event Mixin
- */
+/** @category Event Mixin */
 export interface Postback {
   /**
    * Title for the CTA that was clicked on. This is sent to all apps subscribed
@@ -587,7 +547,7 @@ export interface Postback {
    * Payload parameter that was defined with the button. This is only visible to
    * the app that send the original template message.
    */
-  readonly data: string;
+  readonly callbackData: string;
 
   /** Referral information for how the user got into the thread. */
   readonly referral?: Referral;
@@ -604,7 +564,7 @@ export const Postback: Postback = {
     return this.payload.postback.title;
   },
 
-  get data() {
+  get callbackData() {
     return this.payload.postback.payload;
   },
 

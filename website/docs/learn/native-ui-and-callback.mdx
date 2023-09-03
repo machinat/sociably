@@ -1,5 +1,5 @@
 ---
-title: Native UI and Postback
+title: Native UI and Callback
 ---
 
 > General UI like `<p>...</p>` are supported on every chat platform,
@@ -35,7 +35,7 @@ import Sociably, { serviceContainer } from '@sociably/core';
 import * as Facebook from '@sociably/facebook/components';
 // ...
     async (
-      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+      ctx: ChatEventContext & { event: { category: 'message' | 'callback' } }
     ) => {
       const { event, reply } = ctx;
 
@@ -83,7 +83,7 @@ import Sociably, { serviceContainer } from '@sociably/core';
 import * as Telegram from '@sociably/telegram/components';
 // ...
     async (
-      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+      ctx: ChatEventContext & { event: { category: 'message' | 'callback' } }
     ) => {
       const { event, reply } = ctx;
 
@@ -134,7 +134,7 @@ import Sociably, { serviceContainer } from '@sociably/core';
 import * as Line from '@sociably/line/components';
 //...
   async (
-    ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+    ctx: ChatEventContext & { event: { category: 'message' | 'callback' } }
   ) => {
     const { event, reply } = ctx;
 
@@ -228,9 +228,9 @@ Props are used to pass values to the component. The value can be text (like `tit
 expression (like `payload`) or even another JSX element (like `buttons`).
 
 The JSON encoded data `{ action: 'list' }` is set on the button.
-We can use the data later to handle the postback event.
+We can use the data later to handle the callback event.
 
-## Postback Event
+## Callback Event
 
 When the user taps the button, it triggers an event that posts the data back.
 We can handle it by adding these codes in `handleChat`:
@@ -239,7 +239,7 @@ We can handle it by adding these codes in `handleChat`:
 //...
   (getIntent, getUserProfile) =>
     async (
-      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+      ctx: ChatEventContext & { event: { category: 'message' | 'callback' } }
     ) => {
       const { event, reply } = ctx;
       const intent = await getIntent(event);
@@ -350,5 +350,5 @@ We can get the data at `event.data` and reply according to it.
 
 ---
 
-Our bot can interact with users using buttons and postback.
+Our bot can interact with users using buttons and callback.
 Next, we'll learn how to make a reusable UI with a **component**.

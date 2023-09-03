@@ -14,7 +14,7 @@ const handleChat = serviceContainer({
 })(
   (getIntent, getUserProfile) =>
     async (
-      ctx: ChatEventContext & { event: { category: 'message' | 'postback' } }
+      ctx: ChatEventContext & { event: { category: 'message' | 'callback' } }
     ) => {
       const { event, reply } = ctx;${when(platforms.includes('telegram'))`
       if (!event.thread) {

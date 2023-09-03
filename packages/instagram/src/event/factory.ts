@@ -18,9 +18,7 @@ const createMessengerEvent = createEventFactory<
 const createEvent = (
   agentId: string,
   isStandBy: boolean,
-  rawEvent: InstagramRawEvent
-) => {
-  return createMessengerEvent(agentId, isStandBy, rawEvent);
-};
+  rawEvent: InstagramRawEvent,
+) => createMessengerEvent(agentId, isStandBy, rawEvent);
 
 export default createEvent;

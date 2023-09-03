@@ -52,7 +52,7 @@ import { TelegramEvent } from './types.js';
 const makeEventObject = <Proto extends {}>(
   botId: number,
   payload: TelegramRawEvent,
-  proto: Proto
+  proto: Proto,
 ): {
   botId: number;
   payload: TelegramRawEvent;
@@ -71,7 +71,7 @@ const ChannelPostProto = mixin(EventBase, ChannelPost, MessageDetail);
 const EditedChannelPostProto = mixin(
   EventBase,
   EditedChannelPost,
-  MessageDetail
+  MessageDetail,
 );
 
 const TextMessageProto = mixin(MessageProto, Text, {
@@ -99,7 +99,7 @@ const AnimationMessageProto = mixin(
   {
     category: 'message' as const,
     type: 'animation' as const,
-  }
+  },
 );
 const AnimationEditedMessageProto = mixin(
   EditedMessageProto,
@@ -109,7 +109,7 @@ const AnimationEditedMessageProto = mixin(
   {
     category: 'edit_message' as const,
     type: 'animation' as const,
-  }
+  },
 );
 const AnimationChannelPostProto = mixin(
   ChannelPostProto,
@@ -119,7 +119,7 @@ const AnimationChannelPostProto = mixin(
   {
     category: 'channel_post' as const,
     type: 'animation' as const,
-  }
+  },
 );
 const AnimationEditedChannelPostProto = mixin(
   EditedChannelPostProto,
@@ -129,7 +129,7 @@ const AnimationEditedChannelPostProto = mixin(
   {
     category: 'edit_channel_post' as const,
     type: 'animation' as const,
-  }
+  },
 );
 
 const AudioMessageProto = mixin(MessageProto, Audio, FileDetail, Caption, {
@@ -144,7 +144,7 @@ const AudioEditedMessageProto = mixin(
   {
     category: 'edit_message' as const,
     type: 'audio' as const,
-  }
+  },
 );
 const AudioChannelPostProto = mixin(
   ChannelPostProto,
@@ -154,7 +154,7 @@ const AudioChannelPostProto = mixin(
   {
     category: 'channel_post' as const,
     type: 'audio' as const,
-  }
+  },
 );
 const AudioEditedChannelPostProto = mixin(
   EditedChannelPostProto,
@@ -164,7 +164,7 @@ const AudioEditedChannelPostProto = mixin(
   {
     category: 'edit_channel_post' as const,
     type: 'audio' as const,
-  }
+  },
 );
 
 const DocumentMessageProto = mixin(
@@ -175,7 +175,7 @@ const DocumentMessageProto = mixin(
   {
     category: 'message' as const,
     type: 'document' as const,
-  }
+  },
 );
 const DocumentEditedMessageProto = mixin(
   EditedMessageProto,
@@ -185,7 +185,7 @@ const DocumentEditedMessageProto = mixin(
   {
     category: 'edit_message' as const,
     type: 'document' as const,
-  }
+  },
 );
 const DocumentChannelPostProto = mixin(
   ChannelPostProto,
@@ -195,7 +195,7 @@ const DocumentChannelPostProto = mixin(
   {
     category: 'channel_post' as const,
     type: 'document' as const,
-  }
+  },
 );
 const DocumentEditedChannelPostProto = mixin(
   EditedChannelPostProto,
@@ -205,7 +205,7 @@ const DocumentEditedChannelPostProto = mixin(
   {
     category: 'edit_channel_post' as const,
     type: 'document' as const,
-  }
+  },
 );
 
 const PhotoMessageProto = mixin(MessageProto, Photo, FileDetail, Caption, {
@@ -220,7 +220,7 @@ const PhotoEditedMessageProto = mixin(
   {
     category: 'edit_message' as const,
     type: 'photo' as const,
-  }
+  },
 );
 const PhotoChannelPostProto = mixin(
   ChannelPostProto,
@@ -230,7 +230,7 @@ const PhotoChannelPostProto = mixin(
   {
     category: 'channel_post' as const,
     type: 'photo' as const,
-  }
+  },
 );
 const PhotoEditedChannelPostProto = mixin(
   EditedChannelPostProto,
@@ -240,7 +240,7 @@ const PhotoEditedChannelPostProto = mixin(
   {
     category: 'edit_channel_post' as const,
     type: 'photo' as const,
-  }
+  },
 );
 
 const StickerMessageProto = mixin(MessageProto, Sticker, FileDetail, Caption, {
@@ -255,7 +255,7 @@ const StickerEditedMessageProto = mixin(
   {
     category: 'edit_message' as const,
     type: 'sticker' as const,
-  }
+  },
 );
 const StickerChannelPostProto = mixin(
   ChannelPostProto,
@@ -265,7 +265,7 @@ const StickerChannelPostProto = mixin(
   {
     category: 'channel_post' as const,
     type: 'sticker' as const,
-  }
+  },
 );
 const StickerEditedChannelPostProto = mixin(
   EditedChannelPostProto,
@@ -275,7 +275,7 @@ const StickerEditedChannelPostProto = mixin(
   {
     category: 'edit_channel_post' as const,
     type: 'sticker' as const,
-  }
+  },
 );
 
 const VideoMessageProto = mixin(MessageProto, Video, FileDetail, Caption, {
@@ -290,7 +290,7 @@ const VideoEditedMessageProto = mixin(
   {
     category: 'edit_message' as const,
     type: 'video' as const,
-  }
+  },
 );
 const VideoChannelPostProto = mixin(
   ChannelPostProto,
@@ -300,7 +300,7 @@ const VideoChannelPostProto = mixin(
   {
     category: 'channel_post' as const,
     type: 'video' as const,
-  }
+  },
 );
 const VideoEditedChannelPostProto = mixin(
   EditedChannelPostProto,
@@ -310,7 +310,7 @@ const VideoEditedChannelPostProto = mixin(
   {
     category: 'edit_channel_post' as const,
     type: 'video' as const,
-  }
+  },
 );
 
 const VideoNoteMessageProto = mixin(
@@ -321,7 +321,7 @@ const VideoNoteMessageProto = mixin(
   {
     category: 'message' as const,
     type: 'video_note' as const,
-  }
+  },
 );
 const VideoNoteChannelPostProto = mixin(
   ChannelPostProto,
@@ -331,7 +331,7 @@ const VideoNoteChannelPostProto = mixin(
   {
     category: 'channel_post' as const,
     type: 'video_note' as const,
-  }
+  },
 );
 
 const VoiceMessageProto = mixin(MessageProto, Voice, FileDetail, Caption, {
@@ -346,7 +346,7 @@ const VoiceEditedMessageProto = mixin(
   {
     category: 'edit_message' as const,
     type: 'voice' as const,
-  }
+  },
 );
 const VoiceChannelPostProto = mixin(
   ChannelPostProto,
@@ -356,7 +356,7 @@ const VoiceChannelPostProto = mixin(
   {
     category: 'channel_post' as const,
     type: 'voice' as const,
-  }
+  },
 );
 const VoiceEditedChannelPostProto = mixin(
   EditedChannelPostProto,
@@ -366,7 +366,7 @@ const VoiceEditedChannelPostProto = mixin(
   {
     category: 'edit_channel_post' as const,
     type: 'voice' as const,
-  }
+  },
 );
 
 const ContactMessageProto = mixin(MessageProto, Contact, {
@@ -469,17 +469,17 @@ const PinMessageActionProto = mixin(MessageProto, PinnedMessage, {
 });
 
 const SuccessfulPaymentPostbackProto = mixin(MessageProto, SuccessfulPayment, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'successful_payment' as const,
 });
 
 const InlineQueryPostbackProto = mixin(EventBase, InlineQuery, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'inline_query' as const,
 });
 
 const ChooseInlineResultPostbackProto = mixin(EventBase, ChosenInlineResult, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'choose_inline_result' as const,
 });
 
@@ -488,33 +488,33 @@ const CallbackQueryPostbackProto = mixin(
   CallbackBase,
   CallbackQuery,
   {
-    category: 'postback' as const,
+    category: 'callback' as const,
     type: 'callback_query' as const,
-  }
+  },
 );
 
 const CallbackGamePostbackProto = mixin(EventBase, CallbackBase, CallbackGame, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'callback_game' as const,
 });
 
 const ShippingQueryPostbackProto = mixin(EventBase, ShippingQuery, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'shipping_query' as const,
 });
 
 const PreCheckoutQueryPostbackProto = mixin(EventBase, PreCheckoutQuery, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'pre_checkout_query' as const,
 });
 
 const PollChangePostbackProto = mixin(EventBase, PollChange, PollDetail, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'poll_change' as const,
 });
 
 const PollAnswerChangePostbackProto = mixin(EventBase, PollAnswer, {
-  category: 'postback' as const,
+  category: 'callback' as const,
   type: 'poll_answer_change' as const,
 });
 
@@ -525,7 +525,7 @@ const BotMemberUpdatedActionProto = mixin(
   {
     category: 'action' as const,
     type: 'bot_member_updated' as const,
-  }
+  },
 );
 
 const ChatMemberUpdatedActionProto = mixin(
@@ -535,7 +535,7 @@ const ChatMemberUpdatedActionProto = mixin(
   {
     category: 'action' as const,
     type: 'chat_member_updated' as const,
-  }
+  },
 );
 
 const UnknownProto = mixin(EventBase, Unknown, {
@@ -545,7 +545,7 @@ const UnknownProto = mixin(EventBase, Unknown, {
 
 const createEvent = (
   botId: number,
-  payload: TelegramRawEvent
+  payload: TelegramRawEvent,
 ): TelegramEvent => {
   if (payload.message) {
     const { message } = payload;

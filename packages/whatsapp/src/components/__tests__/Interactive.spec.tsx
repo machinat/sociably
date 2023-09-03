@@ -13,8 +13,8 @@ describe('ListTemplate', () => {
       isNativeType(
         <ListTemplate buttonTitle="" sections={[]}>
           FOO
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).toBe(true);
     expect(ListTemplate.$$platform).toBe('whatsapp');
     expect(ListTemplate.$$name).toBe('ListTemplate');
@@ -27,14 +27,14 @@ describe('ListTemplate', () => {
           buttonTitle="open"
           sections={
             <ListSection>
-              <ListRow id="0" title="FOO" />
-              <ListRow id="1" title="BAR" />
+              <ListRow data="foo" title="FOO" />
+              <ListRow data="bar" title="BAR" />
             </ListSection>
           }
         >
           hello world
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -43,11 +43,11 @@ describe('ListTemplate', () => {
             sections={
               <ListSection>
                 <ListRow
-                  id="0"
+                  data="foo"
                   title="FOO"
                 />
                 <ListRow
-                  id="1"
+                  data="bar"
                   title="BAR"
                 />
               </ListSection>
@@ -69,12 +69,12 @@ describe('ListTemplate', () => {
                       "rows": [
                         {
                           "description": undefined,
-                          "id": "0",
+                          "id": "foo",
                           "title": "FOO",
                         },
                         {
                           "description": undefined,
-                          "id": "1",
+                          "id": "bar",
                           "title": "BAR",
                         },
                       ],
@@ -104,19 +104,19 @@ describe('ListTemplate', () => {
           sections={
             <>
               <ListSection title="a">
-                <ListRow id="0" title="FOO" />
-                <ListRow id="1" title="BAR" />
+                <ListRow data="foo" title="FOO" />
+                <ListRow data="bar" title="BAR" />
               </ListSection>
               <ListSection title="b">
-                <ListRow id="2" title="BAZ" />
+                <ListRow data="baz" title="BAZ" />
               </ListSection>
             </>
           }
           replyTo="REPLY_TO_MESSAGE_ID"
         >
           hello
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -135,11 +135,11 @@ describe('ListTemplate', () => {
                   title="a"
                 >
                   <ListRow
-                    id="0"
+                    data="foo"
                     title="FOO"
                   />
                   <ListRow
-                    id="1"
+                    data="bar"
                     title="BAR"
                   />
                 </ListSection>
@@ -147,7 +147,7 @@ describe('ListTemplate', () => {
                   title="b"
                 >
                   <ListRow
-                    id="2"
+                    data="baz"
                     title="BAZ"
                   />
                 </ListSection>
@@ -172,12 +172,12 @@ describe('ListTemplate', () => {
                       "rows": [
                         {
                           "description": undefined,
-                          "id": "0",
+                          "id": "foo",
                           "title": "FOO",
                         },
                         {
                           "description": undefined,
-                          "id": "1",
+                          "id": "bar",
                           "title": "BAR",
                         },
                       ],
@@ -187,7 +187,7 @@ describe('ListTemplate', () => {
                       "rows": [
                         {
                           "description": undefined,
-                          "id": "2",
+                          "id": "baz",
                           "title": "BAZ",
                         },
                       ],
@@ -227,21 +227,21 @@ describe('ListTemplate', () => {
           sections={
             <>
               <ListSection title="a">
-                <ListRow id="0" title="FOO" />
+                <ListRow data="foo" title="FOO" />
               </ListSection>
               <ListSection title="b">
-                <ListRow id="1" title="BAR" />
+                <ListRow data="bar" title="BAR" />
               </ListSection>
               <ListSection title="c">
-                <ListRow id="2" title="BAZ" />
+                <ListRow data="baz" title="BAZ" />
               </ListSection>
             </>
           }
           replyTo="REPLY_TO_MESSAGE_ID"
         >
           BO{'DY'}
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -267,7 +267,7 @@ describe('ListTemplate', () => {
                   title="a"
                 >
                   <ListRow
-                    id="0"
+                    data="foo"
                     title="FOO"
                   />
                 </ListSection>
@@ -275,7 +275,7 @@ describe('ListTemplate', () => {
                   title="b"
                 >
                   <ListRow
-                    id="1"
+                    data="bar"
                     title="BAR"
                   />
                 </ListSection>
@@ -283,7 +283,7 @@ describe('ListTemplate', () => {
                   title="c"
                 >
                   <ListRow
-                    id="2"
+                    data="baz"
                     title="BAZ"
                   />
                 </ListSection>
@@ -309,7 +309,7 @@ describe('ListTemplate', () => {
                       "rows": [
                         {
                           "description": undefined,
-                          "id": "0",
+                          "id": "foo",
                           "title": "FOO",
                         },
                       ],
@@ -319,7 +319,7 @@ describe('ListTemplate', () => {
                       "rows": [
                         {
                           "description": undefined,
-                          "id": "1",
+                          "id": "bar",
                           "title": "BAR",
                         },
                       ],
@@ -329,7 +329,7 @@ describe('ListTemplate', () => {
                       "rows": [
                         {
                           "description": undefined,
-                          "id": "2",
+                          "id": "baz",
                           "title": "BAZ",
                         },
                       ],
@@ -362,10 +362,10 @@ describe('ListTemplate', () => {
       renderUnitElement(
         <ListTemplate buttonTitle="" sections={[]}>
           <Image mediaId="123" />
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""children" prop should contain only textual content"`
+      `""children" prop should contain only textual content"`,
     );
     await expect(
       renderUnitElement(
@@ -375,10 +375,10 @@ describe('ListTemplate', () => {
           header={<Audio mediaId="123" />}
         >
           FOO
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`,
     );
     await expect(
       renderUnitElement(
@@ -393,41 +393,41 @@ describe('ListTemplate', () => {
           }
         >
           FOO
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`,
     );
     await expect(
       renderUnitElement(
         <ListTemplate
           buttonTitle=""
           sections={[]}
-          header={<ReplyButton id="0" title="?" />}
+          header={<ReplyButton data="0" title="?" />}
         >
           FOO
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`,
     );
     await expect(
       renderUnitElement(
         <ListTemplate buttonTitle="" sections={[]}>
           {null}
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""children" prop should not be empty"`
+      `""children" prop should not be empty"`,
     );
     await expect(
       renderUnitElement(
         <ListTemplate buttonTitle="" sections={[]}>
           <Image mediaId="123" />
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""children" prop should contain only textual content"`
+      `""children" prop should contain only textual content"`,
     );
     await expect(
       renderUnitElement(
@@ -437,19 +437,19 @@ describe('ListTemplate', () => {
           footer={<Image mediaId="123" />}
         >
           FOO
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""footer" prop should contain only textual content"`
+      `""footer" prop should contain only textual content"`,
     );
     await expect(
       renderUnitElement(
         <ListTemplate buttonTitle="" sections={[]}>
           FOO
-        </ListTemplate>
-      )
+        </ListTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""sections" prop should not be empty"`
+      `""sections" prop should not be empty"`,
     );
   });
 });
@@ -457,7 +457,7 @@ describe('ListTemplate', () => {
 describe('ButtonsTemplate', () => {
   it('is a valid Component', () => {
     expect(
-      isNativeType(<ButtonsTemplate buttons={[]}>FOO</ButtonsTemplate>)
+      isNativeType(<ButtonsTemplate buttons={[]}>FOO</ButtonsTemplate>),
     ).toBe(true);
     expect(ButtonsTemplate.$$platform).toBe('whatsapp');
     expect(ButtonsTemplate.$$name).toBe('ButtonsTemplate');
@@ -466,17 +466,17 @@ describe('ButtonsTemplate', () => {
   test('rendering value', async () => {
     await expect(
       renderUnitElement(
-        <ButtonsTemplate buttons={<ReplyButton id="0" title="FOO" />}>
+        <ButtonsTemplate buttons={<ReplyButton data="foo" title="FOO" />}>
           hello world
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
           "node": <ButtonsTemplate
             buttons={
               <ReplyButton
-                id="0"
+                data="foo"
                 title="FOO"
               />
             }
@@ -494,7 +494,7 @@ describe('ButtonsTemplate', () => {
                   "buttons": [
                     {
                       "reply": {
-                        "id": "0",
+                        "id": "foo",
                         "title": "FOO",
                       },
                       "type": "reply",
@@ -521,14 +521,14 @@ describe('ButtonsTemplate', () => {
           footer="world"
           buttons={
             <>
-              <ReplyButton id="0" title="FOO" />
-              <ReplyButton id="1" title="BAR" />
+              <ReplyButton data="foo" title="FOO" />
+              <ReplyButton data="bar" title="BAR" />
             </>
           }
         >
           hello
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -536,11 +536,11 @@ describe('ButtonsTemplate', () => {
             buttons={
               <Sociably.Fragment>
                 <ReplyButton
-                  id="0"
+                  data="foo"
                   title="FOO"
                 />
                 <ReplyButton
-                  id="1"
+                  data="bar"
                   title="BAR"
                 />
               </Sociably.Fragment>
@@ -565,14 +565,14 @@ describe('ButtonsTemplate', () => {
                   "buttons": [
                     {
                       "reply": {
-                        "id": "0",
+                        "id": "foo",
                         "title": "FOO",
                       },
                       "type": "reply",
                     },
                     {
                       "reply": {
-                        "id": "1",
+                        "id": "bar",
                         "title": "BAR",
                       },
                       "type": "reply",
@@ -609,16 +609,16 @@ describe('ButtonsTemplate', () => {
           footer={<>FOO{'TER'}</>}
           buttons={
             <>
-              <ReplyButton id="0" title="FOO" />
-              <ReplyButton id="1" title="BAR" />
-              <ReplyButton id="2" title="BAZ" />
+              <ReplyButton data="foo" title="FOO" />
+              <ReplyButton data="bar" title="BAR" />
+              <ReplyButton data="baz" title="BAZ" />
             </>
           }
           replyTo="REPLY_TO_MESSAGE_ID"
         >
           BO{'DY'}
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -626,15 +626,15 @@ describe('ButtonsTemplate', () => {
             buttons={
               <Sociably.Fragment>
                 <ReplyButton
-                  id="0"
+                  data="foo"
                   title="FOO"
                 />
                 <ReplyButton
-                  id="1"
+                  data="bar"
                   title="BAR"
                 />
                 <ReplyButton
-                  id="2"
+                  data="baz"
                   title="BAZ"
                 />
               </Sociably.Fragment>
@@ -670,21 +670,21 @@ describe('ButtonsTemplate', () => {
                   "buttons": [
                     {
                       "reply": {
-                        "id": "0",
+                        "id": "foo",
                         "title": "FOO",
                       },
                       "type": "reply",
                     },
                     {
                       "reply": {
-                        "id": "1",
+                        "id": "bar",
                         "title": "BAR",
                       },
                       "type": "reply",
                     },
                     {
                       "reply": {
-                        "id": "2",
+                        "id": "baz",
                         "title": "BAZ",
                       },
                       "type": "reply",
@@ -716,19 +716,19 @@ describe('ButtonsTemplate', () => {
       renderUnitElement(
         <ButtonsTemplate buttons={[]}>
           <Image mediaId="123" />
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""children" prop should contain only textual content"`
+      `""children" prop should contain only textual content"`,
     );
     await expect(
       renderUnitElement(
         <ButtonsTemplate buttons={[]} header={<Audio mediaId="123" />}>
           FOO
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`,
     );
     await expect(
       renderUnitElement(
@@ -742,47 +742,50 @@ describe('ButtonsTemplate', () => {
           }
         >
           FOO
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`,
     );
     await expect(
       renderUnitElement(
-        <ButtonsTemplate buttons={[]} header={<ReplyButton id="0" title="?" />}>
+        <ButtonsTemplate
+          buttons={[]}
+          header={<ReplyButton data="0" title="?" />}
+        >
           FOO
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`
+      `""header" prop should contain only text or one <Image/>, <Video/>, <Document/> element"`,
     );
     await expect(
-      renderUnitElement(<ButtonsTemplate buttons={[]}>{null}</ButtonsTemplate>)
+      renderUnitElement(<ButtonsTemplate buttons={[]}>{null}</ButtonsTemplate>),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""children" prop should not be empty"`
+      `""children" prop should not be empty"`,
     );
     await expect(
       renderUnitElement(
         <ButtonsTemplate buttons={[]}>
           <Image mediaId="123" />
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""children" prop should contain only textual content"`
+      `""children" prop should contain only textual content"`,
     );
     await expect(
       renderUnitElement(
         <ButtonsTemplate buttons={[]} footer={<Image mediaId="123" />}>
           FOO
-        </ButtonsTemplate>
-      )
+        </ButtonsTemplate>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""footer" prop should contain only textual content"`
+      `""footer" prop should contain only textual content"`,
     );
     await expect(
-      renderUnitElement(<ButtonsTemplate buttons={[]}>FOO</ButtonsTemplate>)
+      renderUnitElement(<ButtonsTemplate buttons={[]}>FOO</ButtonsTemplate>),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `""buttons" prop should not be empty"`
+      `""buttons" prop should not be empty"`,
     );
   });
 });

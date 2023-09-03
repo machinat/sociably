@@ -39,8 +39,9 @@
     "lerna": "^7.1.5",
     "lint-staged": "^14.0.1",
     "nock": "^13.3.1",
-    "prettier": "^3.0.1",
+    "prettier": "^3.0.3",
     "prettier-2": "npm:prettier@^2",
+    "prettier-plugin-jsdoc": "^1.0.1",
     "typedoc": "^0.24.7",
     "typescript": "^5.1.6"
   },

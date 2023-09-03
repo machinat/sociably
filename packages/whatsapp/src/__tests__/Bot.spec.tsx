@@ -20,12 +20,12 @@ nock.disableNetConnect();
 jest.mock('@sociably/core/engine', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/engine'))
+    .moxy(jest.requireActual('@sociably/core/engine')),
 );
 jest.mock('@sociably/core/renderer', () =>
   jest
     .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/renderer'))
+    .moxy(jest.requireActual('@sociably/core/renderer')),
 );
 jest.mock('@sociably/meta-api', () => {
   const module = jest.requireActual('@sociably/meta-api');
@@ -48,7 +48,7 @@ const appSecret = '_APP_SECRET_';
 const message = (
   <ButtonsTemplate
     header={<Image url="http://sociably.com/foo.jpg" />}
-    buttons={<ReplyButton title="BAR" id="BAZ" />}
+    buttons={<ReplyButton title="BAR" data="BAZ" />}
   >
     Hello <b>World!</b>
   </ButtonsTemplate>
@@ -72,9 +72,9 @@ afterEach(() => {
 describe('#constructor(options)', () => {
   it('throw if accessToken not given', () => {
     expect(
-      () => new WhatsAppBot({ businessNumber, appSecret } as never)
+      () => new WhatsAppBot({ businessNumber, appSecret } as never),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.accessToken should not be empty"`
+      `"options.accessToken should not be empty"`,
     );
   });
 
@@ -99,7 +99,7 @@ describe('#constructor(options)', () => {
       expect.any(Queue),
       expect.any(Worker),
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
@@ -122,7 +122,7 @@ describe('#constructor(options)', () => {
         appSecret,
         graphApiVersion: 'v8.0',
         apiBatchRequestInterval: 0,
-      })
+      }),
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
@@ -179,7 +179,7 @@ describe('#render(thread, message, options)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.render(new WhatsAppChat('1234567890', '9876543210'), empty)
+        bot.render(new WhatsAppChat('1234567890', '9876543210'), empty),
       ).resolves.toBe(null);
       expect(apiStatus.isDone()).toBe(false);
     }
@@ -188,7 +188,7 @@ describe('#render(thread, message, options)', () => {
   it('post to NUMBER/messages api', async () => {
     const response = await bot.render(
       new WhatsAppChat('1234567890', '9876543210'),
-      message
+      message,
     );
     expect(response).toMatchSnapshot();
 
@@ -205,7 +205,7 @@ describe('#render(thread, message, options)', () => {
     for (const request of JSON.parse(body.batch)) {
       expect(request.method).toBe('POST');
       expect(request.relative_url).toMatchInlineSnapshot(
-        `"1234567890/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f"`
+        `"1234567890/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f"`,
       );
     }
 
@@ -240,7 +240,7 @@ describe('#uploadMedia(message)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.uploadMedia(new WhatsAppAgent('1234567890'), empty)
+        bot.uploadMedia(new WhatsAppAgent('1234567890'), empty),
       ).resolves.toBe(null);
     }
   });
@@ -252,7 +252,7 @@ describe('#uploadMedia(message)', () => {
 
     const result = await bot.uploadMedia(
       new WhatsAppAgent('1234567890'),
-      <Image fileData={Buffer.from('foo')} fileType="image/png" />
+      <Image fileData={Buffer.from('foo')} fileType="image/png" />,
     );
     expect(result).toEqual({ id: 401759795 });
 
@@ -273,7 +273,7 @@ describe('#requestApi()', () => {
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
 
     await expect(
-      bot.requestApi({ method: 'POST', url: 'foo', params: { bar: 'baz' } })
+      bot.requestApi({ method: 'POST', url: 'foo', params: { bar: 'baz' } }),
     ).resolves.toEqual({
       foo: 'bar',
     });

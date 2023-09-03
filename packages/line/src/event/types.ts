@@ -192,7 +192,7 @@ export interface MemberLeaveEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-event).
  */
 export interface PostbackEvent
-  extends EventObject<'postback', 'postback'>,
+  extends EventObject<'callback', 'postback'>,
     EventBase,
     Repliable,
     Postback {}
@@ -202,7 +202,7 @@ export interface PostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface DatePostbackEvent
-  extends EventObject<'postback', 'date'>,
+  extends EventObject<'callback', 'date_postback'>,
     EventBase,
     Repliable,
     Postback,
@@ -213,7 +213,7 @@ export interface DatePostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface TimePostbackEvent
-  extends EventObject<'postback', 'time'>,
+  extends EventObject<'callback', 'time_postback'>,
     EventBase,
     Repliable,
     Postback,
@@ -224,7 +224,7 @@ export interface TimePostbackEvent
  * @guide Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-params-object).
  */
 export interface DateTimePostbackEvent
-  extends EventObject<'postback', 'datetime'>,
+  extends EventObject<'callback', 'datetime_postback'>,
     EventBase,
     Repliable,
     Postback,
@@ -281,16 +281,12 @@ export interface ThingsScenarioExecutionEvent
     DeviceLink,
     ThingsScenarioExecution {}
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface UnknownEvent
   extends EventObject<'unknown', 'unknown'>,
     EventBase {}
 
-/**
- * @category Event
- */
+/** @category Event */
 export type LineMessageEvent =
   | TextEvent
   | ImageEvent
@@ -300,9 +296,7 @@ export type LineMessageEvent =
   | LocationEvent
   | StickerEvent;
 
-/**
- * @category Event
- */
+/** @category Event */
 export type LineEvent =
   | LineMessageEvent
   | UnsendEvent

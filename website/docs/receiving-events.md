@@ -31,7 +31,7 @@ It's a plain object with the following properties:
 
   - `category`: `string`, rough classifications of the events. Here are some common categories:
     - `'message'`: a message sent by the user.
-    - `'postback'`: the user interacts with an UI defined by the app (like a button).
+    - `'callback'`: the user interacts with an UI defined by the app (like a button).
     - `'action'`: a non-message action triggered by an user.
     - `'system'`: an event from the platform, no user activity is involved.
 
@@ -112,9 +112,9 @@ Here are the common event mixins:
 - `longitude`: `number`, the longitude.
 
 ###### Postback Event
-- `category`: `'postback'`
+- `category`: `'callback'`
 - `type`: `'postback'`
-- `data`: `undefined | string`, the postback data.
+- `data`: `undefined | string`, the callback data.
 
 These common mixins are implemented by all the platforms.
 You can use them to build platform-agnostic features as the example above.

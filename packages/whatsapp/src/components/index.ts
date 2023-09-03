@@ -1,6 +1,6 @@
 export * from './Contact.js';
 export * from './CurrencyParam.js';
-export * from './CustomTemplate.js';
+export * from './PredefinedTemplate.js';
 export * from './Interactive.js';
 export * from './ListRow.js';
 export * from './ListSection.js';

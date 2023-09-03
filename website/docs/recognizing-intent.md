@@ -113,7 +113,7 @@ You don't have to change the recognizing codes if you change the provider.
 ### Combine Your Own Logic
 
 Sometimes you might want to add your own recognizing logic.
-Like handling postback data, recognizing emoji or parsing special formats.
+Like handling callback data, recognizing emoji or parsing special formats.
 You can make your own recognizing service for that, like:
 
 ```js

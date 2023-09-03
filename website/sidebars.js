@@ -20,7 +20,7 @@ module.exports = {
       'learn/introduction',
       'learn/create-app',
       'learn/event-and-reply',
-      'learn/native-ui-and-postback',
+      'learn/native-ui-and-callback',
       'learn/component',
       'learn/service-and-state',
       'learn/recognize-intent',

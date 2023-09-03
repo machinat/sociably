@@ -387,7 +387,7 @@ so only these events would push the dialog forward.
 Like:
 
 ```js
-  if (event.category === 'message' && event.category === 'postback') {
+  if (event.category === 'message' && event.category === 'callback') {
     const runtime = await processor.continue(event.thread, context);
     if (runtime) {
       return reply(runtime.output());

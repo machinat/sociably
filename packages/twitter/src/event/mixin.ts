@@ -53,7 +53,7 @@ export interface TweetBase {
   thread: TweetTarget;
   /** Represent if the subscribing user is metioned in the tweet */
   isMentioned: boolean;
-  /** Represent if the tweet is created by the subscribing user  */
+  /** Represent if the tweet is created by the subscribing user */
   isEcho: boolean;
 }
 
@@ -74,7 +74,7 @@ export const TweetBase: TweetBase = {
   get thread() {
     return new TweetTarget(
       (this as EventBase).forUserId,
-      (this.payload as RawTweet).id_str
+      (this.payload as RawTweet).id_str,
     );
   },
 };
@@ -120,7 +120,7 @@ export interface Favorite {
   id: string;
   /** Like time */
   time: Date;
-  /** Represent if the action is initiated by the subscribing user  */
+  /** Represent if the action is initiated by the subscribing user */
   isEcho: boolean;
 }
 
@@ -139,7 +139,7 @@ export const Favorite: Favorite = {
   get thread() {
     return new TweetTarget(
       (this as EventBase).forUserId,
-      (this.payload as RawFavorite).favorited_status.id_str
+      (this.payload as RawFavorite).favorited_status.id_str,
     );
   },
   get tweet() {
@@ -162,7 +162,7 @@ export interface UserToUserAction {
   target: TwitterUser;
   /** The time when the action is triggered */
   time: Date;
-  /** Represent if the action is initiated by the subscribing user  */
+  /** Represent if the action is initiated by the subscribing user */
   isEcho: boolean;
 }
 
@@ -180,7 +180,7 @@ export const UserToUserAction: UserToUserAction = {
       (this as EventBase).forUserId,
       (this as UserToUserAction).isEcho
         ? action.target.id_str
-        : action.source.id_str
+        : action.source.id_str,
     );
   },
   get time() {
@@ -209,7 +209,7 @@ export const UserRevoke: UserRevoke = {
   thread: null,
   get user() {
     return new TwitterUser(
-      (this.payload as RawUserRevokeEvent).user_event.revoke.source.user_id
+      (this.payload as RawUserRevokeEvent).user_event.revoke.source.user_id,
     );
   },
   get appId() {
@@ -217,14 +217,14 @@ export const UserRevoke: UserRevoke = {
   },
   get time() {
     return new Date(
-      (this.payload as RawUserRevokeEvent).user_event.revoke.date_time
+      (this.payload as RawUserRevokeEvent).user_event.revoke.date_time,
     );
   },
 };
 
 export interface DirectMessageCreate {
   payload: RawDirectMessage;
-  /** Represent if the message is sent by the subscribing user  */
+  /** Represent if the message is sent by the subscribing user */
   isEcho: boolean;
   /** The thread object to reply messages back */
   thread: DirectMessageChat;
@@ -271,7 +271,7 @@ export const DirectMessageCreate: DirectMessageCreate = {
       (this as EventBase).forUserId,
       (this as DirectMessageCreate).isEcho
         ? rawMessage.target.recipient_id
-        : rawMessage.sender_id
+        : rawMessage.sender_id,
     );
   },
   get user() {
@@ -279,7 +279,7 @@ export const DirectMessageCreate: DirectMessageCreate = {
       .sender_id;
     return new TwitterUser(
       senderId,
-      (this as DirectMessageCreate).usersMapping[senderId]
+      (this as DirectMessageCreate).usersMapping[senderId],
     );
   },
   get recipient() {
@@ -287,7 +287,7 @@ export const DirectMessageCreate: DirectMessageCreate = {
       .recipient_id;
     return new TwitterUser(
       recipientId,
-      (this as DirectMessageCreate).usersMapping[recipientId]
+      (this as DirectMessageCreate).usersMapping[recipientId],
     );
   },
   get time() {
@@ -329,7 +329,7 @@ export const DirectMessageCreate: DirectMessageCreate = {
     return (
       this.payload as RawDirectMessage
     ).message_create.message_data.entities.user_mentions.map(
-      polishMentionEntity
+      polishMentionEntity,
     );
   },
   get media() {
@@ -382,11 +382,12 @@ export const AnimatedGifAttachment: AnimatedGifAttachment = {
 };
 
 export interface QuickReply {
-  data: string;
+  /** The callback metadata set on the quick reply */
+  callbackData: string;
 }
 
 export const QuickReply: QuickReply = {
-  get data(): string {
+  get callbackData(): string {
     return (this.payload as RawDirectMessage).message_create.message_data
       .quick_reply_response?.metadata as string;
   },
@@ -405,14 +406,14 @@ export const DirectMessageAction: DirectMessageAction = {
   get thread() {
     return new DirectMessageChat(
       (this as EventBase).forUserId,
-      (this.payload as RawDirectMessageAction).sender_id
+      (this.payload as RawDirectMessageAction).sender_id,
     );
   },
   get user() {
     const senderId = (this.payload as RawDirectMessageAction).sender_id;
     return new TwitterUser(
       senderId,
-      (this as DirectMessageAction).usersMapping[senderId]
+      (this as DirectMessageAction).usersMapping[senderId],
     );
   },
   get recipient() {
@@ -420,7 +421,7 @@ export const DirectMessageAction: DirectMessageAction = {
       .recipient_id;
     return new TwitterUser(
       recipientId,
-      (this as DirectMessageAction).usersMapping[recipientId]
+      (this as DirectMessageAction).usersMapping[recipientId],
     );
   },
   get time() {

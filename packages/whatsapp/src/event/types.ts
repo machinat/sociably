@@ -11,25 +11,19 @@ import type {
   StatusMixin,
 } from './mixins.js';
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface TextEvent extends MessageMixin, WithTextMixin {
   readonly category: 'message';
   readonly type: 'text';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface AudioEvent extends MediaMixin {
   readonly category: 'message';
   readonly type: 'audio';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface ImageEvent
   extends MediaMixin,
     WithSha256Mixin,
@@ -38,17 +32,13 @@ export interface ImageEvent
   readonly type: 'image';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface StickerEvent extends MediaMixin, WithSha256Mixin {
   readonly category: 'message';
   readonly type: 'sticker';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface DocumentEvent
   extends MediaMixin,
     WithSha256Mixin,
@@ -58,9 +48,7 @@ export interface DocumentEvent
   readonly type: 'document';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface VideoEvent
   extends MediaMixin,
     WithSha256Mixin,
@@ -70,17 +58,15 @@ export interface VideoEvent
   readonly type: 'video';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface QuickReplyEvent extends MessageMixin {
-  readonly category: 'postback';
+  readonly category: 'callback';
   readonly type: 'quick_reply';
   /**
    * The payload for a button set up by the business that a customer clicked as
    * part of an interactive message
    */
-  readonly data: string;
+  readonly callbackData: string;
   /** Button text */
   readonly text: string;
   /** Set to true if the message received by the business has been forwarded */
@@ -94,35 +80,27 @@ export interface QuickReplyEvent extends MessageMixin {
   readonly repliedMessageId: string;
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface ContactsEvent extends MessageMixin {
   readonly category: 'message';
   readonly type: 'contacts';
 }
 
-/**
- * @category Event
- */
-export interface InteractiveButtonEvent extends InteractiveMixin {
-  readonly category: 'postback';
-  readonly type: 'interactive_button';
+/** @category Event */
+export interface ButtonInteractiveEvent extends InteractiveMixin {
+  readonly category: 'callback';
+  readonly type: 'button_interactive';
 }
 
-/**
- * @category Event
- */
-export interface InteractiveListEvent extends InteractiveMixin {
-  readonly category: 'postback';
-  readonly type: 'interactive_list';
+/** @category Event */
+export interface ListInteractiveEvent extends InteractiveMixin {
+  readonly category: 'callback';
+  readonly type: 'list_interactive';
   /** Description of the selected row */
   readonly description: string;
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface UserIdentityChangeEvent extends UserChangeMixin {
   readonly category: 'system';
   readonly type: 'user_identity_change';
@@ -130,9 +108,7 @@ export interface UserIdentityChangeEvent extends UserChangeMixin {
   readonly changeId: string;
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface UserNumberChangeEvent extends UserChangeMixin {
   readonly category: 'system';
   readonly type: 'user_number_change';
@@ -140,9 +116,7 @@ export interface UserNumberChangeEvent extends UserChangeMixin {
   readonly newNumber: string;
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface ReferralEvent extends MessageMixin, WithTextMixin {
   readonly category: 'action';
   readonly type: 'referral';
@@ -169,9 +143,7 @@ export interface ReferralEvent extends MessageMixin, WithTextMixin {
   readonly thumbnailUrl?: string;
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface UnsupportedEvent extends MessageMixin {
   readonly category: 'message';
   readonly type: 'unsupported';
@@ -180,41 +152,31 @@ export interface UnsupportedEvent extends MessageMixin {
   readonly errorDetails: string;
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface ReadEvent extends StatusMixin {
   readonly category: 'action';
   readonly type: 'read';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface SentEvent extends StatusMixin {
   readonly category: 'system';
   readonly type: 'sent';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface DeliveredEvent extends StatusMixin {
   readonly category: 'system';
   readonly type: 'delivered';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface FailedEvent extends StatusMixin {
   readonly category: 'system';
   readonly type: 'failed';
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface ErrorEvent extends EventBaseMixin {
   readonly category: 'system';
   readonly type: 'error';
@@ -225,9 +187,7 @@ export interface ErrorEvent extends EventBaseMixin {
   readonly channel: null;
 }
 
-/**
- * @category Event
- */
+/** @category Event */
 export interface UnknownEvent extends EventBaseMixin {
   readonly category: 'message';
   readonly type: 'unknown';
@@ -244,8 +204,8 @@ export type MessageEvent =
   | DocumentEvent
   | VideoEvent
   | QuickReplyEvent
-  | InteractiveButtonEvent
-  | InteractiveListEvent
+  | ButtonInteractiveEvent
+  | ListInteractiveEvent
   | UserIdentityChangeEvent
   | UserNumberChangeEvent
   | ReferralEvent

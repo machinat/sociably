@@ -1,6 +1,6 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { CustomTemplate } from '../CustomTemplate.js';
+import { PredefinedTemplate } from '../PredefinedTemplate.js';
 import { Image, Audio } from '../Media.js';
 import { TextParam } from '../TextParam.js';
 import { CurrencyParam } from '../CurrencyParam.js';
@@ -9,18 +9,20 @@ import { UrlButtonParam } from '../UrlButtonParam.js';
 import { renderUnitElement } from './utils.js';
 
 it('is a valid Component', () => {
-  expect(isNativeType(<CustomTemplate name="" languageCode="" />)).toBe(true);
-  expect(CustomTemplate.$$platform).toBe('whatsapp');
-  expect(CustomTemplate.$$name).toBe('CustomTemplate');
+  expect(isNativeType(<PredefinedTemplate name="" languageCode="" />)).toBe(
+    true,
+  );
+  expect(PredefinedTemplate.$$platform).toBe('whatsapp');
+  expect(PredefinedTemplate.$$name).toBe('PredefinedTemplate');
 });
 
 test('rendering value', async () => {
   await expect(
-    renderUnitElement(<CustomTemplate name="FOO" languageCode="en" />)
+    renderUnitElement(<PredefinedTemplate name="FOO" languageCode="en" />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <CustomTemplate
+        "node": <PredefinedTemplate
           languageCode="en"
           name="FOO"
         />,
@@ -45,7 +47,7 @@ test('rendering value', async () => {
   `);
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="MY_TEMPLATE"
         languageCode="ja"
         headerParams={
@@ -61,12 +63,12 @@ test('rendering value', async () => {
           </>
         }
         buttonParams={<UrlButtonParam index={1} urlPostfix="/baz" />}
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <CustomTemplate
+        "node": <PredefinedTemplate
           bodyParams={
             <Sociably.Fragment>
               <TextParam>
@@ -161,7 +163,7 @@ test('rendering value', async () => {
   `);
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="MY_TEMPLATE"
         languageCode="CA"
         headerParams={<Image url="http://foo.bar/baz.jpg" />}
@@ -179,12 +181,12 @@ test('rendering value', async () => {
           </>
         }
         replyTo="REPLY_TO_MESSAGE_ID"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <CustomTemplate
+        "node": <PredefinedTemplate
           bodyParams={
             <Sociably.Fragment>
               <TextParam>
@@ -304,18 +306,18 @@ test('rendering value', async () => {
 it('throw if invalid params received', async () => {
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="FOO"
         languageCode="en"
         headerParams={<Audio mediaId="123" />}
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<Audio /> is not a valid parameter"`
+    `"<Audio /> is not a valid parameter"`,
   );
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="FOO"
         languageCode="en"
         headerParams={
@@ -324,64 +326,64 @@ it('throw if invalid params received', async () => {
             <Image mediaId="123" />
           </>
         }
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""headerParams" prop contain more than 1 media"`
+    `""headerParams" prop contain more than 1 media"`,
   );
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="FOO"
         languageCode="en"
         headerParams={<QuickReplyParam payload="" />}
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<QuickReplyParam /> is not a valid text parameter"`
+    `"<QuickReplyParam /> is not a valid text parameter"`,
   );
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="FOO"
         languageCode="en"
         bodyParams={<QuickReplyParam payload="" />}
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<QuickReplyParam /> is not a valid text parameter"`
+    `"<QuickReplyParam /> is not a valid text parameter"`,
   );
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="FOO"
         languageCode="en"
         bodyParams={<Image mediaId="123" />}
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<Image /> is not a valid text parameter"`
+    `"<Image /> is not a valid text parameter"`,
   );
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="FOO"
         languageCode="en"
         buttonParams={<TextParam>_</TextParam>}
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<TextParam /> is not a valid button parameter"`
+    `"<TextParam /> is not a valid button parameter"`,
   );
   await expect(
     renderUnitElement(
-      <CustomTemplate
+      <PredefinedTemplate
         name="FOO"
         languageCode="en"
         buttonParams={<Image mediaId="123" />}
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<Image /> is not a valid button parameter"`
+    `"<Image /> is not a valid button parameter"`,
   );
 });
