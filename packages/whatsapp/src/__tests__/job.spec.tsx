@@ -15,9 +15,9 @@ describe('createChatJobs', () => {
         { type: 'text', value: 'FOO', node: 'FOO', path: '$:0' },
         { type: 'text', value: 'BAR', node: 'BAR', path: '$:1' },
         { type: 'text', value: 'BAZ', node: 'BAZ', path: '$:2' },
-      ])
+      ]),
     ).toEqual(
-      ['FOO', 'BAR', 'BAZ'].map((text) => ({
+      ['FOO', 'BAR', 'BAZ'].map((textBody) => ({
         channel: agent,
         key: chat.uid,
         request: {
@@ -25,12 +25,12 @@ describe('createChatJobs', () => {
           url: '1234567890/messages',
           params: {
             type: 'text',
-            text,
+            text: { body: textBody },
             to: '9876543210',
             messaging_product: 'whatsapp',
           },
         },
-      }))
+      })),
     );
   });
 
@@ -42,7 +42,7 @@ describe('createChatJobs', () => {
         { type: 'text', value: 'FOO', node: 'FOO', path: '$:0' },
         {
           type: 'unit',
-          value: { message: { type: 'text', text: 'BAR' } },
+          value: { message: { type: 'text', text: { body: 'BAR' } } },
           node: <bar />,
           path: '$:1',
         },
@@ -57,7 +57,7 @@ describe('createChatJobs', () => {
           node: <baz />,
           path: '$:2',
         },
-      ])
+      ]),
     ).toEqual([
       {
         channel: agent,
@@ -67,7 +67,7 @@ describe('createChatJobs', () => {
           url: '1234567890/messages',
           params: {
             type: 'text',
-            text: 'FOO',
+            text: { body: 'FOO' },
             to: '9876543210',
             messaging_product: 'whatsapp',
           },
@@ -81,7 +81,7 @@ describe('createChatJobs', () => {
           url: '1234567890/messages',
           params: {
             type: 'text',
-            text: 'BAR',
+            text: { body: 'BAR' },
             to: '9876543210',
             messaging_product: 'whatsapp',
           },
@@ -210,8 +210,8 @@ describe('createChatJobs', () => {
       jobs[1].consumeResult?.accomplishRequest(
         jobs[1].request,
         [jobs[0].registerResult!],
-        getResultValue
-      )
+        getResultValue,
+      ),
     ).toEqual({
       params: {
         to: '9876543210',
@@ -226,8 +226,8 @@ describe('createChatJobs', () => {
       jobs[3].consumeResult?.accomplishRequest(
         jobs[3].request,
         [jobs[2].registerResult!],
-        getResultValue
-      )
+        getResultValue,
+      ),
     ).toEqual({
       params: {
         to: '9876543210',
@@ -243,12 +243,12 @@ describe('createChatJobs', () => {
     expect(getResultValue).toHaveBeenNthCalledWith(
       1,
       jobs[0].registerResult,
-      '$.id'
+      '$.id',
     );
     expect(getResultValue).toHaveBeenNthCalledWith(
       2,
       jobs[2].registerResult,
-      '$.id'
+      '$.id',
     );
   });
 });
@@ -266,7 +266,7 @@ describe('createUploadingMediaJobs', () => {
           node: <image />,
           path: '$:0',
         },
-      ])
+      ]),
     ).toEqual([
       {
         channel: agent,
@@ -294,7 +294,7 @@ describe('createUploadingMediaJobs', () => {
           node: <audio />,
           path: '$:0',
         },
-      ])
+      ]),
     ).toEqual([
       {
         channel: agent,
@@ -341,9 +341,9 @@ describe('createUploadingMediaJobs', () => {
           node: <media />,
           path: '$:1',
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"there should be only one media to be uploaded"`
+      `"there should be only one media to be uploaded"`,
     );
   });
 
@@ -351,9 +351,9 @@ describe('createUploadingMediaJobs', () => {
     expect(() =>
       createUploadingMediaJobs(agent, [
         { type: 'text', value: 'FOO', node: 'FOO', path: '$:0' },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `""FOO" is not a media with file data"`
+      `""FOO" is not a media with file data"`,
     );
 
     expect(() =>
@@ -364,9 +364,9 @@ describe('createUploadingMediaJobs', () => {
           node: <bar />,
           path: '$:0',
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<bar /> is not a media with file data"`
+      `"<bar /> is not a media with file data"`,
     );
   });
 
@@ -379,9 +379,9 @@ describe('createUploadingMediaJobs', () => {
           node: <image />,
           path: '$:0',
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<image /> is not a media with file data"`
+      `"<image /> is not a media with file data"`,
     );
 
     expect(() =>
@@ -397,9 +397,9 @@ describe('createUploadingMediaJobs', () => {
           node: <audio />,
           path: '$:0',
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<audio /> is not a media with file data"`
+      `"<audio /> is not a media with file data"`,
     );
   });
 });

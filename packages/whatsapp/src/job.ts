@@ -7,7 +7,7 @@ import { WhatsAppSegmentValue } from './types.js';
 
 export const createChatJobs = (
   chat: WhatsAppChat,
-  segments: DispatchableSegment<WhatsAppSegmentValue>[]
+  segments: DispatchableSegment<WhatsAppSegmentValue>[],
 ): MetaApiJob[] => {
   const jobs: MetaApiJob[] = [];
 
@@ -21,7 +21,7 @@ export const createChatJobs = (
           url: `${chat.agentNumberId}/messages`,
           params: {
             type: 'text',
-            text: segment.value,
+            text: { body: segment.value },
             to: chat.userNumberId,
             messaging_product: 'whatsapp',
           },
@@ -87,14 +87,14 @@ export const createChatJobs = (
 
 export const createUploadingMediaJobs = (
   agent: WhatsAppAgent,
-  segments: DispatchableSegment<WhatsAppSegmentValue>[]
+  segments: DispatchableSegment<WhatsAppSegmentValue>[],
 ): MetaApiJob[] => {
   if (segments.length !== 1) {
     throw new TypeError('there should be only one media to be uploaded');
   }
   if (segments[0].type === 'text' || !segments[0].value.mediaFile) {
     throw new TypeError(
-      `${formatNode(segments[0].node, true)} is not a media with file data`
+      `${formatNode(segments[0].node, true)} is not a media with file data`,
     );
   }
 
