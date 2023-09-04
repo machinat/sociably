@@ -72,9 +72,7 @@ type ServerAuthenticatorOptions = {
   appIconUrl?: string;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class TelegramServerAuthenticator
   implements ServerAuthenticator<never, TelegramAuthData, TelegramAuthContext>
 {
@@ -90,7 +88,7 @@ export class TelegramServerAuthenticator
     bot: BotP,
     settingsAccessor: AgentSettingsAccessorI,
     operator: Auth.HttpOperator,
-    { appName, appIconUrl }: ServerAuthenticatorOptions = {}
+    { appName, appIconUrl }: ServerAuthenticatorOptions = {},
   ) {
     this.bot = bot;
     this.settingsAccessor = settingsAccessor;
@@ -102,7 +100,7 @@ export class TelegramServerAuthenticator
   getAuthUrl(
     botId: number,
     chatId?: number | string,
-    redirectUrl?: string
+    redirectUrl?: string,
   ): string {
     const url = new URL(this.operator.getAuthUrl(TELEGRAM));
     url.searchParams.set(BOT_ID_QUERY, botId.toString());
@@ -120,7 +118,7 @@ export class TelegramServerAuthenticator
   async delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    { trailingPath }: RoutingInfo
+    { trailingPath }: RoutingInfo,
   ): Promise<void> {
     const { query } = parseUrl(req.url || '', true);
 
@@ -144,7 +142,7 @@ export class TelegramServerAuthenticator
   }
 
   async verifyRefreshment(
-    data: TelegramAuthData
+    data: TelegramAuthData,
   ): Promise<VerifyResult<TelegramAuthData>> {
     const { chat, user, botId } = data;
 
@@ -155,7 +153,7 @@ export class TelegramServerAuthenticator
 
     if (!agentSettingsResult.ok || (chatMemberResult && !chatMemberResult.ok)) {
       return [agentSettingsResult, chatMemberResult].find(
-        (result) => result && !result.ok
+        (result) => result && !result.ok,
       ) as VerifyResult<TelegramAuthData>;
     }
 
@@ -172,7 +170,7 @@ export class TelegramServerAuthenticator
 
   private async _handleTelegramAuthCallback(
     res: ServerResponse,
-    query: ParsedUrlQuery
+    query: ParsedUrlQuery,
   ): Promise<void> {
     const targetsResult = await this._getLoginTargetsFormQuery(query);
     if (!targetsResult.ok) {
@@ -184,7 +182,7 @@ export class TelegramServerAuthenticator
 
     const authQueryResult = verifyTelegramAuthQuery(
       agentSettings.botToken,
-      query
+      query,
     );
     if (!authQueryResult.ok) {
       const { code, reason } = authQueryResult;
@@ -198,7 +196,7 @@ export class TelegramServerAuthenticator
       const chatMemberResult = await this._verifyChatMember(
         botId,
         chatId,
-        userData.id
+        userData.id,
       );
 
       if (!chatMemberResult.ok) {
@@ -244,7 +242,7 @@ export class TelegramServerAuthenticator
         appName: this.appName,
         appIconUrl: this.appIconUrl,
         callbackUrl: this.getAuthUrl(botId, chatId, redirectUrl),
-      })
+      }),
     );
   }
 
@@ -293,7 +291,7 @@ export class TelegramServerAuthenticator
 
   private async _verifyAgentSettings(botId: number) {
     const agentSettings = await this.settingsAccessor.getAgentSettings(
-      new TelegramUser(botId, true)
+      new TelegramUser(botId, true),
     );
     if (!agentSettings) {
       return {
@@ -308,7 +306,7 @@ export class TelegramServerAuthenticator
   private async _verifyChatMember(
     botId: number,
     chatId: number | string,
-    userId: number
+    userId: number,
   ) {
     const agent = new TelegramUser(botId, true);
     try {
@@ -352,7 +350,7 @@ export class TelegramServerAuthenticator
     res: ServerResponse,
     code: number,
     message: string,
-    redirectUrl?: string
+    redirectUrl?: string,
   ) {
     await this.operator.issueError(res, TELEGRAM, code, message);
     this.operator.redirect(res, redirectUrl, { assertInternal: true });
@@ -367,12 +365,11 @@ const ServerAuthenticatorP = serviceProviderClass({
     Auth.HttpOperator,
     { require: BasicAuthenticator, optional: true },
   ],
-  factory: (bot, settingsAccessor, operator, basicAuthenticator) => {
-    return new TelegramServerAuthenticator(bot, settingsAccessor, operator, {
+  factory: (bot, settingsAccessor, operator, basicAuthenticator) =>
+    new TelegramServerAuthenticator(bot, settingsAccessor, operator, {
       appName: basicAuthenticator?.appName,
       appIconUrl: basicAuthenticator?.appIconUrl,
-    });
-  },
+    }),
 })(TelegramServerAuthenticator);
 
 type ServerAuthenticatorP = TelegramServerAuthenticator;

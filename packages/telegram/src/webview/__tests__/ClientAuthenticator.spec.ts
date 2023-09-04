@@ -39,7 +39,7 @@ describe('.init()', () => {
     botName: 'MyBot',
     chat: undefined,
     user: {
-      id: 12345,
+      id: 67890,
       first_name: 'Jojo',
       last_name: 'Doe',
       username: 'jojodoe',
@@ -50,9 +50,9 @@ describe('.init()', () => {
   it('throw if `botId` is not set on constructor options or querystring', async () => {
     const authenticator = new TelegramClientAuthenticator();
     await expect(
-      authenticator.init('https://sociably.io/auth/telegram/', null, null)
+      authenticator.init('https://sociably.io/auth/telegram/', null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Telegram bot ID is required on either \`options.botId\` or \`botId\` querystring"`
+      `"Telegram bot ID is required on either \`options.botId\` or \`botId\` querystring"`,
     );
   });
 
@@ -70,17 +70,17 @@ describe('.init()', () => {
     const promise = authenticator.init(
       'https://sociably.io/auth/telegram/',
       null,
-      null
+      null,
     );
 
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
     expect(location.mock.setter('href').calls[0].args[0]).toMatchInlineSnapshot(
-      `"https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz&chatId=67890"`
+      `"https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz&chatId=67890"`,
     );
 
     jest.advanceTimersByTime(5000);
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"redirect timeout"`
+      `"redirect timeout"`,
     );
 
     jest.useRealTimers();
@@ -99,7 +99,7 @@ describe('.init()', () => {
 
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
     expect(location.mock.setter('href').calls[0].args[0]).toMatchInlineSnapshot(
-      `"https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz%26botId%3D12345"`
+      `"https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz%26botId%3D12345"`,
     );
 
     jest.useRealTimers();
@@ -118,7 +118,7 @@ describe('.init()', () => {
 
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
     expect(location.mock.setter('href').calls[0].args[0]).toMatchInlineSnapshot(
-      `"https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz%26chatId%3D67890&chatId=67890"`
+      `"https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz%26chatId%3D67890&chatId=67890"`,
     );
 
     jest.useRealTimers();
@@ -131,12 +131,36 @@ describe('.init()', () => {
       authenticator.init(
         'https://sociably.io/auth/telegram/',
         new Error('boom'),
-        null
-      )
+        null,
+      ),
+    ).resolves.toEqual({ forceSignIn: false });
+    await expect(
+      authenticator.init('https://sociably.io/auth/telegram/', null, authData),
+    ).resolves.toEqual({ forceSignIn: false });
+    await expect(
+      authenticator.init('https://sociably.io/auth/telegram/', null, {
+        ...authData,
+        chat: { type: 'group', id: 67890 },
+      }),
     ).resolves.toEqual({ forceSignIn: false });
 
+    // with chatId specified
+    const authenticatorWithChatId = new TelegramClientAuthenticator({
+      botId: 12345,
+      chatId: 54321,
+    });
+
     await expect(
-      authenticator.init('https://sociably.io/auth/telegram/', null, authData)
+      authenticatorWithChatId.init('https://sociably.io/auth/telegram/', null, {
+        ...authData,
+        chat: { type: 'group', id: 54321 },
+      }),
+    ).resolves.toEqual({ forceSignIn: false });
+    await expect(
+      authenticatorWithChatId.init('https://sociably.io/auth/telegram/', null, {
+        ...authData,
+        user: { id: 54321, first_name: 'Jojo' },
+      }),
     ).resolves.toEqual({ forceSignIn: false });
   });
 
@@ -151,7 +175,7 @@ describe('.init()', () => {
     new TelegramClientAuthenticator({ botId: 54321 }).init(
       'https://sociably.io/auth/telegram/',
       null,
-      authData
+      authData,
     );
 
     // with botId querystring
@@ -159,7 +183,7 @@ describe('.init()', () => {
     new TelegramClientAuthenticator().init(
       'https://sociably.io/auth/telegram/',
       null,
-      authData
+      authData,
     );
 
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(2);
@@ -168,6 +192,50 @@ describe('.init()', () => {
       [
         "https://sociably.io/auth/telegram/login?botId=54321&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz",
         "https://sociably.io/auth/telegram/login?botId=54321&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz",
+      ]
+    `);
+
+    jest.useRealTimers();
+  });
+
+  it('redirect to login page if specified `chatId` is different from auth data', async () => {
+    jest.useFakeTimers();
+
+    location.mock
+      .getter('href')
+      .fakeReturnValue('https://sociably.io/webview/foo?bar=baz');
+
+    // with chatId option
+    new TelegramClientAuthenticator({ botId: 12345, chatId: 54321 }).init(
+      'https://sociably.io/auth/telegram/',
+      null,
+      authData,
+    );
+
+    // with chat querystring
+    location.mock
+      .getter('search')
+      .fakeReturnValue('?botId=12345&chatId=54321&bar=baz');
+    new TelegramClientAuthenticator().init(
+      'https://sociably.io/auth/telegram/',
+      null,
+      authData,
+    );
+
+    // with auth data chat
+    new TelegramClientAuthenticator({ botId: 12345, chatId: 67890 }).init(
+      'https://sociably.io/auth/telegram/',
+      null,
+      { ...authData, chat: { type: 'group', id: 54321 } },
+    );
+
+    expect(location.mock.setter('href')).toHaveBeenCalledTimes(3);
+    expect(location.mock.setter('href').calls.map(({ args }) => args[0]))
+      .toMatchInlineSnapshot(`
+      [
+        "https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz&chatId=54321",
+        "https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz&chatId=54321",
+        "https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz&chatId=67890",
       ]
     `);
 
@@ -212,7 +280,7 @@ test('.checkAuthData()', () => {
       last_name: 'Doe',
       username: 'jojodoe',
     },
-    'http://crazy.dm/stand.png'
+    'http://crazy.dm/stand.png',
   );
 
   expect(authenticator.checkAuthData(authData)).toEqual({
@@ -236,7 +304,7 @@ test('.checkAuthData()', () => {
     authenticator.checkAuthData({
       ...authData,
       chat: { type: 'group', id: 67890 },
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {
@@ -258,7 +326,7 @@ it('.closeWebview() redirect to telegram.me while in mobile devices', () => {
   navigator.mock
     .getter('userAgent')
     .fakeReturnValue(
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
     );
   expect(
     authenticator.closeWebview({
@@ -271,10 +339,10 @@ it('.closeWebview() redirect to telegram.me while in mobile devices', () => {
       photoUrl: 'http://crazy.dm/stand.png',
       loginAt: new Date(),
       expireAt: new Date(Date.now() + 9999),
-    })
+    }),
   ).toBe(true);
   expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
   expect(location.mock.setter('href')).toHaveBeenCalledWith(
-    'https://telegram.me/MyBot'
+    'https://telegram.me/MyBot',
   );
 });

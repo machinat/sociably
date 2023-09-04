@@ -49,7 +49,7 @@ export default class TelegramClientAuthenticator
   async init(
     authEntry: string,
     errorFromServer: null | Error,
-    dataFromServer: null | TelegramAuthData
+    dataFromServer: null | TelegramAuthData,
   ): Promise<{ forceSignIn: boolean }> {
     const searchParams = new URLSearchParams(window.location.search);
     if (!this.botId) {
@@ -63,7 +63,7 @@ export default class TelegramClientAuthenticator
     }
     if (!this.botId || Number.isNaN(this.botId)) {
       throw new Error(
-        'Telegram bot ID is required on either `options.botId` or `botId` querystring'
+        'Telegram bot ID is required on either `options.botId` or `botId` querystring',
       );
     }
 
@@ -75,10 +75,13 @@ export default class TelegramClientAuthenticator
     }
 
     if (
-      (!errorFromServer && !dataFromServer) ||
+      (!dataFromServer && !errorFromServer) ||
       (dataFromServer &&
         (dataFromServer.botId !== this.botId ||
-          dataFromServer.chat?.id !== this.chatId))
+          (this.chatId &&
+            (dataFromServer.chat
+              ? dataFromServer.chat.id !== this.chatId
+              : dataFromServer.user.id !== this.chatId))))
     ) {
       const authUrl = new URL('login', authEntry);
       authUrl.searchParams.set(BOT_ID_QUERY, this.botId.toString());
@@ -89,7 +92,7 @@ export default class TelegramClientAuthenticator
 
       window.location.href = authUrl.href;
       await new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('redirect timeout')), 5000)
+        setTimeout(() => reject(new Error('redirect timeout')), 5000),
       );
     }
 
