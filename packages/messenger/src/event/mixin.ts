@@ -419,6 +419,7 @@ export interface Optin {
    * only. user_ref attribute that was defined in the checkbox plugin include.
    */
   readonly userRef: undefined | string;
+  readonly callbackData?: undefined;
 }
 
 export const Optin: Optin = {

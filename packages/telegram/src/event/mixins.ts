@@ -903,6 +903,7 @@ export interface SuccessfulPayment {
   telegramPpaymentChargeId: string;
   /** Provider payment identifier */
   providerPaymentChargeId: string;
+  callbackData?: undefined;
 }
 
 export const SuccessfulPayment: SuccessfulPayment = {
@@ -947,6 +948,7 @@ export interface InlineQuery {
   query: string;
   /** Offset of the results to be returned, can be controlled by the bot */
   offset?: string;
+  callbackData?: undefined;
 }
 
 export const InlineQuery: InlineQuery = {
@@ -991,6 +993,7 @@ export interface ChosenInlineResult {
   inlineMessageId?: string;
   /** The query that was used to obtain the result */
   query: string;
+  callbackData?: undefined;
 }
 
 export const ChosenInlineResult: ChosenInlineResult = {
@@ -1094,6 +1097,7 @@ export interface CallbackGame {
    * the game
    */
   gameShortName: string;
+  callbackData?: undefined;
 }
 
 export const CallbackGame: CallbackGame = {
@@ -1115,6 +1119,7 @@ export interface ShippingQuery {
   invoicePayload: string;
   /** User specified shipping address */
   shippingAddress: RawShippingAddress;
+  callbackData?: undefined;
 }
 
 export const ShippingQuery: ShippingQuery = {
@@ -1162,6 +1167,7 @@ export interface PreCheckoutQuery {
   shippingOptionId?: string;
   /** Order info provided by the user */
   orderInfo?: RawOrderInfo;
+  callbackData?: undefined;
 }
 
 export const PreCheckoutQuery: PreCheckoutQuery = {
@@ -1202,6 +1208,7 @@ export interface PollChange {
   user: null;
   /** Poll object. */
   poll: RawPoll;
+  callbackData?: undefined;
 }
 
 export const PollChange: PollChange = {
@@ -1226,6 +1233,7 @@ export interface PollAnswer {
    * the user retracted their vote.
    */
   optionIds: number[];
+  callbackData?: undefined;
 }
 
 export const PollAnswer: PollAnswer = {
