@@ -24,7 +24,7 @@ PORT=8080
 ${when(
   platforms.includes('facebook') ||
     platforms.includes('instagram') ||
-    platforms.includes('whatsapp')
+    platforms.includes('whatsapp'),
 )`
 # Meta App
 
@@ -38,16 +38,17 @@ FACEBOOK_PAGE_ID=
 FACEBOOK_ACCESS_TOKEN=
 `}${when(platforms.includes('instagram'))`
 # Instagram
-
+e
 INSTAGRAM_AGENT_ID=
+INSTAGRAM_AGENT_USERNAME=
 INSTAGRAM_PAGE_ID=
 INSTAGRAM_ACCESS_TOKEN=
-INSTAGRAM_AGENT_USERNAME=
 `}${when(platforms.includes('whatsapp'))`
 # WhatsApp
 
 WHATSAPP_PHONE_NUMBER=
 WHATSAPP_NUMBER_ID=
+WHATSAPP_BUSINESS_ACCOUNT_ID=
 WHATSAPP_ACCESS_TOKEN=
 `}${when(platforms.includes('twitter'))`
 # Twitter

@@ -10,8 +10,8 @@ const useIntent =
       return intent;
     }
 
-    if ('data' in event && event.data) {
-      const { action, ...payload } = JSON.parse(event.data);
+    if (event.category === 'callback' && event.callbackData) {
+      const { action, ...payload } = JSON.parse(event.callbackData);
       return {
         type: action,
         confidence: 1,

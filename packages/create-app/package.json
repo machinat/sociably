@@ -32,7 +32,7 @@
     "glob": "^7.1.6",
     "meow": "^12.0.1",
     "nanoid": "^3.1.22",
-    "prettier": "^3.0.1",
+    "prettier": "^3.0.3",
     "project-name-generator": "^2.1.9",
     "sort-package-json": "^1.49.0",
     "thenifiedly": "^0.2.1"

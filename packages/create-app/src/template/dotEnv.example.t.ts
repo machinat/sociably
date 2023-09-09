@@ -32,11 +32,11 @@ PORT=8080
 ${when(
   platforms.includes('facebook') ||
     platforms.includes('instagram') ||
-    platforms.includes('whatsapp')
+    platforms.includes('whatsapp'),
 )`
 
 # Meta App Settings
-#   Create a Facebook app for Meta platforms at https://developers.facebook.com/apps
+#   Create an app for Meta platforms at https://developers.facebook.com/apps
 
 # app id, available at: App Dashboard > Settings > Basic > App ID
 META_APP_ID= 1234567890
@@ -49,52 +49,63 @@ META_WEBHOOK_VERIFY_TOKEN= <random secret string>
 `}${when(platforms.includes('facebook'))`
 
 # Facebook Settings
-#   1. Choose the app ot use at https://developers.facebook.com/apps
+#   1. Choose the app to use at https://developers.facebook.com/apps
 #   2. Enable Messenger in you app, go to:
 #     App Dashboard Page > Add a Product > Messenger > Set Up
 #   3. If you don't have a page ready to use, create one at:
-#     "Messenger" > "Settings" > "Access Tokens" > "Create New Page"
+#     Messenger > Settings > Access Tokens > Create New Page
 #   4. Connect your page to the app at:
-#     "Messenger" > Access Tokens > Add or Remove Pages
+#     Messenger > Access Tokens > Add or Remove Pages
 #   5. Press "Generate Token" at the connected page to get the token
 
-# page id, available at: "Messenger" > "Setting" > "Access Tokens" > "Pages"
+# agent page id, available at: Messenger > Setting > Access Tokens > "Pages
 FACEBOOK_PAGE_ID=
 
-# page access token, available at: "Messenger" > "Setting" > "Access Tokens" > "Tokens"
+# page access token, available at:Messenger > Setting > Access Tokens > Tokens
 FACEBOOK_ACCESS_TOKEN=
 `}${when(platforms.includes('instagram'))`
 
 # Instagram Settings
-#   1. Choose the app ot use at https://developers.facebook.com/apps
+#   1. Choose the app to use at https://developers.facebook.com/apps
 #   2. Enable Instagram in you app, go to:
 #     App Dashboard Page > Add a Product > Messenger > Set Up
 #   3. Connect your page to the app at:
-#     "Messenger" > "Instagram setting" > "Access Tokens" > "Add or Remove Pages"
-#   4. Press "Generate Token" at the connected page to get the token
+#     Messenger > Instagram setting > Access Tokens > Add or Remove Pages
+#   4. Press Generate Token at the connected page to get the token
 
-# page id, available at: "Messenger" > "Instagram settings" > "Access Tokens" > "Pages"
+# page id which your Instagram account is bound to, available at:
+#   Messenger > Instagram settings > Access Tokens > Pages
 INSTAGRAM_PAGE_ID=
 
-# page access token, available at: "Messenger" > "Instagram settings" > "Access Tokens" > "Tokens"
+# page access token, available at:
+#   Messenger > Instagram settings > Access Tokens > Tokens
 INSTAGRAM_ACCESS_TOKEN=
 
-#
+# user id of the Instagram agent, use \`npm run getInstagramAgentAccount\` to get the info
 INSTAGRAM_AGENT_ID=
 
-# the username of the Instagram account
+# username of the Instagram agent, use \`npm run getInstagramAgentAccount\` to get the info
 INSTAGRAM_AGENT_USERNAME=
 `}${when(platforms.includes('whatsapp'))`
-
 # WhatsApp Settings
+#   1. Choose the app to use at https://developers.facebook.com/apps
+#   2. Enable Instagram in you app, go to:
+#     App Dashboard Page > Add a Product > WhatsApp > Set Up
 
-#
+# the agent phone number, available at:
+#   WhatsApp > API Setup > Send and receive messages
 WHATSAPP_PHONE_NUMBER=
 
-#
+# the agent number id, available at:
+#   WhatsApp > API Setup > Send and receive messages > Phone number ID
 WHATSAPP_NUMBER_ID=
 
-#
+# the agent business account id, available at:
+#   WhatsApp > API Setup > Send and receive messages > WhatsApp Business Account ID
+WHATSAPP_BUSINESS_ACCOUNT_ID=
+
+# the admin access token to use, token for development available at:
+#   WhatsApp > API Setup > Temporary access token
 WHATSAPP_ACCESS_TOKEN=
 `}${when(platforms.includes('twitter'))`
 

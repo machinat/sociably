@@ -38,7 +38,7 @@ const main = (event$: Stream<AppEventContext>): void => {
       )
     );
 
-  // handle messages and postbacks from chat platforms
+  // handle messages and callbacks from chat platforms
   chat$
     .subscribe(handleChat)
     .catch(console.error);${when(platforms.includes('telegram'))`

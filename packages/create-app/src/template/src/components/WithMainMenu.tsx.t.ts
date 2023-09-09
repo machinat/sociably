@@ -3,29 +3,37 @@ import { CreateAppContext } from '../../../types.js';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
 import Sociably, { SociablyNode } from '@sociably/core';${when(
-  platforms.includes('facebook')
+  platforms.includes('facebook'),
 )`
 import * as Facebook from '@sociably/facebook/components';${when(withWebview)`
 import { WebviewButton as FacebookWebviewButton } from '@sociably/facebook/webview';`}`}${when(
-  platforms.includes('twitter')
+  platforms.includes('instagram'),
+)`
+import * as Instagram from '@sociably/instagram/components';${when(withWebview)`
+import { WebviewButton as InstagramWebviewButton } from '@sociably/instagram/webview';`}`}${when(
+  platforms.includes('whatsapp'),
+)`
+import * as WhatsApp from '@sociably/whatsapp/components';`}${when(
+  platforms.includes('twitter'),
 )`
 import * as Twitter from '@sociably/twitter/components';${when(withWebview)`
 import { WebviewButton as TwitterWebviewButton } from '@sociably/twitter/webview';`}`}${when(
-  platforms.includes('telegram')
+  platforms.includes('telegram'),
 )`
 import * as Telegram from '@sociably/telegram/components';${when(withWebview)`
 import { WebviewButton as TelegramWebviewButton } from '@sociably/telegram/webview';`}`}${when(
-  platforms.includes('line')
+  platforms.includes('line'),
 )`
 import * as Line from '@sociably/line/components';${when(withWebview)`
 import { WebviewAction as LineWebviewAction } from '@sociably/line/webview';`}`}
 
-type WithMenuProps = {
-  children: SociablyNode;
+
+type WithMainMenuProps = {
+  text: string;
 };
 
-const WithMenu = ({ children }: WithMenuProps, { platform }) => {${when(
-  withWebview
+const WithMainMenu = ({ text }: WithMainMenuProps, { platform }) => {${when(
+  withWebview,
 )`
   const webviewText = 'Open Webview ↗️';`}
   const aboutText = 'About ℹ';
@@ -38,14 +46,44 @@ ${when(platforms.includes('facebook'))`
         buttons={${`${when(withWebview)`
           <>`}
             <Facebook.PostbackButton title={aboutText} payload={aboutData} />${when(
-              withWebview
+              withWebview,
             )`
             <FacebookWebviewButton title={webviewText} />
           </>`}
         `}}
       >
-        {children}
+        {text}
       </Facebook.ButtonTemplate>
+    );
+  }`}
+  ${when(platforms.includes('instagram'))`
+  if (platform === "instagram") {
+    return (
+      <Instagram.GenericTemplate>
+        <Instagram.GenericItem
+          title={text}
+          buttons={
+            <>
+              <Instagram.PostbackButton title={aboutText} payload={aboutData} />
+              <InstagramWebviewButton title={webviewText} />
+            </>
+          }
+        />
+      </Instagram.GenericTemplate>
+    );
+  }`}
+  ${when(platforms.includes('whatsapp'))`
+  if (platform === "whatsapp") {
+    return (
+      <WhatsApp.ButtonsTemplate
+        buttons={
+          <>
+            <WhatsApp.ReplyButton title={aboutText} data={aboutData} />
+          </>
+        }
+      >
+        {text}
+      </WhatsApp.ButtonsTemplate>
     );
   }`}
 ${when(platforms.includes('twitter'))`
@@ -57,7 +95,7 @@ ${when(platforms.includes('twitter'))`
           <Twitter.QuickReply label={aboutText} metadata={aboutData} />
         }
       >
-        {children}
+        {text}
       </Twitter.DirectMessage>
     );
   }`}
@@ -68,13 +106,13 @@ ${when(platforms.includes('telegram'))`
         replyMarkup={
           <Telegram.InlineKeyboard>
             <Telegram.CallbackButton text={aboutText} data={aboutData} />${when(
-              withWebview
+              withWebview,
             )`
             <TelegramWebviewButton text={webviewText} />`}
           </Telegram.InlineKeyboard>
         }
       >
-        {children}
+        {text}
       </Telegram.Text>
     );
   }`}
@@ -94,13 +132,13 @@ ${when(platforms.includes('line'))`
           </>`}
         `}}
       >
-        {children}
+        {text}
       </Line.ButtonTemplate>
     );
   }`}
 
-  return <p>{children}</p>;
+  return <p>{text}</p>;
 };
 
-export default WithMenu;
+export default WithMainMenu;
 `;

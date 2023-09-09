@@ -3,19 +3,19 @@ import { CreateAppContext } from '../../../types.js';
 
 export default ({ platforms }: CreateAppContext): string => `
 import { serviceContainer } from '@sociably/core';${when(
-  platforms.includes('facebook')
+  platforms.includes('facebook'),
 )`
 import Facebook from '@sociably/facebook';`}${when(
-  platforms.includes('instagram')
+  platforms.includes('instagram'),
 )`
 import Instagram from '@sociably/instagram';`}${when(
-  platforms.includes('whatsapp')
+  platforms.includes('whatsapp'),
 )`
 import WhatsApp from '@sociably/whatsapp';`}${when(
-  platforms.includes('twitter')
+  platforms.includes('twitter'),
 )`
 import Twitter from '@sociably/twitter';`}${when(
-  platforms.includes('telegram')
+  platforms.includes('telegram'),
 )`
 import Telegram from '@sociably/telegram';`}${when(platforms.includes('line'))`
 import Line from '@sociably/line';`}
@@ -56,16 +56,25 @@ ${when(platforms.includes('facebook'))`
   await facebookManager.setAppSubscription();
   await facebookManager.setSubscribedApp(FACEBOOK_PAGE_ID);
   await facebookManager.setMessengerProfile(FACEBOOK_PAGE_ID, {
+    whitelistedDomains: [ENTRY_URL],
+    getStarted: { payload: JSON.stringify({ action: 'greeting' }) },
     greeting: [
       { locale: 'default', text: 'Hello World!' },
     ],
-    whitelistedDomains: [ENTRY_URL],
   });`}
 
 ${when(platforms.includes('instagram'))`
   // Instagram
   await instagramManager.setAppSubscription();
-  await instagramManager.setSubscribedApp(INSTAGRAM_AGENT_ID);`}
+  await instagramManager.setSubscribedApp(INSTAGRAM_AGENT_ID);
+  await instagramManager.setMessengerProfile(INSTAGRAM_AGENT_ID, {
+    iceBreakers: [
+      {
+        callToActions: [{ question: "Hello!", payload: JSON.stringify({ action: 'greeting' }) }],
+        locale: "default",
+      },
+    ],
+  });`}
 
 ${when(platforms.includes('whatsapp'))`
   // WhatsApp
@@ -100,14 +109,12 @@ export const down = serviceContainer({
 ${when(platforms.includes('facebook'))`
   // Facebook
   await facebookManager.deleteAppSubscription();
-  await facebookManager.deleteSubscribedApp(FACEBOOK_PAGE_ID);
   await facebookManager.setMessengerProfile(FACEBOOK_PAGE_ID, {});`}
 
 ${when(platforms.includes('instagram'))`
   // Instagram
   await instagramManager.deleteAppSubscription();
-  await instagramManager.deleteSubscribedApp(INSTAGRAM_PAGE_ID);
-  await instagramManager.setMessengerProfile(INSTAGRAM_PAGE_ID, {});`}
+  await instagramManager.setMessengerProfile(INSTAGRAM_AGENT_ID, {});`}
 
 ${when(platforms.includes('whatsapp'))`
   // WhatsApp

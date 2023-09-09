@@ -5,13 +5,14 @@ export const mode = 0o775;
 
 export default ({ recognizer }: CreateAppContext): string => `
 #!/usr/bin/env node
-import { resolve as resolvePath } from 'path';${when(
-  recognizer === 'dialogflow'
-)`
+import { dirname, resolve as resolvePath } from 'path';
+import { fileURLToPath } from 'url';${when(recognizer === 'dialogflow')`
 import DialogFlow from '@sociably/dialogflow';`}
 import { Umzug, JSONStorage } from 'umzug';
 import { program } from 'commander';
 import createApp from '../app.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = createApp({ noServer: true });
 

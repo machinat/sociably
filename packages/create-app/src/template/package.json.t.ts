@@ -15,12 +15,8 @@ export default ({
     scripts: {
       clean: 'rm -rf ./lib ./dist && rm -f tsconfig.tsbuildinfo',
 
-      migrate: 'per-env',
-      'migrate:development': 'dotenv -- ts-node ./src/cli/migrate.ts',
-      'migrate:production': 'node ./lib/cli/migrate.js',
-
       build: `npm run clean && npm run build:src${when(
-        withWebview
+        withWebview,
       )` && npm run build:webview`}`,
       'build:src': 'tsc',
       'build:webview': withWebview
@@ -28,10 +24,14 @@ export default ({
         : undefined,
 
       start: 'per-env',
-      'start:development': 'dotenv -- ts-node ./src/index.ts',
+      'start:development': 'dotenv -- ts-node-esm ./src/index.ts',
       'start:production': 'node ./lib/index.js',
 
       dev: 'nodemon ./src/index.ts',
+
+      migrate: 'per-env',
+      'migrate:development': 'dotenv -- ts-node-esm ./src/cli/migrate.ts',
+      'migrate:production': 'node ./lib/cli/migrate.js',
     },
     dependencies: {
       '@machinat/per-env': '^1.1.0',
@@ -48,7 +48,7 @@ export default ({
     },
     nodemonConfig: {
       exec: './node_modules/.bin/ts-node-esm -r dotenv/config',
-      watch: './src',
+      watch: ['./src', './.env'],
       ext: 'ts,tsx',
       verbose: true,
       delay: 2000,
@@ -65,6 +65,19 @@ export default ({
       },
     };
     packageConfigs.devDependencies['@types/react'] = '^18.0.0';
+  }
+
+  if (platforms.includes('instagram')) {
+    packageConfigs.scripts = {
+      ...packageConfigs.scripts,
+      ...{
+        getInstagramAgentAccount: 'per-env',
+        'getInstagramAgentAccount:development':
+          'dotenv -- ts-node-esm ./src/cli/getInstagramAgentAccount.ts',
+        'getInstagramAgentAccount:production':
+          'node ./lib/cli/getInstagramAgentAccount.js',
+      },
+    };
   }
 
   if (platforms.includes('twitter')) {

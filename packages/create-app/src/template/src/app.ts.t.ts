@@ -10,23 +10,23 @@ import Sociably from '@sociably/core';
 import Http from '@sociably/http';${when(platforms.includes('facebook'))`
 import Facebook from '@sociably/facebook';${when(withWebview)`
 import FacebookWebview from '@sociably/facebook/webview';`}`}${when(
-  platforms.includes('instagram')
+  platforms.includes('instagram'),
 )`
 import Instagram from '@sociably/instagram';${when(withWebview)`
 import InstagramWebview from '@sociably/instagram/webview';`}`}${when(
-  platforms.includes('whatsapp')
+  platforms.includes('whatsapp'),
 )`
 import WhatsApp from '@sociably/whatsapp';${when(withWebview)`
 import WhatsAppWebview from '@sociably/whatsapp/webview';`}`}${when(
-  platforms.includes('twitter')
+  platforms.includes('twitter'),
 )`
 import Twitter from '@sociably/twitter';${when(withWebview)`
 import TwitterWebview from '@sociably/twitter/webview';`}`}${when(
-  platforms.includes('telegram')
+  platforms.includes('telegram'),
 )`
 import Telegram from '@sociably/telegram';${when(withWebview)`
 import TelegramWebview from '@sociably/telegram/webview';`}`}${when(
-  platforms.includes('line')
+  platforms.includes('line'),
 )`
 import Line from '@sociably/line';${when(withWebview)`
 import LineWebview from '@sociably/line/webview';`}`}${when(withWebview)`
@@ -54,7 +54,7 @@ const {
   WEBVIEW_AUTH_SECRET,`}${when(
     platforms.includes('facebook') ||
       platforms.includes('instagram') ||
-      platforms.includes('whatsapp')
+      platforms.includes('whatsapp'),
   )`
   // meta
   META_APP_ID,
@@ -189,8 +189,8 @@ ${when(recognizer === 'dialogflow')`
         agentSettings: {
           botToken: TELEGRAM_BOT_TOKEN,
           botName: TELEGRAM_BOT_NAME,
-          secretToken: TELEGRAM_SECRET_TOKEN,
         },
+        secretToken: TELEGRAM_SECRET_TOKEN,
       }),`}${when(platforms.includes('line'))`
 
       Line.initModule({
@@ -199,10 +199,10 @@ ${when(recognizer === 'dialogflow')`
           providerId: LINE_PROVIDER_ID,
           channelId: LINE_CHANNEL_ID,
           accessToken: LINE_ACCESS_TOKEN,
-          channelSecret: LINE_CHANNEL_SECRET,
-        },${when(withWebview)`
-        liffId: LINE_LIFF_ID,`}
-      }),`}${when(withWebview)`
+          channelSecret: LINE_CHANNEL_SECRET,${when(withWebview)`
+          liff: { default: LINE_LIFF_ID },`}
+        },`}
+      }),${when(withWebview)`
 
       Webview.initModule<${when(platforms.includes('facebook'))`
         | FacebookWebview`}${when(platforms.includes('instagram'))`
