@@ -36,11 +36,9 @@ exports[`createChatJobs(options)(chat, segments) add attached file data and info
       "uid": "test.12345",
     },
     "file": {
+      "contentType": "image/jpeg",
       "data": "_BAR_",
-      "info": {
-        "contentType": "image/jpeg",
-        "filename": "deathangel.jpg",
-      },
+      "fileName": "deathangel.jpg",
     },
     "key": "test.12345.67890",
     "request": {

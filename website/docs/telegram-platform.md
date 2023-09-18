@@ -33,22 +33,17 @@ import Sociably from '@sociably/core';
 import Http from '@sociably/http';
 import Telegram from '@sociably/telegram';
 
-const {
-  TELEGRAM_BOT_NAME,
-  TELEGRAM_BOT_TOKEN,
-  TELEGRAM_TOKEN_SECRET,
-} = process.env;
+const { TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN, TELEGRAM_TOKEN_SECRET } =
+  process.env;
 
 const app = Sociably.createApp({
-  modules: [
-    Http.initModule({ port: 8080 }),
-  ],
+  modules: [Http.initModule({ port: 8080 })],
   platforms: [
     Telegram.intiModule({
       webhookPath: 'webhook/telegram', // webhook path
       agentSettings: {
-        botName: TELEGRAM_BOT_NAME,       // bot name
-        botToken: TELEGRAM_BOT_TOKEN,     // bot token
+        botName: TELEGRAM_BOT_NAME, // bot name
+        botToken: TELEGRAM_BOT_TOKEN, // bot token
         tokenSecret: TELEGRAM_TOKEN_SECRET, // secret path for webhook
       },
     }),
@@ -64,22 +59,19 @@ import { TelegramBot, TelegramUser } from '@sociably/telegram';
 const { DOMAIN, TELEGRAM_BOT_TOKEN, TELEGRAM_BOT_ID } = process.env;
 const botId = parseInt(TELEGRAM_BOT_ID, 10);
 
-
 const bot = new TelegramBot({ token: TELEGRAM_BOT_TOKEN });
-const botUser = new TelegramUser(botId, true)
+const botUser = new TelegramUser(botId, true);
 
-bot
-  .start()
-  .then(() =>
-    bot.requestApi({
-      bot: botUser,
-      method: 'setWebhook',
-      params: {
-        // webhook URL with trailing bot ID
-        url: `https://${DOMAIN}/webhook/telegram/${botId}`,
-      },
-    })
-  );
+bot.start().then(() =>
+  bot.requestApi({
+    bot: botUser,
+    method: 'setWebhook',
+    params: {
+      // webhook URL with trailing bot ID
+      url: `https://${DOMAIN}/webhook/telegram/${botId}`,
+    },
+  }),
+);
 ```
 
 ## Usage
@@ -106,7 +98,7 @@ app.onEvent(async ({ platform, event, reply }) => {
         <p>Hello Telegram! 👋</p>
         <p>It's your daily 🐱</p>
         <img src="https://cataas.com/cat" />
-      </Telegram.Expression>
+      </Telegram.Expression>,
     );
   }
 });
@@ -132,9 +124,7 @@ import TelegramAuth from '@sociably/telegram/webview';
 const app = Sociably.createApp({
   platforms: [
     Webview.intiModule({
-      authPlatforms: [
-        TelegramAuth
-      ],
+      authPlatforms: [TelegramAuth],
       // ...
     }),
   ],
@@ -147,10 +137,8 @@ const app = Sociably.createApp({
 import WebviewClient from '@sociably/webview/client';
 import TelegramAuth from '@sociably/telegram/webview/client';
 
-const client =  new WebviewClient({
-  authPlatforms: [
-    new TelegramAuth(),
-  ],
+const client = new WebviewClient({
+  authPlatforms: [new TelegramAuth()],
 });
 ```
 
@@ -173,7 +161,7 @@ app.onEvent(async ({ reply }) => {
       }
     >
       Hello Webview!
-    </Telegram.Expression>
+    </Telegram.Expression>,
   );
 });
 ```
@@ -193,7 +181,9 @@ Then register `TelegramAssetsManager` like this:
 ```ts
 import { FileState } from '@sociably/dev-tools';
 // highlight-next-line
-import TelegramAssetsManager, { saveUplodedFile } from '@sociably/telegram/asssets';
+import TelegramAssetsManager, {
+  saveUplodedFile,
+} from '@sociably/telegram/asssets';
 
 const app = Sociably.createApp({
   services: [
@@ -225,25 +215,25 @@ import { serviceContainer } from '@sociably/core';
 import * as Telegram from '@sociably/telegram/components';
 import TelegramAssetsManager from '@sociably/telegram/asssets';
 
-app.onEvent(serviceContainer({ deps: [TelegramAssetsManager] })(
-  (assetsManager) =>
-    async ({ reply }) => {
-      const fooImageId = await assetsManager.getFile('foo.image');
+app.onEvent(
+  serviceContainer({ deps: [TelegramAssetsManager] })(
+    (assetsManager) =>
+      async ({ reply }) => {
+        const fooImageId = await assetsManager.getFile('foo.image');
 
-      if (fooImageId) {
-        await reply(
-          <Telegram.Image fileId={fooImageId} />
-        );
-      } else {
-        await reply(
-          <Telegram.Image
-            assetTag="foo.image"
-            fileData={fs.createReadStream('./assets/foo.jpg')}
-          />
-        );
-      }
-    }
-));
+        if (fooImageId) {
+          await reply(<Telegram.Image fileId={fooImageId} />);
+        } else {
+          await reply(
+            <Telegram.Image
+              assetTag="foo.image"
+              file={{ data: fs.createReadStream('./assets/foo.jpg') }}
+            />,
+          );
+        }
+      },
+  ),
+);
 ```
 
 If you upload a file with `assetTag` prop,

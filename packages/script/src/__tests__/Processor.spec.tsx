@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably, { SociablyThread } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
 import { traverse as traverseMessage } from '@sociably/core/iterator';
@@ -50,8 +50,8 @@ const AnotherScript = moxy(
       <PROMPT key="ask_4" set={promptSetFn} />
       {() => 'elit, '}
       <EFFECT yield={effectYieldFn} />
-    </>
-  )
+    </>,
+  ),
 );
 
 const MyScript = moxy(
@@ -102,8 +102,8 @@ const MyScript = moxy(
       </WHILE>
       {() => 'eiusmod '}
       <RETURN value={({ vars: { foo } }) => ({ foo, done: true })} />
-    </>
-  )
+    </>,
+  ),
 );
 
 const scriptAccessor = moxy({
@@ -134,7 +134,7 @@ describe('.start(thread, Script)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = await processor.start(thread, MyScript);
 
@@ -172,7 +172,7 @@ describe('.start(thread, Script)', () => {
 
     expect(runtime.requireSaving).toBe(false);
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -187,7 +187,7 @@ describe('.start(thread, Script)', () => {
         "timestamp": Any<Number>,
         "version": "0",
       }
-    `
+    `,
     );
 
     expect(promptSetFn).not.toHaveBeenCalled();
@@ -198,7 +198,7 @@ describe('.start(thread, Script)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = await processor.start(thread, MyScript, {
       goto: '#3',
@@ -232,7 +232,7 @@ describe('.start(thread, Script)', () => {
     const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -247,7 +247,7 @@ describe('.start(thread, Script)', () => {
         "timestamp": Any<Number>,
         "version": "0",
       }
-    `
+    `,
     );
   });
 
@@ -256,7 +256,7 @@ describe('.start(thread, Script)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = await processor.start(thread, MyScript, {
       params: { foo: 'bar' },
@@ -293,7 +293,7 @@ describe('.start(thread, Script)', () => {
     const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -310,7 +310,7 @@ describe('.start(thread, Script)', () => {
         "timestamp": Any<Number>,
         "version": "0",
       }
-    `
+    `,
     );
   });
 
@@ -319,15 +319,15 @@ describe('.start(thread, Script)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
 
     scriptAccessor.getScript.mock.fakeReturnValue(null);
 
     await expect(
-      processor.start(thread, AnotherScript)
+      processor.start(thread, AnotherScript),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"script AnotherScript is not registered as libs"`
+      `"script AnotherScript is not registered as libs"`,
     );
   });
 
@@ -342,13 +342,13 @@ describe('.start(thread, Script)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
 
     await expect(
-      processor.start(thread, MyScript)
+      processor.start(thread, MyScript),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"script [MyScript] is already running on thread [test.thread], exit the current runtime before start new one"`
+      `"script [MyScript] is already running on thread [test.thread], exit the current runtime before start new one"`,
     );
   });
 });
@@ -365,7 +365,7 @@ describe('.continue(thread, input)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = (await processor.continue(thread, { hello: 'world' }))!;
 
@@ -395,7 +395,7 @@ describe('.continue(thread, input)', () => {
     const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -417,7 +417,7 @@ describe('.continue(thread, input)', () => {
         "timestamp": Any<Number>,
         "version": "0",
       }
-    `
+    `,
     );
 
     expect(promptSetFn).toHaveBeenCalledTimes(1);
@@ -428,7 +428,7 @@ describe('.continue(thread, input)', () => {
         vars: { foo: 'bar' },
         meta: { hello: 'there' },
       },
-      { hello: 'world' }
+      { hello: 'world' },
     );
   });
 
@@ -446,7 +446,7 @@ describe('.continue(thread, input)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = (await processor.continue(thread, { hello: 'world' }))!;
 
@@ -476,7 +476,7 @@ describe('.continue(thread, input)', () => {
     const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -494,7 +494,7 @@ describe('.continue(thread, input)', () => {
         "timestamp": Any<Number>,
         "version": "0",
       }
-    `
+    `,
     );
 
     expect(promptSetFn).toHaveBeenCalledTimes(1);
@@ -505,7 +505,7 @@ describe('.continue(thread, input)', () => {
         vars: { foo: 'baz' },
         meta: { hello: 'here' },
       },
-      { hello: 'world' }
+      { hello: 'world' },
     );
   });
 
@@ -514,10 +514,10 @@ describe('.continue(thread, input)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     await expect(processor.continue(thread, { hello: 'world' })).resolves.toBe(
-      null
+      null,
     );
   });
 
@@ -532,12 +532,12 @@ describe('.continue(thread, input)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     await expect(
-      processor.continue(thread, { hello: 'world' })
+      processor.continue(thread, { hello: 'world' }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"script UnknownScript is not registered, the linked libs might have been changed"`
+      `"script UnknownScript is not registered, the linked libs might have been changed"`,
     );
   });
 });
@@ -554,7 +554,7 @@ describe('.getRuntime(thread)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = (await processor.getRuntime(thread))!;
 
@@ -582,7 +582,7 @@ describe('.getRuntime(thread)', () => {
         vars: { foo: 'bar' },
         meta: { hello: 'there' },
       },
-      { hello: 'world' }
+      { hello: 'world' },
     );
 
     await expect(runtime.run({ hello: 'again' })).resolves.toEqual({
@@ -600,7 +600,7 @@ describe('.getRuntime(thread)', () => {
         vars: {},
         meta: { hello: 'here' },
       },
-      { hello: 'again' }
+      { hello: 'again' },
     );
 
     for (let i = 0; i < 4; i += 1) {
@@ -620,7 +620,7 @@ describe('.getRuntime(thread)', () => {
           vars: { foo: 'bar', i: 1 + i },
           meta: { hello: 'there' },
         },
-        { hello: 'again' }
+        { hello: 'again' },
       );
     }
 
@@ -636,7 +636,7 @@ describe('.getRuntime(thread)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     await expect(processor.getRuntime(thread)).resolves.toBe(null);
   });
@@ -652,12 +652,12 @@ describe('.getRuntime(thread)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     await expect(
-      processor.getRuntime(thread)
+      processor.getRuntime(thread),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"script UnknownScript is not registered, the linked libs might have been changed"`
+      `"script UnknownScript is not registered, the linked libs might have been changed"`,
     );
   });
 });
@@ -674,14 +674,14 @@ describe('Runtime.exit(thread)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = (await processor.getRuntime(thread))!;
 
     await expect(runtime.exit()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toBe(undefined);
   });
 
@@ -690,14 +690,14 @@ describe('Runtime.exit(thread)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
 
     const runtime = await processor.start(thread, MyScript);
     await expect(runtime.exit()).resolves.toBe(false);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toBe(undefined);
   });
 });
@@ -708,7 +708,7 @@ describe('Runtime.save(runtime)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
 
     const runtime = await processor.start(thread, MyScript, {
@@ -717,7 +717,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toEqual({
       callStack: [{ name: 'MyScript', stopAt: 'ask_2', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
@@ -730,7 +730,7 @@ describe('Runtime.save(runtime)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
 
     stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
@@ -744,7 +744,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toEqual({
       callStack: [
         { name: 'MyScript', stopAt: 'call_1', vars: { foo: 'bar' } },
@@ -760,7 +760,7 @@ describe('Runtime.save(runtime)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = await processor.start(thread, MyScript, {
       goto: '#3',
@@ -773,7 +773,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(false);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY)
+      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toBe(undefined);
   });
 
@@ -782,7 +782,7 @@ describe('Runtime.save(runtime)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
 
     const runtime = await processor.start(thread, MyScript, {
@@ -798,7 +798,7 @@ describe('Runtime.save(runtime)', () => {
     });
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
-      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`,
     );
   });
 
@@ -815,7 +815,7 @@ describe('Runtime.save(runtime)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = (await processor.getRuntime(thread))!;
 
@@ -823,7 +823,7 @@ describe('Runtime.save(runtime)', () => {
     await runtime.run();
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
-      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`,
     );
   });
 
@@ -840,7 +840,7 @@ describe('Runtime.save(runtime)', () => {
     const processor = new ScriptProcessor(
       stateController,
       scope,
-      scriptAccessor
+      scriptAccessor,
     );
     const runtime = (await processor.getRuntime(thread))!;
 
@@ -854,7 +854,7 @@ describe('Runtime.save(runtime)', () => {
     await runtime.run({ hello: 'script' });
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
-      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`
+      `[Error: runtime state have changed while execution, there are maybe mutiple runtimes of the same thread executing at the same time]`,
     );
   });
 });

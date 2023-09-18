@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
 import Stream from '../stream.js';
 import { STREAMING_KEY_I } from '../interface.js';
@@ -31,7 +31,7 @@ describe('#subscribe()', () => {
     const stream = new Stream();
     const eventListener = moxy();
     const nextContainer = moxy(
-      serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListener)
+      serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListener),
     );
 
     stream.subscribe(nextContainer);
@@ -97,10 +97,10 @@ test('#pipe()', () => {
   expect(operators[2]).toHaveBeenCalledTimes(1);
 
   expect(operators[0].mock.calls[0].result).toBe(
-    operators[1].mock.calls[0].args[0]
+    operators[1].mock.calls[0].args[0],
   );
   expect(operators[1].mock.calls[0].result).toBe(
-    operators[2].mock.calls[0].args[0]
+    operators[2].mock.calls[0].args[0],
   );
   expect(operators[2].mock.calls[0].result).toBe(destination);
 });
@@ -151,7 +151,7 @@ describe('#catch()', () => {
     const stream = new Stream();
     const errorListener = moxy();
     const errorContainer = moxy(
-      serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+      serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener),
     );
 
     stream.catch(errorContainer);

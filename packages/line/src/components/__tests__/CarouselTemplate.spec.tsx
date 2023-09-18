@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
@@ -13,10 +13,10 @@ import { renderUnitElement } from './utils.js';
 
 test('is valid native component', () => {
   expect(isNativeType(<CarouselItem {...({} as CarouselItemProps)} />)).toBe(
-    true
+    true,
   );
   expect(
-    isNativeType(<CarouselTemplate {...({} as CarouselTemplateProps)} />)
+    isNativeType(<CarouselTemplate {...({} as CarouselTemplateProps)} />),
   ).toBe(true);
   expect(CarouselItem.$$platform).toBe('line');
   expect(CarouselTemplate.$$platform).toBe('line');
@@ -51,8 +51,8 @@ it('match snapshot', async () => {
         >
           Naporitan
         </CarouselItem>
-      </CarouselTemplate>
-    )
+      </CarouselTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -170,7 +170,7 @@ test('altText as function', async () => {
       >
         Burger
       </CarouselItem>
-    </CarouselTemplate>
+    </CarouselTemplate>,
   );
   const messageSegValue = segemnts?.[0].value as MessageSegmentValue;
   const templateValue = messageSegValue.params as TemplateMessageParams;

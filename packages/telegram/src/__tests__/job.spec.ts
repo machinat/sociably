@@ -27,8 +27,10 @@ describe('createChatJob(thread, segments)', () => {
             files: [
               {
                 fieldName: 'photo',
-                data: Buffer.from('BAR'),
-                info: { filename: 'bar.jpg' },
+                source: {
+                  data: Buffer.from('BAR'),
+                  fileName: 'bar.jpg',
+                },
                 assetTag: 'MyBar',
               },
             ],
@@ -40,7 +42,7 @@ describe('createChatJob(thread, segments)', () => {
           path: '$',
           value: 'baz',
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -58,17 +60,17 @@ describe('createChatJob(thread, segments)', () => {
           "files": [
             {
               "assetTag": "MyBar",
-              "data": {
-                "data": [
-                  66,
-                  65,
-                  82,
-                ],
-                "type": "Buffer",
-              },
               "fieldName": "photo",
-              "info": {
-                "filename": "bar.jpg",
+              "source": {
+                "data": {
+                  "data": [
+                    66,
+                    65,
+                    82,
+                  ],
+                  "type": "Buffer",
+                },
+                "fileName": "bar.jpg",
               },
             },
           ],
@@ -142,14 +144,16 @@ describe('createBotScopeJobs(action, segments)', () => {
             files: [
               {
                 fieldName: 'photo',
-                data: Buffer.from('BAR'),
-                info: { filename: 'bar.jpg' },
+                source: {
+                  data: Buffer.from('BAR'),
+                  fileName: 'bar.jpg',
+                },
                 assetTag: 'MyBar',
               },
             ],
           },
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -176,17 +180,17 @@ describe('createBotScopeJobs(action, segments)', () => {
           "files": [
             {
               "assetTag": "MyBar",
-              "data": {
-                "data": [
-                  66,
-                  65,
-                  82,
-                ],
-                "type": "Buffer",
-              },
               "fieldName": "photo",
-              "info": {
-                "filename": "bar.jpg",
+              "source": {
+                "data": {
+                  "data": [
+                    66,
+                    65,
+                    82,
+                  ],
+                  "type": "Buffer",
+                },
+                "fileName": "bar.jpg",
               },
             },
           ],
@@ -213,9 +217,9 @@ describe('createBotScopeJobs(action, segments)', () => {
           path: '$',
           value: 'foo',
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"text is invalid to be rendered without target chat"`
+      `"text is invalid to be rendered without target chat"`,
     );
   });
 
@@ -233,9 +237,9 @@ describe('createBotScopeJobs(action, segments)', () => {
             },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"inlineMessageId is required to edit an inline message"`
+      `"inlineMessageId is required to edit an inline message"`,
     );
   });
 
@@ -253,9 +257,9 @@ describe('createBotScopeJobs(action, segments)', () => {
             },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `""__ELEMENT__" is invalid to be rendered without target chat"`
+      `""__ELEMENT__" is invalid to be rendered without target chat"`,
     );
   });
 });

@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { MetaApiChannel } from '@sociably/meta-api';
 import createEventFactory from '../factory.js';
 import {

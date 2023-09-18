@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -68,7 +68,7 @@ describe('initModule(configs)', () => {
     expect(typeof module.startHook).toBe('function');
     expect(module.eventMiddlewares).toEqual([eventMiddleware]);
     expect(module.dispatchMiddlewares).toEqual(
-      expect.arrayContaining([dispatchMiddleware, saveReusableAttachments])
+      expect.arrayContaining([dispatchMiddleware, saveReusableAttachments]),
     );
   });
 
@@ -162,7 +162,7 @@ describe('initModule(configs)', () => {
         InstagramChat,
         InstagramUser,
         InstagramUserProfile,
-      ])
+      ]),
     );
 
     bot.stop();
@@ -218,17 +218,17 @@ describe('initModule(configs)', () => {
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramAgent('1234567890'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('1234567890')),
     ).resolves.toEqual(agentSettings);
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramAgent('9876543210'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('9876543210')),
     ).resolves.toEqual(null);
 
     await expect(
       agentSettingsAccessor.getAgentSettingsBatch([
         new InstagramAgent('1234567890'),
         new InstagramAgent('9876543210'),
-      ])
+      ]),
     ).resolves.toEqual([agentSettings, null]);
 
     await app.stop();
@@ -267,13 +267,13 @@ describe('initModule(configs)', () => {
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramAgent('1234567890'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('1234567890')),
     ).resolves.toEqual(multiAgentSettings[0]);
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramAgent('9876543210'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('9876543210')),
     ).resolves.toEqual(multiAgentSettings[1]);
     await expect(
-      agentSettingsAccessor.getAgentSettings(new InstagramAgent('8888888888'))
+      agentSettingsAccessor.getAgentSettings(new InstagramAgent('8888888888')),
     ).resolves.toBe(null);
 
     await expect(
@@ -281,7 +281,7 @@ describe('initModule(configs)', () => {
         new InstagramAgent('9876543210'),
         new InstagramAgent('1234567890'),
         new InstagramAgent('8888888888'),
-      ])
+      ]),
     ).resolves.toEqual([multiAgentSettings[1], multiAgentSettings[0], null]);
 
     await app.stop();
@@ -293,7 +293,7 @@ describe('initModule(configs)', () => {
       getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
     const mySettingsService = serviceProviderFactory({})(
-      () => settingsAccessor
+      () => settingsAccessor,
     );
 
     const app = Sociably.createApp({
@@ -324,9 +324,9 @@ describe('initModule(configs)', () => {
         appId: '...',
         appSecret: '...',
         webhookVerifyToken: '...',
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Instagram platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
+      `"Instagram platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`,
     );
   });
 

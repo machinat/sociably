@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
@@ -8,7 +8,7 @@ import { renderUnitElement } from './utils.js';
 
 test('is valid native component', () => {
   expect(
-    isNativeType(<ButtonTemplate {...({} as ButtonTemplateProps)} />)
+    isNativeType(<ButtonTemplate {...({} as ButtonTemplateProps)} />),
   ).toBe(true);
   expect(ButtonTemplate.$$platform).toBe('line');
   expect(ButtonTemplate.$$name).toBe('ButtonTemplate');
@@ -31,8 +31,8 @@ it('match snapshot', async () => {
         ]}
       >
         world
-      </ButtonTemplate>
-    )
+      </ButtonTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -116,7 +116,7 @@ test('altText as function', async () => {
       ]}
     >
       hello world
-    </ButtonTemplate>
+    </ButtonTemplate>,
   );
   const messageSegValue = segemnts?.[0].value as MessageSegmentValue;
   const templateValue = messageSegValue.params as TemplateMessageParams;

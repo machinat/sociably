@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import type { TelegramBot } from '../Bot.js';
 import TelegramChat from '../Chat.js';
 import TelegramChatProfile from '../ChatProfile.js';
@@ -39,7 +39,7 @@ describe('.getUserProfile(user)', () => {
         first_name: 'Jane',
         last_name: 'Doe',
         username: 'janedoe',
-      })
+      }),
     );
     expect(profile.platform).toBe('telegram');
     expect(profile.id).toBe(12345);
@@ -56,7 +56,7 @@ describe('.getUserProfile(user)', () => {
     const profiler = new TelegramProfiler(bot);
     const profile = await profiler.getUserProfile(
       botUser,
-      new TelegramUser(12345, undefined, rawUser, avatarUrl)
+      new TelegramUser(12345, undefined, rawUser, avatarUrl),
     );
 
     expect(profile.avatarUrl).toBe(avatarUrl);
@@ -82,7 +82,7 @@ describe('.getUserProfile(user)', () => {
     const profiler = new TelegramProfiler(bot);
     const profile = await profiler.getUserProfile(
       botUser,
-      new TelegramUser(12345)
+      new TelegramUser(12345),
     );
 
     expect(profile.platform).toBe('telegram');
@@ -113,7 +113,7 @@ describe('.getUserProfile(user)', () => {
     const profile = await profiler.getUserProfile(
       botUser,
       new TelegramUser(12345),
-      { inChat: new TelegramChat(54321, 67890) }
+      { inChat: new TelegramChat(54321, 67890) },
     );
 
     expect(profile.platform).toBe('telegram');
@@ -154,7 +154,7 @@ describe('.getUserProfile(user)', () => {
         is_bot: false,
         first_name: 'Jojo',
       }),
-      { fromApi: true }
+      { fromApi: true },
     );
 
     expect(profile).toBeInstanceOf(TelegramUserProfile);
@@ -188,7 +188,7 @@ describe('.getUserProfile(user)', () => {
         last_name: 'Doe',
         username: 'janedoe',
       }),
-      { avatarUrl: 'http://jane.doe/avatar' }
+      { avatarUrl: 'http://jane.doe/avatar' },
     );
 
     expect(profile.typeName()).toBe('TgUserProfile');
@@ -205,7 +205,7 @@ describe('.getUserProfile(user)', () => {
       }
     `);
     expect(
-      TelegramUserProfile.fromJSONValue(profile.toJSONValue())
+      TelegramUserProfile.fromJSONValue(profile.toJSONValue()),
     ).toStrictEqual(profile);
   });
 
@@ -243,7 +243,7 @@ describe('.getChatProfile(user)', () => {
         first_name: 'Jane',
         last_name: 'Doe',
         username: 'janedoe',
-      })
+      }),
     );
     expect(profile.platform).toBe('telegram');
     expect(profile.id).toBe(67890);
@@ -288,7 +288,7 @@ describe('.getChatProfile(user)', () => {
     const profiler = new TelegramProfiler(bot);
     const profile = await profiler.getChatProfile(
       botUser,
-      new TelegramChat(12345, 67890)
+      new TelegramChat(12345, 67890),
     );
 
     expect(profile.platform).toBe('telegram');
@@ -307,10 +307,10 @@ describe('.getChatProfile(user)', () => {
     });
 
     await expect(
-      profiler.getChatProfile(botUser, 67890)
+      profiler.getChatProfile(botUser, 67890),
     ).resolves.toStrictEqual(profile);
     await expect(
-      profiler.getChatProfile(botUser, 12345)
+      profiler.getChatProfile(botUser, 12345),
     ).resolves.toStrictEqual(profile);
 
     expect(bot.requestApi).toHaveReturnedTimes(3);
@@ -350,7 +350,7 @@ describe('.getChatProfile(user)', () => {
         type: 'private',
         first_name: 'Jojo',
       }),
-      { fromApi: true }
+      { fromApi: true },
     );
 
     expect(profile.platform).toBe('telegram');
@@ -380,7 +380,7 @@ describe('.getChatProfile(user)', () => {
         last_name: 'Doe',
         username: 'janedoe',
       }),
-      { avatarUrl: 'http://jane.doe/avatar' }
+      { avatarUrl: 'http://jane.doe/avatar' },
     );
 
     expect(profile.typeName()).toBe('TgChatProfile');
@@ -397,7 +397,7 @@ describe('.getChatProfile(user)', () => {
       }
     `);
     expect(
-      TelegramChatProfile.fromJSONValue(profile.toJSONValue())
+      TelegramChatProfile.fromJSONValue(profile.toJSONValue()),
     ).toStrictEqual(profile);
   });
 });
@@ -471,7 +471,7 @@ describe('.fetchUserPhoto(user)', () => {
     });
 
     await expect(
-      profiler.fetchUserPhoto(botUser, user, { minWidth: 180 })
+      profiler.fetchUserPhoto(botUser, user, { minWidth: 180 }),
     ).resolves.toEqual({
       content: expect.any(Readable),
       contentType: 'image/jpeg',
@@ -480,7 +480,7 @@ describe('.fetchUserPhoto(user)', () => {
       height: 200,
     });
     await expect(
-      profiler.fetchUserPhoto(botUser, user, { minWidth: 380 })
+      profiler.fetchUserPhoto(botUser, user, { minWidth: 380 }),
     ).resolves.toEqual({
       content: expect.any(Readable),
       contentType: 'image/jpeg',
@@ -489,7 +489,7 @@ describe('.fetchUserPhoto(user)', () => {
       height: 400,
     });
     await expect(
-      profiler.fetchUserPhoto(botUser, user, { minWidth: 580 })
+      profiler.fetchUserPhoto(botUser, user, { minWidth: 580 }),
     ).resolves.toEqual({
       content: expect.any(Readable),
       contentType: 'image/jpeg',
@@ -566,7 +566,7 @@ describe('.fetchChatPhoto(user)', () => {
     const profiler = new TelegramProfiler(bot);
 
     await expect(
-      profiler.fetchChatPhoto(botUser, 12345, { size: 'small' })
+      profiler.fetchChatPhoto(botUser, 12345, { size: 'small' }),
     ).resolves.toEqual({
       content: expect.any(Readable),
       contentType: 'image/jpeg',
@@ -597,11 +597,11 @@ describe('.fetchChatPhoto(user)', () => {
     };
 
     await expect(
-      profiler.fetchChatPhoto(botUser, new TelegramChat(12345, 67890))
+      profiler.fetchChatPhoto(botUser, new TelegramChat(12345, 67890)),
     ).resolves.toEqual(expectedResponse);
 
     await expect(
-      profiler.fetchChatPhoto(botUser, '@foo_channel')
+      profiler.fetchChatPhoto(botUser, '@foo_channel'),
     ).resolves.toEqual(expectedResponse);
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);

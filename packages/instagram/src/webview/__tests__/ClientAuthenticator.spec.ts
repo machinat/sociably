@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import InstagramAgent from '../../Agent.js';
 import InstagramUser from '../../User.js';
 import InstagramChat from '../../Chat.js';
@@ -45,14 +45,14 @@ test('.closeWebview() always return false since we have no way to deep link a dr
   navigator.mock
     .getter('userAgent')
     .fakeReturnValue(
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
     );
   expect(authenticator.closeWebview()).toBe(false);
 
   navigator.mock
     .getter('userAgent')
     .fakeReturnValue(
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0'
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0',
     );
   expect(authenticator.closeWebview()).toBe(false);
 
@@ -64,7 +64,7 @@ test('.checkAuthData(data)', () => {
     authenticator.checkAuthData({
       agent: { id: '1234567890', name: 'jojodoe123' },
       user: '9876543210',
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {
@@ -91,7 +91,7 @@ test('.checkAuthData(data)', () => {
       agent: { id: '7777777777', name: 'janedoe123' },
       user: '8888888888',
       profile: profileData,
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {

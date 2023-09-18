@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import BasicAuthenticator, {
   AuthDelegatorOptions,
 } from '@sociably/auth/basicAuth';
@@ -49,7 +49,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     const authenticator = new ServerAuthenticator(
       bot,
       basicAuthenticator,
-      agentSettingsAccessor
+      agentSettingsAccessor,
     );
     const req = moxy();
     const res = moxy();
@@ -61,7 +61,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     };
 
     await expect(
-      authenticator.delegateAuthRequest(req, res, routing)
+      authenticator.delegateAuthRequest(req, res, routing),
     ).resolves.toBe(undefined);
 
     expect(requestDelegator).toHaveReturnedTimes(1);
@@ -121,8 +121,8 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         {
           agent: { id: '2222222222', num: '+1234567890' },
           user: '9876543210',
-        }
-      )
+        },
+      ),
     ).toEqual({ ok: true });
     expect(
       checkCurrentAuthUsability(
@@ -130,8 +130,8 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         {
           agent: { id: '2222222222', num: '+1234567890' },
           user: '9876543210',
-        }
-      )
+        },
+      ),
     ).toEqual({ ok: false });
     expect(
       checkCurrentAuthUsability(
@@ -139,8 +139,8 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         {
           agent: { id: '2222222222', num: '+1234567890' },
           user: '9876543210',
-        }
-      )
+        },
+      ),
     ).toEqual({ ok: false });
   });
 
@@ -151,7 +151,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
 
     await expect(
-      verifyCredential({ agent: '2222222222', user: '9876543210' })
+      verifyCredential({ agent: '2222222222', user: '9876543210' }),
     ).resolves.toEqual({
       ok: true,
       data: {
@@ -177,19 +177,19 @@ test('.getAuthUrlPostfix(id, path)', () => {
   const authenticator = new ServerAuthenticator(
     bot,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
   const expectedSuffix = '/foo/auth/whatsapp?login=__LOGIN_TOKEN__';
   expect(
     authenticator.getAuthUrlPostfix(
-      new WhatsAppChat('1111111111', '9876543210')
-    )
+      new WhatsAppChat('1111111111', '9876543210'),
+    ),
   ).toBe(expectedSuffix);
   expect(
     authenticator.getAuthUrlPostfix(
       new WhatsAppChat('1111111111', '9876543210'),
-      '/foo?bar=baz'
-    )
+      '/foo?bar=baz',
+    ),
   ).toBe(expectedSuffix);
 
   expect(basicAuthenticator.getAuthUrl).toHaveBeenCalledTimes(2);
@@ -197,13 +197,13 @@ test('.getAuthUrlPostfix(id, path)', () => {
     1,
     'whatsapp',
     { agent: '1111111111', user: '9876543210' },
-    undefined
+    undefined,
   );
   expect(basicAuthenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
     'whatsapp',
     { agent: '1111111111', user: '9876543210' },
-    '/foo?bar=baz'
+    '/foo?bar=baz',
   );
 });
 
@@ -211,7 +211,7 @@ test('.verifyCredential() fails anyway', async () => {
   const authenticator = new ServerAuthenticator(
     bot,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
@@ -227,13 +227,13 @@ test('.verifyRefreshment(data)', async () => {
   const authenticator = new ServerAuthenticator(
     bot,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
   await expect(
     authenticator.verifyRefreshment({
       agent: { id: '2222222222', num: '+1234567890' },
       user: '9876543210',
-    })
+    }),
   ).resolves.toEqual({
     ok: true,
     data: {
@@ -247,7 +247,7 @@ test('.verifyRefreshment(data)', async () => {
     authenticator.verifyRefreshment({
       agent: { id: '2222222222', num: '+1234567890' },
       user: '9876543210',
-    })
+    }),
   ).resolves.toMatchInlineSnapshot(`
     {
       "code": 404,
@@ -261,13 +261,13 @@ test('.checkAuthData(data)', () => {
   const authenticator = new ServerAuthenticator(
     bot,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
   expect(
     authenticator.checkAuthData({
       agent: { id: '1111111111', num: '+1234567890' },
       user: '9876543210',
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {

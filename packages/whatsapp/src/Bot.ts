@@ -16,6 +16,7 @@ import {
   MetaApiResult,
   MetaApiDispatchResponse,
   MetaApiResponseBody,
+  MetaApiUploadingFile,
 } from '@sociably/meta-api';
 import generalComponentDelegator from './components/general.js';
 import { WHATSAPP } from './constant.js';
@@ -52,10 +53,13 @@ type ApiCallOptions = {
   params?: Record<string, unknown>;
   /** Make the API call as the Meta app */
   asApp?: boolean;
+  /** File to upload */
+  file?: MetaApiUploadingFile;
 };
 
 /**
  * WhatsAppBot render messages and make API call to WhatsApp platform.
+ *
  * @category Provider
  */
 export class WhatsAppBot
@@ -103,7 +107,7 @@ export class WhatsAppBot
       queue,
       worker,
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   }
 
@@ -117,14 +121,14 @@ export class WhatsAppBot
 
   async render(
     thread: WhatsAppChat,
-    messages: SociablyNode
+    messages: SociablyNode,
   ): Promise<null | MetaApiDispatchResponse> {
     return this.engine.render(thread, messages, createChatJobs);
   }
 
   async uploadMedia(
     agentIdOrInstance: string | WhatsAppAgent,
-    node: SociablyNode
+    node: SociablyNode,
   ): Promise<null | { id: string }> {
     const agent =
       typeof agentIdOrInstance === 'string'
@@ -134,7 +138,7 @@ export class WhatsAppBot
     const response = await this.engine.render(
       agent,
       node,
-      createUploadingMediaJobs
+      createUploadingMediaJobs,
     );
 
     if (!response) {
@@ -148,10 +152,11 @@ export class WhatsAppBot
     url,
     params,
     asApp,
+    file,
   }: ApiCallOptions): Promise<ResBody> {
     try {
       const { results } = await this.engine.dispatchJobs(null, [
-        { request: { method, url, params }, asApp },
+        { request: { method, url, params }, asApp, file },
       ]);
 
       return results[0].body as ResBody;
@@ -174,7 +179,7 @@ const BotP = serviceProviderClass({
   factory: (
     { accessToken, appId, appSecret, apiBatchRequestInterval },
     moduleUitils,
-    platformUtils
+    platformUtils,
   ) =>
     new WhatsAppBot({
       accessToken,

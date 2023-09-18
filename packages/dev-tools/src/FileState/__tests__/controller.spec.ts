@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { tmpNameSync } from 'tmp';
 import { FileStateController } from '../controller.js';
 
@@ -86,7 +86,7 @@ describe('.get()', () => {
     const tmpPath = tmpNameSync();
     const controller = new FileStateController({ path: tmpPath });
     await expect(controller.threadState(fooThread).get('key')).resolves.toBe(
-      undefined
+      undefined,
     );
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
@@ -143,7 +143,7 @@ describe('.getAll()', () => {
     `);
 
     await expect(
-      controller.threadState(unknownThread).getAll()
+      controller.threadState(unknownThread).getAll(),
     ).resolves.toEqual(new Map());
   });
 
@@ -152,7 +152,7 @@ describe('.getAll()', () => {
     const controller = new FileStateController({ path: tmpPath });
 
     await expect(controller.threadState(fooThread).getAll()).resolves.toEqual(
-      new Map()
+      new Map(),
     );
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
@@ -188,7 +188,7 @@ describe('.keys()', () => {
       'key2',
     ]);
     await expect(controller.threadState(unknownThread).keys()).resolves.toEqual(
-      []
+      [],
     );
   });
 
@@ -284,7 +284,7 @@ describe('.set()', () => {
     const controller = new FileStateController({ path: tmpPath });
 
     await expect(
-      controller.threadState(fooThread).set('bar', 'baz')
+      controller.threadState(fooThread).set('bar', 'baz'),
     ).resolves.toBe(false);
 
     await delay(50);
@@ -321,10 +321,10 @@ describe('.delete()', () => {
     await expect(fooThreadState.delete('key1')).resolves.toBe(false);
 
     await expect(controller.userState(barUser).delete('key1')).resolves.toBe(
-      true
+      true,
     );
     await expect(
-      controller.channelState(booChannel).delete('key3')
+      controller.channelState(booChannel).delete('key3'),
     ).resolves.toBe(false);
 
     await delay(50);
@@ -363,7 +363,7 @@ describe('.delete()', () => {
     const controller = new FileStateController({ path: tmpPath });
 
     await expect(controller.threadState(fooThread).delete('key')).resolves.toBe(
-      false
+      false,
     );
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
@@ -449,7 +449,7 @@ test('reflect content changes on storage file', async () => {
     new Map<string, unknown>([
       ['key1', 'foo'],
       ['key2', 123],
-    ])
+    ]),
   );
 
   fs.writeFileSync(
@@ -461,7 +461,7 @@ test('reflect content changes on storage file', async () => {
            "key2": "baz"
          }
        }
-     }`
+     }`,
   );
 
   await delay(50);
@@ -470,7 +470,7 @@ test('reflect content changes on storage file', async () => {
     new Map([
       ['key1', 'foooo'],
       ['key2', 'baz'],
-    ])
+    ]),
   );
 });
 
@@ -492,7 +492,7 @@ test('custom marshaler', async () => {
            }
          }
        }
-     }`
+     }`,
   );
 
   const controller = new FileStateController({ path: tmpPath }, marshaler);
@@ -510,7 +510,7 @@ test('custom marshaler', async () => {
   expect(marshaler.marshal).toHaveBeenCalledWith(456);
 
   await expect(fooState.update('key1', (v: number) => v + 666)).resolves.toBe(
-    789
+    789,
   );
   await delay(50);
   expect(marshaler.marshal).toHaveBeenCalledWith(789);
@@ -519,7 +519,7 @@ test('custom marshaler', async () => {
     new Map([
       ['key1', 789],
       ['key2', 456],
-    ])
+    ]),
   );
   expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
     {
@@ -561,7 +561,7 @@ test('custom serializer', async () => {
   const controller = new FileStateController(
     { path: tmpPath },
     undefined,
-    serializer
+    serializer,
   );
 
   const fooThreadState = controller.threadState(fooThread);
@@ -573,7 +573,7 @@ test('custom serializer', async () => {
 
   await delay(50);
   expect(fs.readFileSync(tmpPath, 'utf8')).toBe(
-    '_UPDATED_MAGICALLY_ENCODED_DATA_'
+    '_UPDATED_MAGICALLY_ENCODED_DATA_',
   );
   expect(serializer.stringify).toHaveBeenCalledWith({
     threadStates: {

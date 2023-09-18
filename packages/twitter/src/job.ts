@@ -14,16 +14,16 @@ import type {
   TweetResult,
 } from './types.js';
 
-const useCreatedTweetTarget = (agentId: string) => (_, result: TweetResult) => {
-  return new TweetTarget(agentId, result.data.id);
-};
+const useCreatedTweetTarget = (agentId: string) => (_, result: TweetResult) =>
+  new TweetTarget(agentId, result.data.id);
+
 const useCurrentTarget = (curTarget: TweetTarget) => curTarget;
 
 const plainTweetJob = (
   agentId: string,
   target: TweetTarget,
   key: string,
-  text?: string
+  text?: string,
 ) => {
   const { request, accomplishRequest, mediaSources } = createTweetSegmentValue({
     text,
@@ -43,7 +43,7 @@ export const createTweetJobs =
   ({ key }: { key: string }) =>
   (
     target: TweetTarget,
-    segments: DispatchableSegment<TwitterSegmentValue>[]
+    segments: DispatchableSegment<TwitterSegmentValue>[],
   ): TwitterJob[] => {
     const jobs: TwitterJob[] = [];
     let lastOpenTweet: null | TwitterJob = null;
@@ -53,7 +53,7 @@ export const createTweetJobs =
       if (segment.type === 'text') {
         const splitedContent = splitTweetText(segment.value);
         const newJobs = splitedContent?.map((text) =>
-          plainTweetJob(target.agentId, target, key, text)
+          plainTweetJob(target.agentId, target, key, text),
         );
 
         if (newJobs) {
@@ -108,8 +108,8 @@ export const createTweetJobs =
       } else {
         throw new Error(
           `direct message feature ${formatNode(
-            segment.node
-          )} cannot be used while tweeting`
+            segment.node,
+          )} cannot be used while tweeting`,
         );
       }
     });
@@ -119,7 +119,7 @@ export const createTweetJobs =
 
 export const createDirectMessageJobs = (
   chat: TwitterChat,
-  segments: DispatchableSegment<TwitterSegmentValue>[]
+  segments: DispatchableSegment<TwitterSegmentValue>[],
 ): TwitterJob[] => {
   const jobs: TwitterJob[] = [];
   const key = chat.uid;
@@ -127,7 +127,7 @@ export const createDirectMessageJobs = (
   segments.forEach((segment) => {
     if (segment.type === 'text') {
       const { request, mediaSources, accomplishRequest } = createDmSegmentValue(
-        segment.value
+        segment.value,
       );
 
       jobs.push({
@@ -153,7 +153,7 @@ export const createDirectMessageJobs = (
     } else if (segment.value.type === 'media') {
       const { request, mediaSources, accomplishRequest } = createDmSegmentValue(
         undefined,
-        segment.value.attachment
+        segment.value.attachment,
       );
 
       jobs.push({
@@ -168,8 +168,8 @@ export const createDirectMessageJobs = (
     } else {
       throw new Error(
         `tweeting feature ${formatNode(
-          segment.node
-        )} cannot be used while tweeting`
+          segment.node,
+        )} cannot be used while tweeting`,
       );
     }
   });
@@ -182,7 +182,7 @@ export const createWelcomeMessageJobs = (name?: string) => {
 
   return (
     _targe: TweetTarget,
-    segments: DispatchableSegment<TwitterSegmentValue>[]
+    segments: DispatchableSegment<TwitterSegmentValue>[],
   ): TwitterJob[] => {
     if (isCreated || segments.length > 1) {
       throw new Error('welcome message should contain only one direct message');
@@ -200,7 +200,7 @@ export const createWelcomeMessageJobs = (name?: string) => {
       dmSegValue = segment.value;
     } else {
       throw new Error(
-        `${formatNode(segment.node)} cannot be used as welcome message`
+        `${formatNode(segment.node)} cannot be used as welcome message`,
       );
     }
 

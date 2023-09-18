@@ -32,7 +32,7 @@ const baseConfigs = {
     '<rootDir>/node_modules/@sociably/jest-snapshot-serializer/lib/index.js',
   ],
   transformIgnorePatterns: [
-    '<rootDir>/node_modules/(?!camelcase-keys|camelcase|node-fetch)',
+    '<rootDir>/node_modules/(?!camelcase-keys|camelcase|node-fetch|@moxyjs/moxy|data-uri-to-buffer|fetch-blob|formdata-polyfill)',
   ],
   prettierPath: require.resolve('prettier-2'),
 };

@@ -12,7 +12,7 @@ it('is valid root Component', () => {
 
 it('match snapshot', async () => {
   await expect(
-    renderUnitElement(<PageVideo url="http://sociably.js/yoyoyo.mp4" />)
+    renderUnitElement(<PageVideo url="http://sociably.js/yoyoyo.mp4" />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -23,7 +23,7 @@ it('match snapshot', async () => {
         "type": "unit",
         "value": {
           "apiPath": "me/videos",
-          "attachFile": undefined,
+          "file": undefined,
           "params": {
             "backdated_post": undefined,
             "file_size": undefined,
@@ -36,20 +36,26 @@ it('match snapshot', async () => {
     ]
   `);
 
-  await expect(renderUnitElement(<PageVideo fileData={Buffer.from('🤟')} />))
-    .resolves.toMatchInlineSnapshot(`
+  await expect(
+    renderUnitElement(
+      <PageVideo file={{ data: Buffer.from('🤟'), contentLength: 4 }} />,
+    ),
+  ).resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <PageVideo
-          fileData={
+          file={
             {
-              "data": [
-                240,
-                159,
-                164,
-                159,
-              ],
-              "type": "Buffer",
+              "contentLength": 4,
+              "data": {
+                "data": [
+                  240,
+                  159,
+                  164,
+                  159,
+                ],
+                "type": "Buffer",
+              },
             }
           }
         />,
@@ -57,7 +63,8 @@ it('match snapshot', async () => {
         "type": "unit",
         "value": {
           "apiPath": "me/videos",
-          "attachFile": {
+          "file": {
+            "contentLength": 4,
             "data": {
               "data": [
                 240,
@@ -70,7 +77,7 @@ it('match snapshot', async () => {
           },
           "params": {
             "backdated_post": undefined,
-            "file_size": undefined,
+            "file_size": 4,
             "url": undefined,
           },
           "thumbnailFile": undefined,
@@ -96,9 +103,9 @@ it('match snapshot', async () => {
           backdatedTime: new Date('2022Z'),
           backdatedTimeGranularity: 'month',
         }}
-        thumbnailData={Buffer.from('🤘')}
-      />
-    )
+        thumbnailFile={{ data: Buffer.from('🤘') }}
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -121,15 +128,17 @@ it('match snapshot', async () => {
               },
             }
           }
-          thumbnailData={
+          thumbnailFile={
             {
-              "data": [
-                240,
-                159,
-                164,
-                152,
-              ],
-              "type": "Buffer",
+              "data": {
+                "data": [
+                  240,
+                  159,
+                  164,
+                  152,
+                ],
+                "type": "Buffer",
+              },
             }
           }
           title="LET'S ROCK 🤟"
@@ -139,7 +148,7 @@ it('match snapshot', async () => {
         "type": "unit",
         "value": {
           "apiPath": "me/videos",
-          "attachFile": undefined,
+          "file": undefined,
           "params": {
             "backdated_post": {
               "backdated_time": 1640995200,
@@ -179,18 +188,21 @@ it('match snapshot', async () => {
 
 it('throw if there is no source prop', async () => {
   await expect(
-    renderUnitElement(<PageVideo />)
+    renderUnitElement(<PageVideo />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: "url" or "fileData""`
+    `"There should be exactly one source prop: "url" or "file""`,
   );
 });
 
 it('throw if multiple source props are set', async () => {
   await expect(
     renderUnitElement(
-      <PageVideo fileData={Buffer.from('foo')} url="http://..." />
-    )
+      <PageVideo
+        file={{ data: Buffer.from('foo'), contentLength: 3 }}
+        url="http://..."
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: "url" or "fileData""`
+    `"There should be exactly one source prop: "url" or "file""`,
   );
 });

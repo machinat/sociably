@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { MetaApiError } from '@sociably/meta-api';
 import type { FacebookBot } from '../Bot.js';
 import FacebookPage from '../Page.js';
@@ -35,7 +35,7 @@ test('fetch profile from api', async () => {
   expect(profile?.firstName).toBe('Peter');
   expect(profile?.lastName).toBe('Chang');
   expect(profile?.avatarUrl).toBe(
-    'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/p200x200/13055603_10105219398495383_8237637584159975445_n.jpg?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce'
+    'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/p200x200/13055603_10105219398495383_8237637584159975445_n.jpg?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce',
   );
   expect(profile?.languageCode).toBe(undefined);
   expect(profile?.timeZone).toBe(undefined);
@@ -69,7 +69,7 @@ test('fetch profile from api', async () => {
     }
   `);
   expect(UserProfile.fromJSONValue(profile?.toJSONValue())).toStrictEqual(
-    profile
+    profile,
   );
 });
 
@@ -127,7 +127,7 @@ it('query additional optionalProfileFields if given', async () => {
     }
   `);
   expect(UserProfile.fromJSONValue(profile!.toJSONValue())).toStrictEqual(
-    profile
+    profile,
   );
 });
 

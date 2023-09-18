@@ -40,7 +40,10 @@ module.exports = {
       'always',
       { exceptAfterSingleLine: true },
     ],
-    'prefer-destructuring': ['error', { object: true, array: false }],
+    'prefer-destructuring': [
+      'error',
+      { AssignmentExpression: { array: false, object: false } },
+    ],
     'max-classes-per-file': 'off',
     'import/extensions': 'off',
     'import/no-extraneous-dependencies': [

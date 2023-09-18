@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { DispatchError } from '@sociably/core/engine';
 import { MetaApiChannel } from '@sociably/meta-api';
 import saveReusableAttachments from '../saveReusableAttachments.js';
@@ -46,7 +46,7 @@ it('do nothing when job has no assetTag', async () => {
   const next = moxy(async () => response);
 
   await expect(
-    saveReusableAttachments(manager)(context, next)
+    saveReusableAttachments(manager)(context, next),
   ).resolves.toEqual(response);
 
   expect(next).toHaveBeenCalledTimes(1);
@@ -88,7 +88,7 @@ it('save attachment id created with send api', async () => {
   const context = { hello: 'droid' };
 
   await expect(
-    saveReusableAttachments(manager)(context as never, next)
+    saveReusableAttachments(manager)(context as never, next),
   ).resolves.toEqual(response);
 
   expect(next).toHaveBeenCalledTimes(1);
@@ -99,19 +99,19 @@ it('save attachment id created with send api', async () => {
     1,
     channel.id,
     'foo',
-    '_ATTACHMENT_1_'
+    '_ATTACHMENT_1_',
   );
   expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     2,
     channel.id,
     'bar',
-    '_ATTACHMENT_2_'
+    '_ATTACHMENT_2_',
   );
   expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     3,
     channel.id,
     'baz',
-    '_ATTACHMENT_3_'
+    '_ATTACHMENT_3_',
   );
 });
 
@@ -138,7 +138,7 @@ it('save attachment id when partial success', async () => {
       },
       undefined,
       undefined,
-    ]
+    ],
   );
 
   const next = moxy(async () => {
@@ -147,7 +147,7 @@ it('save attachment id when partial success', async () => {
   const context = { hello: 'droid' };
 
   await expect(
-    saveReusableAttachments(manager)(context as never, next)
+    saveReusableAttachments(manager)(context as never, next),
   ).rejects.toThrowError(error);
 
   expect(next).toHaveBeenCalledTimes(1);
@@ -158,12 +158,12 @@ it('save attachment id when partial success', async () => {
     1,
     channel.id,
     'foo',
-    '_ATTACHMENT_1_'
+    '_ATTACHMENT_1_',
   );
   expect(manager.saveAttachment).toHaveBeenNthCalledWith(
     2,
     channel.id,
     'bar',
-    '_ATTACHMENT_2_'
+    '_ATTACHMENT_2_',
   );
 });

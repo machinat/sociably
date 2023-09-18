@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
 import type { FacebookBot } from '../../Bot.js';
@@ -47,7 +47,7 @@ describe('subscription management', () => {
           webhookVerifyToken: '_VERIFY_TOKEN_',
           objectType: 'user',
           fields: ['foo_field', 'bar_field'],
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -97,7 +97,7 @@ describe('subscription management', () => {
       });
 
       await expect(
-        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' })
+        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -122,9 +122,9 @@ describe('subscription management', () => {
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           webhookVerifyToken: '_VERIFY_TOKEN_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -135,9 +135,9 @@ describe('subscription management', () => {
         manager.setAppSubscription({
           appId: '_APP_ID_',
           webhookVerifyToken: '_VERIFY_TOKEN_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -148,9 +148,9 @@ describe('subscription management', () => {
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           appId: '_APP_ID_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -177,7 +177,7 @@ describe('subscription management', () => {
           objectType: 'user',
           fields: ['foo_field', 'bar_field'],
           appId: '_ANOTHER_APP_ID_',
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -196,7 +196,7 @@ describe('subscription management', () => {
       const manager = new FacebookAssetsManager(stateController, bot);
 
       await expect(
-        manager.deleteAppSubscription()
+        manager.deleteAppSubscription(),
       ).rejects.toThrowErrorMatchingInlineSnapshot(`"appId is empty"`);
 
       expect(bot.requestApi).not.toHaveBeenCalled();
@@ -211,7 +211,7 @@ describe('subscription management', () => {
         manager.setSubscribedApp(page, {
           fields: ['messages', 'messaging_postbacks'],
           accessToken: '_ACCESS_TOKEN_',
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -292,7 +292,7 @@ describe('subscription management', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new FacebookAssetsManager(stateController, bot);
       bot.requestApi.mock.fake(async ({ method }) =>
-        method === 'GET' ? { data: [] } : {}
+        method === 'GET' ? { data: [] } : {},
       );
 
       await expect(
@@ -301,7 +301,7 @@ describe('subscription management', () => {
           getStarted: { payload: 'GO!' },
           greeting: [{ locale: 'default', text: 'Hello World!' }],
           accessToken: '_ACCESS_TOKEN_',
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -352,7 +352,7 @@ describe('subscription management', () => {
                 },
               ],
             }
-          : {}
+          : {},
       );
 
       await expect(
@@ -362,7 +362,7 @@ describe('subscription management', () => {
             { locale: 'zh_TW', text: '哈囉！' },
             { locale: 'default', text: 'Hello World!' },
           ],
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
@@ -409,7 +409,7 @@ describe('subscription management', () => {
                 },
               ],
             }
-          : {}
+          : {},
       );
 
       await expect(
@@ -427,7 +427,7 @@ describe('subscription management', () => {
               locale: 'zh_TW',
             },
           ],
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -459,13 +459,13 @@ describe('assets management', () => {
     const manager = new FacebookAssetsManager(stateController, bot);
 
     await expect(manager.getAssetId(page, 'foo', 'bar')).resolves.toBe(
-      undefined
+      undefined,
     );
     await expect(manager.getAttachment(page, 'my_attachment')).resolves.toBe(
-      undefined
+      undefined,
     );
     await expect(manager.getPersona(page, 'my_persona')).resolves.toBe(
-      undefined
+      undefined,
     );
 
     expect(stateController.globalState).toHaveBeenCalledTimes(3);
@@ -488,12 +488,12 @@ describe('assets management', () => {
 
     state.get.mock.fakeReturnValue('_ATTACHMENT_ID_');
     await expect(manager.getAttachment(page, 'my_attachment')).resolves.toBe(
-      '_ATTACHMENT_ID_'
+      '_ATTACHMENT_ID_',
     );
 
     state.get.mock.fakeReturnValue('_PERSONA_ID_');
     await expect(manager.getPersona(page, 'my_persona')).resolves.toBe(
-      '_PERSONA_ID_'
+      '_PERSONA_ID_',
     );
 
     expect(stateController.globalState).toHaveBeenCalledTimes(6);
@@ -504,13 +504,13 @@ describe('assets management', () => {
     const manager = new FacebookAssetsManager(stateController, bot);
 
     await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
-      false
+      false,
     );
     await expect(
-      manager.saveAttachment(page, 'my_attachment', '_ATTACHMENT_ID_')
+      manager.saveAttachment(page, 'my_attachment', '_ATTACHMENT_ID_'),
     ).resolves.toBe(false);
     await expect(
-      manager.savePersona(page, 'my_persona', '_PERSONA_ID_')
+      manager.savePersona(page, 'my_persona', '_PERSONA_ID_'),
     ).resolves.toBe(false);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(3);
@@ -528,19 +528,19 @@ describe('assets management', () => {
     expect(state.set).toHaveBeenNthCalledWith(
       2,
       'my_attachment',
-      '_ATTACHMENT_ID_'
+      '_ATTACHMENT_ID_',
     );
     expect(state.set).toHaveBeenNthCalledWith(3, 'my_persona', '_PERSONA_ID_');
 
     state.set.mock.fake(async () => true);
     await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
-      true
+      true,
     );
     await expect(
-      manager.saveAttachment(page, 'my_attachment', '_ATTACHMENT_ID_')
+      manager.saveAttachment(page, 'my_attachment', '_ATTACHMENT_ID_'),
     ).resolves.toBe(true);
     await expect(
-      manager.savePersona(page, 'my_persona', '_PERSONA_ID_')
+      manager.savePersona(page, 'my_persona', '_PERSONA_ID_'),
     ).resolves.toBe(true);
     expect(state.set).toHaveBeenCalledTimes(6);
   });
@@ -580,7 +580,7 @@ describe('assets management', () => {
 
     await expect(manager.unsaveAssetId(page, 'foo', 'bar')).resolves.toBe(true);
     await expect(manager.unsaveAttachment(page, 'my_attachment')).resolves.toBe(
-      true
+      true,
     );
     await expect(manager.unsavePersona(page, 'my_persona')).resolves.toBe(true);
 
@@ -601,13 +601,13 @@ describe('assets management', () => {
 
     state.delete.mock.fake(async () => false);
     await expect(manager.unsaveAssetId(page, 'foo', 'bar')).resolves.toBe(
-      false
+      false,
     );
     await expect(manager.unsaveAttachment(page, 'my_attachment')).resolves.toBe(
-      false
+      false,
     );
     await expect(manager.unsavePersona(page, 'my_persona')).resolves.toBe(
-      false
+      false,
     );
     expect(state.delete).toHaveBeenCalledTimes(6);
   });
@@ -622,14 +622,14 @@ describe('assets management', () => {
       manager.uploadChatAttachment(
         page,
         'my_avatar',
-        <img src="http://foo.bar/avatar" />
-      )
+        <img src="http://foo.bar/avatar" />,
+      ),
     ).resolves.toBe('1857777774821032');
 
     expect(bot.uploadChatAttachment).toHaveBeenCalledTimes(1);
     expect(bot.uploadChatAttachment).toHaveBeenCalledWith(
       page,
-      <img src="http://foo.bar/avatar" />
+      <img src="http://foo.bar/avatar" />,
     );
 
     expect(state.set).toHaveBeenCalledTimes(1);
@@ -644,7 +644,7 @@ describe('assets management', () => {
       manager.createPersona(page, 'cute_persona', {
         name: 'Baby Yoda',
         profilePictureUrl: '_URL_',
-      })
+      }),
     ).resolves.toBe('_PERSONA_ID_');
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -664,7 +664,7 @@ describe('assets management', () => {
         name: 'Boba Fett',
         profilePictureUrl: '_URL_2_',
         accessToken: '_MY_ACCESS_TOKEN_',
-      })
+      }),
     ).resolves.toBe('_PERSONA_ID_2_');
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -687,7 +687,7 @@ describe('assets management', () => {
     }));
 
     await expect(manager.deletePersona(page, 'my_persona')).resolves.toBe(
-      false
+      false,
     );
     expect(bot.requestApi).not.toHaveBeenCalled();
 
@@ -695,7 +695,7 @@ describe('assets management', () => {
     await expect(
       manager.deletePersona(page, 'my_persona', {
         accessToken: '_ACCESS_TOKEN_',
-      })
+      }),
     ).resolves.toBe(true);
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);

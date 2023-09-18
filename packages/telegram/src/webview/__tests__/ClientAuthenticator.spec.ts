@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import TelegramClientAuthenticator from '../ClientAuthenticator.js';
 import TelegramChat from '../../Chat.js';
 import TelegramUser from '../../User.js';

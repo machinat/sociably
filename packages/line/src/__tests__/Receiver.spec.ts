@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
-import { moxy, Mock } from '@moxyjs/moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import { LineReceiver } from '../Receiver.js';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
@@ -85,7 +85,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 
     expect(res.statusCode).toBe(405);
     expect(res.finished).toBe(true);
-  }
+  },
 );
 
 it('responds 400 if body is empty', async () => {
@@ -205,7 +205,7 @@ it('respond 200 and pop events received', async () => {
     expect(event.platform).toBe('line');
     expect(event.channel).toEqual(new LineChannel('_CHANNEL_ID_FOO_'));
     expect(event.thread).toEqual(
-      new LineChat('_CHANNEL_ID_FOO_', 'user', 'U4af4980629')
+      new LineChat('_CHANNEL_ID_FOO_', 'user', 'U4af4980629'),
     );
     expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'U4af4980629'));
 
@@ -231,10 +231,10 @@ it('respond 200 and pop events received', async () => {
   expect(event2.payload).toEqual(body.events[1]);
 
   expect(
-    agentSettingsAccessor.getLineChatChannelSettingsByBotUserId
+    agentSettingsAccessor.getLineChatChannelSettingsByBotUserId,
   ).toHaveBeenCalledTimes(1);
   expect(
-    agentSettingsAccessor.getLineChatChannelSettingsByBotUserId
+    agentSettingsAccessor.getLineChatChannelSettingsByBotUserId,
   ).toHaveBeenCalledWith('FOO');
 });
 
@@ -251,7 +251,7 @@ test('reply(message)', async () => {
       method: 'POST',
       body: '{"destination":"xxx","events":[{"replyToken":"_REPLY_TOKEN_","type":"message","timestamp":1462629479859,"source":{"type":"user","userId":"xxx"},"message":{"id":"325708","type":"text","text":"Hello, world"}}]}',
     }),
-    createRes()
+    createRes(),
   );
 
   const { reply, event } = popEventMock.calls[0].args[0];
@@ -286,7 +286,7 @@ it('validate request', async () => {
       channelId: '_CHANNEL_ID_',
       providerId: '_PROVIDER_ID_',
       accessToken: '_ACCESS_TOKEN_',
-    }
+    },
   );
 
   const body =

@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -62,7 +62,7 @@ describe('initModule(configs)', () => {
     expect(typeof module.startHook).toBe('function');
     expect(module.eventMiddlewares).toEqual([eventMiddleware]);
     expect(module.dispatchMiddlewares).toEqual(
-      expect.arrayContaining([dispatchMiddleware, saveUploadedFile])
+      expect.arrayContaining([dispatchMiddleware, saveUploadedFile]),
     );
   });
 
@@ -144,7 +144,7 @@ describe('initModule(configs)', () => {
         TelegramChatSender,
         TelegramUserProfile,
         TelegramChatProfile,
-      ])
+      ]),
     );
   });
 
@@ -191,10 +191,10 @@ describe('initModule(configs)', () => {
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(new TelegramUser(12345))
+      agentSettingsAccessor.getAgentSettings(new TelegramUser(12345)),
     ).resolves.toEqual(agentSettings);
     await expect(
-      agentSettingsAccessor.getAgentSettingsBatch([new TelegramUser(12345)])
+      agentSettingsAccessor.getAgentSettingsBatch([new TelegramUser(12345)]),
     ).resolves.toEqual([agentSettings]);
 
     await app.stop();
@@ -227,16 +227,16 @@ describe('initModule(configs)', () => {
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(new TelegramUser(1111111, true))
+      agentSettingsAccessor.getAgentSettings(new TelegramUser(1111111, true)),
     ).resolves.toEqual(multiAgentSettings[0]);
     await expect(
-      agentSettingsAccessor.getAgentSettings(new TelegramUser(2222222, true))
+      agentSettingsAccessor.getAgentSettings(new TelegramUser(2222222, true)),
     ).resolves.toEqual(multiAgentSettings[1]);
     await expect(
       agentSettingsAccessor.getAgentSettingsBatch([
         new TelegramUser(1111111, true),
         new TelegramUser(1234567, true),
-      ])
+      ]),
     ).resolves.toEqual([multiAgentSettings[0], null]);
 
     await app.stop();
@@ -253,7 +253,7 @@ describe('initModule(configs)', () => {
       getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
     const myAgentSettingsService = serviceProviderFactory({})(
-      () => settingsAccessor
+      () => settingsAccessor,
     );
 
     const app = Sociably.createApp({
@@ -278,9 +278,9 @@ describe('initModule(configs)', () => {
 
   it('throw if no bot settings source provided', () => {
     expect(() =>
-      Telegram.initModule({ secretToken: '_SECRET_' })
+      Telegram.initModule({ secretToken: '_SECRET_' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Telegram platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
+      `"Telegram platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`,
     );
   });
 

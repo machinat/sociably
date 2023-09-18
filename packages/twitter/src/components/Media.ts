@@ -1,30 +1,40 @@
 import { NativeElement } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent.js';
-import { TwitterSegmentValue, TwitterComponent, MediaType } from '../types.js';
+import {
+  TwitterSegmentValue,
+  TwitterComponent,
+  MediaType,
+  UploadingFile,
+} from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type MediaProps = {
-  /** Set to true if media asset will be reused for multiple Direct Messages. Default is false */
+  /**
+   * Set to true if media asset will be reused for multiple Direct Messages.
+   * Default is false
+   */
   shared?: boolean;
   /** The tag to store media asset with */
   assetTag?: string;
-  /** A string enum value which identifies a media usecase. This identifier is used to enforce usecase specific constraints (e.g. file size, video duration) and enable advanced features */
+  /**
+   * A string enum value which identifies a media usecase. This identifier is
+   * used to enforce usecase specific constraints (e.g. file size, video
+   * duration) and enable advanced features
+   */
   mediaCategory?: string;
-  /** A comma-separated list of user IDs to set as additional owners allowed to use the returned media_id in Tweets or Cards. Up to 100 additional owners may be specified */
+  /**
+   * A comma-separated list of user IDs to set as additional owners allowed to
+   * use the returned media_id in Tweets or Cards. Up to 100 additional owners
+   * may be specified
+   */
   additionalOwners?: string[];
   /** The media file url */
   url?: string;
   /** The uploaded media id */
   mediaId?: string;
   /** The file content to be upload */
-  fileData?: Buffer | NodeJS.ReadableStream;
-  /** The content type of the file. Required when uploading using `file` */
-  fileType?: string;
-  /** The file size in bytes. Required when uploading using `file` */
-  fileSize?: number;
+  file?: UploadingFile;
 };
 
 const makeMediaComponent = (name: string, mediaType: MediaType) =>
@@ -32,33 +42,26 @@ const makeMediaComponent = (name: string, mediaType: MediaType) =>
     {
       [name](
         node: NativeElement<MediaProps, TwitterComponent<MediaProps>>,
-        path: string
+        path: string,
       ): UnitSegment<TwitterSegmentValue>[] {
         const {
           shared,
           assetTag,
           url,
           mediaId,
-          fileData,
-          fileSize,
-          fileType,
+          file,
           mediaCategory,
           additionalOwners,
         } = node.props;
 
         if (
-          !(url || mediaId || fileData) ||
+          !(url || mediaId || file) ||
           (url && mediaId) ||
-          (url && fileData) ||
-          (fileData && mediaId)
+          (url && file) ||
+          (file && mediaId)
         ) {
           throw new TypeError(
-            'there should be exactly one of "url", "mediaId" or "fileData" prop'
-          );
-        }
-        if (fileData && (!fileType || !fileSize)) {
-          throw new TypeError(
-            '"fileType" and "fileSize" props are required when using "fileData" source'
+            'there should be exactly one of "url", "mediaId" or "file" prop',
           );
         }
 
@@ -83,17 +86,17 @@ const makeMediaComponent = (name: string, mediaType: MediaType) =>
                   type: mediaType,
                   source: { type: 'url', url, params },
                 }
-              : fileData
+              : file
               ? {
                   type: mediaType,
                   source: {
                     type: 'file',
                     params: {
                       ...params,
-                      total_bytes: fileSize,
-                      media_type: fileType,
+                      total_bytes: file.contentLength,
+                      media_type: file.contentType,
                     },
-                    fileData,
+                    file,
                     assetTag,
                   },
                 }
@@ -101,11 +104,12 @@ const makeMediaComponent = (name: string, mediaType: MediaType) =>
           }),
         ];
       },
-    }[name]
+    }[name],
   );
 
 /**
  * Send a photo by direct message or attach it to a tweet
+ *
  * @category Component
  * @props {@link MediaProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/v1/media/upload-media/overview).
@@ -117,6 +121,7 @@ export const Photo: TwitterComponent<
 
 /**
  * Send a video by direct message or attach it to a tweet
+ *
  * @category Component
  * @props {@link MediaProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/v1/media/upload-media/overview).
@@ -128,6 +133,7 @@ export const Video: TwitterComponent<
 
 /**
  * Send an animated gif by direct message or attach it to a tweet
+ *
  * @category Component
  * @props {@link MediaProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/v1/media/upload-media/overview).

@@ -1,5 +1,5 @@
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Stream from '../stream.js';
 import conditions from '../conditions.js';
 import { STREAMING_KEY_I } from '../interface.js';
@@ -11,15 +11,15 @@ it('split source stream and transmit by the first condtion the value match', asy
 
   const eventListenerFoo = moxy();
   const eventContainerFoo = moxy(
-    serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListenerFoo)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListenerFoo),
   );
   const eventListenerBar = moxy();
   const eventContainerBar = moxy(
-    serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListenerBar)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListenerBar),
   );
   const eventListenerBaz = moxy();
   const eventContainerBaz = moxy(
-    serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListenerBaz)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListenerBaz),
   );
 
   const [foo$, bar$, baz$] = conditions(source, [
@@ -84,15 +84,15 @@ it('split source stream and transmit by the first condtion the value match', asy
 
 const errorListenerA = moxy();
 const errorContainerA = moxy(
-  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListenerA)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListenerA),
 );
 const errorListenerB = moxy();
 const errorContainerB = moxy(
-  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListenerB)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListenerB),
 );
 const errorListenerC = moxy();
 const errorContainerC = moxy(
-  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListenerC)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListenerC),
 );
 
 beforeEach(() => {

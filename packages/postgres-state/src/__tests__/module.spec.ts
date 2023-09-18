@@ -1,4 +1,4 @@
-import { Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import { Pool as _Pool } from 'pg';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
@@ -8,9 +8,9 @@ import { ControllerP as PostgresStateController } from '../Controller.js';
 const Pool = _Pool as Moxy<typeof _Pool>;
 
 jest.mock('pg', () =>
-  jest.requireActual('@moxyjs/moxy').moxy({
+  moxy({
     Pool: function FakedPool() {},
-  })
+  }),
 );
 
 test('export interfaces', () => {

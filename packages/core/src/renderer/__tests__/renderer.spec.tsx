@@ -1,4 +1,4 @@
-import { moxy, Mock } from '@moxyjs/moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import Sociably from '../../index.js';
 import {
   createEmptyScope,
@@ -25,8 +25,8 @@ const generalElementDelegate = moxy(
               value: { letters: node.props.children },
               path,
             },
-          ]
-    )
+          ],
+    ),
 );
 
 beforeEach(() => {
@@ -46,7 +46,7 @@ describe('.render()', () => {
         return Promise.resolve([
           { type: 'unit', node, value: node.props, path },
         ]);
-      })
+      }),
     );
 
     const Custom = moxy(function Custom(props) {
@@ -82,7 +82,7 @@ describe('.render()', () => {
             path: `${path}.propB`,
           },
         ]);
-      })
+      }),
     );
 
     const message = (
@@ -206,7 +206,7 @@ describe('.render()', () => {
     expect(Custom).toHaveBeenCalledTimes(1);
     expect(Custom).toHaveBeenCalledWith(
       { a: 'A', b: 2 },
-      { platform: 'test', path: '$::7' }
+      { platform: 'test', path: '$::7' },
     );
 
     expect(generalElementDelegate).toHaveBeenCalledTimes(2);
@@ -214,13 +214,13 @@ describe('.render()', () => {
       1,
       <a>AAA</a>,
       '$::3',
-      expect.any(Function)
+      expect.any(Function),
     );
     expect(generalElementDelegate).toHaveBeenNthCalledWith(
       2,
       <b>BBB</b>,
       '$::4',
-      expect.any(Function)
+      expect.any(Function),
     );
 
     let [, , renderInner] = generalElementDelegate.mock.calls[0].args;
@@ -238,13 +238,13 @@ describe('.render()', () => {
       1,
       <NativeUnit1 x="true" y={false} />,
       '$::6',
-      expect.any(Function)
+      expect.any(Function),
     );
     expect(NativeUnit1.$$render).toHaveBeenNthCalledWith(
       2,
       <NativeUnit1 a="A" b={2} />,
       '$::7#Custom::1',
-      expect.any(Function)
+      expect.any(Function),
     );
 
     [, , renderInner] = NativeUnit1.$$render.mock.calls[0].args;
@@ -270,7 +270,7 @@ describe('.render()', () => {
     expect(NativeUnit2.$$render).toHaveBeenCalledWith(
       <NativeUnit2>somthing wrapped</NativeUnit2>,
       '$::9',
-      expect.any(Function)
+      expect.any(Function),
     );
 
     [, , renderInner] = NativeUnit2.$$render.mock.calls[0].args;
@@ -294,7 +294,7 @@ describe('.render()', () => {
     const Vestibulum = makeNativeComponent('test')(
       function Vestibulum(node, path) {
         return [{ type: 'text', value: 'Vestibulum', node, path }];
-      }
+      },
     );
 
     const Unit = makeNativeComponent('test')(function Unit(node, path) {
@@ -424,7 +424,7 @@ describe('.render()', () => {
           { type: 'break', node: <br />, value: undefined, path: '$' },
           { type: 'text', node: 'foot', value: 'foot', path: '$' },
         ];
-      })
+      }),
     );
 
     await expect(renderer.render(<Section />, null, [])).resolves.toEqual([
@@ -445,13 +445,13 @@ describe('.render()', () => {
     const Unit = moxy(
       makeNativeComponent('test')(async function Unit(node) {
         return [{ type: 'unit', node, value: { root: true }, path: '$' }];
-      })
+      }),
     );
 
     const Part = moxy(
       makeNativeComponent('test')(async function Part(node) {
         return [{ type: 'part', node, value: { root: false }, path: '$' }];
-      })
+      }),
     );
 
     const renderer = new Renderer('test', generalElementDelegate);
@@ -466,9 +466,9 @@ describe('.render()', () => {
     ]);
 
     await expect(
-      renderer.render(<Part />, null, [])
+      renderer.render(<Part />, null, []),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"<Part /> is a part element and should not be placed at surface level"`
+      `"<Part /> is a part element and should not be placed at surface level"`,
     );
   });
 
@@ -494,7 +494,7 @@ describe('.render()', () => {
             }`}
           />
         ));
-      })
+      }),
     );
 
     const renderer = new Renderer('test', generalElementDelegate);
@@ -502,7 +502,7 @@ describe('.render()', () => {
     const Native = makeNativeComponent('test')(function Native(
       { props }: any,
       path,
-      render
+      render,
     ) {
       return render(props.children, '.children');
     });
@@ -550,8 +550,8 @@ describe('.render()', () => {
           <Container n={10} />
         </>,
         scope,
-        []
-      )
+        [],
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -640,14 +640,14 @@ describe('.render()', () => {
     expect(scope.injectContainer).toHaveBeenCalledTimes(10);
     expect(scope.injectContainer).toHaveBeenCalledWith(
       Container,
-      expect.any(Map)
+      expect.any(Map),
     );
 
     expect(Container.$$factory).toHaveBeenCalledTimes(10);
     expect(componentMock).toHaveBeenCalledTimes(10);
     expect(componentMock).toHaveBeenCalledWith(
       { n: expect.any(Number) },
-      { platform: 'test', path: expect.any(String) }
+      { platform: 'test', path: expect.any(String) },
     );
   });
 
@@ -666,14 +666,14 @@ describe('.render()', () => {
         ],
       })(function Container(foo, bar, baz) {
         return () => `foo:${foo || 'x'} bar:${bar || 'x'} baz:${baz || 'x'}`;
-      })
+      }),
     );
 
     await expect(
       renderer.render(<Container />, null, [
         [FooI, 1],
         [BarI, 2],
-      ])
+      ]),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -696,7 +696,7 @@ describe('.render()', () => {
 
     const renderer = new Renderer('test', generalElementDelegate);
     expect(renderer.render(<FunctionalComponent />, null, [])).rejects.toThrow(
-      'オラオラオラ'
+      'オラオラオラ',
     );
   });
 
@@ -708,7 +708,7 @@ describe('.render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<ContainerFailWhenInject />, null, [])
+      renderer.render(<ContainerFailWhenInject />, null, []),
     ).rejects.toThrow(new Error('無駄無駄無駄'));
 
     const ContainerFailAtComponent = serviceContainer({})(() => async () => {
@@ -716,7 +716,7 @@ describe('.render()', () => {
     });
 
     await expect(
-      renderer.render(<ContainerFailAtComponent />, null, [])
+      renderer.render(<ContainerFailAtComponent />, null, []),
     ).rejects.toThrow(new Error('オラオラオラ'));
   });
 
@@ -727,7 +727,7 @@ describe('.render()', () => {
     });
 
     await expect(
-      renderer.render(<invalid />, null, [])
+      renderer.render(<invalid />, null, []),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<invalid /> is not good"`);
   });
 
@@ -737,9 +737,9 @@ describe('.render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<IllegalComponent />, null, [])
+      renderer.render(<IllegalComponent />, null, []),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"[object Object] at poistion '$' is not valid element type"`
+      `"[object Object] at poistion '$' is not valid element type"`,
     );
   });
 
@@ -747,15 +747,15 @@ describe('.render()', () => {
     const AnotherPlatformUnit = makeNativeComponent('another')(
       function AnotherPlatformUnit() {
         return null;
-      }
+      },
     );
 
     const renderer = new Renderer('test', generalElementDelegate);
 
     await expect(
-      renderer.render(<AnotherPlatformUnit />, null, [])
+      renderer.render(<AnotherPlatformUnit />, null, []),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"native component <AnotherPlatformUnit /> at '$' is not supported by test"`
+      `"native component <AnotherPlatformUnit /> at '$' is not supported by test"`,
     );
   });
 
@@ -773,7 +773,7 @@ describe('.render()', () => {
         <Sociably.Pause time={1000} delay={delayFn} />
       </>,
       null,
-      []
+      [],
     );
 
     expect(segments).toEqual([

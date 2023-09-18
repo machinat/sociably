@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import {
   SOCIABLY_SERVICE_PROVIDER,
   SOCIABLY_SERVICE_INTERFACE,
@@ -59,7 +59,7 @@ describe('serviceProviderClass({ deps, factory, lifetime })(klass)', () => {
     expect(MyProvider.$$multi).toBe(false);
 
     expect(MyProvider.$$factory('foo', 'bar', 'baz')).toBeInstanceOf(
-      ServiceKlazz
+      ServiceKlazz,
     );
     expect(ServiceKlazz).toHaveBeenCalledWith('foo', 'bar', 'baz');
   });
@@ -73,25 +73,25 @@ describe('serviceProviderClass({ deps, factory, lifetime })(klass)', () => {
         lifetime: 'singleton',
       })(class MyProvider {});
     }).toThrowErrorMatchingInlineSnapshot(
-      `"NoneService is not a valid interface"`
+      `"NoneService is not a valid interface"`,
     );
   });
 
   it('throw if invalid lifetime received', () => {
     expect(() =>
-      serviceProviderClass({ lifetime: 'singleton' })(class K {})
+      serviceProviderClass({ lifetime: 'singleton' })(class K {}),
     ).not.toThrow();
     expect(() =>
-      serviceProviderClass({ lifetime: 'scoped' })(class K {})
+      serviceProviderClass({ lifetime: 'scoped' })(class K {}),
     ).not.toThrow();
     expect(() =>
-      serviceProviderClass({ lifetime: 'transient' })(class K {})
+      serviceProviderClass({ lifetime: 'transient' })(class K {}),
     ).not.toThrow();
 
     expect(() => {
       serviceProviderClass({ lifetime: 'elf' } as never)(class K {});
     }).toThrowErrorMatchingInlineSnapshot(
-      `"elf is not valid service lifetime"`
+      `"elf is not valid service lifetime"`,
     );
   });
 });

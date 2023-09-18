@@ -12,7 +12,7 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": undefined,
+      "file": undefined,
       "params": {
         "message": {
           "attachment": {
@@ -37,7 +37,7 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": undefined,
+      "file": undefined,
       "params": {
         "message": {
           "attachment": {
@@ -55,16 +55,19 @@ exports[`media Components match snapshot 1`] = `
   },
   {
     "node": <Image
-      fileData="_IMAGE_BINARY_DATA_"
+      file={
+        {
+          "data": "_IMAGE_BINARY_DATA_",
+        }
+      }
     />,
     "path": "$::2",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": {
+      "file": {
         "data": "_IMAGE_BINARY_DATA_",
-        "info": undefined,
       },
       "params": {
         "message": {
@@ -91,7 +94,7 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": undefined,
+      "file": undefined,
       "params": {
         "message": {
           "attachment": {
@@ -116,7 +119,7 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": undefined,
+      "file": undefined,
       "params": {
         "message": {
           "attachment": {
@@ -134,10 +137,10 @@ exports[`media Components match snapshot 1`] = `
   },
   {
     "node": <Video
-      fileData="_VIDEO_BINARY_DATA_"
-      fileInfo={
+      file={
         {
-          "filename": "foo.mp4",
+          "data": "_VIDEO_BINARY_DATA_",
+          "fileName": "foo.mp4",
         }
       }
     />,
@@ -146,11 +149,9 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": {
+      "file": {
         "data": "_VIDEO_BINARY_DATA_",
-        "info": {
-          "filename": "foo.mp4",
-        },
+        "fileName": "foo.mp4",
       },
       "params": {
         "message": {
@@ -177,7 +178,7 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": undefined,
+      "file": undefined,
       "params": {
         "message": {
           "attachment": {
@@ -202,7 +203,7 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": undefined,
+      "file": undefined,
       "params": {
         "message": {
           "attachment": {
@@ -221,7 +222,11 @@ exports[`media Components match snapshot 1`] = `
   {
     "node": <Audio
       assetTag="foo_audio"
-      fileData="_AUDIO_BINARY_DATA_"
+      file={
+        {
+          "data": "_AUDIO_BINARY_DATA_",
+        }
+      }
       reusable={true}
     />,
     "path": "$::8",
@@ -229,9 +234,8 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": "foo_audio",
-      "attachFile": {
+      "file": {
         "data": "_AUDIO_BINARY_DATA_",
-        "info": undefined,
       },
       "params": {
         "message": {
@@ -258,7 +262,7 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": undefined,
+      "file": undefined,
       "params": {
         "message": {
           "attachment": {
@@ -283,7 +287,7 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": undefined,
-      "attachFile": undefined,
+      "file": undefined,
       "params": {
         "message": {
           "attachment": {
@@ -302,10 +306,10 @@ exports[`media Components match snapshot 1`] = `
   {
     "node": <File
       assetTag="foo_file"
-      fileData="_FILE_BINARY_DATA_"
-      fileInfo={
+      file={
         {
-          "filename": "foo.pdf",
+          "data": "_FILE_BINARY_DATA_",
+          "fileName": "foo.pdf",
         }
       }
       reusable={true}
@@ -315,11 +319,9 @@ exports[`media Components match snapshot 1`] = `
     "value": {
       "apiPath": "me/messages",
       "assetTag": "foo_file",
-      "attachFile": {
+      "file": {
         "data": "_FILE_BINARY_DATA_",
-        "info": {
-          "filename": "foo.pdf",
-        },
+        "fileName": "foo.pdf",
       },
       "params": {
         "message": {

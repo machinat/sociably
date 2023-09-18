@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import TwitterUser from '../../User.js';
 import TwitterChat from '../../Chat.js';
@@ -47,7 +47,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     const authenticator = new ServerAuthenticator(
       bot,
       profiler,
-      basicAuthenticator
+      basicAuthenticator,
     );
     const req = moxy();
     const res = moxy();
@@ -58,7 +58,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     };
 
     await expect(
-      authenticator.delegateAuthRequest(req, res, routing)
+      authenticator.delegateAuthRequest(req, res, routing),
     ).resolves.toBe(undefined);
 
     expect(requestDelegator).toHaveReturnedTimes(1);
@@ -91,7 +91,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       delegatorOptions.checkAuthData({
         agent: '1234567890',
         user: { id: '9876543210', data: rawUserData },
-      })
+      }),
     ).toEqual({
       ok: true,
       thread: new TwitterChat('1234567890', '9876543210'),
@@ -113,20 +113,20 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     expect(
       checkCurrentAuthUsability(
         { agent: '1234567890', user: '9876543210' },
-        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } }
-      )
+        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } },
+      ),
     ).toEqual({ ok: true });
     expect(
       checkCurrentAuthUsability(
         { agent: '1111111111', user: '9876543210' },
-        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } }
-      )
+        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } },
+      ),
     ).toEqual({ ok: false });
     expect(
       checkCurrentAuthUsability(
         { agent: '1234567890', user: '9999999999' },
-        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } }
-      )
+        { agent: '1234567890', user: { id: '9876543210', data: rawUserData } },
+      ),
     ).toEqual({ ok: false });
   });
 
@@ -140,7 +140,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       verifyCredential({
         agent: '1234567890',
         user: '9876543210',
-      })
+      }),
     ).resolves.toEqual({
       ok: true,
       data: {
@@ -152,18 +152,18 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     expect(profiler.getUserProfile).toHaveBeenCalledTimes(1);
     expect(profiler.getUserProfile).toHaveBeenCalledWith(
       new TwitterUser('1234567890'),
-      new TwitterUser('9876543210')
+      new TwitterUser('9876543210'),
     );
 
     profiler.getUserProfile.mock.fakeRejectedValue(
-      new TwitterApiError(418, { detail: "I'm a teapot" } as never)
+      new TwitterApiError(418, { detail: "I'm a teapot" } as never),
     );
 
     await expect(
       verifyCredential({
         agent: '1234567890',
         user: '9876543210',
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 418,
@@ -178,11 +178,11 @@ test('.getAuthUrl(id, path)', () => {
   const authenticator = new ServerAuthenticator(
     bot,
     profiler,
-    basicAuthenticator
+    basicAuthenticator,
   );
   expect(authenticator.getAuthUrl('1234567890', '9876543210')).toBe(loginUrl);
   expect(
-    authenticator.getAuthUrl('1234567890', '9876543210', '/foo?bar=baz')
+    authenticator.getAuthUrl('1234567890', '9876543210', '/foo?bar=baz'),
   ).toBe(loginUrl);
 
   expect(basicAuthenticator.getAuthUrl).toHaveBeenCalledTimes(2);
@@ -190,13 +190,13 @@ test('.getAuthUrl(id, path)', () => {
     1,
     'twitter',
     { agent: '1234567890', user: '9876543210' },
-    undefined
+    undefined,
   );
   expect(basicAuthenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
     'twitter',
     { agent: '1234567890', user: '9876543210' },
-    '/foo?bar=baz'
+    '/foo?bar=baz',
   );
 });
 
@@ -204,7 +204,7 @@ test('.verifyCredential() fails anyway', async () => {
   const authenticator = new ServerAuthenticator(
     bot,
     profiler,
-    basicAuthenticator
+    basicAuthenticator,
   );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
@@ -220,7 +220,7 @@ describe('.verifyRefreshment(data)', () => {
   const authenticator = new ServerAuthenticator(
     bot,
     profiler,
-    basicAuthenticator
+    basicAuthenticator,
   );
 
   test('verify auth through profiler.getUserProfiler() API', async () => {
@@ -228,7 +228,7 @@ describe('.verifyRefreshment(data)', () => {
       authenticator.verifyRefreshment({
         agent: '1234567890',
         user: { id: '9876543210', data: rawUserData },
-      })
+      }),
     ).resolves.toEqual({
       ok: true,
       data: {
@@ -240,20 +240,20 @@ describe('.verifyRefreshment(data)', () => {
     expect(profiler.getUserProfile).toHaveBeenCalledTimes(1);
     expect(profiler.getUserProfile).toHaveBeenCalledWith(
       new TwitterUser('1234567890'),
-      new TwitterUser('9876543210')
+      new TwitterUser('9876543210'),
     );
   });
 
   it('fails if profiler.getUserProfiler() throw', async () => {
     profiler.getUserProfile.mock.fakeRejectedValue(
-      new TwitterApiError(418, { detail: "I'm a teapot" } as never)
+      new TwitterApiError(418, { detail: "I'm a teapot" } as never),
     );
 
     await expect(
       authenticator.verifyRefreshment({
         agent: '1234567890',
         user: { id: '9876543210', data: rawUserData },
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 418,
@@ -268,13 +268,13 @@ test('.checkAuthData(data)', () => {
   const authenticator = new ServerAuthenticator(
     bot,
     profiler,
-    basicAuthenticator
+    basicAuthenticator,
   );
   expect(
     authenticator.checkAuthData({
       agent: '1234567890',
       user: { id: '9876543210', data: rawUserData },
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {

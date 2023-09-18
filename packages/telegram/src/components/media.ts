@@ -4,7 +4,7 @@ import { formatNode } from '@sociably/core/utils';
 import makeTelegramComponent from '../utils/makeTelegramComponent.js';
 import {
   TelegramSegmentValue,
-  UploadingFile,
+  UploadingFileSource,
   UploadingFileInfo,
   TelegramComponent,
   TelegramParseMode,
@@ -17,38 +17,41 @@ export type FileProps = {
   /** HTTP URL for the file to be sent. */
   url?: string;
   /** The file content data when uploading the file directly. */
-  fileData?: string | Buffer | NodeJS.ReadableStream;
-  /** Metadata about `fileData` if needed (while using Buffer). */
-  fileInfo?: UploadingFileInfo;
+  file?: UploadingFileSource;
   /**
-   * The asset tag for {@link TelegramAssetsManager} to save the uploaded file
-   * id with. This prop only annotates on the created job, you have to add
+   * The asset tag for {@link TelegramAssetsManager} to save the uploaded file id
+   * with. This prop only annotates on the created job, you have to add
    * {@link saveUplodedFile} middleware to make automatical saving happen.
    */
   assetTag?: string;
 };
 
 export type CaptionProps = {
-  /** File caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing */
+  /**
+   * File caption (may also be used when resending photos by file_id), 0-1024
+   * characters after entities parsing
+   */
   caption?: SociablyNode;
-  /** Mode for parsing entities in the `caption`. Default to `'HTML'`.  */
+  /** Mode for parsing entities in the `caption`. Default to `'HTML'`. */
   parseMode?: TelegramParseMode;
 };
 
 export type ThumbnailProps = {
-  /** Thumbnail file data. Can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. */
-  thumbnailFileData?: Buffer | NodeJS.ReadableStream;
-  /** Metadata about the uploading `thumbnailFileData` if needed (while using Buffer). */
-  thumbnailFileInfo?: UploadingFileInfo;
+  /**
+   * Thumbnail file data. Can be ignored if thumbnail generation for the file is
+   * supported server-side. The thumbnail should be in JPEG format and less than
+   * 200 kB in size. A thumbnail's width and height should not exceed 320.
+   */
+  thumbnailFile?: UploadingFileSource;
 };
 
-/**
- * @category Props
- */
+/** @category Props */
 export type PhotoProps = {} & MessageProps & FileProps & CaptionProps;
 
 /**
- * Send a photo by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * Send a photo by a `file_id` alreay uploaded, a external url or uploading a
+ * new file.
+ *
  * @category Component
  * @props {@link PhotoProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#sendphoto).
@@ -60,8 +63,7 @@ export const Photo: TelegramComponent<
   const {
     fileId,
     url,
-    fileData,
-    fileInfo,
+    file,
     caption,
     parseMode = 'HTML',
     disableNotification,
@@ -70,8 +72,10 @@ export const Photo: TelegramComponent<
     assetTag,
   } = node.props;
 
-  const captionSegments = await render(caption, '.caption');
-  const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
+  const [captionSegments, replyMarkupSegments] = await Promise.all([
+    render(caption, '.caption'),
+    render(replyMarkup, '.replyMarkup'),
+  ]);
   return [
     makeUnitSegment(node, path, {
       method: 'sendPhoto',
@@ -83,12 +87,11 @@ export const Photo: TelegramComponent<
         reply_to_message_id: replyToMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      files: fileData
+      files: file
         ? [
             {
               fieldName: 'photo',
-              data: fileData,
-              info: fileInfo,
+              source: file,
               assetTag,
             },
           ]
@@ -97,9 +100,7 @@ export const Photo: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type AudioProps = {
   /** Duration of the audio in seconds */
   duration?: number;
@@ -113,7 +114,9 @@ export type AudioProps = {
   ThumbnailProps;
 
 /**
- * Send a audio by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * Send a audio by a `file_id` alreay uploaded, a external url or uploading a
+ * new file.
+ *
  * @category Component
  * @props {@link AudioProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#sendaudio).
@@ -125,8 +128,7 @@ export const Audio: TelegramComponent<
   const {
     fileId,
     url,
-    fileData,
-    fileInfo,
+    file,
     caption,
     parseMode = 'HTML',
     disableNotification,
@@ -135,29 +137,28 @@ export const Audio: TelegramComponent<
     duration,
     performer,
     title,
-    thumbnailFileData,
-    thumbnailFileInfo,
+    thumbnailFile,
     assetTag,
   } = node.props;
 
-  const captionSegments = await render(caption, '.caption');
-  const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const files: UploadingFile[] = [];
+  const [captionSegments, replyMarkupSegments] = await Promise.all([
+    render(caption, '.caption'),
+    render(replyMarkup, '.replyMarkup'),
+  ]);
+  const files: UploadingFileInfo[] = [];
 
-  if (fileData) {
+  if (file) {
     files.push({
       fieldName: 'audio',
-      data: fileData,
-      info: fileInfo,
+      source: file,
       assetTag,
     });
   }
 
-  if (thumbnailFileData) {
+  if (thumbnailFile) {
     files.push({
       fieldName: 'thumb',
-      data: thumbnailFileData,
-      info: thumbnailFileInfo,
+      source: thumbnailFile,
       assetTag: undefined,
     });
   }
@@ -181,16 +182,16 @@ export const Audio: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type DocumentProps = {} & MessageProps &
   FileProps &
   CaptionProps &
   ThumbnailProps;
 
 /**
- * Send a document by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * Send a document by a `file_id` alreay uploaded, a external url or uploading a
+ * new file.
+ *
  * @category Component
  * @props {@link DocumentProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#senddocument).
@@ -202,36 +203,34 @@ export const Document: TelegramComponent<
   const {
     fileId,
     url,
-    fileData,
-    fileInfo,
+    file,
     caption,
     parseMode = 'HTML',
     disableNotification,
     replyToMessageId,
     replyMarkup,
-    thumbnailFileData,
-    thumbnailFileInfo,
+    thumbnailFile,
     assetTag,
   } = node.props;
 
-  const captionSegments = await render(caption, '.caption');
-  const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const files: UploadingFile[] = [];
+  const [captionSegments, replyMarkupSegments] = await Promise.all([
+    render(caption, '.caption'),
+    render(replyMarkup, '.replyMarkup'),
+  ]);
+  const files: UploadingFileInfo[] = [];
 
-  if (fileData) {
+  if (file) {
     files.push({
       fieldName: 'document',
-      data: fileData,
-      info: fileInfo,
+      source: file,
       assetTag,
     });
   }
 
-  if (thumbnailFileData) {
+  if (thumbnailFile) {
     files.push({
       fieldName: 'thumb',
-      data: thumbnailFileData,
-      info: thumbnailFileInfo,
+      source: thumbnailFile,
       assetTag: undefined,
     });
   }
@@ -252,9 +251,7 @@ export const Document: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type VideoProps = {
   /** Duration of sent video in seconds */
   duration?: number;
@@ -270,7 +267,9 @@ export type VideoProps = {
   ThumbnailProps;
 
 /**
- * Send a video by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * Send a video by a `file_id` alreay uploaded, a external url or uploading a
+ * new file.
+ *
  * @category Component
  * @props {@link VideoProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#sendvideo).
@@ -282,15 +281,13 @@ export const Video: TelegramComponent<
   const {
     fileId,
     url,
-    fileData,
-    fileInfo,
+    file,
     caption,
     parseMode = 'HTML',
     disableNotification,
     replyToMessageId,
     replyMarkup,
-    thumbnailFileData,
-    thumbnailFileInfo,
+    thumbnailFile,
     duration,
     width,
     height,
@@ -298,24 +295,23 @@ export const Video: TelegramComponent<
     assetTag,
   } = node.props;
 
-  const captionSegments = await render(caption, '.caption');
-  const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const files: UploadingFile[] = [];
+  const [captionSegments, replyMarkupSegments] = await Promise.all([
+    render(caption, '.caption'),
+    render(replyMarkup, '.replyMarkup'),
+  ]);
+  const files: UploadingFileInfo[] = [];
 
-  if (fileData) {
+  if (file) {
     files.push({
       fieldName: 'video',
-      data: fileData,
-      info: fileInfo,
+      source: file,
       assetTag,
     });
   }
-
-  if (thumbnailFileData) {
+  if (thumbnailFile) {
     files.push({
       fieldName: 'thumb',
-      data: thumbnailFileData,
-      info: thumbnailFileInfo,
+      source: thumbnailFile,
       assetTag: undefined,
     });
   }
@@ -340,9 +336,7 @@ export const Video: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type AnimationProps = {
   /** Duration of sent animation in seconds */
   duration?: number;
@@ -356,7 +350,9 @@ export type AnimationProps = {
   ThumbnailProps;
 
 /**
- * Send a animation by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * Send a animation by a `file_id` alreay uploaded, a external url or uploading
+ * a new file.
+ *
  * @category Component
  * @props {@link AnimationProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#sendanimation).
@@ -368,39 +364,37 @@ export const Animation: TelegramComponent<
   const {
     fileId,
     url,
-    fileData,
-    fileInfo,
+    file,
     caption,
     parseMode = 'HTML',
     disableNotification,
     replyToMessageId,
     replyMarkup,
-    thumbnailFileData,
-    thumbnailFileInfo,
+    thumbnailFile,
     duration,
     width,
     height,
     assetTag,
   } = node.props;
 
-  const captionSegments = await render(caption, '.caption');
-  const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const files: UploadingFile[] = [];
+  const [captionSegments, replyMarkupSegments] = await Promise.all([
+    render(caption, '.caption'),
+    render(replyMarkup, '.replyMarkup'),
+  ]);
+  const files: UploadingFileInfo[] = [];
 
-  if (fileData) {
+  if (file) {
     files.push({
       fieldName: 'animation',
-      data: fileData,
-      info: fileInfo,
+      source: file,
       assetTag,
     });
   }
 
-  if (thumbnailFileData) {
+  if (thumbnailFile) {
     files.push({
       fieldName: 'thumb',
-      data: thumbnailFileData,
-      info: thumbnailFileInfo,
+      source: thumbnailFile,
       assetTag: undefined,
     });
   }
@@ -424,9 +418,7 @@ export const Animation: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type VoiceProps = {
   /** Duration of sent voice in seconds */
   duration?: number;
@@ -435,7 +427,9 @@ export type VoiceProps = {
   CaptionProps;
 
 /**
- * Send a voice by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * Send a voice by a `file_id` alreay uploaded, a external url or uploading a
+ * new file.
+ *
  * @category Component
  * @props {@link VoiceProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#sendvoice).
@@ -447,8 +441,7 @@ export const Voice: TelegramComponent<
   const {
     fileId,
     url,
-    fileData,
-    fileInfo,
+    file,
     caption,
     parseMode = 'HTML',
     disableNotification,
@@ -458,8 +451,10 @@ export const Voice: TelegramComponent<
     assetTag,
   } = node.props;
 
-  const captionSegments = await render(caption, '.caption');
-  const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
+  const [captionSegments, replyMarkupSegments] = await Promise.all([
+    render(caption, '.caption'),
+    render(replyMarkup, '.replyMarkup'),
+  ]);
   return [
     makeUnitSegment(node, path, {
       method: 'sendVoice',
@@ -472,12 +467,11 @@ export const Voice: TelegramComponent<
         reply_markup: replyMarkupSegments?.[0].value,
         duration,
       },
-      files: fileData
+      files: file
         ? [
             {
               fieldName: 'voice',
-              data: fileData,
-              info: fileInfo,
+              source: file,
               assetTag,
             },
           ]
@@ -486,9 +480,7 @@ export const Voice: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type VideoNoteProps = {
   /** Duration of sent video note in seconds */
   duration?: number;
@@ -500,7 +492,9 @@ export type VideoNoteProps = {
   ThumbnailProps;
 
 /**
- * Send a video note by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * Send a video note by a `file_id` alreay uploaded, a external url or uploading
+ * a new file.
+ *
  * @category Component
  * @props {@link VideoNoteProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#sendvideonote).
@@ -512,38 +506,36 @@ export const VideoNote: TelegramComponent<
   const {
     fileId,
     url,
-    fileData,
-    fileInfo,
+    file,
     caption,
     parseMode = 'HTML',
     disableNotification,
     replyToMessageId,
     replyMarkup,
-    thumbnailFileData,
-    thumbnailFileInfo,
+    thumbnailFile,
     duration,
     length,
     assetTag,
   } = node.props;
 
-  const captionSegments = await render(caption, '.caption');
-  const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const files: UploadingFile[] = [];
+  const [captionSegments, replyMarkupSegments] = await Promise.all([
+    render(caption, '.caption'),
+    render(replyMarkup, '.replyMarkup'),
+  ]);
+  const files: UploadingFileInfo[] = [];
 
-  if (fileData) {
+  if (file) {
     files.push({
       fieldName: 'video_note',
-      data: fileData,
-      info: fileInfo,
+      source: file,
       assetTag,
     });
   }
 
-  if (thumbnailFileData) {
+  if (thumbnailFile) {
     files.push({
       fieldName: 'thumb',
-      data: thumbnailFileData,
-      info: thumbnailFileInfo,
+      source: thumbnailFile,
       assetTag: undefined,
     });
   }
@@ -568,18 +560,23 @@ export const VideoNote: TelegramComponent<
 
 export type MediaGroupProps = {
   /**
-   * {@link Photo} and {@link Video} elements to be presented in the group.
-   * Please note that {@link MessageProps} of the children are ignored.
+   * {@link Photo} and {@link Video} elements to be presented in the group. Please
+   * note that {@link MessageProps} of the children are ignored.
    */
   children: SociablyNode;
-  /** Sends the message silently. Users will receive a notification with no sound. */
+  /**
+   * Sends the message silently. Users will receive a notification with no
+   * sound.
+   */
   disableNotification?: boolean;
   /** If the message is a reply, ID of the original message */
   replyToMessageId?: number;
 };
 
 /**
- * Send a video note by a `file_id` alreay uploaded, a external url or uploading a new file.
+ * Send a video note by a `file_id` alreay uploaded, a external url or uploading
+ * a new file.
+ *
  * @category Component
  * @props {@link MediaGroupProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#sendmediagroup).
@@ -596,7 +593,7 @@ export const MediaGroup: TelegramComponent<
   }
 
   let fileCount = 0;
-  const mediaFiles: UploadingFile[] = [];
+  const mediaFiles: UploadingFileInfo[] = [];
   const inputMedia: Record<string, unknown>[] = [];
 
   mediaSegments.forEach(({ node: inputNode, value }) => {
@@ -609,7 +606,7 @@ export const MediaGroup: TelegramComponent<
       inputType = 'photo';
     } else {
       throw new TypeError(
-        `${formatNode(inputNode)} is not a valid media in <MediaGroup/>`
+        `${formatNode(inputNode)} is not a valid media in <MediaGroup/>`,
       );
     }
 
@@ -634,7 +631,7 @@ export const MediaGroup: TelegramComponent<
           };
 
     if (files) {
-      files.forEach(({ fieldName, data, info, assetTag }) => {
+      files.forEach(({ fieldName, source, assetTag }) => {
         const fileName = `file_${fileCount}`;
         fileCount += 1;
 
@@ -646,8 +643,7 @@ export const MediaGroup: TelegramComponent<
 
         mediaFiles.push({
           fieldName: fileName,
-          data,
-          info,
+          source,
           assetTag,
         });
       });
@@ -669,13 +665,12 @@ export const MediaGroup: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type StickerProps = {} & MessageProps & FileProps;
 
 /**
  * Send static .WEBP or animated .TGS stickers
+ *
  * @category Component
  * @props {@link StickerProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#sendsticker).
@@ -687,25 +682,13 @@ export const Sticker: TelegramComponent<
   const {
     fileId,
     url,
-    fileData,
-    fileInfo,
+    file,
     disableNotification,
     replyToMessageId,
     replyMarkup,
     assetTag,
   } = node.props;
-
   const replyMarkupSegments = await render(replyMarkup, '.replyMarkup');
-  const files: UploadingFile[] = [];
-
-  if (fileData) {
-    files.push({
-      fieldName: 'sticker',
-      data: fileData,
-      info: fileInfo,
-      assetTag,
-    });
-  }
 
   return [
     makeUnitSegment(node, path, {
@@ -716,7 +699,15 @@ export const Sticker: TelegramComponent<
         reply_to_message_id: replyToMessageId,
         reply_markup: replyMarkupSegments?.[0].value,
       },
-      files,
+      files: file
+        ? [
+            {
+              fieldName: 'sticker',
+              source: file,
+              assetTag,
+            },
+          ]
+        : undefined,
     }),
   ];
 });

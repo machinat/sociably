@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { moxy, Mock } from '@moxyjs/moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import { ServerAuthenticator } from '@sociably/auth';
 import type { WebviewSocketServer } from '../interface.js';
 import { WebviewReceiver } from '../Receiver.js';
@@ -47,7 +47,7 @@ const server = moxy<
 >(
   Object.assign(new EventEmitter(), {
     subscribeTopic: async () => true,
-  }) as never
+  }) as never,
 );
 
 server.id = '_SERVER_ID_';
@@ -55,7 +55,7 @@ server.handleUpgrade = (async () => {}) as never;
 
 const popEventMock = new Mock();
 const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify(finalHandler)
+  popEventMock.proxify(finalHandler),
 );
 const popError = moxy();
 
@@ -116,7 +116,7 @@ it('pop events', () => {
   server.emit(
     'events',
     [{ category: 'greet', type: 'hello', payload: 'world' }, { type: 'hug' }],
-    connectionInfo
+    connectionInfo,
   );
 
   expect(popEventMock).toHaveBeenCalledTimes(3);

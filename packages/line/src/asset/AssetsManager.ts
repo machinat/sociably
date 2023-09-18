@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { serviceProviderClass, StateController } from '@sociably/core';
 import Http from '@sociably/http';
 import fetch from 'node-fetch';
@@ -16,9 +17,7 @@ type DefaultSettings = {
   webhookUrl?: string;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class LineAssetsManager {
   private _stateController: StateController;
   private _settingsAccessor: AgentSettingsAccessorI;
@@ -29,7 +28,7 @@ export class LineAssetsManager {
     stateManger: StateController,
     bot: BotP,
     settingsAccessor: AgentSettingsAccessorI,
-    defaultSettings: DefaultSettings = {}
+    defaultSettings: DefaultSettings = {},
   ) {
     this._stateController = stateManger;
     this._settingsAccessor = settingsAccessor;
@@ -40,7 +39,7 @@ export class LineAssetsManager {
   async getAssetId(
     channel: string | LineChannel,
     resource: string,
-    name: string
+    name: string,
   ): Promise<undefined | string> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
     const existed = await this._stateController
@@ -54,7 +53,7 @@ export class LineAssetsManager {
     channel: string | LineChannel,
     resource: string,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
     const isUpdated = await this._stateController
@@ -66,7 +65,7 @@ export class LineAssetsManager {
 
   getAllAssets(
     channel: string | LineChannel,
-    resource: string
+    resource: string,
   ): Promise<null | Map<string, string>> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
     return this._stateController
@@ -77,7 +76,7 @@ export class LineAssetsManager {
   async unsaveAssetId(
     channel: string | LineChannel,
     resource: string,
-    assetTag: string
+    assetTag: string,
   ): Promise<boolean> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
     const isDeleted = await this._stateController
@@ -89,7 +88,7 @@ export class LineAssetsManager {
 
   getRichMenu(
     channel: string | LineChannel,
-    assetTag: string
+    assetTag: string,
   ): Promise<undefined | string> {
     return this.getAssetId(channel, RICH_MENU, assetTag);
   }
@@ -97,20 +96,20 @@ export class LineAssetsManager {
   saveRichMenu(
     channel: string | LineChannel,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     return this.saveAssetId(channel, RICH_MENU, assetTag, id);
   }
 
   getAllRichMenus(
-    channel: string | LineChannel
+    channel: string | LineChannel,
   ): Promise<null | Map<string, string>> {
     return this.getAllAssets(channel, RICH_MENU);
   }
 
   unsaveRichMenu(
     channel: string | LineChannel,
-    assetTag: string
+    assetTag: string,
   ): Promise<boolean> {
     return this.unsaveAssetId(channel, RICH_MENU, assetTag);
   }
@@ -118,13 +117,13 @@ export class LineAssetsManager {
   async createRichMenu(
     channelInput: string | LineChannel,
     assetTag: string,
-    content: NodeJS.ReadableStream | Buffer,
+    content: Buffer | Readable,
     params: Record<string, unknown>,
     options?: {
       asDefault?: boolean;
       contentType?: string;
       accessToken?: string;
-    }
+    },
   ): Promise<{ richMenuId: string }> {
     const channel =
       typeof channelInput === 'string'
@@ -160,7 +159,7 @@ export class LineAssetsManager {
           'Content-Type': options?.contentType,
         } as Record<string, string>,
         body: content,
-      }
+      },
     );
     const uploadBody = await uploadRes.json();
     if (uploadRes.status >= 300) {
@@ -188,7 +187,7 @@ export class LineAssetsManager {
   async deleteRichMenu(
     channel: string | LineChannel,
     assetTag: string,
-    options?: { accessToken?: string }
+    options?: { accessToken?: string },
   ): Promise<boolean> {
     const id = await this.getRichMenu(channel, assetTag);
     if (id === undefined) {
@@ -211,7 +210,7 @@ export class LineAssetsManager {
     {
       webhookUrl: webhookUrlInput,
       accessToken,
-    }: { webhookUrl?: string; accessToken?: string } = {}
+    }: { webhookUrl?: string; accessToken?: string } = {},
   ): Promise<void> {
     const webhookUrl = webhookUrlInput || this.defaultSettings.webhookUrl;
     if (!webhookUrl) {
@@ -244,7 +243,7 @@ const AssetsManagerP = serviceProviderClass({
     bot,
     agentSettingsAccessor,
     connector,
-    { webhookPath }
+    { webhookPath },
   ) =>
     new LineAssetsManager(stateController, bot, agentSettingsAccessor, {
       webhookUrl: connector.getServerUrl(webhookPath),

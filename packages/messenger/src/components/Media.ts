@@ -1,12 +1,10 @@
 import type { NativeElement, AnyNativeComponent } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
-import type { FileInfo } from '@sociably/meta-api';
+import type { MetaApiUploadingFile } from '@sociably/meta-api';
 import { PATH_MESSAGES } from '../constant.js';
 import type { MessageValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type MediaProps = {
   /**
    * URL of the file to upload. Max file size is 25MB (after encoding). A
@@ -21,9 +19,7 @@ export type MediaProps = {
   /** Use an uploaded attachment id */
   attachmentId?: string;
   /** Upload a media file */
-  fileData?: string | Buffer | NodeJS.ReadableStream;
-  /** Uploading file info */
-  fileInfo?: FileInfo;
+  file?: MetaApiUploadingFile;
   /** The asset tag for saving the created attachment and reusing it */
   assetTag?: string;
 };
@@ -32,10 +28,9 @@ const mediaFactory = (name: string, type: string) => {
   const container = {
     [name]: (
       node: NativeElement<MediaProps, AnyNativeComponent>,
-      path: string
+      path: string,
     ): UnitSegment<MessageValue>[] => {
-      const { url, reusable, attachmentId, assetTag, fileData, fileInfo } =
-        node.props;
+      const { url, reusable, attachmentId, assetTag, file } = node.props;
 
       return [
         makeUnitSegment(node, path, {
@@ -54,12 +49,7 @@ const mediaFactory = (name: string, type: string) => {
             },
           },
           assetTag,
-          attachFile: fileData
-            ? {
-                data: fileData,
-                info: fileInfo,
-              }
-            : undefined,
+          file,
         }),
       ];
     },
@@ -70,6 +60,7 @@ const mediaFactory = (name: string, type: string) => {
 
 /**
  * The log out button triggers the account unlinking flow.
+ *
  * @category Component
  * @props {@link MediaProps}
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
@@ -79,6 +70,7 @@ export const Image = mediaFactory('Image', 'image');
 
 /**
  * The log out button triggers the account unlinking flow.
+ *
  * @category Component
  * @props {@link MediaProps}
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
@@ -88,6 +80,7 @@ export const Video = mediaFactory('Video', 'video');
 
 /**
  * The log out button triggers the account unlinking flow.
+ *
  * @category Component
  * @props {@link MediaProps}
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
@@ -97,6 +90,7 @@ export const Audio = mediaFactory('Audio', 'audio');
 
 /**
  * The log out button triggers the account unlinking flow.
+ *
  * @category Component
  * @props {@link MediaProps}
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)

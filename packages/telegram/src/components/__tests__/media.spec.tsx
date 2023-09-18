@@ -1,7 +1,7 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
-import { InlineKeyboard, CallbackButton } from '../replyMarkup';
+import { InlineKeyboard, CallbackButton } from '../replyMarkup.js';
 import {
   Photo,
   Audio,
@@ -12,9 +12,9 @@ import {
   VideoNote,
   MediaGroup,
   Sticker,
-} from '../media';
+} from '../media.js';
 
-const renderer = new Renderer('telegram', (node, path) => [
+const renderer = new Renderer('telegram', async (node, path) => [
   {
     type: 'text',
     node,
@@ -22,6 +22,8 @@ const renderer = new Renderer('telegram', (node, path) => [
     value: `<${node.type}>${node.props.children}</${node.type}>`,
   },
 ]);
+
+const render = (node) => renderer.render(node, null, null);
 
 describe.each([
   Photo,
@@ -41,9 +43,8 @@ describe.each([
 });
 
 test('Photo match snapshot', async () => {
-  await expect(
-    renderer.render(<Photo fileId="12345" caption={<b>My Photo</b>} />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<Photo fileId="12345" caption={<b>My Photo</b>} />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <Photo
@@ -72,13 +73,13 @@ test('Photo match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Photo
         url="http://foo.bar/baz.jpg"
         caption="PlainTextCaption"
         parseMode="None"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -105,10 +106,12 @@ test('Photo match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Photo
-        fileData="__DATA__"
-        fileInfo={{ fileName: 'baz.jpg' }}
+        file={{
+          data: '__DATA__',
+          fileName: 'baz.jpg',
+        }}
         assetTag="my_photo"
         parseMode="MarkdownV2"
         caption="__MyPhoto__"
@@ -119,8 +122,8 @@ test('Photo match snapshot', async () => {
             <CallbackButton text="Like" data="__LIKE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -128,9 +131,9 @@ test('Photo match snapshot', async () => {
           assetTag="my_photo"
           caption="__MyPhoto__"
           disableNotification={true}
-          fileData="__DATA__"
-          fileInfo={
+          file={
             {
+              "data": "__DATA__",
               "fileName": "baz.jpg",
             }
           }
@@ -151,9 +154,9 @@ test('Photo match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_photo",
-              "data": "__DATA__",
               "fieldName": "photo",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -184,7 +187,7 @@ test('Photo match snapshot', async () => {
 
 test('Animation match snapshot', async () => {
   await expect(
-    renderer.render(<Animation fileId="12345" caption={<b>My Animation</b>} />)
+    render(<Animation fileId="12345" caption={<b>My Animation</b>} />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -217,13 +220,13 @@ test('Animation match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Animation
         url="http://foo.bar/baz.gif"
         caption="PlainTextCaption"
         parseMode="None"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -253,15 +256,19 @@ test('Animation match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Animation
-        fileData="__DATA__"
-        fileInfo={{ fileName: 'baz.gif' }}
+        file={{
+          data: '__DATA__',
+          fileName: 'baz.gif',
+        }}
         assetTag="my_animate"
         parseMode="MarkdownV2"
         caption="__MyAnimation__"
-        thumbnailFileData="__THUMB_DATA__"
-        thumbnailFileInfo={{ fileName: 'baz.jpg' }}
+        thumbnailFile={{
+          data: '__THUMB_DATA__',
+          fileName: 'baz.jpg',
+        }}
         duration={100}
         width={1920}
         height={1080}
@@ -272,8 +279,8 @@ test('Animation match snapshot', async () => {
             <CallbackButton text="Like" data="__LIKE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -282,9 +289,9 @@ test('Animation match snapshot', async () => {
           caption="__MyAnimation__"
           disableNotification={true}
           duration={100}
-          fileData="__DATA__"
-          fileInfo={
+          file={
             {
+              "data": "__DATA__",
               "fileName": "baz.gif",
             }
           }
@@ -299,9 +306,9 @@ test('Animation match snapshot', async () => {
             </InlineKeyboard>
           }
           replyToMessageId={123}
-          thumbnailFileData="__THUMB_DATA__"
-          thumbnailFileInfo={
+          thumbnailFile={
             {
+              "data": "__THUMB_DATA__",
               "fileName": "baz.jpg",
             }
           }
@@ -313,17 +320,17 @@ test('Animation match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_animate",
-              "data": "__DATA__",
               "fieldName": "animation",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.gif",
               },
             },
             {
               "assetTag": undefined,
-              "data": "__THUMB_DATA__",
               "fieldName": "thumb",
-              "info": {
+              "source": {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -356,9 +363,8 @@ test('Animation match snapshot', async () => {
 });
 
 test('Audio match snapshot', async () => {
-  await expect(
-    renderer.render(<Audio fileId="12345" caption={<b>My Audio</b>} />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<Audio fileId="12345" caption={<b>My Audio</b>} />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <Audio
@@ -390,13 +396,13 @@ test('Audio match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Audio
         url="http://foo.bar/baz.mp3"
         caption="PlainTextCaption"
         parseMode="None"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -426,15 +432,19 @@ test('Audio match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Audio
-        fileData="__DATA__"
-        fileInfo={{ fileName: 'baz.mp3' }}
+        file={{
+          data: '__DATA__',
+          fileName: 'baz.mp3',
+        }}
         assetTag="my_audio"
         parseMode="MarkdownV2"
         caption="__MyAudio__"
-        thumbnailFileData="__THUMB_DATA__"
-        thumbnailFileInfo={{ fileName: 'baz.jpg' }}
+        thumbnailFile={{
+          data: '__THUMB_DATA__',
+          fileName: 'baz.jpg',
+        }}
         duration={100}
         performer="John Doe"
         title="Foo"
@@ -445,8 +455,8 @@ test('Audio match snapshot', async () => {
             <CallbackButton text="Like" data="__LIKE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -455,9 +465,9 @@ test('Audio match snapshot', async () => {
           caption="__MyAudio__"
           disableNotification={true}
           duration={100}
-          fileData="__DATA__"
-          fileInfo={
+          file={
             {
+              "data": "__DATA__",
               "fileName": "baz.mp3",
             }
           }
@@ -472,9 +482,9 @@ test('Audio match snapshot', async () => {
             </InlineKeyboard>
           }
           replyToMessageId={123}
-          thumbnailFileData="__THUMB_DATA__"
-          thumbnailFileInfo={
+          thumbnailFile={
             {
+              "data": "__THUMB_DATA__",
               "fileName": "baz.jpg",
             }
           }
@@ -486,17 +496,17 @@ test('Audio match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_audio",
-              "data": "__DATA__",
               "fieldName": "audio",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.mp3",
               },
             },
             {
               "assetTag": undefined,
-              "data": "__THUMB_DATA__",
               "fieldName": "thumb",
-              "info": {
+              "source": {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -529,9 +539,8 @@ test('Audio match snapshot', async () => {
 });
 
 test('Document match snapshot', async () => {
-  await expect(
-    renderer.render(<Document fileId="12345" caption={<b>My Document</b>} />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<Document fileId="12345" caption={<b>My Document</b>} />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <Document
@@ -560,13 +569,13 @@ test('Document match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Document
         url="http://foo.bar/baz.txt"
         caption="PlainTextCaption"
         parseMode="None"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -593,15 +602,19 @@ test('Document match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Document
-        fileData="__DATA__"
-        fileInfo={{ fileName: 'baz.txt' }}
+        file={{
+          data: '__DATA__',
+          fileName: 'baz.txt',
+        }}
         assetTag="my_doc"
         parseMode="MarkdownV2"
         caption="__MyDocument__"
-        thumbnailFileData="__THUMB_DATA__"
-        thumbnailFileInfo={{ fileName: 'baz.jpg' }}
+        thumbnailFile={{
+          data: '__THUMB_DATA__',
+          fileName: 'baz.jpg',
+        }}
         disableNotification
         replyToMessageId={123}
         replyMarkup={
@@ -609,8 +622,8 @@ test('Document match snapshot', async () => {
             <CallbackButton text="Like" data="__LIKE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -618,9 +631,9 @@ test('Document match snapshot', async () => {
           assetTag="my_doc"
           caption="__MyDocument__"
           disableNotification={true}
-          fileData="__DATA__"
-          fileInfo={
+          file={
             {
+              "data": "__DATA__",
               "fileName": "baz.txt",
             }
           }
@@ -634,9 +647,9 @@ test('Document match snapshot', async () => {
             </InlineKeyboard>
           }
           replyToMessageId={123}
-          thumbnailFileData="__THUMB_DATA__"
-          thumbnailFileInfo={
+          thumbnailFile={
             {
+              "data": "__THUMB_DATA__",
               "fileName": "baz.jpg",
             }
           }
@@ -647,17 +660,17 @@ test('Document match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_doc",
-              "data": "__DATA__",
               "fieldName": "document",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.txt",
               },
             },
             {
               "assetTag": undefined,
-              "data": "__THUMB_DATA__",
               "fieldName": "thumb",
-              "info": {
+              "source": {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -687,9 +700,8 @@ test('Document match snapshot', async () => {
 });
 
 test('Video match snapshot', async () => {
-  await expect(
-    renderer.render(<Video fileId="12345" caption={<b>My Video</b>} />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<Video fileId="12345" caption={<b>My Video</b>} />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <Video
@@ -722,13 +734,13 @@ test('Video match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Video
         url="http://foo.bar/baz.mp4"
         caption="PlainTextCaption"
         parseMode="None"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -759,15 +771,19 @@ test('Video match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Video
-        fileData="__DATA__"
-        fileInfo={{ fileName: 'baz.mp4' }}
+        file={{
+          data: '__DATA__',
+          fileName: 'baz.mp4',
+        }}
         assetTag="my_video"
         parseMode="MarkdownV2"
         caption="__MyVideo__"
-        thumbnailFileData="__THUMB_DATA__"
-        thumbnailFileInfo={{ fileName: 'baz.jpg' }}
+        thumbnailFile={{
+          data: '__THUMB_DATA__',
+          fileName: 'baz.jpg',
+        }}
         duration={100}
         width={1920}
         height={1080}
@@ -779,8 +795,8 @@ test('Video match snapshot', async () => {
             <CallbackButton text="Like" data="__LIKE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -789,9 +805,9 @@ test('Video match snapshot', async () => {
           caption="__MyVideo__"
           disableNotification={true}
           duration={100}
-          fileData="__DATA__"
-          fileInfo={
+          file={
             {
+              "data": "__DATA__",
               "fileName": "baz.mp4",
             }
           }
@@ -807,9 +823,9 @@ test('Video match snapshot', async () => {
           }
           replyToMessageId={123}
           supportsStreaming={true}
-          thumbnailFileData="__THUMB_DATA__"
-          thumbnailFileInfo={
+          thumbnailFile={
             {
+              "data": "__THUMB_DATA__",
               "fileName": "baz.jpg",
             }
           }
@@ -821,17 +837,17 @@ test('Video match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_video",
-              "data": "__DATA__",
               "fieldName": "video",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.mp4",
               },
             },
             {
               "assetTag": undefined,
-              "data": "__THUMB_DATA__",
               "fieldName": "thumb",
-              "info": {
+              "source": {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -865,9 +881,8 @@ test('Video match snapshot', async () => {
 });
 
 test('Voice match snapshot', async () => {
-  await expect(
-    renderer.render(<Voice fileId="12345" caption={<b>My Voice</b>} />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<Voice fileId="12345" caption={<b>My Voice</b>} />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <Voice
@@ -897,13 +912,13 @@ test('Voice match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Voice
         url="http://foo.bar/baz.wmv"
         caption="PlainTextCaption"
         parseMode="None"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -931,10 +946,12 @@ test('Voice match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Voice
-        fileData="__DATA__"
-        fileInfo={{ fileName: 'baz.wmv' }}
+        file={{
+          data: '__DATA__',
+          fileName: 'baz.wmv',
+        }}
         assetTag="my_voice"
         parseMode="MarkdownV2"
         caption="__MyVoice__"
@@ -946,8 +963,8 @@ test('Voice match snapshot', async () => {
             <CallbackButton text="Like" data="__LIKE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -956,9 +973,9 @@ test('Voice match snapshot', async () => {
           caption="__MyVoice__"
           disableNotification={true}
           duration={100}
-          fileData="__DATA__"
-          fileInfo={
+          file={
             {
+              "data": "__DATA__",
               "fileName": "baz.wmv",
             }
           }
@@ -979,9 +996,9 @@ test('Voice match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_voice",
-              "data": "__DATA__",
               "fieldName": "voice",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.wmv",
               },
             },
@@ -1013,7 +1030,7 @@ test('Voice match snapshot', async () => {
 
 test('VideoNote match snapshot', async () => {
   await expect(
-    renderer.render(<VideoNote fileId="12345" caption={<b>My Video Note</b>} />)
+    render(<VideoNote fileId="12345" caption={<b>My Video Note</b>} />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -1045,13 +1062,13 @@ test('VideoNote match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <VideoNote
         url="http://foo.bar/baz.mpeg"
         caption="PlainTextCaption"
         parseMode="None"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -1080,15 +1097,19 @@ test('VideoNote match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <VideoNote
-        fileData="__DATA__"
-        fileInfo={{ fileName: 'baz.mpeg' }}
+        file={{
+          data: '__DATA__',
+          fileName: 'baz.mpeg',
+        }}
         assetTag="my_video_note"
         parseMode="MarkdownV2"
         caption="__MyVideoNote__"
-        thumbnailFileData="__THUMB_DATA__"
-        thumbnailFileInfo={{ fileName: 'baz.jpg' }}
+        thumbnailFile={{
+          data: '__THUMB_DATA__',
+          fileName: 'baz.jpg',
+        }}
         duration={100}
         length={1080}
         disableNotification
@@ -1098,8 +1119,8 @@ test('VideoNote match snapshot', async () => {
             <CallbackButton text="Like" data="__LIKE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -1108,9 +1129,9 @@ test('VideoNote match snapshot', async () => {
           caption="__MyVideoNote__"
           disableNotification={true}
           duration={100}
-          fileData="__DATA__"
-          fileInfo={
+          file={
             {
+              "data": "__DATA__",
               "fileName": "baz.mpeg",
             }
           }
@@ -1125,9 +1146,9 @@ test('VideoNote match snapshot', async () => {
             </InlineKeyboard>
           }
           replyToMessageId={123}
-          thumbnailFileData="__THUMB_DATA__"
-          thumbnailFileInfo={
+          thumbnailFile={
             {
+              "data": "__THUMB_DATA__",
               "fileName": "baz.jpg",
             }
           }
@@ -1138,17 +1159,17 @@ test('VideoNote match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_video_note",
-              "data": "__DATA__",
               "fieldName": "video_note",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.mpeg",
               },
             },
             {
               "assetTag": undefined,
-              "data": "__THUMB_DATA__",
               "fieldName": "thumb",
-              "info": {
+              "source": {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -1181,7 +1202,7 @@ test('VideoNote match snapshot', async () => {
 
 test('MediaGroup match snapshot', async () => {
   await expect(
-    renderer.render(
+    render(
       <MediaGroup>
         <Photo fileId="12345" />
         <Video
@@ -1189,8 +1210,8 @@ test('MediaGroup match snapshot', async () => {
           caption="PlainTextCaption"
           parseMode="None"
         />
-      </MediaGroup>
-    )
+      </MediaGroup>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -1237,30 +1258,36 @@ test('MediaGroup match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <MediaGroup disableNotification replyToMessageId={123}>
         <Photo
-          fileData="__DATA__"
-          fileInfo={{ fileName: 'baz.jpg' }}
+          file={{
+            data: '__DATA__',
+            fileName: 'baz.jpg',
+          }}
           assetTag="my_photo"
           parseMode="MarkdownV2"
           caption="__MyPhoto__"
         />
 
         <Video
-          fileData="__DATA__"
-          fileInfo={{ fileName: 'baz.mpeg' }}
+          file={{
+            data: '__DATA__',
+            fileName: 'baz.mpeg',
+          }}
           assetTag="my_video"
           parseMode="MarkdownV2"
           caption="__MyVideo__"
-          thumbnailFileData="__THUMB_DATA__"
-          thumbnailFileInfo={{ fileName: 'baz.jpg' }}
+          thumbnailFile={{
+            data: '__THUMB_DATA__',
+            fileName: 'baz.jpg',
+          }}
           duration={100}
           width={1920}
           height={1080}
         />
-      </MediaGroup>
-    )
+      </MediaGroup>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -1271,9 +1298,9 @@ test('MediaGroup match snapshot', async () => {
           <Photo
             assetTag="my_photo"
             caption="__MyPhoto__"
-            fileData="__DATA__"
-            fileInfo={
+            file={
               {
+                "data": "__DATA__",
                 "fileName": "baz.jpg",
               }
             }
@@ -1283,17 +1310,17 @@ test('MediaGroup match snapshot', async () => {
             assetTag="my_video"
             caption="__MyVideo__"
             duration={100}
-            fileData="__DATA__"
-            fileInfo={
+            file={
               {
+                "data": "__DATA__",
                 "fileName": "baz.mpeg",
               }
             }
             height={1080}
             parseMode="MarkdownV2"
-            thumbnailFileData="__THUMB_DATA__"
-            thumbnailFileInfo={
+            thumbnailFile={
               {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               }
             }
@@ -1306,25 +1333,25 @@ test('MediaGroup match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_photo",
-              "data": "__DATA__",
               "fieldName": "file_0",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.jpg",
               },
             },
             {
               "assetTag": "my_video",
-              "data": "__DATA__",
               "fieldName": "file_1",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.mpeg",
               },
             },
             {
               "assetTag": undefined,
-              "data": "__THUMB_DATA__",
               "fieldName": "file_2",
-              "info": {
+              "source": {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -1360,7 +1387,7 @@ test('MediaGroup match snapshot', async () => {
 });
 
 test('Sticker match snapshot', async () => {
-  await expect(renderer.render(<Sticker fileId="12345" />)).resolves
+  await expect(render(<Sticker fileId="12345" />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -1370,7 +1397,7 @@ test('Sticker match snapshot', async () => {
         "path": "$",
         "type": "unit",
         "value": {
-          "files": [],
+          "files": undefined,
           "method": "sendSticker",
           "params": {
             "disable_notification": undefined,
@@ -1382,8 +1409,8 @@ test('Sticker match snapshot', async () => {
       },
     ]
   `);
-  await expect(renderer.render(<Sticker url="http://foo.bar/baz.webp" />))
-    .resolves.toMatchInlineSnapshot(`
+  await expect(render(<Sticker url="http://foo.bar/baz.webp" />)).resolves
+    .toMatchInlineSnapshot(`
     [
       {
         "node": <Sticker
@@ -1392,7 +1419,7 @@ test('Sticker match snapshot', async () => {
         "path": "$",
         "type": "unit",
         "value": {
-          "files": [],
+          "files": undefined,
           "method": "sendSticker",
           "params": {
             "disable_notification": undefined,
@@ -1405,10 +1432,12 @@ test('Sticker match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <Sticker
-        fileData="__DATA__"
-        fileInfo={{ fileName: 'baz.gif' }}
+        file={{
+          data: '__DATA__',
+          fileName: 'baz.gif',
+        }}
         assetTag="my_sticker"
         disableNotification
         replyToMessageId={123}
@@ -1417,17 +1446,17 @@ test('Sticker match snapshot', async () => {
             <CallbackButton text="Like" data="__LIKE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <Sticker
           assetTag="my_sticker"
           disableNotification={true}
-          fileData="__DATA__"
-          fileInfo={
+          file={
             {
+              "data": "__DATA__",
               "fileName": "baz.gif",
             }
           }
@@ -1447,9 +1476,9 @@ test('Sticker match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_sticker",
-              "data": "__DATA__",
               "fieldName": "sticker",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.gif",
               },
             },

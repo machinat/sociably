@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { moxy, Mock } from '@moxyjs/moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import type { WebSocketServer } from '../Server.js';
 import { WebSocketReceiver } from '../Receiver.js';
 import WebSocketConnection from '../Connection.js';
@@ -15,7 +15,7 @@ server.handleUpgrade = (async () => {}) as never;
 
 const popEventMock = new Mock();
 const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify(finalHandler)
+  popEventMock.proxify(finalHandler),
 );
 const popError = moxy();
 
@@ -76,7 +76,7 @@ it('pop events', () => {
   server.emit(
     'events',
     [{ category: 'greet', type: 'hello', payload: 'world' }, { type: 'hug' }],
-    connectionInfo
+    connectionInfo,
   );
 
   expect(popEventMock).toHaveBeenCalledTimes(3);

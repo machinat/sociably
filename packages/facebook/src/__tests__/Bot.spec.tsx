@@ -1,6 +1,6 @@
 import querystring from 'querystring';
 import nock from 'nock';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
@@ -19,24 +19,18 @@ const Worker = _Worker as Moxy<typeof _Worker>;
 nock.disableNetConnect();
 
 jest.mock('@sociably/core/engine', () =>
-  jest
-    .requireActual<{ moxy: typeof moxy }>('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/engine'))
+  moxy(jest.requireActual('@sociably/core/engine')),
 );
 
 jest.mock('@sociably/core/renderer', () =>
-  jest
-    .requireActual<{ moxy: typeof moxy }>('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/renderer'))
+  moxy(jest.requireActual('@sociably/core/renderer')),
 );
 
 jest.mock('@sociably/meta-api', () => {
   const module = jest.requireActual<typeof MetaApiModule>('@sociably/meta-api');
   return {
     ...module,
-    MetaApiWorker: jest
-      .requireActual<{ moxy: typeof moxy }>('@moxyjs/moxy')
-      .moxy(module.MetaApiWorker),
+    MetaApiWorker: moxy(module.MetaApiWorker),
   };
 });
 
@@ -99,7 +93,7 @@ describe('.constructor(options)', () => {
       expect.any(Queue),
       expect.any(Worker),
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
@@ -122,7 +116,7 @@ describe('.constructor(options)', () => {
         dispatchWrapper,
         graphApiVersion: 'v8.0',
         apiBatchRequestInterval: 0,
-      })
+      }),
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
@@ -197,7 +191,7 @@ describe('.message(thread, message, options)', () => {
     for (const request of JSON.parse(body.batch)) {
       expect(request.method).toBe('POST');
       expect(request.relative_url).toBe(
-        'me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f'
+        'me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f',
       );
     }
 
@@ -291,8 +285,8 @@ describe('.uploadChatAttachment(page, message)', () => {
     await expect(
       bot.uploadChatAttachment(
         page,
-        <Image url="https://sociably.io/trollface.png" />
-      )
+        <Image url="https://sociably.io/trollface.png" />,
+      ),
     ).resolves.toEqual({ attachmentId: 401759795 });
 
     expect(bodySpy).toHaveBeenCalledTimes(1);
@@ -303,7 +297,7 @@ describe('.uploadChatAttachment(page, message)', () => {
     expect(reqest.method).toBe('POST');
 
     expect(reqest.relative_url).toMatchInlineSnapshot(
-      `"me/message_attachments?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f"`
+      `"me/message_attachments?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f"`,
     );
     expect(querystring.decode(reqest.body)).toMatchInlineSnapshot(`
       {
@@ -328,7 +322,7 @@ describe('.requestApi(options)', () => {
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
-      })
+      }),
     ).resolves.toEqual({ foo: 'bar' });
 
     expect(apiCall.isDone()).toBe(true);
@@ -353,7 +347,7 @@ describe('.requestApi(options)', () => {
         url: 'foo',
         params: { bar: 'baz' },
         accessToken: '_MY_ACCESS_TOKEN_',
-      })
+      }),
     ).resolves.toEqual({ foo: 'bar' });
 
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`
@@ -376,7 +370,7 @@ describe('.requestApi(options)', () => {
         url: 'foo',
         params: { bar: 'baz' },
         asApp: true,
-      })
+      }),
     ).resolves.toEqual({ foo: 'bar' });
 
     expect(bodySpy.mock.calls[0].args[0]).toMatchInlineSnapshot(`

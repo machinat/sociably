@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import jwt from 'jsonwebtoken';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import HttpOperator from '../HttpOperator.js';
 import { getCookies } from './utils.js';
 
@@ -35,23 +35,23 @@ describe('#constructor()', () => {
 
   it('throw if options.secret is empty', () => {
     expect(
-      () => new HttpOperator({ redirectUrl } as any)
+      () => new HttpOperator({ redirectUrl } as any),
     ).toThrowErrorMatchingInlineSnapshot(`"options.secret must not be empty"`);
     expect(
-      () => new HttpOperator({ secret: '', serverUrl })
+      () => new HttpOperator({ secret: '', serverUrl }),
     ).toThrowErrorMatchingInlineSnapshot(`"options.secret must not be empty"`);
   });
 
   it('throw if options.redirectUrl is empty', () => {
     expect(
-      () => new HttpOperator({ secret } as any)
+      () => new HttpOperator({ secret } as any),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.serverUrl must not be empty"`
+      `"options.serverUrl must not be empty"`,
     );
     expect(
-      () => new HttpOperator({ serverUrl: '', secret })
+      () => new HttpOperator({ serverUrl: '', secret }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.serverUrl must not be empty"`
+      `"options.serverUrl must not be empty"`,
     );
   });
 
@@ -63,9 +63,9 @@ describe('#constructor()', () => {
           serverUrl,
           apiPath: '/auth',
           cookiePath: '/app',
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.apiPath should be a subpath of options.cookiePath"`
+      `"options.apiPath should be a subpath of options.cookiePath"`,
     );
   });
 
@@ -78,9 +78,9 @@ describe('#constructor()', () => {
           redirectUrl: '/webview',
           apiPath: '/app/auth',
           cookiePath: '/app',
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.redirectUrl should be under a subpath of options.cookiePath"`
+      `"options.redirectUrl should be under a subpath of options.cookiePath"`,
     );
   });
 
@@ -93,9 +93,9 @@ describe('#constructor()', () => {
           redirectUrl: '//view.sociably.io',
           apiPath: '/auth',
           cookieDomain: 'api.sociably.io',
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.serverUrl should be under a subdomain of options.cookieDomain"`
+      `"options.serverUrl should be under a subdomain of options.cookieDomain"`,
     );
   });
 
@@ -112,9 +112,9 @@ describe('#constructor()', () => {
         new HttpOperator({
           secret,
           serverUrl: 'http://sociably.io',
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"protocol of options.serverUrl should be "https" when options.secure is set to true"`
+      `"protocol of options.serverUrl should be "https" when options.secure is set to true"`,
     );
   });
 });
@@ -163,7 +163,7 @@ test('.issueState(res, data)', async () => {
       cookiePath: '/app',
       cookieSameSite: 'none',
       secure: false,
-    })
+    }),
   );
   expect(cookies).toMatchInlineSnapshot(`
     Map {
@@ -191,7 +191,7 @@ test('.issueAuth(data, options)', async () => {
       res,
       'foo',
       { foo: 'data' },
-      initiateAt
+      initiateAt,
     );
 
     const cookies = getCookies(res);
@@ -339,7 +339,7 @@ test('.issueError(code, reason)', async () => {
       res,
       'foo',
       418,
-      "I'm a teapot"
+      "I'm a teapot",
     );
     const cookies = getCookies(res);
 
@@ -400,7 +400,7 @@ test('.issueError(code, reason)', async () => {
       cookiePath: '/app',
       cookieSameSite: 'none',
       secure: false,
-    })
+    }),
   );
   expect(cookies).toMatchInlineSnapshot(`
     Map {
@@ -453,7 +453,7 @@ test('.getState()', async () => {
 
   const stateEnceded = jwt.sign(
     { platform, state, scope, iat: SEC_NOW - 10, exp: SEC_NOW + 10 },
-    '__SECRET__'
+    '__SECRET__',
   );
 
   // ok
@@ -474,7 +474,7 @@ test('.getState()', async () => {
   req.mock.getter('headers').fake(() => ({
     cookie: `sociably_auth_state=${jwt.sign(
       { platform: 'bar', state, scope, iat: SEC_NOW - 10 },
-      '__SECRET__'
+      '__SECRET__',
     )}`,
   }));
   await expect(operator.getState(req, 'foo')).resolves.toBe(null);
@@ -483,7 +483,7 @@ test('.getState()', async () => {
   req.mock.getter('headers').fake(() => ({
     cookie: `sociably_auth_state=${jwt.sign(
       { platform, state, scope, iat: SEC_NOW - 21, exp: SEC_NOW - 1 },
-      '__SECRET__'
+      '__SECRET__',
     )}`,
   }));
   await expect(operator.getState(req, 'foo')).resolves.toBe(null);
@@ -574,7 +574,7 @@ test('.getAuth()', async () => {
 
   // acceptRefreshable
   await expect(
-    operator.getAuth(req, 'foo', { acceptRefreshable: true })
+    operator.getAuth(req, 'foo', { acceptRefreshable: true }),
   ).resolves.toEqual({ foo: 'data' });
 
   const operatorWithRefreshLimit = new HttpOperator({
@@ -596,10 +596,10 @@ test('.getAuth()', async () => {
     cookie: `sociably_auth_token=${token};sociably_auth_signature=${sig};`,
   }));
   await expect(operatorWithRefreshLimit.getAuth(req, 'foo')).resolves.toBe(
-    null
+    null,
   );
   await expect(
-    operatorWithRefreshLimit.getAuth(req, 'foo', { acceptRefreshable: true })
+    operatorWithRefreshLimit.getAuth(req, 'foo', { acceptRefreshable: true }),
   ).resolves.toEqual({ foo: 'data' });
 
   // not refreshable
@@ -615,10 +615,10 @@ test('.getAuth()', async () => {
     cookie: `sociably_auth_token=${token};sociably_auth_signature=${sig};`,
   }));
   await expect(operatorWithRefreshLimit.getAuth(req, 'foo')).resolves.toBe(
-    null
+    null,
   );
   await expect(
-    operatorWithRefreshLimit.getAuth(req, 'foo', { acceptRefreshable: true })
+    operatorWithRefreshLimit.getAuth(req, 'foo', { acceptRefreshable: true }),
   ).resolves.toBe(null);
 });
 
@@ -638,7 +638,7 @@ test('.getError()', async () => {
 
   const errEncoded = jwt.sign(
     { platform, error, scope, iat: SEC_NOW - 10 },
-    '__SECRET__'
+    '__SECRET__',
   );
 
   // ok
@@ -657,7 +657,7 @@ test('.getError()', async () => {
   req.mock.getter('headers').fake(() => ({
     cookie: `sociably_auth_error=${jwt.sign(
       { platform: 'bar', error, scope, iat: SEC_NOW - 10 },
-      '__SECRET__'
+      '__SECRET__',
     )}`,
   }));
   await expect(operator.getError(req, 'foo')).resolves.toBe(null);
@@ -689,7 +689,7 @@ describe('.redirect(url, options)', () => {
     });
 
     expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
-      true
+      true,
     );
     expect(res.end).toHaveBeenCalledTimes(3);
     expect(res.writeHead).toHaveBeenCalledTimes(3);
@@ -723,7 +723,7 @@ describe('.redirect(url, options)', () => {
     });
 
     expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
-      true
+      true,
     );
     expect(res.end).toHaveBeenCalledTimes(3);
     expect(res.writeHead).toHaveBeenCalledTimes(3);
@@ -743,7 +743,7 @@ describe('.redirect(url, options)', () => {
     res.end.mock.fake(() => {});
 
     expect(operator.redirect(res, undefined, { assertInternal: true })).toBe(
-      true
+      true,
     );
     expect(res.end).toHaveBeenCalledTimes(1);
     expect(res.writeHead).toHaveBeenCalledTimes(1);
@@ -752,7 +752,7 @@ describe('.redirect(url, options)', () => {
     });
 
     expect(operator.redirect(res, 'foo?a=b', { assertInternal: true })).toBe(
-      true
+      true,
     );
     expect(res.end).toHaveBeenCalledTimes(2);
     expect(res.writeHead).toHaveBeenCalledTimes(2);
@@ -761,14 +761,14 @@ describe('.redirect(url, options)', () => {
     });
 
     expect(operator.redirect(res, '/foo', { assertInternal: true })).toBe(
-      false
+      false,
     );
     expect(res.end).toHaveBeenCalledTimes(3);
     expect(res.writeHead).toHaveBeenCalledTimes(3);
     expect(res.writeHead).toHaveBeenNthCalledWith(3, 400);
 
     expect(operator.redirect(res, undefined, { assertInternal: true })).toBe(
-      true
+      true,
     );
     expect(res.end).toHaveBeenCalledTimes(4);
     expect(res.writeHead).toHaveBeenCalledTimes(4);
@@ -779,7 +779,7 @@ describe('.redirect(url, options)', () => {
     expect(
       operator.redirect(res, 'https://sociably.io/foo', {
         assertInternal: true,
-      })
+      }),
     ).toBe(false);
     expect(res.end).toHaveBeenCalledTimes(5);
     expect(res.writeHead).toHaveBeenCalledTimes(5);
@@ -788,7 +788,7 @@ describe('.redirect(url, options)', () => {
     expect(
       operator.redirect(res, 'http://sociably.io/myApp/webview/', {
         assertInternal: true,
-      })
+      }),
     ).toBe(false);
     expect(res.end).toHaveBeenCalledTimes(6);
     expect(res.writeHead).toHaveBeenCalledTimes(6);
@@ -797,7 +797,7 @@ describe('.redirect(url, options)', () => {
     expect(
       operator.redirect(res, 'https://sociably.app/myApp/webview/', {
         assertInternal: true,
-      })
+      }),
     ).toBe(false);
     expect(res.end).toHaveBeenCalledTimes(7);
     expect(res.writeHead).toHaveBeenCalledTimes(7);
@@ -810,10 +810,10 @@ test('.getAuthUrl(url, options)', () => {
 
   expect(operator.getAuthUrl('test')).toBe('https://sociably.io/auth/test');
   expect(operator.getAuthUrl('test', 'foo?bar=baz')).toBe(
-    'https://sociably.io/auth/test/foo?bar=baz'
+    'https://sociably.io/auth/test/foo?bar=baz',
   );
   expect(operator.getAuthUrl('test', 'foo/bar/baz')).toBe(
-    'https://sociably.io/auth/test/foo/bar/baz'
+    'https://sociably.io/auth/test/foo/bar/baz',
   );
 });
 
@@ -826,10 +826,10 @@ test('.getRedirectUrl(url, options)', () => {
 
   expect(operator.getRedirectUrl()).toBe('https://sociably.io/myApp/webview/');
   expect(operator.getRedirectUrl('foo?bar=baz')).toBe(
-    'https://sociably.io/myApp/webview/foo?bar=baz'
+    'https://sociably.io/myApp/webview/foo?bar=baz',
   );
   expect(operator.getRedirectUrl('foo/bar/baz')).toBe(
-    'https://sociably.io/myApp/webview/foo/bar/baz'
+    'https://sociably.io/myApp/webview/foo/bar/baz',
   );
 });
 
@@ -837,14 +837,14 @@ test('.signToken(platform, payload, options)', () => {
   const operator = new HttpOperator({ secret, serverUrl });
 
   expect(
-    operator.signToken('foo', 'bar', { noTimestamp: true })
+    operator.signToken('foo', 'bar', { noTimestamp: true }),
   ).toMatchInlineSnapshot(
-    `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOiJiYXIifQ.gLdeF0o1IRiSnMof7uyN_ztn8X2kw7S-xmjBh5AL6Z4"`
+    `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOiJiYXIifQ.gLdeF0o1IRiSnMof7uyN_ztn8X2kw7S-xmjBh5AL6Z4"`,
   );
   expect(
-    operator.signToken('foo', { bar: 'baz' }, { noTimestamp: true })
+    operator.signToken('foo', { bar: 'baz' }, { noTimestamp: true }),
   ).toMatchInlineSnapshot(
-    `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOnsiYmFyIjoiYmF6In19.eQMamzQAeuKRTSCV5xzuovnZdnzw7eHpvCjErkKeg-U"`
+    `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOnsiYmFyIjoiYmF6In19.eQMamzQAeuKRTSCV5xzuovnZdnzw7eHpvCjErkKeg-U"`,
   );
 });
 
@@ -854,20 +854,20 @@ test('.verifyToken(platform)', () => {
   expect(
     operator.verifyToken(
       'foo',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOiJiYXIifQ.gLdeF0o1IRiSnMof7uyN_ztn8X2kw7S-xmjBh5AL6Z4'
-    )
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOiJiYXIifQ.gLdeF0o1IRiSnMof7uyN_ztn8X2kw7S-xmjBh5AL6Z4',
+    ),
   ).toBe('bar');
   expect(
     operator.verifyToken(
       'foo',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOnsiYmFyIjoiYmF6In19.eQMamzQAeuKRTSCV5xzuovnZdnzw7eHpvCjErkKeg-U'
-    )
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOnsiYmFyIjoiYmF6In19.eQMamzQAeuKRTSCV5xzuovnZdnzw7eHpvCjErkKeg-U',
+    ),
   ).toEqual({ bar: 'baz' });
   expect(
     operator.verifyToken(
       'foo',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOiJiYXIifQ.__WRONG_SIGNATURE__'
-    )
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybSI6ImZvbyIsInBheWxvYWQiOiJiYXIifQ.__WRONG_SIGNATURE__',
+    ),
   ).toBe(null);
   expect(operator.verifyToken('foo', '__WRONG_TOKEN__')).toBe(null);
 });

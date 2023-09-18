@@ -1,4 +1,4 @@
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably, { SociablyUser, SociablyThread } from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import type { AnyServerAuthenticator } from '@sociably/auth';
@@ -15,19 +15,13 @@ const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
 
 jest.mock('@sociably/core/engine', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/engine'))
+  moxy(jest.requireActual('@sociably/core/engine')),
 );
 jest.mock('@sociably/core/renderer', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/renderer'))
+  moxy(jest.requireActual('@sociably/core/renderer')),
 );
 jest.mock('@sociably/websocket', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/websocket'))
+  moxy(jest.requireActual('@sociably/websocket')),
 );
 
 const server = moxy<WebviewSocketServer<AnyServerAuthenticator>>({
@@ -72,7 +66,7 @@ describe('#constructor(options)', () => {
       expect.any(Queue),
       expect.any(Worker),
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   });
 });

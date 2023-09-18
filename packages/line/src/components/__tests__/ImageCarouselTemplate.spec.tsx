@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
@@ -13,12 +13,12 @@ import {
 
 test('is valid native component', () => {
   expect(
-    isNativeType(<ImageCarouselItem {...({} as ImageCarouselItemProps)} />)
+    isNativeType(<ImageCarouselItem {...({} as ImageCarouselItemProps)} />),
   ).toBe(true);
   expect(
     isNativeType(
-      <ImageCarouselTemplate {...({} as ImageCarouselTemplateProps)} />
-    )
+      <ImageCarouselTemplate {...({} as ImageCarouselTemplateProps)} />,
+    ),
   ).toBe(true);
   expect(ImageCarouselItem.$$platform).toBe('line');
   expect(ImageCarouselTemplate.$$platform).toBe('line');
@@ -39,8 +39,8 @@ it('match snapshot', async () => {
           imageUrl="https://..."
           action={<UriAction uri="https://..." label="bar" />}
         />
-      </ImageCarouselTemplate>
-    )
+      </ImageCarouselTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -110,7 +110,7 @@ test('altText as function', async () => {
         imageUrl="https://..."
         action={<UriAction uri="https://..." label="foo" />}
       />
-    </ImageCarouselTemplate>
+    </ImageCarouselTemplate>,
   );
   const messageSegValue = segemnts?.[0].value as MessageSegmentValue;
   const templateValue = messageSegValue.params as TemplateMessageParams;

@@ -112,18 +112,20 @@ exports[`rendering with media 1`] = `
             url="http://foo.bar/baz.png"
           />
           <Photo
-            fileData={
+            file={
               {
-                "data": [
-                  102,
-                  111,
-                  111,
-                ],
-                "type": "Buffer",
+                "contentLength": 123,
+                "contentType": "image/jpeg",
+                "data": {
+                  "data": [
+                    102,
+                    111,
+                    111,
+                  ],
+                  "type": "Buffer",
+                },
               }
             }
-            fileSize={123}
-            fileType="image/jpeg"
           />
         </Sociably.Fragment>
       }
@@ -159,13 +161,17 @@ exports[`rendering with media 1`] = `
         },
         {
           "assetTag": undefined,
-          "fileData": {
-            "data": [
-              102,
-              111,
-              111,
-            ],
-            "type": "Buffer",
+          "file": {
+            "contentLength": 123,
+            "contentType": "image/jpeg",
+            "data": {
+              "data": [
+                102,
+                111,
+                111,
+              ],
+              "type": "Buffer",
+            },
           },
           "params": {
             "additional_owners": undefined,

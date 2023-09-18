@@ -18,7 +18,7 @@ test('rendering value', async () => {
           data="foo"
           title="FOO"
         />,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "reply": {

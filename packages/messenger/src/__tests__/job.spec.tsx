@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { UnitSegment, TextSegment } from '@sociably/core/renderer';
 import { MetaApiChannel } from '@sociably/meta-api';
@@ -132,7 +132,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
             tag: 'PAYMENT_UPDATE',
             notification_type: 'SILENT_PUSH',
             persona_id: 'your-dearest-friend',
-          })
+          }),
         );
       }
     });
@@ -184,7 +184,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
 
     jobs.forEach((job, i) => {
       expect(job.request.params?.persona_id).toBe(
-        i !== 3 ? 'droid' : undefined
+        i !== 3 ? 'droid' : undefined,
       );
     });
   });
@@ -314,18 +314,13 @@ describe('createChatJobs(options)(chat, segments)', () => {
             params: { message: { text: 'world' } },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"oneTimeNotifToken can only be used to send one message"`
+      `"oneTimeNotifToken can only be used to send one message"`,
     );
   });
 
   it('add attached file data and info', () => {
-    const fileInfo = {
-      filename: 'deathangel.jpg',
-      contentType: 'image/jpeg',
-    };
-
     const jobs = createChatJobs(channel)(chat, [
       {
         type: 'unit',
@@ -337,7 +332,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
           params: {
             message: { attachment: { type: 'image' } },
           },
-          attachFile: {
+          file: {
             data: '_FOO_',
           },
         },
@@ -352,9 +347,10 @@ describe('createChatJobs(options)(chat, segments)', () => {
           params: {
             message: { attachment: { type: 'file' } },
           },
-          attachFile: {
+          file: {
             data: '_BAR_',
-            info: fileInfo,
+            fileName: 'deathangel.jpg',
+            contentType: 'image/jpeg',
           },
           assetTag: 'BAR!',
         },
@@ -365,7 +361,11 @@ describe('createChatJobs(options)(chat, segments)', () => {
 
     expect(jobs[0].file).toEqual({ data: '_FOO_' });
     expect(jobs[0].assetTag).toBe(undefined);
-    expect(jobs[1].file).toEqual({ data: '_BAR_', info: fileInfo });
+    expect(jobs[1].file).toEqual({
+      data: '_BAR_',
+      fileName: 'deathangel.jpg',
+      contentType: 'image/jpeg',
+    });
     expect(jobs[1].assetTag).toBe('BAR!');
   });
 });
@@ -392,7 +392,7 @@ describe('createUploadChatAttachmentJobs()', () => {
             },
           },
         },
-      ])
+      ]),
     ).toEqual([
       {
         channel,
@@ -414,12 +414,12 @@ describe('createUploadChatAttachmentJobs()', () => {
   });
 
   it('create upload with file data', () => {
-    const fileInfo = {
-      filename: 'doge.jpg',
+    const file = {
+      data: '_FILE_CONTENT_DATA_',
+      fileName: 'doge.jpg',
       contentType: 'image/jpeg',
     };
     const assetTag = 'MY_ASSET';
-    const fileData = '_FILE_CONTENT_DATA_';
 
     expect(
       createUploadChatAttachmentJobs()(channel, [
@@ -435,14 +435,11 @@ describe('createUploadChatAttachmentJobs()', () => {
                 attachment: { type: 'image', is_sharable: true },
               },
             },
-            attachFile: {
-              data: fileData,
-              info: fileInfo,
-            },
+            file,
             assetTag,
           },
         },
-      ])
+      ]),
     ).toEqual([
       {
         channel,
@@ -455,10 +452,7 @@ describe('createUploadChatAttachmentJobs()', () => {
             },
           },
         },
-        file: {
-          data: fileData,
-          info: fileInfo,
-        },
+        file,
         assetTag,
       },
     ]);
@@ -485,7 +479,7 @@ describe('createUploadChatAttachmentJobs()', () => {
     };
 
     expect(() =>
-      createUploadChatAttachmentJobs()(channel, [segment, segment])
+      createUploadChatAttachmentJobs()(channel, [segment, segment]),
     ).toThrowErrorMatchingInlineSnapshot(`"more than 1 message received"`);
   });
 
@@ -502,9 +496,9 @@ describe('createUploadChatAttachmentJobs()', () => {
             params: { message: { text: "I'm an attachment!" } },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<Foo /> is not valid attachment message"`
+      `"<Foo /> is not valid attachment message"`,
     );
 
     expect(() =>
@@ -528,9 +522,9 @@ describe('createUploadChatAttachmentJobs()', () => {
             },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"invalid attachment type "template" to be uploaded"`
+      `"invalid attachment type "template" to be uploaded"`,
     );
   });
 });

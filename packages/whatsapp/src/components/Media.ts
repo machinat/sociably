@@ -4,21 +4,18 @@ import {
   UnitSegment,
   InnerRenderFn,
 } from '@sociably/core/renderer';
+import { MetaApiUploadingFile } from '@sociably/meta-api';
 import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
 import { WhatsAppSegmentValue, WhatsAppComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type MediaProps = {
   /** The uploaded media ID */
   mediaId?: string;
   /** The URL of the media to be sent */
   url?: string;
   /** The file content to be upload */
-  fileData?: Buffer | NodeJS.ReadableStream;
-  /** The content type of the file. Required when uploading using `file` */
-  fileType?: string;
+  file?: MetaApiUploadingFile & { contentType: string };
   /** Reply to the specified message */
   replyTo?: string;
   /** The asset tag for saving the created media and reusing it */
@@ -43,32 +40,19 @@ const makeMediaComponent = (componentName: string, mediaType: string) => {
     [componentName]: async (
       node: NativeElement<MediaProps & WithCaption & WithFileName, any>,
       path: string,
-      render: InnerRenderFn
-    ) => {
-      const {
-        mediaId,
-        url,
-        fileData,
-        fileType,
-        caption,
-        fileName,
-        replyTo,
-        assetTag,
-      } = node.props;
+      render: InnerRenderFn,
+    ): Promise<UnitSegment<WhatsAppSegmentValue>[]> => {
+      const { mediaId, url, file, caption, fileName, replyTo, assetTag } =
+        node.props;
 
       if (
-        !(url || mediaId || fileData) ||
+        !(url || mediaId || file) ||
         (url && mediaId) ||
-        (url && fileData) ||
-        (fileData && mediaId)
+        (url && file) ||
+        (file && mediaId)
       ) {
         throw new TypeError(
-          'there should be exactly one of "url", "mediaId" or "fileData" prop'
-        );
-      }
-      if (fileData && !fileType) {
-        throw new TypeError(
-          '"fileType" prop is required when using "fileData" source'
+          'there should be exactly one of "url", "mediaId" or "file" prop',
         );
       }
 
@@ -77,7 +61,7 @@ const makeMediaComponent = (componentName: string, mediaType: string) => {
         for (const seg of captionSegments) {
           if (seg.type !== 'text') {
             throw new TypeError(
-              `"caption" prop should contain only textual content`
+              `"caption" prop should contain only textual content`,
             );
           }
         }
@@ -91,17 +75,11 @@ const makeMediaComponent = (componentName: string, mediaType: string) => {
               id: mediaId,
               link: url,
               caption: captionSegments?.[0].value,
-              filename: fileName,
+              filename: fileName || file?.fileName,
             },
             context: replyTo ? { message_id: replyTo } : undefined,
           },
-          mediaFile: fileData
-            ? {
-                data: fileData,
-                type: fileType!,
-                info: { contentType: fileType, filename: fileName },
-              }
-            : undefined,
+          file,
           assetTag,
         }),
       ];
@@ -113,6 +91,7 @@ const makeMediaComponent = (componentName: string, mediaType: string) => {
 
 /**
  * Send an audio
+ *
  * @category Component
  * @props {@link AudioProps}
  */
@@ -123,6 +102,7 @@ export const Audio: WhatsAppComponent<
 
 /**
  * Send a document
+ *
  * @category Component
  * @props {@link DocumentProps}
  */
@@ -133,6 +113,7 @@ export const Document: WhatsAppComponent<
 
 /**
  * Send an image
+ *
  * @category Component
  * @props {@link ImageProps}
  */
@@ -143,6 +124,7 @@ export const Image: WhatsAppComponent<
 
 /**
  * Send a sticker
+ *
  * @category Component
  * @props {@link StickerProps}
  */
@@ -153,6 +135,7 @@ export const Sticker: WhatsAppComponent<
 
 /**
  * Send a video
+ *
  * @category Component
  * @props {@link VideoProps}
  */

@@ -1,5 +1,5 @@
 import fetch, { Response } from 'node-fetch';
-import FormData from 'form-data';
+import FormStream from 'formstream';
 import type { SociablyWorker } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import TelegramUser from './User.js';
@@ -8,7 +8,7 @@ import TelegramApiError from './Error.js';
 import type {
   TelegramJob,
   TelegramResult,
-  UploadingFile,
+  UploadingFileInfo,
   FailApiResult,
 } from './types.js';
 
@@ -22,31 +22,46 @@ const requestBotApi = async (
   botToken: string,
   method: string,
   parameters: Record<string, unknown>,
-  files: undefined | UploadingFile[]
+  files: undefined | UploadingFileInfo[],
 ): Promise<TelegramResult> => {
   const botApiEntry = makeBotApiEntry(botToken);
   let response: Response;
 
   if (files && files.length > 0) {
-    const form = new FormData();
+    const form = FormStream();
     Object.entries(parameters).forEach(([key, value]) => {
-      form.append(key, JSON.stringify(value));
+      form.field(key, JSON.stringify(value));
     });
 
-    files.forEach(({ fieldName, data, info: fileInfo }) => {
-      form.append(fieldName, data, fileInfo);
+    files.forEach(({ fieldName, source }) => {
+      if (typeof source.data === 'string' || Buffer.isBuffer(source.data)) {
+        form.buffer(
+          fieldName,
+          Buffer.from(source.data),
+          source.fileName as string,
+          source.contentType,
+        );
+      } else {
+        form.stream(
+          fieldName,
+          source.data,
+          source.fileName as string,
+          source.contentType,
+          source.contentLength,
+        );
+      }
     });
 
     response = await fetch(`${botApiEntry}/${method}`, {
       method: 'POST',
-      body: form,
-      headers: form.getHeaders(),
+      headers: form.headers(),
+      body: form as unknown as NodeJS.ReadableStream,
     });
   } else {
     response = await fetch(`${botApiEntry}/${method}`, {
       method: 'POST',
-      body: JSON.stringify(parameters),
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(parameters),
     });
   }
 
@@ -70,7 +85,7 @@ export default class TelegramWorker
 
   constructor(
     settingsAccessor: AgentSettingsAccessorI,
-    maxConnections: number
+    maxConnections: number,
   ) {
     this._settingsAccessor = settingsAccessor;
     this.connectionCount = 0;
@@ -133,7 +148,7 @@ export default class TelegramWorker
   private async _consumeJobAt(
     queue: Queue<TelegramJob, TelegramResult>,
     idx: number,
-    executionKey: undefined | string
+    executionKey: undefined | string,
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);
@@ -158,7 +173,7 @@ export default class TelegramWorker
   private async _executeJob([job]: TelegramJob[]) {
     const { method, params, files, agentId } = job;
     const agentSettings = await this._settingsAccessor.getAgentSettings(
-      new TelegramUser(agentId, true)
+      new TelegramUser(agentId, true),
     );
     if (!agentSettings) {
       throw new Error(`Agent bot "${agentId}" not registered`);
@@ -168,7 +183,7 @@ export default class TelegramWorker
       agentSettings.botToken,
       method,
       params,
-      files
+      files,
     );
 
     return [{ success: true as const, result, job, error: undefined }];

@@ -31,7 +31,7 @@ test('rendering value', async () => {
             title="BAR"
           />
         </ListSection>,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "rows": [
@@ -68,7 +68,7 @@ test('rendering value', async () => {
             title="FOO"
           />
         </ListSection>,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "rows": [

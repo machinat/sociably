@@ -1,4 +1,4 @@
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import {
   serviceContainer,
   serviceProviderClass,
@@ -17,7 +17,7 @@ const useModuleUtils = moxy(() => ({}));
 const TestService = moxy(
   serviceProviderClass({
     lifetime: 'transient',
-  })(class TestService {})
+  })(class TestService {}),
 );
 
 const TestModule = moxy({
@@ -36,7 +36,7 @@ const AnotherService = moxy(
   serviceProviderClass({
     deps: [TestService],
     lifetime: 'scoped',
-  })(class AnotherService {})
+  })(class AnotherService {}),
 );
 
 const AnotherModule = moxy({
@@ -53,7 +53,7 @@ const FooService = moxy(
   serviceProviderClass({
     deps: [TestService, AnotherService],
     lifetime: 'singleton',
-  })(class FooService {})
+  })(class FooService {}),
 );
 
 const TestPlatformUtilsI = serviceInterface({ name: 'TestPlatformUtils' });
@@ -87,14 +87,14 @@ const FooPlatform = moxy(
       (frame, next) => next(frame),
     ],
   } as never,
-  { includeProperties: ['eventMiddlewares', 'dispatchMiddlewares'] }
+  { includeProperties: ['eventMiddlewares', 'dispatchMiddlewares'] },
 );
 
 const BarService = moxy(
   serviceProviderClass({
     deps: [TestService, AnotherService],
     lifetime: 'scoped',
-  })(class BarService {})
+  })(class BarService {}),
 );
 
 const AnotherPlatformUtilsI = serviceInterface({
@@ -124,14 +124,14 @@ const MyService = moxy(
   serviceProviderClass({
     deps: [TestService, AnotherService, FooService, BarService],
     lifetime: 'scoped',
-  })(class MyService {})
+  })(class MyService {}),
 );
 
 const YourService = moxy(
   serviceProviderClass({
     deps: [TestService, AnotherService, FooService, BarService, MyService],
     lifetime: 'transient',
-  })(class YourService {})
+  })(class YourService {}),
 );
 
 beforeEach(() => {
@@ -164,49 +164,49 @@ it('start modules', async () => {
   expect(TestService.$$factory).toHaveBeenCalledTimes(5);
   expect(TestService.$$factory).toHaveBeenCalledWith(/* empty */);
   expect(
-    (TestModule.startHook.$$factory as Moxy<() => unknown>).mock
+    (TestModule.startHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (TestModule.startHook.$$factory as Moxy<() => unknown>).mock
+    (TestModule.startHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(expect.any(TestService));
 
   expect(AnotherService.$$factory).toHaveBeenCalledTimes(1);
   expect(AnotherService.$$factory).toHaveBeenCalledWith(
-    expect.any(TestService)
+    expect.any(TestService),
   );
   expect(
-    (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock
+    (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock
+    (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(expect.any(TestService), expect.any(AnotherService));
 
   expect(FooService.$$factory).toHaveBeenCalledTimes(1);
   expect(FooService.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
-    expect.any(AnotherService)
+    expect.any(AnotherService),
   );
   expect(FooPlatform.startHook.$$factory).toHaveBeenCalledTimes(1);
   expect(FooPlatform.startHook.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
-    expect.any(FooService)
+    expect.any(FooService),
   );
 
   expect(BarService.$$factory).toHaveBeenCalledTimes(1);
   expect(BarService.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
-    expect.any(AnotherService)
+    expect.any(AnotherService),
   );
   expect(
-    (BarPlatform.startHook.$$factory as Moxy<() => unknown>).mock
+    (BarPlatform.startHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (BarPlatform.startHook.$$factory as Moxy<() => unknown>).mock
+    (BarPlatform.startHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
-    expect.any(BarService)
+    expect.any(BarService),
   );
 
   expect(MyService.$$factory).not.toHaveBeenCalled();
@@ -231,7 +231,7 @@ it('provide platform utilities bound to utilitiesInterface', async () => {
     {
       initScope: expect.any(Function),
       popError: expect.any(Function),
-    }
+    },
   );
   expect(useAnotherPlatformUtils).toHaveBeenCalledTimes(1);
   expect(useAnotherPlatformUtils).toHaveBeenCalledWith({
@@ -250,48 +250,48 @@ test('#stop() calls stopHook of platfroms & modules', async () => {
   await app.start();
 
   expect(
-    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock
+    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).not.toHaveBeenCalled();
   expect(
-    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock
+    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).not.toHaveBeenCalled();
   expect(FooPlatform.stopHook.$$factory).not.toHaveBeenCalled();
   expect(
-    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock
+    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).not.toHaveBeenCalled();
 
   await app.stop();
 
   expect(
-    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock
+    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock
+    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(expect.any(TestService));
 
   expect(
-    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock
+    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock
+    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(expect.any(TestService), expect.any(AnotherService));
 
   expect(FooPlatform.stopHook.$$factory).toHaveBeenCalledTimes(1);
   expect(FooPlatform.stopHook.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
-    expect.any(FooService)
+    expect.any(FooService),
   );
 
   expect(
-    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock
+    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock
+    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
-    expect.any(BarService)
+    expect.any(BarService),
   );
 });
 
@@ -325,7 +325,7 @@ describe('module utilities', () => {
         BarService,
         MyService,
         YourService,
-      ])
+      ]),
     ).toEqual([
       expect.any(TestService),
       expect.any(AnotherService),
@@ -367,7 +367,7 @@ describe('module utilities', () => {
           MyService,
           YourService,
         ],
-      })(() => containedListener)
+      })(() => containedListener),
     );
 
     const app = new App({
@@ -390,12 +390,12 @@ describe('module utilities', () => {
       expect.any(TestService),
       expect.any(AnotherService),
       expect.any(MyService),
-      expect.any(YourService)
+      expect.any(YourService),
     );
 
     expect(containedListener).toHaveBeenCalledTimes(1);
     expect(containedListener).toHaveBeenCalledWith(
-      new Error('hello container')
+      new Error('hello container'),
     );
   });
 });
@@ -447,7 +447,7 @@ describe('popEventWrapper', () => {
       expect(middleware).toHaveBeenCalledTimes(1);
       expect(middleware).toHaveBeenCalledWith(
         eventContext,
-        expect.any(Function)
+        expect.any(Function),
       );
     }
   });
@@ -542,7 +542,7 @@ describe('popEventWrapper', () => {
     const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).rejects.toThrow(
-      "I'll call police!"
+      "I'll call police!",
     );
 
     expect(FooPlatform.eventMiddlewares[0]).toHaveBeenCalledTimes(1);
@@ -572,7 +572,7 @@ describe('popEventWrapper', () => {
     const { popEventWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(popEventWrapper(finalHandler)(eventContext)).rejects.toThrow(
-      'DO~DOO~DOOOO~DO~'
+      'DO~DOO~DOOOO~DO~',
     );
 
     expect(FooPlatform.eventMiddlewares[0]).toHaveBeenCalledTimes(1);
@@ -633,7 +633,7 @@ describe('popEventWrapper', () => {
           MyService,
           YourService,
         ],
-      })(() => containedListener)
+      })(() => containedListener),
     );
 
     const app = new App({
@@ -656,7 +656,7 @@ describe('popEventWrapper', () => {
       expect.any(TestService),
       expect.any(AnotherService),
       expect.any(MyService),
-      expect.any(YourService)
+      expect.any(YourService),
     );
 
     expect(containedListener).toHaveBeenCalledTimes(1);
@@ -675,7 +675,7 @@ describe('popEventWrapper', () => {
           MyService,
           YourService,
         ],
-      })(() => containedMiddleware)
+      })(() => containedMiddleware),
     );
 
     FooPlatform.mock
@@ -707,13 +707,13 @@ describe('popEventWrapper', () => {
       expect.any(TestService),
       expect.any(AnotherService),
       expect.any(MyService),
-      expect.any(YourService)
+      expect.any(YourService),
     );
 
     expect(containedMiddleware).toHaveBeenCalledTimes(1);
     expect(containedMiddleware).toHaveBeenCalledWith(
       eventContext,
-      expect.any(Function)
+      expect.any(Function),
     );
   });
 });
@@ -749,7 +749,7 @@ describe('dispatchWrapper', () => {
     const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
-      dispatchResponse
+      dispatchResponse,
     );
 
     expect(dispatcher).toHaveBeenCalledTimes(1);
@@ -759,7 +759,7 @@ describe('dispatchWrapper', () => {
       expect(middleware).toHaveBeenCalledTimes(1);
       expect(middleware).toHaveBeenCalledWith(
         dispatchFrame,
-        expect.any(Function)
+        expect.any(Function),
       );
     }
   });
@@ -842,7 +842,7 @@ describe('dispatchWrapper', () => {
     const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).rejects.toThrow(
-      'Obi-Wan vanished'
+      'Obi-Wan vanished',
     );
 
     expect(FooPlatform.dispatchMiddlewares[0]).toHaveBeenCalledTimes(1);
@@ -881,7 +881,7 @@ describe('dispatchWrapper', () => {
     const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
-      newResponse
+      newResponse,
     );
 
     expect(FooPlatform.dispatchMiddlewares[0]).toHaveBeenCalledTimes(1);
@@ -902,7 +902,7 @@ describe('dispatchWrapper', () => {
           MyService,
           YourService,
         ],
-      })(() => containedMiddleware)
+      })(() => containedMiddleware),
     );
 
     FooPlatform.mock
@@ -919,7 +919,7 @@ describe('dispatchWrapper', () => {
     const { dispatchWrapper } = useTestPlatformUtils.mock.calls[0].args[0];
 
     await expect(dispatchWrapper(dispatcher)(dispatchFrame)).resolves.toEqual(
-      dispatchResponse
+      dispatchResponse,
     );
 
     expect(middlewareContainer.$$factory).toHaveBeenCalledTimes(1);
@@ -929,13 +929,13 @@ describe('dispatchWrapper', () => {
       expect.any(TestService),
       expect.any(AnotherService),
       expect.any(MyService),
-      expect.any(YourService)
+      expect.any(YourService),
     );
 
     expect(containedMiddleware).toHaveBeenCalledTimes(1);
     expect(containedMiddleware).toHaveBeenCalledWith(
       dispatchFrame,
-      expect.any(Function)
+      expect.any(Function),
     );
 
     expect(dispatcher).toHaveBeenCalledTimes(1);
@@ -966,7 +966,7 @@ describe('#useServices(requirements)', () => {
         MyService,
         { require: YourService, optional: true },
         { require: NoneService, optional: true },
-      ])
+      ]),
     ).toEqual([
       expect.any(TestService),
       expect.any(AnotherService),
@@ -978,7 +978,7 @@ describe('#useServices(requirements)', () => {
     ]);
 
     expect(() =>
-      app.useServices([NoneService])
+      app.useServices([NoneService]),
     ).toThrowErrorMatchingInlineSnapshot(`"NoneService is not bound"`);
   });
 

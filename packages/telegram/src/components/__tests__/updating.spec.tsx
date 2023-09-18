@@ -1,17 +1,17 @@
-import Sociably from '@sociably/core';
+import Sociably, { SociablyNode } from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
-import { InlineKeyboard, CallbackButton } from '../replyMarkup';
-import { Animation, Audio, Document, Video, Photo } from '../media';
+import { InlineKeyboard, CallbackButton } from '../replyMarkup.js';
+import { Animation, Audio, Document, Video, Photo } from '../media.js';
 import {
   EditText,
   EditCaption,
   EditMedia,
   StopPoll,
   DeleteMessage,
-} from '../updating';
+} from '../updating.js';
 
-const renderer = new Renderer('telegram', (node, path) => [
+const renderer = new Renderer('telegram', async (node, path) => [
   {
     type: 'text',
     node,
@@ -19,24 +19,25 @@ const renderer = new Renderer('telegram', (node, path) => [
     value: `<${node.type}>${node.props.children}</${node.type}>`,
   },
 ]);
+const render = async (node: SociablyNode) => renderer.render(node, null, null);
 
 describe.each([EditText, EditCaption, EditMedia, StopPoll, DeleteMessage])(
   '%p',
   (Updating) => {
     it('is valid unit Component', () => {
-      expect(isNativeType(<Updating />)).toBe(true);
+      expect(isNativeType(<Updating> </Updating>)).toBe(true);
       expect(Updating.$$platform).toBe('telegram');
     });
-  }
+  },
 );
 
 test('EditText match snapshot', async () => {
   await expect(
-    renderer.render(
+    render(
       <EditText messageId={123}>
         <b>foo</b>
-      </EditText>
-    )
+      </EditText>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -65,11 +66,11 @@ test('EditText match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <EditText messageId={123} parseMode="None">
         foo
-      </EditText>
-    )
+      </EditText>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -97,7 +98,7 @@ test('EditText match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <EditText
         inlineMessageId="123456"
         parseMode="MarkdownV2"
@@ -109,8 +110,8 @@ test('EditText match snapshot', async () => {
         }
       >
         *foo*
-      </EditText>
-    )
+      </EditText>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -159,11 +160,11 @@ test('EditText match snapshot', async () => {
 
 test('EditCaption match snapshot', async () => {
   await expect(
-    renderer.render(
+    render(
       <EditCaption messageId={123}>
         <b>foo</b>
-      </EditCaption>
-    )
+      </EditCaption>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -191,11 +192,11 @@ test('EditCaption match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <EditCaption messageId={123} parseMode="None">
         foo
-      </EditCaption>
-    )
+      </EditCaption>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -222,7 +223,7 @@ test('EditCaption match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <EditCaption
         inlineMessageId="123456"
         parseMode="MarkdownV2"
@@ -233,8 +234,8 @@ test('EditCaption match snapshot', async () => {
         }
       >
         *foo*
-      </EditCaption>
-    )
+      </EditCaption>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -281,11 +282,11 @@ test('EditCaption match snapshot', async () => {
 
 test('EditMedia match snapshot', async () => {
   await expect(
-    renderer.render(
+    render(
       <EditMedia messageId={123}>
         <Animation fileId="123456" duration={100} width={1920} height={1080} />
-      </EditMedia>
-    )
+      </EditMedia>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -325,7 +326,7 @@ test('EditMedia match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <EditMedia messageId={123}>
         <Audio
           url="http://foo.bar/baz.mp3"
@@ -335,8 +336,8 @@ test('EditMedia match snapshot', async () => {
           performer="John Doe"
           title="Foo"
         />
-      </EditMedia>
-    )
+      </EditMedia>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -378,16 +379,18 @@ test('EditMedia match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <EditMedia messageId={123}>
         <Document
-          fileData="__DATA__"
-          fileInfo={{ fileName: 'baz.txt' }}
+          file={{
+            data: '__DATA__',
+            fileName: 'baz.txt',
+          }}
           assetTag="my_doc"
           caption={<b>Important Document</b>}
         />
-      </EditMedia>
-    )
+      </EditMedia>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -401,9 +404,9 @@ test('EditMedia match snapshot', async () => {
                 Important Document
               </b>
             }
-            fileData="__DATA__"
-            fileInfo={
+            file={
               {
+                "data": "__DATA__",
                 "fileName": "baz.txt",
               }
             }
@@ -415,9 +418,9 @@ test('EditMedia match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_doc",
-              "data": "__DATA__",
               "fieldName": "document",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.txt",
               },
             },
@@ -441,23 +444,27 @@ test('EditMedia match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <EditMedia messageId={123}>
         <Video
-          fileData="__DATA__"
-          fileInfo={{ fileName: 'baz.mp4' }}
+          file={{
+            data: '__DATA__',
+            fileName: 'baz.mp4',
+          }}
           assetTag="my_video"
           parseMode="MarkdownV2"
           caption="__MyVideo__"
-          thumbnailFileData="__THUMB_DATA__"
-          thumbnailFileInfo={{ fileName: 'baz.jpg' }}
+          thumbnailFile={{
+            data: '__THUMB_DATA__',
+            fileName: 'baz.jpg',
+          }}
           duration={100}
           width={1920}
           height={1080}
           supportsStreaming
         />
-      </EditMedia>
-    )
+      </EditMedia>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -468,18 +475,18 @@ test('EditMedia match snapshot', async () => {
             assetTag="my_video"
             caption="__MyVideo__"
             duration={100}
-            fileData="__DATA__"
-            fileInfo={
+            file={
               {
+                "data": "__DATA__",
                 "fileName": "baz.mp4",
               }
             }
             height={1080}
             parseMode="MarkdownV2"
             supportsStreaming={true}
-            thumbnailFileData="__THUMB_DATA__"
-            thumbnailFileInfo={
+            thumbnailFile={
               {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               }
             }
@@ -492,17 +499,17 @@ test('EditMedia match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_video",
-              "data": "__DATA__",
               "fieldName": "video",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.mp4",
               },
             },
             {
               "assetTag": undefined,
-              "data": "__THUMB_DATA__",
               "fieldName": "thumb",
-              "info": {
+              "source": {
+                "data": "__THUMB_DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -530,7 +537,7 @@ test('EditMedia match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <EditMedia
         inlineMessageId="123456"
         replyMarkup={
@@ -540,12 +547,14 @@ test('EditMedia match snapshot', async () => {
         }
       >
         <Photo
-          fileData="__DATA__"
-          fileInfo={{ fileName: 'baz.jpg' }}
+          file={{
+            data: '__DATA__',
+            fileName: 'baz.jpg',
+          }}
           assetTag="my_photo"
         />
-      </EditMedia>
-    )
+      </EditMedia>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -562,9 +571,9 @@ test('EditMedia match snapshot', async () => {
         >
           <Photo
             assetTag="my_photo"
-            fileData="__DATA__"
-            fileInfo={
+            file={
               {
+                "data": "__DATA__",
                 "fileName": "baz.jpg",
               }
             }
@@ -576,9 +585,9 @@ test('EditMedia match snapshot', async () => {
           "files": [
             {
               "assetTag": "my_photo",
-              "data": "__DATA__",
               "fieldName": "photo",
-              "info": {
+              "source": {
+                "data": "__DATA__",
                 "fileName": "baz.jpg",
               },
             },
@@ -612,7 +621,7 @@ test('EditMedia match snapshot', async () => {
 });
 
 test('StopPoll match snapshot', async () => {
-  await expect(renderer.render(<StopPoll messageId={123} />)).resolves
+  await expect(render(<StopPoll messageId={123} />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -632,7 +641,7 @@ test('StopPoll match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <StopPoll
         messageId={123}
         replyMarkup={
@@ -640,8 +649,8 @@ test('StopPoll match snapshot', async () => {
             <CallbackButton text="Noooo" data="__TOO_LATE__" />
           </InlineKeyboard>
         }
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -680,7 +689,7 @@ test('StopPoll match snapshot', async () => {
 });
 
 test('DeleteMessage match snapshot', async () => {
-  await expect(renderer.render(<DeleteMessage messageId={123} />)).resolves
+  await expect(render(<DeleteMessage messageId={123} />)).resolves
     .toMatchInlineSnapshot(`
     [
       {

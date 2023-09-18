@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import type Ws from 'ws';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Socket from '../Socket.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
@@ -124,28 +124,28 @@ describe('login', () => {
     expect(singInSpy).toHaveBeenCalledWith(
       { credential: '***' },
       expect.any(Number),
-      serverSocket
+      serverSocket,
     );
 
     const seq = singInSpy.mock.calls[0].args[1];
     expect(clientWs.send).toHaveBeenCalledWith(
       JSON.stringify(['login', seq, { credential: '***' }]),
-      expect.any(Function)
+      expect.any(Function),
     );
   });
 
   it('throws if the socket is not ready', async () => {
     clientWs.mock.getter('readyState').fakeReturnValue(0);
     await expect(
-      clientSocket.login({ credential: '***' })
+      clientSocket.login({ credential: '***' }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"socket is not ready"`);
   });
 
   it('throws when register on server side', async () => {
     await expect(
-      serverSocket.login({ credential: '***' })
+      serverSocket.login({ credential: '***' }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"can't sign in on server side"`
+      `"can't sign in on server side"`,
     );
   });
 
@@ -200,14 +200,14 @@ describe('connecting handshake', () => {
     expect(serverConnectSpy).toHaveBeenCalledWith(
       { seq, connId },
       expect.any(Number),
-      serverSocket
+      serverSocket,
     );
 
     expect(clientConnectSpy).toHaveBeenCalledTimes(1);
     expect(clientConnectSpy).toHaveBeenCalledWith(
       { connId, seq: 1 },
       expect.any(Number),
-      clientSocket
+      clientSocket,
     );
 
     expect(serverWs.send).toHaveBeenCalledTimes(1);
@@ -239,10 +239,10 @@ describe('connecting handshake', () => {
     expect(clientFailSpy).toHaveBeenCalledWith(
       { connId, seq, reason: expect.any(String) },
       expect.any(Number),
-      clientSocket
+      clientSocket,
     );
     expect(clientFailSpy.mock.calls[0].args[0].reason).toMatchInlineSnapshot(
-      `"initiate connect handshake from client is not allowed"`
+      `"initiate connect handshake from client is not allowed"`,
     );
 
     expect(serverFailSpy).not.toHaveBeenCalled();
@@ -275,7 +275,7 @@ describe('connecting handshake', () => {
     expect(serverFailSpy).toHaveBeenCalledWith(
       { connId, reason: 'echo', seq: disconnectReq },
       expect.any(Number),
-      serverSocket
+      serverSocket,
     );
 
     expect(clientFailSpy).not.toHaveBeenCalled();
@@ -283,21 +283,21 @@ describe('connecting handshake', () => {
     expect(clientConnectSpy).toHaveBeenCalledWith(
       { connId, seq: 1 },
       connectReq,
-      clientSocket
+      clientSocket,
     );
 
     expect(clientDisconnectSpy).toHaveBeenCalledTimes(1);
     expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId, reason: 'sorry! wrong number' },
       disconnectReq,
-      clientSocket
+      clientSocket,
     );
   });
 
   it('throw if the socket is not ready', async () => {
     serverWs.mock.getter('readyState').fakeReturnValue(0);
     await expect(
-      serverSocket.connect({ connId, seq: 1 })
+      serverSocket.connect({ connId, seq: 1 }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"socket is not ready"`);
   });
 
@@ -305,9 +305,9 @@ describe('connecting handshake', () => {
     serverSocket.connect({ connId, seq: 1 });
     await delay(50);
     await expect(
-      serverSocket.connect({ connId, seq: 1 })
+      serverSocket.connect({ connId, seq: 1 }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"connection [conn#id] is already connected"`
+      `"connection [conn#id] is already connected"`,
     );
   });
 });
@@ -337,13 +337,13 @@ describe('disconnect handshake', () => {
     expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId, reason: 'bye!' },
       seq,
-      clientSocket
+      clientSocket,
     );
     expect(serverDisconnectSpy).toHaveBeenCalledTimes(1);
     expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { seq, connId, reason: 'echo' },
       expect.any(Number),
-      serverSocket
+      serverSocket,
     );
   });
 
@@ -361,21 +361,21 @@ describe('disconnect handshake', () => {
     expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { connId, reason: 'bye!' },
       seq,
-      serverSocket
+      serverSocket,
     );
     expect(clientDisconnectSpy).toHaveBeenCalledTimes(1);
     expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { seq, connId, reason: 'echo' },
       expect.any(Number),
-      clientSocket
+      clientSocket,
     );
   });
 
   it('throw if not connected', async () => {
     await expect(
-      clientSocket.disconnect({ connId, reason: 'bye!' })
+      clientSocket.disconnect({ connId, reason: 'bye!' }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"connection [conn#id] not existed or already disconnected"`
+      `"connection [conn#id] not existed or already disconnected"`,
     );
   });
 
@@ -388,7 +388,7 @@ describe('disconnect handshake', () => {
 
     const seq = await serverSocket.disconnect({ connId, reason: 'bye' });
     await expect(
-      serverSocket.disconnect({ connId, reason: 'bye2' })
+      serverSocket.disconnect({ connId, reason: 'bye2' }),
     ).resolves.toBe(undefined);
     await delay(100);
 
@@ -396,13 +396,13 @@ describe('disconnect handshake', () => {
     expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId, reason: 'bye' },
       seq,
-      clientSocket
+      clientSocket,
     );
     expect(serverDisconnectSpy).toHaveBeenCalledTimes(1);
     expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { seq, connId, reason: 'echo' },
       expect.any(Number),
-      serverSocket
+      serverSocket,
     );
   });
 });
@@ -436,7 +436,7 @@ describe('dispatch events', () => {
     expect(serverDispatchSpy).toHaveBeenCalledWith(
       eventsBody,
       seq,
-      serverSocket
+      serverSocket,
     );
 
     expect(clientDispatchSpy).not.toHaveBeenCalled();
@@ -460,7 +460,7 @@ describe('dispatch events', () => {
     expect(clientDispatchSpy).toHaveBeenCalledWith(
       eventsBody,
       seq,
-      clientSocket
+      clientSocket,
     );
 
     expect(serverDispatchSpy).not.toHaveBeenCalled();
@@ -476,9 +476,9 @@ describe('dispatch events', () => {
   it('throw if not connected', async () => {
     expect(serverSocket.isConnected(connId)).toBe(false);
     await expect(
-      serverSocket.dispatch(eventsBody)
+      serverSocket.dispatch(eventsBody),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"connection [conn#id] is not connected"`
+      `"connection [conn#id] is not connected"`,
     );
   });
 
@@ -487,9 +487,9 @@ describe('dispatch events', () => {
     expect(serverSocket.isConnecting(connId)).toBe(true);
 
     await expect(
-      serverSocket.dispatch(eventsBody)
+      serverSocket.dispatch(eventsBody),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"connection [conn#id] is not connected"`
+      `"connection [conn#id] is not connected"`,
     );
   });
 
@@ -500,9 +500,9 @@ describe('dispatch events', () => {
     expect(serverSocket.isDisconnecting(connId)).toBe(true);
 
     await expect(
-      serverSocket.dispatch(eventsBody)
+      serverSocket.dispatch(eventsBody),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"connection [conn#id] is not connected"`
+      `"connection [conn#id] is not connected"`,
     );
   });
 });
@@ -532,14 +532,14 @@ describe('reject', () => {
     expect(clientRejectSpy).toHaveBeenCalledWith(
       { seq: 2, reason: 'foo' },
       seq1,
-      clientSocket
+      clientSocket,
     );
 
     expect(serverRejectSpy).toHaveBeenCalledTimes(1);
     expect(serverRejectSpy).toHaveBeenCalledWith(
       { seq: 3, reason: 'bar' },
       seq2,
-      serverSocket
+      serverSocket,
     );
   });
 });
@@ -597,23 +597,23 @@ describe('closing', () => {
     expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId: 'conn#1', reason: 'Bye!' },
       undefined,
-      clientSocket
+      clientSocket,
     );
     expect(clientDisconnectSpy).toHaveBeenCalledWith(
       { connId: 'conn#2', reason: 'Bye!' },
       undefined,
-      clientSocket
+      clientSocket,
     );
     expect(serverDisconnectSpy).toHaveBeenCalledTimes(2);
     expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { connId: 'conn#1', reason: 'Bye!' },
       undefined,
-      serverSocket
+      serverSocket,
     );
     expect(serverDisconnectSpy).toHaveBeenCalledWith(
       { connId: 'conn#2', reason: 'Bye!' },
       undefined,
-      serverSocket
+      serverSocket,
     );
   });
 });

@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler';
 import type TelegramUser from './User.js';
@@ -10,7 +11,7 @@ import { TELEGRAM } from './constant.js';
 import type { RawPhotoSize, RawUser, RawChat } from './types.js';
 
 type PhotoResponse = {
-  content: NodeJS.ReadableStream;
+  content: Readable;
   contentType?: string;
   contentLength?: number;
   width: number;
@@ -19,8 +20,8 @@ type PhotoResponse = {
 
 type GetUserProfileOptions = {
   /**
-   * The group chat to call `getChatMember` API with. By default, the
-   * private chat to the user is used.
+   * The group chat to call `getChatMember` API with. By default, the private
+   * chat to the user is used.
    */
   inChat?: TelegramChat;
   /**
@@ -28,13 +29,11 @@ type GetUserProfileOptions = {
    * method to fetch the file and serve it through an open URL.
    */
   avatarUrl?: string;
-  /** Force to fetch user data from API  */
+  /** Force to fetch user data from API */
   fromApi?: boolean;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class TelegramProfiler
   implements UserProfiler<TelegramUser, TelegramUser>
 {
@@ -53,7 +52,7 @@ export class TelegramProfiler
   async getUserProfile(
     agent: number | TelegramUser,
     user: TelegramUser | TelegramChatSender,
-    options: GetUserProfileOptions = {}
+    options: GetUserProfileOptions = {},
   ): Promise<TelegramUserProfile> {
     if (user.type !== 'user') {
       const chatProfile = await this.getChatProfile(agent, user);
@@ -65,7 +64,7 @@ export class TelegramProfiler
           last_name: chatProfile.lastName,
           username: chatProfile.username,
         },
-        chatProfile.avatarUrl
+        chatProfile.avatarUrl,
       );
     }
 
@@ -99,13 +98,14 @@ export class TelegramProfiler
     chat: string | number | TelegramChat | TelegramChatSender,
     options: {
       /**
-       * Provide the `avatarUrl` of the chat profile. You can use `fetchChatPhoto`
-       * method to fetch the file and serve it through an open URL.
+       * Provide the `avatarUrl` of the chat profile. You can use
+       * `fetchChatPhoto` method to fetch the file and serve it through an open
+       * URL.
        */
       avatarUrl?: string;
       /** Get chat data from API by force. */
       fromApi?: boolean;
-    } = {}
+    } = {},
   ): Promise<TelegramChatProfile> {
     const { fromApi, avatarUrl } = options;
     let chatId: number | string;
@@ -135,9 +135,12 @@ export class TelegramProfiler
     agent: number | TelegramUser,
     user: TelegramUser,
     options?: {
-      /** If set, the minimum size above the value is chosen. Otherwise the smallest one */
+      /**
+       * If set, the minimum size above the value is chosen. Otherwise the
+       * smallest one
+       */
       minWidth?: number;
-    }
+    },
   ): Promise<null | PhotoResponse> {
     const { photos } = await this.bot.requestApi<{ photos: RawPhotoSize[] }>({
       channel: agent,
@@ -173,7 +176,7 @@ export class TelegramProfiler
   async fetchChatPhoto(
     agent: number | TelegramUser,
     chat: number | string | TelegramChat | TelegramChatSender,
-    options?: { size?: 'big' | 'small' }
+    options?: { size?: 'big' | 'small' },
   ): Promise<null | PhotoResponse> {
     const { photo } = await this.bot.requestApi<{ photo: RawPhotoSize }>({
       channel: agent,
@@ -190,7 +193,7 @@ export class TelegramProfiler
 
     const fileResponse = await this.bot.fetchFile(
       agent,
-      options?.size === 'small' ? photo.small_file_id : photo.big_file_id
+      options?.size === 'small' ? photo.small_file_id : photo.big_file_id,
     );
     if (!fileResponse) {
       return null;

@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import ServiceSpace from '../space.js';
 import ServiceScope from '../scope.js';
 import serviceContainer from '../decorators/serviceContainer.js';
@@ -16,8 +16,8 @@ const Foo = moxy(
       foo() {
         return 'Foo';
       }
-    }
-  )
+    },
+  ),
 );
 
 const Bar = serviceInterface<{ bar(): string }>({ name: 'BAR' });
@@ -28,8 +28,8 @@ const BarImpl = moxy(
       bar() {
         return 'BarImpl';
       }
-    }
-  )
+    },
+  ),
 );
 
 const BAZ = serviceInterface<{ baz(): string }>({ name: 'Baz' });
@@ -40,15 +40,15 @@ const Baz = class Baz {
 };
 const bazProvider = moxy(
   serviceProviderFactory({ deps: [Foo, Bar], lifetime: 'transient' })(
-    () => new Baz()
-  )
+    () => new Baz(),
+  ),
 );
 
 const myContainer = moxy(
   serviceContainer({ deps: [HELLO, Foo, Bar, BAZ] })(
     (greeter, foo, bar, baz) =>
-      `${greeter.hello()} ${foo.foo()} ${bar.bar()} ${baz.baz()}`
-  )
+      `${greeter.hello()} ${foo.foo()} ${bar.bar()} ${baz.baz()}`,
+  ),
 );
 
 beforeEach(() => {
@@ -95,7 +95,7 @@ it('provide services bound in bindings', () => {
     greeter,
     foo,
     bar,
-    expect.any(Baz)
+    expect.any(Baz),
   );
 });
 
@@ -106,8 +106,8 @@ test('new bindings are prioritized to the bindings from base space', () => {
         foo() {
           return 'MyFoo';
         }
-      }
-    )
+      },
+    ),
   );
   const AnotherBar = moxy(
     serviceProviderClass({ deps: [BAZ], lifetime: 'singleton' })(
@@ -115,8 +115,8 @@ test('new bindings are prioritized to the bindings from base space', () => {
         bar() {
           return 'AnotherBar';
         }
-      }
-    )
+      },
+    ),
   );
   const fakeBaz = moxy({ baz: () => 'NO_BAZ' });
 
@@ -156,7 +156,7 @@ test('new bindings are prioritized to the bindings from base space', () => {
     staticGreeter,
     foo,
     bar,
-    baz
+    baz,
   );
 });
 
@@ -169,7 +169,7 @@ it('throw if bindings conflicted', () => {
         { provide: BAZ, withValue: bazProvider },
         { provide: Bar, withProvider: BarImpl },
         { provide: Bar, withValue: someBar },
-      ])
+      ]),
   ).toThrowErrorMatchingInlineSnapshot(`"BAR is already bound to BarImpl"`);
 
   expect(
@@ -179,14 +179,14 @@ it('throw if bindings conflicted', () => {
         [
           { provide: Bar, withProvider: BarImpl },
           { provide: Bar, withValue: someBar },
-        ]
-      )
+        ],
+      ),
   ).toThrowErrorMatchingInlineSnapshot(`"BAR is already bound to BarImpl"`);
 });
 
 it('throw if provider dependencies is not bound', () => {
   expect(() =>
-    new ServiceSpace(null, [BarImpl]).bootstrap()
+    new ServiceSpace(null, [BarImpl]).bootstrap(),
   ).toThrowErrorMatchingInlineSnapshot(`"Foo is not bound"`);
   expect(() =>
     new ServiceSpace(
@@ -194,34 +194,36 @@ it('throw if provider dependencies is not bound', () => {
         { provide: HELLO, withValue: staticGreeter },
         Foo,
       ]),
-      [{ provide: BAZ, withProvider: bazProvider }]
-    ).bootstrap()
+      [{ provide: BAZ, withProvider: bazProvider }],
+    ).bootstrap(),
   ).toThrowErrorMatchingInlineSnapshot(`"BAR is not bound"`);
 });
 
 it('throw if invalid binding received', () => {
   expect(
-    () => new ServiceSpace(null, [Bar] as never)
+    () => new ServiceSpace(null, [Bar] as never),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"BAR is an interface and cannot be provided directly"`
+    `"BAR is an interface and cannot be provided directly"`,
   );
   expect(
     () =>
       new ServiceSpace(null, [
         { provide: class Bae {}, withValue: 'bae~' } as never,
-      ])
+      ]),
   ).toThrowErrorMatchingInlineSnapshot(`"invalid service interface Bae"`);
   expect(
     () =>
-      new ServiceSpace(null, [{ provide: Bar, withTea: 'Oooooolong' } as never])
+      new ServiceSpace(null, [
+        { provide: Bar, withTea: 'Oooooolong' } as never,
+      ]),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"either withProvider or withValue must be provided within binding"`
+    `"either withProvider or withValue must be provided within binding"`,
   );
   expect(
     () =>
       new ServiceSpace(null, [
         { provide: Bar, withProvider: { star: 'bucks' } as never },
-      ])
+      ]),
   ).toThrowErrorMatchingInlineSnapshot(`"invalid provider [object Object]"`);
 });
 
@@ -234,9 +236,9 @@ it('throw circular dependent provider found when bootstrap', () => {
   expect(() =>
     new ServiceSpace(null, [
       { provide: Foo, withProvider: SelfDependentFoo },
-    ]).bootstrap()
+    ]).bootstrap(),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"SelfDependentFoo is circular dependent (SelfDependentFoo > SelfDependentFoo)"`
+    `"SelfDependentFoo is circular dependent (SelfDependentFoo > SelfDependentFoo)"`,
   );
 
   const CircularDependentFoo = serviceProviderClass({
@@ -247,9 +249,9 @@ it('throw circular dependent provider found when bootstrap', () => {
     new ServiceSpace(null, [
       { provide: Foo, withProvider: CircularDependentFoo },
       { provide: Bar, withProvider: BarImpl },
-    ]).bootstrap()
+    ]).bootstrap(),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"CircularDependentFoo is circular dependent (CircularDependentFoo > BarImpl > CircularDependentFoo)"`
+    `"CircularDependentFoo is circular dependent (CircularDependentFoo > BarImpl > CircularDependentFoo)"`,
   );
 });
 
@@ -261,7 +263,7 @@ it('provide polymorphic interface with a map of platform and service', () => {
 
   const fooCat = { foo: () => 'FOO_MEOW' };
   const fooCatFactory = serviceProviderFactory({ lifetime: 'transient' })(
-    () => fooCat
+    () => fooCat,
   );
   const fooBird = { foo: () => 'FOO_TWEET' };
   const fooWhale = { foo: () => 'FOO_SONAR' };
@@ -284,13 +286,13 @@ it('provide polymorphic interface with a map of platform and service', () => {
       cat: fooCat,
       bird: fooBird,
       whale: fooWhale,
-    })
+    }),
   );
 
   expect(scope.useServices([polymorphicMammal])).toEqual([expectedMap]);
 
   const mammalContainer = serviceContainer({ deps: [polymorphicMammal] })(
-    (mammals) => mammals
+    (mammals) => mammals,
   );
   expect(scope.injectContainer(mammalContainer)).toEqual(expectedMap);
 });
@@ -303,7 +305,7 @@ it('throw if bindings conflicted on specified platform', () => {
 
   const whiteCat = { foo: () => 'FOO_MEOW' };
   const whiteCatFactory = serviceProviderFactory({ lifetime: 'transient' })(
-    () => whiteCat
+    () => whiteCat,
   );
   const blackCat = { foo: () => 'FOO_MEOW' };
   expect(() =>
@@ -314,9 +316,9 @@ it('throw if bindings conflicted on specified platform', () => {
         withProvider: whiteCatFactory,
       },
       { provide: polymorphicMammal, platform: 'cat', withValue: blackCat },
-    ]).bootstrap()
+    ]).bootstrap(),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"FooMammal is already bound to ()=>whiteCat on 'cat' platform"`
+    `"FooMammal is already bound to ()=>whiteCat on 'cat' platform"`,
   );
 });
 
@@ -332,7 +334,7 @@ it('registered polymorphic bindings overrides the base one on platform', () => {
     new ServiceSpace(null, [
       { provide: polymorphicMammal, platform: 'cat', withValue: whiteCat },
     ]),
-    [{ provide: polymorphicMammal, platform: 'cat', withValue: blackCat }]
+    [{ provide: polymorphicMammal, platform: 'cat', withValue: blackCat }],
   );
   space.bootstrap();
 
@@ -351,16 +353,16 @@ it('throw if unbound service usage required', () => {
   space.bootstrap();
 
   const fooContainer = serviceContainer({ deps: [Foo, Bar, BAZ] })(
-    () => 'BOOM'
+    () => 'BOOM',
   );
 
   const scope = space.createScope();
   expect(() =>
-    scope.injectContainer(fooContainer)
+    scope.injectContainer(fooContainer),
   ).toThrowErrorMatchingInlineSnapshot(`"Baz is not bound"`);
 
   expect(() =>
-    scope.useServices([Foo, Bar, BAZ])
+    scope.useServices([Foo, Bar, BAZ]),
   ).toThrowErrorMatchingInlineSnapshot(`"Baz is not bound"`);
 });
 
@@ -380,7 +382,7 @@ test('optional dependency', () => {
     ],
   })(
     (foo, bar, baz) =>
-      `${foo.foo()} ${bar ? bar.bar() : 'x'} ${baz ? baz.baz() : 'x'}`
+      `${foo.foo()} ${bar ? bar.bar() : 'x'} ${baz ? baz.baz() : 'x'}`,
   );
 
   const scope = space.createScope();
@@ -476,34 +478,34 @@ test('provide multi interface as an array of bound value', () => {
       deps: [MULTI_FOOD],
     })((dishes) => ({
       serve: () => dishes,
-    }))
+    })),
   );
 
   const meatFactory = moxy(
-    serviceProviderFactory({ lifetime: 'scoped' })(() => '🥩')
+    serviceProviderFactory({ lifetime: 'scoped' })(() => '🥩'),
   );
 
   const burgerFactory = moxy(
     serviceProviderFactory({
       lifetime: 'singleton',
       deps: [meatFactory],
-    })(() => '🍔')
+    })(() => '🍔'),
   );
   const hotdogFactory = moxy(
     serviceProviderFactory({
       lifetime: 'scoped',
       deps: [meatFactory],
-    })(() => '🌭')
+    })(() => '🌭'),
   );
 
   const pizzaFactory = moxy(
-    serviceProviderFactory({ lifetime: 'singleton' })(() => '🍕')
+    serviceProviderFactory({ lifetime: 'singleton' })(() => '🍕'),
   );
   const tacoFactory = moxy(
-    serviceProviderFactory({ lifetime: 'scoped' })(() => '🌮')
+    serviceProviderFactory({ lifetime: 'scoped' })(() => '🌮'),
   );
   const ramenFactory = moxy(
-    serviceProviderFactory({ lifetime: 'transient' })(() => '🍜')
+    serviceProviderFactory({ lifetime: 'transient' })(() => '🍜'),
   );
 
   const baseSpace = new ServiceSpace(null, [
@@ -563,7 +565,7 @@ test('provide multi interface as an empty array if no value bound', () => {
     serviceProviderFactory({
       lifetime: 'singleton',
       deps: [MULTI_FOO],
-    })(() => ({}))
+    })(() => ({})),
   );
 
   const space = new ServiceSpace(null, [
@@ -603,7 +605,7 @@ test('inject time provision', () => {
   const scope = space.createScope();
   const [greeter, foo, bar, baz] = scope.useServices(
     [HELLO, Foo, Bar, BAZ],
-    injectTimeProvisions
+    injectTimeProvisions,
   );
 
   expect(foo).toBe(myFoo);
@@ -614,8 +616,8 @@ test('inject time provision', () => {
   expect(
     scope.injectContainer(
       serviceContainer({ deps: [HELLO, Foo, Bar, BAZ] })((...args) => args),
-      injectTimeProvisions
-    )
+      injectTimeProvisions,
+    ),
   ).toEqual([greeter, foo, bar, baz]);
 
   expect(Foo.$$factory).toHaveBeenCalledTimes(1);
@@ -643,7 +645,7 @@ test('boostrap time provision', () => {
   expect(BooConsumer).toHaveBeenCalledWith('boooo~');
 
   expect(() =>
-    space.createScope().useServices([BOOTSTRAP_TIME_INTERFACE])
+    space.createScope().useServices([BOOTSTRAP_TIME_INTERFACE]),
   ).toThrowErrorMatchingInlineSnapshot(`"BOO is not bound"`);
 });
 
@@ -652,14 +654,14 @@ test('require underlying ServiceScope', () => {
     serviceProviderClass({
       deps: [ServiceScope],
       lifetime: 'singleton',
-    })(class A {})
+    })(class A {}),
   );
 
   const scopedService = moxy(
     serviceProviderClass({
       deps: [ServiceScope],
       lifetime: 'scoped',
-    })(class B {})
+    })(class B {}),
   );
 
   const space = new ServiceSpace(null, [singletonService, scopedService]);
@@ -670,7 +672,7 @@ test('require underlying ServiceScope', () => {
   expect(singletonService.$$factory.mock.calls[0].args[0]).toBe(scope);
 
   const consumerContainer = moxy(
-    serviceContainer({ deps: [ServiceScope, scopedService] })(() => ({}))
+    serviceContainer({ deps: [ServiceScope, scopedService] })(() => ({})),
   );
 
   scope.injectContainer(consumerContainer);

@@ -1,14 +1,12 @@
 import type { IncomingMessage } from 'http';
 import type { Socket as NetSocket } from 'net';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Ws from 'ws';
 import { WebSocketServer } from '../Server.js';
 import _Socket from '../Socket.js';
 import { LocalOnlyBroker } from '../broker/LocalOnlyBroker.js';
 
-jest.mock('../Socket.js', () =>
-  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../socket'))
-);
+jest.mock('../Socket.js', () => moxy(jest.requireActual('../socket')));
 
 const Socket = _Socket as Moxy<typeof _Socket>;
 type Socket = Moxy<_Socket>;
@@ -204,7 +202,7 @@ it('handle sockets and connections lifecycle', async () => {
   expect(disconnectSpy).toHaveBeenCalledTimes(1);
   expect(disconnectSpy).toHaveBeenCalledWith(
     { reason: 'bye' },
-    expectedConnInfo
+    expectedConnInfo,
   );
 
   socket.emit('close', 666, 'bye', socket);
@@ -316,7 +314,7 @@ test('multi sockets and connections', async () => {
       values: [{ type: 'a', payload: 0 }],
     },
     7,
-    socket1
+    socket1,
   );
   socket1.emit(
     'events',
@@ -328,7 +326,7 @@ test('multi sockets and connections', async () => {
       ],
     },
     9,
-    socket1
+    socket1,
   );
   socket2.emit(
     'events',
@@ -340,14 +338,14 @@ test('multi sockets and connections', async () => {
       ],
     },
     5,
-    socket2
+    socket2,
   );
 
   expect(eventsSpy).toHaveBeenCalledTimes(3);
   expect(eventsSpy).toHaveBeenNthCalledWith(
     1,
     [{ type: 'a', payload: 0 }],
-    anoymousConnInfo
+    anoymousConnInfo,
   );
   expect(eventsSpy).toHaveBeenNthCalledWith(
     2,
@@ -355,7 +353,7 @@ test('multi sockets and connections', async () => {
       { type: 'b', payload: 1 },
       { type: 'c', payload: 2 },
     ],
-    johnConnInfo
+    johnConnInfo,
   );
   expect(eventsSpy).toHaveBeenNthCalledWith(
     3,
@@ -363,26 +361,26 @@ test('multi sockets and connections', async () => {
       { type: 'd', payload: 3 },
       { type: 'e', payload: 4 },
     ],
-    jojoConnInfo
+    jojoConnInfo,
   );
 
   socket1.emit(
     'disconnect',
     { connId: anoymousConn.id, reason: 'bye0' },
     6,
-    socket1
+    socket1,
   );
   socket1.emit(
     'disconnect',
     { connId: johnConn.id, reason: 'bye1' },
     7,
-    socket1
+    socket1,
   );
   socket2.emit(
     'disconnect',
     { connId: jojoConn.id, reason: 'bye2' },
     4,
-    socket2
+    socket2,
   );
   await nextTick();
 
@@ -390,17 +388,17 @@ test('multi sockets and connections', async () => {
   expect(disconnectSpy).toHaveBeenNthCalledWith(
     1,
     { reason: 'bye0' },
-    anoymousConnInfo
+    anoymousConnInfo,
   );
   expect(disconnectSpy).toHaveBeenNthCalledWith(
     2,
     { reason: 'bye1' },
-    johnConnInfo
+    johnConnInfo,
   );
   expect(disconnectSpy).toHaveBeenNthCalledWith(
     3,
     { reason: 'bye2' },
-    jojoConnInfo
+    jojoConnInfo,
   );
 
   socket1.emit('close', 666, 'bye', socket1);
@@ -423,7 +421,7 @@ test('unmarshal payload', async () => {
       ],
     },
     4,
-    socket
+    socket,
   );
 
   expect(eventsSpy).toHaveBeenCalledTimes(1);
@@ -438,7 +436,7 @@ test('unmarshal payload', async () => {
       request: expectedReqInfo,
       authContext: null,
       expireAt: null,
-    }
+    },
   );
 
   expect(marshaler.unmarshal).toHaveBeenCalledTimes(2);
@@ -611,25 +609,25 @@ describe('subscribeTopic() and unsubscribeTopic()', () => {
 
     broker.subscribeTopicRemote.mock.fake(async () => true);
     await expect(testServer.subscribeTopic(remoteConn, 'foo')).resolves.toBe(
-      true
+      true,
     );
     expect(broker.subscribeTopicRemote).toHaveBeenCalledTimes(1);
 
     broker.subscribeTopicRemote.mock.fake(async () => false);
     await expect(testServer.subscribeTopic(remoteConn, 'foo')).resolves.toBe(
-      false
+      false,
     );
     expect(broker.subscribeTopicRemote).toHaveBeenCalledTimes(2);
 
     broker.unsubscribeTopicRemote.mock.fake(async () => true);
     await expect(testServer.unsubscribeTopic(remoteConn, 'foo')).resolves.toBe(
-      true
+      true,
     );
     expect(broker.unsubscribeTopicRemote).toHaveBeenCalledTimes(1);
 
     broker.unsubscribeTopicRemote.mock.fake(async () => false);
     await expect(testServer.unsubscribeTopic(remoteConn, 'foo')).resolves.toBe(
-      false
+      false,
     );
     expect(broker.unsubscribeTopicRemote).toHaveBeenCalledTimes(2);
   });
@@ -672,7 +670,7 @@ describe('dispatch()', () => {
       testServer.dispatch({
         target: conn1,
         values: [{ type: 'foo', category: 'bar', payload: 1 }],
-      })
+      }),
     ).resolves.toEqual([{ serverId, id: conn1.id }]);
     await expect(
       testServer.dispatch({
@@ -681,7 +679,7 @@ describe('dispatch()', () => {
           { type: 'foo', category: 'bar', payload: 2 },
           { type: 'foo', category: 'baz', payload: 3 },
         ],
-      })
+      }),
     ).resolves.toEqual([{ serverId, id: conn2.id }]);
 
     expect(socket.dispatch).toHaveBeenCalledTimes(2);
@@ -714,14 +712,14 @@ describe('dispatch()', () => {
       testServer.dispatch({
         target: remoteTarget,
         values: eventValues,
-      })
+      }),
     ).resolves.toEqual([]);
 
     broker.dispatchRemote.mock.fake(async () => [
       { serverId: '_REMOTE_SERVER_', id: '_CONN_ID_' },
     ]);
     await expect(
-      testServer.dispatch({ target: remoteTarget, values: eventValues })
+      testServer.dispatch({ target: remoteTarget, values: eventValues }),
     ).resolves.toEqual([{ serverId: '_REMOTE_SERVER_', id: '_CONN_ID_' }]);
 
     expect(broker.dispatchRemote).toHaveBeenCalledTimes(2);
@@ -811,7 +809,7 @@ describe('dispatch()', () => {
       testServer.dispatch({
         target: { type: 'topic', key: 'foo' },
         values: [{ type: 'greet', payload: 'good morning' }],
-      })
+      }),
     ).resolves.toEqual([{ serverId, id: conn1.id }]);
 
     broker.dispatchRemote.mock.fake(async () => [remoteConn1]);
@@ -819,7 +817,7 @@ describe('dispatch()', () => {
       testServer.dispatch({
         target: { type: 'topic', key: 'bar' },
         values: [{ type: 'greet', payload: 'good afternoon' }],
-      })
+      }),
     ).resolves.toEqual([{ serverId, id: conn2.id }, remoteConn1]);
 
     broker.dispatchRemote.mock.fake(async () => [remoteConn1, remoteConn2]);
@@ -827,7 +825,7 @@ describe('dispatch()', () => {
       testServer.dispatch({
         target: { type: 'topic', key: 'baz' },
         values: [{ type: 'greet', payload: 'good evening' }],
-      })
+      }),
     ).resolves.toEqual([{ serverId, id: conn1.id }, remoteConn1, remoteConn2]);
 
     expect(socket.dispatch).toHaveBeenCalledTimes(3);
@@ -874,7 +872,7 @@ describe('dispatch()', () => {
       testServer.dispatch({
         target: { type: 'topic', key: 'foo' },
         values: [event],
-      })
+      }),
     ).resolves.toEqual([{ serverId, id: conn2.id }]);
 
     expect(errorSpy).toHaveBeenCalledTimes(1);
@@ -884,7 +882,7 @@ describe('dispatch()', () => {
       testServer.dispatch({
         target: { type: 'topic', key: 'foo' },
         values: [event],
-      })
+      }),
     ).resolves.toEqual([]);
     expect(errorSpy).toHaveBeenCalledTimes(3);
 

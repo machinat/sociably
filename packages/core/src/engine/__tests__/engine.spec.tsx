@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { moxy, Mock } from '@moxyjs/moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import Sociably from '../../index.js';
 import Engine from '../engine.js';
 import RenderingTargetI from '../../base/RenderingTarget.js';
@@ -33,7 +33,7 @@ const initScope = moxy(() => scope);
 
 const wrappedDispatchMock = new Mock();
 const dispatchWrapper = moxy((dispatcher) =>
-  wrappedDispatchMock.proxify((frame) => dispatcher(frame))
+  wrappedDispatchMock.proxify((frame) => dispatcher(frame)),
 );
 
 beforeEach(() => {
@@ -53,7 +53,7 @@ test('.constructor(...) ok', () => {
     queue,
     worker,
     initScope,
-    dispatchWrapper
+    dispatchWrapper,
   );
 
   expect(engine.platform).toBe('test');
@@ -69,7 +69,7 @@ test('.start() and #stop()', () => {
     queue,
     worker,
     initScope,
-    dispatchWrapper
+    dispatchWrapper,
   );
 
   expect(worker.start).not.toHaveBeenCalled();
@@ -106,7 +106,7 @@ describe('.render(target, node, createJobs)', () => {
   ];
 
   const createJobs = moxy((target, segemnts) =>
-    segemnts.map(({ value: { id } }) => ({ id }))
+    segemnts.map(({ value: { id } }) => ({ id })),
   );
 
   const engine = new Engine(
@@ -115,7 +115,7 @@ describe('.render(target, node, createJobs)', () => {
     queue,
     worker,
     initScope,
-    dispatchWrapper
+    dispatchWrapper,
   );
 
   beforeEach(() => {
@@ -127,7 +127,7 @@ describe('.render(target, node, createJobs)', () => {
     renderer.render.mock.fake(() => Promise.resolve(null));
 
     await expect(
-      engine.render(dispatchTarget, message, createJobs)
+      engine.render(dispatchTarget, message, createJobs),
     ).resolves.toBe(null);
 
     expect(initScope).toHaveBeenCalledTimes(1);
@@ -147,7 +147,7 @@ describe('.render(target, node, createJobs)', () => {
     const expectedTasks = [{ type: 'dispatch', payload: expectedJobs }];
 
     await expect(
-      engine.render(dispatchTarget, message, createJobs)
+      engine.render(dispatchTarget, message, createJobs),
     ).resolves.toEqual({
       jobs: expectedJobs,
       results: expectedResults,
@@ -172,7 +172,7 @@ describe('.render(target, node, createJobs)', () => {
         node: message,
         tasks: expectedTasks,
       },
-      scope
+      scope,
     );
 
     expect(queue.executeJobs).toHaveBeenCalledTimes(1);
@@ -213,7 +213,7 @@ describe('.render(target, node, createJobs)', () => {
     ];
 
     await expect(
-      engine.render(dispatchTarget, message, createJobs)
+      engine.render(dispatchTarget, message, createJobs),
     ).resolves.toEqual({
       jobs: expectedJobs,
       results: expectedResults,
@@ -247,7 +247,7 @@ describe('.render(target, node, createJobs)', () => {
         node: message,
         tasks: expectedTasks,
       },
-      scope
+      scope,
     );
 
     expect(queue.executeJobs).toHaveBeenCalledTimes(3);
@@ -312,7 +312,7 @@ describe('.render(target, node, createJobs)', () => {
     ];
 
     await expect(
-      engine.render(dispatchTarget, message, createJobs)
+      engine.render(dispatchTarget, message, createJobs),
     ).resolves.toEqual({
       jobs: expectedJobs,
       results: expectedResults,
@@ -347,7 +347,7 @@ describe('.render(target, node, createJobs)', () => {
         node: message,
         tasks: expectedTasks,
       },
-      scope
+      scope,
     );
 
     expect(queue.executeJobs).toHaveBeenCalledTimes(3);
@@ -437,11 +437,11 @@ describe('.render(target, node, createJobs)', () => {
 
   it('throw what renderer thrown', async () => {
     renderer.render.mock.fake(() =>
-      Promise.reject(new Error('You rendered a BOMB!'))
+      Promise.reject(new Error('You rendered a BOMB!')),
     );
 
     await expect(
-      engine.render(dispatchTarget, message, createJobs)
+      engine.render(dispatchTarget, message, createJobs),
     ).rejects.toThrow('You rendered a BOMB!');
 
     expect(initScope).toHaveBeenCalledTimes(1);
@@ -461,7 +461,7 @@ describe('.render(target, node, createJobs)', () => {
     });
 
     await expect(
-      engine.render(dispatchTarget, message, createJobs)
+      engine.render(dispatchTarget, message, createJobs),
     ).rejects.toThrow('There is a BOMB in segments!');
 
     expect(initScope).toHaveBeenCalledTimes(1);
@@ -536,8 +536,8 @@ describe('.render(target, node, createJobs)', () => {
 
     dispatchWrapper.mock.fake((dispatch) =>
       wrappedDispatchMock.proxify((frame) =>
-        dispatch({ ...frame, tasks: modifiedTasks })
-      )
+        dispatch({ ...frame, tasks: modifiedTasks }),
+      ),
     );
 
     await expect(
@@ -547,8 +547,8 @@ describe('.render(target, node, createJobs)', () => {
         queue,
         worker,
         initScope,
-        dispatchWrapper
-      ).render(dispatchTarget, message, createJobs)
+        dispatchWrapper,
+      ).render(dispatchTarget, message, createJobs),
     ).resolves.toEqual({
       jobs: [{ id: 'bar' }],
       results: ['result#bar'],
@@ -568,7 +568,7 @@ describe('.render(target, node, createJobs)', () => {
         node: message,
         tasks: originalTasks,
       },
-      scope
+      scope,
     );
 
     expect(queue.executeJobs).toHaveBeenCalledTimes(1);
@@ -584,7 +584,7 @@ describe('.render(target, node, createJobs)', () => {
           results: response.results.map((r) => `${r}👍`),
           hello: 'world',
         };
-      })
+      }),
     );
 
     const expectedJobs = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
@@ -597,8 +597,8 @@ describe('.render(target, node, createJobs)', () => {
         queue,
         worker,
         initScope,
-        dispatchWrapper
-      ).render(dispatchTarget, message, createJobs)
+        dispatchWrapper,
+      ).render(dispatchTarget, message, createJobs),
     ).resolves.toEqual({
       tasks: expectedTasks,
       jobs: expectedJobs,
@@ -618,7 +618,7 @@ describe('.render(target, node, createJobs)', () => {
         node: message,
         tasks: expectedTasks,
       },
-      scope
+      scope,
     );
 
     expect(queue.executeJobs).toHaveBeenCalledTimes(1);
@@ -629,7 +629,7 @@ describe('.render(target, node, createJobs)', () => {
     wrappedDispatchMock.fake(() => Promise.resolve(null));
 
     await expect(
-      engine.render(dispatchTarget, message, createJobs)
+      engine.render(dispatchTarget, message, createJobs),
     ).resolves.toBe(null);
 
     expect(initScope).toHaveBeenCalledTimes(1);
@@ -657,7 +657,7 @@ describe('.render(target, node, createJobs)', () => {
           },
         ],
       },
-      scope
+      scope,
     );
   });
 
@@ -670,7 +670,7 @@ describe('.render(target, node, createJobs)', () => {
     expect(renderer.render).toHaveBeenCalledWith(
       message,
       expect.any(ServiceScope),
-      [[RenderingTargetI, dispatchTarget]]
+      [[RenderingTargetI, dispatchTarget]],
     );
 
     expect(initScope).not.toHaveBeenCalled();
@@ -685,7 +685,7 @@ describe('.render(target, node, createJobs)', () => {
     });
 
     await expect(
-      engine.render(dispatchTarget, message, createJobs)
+      engine.render(dispatchTarget, message, createJobs),
     ).rejects.toThrow('something wrong within middlewares');
 
     expect(initScope).toHaveBeenCalledTimes(1);
@@ -704,7 +704,7 @@ describe('.dispatchJobs(target, tasks, node)', () => {
     queue,
     worker,
     initScope,
-    dispatchWrapper
+    dispatchWrapper,
   );
 
   const target = {
@@ -736,7 +736,7 @@ describe('.dispatchJobs(target, tasks, node)', () => {
         node: null,
         tasks: expectedTasks,
       },
-      scope
+      scope,
     );
   });
 
@@ -789,8 +789,8 @@ describe('.dispatchJobs(target, tasks, node)', () => {
         dispatch({
           ...frame,
           tasks: modifiedTasks,
-        })
-      )
+        }),
+      ),
     );
 
     await expect(
@@ -800,8 +800,8 @@ describe('.dispatchJobs(target, tasks, node)', () => {
         queue,
         worker,
         initScope,
-        dispatchWrapper
-      ).dispatchJobs(target, [{ id: 'foo' }])
+        dispatchWrapper,
+      ).dispatchJobs(target, [{ id: 'foo' }]),
     ).resolves.toEqual({
       jobs: [{ id: 'bar' }],
       results: ['result#bar'],
@@ -818,7 +818,7 @@ describe('.dispatchJobs(target, tasks, node)', () => {
         node: null,
         tasks: [{ type: 'dispatch', payload: [{ id: 'foo' }] }],
       },
-      scope
+      scope,
     );
 
     expect(queue.executeJobs).toHaveBeenCalledTimes(1);
@@ -834,7 +834,7 @@ describe('.dispatchJobs(target, tasks, node)', () => {
           results: response.results.map((r) => `${r}👍`),
           hello: 'world',
         };
-      })
+      }),
     );
 
     await expect(
@@ -844,8 +844,8 @@ describe('.dispatchJobs(target, tasks, node)', () => {
         queue,
         worker,
         initScope,
-        dispatchWrapper
-      ).dispatchJobs(target, jobs)
+        dispatchWrapper,
+      ).dispatchJobs(target, jobs),
     ).resolves.toEqual({
       jobs: [{ id: 1 }, { id: 2 }, { id: 3 }],
       results: ['result#1👍', 'result#2👍', 'result#3👍'],
@@ -863,7 +863,7 @@ describe('.dispatchJobs(target, tasks, node)', () => {
         node: null,
         tasks: [{ type: 'dispatch', payload: jobs }],
       },
-      scope
+      scope,
     );
 
     expect(queue.executeJobs).toHaveBeenCalledTimes(1);
@@ -885,7 +885,7 @@ describe('.dispatchJobs(target, tasks, node)', () => {
         node: null,
         tasks: [{ type: 'dispatch', payload: jobs }],
       },
-      scope
+      scope,
     );
   });
 
@@ -895,7 +895,7 @@ describe('.dispatchJobs(target, tasks, node)', () => {
     });
 
     await expect(engine.dispatchJobs(target, jobs)).rejects.toThrow(
-      'something wrong within middlewares'
+      'something wrong within middlewares',
     );
 
     expect(initScope).toHaveBeenCalledTimes(1);

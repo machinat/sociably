@@ -65,18 +65,20 @@ exports[`AnimatedGif rendering 3`] = `
         ]
       }
       assetTag="MyAnimatedGif"
-      fileData={
+      file={
         {
-          "data": [
-            102,
-            111,
-            111,
-          ],
-          "type": "Buffer",
+          "contentLength": 1234,
+          "contentType": "image/gif",
+          "data": {
+            "data": [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
         }
       }
-      fileSize={1234}
-      fileType="image/gif"
       mediaCategory="dm_gif"
       shared={true}
     />,
@@ -86,13 +88,17 @@ exports[`AnimatedGif rendering 3`] = `
       "attachment": {
         "source": {
           "assetTag": "MyAnimatedGif",
-          "fileData": {
-            "data": [
-              102,
-              111,
-              111,
-            ],
-            "type": "Buffer",
+          "file": {
+            "contentLength": 1234,
+            "contentType": "image/gif",
+            "data": {
+              "data": [
+                102,
+                111,
+                111,
+              ],
+              "type": "Buffer",
+            },
           },
           "params": {
             "additional_owners": "12345",
@@ -176,18 +182,20 @@ exports[`Photo rendering 3`] = `
         ]
       }
       assetTag="MyPhoto"
-      fileData={
+      file={
         {
-          "data": [
-            102,
-            111,
-            111,
-          ],
-          "type": "Buffer",
+          "contentLength": 1234,
+          "contentType": "image/jpeg",
+          "data": {
+            "data": [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
         }
       }
-      fileSize={1234}
-      fileType="image/jpeg"
       mediaCategory="dm_image"
       shared={true}
     />,
@@ -197,13 +205,17 @@ exports[`Photo rendering 3`] = `
       "attachment": {
         "source": {
           "assetTag": "MyPhoto",
-          "fileData": {
-            "data": [
-              102,
-              111,
-              111,
-            ],
-            "type": "Buffer",
+          "file": {
+            "contentLength": 1234,
+            "contentType": "image/jpeg",
+            "data": {
+              "data": [
+                102,
+                111,
+                111,
+              ],
+              "type": "Buffer",
+            },
           },
           "params": {
             "additional_owners": "12345",
@@ -287,18 +299,20 @@ exports[`Video rendering 3`] = `
         ]
       }
       assetTag="MyVideo"
-      fileData={
+      file={
         {
-          "data": [
-            102,
-            111,
-            111,
-          ],
-          "type": "Buffer",
+          "contentLength": 1234,
+          "contentType": "video/mp4",
+          "data": {
+            "data": [
+              102,
+              111,
+              111,
+            ],
+            "type": "Buffer",
+          },
         }
       }
-      fileSize={1234}
-      fileType="video/mp4"
       mediaCategory="dm_video"
       shared={true}
     />,
@@ -308,13 +322,17 @@ exports[`Video rendering 3`] = `
       "attachment": {
         "source": {
           "assetTag": "MyVideo",
-          "fileData": {
-            "data": [
-              102,
-              111,
-              111,
-            ],
-            "type": "Buffer",
+          "file": {
+            "contentLength": 1234,
+            "contentType": "video/mp4",
+            "data": {
+              "data": [
+                102,
+                111,
+                111,
+              ],
+              "type": "Buffer",
+            },
           },
           "params": {
             "additional_owners": "12345",

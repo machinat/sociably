@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Queue from '@sociably/core/queue';
 import type { WebSocketServer } from '../Server.js';
 import Worker from '../Worker.js';

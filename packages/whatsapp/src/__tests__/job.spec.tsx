@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { createChatJobs, createUploadingMediaJobs } from '../job.js';
 import WhatsAppAgent from '../Agent.js';
 import WhatsAppChat from '../Chat.js';
@@ -112,7 +112,7 @@ describe('createChatJobs', () => {
         type: 'unit',
         value: {
           message: { type: 'image', image: { caption: 'FOO' } },
-          mediaFile: { type: 'image/jpeg', data: '_IMAGE_BLOB_DATA_' },
+          file: { contentType: 'image/jpeg', data: '_IMAGE_BLOB_DATA_' },
         },
         node: <image />,
         path: '$:0',
@@ -121,10 +121,10 @@ describe('createChatJobs', () => {
         type: 'unit',
         value: {
           message: { type: 'audio', audio: { caption: 'BAR' } },
-          mediaFile: {
-            type: 'audio/mp3',
+          file: {
+            contentType: 'audio/mp3',
             data: '_AUDIO_BLOB_DATA_',
-            info: { filename: 'meow.mp3' },
+            fileName: 'meow.mp3',
           },
           assetTag: 'foo_mp3',
         },
@@ -140,9 +140,15 @@ describe('createChatJobs', () => {
         request: {
           method: 'POST',
           url: '1234567890/media',
-          params: { type: 'image/jpeg', messaging_product: 'whatsapp' },
+          params: {
+            type: 'image/jpeg',
+            messaging_product: 'whatsapp',
+          },
         },
-        file: { data: '_IMAGE_BLOB_DATA_' },
+        file: {
+          data: '_IMAGE_BLOB_DATA_',
+          contentType: 'image/jpeg',
+        },
         registerResult: expect.any(String),
       },
       {
@@ -173,7 +179,8 @@ describe('createChatJobs', () => {
         },
         file: {
           data: '_AUDIO_BLOB_DATA_',
-          info: { filename: 'meow.mp3' },
+          fileName: 'meow.mp3',
+          contentType: 'audio/mp3',
         },
         assetTag: 'foo_mp3',
         registerResult: expect.any(String),
@@ -261,7 +268,7 @@ describe('createUploadingMediaJobs', () => {
           type: 'unit',
           value: {
             message: { type: 'image', image: {} },
-            mediaFile: { type: 'image/jpeg', data: '_IMAGE_BLOB_DATA_' },
+            file: { contentType: 'image/jpeg', data: '_IMAGE_BLOB_DATA_' },
           },
           node: <image />,
           path: '$:0',
@@ -273,9 +280,15 @@ describe('createUploadingMediaJobs', () => {
         request: {
           method: 'POST',
           url: '1234567890/media',
-          params: { type: 'image/jpeg', messaging_product: 'whatsapp' },
+          params: {
+            type: 'image/jpeg',
+            messaging_product: 'whatsapp',
+          },
         },
-        file: { data: '_IMAGE_BLOB_DATA_' },
+        file: {
+          data: '_IMAGE_BLOB_DATA_',
+          contentType: 'image/jpeg',
+        },
       },
     ]);
     expect(
@@ -284,10 +297,10 @@ describe('createUploadingMediaJobs', () => {
           type: 'unit',
           value: {
             message: { type: 'audio', audio: {} },
-            mediaFile: {
-              type: 'audio/mp3',
+            file: {
               data: '_AUDIO_BLOB_DATA_',
-              info: { filename: 'foo.mp3' },
+              contentType: 'audio/mp3',
+              fileName: 'foo.mp3',
             },
             assetTag: 'foo_mp3',
           },
@@ -305,7 +318,8 @@ describe('createUploadingMediaJobs', () => {
         },
         file: {
           data: '_AUDIO_BLOB_DATA_',
-          info: { filename: 'foo.mp3' },
+          contentType: 'audio/mp3',
+          fileName: 'foo.mp3',
         },
         assetTag: 'foo_mp3',
       },
@@ -319,10 +333,10 @@ describe('createUploadingMediaJobs', () => {
           type: 'unit',
           value: {
             message: { type: 'image', image: {} },
-            mediaFile: {
-              type: 'image/jpeg',
+            file: {
+              contentType: 'image/jpeg',
               data: '_IMAGE_BLOB_DATA_',
-              info: { filename: 'foo.jpg' },
+              fileName: 'foo.jpg',
             },
           },
           node: <media />,
@@ -332,10 +346,10 @@ describe('createUploadingMediaJobs', () => {
           type: 'unit',
           value: {
             message: { type: 'audio', audio: {} },
-            mediaFile: {
-              type: 'audio/mp3',
+            file: {
               data: '_AUDIO_BLOB_DATA_',
-              info: { filename: 'bar.mp3' },
+              contentType: 'audio/mp3',
+              fileName: 'bar.mp3',
             },
           },
           node: <media />,

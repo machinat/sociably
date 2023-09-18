@@ -10,8 +10,8 @@ it('is a valid Component', () => {
         code="USD"
         fallbackValue="a lot of money"
         amount1000={9999}
-      />
-    )
+      />,
+    ),
   ).toBe(true);
   expect(CurrencyParam.$$platform).toBe('whatsapp');
   expect(CurrencyParam.$$name).toBe('CurrencyParam');
@@ -24,8 +24,8 @@ test('rendering value', async () => {
         code="USD"
         fallbackValue="a lot of money"
         amount1000={9999}
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -34,7 +34,7 @@ test('rendering value', async () => {
           code="USD"
           fallbackValue="a lot of money"
         />,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "currency": {

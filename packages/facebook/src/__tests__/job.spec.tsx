@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { createPostJobs, createInteractJobs } from '../job.js';
 import { PATH_FEED, PATH_PHOTOS } from '../constant.js';
@@ -40,7 +40,7 @@ describe('createPostJobs()', () => {
           node: <Foo />,
           value: 'hello facebook',
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -76,7 +76,7 @@ describe('createPostJobs()', () => {
             },
           },
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -113,12 +113,12 @@ describe('createPostJobs()', () => {
               name: 'Sociably',
               description: 'The social media framework',
             },
-            attachFile: {
+            file: {
               data: Buffer.from('thumb'),
             },
           },
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -164,12 +164,12 @@ describe('createPostJobs()', () => {
             type: 'page',
             apiPath: PATH_PHOTOS,
             params: {},
-            attachFile: {
+            file: {
               data: Buffer.from('foo'),
             },
           },
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -202,7 +202,7 @@ describe('createPostJobs()', () => {
     const album = new FacebookInteractTarget(
       '1234567890',
       '9876543210',
-      'album'
+      'album',
     );
     expect(
       createPostJobs(album, [
@@ -218,7 +218,7 @@ describe('createPostJobs()', () => {
             },
           },
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -253,7 +253,7 @@ describe('createPostJobs()', () => {
         type: 'page',
         apiPath: PATH_PHOTOS,
         params: {},
-        attachFile: {
+        file: {
           data: Buffer.from('bar'),
         },
       },
@@ -355,8 +355,8 @@ describe('createPostJobs()', () => {
       cunsumingPhotoResults?.accomplishRequest(
         jobs[2].request,
         ['key1', 'key2'],
-        getRegisteredResult
-      )
+        getRegisteredResult,
+      ),
     ).toMatchInlineSnapshot(`
       {
         "method": "POST",
@@ -400,7 +400,7 @@ describe('createPostJobs()', () => {
             ],
           },
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -460,7 +460,7 @@ describe('createPostJobs()', () => {
             params: { message: { text: 'foo' } },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(`"invalid feed element <Foo />"`);
     expect(() =>
       createPostJobs(page, [
@@ -473,7 +473,7 @@ describe('createPostJobs()', () => {
             params: { message: 'foo' },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(`"invalid feed element <Foo />"`);
   });
 
@@ -490,7 +490,7 @@ describe('createPostJobs()', () => {
             params: { message: 'foo' },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(`"invalid feed element <Foo />"`);
   });
 });
@@ -507,7 +507,7 @@ describe('createInteractJobs()', () => {
           path: '?',
           value: 'hello',
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -545,7 +545,7 @@ describe('createInteractJobs()', () => {
             },
           },
         },
-      ])
+      ]),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -582,7 +582,7 @@ describe('createInteractJobs()', () => {
             type: 'page',
             apiPath: 'me/photos',
             params: {},
-            attachFile: {
+            file: {
               data: Buffer.from('foo'),
             },
           },
@@ -645,8 +645,8 @@ describe('createInteractJobs()', () => {
       consumePhotoResult?.accomplishRequest(
         jobs[1].request,
         ['resultKey'],
-        getRegisteredResult
-      )
+        getRegisteredResult,
+      ),
     ).toMatchInlineSnapshot(`
       {
         "method": "POST",
@@ -778,8 +778,8 @@ describe('createInteractJobs()', () => {
       consumeResult2?.accomplishRequest(
         jobs[1].request,
         ['commentResultKey'],
-        getRegisteredResult
-      )
+        getRegisteredResult,
+      ),
     ).toMatchInlineSnapshot(`
       {
         "method": "POST",
@@ -792,7 +792,7 @@ describe('createInteractJobs()', () => {
     expect(getRegisteredResult).toHaveBeenCalledTimes(1);
     expect(getRegisteredResult).toHaveBeenCalledWith(
       'commentResultKey',
-      '$.id'
+      '$.id',
     );
 
     const consumeResult3 = jobs[3].consumeResult;
@@ -802,14 +802,14 @@ describe('createInteractJobs()', () => {
     expect(consumeResult3?.keys).toContain(photoResultKey);
 
     getRegisteredResult.mock.fake((key) =>
-      key === comment2ResultKey ? '_COMMENT_ID_2_' : '_PHOTO_ID_'
+      key === comment2ResultKey ? '_COMMENT_ID_2_' : '_PHOTO_ID_',
     );
     expect(
       consumeResult3?.accomplishRequest(
         jobs[1].request,
         consumeResult3.keys,
-        getRegisteredResult
-      )
+        getRegisteredResult,
+      ),
     ).toMatchInlineSnapshot(`
       {
         "method": "POST",
@@ -838,7 +838,7 @@ describe('createInteractJobs()', () => {
             params: { message: { text: 'foo' } },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(`"invalid comment content <Foo />"`);
     expect(() =>
       createInteractJobs(commentTarget, [
@@ -852,7 +852,7 @@ describe('createInteractJobs()', () => {
             params: { message: 'foo' },
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(`"invalid comment content <Foo />"`);
   });
 });

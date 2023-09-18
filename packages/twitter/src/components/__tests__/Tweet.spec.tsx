@@ -15,7 +15,7 @@ test("rendering to agent's page", async () => {
   const segments = await renderUnitElement(
     <Tweet quoteTweetId="67890" replySetting="following" superFollowersOnly>
       Hello World
-    </Tweet>
+    </Tweet>,
   );
   expect(segments).toMatchSnapshot();
   const { request, accomplishRequest } = (segments as any)[0].value;
@@ -47,7 +47,7 @@ test('rendering as a reply', async () => {
       excludeUsersInReply={['56789']}
     >
       Hello World
-    </Tweet>
+    </Tweet>,
   );
   expect(segments).toMatchSnapshot();
   const { request, accomplishRequest } = (segments as any)[0].value;
@@ -95,13 +95,15 @@ test('rendering with media', async () => {
           <Photo mediaId="123" />
           <Photo url="http://foo.bar/baz.png" />
           <Photo
-            fileData={Buffer.from('foo')}
-            fileSize={123}
-            fileType="image/jpeg"
+            file={{
+              data: Buffer.from('foo'),
+              contentType: 'image/jpeg',
+              contentLength: 123,
+            }}
           />
         </>
       }
-    />
+    />,
   );
   expect(segments).toMatchSnapshot();
   const { request, accomplishRequest } = (segments as any)[0].value;
@@ -110,7 +112,7 @@ test('rendering with media', async () => {
       '12345',
       '23456',
       '34567',
-    ])
+    ]),
   ).toMatchInlineSnapshot(`
     {
       "method": "POST",
@@ -141,7 +143,7 @@ test('rendering with media', async () => {
 
 test("rendering to agent's page", async () => {
   let segments = await renderUnitElement(
-    <Tweet directMessageLink>Hello World</Tweet>
+    <Tweet directMessageLink>Hello World</Tweet>,
   );
   let { request, accomplishRequest } = (segments as any)[0].value;
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
@@ -166,7 +168,7 @@ test("rendering to agent's page", async () => {
   segments = await renderUnitElement(
     <Tweet directMessageLink="https://twitter.com/messages/compose?recipient_id=23456&text=boo">
       Hello World
-    </Tweet>
+    </Tweet>,
   );
   ({ request, accomplishRequest } = (segments as any)[0].value);
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
@@ -193,7 +195,7 @@ test("rendering to agent's page", async () => {
       directMessageLink={{ text: 'hello world', welcomeMessageId: '22222' }}
     >
       Hello World
-    </Tweet>
+    </Tweet>,
   );
   ({ request, accomplishRequest } = (segments as any)[0].value);
   expect(accomplishRequest(new TweetTarget('12345'), request, null))
@@ -224,18 +226,18 @@ it('throw if multiple attchments received', async () => {
         poll={{ durationMinutes: 1, options: ['2', '3'] }}
       >
         Hello
-      </Tweet>
-    )
+      </Tweet>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be exactly one of "media", "poll" or "quoteTweetId" prop"`
+    `"there should be exactly one of "media", "poll" or "quoteTweetId" prop"`,
   );
 
   await expect(
     renderUnitElement(
-      <Tweet media={<Photo mediaId="33333" />} quoteTweetId="23456" />
-    )
+      <Tweet media={<Photo mediaId="33333" />} quoteTweetId="23456" />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be exactly one of "media", "poll" or "quoteTweetId" prop"`
+    `"there should be exactly one of "media", "poll" or "quoteTweetId" prop"`,
   );
 });
 
@@ -244,42 +246,42 @@ it('throw if non-textual content in children', async () => {
     renderUnitElement(
       <Tweet>
         <Photo mediaId="44444" />
-      </Tweet>
-    )
+      </Tweet>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-texual element <Photo /> can't be placed under <Tweet/>"`
+    `"non-texual element <Photo /> can't be placed under <Tweet/>"`,
   );
 
   await expect(
     renderUnitElement(
       <Tweet>
         <Sociably.Pause />
-      </Tweet>
-    )
+      </Tweet>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-texual element <Pause /> can't be placed under <Tweet/>"`
+    `"non-texual element <Pause /> can't be placed under <Tweet/>"`,
   );
 });
 
 it('throw if invalid media received', async () => {
   await expect(
-    renderUnitElement(<Tweet media={'foo' as never} />)
+    renderUnitElement(<Tweet media={'foo' as never} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""foo" can't be placed in "media" prop"`
+    `""foo" can't be placed in "media" prop"`,
   );
 
   await expect(
-    renderUnitElement(<Tweet media={<Sociably.Pause />} />)
+    renderUnitElement(<Tweet media={<Sociably.Pause />} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"<Pause /> can't be placed in "media" prop"`
+    `"<Pause /> can't be placed in "media" prop"`,
   );
 });
 
 it('throw if no content available', async () => {
   await expect(
-    renderUnitElement(<Tweet />)
+    renderUnitElement(<Tweet />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"no text or media in <Tweet/>"`
+    `"no text or media in <Tweet/>"`,
   );
 });
 
@@ -298,7 +300,7 @@ test('spliting long content into tweet thread', async () => {
       國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
       國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
       國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國國
-    </Tweet>
+    </Tweet>,
   );
   expect(segments).toMatchSnapshot();
   expect(
@@ -308,9 +310,9 @@ test('spliting long content into tweet thread', async () => {
           ? new TweetTarget('12345')
           : new TweetTarget('12345', String(11111 * i)),
         request,
-        null
-      )
-    )
+        null,
+      ),
+    ),
   ).toMatchInlineSnapshot(`
     [
       {

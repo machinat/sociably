@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
 import MetaApiWorker from '../Worker.js';
@@ -89,8 +89,8 @@ it('call to graph api', async () => {
       new Array(4).fill({
         code: 200,
         body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
-      })
-    )
+      }),
+    ),
   );
 
   worker.start(queue);
@@ -203,8 +203,8 @@ it('upload files with form data if binary attached on job', async () => {
         new Array(4).fill({
           code: 200,
           body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
-        })
-      )
+        }),
+      ),
     );
 
   worker.start(queue);
@@ -216,20 +216,16 @@ it('upload files with form data if binary attached on job', async () => {
       ...jobs[2],
       file: {
         data: '_file1_',
-        info: {
-          filename: 'YouDontSay.jpg',
-          contentType: 'image/jpeg',
-        },
+        fileName: 'YouDontSay.jpg',
+        contentType: 'image/jpeg',
       },
     },
     {
       ...jobs[3],
       file: {
         data: '_file2_',
-        info: {
-          filename: 'Cage.gif',
-          contentType: 'image/gif',
-        },
+        fileName: 'Cage.gif',
+        contentType: 'image/gif',
       },
     },
   ];
@@ -254,35 +250,35 @@ it('upload files with form data if binary attached on job', async () => {
   const body = bodySpy.mock.calls[0].args[0];
 
   expect(
-    body.replace(/-----+[0-9]+/g, '-----MULTIPART_SEPARATOR-----')
+    body.replace(/-----+[0-9]+/g, '-----MULTIPART_SEPARATOR-----'),
   ).toMatchSnapshot();
 
   const file0Field =
     /Content-Disposition: form-data; name="(?<name>.+)"[\n\r\s]+_file0_/.exec(
-      body
+      body,
     );
   const file1Field = new RegExp(
     'Content-Disposition: form-data; name="(?<name>.+)"; filename="YouDontSay.jpg"' +
       '[\\n\\r\\s]+Content-Type: image/jpeg' +
-      '[\\n\\r\\s]+_file1_'
+      '[\\n\\r\\s]+_file1_',
   ).exec(body);
   const file2Field = new RegExp(
     'Content-Disposition: form-data; name="(?<name>.+)"; filename="Cage.gif"' +
       '[\\n\\r\\s]+Content-Type: image/gif' +
-      '[\\n\\r\\s]+_file2_'
+      '[\\n\\r\\s]+_file2_',
   ).exec(body);
 
   expect(file0Field).toBeTruthy();
   expect(file1Field).toBeTruthy();
 
   expect(body).toMatch(
-    /Content-Disposition: form-data; name="access_token"[\n\r\s]+access_token_foo/
+    /Content-Disposition: form-data; name="access_token"[\n\r\s]+access_token_foo/,
   );
 
   const batch = JSON.parse(
     body.match(
-      /Content-Disposition: form-data; name="batch"[\n\r\s]+(.*)[\n\r\s]+-+/
-    )[1]
+      /Content-Disposition: form-data; name="batch"[\n\r\s]+(.*)[\n\r\s]+-+/,
+    )[1],
   );
 
   expect(batch[0].attached_files).toBe(file0Field![1]);
@@ -422,7 +418,7 @@ it('fail if one single job fail', async () => {
         code: 200,
         body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
       },
-    ])
+    ]),
   );
 
   worker.start(queue);
@@ -452,8 +448,8 @@ it('waits consumeInterval for jobs to execute if set', async () => {
       new Array(9).fill({
         code: 200,
         body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
-      })
-    )
+      }),
+    ),
   );
 
   worker.start(queue);
@@ -496,8 +492,8 @@ it('execute immediatly if consumeInterval is 0', async () => {
         new Array(3).fill({
           code: 200,
           body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
-        })
-      )
+        }),
+      ),
     );
 
   worker.start(queue);
@@ -536,7 +532,7 @@ it('use querystring params for GET request', async () => {
       200,
       JSON.stringify([
         { code: 200, body: JSON.stringify({ result: 'success' }) },
-      ])
+      ]),
     );
 
   worker.start(queue);
@@ -596,7 +592,7 @@ it('use querystring params for DELETE request', async () => {
       200,
       JSON.stringify([
         { code: 200, body: JSON.stringify({ result: 'success' }) },
-      ])
+      ]),
     );
 
   worker.start(queue);
@@ -654,7 +650,7 @@ test('asApp job', async () => {
     .post('/v17.0/', bodySpy)
     .reply(
       200,
-      JSON.stringify([{ code: 200, body: JSON.stringify({ settings: 'ok' }) }])
+      JSON.stringify([{ code: 200, body: JSON.stringify({ settings: 'ok' }) }]),
     );
   worker.start(queue);
 
@@ -668,7 +664,7 @@ test('asApp job', async () => {
         },
         asApp: true,
       },
-    ])
+    ]),
   ).resolves.toMatchSnapshot();
 
   expect(bodySpy).toHaveBeenCalledTimes(1);
@@ -704,7 +700,7 @@ test('job with accessToken', async () => {
     .post('/v17.0/', bodySpy)
     .reply(
       200,
-      JSON.stringify([{ code: 200, body: JSON.stringify({ settings: 'ok' }) }])
+      JSON.stringify([{ code: 200, body: JSON.stringify({ settings: 'ok' }) }]),
     );
   worker.start(queue);
 
@@ -719,7 +715,7 @@ test('job with accessToken', async () => {
           params: { some: 'app settings' },
         },
       },
-    ])
+    ]),
   ).resolves.toMatchSnapshot();
 
   expect(bodySpy).toHaveBeenCalledTimes(1);
@@ -753,16 +749,16 @@ it('skip job when no access token available', async () => {
   });
   agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
     channels.map((channel) =>
-      channel.uid === 'foo' ? { accessToken: `access_token_foo` } : null
-    )
+      channel.uid === 'foo' ? { accessToken: `access_token_foo` } : null,
+    ),
   );
   const scope = graphApi.post('/v17.0/', bodySpy).reply(200, (_, { batch }) =>
     JSON.stringify(
       JSON.parse(batch).map((_r, i) => ({
         code: 200,
         body: JSON.stringify({ id: i + 1 }),
-      }))
-    )
+      })),
+    ),
   );
 
   worker.start(queue);
@@ -785,7 +781,7 @@ it('skip job when no access token available', async () => {
   };
 
   await expect(
-    queue.executeJobs([jobWithAccessToken, ...jobs, jobasApp])
+    queue.executeJobs([jobWithAccessToken, ...jobs, jobasApp]),
   ).resolves.toMatchSnapshot();
 
   expect(bodySpy).toHaveBeenCalledTimes(1);
@@ -839,7 +835,7 @@ it('skip request when fail to get access token for all the jobs', async () => {
     consumeInterval: 0,
   });
   agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
-    channels.map(() => null)
+    channels.map(() => null),
   );
 
   worker.start(queue);
@@ -854,7 +850,7 @@ it('skip request when fail to get access token for all the jobs', async () => {
           params: { some: 'app settings' },
         },
       },
-    ])
+    ]),
   ).resolves.toMatchInlineSnapshot(`
     {
       "batch": [
@@ -925,16 +921,16 @@ test('with defaultAccessTokenOption', async () => {
   });
   agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
     channels.map((channel) =>
-      channel.uid === 'bar' ? { accessToken: `access_token_bar` } : null
-    )
+      channel.uid === 'bar' ? { accessToken: `access_token_bar` } : null,
+    ),
   );
   const scope = graphApi.post('/v17.0/', bodySpy).reply(200, (_, { batch }) =>
     JSON.stringify(
       JSON.parse(batch).map((_r, i) => ({
         code: 200,
         body: JSON.stringify({ id: i + 1 }),
-      }))
-    )
+      })),
+    ),
   );
 
   worker.start(queue);
@@ -949,7 +945,7 @@ test('with defaultAccessTokenOption', async () => {
   };
 
   await expect(
-    queue.executeJobs([...jobs, asAppJob])
+    queue.executeJobs([...jobs, asAppJob]),
   ).resolves.toMatchSnapshot();
 
   expect(bodySpy).toHaveBeenCalledTimes(1);
@@ -1129,7 +1125,7 @@ describe('using API result in following request', () => {
     expect(accomplishRequest).toHaveBeenCalledWith(
       expect.objectContaining(continuousJobs[2].request),
       ['image_1', 'image_2'],
-      expect.any(Function)
+      expect.any(Function),
     );
 
     expect(apiCall.isDone()).toBe(true);
@@ -1150,8 +1146,8 @@ describe('using API result in following request', () => {
     worker.start(queue);
     await expect(
       queue.executeJobs(
-        continuousJobs.map((job) => ({ ...job, key: undefined }))
-      )
+        continuousJobs.map((job) => ({ ...job, key: undefined })),
+      ),
     ).resolves.toMatchSnapshot();
 
     const body = bodySpy.mock.calls[0].args[0];
@@ -1185,7 +1181,7 @@ describe('using API result in following request', () => {
     expect(accomplishRequest).toHaveBeenCalledWith(
       expect.objectContaining(continuousJobs[2].request),
       ['image_1', 'image_2'],
-      expect.any(Function)
+      expect.any(Function),
     );
 
     expect(apiCall.isDone()).toBe(true);
@@ -1207,7 +1203,7 @@ describe('using API result in following request', () => {
           body: JSON.stringify({ result: 'ok' }),
         }),
         continuousApiResults[0],
-      ])
+      ]),
     );
     const apiCall2 = graphApi
       .post('/v17.0/', bodySpy)
@@ -1221,7 +1217,7 @@ describe('using API result in following request', () => {
           channel: { uid: 'foo' },
         }),
         ...continuousJobs,
-      ])
+      ]),
     ).resolves.toMatchSnapshot();
 
     expect(bodySpy).toHaveBeenCalledTimes(2);
@@ -1266,7 +1262,7 @@ describe('using API result in following request', () => {
     expect(accomplishRequest).toHaveBeenCalledWith(
       expect.objectContaining(continuousJobs[2].request),
       ['image_1', 'image_2'],
-      expect.any(Function)
+      expect.any(Function),
     );
 
     expect(apiCall1.isDone()).toBe(true);

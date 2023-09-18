@@ -12,7 +12,7 @@ it('is valid root Component', () => {
 
 it('match snapshot', async () => {
   await expect(
-    renderUnitElement(<PagePhoto url="http://sociably.js/awesome.jpg" />)
+    renderUnitElement(<PagePhoto url="http://sociably.js/awesome.jpg" />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -23,7 +23,7 @@ it('match snapshot', async () => {
         "type": "unit",
         "value": {
           "apiPath": "me/photos",
-          "attachFile": undefined,
+          "file": undefined,
           "params": {
             "backdated_time": undefined,
             "spherical_metadata": undefined,
@@ -36,20 +36,23 @@ it('match snapshot', async () => {
     ]
   `);
 
-  await expect(renderUnitElement(<PagePhoto fileData={Buffer.from('COOL')} />))
-    .resolves.toMatchInlineSnapshot(`
+  await expect(
+    renderUnitElement(<PagePhoto file={{ data: Buffer.from('COOL') }} />),
+  ).resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <PagePhoto
-          fileData={
+          file={
             {
-              "data": [
-                67,
-                79,
-                79,
-                76,
-              ],
-              "type": "Buffer",
+              "data": {
+                "data": [
+                  67,
+                  79,
+                  79,
+                  76,
+                ],
+                "type": "Buffer",
+              },
             }
           }
         />,
@@ -57,7 +60,7 @@ it('match snapshot', async () => {
         "type": "unit",
         "value": {
           "apiPath": "me/photos",
-          "attachFile": {
+          "file": {
             "data": {
               "data": [
                 67,
@@ -91,7 +94,7 @@ it('match snapshot', async () => {
         "type": "unit",
         "value": {
           "apiPath": "me/photos",
-          "attachFile": undefined,
+          "file": undefined,
           "params": {
             "backdated_time": undefined,
             "spherical_metadata": undefined,
@@ -122,8 +125,8 @@ it('match snapshot', async () => {
         }}
         ogIconId={1234}
         place="social media"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -152,7 +155,7 @@ it('match snapshot', async () => {
         "type": "unit",
         "value": {
           "apiPath": "me/photos",
-          "attachFile": undefined,
+          "file": undefined,
           "params": {
             "allow_spherical_photo": true,
             "alt_text_custom": "COOL",
@@ -180,30 +183,30 @@ it('match snapshot', async () => {
 
 it('throw if there is no source prop', async () => {
   await expect(
-    renderUnitElement(<PagePhoto />)
+    renderUnitElement(<PagePhoto />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
+    `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
   );
 });
 
 it('throw if multiple source props are set', async () => {
   await expect(
     renderUnitElement(
-      <PagePhoto vaultImageId="123" fileData={Buffer.from('foo')} />
-    )
+      <PagePhoto vaultImageId="123" file={{ data: Buffer.from('foo') }} />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
+    `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
   );
   await expect(
-    renderUnitElement(<PagePhoto vaultImageId="123" url="http://..." />)
+    renderUnitElement(<PagePhoto vaultImageId="123" url="http://..." />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
+    `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
   );
   await expect(
     renderUnitElement(
-      <PagePhoto fileData={Buffer.from('foo')} url="http://..." />
-    )
+      <PagePhoto file={{ data: Buffer.from('foo') }} url="http://..." />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
+    `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
   );
 });

@@ -1,5 +1,5 @@
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Stream from '../stream.js';
 import merge from '../merge.js';
 import { STREAMING_KEY_I } from '../interface.js';
@@ -10,7 +10,7 @@ it('merge events form  streams', () => {
   const sourceC = new Stream();
   const eventListener = moxy();
   const eventContainer = moxy(
-    serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListener)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => eventListener),
   );
 
   const destination = merge(sourceA, sourceB, sourceC);
@@ -48,7 +48,7 @@ it('merge errors form streams', () => {
   const sourceC = new Stream();
   const errorListener = moxy();
   const errorContainer = moxy(
-    serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener),
   );
 
   const destination = merge(sourceA, sourceB, sourceC);

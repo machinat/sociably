@@ -1,4 +1,4 @@
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
 import NextJs from 'next';
@@ -35,7 +35,7 @@ describe('initModule()', () => {
         noPrepare: false,
         serverOptions: { dir: './webview' },
         handleRequest: () => ({ ok: true }),
-      })
+      }),
     ).toMatchInlineSnapshot(`
       {
         "provisions": [

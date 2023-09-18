@@ -1,5 +1,5 @@
 import { DispatchError } from '@sociably/core/engine';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import type AssetsManagerP from '../AssetsManager.js';
 import saveUploadedFile from '../saveUploadedFile.js';
 import TelegramUser from '../../User.js';
@@ -86,7 +86,7 @@ const mediaMethodPairs = [
   ['sticker', 'sendSticker'],
 ];
 
-const fileData = Buffer.from('__BINARY_DATA__');
+const fileSource = { data: Buffer.from('__BINARY_DATA__') };
 
 beforeEach(() => {
   manager.mock.reset();
@@ -104,8 +104,8 @@ it('ignore noraml messages and media message without assetTag', async () => {
         method: 'sendPhoto',
         params: { chat_id: 67890 },
         files: [
-          { fieldName: 'photo', fileData },
-          { fieldName: 'thumb', fileData },
+          { fieldName: 'photo', source: fileSource },
+          { fieldName: 'thumb', source: fileSource },
         ],
       },
       ...mediaMethodPairs.map(([mediaType, method]) => ({
@@ -113,8 +113,8 @@ it('ignore noraml messages and media message without assetTag', async () => {
         method,
         params: { chat_id: 67890 },
         files: [
-          { fieldName: mediaType, fileData },
-          { fieldName: 'thumb', fileData },
+          { fieldName: mediaType, source: fileSource },
+          { fieldName: 'thumb', source: fileSource },
         ],
       })),
     ],
@@ -139,8 +139,8 @@ it('save files uploaded when sending media with assetTag', async () => {
     method: 'sendPhoto',
     params: { chat_id: 67890 },
     files: [
-      { fieldName: 'photo', assetTag: 'my_photo', fileData },
-      { fieldName: 'thumb', fileData },
+      { fieldName: 'photo', assetTag: 'my_photo', source: fileSource },
+      { fieldName: 'thumb', source: fileSource },
     ],
   };
 
@@ -149,8 +149,8 @@ it('save files uploaded when sending media with assetTag', async () => {
     method,
     params: { chat_id: 67890 },
     files: [
-      { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
-      { fieldName: 'thumb', fileData },
+      { fieldName: mediaType, assetTag: `my_${mediaType}`, source: fileSource },
+      { fieldName: 'thumb', source: fileSource },
     ],
   }));
 
@@ -172,13 +172,13 @@ it('save files uploaded when sending media with assetTag', async () => {
   expect(manager.saveFile).toHaveBeenCalledWith(
     botUser,
     'my_photo',
-    '_PHOTO_L_ID_'
+    '_PHOTO_L_ID_',
   );
   mediaMethodPairs.forEach(([mediaType]) => {
     expect(manager.saveFile).toHaveBeenCalledWith(
       botUser,
       `my_${mediaType}`,
-      `_${mediaType.toUpperCase()}_ID_`
+      `_${mediaType.toUpperCase()}_ID_`,
     );
   });
 });
@@ -193,14 +193,20 @@ it('save uploaded media when partial success', async () => {
         agentId,
         method: 'sendPhoto',
         params: { chat_id: 67890 },
-        files: [{ fieldName: 'photo', assetTag: 'my_photo', fileData }],
+        files: [
+          { fieldName: 'photo', assetTag: 'my_photo', source: fileSource },
+        ],
       },
       ...mediaMethodPairs.map(([mediaType, method]) => ({
         agentId,
         method,
         params: { chat_id: 67890 },
         files: [
-          { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
+          {
+            fieldName: mediaType,
+            assetTag: `my_${mediaType}`,
+            source: fileSource,
+          },
         ],
       })),
       sendMessageJob,
@@ -209,7 +215,7 @@ it('save uploaded media when partial success', async () => {
       sendPhotoResult,
       ...mediaMethodPairs.map(([mediaType]) => makeMediaResult(mediaType)),
       undefined,
-    ]
+    ],
   );
 
   const next = async () => {
@@ -217,20 +223,20 @@ it('save uploaded media when partial success', async () => {
   };
 
   await expect(saveUploadedFile(manager)(frame, next)).rejects.toThrowError(
-    error
+    error,
   );
 
   expect(manager.saveFile).toHaveBeenCalledTimes(mediaMethodPairs.length + 1);
   expect(manager.saveFile).toHaveBeenCalledWith(
     botUser,
     'my_photo',
-    '_PHOTO_L_ID_'
+    '_PHOTO_L_ID_',
   );
   mediaMethodPairs.forEach(([mediaType]) => {
     expect(manager.saveFile).toHaveBeenCalledWith(
       botUser,
       `my_${mediaType}`,
-      `_${mediaType.toUpperCase()}_ID_`
+      `_${mediaType.toUpperCase()}_ID_`,
     );
   });
 });
@@ -252,8 +258,8 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
       },
     },
     files: [
-      { fieldName: 'photo', assetTag: 'my_photo', fileData },
-      { fieldName: 'thumb', fileData },
+      { fieldName: 'photo', assetTag: 'my_photo', source: fileSource },
+      { fieldName: 'thumb', source: fileSource },
     ],
   };
 
@@ -271,8 +277,8 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
       },
     },
     files: [
-      { fieldName: mediaType, assetTag: `my_${mediaType}`, fileData },
-      { fieldName: 'thumb', fileData },
+      { fieldName: mediaType, assetTag: `my_${mediaType}`, source: fileSource },
+      { fieldName: 'thumb', source: fileSource },
     ],
   }));
 
@@ -290,13 +296,13 @@ it('save files uploaded by editMessageMedia with assetTag', async () => {
   expect(manager.saveFile).toHaveBeenCalledWith(
     botUser,
     'my_photo',
-    '_PHOTO_L_ID_'
+    '_PHOTO_L_ID_',
   );
   editableMedias.forEach((mediaType) => {
     expect(manager.saveFile).toHaveBeenCalledWith(
       botUser,
       `my_${mediaType}`,
-      `_${mediaType.toUpperCase()}_ID_`
+      `_${mediaType.toUpperCase()}_ID_`,
     );
   });
 });
@@ -327,10 +333,10 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
           ],
         },
         files: [
-          { fieldName: 'file_0', assetTag: 'my_photo', fileData },
-          { fieldName: 'file_1', fileData },
-          { fieldName: 'file_2', assetTag: 'my_video', fileData },
-          { fieldName: 'file_3', fileData },
+          { fieldName: 'file_0', assetTag: 'my_photo', source: fileSource },
+          { fieldName: 'file_1', source: fileSource },
+          { fieldName: 'file_2', assetTag: 'my_video', source: fileSource },
+          { fieldName: 'file_3', source: fileSource },
         ],
       },
     ],
@@ -351,11 +357,11 @@ it('save files uploaded by sendMediaGroup with assetTag', async () => {
   expect(manager.saveFile).toHaveBeenCalledWith(
     botUser,
     'my_photo',
-    '_PHOTO_L_ID_'
+    '_PHOTO_L_ID_',
   );
   expect(manager.saveFile).toHaveBeenCalledWith(
     botUser,
     'my_video',
-    '_VIDEO_ID_'
+    '_VIDEO_ID_',
   );
 });

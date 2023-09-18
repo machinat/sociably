@@ -1,7 +1,8 @@
 import { createHmac } from 'crypto';
 import { URL } from 'url';
+import { Readable } from 'stream';
 import fetch, { Response } from 'node-fetch';
-import FormData from 'form-data';
+import FormStream from 'formstream';
 import _BigIntJSON from 'json-bigint';
 import { nanoid } from 'nanoid';
 import type { SociablyWorker } from '@sociably/core/engine';
@@ -59,7 +60,7 @@ export default class TwitterWorker
 
   constructor(
     settingsAccessor: AgentSettingsAccessorI,
-    options: TwitterWorkerOptions
+    options: TwitterWorkerOptions,
   ) {
     this._settingsAccessor = settingsAccessor;
     this.options = options;
@@ -76,7 +77,7 @@ export default class TwitterWorker
     href: string,
     params: Record<string, unknown>,
     asApplication?: boolean,
-    withUserOauth?: { token: string; secret: string }
+    withUserOauth?: { token: string; secret: string },
   ): Promise<{ code: number; body: unknown }> {
     const apiUrl = new URL(href, API_ENTRY);
     const apiLocation = `${apiUrl.origin}${apiUrl.pathname}`;
@@ -101,7 +102,7 @@ export default class TwitterWorker
         method,
         apiLocation,
         Object.fromEntries(apiUrl.searchParams.entries()),
-        withUserOauth
+        withUserOauth,
       );
     }
 
@@ -122,7 +123,7 @@ export default class TwitterWorker
 
   async uploadMediaSources(
     agent: TwitterUser,
-    mediaSources: MediaSource[]
+    mediaSources: MediaSource[],
   ): Promise<{
     mediaIds: string[];
     uploadedMedia: TwitterApiResult['uploadedMedia'];
@@ -133,25 +134,23 @@ export default class TwitterWorker
           return source.id;
         }
         if (source.type === 'file') {
-          const { params, fileData } = source;
-          return this.uploadMediaFile(agent, fileData, params, {
-            contentType: params.media_type as string | undefined,
-          });
+          const { params, file } = source;
+          return this.uploadMediaFile(agent, params, file.data);
         }
         if (source.type === 'url') {
           const { url, params } = source;
           return this.uploadMediaUrl(agent, url, params);
         }
         throw new Error(
-          `unknown media source ${(source as { type: string }).type}`
+          `unknown media source ${(source as { type: string }).type}`,
         );
-      })
+      }),
     );
 
     const mediaIds = mediaResults.map((mediaResult) =>
       typeof mediaResult === 'string'
         ? mediaResult
-        : mediaResult.media_id_string
+        : mediaResult.media_id_string,
     );
 
     const uploadedMedia: TwitterApiResult['uploadedMedia'] = [];
@@ -176,12 +175,12 @@ export default class TwitterWorker
   async uploadMediaUrl(
     agent: TwitterUser,
     url: string,
-    params: Record<string, undefined | string | number>
+    params: Record<string, unknown>,
   ): Promise<MediaUploadResult> {
     const downloadRes = await fetch(url);
     if (!downloadRes.ok) {
       throw new Error(
-        `fail to download file at ${url} (${downloadRes.status} ${downloadRes.statusText})`
+        `fail to download file at ${url} (${downloadRes.status} ${downloadRes.statusText})`,
       );
     }
 
@@ -196,58 +195,56 @@ export default class TwitterWorker
 
     const uploadResult = await this.uploadMediaFile(
       agent,
-      downloadRes.body as NodeJS.ReadableStream,
       updatedParams,
-      { contentType: contentType || undefined }
+      downloadRes.body as Readable,
     );
     return uploadResult;
   }
 
   async uploadMediaFile(
     agent: TwitterUser,
-    fileData: Buffer | NodeJS.ReadableStream,
-    params: Record<string, undefined | string | number>,
-    fileMeta?: {
-      filename?: string;
-      contentType?: string;
-    }
+    params: Record<string, unknown>,
+    fileData: string | Buffer | Readable,
   ): Promise<MediaUploadResult> {
-    const initForm = new FormData();
-    initForm.append('command', 'INIT');
-    Object.entries(params).forEach(([filed, value]) => {
+    const initForm = FormStream();
+    initForm.field('command', 'INIT');
+    Object.entries(params).forEach(([key, value]) => {
       if (value) {
-        initForm.append(filed, value);
+        initForm.field(key, value as string);
       }
     });
-    const initResult = await this._requestUpload(agent, initForm);
+    const initResult = await this.requestUploadApi(agent, initForm);
 
     const { media_id_string: mediaId } = initResult;
-    const appendForm = new FormData();
-    appendForm.append('command', 'APPEND');
-    appendForm.append('media_id', mediaId);
-    appendForm.append('media', fileData, fileMeta);
-    appendForm.append('segment_index', 0);
+    const appendForm = FormStream();
+    appendForm.field('command', 'APPEND');
+    appendForm.field('media_id', mediaId);
+    appendForm.field('segment_index', '0');
+    if (typeof fileData === 'string' || Buffer.isBuffer(fileData)) {
+      appendForm.buffer('media', Buffer.from(fileData), '');
+    } else {
+      appendForm.stream('media', fileData, '');
+    }
+    await this.requestUploadApi(agent, appendForm);
 
-    await this._requestUpload(agent, appendForm);
+    const finalizeForm = FormStream();
+    finalizeForm.field('command', 'FINALIZE');
+    finalizeForm.field('media_id', mediaId);
 
-    const finalizeForm = new FormData();
-    finalizeForm.append('command', 'FINALIZE');
-    finalizeForm.append('media_id', mediaId);
-
-    const fnializeResult = await this._requestUpload(agent, finalizeForm);
+    const fnializeResult = await this.requestUploadApi(agent, finalizeForm);
     return fnializeResult;
   }
 
-  private async _requestUpload(agent: TwitterUser, form: FormData) {
+  private async requestUploadApi(agent: TwitterUser, form: FormStream) {
     const authHeader = await this.getUserOauthHeader(agent, 'POST', UPLOAD_URL);
 
     const response = await fetch(UPLOAD_URL, {
       method: 'POST',
-      body: form,
       headers: {
-        ...form.getHeaders(),
+        ...form.headers(),
         Authorization: authHeader,
       },
+      body: form as unknown as NodeJS.ReadableStream,
     });
 
     const result = await getResponseBody(response);
@@ -285,14 +282,13 @@ export default class TwitterWorker
     method: string,
     baseUrl: string,
     additionalParams?: null | Record<string, string>,
-    withUserOauth?: { token: string; secret: string }
+    withUserOauth?: { token: string; secret: string },
   ): Promise<string> {
     let accessToken: string;
     let tokenSecret: string;
     if (agent) {
-      const agentSettings = await this._settingsAccessor.getAgentSettings(
-        agent
-      );
+      const agentSettings =
+        await this._settingsAccessor.getAgentSettings(agent);
       if (!agentSettings) {
         throw new Error(`agent user "${agent.id}" not registered`);
       }
@@ -330,8 +326,8 @@ export default class TwitterWorker
     const signature = createHmac(
       'sha1',
       `${encodeURIComponent(this.options.appSecret)}&${encodeURIComponent(
-        tokenSecret
-      )}`
+        tokenSecret,
+      )}`,
     )
       .update(baseStr)
       .digest('base64');
@@ -372,7 +368,7 @@ export default class TwitterWorker
   private async _consumeJobAt(
     queue: Queue<TwitterJob, TwitterApiResult>,
     idx: number,
-    executeKey: undefined | string
+    executeKey: undefined | string,
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);
@@ -417,7 +413,7 @@ export default class TwitterWorker
         ? accomplishRequest(
             currentTarget,
             request,
-            mediaResults?.mediaIds || null
+            mediaResults?.mediaIds || null,
           )
         : request;
 
@@ -426,7 +422,7 @@ export default class TwitterWorker
       method,
       url,
       params,
-      asApplication
+      asApplication,
     );
 
     if (key) {

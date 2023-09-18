@@ -1,5 +1,5 @@
 import { SociablyThread } from '@sociably/core';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { serviceContainer, ServiceScope } from '@sociably/core/service';
 import execute from '../execute.js';
 
@@ -18,7 +18,7 @@ const mockScript = (
   stopPoints = {},
   name = 'MockScript',
   initVars = (input) => input || {},
-  meta = null
+  meta = null,
 ) =>
   moxy<any>(
     {
@@ -28,7 +28,7 @@ const mockScript = (
       stopPointIndex: new Map(Object.entries(stopPoints)),
       initVars,
     } as never,
-    { includeProperties: ['*'], excludeProperties: ['stopPointIndex'] }
+    { includeProperties: ['*'], excludeProperties: ['stopPointIndex'] },
   );
 
 describe('execute content command', () => {
@@ -48,8 +48,8 @@ describe('execute content command', () => {
             stopAt: undefined,
           },
         ],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -83,8 +83,8 @@ describe('execute content command', () => {
             stopAt: undefined,
           },
         ],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -121,7 +121,7 @@ describe('execute content command', () => {
         { type: 'content', getContent: async () => 'async' },
         { type: 'content', getContent: () => 'world' },
       ],
-      { includeProperties: ['*'] }
+      { includeProperties: ['*'] },
     );
 
     await expect(
@@ -135,8 +135,8 @@ describe('execute content command', () => {
             stopAt: undefined,
           },
         ],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -173,8 +173,8 @@ describe('execute content command', () => {
             stopAt: undefined,
           },
         ],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -206,7 +206,7 @@ describe('execute prompt command', () => {
       promptCommand,
       { type: 'content', getContent: ({ vars: { answer } }) => answer },
     ],
-    { 'prompt#0': 1 }
+    { 'prompt#0': 1 },
   );
 
   beforeEach(() => {
@@ -220,8 +220,8 @@ describe('execute prompt command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: false,
       returnedValue: undefined,
@@ -239,8 +239,8 @@ describe('execute prompt command', () => {
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
-        { answer: 'yes' }
-      )
+        { answer: 'yes' },
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -251,7 +251,7 @@ describe('execute prompt command', () => {
     expect(promptCommand.setVars).toHaveBeenCalledTimes(1);
     expect(promptCommand.setVars).toHaveBeenCalledWith(
       { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
-      { answer: 'yes' }
+      { answer: 'yes' },
     );
     expect(script.commands[2].getContent).toHaveBeenCalledWith({
       platform: 'test',
@@ -273,8 +273,8 @@ describe('execute prompt command', () => {
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
-        { answer: 'no' }
-      )
+        { answer: 'no' },
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -285,7 +285,7 @@ describe('execute prompt command', () => {
     expect(promptCommand.setVars).toHaveBeenCalledTimes(1);
     expect(promptCommand.setVars).toHaveBeenCalledWith(
       { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
-      { answer: 'no' }
+      { answer: 'no' },
     );
     expect(script.commands[2].getContent).toHaveBeenCalledWith({
       platform: 'test',
@@ -306,8 +306,8 @@ describe('execute prompt command', () => {
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: 'prompt#0' }],
         true,
-        { answer: 'maybe' }
-      )
+        { answer: 'maybe' },
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -321,7 +321,7 @@ describe('execute prompt command', () => {
     expect(setVars).toHaveBeenCalledTimes(1);
     expect(setVars).toHaveBeenCalledWith(
       { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
-      { answer: 'maybe' }
+      { answer: 'maybe' },
     );
     expect(script.commands[2].getContent).toHaveBeenCalledWith({
       platform: 'test',
@@ -337,7 +337,7 @@ describe('execute call command', () => {
     const subScript = mockScript(
       [{ type: 'content', getContent: moxy(() => 'at skyfall') }],
       {},
-      'ChildScript'
+      'ChildScript',
     );
     const script = mockScript([
       { type: 'call', script: subScript },
@@ -349,8 +349,8 @@ describe('execute call command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -380,7 +380,7 @@ describe('execute call command', () => {
         { type: 'return', getValue: () => ({ hello: 'from bottom' }) },
       ],
       undefined,
-      'ChildScript'
+      'ChildScript',
     );
     const callCommand = moxy({
       type: 'call',
@@ -405,8 +405,8 @@ describe('execute call command', () => {
           scope,
           thread,
           [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-          false
-        )
+          false,
+        ),
       ).resolves.toEqual({
         finished: true,
         returnedValue: undefined,
@@ -430,7 +430,7 @@ describe('execute call command', () => {
       expect(script.commands[0].setVars).toHaveBeenCalledTimes(1);
       expect(script.commands[0].setVars).toHaveBeenCalledWith(
         { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
-        { hello: 'from bottom' }
+        { hello: 'from bottom' },
       );
       expect(script.commands[1].getContent).toHaveBeenCalledTimes(1);
       expect(script.commands[1].getContent).toHaveBeenCalledWith({
@@ -455,8 +455,8 @@ describe('execute call command', () => {
           scope,
           thread,
           [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-          false
-        )
+          false,
+        ),
       ).resolves.toEqual({
         finished: true,
         returnedValue: undefined,
@@ -480,14 +480,14 @@ describe('execute call command', () => {
       expect(script.commands[0].setVars).toHaveBeenCalledTimes(1);
       expect(script.commands[0].setVars).toHaveBeenCalledWith(
         { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
-        { hello: 'from bottom' }
+        { hello: 'from bottom' },
       );
     });
 
     test('with container vars functions', async () => {
       const withParamsFn = moxy(async () => ({ hello: 'from top container' }));
       const withParamsContainer = moxy(
-        serviceContainer({})(() => withParamsFn)
+        serviceContainer({})(() => withParamsFn),
       );
       const setVarsFn = moxy(async ({ vars }, returnedValue) => ({
         ...vars,
@@ -503,8 +503,8 @@ describe('execute call command', () => {
           scope,
           thread,
           [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-          false
-        )
+          false,
+        ),
       ).resolves.toEqual({
         finished: true,
         returnedValue: undefined,
@@ -532,7 +532,7 @@ describe('execute call command', () => {
       expect(setVarsFn).toHaveBeenCalledTimes(1);
       expect(setVarsFn).toHaveBeenCalledWith(
         { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
-        { hello: 'from bottom' }
+        { hello: 'from bottom' },
       );
     });
   });
@@ -544,7 +544,7 @@ describe('execute call command', () => {
         { type: 'prompt', key: 'childPrompt' },
       ],
       {},
-      'ChildScript'
+      'ChildScript',
     );
     const script = mockScript([
       {
@@ -561,8 +561,8 @@ describe('execute call command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: false,
       returnedValue: undefined,
@@ -589,7 +589,7 @@ describe('execute call command', () => {
         { type: 'content', getContent: moxy(() => 'starting in my heart') },
       ],
       { where: 1 },
-      'ChildScript'
+      'ChildScript',
     );
 
     await expect(
@@ -605,8 +605,8 @@ describe('execute call command', () => {
             stopAt: undefined,
           },
         ],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -633,7 +633,7 @@ describe('execute jump command', () => {
       { type: 'content', getContent: () => 'baz' },
     ]);
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -650,7 +650,7 @@ describe('execute jump command', () => {
       { type: 'content', getContent: () => 'bar' },
     ]);
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -682,7 +682,7 @@ describe('execute jump_condition command', () => {
 
   test('with sync condition function', async () => {
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -693,7 +693,7 @@ describe('execute jump_condition command', () => {
 
     jumpCondCommand.condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -706,7 +706,7 @@ describe('execute jump_condition command', () => {
   test('with async condition function', async () => {
     jumpCondCommand.condition.mock.fake(async () => true);
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -716,7 +716,7 @@ describe('execute jump_condition command', () => {
 
     jumpCondCommand.condition.mock.fake(async () => false);
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -731,7 +731,7 @@ describe('execute jump_condition command', () => {
 
     jumpCondCommand.mock.getter('condition').fake(() => conditionContainer);
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -741,7 +741,7 @@ describe('execute jump_condition command', () => {
 
     conditionFn.mock.fake(async () => false);
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -754,7 +754,7 @@ describe('execute jump_condition command', () => {
     jumpCondCommand.mock.getter('isNot').fakeReturnValue(true);
 
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -765,7 +765,7 @@ describe('execute jump_condition command', () => {
 
     script.commands[1].condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false)
+      execute(scope, thread, [{ script, vars: {}, stopAt: undefined }], false),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -788,8 +788,8 @@ describe('execute return command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -820,8 +820,8 @@ describe('execute return command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: 'bar',
@@ -845,8 +845,8 @@ describe('execute return command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: 'bar',
@@ -872,8 +872,8 @@ describe('execute return command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: 'bar',
@@ -911,8 +911,8 @@ describe('execute effect command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'EFFECT!' },
@@ -944,8 +944,8 @@ describe('execute effect command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'EFFECT!' },
@@ -980,8 +980,8 @@ describe('execute effect command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -994,17 +994,17 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
       { platform: 'test', thread, vars: { foo: 2 }, meta: null },
-      undefined
+      undefined,
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
       { platform: 'test', thread, vars: { foo: 1 }, meta: null },
-      { n: 1 }
+      { n: 1 },
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       3,
       { platform: 'test', thread, vars: { foo: 0 }, meta: null },
-      { n: 2 }
+      { n: 2 },
     );
   });
 
@@ -1026,8 +1026,8 @@ describe('execute effect command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -1043,12 +1043,12 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
       { platform: 'test', thread, vars: { foo: 1 }, meta: null },
-      undefined
+      undefined,
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
       { platform: 'test', thread, vars: { foo: 0 }, meta: null },
-      { n: 1 }
+      { n: 1 },
     );
   });
 
@@ -1063,7 +1063,7 @@ describe('execute effect command', () => {
         { type: 'content', getContent: () => 'world' },
         { type: 'effect', yieldValue: yieldFn },
       ],
-      { ask: 3 }
+      { ask: 3 },
     );
 
     await expect(
@@ -1071,8 +1071,8 @@ describe('execute effect command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: false,
       returnedValue: undefined,
@@ -1085,12 +1085,12 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
       { platform: 'test', thread, vars: { foo: 1 }, meta: null },
-      undefined
+      undefined,
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
       { platform: 'test', thread, vars: { foo: 0 }, meta: null },
-      { n: 1 }
+      { n: 1 },
     );
 
     await expect(
@@ -1099,8 +1099,8 @@ describe('execute effect command', () => {
         thread,
         [{ script, vars: { foo: 1 }, stopAt: 'ask' }],
         true,
-        null
-      )
+        null,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -1113,7 +1113,7 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenNthCalledWith(
       3,
       { platform: 'test', thread, vars: { foo: 1 }, meta: null },
-      undefined
+      undefined,
     );
   });
 
@@ -1129,7 +1129,7 @@ describe('execute effect command', () => {
       ],
       { ask: 2 },
       'Child',
-      () => ({ bar: 0 })
+      () => ({ bar: 0 }),
     );
     const script = mockScript(
       [
@@ -1139,7 +1139,7 @@ describe('execute effect command', () => {
         { type: 'content', getContent: () => 'd' },
         { type: 'effect', yieldValue: yieldFn, setVars: () => ({ foo: 1 }) },
       ],
-      { child: 2 }
+      { child: 2 },
     );
 
     await expect(
@@ -1147,8 +1147,8 @@ describe('execute effect command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: false,
       returnedValue: undefined,
@@ -1164,12 +1164,12 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
       { platform: 'test', thread, vars: { bar: 0 }, meta: null },
-      undefined
+      undefined,
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
       { platform: 'test', thread, vars: { foo: 0 }, meta: null },
-      { n: 1 }
+      { n: 1 },
     );
 
     await expect(
@@ -1181,8 +1181,8 @@ describe('execute effect command', () => {
           { script: subscript, stopAt: 'ask', vars: { bar: 0 } },
         ],
         true,
-        null
-      )
+        null,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -1195,12 +1195,12 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenNthCalledWith(
       3,
       { platform: 'test', thread, vars: { foo: 1 }, meta: null },
-      undefined
+      undefined,
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       4,
       { platform: 'test', thread, vars: { bar: 1 }, meta: null },
-      { n: 1 }
+      { n: 1 },
     );
   });
 
@@ -1213,7 +1213,7 @@ describe('execute effect command', () => {
       ],
       { ask: 2 },
       'Child',
-      () => ({ bar: 0 })
+      () => ({ bar: 0 }),
     );
     const script = mockScript(
       [
@@ -1223,7 +1223,7 @@ describe('execute effect command', () => {
         { type: 'content', getContent: () => 'c' },
         { type: 'effect', yieldValue: yieldFn, setVars: () => ({ foo: 1 }) },
       ],
-      { child: 2 }
+      { child: 2 },
     );
 
     await expect(
@@ -1231,8 +1231,8 @@ describe('execute effect command', () => {
         scope,
         thread,
         [{ script, vars: { foo: 0 }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: undefined,
@@ -1245,17 +1245,17 @@ describe('execute effect command', () => {
     expect(yieldFn).toHaveBeenNthCalledWith(
       1,
       { platform: 'test', thread, vars: { foo: 1 }, meta: null },
-      undefined
+      undefined,
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       2,
       { platform: 'test', thread, vars: { bar: 0 }, meta: null },
-      { n: 1 }
+      { n: 1 },
     );
     expect(yieldFn).toHaveBeenNthCalledWith(
       3,
       { platform: 'test', thread, vars: { foo: 0 }, meta: null },
-      { n: 2 }
+      { n: 2 },
     );
   });
 });
@@ -1273,7 +1273,7 @@ describe('run whole script', () => {
       { type: 'return', getValue: ({ vars }) => vars },
     ],
     { BEGIN: 0, CHILD_PROMPT: 2 },
-    'ChildScript'
+    'ChildScript',
   );
 
   const MockScript = mockScript(
@@ -1307,7 +1307,7 @@ describe('run whole script', () => {
     ],
     { BEGIN: 0, PROMPT: 7, CALL: 8 },
     'MockScript',
-    (input) => ({ ...input, t: 0 })
+    (input) => ({ ...input, t: 0 }),
   );
 
   beforeEach(() => {
@@ -1321,8 +1321,8 @@ describe('run whole script', () => {
         scope,
         thread,
         [{ script: MockScript, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: false,
       returnedValue: undefined,
@@ -1373,8 +1373,8 @@ describe('run whole script', () => {
         scope,
         thread,
         [{ script: MockScript, vars: { foo: 'bar' }, stopAt: undefined }],
-        false
-      )
+        false,
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'bar' },
@@ -1427,7 +1427,7 @@ describe('run whole script', () => {
 
     MockScript.commands[5].condition.mock.fakeReturnValue(false);
     await expect(
-      execute(scope, thread, callStack, true, { desc: 'fascinating' })
+      execute(scope, thread, callStack, true, { desc: 'fascinating' }),
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'bar', t: 3, desc: 'fascinating' },
@@ -1461,8 +1461,8 @@ describe('run whole script', () => {
         thread,
         [{ script: MockScript, vars: { foo: 'bar' }, stopAt: 'PROMPT' }],
         true,
-        { desc: 'fabulous' }
-      )
+        { desc: 'fabulous' },
+      ),
     ).resolves.toEqual({
       finished: false,
       returnedValue: undefined,
@@ -1528,8 +1528,8 @@ describe('run whole script', () => {
           },
         ],
         true,
-        { hello: 'subscript' }
-      )
+        { hello: 'subscript' },
+      ),
     ).resolves.toEqual({
       finished: true,
       returnedValue: { foo: 'baz', hello: 'subscript' },
@@ -1555,7 +1555,7 @@ describe('run whole script', () => {
     expect(commands[8].setVars).toHaveBeenCalledTimes(1);
     expect(commands[8].setVars).toHaveBeenCalledWith(
       { platform: 'test', thread, vars: { foo: 'bar' }, meta: null },
-      { foo: 'baz', hello: 'subscript' }
+      { foo: 'baz', hello: 'subscript' },
     );
     expect(commands[10].getContent).toHaveBeenCalledTimes(1);
     expect(commands[10].getContent).toHaveBeenCalledWith({
@@ -1571,7 +1571,7 @@ describe('run whole script', () => {
     expect(commands[2].setVars).toHaveBeenCalledTimes(1);
     expect(commands[2].setVars).toHaveBeenCalledWith(
       { platform: 'test', thread, vars: { foo: 'baz' }, meta: null },
-      { hello: 'subscript' }
+      { hello: 'subscript' },
     );
 
     expect(MockScript.initVars).not.toHaveBeenCalled();
@@ -1582,9 +1582,9 @@ describe('run whole script', () => {
 it('throw if stopped point key not found', async () => {
   const script = mockScript([{}, {}], { foo: 0, bar: 1 }, 'MyScript');
   await expect(() =>
-    execute(scope, thread, [{ script, vars: {}, stopAt: 'UNKNOWN' }], true, {})
+    execute(scope, thread, [{ script, vars: {}, stopAt: 'UNKNOWN' }], true, {}),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"key "UNKNOWN" not found in MyScript"`
+    `"key "UNKNOWN" not found in MyScript"`,
   );
 });
 
@@ -1595,14 +1595,14 @@ it('throw if stopped point is not <Prompt/>', async () => {
       { type: 'prompt', key: 'prompt#0' },
     ],
     { ask: 0, 'prompt#0': 1 },
-    'MyScript'
+    'MyScript',
   );
   await expect(() =>
     execute(scope, thread, [{ script, vars: {}, stopAt: 'ask' }], true, {
       event: { text: 'yes' },
-    })
+    }),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"stopped point "ask" is not a <Prompt/>, the key mapping of MyScript might have been changed"`
+    `"stopped point "ask" is not a <Prompt/>, the key mapping of MyScript might have been changed"`,
   );
 });
 
@@ -1613,7 +1613,7 @@ it('throw if returned point is not <Call/>', async () => {
       { type: 'prompt', key: 'prompt#0' },
     ],
     { ask: 0, 'prompt#0': 1 },
-    'ChildScript'
+    'ChildScript',
   );
   const script = mockScript(
     [
@@ -1621,7 +1621,7 @@ it('throw if returned point is not <Call/>', async () => {
       { type: 'call', script: subScript, key: 'call#0' },
     ],
     { greet: 0, 'call#0': 1 },
-    'MyScript'
+    'MyScript',
   );
   await expect(() =>
     execute(
@@ -1633,9 +1633,9 @@ it('throw if returned point is not <Call/>', async () => {
       ],
 
       true,
-      { event: { text: 'fine' } }
-    )
+      { event: { text: 'fine' } },
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"returned point "greet" is not a <Call/>, the key mapping of MyScript might have been changed"`
+    `"returned point "greet" is not a <Call/>, the key mapping of MyScript might have been changed"`,
   );
 });

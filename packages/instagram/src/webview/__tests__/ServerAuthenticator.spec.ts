@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import BasicAuthenticator, {
   AuthDelegatorOptions,
 } from '@sociably/auth/basicAuth';
@@ -84,7 +84,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       bot,
       profiler,
       basicAuthenticator,
-      agentSettingsAccessor
+      agentSettingsAccessor,
     );
     delegatorOptions =
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
@@ -92,7 +92,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
   test('delegation options', async () => {
     await expect(
-      authenticator.delegateAuthRequest(req, res, routing)
+      authenticator.delegateAuthRequest(req, res, routing),
     ).resolves.toBe(undefined);
 
     expect(requestDelegator).toHaveReturnedTimes(1);
@@ -120,7 +120,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         agent: { id: '1234567890', name: 'jojodoe123' },
         user: '9876543210',
         profile: profileData,
-      })
+      }),
     ).toEqual({
       ok: true,
       thread: new InstagramChat('1234567890', { id: '9876543210' }),
@@ -137,20 +137,20 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     expect(
       delegatorOptions.checkCurrentAuthUsability(
         { agent: { id: '1234567890', name: 'jojodoe123' }, user: '67890' },
-        { agent: { id: '1234567890', name: 'jojodoe123' }, user: '67890' }
-      )
+        { agent: { id: '1234567890', name: 'jojodoe123' }, user: '67890' },
+      ),
     ).toEqual({ ok: true });
     expect(
       delegatorOptions.checkCurrentAuthUsability(
         { agent: { id: '1111111111', name: 'janedoe555' }, user: '67890' },
-        { agent: { id: '1234567890', name: 'jojodoe123' }, user: '67890' }
-      )
+        { agent: { id: '1234567890', name: 'jojodoe123' }, user: '67890' },
+      ),
     ).toEqual({ ok: false });
     expect(
       delegatorOptions.checkCurrentAuthUsability(
         { agent: { id: '1234567890', name: 'jojodoe123' }, user: '66666' },
-        { agent: { id: '1234567890', name: 'jojodoe123' }, user: '67890' }
-      )
+        { agent: { id: '1234567890', name: 'jojodoe123' }, user: '67890' },
+      ),
     ).toEqual({ ok: false });
   });
 
@@ -160,7 +160,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         delegatorOptions.verifyCredential({
           agent: { id: '1234567890', name: 'jojodoe123' },
           user: '9876543210',
-        })
+        }),
       ).resolves.toEqual({
         ok: true,
         data: {
@@ -172,13 +172,13 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
       expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
       expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-        new InstagramAgent('1234567890')
+        new InstagramAgent('1234567890'),
       );
 
       expect(profiler.getUserProfile).toHaveBeenCalledTimes(1);
       expect(profiler.getUserProfile).toHaveBeenCalledWith(
         '1234567890',
-        '9876543210'
+        '9876543210',
       );
     });
 
@@ -188,7 +188,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         delegatorOptions.verifyCredential({
           agent: { id: '1234567890', name: 'jojodoe123' },
           user: '9876543210',
-        })
+        }),
       ).resolves.toMatchInlineSnapshot(`
         {
           "code": 404,
@@ -202,13 +202,13 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       profiler.getUserProfile.mock.fakeRejectedValue(
         new MetaApiError({
           error: { code: 404, message: 'user not found' } as never,
-        })
+        }),
       );
       await expect(
         delegatorOptions.verifyCredential({
           agent: { id: '1234567890', name: 'jojodoe123' },
           user: '0000000000',
-        })
+        }),
       ).resolves.toMatchInlineSnapshot(`
         {
           "code": 404,
@@ -227,11 +227,11 @@ test('.getAuthUrl(id, path)', async () => {
     bot,
     profiler,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
   await expect(authenticator.getAuthUrl(user)).resolves.toBe(loginUrl);
   await expect(authenticator.getAuthUrl(user, '/foo?bar=baz')).resolves.toBe(
-    loginUrl
+    loginUrl,
   );
 
   expect(basicAuthenticator.getAuthUrl).toHaveBeenCalledTimes(2);
@@ -239,13 +239,13 @@ test('.getAuthUrl(id, path)', async () => {
     1,
     'instagram',
     { agent: { id: '1234567890', name: 'jojodoe123' }, user: '9876543210' },
-    undefined
+    undefined,
   );
   expect(basicAuthenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
     'instagram',
     { agent: { id: '1234567890', name: 'jojodoe123' }, user: '9876543210' },
-    '/foo?bar=baz'
+    '/foo?bar=baz',
   );
 });
 
@@ -254,7 +254,7 @@ test('.verifyCredential() fails anyway', async () => {
     bot,
     profiler,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
@@ -271,7 +271,7 @@ describe('.verifyRefreshment(data)', () => {
     bot,
     profiler,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
 
   test('returns ok when verification passed', async () => {
@@ -279,7 +279,7 @@ describe('.verifyRefreshment(data)', () => {
       authenticator.verifyRefreshment({
         agent: { id: '1234567890', name: 'jojodoe123' },
         user: '9876543210',
-      })
+      }),
     ).resolves.toEqual({
       ok: true,
       data: {
@@ -291,13 +291,13 @@ describe('.verifyRefreshment(data)', () => {
 
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-      new InstagramAgent('1234567890')
+      new InstagramAgent('1234567890'),
     );
 
     expect(profiler.getUserProfile).toHaveBeenCalledTimes(1);
     expect(profiler.getUserProfile).toHaveBeenCalledWith(
       '1234567890',
-      '9876543210'
+      '9876543210',
     );
   });
 
@@ -307,7 +307,7 @@ describe('.verifyRefreshment(data)', () => {
       authenticator.verifyRefreshment({
         agent: { id: '8888888888', name: 'foooo' },
         user: '67890',
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 404,
@@ -323,7 +323,7 @@ test('.checkAuthData(data)', () => {
     bot,
     profiler,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
 
   expect(
@@ -331,7 +331,7 @@ test('.checkAuthData(data)', () => {
       agent: { id: '1234567890', name: 'jojodoe123' },
       user: '9876543210',
       profile: profileData,
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {
@@ -347,7 +347,7 @@ test('.checkAuthData(data)', () => {
     authenticator.checkAuthData({
       agent: { id: '5555555555', name: 'jojodoe123' },
       user: '6666666666',
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {

@@ -1,5 +1,6 @@
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import snakecaseKeys from 'snakecase-keys';
+import { MetaApiUploadingFile } from '@sociably/meta-api';
 import makeFacebookComponent from '../utils/makeFacebookComponent.js';
 import getUnixTimestamp from '../utils/getUnixTimestamp.js';
 import { PATH_PHOTOS } from '../constant.js';
@@ -12,7 +13,7 @@ export type PagePhotoProps = {
    */
   url?: string;
   /** Upload a photo file. Supported formats: JPEG, BMP, PNG, GIF, TIFF */
-  fileData?: Buffer | NodeJS.ReadableStream;
+  file?: MetaApiUploadingFile;
   /**
    * A vault image ID to use for a photo. You can use only one of url, a file
    * attachment, vault_image_id
@@ -30,14 +31,11 @@ export type PagePhotoProps = {
   altTextCustom?: string;
   /** Android key hash */
   androidKeyHash?: string;
-  /**
-   * iTunes App ID. This is used by the native Share dialog that's part of
-   * iOS
-   */
+  /** ITunes App ID. This is used by the native Share dialog that's part of iOS */
   applicationId?: string;
   /**
-   * Number of attempts that have been made to upload this photo. Default
-   * value: 0
+   * Number of attempts that have been made to upload this photo. Default value:
+   * 0
    */
   attempt?: number;
   /** Audience exp. Default value: false */
@@ -58,26 +56,43 @@ export type PagePhotoProps = {
   /**
    * Object that controls News Feed targeting for this post. Anyone in these
    * groups will be more likely to see this post. People not in these groups
-   *  will be less likely to see this post, but may still see it anyway. Any
-   * of the targeting fields shown here can be used, but none are required.
+   * will be less likely to see this post, but may still see it anyway. Any of
+   * the targeting fields shown here can be used, but none are required.
    */
   feedTargeting?: {
     /**
-     * Values for targeted locales. Use type of adlocale to find Targeting Options and use the returned key to specify. */
+     * Values for targeted locales. Use type of adlocale to find Targeting
+     * Options and use the returned key to specify.
+     */
     locales?: string[];
     /** Must be 13 or higher. Default is 0. */
     ageMin?: number;
     /** Maximum age. */
     ageMax?: number;
-    /** Target specific genders. 1 targets all male viewers and 2 females. Default is to target both. */
+    /**
+     * Target specific genders. 1 targets all male viewers and 2 females.
+     * Default is to target both.
+     */
     genders?: number[];
     /** Array of integers. Represent graduation years from college. */
     collegeYears?: number[];
-    /** Array of integers which represent current educational status. Use 1 for high school, 2 for undergraduate, and 3 for alum (or localized equivalents). */
+    /**
+     * Array of integers which represent current educational status. Use 1 for
+     * high school, 2 for undergraduate, and 3 for alum (or localized
+     * equivalents).
+     */
     educationStatuses?: number[];
-    /** Array of integers for targeting based on relationship status. Use 1 for single, 2 for 'in a relationship', 3 for married, and 4 for engaged. Default is all types. */
+    /**
+     * Array of integers for targeting based on relationship status. Use 1 for
+     * single, 2 for 'in a relationship', 3 for married, and 4 for engaged.
+     * Default is all types.
+     */
     relationshipStatuses?: number[];
-    /** One or more IDs of pages to target fans of pages.Use type of page to get possible IDs as find Targeting Options and use the returned id to specify. */
+    /**
+     * One or more IDs of pages to target fans of pages.Use type of page to get
+     * possible IDs as find Targeting Options and use the returned id to
+     * specify.
+     */
     interests?: number[];
   };
   /** Unused? Default value: -1 */
@@ -93,24 +108,28 @@ export type PagePhotoProps = {
   /**
    * Manually specify the initial view pitch in degrees from -90 to 90. This
    * overrides any value present in the photo embedded metadata or provided in
-   *  the spherical_metadata parameter
+   * the spherical_metadata parameter
    */
   initialViewPitchOverrideDegrees?: number;
-  /** Manually specify the initial view vertical FOV in degrees from 60 to 120. This overrides any value present in the photo embedded metadata or provided in the spherical_metadata parameter */
+  /**
+   * Manually specify the initial view vertical FOV in degrees from 60 to 120.
+   * This overrides any value present in the photo embedded metadata or provided
+   * in the spherical_metadata parameter
+   */
   initialViewVerticalFovOverrideDegrees?: number;
-  /** iOS Bundle ID */
+  /** IOS Bundle ID */
   iosBundleId?: string;
   /** Is this an explicit location? */
   isExplicitLocation?: boolean;
   /** If set to true, the tag is a place, not a person */
   isExplicitPlace?: boolean;
-  /**  Manual privacy. Default value: false */
+  /** Manual privacy. Default value: false */
   manualPrivacy?: boolean;
   /**
    * If set to true, this will suppress the News Feed story that is
-   * automatically generated on a profile when people upload a photo using
-   * your app. Useful for adding old photos where you may not want to generate
-   * a story
+   * automatically generated on a profile when people upload a photo using your
+   * app. Useful for adding old photos where you may not want to generate a
+   * story
    */
   noStory?: boolean;
   /** Offline ID. Default value: 0 */
@@ -123,10 +142,7 @@ export type PagePhotoProps = {
   ogObjectId?: string;
   /** The Open Graph phrase */
   ogPhrase?: string;
-  /**
-   * Flag to set if the post should create a profile badge. Default value:
-   * false
-   */
+  /** Flag to set if the post should create a profile badge. Default value: false */
   ogSetProfileBadge?: boolean;
   /** The Open Graph suggestion */
   ogSuggestionMechanism?: string;
@@ -134,12 +150,12 @@ export type PagePhotoProps = {
   place?: string;
   /**
    * Determines the privacy settings of the photo. If not supplied, this
-   * defaults to the privacy level granted to the app in the Login dialog.
-   * This field cannot be used to set a more open privacy setting than the
-   * one granted
+   * defaults to the privacy level granted to the app in the Login dialog. This
+   * field cannot be used to set a more open privacy setting than the one
+   * granted
    */
   privacy?: string;
-  /**    Proxied app ID */
+  /** Proxied app ID */
   proxiedAppId?: string | number;
   /**
    * Set to false if you don't want the photo to be published immediately.
@@ -157,8 +173,8 @@ export type PagePhotoProps = {
    * A set of params describing an uploaded spherical photo. This field is not
    * required; if it is not present we will try to generate spherical metadata
    * from the metadata embedded in the image. If it is present, it takes
-   * precedence over any embedded metadata. See also the Google
-   * Photo Sphere spec for more info on the meaning of the params:
+   * precedence over any embedded metadata. See also the Google Photo Sphere
+   * spec for more info on the meaning of the params:
    * https://developers.google.com/streetview/spherical-metadata
    */
   sphericalMetadata?: Record<string, string | number>;
@@ -204,12 +220,13 @@ export type PagePhotoProps = {
     | 'INLINE_CREATED'
     | 'PUBLISHED'
     | 'REVIEWABLE_BRANDED_CONTENT';
-  /**  User selected tags. Default value: false */
+  /** User selected tags. Default value: false */
   userSelectedTags?: boolean;
 };
 
 /**
  * Publish a photo to the page
+ *
  * @category Component
  * @props {@link PagePhotoProps}
  * @guides Check official [reference](https://developers.facebook.com/docs/graph-api/reference/photo/).
@@ -220,7 +237,7 @@ export const PagePhoto: FacebookComponent<
 > = makeFacebookComponent(function PagePhoto(node, path) {
   const {
     url,
-    fileData,
+    file,
     vaultImageId,
     sphericalMetadata,
     backdatedTime,
@@ -228,13 +245,13 @@ export const PagePhoto: FacebookComponent<
   } = node.props;
 
   if (
-    (!url && !fileData && !vaultImageId) ||
-    (url && fileData) ||
-    (fileData && vaultImageId) ||
+    (!url && !file && !vaultImageId) ||
+    (url && file) ||
+    (file && vaultImageId) ||
     (url && vaultImageId)
   ) {
     throw new TypeError(
-      'There should be exactly one source prop: "url", "fileData" or "vaultImageId"'
+      'There should be exactly one source prop: "url", "file" or "vaultImageId"',
     );
   }
 
@@ -250,7 +267,7 @@ export const PagePhoto: FacebookComponent<
         backdated_time: getUnixTimestamp(backdatedTime),
         ...snakecaseKeys(restParams, { deep: true }),
       },
-      attachFile: fileData ? { data: fileData } : undefined,
+      file,
     }),
   ];
 });

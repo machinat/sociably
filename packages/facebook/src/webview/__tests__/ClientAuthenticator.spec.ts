@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import FacebookPage from '../../Page.js';
 import FacebookUser from '../../User.js';
 import FacebookChat from '../../Chat.js';
@@ -55,12 +55,12 @@ describe('.closeWebview()', () => {
     navigator.mock
       .getter('userAgent')
       .fakeReturnValue(
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
       );
     expect(authenticator.closeWebview(authContext)).toBe(true);
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
     expect(location.mock.setter('href').calls[0].args[0]).toMatchInlineSnapshot(
-      `"https://m.me/12345"`
+      `"https://m.me/12345"`,
     );
   });
 
@@ -68,7 +68,7 @@ describe('.closeWebview()', () => {
     navigator.mock
       .getter('userAgent')
       .fakeReturnValue(
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
       );
     expect(authenticator.closeWebview(null)).toBe(false);
     expect(location.mock.setter('href')).not.toHaveBeenCalled();
@@ -78,7 +78,7 @@ describe('.closeWebview()', () => {
     navigator.mock
       .getter('userAgent')
       .fakeReturnValue(
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0'
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0',
       );
     expect(authenticator.closeWebview(authContext)).toBe(false);
     expect(location.mock.setter('href')).not.toHaveBeenCalled();
@@ -96,7 +96,7 @@ test('.checkAuthData(data)', () => {
         user: new FacebookUser('12345', '67890'),
         userProfile: null,
       },
-    }
+    },
   );
 
   const profileData = {
@@ -111,7 +111,7 @@ test('.checkAuthData(data)', () => {
       page: '98765',
       user: '43210',
       profile: profileData,
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {

@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import fetch from 'node-fetch';
 import type {
   SociablyNode,
@@ -29,8 +30,8 @@ import type {
   BotApiResult,
   TelegramDispatchFrame,
   TelegramDispatchResponse,
-  UploadingFile,
   TelegramComponent,
+  UploadingFileInfo,
 } from './types.js';
 
 type TelegramBotOptions = {
@@ -52,12 +53,10 @@ type ApiCallOptions = {
   /** Bot API parameter */
   params?: Record<string, unknown>;
   /** Attach files with the API request */
-  uploadFiles?: UploadingFile[];
+  uploadFiles?: UploadingFileInfo[];
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class TelegramBot
   implements SociablyBot<TelegramChat, TelegramJob, TelegramResult>
 {
@@ -81,7 +80,7 @@ export class TelegramBot
     const queue = new Queue<TelegramJob, TelegramResult>();
     const worker = new TelegramWorker(
       agentSettingsAccessor,
-      maxRequestConnections
+      maxRequestConnections,
     );
     const renderer = new Renderer<
       TelegramSegmentValue,
@@ -95,7 +94,7 @@ export class TelegramBot
       queue,
       worker,
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   }
 
@@ -116,7 +115,7 @@ export class TelegramBot
    */
   render(
     target: TelegramUser | TelegramChat,
-    message: SociablyNode
+    message: SociablyNode,
   ): Promise<null | TelegramDispatchResponse> {
     if (target instanceof TelegramUser) {
       return this.engine.render(target, message, createBotScopeJobs);
@@ -128,9 +127,9 @@ export class TelegramBot
   async fetchFile(
     /** The ID or username or instance of the bot user */
     agentIdOrInstance: number | TelegramUser,
-    fileId: string
+    fileId: string,
   ): Promise<null | {
-    content: NodeJS.ReadableStream;
+    content: Readable;
     contentType?: string;
     contentLength?: number;
   }> {
@@ -139,9 +138,8 @@ export class TelegramBot
         ? new TelegramUser(agentIdOrInstance, true)
         : agentIdOrInstance;
 
-    const agentSettings = await this.agentSettingsAccessor.getAgentSettings(
-      agent
-    );
+    const agentSettings =
+      await this.agentSettingsAccessor.getAgentSettings(agent);
     if (!agentSettings) {
       throw new Error(`Bot agent "${agent.id}" not registered`);
     }
@@ -157,7 +155,7 @@ export class TelegramBot
     }
 
     const fetchResponse = await fetch(
-      `https://api.telegram.org/file/bot${agentSettings.botToken}/${filePath}`
+      `https://api.telegram.org/file/bot${agentSettings.botToken}/${filePath}`,
     );
 
     if (!fetchResponse.ok) {
@@ -170,7 +168,7 @@ export class TelegramBot
 
     const contentLength = fetchResponse.headers.get('content-length');
     return {
-      content: fetchResponse.body as NodeJS.ReadableStream,
+      content: fetchResponse.body as Readable,
       contentType: fetchResponse.headers.get('content-type') || undefined,
       contentLength: contentLength ? Number(contentLength) : undefined,
     };
@@ -194,7 +192,7 @@ export class TelegramBot
             key: undefined,
             files: uploadFiles || [],
           },
-        ]
+        ],
       );
 
       return response.results[0].result as Result;
@@ -219,15 +217,14 @@ const BotP = serviceProviderClass({
     { maxRequestConnections },
     agentSettingsAccessor,
     moduleUtils,
-    platformUtils
-  ) => {
-    return new TelegramBot({
+    platformUtils,
+  ) =>
+    new TelegramBot({
       agentSettingsAccessor,
       maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
-    });
-  },
+    }),
 })(TelegramBot);
 
 type BotP = TelegramBot;

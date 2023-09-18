@@ -14,7 +14,7 @@ import type {
   MetaApiJob,
   MetaApiResult,
   MetaApiDispatchResponse,
-  FileInfo,
+  MetaApiUploadingFile,
 } from '@sociably/meta-api';
 import {
   MessageValue,
@@ -57,16 +57,11 @@ export type MessagingTarget =
 // TODO: type the raw event object
 export type InstagramRawEvent = any;
 
-export type AttachFileValue = {
-  data: string | Buffer | NodeJS.ReadableStream;
-  info?: FileInfo;
-};
-
 export type BaseSegmentValue = {
   type: string;
   apiPath: string;
   params: Record<string, unknown>;
-  attachFile?: AttachFileValue;
+  file?: MetaApiUploadingFile;
   assetTag?: string;
 };
 
@@ -149,8 +144,9 @@ export type InstagramConfigs = {
   /** To handle the webhook challenge request or not. Default to `true` */
   shouldHandleChallenge?: boolean;
   /**
-   * The webhook subscription fields for instagram. Default to `['messages', 'messaging_postbacks',
-   * 'messaging_handovers', 'messaging_policy_enforcement', 'messaging_referrals']`
+   * The webhook subscription fields for instagram. Default to `['messages',
+   * 'messaging_postbacks', 'messaging_handovers',
+   * 'messaging_policy_enforcement', 'messaging_referrals']`
    */
   subscriptionFields?: string[];
   /** The graph API version to make API calls */
@@ -162,8 +158,9 @@ export type InstagramConfigs = {
 
 export type InstagramMessagingOptions = Omit<MessagingOptions, 'tag'> & {
   /**
-   * Human agent support for issues that cannot be resolved within the 24 hour standard messaging window, such
-   * as resolving issues outside normal business hours or issues requiring more than 24 hours to resolve
+   * Human agent support for issues that cannot be resolved within the 24 hour
+   * standard messaging window, such as resolving issues outside normal business
+   * hours or issues requiring more than 24 hours to resolve
    */
   tag?: 'HUMAN_AGENT';
 };

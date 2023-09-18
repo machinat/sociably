@@ -1,4 +1,4 @@
-import Sociably from '@sociably/core';
+import Sociably, { SociablyNode } from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
 import {
@@ -19,9 +19,10 @@ import {
   LeaveChat,
   SetChatStickerSet,
   DeleteChatStickerSet,
-} from '../action';
+} from '../action.js';
 
-const renderer = new Renderer('telegram', () => null);
+const renderer = new Renderer('telegram', async () => null);
+const render = async (node: SociablyNode) => renderer.render(node, null, null);
 
 describe.each([
   ForwardMessage,
@@ -43,15 +44,14 @@ describe.each([
   DeleteChatStickerSet,
 ])('%p', (Action) => {
   it('is valid unit Component', () => {
-    expect(isNativeType(<Action />)).toBe(true);
+    expect(isNativeType(<Action {...({} as any)} />)).toBe(true);
     expect(Action.$$platform).toBe('telegram');
   });
 });
 
 test('ForwardMessage match snapshot', async () => {
-  await expect(
-    renderer.render(<ForwardMessage fromChatId={12345} messageId={6789} />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<ForwardMessage fromChatId={12345} messageId={6789} />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <ForwardMessage
@@ -72,9 +72,13 @@ test('ForwardMessage match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
-      <ForwardMessage fromChatId={54321} messageId={9876} disableNotification />
-    )
+    render(
+      <ForwardMessage
+        fromChatId={54321}
+        messageId={9876}
+        disableNotification
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -99,7 +103,7 @@ test('ForwardMessage match snapshot', async () => {
 });
 
 test('ChatAction match snapshot', async () => {
-  await expect(renderer.render(<ChatAction action="typing" />)).resolves
+  await expect(render(<ChatAction action="typing" />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -117,7 +121,7 @@ test('ChatAction match snapshot', async () => {
       },
     ]
   `);
-  await expect(renderer.render(<ChatAction action="upload_photo" />)).resolves
+  await expect(render(<ChatAction action="upload_photo" />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -138,7 +142,7 @@ test('ChatAction match snapshot', async () => {
 });
 
 test('KickChatMember match snapshot', async () => {
-  await expect(renderer.render(<KickChatMember userId={123456} />)).resolves
+  await expect(render(<KickChatMember userId={123456} />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -157,9 +161,8 @@ test('KickChatMember match snapshot', async () => {
       },
     ]
   `);
-  await expect(
-    renderer.render(<KickChatMember userId={123456} untilDate={160077304} />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<KickChatMember userId={123456} untilDate={160077304} />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <KickChatMember
@@ -179,9 +182,9 @@ test('KickChatMember match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
-      <KickChatMember userId={123456} untilDate={new Date(160077304000)} />
-    )
+    render(
+      <KickChatMember userId={123456} untilDate={new Date(160077304000)} />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -204,7 +207,7 @@ test('KickChatMember match snapshot', async () => {
 });
 
 test('UnbanChatMember match snapshot', async () => {
-  await expect(renderer.render(<UnbanChatMember userId={123456} />)).resolves
+  await expect(render(<UnbanChatMember userId={123456} />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -225,9 +228,8 @@ test('UnbanChatMember match snapshot', async () => {
 });
 
 test('RestrictChatMember match snapshot', async () => {
-  await expect(
-    renderer.render(<RestrictChatMember userId={123456} canSendMessages />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<RestrictChatMember userId={123456} canSendMessages />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <RestrictChatMember
@@ -257,7 +259,7 @@ test('RestrictChatMember match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <RestrictChatMember
         userId={123456}
         canSendMessages
@@ -265,8 +267,8 @@ test('RestrictChatMember match snapshot', async () => {
         canSendPolls
         canSendOtherMessages
         untilDate={160077304}
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -301,7 +303,7 @@ test('RestrictChatMember match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <RestrictChatMember
         userId={123456}
         canAddWebPagePreviews={false}
@@ -309,8 +311,8 @@ test('RestrictChatMember match snapshot', async () => {
         canInviteUsers={false}
         canPinMessages={false}
         untilDate={new Date(160077304000)}
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -347,9 +349,8 @@ test('RestrictChatMember match snapshot', async () => {
 });
 
 test('PromoteChatMember match snapshot', async () => {
-  await expect(
-    renderer.render(<PromoteChatMember userId={123456} canPostMessages />)
-  ).resolves.toMatchInlineSnapshot(`
+  await expect(render(<PromoteChatMember userId={123456} canPostMessages />))
+    .resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <PromoteChatMember
@@ -376,7 +377,7 @@ test('PromoteChatMember match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <PromoteChatMember
         userId={123456}
         canChangeInfo
@@ -387,8 +388,8 @@ test('PromoteChatMember match snapshot', async () => {
         canRestrictMembers={false}
         canPinMessages
         canPromoteMembers={false}
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -426,9 +427,12 @@ test('PromoteChatMember match snapshot', async () => {
 
 test('SetChatAdministratorCustomTitle match snapshot', async () => {
   await expect(
-    renderer.render(
-      <SetChatAdministratorCustomTitle userId={123456} customTitle="Big Boss" />
-    )
+    render(
+      <SetChatAdministratorCustomTitle
+        userId={123456}
+        customTitle="Big Boss"
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -451,7 +455,7 @@ test('SetChatAdministratorCustomTitle match snapshot', async () => {
 });
 
 test('SetChatPermissions match snapshot', async () => {
-  await expect(renderer.render(<SetChatPermissions canSendMessages />)).resolves
+  await expect(render(<SetChatPermissions canSendMessages />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -479,7 +483,7 @@ test('SetChatPermissions match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(
+    render(
       <SetChatPermissions
         canSendMessages
         canSendMediaMessages
@@ -489,8 +493,8 @@ test('SetChatPermissions match snapshot', async () => {
         canChangeInfo={false}
         canInviteUsers={false}
         canPinMessages={false}
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -527,72 +531,77 @@ test('SetChatPermissions match snapshot', async () => {
 });
 
 test('SetChatPhoto match snapshot', async () => {
-  await expect(renderer.render(<SetChatPhoto fileData="__DATA__" />)).resolves
+  await expect(render(<SetChatPhoto file={{ data: '__DATA__' }} />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
         "node": <SetChatPhoto
-          fileData="__DATA__"
-        />,
-        "path": "$",
-        "type": "unit",
-        "value": {
-          "method": "setChatPhoto",
-          "params": {
-            "photo": undefined,
-          },
-          "uploadingFiles": [
+          file={
             {
-              "assetTag": undefined,
-              "fieldName": "photo",
-              "fileData": "__DATA__",
-              "fileInfo": undefined,
-            },
-          ],
-        },
-      },
-    ]
-  `);
-  await expect(
-    renderer.render(
-      <SetChatPhoto
-        fileData="__DATA__"
-        fileInfo={{
-          filename: 'bar.jpg',
-          contentType: 'image/jpeg',
-        }}
-      />
-    )
-  ).resolves.toMatchInlineSnapshot(`
-    [
-      {
-        "node": <SetChatPhoto
-          fileData="__DATA__"
-          fileInfo={
-            {
-              "contentType": "image/jpeg",
-              "filename": "bar.jpg",
+              "data": "__DATA__",
             }
           }
         />,
         "path": "$",
         "type": "unit",
         "value": {
+          "files": [
+            {
+              "assetTag": undefined,
+              "fieldName": "photo",
+              "source": {
+                "data": "__DATA__",
+              },
+            },
+          ],
           "method": "setChatPhoto",
           "params": {
             "photo": undefined,
           },
-          "uploadingFiles": [
+        },
+      },
+    ]
+  `);
+  await expect(
+    render(
+      <SetChatPhoto
+        file={{
+          data: '__DATA__',
+          fileName: 'bar.jpg',
+          contentType: 'image/jpeg',
+        }}
+      />,
+    ),
+  ).resolves.toMatchInlineSnapshot(`
+    [
+      {
+        "node": <SetChatPhoto
+          file={
+            {
+              "contentType": "image/jpeg",
+              "data": "__DATA__",
+              "fileName": "bar.jpg",
+            }
+          }
+        />,
+        "path": "$",
+        "type": "unit",
+        "value": {
+          "files": [
             {
               "assetTag": undefined,
               "fieldName": "photo",
-              "fileData": "__DATA__",
-              "fileInfo": {
+              "source": {
                 "contentType": "image/jpeg",
-                "filename": "bar.jpg",
+                "data": "__DATA__",
+                "fileName": "bar.jpg",
               },
             },
           ],
+          "method": "setChatPhoto",
+          "params": {
+            "photo": undefined,
+          },
         },
       },
     ]
@@ -600,8 +609,7 @@ test('SetChatPhoto match snapshot', async () => {
 });
 
 test('DeleteChatPhoto match snapshot', async () => {
-  await expect(renderer.render(<DeleteChatPhoto />)).resolves
-    .toMatchInlineSnapshot(`
+  await expect(render(<DeleteChatPhoto />)).resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <DeleteChatPhoto />,
@@ -617,7 +625,7 @@ test('DeleteChatPhoto match snapshot', async () => {
 });
 
 test('SetChatTitle match snapshot', async () => {
-  await expect(renderer.render(<SetChatTitle title="Foo" />)).resolves
+  await expect(render(<SetChatTitle title="Foo" />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -638,8 +646,8 @@ test('SetChatTitle match snapshot', async () => {
 });
 
 test('SetChatDescription match snapshot', async () => {
-  await expect(renderer.render(<SetChatDescription description="Bar" />))
-    .resolves.toMatchInlineSnapshot(`
+  await expect(render(<SetChatDescription description="Bar" />)).resolves
+    .toMatchInlineSnapshot(`
     [
       {
         "node": <SetChatDescription
@@ -659,7 +667,7 @@ test('SetChatDescription match snapshot', async () => {
 });
 
 test('PinChatMessage match snapshot', async () => {
-  await expect(renderer.render(<PinChatMessage messageId={123456} />)).resolves
+  await expect(render(<PinChatMessage messageId={123456} />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
@@ -679,7 +687,7 @@ test('PinChatMessage match snapshot', async () => {
     ]
   `);
   await expect(
-    renderer.render(<PinChatMessage messageId={123456} disableNotification />)
+    render(<PinChatMessage messageId={123456} disableNotification />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -702,8 +710,7 @@ test('PinChatMessage match snapshot', async () => {
 });
 
 test('UnpinChatMessage match snapshot', async () => {
-  await expect(renderer.render(<UnpinChatMessage />)).resolves
-    .toMatchInlineSnapshot(`
+  await expect(render(<UnpinChatMessage />)).resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <UnpinChatMessage />,
@@ -719,7 +726,7 @@ test('UnpinChatMessage match snapshot', async () => {
 });
 
 test('LeaveChat match snapshot', async () => {
-  await expect(renderer.render(<LeaveChat />)).resolves.toMatchInlineSnapshot(`
+  await expect(render(<LeaveChat />)).resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <LeaveChat />,
@@ -735,8 +742,8 @@ test('LeaveChat match snapshot', async () => {
 });
 
 test('SetChatStickerSet match snapshot', async () => {
-  await expect(renderer.render(<SetChatStickerSet stickerSetName="Stitch" />))
-    .resolves.toMatchInlineSnapshot(`
+  await expect(render(<SetChatStickerSet stickerSetName="Stitch" />)).resolves
+    .toMatchInlineSnapshot(`
     [
       {
         "node": <SetChatStickerSet
@@ -756,7 +763,7 @@ test('SetChatStickerSet match snapshot', async () => {
 });
 
 test('DeleteChatStickerSet match snapshot', async () => {
-  await expect(renderer.render(<DeleteChatStickerSet />)).resolves
+  await expect(render(<DeleteChatStickerSet />)).resolves
     .toMatchInlineSnapshot(`
     [
       {

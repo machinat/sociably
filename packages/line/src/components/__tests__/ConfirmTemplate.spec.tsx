@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
@@ -8,7 +8,7 @@ import { renderUnitElement } from './utils.js';
 
 test('is valid native component', () => {
   expect(
-    isNativeType(<ConfirmTemplate {...({} as ConfirmTemplateProps)} />)
+    isNativeType(<ConfirmTemplate {...({} as ConfirmTemplateProps)} />),
   ).toBe(true);
   expect(ConfirmTemplate.$$platform).toBe('line');
   expect(ConfirmTemplate.$$name).toBe('ConfirmTemplate');
@@ -25,8 +25,8 @@ it('match snapshot', async () => {
         ]}
       >
         Take a pill
-      </ConfirmTemplate>
-    )
+      </ConfirmTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -89,7 +89,7 @@ test('altText as function', async () => {
       ]}
     >
       hello world
-    </ConfirmTemplate>
+    </ConfirmTemplate>,
   );
   const messageSegValue = segemnts?.[0].value as MessageSegmentValue;
   const templateValue = messageSegValue.params as TemplateMessageParams;

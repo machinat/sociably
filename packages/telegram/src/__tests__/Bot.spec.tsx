@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Readable } from 'stream';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Sociably from '@sociably/core';
 import Queue from '@sociably/core/queue';
@@ -26,19 +26,15 @@ const Worker = _Worker as Moxy<typeof _Worker>;
 nock.disableNetConnect();
 
 jest.mock('@sociably/core/engine', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/engine'))
+  moxy(jest.requireActual('@sociably/core/engine')),
 );
 jest.mock('@sociably/core/renderer', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/renderer'))
+  moxy(jest.requireActual('@sociably/core/renderer')),
 );
 jest.mock('../Worker.js', () =>
-  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../Worker.js'), {
+  moxy(jest.requireActual('../Worker.js'), {
     mockNewInstance: false,
-  })
+  }),
 );
 
 const initScope = moxy(() => moxy());
@@ -96,7 +92,7 @@ describe('.constructor(options)', () => {
       expect.any(Queue),
       expect.any(Worker),
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
@@ -109,7 +105,7 @@ describe('.constructor(options)', () => {
         initScope,
         dispatchWrapper,
         agentSettingsAccessor,
-      })
+      }),
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
@@ -155,7 +151,7 @@ describe('.render(thread, message, options)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.render(new TelegramChat(12345, 67890), empty)
+        bot.render(new TelegramChat(12345, 67890), empty),
       ).resolves.toBe(null);
     }
   });
@@ -216,7 +212,7 @@ describe('.render(thread, message, options)', () => {
         <EditMedia inlineMessageId="2">
           <Photo url="https://sociably.io/trollface.png" />
         </EditMedia>
-      </>
+      </>,
     );
     expect(response!).toMatchSnapshot();
     expect(response!.results).toEqual([
@@ -252,7 +248,7 @@ describe('.render(thread, message, options)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.render(new TelegramUser(12345, true), empty)
+        bot.render(new TelegramUser(12345, true), empty),
       ).resolves.toBe(null);
     }
   });
@@ -279,7 +275,7 @@ describe('.requestApi()', () => {
         channel: botUser,
         method: 'foo',
         params: { bar: 'baz' },
-      })
+      }),
     ).resolves.toEqual({
       foo: 'bar',
     });

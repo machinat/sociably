@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import TwitterBot from '../Bot.js';
 import TwitterUser from '../User.js';
 import TwitterUserProfile from '../UserProfile.js';

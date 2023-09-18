@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
@@ -17,19 +17,15 @@ const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Worker = _Worker as Moxy<typeof _Worker>;
 
 jest.mock('@sociably/core/engine', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/engine'))
+  moxy(jest.requireActual('@sociably/core/engine')),
 );
 jest.mock('@sociably/core/renderer', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/renderer'))
+  moxy(jest.requireActual('@sociably/core/renderer')),
 );
 jest.mock('../Worker.js', () =>
-  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../Worker'), {
+  moxy(jest.requireActual('../Worker'), {
     mockNewInstance: false,
-  })
+  }),
 );
 
 nock.disableNetConnect();
@@ -71,9 +67,9 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
         new TwitterBot(agentSettingsAccessor, {
           appSecret,
           bearerToken,
-        } as never)
+        } as never),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.appKey should not be empty"`
+      `"options.appKey should not be empty"`,
     );
   });
   it('throw if options.appSecret is empty', () => {
@@ -82,9 +78,9 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
         new TwitterBot(agentSettingsAccessor, {
           appKey,
           bearerToken,
-        } as never)
+        } as never),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.appSecret should not be empty"`
+      `"options.appSecret should not be empty"`,
     );
   });
   it('throw if options.bearerToken is empty', () => {
@@ -93,9 +89,9 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
         new TwitterBot(agentSettingsAccessor, {
           appKey,
           appSecret,
-        } as never)
+        } as never),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.bearerToken should not be empty"`
+      `"options.bearerToken should not be empty"`,
     );
   });
 
@@ -121,7 +117,7 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
       expect.any(Queue),
       expect.any(Worker),
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
 
     expect(Worker).toHaveBeenCalledTimes(1);
@@ -173,11 +169,11 @@ describe('.render(thread, content)', () => {
       <>
         <p>Hello World</p>
         <p>Foo Bar Baz</p>
-      </>
+      </>,
     );
     expect(response?.results).toMatchSnapshot();
     expect(
-      response?.jobs.map((job) => ({ ...job, key: '---' }))
+      response?.jobs.map((job) => ({ ...job, key: '---' })),
     ).toMatchSnapshot();
 
     expect(bodySpy).toHaveBeenNthCalledWith(1, {
@@ -205,11 +201,11 @@ describe('.render(thread, content)', () => {
       <>
         <p>Hello World</p>
         <p>Foo Bar Baz</p>
-      </>
+      </>,
     );
     expect(response?.results).toMatchSnapshot();
     expect(
-      response?.jobs.map((job) => ({ ...job, key: '---' }))
+      response?.jobs.map((job) => ({ ...job, key: '---' })),
     ).toMatchSnapshot();
 
     expect(bodySpy).toHaveBeenNthCalledWith(1, {
@@ -238,7 +234,7 @@ describe('.render(thread, content)', () => {
       <>
         <p>Hello World</p>
         <p>Foo Bar Baz</p>
-      </>
+      </>,
     );
     expect(response).toMatchSnapshot();
 
@@ -347,7 +343,7 @@ describe('.requestApi(method, uri, params)', () => {
         method: 'GET',
         url: '2/foo',
         params: { a: 0, b: 1 },
-      })
+      }),
     ).resolves.toEqual({ data: { id: '11111' } });
 
     expect(apiCall.isDone()).toBe(true);
@@ -367,7 +363,7 @@ describe('.requestApi(method, uri, params)', () => {
         method: 'POST',
         url: '2/foo',
         params: { a: 0, b: 1 },
-      })
+      }),
     ).resolves.toEqual({ data: { id: '11111' } });
 
     expect(apiCall.isDone()).toBe(true);
@@ -381,7 +377,7 @@ describe('.requestApi(method, uri, params)', () => {
       .post(
         '/2/foo',
         { a: 0, b: 1 },
-        { reqheaders: { Authorization: 'Bearer __BEARER_TOKEN__' } }
+        { reqheaders: { Authorization: 'Bearer __BEARER_TOKEN__' } },
       )
       .reply(200, { data: { id: '11111' } });
 
@@ -392,7 +388,7 @@ describe('.requestApi(method, uri, params)', () => {
         url: '2/foo',
         params: { a: 0, b: 1 },
         asApplication: true,
-      })
+      }),
     ).resolves.toEqual({ data: { id: '11111' } });
 
     expect(apiCall.isDone()).toBe(true);
@@ -414,7 +410,7 @@ describe('.uploadMedia(media)', () => {
               : /(1{18}|2{18})/.exec(body as string)?.[0];
           return `{"media_id":${id},"media_id_string":"${id}"}`;
         },
-        { 'content-type': 'application/json' }
+        { 'content-type': 'application/json' },
       );
 
     const externalMediaFileCall = nock('https://sociably.io')
@@ -432,12 +428,14 @@ describe('.uploadMedia(media)', () => {
         <>
           <Photo shared url="https://sociably.io/img/foo.jpg" />
           <Photo
-            fileData={Buffer.from('foo')}
-            fileSize={3}
-            fileType="image/jpg"
+            file={{
+              data: Buffer.from('foo'),
+              contentType: 'image/jpg',
+              contentLength: 3,
+            }}
           />
-        </>
-      )
+        </>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -465,13 +463,17 @@ describe('.uploadMedia(media)', () => {
           },
           "source": {
             "assetTag": undefined,
-            "fileData": {
-              "data": [
-                102,
-                111,
-                111,
-              ],
-              "type": "Buffer",
+            "file": {
+              "contentLength": 3,
+              "contentType": "image/jpg",
+              "data": {
+                "data": [
+                  102,
+                  111,
+                  111,
+                ],
+                "type": "Buffer",
+              },
             },
             "params": {
               "additional_owners": undefined,
@@ -495,15 +497,15 @@ describe('.uploadMedia(media)', () => {
     const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
 
     await expect(
-      bot.uploadMedia(agent, 'foo')
+      bot.uploadMedia(agent, 'foo'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`""foo" is not media"`);
     await expect(
-      bot.uploadMedia(agent, <Sociably.Pause />)
+      bot.uploadMedia(agent, <Sociably.Pause />),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<Pause /> is not media"`);
     await expect(
-      bot.uploadMedia(agent, <DirectMessage>foo</DirectMessage>)
+      bot.uploadMedia(agent, <DirectMessage>foo</DirectMessage>),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"<DirectMessage /> is not media"`
+      `"<DirectMessage /> is not media"`,
     );
   });
 
@@ -534,8 +536,8 @@ describe('.createWelcomeMessage(name, message)', () => {
       bot.createWelcomeMessage(
         agent,
         'foo_welcome',
-        <DirectMessage>Foo!</DirectMessage>
-      )
+        <DirectMessage>Foo!</DirectMessage>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "welcome_message": {
@@ -564,7 +566,7 @@ describe('.createWelcomeMessage(name, message)', () => {
     bot.start();
 
     await expect(
-      bot.createWelcomeMessage(agent, 'foo_welcome', null)
+      bot.createWelcomeMessage(agent, 'foo_welcome', null),
     ).resolves.toBe(null);
   });
 });
@@ -576,7 +578,7 @@ test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
     reqheaders: { authorization: authSpy },
   })
     .get(
-      '/1.1/ton/data/dm/1034828552951160836/1034828533812486145/oP5p359h.jpg'
+      '/1.1/ton/data/dm/1034828552951160836/1034828533812486145/oP5p359h.jpg',
     )
     .reply(200, mediaContent, {
       'content-type': 'image/jpeg',
@@ -587,7 +589,7 @@ test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
 
   const response = await bot.fetchMediaFile(
     agent,
-    'https://ton.twitter.com/1.1/ton/data/dm/1034828552951160836/1034828533812486145/oP5p359h.jpg'
+    'https://ton.twitter.com/1.1/ton/data/dm/1034828552951160836/1034828533812486145/oP5p359h.jpg',
   );
 
   expect(response.contentType).toBe('image/jpeg');
@@ -606,9 +608,9 @@ test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
     authSpy.mock.calls[0].args[0]
       .replace(/oauth_nonce="[^"]+"/, 'oauth_nonce="_NONCE_"')
       .replace(/oauth_timestamp="\d+"/, 'oauth_timestamp="1234567890"')
-      .replace(/oauth_signature="[^"]+"/, 'oauth_signature="_SIGNATURE_"')
+      .replace(/oauth_signature="[^"]+"/, 'oauth_signature="_SIGNATURE_"'),
   ).toMatchInlineSnapshot(
-    `"OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="_NONCE_",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1234567890",oauth_token="1234567890-__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="_SIGNATURE_""`
+    `"OAuth oauth_consumer_key="__APP_KEY__",oauth_nonce="_NONCE_",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1234567890",oauth_token="1234567890-__ACCESS_TOKEN__",oauth_version="1.0",oauth_signature="_SIGNATURE_""`,
   );
 
   expect(content).toEqual(mediaContent);

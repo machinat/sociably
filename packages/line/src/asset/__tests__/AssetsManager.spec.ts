@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import type StateControllerI from '@sociably/core/base/StateController';
 import LineChannel from '../../Channel.js';
@@ -50,15 +50,15 @@ beforeEach(() => {
 const manager = new LineAssetsManager(
   stateController,
   bot,
-  agentSettingsAccessor
+  agentSettingsAccessor,
 );
 
 test('get asset id', async () => {
   await expect(manager.getAssetId(channel, 'foo', 'bar')).resolves.toBe(
-    undefined
+    undefined,
   );
   await expect(manager.getRichMenu(channel, 'my_rich_menu')).resolves.toBe(
-    undefined
+    undefined,
   );
 
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -79,7 +79,7 @@ test('get asset id', async () => {
 
   state.get.mock.fakeReturnValue('_RICH_MENU_ID_');
   await expect(manager.getRichMenu(channel, 'my_rich_menu')).resolves.toBe(
-    '_RICH_MENU_ID_'
+    '_RICH_MENU_ID_',
   );
 
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
@@ -88,11 +88,11 @@ test('get asset id', async () => {
 
 test('set asset id', async () => {
   await expect(manager.saveAssetId(channel, 'foo', 'bar', 'baz')).resolves.toBe(
-    true
+    true,
   );
 
   await expect(
-    manager.saveRichMenu(channel, 'my_rich_menu', '_RICH_MENU_ID_')
+    manager.saveRichMenu(channel, 'my_rich_menu', '_RICH_MENU_ID_'),
   ).resolves.toBe(true);
 
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -109,16 +109,16 @@ test('set asset id', async () => {
   expect(state.set).toHaveBeenNthCalledWith(
     2,
     'my_rich_menu',
-    '_RICH_MENU_ID_'
+    '_RICH_MENU_ID_',
   );
 
   state.set.mock.fake(async () => false);
   await expect(manager.saveAssetId(channel, 'foo', 'bar', 'baz')).resolves.toBe(
-    false
+    false,
   );
 
   await expect(
-    manager.saveRichMenu(channel, 'my_rich_menu', '_RICH_MENU_ID_')
+    manager.saveRichMenu(channel, 'my_rich_menu', '_RICH_MENU_ID_'),
   ).resolves.toBe(false);
   expect(state.set).toHaveBeenCalledTimes(4);
 });
@@ -145,7 +145,7 @@ test('get all assets', async () => {
   state.getAll.mock.fake(async () => resources);
 
   await expect(manager.getAllAssets(channel, 'foo')).resolves.toEqual(
-    resources
+    resources,
   );
   await expect(manager.getAllRichMenus(channel)).resolves.toEqual(resources);
 
@@ -155,10 +155,10 @@ test('get all assets', async () => {
 
 test('unsave asset id', async () => {
   await expect(manager.unsaveAssetId(channel, 'foo', 'bar')).resolves.toBe(
-    true
+    true,
   );
   await expect(manager.unsaveRichMenu(channel, 'my_rich_menu')).resolves.toBe(
-    true
+    true,
   );
 
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -176,10 +176,10 @@ test('unsave asset id', async () => {
 
   state.delete.mock.fake(async () => false);
   await expect(manager.unsaveAssetId(channel, 'foo', 'bar')).resolves.toBe(
-    false
+    false,
   );
   await expect(manager.unsaveRichMenu(channel, 'my_rich_menu')).resolves.toBe(
-    false
+    false,
   );
   expect(state.delete).toHaveBeenCalledTimes(4);
 });
@@ -216,13 +216,13 @@ describe('.createRichMenu()', () => {
         'my_rich_menu',
         Buffer.from('IMAGE'),
         richMenuBody,
-        { contentType: 'image/png' }
-      )
+        { contentType: 'image/png' },
+      ),
     ).resolves.toEqual({ richMenuId });
 
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-      channel
+      channel,
     );
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -258,8 +258,8 @@ describe('.createRichMenu()', () => {
           contentType: 'image/png',
           asDefault: true,
           accessToken: '_MY_ACCESS_TOKEN_',
-        }
-      )
+        },
+      ),
     ).resolves.toEqual({ richMenuId });
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -297,8 +297,8 @@ describe('.createRichMenu()', () => {
         'my_rich_menu',
         Buffer.from('IMAGE'),
         richMenuBody,
-        { contentType: 'image/png' }
-      )
+        { contentType: 'image/png' },
+      ),
     ).rejects.toThrowError('BOOM');
 
     expect(uploadCall.isDone()).toBe(true);
@@ -315,15 +315,15 @@ describe('.createRichMenu()', () => {
         'my_rich_menu',
         Buffer.from('IMAGE'),
         richMenuBody,
-        { contentType: 'image/png' }
-      )
+        { contentType: 'image/png' },
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Line channel "line.1234567" not registered"`
+      `"Line channel "line.1234567" not registered"`,
     );
 
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-      channel
+      channel,
     );
 
     nock.enableNetConnect();
@@ -334,12 +334,12 @@ test('.deleteRichMenu()', async () => {
   bot.requestApi.mock.fake(async () => ({}));
 
   await expect(manager.deleteRichMenu(channel, 'my_rich_menu')).resolves.toBe(
-    false
+    false,
   );
 
   state.get.mock.fake(async () => '_RICH_MENU_ID_');
   await expect(manager.deleteRichMenu(channel, 'my_rich_menu')).resolves.toBe(
-    true
+    true,
   );
 
   expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -360,7 +360,7 @@ describe('.setChannelWebhook', () => {
     await expect(
       manager.setChannelWebhook(channel, {
         webhookUrl: 'https://example.com/foo',
-      })
+      }),
     ).resolves.toBe(undefined);
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -375,7 +375,7 @@ describe('.setChannelWebhook', () => {
       manager.setChannelWebhook(channel, {
         webhookUrl: 'https://example.com/bar',
         accessToken: '_ACCESS_TOKEN_',
-      })
+      }),
     ).resolves.toBe(undefined);
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -395,16 +395,16 @@ describe('.setChannelWebhook', () => {
       stateController,
       bot,
       agentSettingsAccessor,
-      { webhookUrl: 'https://example.com/baz' }
+      { webhookUrl: 'https://example.com/baz' },
     );
 
     await expect(
-      managerWithDefaultWebhookUrl.setChannelWebhook(channel)
+      managerWithDefaultWebhookUrl.setChannelWebhook(channel),
     ).resolves.toBe(undefined);
     await expect(
       managerWithDefaultWebhookUrl.setChannelWebhook(channel, {
         accessToken: '_ACCESS_TOKEN_',
-      })
+      }),
     ).resolves.toBe(undefined);
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);

@@ -10,16 +10,14 @@ import {
   MediaAttachment,
 } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type TweetProps = {
   /** Texual content of the tweet */
   children?: SociablyNode;
   /**
-   * Tweets a link directly to a Direct Message conversation with an account.
-   * By default it links to the agent who create the tweet. You can directly
-   * pass the URL string or an object specifying the URL queries.
+   * Tweets a link directly to a Direct Message conversation with an account. By
+   * default it links to the agent who create the tweet. You can directly pass
+   * the URL string or an object specifying the URL queries.
    */
   directMessageLink?:
     | boolean
@@ -31,20 +29,36 @@ export type TweetProps = {
       };
   /** Place ID being attached to the Tweet for geo location */
   placeId?: string;
-  /** Link to the Tweet being quoted.  This is mutually exclusive from `media` and `poll` */
+  /**
+   * Link to the Tweet being quoted. This is mutually exclusive from `media` and
+   * `poll`
+   */
   quoteTweetId?: string;
-  /** Attach media to the tweet. Should contain only {@link Media}. This is mutually exclusive from `poll` and `quoteTweetId` */
+  /**
+   * Attach media to the tweet. Should contain only {@link Media}. This is
+   * mutually exclusive from `poll` and `quoteTweetId`
+   */
   media?: SociablyNode;
-  /** A list of User IDs being tagged in the Tweet with Media. If the user you're tagging doesn't have photo-tagging enabled, their names won't show up in the list of tagged users even though the Tweet is successfully created */
+  /**
+   * A list of User IDs being tagged in the Tweet with Media. If the user you're
+   * tagging doesn't have photo-tagging enabled, their names won't show up in
+   * the list of tagged users even though the Tweet is successfully created
+   */
   tagUsersInMedia?: string[];
-  /** Attach a poll to the tweet. This is mutually exclusive from `media` and `quoteTweetId` */
+  /**
+   * Attach a poll to the tweet. This is mutually exclusive from `media` and
+   * `quoteTweetId`
+   */
   poll?: {
     /** Duration of the poll in minutes for a Tweet with a poll */
     durationMinutes: number;
     /** A list of poll options for a Tweet with a poll */
     options: string[];
   };
-  /** A list of User IDs to be excluded from the reply Tweet thus removing a user from a thread */
+  /**
+   * A list of User IDs to be excluded from the reply Tweet thus removing a user
+   * from a thread
+   */
   excludeUsersInReply?: string[];
   /** Tweet exclusively for Super Followers. */
   superFollowersOnly?: boolean;
@@ -54,6 +68,7 @@ export type TweetProps = {
 
 /**
  * Send direct messages with metadata
+ *
  * @category Component
  * @props {@link TweetProps}
  * @guides Check official [guides](https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/api-features).
@@ -77,7 +92,7 @@ export const Tweet: TwitterComponent<
 
   if ((media && poll) || (media && quoteTweetId) || (poll && quoteTweetId)) {
     throw new TypeError(
-      'there should be exactly one of "media", "poll" or "quoteTweetId" prop'
+      'there should be exactly one of "media", "poll" or "quoteTweetId" prop',
     );
   }
 
@@ -90,8 +105,8 @@ export const Tweet: TwitterComponent<
     if (segment.type !== 'text') {
       throw new TypeError(
         `non-texual element ${formatNode(
-          segment.node
-        )} can't be placed under <Tweet/>`
+          segment.node,
+        )} can't be placed under <Tweet/>`,
       );
     }
   }
@@ -106,7 +121,7 @@ export const Tweet: TwitterComponent<
         segment.value.type !== 'media'
       ) {
         throw new TypeError(
-          `${formatNode(segment.node)} can't be placed in "media" prop`
+          `${formatNode(segment.node)} can't be placed in "media" prop`,
         );
       }
 
@@ -153,8 +168,8 @@ export const Tweet: TwitterComponent<
           direct_message_deep_link: undefined,
         },
         mediaAttachments,
-        directMessageLink
-      )
+        directMessageLink,
+      ),
     ),
   ];
 
@@ -163,8 +178,8 @@ export const Tweet: TwitterComponent<
       ...splitedContent
         .slice(1)
         .map((text) =>
-          makeUnitSegment(node, path, createTweetSegmentValue({ text }))
-        )
+          makeUnitSegment(node, path, createTweetSegmentValue({ text })),
+        ),
     );
   }
 

@@ -1,5 +1,5 @@
 import { DispatchError } from '@sociably/core/engine';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import TwitterChat from '../../Chat.js';
 import type AssetsManagerP from '../AssetsManager.js';
 import saveUploadedMedia from '../saveUploadedMedia.js';
@@ -140,19 +140,19 @@ it('save uploaded media with assetTag', async () => {
     1,
     chat.agent,
     'media_1',
-    '2222222222222222'
+    '2222222222222222',
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     2,
     chat.agent,
     'media_2',
-    '4444444444444444'
+    '4444444444444444',
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     3,
     chat.agent,
     'media_3',
-    '5555555555555555'
+    '5555555555555555',
   );
 });
 
@@ -211,14 +211,14 @@ it('save uploaded media when partial success', async () => {
     [new Error('foo'), new Error('bar')],
     [],
     jobs,
-    [...results.slice(0, 2), undefined]
+    [...results.slice(0, 2), undefined],
   );
 
   const next = moxy(async () => {
     throw error;
   });
   await expect(saveUploadedMedia(manager)(frame, next)).rejects.toThrowError(
-    error
+    error,
   );
 
   expect(manager.saveMedia).toHaveBeenCalledTimes(3);
@@ -226,18 +226,18 @@ it('save uploaded media when partial success', async () => {
     1,
     chat.agent,
     'media_1',
-    '2222222222222222'
+    '2222222222222222',
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     2,
     chat.agent,
     'media_2',
-    '4444444444444444'
+    '4444444444444444',
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     3,
     chat.agent,
     'media_3',
-    '5555555555555555'
+    '5555555555555555',
   );
 });

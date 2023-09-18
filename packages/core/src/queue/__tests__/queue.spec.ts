@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop, no-loop-func, no-return-assign, no-fallthrough, default-case */
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import SociablyQueue from '../queue.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
@@ -154,14 +154,14 @@ describe('as a FIFO queue', () => {
       jest.runOnlyPendingTimers();
 
       await expect(promise).resolves.toEqual(
-        successJobResponses(i === 4 ? [8] : [i * 2, i * 2 + 1])
+        successJobResponses(i === 4 ? [8] : [i * 2, i * 2 + 1]),
       );
       expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
 
       expect(consume).toHaveBeenCalledTimes(i + 1);
       expect(consume).toHaveBeenNthCalledWith(
         i + 1,
-        jobs.slice(i * 2, i * 2 + 2)
+        jobs.slice(i * 2, i * 2 + 2),
       );
 
       switch (i) {
@@ -204,13 +204,13 @@ describe('as a FIFO queue', () => {
       jest.runOnlyPendingTimers();
 
       await expect(promise).resolves.toEqual(
-        successJobResponses(i === 0 ? [0, 1, 2, 3, 4] : [5, 6, 7, 8])
+        successJobResponses(i === 0 ? [0, 1, 2, 3, 4] : [5, 6, 7, 8]),
       );
 
       expect(consume).toHaveBeenCalledTimes(i + 1);
       expect(consume).toHaveBeenNthCalledWith(
         i + 1,
-        jobs.slice(i * 5, i * 5 + 5)
+        jobs.slice(i * 5, i * 5 + 5),
       );
 
       expect(queue.length).toBe(i === 0 ? 4 : 0);
@@ -258,8 +258,8 @@ describe('as a FIFO queue', () => {
       } else {
         await expect(promise).resolves.toEqual(
           successJobResponses(
-            i === 3 ? [8] : i === 2 ? [6, 7] : [i * 2, i * 2 + 1]
-          )
+            i === 3 ? [8] : i === 2 ? [6, 7] : [i * 2, i * 2 + 1],
+          ),
         );
       }
 
@@ -271,7 +271,7 @@ describe('as a FIFO queue', () => {
           i + 1,
           i < 2
             ? jobs.slice(i * 2, (i + 1) * 2)
-            : jobs.slice((i + 1) * 2, (i + 2) * 2)
+            : jobs.slice((i + 1) * 2, (i + 2) * 2),
         );
 
       switch (i) {
@@ -417,7 +417,7 @@ describe('as a FIFO queue', () => {
         }
 
         return successJobResponses(acquired.map((job) => job.id));
-      })
+      }),
     );
     expect(queue.length).toBe(0);
 
@@ -468,7 +468,7 @@ describe('as a FIFO queue', () => {
         }
 
         return successJobResponses(acquired.map((job) => job.id));
-      })
+      }),
     );
     expect(queue.length).toBe(0);
 
@@ -525,7 +525,7 @@ describe('as a FIFO queue', () => {
         }
 
         return successJobResponses(acquired.map((job) => job.id));
-      })
+      }),
     );
     expect(queue.length).toBe(0);
 
@@ -591,7 +591,7 @@ describe('as a FIFO queue', () => {
             job,
           };
         });
-      })
+      }),
     );
     expect(queue.length).toBe(0);
 
@@ -703,7 +703,7 @@ describe('as a FILO queue', () => {
       jest.runOnlyPendingTimers();
 
       await expect(promise).resolves.toEqual(
-        successJobResponses(i !== 4 ? [9 - i * 2 - 2, 9 - i * 2 - 1] : [0])
+        successJobResponses(i !== 4 ? [9 - i * 2 - 2, 9 - i * 2 - 1] : [0]),
       );
 
       expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
@@ -711,7 +711,7 @@ describe('as a FILO queue', () => {
       expect(consume).toHaveBeenCalledTimes(i + 1);
       expect(consume).toHaveBeenNthCalledWith(
         i + 1,
-        jobs.slice(-i * 2 - 2, 9 - i * 2)
+        jobs.slice(-i * 2 - 2, 9 - i * 2),
       );
 
       switch (i) {
@@ -755,13 +755,13 @@ describe('as a FILO queue', () => {
       jest.runOnlyPendingTimers();
 
       await expect(promise).resolves.toEqual(
-        successJobResponses(!i ? [4, 5, 6, 7, 8] : [0, 1, 2, 3])
+        successJobResponses(!i ? [4, 5, 6, 7, 8] : [0, 1, 2, 3]),
       );
 
       expect(consume).toHaveBeenCalledTimes(i + 1);
       expect(consume).toHaveBeenNthCalledWith(
         i + 1,
-        i === 0 ? jobs.slice(4, 9) : jobs.slice(0, 4)
+        i === 0 ? jobs.slice(4, 9) : jobs.slice(0, 4),
       );
 
       expect(queue.length).toBe(i === 0 ? 4 : 0);
@@ -809,7 +809,7 @@ describe('as a FILO queue', () => {
         await expect(promise).resolves.toBe(undefined);
       } else {
         await expect(promise).resolves.toEqual(
-          successJobResponses(i === 3 ? [0] : i === 2 ? [1, 2] : [7, 8])
+          successJobResponses(i === 3 ? [0] : i === 2 ? [1, 2] : [7, 8]),
         );
       }
 
@@ -823,7 +823,7 @@ describe('as a FILO queue', () => {
             ? jobs.slice(9 - i * 2 - 2, 9 - i * 2)
             : i === 2
             ? jobs.slice(1, 3)
-            : jobs.slice(0, 1)
+            : jobs.slice(0, 1),
         );
 
       switch (i) {

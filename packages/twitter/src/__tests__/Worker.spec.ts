@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
 import TwitterWorker from '../Worker.js';
@@ -6,7 +6,9 @@ import TwitterChat from '../Chat.js';
 import TweetTarget from '../TweetTarget.js';
 
 nock.disableNetConnect();
-jest.mock('nanoid', () => ({ nanoid: () => '__UNIQUE_NONCE__' }));
+jest.mock('nanoid', () => ({
+  nanoid: () => '__UNIQUE_NONCE__',
+}));
 
 const mockDateNow = moxy(() => 1646626057392);
 const realDateNow = Date.now;
@@ -57,7 +59,7 @@ const agentSettingsAccessor = moxy({
     agent.id === '1111111111' ? agentSettings : agentSettings2,
   getAgentSettingsBatch: async (agents) =>
     agents.map((agent) =>
-      agent.id === '1111111111' ? agentSettings : agentSettings2
+      agent.id === '1111111111' ? agentSettings : agentSettings2,
     ),
 });
 
@@ -175,7 +177,7 @@ test('api request', async () => {
   expect(
     authorizationSpy.mock.calls
       .map(({ args }) => args[0])
-      .filter((header) => header.startsWith('OAuth'))
+      .filter((header) => header.startsWith('OAuth')),
   ).toMatchSnapshot();
 });
 
@@ -267,11 +269,11 @@ it('sequently excute jobs with the same key', async () => {
       success: true,
       result: { code: 200, body: { data: { n: i + 1 } }, uploadedMedia: null },
       job,
-    }))
+    })),
   );
 
   expect(
-    authorizationSpy.mock.calls.map(({ args }) => args[0])
+    authorizationSpy.mock.calls.map(({ args }) => args[0]),
   ).toMatchSnapshot();
 });
 
@@ -377,18 +379,18 @@ it('open requests up to maxConnections', async () => {
       success: true,
       result: { code: 200, body: { data: { n: i + 1 } }, uploadedMedia: null },
       job,
-    }))
+    })),
   );
 
   expect(
-    authorizationSpy.mock.calls.map(({ args }) => args[0])
+    authorizationSpy.mock.calls.map(({ args }) => args[0]),
   ).toMatchSnapshot();
 });
 
 it('throw if agent settings not found', async () => {
   agentSettingsAccessor.getAgentSettings.mock.wrap(
     (impl) => (channel) =>
-      channel.id === chatThread2.agentId ? null : impl(channel)
+      channel.id === chatThread2.agentId ? null : impl(channel),
   );
   const apiCall = twitterApi.post('/2/foo').reply(200, { data: { n: 1 } });
 
@@ -616,7 +618,7 @@ test('with target & refreshTarget & accomplishRequest', async () => {
     params: { ...request.params, id: target.tweetId },
   }));
   const refreshTarget = moxy(
-    (target, body) => new TweetTarget(target.agentId, body.id)
+    (target, body) => new TweetTarget(target.agentId, body.id),
   );
 
   const bodySpy = moxy(() => true);
@@ -720,12 +722,12 @@ test('with target & refreshTarget & accomplishRequest', async () => {
   expect(refreshTarget).toHaveBeenNthCalledWith(
     3,
     new TweetTarget('123456790', '1000000001'),
-    { id: '1000000002', n: 2 }
+    { id: '1000000002', n: 2 },
   );
   expect(refreshTarget).toHaveBeenNthCalledWith(
     4,
     new TweetTarget('123456790', '2000000001'),
-    { id: '2000000002', n: 4 }
+    { id: '2000000002', n: 4 },
   );
   expect(accomplishRequest.mock.calls.map(({ args }) => args[0])).toEqual([
     initialThread1,
@@ -786,7 +788,7 @@ test('with target & refreshTarget & accomplishRequest', async () => {
     [initialThread2, { n: 4, id: '2000000001' }],
   ]);
   expect(
-    accomplishRequest.mock.calls.slice(4).map(({ args }) => args[0])
+    accomplishRequest.mock.calls.slice(4).map(({ args }) => args[0]),
   ).toEqual([
     new TweetTarget('123456790', '1000000002'),
     new TweetTarget('123456790', '2000000002'),
@@ -818,7 +820,7 @@ test('with mediaSources & accomplishRequest', async () => {
             : /(1{18}|2{18}|3{18}|4{18})/.exec(body as string)?.[0];
         return `{"media_id":${id},"media_id_string":"${id}"}`;
       },
-      { 'content-type': 'application/json' }
+      { 'content-type': 'application/json' },
     );
 
   const apiBodySpy = moxy(() => true);
@@ -853,8 +855,10 @@ test('with mediaSources & accomplishRequest', async () => {
         {
           type: 'file',
           params: { total_bytes: 11, media_type: 'image/png' },
-          fileData: Buffer.from('hello media'),
-          fileInfo: { contentType: 'image/png' },
+          file: {
+            data: Buffer.from('hello media'),
+            contentType: 'image/png',
+          },
           assetTag: 'foo',
         },
         {
@@ -953,18 +957,18 @@ test('with mediaSources & accomplishRequest', async () => {
   expect(accomplishRequest).toHaveBeenCalledWith(
     tweetTargetThread,
     jobs[1].request,
-    ['444444444444444444']
+    ['444444444444444444'],
   );
 
   expect(
     uploadBodySpy.mock.calls.map(({ args }) =>
-      args[0].replace(/-{10}[0-9]+/g, 'BOUNDARY-PLACEHOLDER')
-    )
+      args[0].replace(/-{10}[0-9]+/g, 'BOUNDARY-PLACEHOLDER'),
+    ),
   ).toMatchSnapshot();
 
   expect(authorizationSpy).toHaveBeenCalledTimes(11);
   expect(
-    authorizationSpy.mock.calls.map(({ args }) => args[0])
+    authorizationSpy.mock.calls.map(({ args }) => args[0]),
   ).toMatchSnapshot();
 
   expect(uploadCall.isDone()).toBe(true);

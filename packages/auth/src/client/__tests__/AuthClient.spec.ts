@@ -1,5 +1,5 @@
 import url from 'url';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
@@ -93,7 +93,7 @@ const authenticators = [fooAuthenticator, barAuthenticator];
 const serverUrl = '/auth';
 
 const location = moxy<Location>(
-  url.parse('https://sociably.io/app?platform=foo') as never
+  url.parse('https://sociably.io/app?platform=foo') as never,
 );
 const document = moxy<Document>({ cookie: '' } as never);
 
@@ -122,9 +122,9 @@ const FakeDate = moxy<typeof Date>(
     function FakeDate(t = FAKE_NOW) {
       return new _Date(t);
     },
-    { now: () => FAKE_NOW }
+    { now: () => FAKE_NOW },
   ) as never,
-  { mockNewInstance: false }
+  { mockNewInstance: false },
 );
 
 beforeAll(() => {
@@ -180,15 +180,15 @@ describe('bootstraping phase', () => {
         new AuthClient({
           authenticators: undefined as never,
           serverUrl: '/auth',
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.authenticators is required"`
+      `"options.authenticators is required"`,
     );
   });
 
   it('throw if serverUrl is empty', () => {
     expect(
-      () => new AuthClient({ authenticators, serverUrl: undefined as never })
+      () => new AuthClient({ authenticators, serverUrl: undefined as never }),
     ).toThrowErrorMatchingInlineSnapshot(`"options.serverUrl is required"`);
   });
 
@@ -240,7 +240,7 @@ describe('bootstraping phase', () => {
 
       expect(client.platform).toBe(expectedPlatform);
       expect(client.getAuthenticator()).toBe(
-        expectedPlatform === 'foo' ? fooAuthenticator : barAuthenticator
+        expectedPlatform === 'foo' ? fooAuthenticator : barAuthenticator,
       );
 
       if (expectedPlatform === 'foo') {
@@ -250,7 +250,7 @@ describe('bootstraping phase', () => {
           cookieError === 'foo'
             ? new AuthError('foo', 418, "I'm a teapot")
             : null,
-          cookieAuth === 'foo' ? { foo: '__DATA__' } : null
+          cookieAuth === 'foo' ? { foo: '__DATA__' } : null,
         );
       } else if (expectedPlatform === 'bar') {
         expect(barAuthenticator.init).toHaveBeenCalledTimes(1);
@@ -259,11 +259,11 @@ describe('bootstraping phase', () => {
           cookieError === 'bar'
             ? new AuthError('bar', 418, "I'm a teapot")
             : null,
-          cookieAuth === 'bar' ? { bar: '__DATA__' } : null
+          cookieAuth === 'bar' ? { bar: '__DATA__' } : null,
         );
       }
       client.signOut();
-    }
+    },
   );
 
   it('call authenticator.init() of the platform only once', async () => {
@@ -288,7 +288,7 @@ describe('bootstraping phase', () => {
     expect(fooAuthenticator.init).toHaveBeenCalledWith(
       'https://sociably.io/auth/foo/',
       null,
-      { foo: 'data' }
+      { foo: 'data' },
     );
 
     expect(barAuthenticator.init).not.toHaveBeenCalled();
@@ -305,7 +305,7 @@ describe('bootstraping phase', () => {
     });
 
     await expect(client.signIn({ platform: 'foo' })).rejects.toThrowError(
-      'Boom!'
+      'Boom!',
     );
 
     expect(errorSpy).toHaveBeenCalledTimes(1);
@@ -321,17 +321,17 @@ describe('bootstraping phase', () => {
     client.on('error', errorSpy);
 
     await expect(client.signIn()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"no platform specified"`
+      `"no platform specified"`,
     );
 
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy).toHaveBeenCalledWith(
       new Error('no platform specified'),
-      null
+      null,
     );
 
     await expect(
-      client.signIn({ platform: 'baz' })
+      client.signIn({ platform: 'baz' }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"unknown platform "baz""`);
 
     expect(client.platform).toBe(undefined);
@@ -340,7 +340,7 @@ describe('bootstraping phase', () => {
     expect(errorSpy).toHaveBeenNthCalledWith(
       2,
       new Error('unknown platform "baz"'),
-      null
+      null,
     );
     client.signOut();
   });
@@ -360,7 +360,7 @@ describe('bootstraping phase', () => {
     document.mock.getter('cookie').fakeReturnValue('');
     // prevent further signing request
     fooAuthenticator.fetchCredential.mock.fake(() =>
-      Promise.reject(new Error())
+      Promise.reject(new Error()),
     );
 
     await expect(client.signIn({ platform: 'foo' })).rejects.toThrow();
@@ -375,10 +375,10 @@ describe('bootstraping phase', () => {
 
     // prevent further signing request
     fooAuthenticator.fetchCredential.mock.fake(() =>
-      Promise.reject(new Error())
+      Promise.reject(new Error()),
     );
     barAuthenticator.fetchCredential.mock.fake(() =>
-      Promise.reject(new Error())
+      Promise.reject(new Error()),
     );
 
     await expect(client.signIn()).rejects.toThrow();
@@ -388,7 +388,7 @@ describe('bootstraping phase', () => {
     expect(fooAuthenticator.init).toHaveBeenCalledWith(
       'https://sociably.io/auth/foo/',
       null,
-      null
+      null,
     );
 
     await expect(client.signIn({ platform: 'bar' })).rejects.toThrow();
@@ -398,7 +398,7 @@ describe('bootstraping phase', () => {
     expect(barAuthenticator.init).toHaveBeenCalledWith(
       'https://sociably.io/auth/bar/',
       null,
-      null
+      null,
     );
 
     await expect(client.signIn({ platform: 'bar' })).rejects.toThrow();
@@ -430,7 +430,7 @@ describe('bootstraping phase', () => {
 
     // prevent further signing request
     barAuthenticator.fetchCredential.mock.fake(() =>
-      Promise.reject(new Error())
+      Promise.reject(new Error()),
     );
 
     await expect(client.signIn({ platform: 'bar' })).rejects.toThrow();
@@ -497,7 +497,7 @@ describe('.signIn()', () => {
     expect(client.isAuthorized).toBe(false);
 
     await expect(client.signIn()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"I'm a teapot"`
+      `"I'm a teapot"`,
     );
 
     expect(client.isAuthorizing).toBe(false);
@@ -527,7 +527,7 @@ describe('.signIn()', () => {
     expect(client.isAuthorized).toBe(true);
     expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.fetchCredential).toHaveBeenCalledWith(
-      'https://sociably.io/auth/foo'
+      'https://sociably.io/auth/foo',
     );
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
@@ -627,7 +627,7 @@ describe('.signIn()', () => {
 
     expect(fooAuthenticator.fetchCredential).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.fetchCredential).toHaveBeenCalledWith(
-      'https://sociably.io/auth/foo'
+      'https://sociably.io/auth/foo',
     );
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledTimes(1);
     expect(fooAuthenticator.checkAuthData).toHaveBeenCalledWith({
@@ -723,7 +723,7 @@ describe('.signIn()', () => {
     const client = new AuthClient({ authenticators, serverUrl });
 
     await expect(client.signIn()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"I'm a teapot"`
+      `"I'm a teapot"`,
     );
 
     expect(signingCall.isDone()).toBe(true);
@@ -750,7 +750,7 @@ describe('.signIn()', () => {
     const client = new AuthClient({ authenticators, serverUrl });
 
     await expect(client.signIn()).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"invalid auth info"`
+      `"invalid auth info"`,
     );
 
     expect(signingCall.isDone()).toBe(true);
@@ -779,7 +779,7 @@ describe('.signIn()', () => {
     (Date as Moxy<DateConstructor>).now.mock.fake(() => FAKE_NOW + 100);
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"signed out during authenticating"`
+      `"signed out during authenticating"`,
     );
     expect(client.isAuthorized).toBe(false);
     client.signOut();
@@ -989,7 +989,7 @@ describe('refresh flow', () => {
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy).toHaveBeenCalledWith(
       new Error("You don't see me"),
-      context
+      context,
     );
     expect(expireSpy).not.toHaveBeenCalled();
 
@@ -1052,7 +1052,7 @@ describe('refresh flow', () => {
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(errorSpy).toHaveBeenCalledWith(
       new Error("I'm a teapot too"),
-      context
+      context,
     );
     expect(expireSpy).not.toHaveBeenCalled();
 

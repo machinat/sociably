@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import _redis, { RedisClient } from 'redis';
 import Sociably from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
@@ -9,9 +9,9 @@ import { ControllerP as RedisStateController } from '../controller.js';
 const redis = _redis as Moxy<typeof _redis>;
 
 jest.mock('redis', () =>
-  jest.requireActual('@moxyjs/moxy').moxy({
+  moxy({
     createClient: () => ({ connected: true }),
-  })
+  }),
 );
 
 test('export interfaces', () => {

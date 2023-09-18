@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { AuthHttpOperator } from '@sociably/auth';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import type { LineBot } from '../../Bot.js';
 import LineChannel from '../../Channel.js';
 import LineChat from '../../Chat.js';
@@ -79,46 +79,46 @@ describe('.getLiffUrl(channel, path, chat)', () => {
   test('return LIFF URL', async () => {
     const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
     await expect(
-      authenticator.getLiffUrl(botChannel)
+      authenticator.getLiffUrl(botChannel),
     ).resolves.toMatchInlineSnapshot(
-      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`,
     );
     await expect(
-      authenticator.getLiffUrl(botChannel, '/foo')
+      authenticator.getLiffUrl(botChannel, '/foo'),
     ).resolves.toMatchInlineSnapshot(
-      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`,
     );
     await expect(
-      authenticator.getLiffUrl(botChannel, 'foo?bar=baz')
+      authenticator.getLiffUrl(botChannel, 'foo?bar=baz'),
     ).resolves.toMatchInlineSnapshot(
-      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`
-    );
-    await expect(
-      authenticator.getLiffUrl(
-        botChannel,
-        'foo?bar=baz',
-        new LineChat('_BOT_CHAN_ID_', 'user', '_USER_ID_')
-      )
-    ).resolves.toMatchInlineSnapshot(
-      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`,
     );
     await expect(
       authenticator.getLiffUrl(
         botChannel,
         'foo?bar=baz',
-        new LineChat('_BOT_CHAN_ID_', 'group', '_GROUP_ID_')
-      )
+        new LineChat('_BOT_CHAN_ID_', 'user', '_USER_ID_'),
+      ),
     ).resolves.toMatchInlineSnapshot(
-      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_&groupId=_GROUP_ID_"`
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`,
     );
     await expect(
       authenticator.getLiffUrl(
         botChannel,
         'foo?bar=baz',
-        new LineChat('_BOT_CHAN_ID_', 'room', '_ROOM_ID_')
-      )
+        new LineChat('_BOT_CHAN_ID_', 'group', '_GROUP_ID_'),
+      ),
     ).resolves.toMatchInlineSnapshot(
-      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_&roomId=_ROOM_ID_"`
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_&groupId=_GROUP_ID_"`,
+    );
+    await expect(
+      authenticator.getLiffUrl(
+        botChannel,
+        'foo?bar=baz',
+        new LineChat('_BOT_CHAN_ID_', 'room', '_ROOM_ID_'),
+      ),
+    ).resolves.toMatchInlineSnapshot(
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_&roomId=_ROOM_ID_"`,
     );
   });
 
@@ -127,9 +127,9 @@ describe('.getLiffUrl(channel, path, chat)', () => {
 
     agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
     await expect(
-      authenticator.getLiffUrl(botChannel)
+      authenticator.getLiffUrl(botChannel),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"liff setting for messaging channel "_BOT_CHAN_ID_" not found"`
+      `"liff setting for messaging channel "_BOT_CHAN_ID_" not found"`,
     );
 
     agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue({
@@ -140,9 +140,9 @@ describe('.getLiffUrl(channel, path, chat)', () => {
       // no liff
     });
     await expect(
-      authenticator.getLiffUrl(botChannel)
+      authenticator.getLiffUrl(botChannel),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"liff setting for messaging channel "_BOT_CHAN_ID_" not found"`
+      `"liff setting for messaging channel "_BOT_CHAN_ID_" not found"`,
     );
   });
 });
@@ -158,7 +158,7 @@ test('.delegateAuthRequest() respond 403', async () => {
   const res = moxy(new ServerResponse({} as never));
 
   await expect(authenticator.delegateAuthRequest(req, res)).resolves.toBe(
-    undefined
+    undefined,
   );
 
   expect(res.statusCode).toBe(403);
@@ -209,7 +209,7 @@ describe('.verifyCredential(credential)', () => {
         ...credential,
         chatChannelId: botChannelId,
         contextType: 'utou',
-      })
+      }),
     ).resolves.toEqual({
       ok: true,
       data: {
@@ -240,7 +240,7 @@ describe('.verifyCredential(credential)', () => {
         chatChannelId: botChannelId,
         contextType: 'group',
         groupId,
-      })
+      }),
     ).resolves.toEqual({
       ok: true,
       data: {
@@ -272,7 +272,7 @@ describe('.verifyCredential(credential)', () => {
         chatChannelId: botChannelId,
         contextType: 'room',
         roomId,
-      })
+      }),
     ).resolves.toEqual({
       ok: true,
       data: {
@@ -338,7 +338,7 @@ describe('.verifyCredential(credential)', () => {
     const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
 
     agentSettingsAccessor.getLineLoginChannelSettings.mock.fakeResolvedValue(
-      null
+      null,
     );
 
     await expect(authenticator.verifyCredential(credential)).resolves
@@ -358,7 +358,7 @@ describe('.verifyCredential(credential)', () => {
       authenticator.verifyCredential({
         ...credential,
         chatChannelId: '_WRONG_CHANNEL_',
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 403,
@@ -375,7 +375,7 @@ describe('.verifyCredential(credential)', () => {
       authenticator.verifyCredential({
         ...credential,
         userId: '_WORNG_USER_',
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 401,
@@ -404,7 +404,7 @@ describe('.verifyCredential(credential)', () => {
         ...credential,
         chatChannelId: botChannelId,
         contextType: 'utou',
-      })
+      }),
     ).resolves.toEqual({
       ok: false,
       code: 404,
@@ -432,7 +432,7 @@ describe('.verifyCredential(credential)', () => {
         chatChannelId: botChannelId,
         contextType: 'group',
         groupId,
-      })
+      }),
     ).resolves.toEqual({
       ok: false,
       code: 404,
@@ -460,7 +460,7 @@ describe('.verifyCredential(credential)', () => {
         chatChannelId: botChannelId,
         contextType: 'room',
         roomId,
-      })
+      }),
     ).resolves.toEqual({
       ok: false,
       code: 404,
@@ -482,14 +482,14 @@ describe('.verifyCredential(credential)', () => {
         chatChannelId: botChannelId,
         contextType: 'utou',
         roomId,
-      })
+      }),
     ).resolves.toEqual(expectedResult);
     await expect(
       authenticator.verifyCredential({
         ...credential,
         chatChannelId: botChannelId,
         contextType: 'group',
-      })
+      }),
     ).resolves.toEqual(expectedResult);
     await expect(
       authenticator.verifyCredential({
@@ -497,7 +497,7 @@ describe('.verifyCredential(credential)', () => {
         chatChannelId: botChannelId,
         contextType: 'room',
         groupId,
-      })
+      }),
     ).resolves.toEqual(expectedResult);
   });
 
@@ -509,7 +509,7 @@ describe('.verifyCredential(credential)', () => {
     });
 
     await expect(authenticator.verifyCredential(credential)).rejects.toThrow(
-      new Error('connection error')
+      new Error('connection error'),
     );
   });
 });
@@ -544,7 +544,7 @@ describe('.verifyRefreshment()', () => {
       chan: botChannelId,
     };
     await expect(
-      authenticator.verifyRefreshment(authDataWithMessagingChannel)
+      authenticator.verifyRefreshment(authDataWithMessagingChannel),
     ).resolves.toEqual({
       ok: true,
       data: authDataWithMessagingChannel,
@@ -574,7 +574,7 @@ describe('.verifyRefreshment()', () => {
       group: '_GROUP_ID_',
     };
     await expect(
-      authenticator.verifyRefreshment(authDataWithGroup)
+      authenticator.verifyRefreshment(authDataWithGroup),
     ).resolves.toEqual({
       ok: true,
       data: authDataWithGroup,
@@ -604,7 +604,7 @@ describe('.verifyRefreshment()', () => {
       room: '_ROOM_ID_',
     };
     await expect(
-      authenticator.verifyRefreshment(authDataWithRoom)
+      authenticator.verifyRefreshment(authDataWithRoom),
     ).resolves.toEqual({
       ok: true,
       data: authDataWithRoom,
@@ -631,7 +631,7 @@ describe('.verifyRefreshment()', () => {
       authenticator.verifyRefreshment({
         ...authData,
         provider: '_WORNG_PROVIDER_',
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 400,
@@ -648,7 +648,7 @@ describe('.verifyRefreshment()', () => {
       authenticator.verifyRefreshment({
         ...authData,
         user: '_WORNG_USER_',
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "data": {
@@ -668,7 +668,7 @@ describe('.verifyRefreshment()', () => {
     const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
 
     await expect(
-      authenticator.verifyRefreshment({ ...authData, chan: '_WORNG_CHANNEL_' })
+      authenticator.verifyRefreshment({ ...authData, chan: '_WORNG_CHANNEL_' }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 403,
@@ -682,14 +682,14 @@ describe('.verifyRefreshment()', () => {
     const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
 
     agentSettingsAccessor.getLineLoginChannelSettings.mock.fakeResolvedValue(
-      null
+      null,
     );
 
     await expect(
       authenticator.verifyRefreshment({
         ...authData,
         client: '_WORNG_CLIENT_',
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 404,
@@ -713,14 +713,14 @@ describe('.verifyRefreshment()', () => {
         ref: RefChatType.Utou,
         chan: botChannelId,
         room: roomId,
-      })
+      }),
     ).resolves.toEqual(expectedResult);
     await expect(
       authenticator.verifyRefreshment({
         ...authData,
         chan: botChannelId,
         ref: RefChatType.Group,
-      })
+      }),
     ).resolves.toEqual(expectedResult);
     await expect(
       authenticator.verifyRefreshment({
@@ -728,7 +728,7 @@ describe('.verifyRefreshment()', () => {
         chan: botChannelId,
         ref: RefChatType.Room,
         group: groupId,
-      })
+      }),
     ).resolves.toEqual(expectedResult);
   });
 
@@ -739,7 +739,7 @@ describe('.verifyRefreshment()', () => {
         code: 404,
         headers: {},
         body: { message: 'user profile not found' },
-      })
+      }),
     );
 
     const authDataWithMessagingChannel = {
@@ -748,7 +748,7 @@ describe('.verifyRefreshment()', () => {
       chan: botChannelId,
     };
     await expect(
-      authenticator.verifyRefreshment(authDataWithMessagingChannel)
+      authenticator.verifyRefreshment(authDataWithMessagingChannel),
     ).resolves.toEqual({
       ok: false,
       code: 404,
@@ -763,7 +763,7 @@ describe('.verifyRefreshment()', () => {
         code: 404,
         headers: {},
         body: { message: 'group member not found' },
-      })
+      }),
     );
 
     const authDataWithGroup = {
@@ -773,7 +773,7 @@ describe('.verifyRefreshment()', () => {
       group: '_GROUP_ID_',
     };
     await expect(
-      authenticator.verifyRefreshment(authDataWithGroup)
+      authenticator.verifyRefreshment(authDataWithGroup),
     ).resolves.toEqual({
       ok: false,
       code: 404,
@@ -788,7 +788,7 @@ describe('.verifyRefreshment()', () => {
         code: 404,
         headers: {},
         body: { message: 'room member not found' },
-      })
+      }),
     );
 
     const authDataWithRoom = {
@@ -798,7 +798,7 @@ describe('.verifyRefreshment()', () => {
       room: '_ROOM_ID_',
     };
     await expect(
-      authenticator.verifyRefreshment(authDataWithRoom)
+      authenticator.verifyRefreshment(authDataWithRoom),
     ).resolves.toEqual({
       ok: false,
       code: 404,
@@ -859,7 +859,7 @@ describe('.checkAuthData(data)', () => {
         ref: RefChatType.Utou,
         os: LiffOs.Ios,
         lang: 'zh-TW',
-      })
+      }),
     ).toEqual({
       ok: true,
       contextDetails: {
@@ -886,7 +886,7 @@ describe('.checkAuthData(data)', () => {
         ref: RefChatType.Group,
         os: LiffOs.Ios,
         lang: 'zh-TW',
-      })
+      }),
     ).toEqual({
       ok: true,
       contextDetails: {
@@ -913,7 +913,7 @@ describe('.checkAuthData(data)', () => {
         ref: RefChatType.Room,
         os: LiffOs.Android,
         lang: 'jp',
-      })
+      }),
     ).toEqual({
       ok: true,
       contextDetails: {

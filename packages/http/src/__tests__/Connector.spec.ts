@@ -1,6 +1,6 @@
 import { Server } from 'http';
 import { EventEmitter } from 'events';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { HttpConnector } from '../Connector.js';
 
 const FakeServer = class FakeServer extends EventEmitter {
@@ -32,17 +32,17 @@ it('throw if entryUrl is not a directory', () => {
     () =>
       new HttpConnector({
         entryUrl: 'https://sociably.io/foo',
-      })
+      }),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"entryUrl must be a directory which ends with "/""`
+    `"entryUrl must be a directory which ends with "/""`,
   );
   expect(
     () =>
       new HttpConnector({
         entryUrl: 'https://sociably.io/foo/bar.baz',
-      })
+      }),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"entryUrl must be a directory which ends with "/""`
+    `"entryUrl must be a directory which ends with "/""`,
   );
 });
 
@@ -60,7 +60,7 @@ test('.getServerUrl(subpath) return the url of the server', () => {
   expect(connector.getServerUrl()).toBe('https://sociably.io/foo/');
   expect(connector.getServerUrl('bar')).toBe('https://sociably.io/foo/bar');
   expect(connector.getServerUrl('bar/baz')).toBe(
-    'https://sociably.io/foo/bar/baz'
+    'https://sociably.io/foo/bar/baz',
   );
 });
 
@@ -79,7 +79,7 @@ describe('handling requests', () => {
     expect(server.listen).toHaveBeenCalledTimes(1);
     expect(server.listen).toHaveBeenCalledWith(
       { port: 8888 },
-      expect.any(Function)
+      expect.any(Function),
     );
 
     expect(server.on).toHaveBeenCalledTimes(1);
@@ -202,7 +202,7 @@ describe('handling requests', () => {
     expect(server.listen).toHaveBeenCalledTimes(1);
     expect(server.listen).toHaveBeenCalledWith(
       { port: 8888 },
-      expect.any(Function)
+      expect.any(Function),
     );
 
     expect(server.on).toHaveBeenCalledTimes(1);
@@ -355,9 +355,9 @@ describe('handling requests', () => {
             { name: 'root', path: '.', handler: moxy() },
             { name: 'foo', path: './foo', handler: moxy() },
           ],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"route [foo] "./foo" is conflicted with route [root] ".""`
+      `"route [foo] "./foo" is conflicted with route [root] ".""`,
     );
     expect(
       () =>
@@ -367,9 +367,9 @@ describe('handling requests', () => {
             { name: 'bar', path: './bar', handler: moxy() },
             { path: './bar/baz', handler: moxy() },
           ],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"route "./bar/baz" is conflicted with route [bar] "./bar""`
+      `"route "./bar/baz" is conflicted with route [bar] "./bar""`,
     );
   });
 
@@ -379,18 +379,18 @@ describe('handling requests', () => {
         new HttpConnector({
           entryUrl: 'https://sociably.io',
           requestRoutes: [{ name: 'foo', path: '/foo', handler: moxy() }],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"route path should be a relative path"`
+      `"route path should be a relative path"`,
     );
     expect(
       () =>
         new HttpConnector({
           entryUrl: 'https://sociably.io',
           requestRoutes: [{ name: 'foo', path: '../foo', handler: moxy() }],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"route path should be under entryUrl"`
+      `"route path should be under entryUrl"`,
     );
   });
 
@@ -404,9 +404,9 @@ describe('handling requests', () => {
             { name: 'bar', default: true, handler: moxy() },
             { name: 'baz', default: true, handler: moxy() },
           ],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"multiple default request routes received: bar, baz"`
+      `"multiple default request routes received: bar, baz"`,
     );
   });
 });
@@ -436,7 +436,7 @@ describe('handling upgrade', () => {
     expect(server.listen).toHaveBeenCalledTimes(1);
     expect(server.listen).toHaveBeenCalledWith(
       { port: 8888 },
-      expect.any(Function)
+      expect.any(Function),
     );
 
     expect(server.on).toHaveBeenCalledTimes(2);
@@ -700,9 +700,9 @@ describe('handling upgrade', () => {
             { name: 'root', path: './', handler: moxy() },
             { name: 'foo', path: './foo', handler: moxy() },
           ],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"route [foo] "./foo" is conflicted with route [root] "./""`
+      `"route [foo] "./foo" is conflicted with route [root] "./""`,
     );
     expect(
       () =>
@@ -712,9 +712,9 @@ describe('handling upgrade', () => {
             { name: 'bar', path: './bar', handler: moxy() },
             { path: './bar/baz', handler: moxy() },
           ],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"route "./bar/baz" is conflicted with route [bar] "./bar""`
+      `"route "./bar/baz" is conflicted with route [bar] "./bar""`,
     );
   });
 
@@ -724,18 +724,18 @@ describe('handling upgrade', () => {
         new HttpConnector({
           entryUrl: 'https://sociably.io',
           upgradeRoutes: [{ name: 'foo', path: '/foo', handler: moxy() }],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"route path should be a relative path"`
+      `"route path should be a relative path"`,
     );
     expect(
       () =>
         new HttpConnector({
           entryUrl: 'https://sociably.io',
           upgradeRoutes: [{ name: 'foo', path: '../foo', handler: moxy() }],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"route path should be under entryUrl"`
+      `"route path should be under entryUrl"`,
     );
   });
 
@@ -749,9 +749,9 @@ describe('handling upgrade', () => {
             { default: true, handler: moxy() },
             { default: true, handler: moxy() },
           ],
-        })
+        }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"multiple default upgrade routes received: "undefined", "undefined""`
+      `"multiple default upgrade routes received: "undefined", "undefined""`,
     );
   });
 });

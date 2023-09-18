@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
-import { moxy, Mock, Moxy } from '@moxyjs/moxy';
+import moxy, { Mock, Moxy } from '@moxyjs/moxy';
 
 import { TelegramReceiver } from '../Receiver.js';
 import TelegramChat from '../Chat.js';
@@ -111,7 +111,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 
     expect(res.statusCode).toBe(405);
     expect(res.finished).toBe(true);
-  }
+  },
 );
 
 it('respond 404 if bot ID entry path is invalid', async () => {
@@ -136,7 +136,7 @@ it('respond 404 if bot ID entry path is invalid', async () => {
       basePath: '/',
       matchedPath: 'telegram',
       trailingPath: '',
-    }
+    },
   );
   expect(res.statusCode).toBe(404);
   expect(res.finished).toBe(true);
@@ -154,7 +154,7 @@ it('respond 404 if bot ID entry path is invalid', async () => {
       basePath: '/',
       matchedPath: 'telegram',
       trailingPath: 'foo',
-    }
+    },
   );
   expect(res.statusCode).toBe(404);
   expect(res.finished).toBe(true);
@@ -262,10 +262,10 @@ it('respond 200 and pop events received', async () => {
   expect(context.event.category).toBe('message');
   expect(context.event.type).toBe('text');
   expect(context.event.thread).toEqual(
-    new TelegramChat(botId, 67890, updateBody.message.chat as never)
+    new TelegramChat(botId, 67890, updateBody.message.chat as never),
   );
   expect(context.event.user).toEqual(
-    new TelegramUser(67890, undefined, updateBody.message.from)
+    new TelegramUser(67890, undefined, updateBody.message.from),
   );
   expect(context.event.payload).toEqual(updateBody);
 });
@@ -287,7 +287,7 @@ describe('constext.reply(message)', () => {
         body: JSON.stringify(updateBody),
       }),
       createRes(),
-      validRoutingInfo
+      validRoutingInfo,
     );
 
     expect(popEventMock).toHaveBeenCalledTimes(1);
@@ -320,7 +320,7 @@ describe('constext.reply(message)', () => {
         }),
       }),
       createRes(),
-      validRoutingInfo
+      validRoutingInfo,
     );
     expect(popEventMock).toHaveBeenCalledTimes(1);
     const [{ reply, event }] = popEventMock.calls[0].args;
@@ -329,7 +329,7 @@ describe('constext.reply(message)', () => {
     expect(bot.render).toHaveBeenCalledTimes(1);
     expect(bot.render).toHaveBeenCalledWith(
       event.channel,
-      'hello callback_query'
+      'hello callback_query',
     );
   });
 });

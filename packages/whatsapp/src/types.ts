@@ -13,7 +13,7 @@ import type {
   MetaApiJob,
   MetaApiResult,
   MetaApiDispatchResponse,
-  FileInfo,
+  MetaApiUploadingFile,
 } from '@sociably/meta-api';
 import type { WhatsAppBot } from './Bot.js';
 import type WhatsAppChat from './Chat.js';
@@ -24,10 +24,8 @@ export * from './event/types.js';
 
 export type WhatsAppSegmentValue = {
   message: Omit<CreateMessageData, 'to' | 'messaging_product'>;
-  mediaFile?: {
-    type: string;
-    data: string | Buffer | NodeJS.ReadableStream;
-    info?: FileInfo;
+  file?: MetaApiUploadingFile & {
+    contentType: string;
   };
   assetTag?: string;
 };
@@ -64,11 +62,13 @@ export type WhatsAppAgentSettings = {
   phoneNumber: string;
   /** Phone number ID */
   numberId: string;
+  /** Business account ID that the number belongs to */
+  budsinessAccountId: string;
 };
 
 export type WhatsAppBusinessAccountSettings = {
   /** Business account ID that the numbers belongs to */
-  accountId: string;
+  budsinessAccountId: string;
   numbers: {
     /** Phone number ID */
     numberId: string;
@@ -99,7 +99,8 @@ export type WhatsAppConfigs = {
   /** The webhook path to receive events. Default to `.` */
   webhookPath?: string;
   /**
-   * The webhook subscription fields for WhatsApp account. Default to `['messages']`
+   * The webhook subscription fields for WhatsApp account. Default to
+   * `['messages']`
    */
   subscriptionFields?: string[];
   /** The graph API version to make API calls */

@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
-import { moxy, Mock } from '@moxyjs/moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import FacebookChat from '../Chat.js';
 import FacebookUser from '../User.js';
 import { FacebookReceiver } from '../Receiver.js';
@@ -12,7 +12,7 @@ const bot = moxy<FacebookBot>({
 
 const popEventMock = new Mock();
 const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify((ctx) => finalHandler(ctx))
+  popEventMock.proxify((ctx) => finalHandler(ctx)),
 );
 
 const createReq = ({
@@ -144,7 +144,7 @@ describe('handling POST', () => {
 
       expect(context.event.user).toEqual(new FacebookUser('12345', '67890'));
       expect(context.event.thread).toEqual(
-        new FacebookChat('12345', { id: '67890' })
+        new FacebookChat('12345', { id: '67890' }),
       );
 
       expect(context.metadata).toEqual({
@@ -214,13 +214,13 @@ describe('handling POST', () => {
     const ctx1 = popEventMock.calls[0].args[0];
     expect(ctx1.event.user).toEqual(new FacebookUser('12345', '67890'));
     expect(ctx1.event.thread).toEqual(
-      new FacebookChat('12345', { id: '67890' })
+      new FacebookChat('12345', { id: '67890' }),
     );
 
     const ctx2 = popEventMock.calls[1].args[0];
     expect(ctx2.event.user).toBe(null);
     expect(ctx2.event.thread).toEqual(
-      new FacebookChat('12345', { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' })
+      new FacebookChat('12345', { user_ref: '<REF_FROM_CHECKBOX_PLUGIN>' }),
     );
 
     for (const { args } of popEventMock.calls) {
@@ -252,7 +252,7 @@ describe('handling POST', () => {
         body: '{"object":"page","entry":[{"id":1234567890,"time":1458692752478,"messaging":[{"sender":{"id":"_PSID_"},"recipient":{"id":1234567890},"message":{"mid":"xxx","text":"foo"}}]}]}',
       }),
       createRes(),
-      routingInfo
+      routingInfo,
     );
 
     expect(popEventMock).toHaveBeenCalledTimes(1);

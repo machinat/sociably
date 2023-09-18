@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
@@ -274,9 +274,9 @@ describe('createChatJobs()', () => {
           params: { type: 'text', text: '1' },
         }),
         segment('unit', <foo />, chatActionValue),
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<foo /> is not valid to be sent in a chat"`
+      `"<foo /> is not valid to be sent in a chat"`,
     );
   });
 });
@@ -411,9 +411,9 @@ describe('createMulticastJobs()', () => {
           params: { type: 'text', text: '1' },
         }),
         segment('unit', <foo />, chatActionValue),
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<foo /> is not valid to be sent by multicast"`
+      `"<foo /> is not valid to be sent by multicast"`,
     );
   });
 });

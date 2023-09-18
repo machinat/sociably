@@ -1,5 +1,6 @@
 import { parse as parseUrl } from 'url';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import EventEmitter from 'events';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
 import _Connector from '../Connector.js';
 import WebSocketConnection from '../../Connection.js';
@@ -9,28 +10,22 @@ const Connector = _Connector as Moxy<typeof _Connector>;
 const BaseMarshaler = _BaseMarshaler as Moxy<typeof _BaseMarshaler>;
 
 jest.mock('@sociably/core/base/Marshaler', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/base/Marshaler'))
+  moxy(jest.requireActual('@sociably/core/base/Marshaler')),
 );
 
-jest.mock('../Connector.js', () => {
-  const _moxy = jest.requireActual('@moxyjs/moxy').moxy;
-  const _EventEmitter = jest.requireActual('events').EventEmitter;
-  return {
-    __esModule: true,
-    default: _moxy(function FakeConnector() {
-      return _moxy(
-        Object.assign(new _EventEmitter(), {
-          connect: () => {},
-          send: async () => {},
-          close: () => {},
-          isConnected: () => false,
-        })
-      );
-    }),
-  };
-});
+jest.mock('../Connector.js', () => ({
+  __esModule: true,
+  default: moxy(function FakeConnector() {
+    return moxy(
+      Object.assign(new EventEmitter(), {
+        connect: () => {},
+        send: async () => {},
+        close: () => {},
+        isConnected: () => false,
+      }),
+    );
+  }),
+}));
 
 const location = moxy(parseUrl('https://sociably.io/hello'));
 (global as any).window = { location } as never;
@@ -95,7 +90,7 @@ test('specify url', async () => {
   expect(Connector).toHaveBeenCalledWith(
     'ws://sociably.io/websocket',
     login,
-    expect.any(BaseMarshaler)
+    expect.any(BaseMarshaler),
   );
 
   (() => new Client({ url: '/foo/websocket/server', login }))();
@@ -104,7 +99,7 @@ test('specify url', async () => {
   expect(Connector).toHaveBeenCalledWith(
     '/foo/websocket/server',
     login,
-    expect.any(BaseMarshaler)
+    expect.any(BaseMarshaler),
   );
 });
 
@@ -141,7 +136,7 @@ it('use options.marshalTypes to initiate marshaler', () => {
   expect(BaseMarshaler).toHaveBeenCalledWith([FooType, BarType]);
 
   expect(Connector.mock.calls[0].args[2]).toBe(
-    BaseMarshaler.mock.calls[0].instance
+    BaseMarshaler.mock.calls[0].instance,
   );
 });
 
@@ -162,7 +157,7 @@ it('emit "event" when dispatched events received', async () => {
         payload: 'Link is down! Legend over.',
       },
     ],
-    { connId: '#conn', user }
+    { connId: '#conn', user },
   );
 
   expect(eventSpy).toHaveBeenCalledTimes(3);
@@ -191,7 +186,7 @@ it('emit "event" when dispatched events received', async () => {
   connector.emit(
     'events',
     [{ type: 'resurrect', payload: 'Hero never die!' }],
-    { connId: '#conn', user }
+    { connId: '#conn', user },
   );
 
   expect(eventSpy).toHaveBeenCalledTimes(4);
@@ -216,7 +211,7 @@ it('send events', async () => {
     client.send([
       { type: 'foo', payload: 1 },
       { type: 'bar', category: 'beer', payload: 2 },
-    ])
+    ]),
   ).resolves.toBe(undefined);
 
   expect(connector.send).toHaveBeenCalledTimes(1);
@@ -226,7 +221,7 @@ it('send events', async () => {
   ]);
 
   await expect(client.send({ type: 'baz', payload: 3 })).resolves.toBe(
-    undefined
+    undefined,
   );
   expect(connector.send).toHaveBeenCalledTimes(2);
   expect(connector.send).toHaveBeenCalledWith([{ type: 'baz', payload: 3 }]);
@@ -245,7 +240,7 @@ test('disconnected by server', async () => {
   connector.emit(
     'disconnect',
     { reason: 'See ya!' },
-    { connId: '#conn', user }
+    { connId: '#conn', user },
   );
 
   expect(eventSpy).toHaveBeenLastCalledWith({

@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import type { Readable } from 'stream';
 import type {
   PlatformUtilities,
   EventMiddleware,
@@ -58,14 +59,21 @@ export type IdMediaSource = {
 export type UrlMediaSource = {
   type: 'url';
   url: string;
-  params: Record<string, undefined | string | number>;
+  params: Record<string, unknown>;
   assetTag?: string;
+};
+
+export type UploadingFile = {
+  data: string | Buffer | Readable;
+  contentType: string;
+  contentLength: number;
+  fileName?: string;
 };
 
 export type FileMediaSource = {
   type: 'file';
-  params: Record<string, undefined | string | number>;
-  fileData: Buffer | NodeJS.ReadableStream;
+  params: Record<string, unknown>;
+  file: UploadingFile;
   assetTag?: string;
 };
 
@@ -85,7 +93,7 @@ export type TwitterApiRequest = {
 type AccomplishRequestFn = (
   target: TwitterThread,
   request: TwitterApiRequest,
-  uploadedMedia: null | string[]
+  uploadedMedia: null | string[],
 ) => TwitterApiRequest;
 
 export type TwitterJob = {
@@ -193,25 +201,49 @@ export type NumberPairs = [number, number];
 export type HashtagEntity = {
   /** Name of the hashtag, minus the leading ‘#’ character */
   text: string;
-  /** An array of integers indicating the offsets within the Tweet text where the hashtag begins and ends. The first integer represents the location of the # character in the Tweet text string. The second integer represents the location of the first character after the hashtag. Therefore the difference between the two numbers will be the length of the hashtag name plus one (for the ‘#’ character). Example: `[32,38]` */
+  /**
+   * An array of integers indicating the offsets within the Tweet text where the
+   * hashtag begins and ends. The first integer represents the location of the #
+   * character in the Tweet text string. The second integer represents the
+   * location of the first character after the hashtag. Therefore the difference
+   * between the two numbers will be the length of the hashtag name plus one
+   * (for the ‘#’ character). Example: `[32,38]`
+   */
   indices: NumberPairs;
 };
 
 export type SymbolEntity = {
   /** Name of the cashhtag, minus the leading ‘$’ character */
   text: string;
-  /** An array of integers indicating the offsets within the Tweet text where the symbol/cashtag begins and ends. The first integer represents the location of the $ character in the Tweet text string. The second integer represents the location of the first character after the cashtag. Therefore the difference between the two numbers will be the length of the hashtag name plus one (for the ‘$’ character). Example: `[12,17]` */
+  /**
+   * An array of integers indicating the offsets within the Tweet text where the
+   * symbol/cashtag begins and ends. The first integer represents the location
+   * of the $ character in the Tweet text string. The second integer represents
+   * the location of the first character after the cashtag. Therefore the
+   * difference between the two numbers will be the length of the hashtag name
+   * plus one (for the ‘$’ character). Example: `[12,17]`
+   */
   indices: NumberPairs;
 };
 
 export type UrlEntity = {
-  /** Wrapped URL, corresponding to the value embedded directly into the raw Tweet text, and the values for the indices parameter. Example: `https://t.co/yzocNFvJuL` */
+  /**
+   * Wrapped URL, corresponding to the value embedded directly into the raw
+   * Tweet text, and the values for the indices parameter. Example:
+   * `https://t.co/yzocNFvJuL`
+   */
   url: string;
   /** URL pasted/typed into Tweet. Example: `bit.ly/2so49n2` */
   displayUrl: string;
   /** Expanded version of `displayUrl` . Example: `http://bit.ly/2so49n2` */
   expandedUrl: string;
-  /** An array of integers representing offsets within the Tweet text where the URL begins and ends. The first integer represents the location of the first character of the URL in the Tweet text. The second integer represents the location of the first non-URL character after the end of the URL. Example: `[30,53]` */
+  /**
+   * An array of integers representing offsets within the Tweet text where the
+   * URL begins and ends. The first integer represents the location of the first
+   * character of the URL in the Tweet text. The second integer represents the
+   * location of the first non-URL character after the end of the URL. Example:
+   * `[30,53]`
+   */
   indices: NumberPairs;
 };
 
@@ -224,12 +256,21 @@ export type MentionEntity = {
   name: string;
   /** Screen name of the referenced user */
   screenName: string;
-  /** An array of integers representing the offsets within the Tweet text where the user reference begins and ends. The first integer represents the location of the ‘@’ character of the user mention. The second integer represents the location of the first non-screenname character following the user mention. Example: `[4,15]` */
+  /**
+   * An array of integers representing the offsets within the Tweet text where
+   * the user reference begins and ends. The first integer represents the
+   * location of the ‘@’ character of the user mention. The second integer
+   * represents the location of the first non-screenname character following the
+   * user mention. Example: `[4,15]`
+   */
   indices: [number, number];
 };
 
 export type PollEntity = {
-  /** An array of options, each having a poll position, and the text for that position */
+  /**
+   * An array of options, each having a poll position, and the text for that
+   * position
+   */
   options: {
     position: number;
     text: string;
@@ -275,19 +316,39 @@ export type Media = {
   id: string;
   /** Type of uploaded media */
   type: MediaType;
-  /** Wrapped URL for the media link. This corresponds with the URL embedded directly into the raw Tweet text, and the values for the indices parameter. Example: `http://t.co/rJC5Pxsu` */
+  /**
+   * Wrapped URL for the media link. This corresponds with the URL embedded
+   * directly into the raw Tweet text, and the values for the indices parameter.
+   * Example: `http://t.co/rJC5Pxsu`
+   */
   inlineUrl: string;
   /** URL of the media to display to clients. Example: `pic.twitter.com/rJC5Pxsu` */
   displayUrl: string;
-  /** An expanded version of display_url. Links to the media display page. Example: `http://twitter.com/yunorno/status/114080493036773378/photo/1` */
+  /**
+   * An expanded version of display_url. Links to the media display page.
+   * Example: `http://twitter.com/yunorno/status/114080493036773378/photo/1`
+   */
   expandedUrl: string;
-  /** An array of integers indicating the offsets within the Tweet text where the URL begins and ends. The first integer represents the location of the first character of the URL in the Tweet text. The second integer represents the location of the first non-URL character occurring after the URL (or the end of the string if the URL is the last part of the Tweet text). Example: `[15,35]` */
+  /**
+   * An array of integers indicating the offsets within the Tweet text where the
+   * URL begins and ends. The first integer represents the location of the first
+   * character of the URL in the Tweet text. The second integer represents the
+   * location of the first non-URL character occurring after the URL (or the end
+   * of the string if the URL is the last part of the Tweet text). Example:
+   * `[15,35]`
+   */
   indices: NumberPairs;
-  /** The URL pointing directly to the uploaded media file, for embedding on https pages. */
+  /**
+   * The URL pointing directly to the uploaded media file, for embedding on
+   * https pages.
+   */
   downloadUrl: string;
   /** An object showing available sizes for the media file */
   sizes: RawMediaSizeChoices;
-  /** For Tweets containing media that was originally associated with a different tweet, this string-based ID points to the original Tweet */
+  /**
+   * For Tweets containing media that was originally associated with a different
+   * tweet, this string-based ID points to the original Tweet
+   */
   sourceStatusId?: string;
 };
 
@@ -311,7 +372,11 @@ export type Photo = Media & { type: 'photo' };
 export type Video = Media & {
   type: 'video';
   videoInfo: null | AnimateInfo;
-  /** When an advertiser chooses to limit video playback to just Twitter owned and operated platforms, the `videoInfo` is replaced with `additionalMediaInfo` */
+  /**
+   * When an advertiser chooses to limit video playback to just Twitter owned
+   * and operated platforms, the `videoInfo` is replaced with
+   * `additionalMediaInfo`
+   */
   additionalMediaInfo: null | {
     title: string;
     description: string;

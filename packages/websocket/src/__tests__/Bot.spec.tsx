@@ -1,4 +1,4 @@
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
@@ -14,18 +14,12 @@ const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Worker = _Worker as Moxy<typeof _Worker>;
 
 jest.mock('@sociably/core/engine', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/engine'))
+  moxy(jest.requireActual('@sociably/core/engine')),
 );
 jest.mock('@sociably/core/renderer', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/renderer'))
+  moxy(jest.requireActual('@sociably/core/renderer')),
 );
-jest.mock('../Worker.js', () =>
-  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../Worker.js'))
-);
+jest.mock('../Worker.js', () => moxy(jest.requireActual('../Worker.js')));
 
 const server = moxy<WebSocketServer<any, unknown>>({
   id: '_SERVER_ID_',
@@ -69,7 +63,7 @@ describe('#constructor(options)', () => {
       expect.any(Queue),
       expect.any(Worker),
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   });
 });

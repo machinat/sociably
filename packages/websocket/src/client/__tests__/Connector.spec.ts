@@ -1,5 +1,5 @@
 import url from 'url';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import { SociablyUser } from '@sociably/core';
 import _Ws from 'ws';
 import _Socket from '../../Socket.js';
@@ -11,9 +11,7 @@ const Ws = _Ws as Moxy<typeof _Ws>;
 const location = url.parse('https://sociably.io/hello');
 (global as any).window = { location };
 
-jest.mock('../../Socket.js', () =>
-  jest.requireActual('@moxyjs/moxy').moxy(jest.requireActual('../../socket'))
-);
+jest.mock('../../Socket.js', () => moxy(jest.requireActual('../../socket')));
 
 const nextTick = () => new Promise(process.nextTick);
 
@@ -74,7 +72,7 @@ test('.connect()', async () => {
   expect(Ws).toHaveBeenCalledTimes(1);
   expect(Ws).toHaveBeenCalledWith(
     'wss://sociably.io/websocket',
-    'sociably-websocket-v0'
+    'sociably-websocket-v0',
   );
 
   expect(Socket).toHaveBeenCalledTimes(1);
@@ -85,7 +83,7 @@ test('use ws: protocol', async () => {
   const connector = new Connector(
     'ws://sociably.io/websocket',
     login,
-    marshaler
+    marshaler,
   );
   connector.connect();
   await nextTick();
@@ -93,7 +91,7 @@ test('use ws: protocol', async () => {
   expect(Ws).toHaveBeenCalledTimes(1);
   expect(Ws).toHaveBeenCalledWith(
     'ws://sociably.io/websocket',
-    'sociably-websocket-v0'
+    'sociably-websocket-v0',
   );
 
   expect(Socket).toHaveBeenCalledTimes(1);
@@ -145,7 +143,7 @@ it('emit "error" if login rejected', async () => {
 
   expect(errorSpy).toHaveBeenCalledTimes(1);
   expect(errorSpy.mock.calls[0].args[0]).toMatchInlineSnapshot(
-    `[SocketError: you shall not pass]`
+    `[SocketError: you shall not pass]`,
   );
 });
 
@@ -186,7 +184,7 @@ it('unmarshal payload', async () => {
       ],
     },
     3,
-    socket
+    socket,
   );
 
   expect(eventsSpy).toHaveBeenCalledTimes(1);
@@ -195,7 +193,7 @@ it('unmarshal payload', async () => {
       { type: 'any', payload: { foo: 'bar', unmarshaled: true } },
       { type: 'any', payload: { foo: 'baz', unmarshaled: true } },
     ],
-    { connId, user }
+    { connId, user },
   );
 
   expect(marshaler.unmarshal).toHaveBeenCalledTimes(2);
@@ -210,7 +208,7 @@ it('send events after connected', async () => {
     connector.send([
       { type: 'foo', payload: 1 },
       { type: 'bar', category: 'beer', payload: 2 },
-    ])
+    ]),
   ).resolves.toBe(undefined);
 
   expect(socket.dispatch).toHaveBeenCalledTimes(1);
@@ -223,7 +221,7 @@ it('send events after connected', async () => {
   });
 
   await expect(connector.send([{ type: 'baz', payload: 3 }])).resolves.toBe(
-    undefined
+    undefined,
   );
   expect(socket.dispatch).toHaveBeenCalledTimes(2);
   expect(socket.dispatch).toHaveBeenCalledWith({
@@ -306,7 +304,7 @@ test('disconnect by server', async () => {
   expect(connector.isConnected()).toBe(false);
   expect(disconnectSpy).toHaveBeenCalledWith(
     { reason: 'See ya!' },
-    { connId, user }
+    { connId, user },
   );
 });
 
@@ -326,7 +324,7 @@ test('.close()', async () => {
   socket.emit('disconnect', { connId, reason: 'Bye!' }, 4, socket);
   expect(disconnectSpy).toHaveBeenCalledWith(
     { reason: 'Bye!' },
-    { connId, user }
+    { connId, user },
   );
 });
 
@@ -337,7 +335,7 @@ test('throw when sending event after closed', async () => {
   connector.close(4567, 'Bye!');
 
   await expect(
-    connector.send([{ type: 'foo', payload: 'bar' }])
+    connector.send([{ type: 'foo', payload: 'bar' }]),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"socket is already closed"`);
 
   expect(socket.dispatch).not.toHaveBeenCalled();

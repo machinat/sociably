@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { moxy, isMoxy } from '@moxyjs/moxy';
+import moxy, { isMoxy } from '@moxyjs/moxy';
 import { SociablyThread, SociablyChannel, SociablyUser } from '@sociably/core';
 import { StateAccessor } from '@sociably/core/base/StateController';
 import {
@@ -40,7 +40,7 @@ pgPool.connect.mock.wrap(
       }
       usedClients.push(client);
       return client;
-    }
+    },
 );
 
 const marshaler = moxy({
@@ -58,7 +58,7 @@ const getIdenticalQueryCallsText = (queryCalls) =>
   }, null);
 const getQueryCallsText = (queryCalls) =>
   queryCalls.map(({ args: [query] }) =>
-    typeof query === 'string' ? query : query.text
+    typeof query === 'string' ? query : query.text,
   );
 const getQueryCallsValues = (queryCalls) =>
   queryCalls.map(({ args: [{ values }] }) => values);
@@ -216,11 +216,12 @@ describe.each<[string, Record<string, string>]>([
             "${FIELD_STATE_DATA}",
             ${idKeys.map((name) => `"${name}"`).join(', ')}
           ) VALUES ${pairs
-            .map((_p, i) => {
-              return `($${i * w + 1}, $${i * w + 2}, ${idKeys
-                .map((_n, j) => `$${i * w + j + 3}`)
-                .join(', ')})`;
-            })
+            .map(
+              (_p, i) =>
+                `($${i * w + 1}, $${i * w + 2}, ${idKeys
+                  .map((_n, j) => `$${i * w + j + 3}`)
+                  .join(', ')})`,
+            )
             .join(', ')};
         `,
         values: pairs
@@ -244,7 +245,7 @@ describe.each<[string, Record<string, string>]>([
     const getStateEntityOfKey = async (key) => {
       const entities = await getStateEntities();
       return entities.find(
-        ({ [FIELD_STATE_KEY]: entityKey }) => key === entityKey
+        ({ [FIELD_STATE_KEY]: entityKey }) => key === entityKey,
       );
     };
 
@@ -278,11 +279,11 @@ describe.each<[string, Record<string, string>]>([
           ] as const
         ).map(async ([key, value]) => {
           await expect(state.get(key)).resolves.toEqual(value);
-        })
+        }),
       );
 
       expect(
-        getIdenticalQueryCallsText(pgPool.query.mock.calls)
+        getIdenticalQueryCallsText(pgPool.query.mock.calls),
       ).toMatchSnapshot();
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
     });
@@ -300,11 +301,11 @@ describe.each<[string, Record<string, string>]>([
           ] as const
         ).map(async ([key, value, isUpdated]) => {
           await expect(state.set(key, value)).resolves.toBe(isUpdated);
-        })
+        }),
       );
 
       expect(
-        getIdenticalQueryCallsText(pgPool.query.mock.calls)
+        getIdenticalQueryCallsText(pgPool.query.mock.calls),
       ).toMatchSnapshot();
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
     });
@@ -326,7 +327,7 @@ describe.each<[string, Record<string, string>]>([
 
             expect(updator.mock).toHaveBeenCalledTimes(1);
             expect(updator.mock).toHaveBeenCalledWith(originalValue);
-          })
+          }),
         );
 
         const queryTexts = getQueryCallsText(usedClients[0].query.mock.calls);
@@ -334,16 +335,16 @@ describe.each<[string, Record<string, string>]>([
 
         for (const client of usedClients) {
           expect(getQueryCallsText(client.query.mock.calls)).toEqual(
-            queryTexts
+            queryTexts,
           );
         }
 
         expect(
           usedClients.map((client) =>
             getQueryCallsValues(client.query.mock.calls).filter(
-              (value) => value
-            )
-          )
+              (value) => value,
+            ),
+          ),
         ).toMatchSnapshot();
 
         await expect(getStateEntities()).resolves.toEqual(
@@ -354,8 +355,8 @@ describe.each<[string, Record<string, string>]>([
               [FIELD_STATE_DATA]: { value: newValue },
               [FIELD_CREATED_AT]: expect.any(Date),
               [FIELD_UPDATED_AT]: expect.any(Date),
-            }))
-          )
+            })),
+          ),
         );
       });
 
@@ -369,7 +370,7 @@ describe.each<[string, Record<string, string>]>([
         const queryCalls = usedClients[0].query.mock.calls;
         expect(getQueryCallsText(queryCalls)).toMatchSnapshot();
         expect(
-          getQueryCallsValues(queryCalls).filter((value) => value)
+          getQueryCallsValues(queryCalls).filter((value) => value),
         ).toMatchSnapshot();
 
         await expect(getStateEntityOfKey('key2')).resolves.toBe(undefined);
@@ -390,7 +391,7 @@ describe.each<[string, Record<string, string>]>([
 
             expect(updater.mock).toHaveBeenCalledTimes(1);
             expect(updater.mock).toHaveBeenCalledWith(value);
-          })
+          }),
         );
 
         const queryCalls = usedClients[0].query.mock.calls;
@@ -398,16 +399,16 @@ describe.each<[string, Record<string, string>]>([
 
         for (const client of usedClients) {
           expect(getQueryCallsText(client.query.mock.calls)).toEqual(
-            getQueryCallsText(queryCalls)
+            getQueryCallsText(queryCalls),
           );
         }
 
         expect(
           usedClients.map((client) =>
             getQueryCallsValues(client.query.mock.calls).filter(
-              (value) => value
-            )
-          )
+              (value) => value,
+            ),
+          ),
         ).toMatchSnapshot();
 
         await expect(getStateEntities()).resolves.toEqual(
@@ -418,8 +419,8 @@ describe.each<[string, Record<string, string>]>([
               [FIELD_STATE_DATA]: { value },
               [FIELD_CREATED_AT]: expect.any(Date),
               [FIELD_UPDATED_AT]: expect.any(Date),
-            }))
-          )
+            })),
+          ),
         );
       });
     });
@@ -437,11 +438,11 @@ describe.each<[string, Record<string, string>]>([
           ] as const
         ).map(async ([key, isDeleted]) => {
           await expect(state.delete(key)).resolves.toBe(isDeleted);
-        })
+        }),
       );
 
       expect(
-        getIdenticalQueryCallsText(pgPool.query.mock.calls)
+        getIdenticalQueryCallsText(pgPool.query.mock.calls),
       ).toMatchSnapshot();
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
 
@@ -452,7 +453,7 @@ describe.each<[string, Record<string, string>]>([
       await expect(state.clear()).resolves.toBe(undefined);
 
       expect(
-        getIdenticalQueryCallsText(pgPool.query.mock.calls)
+        getIdenticalQueryCallsText(pgPool.query.mock.calls),
       ).toMatchSnapshot();
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
 
@@ -461,11 +462,11 @@ describe.each<[string, Record<string, string>]>([
 
     test('.keys()', async () => {
       await expect(state.keys()).resolves.toEqual(
-        expect.arrayContaining(['key2', 'key3', 'key4', 'key5', 'key6'])
+        expect.arrayContaining(['key2', 'key3', 'key4', 'key5', 'key6']),
       );
 
       expect(
-        getIdenticalQueryCallsText(pgPool.query.mock.calls)
+        getIdenticalQueryCallsText(pgPool.query.mock.calls),
       ).toMatchSnapshot();
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
     });
@@ -478,11 +479,11 @@ describe.each<[string, Record<string, string>]>([
           ['key4', { bar: 'baz' }],
           ['key5', [{ a: 0 }, { b: 1 }, { c: 2 }]],
           ['key6', null],
-        ])
+        ]),
       );
 
       expect(
-        getIdenticalQueryCallsText(pgPool.query.mock.calls)
+        getIdenticalQueryCallsText(pgPool.query.mock.calls),
       ).toMatchSnapshot();
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
     });

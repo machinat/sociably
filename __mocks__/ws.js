@@ -1,6 +1,6 @@
-/* eslint-disable class-methods-use-this */
+/* eslint-disable import/no-import-module-exports, class-methods-use-this */
 import EventEmitter from 'events';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 
 class WebSocket extends EventEmitter {
   readyState = 1;

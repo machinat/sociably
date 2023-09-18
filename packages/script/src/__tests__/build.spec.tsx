@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably, { RenderingTarget } from '@sociably/core';
 import { isContainerType } from '@sociably/core/utils';
 import ProcessorP from '../Processor.js';
@@ -29,7 +29,7 @@ const ChildScript = build(
   <>
     {() => <dolore />}
     <PROMPT set={(_, ctx) => ({ x: ctx.x })} key="childPrompt" />
-  </>
+  </>,
 );
 
 const MyScript = build(
@@ -70,7 +70,7 @@ const MyScript = build(
     <EFFECT set={() => ({ foo: 'bar' })} />
     {() => 'ad minim veniam'}
     <GOTO key="start" />
-  </>
+  </>,
 );
 
 test('Script object', () => {
@@ -119,7 +119,7 @@ test('Script.Start', () => {
   ]);
 
   expect((MyScript.Start as any)(mockProcessor, thread)({})).resolves.toBe(
-    'Hello Script'
+    'Hello Script',
   );
   expect(mockProcessor.start).toHaveBeenCalledTimes(1);
   expect(mockProcessor.start).toHaveBeenCalledWith(thread, MyScript, {});
@@ -131,11 +131,11 @@ test('Script.Start', () => {
   expect(
     (ChildScript.Start as any)(
       mockProcessor,
-      thread
+      thread,
     )({
       params: { foo: 'baz' },
       goto: 'bar',
-    })
+    }),
   ).resolves.toBe('Hello Script');
   expect(mockProcessor.start).toHaveBeenCalledTimes(2);
   expect(mockProcessor.start).toHaveBeenCalledWith(thread, ChildScript, {

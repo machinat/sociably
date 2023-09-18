@@ -5,7 +5,7 @@ import {
   serviceContainer,
   ServiceScope,
 } from '@sociably/core/service';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import type createNextApp from 'next';
 import { NextReceiver } from '../Receiver.js';
 
@@ -162,7 +162,7 @@ test('with entryPath', async () => {
   expect(nextDefaultHandler).toHaveBeenCalledWith(
     req,
     res,
-    parseUrl('http://sociably.io/hello/world', true)
+    parseUrl('http://sociably.io/hello/world', true),
   );
 
   expect(handleRequest).toHaveBeenCalledTimes(1);
@@ -232,7 +232,7 @@ it('call next.render() with page/query returned by handleRequest', async () => {
     res,
     '/hello/world',
     { foo: 'bar' },
-    expect.any(Object)
+    expect.any(Object),
   );
 
   expect(nextApp.render.mock.calls[0].args[4]).toMatchInlineSnapshot(`
@@ -275,7 +275,7 @@ test('use service container for handleRequest', async () => {
     popError,
     initScope,
     handleRequest: serviceContainer({ deps: [ServiceScope] })(
-      useRequestHandler
+      useRequestHandler,
     ),
   });
   await receiver.prepare();
@@ -286,7 +286,7 @@ test('use service container for handleRequest', async () => {
   expect(initScope).toHaveBeenCalledTimes(1);
   expect(useRequestHandler).toHaveReturnedTimes(1);
   expect(useRequestHandler).toHaveBeenCalledWith(
-    initScope.mock.calls[0].result
+    initScope.mock.calls[0].result,
   );
 
   expect(nextDefaultHandler).not.toHaveBeenCalled();
@@ -298,7 +298,7 @@ test('use service container for handleRequest', async () => {
     res,
     '/foo',
     { foo: 'bar' },
-    expect.any(Object)
+    expect.any(Object),
   );
 
   expect(handleRequestFn).toHaveBeenCalledTimes(1);
@@ -341,7 +341,7 @@ it('call next.renderError() handleRequest return not ok', async () => {
     req,
     res,
     'hello',
-    { foo: 'bar' }
+    { foo: 'bar' },
   );
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(418);
@@ -371,7 +371,7 @@ it('call next.renderError() with customized headers return by handleRequest', as
     req,
     res,
     'hello',
-    { foo: 'bar' }
+    { foo: 'bar' },
   );
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledTimes(1);
@@ -429,7 +429,7 @@ test('page returned by handleRequest prioritized than routing', async () => {
       basePath: '/',
       matchedPath: 'hello',
       trailingPath: 'world',
-    })
+    }),
   ).toBe(undefined);
   await nextTick();
 
@@ -439,7 +439,7 @@ test('page returned by handleRequest prioritized than routing', async () => {
     res,
     '/hello/world',
     { foo: 'bar' },
-    expect.any(Object)
+    expect.any(Object),
   );
 });
 
@@ -469,7 +469,7 @@ it('call next.renderError() if middlewares reject', async () => {
     req,
     res,
     'hello',
-    { foo: 'bar' }
+    { foo: 'bar' },
   );
 
   expect(res.mock.setter('statusCode')).toHaveBeenCalledWith(500);
@@ -498,7 +498,7 @@ it('pass hmr upgrade request to next server', async () => {
 
   expect(nextDefaultHandler).toHaveBeenCalledWith(
     req,
-    expect.any(ServerResponse)
+    expect.any(ServerResponse),
   );
   expect(socket.write).not.toHaveBeenCalled();
   expect(socket.destroy).not.toHaveBeenCalled();

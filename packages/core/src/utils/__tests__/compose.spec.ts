@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import compose from '../compose.js';
 
 it('return an identity function if nothing passed', () => {

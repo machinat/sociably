@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import {
   SOCIABLY_SERVICE_PROVIDER,
   SOCIABLY_SERVICE_INTERFACE,
@@ -67,25 +67,25 @@ describe('serviceProviderFactory({ deps, lifetime })(factory)', () => {
         lifetime: 'scoped',
       })((foo) => ({ foo }));
     }).toThrowErrorMatchingInlineSnapshot(
-      `"NoneService is not a valid interface"`
+      `"NoneService is not a valid interface"`,
     );
   });
 
   it('throw if invalid lifetime received', () => {
     expect(() =>
-      serviceProviderFactory({ lifetime: 'singleton' })(() => 'foo')
+      serviceProviderFactory({ lifetime: 'singleton' })(() => 'foo'),
     ).not.toThrow();
     expect(() =>
-      serviceProviderFactory({ lifetime: 'scoped' })(() => 'foo')
+      serviceProviderFactory({ lifetime: 'scoped' })(() => 'foo'),
     ).not.toThrow();
     expect(() =>
-      serviceProviderFactory({ lifetime: 'transient' })(() => 'foo')
+      serviceProviderFactory({ lifetime: 'transient' })(() => 'foo'),
     ).not.toThrow();
 
     expect(() => {
       serviceProviderFactory({ lifetime: 'halfling' } as never)(() => 'foo');
     }).toThrowErrorMatchingInlineSnapshot(
-      `"halfling is not valid service lifetime"`
+      `"halfling is not valid service lifetime"`,
     );
   });
 });

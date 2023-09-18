@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import WebhookReceiver from '../Receiver';
 
 const createReq = ({ method, url = '/', body = '', headers = {} }) => {
@@ -133,7 +133,7 @@ it("respond JSON of the body if it's an object", async () => {
   expect(res.statusCode).toBe(408);
   expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(
-    `"{"hello":"teapot"}"`
+    `"{"hello":"teapot"}"`,
   );
 });
 
@@ -165,7 +165,7 @@ it('pass routing info down to the handler if received', async () => {
       basePath: '/',
       matchedPath: 'foo',
       trailingPath: 'bar/baz',
-    }
+    },
   );
 
   expect(res.statusCode).toBe(200);
@@ -188,7 +188,7 @@ it('ends res with 500 if error thrown in webhookHandler', async () => {
   expect(res.statusCode).toBe(500);
   expect(res.end).toHaveBeenCalledTimes(1);
   expect(res.end.mock.calls[0].args[0]).toMatchInlineSnapshot(
-    `"{"code":500,"message":"very interal error"}"`
+    `"{"code":500,"message":"very interal error"}"`,
   );
 });
 

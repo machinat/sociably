@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { BaseProfiler, SociablyProfile } from '../Profiler.js';
 
 const fooProfiler = moxy({
@@ -49,7 +49,7 @@ const profiler = new BaseProfiler(
   new Map([
     ['foo', fooProfiler],
     ['bar', barProfiler],
-  ])
+  ]),
 );
 
 it('proxy #getUserProfile() call to the profiler corresponded to the user platform', async () => {
@@ -73,12 +73,12 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
   expect(fooProfiler.getUserProfile).toHaveBeenNthCalledWith(
     1,
     fooChannel,
-    fooUser1
+    fooUser1,
   );
   expect(fooProfiler.getUserProfile).toHaveBeenNthCalledWith(
     2,
     fooChannel,
-    fooUser2
+    fooUser2,
   );
 
   expect(barProfiler.getUserProfile).toHaveBeenCalledTimes(1);
@@ -87,9 +87,9 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
 
 it('throw if paltform of channel and user are not equal', async () => {
   await expect(
-    profiler.getUserProfile(fooChannel, barUser1)
+    profiler.getUserProfile(fooChannel, barUser1),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"channel (foo) and user (bar) platforms mismatch"`
+    `"channel (foo) and user (bar) platforms mismatch"`,
   );
 });
 
@@ -106,8 +106,8 @@ it('throw if user from unsupported platform received', async () => {
   };
 
   await expect(
-    profiler.getUserProfile(bazChannel, bazUser)
+    profiler.getUserProfile(bazChannel, bazUser),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"getting profile on "baz" platform is not supported"`
+    `"getting profile on "baz" platform is not supported"`,
   );
 });

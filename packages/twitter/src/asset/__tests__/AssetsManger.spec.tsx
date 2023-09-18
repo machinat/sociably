@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
 import TwitterUser from '../../User.js';
@@ -45,7 +45,7 @@ test('get asset id', async () => {
       manager.getMedia(agent, 'my_media'),
       manager.getCustomProfile(agent, 'my_custom_profile'),
       manager.getWelcomeMessage(agent, 'my_welcome_message'),
-    ])
+    ]),
   ).resolves.toEqual([undefined, undefined, undefined, undefined]);
 
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
@@ -77,7 +77,7 @@ test('get asset id', async () => {
       manager.getMedia(agent, 'my_media'),
       manager.getCustomProfile(agent, 'my_custom_profile'),
       manager.getWelcomeMessage(agent, 'my_welcome_message'),
-    ])
+    ]),
   ).resolves.toEqual([
     '_FOO_BAR_ID_',
     '_MEDIA_ID_',
@@ -99,14 +99,14 @@ test('save asset id', async () => {
       manager.saveCustomProfile(
         agent,
         'my_custom_profile',
-        '_CUSTOM_PROFILE_ID_'
+        '_CUSTOM_PROFILE_ID_',
       ),
       manager.saveWelcomeMessage(
         agent,
         'my_welcome_message',
-        '_WELCOME_MESSAGE_ID_'
+        '_WELCOME_MESSAGE_ID_',
       ),
-    ])
+    ]),
   ).resolves.toEqual([false, false, false, false]);
 
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
@@ -136,14 +136,14 @@ test('save asset id', async () => {
       manager.saveCustomProfile(
         agent,
         'my_custom_profile',
-        '_CUSTOM_PROFILE_ID_'
+        '_CUSTOM_PROFILE_ID_',
       ),
       manager.saveWelcomeMessage(
         agent,
         'my_welcome_message',
-        '_WELCOME_MESSAGE_ID_'
+        '_WELCOME_MESSAGE_ID_',
       ),
-    ])
+    ]),
   ).resolves.toEqual([true, true, true, true]);
 
   expect(stateController.globalState).toHaveBeenCalledTimes(8);
@@ -159,7 +159,7 @@ test('get all assets', async () => {
       manager.getAllMedia(agent),
       manager.getAllCustomProfiles(agent),
       manager.getAllWelcomeMessages(agent),
-    ])
+    ]),
   ).resolves.toEqual([null, null, null, null]);
 
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
@@ -186,7 +186,7 @@ test('get all assets', async () => {
       manager.getAllMedia(agent),
       manager.getAllCustomProfiles(agent),
       manager.getAllWelcomeMessages(agent),
-    ])
+    ]),
   ).resolves.toEqual([assetsMap, assetsMap, assetsMap, assetsMap]);
 
   expect(stateController.globalState).toHaveBeenCalledTimes(8);
@@ -202,7 +202,7 @@ test('unsave asset id', async () => {
       manager.unsaveMedia(agent, 'my_media'),
       manager.unsaveCustomProfile(agent, 'my_custom_profile'),
       manager.unsaveWelcomeMessage(agent, 'my_welcome_message'),
-    ])
+    ]),
   ).resolves.toEqual([true, true, true, true]);
 
   expect(stateController.globalState).toHaveBeenCalledTimes(4);
@@ -230,7 +230,7 @@ test('unsave asset id', async () => {
       manager.unsaveMedia(agent, 'my_media'),
       manager.unsaveCustomProfile(agent, 'my_custom_profile'),
       manager.unsaveWelcomeMessage(agent, 'my_welcome_message'),
-    ])
+    ]),
   ).resolves.toEqual([false, false, false, false]);
 
   expect(stateController.globalState).toHaveBeenCalledTimes(8);
@@ -257,14 +257,14 @@ describe('.uploadMedia(tag, media)', () => {
     bot.uploadMedia.mock.fake(async () => [uploadResponse]);
 
     await expect(manager.uploadMedia(agent, 'foo', photo)).resolves.toEqual(
-      uploadResponse
+      uploadResponse,
     );
 
     expect(bot.uploadMedia).toHaveBeenCalledTimes(1);
     expect(bot.uploadMedia).toHaveBeenCalledWith(agent, photo);
 
     expect(
-      stateController.globalState.mock.calls[0].args[0]
+      stateController.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"$twtr.media.1234567890"`);
 
     expect(state.set).toHaveBeenCalledTimes(1);
@@ -275,7 +275,7 @@ describe('.uploadMedia(tag, media)', () => {
     const manager = new TwitterAssetsManager(bot, stateController);
 
     await expect(
-      manager.uploadMedia(agent, 'foo', null)
+      manager.uploadMedia(agent, 'foo', null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"media content is empty"`);
 
     expect(state.set).not.toHaveBeenCalled();
@@ -298,24 +298,24 @@ test('.createWelcomeMessage(name, message)', async () => {
     manager.createWelcomeMessage(
       agent,
       'my_welcome_message',
-      <p>Hello World!</p>
-    )
+      <p>Hello World!</p>,
+    ),
   ).resolves.toBe('844385345234');
 
   expect(bot.createWelcomeMessage).toHaveBeenCalledWith(
     agent,
     'my_welcome_message',
-    <p>Hello World!</p>
+    <p>Hello World!</p>,
   );
 
   expect(
-    stateController.globalState.mock.calls[0].args[0]
+    stateController.globalState.mock.calls[0].args[0],
   ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_welcome_message', '844385345234');
 
   bot.createWelcomeMessage.mock.fake(async () => null);
   await expect(
-    manager.createWelcomeMessage(agent, 'my_welcome_message', null)
+    manager.createWelcomeMessage(agent, 'my_welcome_message', null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"message content is empty"`);
 
   expect(state.set).toHaveBeenCalledTimes(1);
@@ -329,7 +329,7 @@ test('.deleteWelcomeMessage(name)', async () => {
   bot.requestApi.mock.fake(async () => ({}));
 
   await expect(
-    manager.deleteWelcomeMessage(agent, 'my_welcome_message')
+    manager.deleteWelcomeMessage(agent, 'my_welcome_message'),
   ).resolves.toBe('1234567890');
 
   expect(bot.requestApi).toHaveBeenCalledWith({
@@ -340,15 +340,15 @@ test('.deleteWelcomeMessage(name)', async () => {
   });
 
   expect(
-    stateController.globalState.mock.calls[0].args[0]
+    stateController.globalState.mock.calls[0].args[0],
   ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
   expect(state.delete).toHaveBeenCalledWith('my_welcome_message');
 
   state.get.mock.fake(async () => undefined);
   await expect(
-    manager.deleteCustomProfile(agent, 'my_welcome_message')
+    manager.deleteCustomProfile(agent, 'my_welcome_message'),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"custom profile [my_welcome_message] doesn't exist"`
+    `"custom profile [my_welcome_message] doesn't exist"`,
   );
 
   expect(state.delete).toHaveBeenCalledTimes(1);
@@ -376,8 +376,8 @@ test('.createCustomProfile(tag, name, img)', async () => {
       agent,
       'my_custom_profile',
       'Jon C, Partner Engineer',
-      '9876543210'
-    )
+      '9876543210',
+    ),
   ).resolves.toBe('1234567890');
 
   expect(bot.requestApi).toHaveBeenCalledWith({
@@ -393,7 +393,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
   });
 
   expect(
-    stateController.globalState.mock.calls[0].args[0]
+    stateController.globalState.mock.calls[0].args[0],
   ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_custom_profile', '1234567890');
 
@@ -408,7 +408,7 @@ test('.deleteCustomProfile(name)', async () => {
   bot.requestApi.mock.fake(async () => ({}));
 
   await expect(
-    manager.deleteCustomProfile(agent, 'my_custom_profile')
+    manager.deleteCustomProfile(agent, 'my_custom_profile'),
   ).resolves.toBe('1234567890');
 
   expect(bot.requestApi).toHaveBeenCalledWith({
@@ -419,15 +419,15 @@ test('.deleteCustomProfile(name)', async () => {
   });
 
   expect(
-    stateController.globalState.mock.calls[0].args[0]
+    stateController.globalState.mock.calls[0].args[0],
   ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
   expect(state.delete).toHaveBeenCalledWith('my_custom_profile');
 
   state.get.mock.fake(async () => undefined);
   await expect(
-    manager.deleteCustomProfile(agent, 'my_custom_profile')
+    manager.deleteCustomProfile(agent, 'my_custom_profile'),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"custom profile [my_custom_profile] doesn't exist"`
+    `"custom profile [my_custom_profile] doesn't exist"`,
   );
 
   expect(state.delete).toHaveBeenCalledTimes(1);

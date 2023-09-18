@@ -1,6 +1,6 @@
 import querystring from 'querystring';
 import nock from 'nock';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import _Renderer from '@sociably/core/renderer';
@@ -18,24 +18,16 @@ const Worker = _Worker as Moxy<typeof _Worker>;
 nock.disableNetConnect();
 
 jest.mock('@sociably/core/engine', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/engine')),
+  moxy(jest.requireActual('@sociably/core/engine')),
 );
 jest.mock('@sociably/core/renderer', () =>
-  jest
-    .requireActual('@moxyjs/moxy')
-    .moxy(jest.requireActual('@sociably/core/renderer')),
+  moxy(jest.requireActual('@sociably/core/renderer')),
 );
-jest.mock('@sociably/meta-api', () => {
-  const module = jest.requireActual('@sociably/meta-api');
-  return {
-    ...module,
-    MetaApiWorker: jest
-      .requireActual('@moxyjs/moxy')
-      .moxy(module.MetaApiWorker),
-  };
-});
+jest.mock('@sociably/meta-api', () =>
+  moxy(jest.requireActual('@sociably/meta-api'), {
+    includeProperties: ['MetaApiWorker'],
+  }),
+);
 
 const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
@@ -252,7 +244,7 @@ describe('#uploadMedia(message)', () => {
 
     const result = await bot.uploadMedia(
       new WhatsAppAgent('1234567890'),
-      <Image fileData={Buffer.from('foo')} fileType="image/png" />,
+      <Image file={{ data: Buffer.from('foo'), contentType: 'image/png' }} />,
     );
     expect(result).toEqual({ id: 401759795 });
 

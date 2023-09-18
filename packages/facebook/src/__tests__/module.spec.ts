@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -64,7 +64,7 @@ describe('initModule(configs)', () => {
     expect(typeof module.startHook).toBe('function');
     expect(module.eventMiddlewares).toEqual([eventMiddleware]);
     expect(module.dispatchMiddlewares).toEqual(
-      expect.arrayContaining([dispatchMiddleware, saveReusableAttachments])
+      expect.arrayContaining([dispatchMiddleware, saveReusableAttachments]),
     );
   });
 
@@ -164,7 +164,7 @@ describe('initModule(configs)', () => {
         FacebookChat,
         FacebookUser,
         FacebookUserProfile,
-      ])
+      ]),
     );
 
     bot.stop();
@@ -227,17 +227,17 @@ describe('initModule(configs)', () => {
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(new FacebookPage('1234567890'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('1234567890')),
     ).resolves.toEqual(agentSettings);
     await expect(
-      agentSettingsAccessor.getAgentSettings(new FacebookPage('9876543210'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('9876543210')),
     ).resolves.toEqual(null);
 
     await expect(
       agentSettingsAccessor.getAgentSettingsBatch([
         new FacebookPage('1234567890'),
         new FacebookPage('9876543210'),
-      ])
+      ]),
     ).resolves.toEqual([agentSettings, null]);
 
     await app.stop();
@@ -271,19 +271,19 @@ describe('initModule(configs)', () => {
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(new FacebookPage('1234567890'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('1234567890')),
     ).resolves.toEqual({
       pageId: '1234567890',
       accessToken: '_ACCESS_TOKEN_1_',
     });
     await expect(
-      agentSettingsAccessor.getAgentSettings(new FacebookPage('9876543210'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('9876543210')),
     ).resolves.toEqual({
       pageId: '9876543210',
       accessToken: '_ACCESS_TOKEN_2_',
     });
     await expect(
-      agentSettingsAccessor.getAgentSettings(new FacebookPage('8888888888'))
+      agentSettingsAccessor.getAgentSettings(new FacebookPage('8888888888')),
     ).resolves.toBe(null);
 
     await expect(
@@ -291,7 +291,7 @@ describe('initModule(configs)', () => {
         new FacebookPage('9876543210'),
         new FacebookPage('1234567890'),
         new FacebookPage('8888888888'),
-      ])
+      ]),
     ).resolves.toEqual([
       { pageId: '9876543210', accessToken: '_ACCESS_TOKEN_2_' },
       { pageId: '1234567890', accessToken: '_ACCESS_TOKEN_1_' },
@@ -311,7 +311,7 @@ describe('initModule(configs)', () => {
       getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
     const myPageSettingsService = serviceProviderFactory({})(
-      () => settingsAccessor
+      () => settingsAccessor,
     );
 
     const app = Sociably.createApp({
@@ -342,9 +342,9 @@ describe('initModule(configs)', () => {
         appId: '...',
         appSecret: '...',
         webhookVerifyToken: '...',
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Facebook platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
+      `"Facebook platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`,
     );
   });
 

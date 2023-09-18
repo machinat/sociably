@@ -1,6 +1,6 @@
 import url from 'url';
 import { performance } from 'perf_hooks';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import { JSDOM } from 'jsdom';
 import ClientAuthenticator from '../ClientAuthenticator.js';
 import LineChannel from '../../Channel.js';
@@ -51,10 +51,10 @@ const window = moxy(
     document,
     liff,
     location: url.parse(
-      'https://sociably.io/foo?bar=baz'
+      'https://sociably.io/foo?bar=baz',
     ) as unknown as Moxy<Location>,
   },
-  { includeProperties: ['*'] }
+  { includeProperties: ['*'] },
 );
 
 global.window = window as never;
@@ -88,7 +88,7 @@ describe('.constructor()', () => {
         LineChat,
         UserProfile,
         GroupProfile,
-      ])
+      ]),
     );
   });
 });
@@ -102,7 +102,7 @@ describe('.init()', () => {
     const liffScriptEle: any = window.document.getElementById('LIFF');
     expect(liffScriptEle.tagName).toBe('SCRIPT');
     expect(liffScriptEle.getAttribute('src')).toBe(
-      'https://static.line-scdn.net/liff/edge/2/sdk.js'
+      'https://static.line-scdn.net/liff/edge/2/sdk.js',
     );
     expect(liff.init).not.toHaveBeenCalled();
 
@@ -121,7 +121,7 @@ describe('.init()', () => {
     });
 
     await expect(
-      authenticator.init('https://...', null, null)
+      authenticator.init('https://...', null, null),
     ).resolves.toEqual({ forceSignIn: false });
 
     expect(document.getElementById('LIFF')).toBe(null);
@@ -132,7 +132,7 @@ describe('.init()', () => {
     window.mock
       .getter('location')
       .fakeReturnValue(
-        url.parse('https://sociably.io/foo?bar=baz&liffId=_LIFF_ID_')
+        url.parse('https://sociably.io/foo?bar=baz&liffId=_LIFF_ID_'),
       );
 
     const authenticator = new ClientAuthenticator({
@@ -151,9 +151,9 @@ describe('.init()', () => {
     });
 
     await expect(
-      authenticator.init('https://...', null, null)
+      authenticator.init('https://...', null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"liff id is required on either \`options.liffId\` or \`liffId\` query param"`
+      `"liff id is required on either \`options.liffId\` or \`liffId\` query param"`,
     );
   });
 
@@ -173,7 +173,7 @@ describe('.init()', () => {
     setImmediate(jest.runAllTimers);
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"redirect timeout"`
+      `"redirect timeout"`,
     );
     expect(liff.init).toHaveBeenCalledTimes(1);
 
@@ -218,9 +218,9 @@ describe('.init()', () => {
           lang: 'en-US',
           user: '_USER_ID_',
           ...authDataAttrs,
-        })
+        }),
       ).resolves.toEqual({ forceSignIn: shouldForceSignIn });
-    }
+    },
   );
 });
 
@@ -254,8 +254,8 @@ describe('.fetchCredential()', () => {
       .getter('location')
       .fakeReturnValue(
         url.parse(
-          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_'
-        )
+          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_',
+        ),
       );
 
     const authenticator = new ClientAuthenticator({
@@ -283,8 +283,8 @@ describe('.fetchCredential()', () => {
       .getter('location')
       .fakeReturnValue(
         url.parse(
-          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_&groupId=_GROUP_ID_'
-        )
+          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_&groupId=_GROUP_ID_',
+        ),
       );
 
     const authenticator = new ClientAuthenticator({
@@ -313,8 +313,8 @@ describe('.fetchCredential()', () => {
       .getter('location')
       .fakeReturnValue(
         url.parse(
-          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_&roomId=_ROOM_ID_'
-        )
+          'https://sociably.io/foo?bar=baz&chatChannelId=_CHAT_CHANNEL_&roomId=_ROOM_ID_',
+        ),
       );
 
     const authenticator = new ClientAuthenticator({
@@ -361,7 +361,7 @@ describe('.fetchCredential()', () => {
     });
 
     await expect(promise).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"redirect timeout"`
+      `"redirect timeout"`,
     );
 
     jest.clearAllTimers();
@@ -413,7 +413,7 @@ describe('.checkAuthData(data)', () => {
         ref: RefChatType.Utou,
         os: LiffOs.Ios,
         lang: 'zh-TW',
-      })
+      }),
     ).toEqual({
       ok: true,
       contextDetails: {
@@ -443,7 +443,7 @@ describe('.checkAuthData(data)', () => {
         ref: RefChatType.Group,
         os: LiffOs.Ios,
         lang: 'zh-TW',
-      })
+      }),
     ).toEqual({
       ok: true,
       contextDetails: {
@@ -473,7 +473,7 @@ describe('.checkAuthData(data)', () => {
         ref: RefChatType.Room,
         os: LiffOs.Android,
         lang: 'jp',
-      })
+      }),
     ).toEqual({
       ok: true,
       contextDetails: {

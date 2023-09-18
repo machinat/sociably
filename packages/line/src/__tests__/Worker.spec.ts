@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
 import LineChannel from '../Channel.js';
@@ -21,21 +21,15 @@ const agentSettingsAccessor = moxy({
   getLineLoginChannelSettings: async () => null,
 });
 
-const authorizationHeaderSpy = moxy(() => true);
-
-let lineApi;
+let lineApi: nock.Scope;
 let queue;
 beforeEach(() => {
   lineApi = nock('https://api.line.me', {
     reqheaders: {
       'content-type': 'application/json',
-      authorization: authorizationHeaderSpy,
     },
   });
-
   queue = new Queue();
-
-  authorizationHeaderSpy.mock.clear();
   agentSettingsAccessor.mock.reset();
 });
 
@@ -43,12 +37,36 @@ it('makes calls to api', async () => {
   const client = new LineWorker(agentSettingsAccessor, 10);
 
   const apiAssertions = [
-    lineApi.get('/foo/1?id=1').delay(100).reply(200, { id: 1 }),
-    lineApi.post('/bar/1', { id: 2 }).delay(100).reply(200, { id: 2 }),
-    lineApi.put('/baz/1', { id: 3 }).delay(100).reply(200, { id: 3 }),
-    lineApi.post('/foo/2', { id: 4 }).delay(100).reply(200, { id: 4 }),
-    lineApi.delete('/bar/2?id=5').delay(100).reply(200, { id: 5 }),
-    lineApi.post('/baz/2', { id: 6 }).delay(100).reply(200, { id: 6 }),
+    lineApi
+      .get('/foo/1?id=1')
+      .matchHeader('authorization', 'Bearer __ACCESS_TOKEN_1__')
+      .delay(100)
+      .reply(200, { id: 1 }),
+    lineApi
+      .post('/bar/1', { id: 2 })
+      .matchHeader('authorization', 'Bearer __ACCESS_TOKEN_1__')
+      .delay(100)
+      .reply(200, { id: 2 }),
+    lineApi
+      .put('/baz/1', { id: 3 })
+      .matchHeader('authorization', 'Bearer __ACCESS_TOKEN_1__')
+      .delay(100)
+      .reply(200, { id: 3 }),
+    lineApi
+      .post('/foo/2', { id: 4 })
+      .matchHeader('authorization', 'Bearer __ACCESS_TOKEN_2__')
+      .delay(100)
+      .reply(200, { id: 4 }),
+    lineApi
+      .delete('/bar/2?id=5')
+      .matchHeader('authorization', 'Bearer __ACCESS_TOKEN_2__')
+      .delay(100)
+      .reply(200, { id: 5 }),
+    lineApi
+      .post('/baz/2', { id: 6 })
+      .matchHeader('authorization', 'Bearer __ACCESS_TOKEN_3__')
+      .delay(100)
+      .reply(200, { id: 6 }),
   ];
 
   client.start(queue);
@@ -95,8 +113,8 @@ it('makes calls to api', async () => {
   const promise = queue.executeJobs(jobs);
 
   await delay(100);
-  for (const scope of apiAssertions) {
-    expect(scope.isDone()).toBe(true);
+  for (const apiCall of apiAssertions) {
+    expect(apiCall.isDone()).toBe(true);
   }
 
   await expect(promise).resolves.toEqual({
@@ -118,11 +136,7 @@ it('makes calls to api', async () => {
   jobs.forEach(({ chatChannelId }, i) => {
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenNthCalledWith(
       i + 1,
-      new LineChannel(chatChannelId)
-    );
-    expect(authorizationHeaderSpy).toHaveBeenNthCalledWith(
-      i + 1,
-      `Bearer __ACCESS_TOKEN_${chatChannelId}__`
+      new LineChannel(chatChannelId),
     );
   });
 });
@@ -135,7 +149,7 @@ it('fail if unable to get channel setting', async () => {
   agentSettingsAccessor.getAgentSettings.mock.fake(async (channel) =>
     channel.id === '1'
       ? null
-      : { accessToken: `__ACCESS_TOKEN_${channel.id}__` }
+      : { accessToken: `__ACCESS_TOKEN_${channel.id}__` },
   );
 
   client.start(queue);
@@ -170,7 +184,7 @@ it('fail if unable to get channel setting', async () => {
         key: 'baz',
         chatChannelId: '1',
       },
-    ])
+    ]),
   ).resolves.toMatchInlineSnapshot(`
                     {
                       "batch": [
@@ -246,7 +260,7 @@ it('fail if connection error happen', async () => {
         key: 'foo',
         chatChannelId: '1',
       },
-    ])
+    ]),
   ).resolves.toMatchInlineSnapshot(`
     {
       "batch": [
@@ -327,7 +341,7 @@ it('fail if api error happen', async () => {
         key: 'foo',
         chatChannelId: '1',
       },
-    ])
+    ]),
   ).resolves.toMatchInlineSnapshot(`
     {
       "batch": [
@@ -367,10 +381,12 @@ it('fail if api error happen', async () => {
 
 it('sequently excute jobs within an identical thread', async () => {
   const client = new LineWorker(agentSettingsAccessor, 10);
+  const authorizationHeaderSpy = moxy(() => true);
 
   const bodySpy = moxy(() => true);
   const msgScope = lineApi
     .post(/^\/v2\/bot\/message/, bodySpy)
+    .matchHeader('authorization', authorizationHeaderSpy)
     .delay(100)
     .times(9)
     .reply(200, '{}');

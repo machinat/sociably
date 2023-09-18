@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import ServerAuthenticator from '../ServerAuthenticator.js';
 import WebviewAction from '../WebviewAction.js';
 import LineChat from '../../Chat.js';
@@ -23,10 +23,10 @@ test('rendering to UrlButton', async () => {
   `);
 
   authenticator.getLiffUrl.mock.fakeReturnValue(
-    `https://liff.line.me/1234567890-AaBbCcDd/foo?bar=baz`
+    `https://liff.line.me/1234567890-AaBbCcDd/foo?bar=baz`,
   );
   await expect(
-    WebviewAction(authenticator, chat)({ label: 'Foo', page: '/foo?bar=baz' })
+    WebviewAction(authenticator, chat)({ label: 'Foo', page: '/foo?bar=baz' }),
   ).resolves.toMatchInlineSnapshot(`
     <UriAction
       label="Foo"
@@ -39,12 +39,12 @@ test('rendering to UrlButton', async () => {
     1,
     chat.channel,
     undefined,
-    chat
+    chat,
   );
   expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(
     2,
     chat.channel,
     '/foo?bar=baz',
-    chat
+    chat,
   );
 });

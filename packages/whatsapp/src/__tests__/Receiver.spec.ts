@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
-import { moxy, Mock } from '@moxyjs/moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import WhatsAppAgent from '../Agent.js';
 import WhatsAppChat from '../Chat.js';
 import WhatsAppUser from '../User.js';
@@ -13,7 +13,7 @@ const bot = moxy<WhatsAppBot>({
 
 const popEventMock = new Mock();
 const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify((ctx) => finalHandler(ctx))
+  popEventMock.proxify((ctx) => finalHandler(ctx)),
 );
 
 const createReq = ({
@@ -155,10 +155,10 @@ describe('handling POST', () => {
 
       expect(context.event.channel).toEqual(new WhatsAppAgent('1234567890'));
       expect(context.event.user).toEqual(
-        new WhatsAppUser('9876543210', { name: 'John' })
+        new WhatsAppUser('9876543210', { name: 'John' }),
       );
       expect(context.event.thread).toEqual(
-        new WhatsAppChat('1234567890', '9876543210')
+        new WhatsAppChat('1234567890', '9876543210'),
       );
 
       expect(context.metadata).toEqual({
@@ -194,7 +194,7 @@ describe('handling POST', () => {
         body: '{"object":"whatsapp_business_account","entry":[{"id":"WHATSAPP_BUSINESS_ACCOUNT_ID","changes":[{"value":{"messaging_product":"whatsapp","metadata":{"display_phone_number":"+1 234567890","phone_number_id":"1234567890"},"contacts":[{"profile":{"name":"NAME"},"wa_id":"9876543210"}],"messages":[{"from":"9876543210","id":"wamid.ID1","timestamp":1661242706857,"text":{"body":"MESSAGE_BODY"},"type":"text"}]},"field":"messages"}]}]}',
       }),
       createRes(),
-      routingInfo
+      routingInfo,
     );
 
     expect(popEventMock).toHaveBeenCalledTimes(1);

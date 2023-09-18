@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import TwitterUser from '../../User.js';
 import TwitterChat from '../../Chat.js';
 import UserProfile from '../../UserProfile.js';
@@ -63,7 +63,7 @@ it('.closeWebview() redirect to twitter chat deep link in mobile devices', () =>
   navigator.mock
     .getter('userAgent')
     .fakeReturnValue(
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
     );
 
   expect(authenticator.closeWebview(null)).toBe(false);
@@ -71,7 +71,7 @@ it('.closeWebview() redirect to twitter chat deep link in mobile devices', () =>
 
   expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
   expect(location.mock.setter('href').calls[0].args[0]).toMatchInlineSnapshot(
-    `"https://twitter.com/messages/compose?recipient_id=12345"`
+    `"https://twitter.com/messages/compose?recipient_id=12345"`,
   );
 });
 
@@ -80,7 +80,7 @@ test('.checkAuthData(data)', () => {
     authenticator.checkAuthData({
       agent: '1234567890',
       user: { id: '9876543210', data: rawUserData },
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {

@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
 import type { InstagramBot } from '../../Bot.js';
@@ -51,7 +51,7 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
 
       await expect(
@@ -61,7 +61,7 @@ describe('subscription management', () => {
           webhookVerifyToken: '_VERIFY_TOKEN_',
           objectType: 'user',
           fields: ['foo_field', 'bar_field'],
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -89,7 +89,7 @@ describe('subscription management', () => {
           webhookVerifyToken: '_VERIFY_TOKEN_',
           webhookUrl: 'https://foo.bar/baz/',
           subscriptionFields: ['messages', 'messaging_postbacks'],
-        }
+        },
       );
 
       await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
@@ -117,11 +117,11 @@ describe('subscription management', () => {
         {
           appId: '_APP_ID_',
           webhookVerifyToken: '_VERIFY_TOKEN_',
-        }
+        },
       );
 
       await expect(
-        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' })
+        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -140,15 +140,15 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           webhookVerifyToken: '_VERIFY_TOKEN_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -157,15 +157,15 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
       await expect(
         manager.setAppSubscription({
           appId: '_APP_ID_',
           webhookVerifyToken: '_VERIFY_TOKEN_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -174,15 +174,15 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           appId: '_APP_ID_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -196,7 +196,7 @@ describe('subscription management', () => {
         agentSettingsAccessor,
         {
           appId: '_APP_ID_',
-        }
+        },
       );
 
       await expect(manager.deleteAppSubscription()).resolves.toBe(undefined);
@@ -214,7 +214,7 @@ describe('subscription management', () => {
           objectType: 'user',
           fields: ['foo_field', 'bar_field'],
           appId: '_ANOTHER_APP_ID_',
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -233,11 +233,11 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
 
       await expect(
-        manager.deleteAppSubscription()
+        manager.deleteAppSubscription(),
       ).rejects.toThrowErrorMatchingInlineSnapshot(`"appId is empty"`);
 
       expect(bot.requestApi).not.toHaveBeenCalled();
@@ -249,14 +249,14 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
 
       await expect(
         manager.setSubscribedApp(agent, {
           fields: ['messages', 'messaging_postbacks'],
           accessToken: '_ACCESS_TOKEN_',
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -282,7 +282,7 @@ describe('subscription management', () => {
             'messaging_postbacks',
             'messaging_optins',
           ],
-        }
+        },
       );
 
       await expect(manager.setSubscribedApp(agent)).resolves.toBe(undefined);
@@ -306,7 +306,7 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
       await expect(manager.setSubscribedApp(agent)).resolves.toBe(undefined);
 
@@ -332,7 +332,7 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
 
       await expect(manager.deleteSubscribedApp(agent)).resolves.toBe(undefined);
@@ -402,17 +402,17 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
       bot.requestApi.mock.fake(async ({ method }) =>
-        method === 'GET' ? { data: [] } : {}
+        method === 'GET' ? { data: [] } : {},
       );
 
       await expect(
         manager.setMessengerProfile(agent, {
           ...messengerProfileParams,
           accessToken: '_ACCESS_TOKEN_',
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -449,7 +449,7 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
       bot.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
@@ -460,13 +460,13 @@ describe('subscription management', () => {
                 },
               ],
             }
-          : {}
+          : {},
       );
 
       await expect(
         manager.setMessengerProfile(agent, {
           persistentMenu: messengerProfileParams.persistentMenu,
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
@@ -494,10 +494,10 @@ describe('subscription management', () => {
       const manager = new InstagramAssetsManager(
         stateController,
         bot,
-        agentSettingsAccessor
+        agentSettingsAccessor,
       );
       bot.requestApi.mock.fake(async ({ method }) =>
-        method === 'GET' ? { data: [messengerProfileRawData] } : {}
+        method === 'GET' ? { data: [messengerProfileRawData] } : {},
       );
 
       await expect(
@@ -513,7 +513,7 @@ describe('subscription management', () => {
               locale: 'zh_TW',
             },
           ],
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -544,14 +544,14 @@ describe('assets management', () => {
     const manager = new InstagramAssetsManager(
       stateController,
       bot,
-      agentSettingsAccessor
+      agentSettingsAccessor,
     );
 
     await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe(
-      undefined
+      undefined,
     );
     await expect(manager.getAttachment(agent, 'my_attachment')).resolves.toBe(
-      undefined
+      undefined,
     );
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -572,7 +572,7 @@ describe('assets management', () => {
 
     state.get.mock.fakeReturnValue('_ATTACHMENT_ID_');
     await expect(manager.getAttachment(agent, 'my_attachment')).resolves.toBe(
-      '_ATTACHMENT_ID_'
+      '_ATTACHMENT_ID_',
     );
 
     state.get.mock.fakeReturnValue('_PERSONA_ID_');
@@ -585,14 +585,14 @@ describe('assets management', () => {
     const manager = new InstagramAssetsManager(
       stateController,
       bot,
-      agentSettingsAccessor
+      agentSettingsAccessor,
     );
 
     await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
-      false
+      false,
     );
     await expect(
-      manager.saveAttachment(agent, 'my_attachment', '_ATTACHMENT_ID_')
+      manager.saveAttachment(agent, 'my_attachment', '_ATTACHMENT_ID_'),
     ).resolves.toBe(false);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -609,15 +609,15 @@ describe('assets management', () => {
     expect(state.set).toHaveBeenNthCalledWith(
       2,
       'my_attachment',
-      '_ATTACHMENT_ID_'
+      '_ATTACHMENT_ID_',
     );
 
     state.set.mock.fake(async () => true);
     await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
-      true
+      true,
     );
     await expect(
-      manager.saveAttachment(agent, 'my_attachment', '_ATTACHMENT_ID_')
+      manager.saveAttachment(agent, 'my_attachment', '_ATTACHMENT_ID_'),
     ).resolves.toBe(true);
     expect(state.set).toHaveBeenCalledTimes(4);
   });
@@ -626,7 +626,7 @@ describe('assets management', () => {
     const manager = new InstagramAssetsManager(
       stateController,
       bot,
-      agentSettingsAccessor
+      agentSettingsAccessor,
     );
 
     await expect(manager.getAllAssets(agent, 'foo')).resolves.toBe(null);
@@ -650,7 +650,7 @@ describe('assets management', () => {
     state.getAll.mock.fake(async () => resources);
 
     await expect(manager.getAllAssets(agent, 'foo')).resolves.toEqual(
-      resources
+      resources,
     );
     await expect(manager.getAllAttachments(agent)).resolves.toEqual(resources);
   });
@@ -659,14 +659,14 @@ describe('assets management', () => {
     const manager = new InstagramAssetsManager(
       stateController,
       bot,
-      agentSettingsAccessor
+      agentSettingsAccessor,
     );
 
     await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
-      true
+      true,
     );
     await expect(
-      manager.unsaveAttachment(agent, 'my_attachment')
+      manager.unsaveAttachment(agent, 'my_attachment'),
     ).resolves.toBe(true);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -684,10 +684,10 @@ describe('assets management', () => {
 
     state.delete.mock.fake(async () => false);
     await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
-      false
+      false,
     );
     await expect(
-      manager.unsaveAttachment(agent, 'my_attachment')
+      manager.unsaveAttachment(agent, 'my_attachment'),
     ).resolves.toBe(false);
     expect(state.delete).toHaveBeenCalledTimes(4);
   });
@@ -696,7 +696,7 @@ describe('assets management', () => {
     const manager = new InstagramAssetsManager(
       stateController,
       bot,
-      agentSettingsAccessor
+      agentSettingsAccessor,
     );
     bot.uploadChatAttachment.mock.fake(async () => ({
       attachmentId: '1857777774821032',
@@ -706,14 +706,14 @@ describe('assets management', () => {
       manager.uploadChatAttachment(
         agent,
         'my_avatar',
-        <img src="http://foo.bar/avatar" />
-      )
+        <img src="http://foo.bar/avatar" />,
+      ),
     ).resolves.toBe('1857777774821032');
 
     expect(bot.uploadChatAttachment).toHaveBeenCalledTimes(1);
     expect(bot.uploadChatAttachment).toHaveBeenCalledWith(
       agent,
-      <img src="http://foo.bar/avatar" />
+      <img src="http://foo.bar/avatar" />,
     );
 
     expect(state.set).toHaveBeenCalledTimes(1);

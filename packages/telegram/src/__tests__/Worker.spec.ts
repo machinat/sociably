@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Queue from '@sociably/core/queue';
 import TelegramUser from '../User.js';
@@ -92,10 +92,10 @@ it('makes calls to api', async () => {
 
   expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(6);
   expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-    new TelegramUser(botId1, true)
+    new TelegramUser(botId1, true),
   );
   expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-    new TelegramUser(botId2, true)
+    new TelegramUser(botId2, true),
   );
 });
 
@@ -159,7 +159,7 @@ it('sequently excute jobs within the same identical chat', async () => {
       success: true,
       result: { ok: true, result: { n: i + 1 } },
       job,
-    }))
+    })),
   );
 });
 
@@ -230,7 +230,7 @@ it('open requests up to maxConnections', async () => {
       success: true,
       result: { ok: true, result: { n: i + 1 } },
       job,
-    }))
+    })),
   );
 });
 
@@ -364,12 +364,12 @@ test('with files', async () => {
       files: [
         {
           fieldName: 'photo',
-          data: '__PHOTO_CONTENT__',
-          assetTag: 'foo',
-          info: {
+          source: {
+            data: '__PHOTO_CONTENT__',
             contentType: 'image/png',
-            filename: 'my_photo.png',
+            fileName: 'my_photo.png',
           },
+          assetTag: 'foo',
         },
       ],
     },
@@ -387,12 +387,16 @@ test('with files', async () => {
       files: [
         {
           fieldName: 'my_video',
-          data: '__VIDEO_CONTENT__',
+          source: {
+            data: '__VIDEO_CONTENT__',
+          },
           assetTag: 'bar',
         },
         {
           fieldName: 'my_audio',
-          data: '__AUDIO_CONTENT__',
+          source: {
+            data: '__AUDIO_CONTENT__',
+          },
           assetTag: 'bar',
         },
       ],
@@ -420,8 +424,8 @@ test('with files', async () => {
   expect(bodySpy).toHaveBeenCalledTimes(2);
   expect(
     bodySpy.mock.calls.map(({ args }) =>
-      args[0].replace(/-{10}[0-9]+/g, 'BOUNDARY-PLACEHOLDER')
-    )
+      args[0].replace(/-{10}[0-9]+/g, 'BOUNDARY-PLACEHOLDER'),
+    ),
   ).toMatchSnapshot();
 
   expect(apiCallWithFile.isDone()).toBe(true);

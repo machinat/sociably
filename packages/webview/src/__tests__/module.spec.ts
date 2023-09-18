@@ -1,4 +1,4 @@
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import NextJs from 'next';
 import Sociably from '@sociably/core';
 import BaseBot from '@sociably/core/base/Bot';
@@ -134,7 +134,7 @@ test('service provisions', async () => {
     expect.arrayContaining([
       { name: 'auth', path: 'myAuth', handler: expect.any(Function) },
       { name: 'next', path: 'myView', handler: expect.any(Function) },
-    ])
+    ]),
   );
   expect(upgradeRoutes).toEqual([
     { name: 'websocket', path: 'mySocket', handler: expect.any(Function) },
@@ -168,7 +168,7 @@ test('with basicAuth', async () => {
   expect(basicAuthenticator).toBeInstanceOf(BasicAuthenticator);
   expect(basicAuthenticator.appName).toBe('Hello World');
   expect(basicAuthenticator.appIconUrl).toBe(
-    'https://sociably.io/img/logo.png'
+    'https://sociably.io/img/logo.png',
   );
 });
 
@@ -202,7 +202,7 @@ test('with noNextServer option', async () => {
       { require: Webview.NextServer, optional: true },
       Http.RequestRouteList,
       Http.UpgradeRouteList,
-    ]
+    ],
   );
 
   expect(nextReceiver).toBe(null);
@@ -276,7 +276,7 @@ test('provide base interfaces', async () => {
 
   expect(bots.get('webview')).toBeInstanceOf(WebviewBot);
   expect(marshalTypes).toEqual(
-    expect.arrayContaining([WebviewConnection, MemoCacheTarget])
+    expect.arrayContaining([WebviewConnection, MemoCacheTarget]),
   );
   await app.stop();
 });

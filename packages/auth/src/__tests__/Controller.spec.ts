@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
 import jwt from 'jsonwebtoken';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import { AuthController } from '../Controller.js';
 import { AnyServerAuthenticator } from '../types.js';
 import HttpOperator from '../HttpOperator.js';
@@ -17,7 +17,7 @@ const prepareReq = (
   method,
   url,
   headers,
-  body
+  body,
 ): Moxy<IncomingMessage & { method: string; url: string }> => {
   const req = moxy(
     new Readable({
@@ -25,7 +25,7 @@ const prepareReq = (
         this.push(typeof body === 'string' ? body : JSON.stringify(body));
         this.push(null);
       },
-    })
+    }),
   );
   req.mock.getter('url').fake(() => url);
   req.mock.getter('method').fake(() => method);
@@ -100,7 +100,7 @@ describe('#constructor()', () => {
   it('initiate ok', () => {
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     expect(controller.authenticators).toBe(authenticators);
     expect(controller.secret).toBe(secret);
@@ -108,15 +108,18 @@ describe('#constructor()', () => {
 
   it('throw if options.authenticators is empty', () => {
     expect(
-      () => new AuthController(new HttpOperator({ secret, serverUrl }), [])
+      () => new AuthController(new HttpOperator({ secret, serverUrl }), []),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.authenticators must not be empty"`
+      `"options.authenticators must not be empty"`,
     );
     expect(
       () =>
-        new AuthController(new HttpOperator({ secret, serverUrl }), null as any)
+        new AuthController(
+          new HttpOperator({ secret, serverUrl }),
+          null as any,
+        ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"options.authenticators must not be empty"`
+      `"options.authenticators must not be empty"`,
     );
   });
 });
@@ -131,7 +134,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 403 if being called outside fo apiPath scope', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl, apiPath: '/auth' }),
-        authenticators
+        authenticators,
       );
 
       let req = prepareReq('GET', 'https://auth.sociably.io', {}, '');
@@ -165,7 +168,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 403 if being called on apiPath directly', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       const req = prepareReq('GET', 'https://auth.sociably.io', {}, '');
 
@@ -186,7 +189,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('delegate to provider correponded to the platform in the route', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       res.mock.getter('finished').fakeReturnValue(true);
 
@@ -202,7 +205,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           basePath: '/',
           matchedPath: 'foo',
           trailingPath: '',
-        }
+        },
       );
 
       req = prepareReq('GET', 'https://auth.sociably.io/bar/baz', {}, '');
@@ -217,7 +220,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           basePath: '/',
           matchedPath: 'bar',
           trailingPath: 'baz',
-        }
+        },
       );
 
       expect(res.end).not.toHaveBeenCalled();
@@ -226,7 +229,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 501 if res not closed by provider', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       const req = prepareReq('GET', 'https://auth.sociably.io/foo', {}, '');
 
@@ -250,7 +253,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 404 if no matched provider', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       const req = prepareReq('GET', 'https://auth.sociably.io/baz', {}, '');
 
@@ -276,7 +279,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -305,14 +308,14 @@ describe('#delegateAuthRequest(req, res)', () => {
         'POST',
         'http://auth.sociably.io/_sign',
         {},
-        { platform: 'foo', credential: { foo: 'data' } }
+        { platform: 'foo', credential: { foo: 'data' } },
       );
     });
 
     it('sign cookie and respond token if provider verfication passed', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -355,8 +358,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(
         jwt.verify(
           `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
-          '__SECRET__'
-        )
+          '__SECRET__',
+        ),
       ).toMatchInlineSnapshot(`
         {
           "data": {
@@ -392,7 +395,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           cookieSameSite: 'strict',
           secure: false,
         }),
-        authenticators
+        authenticators,
       );
 
       await controller.handleRequest(req, res);
@@ -428,8 +431,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(
         jwt.verify(
           `${token}.${cookies.get('sociably_auth_signature').value}`,
-          '__SECRET__'
-        )
+          '__SECRET__',
+        ),
       ).toMatchInlineSnapshot(`
         {
           "data": {
@@ -452,12 +455,12 @@ describe('#delegateAuthRequest(req, res)', () => {
         'POST',
         'http://auth.sociably.io/_sign',
         {},
-        { platform: 'baz', credential: { baz: 'data' } }
+        { platform: 'baz', credential: { baz: 'data' } },
       );
 
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -487,7 +490,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -510,13 +513,13 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 400 if invalid body received', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       const url = 'http://auth.sociably.io/_sign';
 
       await controller.handleRequest(
         prepareReq('POST', url, {}, '"Woooof"'),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -530,7 +533,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, {}, 'Prrrrrrr'),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -544,7 +547,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, {}, { hey: 'Roarrrr' }),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -564,7 +567,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -582,11 +585,11 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 405 if non POST request called on prvate api', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(
         prepareReq('GET', 'https://auth.sociably.io/_sign', {}, ''),
-        res
+        res,
       );
       expect(res.statusCode).toBe(405);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -617,7 +620,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         'POST',
         'http://auth.sociably.io/_refresh',
         { cookie: `sociably_auth_signature=${signature}` },
-        { token }
+        { token },
       );
       res = moxy(new ServerResponse({} as never));
     });
@@ -625,7 +628,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('refresh token if provider.verifyRefreshment() passed', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -662,8 +665,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(
         jwt.verify(
           `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
-          '__SECRET__'
-        )
+          '__SECRET__',
+        ),
       ).toMatchInlineSnapshot(`
         {
           "data": {
@@ -699,7 +702,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           cookieSameSite: 'strict',
           secure: false,
         }),
-        authenticators
+        authenticators,
       );
 
       await controller.handleRequest(req, res);
@@ -732,8 +735,8 @@ describe('#delegateAuthRequest(req, res)', () => {
       expect(
         jwt.verify(
           `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
-          '__SECRET__'
-        )
+          '__SECRET__',
+        ),
       ).toMatchInlineSnapshot(`
         {
           "data": {
@@ -764,12 +767,12 @@ describe('#delegateAuthRequest(req, res)', () => {
         'POST',
         'http://auth.sociably.io/_refresh',
         { cookie: `sociably_auth_signature=${signature}` },
-        { token }
+        { token },
       );
 
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -797,7 +800,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -821,7 +824,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -858,7 +861,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 401 if refreshDuration expired', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl, refreshDuration: 66666 }),
-        authenticators
+        authenticators,
       );
 
       const [token, signature] = prepareToken({
@@ -873,7 +876,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         'POST',
         'http://auth.sociably.io/_refresh',
         { cookie: `sociably_auth_signature=${signature}` },
-        { token }
+        { token },
       );
 
       await controller.handleRequest(req, res);
@@ -896,14 +899,14 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 400 if invalid body received', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       const url = 'http://auth.sociably.io/_refresh';
       const header = { cookie: `sociably_auth_signature=SOMETHING_WHATEVER` };
 
       await controller.handleRequest(
         prepareReq('POST', url, header, '"Woooof"'),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -917,7 +920,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, 'Prrrrrrr'),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -931,7 +934,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, { hey: 'Roarrrr' }),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -950,7 +953,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       });
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(req, res);
 
@@ -968,11 +971,11 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 405 if non POST request called on prvate api', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(
         prepareReq('get', 'https://auth.sociably.io/_refresh', {}, ''),
-        res
+        res,
       );
       expect(res.statusCode).toBe(405);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1003,14 +1006,14 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 200 if token and signature valid', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
 
       const req = prepareReq(
         'POST',
         'http://auth.sociably.io/_verify',
         { cookie: `sociably_auth_signature=${signature}` },
-        { token }
+        { token },
       );
       const res = moxy(new ServerResponse({} as never));
 
@@ -1026,7 +1029,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 401 if token expired', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
 
       [token, signature] = prepareToken({
@@ -1041,7 +1044,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         'POST',
         'http://auth.sociably.io/_verify',
         { cookie: `sociably_auth_signature=${signature}` },
-        { token }
+        { token },
       );
       const res = moxy(new ServerResponse({} as never));
 
@@ -1064,7 +1067,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 404 platform not found', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
 
       [token, signature] = prepareToken({
@@ -1079,7 +1082,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         'POST',
         'http://auth.sociably.io/_verify',
         { cookie: `sociably_auth_signature=${signature}` },
-        { token }
+        { token },
       );
       const res = moxy(new ServerResponse({} as never));
 
@@ -1101,13 +1104,13 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 401 if signature not found or invalid', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       let res;
 
       await controller.handleRequest(
         prepareReq('POST', 'http://auth.sociably.io/_verify', {}, { token }),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
 
       expect(res.statusCode).toBe(401);
@@ -1126,9 +1129,9 @@ describe('#delegateAuthRequest(req, res)', () => {
           'POST',
           'http://auth.sociably.io/_verify',
           { cookie: `sociably_auth_signature=INVALID_SIGNATURE` },
-          { token }
+          { token },
         ),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1146,7 +1149,7 @@ describe('#delegateAuthRequest(req, res)', () => {
     it('respond 400 if invalid body received', async () => {
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       const url = 'http://auth.sociably.io/_verify';
       const header = { cookie: `sociably_auth_signature=SOMETHING_WHATEVER` };
@@ -1154,7 +1157,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, '"Woooof"'),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1168,7 +1171,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, 'Prrrrrrr'),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1182,7 +1185,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, { hey: 'Roarrrr' }),
-        (res = moxy(new ServerResponse({} as never)))
+        (res = moxy(new ServerResponse({} as never))),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1199,11 +1202,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       const res = moxy(new ServerResponse({} as never));
       const controller = new AuthController(
         new HttpOperator({ secret, serverUrl }),
-        authenticators
+        authenticators,
       );
       await controller.handleRequest(
         prepareReq('GET', 'https://auth.sociably.io/_verify', {}, ''),
-        res
+        res,
       );
       expect(res.statusCode).toBe(405);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1231,7 +1234,7 @@ describe('#verifyAuth(req)', () => {
   it('resolve auth context if authorization verified', async () => {
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     await expect(
       controller.verifyAuth(
@@ -1242,9 +1245,9 @@ describe('#verifyAuth(req)', () => {
             authorization: `Bearer ${token}`,
             cookie: `sociably_auth_signature=${signature}`,
           },
-          { user_api: 'stuff' }
-        )
-      )
+          { user_api: 'stuff' },
+        ),
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "context": {
@@ -1275,7 +1278,7 @@ describe('#verifyAuth(req)', () => {
   it('work with token passed as 2nd param', async () => {
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     await expect(
       controller.verifyAuth(
@@ -1283,10 +1286,10 @@ describe('#verifyAuth(req)', () => {
           'POST',
           'https://auth.sociably.io/foo',
           { cookie: `sociably_auth_signature=${signature}` },
-          { user_api: 'stuff' }
+          { user_api: 'stuff' },
         ),
-        token
-      )
+        token,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "context": {
@@ -1317,7 +1320,7 @@ describe('#verifyAuth(req)', () => {
   it('throw 401 if signature invalid', async () => {
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     await expect(
       controller.verifyAuth(
@@ -1328,9 +1331,9 @@ describe('#verifyAuth(req)', () => {
             authorization: `Bearer ${token}`,
             cookie: `sociably_auth_signature=INVALID_SIGNATURE`,
           },
-          { user_api: 'stuff' }
-        )
-      )
+          { user_api: 'stuff' },
+        ),
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 400,
@@ -1346,7 +1349,7 @@ describe('#verifyAuth(req)', () => {
   it('throw 401 if no signature in cookies', async () => {
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     await expect(
       controller.verifyAuth(
@@ -1354,9 +1357,9 @@ describe('#verifyAuth(req)', () => {
           'POST',
           'https://auth.sociably.io/foo',
           { authorization: `Bearer ${token}` },
-          { user_api: 'stuff' }
-        )
-      )
+          { user_api: 'stuff' },
+        ),
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 401,
@@ -1372,7 +1375,7 @@ describe('#verifyAuth(req)', () => {
   it('throw 401 if no token provided', async () => {
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     await expect(
       controller.verifyAuth(
@@ -1380,9 +1383,9 @@ describe('#verifyAuth(req)', () => {
           'POST',
           'https://auth.sociably.io/foo',
           { cookie: `sociably_auth_signature=${signature}` },
-          { user_api: 'stuff' }
-        )
-      )
+          { user_api: 'stuff' },
+        ),
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 401,
@@ -1398,7 +1401,7 @@ describe('#verifyAuth(req)', () => {
   it('throw 400 if no invalid authorization format received', async () => {
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     await expect(
       controller.verifyAuth(
@@ -1409,9 +1412,9 @@ describe('#verifyAuth(req)', () => {
             authorization: `Unknown-Scheme ${token}`,
             cookie: `sociably_auth_signature=${signature}`,
           },
-          { user_api: 'stuff' }
-        )
-      )
+          { user_api: 'stuff' },
+        ),
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 400,
@@ -1436,7 +1439,7 @@ describe('#verifyAuth(req)', () => {
 
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     await expect(
       controller.verifyAuth(
@@ -1447,9 +1450,9 @@ describe('#verifyAuth(req)', () => {
             authorization: `Bearer ${bazToken}`,
             cookie: `sociably_auth_signature=${bazSignature}`,
           },
-          { user_api: 'stuff' }
-        )
-      )
+          { user_api: 'stuff' },
+        ),
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 404,
@@ -1463,17 +1466,15 @@ describe('#verifyAuth(req)', () => {
   });
 
   it('throw 400 if provider.checkAuthData() fail', async () => {
-    fooAuthenticator.checkAuthData.mock.fake(() => {
-      return {
-        ok: false,
-        code: 400,
-        reason: 'invalid auth data',
-      };
-    });
+    fooAuthenticator.checkAuthData.mock.fake(() => ({
+      ok: false,
+      code: 400,
+      reason: 'invalid auth data',
+    }));
 
     const controller = new AuthController(
       new HttpOperator({ secret, serverUrl }),
-      authenticators
+      authenticators,
     );
     await expect(
       controller.verifyAuth(
@@ -1484,9 +1485,9 @@ describe('#verifyAuth(req)', () => {
             authorization: `Bearer ${token}`,
             cookie: `sociably_auth_signature=${signature}`,
           },
-          { user_api: 'stuff' }
-        )
-      )
+          { user_api: 'stuff' },
+        ),
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 400,

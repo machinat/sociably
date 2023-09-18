@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import type { AuthHttpOperator } from '@sociably/auth';
 import type { TelegramBot } from '../../Bot.js';
 import { TelegramServerAuthenticator } from '../ServerAuthenticator.js';
@@ -48,7 +48,7 @@ const botUser = new TelegramUser(12345, true);
 const authenticator = new TelegramServerAuthenticator(
   bot,
   agentSettingsAccessor,
-  httpOperator
+  httpOperator,
 );
 
 beforeEach(() => {
@@ -209,10 +209,10 @@ describe('.delegateAuthRequest() on root route', () => {
       res,
       'telegram',
       404,
-      expect.any(String)
+      expect.any(String),
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"bot "12345" not registered"`
+      `"bot "12345" not registered"`,
     );
   });
 
@@ -247,10 +247,10 @@ describe('.delegateAuthRequest() on root route', () => {
       res,
       'telegram',
       400,
-      expect.any(String)
+      expect.any(String),
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"Bad Request: user not found"`
+      `"Bad Request: user not found"`,
     );
   });
 
@@ -272,7 +272,7 @@ describe('.delegateAuthRequest() on root route', () => {
     expect(httpOperator.redirect).toHaveBeenCalledWith(
       res,
       '/webview/hello_world.html',
-      { assertInternal: true }
+      { assertInternal: true },
     );
 
     expect(httpOperator.issueError).not.toHaveBeenCalled();
@@ -305,10 +305,10 @@ describe('.delegateAuthRequest() on root route', () => {
       res,
       'telegram',
       401,
-      expect.any(String)
+      expect.any(String),
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"login expired"`
+      `"login expired"`,
     );
   });
 
@@ -339,10 +339,10 @@ describe('.delegateAuthRequest() on root route', () => {
       res,
       'telegram',
       401,
-      expect.any(String)
+      expect.any(String),
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"invalid auth signature"`
+      `"invalid auth signature"`,
     );
   });
 });
@@ -369,8 +369,8 @@ describe('.delegateAuthRequest() on login route', () => {
     expect(pageHtml).toMatchSnapshot();
     expect(pageHtml).toEqual(
       expect.stringContaining(
-        'https://sociably.io/MyApp/auth/telegram?botId=12345'
-      )
+        'https://sociably.io/MyApp/auth/telegram?botId=12345',
+      ),
     );
   });
 
@@ -390,8 +390,8 @@ describe('.delegateAuthRequest() on login route', () => {
     expect(pageHtml).toMatchSnapshot();
     expect(pageHtml).toEqual(
       expect.stringContaining(
-        'https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=%2Fwebview%2Fhello_world'
-      )
+        'https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=%2Fwebview%2Fhello_world',
+      ),
     );
   });
 
@@ -405,7 +405,7 @@ describe('.delegateAuthRequest() on login route', () => {
       {
         appName: 'Mine Mine Mine App',
         appIconUrl: 'http://sociably.io/MyApp/icon.png',
-      }
+      },
     );
     await authenticatorWithAppDetails.delegateAuthRequest(req, res, loginRoute);
 
@@ -415,10 +415,10 @@ describe('.delegateAuthRequest() on login route', () => {
     const pageHtml = res.end.mock.calls[0].args[0];
     expect(pageHtml).toMatchSnapshot();
     expect(pageHtml).toEqual(
-      expect.stringContaining('<h1>Mine Mine Mine App</h1>')
+      expect.stringContaining('<h1>Mine Mine Mine App</h1>'),
     );
     expect(pageHtml).toEqual(
-      expect.stringContaining('src="http://sociably.io/MyApp/icon.png"')
+      expect.stringContaining('src="http://sociably.io/MyApp/icon.png"'),
     );
   });
 
@@ -435,10 +435,10 @@ describe('.delegateAuthRequest() on login route', () => {
       res,
       'telegram',
       400,
-      expect.any(String)
+      expect.any(String),
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"invalid bot id "undefined""`
+      `"invalid bot id "undefined""`,
     );
   });
 
@@ -454,17 +454,17 @@ describe('.delegateAuthRequest() on login route', () => {
     expect(httpOperator.redirect).toHaveBeenCalledWith(
       res,
       '/webview/hello_world',
-      { assertInternal: true }
+      { assertInternal: true },
     );
     expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
     expect(httpOperator.issueError).toHaveBeenCalledWith(
       res,
       'telegram',
       404,
-      expect.any(String)
+      expect.any(String),
     );
     expect(httpOperator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"bot "12345" not registered"`
+      `"bot "12345" not registered"`,
     );
   });
 });
@@ -485,17 +485,17 @@ test('.delegateAuthRequest() on unknown route', async () => {
 
 test('.getAuthUrl()', () => {
   expect(authenticator.getAuthUrl(12345)).toMatchInlineSnapshot(
-    `"https://sociably.io/MyApp/auth/telegram?botId=12345"`
+    `"https://sociably.io/MyApp/auth/telegram?botId=12345"`,
   );
   expect(
-    authenticator.getAuthUrl(12345, undefined, 'foo?bar=baz')
+    authenticator.getAuthUrl(12345, undefined, 'foo?bar=baz'),
   ).toMatchInlineSnapshot(
-    `"https://sociably.io/MyApp/auth/telegram?botId=12345&redirectUrl=foo%3Fbar%3Dbaz"`
+    `"https://sociably.io/MyApp/auth/telegram?botId=12345&redirectUrl=foo%3Fbar%3Dbaz"`,
   );
   expect(
-    authenticator.getAuthUrl(12345, 67890, 'foo?bar=baz')
+    authenticator.getAuthUrl(12345, 67890, 'foo?bar=baz'),
   ).toMatchInlineSnapshot(
-    `"https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=foo%3Fbar%3Dbaz"`
+    `"https://sociably.io/MyApp/auth/telegram?botId=12345&chatId=67890&redirectUrl=foo%3Fbar%3Dbaz"`,
   );
 
   expect(httpOperator.getAuthUrl).toHaveBeenCalledTimes(3);
@@ -610,7 +610,7 @@ describe('.verifyRefreshment()', () => {
           username: 'jojodoe',
         },
         photo: undefined,
-      })
+      }),
     ).resolves.toEqual({
       ok: false,
       code: 404,
@@ -635,7 +635,7 @@ describe('.verifyRefreshment()', () => {
           username: 'jojodoe',
         },
         photo: undefined,
-      })
+      }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 404,
@@ -670,7 +670,7 @@ test('.checkAuthData()', () => {
       last_name: 'Doe',
       username: 'jojodoe',
     },
-    'http://crazy.dm/stand.png'
+    'http://crazy.dm/stand.png',
   );
 
   expect(authenticator.checkAuthData(authData)).toEqual({
@@ -694,7 +694,7 @@ test('.checkAuthData()', () => {
     authenticator.checkAuthData({
       ...authData,
       chat: { type: 'group', id: 67890 },
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {

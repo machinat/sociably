@@ -28,21 +28,22 @@ export const createChatJobs = (
         },
       });
     } else {
-      const { message, mediaFile, assetTag } = segment.value;
-      const mediaResultKey = mediaFile ? getTimeId() : undefined;
+      const { message, file, assetTag } = segment.value;
+      const mediaResultKey = file ? getTimeId() : undefined;
 
-      if (mediaFile) {
-        const { type: fileType, data: fileData, info: fileInfo } = mediaFile;
-
+      if (file) {
         jobs.push({
           key: chat.uid,
           channel: chat.agent,
           request: {
             method: 'POST',
             url: `${chat.agentNumberId}/media`,
-            params: { type: fileType, messaging_product: 'whatsapp' },
+            params: {
+              type: file.contentType,
+              messaging_product: 'whatsapp',
+            },
           },
-          file: { data: fileData, info: fileInfo },
+          file,
           assetTag,
           registerResult: mediaResultKey,
         });
@@ -92,16 +93,13 @@ export const createUploadingMediaJobs = (
   if (segments.length !== 1) {
     throw new TypeError('there should be only one media to be uploaded');
   }
-  if (segments[0].type === 'text' || !segments[0].value.mediaFile) {
+  if (segments[0].type === 'text' || !segments[0].value.file) {
     throw new TypeError(
       `${formatNode(segments[0].node, true)} is not a media with file data`,
     );
   }
 
-  const {
-    mediaFile: { type: fileType, data: fileData, info: fileInfo },
-    assetTag,
-  } = segments[0].value;
+  const { file, assetTag } = segments[0].value;
   return [
     {
       key: undefined,
@@ -109,9 +107,9 @@ export const createUploadingMediaJobs = (
       request: {
         method: 'POST',
         url: `${agent.id}/media`,
-        params: { type: fileType, messaging_product: 'whatsapp' },
+        params: { type: file?.contentType, messaging_product: 'whatsapp' },
       },
-      file: { data: fileData, info: fileInfo },
+      file,
       assetTag,
     },
   ];

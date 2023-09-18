@@ -1,4 +1,4 @@
-import { moxy, Mock } from '@moxyjs/moxy';
+import moxy, { Mock } from '@moxyjs/moxy';
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
 import Stream from '../../stream.js';
 import { STREAMING_KEY_I } from '../../interface.js';
@@ -11,11 +11,11 @@ const nextTick = () => new Promise(process.nextTick);
 
 const nextListener = moxy();
 const nextContainer = moxy(
-  serviceContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => nextListener),
 );
 const errorListener = moxy();
 const errorContainer = moxy(
-  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener),
 );
 
 beforeEach(() => {
@@ -70,7 +70,7 @@ test('map frames with different keys parallelly', async () => {
       map(async (value) => {
         await delay(100);
         return `${value}!!!`;
-      })
+      }),
     )
     .subscribe(nextContainer)
     .catch(errorContainer);
@@ -124,7 +124,7 @@ it('emit error if thrown in mapper', async () => {
           throw new Error('noo');
         }
         return `${value}!!!`;
-      })
+      }),
     )
     .subscribe(nextContainer)
     .catch(errorContainer);
@@ -164,8 +164,8 @@ test('use service container as mapper', async () => {
       mapFnMock.proxify(async (value: string) => {
         await delay(100);
         return key + value;
-      })
-    )
+      }),
+    ),
   );
 
   const stream = new Stream();

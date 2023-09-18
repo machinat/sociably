@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import BasicAuthenticator, {
   AuthDelegatorOptions,
 } from '@sociably/auth/basicAuth';
@@ -74,7 +74,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       bot,
       profiler,
       basicAuthenticator,
-      agentSettingsAccessor
+      agentSettingsAccessor,
     );
     delegatorOptions =
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
@@ -82,7 +82,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
   test('delegation options', async () => {
     await expect(
-      authenticator.delegateAuthRequest(req, res, routing)
+      authenticator.delegateAuthRequest(req, res, routing),
     ).resolves.toBe(undefined);
 
     expect(requestDelegator).toHaveReturnedTimes(1);
@@ -110,7 +110,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
         page: '12345',
         user: '67890',
         profile: profileData,
-      })
+      }),
     ).toEqual({
       ok: true,
       thread: new FacebookChat('12345', { id: '67890' }),
@@ -123,27 +123,27 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     expect(
       delegatorOptions.checkCurrentAuthUsability(
         { page: '12345', user: '67890' },
-        { page: '12345', user: '67890' }
-      )
+        { page: '12345', user: '67890' },
+      ),
     ).toEqual({ ok: true });
     expect(
       delegatorOptions.checkCurrentAuthUsability(
         { page: '11111', user: '67890' },
-        { page: '12345', user: '67890' }
-      )
+        { page: '12345', user: '67890' },
+      ),
     ).toEqual({ ok: false });
     expect(
       delegatorOptions.checkCurrentAuthUsability(
         { page: '12345', user: '66666' },
-        { page: '12345', user: '67890' }
-      )
+        { page: '12345', user: '67890' },
+      ),
     ).toEqual({ ok: false });
   });
 
   describe('options.verifyCredential', () => {
     it('return ok when verification passed', async () => {
       await expect(
-        delegatorOptions.verifyCredential({ page: '12345', user: '67890' })
+        delegatorOptions.verifyCredential({ page: '12345', user: '67890' }),
       ).resolves.toEqual({
         ok: true,
         data: { page: '12345', user: '67890', profile: profileData },
@@ -151,20 +151,20 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
       expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
       expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-        new FacebookPage('12345')
+        new FacebookPage('12345'),
       );
 
       expect(profiler.getUserProfile).toHaveBeenCalledTimes(1);
       expect(profiler.getUserProfile).toHaveBeenCalledWith(
         new FacebookPage('12345'),
-        new FacebookUser('12345', '67890')
+        new FacebookUser('12345', '67890'),
       );
     });
 
     it('fail if fail to find page settings', async () => {
       agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
       await expect(
-        delegatorOptions.verifyCredential({ page: '12345', user: '67890' })
+        delegatorOptions.verifyCredential({ page: '12345', user: '67890' }),
       ).resolves.toMatchInlineSnapshot(`
         {
           "code": 404,
@@ -178,10 +178,10 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       profiler.getUserProfile.mock.fakeRejectedValue(
         new MetaApiError({
           error: { code: 404, message: 'user not found' } as never,
-        })
+        }),
       );
       await expect(
-        delegatorOptions.verifyCredential({ page: '12345', user: '67890' })
+        delegatorOptions.verifyCredential({ page: '12345', user: '67890' }),
       ).resolves.toMatchInlineSnapshot(`
         {
           "code": 404,
@@ -200,7 +200,7 @@ test('.getAuthUrl(id, path)', () => {
     bot,
     profiler,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
   expect(authenticator.getAuthUrl(user)).toBe(loginUrl);
   expect(authenticator.getAuthUrl(user, '/foo?bar=baz')).toBe(loginUrl);
@@ -210,13 +210,13 @@ test('.getAuthUrl(id, path)', () => {
     1,
     'facebook',
     { page: '12345', user: '67890' },
-    undefined
+    undefined,
   );
   expect(basicAuthenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
     'facebook',
     { page: '12345', user: '67890' },
-    '/foo?bar=baz'
+    '/foo?bar=baz',
   );
 });
 
@@ -225,7 +225,7 @@ test('.verifyCredential() fails anyway', async () => {
     bot,
     profiler,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
   await expect(authenticator.verifyCredential()).resolves
     .toMatchInlineSnapshot(`
@@ -242,12 +242,12 @@ describe('.verifyRefreshment(data)', () => {
     bot,
     profiler,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
 
   test('returns ok when verification passed', async () => {
     await expect(
-      authenticator.verifyRefreshment({ page: '12345', user: '67890' })
+      authenticator.verifyRefreshment({ page: '12345', user: '67890' }),
     ).resolves.toEqual({
       ok: true,
       data: { page: '12345', user: '67890', profile: profileData },
@@ -255,20 +255,20 @@ describe('.verifyRefreshment(data)', () => {
 
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledTimes(1);
     expect(agentSettingsAccessor.getAgentSettings).toHaveBeenCalledWith(
-      new FacebookPage('12345')
+      new FacebookPage('12345'),
     );
 
     expect(profiler.getUserProfile).toHaveBeenCalledTimes(1);
     expect(profiler.getUserProfile).toHaveBeenCalledWith(
       new FacebookPage('12345'),
-      new FacebookUser('12345', '67890')
+      new FacebookUser('12345', '67890'),
     );
   });
 
   it('fails if page not found', async () => {
     agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
     await expect(
-      authenticator.verifyRefreshment({ page: '54321', user: '67890' })
+      authenticator.verifyRefreshment({ page: '54321', user: '67890' }),
     ).resolves.toMatchInlineSnapshot(`
       {
         "code": 404,
@@ -284,7 +284,7 @@ test('.checkAuthData(data)', () => {
     bot,
     profiler,
     basicAuthenticator,
-    agentSettingsAccessor
+    agentSettingsAccessor,
   );
 
   expect(
@@ -292,7 +292,7 @@ test('.checkAuthData(data)', () => {
       page: '12345',
       user: '67890',
       profile: profileData,
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {
@@ -314,6 +314,6 @@ test('.checkAuthData(data)', () => {
         user: new FacebookUser('98765', '43210'),
         userProfile: null,
       },
-    }
+    },
   );
 });

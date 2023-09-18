@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import type { Readable } from 'stream';
 import type {
   PlatformUtilities,
   EventMiddleware,
@@ -76,7 +77,14 @@ export type RawChatMember = any;
 export type RawChatMemberUpdated = any;
 
 export type TelegramRawEvent = {
-  /** The update's unique identifier. Update identifiers start from a certain positive number and increase sequentially. This ID becomes especially handy if you're using Webhooks, since it allows you to ignore repeated updates or to restore the correct update sequence, should they get out of order. If there are no new updates for at least a week, then identifier of the next update will be chosen randomly instead of sequentially. */
+  /**
+   * The update's unique identifier. Update identifiers start from a certain
+   * positive number and increase sequentially. This ID becomes especially handy
+   * if you're using Webhooks, since it allows you to ignore repeated updates or
+   * to restore the correct update sequence, should they get out of order. If
+   * there are no new updates for at least a week, then identifier of the next
+   * update will be chosen randomly instead of sequentially.
+   */
   update_id: number;
   /** New incoming message of any kind — text, photo, sticker, etc. */
   message?: RawMessage;
@@ -88,7 +96,11 @@ export type TelegramRawEvent = {
   edited_channel_post?: RawMessage;
   /** New incoming inline query */
   inline_query?: RawInlineQuery;
-  /**	 The result of an inline query that was chosen by a user and sent to their chat partner. Please see our documentation on the feedback collecting for details on how to enable these updates for your bot. */
+  /**
+   * The result of an inline query that was chosen by a user and sent to their
+   * chat partner. Please see our documentation on the feedback collecting for
+   * details on how to enable these updates for your bot.
+   */
   chosen_inline_result?: RawChosenInlineResult;
   /** New incoming callback query */
   callback_query?: RawCallbackQuery;
@@ -96,23 +108,30 @@ export type TelegramRawEvent = {
   shipping_query?: RawShippingQuery;
   /** New incoming pre-checkout query. Contains full information about checkout */
   pre_checkout_query?: RawPreCheckoutQuery;
-  /** New poll state. Bots receive only updates about stopped polls and polls, which are sent by the bot */
+  /**
+   * New poll state. Bots receive only updates about stopped polls and polls,
+   * which are sent by the bot
+   */
   poll?: RawPoll;
-  /** A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself. */
+  /**
+   * A user changed their answer in a non-anonymous poll. Bots receive new votes
+   * only in polls that were sent by the bot itself.
+   */
   poll_answer?: RawPollAnswer;
   my_chat_member?: RawChatMemberUpdated;
   chat_member?: RawChatMemberUpdated;
 };
 
-export type UploadingFileInfo = {
-  filename?: string;
+export type UploadingFileSource = {
+  data: string | Buffer | Readable;
+  fileName?: string;
   contentType?: string;
+  contentLength?: number;
 };
 
-export type UploadingFile = {
+export type UploadingFileInfo = {
+  source: UploadingFileSource;
   fieldName: string;
-  data: string | Buffer | NodeJS.ReadableStream;
-  info?: UploadingFileInfo;
   assetTag?: string;
 };
 
@@ -120,7 +139,7 @@ export type TelegramSegmentValue = {
   method: string;
   params: Record<string, unknown>;
   toNonChatTarget?: boolean;
-  files?: UploadingFile[];
+  files?: UploadingFileInfo[];
 };
 
 export type TelegramComponent<
@@ -134,7 +153,7 @@ export type TelegramJob = {
   method: string;
   params: Record<string, any>;
   key: undefined | string;
-  files?: UploadingFile[];
+  files?: UploadingFileInfo[];
 };
 
 export type TelegramEventContext = {

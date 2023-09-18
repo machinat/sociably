@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
 import { InMemoryState } from '@sociably/dev-tools';
@@ -86,7 +86,7 @@ describe('initModule()', () => {
     expect(basicAuthenticator).toBeInstanceOf(BasicAuthenticator);
     expect(basicAuthenticator.appName).toBe('Hello World');
     expect(basicAuthenticator.appIconUrl).toBe(
-      'https://sociably.io/img/logo.png'
+      'https://sociably.io/img/logo.png',
     );
   });
 
@@ -113,7 +113,7 @@ describe('initModule()', () => {
     expect(ControllerSpy.$$factory).toHaveBeenCalledTimes(1);
     expect(ControllerSpy.$$factory).toHaveBeenCalledWith(
       expect.any(HttpOperatorP),
-      expect.arrayContaining([fooAuthenticator, barAuthenticator])
+      expect.arrayContaining([fooAuthenticator, barAuthenticator]),
     );
   });
 
@@ -150,7 +150,7 @@ describe('initModule()', () => {
     expect(fakeController.handleRequest).toHaveBeenCalledWith(
       req,
       res,
-      routingInfo
+      routingInfo,
     );
   });
 });

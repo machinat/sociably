@@ -34,8 +34,8 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <Comment photo={<PagePhoto url="http://sociably.js/good.jpg" />} />
-    )
+      <Comment photo={<PagePhoto url="http://sociably.js/good.jpg" />} />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -55,7 +55,7 @@ it('match snapshot', async () => {
           },
           "photo": {
             "apiPath": "me/photos",
-            "attachFile": undefined,
+            "file": undefined,
             "params": {
               "backdated_time": undefined,
               "spherical_metadata": undefined,
@@ -74,8 +74,8 @@ it('match snapshot', async () => {
     renderUnitElement(
       <Comment gifShareUrl="http://sociably.js/cool.gif">
         ハロー ワールド
-      </Comment>
-    )
+      </Comment>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -101,9 +101,9 @@ it('match snapshot', async () => {
 
 it('throw if comment is empty', async () => {
   await expect(
-    renderUnitElement(<Comment />)
+    renderUnitElement(<Comment />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be at least one of "children", "photo" or "gifShareUrl" prop"`
+    `"there should be at least one of "children", "photo" or "gifShareUrl" prop"`,
   );
 });
 
@@ -113,23 +113,23 @@ it('throw if gifShareUrl and photo props exist at the same time', async () => {
       <Comment
         photo={<PagePhoto />}
         gifShareUrl="http://sociably.js/unblievable.gif"
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"There should be exactly one source prop: "url", "fileData" or "vaultImageId""`
+    `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
   );
 });
 
 it('throw if photo prop contain non PagePhoto content', async () => {
   await expect(
-    renderUnitElement(<Comment photo={<>foo</>} />)
+    renderUnitElement(<Comment photo={<>foo</>} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""photo" should contain exactly one <PagePhoto/> element"`
+    `""photo" should contain exactly one <PagePhoto/> element"`,
   );
 
   await expect(
-    renderUnitElement(<Comment photo={<Sociably.Pause />} />)
+    renderUnitElement(<Comment photo={<Sociably.Pause />} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""photo" should contain exactly one <PagePhoto/> element"`
+    `""photo" should contain exactly one <PagePhoto/> element"`,
   );
 });

@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type {
@@ -67,9 +68,7 @@ type ApiCallOptions = {
   asApplication?: boolean;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class TwitterBot
   implements SociablyBot<TwitterThread, TwitterJob, TwitterApiResult>
 {
@@ -94,7 +93,7 @@ export class TwitterBot
       maxRequestConnections = 100,
       initScope,
       dispatchWrapper,
-    }: TwitterBotOptions
+    }: TwitterBotOptions,
   ) {
     invariant(appKey, 'options.appKey should not be empty');
     invariant(appSecret, 'options.appSecret should not be empty');
@@ -119,7 +118,7 @@ export class TwitterBot
       queue,
       this.client,
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   }
 
@@ -133,7 +132,7 @@ export class TwitterBot
 
   render(
     thread: TweetTarget | DirectMessageChat,
-    message: SociablyNode
+    message: SociablyNode,
   ): Promise<null | TwitterDispatchResponse> {
     if (thread instanceof DirectMessageChat) {
       return this.engine.render(thread, message, createDirectMessageJobs);
@@ -142,7 +141,7 @@ export class TwitterBot
     return this.engine.render(
       thread,
       message,
-      createTweetJobs({ key: getTimeId() })
+      createTweetJobs({ key: getTimeId() }),
     );
   }
 
@@ -179,7 +178,7 @@ export class TwitterBot
 
   async uploadMedia(
     agentIdOrInstance: string | TwitterUser,
-    media: SociablyNode
+    media: SociablyNode,
   ): Promise<null | RenderMediaResponse[]> {
     const segments = await this.engine.renderer.render(media, null, null);
     if (!segments) {
@@ -205,7 +204,7 @@ export class TwitterBot
         : agentIdOrInstance;
     const { uploadedMedia } = await this.client.uploadMediaSources(
       agent,
-      attachments.map(({ source }) => source)
+      attachments.map(({ source }) => source),
     );
     if (!uploadedMedia) {
       return null;
@@ -222,7 +221,7 @@ export class TwitterBot
   async createWelcomeMessage(
     agent: string | TwitterUser,
     name: undefined | string,
-    message: SociablyNode
+    message: SociablyNode,
   ): Promise<null | {
     /* eslint-disable camelcase */
     welcome_message: {
@@ -237,16 +236,16 @@ export class TwitterBot
     const response = await this.engine.render(
       new TweetTarget(agentId),
       message,
-      createWelcomeMessageJobs(name)
+      createWelcomeMessageJobs(name),
     );
     return (response?.results[0].body as any) || null;
   }
 
   async fetchMediaFile(
     agentIdOrInstance: string | TwitterUser,
-    url: string
+    url: string,
   ): Promise<{
-    content: NodeJS.ReadableStream;
+    content: Readable;
     contentType?: string;
     contentLength?: number;
   }> {
@@ -268,7 +267,7 @@ export class TwitterBot
 
     const contentLength = response.headers.get('content-length');
     return {
-      content: response.body as NodeJS.ReadableStream,
+      content: response.body as Readable,
       contentType: response.headers.get('content-type') || undefined,
       contentLength: contentLength ? Number(contentLength) : undefined,
     };
@@ -287,7 +286,7 @@ const BotP = serviceProviderClass({
     { appKey, appSecret, bearerToken, maxRequestConnections },
     settingsAccessor,
     moduleUtils,
-    platformUtils
+    platformUtils,
   ) => {
     invariant(appKey, 'configs.appKey should not be empty');
 

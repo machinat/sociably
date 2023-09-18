@@ -1,6 +1,10 @@
 import { formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
-import type { MetaApiJob, MetaApiChannel } from '@sociably/meta-api';
+import type {
+  MetaApiJob,
+  MetaApiChannel,
+  MetaApiUploadingFile,
+} from '@sociably/meta-api';
 import {
   PATH_MESSAGES,
   PATH_MESSAGE_ATTACHMENTS,
@@ -9,8 +13,8 @@ import {
 import type {
   MessengerSegmentValue,
   MessagingOptions,
-  AttachFileValue,
   BaseSegmentValue,
+  MessageValue,
   MessengerChat,
 } from './types.js';
 
@@ -21,13 +25,13 @@ export const createChatJobs = <
   Chat extends MessengerChat,
 >(
   channel: Channel,
-  options?: MessagingOptions
+  options?: MessagingOptions,
 ) => {
   let isOneTimeTokenUsed = false;
 
   return (
     chat: Chat,
-    segments: DispatchableSegment<MessengerSegmentValue>[]
+    segments: DispatchableSegment<MessengerSegmentValue>[],
   ): MetaApiJob[] => {
     const jobs: MetaApiJob[] = new Array(segments.length);
 
@@ -36,19 +40,22 @@ export const createChatJobs = <
 
       let params: Record<string, unknown>;
       let apiUrl: string;
-      let file: undefined | AttachFileValue;
+      let file: undefined | MetaApiUploadingFile;
       let assetTag: undefined | string;
 
       if (typeof value === 'string') {
         apiUrl = PATH_MESSAGES;
         params = { message: { text: value } };
       } else if (typeof value === 'object' && value.type === 'message') {
-        ({ params, assetTag } = value as BaseSegmentValue);
-        apiUrl = value.apiPath;
-        file = value.attachFile;
+        ({
+          params,
+          assetTag,
+          file,
+          apiPath: apiUrl,
+        } = value as BaseSegmentValue);
       } else {
         throw new TypeError(
-          `${formatNode(node)} is invalid to be sent in a chat`
+          `${formatNode(node)} is invalid to be sent in a chat`,
         );
       }
 
@@ -70,7 +77,7 @@ export const createChatJobs = <
           if (options.oneTimeNotifToken) {
             if (isOneTimeTokenUsed) {
               throw new Error(
-                'oneTimeNotifToken can only be used to send one message'
+                'oneTimeNotifToken can only be used to send one message',
               );
             }
 
@@ -108,7 +115,7 @@ export const createUploadChatAttachmentJobs =
   <Channel extends MetaApiChannel>({ platform }: { platform?: string } = {}) =>
   (
     channel: Channel,
-    segments: DispatchableSegment<MessengerSegmentValue>[]
+    segments: DispatchableSegment<MessengerSegmentValue>[],
   ): MetaApiJob[] => {
     if (segments.length !== 1) {
       throw new TypeError('more than 1 message received');
@@ -123,11 +130,11 @@ export const createUploadChatAttachmentJobs =
       !value.params.message.attachment
     ) {
       throw new TypeError(
-        `${formatNode(node || value)} is not valid attachment message`
+        `${formatNode(node || value)} is not valid attachment message`,
       );
     }
 
-    const { params, attachFile, assetTag } = value;
+    const { params, file, assetTag } = value as MessageValue;
     const attachmentType = params.message.attachment.type;
     if (
       attachmentType !== 'image' &&
@@ -136,14 +143,14 @@ export const createUploadChatAttachmentJobs =
       attachmentType !== 'file'
     ) {
       throw new TypeError(
-        `invalid attachment type "${attachmentType}" to be uploaded`
+        `invalid attachment type "${attachmentType}" to be uploaded`,
       );
     }
 
     return [
       {
         channel,
-        file: attachFile,
+        file,
         request: {
           method: POST,
           url: PATH_MESSAGE_ATTACHMENTS,

@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { serviceContainer, ServiceScope } from '@sociably/core/service';
 import { STREAMING_KEY_I } from '../interface.js';
 import injectMaybe from '../injectMaybe.js';
@@ -21,7 +21,7 @@ it('inject container with frame.scope', () => {
       deps: [
         /* FooProvider */
       ],
-    })((..._args) => containedFn)
+    })((..._args) => containedFn),
   );
 
   expect(injectMaybe(myContainer)(frame)('bar')).toBe('baz');
@@ -29,7 +29,7 @@ it('inject container with frame.scope', () => {
   expect(scope.injectContainer).toHaveBeenCalledTimes(1);
   expect(scope.injectContainer).toHaveBeenCalledWith(
     myContainer,
-    expect.any(Map)
+    expect.any(Map),
   );
 
   expect(myContainer).toHaveBeenCalledTimes(1);
@@ -56,7 +56,7 @@ it('return a thunk if target is normal function', () => {
 
   const multiParamFn = moxy((...args) => args.map((v) => `${v}!`).join(' '));
   expect(injectMaybe(multiParamFn)(frame)('bar', 'beer', 'bacon')).toBe(
-    'bar! beer! bacon!'
+    'bar! beer! bacon!',
   );
 
   expect(scope.injectContainer).not.toHaveBeenCalled();
@@ -74,6 +74,6 @@ it('provide StreamingFrame key when inject', () => {
   expect(scope.injectContainer).toHaveBeenCalledTimes(1);
   expect(scope.injectContainer).toHaveBeenCalledWith(
     myContainer,
-    expectedProvision
+    expectedProvision,
   );
 });

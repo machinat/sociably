@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -132,25 +132,25 @@ describe('initModule(configs)', () => {
     };
 
     await expect(
-      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_')),
     ).resolves.toEqual(expectedAgentSettings);
     await expect(
-      settingsAccessor.getAgentSettings(new LineChannel('_WRONG_CHANNEL_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_WRONG_CHANNEL_')),
     ).resolves.toBe(null);
 
     await expect(
       settingsAccessor.getAgentSettingsBatch([
         new LineChannel('_CHANNEL_ID_'),
         new LineChannel('_WRONG_CHANNEL_'),
-      ])
+      ]),
     ).resolves.toEqual([expectedAgentSettings, null]);
 
     await expect(
-      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_')
+      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_'),
     ).resolves.toEqual(expectedAgentSettings);
 
     await expect(
-      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_')
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_'),
     ).resolves.toEqual({
       providerId: '_PROVIDER_ID_',
       channelId: '_LOGIN_CHANNEL_ID_',
@@ -158,7 +158,7 @@ describe('initModule(configs)', () => {
       refChatChannelIds: ['_CHANNEL_ID_'],
     });
     await expect(
-      settingsAccessor.getLineLoginChannelSettings('_WRONG_CHANNEL_')
+      settingsAccessor.getLineLoginChannelSettings('_WRONG_CHANNEL_'),
     ).resolves.toBe(null);
   });
 
@@ -236,16 +236,16 @@ describe('initModule(configs)', () => {
     };
 
     await expect(
-      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_1_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_1_')),
     ).resolves.toEqual(expectedChannel1Settings);
     await expect(
-      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_2_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_2_')),
     ).resolves.toEqual(expectedChannel2Settings);
     await expect(
-      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_3_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_CHANNEL_ID_3_')),
     ).resolves.toEqual(expectedChannel3Settings);
     await expect(
-      settingsAccessor.getAgentSettings(new LineChannel('_WRONG_CHANNEL_'))
+      settingsAccessor.getAgentSettings(new LineChannel('_WRONG_CHANNEL_')),
     ).resolves.toBe(null);
 
     await expect(
@@ -253,7 +253,7 @@ describe('initModule(configs)', () => {
         new LineChannel('_CHANNEL_ID_2_'),
         new LineChannel('_CHANNEL_ID_3_'),
         new LineChannel('_WRONG_CHANNEL_'),
-      ])
+      ]),
     ).resolves.toEqual([
       expectedChannel2Settings,
       expectedChannel3Settings,
@@ -261,17 +261,17 @@ describe('initModule(configs)', () => {
     ]);
 
     await expect(
-      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_1_')
+      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_1_'),
     ).resolves.toEqual(expectedChannel1Settings);
     await expect(
-      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_2_')
+      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_2_'),
     ).resolves.toEqual(expectedChannel2Settings);
     await expect(
-      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_3_')
+      settingsAccessor.getLineChatChannelSettingsByBotUserId('_BOT_ID_3_'),
     ).resolves.toEqual(expectedChannel3Settings);
 
     await expect(
-      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_1_')
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_1_'),
     ).resolves.toEqual({
       providerId: '_PROVIDER_ID_1_',
       channelId: '_LOGIN_CHANNEL_ID_1_',
@@ -282,7 +282,7 @@ describe('initModule(configs)', () => {
       refChatChannelIds: ['_CHANNEL_ID_1_', '_CHANNEL_ID_2_'],
     });
     await expect(
-      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_2_')
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_2_'),
     ).resolves.toEqual({
       providerId: '_PROVIDER_ID_2_',
       channelId: '_LOGIN_CHANNEL_ID_2_',
@@ -290,7 +290,7 @@ describe('initModule(configs)', () => {
       refChatChannelIds: ['_CHANNEL_ID_3_'],
     });
     await expect(
-      settingsAccessor.getLineLoginChannelSettings('_WRONG_CHANNEL_')
+      settingsAccessor.getLineLoginChannelSettings('_WRONG_CHANNEL_'),
     ).resolves.toBe(null);
   });
 
@@ -302,7 +302,7 @@ describe('initModule(configs)', () => {
       getLineLoginChannelSettings: async () => null,
     };
     const agentSettingsService = serviceProviderFactory({})(
-      () => agentSettingsAccessor
+      () => agentSettingsAccessor,
     );
 
     const app = Sociably.createApp({
@@ -324,7 +324,7 @@ describe('initModule(configs)', () => {
 
   it('throws if no channel settings source provided', async () => {
     expect(() => Line.initModule({})).toThrowErrorMatchingInlineSnapshot(
-      `"Line platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`
+      `"Line platform requires one of \`agentSettings\`, \`multiAgentSettings\` or \`agentSettingsService\` option"`,
     );
   });
 
@@ -362,7 +362,7 @@ describe('initModule(configs)', () => {
         LineUser,
         LineUserProfile,
         LineGroupProfile,
-      ])
+      ]),
     );
   });
 

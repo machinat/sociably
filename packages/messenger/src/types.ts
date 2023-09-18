@@ -6,7 +6,11 @@ import type {
   SociablyUser,
 } from '@sociably/core';
 import type { IntermediateSegment } from '@sociably/core/renderer';
-import type { FileInfo, MetaApiChannel, MetaApiBot } from '@sociably/meta-api';
+import type {
+  MetaApiUploadingFile,
+  MetaApiChannel,
+  MetaApiBot,
+} from '@sociably/meta-api';
 import type {
   PATH_MESSAGES,
   PATH_PASS_THREAD_CONTROL,
@@ -47,16 +51,11 @@ export type MessageTags =
   | 'ACCOUNT_UPDATE'
   | 'HUMAN_AGENT';
 
-export type AttachFileValue = {
-  data: string | Buffer | NodeJS.ReadableStream;
-  info?: FileInfo;
-};
-
 export type BaseSegmentValue = {
   type: string;
   apiPath: string;
   params: Record<string, unknown>;
-  attachFile?: AttachFileValue;
+  file?: MetaApiUploadingFile;
   assetTag?: string;
 };
 
@@ -70,7 +69,7 @@ export type MessageValue = {
     tag?: MessageTags;
     persona_id?: string;
   };
-  attachFile?: AttachFileValue;
+  file?: MetaApiUploadingFile;
   assetTag?: string;
 };
 
@@ -81,8 +80,6 @@ export type SenderActionValue = {
     sender_action: 'mark_seen' | 'typing_on' | 'typing_off';
     persona_id?: string;
   };
-  attachFile?: undefined;
-  assetTag?: undefined;
 };
 
 export type PassThreadControlValue = {
@@ -92,8 +89,6 @@ export type PassThreadControlValue = {
     target_app_id: number;
     metadata?: string;
   };
-  attachFile?: undefined;
-  assetTag?: undefined;
 };
 
 export type RequestThreadControlValue = {
@@ -102,8 +97,6 @@ export type RequestThreadControlValue = {
   params: {
     metadata?: string;
   };
-  attachFile?: undefined;
-  assetTag?: undefined;
 };
 
 export type TakeThreadControlValue = {
@@ -112,8 +105,6 @@ export type TakeThreadControlValue = {
   params: {
     metadata?: string;
   };
-  attachFile?: undefined;
-  assetTag?: undefined;
 };
 
 export type HandoverProtocolValue =
@@ -131,7 +122,7 @@ export type MessengerIntermediateSegment =
 
 export type MessengerComponent<
   Props,
-  Segment extends MessengerIntermediateSegment = MessengerIntermediateSegment
+  Segment extends MessengerIntermediateSegment = MessengerIntermediateSegment,
 > = NativeComponent<Props, Segment>;
 
 export type MessagingOptions = {
@@ -154,7 +145,7 @@ export type MessengerBot<Channel extends MetaApiChannel> =
   MetaApiBot<Channel> & {
     uploadChatAttachment(
       channel: string | Channel,
-      node: SociablyNode
+      node: SociablyNode,
     ): Promise<null | { attachmentId: string }>;
   };
 
@@ -185,9 +176,7 @@ export type SetMessengerProfileOptions = {
     locale: string;
     callToActions: { question: string; payload: string }[];
   }[];
-  /**
-   * An array of call-to-action buttons to include in the persistent menu.
-   */
+  /** An array of call-to-action buttons to include in the persistent menu. */
   persistentMenu?: {
     locale: string;
     composerInputDisabled?: boolean;
@@ -208,8 +197,6 @@ export type SetMessengerProfileOptions = {
    * Extensions SDK and the checkbox plugin.
    */
   whitelistedDomains?: string[];
-  /**
-   * Authentication callback URL. Must use https protocol.
-   */
+  /** Authentication callback URL. Must use https protocol. */
   accountLinkingUrl?: string;
 };

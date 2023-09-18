@@ -7,6 +7,7 @@ export * from './ListSection.js';
 export * from './Location.js';
 export * from './Media.js';
 export * from './QuickReplyParam.js';
+export * from './CopyCodeParam.js';
 export * from './Read.js';
 export * from './ReplyButton.js';
 export * from './Text.js';

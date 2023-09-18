@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import InstagramAgent from '../../Agent.js';
 import InstagramChat from '../../Chat.js';
 import InstagramUser from '../../User.js';
@@ -18,8 +18,8 @@ test('rendering to UrlButton', async () => {
   await expect(
     WebviewButton(
       authenticator,
-      new InstagramChat('12345', { id: '67890' })
-    )({ title: 'Foo' })
+      new InstagramChat('12345', { id: '67890' }),
+    )({ title: 'Foo' }),
   ).resolves.toMatchInlineSnapshot(`
     <UrlButton
       title="Foo"
@@ -30,8 +30,8 @@ test('rendering to UrlButton', async () => {
   await expect(
     WebviewButton(
       authenticator,
-      new InstagramChat('12345', { id: '67890' })
-    )({ title: 'Foo', webviewHeightRatio: 'compact', hideShareButton: true })
+      new InstagramChat('12345', { id: '67890' }),
+    )({ title: 'Foo', webviewHeightRatio: 'compact', hideShareButton: true }),
   ).resolves.toMatchInlineSnapshot(`
     <UrlButton
       hideShareButton={true}
@@ -44,8 +44,8 @@ test('rendering to UrlButton', async () => {
   await expect(
     WebviewButton(
       authenticator,
-      new InstagramChat('12345', { id: '67890' })
-    )({ title: 'Foo', page: '/foo?bar=baz' })
+      new InstagramChat('12345', { id: '67890' }),
+    )({ title: 'Foo', page: '/foo?bar=baz' }),
   ).resolves.toMatchInlineSnapshot(`
     <UrlButton
       title="Foo"
@@ -57,17 +57,17 @@ test('rendering to UrlButton', async () => {
   expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     1,
     new InstagramUser('12345', '67890'),
-    undefined
+    undefined,
   );
   expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     2,
     new InstagramUser('12345', '67890'),
-    undefined
+    undefined,
   );
   expect(authenticator.getAuthUrl).toHaveBeenNthCalledWith(
     3,
     new InstagramUser('12345', '67890'),
-    'foo?bar=baz'
+    'foo?bar=baz',
   );
 });
 
@@ -75,18 +75,18 @@ test('throw if thread is not a InstagramChat', async () => {
   await expect(
     WebviewButton(
       authenticator,
-      new InstagramAgent('1234567890', '9876543210')
-    )({ title: 'Foo' })
+      new InstagramAgent('1234567890', '9876543210'),
+    )({ title: 'Foo' }),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"WebviewButton can only be used in the InstagramChat with a user ID"`
+    `"WebviewButton can only be used in the InstagramChat with a user ID"`,
   );
   await expect(
     WebviewButton(
       authenticator,
-      new InstagramUser('1234567890', '9876543210') as never
-    )({ title: 'Foo', page: '/foo' })
+      new InstagramUser('1234567890', '9876543210') as never,
+    )({ title: 'Foo', page: '/foo' }),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"WebviewButton can only be used in the InstagramChat with a user ID"`
+    `"WebviewButton can only be used in the InstagramChat with a user ID"`,
   );
   await expect(
     WebviewButton(authenticator, {
@@ -94,9 +94,9 @@ test('throw if thread is not a InstagramChat', async () => {
       uid: 'test.foo',
     } as never)({
       title: 'Foo',
-    })
+    }),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"WebviewButton can only be used in the InstagramChat with a user ID"`
+    `"WebviewButton can only be used in the InstagramChat with a user ID"`,
   );
 
   expect(authenticator.getAuthUrl).not.toHaveBeenCalled();

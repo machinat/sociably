@@ -9,21 +9,32 @@ import {
 } from '../types.js';
 
 export type EditMessageProps = {
-  /** Required if inlineMessageId is not specified. Identifier of the message to edit */
+  /**
+   * Required if inlineMessageId is not specified. Identifier of the message to
+   * edit
+   */
   messageId?: number;
   /** Required if messageId are not specified. Identifier of the inline message */
   inlineMessageId?: string;
-  /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
+  /**
+   * One {@link ReplyMarkup} element for an inline keyboard, custom reply
+   * keyboard, instructions to remove reply keyboard or to force a reply from
+   * the user.
+   */
   replyMarkup?: SociablyNode;
 };
 
-/**
- * @category Props
- */
+/** @category Props */
 export type EditTextProps = {
-  /** Texual content for the new text of the message, 1-4096 characters after entities parsing */
+  /**
+   * Texual content for the new text of the message, 1-4096 characters after
+   * entities parsing
+   */
   children: SociablyNode;
-  /** Mode for parsing entities in the message text. See formatting options for more details. */
+  /**
+   * Mode for parsing entities in the message text. See formatting options for
+   * more details.
+   */
   parseMode?: TelegramParseMode;
   /** Disables link previews for links in this message */
   disableWebPagePreview?: boolean;
@@ -31,6 +42,7 @@ export type EditTextProps = {
 
 /**
  * Edit a text and game message
+ *
  * @category Component
  * @props {@link EditTextProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#editmessagetext).
@@ -56,7 +68,9 @@ export const EditText: TelegramComponent<
   for (const segment of textSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-texual element ${formatNode(segment.node)} received in <EditText/>`
+        `non-texual element ${formatNode(
+          segment.node,
+        )} received in <EditText/>`,
       );
     }
   }
@@ -78,18 +92,23 @@ export const EditText: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type EditCaptionProps = {
-  /** Texual content for the new caption of the message, 1-1024 characters after entities parsing */
+  /**
+   * Texual content for the new caption of the message, 1-1024 characters after
+   * entities parsing
+   */
   children: SociablyNode;
-  /** Mode for parsing entities in the message text. See formatting options for more details. */
-  parseMode: TelegramParseMode;
+  /**
+   * Mode for parsing entities in the message text. See formatting options for
+   * more details.
+   */
+  parseMode?: TelegramParseMode;
 } & EditMessageProps;
 
 /**
  * Edit captions of a media messages
+ *
  * @category Component
  * @props {@link EditCaptionProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#editmssagecaption).
@@ -115,8 +134,8 @@ export const EditCaption: TelegramComponent<
     if (segment.type !== 'text') {
       throw new TypeError(
         `non-texual element ${formatNode(
-          segment.node
-        )} received in <EditCaption/>`
+          segment.node,
+        )} received in <EditCaption/>`,
       );
     }
   }
@@ -137,9 +156,7 @@ export const EditCaption: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type EditMediaProps = {
   /**
    * An {@link Animation}, {@link Audio}, {@link Document}, {@link Photo} or
@@ -150,7 +167,12 @@ export type EditMediaProps = {
 } & EditMessageProps;
 
 /**
- * Edit a animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL.
+ * Edit a animation, audio, document, photo, or video messages. If a message is
+ * a part of a message album, then it can be edited only to a photo or a video.
+ * Otherwise, message type can be changed arbitrarily. When inline message is
+ * edited, new file can't be uploaded. Use previously uploaded file via its
+ * file_id or specify a URL.
+ *
  * @category Component
  * @props {@link EditMediaProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#editmessagemedia).
@@ -246,18 +268,21 @@ export const EditMedia: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type StopPollProps = {
-  /**  	Identifier of the original message with the poll */
+  /** Identifier of the original message with the poll */
   messageId: number;
-  /** One {@link ReplyMarkup} element for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user. */
+  /**
+   * One {@link ReplyMarkup} element for an inline keyboard, custom reply
+   * keyboard, instructions to remove reply keyboard or to force a reply from
+   * the user.
+   */
   replyMarkup?: SociablyNode;
 };
 
 /**
  * Edit a text and game message
+ *
  * @category Component
  * @props {@link StopPollProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#stoppoll).
@@ -280,16 +305,15 @@ export const StopPoll: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type DeleteMessageProps = {
-  /**	Identifier of the original message with the poll */
+  /** Identifier of the original message with the poll */
   messageId: number;
 };
 
 /**
  * Edit a text and game message
+ *
  * @category Component
  * @props {@link DeleteMessageProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#deletemessage).

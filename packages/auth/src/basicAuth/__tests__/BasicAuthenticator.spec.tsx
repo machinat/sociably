@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably, {
   StateController,
   SociablyBot,
@@ -95,18 +95,18 @@ test('.getAuthUrl()', () => {
   operator.signToken.mock.fakeReturnValue(loginToken);
 
   expect(
-    authenticator.getAuthUrl('test', { foo: 'bar' })
+    authenticator.getAuthUrl('test', { foo: 'bar' }),
   ).toMatchInlineSnapshot(
-    `"https://sociably.io/myApp/auth/test/init?login=__SIGNED_LOGIN_TOKEN__"`
+    `"https://sociably.io/myApp/auth/test/init?login=__SIGNED_LOGIN_TOKEN__"`,
   );
   expect(operator.signToken).toHaveBeenCalledWith('test', {
     credential: { foo: 'bar' },
   });
 
   expect(
-    authenticator.getAuthUrl('test', { hello: 'world' }, '/foo?bar=baz')
+    authenticator.getAuthUrl('test', { hello: 'world' }, '/foo?bar=baz'),
   ).toMatchInlineSnapshot(
-    `"https://sociably.io/myApp/auth/test/init?login=__SIGNED_LOGIN_TOKEN__"`
+    `"https://sociably.io/myApp/auth/test/init?login=__SIGNED_LOGIN_TOKEN__"`,
   );
   expect(operator.signToken).toHaveBeenCalledWith('test', {
     credential: { hello: 'world' },
@@ -125,7 +125,7 @@ describe('init login flow', () => {
   const delegateRequest = authenticator.createRequestDelegator(delegateOptions);
 
   const req = createReq(
-    'https://sociably.io/myApp/auth/test/init?login=__SIGNED_LOGIN_TOKEN__'
+    'https://sociably.io/myApp/auth/test/init?login=__SIGNED_LOGIN_TOKEN__',
   );
   const res = moxy<ServerResponse>(new ServerResponse(req));
 
@@ -179,12 +179,12 @@ describe('init login flow', () => {
     expect(operator.redirect).toHaveBeenCalledTimes(2);
     expect(operator.redirect).toHaveBeenCalledWith(
       res,
-      'https://sociably.io/myApp/auth/test/login'
+      'https://sociably.io/myApp/auth/test/login',
     );
     expect(operator.verifyToken).toHaveBeenCalledTimes(2);
     expect(operator.verifyToken).toHaveBeenCalledWith(
       'test',
-      '__SIGNED_LOGIN_TOKEN__'
+      '__SIGNED_LOGIN_TOKEN__',
     );
     expect(operator.getAuth).toHaveBeenCalledTimes(2);
     expect(operator.getAuth).toHaveBeenCalledWith(req, 'test', {
@@ -208,7 +208,7 @@ describe('init login flow', () => {
     expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledTimes(1);
     expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledWith(
       { foo: 'bar' },
-      { foo: 'baz' }
+      { foo: 'baz' },
     );
 
     expect(operator.redirect).toHaveBeenCalledTimes(1);
@@ -231,7 +231,7 @@ describe('init login flow', () => {
     expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledTimes(2);
     expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledWith(
       { foo: 'bae' },
-      { foo: 'baz' }
+      { foo: 'baz' },
     );
 
     expect(delegateOptions.verifyCredential).not.toHaveBeenCalled();
@@ -252,7 +252,7 @@ describe('init login flow', () => {
     expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledTimes(1);
     expect(delegateOptions.checkCurrentAuthUsability).toHaveBeenCalledWith(
       { foo: 'bar' },
-      { foo: 'baz' }
+      { foo: 'baz' },
     );
 
     expect(delegateOptions.verifyCredential).toHaveBeenCalledTimes(1);
@@ -305,7 +305,7 @@ describe('init login flow', () => {
     expect(operator.redirect).toHaveBeenCalledTimes(2);
     expect(operator.redirect).toHaveBeenCalledWith(
       res,
-      'https://sociably.io/myApp/auth/test/login'
+      'https://sociably.io/myApp/auth/test/login',
     );
     expect(delegateOptions.verifyCredential).toHaveBeenCalledTimes(2);
     expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(2);
@@ -347,7 +347,7 @@ describe('init login flow', () => {
     expect(operator.redirect).toHaveBeenCalledTimes(2);
     expect(operator.redirect).toHaveBeenCalledWith(
       res,
-      'https://sociably.io/myApp/auth/test/login'
+      'https://sociably.io/myApp/auth/test/login',
     );
 
     expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(2);
@@ -359,13 +359,13 @@ describe('init login flow', () => {
     const looseAuthenticator = new BasicAuthenticator(
       stateController,
       operator,
-      { mode: 'loose' }
+      { mode: 'loose' },
     );
 
     await looseAuthenticator.createRequestDelegator(delegateOptions)(
       req,
       res,
-      routing
+      routing,
     );
 
     expect(delegateOptions.verifyCredential).toHaveBeenCalledWith({
@@ -388,7 +388,7 @@ describe('init login flow', () => {
     await looseAuthenticator.createRequestDelegator(delegateOptions)(
       req,
       res,
-      routing
+      routing,
     );
     expect(delegateOptions.verifyCredential).toHaveBeenCalledWith({
       hello: 'world',
@@ -419,7 +419,7 @@ describe('init login flow', () => {
     await authenticator.createRequestDelegator(delegateOptions)(
       req,
       res,
-      routing
+      routing,
     );
 
     expect(delegateOptions.verifyCredential).toHaveBeenCalledWith({
@@ -429,7 +429,7 @@ describe('init login flow', () => {
       res,
       'test',
       444,
-      'For four fools'
+      'For four fools',
     );
     expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
@@ -442,7 +442,7 @@ describe('init login flow', () => {
     await authenticator.createRequestDelegator(delegateOptions)(
       req,
       res,
-      routing
+      routing,
     );
     expect(delegateOptions.verifyCredential).toHaveBeenNthCalledWith(2, {
       hello: 'world',
@@ -467,7 +467,7 @@ describe('init login flow', () => {
     await authenticator.createRequestDelegator(delegateOptions)(
       req,
       res,
-      routing
+      routing,
     );
 
     expect(delegateOptions.checkAuthData).toHaveBeenCalledWith({
@@ -477,7 +477,7 @@ describe('init login flow', () => {
       res,
       'test',
       418,
-      "I'm a Teapot"
+      "I'm a Teapot",
     );
     expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
@@ -490,7 +490,7 @@ describe('init login flow', () => {
     await authenticator.createRequestDelegator(delegateOptions)(
       req,
       res,
-      routing
+      routing,
     );
     expect(operator.redirect).toHaveBeenNthCalledWith(2, res, '/foo?bar=baz', {
       assertInternal: true,
@@ -511,10 +511,10 @@ describe('init login flow', () => {
       res,
       'test',
       400,
-      expect.any(String)
+      expect.any(String),
     );
     expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"invalid login param"`
+      `"invalid login param"`,
     );
     expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
@@ -523,7 +523,7 @@ describe('init login flow', () => {
 
   it('respond 400 if login query is invalid', async () => {
     const invalidReq = createReq(
-      'https://sociably.io/myApp/auth/test/?login=__INVALID_LOGIN_TOKEN__'
+      'https://sociably.io/myApp/auth/test/?login=__INVALID_LOGIN_TOKEN__',
     );
 
     operator.verifyToken.mock.fakeReturnValue(null);
@@ -532,17 +532,17 @@ describe('init login flow', () => {
     expect(operator.verifyToken).toHaveBeenCalledTimes(1);
     expect(operator.verifyToken).toHaveBeenCalledWith(
       'test',
-      '__INVALID_LOGIN_TOKEN__'
+      '__INVALID_LOGIN_TOKEN__',
     );
 
     expect(operator.issueError).toHaveBeenCalledWith(
       res,
       'test',
       400,
-      expect.any(String)
+      expect.any(String),
     );
     expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"invalid login param"`
+      `"invalid login param"`,
     );
     expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
@@ -562,7 +562,7 @@ describe('init login flow', () => {
       res,
       'test',
       418,
-      "I'm a Teapot"
+      "I'm a Teapot",
     );
     expect(operator.redirect).toHaveBeenCalledWith(res, undefined, {
       assertInternal: true,
@@ -611,7 +611,7 @@ describe('login page', () => {
         ip="222.222.222.222"
         osName="iOS"
       />
-    `
+    `,
     );
 
     const msgElement = bot.render.mock.calls[0].args[1];
@@ -632,7 +632,7 @@ describe('login page', () => {
     expect(operator.signToken).toHaveBeenCalledWith(
       'test',
       expect.stringMatching(/^test.foo:1647870481457:[0-9]{6}$/),
-      { noTimestamp: true }
+      { noTimestamp: true },
     );
 
     expect(operator.issueState).toHaveBeenCalledTimes(1);
@@ -692,7 +692,7 @@ describe('login page', () => {
         ip="222.222.222.222"
         osName="iOS"
       />
-    `
+    `,
     );
 
     expect(operator.issueState).toHaveBeenCalledTimes(1);
@@ -800,11 +800,11 @@ describe('login page', () => {
 
     expect(state.update).toHaveBeenCalledTimes(1);
     expect(state.update.mock.calls[0].args[0]).toMatchInlineSnapshot(
-      `"test.foo:1647870381457"`
+      `"test.foo:1647870381457"`,
     );
     await expect(state.update.mock.calls[0].result).resolves.toBe(10);
     expect(
-      stateController.globalState.mock.calls[0].args[0]
+      stateController.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"basic_auth_verify_records"`);
   });
 
@@ -828,10 +828,10 @@ describe('login page', () => {
       res,
       'test',
       401,
-      expect.any(String)
+      expect.any(String),
     );
     expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"login session expired"`
+      `"login session expired"`,
     );
 
     expect(operator.redirect).toHaveBeenCalledTimes(1);
@@ -870,7 +870,7 @@ describe('login page', () => {
       res,
       'test',
       418,
-      "I'm a Teapot"
+      "I'm a Teapot",
     );
 
     expect(operator.redirect).toHaveBeenCalledTimes(1);
@@ -907,10 +907,10 @@ describe('login page', () => {
       res,
       'test',
       510,
-      expect.any(String)
+      expect.any(String),
     );
     expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"fail to send login code"`
+      `"fail to send login code"`,
     );
 
     expect(operator.redirect).toHaveBeenCalledTimes(1);
@@ -934,7 +934,7 @@ describe('verify code api', () => {
           this.push(typeof body === 'string' ? body : JSON.stringify(body));
           this.push(null);
         },
-      })
+      }),
     );
     req.mock
       .getter('url')
@@ -982,19 +982,19 @@ describe('verify code api', () => {
     expect(operator.signToken).toHaveBeenCalledWith(
       'test',
       expect.any(String),
-      { noTimestamp: true }
+      { noTimestamp: true },
     );
     expect(operator.signToken.mock.calls[0].args[1]).toMatchInlineSnapshot(
-      `"test.foo:1647870471457:123456"`
+      `"test.foo:1647870471457:123456"`,
     );
 
     expect(state.update).toHaveBeenCalledTimes(1);
     expect(state.update.mock.calls[0].args[0]).toMatchInlineSnapshot(
-      `"test.foo:1647870471457"`
+      `"test.foo:1647870471457"`,
     );
     await expect(state.update.mock.calls[0].result).resolves.toBe(undefined);
     expect(
-      stateController.globalState.mock.calls[0].args[0]
+      stateController.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"basic_auth_verify_records"`);
 
     expect(operator.issueError).not.toHaveBeenCalled();
@@ -1047,10 +1047,10 @@ describe('verify code api', () => {
           res,
           'test',
           401,
-          expect.any(String)
+          expect.any(String),
         );
         expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-          `"invalid login verify code"`
+          `"invalid login verify code"`,
         );
       }
     }
@@ -1059,7 +1059,7 @@ describe('verify code api', () => {
     expect(operator.signToken).toHaveBeenCalledWith(
       'test',
       expect.any(String),
-      { noTimestamp: true }
+      { noTimestamp: true },
     );
     expect(operator.signToken.mock.calls.map(({ args }) => args[1]))
       .toMatchInlineSnapshot(`
@@ -1087,7 +1087,7 @@ describe('verify code api', () => {
       ]
     `);
     await expect(
-      Promise.all(state.update.mock.calls.map(({ result }) => result))
+      Promise.all(state.update.mock.calls.map(({ result }) => result)),
     ).resolves.toMatchInlineSnapshot(`
       [
         1,
@@ -1106,7 +1106,7 @@ describe('verify code api', () => {
     `);
 
     expect(
-      stateController.globalState.mock.calls[0].args[0]
+      stateController.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"basic_auth_verify_records"`);
   });
 
@@ -1193,10 +1193,10 @@ describe('verify code api', () => {
       res1,
       'test',
       401,
-      expect.any(String)
+      expect.any(String),
     );
     expect(operator.issueError.mock.calls[0].args[3]).toMatchInlineSnapshot(
-      `"login session expired"`
+      `"login session expired"`,
     );
 
     operator.getState.mock.fake(async () => ({
@@ -1223,7 +1223,7 @@ describe('verify code api', () => {
     `);
     expect(operator.issueError).toHaveBeenCalledTimes(2);
     expect(operator.issueError.mock.calls[1].args[3]).toMatchInlineSnapshot(
-      `"login session expired"`
+      `"login session expired"`,
     );
 
     operator.getState.mock.fake(async () => ({
@@ -1252,7 +1252,7 @@ describe('verify code api', () => {
     `);
     expect(operator.issueError).toHaveBeenCalledTimes(3);
     expect(operator.issueError.mock.calls[2].args[3]).toMatchInlineSnapshot(
-      `"login session expired"`
+      `"login session expired"`,
     );
 
     expect(operator.issueAuth).not.toHaveBeenCalled();
@@ -1268,8 +1268,8 @@ describe('verify code api', () => {
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
 
-    state.update.mock.fake(async (key, updator) => {
-      return updator(
+    state.update.mock.fake(async (key, updator) =>
+      updator(
         /^\$/.test(key)
           ? [
               { ts: now - 999999, ch: 'test.foo.1' },
@@ -1278,9 +1278,9 @@ describe('verify code api', () => {
               { ts: now - 666666, ch: 'test.foo.4' },
               { ts: now - 555555, ch: 'test.foo.5' },
             ]
-          : undefined
-      );
-    });
+          : undefined,
+      ),
+    );
 
     operator.getState.mock.fake(async () => ({
       status: 'verify',
@@ -1297,7 +1297,7 @@ describe('verify code api', () => {
 
     expect(state.update).toHaveBeenCalledTimes(1);
     expect(state.update.mock.calls[0].args[0]).toMatchInlineSnapshot(
-      `"test.foo:1647870471457"`
+      `"test.foo:1647870471457"`,
     );
     await expect(state.update.mock.calls[0].result).resolves.toBe(undefined);
     expect(state.delete).not.toHaveBeenCalled();
@@ -1317,12 +1317,12 @@ describe('verify code api', () => {
 
     expect(state.update).toHaveBeenCalledTimes(3);
     expect(state.update.mock.calls[1].args[0]).toMatchInlineSnapshot(
-      `"test.foo:1647870471457"`
+      `"test.foo:1647870471457"`,
     );
     await expect(state.update.mock.calls[1].result).resolves.toBe(1);
 
     expect(state.update.mock.calls[2].args[0]).toMatchInlineSnapshot(
-      `"$time_index"`
+      `"$time_index"`,
     );
     await expect(state.update.mock.calls[2].result).resolves
       .toMatchInlineSnapshot(`

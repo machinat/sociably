@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import type { LineBot } from '../Bot.js';
 import LineChannel from '../Channel.js';
 import LineUser from '../User.js';
@@ -183,7 +183,7 @@ describe('#getGroupProfile(user)', () => {
     expect(profile.name).toBe('Group name');
     expect(profile.id).toBe('_GROUP_ID_');
     expect(profile.avatarUrl).toBe(
-      'https://profile.line-scdn.net/abcdefghijklmn'
+      'https://profile.line-scdn.net/abcdefghijklmn',
     );
     expect(profile.data).toEqual(groupSummary);
 

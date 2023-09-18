@@ -14,7 +14,7 @@ import type {
   MetaApiJob,
   MetaApiResult,
   MetaApiDispatchResponse,
-  FileInfo,
+  MetaApiUploadingFile,
 } from '@sociably/meta-api';
 import {
   MessageValue,
@@ -61,15 +61,10 @@ export type MessagingTarget =
 // TODO: type the raw event object
 export type FacebookRawEvent = any;
 
-export type AttachFileValue = {
-  data: string | Buffer | NodeJS.ReadableStream;
-  info?: FileInfo;
-};
-
 export type CommentValue = {
   type: 'comment';
   params: Record<string, unknown>;
-  attachFile?: undefined;
+  file?: undefined;
   photo?: PagePhotoValue;
 };
 
@@ -77,22 +72,22 @@ export type PagePhotoValue = {
   type: 'page';
   apiPath: typeof PATH_PHOTOS;
   params: Record<string, unknown>;
-  attachFile?: AttachFileValue;
+  file?: MetaApiUploadingFile;
 };
 
 export type PageVideoValue = {
   type: 'page';
   apiPath: typeof PATH_VIDEOS;
   params: Record<string, unknown>;
-  attachFile?: AttachFileValue;
-  thumbnailFile?: AttachFileValue;
+  file?: MetaApiUploadingFile;
+  thumbnailFile?: MetaApiUploadingFile;
 };
 
 export type PagePostValue = {
   type: 'page';
   apiPath: typeof PATH_FEED;
   params: Record<string, unknown>;
-  attachFile?: AttachFileValue;
+  file?: MetaApiUploadingFile;
   photos?: PagePhotoValue[];
 };
 
@@ -115,7 +110,7 @@ export type FacebookIntermediateSegment =
 
 export type FacebookComponent<
   Props,
-  Segment extends FacebookIntermediateSegment = FacebookIntermediateSegment
+  Segment extends FacebookIntermediateSegment = FacebookIntermediateSegment,
 > = NativeComponent<Props, Segment>;
 
 export type RawUserProfile = {
@@ -177,14 +172,18 @@ export type FacebookConfigs = {
   /** To handle the webhook challenge request or not. Default to `true` */
   shouldHandleChallenge?: boolean;
   /**
-   * The webhook subscription fields for the pages. Default to `['messages', 'messaging_postbacks',
-   * 'messaging_optins', 'messaging_handovers', 'messaging_policy_enforcement', 'messaging_account_linking',
+   * The webhook subscription fields for the pages. Default to `['messages',
+   * 'messaging_postbacks', 'messaging_optins', 'messaging_handovers',
+   * 'messaging_policy_enforcement', 'messaging_account_linking',
    * 'messaging_game_plays', 'messaging_referrals']`
    */
   subscriptionFields?: string[];
   /** The graph API version to make API calls */
   graphApiVersion?: string;
-  /** Request additional info of user profile. This requires addtional permisions of your app */
+  /**
+   * Request additional info of user profile. This requires addtional permisions
+   * of your app
+   */
   optionalProfileFields?: ('locale' | 'timezone' | 'gender')[];
   apiBatchRequestInterval?: number;
   eventMiddlewares?: MaybeContainer<FacebookEventMiddleware>[];

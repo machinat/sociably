@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
-import { moxy, Mock, Moxy } from '@moxyjs/moxy';
+import moxy, { Mock, Moxy } from '@moxyjs/moxy';
 
 import { TwitterReceiver } from '../Receiver.js';
 import TwitterChat from '../Chat.js';
@@ -91,9 +91,9 @@ beforeEach(() => {
 
 it('throw if options.appSecret is empty', () => {
   expect(
-    () => new TwitterReceiver({ bot, popEventWrapper } as never)
+    () => new TwitterReceiver({ bot, popEventWrapper } as never),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"options.appSecret should not be empty"`
+    `"options.appSecret should not be empty"`,
   );
 });
 
@@ -113,7 +113,7 @@ it.each(['PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 
     expect(res.statusCode).toBe(405);
     expect(res.writableEnded).toBe(true);
-  }
+  },
 );
 
 it('responds 400 if body is empty', async () => {
@@ -176,13 +176,16 @@ it('respond 200 and pop events', async () => {
   expect(context.event.type).toBe('text');
   expect(context.event.channel).toEqual(new TwitterUser('4337869213'));
   expect(context.event.thread).toEqual(
-    new TwitterChat('4337869213', '3001969357')
+    new TwitterChat('4337869213', '3001969357'),
   );
   expect(context.event.user).toEqual(
-    new TwitterUser('3001969357', messageEventBody.users['3001969357'] as never)
+    new TwitterUser(
+      '3001969357',
+      messageEventBody.users['3001969357'] as never,
+    ),
   );
   expect(context.event.payload).toEqual(
-    messageEventBody.direct_message_events[0]
+    messageEventBody.direct_message_events[0],
   );
   expect(context.event.forUserId).toEqual(messageEventBody.for_user_id);
   expect(context.event.appsMapping).toEqual(messageEventBody.apps);
@@ -200,7 +203,7 @@ describe('context.reply(message)', () => {
   test('render message on event.thread', async () => {
     await receiver.handleRequest(
       createReq({ method: 'POST', body: JSON.stringify(messageEventBody) }),
-      createRes()
+      createRes(),
     );
 
     expect(popEventMock).toHaveBeenCalledTimes(1);
@@ -231,15 +234,15 @@ describe('context.reply(message)', () => {
           },
         }),
       }),
-      createRes()
+      createRes(),
     );
     expect(popEventMock).toHaveBeenCalledTimes(1);
     const [{ reply }] = popEventMock.calls[0].args;
 
     await expect(
-      reply('hello world')
+      reply('hello world'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Cannot reply to subscription_revoke event with no chat thread info"`
+      `"Cannot reply to subscription_revoke event with no chat thread info"`,
     );
     expect(bot.render).not.toHaveBeenCalled();
   });
@@ -303,13 +306,13 @@ it('handle webhook challenge', async () => {
           'sha256=bsQqpx1cyheVTwyNGGPmTeY+SLC8YZIwOfr5Kcb2fQE=',
       },
     }),
-    res1
+    res1,
   );
 
   expect(res1.statusCode).toBe(200);
   expect(res1.writableEnded).toBe(true);
   expect(res1.end.mock.calls[0].args[0]).toBe(
-    '{"response_token":"sha256=rPq0FJoFEukzQI8G52D6xjiQ4BGXK4EuZWYZCWMMlsQ="}'
+    '{"response_token":"sha256=rPq0FJoFEukzQI8G52D6xjiQ4BGXK4EuZWYZCWMMlsQ="}',
   );
 
   const res2 = createRes();
@@ -324,7 +327,7 @@ it('handle webhook challenge', async () => {
       url: '/?crc_token=__TOKEN_FROM_TWITTER__&nonce=__NONCE__',
       headers: { 'x-twitter-webhooks-signature': 'sha256=__WRONG_SIGNATURE__' },
     }),
-    res3
+    res3,
   );
   expect(res3.statusCode).toBe(401);
   expect(res3.writableEnded).toBe(true);

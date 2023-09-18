@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -64,7 +64,7 @@ describe('initModule(configs)', () => {
     expect(typeof module.startHook).toBe('function');
     expect(module.eventMiddlewares).toEqual([eventMiddleware]);
     expect(module.dispatchMiddlewares).toEqual(
-      expect.arrayContaining([dispatchMiddleware, saveUploadedMedia])
+      expect.arrayContaining([dispatchMiddleware, saveUploadedMedia]),
     );
   });
 
@@ -148,7 +148,7 @@ describe('initModule(configs)', () => {
         WhatsAppChat,
         WhatsAppUser,
         WhatsAppUserProfile,
-      ])
+      ]),
     );
 
     bot.stop();
@@ -177,14 +177,14 @@ describe('initModule(configs)', () => {
     const unknownAgent = new WhatsAppAgent('2222222222');
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(agent)
+      agentSettingsAccessor.getAgentSettings(agent),
     ).resolves.toEqual(agentSettings);
     await expect(
-      agentSettingsAccessor.getAgentSettings(unknownAgent)
+      agentSettingsAccessor.getAgentSettings(unknownAgent),
     ).resolves.toBe(null);
 
     await expect(
-      agentSettingsAccessor.getAgentSettingsBatch([agent, unknownAgent])
+      agentSettingsAccessor.getAgentSettingsBatch([agent, unknownAgent]),
     ).resolves.toEqual([agentSettings, null]);
 
     await app.stop();
@@ -240,16 +240,16 @@ describe('initModule(configs)', () => {
     const unknownAgent = new WhatsAppAgent('4444444444');
 
     await expect(
-      agentSettingsAccessor.getAgentSettings(agent1)
+      agentSettingsAccessor.getAgentSettings(agent1),
     ).resolves.toEqual(agentSettings1);
     await expect(
-      agentSettingsAccessor.getAgentSettings(agent2)
+      agentSettingsAccessor.getAgentSettings(agent2),
     ).resolves.toEqual(agentSettings2);
     await expect(
-      agentSettingsAccessor.getAgentSettings(agent3)
+      agentSettingsAccessor.getAgentSettings(agent3),
     ).resolves.toEqual(agentSettings3);
     await expect(
-      agentSettingsAccessor.getAgentSettings(unknownAgent)
+      agentSettingsAccessor.getAgentSettings(unknownAgent),
     ).resolves.toBe(null);
 
     await expect(
@@ -257,7 +257,7 @@ describe('initModule(configs)', () => {
         agent2,
         agent3,
         unknownAgent,
-      ])
+      ]),
     ).resolves.toEqual([agentSettings2, agentSettings3, null]);
 
     await app.stop();
@@ -269,7 +269,7 @@ describe('initModule(configs)', () => {
       getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
     const myAgentSettingsService = serviceProviderFactory({})(
-      () => settingsAccessor
+      () => settingsAccessor,
     );
 
     const app = Sociably.createApp({

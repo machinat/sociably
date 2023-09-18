@@ -8,7 +8,7 @@ import type { FacebookSegmentValue } from './types.js';
 
 export const createPostJobs = (
   feedOrAlbum: FacebookPage | InteractTarget,
-  segments: DispatchableSegment<FacebookSegmentValue>[]
+  segments: DispatchableSegment<FacebookSegmentValue>[],
 ): MetaApiJob[] => {
   if (segments.length !== 1) {
     throw new TypeError('more than 1 element received');
@@ -52,12 +52,12 @@ export const createPostJobs = (
               : `${feedOrAlbum.id}/photos`,
           params: value.params,
         },
-        file: value.attachFile,
+        file: value.file,
       },
     ];
   }
 
-  const { params, photos, attachFile } = value;
+  const { params, photos, file } = value;
   const postJob: MetaApiJob = {
     channel,
     request: {
@@ -65,7 +65,7 @@ export const createPostJobs = (
       url: PATH_FEED,
       params,
     },
-    file: attachFile,
+    file,
   };
 
   if (!photos) {
@@ -100,7 +100,7 @@ export const createPostJobs = (
         temporary: value.params.scheduled_publish_time ? true : undefined,
       },
     },
-    file: photoValue.attachFile,
+    file: photoValue.file,
     registerResult: photoResultKeys[i],
   }));
   return [...photoJobs, postJob];
@@ -109,7 +109,7 @@ export const createPostJobs = (
 const accomplishContiuousCommentRequest = (
   request: MetaApiJobRequest,
   [lastCommentKey]: [string],
-  getResult: (key: string, path: string) => string
+  getResult: (key: string, path: string) => string,
 ) => ({
   ...request,
   url: `${getResult(lastCommentKey, '$.id')}/comments`,
@@ -118,7 +118,7 @@ const accomplishContiuousCommentRequest = (
 const accomplishPhotoCommentRequest = (
   request: MetaApiJobRequest,
   [photoKey, lastCommentKey]: [string] | [string, string],
-  getResult: (key: string, path: string) => string
+  getResult: (key: string, path: string) => string,
 ) => {
   const requestWithPhotoId = {
     ...request,
@@ -131,14 +131,14 @@ const accomplishPhotoCommentRequest = (
     ? accomplishContiuousCommentRequest(
         requestWithPhotoId,
         [lastCommentKey],
-        getResult
+        getResult,
       )
     : requestWithPhotoId;
 };
 
 export const createInteractJobs = (
   target: InteractTarget,
-  segments: DispatchableSegment<FacebookSegmentValue>[]
+  segments: DispatchableSegment<FacebookSegmentValue>[],
 ): MetaApiJob[] => {
   const initialCommentApiPath = `${target.id}/comments`;
   const jobs: MetaApiJob[] = [];
@@ -180,7 +180,7 @@ export const createInteractJobs = (
               url: PATH_PHOTOS,
               params: photo.params,
             },
-            file: photo.attachFile,
+            file: photo.file,
             registerResult: getTimeId(),
           }
         : null;

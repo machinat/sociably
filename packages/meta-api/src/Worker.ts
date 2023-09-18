@@ -1,13 +1,12 @@
 import crypto from 'crypto';
 import fetch from 'node-fetch';
-import FormData from 'form-data';
+import FormStream from 'formstream';
 import type { AgentSettingsAccessor, SociablyChannel } from '@sociably/core';
 import type { SociablyWorker } from '@sociably/core/engine';
 import SociablyQueue, { JobResponse } from '@sociably/core/queue';
 import { LRUCache } from 'lru-cache';
 import GraphAPIError from './Error.js';
 import formatBatchRequest from './utils/formatBatchRequest.js';
-import appendFormFields from './utils/appendFormFields.js';
 import getObjectValueByPath from './utils/getObjectValueByPath.js';
 import type {
   MetaApiJob,
@@ -161,24 +160,23 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
       this._consumptionTimeoutId = setTimeout(
         this._consumeCallback,
         this.consumeInterval,
-        queue
+        queue,
       );
     }
   }
 
   private async _getAccessTokensOfChannels(
-    channels: SociablyChannel[]
+    channels: SociablyChannel[],
   ): Promise<Map<string, string>> {
     const uniqChannelsMap = new Map(channels.map((chan) => [chan.uid, chan]));
     const uniqChannels = [...uniqChannelsMap.values()];
 
-    const settings = await this._agentSettingsAccessor.getAgentSettingsBatch(
-      uniqChannels
-    );
+    const settings =
+      await this._agentSettingsAccessor.getAgentSettingsBatch(uniqChannels);
     return new Map(
       uniqChannels
         .map((chan, i) => [chan.uid, settings[i]?.accessToken])
-        .filter((tokenPair): tokenPair is [string, string] => !!tokenPair[1])
+        .filter((tokenPair): tokenPair is [string, string] => !!tokenPair[1]),
     );
   }
 
@@ -187,17 +185,17 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     const sendingKeysCounts = new Map<string, number>();
     const resultRegistry = new Map<string, { name: string; idx: number }>();
     let fileCount = 0;
-    let filesForm: undefined | FormData;
+    let filesForm: undefined | FormStream;
 
     const jobResponses: JobResponse<MetaApiJob, MetaApiResult>[] = new Array(
-      jobs.length
+      jobs.length,
     );
     const batchRequests: MetaBatchRequest[] = [];
 
     const channelTokenMap = await this._getAccessTokensOfChannels(
       jobs
         .map((job) => job.channel)
-        .filter((channel): channel is SociablyChannel => !!channel)
+        .filter((channel): channel is SociablyChannel => !!channel),
     );
     let rootAccessToken: string | undefined;
 
@@ -232,7 +230,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
           error: new Error(
             `No access token available for ${
               channel ? `channel ${channel.uid}` : 'job'
-            }`
+            }`,
           ),
         };
       } else {
@@ -256,14 +254,14 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
           request = accomplishRequest(
             requestInput,
             consummingKeys,
-            getPreviousResult
+            getPreviousResult,
           );
         }
 
         const batchRequest = formatBatchRequest(
           request,
           accessToken,
-          this._getAppSecretProof(accessToken)
+          this._getAppSecretProof(accessToken),
         );
 
         // to keep the order of requests with the same key
@@ -294,13 +292,28 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         // if binary data attached, use from-data and add the file field
         if (file) {
           if (filesForm === undefined) {
-            filesForm = new FormData();
+            filesForm = FormStream();
           }
 
           const filename = makeFileName(fileCount);
           fileCount += 1;
 
-          filesForm.append(filename, file.data, file.info);
+          if (typeof file.data === 'string' || Buffer.isBuffer(file.data)) {
+            filesForm.buffer(
+              filename,
+              Buffer.from(file.data),
+              file.fileName as string,
+              file.contentType,
+            );
+          } else {
+            filesForm.stream(
+              filename,
+              file.data,
+              file.fileName as string,
+              file.contentType,
+              file.contentLength,
+            );
+          }
           batchRequest.attached_files = filename;
         }
 
@@ -319,15 +332,18 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     };
 
     // use formdata if files attached, otherwise JSON
-    const body =
-      filesForm !== undefined
-        ? appendFormFields(filesForm, batchBody)
-        : JSON.stringify(batchBody);
+    if (filesForm) {
+      for (const [key, value] of Object.entries(batchBody)) {
+        filesForm.field(key, value);
+      }
+    }
 
     const apiRes = await fetch(this._graphApiEntry, {
       method: POST,
-      headers: filesForm !== undefined ? undefined : REQEST_JSON_HEADERS,
-      body,
+      headers: filesForm?.headers() || REQEST_JSON_HEADERS,
+      body: filesForm
+        ? (filesForm as unknown as NodeJS.ReadableStream)
+        : JSON.stringify(batchBody),
     });
 
     const apiBody = await apiRes.json();
@@ -342,7 +358,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
       (result): MetaApiResult => ({
         ...result,
         body: JSON.parse(result.body),
-      })
+      }),
     );
 
     // cache result for the next batch

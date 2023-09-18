@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { InMemoryStateController } from '../controller.js';
 
 const controller = new InMemoryStateController();
@@ -50,18 +50,18 @@ test.each([
     new Map([
       ['key1', 'bar'],
       ['key2', 'baz'],
-    ])
+    ]),
   );
 
   await expect(
-    barState.set('key1', { foo: { bar: { baz: 'bae' } } })
+    barState.set('key1', { foo: { bar: { baz: 'bae' } } }),
   ).resolves.toBe(false);
   await expect(barState.get('key1')).resolves.toEqual({
     foo: { bar: { baz: 'bae' } },
   });
   await expect(barState.keys()).resolves.toEqual(['key1']);
   await expect(barState.getAll()).resolves.toEqual(
-    new Map([['key1', { foo: { bar: { baz: 'bae' } } }]])
+    new Map([['key1', { foo: { bar: { baz: 'bae' } } }]]),
   );
 
   await expect(fooState.delete('key2')).resolves.toBe(true);

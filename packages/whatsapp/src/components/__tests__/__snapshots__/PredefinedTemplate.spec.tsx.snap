@@ -1,0 +1,481 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`rendering value 1`] = `
+[
+  {
+    "node": <PredefinedTemplate
+      language="en"
+      name="FOO"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": {
+      "message": {
+        "context": undefined,
+        "template": {
+          "components": [],
+          "language": {
+            "code": "en",
+          },
+          "name": "FOO",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`rendering value 2`] = `
+[
+  {
+    "node": <PredefinedTemplate
+      bodyParams="Hello World"
+      buttonParams={
+        <Sociably.Fragment>
+          <UrlButtonParam
+            index={1}
+            urlPostfix="/baz"
+          />
+          <CopyCodeParam
+            code="HELLO_WORLD"
+            index={2}
+          />
+        </Sociably.Fragment>
+      }
+      headerParams={
+        <Location
+          latitude={25.033}
+          longitude={121.565}
+        />
+      }
+      language="ja"
+      name="MY_TEMPLATE"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": {
+      "message": {
+        "context": undefined,
+        "template": {
+          "components": [
+            {
+              "parameters": [
+                {
+                  "location": {
+                    "address": undefined,
+                    "latitude": 25.033,
+                    "longitude": 121.565,
+                    "name": undefined,
+                  },
+                  "type": "location",
+                },
+              ],
+              "type": "header",
+            },
+            {
+              "parameters": [
+                {
+                  "text": "Hello World",
+                  "type": "text",
+                },
+              ],
+              "type": "body",
+            },
+            {
+              "index": 1,
+              "parameters": [
+                {
+                  "text": "/baz",
+                  "type": "text",
+                },
+              ],
+              "sub_type": "url",
+              "type": "button",
+            },
+            {
+              "index": 2,
+              "parameters": [
+                {
+                  "coupon_code": "HELLO_WORLD",
+                  "type": "coupon_code",
+                },
+              ],
+              "sub_type": "copy_code",
+              "type": "button",
+            },
+          ],
+          "language": {
+            "code": "ja",
+          },
+          "name": "MY_TEMPLATE",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`rendering value 3`] = `
+[
+  {
+    "node": <PredefinedTemplate
+      bodyParams={
+        <Sociably.Fragment>
+          <TextParam>
+            <b>
+              hello
+            </b>
+          </TextParam>
+          <TextParam>
+            <i>
+              world
+            </i>
+          </TextParam>
+        </Sociably.Fragment>
+      }
+      buttonParams={
+        <Sociably.Fragment>
+          <QuickReplyParam
+            payload="FOO"
+          />
+          <QuickReplyParam
+            payload="BAR"
+          />
+          <QuickReplyParam
+            payload="BAZ"
+          />
+        </Sociably.Fragment>
+      }
+      headerParams={
+        <Image
+          url="http://foo.bar/baz.jpg"
+        />
+      }
+      language="CA"
+      name="MY_TEMPLATE"
+      replyTo="REPLY_TO_MESSAGE_ID"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": {
+      "message": {
+        "context": {
+          "message_id": "REPLY_TO_MESSAGE_ID",
+        },
+        "template": {
+          "components": [
+            {
+              "parameters": [
+                {
+                  "image": {
+                    "caption": undefined,
+                    "filename": undefined,
+                    "id": undefined,
+                    "link": "http://foo.bar/baz.jpg",
+                  },
+                  "type": "image",
+                },
+              ],
+              "type": "header",
+            },
+            {
+              "parameters": [
+                {
+                  "text": "*hello*",
+                  "type": "text",
+                },
+                {
+                  "text": "_world_",
+                  "type": "text",
+                },
+              ],
+              "type": "body",
+            },
+            {
+              "index": 0,
+              "parameters": [
+                {
+                  "payload": "FOO",
+                  "type": "payload",
+                },
+              ],
+              "sub_type": "quick_reply",
+              "type": "button",
+            },
+            {
+              "index": 1,
+              "parameters": [
+                {
+                  "payload": "BAR",
+                  "type": "payload",
+                },
+              ],
+              "sub_type": "quick_reply",
+              "type": "button",
+            },
+            {
+              "index": 2,
+              "parameters": [
+                {
+                  "payload": "BAZ",
+                  "type": "payload",
+                },
+              ],
+              "sub_type": "quick_reply",
+              "type": "button",
+            },
+          ],
+          "language": {
+            "code": "CA",
+          },
+          "name": "MY_TEMPLATE",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`rendering value 4`] = `
+[
+  {
+    "node": <PredefinedTemplate
+      bodyParams={
+        <Sociably.Fragment>
+          <b>
+            Hello
+          </b>
+           
+          <i>
+            Body
+          </i>
+        </Sociably.Fragment>
+      }
+      buttonParams={
+        <CatalogParam
+          thumbnailProductRetailerId="_PRODUCT_ID_"
+        />
+      }
+      headerParams="Hello Header"
+      language="ca"
+      name="MY_TEMPLATE"
+      replyTo="REPLY_TO_MESSAGE_ID"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": {
+      "message": {
+        "context": {
+          "message_id": "REPLY_TO_MESSAGE_ID",
+        },
+        "template": {
+          "components": [
+            {
+              "parameters": [
+                {
+                  "text": "Hello Header",
+                  "type": "text",
+                },
+              ],
+              "type": "header",
+            },
+            {
+              "parameters": [
+                {
+                  "text": "*Hello* _Body_",
+                  "type": "text",
+                },
+              ],
+              "type": "body",
+            },
+            {
+              "index": 0,
+              "parameters": [
+                {
+                  "action": {
+                    "thumbnail_product_retailer_id": "_PRODUCT_ID_",
+                  },
+                  "type": "action",
+                },
+              ],
+              "sub_type": "catalog",
+              "type": "button",
+            },
+          ],
+          "language": {
+            "code": "ca",
+          },
+          "name": "MY_TEMPLATE",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;
+
+exports[`rendering value 5`] = `
+[
+  {
+    "node": <PredefinedTemplate
+      bodyParams={
+        <Sociably.Fragment>
+          <TextParam>
+            <i>
+              BAR
+            </i>
+          </TextParam>
+          <CurrencyParam
+            amount1000={999}
+            code="TWD"
+            fallbackValue="TW$999"
+          />
+        </Sociably.Fragment>
+      }
+      buttonParams={
+        <MultiProductParam
+          sections={
+            [
+              {
+                "productItems": [
+                  {
+                    "productRetailerId": "_PRODUCT_ID_1_",
+                  },
+                  {
+                    "productRetailerId": "_PRODUCT_ID_2_",
+                  },
+                ],
+                "title": "Section 1",
+              },
+              {
+                "productItems": [
+                  {
+                    "productRetailerId": "_PRODUCT_ID_3_",
+                  },
+                  {
+                    "productRetailerId": "_PRODUCT_ID_4_",
+                  },
+                  {
+                    "productRetailerId": "_PRODUCT_ID_5_",
+                  },
+                ],
+                "title": "Section 2",
+              },
+            ]
+          }
+          thumbnailProductRetailerId="_PRODUCT_ID_"
+        />
+      }
+      headerParams={
+        <Sociably.Fragment>
+          <TextParam>
+            <b>
+              FOO
+            </b>
+          </TextParam>
+          <CurrencyParam
+            amount1000={123}
+            code="USD"
+            fallbackValue="US$123"
+          />
+        </Sociably.Fragment>
+      }
+      language="en"
+      name="MY_TEMPLATE"
+    />,
+    "path": "$",
+    "type": "unit",
+    "value": {
+      "message": {
+        "context": undefined,
+        "template": {
+          "components": [
+            {
+              "parameters": [
+                {
+                  "text": "*FOO*",
+                  "type": "text",
+                },
+                {
+                  "currency": {
+                    "amount_1000": 123,
+                    "code": "USD",
+                    "fallback_value": "US$123",
+                  },
+                  "type": "currency",
+                },
+              ],
+              "type": "header",
+            },
+            {
+              "parameters": [
+                {
+                  "text": "_BAR_",
+                  "type": "text",
+                },
+                {
+                  "currency": {
+                    "amount_1000": 999,
+                    "code": "TWD",
+                    "fallback_value": "TW$999",
+                  },
+                  "type": "currency",
+                },
+              ],
+              "type": "body",
+            },
+            {
+              "index": 0,
+              "parameters": [
+                {
+                  "action": {
+                    "thumbnail_product_retailer_id": "_PRODUCT_ID_",
+                  },
+                  "sections": [
+                    {
+                      "product_items": [
+                        {
+                          "product_retailer_id": "_PRODUCT_ID_1_",
+                        },
+                        {
+                          "product_retailer_id": "_PRODUCT_ID_2_",
+                        },
+                      ],
+                      "title": "Section 1",
+                    },
+                    {
+                      "product_items": [
+                        {
+                          "product_retailer_id": "_PRODUCT_ID_3_",
+                        },
+                        {
+                          "product_retailer_id": "_PRODUCT_ID_4_",
+                        },
+                        {
+                          "product_retailer_id": "_PRODUCT_ID_5_",
+                        },
+                      ],
+                      "title": "Section 2",
+                    },
+                  ],
+                  "type": "action",
+                },
+              ],
+              "sub_type": "mpm",
+              "type": "button",
+            },
+          ],
+          "language": {
+            "code": "en",
+          },
+          "name": "MY_TEMPLATE",
+        },
+        "type": "template",
+      },
+    },
+  },
+]
+`;

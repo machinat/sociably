@@ -96,14 +96,13 @@ Content-Disposition: form-data; name="media_id"
 
 222222222222222222
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name="media"
-Content-Type: image/png
-
-hello media
-------------------BOUNDARY-PLACEHOLDER
 Content-Disposition: form-data; name="segment_index"
 
 0
+------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name="media"
+
+hello media
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
@@ -115,14 +114,13 @@ Content-Disposition: form-data; name="media_id"
 
 333333333333333333
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name="media"
-Content-Type: image/jpg
-
-__FILE_CONTENT_FROM_EXTERNAL_URL__
-------------------BOUNDARY-PLACEHOLDER
 Content-Disposition: form-data; name="segment_index"
 
 0
+------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name="media"; filename=""
+
+__FILE_CONTENT_FROM_EXTERNAL_URL__
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER
@@ -134,14 +132,13 @@ Content-Disposition: form-data; name="media_id"
 
 444444444444444444
 ------------------BOUNDARY-PLACEHOLDER
-Content-Disposition: form-data; name="media"
-Content-Type: image/jpg
-
-__FILE_CONTENT_FROM_EXTERNAL_URL__
-------------------BOUNDARY-PLACEHOLDER
 Content-Disposition: form-data; name="segment_index"
 
 0
+------------------BOUNDARY-PLACEHOLDER
+Content-Disposition: form-data; name="media"; filename=""
+
+__FILE_CONTENT_FROM_EXTERNAL_URL__
 ------------------BOUNDARY-PLACEHOLDER--
 ",
   "------------------BOUNDARY-PLACEHOLDER

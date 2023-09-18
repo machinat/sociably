@@ -1,4 +1,5 @@
-import { moxy } from '@moxyjs/moxy';
+/* eslint-disable import/no-import-module-exports */
+import moxy from '@moxyjs/moxy';
 
 const createNextServer = moxy(() =>
   moxy({
@@ -9,7 +10,7 @@ const createNextServer = moxy(() =>
     renderError: async () => {},
     setAssetPrefix() {},
     renderOpts: { assetPrefix: '' },
-  })
+  }),
 );
 
 module.exports = createNextServer;

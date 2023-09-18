@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import WhatsAppAgent from '../../Agent.js';
 import WhatsAppUser from '../../User.js';
 import WhatsAppChat from '../../Chat.js';
@@ -33,7 +33,7 @@ test('attributes', () => {
       WhatsAppUser,
       WhatsAppChat,
       UserProfile,
-    ])
+    ]),
   );
 });
 
@@ -67,7 +67,7 @@ describe('.closeWebview()', () => {
     navigator.mock
       .getter('userAgent')
       .fakeReturnValue(
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1'
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
       );
 
     expect(authenticator.closeWebview(null)).toBe(false);
@@ -76,7 +76,7 @@ describe('.closeWebview()', () => {
     expect(authenticator.closeWebview(authContext)).toBe(true);
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(1);
     expect(location.mock.setter('href').calls[0].args[0]).toMatchInlineSnapshot(
-      `"https://wa.me/1234567890"`
+      `"https://wa.me/1234567890"`,
     );
   });
 
@@ -84,7 +84,7 @@ describe('.closeWebview()', () => {
     navigator.mock
       .getter('userAgent')
       .fakeReturnValue(
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0'
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0',
       );
 
     expect(authenticator.closeWebview(null)).toBe(false);
@@ -98,7 +98,7 @@ test('.checkAuthData(data)', () => {
     authenticator.checkAuthData({
       agent: { id: '1111111111', num: '+1234567890' },
       user: '9876543210',
-    })
+    }),
   ).toEqual({
     ok: true,
     contextDetails: {

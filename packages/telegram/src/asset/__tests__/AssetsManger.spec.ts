@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import type StateControllerI from '@sociably/core/base/StateController';
 import { TelegramBot } from '../../Bot.js';
 import TelegramUser from '../../User.js';
@@ -34,7 +34,7 @@ test('get asset id', async () => {
   const manager = new TelegramAssetsManager(bot, stateController);
 
   await expect(manager.getAssetId(botUser, 'foo', 'bar')).resolves.toBe(
-    undefined
+    undefined,
   );
   await expect(manager.getFile(botUser, 'my_file')).resolves.toBe(undefined);
 
@@ -43,7 +43,7 @@ test('get asset id', async () => {
 
   state.get.mock.fakeReturnValue('_FOO_BAR_ID_');
   await expect(manager.getAssetId(botUser, 'foo', 'bar')).resolves.toBe(
-    '_FOO_BAR_ID_'
+    '_FOO_BAR_ID_',
   );
 
   state.get.mock.fakeReturnValue('_FILE_ID_');
@@ -71,10 +71,10 @@ test('set asset id', async () => {
   const manager = new TelegramAssetsManager(bot, stateController);
 
   await expect(manager.saveAssetId(botUser, 'foo', 'bar', 'baz')).resolves.toBe(
-    false
+    false,
   );
   await expect(manager.saveFile(botUser, 'my_file', '_FILE_ID_')).resolves.toBe(
-    false
+    false,
   );
 
   expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -92,10 +92,10 @@ test('set asset id', async () => {
 
   state.set.mock.fake(async () => true);
   await expect(manager.saveAssetId(botUser, 'foo', 'bar', 'baz')).resolves.toBe(
-    true
+    true,
   );
   await expect(manager.saveFile(botUser, 'my_file', '_FILE_ID_')).resolves.toBe(
-    true
+    true,
   );
   expect(state.set).toHaveBeenCalledTimes(4);
 });
@@ -116,7 +116,7 @@ test('get all assets', async () => {
   state.getAll.mock.fake(async () => resources);
 
   await expect(manager.getAllAssets(botUser, 'foo')).resolves.toEqual(
-    resources
+    resources,
   );
   await expect(manager.getAllFiles(botUser)).resolves.toEqual(resources);
 
@@ -138,7 +138,7 @@ test('remove asset id', async () => {
   const manager = new TelegramAssetsManager(bot, stateController);
 
   await expect(manager.unsaveAssetId(botUser, 'foo', 'bar')).resolves.toBe(
-    true
+    true,
   );
   await expect(manager.unsaveFile(botUser, 'my_file')).resolves.toBe(true);
 
@@ -147,7 +147,7 @@ test('remove asset id', async () => {
 
   state.delete.mock.fake(async () => false);
   await expect(manager.unsaveAssetId(botUser, 'foo', 'bar')).resolves.toBe(
-    false
+    false,
   );
   await expect(manager.unsaveFile(botUser, 'my_file')).resolves.toBe(false);
 
@@ -173,7 +173,7 @@ describe('.setBotWebhook(bot, options)', () => {
     const manager = new TelegramAssetsManager(bot, stateController);
 
     await expect(
-      manager.setBotWebhook(botUser, { url: 'https://sociably.io/foo' })
+      manager.setBotWebhook(botUser, { url: 'https://sociably.io/foo' }),
     ).resolves.toBe(undefined);
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -193,7 +193,7 @@ describe('.setBotWebhook(bot, options)', () => {
         allowedUpdates: ['message', 'callback_query'],
         dropPendingUpdates: true,
         secretToken: '__SECRET_TOKEN__',
-      })
+      }),
     ).resolves.toBe(undefined);
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -244,7 +244,7 @@ test('.deleteBotWebhook(bot, options)', async () => {
   });
 
   await expect(
-    manager.deleteBotWebhook(botUser, { dropPendingUpdates: true })
+    manager.deleteBotWebhook(botUser, { dropPendingUpdates: true }),
   ).resolves.toBe(undefined);
 
   expect(bot.requestApi).toHaveBeenCalledTimes(2);

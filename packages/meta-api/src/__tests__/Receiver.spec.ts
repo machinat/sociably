@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { SociablyEvent } from '@sociably/core';
 import MetaWebhookReceiver from '../Receiver.js';
 
@@ -92,9 +92,9 @@ it('throw if appSecret not given', () => {
           fooListeningPlatformOptions,
           barListeningPlatformOptions,
         ],
-      } as never)
+      } as never),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"appSecret should not be empty if shouldVerifyRequest set to true"`
+    `"appSecret should not be empty if shouldVerifyRequest set to true"`,
   );
 });
 
@@ -109,9 +109,9 @@ it('throw if webhookVerifyToken not given', () => {
           fooListeningPlatformOptions,
           barListeningPlatformOptions,
         ],
-      } as never)
+      } as never),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"webhookVerifyToken should not be empty if shouldHandleChallenge set to true"`
+    `"webhookVerifyToken should not be empty if shouldHandleChallenge set to true"`,
   );
 });
 
@@ -167,7 +167,7 @@ describe('handling GET', () => {
 
       expect(popFooEvent).not.toHaveBeenCalled();
       expect(popBarEvent).not.toHaveBeenCalled();
-    }
+    },
   );
 
   it('respond 400 if hub.verify_token param not matched', async () => {
@@ -510,7 +510,7 @@ describe('handling POST', () => {
         body: '{"object": "foo", "entry": [{ "id": "123" }]}',
       }),
       createRes(),
-      routingInfo
+      routingInfo,
     );
 
     const expectedFooEventContext = {
@@ -558,7 +558,7 @@ describe('handling POST', () => {
           body: '{"object":"foo","entry":[{"id":1234567890}]}',
         }),
         createRes(),
-        routingInfo
+        routingInfo,
       );
 
       expect(popFooEvent).toHaveBeenCalledTimes(1);
@@ -603,7 +603,7 @@ describe('handling POST', () => {
         body: '{"object":"foo","entry":[{"id":1234567890}]}',
       }),
       createRes(),
-      routingInfo
+      routingInfo,
     );
 
     expect(popFooEvent).toHaveBeenCalledTimes(1);

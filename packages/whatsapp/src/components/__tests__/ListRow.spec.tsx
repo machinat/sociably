@@ -18,7 +18,7 @@ test('rendering value', async () => {
           data="foo"
           title="FOO"
         />,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "description": undefined,
@@ -38,7 +38,7 @@ test('rendering value', async () => {
           description="BAZ"
           title="BAR"
         />,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "description": "BAZ",

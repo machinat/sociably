@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import { serviceContainer, createEmptyScope } from '@sociably/core/service';
 import Stream from '../../stream.js';
 import { STREAMING_KEY_I } from '../../interface.js';
@@ -8,7 +8,7 @@ const nextTick = () => new Promise(process.nextTick);
 
 const nextListener = moxy();
 const nextContainer = moxy(
-  serviceContainer({ deps: [STREAMING_KEY_I] })(() => nextListener)
+  serviceContainer({ deps: [STREAMING_KEY_I] })(() => nextListener),
 );
 
 const oldScope = moxy(createEmptyScope(), {});
@@ -84,7 +84,7 @@ test('with async mapper container', async () => {
     scope: newScope,
   }));
   const mapContainer = moxy(
-    serviceContainer({ deps: [STREAMING_KEY_I] })(() => mapFn)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => mapFn),
   );
 
   const stream = new Stream();
@@ -114,7 +114,7 @@ test('with async mapper container', async () => {
 it('transmit error down', () => {
   const errorListener = moxy();
   const errorContainer = moxy(
-    serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener)
+    serviceContainer({ deps: [STREAMING_KEY_I] })(() => errorListener),
   );
 
   const source$ = new Stream();
@@ -124,7 +124,7 @@ it('transmit error down', () => {
         value: 'bar',
         key: 'bar.thread',
         scope: createEmptyScope(),
-      }))
+      })),
     )
     .catch(errorContainer);
 

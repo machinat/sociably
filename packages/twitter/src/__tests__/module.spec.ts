@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
 import BaseBot from '@sociably/core/base/Bot';
@@ -68,7 +68,7 @@ describe('initModule(configs)', () => {
     expect(typeof module.startHook).toBe('function');
     expect(module.eventMiddlewares).toEqual([eventMiddleware]);
     expect(module.dispatchMiddlewares).toEqual(
-      expect.arrayContaining([dispatchMiddleware, saveUploadedMedia])
+      expect.arrayContaining([dispatchMiddleware, saveUploadedMedia]),
     );
   });
 
@@ -131,7 +131,7 @@ describe('initModule(configs)', () => {
         TwitterChat,
         TweetTarget,
         TwitterUserProfile,
-      ])
+      ]),
     );
   });
 
@@ -170,21 +170,21 @@ describe('initModule(configs)', () => {
       const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
       await expect(
-        agentSettingsAccessor.getAgentSettings(new TwitterUser('1234567890'))
+        agentSettingsAccessor.getAgentSettings(new TwitterUser('1234567890')),
       ).resolves.toEqual({
         userId: '1234567890',
         accessToken: '__ACCESS_TOKEN__',
         tokenSecret: '__ACCESS_SECRET__',
       });
       await expect(
-        agentSettingsAccessor.getAgentSettings(new TwitterUser('9876543210'))
+        agentSettingsAccessor.getAgentSettings(new TwitterUser('9876543210')),
       ).resolves.toBe(null);
 
       await expect(
         agentSettingsAccessor.getAgentSettingsBatch([
           new TwitterUser('1234567890'),
           new TwitterUser('9876543210'),
-        ])
+        ]),
       ).resolves.toEqual([
         {
           userId: '1234567890',
@@ -226,13 +226,13 @@ describe('initModule(configs)', () => {
       const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
       await expect(
-        agentSettingsAccessor.getAgentSettings(agent1)
+        agentSettingsAccessor.getAgentSettings(agent1),
       ).resolves.toEqual(agentSettings1);
       await expect(
-        agentSettingsAccessor.getAgentSettings(agent2)
+        agentSettingsAccessor.getAgentSettings(agent2),
       ).resolves.toEqual(agentSettings2);
       await expect(
-        agentSettingsAccessor.getAgentSettings(new TwitterUser('3333333333'))
+        agentSettingsAccessor.getAgentSettings(new TwitterUser('3333333333')),
       ).resolves.toBe(null);
 
       await expect(
@@ -240,7 +240,7 @@ describe('initModule(configs)', () => {
           agent1,
           agent2,
           new TwitterUser('3333333333'),
-        ])
+        ]),
       ).resolves.toEqual([agentSettings1, agentSettings2, null]);
     });
 

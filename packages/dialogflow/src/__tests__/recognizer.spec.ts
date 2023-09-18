@@ -1,4 +1,4 @@
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import { SociablyThread } from '@sociably/core';
 import {
   SessionsClient as _SessionsClient,
@@ -22,13 +22,13 @@ const IntentsClient: Moxy<typeof _IntentsClient> = _IntentsClient as never;
 type IntentsClient = _IntentsClient;
 
 jest.mock('@google-cloud/dialogflow', () =>
-  jest.requireActual('@moxyjs/moxy').moxy({
+  moxy({
     SessionsClient: class {},
     AgentsClient: class {},
     VersionsClient: class {},
     EnvironmentsClient: class {},
     IntentsClient: class {},
-  })
+  }),
 );
 
 beforeEach(() => {
@@ -76,17 +76,17 @@ test('throw if porjectId is empty', () => {
           languages: ['en'],
           intents: null,
         },
-      } as never)
+      } as never),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"options.projectId should not be empty"`
+    `"options.projectId should not be empty"`,
   );
 });
 
 test('throw if recognitionData is empty', () => {
   expect(
-    () => new Recognizer({ projectId: 'test' } as never)
+    () => new Recognizer({ projectId: 'test' } as never),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"options.recognitionData should not be empty"`
+    `"options.recognitionData should not be empty"`,
   );
 });
 
@@ -153,7 +153,7 @@ describe('.detectText()', () => {
         location: { latitude: 25.0456, longitude: 121.5196 },
         resetContexts: true,
         contexts: ['bar', 'baz'],
-      })
+      }),
     ).resolves.toEqual({
       type: 'Default Welcome Intent',
       language: 'zh-TW',
@@ -201,7 +201,7 @@ describe('.detectText()', () => {
     await expect(
       recognizer.detectText(thread, 'Hello, Tobey!', {
         contexts: ['bar', 'baz'],
-      })
+      }),
     ).resolves.toEqual({
       type: 'Default Welcome Intent',
       language: 'en',
@@ -279,7 +279,7 @@ describe('.detectText()', () => {
         location: { latitude: 25.0456, longitude: 121.5196 },
         resetContexts: true,
         contexts: ['bar', 'baz'],
-      })
+      }),
     ).resolves.toEqual({
       type: 'Default Welcome Intent',
       language: 'zh-TW',
@@ -393,7 +393,7 @@ describe('.train()', () => {
       createEnvironment: async () => [environment],
       auth: { request: async () => {} },
     } as never,
-    { includeProperties: ['auth'] }
+    { includeProperties: ['auth'] },
   );
 
   beforeEach(() => {
@@ -440,14 +440,14 @@ describe('.train()', () => {
   test('start from empty project', async () => {
     agentsClient.getAgent.mock.fake(async () => {
       const err = new Error(
-        "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: No DesignTimeAgent found for project 'test'"
+        "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: No DesignTimeAgent found for project 'test'",
       );
       (err as any).code = 5;
       throw err;
     });
     environmentsClient.getEnvironment.mock.fake(async () => {
       const err = new Error(
-        "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: Environment 'sociably-entry' not found for agent with internal ID '51adb532-5bfd-429e-94af-3fbcf2029d33'"
+        "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: Environment 'sociably-entry' not found for agent with internal ID '51adb532-5bfd-429e-94af-3fbcf2029d33'",
       );
       (err as any).code = 5;
       throw err;
@@ -491,10 +491,10 @@ describe('.train()', () => {
 
     expect(intentsClient.batchUpdateIntents).toHaveBeenCalledTimes(2);
     expect(
-      intentsClient.batchUpdateIntents.mock.calls[0].args
+      intentsClient.batchUpdateIntents.mock.calls[0].args,
     ).toMatchSnapshot();
     expect(
-      intentsClient.batchUpdateIntents.mock.calls[1].args
+      intentsClient.batchUpdateIntents.mock.calls[1].args,
     ).toMatchSnapshot();
 
     expect(versionsClient.createVersion).toHaveBeenCalledTimes(1);
@@ -521,7 +521,7 @@ describe('.train()', () => {
       }
     `);
     expect(
-      (environmentsClient.auth.request as any).mock
+      (environmentsClient.auth.request as any).mock,
     ).not.toHaveBeenCalled();
   });
 
@@ -549,10 +549,10 @@ describe('.train()', () => {
 
     expect(intentsClient.batchUpdateIntents).toHaveBeenCalledTimes(2);
     expect(
-      intentsClient.batchUpdateIntents.mock.calls[0].args
+      intentsClient.batchUpdateIntents.mock.calls[0].args,
     ).toMatchSnapshot();
     expect(
-      intentsClient.batchUpdateIntents.mock.calls[1].args
+      intentsClient.batchUpdateIntents.mock.calls[1].args,
     ).toMatchSnapshot();
 
     expect(versionsClient.createVersion).toHaveBeenCalledTimes(1);
@@ -607,7 +607,7 @@ describe('.train()', () => {
     expect(versionsClient.createVersion).not.toHaveBeenCalled();
     expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
     expect(
-      (environmentsClient.auth.request as any).mock
+      (environmentsClient.auth.request as any).mock,
     ).not.toHaveBeenCalled();
   });
 
@@ -653,7 +653,7 @@ describe('.train()', () => {
   test('update agent', async () => {
     environmentsClient.getEnvironment.mock.fake(async () => {
       const err = new Error(
-        "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: Environment 'sociably-entry' not found for agent with internal ID '51adb532-5bfd-429e-94af-3fbcf2029d33'"
+        "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: Environment 'sociably-entry' not found for agent with internal ID '51adb532-5bfd-429e-94af-3fbcf2029d33'",
       );
       (err as any).code = 5;
       throw err;
@@ -717,7 +717,7 @@ describe('.train()', () => {
       parent: 'projects/test/agent',
       version: {
         description: expect.stringMatching(
-          /^@sociably\/dialogflow snapshot at \d+-\d+-\d+T\d+:\d+:\d+.\d+Z$/
+          /^@sociably\/dialogflow snapshot at \d+-\d+-\d+T\d+:\d+:\d+.\d+Z$/,
         ),
       },
     });

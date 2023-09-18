@@ -21,7 +21,7 @@ You can check [setup section in the tutorial](https://sociably.js.org/docs/learn
 It brings you to set up everything step by step.
 :::
 
-First you need to apply a Facebook app and set up the page binding.
+First you need to apply a Meta app and set up the page binding.
 Follow the [official guide](https://developers.facebook.com/docs/messenger-platform/getting-started/app-setup)
 for the setup procedures.
 
@@ -41,18 +41,16 @@ const {
 } = process.env;
 
 const app = Sociably.createApp({
-  modules: [
-    Http.initModule({ port: 8080 }),
-  ],
+  modules: [Http.initModule({ port: 8080 })],
   platforms: [
     Facebook.intiModule({
-      entryPath: 'webhook/facebook',                // webhook path
-      appId: META_APP_ID,                            // Facebook page id
-      appSecret: META_APP_SECRET,                    // Facebook app secret
+      entryPath: 'webhook/facebook', // webhook path
+      appId: META_APP_ID, // Facebook page id
+      appSecret: META_APP_SECRET, // Facebook app secret
       webhookVerifyToken: META_WEBHOOK_VERIFY_TOKEN, // token for webhook verification
       agentSettings: {
-        pageId: FACEBOOK_PAGE_ID,                    // Facebook page id
-        accessToken: FACEBOOK_ACCESS_TOKEN,          // page access token
+        pageId: FACEBOOK_PAGE_ID, // Facebook page id
+        accessToken: FACEBOOK_ACCESS_TOKEN, // page access token
       },
     }),
   ],
@@ -74,21 +72,17 @@ app.onEvent(async ({ platform, event, reply }) => {
       <Facebook.Expression
         notificationType="SILENT_PUSH"
         personaId="BOT_PERSONA_ID"
-        quickReplies={
-          <Facebook.TextReply title="I want 🐶" payload="doggo" />
-        }
+        quickReplies={<Facebook.TextReply title="I want 🐶" payload="doggo" />}
       >
         Hello Facebook! 👋
         <Facebook.GenericTemplate>
           <Facebook.GenericItem
             title="You daily 🐱"
             imageUrl="https://cataas.com/cat"
-            buttons={
-              <Facebook.PostbackButton title="More" payload="catto" />
-            }
+            buttons={<Facebook.PostbackButton title="More" payload="catto" />}
           />
         </Facebook.GenericTemplate>
-      </Facebook.Expression>
+      </Facebook.Expression>,
     );
   }
 });
@@ -116,12 +110,10 @@ import FacebookAuth from '@sociably/facebook/webview';
 const app = Sociably.createApp({
   platforms: [
     Webview.initModule({
-      authPlatforms:[
-        FacebookAuth
-      ],
+      authPlatforms: [FacebookAuth],
       basicAuth: {
         appName: 'My Foo App',
-        appIconUrl: './webview/img/logo.png'
+        appIconUrl: './webview/img/logo.png',
       },
       // ...
     }),
@@ -142,10 +134,8 @@ const app = Sociably.createApp({
 import WebviewClient from '@sociably/webview/client';
 import FacebookAuth from '@sociably/facebook/webview/client';
 
-const client =  new WebviewClient({
-  authPlatforms: [
-    new FacebookAuth(),
-  ],
+const client = new WebviewClient({
+  authPlatforms: [new FacebookAuth()],
 });
 ```
 
@@ -161,12 +151,10 @@ import { WebviewButton as FacebookWebviewButton } from '@sociably/facebook/webvi
 app.onEvent(async ({ reply }) => {
   await reply(
     <Facebook.ButtonTemplate
-      buttons={
-        <FacebookWebviewButton title="Open 📤" />
-      }
+      buttons={<FacebookWebviewButton title="Open 📤" />}
     >
       Hello Webview!
-    </Facebook.ButtonTemplate>
+    </Facebook.ButtonTemplate>,
   );
 });
 ```
@@ -189,7 +177,9 @@ Then register `FacebookAssetsManager` like this:
 ```ts
 import RedisState from '@machiniat/redis';
 // highlight-next-line
-import FacebookAssetsManager, { saveReusableAttachments } from '@sociably/facebook/asssets';
+import FacebookAssetsManager, {
+  saveReusableAttachments,
+} from '@sociably/facebook/asssets';
 
 const app = Sociably.createApp({
   services: [
@@ -202,7 +192,7 @@ const app = Sociably.createApp({
       dispatchMiddlewares: [
         // highlight-next-line
         saveReusableAttachments,
-      ]
+      ],
     }),
   ],
   modules: [
@@ -221,26 +211,26 @@ import { serviceContainer } from '@sociably/core';
 import * as Facebook from '@sociably/facebook/components';
 import FacebookAssetsManager from '@sociably/facebook/asssets';
 
-app.onEvent(serviceContainer({ deps: [FacebookAssetsManager] })(
-  (assetsManager) =>
-    async ({ reply }) => {
-      const fooImageId = await assetsManager.getAttachment('foo.image');
+app.onEvent(
+  serviceContainer({ deps: [FacebookAssetsManager] })(
+    (assetsManager) =>
+      async ({ reply }) => {
+        const fooImageId = await assetsManager.getAttachment('foo.image');
 
-      if (fooImageId) {
-        await reply(
-          <Facebook.Image attachmentId={fooImageId} />
-        );
-      } else {
-        await reply(
-          <Facebook.Image
-            reusable
-            assetTag="foo.image"
-            fileData={fs.createReadStream('./assets/foo.jpg')}
-          />
-        );
-      }
-}
-));
+        if (fooImageId) {
+          await reply(<Facebook.Image attachmentId={fooImageId} />);
+        } else {
+          await reply(
+            <Facebook.Image
+              reusable
+              assetTag="foo.image"
+              file={{ data: fs.createReadStream('./assets/foo.jpg') }}
+            />,
+          );
+        }
+      },
+  ),
+);
 ```
 
 If you upload an attachment with `reusable` and `assetTag` props,

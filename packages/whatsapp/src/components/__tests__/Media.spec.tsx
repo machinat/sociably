@@ -43,7 +43,10 @@ test.each([
   ]);
   const fileData = Buffer.from('_BINARY_DATA_');
   mediaElement = (
-    <Media fileType="foo/bar" fileData={fileData} assetTag="_ASSET_TAG_" />
+    <Media
+      file={{ data: fileData, contentType: 'foo/bar' }}
+      assetTag="_ASSET_TAG_"
+    />
   );
   await expect(renderUnitElement(mediaElement)).resolves.toEqual([
     {
@@ -52,10 +55,9 @@ test.each([
       path: '$',
       value: {
         message: { type, [type]: {} },
-        mediaFile: {
-          type: 'foo/bar',
+        file: {
           data: fileData,
-          info: { contentType: 'foo/bar' },
+          contentType: 'foo/bar',
         },
         assetTag: '_ASSET_TAG_',
       },
@@ -108,7 +110,7 @@ test.each([
 
 test('rendering document with fileName', async () => {
   await expect(
-    renderUnitElement(<Document mediaId="123" fileName="foo.pdf" />)
+    renderUnitElement(<Document mediaId="123" fileName="foo.pdf" />),
   ).resolves.toEqual([
     {
       type: 'unit',
@@ -128,30 +130,33 @@ test('throw when invalid props received', async () => {
   /* eslint-disable no-await-in-loop */
   for (const Media of [Audio, Image, Document, Video, Sticker]) {
     await expect(
-      renderUnitElement(<Media />)
+      renderUnitElement(<Media />),
     ).rejects.toThrowErrorMatchingSnapshot();
     await expect(
-      renderUnitElement(<Media mediaId="123" url="http://foo.bar/baz" />)
-    ).rejects.toThrowErrorMatchingSnapshot();
-    await expect(
-      renderUnitElement(
-        <Media fileData={Buffer.from('FOO')} url="http://foo.bar/baz" />
-      )
+      renderUnitElement(<Media mediaId="123" url="http://foo.bar/baz" />),
     ).rejects.toThrowErrorMatchingSnapshot();
     await expect(
       renderUnitElement(
-        <Media mediaId="123" fileData={Buffer.from('')} fileType="foo/bar" />
-      )
+        <Media
+          file={{ data: Buffer.from('FOO'), contentType: 'plain/text' }}
+          url="http://foo.bar/baz"
+        />,
+      ),
     ).rejects.toThrowErrorMatchingSnapshot();
     await expect(
-      renderUnitElement(<Media fileData={Buffer.from('FOO')} />)
+      renderUnitElement(
+        <Media
+          mediaId="123"
+          file={{ data: Buffer.from(''), contentType: 'foo/bar' }}
+        />,
+      ),
     ).rejects.toThrowErrorMatchingSnapshot();
   }
   for (const Media of [Image, Document, Video]) {
     await expect(
       renderUnitElement(
-        <Media mediaId="123" caption={<Image mediaId="456" />} />
-      )
+        <Media mediaId="123" caption={<Image mediaId="456" />} />,
+      ),
     ).rejects.toThrowErrorMatchingSnapshot();
   }
 });

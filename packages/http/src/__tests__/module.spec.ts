@@ -1,5 +1,5 @@
 import { createServer as _createServer } from 'http';
-import { moxy, Moxy } from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { HttpConnector } from '../Connector.js';
 import Http from '../module.js';
@@ -7,9 +7,7 @@ import Http from '../module.js';
 const createServer = _createServer as Moxy<typeof _createServer>;
 
 jest.mock('http', () =>
-  jest
-    .requireActual<{ moxy: typeof moxy }>('@moxyjs/moxy')
-    .moxy({ createServer() {} })
+  jest.requireActual('@moxyjs/moxy').default({ createServer() {} }),
 );
 
 const mockServer = moxy({
@@ -179,7 +177,7 @@ test('change http server', async () => {
   expect(myServer.listen).toHaveBeenCalledTimes(1);
   expect(myServer.listen).toHaveBeenCalledWith(
     { host: 'localhost', port: 8888 },
-    expect.any(Function)
+    expect.any(Function),
   );
   expect(myServer.addListener).toHaveBeenCalled();
 });
