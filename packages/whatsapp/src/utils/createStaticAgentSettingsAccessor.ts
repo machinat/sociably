@@ -5,8 +5,8 @@ import {
   WhatsAppAgentSettings,
 } from '../types.js';
 
-const normalizePhoneNumber = (
-  settings: WhatsAppAgentSettings
+const normalizeSettingPhoneNumber = (
+  settings: WhatsAppAgentSettings,
 ): WhatsAppAgentSettings => {
   const parsedNumber = parsePhoneNumber(settings.phoneNumber);
 
@@ -20,32 +20,33 @@ const normalizePhoneNumber = (
 };
 
 export const singleStaticAgentSettingsAccessor = (
-  settings: WhatsAppAgentSettings
+  settings: WhatsAppAgentSettings,
 ): AgentSettingsAccessorI => {
-  const normalizedSettings = normalizePhoneNumber(settings);
+  const normalizedSettings = normalizeSettingPhoneNumber(settings);
 
   return {
     getAgentSettings: async (agent) =>
       agent.id === normalizedSettings.numberId ? normalizedSettings : null,
     getAgentSettingsBatch: async (numbers) =>
       numbers.map((agent) =>
-        agent.id === normalizedSettings.numberId ? normalizedSettings : null
+        agent.id === normalizedSettings.numberId ? normalizedSettings : null,
       ),
   };
 };
 
 export const multiStaticAgentSettingsAccessor = (
-  settings: WhatsAppBusinessAccountSettings[]
+  settings: WhatsAppBusinessAccountSettings[],
 ): AgentSettingsAccessorI => {
   const settingsMapping = new Map<string, WhatsAppAgentSettings>();
-  for (const { numbers } of settings) {
+  for (const { budsinessAccountId, numbers } of settings) {
     for (const { numberId, phoneNumber } of numbers) {
       settingsMapping.set(
         numberId,
-        normalizePhoneNumber({
+        normalizeSettingPhoneNumber({
           numberId,
           phoneNumber,
-        })
+          budsinessAccountId,
+        }),
       );
     }
   }

@@ -17,7 +17,7 @@ test('rendering value', async () => {
         "node": <TextParam>
           FOO
         </TextParam>,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "text": "FOO",
@@ -30,8 +30,8 @@ test('rendering value', async () => {
     renderPartElement(
       <TextParam>
         FOO {'BAR'} <>BAZ</>
-      </TextParam>
-    )
+      </TextParam>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -43,7 +43,7 @@ test('rendering value', async () => {
             BAZ
           </Sociably.Fragment>
         </TextParam>,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "text": "FOO BAR BAZ",

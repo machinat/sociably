@@ -2,9 +2,7 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
 import { WhatsAppComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type UrlButtonParamProps = {
   /**
    * Developer-provided postfix that is appended to the predefined prefix URL in
@@ -20,6 +18,7 @@ export type UrlButtonParamProps = {
 
 /**
  * Pass a parameter to a dynamic URL button
+ *
  * @category Component
  * @props {@link UrlButtonParamProps}
  */
@@ -30,12 +29,15 @@ export const UrlButtonParam: WhatsAppComponent<
   const { index, urlPostfix } = node.props;
   return [
     makePartSegment(node, path, {
-      type: 'url',
+      type: 'button',
+      sub_type: 'url',
       index,
-      parameter: {
-        type: 'text',
-        text: urlPostfix,
-      },
+      parameters: [
+        {
+          type: 'text',
+          text: urlPostfix,
+        },
+      ],
     }),
   ];
 });

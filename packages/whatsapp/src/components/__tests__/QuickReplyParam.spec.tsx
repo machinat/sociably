@@ -17,15 +17,18 @@ test('rendering value', async () => {
         "node": <QuickReplyParam
           payload="_HELLO_WORLD_"
         />,
-        "path": "$#p",
+        "path": "$#container",
         "type": "part",
         "value": {
           "index": undefined,
-          "parameter": {
-            "payload": "_HELLO_WORLD_",
-            "type": "payload",
-          },
-          "type": "quick_reply",
+          "parameters": [
+            {
+              "payload": "_HELLO_WORLD_",
+              "type": "payload",
+            },
+          ],
+          "sub_type": "quick_reply",
+          "type": "button",
         },
       },
     ]

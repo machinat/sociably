@@ -1,5 +1,5 @@
 import { DispatchError } from '@sociably/core/engine';
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import WhatsAppAgent from '../../Agent.js';
 import WhatsAppChat from '../../Chat.js';
 import saveUploadedMedia from '../saveUploadedMedia.js';
@@ -35,7 +35,7 @@ it('do nothing when job has no assetTag', async () => {
   };
 
   await expect(saveUploadedMedia(manager)(context, next)).resolves.toEqual(
-    response
+    response,
   );
 
   expect(next).toHaveBeenCalledTimes(1);
@@ -90,7 +90,7 @@ it('save created assets', async () => {
   const context = { hello: 'droid' };
 
   await expect(
-    saveUploadedMedia(manager)(context as never, next)
+    saveUploadedMedia(manager)(context as never, next),
   ).resolves.toEqual(response);
 
   expect(next).toHaveBeenCalledTimes(1);
@@ -101,19 +101,19 @@ it('save created assets', async () => {
     1,
     agent,
     'foo',
-    '111111111'
+    '111111111',
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     2,
     agent,
     'bar',
-    '222222222'
+    '222222222',
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     3,
     agent,
     'baz',
-    '444444444'
+    '444444444',
   );
 });
 
@@ -157,7 +157,7 @@ it('save created assets when partial success', async () => {
     [new Error('foo'), new Error('bar')],
     [],
     jobs,
-    results
+    results,
   );
 
   const next = moxy(async () => {
@@ -166,7 +166,7 @@ it('save created assets when partial success', async () => {
   const context = { hello: 'droid' };
 
   await expect(
-    saveUploadedMedia(manager)(context as never, next)
+    saveUploadedMedia(manager)(context as never, next),
   ).rejects.toThrowError(error);
 
   expect(next).toHaveBeenCalledTimes(1);
@@ -177,12 +177,12 @@ it('save created assets when partial success', async () => {
     1,
     agent,
     'foo',
-    '111111111'
+    '111111111',
   );
   expect(manager.saveMedia).toHaveBeenNthCalledWith(
     2,
     agent,
     'bar',
-    '222222222'
+    '222222222',
   );
 });

@@ -16,42 +16,52 @@ export type PredefinedTemplateProps = {
    * language_locale formats (e.g., en and en_US). For all codes, see [Supported
    * Languages](https://developers.facebook.com/docs/whatsapp/api/messages/message-templates#supported-languages)
    */
-  languageCode: string;
+  language: string;
   /**
-   * Header parameters. For text header, use only `TextParameter` or
-   * `CurrencyParameter`. For media header, use exactly one `Image`, `Video` or
-   * `Document` element.
+   * Header parameters. For text header, use only {@link TextParam} or
+   * {@link CurrencyParam}. For media header, use exactly one corresponded
+   * {@link Image}, {@link Video} or {@link Document} element. For location header,
+   * use exactly one {@link Location} element.
    */
   headerParams?: SociablyNode;
   /**
-   * Body parameters. It should contain only `TextParameter`,
-   * `CurrencyParameter` and `DateTimeParameter`.
+   * Body parameters. It should contain only {@link TextParam},
+   * {@link CurrencyParam}.
    */
   bodyParams?: SociablyNode;
   /**
-   * Button parameters. Use only `QuickReplyParameter` or `UrlButtonParameter`
-   * depends on the pre-defined button type.
+   * Button parameters. Use only {@link QuickReplyParam}, {@link UrlButtonParam},
+   * {@link CopyCodeParam} or {@link CatalogParam} depends on the pre-defined
+   * button type.
    */
   buttonParams?: SociablyNode;
   /** Reply to the specified message */
   replyTo?: string;
 };
 
-const HEADER_MEDIA_TYPES = ['image', 'document', 'video'];
-const TEXT_PARAM_TYPES = ['text', 'currency', 'date_time'];
-const BUTTON_PARAM_TYPES = ['url', 'quick_reply'];
+const VALID_HEADER_ATTACHMENT_TYPES = [
+  'image',
+  'document',
+  'video',
+  'location',
+];
+const TEXT_PARAMETER_TYPES = ['text', 'currency', 'date_time'];
 
-const checkTextParams = (segments: IntermediateSegment<unknown>[]) => {
+const getTextParameters = (segments: IntermediateSegment<unknown>[]) => {
+  const parameters: unknown[] = [];
   for (const seg of segments) {
-    if (!TEXT_PARAM_TYPES.includes(seg.value.type)) {
+    if (seg.type === 'text') {
+      parameters.push({ type: 'text', text: seg.value });
+    } else if (TEXT_PARAMETER_TYPES.includes(seg.value.type)) {
+      parameters.push(seg.value);
+    } else {
       throw new TypeError(
         `${formatNode(seg.node)} is not a valid text parameter`,
       );
     }
   }
+  return parameters;
 };
-
-const getValue = ({ value }: IntermediateSegment<unknown>) => value;
 
 /**
  * Send a pre-defined custom template. WhatsApp message templates are specific
@@ -75,17 +85,11 @@ export const PredefinedTemplate: WhatsAppComponent<
   UnitSegment<WhatsAppSegmentValue>
 > = makeWhatsAppComponent(
   async function PredefinedTemplate(node, path, render) {
-    const {
-      name,
-      languageCode,
-      headerParams,
-      bodyParams,
-      buttonParams,
-      replyTo,
-    } = node.props;
+    const { name, language, headerParams, bodyParams, buttonParams, replyTo } =
+      node.props;
 
     const [headerSegments, bodySegments, buttonsSegments] = await Promise.all([
-      render(headerParams, '.headerParams'),
+      render<WhatsAppSegmentValue>(headerParams, '.headerParams'),
       render(bodyParams, '.bodyParams'),
       render(buttonParams, '.buttonParams'),
     ]);
@@ -93,18 +97,25 @@ export const PredefinedTemplate: WhatsAppComponent<
     const components: unknown[] = [];
 
     if (headerSegments) {
-      if ('message' in headerSegments[0].value) {
+      if (headerSegments[0].type === 'unit') {
         // media based header
         const messageValue = headerSegments[0].value.message;
         const messageType = messageValue.type;
 
-        if (!HEADER_MEDIA_TYPES.includes(messageType)) {
+        if (
+          !messageType ||
+          !VALID_HEADER_ATTACHMENT_TYPES.includes(messageType)
+        ) {
           throw new TypeError(
-            `${formatNode(headerSegments[0].node)} is not a valid parameter`,
+            `${formatNode(
+              headerSegments[0].node,
+            )} is not a valid header parameter`,
           );
         }
         if (headerSegments.length > 1) {
-          throw new TypeError(`"headerParams" prop contain more than 1 media`);
+          throw new TypeError(
+            `"headerParams" prop contain more than 1 attachment parameter node`,
+          );
         }
 
         components.push({
@@ -118,25 +129,21 @@ export const PredefinedTemplate: WhatsAppComponent<
         });
       } else {
         // text based header
-        checkTextParams(headerSegments);
-
         components.push({
           type: 'header',
-          parameters: headerSegments.map(getValue),
+          parameters: getTextParameters(headerSegments),
         });
       }
     }
     if (bodySegments) {
-      checkTextParams(bodySegments);
-
       components.push({
         type: 'body',
-        parameters: bodySegments.map(getValue),
+        parameters: getTextParameters(bodySegments),
       });
     }
     if (buttonsSegments) {
       buttonsSegments.forEach(({ node: buttonNode, value }, idx) => {
-        if (!BUTTON_PARAM_TYPES.includes(value.type)) {
+        if (value.type !== 'button') {
           throw new TypeError(
             `${formatNode(buttonNode)} is not a valid button parameter`,
           );
@@ -144,9 +151,9 @@ export const PredefinedTemplate: WhatsAppComponent<
 
         components.push({
           type: 'button',
-          sub_type: value.type,
+          sub_type: value.sub_type,
           index: typeof value.index === 'undefined' ? idx : value.index,
-          parameters: [value.parameter],
+          parameters: value.parameters,
         });
       });
     }
@@ -158,8 +165,7 @@ export const PredefinedTemplate: WhatsAppComponent<
           template: {
             name,
             language: {
-              policy: 'deterministic',
-              code: languageCode,
+              code: language,
             },
             components,
           },

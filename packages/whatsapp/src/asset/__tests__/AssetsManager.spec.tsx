@@ -1,4 +1,4 @@
-import { moxy } from '@moxyjs/moxy';
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
 import type { WhatsAppBot } from '../../Bot.js';
@@ -48,7 +48,7 @@ describe('subscription management', () => {
           webhookVerifyToken: '_VERIFY_TOKEN_',
           objectType: 'user',
           fields: ['foo_field', 'bar_field'],
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -98,7 +98,7 @@ describe('subscription management', () => {
       });
 
       await expect(
-        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' })
+        manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -116,9 +116,9 @@ describe('subscription management', () => {
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           webhookVerifyToken: '_VERIFY_TOKEN_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -129,9 +129,9 @@ describe('subscription management', () => {
         manager.setAppSubscription({
           appId: '_APP_ID_',
           webhookVerifyToken: '_VERIFY_TOKEN_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -142,9 +142,9 @@ describe('subscription management', () => {
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
           appId: '_APP_ID_',
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`
+        `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
       expect(bot.requestApi).not.toHaveBeenCalled();
     });
@@ -171,7 +171,7 @@ describe('subscription management', () => {
           objectType: 'user',
           fields: ['foo_field', 'bar_field'],
           appId: '_ANOTHER_APP_ID_',
-        })
+        }),
       ).resolves.toBe(undefined);
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
@@ -190,7 +190,7 @@ describe('subscription management', () => {
       const manager = new WhatsAppAssetsManager(stateController, bot);
 
       await expect(
-        manager.deleteAppSubscription()
+        manager.deleteAppSubscription(),
       ).rejects.toThrowErrorMatchingInlineSnapshot(`"appId is empty"`);
 
       expect(bot.requestApi).not.toHaveBeenCalled();
@@ -203,7 +203,7 @@ describe('assets management', () => {
     const manager = new WhatsAppAssetsManager(stateController, bot);
 
     await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe(
-      undefined
+      undefined,
     );
     await expect(manager.getMedia(agent, 'my_media')).resolves.toBe(undefined);
 
@@ -225,7 +225,7 @@ describe('assets management', () => {
 
     state.get.mock.fakeReturnValue('_MEDIA_ID_');
     await expect(manager.getMedia(agent, 'my_media')).resolves.toBe(
-      '_MEDIA_ID_'
+      '_MEDIA_ID_',
     );
 
     expect(stateController.globalState).toHaveBeenCalledTimes(4);
@@ -236,10 +236,10 @@ describe('assets management', () => {
     const manager = new WhatsAppAssetsManager(stateController, bot);
 
     await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
-      false
+      false,
     );
     await expect(
-      manager.saveMedia(agent, 'my_media', '_MEDIA_ID_')
+      manager.saveMedia(agent, 'my_media', '_MEDIA_ID_'),
     ).resolves.toBe(false);
 
     expect(stateController.globalState).toHaveBeenCalledTimes(2);
@@ -257,10 +257,10 @@ describe('assets management', () => {
 
     state.set.mock.fake(async () => true);
     await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
-      true
+      true,
     );
     await expect(
-      manager.saveMedia(agent, 'my_media', '_MEDIA_ID_')
+      manager.saveMedia(agent, 'my_media', '_MEDIA_ID_'),
     ).resolves.toBe(true);
     expect(state.set).toHaveBeenCalledTimes(4);
   });
@@ -289,7 +289,7 @@ describe('assets management', () => {
     state.getAll.mock.fake(async () => resources);
 
     await expect(manager.getAllAssets(agent, 'foo')).resolves.toEqual(
-      resources
+      resources,
     );
     await expect(manager.getAllMedias(agent)).resolves.toEqual(resources);
   });
@@ -298,7 +298,7 @@ describe('assets management', () => {
     const manager = new WhatsAppAssetsManager(stateController, bot);
 
     await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
-      true
+      true,
     );
     await expect(manager.unsaveMedia(agent, 'my_media')).resolves.toBe(true);
 
@@ -317,13 +317,13 @@ describe('assets management', () => {
 
     state.delete.mock.fake(async () => false);
     await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
-      false
+      false,
     );
     await expect(manager.unsaveMedia(agent, 'my_media')).resolves.toBe(false);
     expect(state.delete).toHaveBeenCalledTimes(4);
   });
 
-  test('#uploadMedia()', async () => {
+  test('.uploadMedia()', async () => {
     const manager = new WhatsAppAssetsManager(stateController, bot);
     bot.uploadMedia.mock.fake(async () => ({ id: '1857777774821032' }));
 
@@ -331,17 +331,195 @@ describe('assets management', () => {
       manager.uploadMedia(
         agent,
         'my_avatar',
-        <Image fileData={Buffer.from('')} />
-      )
+        <Image file={{ data: Buffer.from(''), contentType: 'image/png' }} />,
+      ),
     ).resolves.toBe('1857777774821032');
 
     expect(bot.uploadMedia).toHaveBeenCalledTimes(1);
     expect(bot.uploadMedia).toHaveBeenCalledWith(
       agent,
-      <Image fileData={Buffer.from('')} />
+      <Image file={{ data: Buffer.from(''), contentType: 'image/png' }} />,
     );
 
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');
+  });
+});
+
+describe('.createPredefinedTemplate(businessAccountId, options)', () => {
+  it('make POST /message_templates API call', async () => {
+    const manager = new WhatsAppAssetsManager(stateController, bot);
+    bot.requestApi.mock.fake(async () => ({ id: '_TEMPLATE_ID_1_' }));
+
+    await expect(
+      manager.createPredefinedTemplate('_BUSINESS_ACCOUNT_ID_', {
+        category: 'marketing',
+        name: 'MyVeryGoodTemplate',
+        language: 'en_US',
+        header: {
+          format: 'text',
+          text: 'This is a {{1}} header',
+          examples: [['cool'], ['good'], ['fantasy']],
+        },
+        body: {
+          text: 'This is a {{1}} body for {{2}}',
+          examples: [
+            ['beautiful', 'you'],
+            ['amazing', 'us'],
+          ],
+        },
+        footer: { text: 'This is a footer' },
+        buttons: [
+          {
+            type: 'url',
+            text: 'Go to URL',
+            url: 'https://foo.bar/baz/{{1}}',
+            examples: ['bae.html'],
+          },
+          { type: 'quick_reply', text: 'Reply w/ Payload' },
+          { type: 'catalog', text: 'Check Catalog' },
+        ],
+      }),
+    ).resolves.toEqual({ id: '_TEMPLATE_ID_1_' });
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(1);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      method: 'POST',
+      url: '_BUSINESS_ACCOUNT_ID_/message_templates',
+      params: {
+        category: 'marketing',
+        name: 'MyVeryGoodTemplate',
+        language: 'en_US',
+        components: [
+          {
+            type: 'header',
+            format: 'text',
+            text: 'This is a {{1}} header',
+            example: { header_text: ['cool', 'good', 'fantasy'] },
+          },
+          {
+            type: 'body',
+            text: 'This is a {{1}} body for {{2}}',
+            example: {
+              body_text: [
+                ['beautiful', 'you'],
+                ['amazing', 'us'],
+              ],
+            },
+          },
+          { type: 'footer', text: 'This is a footer' },
+          {
+            type: 'buttons',
+            buttons: [
+              {
+                type: 'url',
+                text: 'Go to URL',
+                url: 'https://foo.bar/baz/{{1}}',
+                example: ['bae.html'],
+              },
+              { type: 'quick_reply', text: 'Reply w/ Payload' },
+              { type: 'catalog', text: 'Check Catalog' },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('with media header', async () => {
+    const manager = new WhatsAppAssetsManager(stateController, bot, {
+      appId: '_APP_ID_',
+    });
+    bot.requestApi.mock.fake(async () => ({ id: '_TEMPLATE_ID_2_' }));
+    // mock uploading api
+    bot.requestApi.mock.fakeOnce(async () => ({ id: '_UPLOAD_ID_' }));
+    bot.requestApi.mock.fakeOnce(async () => ({}));
+
+    await expect(
+      manager.createPredefinedTemplate('_BUSINESS_ACCOUNT_ID_', {
+        category: 'marketing',
+        name: 'MyVeryVeryGoodTemplate',
+        language: 'zh_TW',
+        header: {
+          format: 'image',
+          examples: [
+            { url: 'http://foo.bar/baz.png' },
+            {
+              file: {
+                data: Buffer.from('foo'),
+                contentType: 'image/png',
+                fileName: 'baz.png',
+              },
+            },
+          ],
+        },
+        body: {
+          text: 'This is a {{1}} body for {{2}}',
+          examples: [['cool', 'me']],
+        },
+        buttons: [
+          {
+            type: 'copy_code',
+            text: 'Get Coupon',
+            examples: ['_COUPON_CODE_'],
+          },
+          { type: 'phone_number', phoneNumber: '+1234567890' },
+          { type: 'mpm', text: 'Buy Products' },
+        ],
+      }),
+    ).resolves.toEqual({ id: '_TEMPLATE_ID_2_' });
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(3);
+    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+      method: 'POST',
+      url: '_APP_ID_/uploads',
+      params: {
+        file_length: 3,
+        file_type: 'image/png',
+        file_name: 'baz.png',
+      },
+    });
+    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      method: 'POST',
+      url: '_UPLOAD_ID_',
+      file: {
+        data: Buffer.from('foo'),
+      },
+    });
+    expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
+      method: 'POST',
+      url: '_BUSINESS_ACCOUNT_ID_/message_templates',
+      params: {
+        category: 'marketing',
+        name: 'MyVeryVeryGoodTemplate',
+        language: 'zh_TW',
+        components: [
+          {
+            type: 'header',
+            format: 'image',
+            example: {
+              header_handle: ['http://foo.bar/baz.png', '_UPLOAD_ID_'],
+            },
+          },
+          {
+            type: 'body',
+            text: 'This is a {{1}} body for {{2}}',
+            example: { body_text: [['cool', 'me']] },
+          },
+          {
+            type: 'buttons',
+            buttons: [
+              {
+                type: 'copy_code',
+                text: 'Get Coupon',
+                example: ['_COUPON_CODE_'],
+              },
+              { type: 'phone_number', phone_number: '+1234567890' },
+              { type: 'mpm', text: 'Buy Products' },
+            ],
+          },
+        ],
+      },
+    });
   });
 });

@@ -58,7 +58,7 @@ describe('ListTemplate', () => {
           "path": "$",
           "type": "unit",
           "value": {
-            "mediaFile": undefined,
+            "file": undefined,
             "message": {
               "context": undefined,
               "interactive": {
@@ -159,7 +159,7 @@ describe('ListTemplate', () => {
           "path": "$",
           "type": "unit",
           "value": {
-            "mediaFile": undefined,
+            "file": undefined,
             "message": {
               "context": {
                 "message_id": "REPLY_TO_MESSAGE_ID",
@@ -296,7 +296,7 @@ describe('ListTemplate', () => {
           "path": "$",
           "type": "unit",
           "value": {
-            "mediaFile": undefined,
+            "file": undefined,
             "message": {
               "context": {
                 "message_id": "REPLY_TO_MESSAGE_ID",
@@ -486,7 +486,7 @@ describe('ButtonsTemplate', () => {
           "path": "$",
           "type": "unit",
           "value": {
-            "mediaFile": undefined,
+            "file": undefined,
             "message": {
               "context": undefined,
               "interactive": {
@@ -557,7 +557,7 @@ describe('ButtonsTemplate', () => {
           "path": "$",
           "type": "unit",
           "value": {
-            "mediaFile": undefined,
+            "file": undefined,
             "message": {
               "context": undefined,
               "interactive": {
@@ -660,7 +660,7 @@ describe('ButtonsTemplate', () => {
           "path": "$",
           "type": "unit",
           "value": {
-            "mediaFile": undefined,
+            "file": undefined,
             "message": {
               "context": {
                 "message_id": "REPLY_TO_MESSAGE_ID",

@@ -3,12 +3,9 @@ import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
 import { WhatsAppComponent } from '../types.js';
 
 /** @category Props */
-export type QuickReplyParamProps = {
-  /**
-   * Developer-defined payload that is returned when the button is clicked in
-   * addition to the display text on the button.
-   */
-  payload: string;
+export type CopyCodeParamProps = {
+  /** The coupon code to be copied when the customer taps the button. */
+  code: string;
   /**
    * The 0-indexed position of the button. If the value is undefined, it's
    * decided by the order of params.
@@ -17,25 +14,25 @@ export type QuickReplyParamProps = {
 };
 
 /**
- * Define the payload of a quick reply button
+ * Define the coupon code of a copy code button
  *
  * @category Component
- * @props {@link QuickReplyParamProps}
+ * @props {@link CopyCodeParamProps}
  */
-export const QuickReplyParam: WhatsAppComponent<
-  QuickReplyParamProps,
+export const CopyCodeParam: WhatsAppComponent<
+  CopyCodeParamProps,
   PartSegment<{}>
-> = makeWhatsAppComponent(function QuickReplyParam(node, path) {
-  const { index, payload } = node.props;
+> = makeWhatsAppComponent(function CopyCodeParam(node, path) {
+  const { index, code } = node.props;
   return [
     makePartSegment(node, path, {
       type: 'button',
-      sub_type: 'quick_reply',
+      sub_type: 'copy_code',
       index,
       parameters: [
         {
-          type: 'payload',
-          payload,
+          type: 'coupon_code',
+          coupon_code: code,
         },
       ],
     }),

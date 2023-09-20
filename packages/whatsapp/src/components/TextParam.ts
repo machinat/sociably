@@ -3,9 +3,7 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
 import { WhatsAppComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type TextParamProps = {
   /**
    * The textual content to insert. For the header component, the character
@@ -17,6 +15,7 @@ export type TextParamProps = {
 
 /**
  * Pass a text parameter into the body or header of a customized template
+ *
  * @category Component
  * @props {@link TextParamProps}
  */
