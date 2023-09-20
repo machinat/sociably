@@ -1,6 +1,6 @@
 {
   "name": "@sociably/whatsapp",
-  "version": "0.9.0-alpha.23",
+  "version": "0.9.0-alpha.26",
   "type": "module",
   "description": "WhatsApp platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
@@ -30,7 +30,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@sociably/meta-api": "^0.9.0-alpha.18",
+    "@sociably/meta-api": "^0.9.0-alpha.26",
     "bowser": "^2.11.0",
     "invariant": "^2.2.4",
     "libphonenumber-js": "^1.10.26",
