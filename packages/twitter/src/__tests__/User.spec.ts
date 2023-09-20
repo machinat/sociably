@@ -57,6 +57,6 @@ test('marshall type metadata', () => {
   expect(TwitterUser.typeName).toBe('TwtrUser');
 
   expect(TwitterUser.fromJSONValue({ id: '6253282' })).toStrictEqual(
-    new TwitterUser('6253282')
+    new TwitterUser('6253282'),
   );
 });

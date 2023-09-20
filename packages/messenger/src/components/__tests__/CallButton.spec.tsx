@@ -7,8 +7,8 @@ const CallButton = makeTestComponent(_CallButton);
 it('match snapshot', async () => {
   await expect(
     renderPartElement(
-      <CallButton title="call me maybe" number="+15105551234" />
-    )
+      <CallButton title="call me maybe" number="+15105551234" />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

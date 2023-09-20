@@ -12,8 +12,8 @@ it('match snapshot', async () => {
         payload="GAME_OVER"
         playerId="Adam"
         contextId="SAW"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

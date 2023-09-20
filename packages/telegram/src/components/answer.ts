@@ -19,24 +19,41 @@ type UnionToIntersection<U> = (
   ? I
   : never;
 
-/**
- * @category Props
- */
+/** @category Props */
 export type AnswerCallbackQueryProps = {
   /** Unique identifier for the query to be answered */
   queryId: string;
-  /** Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters */
+  /**
+   * Text of the notification. If not specified, nothing will be shown to the
+   * user, 0-200 characters
+   */
   text?: string;
-  /** If true, an alert will be shown by the client instead of a notification at the top of the chat screen. Defaults to false. */
+  /**
+   * If true, an alert will be shown by the client instead of a notification at
+   * the top of the chat screen. Defaults to false.
+   */
   showAlert?: boolean;
-  /** URL that will be opened by the user's client. If you have created a Game and accepted the conditions via @Botfather, specify the URL that opens your game — note that this will only work if the query comes from a callback_game button.   Otherwise, you may use links like t.me/your_bot?start=XXXX that open your bot with a parameter. */
+  /**
+   * URL that will be opened by the user's client. If you have created a Game
+   * and accepted the conditions via @Botfather, specify the URL that opens your
+   * game — note that this will only work if the query comes from a
+   * callback_game button. Otherwise, you may use links like
+   * t.me/your_bot?start=XXXX that open your bot with a parameter.
+   */
   url?: string;
-  /** The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0. */
+  /**
+   * The maximum amount of time in seconds that the result of the callback query
+   * may be cached client-side. Telegram apps will support caching starting in
+   * version 3.14. Defaults to 0.
+   */
   cacheTime?: number;
 };
 
 /**
- * Send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert.
+ * Send answers to callback queries sent from inline keyboards. The answer will
+ * be displayed to the user as a notification at the top of the chat screen or
+ * as an alert.
+ *
  * @category Component
  * @props {@link AnswerCallbackQueryProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#answercallbackquery).
@@ -67,7 +84,10 @@ export type InlineQueryResultProps = {
   id: string;
   /** One {@link InlineKeyboardMarkup} element attached to the message */
   replyMarkup?: SociablyNode;
-  /** One {@link Text}, {@link Location}, {@link Venue} or {@link Contact} element as the replacement of message content to be sent */
+  /**
+   * One {@link Text}, {@link Location}, {@link Venue} or {@link Contact} element as
+   * the replacement of message content to be sent
+   */
   inputMessageContent?: SociablyNode;
 };
 
@@ -120,14 +140,12 @@ const renderInputMessageContent = async (node, render) => {
 
   throw new TypeError(
     `invalid inputMessageContent ${formatNode(
-      segments[0].node
-    )} received, only <Text/>, <Location/>, <Venue/> or <Contact/> allowed`
+      segments[0].node,
+    )} received, only <Text/>, <Location/>, <Venue/> or <Contact/> allowed`,
   );
 };
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultArticleProps = InlineQueryResultProps & {
   /** Title of the result */
   title: string;
@@ -147,6 +165,7 @@ type InlineQueryResultArticleProps = InlineQueryResultProps & {
 
 /**
  * Represents a link to an article or web page.
+ *
  * @category Component
  * @props {@link InlineQueryResultArticleProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultarticle).
@@ -190,17 +209,18 @@ export const InlineQueryResultArticle: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultPhotoProps = InlineQueryResultProps &
   (
     | // from URL
     {
-        /** A valid URL of the photo. Photo must be in jpeg format. Photo size must not exceed 5MB */
+        /**
+         * A valid URL of the photo. Photo must be in jpeg format. Photo size
+         * must not exceed 5MB
+         */
         url: string;
         /** URL of the thumbnail for the photo */
         thumbUrl: string;
@@ -221,12 +241,18 @@ type InlineQueryResultPhotoProps = InlineQueryResultProps &
     description?: string;
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
     caption?: SociablyNode;
-    /** Mode for parsing entities of the. See formatting options for more details. */
+    /**
+     * Mode for parsing entities of the. See formatting options for more
+     * details.
+     */
     parseMode?: TelegramParseMode;
   };
 
 /**
- * Represents a link to a photo. By default, this photo will be sent by the user with optional caption. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the photo.
+ * Represents a link to a photo. By default, this photo will be sent by the user
+ * with optional caption. Alternatively, you can use inputMessageContent to send
+ * a message with the specified content instead of the photo.
+ *
  * @category Component
  * @props {@link InlineQueryResultPhotoProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultphoto).
@@ -275,21 +301,25 @@ export const InlineQueryResultPhoto: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultGifProps = InlineQueryResultProps &
   (
     | // from URL
     {
         /** A valid URL of the GIF file. File size must not exceed 1MB */
         url: string;
-        /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
+        /**
+         * URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the
+         * result
+         */
         thumbUrl: string;
-        /** MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”. Defaults to “image/jpeg” */
+        /**
+         * MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”,
+         * or “video/mp4”. Defaults to “image/jpeg”
+         */
         thumbMimeType?: 'image/jpeg' | 'image/gif' | 'video/mp4';
         /** Width of the GIF */
         width?: number;
@@ -308,12 +338,19 @@ type InlineQueryResultGifProps = InlineQueryResultProps &
     title?: string;
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
     caption?: SociablyNode;
-    /** Mode for parsing entities of the file caption. See formatting options for more details. */
+    /**
+     * Mode for parsing entities of the file caption. See formatting options for
+     * more details.
+     */
     parseMode?: TelegramParseMode;
   };
 
 /**
- * Represents a link to an animated GIF file. By default, this animated GIF file will be sent by the user with optional caption. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the animation.
+ * Represents a link to an animated GIF file. By default, this animated GIF file
+ * will be sent by the user with optional caption. Alternatively, you can use
+ * inputMessageContent to send a message with the specified content instead of
+ * the animation.
+ *
  * @category Component
  * @props {@link InlineQueryResultGifProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultgif).
@@ -364,21 +401,25 @@ export const InlineQueryResultGif: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultMpeg4GifProps = InlineQueryResultProps &
   (
     | // from URL
     {
         /** A valid URL of the MP4 file. File size must not exceed 1MB */
         url: string;
-        /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
+        /**
+         * URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the
+         * result
+         */
         thumbUrl: string;
-        /** MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”. Defaults to “image/jpeg” */
+        /**
+         * MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”,
+         * or “video/mp4”. Defaults to “image/jpeg”
+         */
         thumbMimeType?: 'image/jpeg' | 'image/gif' | 'video/mp4';
         /** Width of the video */
         width?: number;
@@ -402,7 +443,11 @@ type InlineQueryResultMpeg4GifProps = InlineQueryResultProps &
   };
 
 /**
- * Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By default, this animated MPEG-4 file will be sent by the user with optional caption. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the animation.
+ * Represents a link to a video animation (H.264/MPEG-4 AVC video without
+ * sound). By default, this animated MPEG-4 file will be sent by the user with
+ * optional caption. Alternatively, you can use inputMessageContent to send a
+ * message with the specified content instead of the animation.
+ *
  * @category Component
  * @props {@link InlineQueryResultMpeg4GifProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultmpeg4gif).
@@ -453,12 +498,10 @@ export const InlineQueryResultMpeg4Gif: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultVideoProps = InlineQueryResultProps &
   (
     | // from URL
@@ -467,7 +510,10 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
         url: string;
         /** Mime type of the content of video url, “text/html” or “video/mp4” */
         mimeType: 'text/html' | 'video/mp4';
-        /** URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result */
+        /**
+         * URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the
+         * result
+         */
         thumbUrl: string;
         /** Width of the video */
         width?: number;
@@ -483,7 +529,7 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
   ) & {
     /** Title for the result */
     title?: string;
-    /**  Short description for the result */
+    /** Short description for the result */
     description?: string;
     /** Texual node of the file caption, 0-1024 characters after entities parsing */
     caption?: SociablyNode;
@@ -492,7 +538,11 @@ type InlineQueryResultVideoProps = InlineQueryResultProps &
   };
 
 /**
- * Represents a link to a page containing an embedded video player or a video file. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the video.
+ * Represents a link to a page containing an embedded video player or a video
+ * file. By default, this video file will be sent by the user with an optional
+ * caption. Alternatively, you can use inputMessageContent to send a message
+ * with the specified content instead of the video.
+ *
  * @category Component
  * @props {@link InlineQueryResultVideoProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultvideo).
@@ -545,12 +595,10 @@ export const InlineQueryResultVideo: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultAudioProps = InlineQueryResultProps &
   (
     | // from URL
@@ -576,7 +624,10 @@ type InlineQueryResultAudioProps = InlineQueryResultProps &
   };
 
 /**
- * Represents a link to an MP3 audio file. By default, this audio file will be sent by the user. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the audio.
+ * Represents a link to an MP3 audio file. By default, this audio file will be
+ * sent by the user. Alternatively, you can use inputMessageContent to send a
+ * message with the specified content instead of the audio.
+ *
  * @category Component
  * @props {@link InlineQueryResultAudioProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultaudio).
@@ -621,12 +672,10 @@ export const InlineQueryResultAudio: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultVoiceProps = InlineQueryResultProps &
   (
     | // from URL
@@ -650,7 +699,11 @@ type InlineQueryResultVoiceProps = InlineQueryResultProps &
   };
 
 /**
- * Represents a link to a voice recording in an .OGG container encoded with OPUS. By default, this voice recording will be sent by the user. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the the voice message.
+ * Represents a link to a voice recording in an .OGG container encoded with
+ * OPUS. By default, this voice recording will be sent by the user.
+ * Alternatively, you can use inputMessageContent to send a message with the
+ * specified content instead of the the voice message.
+ *
  * @category Component
  * @props {@link InlineQueryResultVoiceProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultvoice).
@@ -693,19 +746,23 @@ export const InlineQueryResultVoice: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultDocumentProps = InlineQueryResultProps &
   (
     | // from URL
     {
-        /** A valid URL of the file. Photo must be in jpeg format. Photo size must not exceed 5MB */
+        /**
+         * A valid URL of the file. Photo must be in jpeg format. Photo size
+         * must not exceed 5MB
+         */
         url: string;
-        /** Mime type of the content of the file, either “application/pdf” or “application/zip” */
+        /**
+         * Mime type of the content of the file, either “application/pdf” or
+         * “application/zip”
+         */
         mimeType: 'application/pdf' | 'application/zip';
         /** URL of the thumbnail for the file */
         thumbUrl?: string;
@@ -723,14 +780,24 @@ type InlineQueryResultDocumentProps = InlineQueryResultProps &
     title: string;
     /** Short description of the result */
     description?: string;
-    /** Texual node as  the caption of the photo to be sent, 0-1024 characters after entities parsing */
+    /**
+     * Texual node as the caption of the photo to be sent, 0-1024 characters
+     * after entities parsing
+     */
     caption?: SociablyNode;
-    /** Mode for parsing entities in the photo caption. See formatting options for more details. */
+    /**
+     * Mode for parsing entities in the photo caption. See formatting options
+     * for more details.
+     */
     parseMode?: TelegramParseMode;
   };
 
 /**
- * Represents a link to a file. By default, this file will be sent by the user with an optional caption. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the file. Currently, only .PDF and .ZIP files can be sent using this method.
+ * Represents a link to a file. By default, this file will be sent by the user
+ * with an optional caption. Alternatively, you can use inputMessageContent to
+ * send a message with the specified content instead of the file. Currently,
+ * only .PDF and .ZIP files can be sent using this method.
+ *
  * @category Component
  * @props {@link InlineQueryResultDocumentProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultdocument).
@@ -781,19 +848,21 @@ export const InlineQueryResultDocument: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultStickerProps = InlineQueryResultProps & {
   /** The file id of sticker stored on the Telegram servers */
   fileId: string;
 };
 
 /**
- * Represents a link to a sticker stored on the Telegram servers. By default, this sticker will be sent by the user. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the sticker.
+ * Represents a link to a sticker stored on the Telegram servers. By default,
+ * this sticker will be sent by the user. Alternatively, you can use
+ * inputMessageContent to send a message with the specified content instead of
+ * the sticker.
+ *
  * @category Component
  * @props {@link InlineQueryResultStickerProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultcachedsticker).
@@ -820,12 +889,10 @@ export const InlineQueryResultSticker: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultLocationProps = InlineQueryResultProps & {
   /** Location latitude in degrees */
   latitude: number;
@@ -833,7 +900,10 @@ type InlineQueryResultLocationProps = InlineQueryResultProps & {
   longitude: number;
   /** Location title */
   title: string;
-  /** Period in seconds for which the location can be updated, should be between 60 and 86400. */
+  /**
+   * Period in seconds for which the location can be updated, should be between
+   * 60 and 86400.
+   */
   livePeriod?: number;
   /** URL of the thumbnail for the loaction */
   thumbUrl?: string;
@@ -844,7 +914,10 @@ type InlineQueryResultLocationProps = InlineQueryResultProps & {
 };
 
 /**
- * Represents a location on a map. By default, the location will be sent by the user. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the location.
+ * Represents a location on a map. By default, the location will be sent by the
+ * user. Alternatively, you can use inputMessageContent to send a message with
+ * the specified content instead of the location.
+ *
  * @category Component
  * @props {@link InlineQueryResultLocationProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultloacation).
@@ -888,12 +961,10 @@ export const InlineQueryResultLocation: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultVenueProps = InlineQueryResultProps & {
   /** Location latitude of the venue in degrees */
   latitude: number;
@@ -905,7 +976,11 @@ type InlineQueryResultVenueProps = InlineQueryResultProps & {
   address: string;
   /** Foursquare identifier of the venue if known */
   foursquareId?: string;
-  /** Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.) */
+  /**
+   * Foursquare type of the venue, if known. (For example,
+   * “arts_entertainment/default”, “arts_entertainment/aquarium” or
+   * “food/icecream”.)
+   */
   foursquareType?: string;
   /** URL of the thumbnail for the venue */
   thumbUrl?: string;
@@ -916,7 +991,10 @@ type InlineQueryResultVenueProps = InlineQueryResultProps & {
 };
 
 /**
- * Represents a venue. By default, the venue will be sent by the user. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the venue.
+ * Represents a venue. By default, the venue will be sent by the user.
+ * Alternatively, you can use inputMessageContent to send a message with the
+ * specified content instead of the venue.
+ *
  * @category Component
  * @props {@link InlineQueryResultVenueProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultvenue).
@@ -964,12 +1042,10 @@ export const InlineQueryResultVenue: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
-/**
- * @category Props
- */
+/** @category Props */
 type InlineQueryResultContactProps = InlineQueryResultProps & {
   /** Contact's phone number */
   phoneNumber: string;
@@ -988,7 +1064,10 @@ type InlineQueryResultContactProps = InlineQueryResultProps & {
 };
 
 /**
- * Represents a contact with a phone number. By default, this contact will be sent by the user. Alternatively, you can use inputMessageContent to send a message with the specified content instead of the contact.
+ * Represents a contact with a phone number. By default, this contact will be
+ * sent by the user. Alternatively, you can use inputMessageContent to send a
+ * message with the specified content instead of the contact.
+ *
  * @category Component
  * @props {@link InlineQueryResultContactProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultcontact).
@@ -1032,7 +1111,7 @@ export const InlineQueryResultContact: TelegramComponent<
         input_message_content: inputMessageContentObject,
       }),
     ];
-  }
+  },
 );
 
 export type InlineQueryResultGameProps = {
@@ -1046,6 +1125,7 @@ export type InlineQueryResultGameProps = {
 
 /**
  * Represents a Game.
+ *
  * @category Component
  * @props {@link InlineQueryResultGameProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinequeryresultgame).
@@ -1066,7 +1146,7 @@ export const InlineQueryResultGame: TelegramComponent<
         reply_markup: inlineKeyboardSegemnts?.[0].value,
       }),
     ];
-  }
+  },
 );
 
 export type InlineQueryResult =
@@ -1084,28 +1164,47 @@ export type InlineQueryResult =
   | typeof InlineQueryResultVideo
   | typeof InlineQueryResultVenue;
 
-/**
- * @category Props
- */
+/** @category Props */
 export type AnswerInlineQueryProps = {
   /** Unique identifier for the answered query */
   queryId: string;
   /** {@link InlineQueryResult} elements as the results to be displayed */
   children?: SociablyNode;
-  /** The maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300. */
+  /**
+   * The maximum amount of time in seconds that the result of the inline query
+   * may be cached on the server. Defaults to 300.
+   */
   cacheTime?: number;
-  /** Pass True, if results may be cached on the server side only for the user that sent the query. By default, results may be returned to any user who sends the same query */
+  /**
+   * Pass True, if results may be cached on the server side only for the user
+   * that sent the query. By default, results may be returned to any user who
+   * sends the same query
+   */
   isPersonal?: boolean;
-  /** Pass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes. */
+  /**
+   * Pass the offset that a client should send in the next query with the same
+   * text to receive more results. Pass an empty string if there are no more
+   * results or if you don't support pagination. Offset length can't exceed 64
+   * bytes.
+   */
   nextOffset?: string;
-  /** If passed, clients will display a button with specified text that switches the user to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter */
+  /**
+   * If passed, clients will display a button with specified text that switches
+   * the user to a private chat with the bot and sends the bot a start message
+   * with the parameter switch_pm_parameter
+   */
   switchPmText?: string;
-  /** Deep-linking parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed. */
+  /**
+   * Deep-linking parameter for the /start message sent to the bot when user
+   * presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are
+   * allowed.
+   */
   switchPmParameter?: string;
 };
 
 /**
  * Send answers to an inline query
+ *
  * @category Component
  * @props {@link AnswerInlineQueryProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#answerInlineQuery).
@@ -1147,7 +1246,12 @@ export const AnswerInlineQuery: TelegramComponent<
 type LabeledPrice = {
   /** Portion label */
   label: string;
-  /** Price of the product in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). */
+  /**
+   * Price of the product in the smallest units of the currency (integer, not
+   * float/double). For example, for a price of US$ 1.45 pass amount = 145. See
+   * the exp parameter in currencies.json, it shows the number of digits past
+   * the decimal point for each currency (2 for the majority of currencies).
+   */
   amount: number;
 };
 
@@ -1161,22 +1265,33 @@ type ShippingOption = {
   prices: LabeledPrice[];
 };
 
-/**
- * @category Props
- */
+/** @category Props */
 export type AnswerShippingQueryProps = {
   /** Unique identifier for the query to be answered */
   queryId: string;
-  /** Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible) */
+  /**
+   * Specify True if delivery to the specified address is possible and False if
+   * there are any problems (for example, if delivery to the specified address
+   * is not possible)
+   */
   ok: boolean;
-  /** Required if ok is True. A JSON-serialized array of available shipping options. */
+  /**
+   * Required if ok is True. A JSON-serialized array of available shipping
+   * options.
+   */
   shippingOptions?: ShippingOption[];
-  /** Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user. */
+  /**
+   * Required if ok is False. Error message in human readable form that explains
+   * why it is impossible to complete the order (e.g. "Sorry, delivery to your
+   * desired address is unavailable'). Telegram will display this message to the
+   * user.
+   */
   errorMessage?: string;
 };
 
 /**
  * Send answers to an inline query
+ *
  * @category Component
  * @props {@link AnswerInlineQueryProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#answerInlineQuery).
@@ -1201,20 +1316,28 @@ export const AnswerShippingQuery: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type AnswerPreCheckoutQueryProps = {
   /** Unique identifier for the query to be answered */
   queryId: string;
-  /** Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible) */
+  /**
+   * Specify True if delivery to the specified address is possible and False if
+   * there are any problems (for example, if delivery to the specified address
+   * is not possible)
+   */
   ok: boolean;
-  /** Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user. */
+  /**
+   * Required if ok is False. Error message in human readable form that explains
+   * why it is impossible to complete the order (e.g. "Sorry, delivery to your
+   * desired address is unavailable'). Telegram will display this message to the
+   * user.
+   */
   errorMessage?: string;
 };
 
 /**
  * Send answers to an inline query
+ *
  * @category Component
  * @props {@link AnswerInlineQueryProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#answerInlineQuery).

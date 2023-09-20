@@ -57,7 +57,7 @@ export default class WhatsAppClientAuthenticator
     }
 
     window.location.href = `https://wa.me/${trimWaUrlNumber(
-      authContext.agentNumber
+      authContext.agentNumber,
     )}`;
     return true;
   }

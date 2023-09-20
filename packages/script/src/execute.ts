@@ -17,7 +17,7 @@ import type {
 
 const getCursorIndexAssertedly = (
   script: ScriptLibrary<unknown, unknown, unknown, unknown, unknown, unknown>,
-  key: string
+  key: string,
 ): number => {
   const index = script.stopPointIndex.get(key);
 
@@ -67,12 +67,12 @@ type ExecuteContext<Vars, Return, Yield, Meta> = {
 
 const executeContentCommand = async <Vars, Return, Yield, Meta>(
   { getContent }: ContentCommand<Vars, Meta>,
-  context: ExecuteContext<Vars, Return, Yield, Meta>
+  context: ExecuteContext<Vars, Return, Yield, Meta>,
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   const { cursor, contents, vars, meta, thread, scope } = context;
   const newContent = await maybeInjectContainer(
     scope,
-    getContent
+    getContent,
   )({ platform: thread.platform, thread, vars, meta });
 
   return {
@@ -84,19 +84,20 @@ const executeContentCommand = async <Vars, Return, Yield, Meta>(
 
 const executeJumpCommand = <Vars, Return, Yield, Meta>(
   { offset }: JumpCommand,
-  context: ExecuteContext<Vars, Return, Yield, Meta>
-): ExecuteContext<Vars, Return, Yield, Meta> => {
-  return { ...context, cursor: context.cursor + offset };
-};
+  context: ExecuteContext<Vars, Return, Yield, Meta>,
+): ExecuteContext<Vars, Return, Yield, Meta> => ({
+  ...context,
+  cursor: context.cursor + offset,
+});
 
 const executeJumpCondCommand = async <Vars, Return, Yield, Meta>(
   { condition, isNot, offset }: JumpCondCommand<Vars, Meta>,
-  context: ExecuteContext<Vars, Return, Yield, Meta>
+  context: ExecuteContext<Vars, Return, Yield, Meta>,
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   const { cursor, scope, vars, meta, thread } = context;
   const isMatched = await maybeInjectContainer(
     scope,
-    condition
+    condition,
   )({ platform: thread.platform, thread, vars, meta });
 
   return {
@@ -107,13 +108,11 @@ const executeJumpCondCommand = async <Vars, Return, Yield, Meta>(
 
 const executePromptCommand = async <Vars, Return, Yield, Meta>(
   { key }: PromptCommand<Vars, unknown, Meta>,
-  context: ExecuteContext<Vars, Return, Yield, Meta>
-): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
-  return {
-    ...context,
-    stopAt: key,
-  };
-};
+  context: ExecuteContext<Vars, Return, Yield, Meta>,
+): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => ({
+  ...context,
+  stopAt: key,
+});
 
 const executeCallCommand = async <Vars, Return, Yield, Meta>(
   {
@@ -123,7 +122,7 @@ const executeCallCommand = async <Vars, Return, Yield, Meta>(
     setVars,
     goto,
   }: CallCommand<Vars, unknown, unknown, Yield, Meta>,
-  context: ExecuteContext<Vars, Return, Yield, Meta>
+  context: ExecuteContext<Vars, Return, Yield, Meta>,
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   const { vars, meta, contents, scope, thread, cursor } = context;
   const index = goto ? getCursorIndexAssertedly(script, goto) : 0;
@@ -131,7 +130,7 @@ const executeCallCommand = async <Vars, Return, Yield, Meta>(
   const params = withParams
     ? await maybeInjectContainer(
         scope,
-        withParams
+        withParams,
       )({ platform: thread.platform, thread, vars, meta })
     : {};
 
@@ -141,7 +140,7 @@ const executeCallCommand = async <Vars, Return, Yield, Meta>(
     thread,
     script,
     index,
-    script.initVars(params)
+    script.initVars(params),
   );
   const concatedContent = [...contents, ...subCtx.contents];
   const concatedYields = [...context.yields, ...subCtx.yields];
@@ -160,7 +159,7 @@ const executeCallCommand = async <Vars, Return, Yield, Meta>(
   if (setVars) {
     updatedVars = await maybeInjectContainer(scope, setVars)(
       { platform: thread.platform, thread, vars, meta },
-      subCtx.returnedValue
+      subCtx.returnedValue,
     );
   }
 
@@ -175,7 +174,7 @@ const executeCallCommand = async <Vars, Return, Yield, Meta>(
 
 const executeEffectCommand = async <Vars, Return, Yield, Meta>(
   { setVars, yieldValue }: EffectCommand<Vars, Yield, Meta>,
-  context: ExecuteContext<Vars, Return, Yield, Meta>
+  context: ExecuteContext<Vars, Return, Yield, Meta>,
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   const { cursor, scope, thread, vars, meta, yields } = context;
 
@@ -183,7 +182,7 @@ const executeEffectCommand = async <Vars, Return, Yield, Meta>(
   if (setVars) {
     newVars = await maybeInjectContainer(
       scope,
-      setVars
+      setVars,
     )({ platform: thread.platform, thread, vars, meta });
   }
 
@@ -205,7 +204,7 @@ const executeEffectCommand = async <Vars, Return, Yield, Meta>(
 
 const executeReturnCommand = async <Vars, Return, Yield, Meta>(
   { getValue }: ReturnCommand<Vars, Return, Meta>,
-  context: ExecuteContext<Vars, Return, Yield, Meta>
+  context: ExecuteContext<Vars, Return, Yield, Meta>,
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   const { scope, thread, vars, meta } = context;
   let returnedValue: undefined | Return;
@@ -214,7 +213,7 @@ const executeReturnCommand = async <Vars, Return, Yield, Meta>(
     // eslint-disable-next-line no-await-in-loop
     returnedValue = await maybeInjectContainer(
       scope,
-      getValue
+      getValue,
     )({
       platform: thread.platform,
       vars,
@@ -232,7 +231,7 @@ const executeReturnCommand = async <Vars, Return, Yield, Meta>(
 
 const executeCommand = async <Vars, Return, Yield, Meta>(
   command: ScriptCommand<Vars, unknown, Return, Yield, Meta>,
-  context: ExecuteContext<Vars, Return, Yield, Meta>
+  context: ExecuteContext<Vars, Return, Yield, Meta>,
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   switch (command.type) {
     case 'content':
@@ -251,7 +250,7 @@ const executeCommand = async <Vars, Return, Yield, Meta>(
       return executeReturnCommand(command, context);
     default:
       throw new TypeError(
-        `unknown command type ${(command as any).type || String(command)}`
+        `unknown command type ${(command as any).type || String(command)}`,
       );
   }
 };
@@ -261,7 +260,7 @@ const executeScript = async <Vars, Return, Yield, Meta>(
   thread: SociablyThread,
   script: ScriptLibrary<Vars, unknown, unknown, Return, Yield, Meta>,
   begin: number,
-  beginVars: Vars
+  beginVars: Vars,
 ): Promise<ExecuteContext<Vars, Return, Yield, Meta>> => {
   const { commands } = script;
 
@@ -310,7 +309,7 @@ const executeScript = async <Vars, Return, Yield, Meta>(
 const resolveYieldValue = async <Yield, Meta>(
   thread: SociablyThread,
   scope: ServiceScope,
-  yields: PendingYields<Yield, Meta>[]
+  yields: PendingYields<Yield, Meta>[],
 ): Promise<undefined | Yield> => {
   let yieldValue: undefined | Yield;
 
@@ -320,7 +319,7 @@ const resolveYieldValue = async <Yield, Meta>(
     // eslint-disable-next-line no-await-in-loop
     yieldValue = await maybeInjectContainer(scope, yielder)(
       { platform: thread.platform, thread, vars, meta },
-      yieldValue
+      yieldValue,
     );
   }
 
@@ -332,7 +331,7 @@ const execute = async <Input, Return, Yield, Meta>(
   thread: SociablyThread,
   beginningStack: CallStatus<unknown>[],
   isPrompting: boolean,
-  input?: Input
+  input?: Input,
 ): Promise<ExecuteResult<Return, Yield>> => {
   const callingDepth = beginningStack.length;
   const contents: SociablyNode[] = [];
@@ -365,7 +364,7 @@ const execute = async <Input, Return, Yield, Meta>(
             stopAt || ''
           }" is not a <Prompt/>, the key mapping of ${
             currentScript.name
-          } might have been changed`
+          } might have been changed`,
         );
 
         const { setVars } = awaitingPrompt;
@@ -392,7 +391,7 @@ const execute = async <Input, Return, Yield, Meta>(
           stopAt || ''
         }" is not a <Call/>, the key mapping of ${
           currentScript.name
-        } might have been changed`
+        } might have been changed`,
       );
 
       const { setVars } = awaitingCall;
@@ -405,7 +404,7 @@ const execute = async <Input, Return, Yield, Meta>(
             meta: currentScript.meta,
             thread,
           },
-          returnValueSlot as Return
+          returnValueSlot as Return,
         );
       }
 
@@ -418,7 +417,7 @@ const execute = async <Input, Return, Yield, Meta>(
       thread,
       currentScript,
       index,
-      vars
+      vars,
     );
     contents.push(...context.contents);
     yields.push(...context.yields);

@@ -27,11 +27,11 @@ type ProviderFn<T, Deps extends AnyDep[]> = ServiceProvider<T, Deps> &
   ((...args: ResolveDependencies<Deps>) => T);
 
 function serviceProviderFactory<A extends AnyDep>(
-  opts: FactoryProviderOptions<[A]>
+  opts: FactoryProviderOptions<[A]>,
 ): <T>(factory: FactoryFn<T, [A]>) => ProviderFn<T, [A]>;
 
 function serviceProviderFactory<A extends AnyDep, B extends AnyDep>(
-  opts: FactoryProviderOptions<[A, B]>
+  opts: FactoryProviderOptions<[A, B]>,
 ): <T>(factory: FactoryFn<T, [A, B]>) => ProviderFn<T, [A, B]>;
 
 function serviceProviderFactory<
@@ -39,7 +39,7 @@ function serviceProviderFactory<
   B extends AnyDep,
   C extends AnyDep,
 >(
-  opts: FactoryProviderOptions<[A, B, C]>
+  opts: FactoryProviderOptions<[A, B, C]>,
 ): <T>(factory: FactoryFn<T, [A, B, C]>) => ProviderFn<T, [A, B, C]>;
 
 function serviceProviderFactory<
@@ -48,7 +48,7 @@ function serviceProviderFactory<
   C extends AnyDep,
   D extends AnyDep,
 >(
-  opts: FactoryProviderOptions<[A, B, C, D]>
+  opts: FactoryProviderOptions<[A, B, C, D]>,
 ): <T>(factory: FactoryFn<T, [A, B, C, D]>) => ProviderFn<T, [A, B, C, D]>;
 
 function serviceProviderFactory<
@@ -58,9 +58,9 @@ function serviceProviderFactory<
   D extends AnyDep,
   E extends AnyDep,
 >(
-  opts: FactoryProviderOptions<[A, B, C, D, E]>
+  opts: FactoryProviderOptions<[A, B, C, D, E]>,
 ): <T>(
-  factory: FactoryFn<T, [A, B, C, D, E]>
+  factory: FactoryFn<T, [A, B, C, D, E]>,
 ) => ProviderFn<T, [A, B, C, D, E]>;
 
 function serviceProviderFactory<
@@ -71,9 +71,9 @@ function serviceProviderFactory<
   E extends AnyDep,
   F extends AnyDep,
 >(
-  opts: FactoryProviderOptions<[A, B, C, D, E, F]>
+  opts: FactoryProviderOptions<[A, B, C, D, E, F]>,
 ): <T>(
-  factory: FactoryFn<T, [A, B, C, D, E, F]>
+  factory: FactoryFn<T, [A, B, C, D, E, F]>,
 ) => ServiceProvider<T, [A, B, C, D, E, F]>;
 
 function serviceProviderFactory<
@@ -85,9 +85,9 @@ function serviceProviderFactory<
   F extends AnyDep,
   G extends AnyDep,
 >(
-  opts: FactoryProviderOptions<[A, B, C, D, E, F, G]>
+  opts: FactoryProviderOptions<[A, B, C, D, E, F, G]>,
 ): <T>(
-  factory: FactoryFn<T, [A, B, C, D, E, F, G]>
+  factory: FactoryFn<T, [A, B, C, D, E, F, G]>,
 ) => ProviderFn<T, [A, B, C, D, E, F, G]>;
 
 function serviceProviderFactory<
@@ -100,9 +100,9 @@ function serviceProviderFactory<
   G extends AnyDep,
   H extends AnyDep,
 >(
-  opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H]>
+  opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H]>,
 ): <T>(
-  factory: FactoryFn<T, [A, B, C, D, E, F, G, H]>
+  factory: FactoryFn<T, [A, B, C, D, E, F, G, H]>,
 ) => ProviderFn<T, [A, B, C, D, E, F, G, H]>;
 
 function serviceProviderFactory<
@@ -116,9 +116,9 @@ function serviceProviderFactory<
   H extends AnyDep,
   I extends AnyDep,
 >(
-  opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H, I]>
+  opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H, I]>,
 ): <T>(
-  factory: FactoryFn<T, [A, B, C, D, E, F, G, H, I]>
+  factory: FactoryFn<T, [A, B, C, D, E, F, G, H, I]>,
 ) => ProviderFn<T, [A, B, C, D, E, F, G, H, I]>;
 
 function serviceProviderFactory<
@@ -133,14 +133,15 @@ function serviceProviderFactory<
   I extends AnyDep,
   J extends AnyDep,
 >(
-  opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H, I, J]>
+  opts: FactoryProviderOptions<[A, B, C, D, E, F, G, H, I, J]>,
 ): <T>(
-  factory: FactoryFn<T, [A, B, C, D, E, F, G, H, I, J]>
+  factory: FactoryFn<T, [A, B, C, D, E, F, G, H, I, J]>,
 ) => ProviderFn<T, [A, B, C, D, E, F, G, H, I, J]>;
 
 /**
- * serviceProviderFactory annotate a factory function as a provider serving for the
- * instance type, and also an interface can be implemented.
+ * ServiceProviderFactory annotate a factory function as a provider serving for
+ * the instance type, and also an interface can be implemented.
+ *
  * @category Service Registry
  */
 function serviceProviderFactory<Deps extends AnyDep[]>({

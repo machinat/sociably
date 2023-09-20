@@ -3,9 +3,7 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
 import { WhatsAppComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ListSectionProps = {
   /**
    * Title of the section. Required if the message has more than one section.
@@ -21,6 +19,7 @@ export type ListSectionProps = {
 
 /**
  * Represent a section of rows in a list template
+ *
  * @category Component
  * @props {@link ListSectionProps}
  */

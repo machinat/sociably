@@ -46,69 +46,55 @@ export type ScriptCircs<Vars, Meta> = {
 };
 
 export type ContentFn<Vars, Meta> = (
-  circs: ScriptCircs<Vars, Meta>
+  circs: ScriptCircs<Vars, Meta>,
 ) => SociablyNode | Promise<SociablyNode>;
 
 export type ContentNode<Vars, Meta> = MaybeContainer<ContentFn<Vars, Meta>>;
 
 export type ConditionMatchFn<Vars, Meta> = (
-  circs: ScriptCircs<Vars, Meta>
+  circs: ScriptCircs<Vars, Meta>,
 ) => boolean | Promise<boolean>;
 
 export type ConditionMatcher<Vars, Meta> = MaybeContainer<
   ConditionMatchFn<Vars, Meta>
 >;
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type IfProps<Vars, Input, Return, Yield, Meta> = {
   condition: ConditionMatcher<Vars, Meta>;
   children: ScriptNode<Vars, Input, Return, Yield, Meta>;
 };
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type IfElement<Vars, Input, Return, Yield, Meta> = SociablyElement<
   IfProps<Vars, Input, Return, Yield, Meta>,
   typeof IF
 >;
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type BlockProps<Vars, Input, Return, Yield, Meta> = {
   children: ScriptNode<Vars, Input, Return, Yield, Meta>;
 };
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type ElseElement<Vars, Input, Return, Yield, Meta> = SociablyElement<
   BlockProps<Vars, Input, Return, Yield, Meta>,
   typeof ELSE
 >;
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type ElseIfElement<Vars, Input, Return, Yield, Meta> = SociablyElement<
   IfProps<Vars, Input, Return, Yield, Meta>,
   typeof ELSE_IF
 >;
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type WhileProps<Vars, Input, Return, Yield, Meta> = {
   condition: ConditionMatcher<Vars, Meta>;
   children: ScriptNode<Vars, Input, Return, Yield, Meta>;
 };
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type WhileElement<Vars, Input, Return, Yield, Meta> = SociablyElement<
   WhileProps<Vars, Input, Return, Yield, Meta>,
   typeof WHILE
@@ -116,50 +102,40 @@ export type WhileElement<Vars, Input, Return, Yield, Meta> = SociablyElement<
 
 export type PromptSetFn<Vars, Input, Meta> = (
   circs: ScriptCircs<Vars, Meta>,
-  input: Input
+  input: Input,
 ) => Vars | Promise<Vars>;
 
 export type PromptSetter<Vars, Input, Meta> = MaybeContainer<
   PromptSetFn<Vars, Input, Meta>
 >;
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type PromptProps<Vars, Input, Meta> = {
   key: string;
   set?: PromptSetter<Vars, Input, Meta>;
 };
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type PromptElement<Vars, Input, Meta> = SociablyElement<
   PromptProps<Vars, Input, Meta>,
   typeof PROMPT
 >;
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type LabelProps = {
   key: string;
 };
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type GotoProps = {
   key: string;
 };
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type LabelElement = SociablyElement<LabelProps, typeof LABEL>;
 
 export type CallParamsFn<Vars, Params, Meta> = (
-  circs: ScriptCircs<Vars, Meta>
+  circs: ScriptCircs<Vars, Meta>,
 ) => Params | Promise<Params>;
 
 export type CallParamsGetter<Vars, Params, Meta> = MaybeContainer<
@@ -168,16 +144,14 @@ export type CallParamsGetter<Vars, Params, Meta> = MaybeContainer<
 
 export type CallReturnSetFn<Vars, Return, Meta> = (
   circs: ScriptCircs<Vars, Meta>,
-  returnValue: Return
+  returnValue: Return,
 ) => Vars | Promise<Vars>;
 
 export type CallReturnSetter<Vars, Return, Meta> = MaybeContainer<
   CallReturnSetFn<Vars, Return, Meta>
 >;
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type CallProps<
   Vars,
   Script extends AnyScriptLibrary,
@@ -198,63 +172,53 @@ export type CallProps<
     }
   : never;
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type CallElement<
   Vars,
   Script extends AnyScriptLibrary,
 > = SociablyElement<CallProps<Vars, Script>, typeof CALL>;
 
 export type EffectSetFn<Vars, Meta> = (
-  circs: ScriptCircs<Vars, Meta>
+  circs: ScriptCircs<Vars, Meta>,
 ) => Vars | Promise<Vars>;
 
 export type EffectSetter<Vars, Meta> = MaybeContainer<EffectSetFn<Vars, Meta>>;
 
 export type EffectYieldFn<Vars, Yield, Meta> = (
   circs: ScriptCircs<Vars, Meta>,
-  prevValue: undefined | Yield
+  prevValue: undefined | Yield,
 ) => Yield | Promise<Yield>;
 
 export type EffectYielder<Vars, Yield, Meta> = MaybeContainer<
   EffectYieldFn<Vars, Yield, Meta>
 >;
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type EffectProps<Vars, Yield, Meta> = {
   set?: EffectSetter<Vars, Meta>;
   yield?: EffectYielder<Vars, Yield, Meta>;
 };
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type EffectElement<Vars, Yield, Meta> = SociablyElement<
   EffectProps<Vars, Yield, Meta>,
   typeof EFFECT
 >;
 
 export type ReturnValueFn<Vars, Return, Meta> = (
-  circs: ScriptCircs<Vars, Meta>
+  circs: ScriptCircs<Vars, Meta>,
 ) => Return | Promise<Return>;
 
 export type ReturnValueGetter<Vars, Return, Meta> = MaybeContainer<
   ReturnValueFn<Vars, Return, Meta>
 >;
 
-/**
- * @category Keyword Props
- */
+/** @category Keyword Props */
 export type ReturnProps<Vars, Return, Meta> = {
   value?: ReturnValueGetter<Vars, Return, Meta>;
 };
 
-/**
- * @category Keyword Element
- */
+/** @category Keyword Element */
 export type ReturnElement<Vars, Return, Meta> = SociablyElement<
   ReturnProps<Vars, Return, Meta>,
   typeof RETURN

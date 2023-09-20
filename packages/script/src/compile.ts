@@ -45,12 +45,12 @@ type CompileResult<Vars, Input, Retrun, Yield, Meta> = {
 };
 
 const compileContentCommand = (
-  command: ContentCommand<unknown, unknown>
+  command: ContentCommand<unknown, unknown>,
 ): CompileMediateNode[] => [command];
 
 const compileConditionsAstNode = (
   { branches, fallbackBody }: ConditionsAstNode<unknown, unknown>,
-  uniqIndexCounter: () => number
+  uniqIndexCounter: () => number,
 ): CompileMediateNode[] => {
   const n: number = uniqIndexCounter();
 
@@ -85,7 +85,7 @@ const compileConditionsAstNode = (
     bodiesSections.push(
       bodyBeginTag,
       ...compileAstNodes(body, uniqIndexCounter),
-      jumpToEnd
+      jumpToEnd,
     );
   }
 
@@ -100,7 +100,7 @@ const compileConditionsAstNode = (
 
 const compileWhileAstNode = (
   { condition, body }: WhileAstNode<unknown, unknown>,
-  uniqIndexCounter: () => number
+  uniqIndexCounter: () => number,
 ): CompileMediateNode[] => {
   const n: number = uniqIndexCounter();
 
@@ -136,12 +136,10 @@ const compileWhileAstNode = (
 const compilePromptCommand = ({
   setVars,
   key,
-}: PromptCommand<unknown, unknown, unknown>): CompileMediateNode[] => {
-  return [
-    { type: 'tag', key, isEntryPoint: true },
-    { type: 'prompt', setVars, key },
-  ];
-};
+}: PromptCommand<unknown, unknown, unknown>): CompileMediateNode[] => [
+  { type: 'tag', key, isEntryPoint: true },
+  { type: 'prompt', setVars, key },
+];
 
 const compileCallCommand = ({
   script,
@@ -155,34 +153,32 @@ const compileCallCommand = ({
   unknown,
   unknown,
   unknown
->): CompileMediateNode[] => {
-  return [
-    { type: 'tag', key, isEntryPoint: true },
-    { type: 'call', script, withParams, setVars, goto, key },
-  ];
-};
+>): CompileMediateNode[] => [
+  { type: 'tag', key, isEntryPoint: true },
+  { type: 'call', script, withParams, setVars, goto, key },
+];
 
 const compileEffectCommand = (
-  command: EffectCommand<unknown, unknown, unknown>
+  command: EffectCommand<unknown, unknown, unknown>,
 ): CompileMediateNode[] => [command];
 
-const compileLabelAstNode = ({ key }: LabelAstNode): CompileMediateNode[] => {
-  return [{ type: 'tag', key, isEntryPoint: true }];
-};
+const compileLabelAstNode = ({ key }: LabelAstNode): CompileMediateNode[] => [
+  { type: 'tag', key, isEntryPoint: true },
+];
 
-const compileGotoAstNode = ({ key }: GotoAstNode): CompileMediateNode[] => {
-  return [{ type: 'goto', key }];
-};
+const compileGotoAstNode = ({ key }: GotoAstNode): CompileMediateNode[] => [
+  { type: 'goto', key },
+];
 
 const compileReturnCommand = ({
   getValue,
-}: ReturnCommand<unknown, unknown, unknown>): CompileMediateNode[] => {
-  return [{ type: 'return', getValue }];
-};
+}: ReturnCommand<unknown, unknown, unknown>): CompileMediateNode[] => [
+  { type: 'return', getValue },
+];
 
 const compileAstNode = <Vars, Input, Retrun, Yield, Meta>(
   segment: ScriptAstNode<Vars, Input, Retrun, Yield, Meta>,
-  uniqIndexCounter: () => number
+  uniqIndexCounter: () => number,
 ): CompileMediateNode[] => {
   switch (segment.type) {
     case 'content':
@@ -207,26 +203,26 @@ const compileAstNode = <Vars, Input, Retrun, Yield, Meta>(
       throw new TypeError(
         `unknown segment type: ${
           (segment as ScriptAstNode<Vars, Input, Retrun, Yield, Meta>).type
-        }`
+        }`,
       );
   }
 };
 
 const compileAstNodes = <Vars, Input, Retrun, Yield, Meta>(
   segments: ScriptAstNode<Vars, Input, Retrun, Yield, Meta>[],
-  counter: () => number
+  counter: () => number,
 ) =>
   segments.reduce(
     (compilingArray, segment) => [
       ...compilingArray,
       ...compileAstNode(segment, counter),
     ],
-    []
+    [],
   );
 
 const compile = <Vars, Input, Return, Yield, Meta>(
   segments: ScriptAstNode<Vars, Input, Return, Yield, Meta>[],
-  meta: { scriptName: string }
+  meta: { scriptName: string },
 ): CompileResult<Vars, Input, Return, Yield, Meta> => {
   const keyIndex = new Map();
   const stopPointIndex = new Map();
@@ -241,7 +237,7 @@ const compile = <Vars, Input, Return, Yield, Meta>(
 
       invariant(
         !keyIndex.has(key),
-        `key "${key}" duplicated in ${meta.scriptName}`
+        `key "${key}" duplicated in ${meta.scriptName}`,
       );
 
       keyIndex.set(key, mediateCommands.length);

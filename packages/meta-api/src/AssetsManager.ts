@@ -20,7 +20,7 @@ export class MetaAssetsManager<
   constructor(
     stateManager: StateControllerI,
     bot: Bot,
-    platformShortId: string
+    platformShortId: string,
   ) {
     this.stateController = stateManager;
     this.bot = bot;
@@ -67,7 +67,7 @@ export class MetaAssetsManager<
   async getAssetId(
     channel: string | Channel,
     resource: string,
-    assetTag: string
+    assetTag: string,
   ): Promise<undefined | string> {
     const existed = await this.stateController
       .globalState(this.makeResourceKey(channelInputId(channel), resource))
@@ -79,7 +79,7 @@ export class MetaAssetsManager<
     channel: string | Channel,
     resource: string,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     const isUpdated = await this.stateController
       .globalState(this.makeResourceKey(channelInputId(channel), resource))
@@ -89,7 +89,7 @@ export class MetaAssetsManager<
 
   getAllAssets(
     channel: string | Channel,
-    resource: string
+    resource: string,
   ): Promise<null | Map<string, string>> {
     return this.stateController
       .globalState(this.makeResourceKey(channelInputId(channel), resource))
@@ -99,7 +99,7 @@ export class MetaAssetsManager<
   async unsaveAssetId(
     channel: string | Channel,
     resource: string,
-    assetTag: string
+    assetTag: string,
   ): Promise<boolean> {
     const isDeleted = await this.stateController
       .globalState(this.makeResourceKey(channelInputId(channel), resource))

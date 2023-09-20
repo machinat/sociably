@@ -24,7 +24,7 @@ class LineApiError extends Error {
           ? `${messagingResult.message}: ${messagingResult.details
               .map((d, i) => `${i + 1}) ${d.message}, at ${d.property}.`)
               .join(' ')}`
-          : messagingResult.message
+          : messagingResult.message,
       );
       this.info = messagingResult;
     } else {

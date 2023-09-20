@@ -18,7 +18,7 @@ export type PostgresStateConfigs = {
   threadStateTableName?: string;
   /** The table used to store user state data */
   userStateTableName?: string;
-  /** options to connect with DB */
+  /** Options to connect with DB */
   connectOptions: PoolConfig;
 };
 

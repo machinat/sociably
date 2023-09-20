@@ -73,7 +73,7 @@ describe('UrlButton', () => {
 
   test('login mode match snapshot', async () => {
     await expect(
-      render(<UrlButton login text="Go and Log in" url="http://sociably.io" />)
+      render(<UrlButton login text="Go and Log in" url="http://sociably.io" />),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -106,8 +106,8 @@ describe('UrlButton', () => {
           forwardText="Forwarded Login"
           botUserName="R2"
           requestWriteAccess
-        />
-      )
+        />,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -214,7 +214,7 @@ describe('SwitchQueryButton', () => {
       ]
     `);
     await expect(
-      render(<SwitchQueryButton currentChat text="Try" query="foo" />)
+      render(<SwitchQueryButton currentChat text="Try" query="foo" />),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -288,8 +288,8 @@ describe('InlineKeyboard', () => {
             <CallbackButton text="Hello" data="World!" />
             <SwitchQueryButton text="Try" />
           </KeyboardRow>
-        </InlineKeyboard>
-      )
+        </InlineKeyboard>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -354,8 +354,8 @@ describe('ReplyKeyboard', () => {
           </KeyboardRow>
 
           <PollReply text="Button6" type="regular" />
-        </ReplyKeyboard>
-      )
+        </ReplyKeyboard>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -442,8 +442,8 @@ describe('ReplyKeyboard', () => {
             <TextReply text="Button1" />
             <TextReply text="Button2" />
           </KeyboardRow>
-        </ReplyKeyboard>
-      )
+        </ReplyKeyboard>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {

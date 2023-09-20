@@ -2,9 +2,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent, MessageSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ImageProps = {
   /** Image URL (Max character limit: 1000) */
   originalContentUrl: string;
@@ -14,6 +12,7 @@ export type ImageProps = {
 
 /**
  * Image sends an image message.
+ *
  * @category Component
  * @props {@link ImageProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#image-message).

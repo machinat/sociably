@@ -7,9 +7,7 @@ import {
   TelegramParseMode,
 } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ExpressionProps = {
   children: SociablyNode;
   disableNotification?: boolean;
@@ -20,6 +18,7 @@ export type ExpressionProps = {
 /**
  * Control options including disableNotification, parseMode of a group of
  * messages. Or add a replyMarkup at the last message in the Expression.
+ *
  * @category Component
  * @props {@link ExpressionProps}
  */
@@ -58,7 +57,7 @@ export const Expression: TelegramComponent<
             parse_mode: parseMode === 'None' ? undefined : parseMode,
             disable_notification: disableNotification,
           },
-        })
+        }),
       );
     } else if (segment.type === 'unit' || segment.type === 'raw') {
       const { method } = segment.value;

@@ -3,9 +3,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { PATH_MESSAGES } from '../constant.js';
 import type { MessageValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type RequestOneTimeNotifProps = {
   /** The title to be displayed in the request message, limited to 65 characters. */
   title: string;
@@ -15,7 +13,7 @@ export type RequestOneTimeNotifProps = {
 
 export function RequestOneTimeNotif(
   node: NativeElement<RequestOneTimeNotifProps, AnyNativeComponent>,
-  path: string
+  path: string,
 ): UnitSegment<MessageValue>[] {
   const { title, payload } = node.props;
   return [

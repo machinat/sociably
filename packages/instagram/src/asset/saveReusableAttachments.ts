@@ -7,6 +7,6 @@ export default serviceContainer({
   deps: [AssetsManagerP],
 })<InstagramDispatchMiddleware>(
   saveReusableAttachments as (
-    manager: AssetsManagerP
-  ) => InstagramDispatchMiddleware
+    manager: AssetsManagerP,
+  ) => InstagramDispatchMiddleware,
 );

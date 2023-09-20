@@ -19,7 +19,7 @@ const getLargestFileIdOfPhotoMessage = (message) => {
 const updateAssetsFromSuccessfulJobs = async (
   manager: AssetsManagerP,
   jobs: TelegramJob[],
-  results: (void | TelegramResult)[]
+  results: (void | TelegramResult)[],
 ) => {
   const updatingAssets: Promise<boolean>[] = [];
 
@@ -48,7 +48,7 @@ const updateAssetsFromSuccessfulJobs = async (
               const fileRef = `attach://${fieldName}`;
 
               const inputIdx = params.media.findIndex(
-                (input) => input.media === fileRef
+                (input) => input.media === fileRef,
               );
 
               if (inputIdx !== -1) {
@@ -75,8 +75,8 @@ const updateAssetsFromSuccessfulJobs = async (
 };
 
 /**
- * saveUplodedFile save the id of uploaded files with the `assetTag` prop.
- * The file id can then be retrieved by the tag through
+ * SaveUplodedFile save the id of uploaded files with the `assetTag` prop. The
+ * file id can then be retrieved by the tag through
  * {@link TelegramAssetsManager.getFile}.
  */
 const saveUplodedFile =

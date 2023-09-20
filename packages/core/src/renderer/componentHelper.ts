@@ -16,7 +16,7 @@ import type {
 export const makeNativeComponent =
   (platform: string) =>
   <Component extends NativeComponent<unknown, any>>(
-    componentFn: Component['$$render']
+    componentFn: Component['$$render'],
   ): Component =>
     Object.defineProperties({} as Component, {
       $$typeof: {
@@ -35,7 +35,7 @@ export const makeNativeComponent =
 
 export const makeBreakSegment = (
   node: GeneralElement | NativeElement<unknown, any>,
-  path: string
+  path: string,
 ): BreakSegment => ({
   type: 'break',
   node,
@@ -46,7 +46,7 @@ export const makeBreakSegment = (
 export const makeTextSegment = (
   node: GeneralElement | NativeElement<unknown, any>,
   path: string,
-  text: string
+  text: string,
 ): TextSegment => ({
   type: 'text',
   node,
@@ -57,7 +57,7 @@ export const makeTextSegment = (
 export const makePartSegment = <Value>(
   node: GeneralElement | NativeElement<unknown, any>,
   path: string,
-  value: Value
+  value: Value,
 ): PartSegment<Value> => ({
   type: 'part',
   node,
@@ -68,7 +68,7 @@ export const makePartSegment = <Value>(
 export const makeUnitSegment = <Value>(
   node: GeneralElement | NativeElement<unknown, any>,
   path: string,
-  value: Value
+  value: Value,
 ): UnitSegment<Value> => ({
   type: 'unit',
   node,
@@ -79,7 +79,7 @@ export const makeUnitSegment = <Value>(
 export const makePauseSegment = (
   node: GeneralElement | NativeElement<unknown, any>,
   path: string,
-  value?: PauseDelayFn
+  value?: PauseDelayFn,
 ): PauseSegment => ({
   type: 'pause',
   node,

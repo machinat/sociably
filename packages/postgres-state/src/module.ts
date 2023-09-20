@@ -11,9 +11,7 @@ const initConnectionPool = serviceProviderFactory({
   deps: [ConfigsI],
 })(({ connectOptions }) => new Pg.Pool(connectOptions));
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace PostgresState {
   export const Controller = ControllerP;
   export type Controller = ControllerP;

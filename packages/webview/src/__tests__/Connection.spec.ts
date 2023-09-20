@@ -25,6 +25,6 @@ test('WebviewConnection(serverId, connId)', () => {
     }
   `);
   expect(WebviewConnection.fromJSONValue(thread.toJSONValue())).toStrictEqual(
-    thread
+    thread,
   );
 });

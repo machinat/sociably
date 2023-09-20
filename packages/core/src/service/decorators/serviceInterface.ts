@@ -14,7 +14,8 @@ type MakeInterfaceOptions = {
 };
 
 /**
- * serviceInterface make a non class service interface
+ * ServiceInterface make a non class service interface
+ *
  * @category Service Registry
  */
 function serviceInterface<T>(options: {
@@ -40,7 +41,7 @@ function serviceInterface<T>({
 }: MakeInterfaceOptions): ServiceInterface<T> {
   invariant(
     !(multi && polymorphic),
-    'cannot be mulit and polymorphic at the same time'
+    'cannot be mulit and polymorphic at the same time',
   );
 
   return {

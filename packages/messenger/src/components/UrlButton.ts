@@ -1,9 +1,7 @@
 import type { NativeElement, AnyNativeComponent } from '@sociably/core';
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type UrlButtonProps = {
   /** Button title. 20 character limit. */
   title: string;
@@ -22,13 +20,16 @@ export type UrlButtonProps = {
   messengerExtensions?: boolean;
   /** Height of the Webview. */
   webviewHeightRatio?: 'compact' | 'tall' | 'full';
-  /** Set to `true` to disable the share button in the Webview (for sensitive info) */
+  /**
+   * Set to `true` to disable the share button in the Webview (for sensitive
+   * info)
+   */
   hideShareButton?: boolean;
 };
 
 export function UrlButton(
   node: NativeElement<UrlButtonProps, AnyNativeComponent>,
-  path: string
+  path: string,
 ): PartSegment<{}>[] {
   const {
     title,

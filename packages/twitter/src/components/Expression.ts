@@ -9,13 +9,14 @@ import {
   TwitterApiRequest,
 } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ExpressionProps = {
-  /** Direct messages content  */
+  /** Direct messages content */
   children: SociablyNode;
-  /** Quick replies to be attached after the messages. Should contain only {@link QuickReply} */
+  /**
+   * Quick replies to be attached after the messages. Should contain only
+   * {@link QuickReply}
+   */
   quickReplies?: SociablyNode;
   /** The custome profile to send the messages with */
   customProfileId?: string;
@@ -23,6 +24,7 @@ export type ExpressionProps = {
 
 /**
  * Send direct messages with metadata
+ *
  * @category Component
  * @props {@link ExpressionProps}
  * @guides Check official [guides](https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/api-features).
@@ -46,7 +48,7 @@ export const Expression: TwitterComponent<
 
     if (segment.type === 'part') {
       throw new TypeError(
-        `${formatNode(segment.node)} can't be sent directly in <Expression/>`
+        `${formatNode(segment.node)} can't be sent directly in <Expression/>`,
       );
     }
     if (segment.type === 'text') {
@@ -64,7 +66,7 @@ export const Expression: TwitterComponent<
 
       if (segValue.type === 'tweet') {
         throw new TypeError(
-          `${formatNode(segment.node)} can't be sent in <Expression/>`
+          `${formatNode(segment.node)} can't be sent in <Expression/>`,
         );
       }
       if (
@@ -103,7 +105,7 @@ export const Expression: TwitterComponent<
   if (quickRepliesSegments) {
     if (!lastCreateDmRequest) {
       throw new TypeError(
-        'no message content available to attach quick replies'
+        'no message content available to attach quick replies',
       );
     }
     lastCreateDmRequest.params.event.message_create.message_data.quick_reply = {

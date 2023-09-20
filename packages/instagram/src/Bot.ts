@@ -65,6 +65,7 @@ type UploadAttachmentResult = {
 
 /**
  * InstagramBot render messages and make API call to Instagram platform.
+ *
  * @category Provider
  */
 export class InstagramBot
@@ -112,7 +113,7 @@ export class InstagramBot
       queue,
       worker,
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   }
 
@@ -126,13 +127,13 @@ export class InstagramBot
 
   async render(
     target: InstagramChat,
-    node: SociablyNode
+    node: SociablyNode,
   ): Promise<null | MetaApiDispatchResponse> {
     if (target instanceof InstagramChat) {
       return this.engine.render(
         target,
         node,
-        createChatJobs<InstagramAgent, InstagramChat>(target.agent)
+        createChatJobs<InstagramAgent, InstagramChat>(target.agent),
       );
     }
 
@@ -143,12 +144,12 @@ export class InstagramBot
   async message(
     chat: InstagramChat,
     messages: SociablyNode,
-    options?: InstagramMessagingOptions
+    options?: InstagramMessagingOptions,
   ): Promise<null | MetaApiDispatchResponse> {
     return this.engine.render(
       chat,
       messages,
-      createChatJobs<InstagramAgent, InstagramChat>(chat.agent, options)
+      createChatJobs<InstagramAgent, InstagramChat>(chat.agent, options),
     );
   }
 
@@ -156,7 +157,10 @@ export class InstagramBot
   async uploadChatAttachment(
     /** The {@link InstagramAgent} that owns the attachment */
     agentInput: string | InstagramAgent,
-    /** An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be uploaded */ node: SociablyNode
+    /**
+     * An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be
+     * uploaded
+     */ node: SociablyNode,
   ): Promise<null | UploadAttachmentResult> {
     const agent =
       typeof agentInput === 'string'
@@ -165,7 +169,7 @@ export class InstagramBot
     const response = await this.engine.render(
       agent,
       node,
-      createUploadChatAttachmentJobs({ platform: 'instagram' })
+      createUploadChatAttachmentJobs({ platform: 'instagram' }),
     );
     const result = response?.results[0].body;
     return result ? { attachmentId: result.attachment_id } : null;
@@ -215,7 +219,7 @@ const BotP = serviceProviderClass({
     { appSecret, appId, apiBatchRequestInterval },
     agentSettingsAccessor,
     moduleUitils,
-    platformUtils
+    platformUtils,
   ) =>
     new InstagramBot({
       agentSettingsAccessor,

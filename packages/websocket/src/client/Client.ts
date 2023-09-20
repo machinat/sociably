@@ -54,7 +54,7 @@ class WebScoketClient<
             user: null as never,
             credential: null as never,
           })),
-      new BaseMarshaler(marshalTypes || [])
+      new BaseMarshaler(marshalTypes || []),
     );
 
     this._connector.connect();
@@ -87,7 +87,7 @@ class WebScoketClient<
   private _initConnector(
     sockerUrl: string,
     login: ClientLoginFn<User, Credential>,
-    marshaler: BaseMarshaler
+    marshaler: BaseMarshaler,
   ) {
     return new Connector<User>(sockerUrl, login, marshaler)
       .on('connect', ({ connId, user }) => {

@@ -13,9 +13,7 @@ type GetUserProfileOptions = {
   inChat?: LineChat;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
   bot: BotP;
   platform = LINE;
@@ -27,7 +25,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
   async getUserProfile(
     channel: string | LineChnnel,
     user: string | LineUser,
-    { inChat }: GetUserProfileOptions = {}
+    { inChat }: GetUserProfileOptions = {},
   ): Promise<LineUserProfile> {
     const userId = typeof user === 'string' ? user : user.id;
     const requestApi = !inChat
@@ -47,12 +45,10 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
     return new LineUserProfile(profileData);
   }
 
-  /**
-   * Get profile object of a group chat. Throws if a user/room chat is received.
-   */
+  /** Get profile object of a group chat. Throws if a user/room chat is received. */
   async getGroupProfile(
     channel: string | LineChnnel,
-    chat: string | LineChat
+    chat: string | LineChat,
   ): Promise<LineGroupProfile> {
     if (typeof chat !== 'string' && chat.type !== 'group') {
       throw new Error(`expect a group chat, got ${chat.type}`);

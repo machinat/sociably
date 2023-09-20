@@ -72,7 +72,7 @@ export class BasicAuthenticator {
       maxLoginAttempt = 5,
       loginDuration = 600,
       codeMessageComponent = DefaultCodeMessage,
-    }: BasicAuthOptions = {}
+    }: BasicAuthOptions = {},
   ) {
     this.mode = mode;
     this.stateController = stateController;
@@ -86,12 +86,12 @@ export class BasicAuthenticator {
   }
 
   createRequestDelegator<Credential, Data, Thread extends SociablyThread>(
-    options: AuthDelegatorOptions<Credential, Data, Thread>
+    options: AuthDelegatorOptions<Credential, Data, Thread>,
   ) {
     return async (
       req: IncomingMessage,
       res: ServerResponse,
-      { trailingPath }: RoutingInfo
+      { trailingPath }: RoutingInfo,
     ): Promise<void> => {
       if (trailingPath === 'init') {
         await this._handleInit(req, res, options);
@@ -109,7 +109,7 @@ export class BasicAuthenticator {
   getAuthUrl<Credential>(
     platform: string,
     credential: Credential,
-    redirectUrl?: string
+    redirectUrl?: string,
   ): string {
     const payload: InitPayload<Credential> = { credential, redirectUrl };
     const loginToken = this.operator.signToken(platform, payload);
@@ -127,7 +127,7 @@ export class BasicAuthenticator {
       checkCurrentAuthUsability,
       verifyCredential,
       checkAuthData,
-    }: AuthDelegatorOptions<Credential, Data, Thread>
+    }: AuthDelegatorOptions<Credential, Data, Thread>,
   ) {
     const {
       query: { [LOGIN_QUERY]: loginToken },
@@ -138,7 +138,7 @@ export class BasicAuthenticator {
       typeof loginToken === 'string'
         ? this.operator.verifyToken<InitPayload<Credential>>(
             platform,
-            loginToken
+            loginToken,
           )
         : null;
     if (!payload) {
@@ -183,7 +183,7 @@ export class BasicAuthenticator {
     // redirect to login page in 'strict' mode
     const currentState = await this.operator.getState<BasicAuthState<Data>>(
       req,
-      platform
+      platform,
     );
 
     if (!currentState || currentState.ch !== thread.uid) {
@@ -210,12 +210,12 @@ export class BasicAuthenticator {
       platformColor,
       platformImageUrl,
       checkAuthData,
-    }: AuthDelegatorOptions<unknown, Data, Thread>
+    }: AuthDelegatorOptions<unknown, Data, Thread>,
   ) {
     const now = Date.now();
     const state = await this.operator.getState<BasicAuthState<Data>>(
       req,
-      platform
+      platform,
     );
     if (!state) {
       await this._redirectError(res, platform, 401, 'login session expired');
@@ -235,7 +235,7 @@ export class BasicAuthenticator {
       const verifyCount = await this._checkVerifyCount(
         state.ch,
         state.ts,
-        false
+        false,
       );
       if (verifyCount < this.maxLoginAttempt) {
         shouldIssueCode = false;
@@ -263,7 +263,7 @@ export class BasicAuthenticator {
             deviceModel={agent?.platform.model}
             deviceType={agent?.platform.type}
             browserName={agent?.browser.name}
-          />
+          />,
         );
       } catch {
         await this._redirectError(
@@ -271,7 +271,7 @@ export class BasicAuthenticator {
           platform,
           510,
           'fail to send login code',
-          state.redirect
+          state.redirect,
         );
         return;
       }
@@ -281,7 +281,7 @@ export class BasicAuthenticator {
         platform,
         thread.uid,
         now,
-        code
+        code,
       );
       await this.operator.issueState<BasicAuthVerifyState<Data>>(
         res,
@@ -293,7 +293,7 @@ export class BasicAuthenticator {
           data: checkedData,
           hash: hashedCode,
           redirect: state.redirect,
-        }
+        },
       );
     }
 
@@ -307,14 +307,14 @@ export class BasicAuthenticator {
         platformColor,
         platformImageUrl,
         chatLinkUrl,
-      })
+      }),
     );
   }
 
   private async _handleVerify<Data, Thread extends SociablyThread>(
     req: IncomingMessage,
     res: ServerResponse,
-    { platform }: AuthDelegatorOptions<unknown, Data, Thread>
+    { platform }: AuthDelegatorOptions<unknown, Data, Thread>,
   ) {
     const body: VerifyCodeRequestBody = await parseJsonBody(req);
     if (!body?.code) {
@@ -325,7 +325,7 @@ export class BasicAuthenticator {
 
     const state = await this.operator.getState<BasicAuthState<Data>>(
       req,
-      platform
+      platform,
     );
     if (
       !state ||
@@ -336,7 +336,7 @@ export class BasicAuthenticator {
         res,
         platform,
         401,
-        'login session expired'
+        'login session expired',
       );
       respondVerify(res, {
         ok: false,
@@ -362,7 +362,7 @@ export class BasicAuthenticator {
         res,
         platform,
         401,
-        'invalid login verify code'
+        'invalid login verify code',
       );
     }
 
@@ -377,7 +377,7 @@ export class BasicAuthenticator {
     platform: string,
     ch: string,
     ts: number,
-    code: string
+    code: string,
   ) {
     const [, , hashedCode] = this.operator
       .signToken(platform, `${ch}:${ts}:${code}`, { noTimestamp: true })
@@ -390,7 +390,7 @@ export class BasicAuthenticator {
     platform: string,
     code: number,
     reason: string,
-    redirectUrl?: string
+    redirectUrl?: string,
   ) {
     await this.operator.issueError(res, platform, code, reason);
     this.operator.redirect(res, redirectUrl, { assertInternal: true });
@@ -399,7 +399,7 @@ export class BasicAuthenticator {
   private async _checkVerifyCount(
     threadUid: string,
     timestamp: number,
-    incremental: boolean
+    incremental: boolean,
   ): Promise<number> {
     const now = Date.now();
     const recordsState = this.stateController.globalState(VERIFY_RECORDS_SPACE);
@@ -411,7 +411,7 @@ export class BasicAuthenticator {
           return (count || 0) + 1;
         }
         return count;
-      }
+      },
     );
 
     // update index and clean records
@@ -424,7 +424,7 @@ export class BasicAuthenticator {
         RECORDS_TIME_INDEX,
         (currentRecords = []) => {
           const idxToKeep = currentRecords.findIndex(
-            ({ ts }) => now - ts < this.loginDurationTime
+            ({ ts }) => now - ts < this.loginDurationTime,
           );
           if (idxToKeep === -1) {
             recordsToClear = currentRecords;
@@ -443,12 +443,12 @@ export class BasicAuthenticator {
           }
           records.splice(idxToInsert, 0, record);
           return records;
-        }
+        },
       );
     }
 
     await Promise.all(
-      recordsToClear.map(({ ts, ch }) => recordsState.delete(`${ch}:${ts}`))
+      recordsToClear.map(({ ts, ch }) => recordsState.delete(`${ch}:${ts}`)),
     );
     return verifyCount || 0;
   }

@@ -14,9 +14,7 @@ import {
 import { PATH_MESSAGES } from '../constant.js';
 import type { MessageValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ReceiptItemProps = {
   /** The name to display for the item. */
   title: string;
@@ -34,7 +32,7 @@ export type ReceiptItemProps = {
 
 export function ReceiptItem(
   node: NativeElement<ReceiptItemProps, AnyNativeComponent>,
-  path: string
+  path: string,
 ): PartSegment<{}>[] {
   const { title, subtitle, quantity, price, currency, imageUrl } = node.props;
   return [
@@ -49,9 +47,7 @@ export function ReceiptItem(
   ];
 }
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ReceiptTemplateProps = {
   /**
    * Maximum of 100 {@line ReceiptItem} elements that describe items in the
@@ -59,8 +55,8 @@ export type ReceiptTemplateProps = {
    */
   children: SociablyNode;
   /**
-   * Set to true to enable the native share button in Messenger for the
-   * template message. Defaults to false.
+   * Set to true to enable the native share button in Messenger for the template
+   * message. Defaults to false.
    */
   sharable?: boolean;
   /** The recipient's name. */
@@ -90,7 +86,10 @@ export type ReceiptTemplateProps = {
     city: string;
     /** The postal code of the address. */
     postalCode: string;
-    /** The state abbreviation for U.S. addresses, or the region/province for non-U.S. addresses. */
+    /**
+     * The state abbreviation for U.S. addresses, or the region/province for
+     * non-U.S. addresses.
+     */
     state: string;
     /** The two-letter country abbreviation of the address. */
     country: string;
@@ -116,7 +115,7 @@ export type ReceiptTemplateProps = {
 export async function ReceiptTemplate(
   node: NativeElement<ReceiptTemplateProps, AnyNativeComponent>,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ): Promise<UnitSegment<MessageValue>[]> {
   const {
     children,

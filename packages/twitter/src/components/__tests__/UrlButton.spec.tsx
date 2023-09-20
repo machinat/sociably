@@ -5,7 +5,7 @@ import { renderPartElement } from './utils.js';
 
 it('is a valid Component', () => {
   expect(isNativeType(<UrlButton label="foo" url="http://bar.baz" />)).toBe(
-    true
+    true,
   );
   expect(UrlButton.$$platform).toBe('twitter');
   expect(UrlButton.$$name).toBe('UrlButton');
@@ -13,7 +13,7 @@ it('is a valid Component', () => {
 
 test('rendering', async () => {
   await expect(
-    renderPartElement(<UrlButton label="foo" url="http://bar.baz" />)
+    renderPartElement(<UrlButton label="foo" url="http://bar.baz" />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

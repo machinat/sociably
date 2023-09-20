@@ -30,7 +30,7 @@ class LineChat implements SociablyThread, MarshallableInstance<LineChatValue> {
         return new LineChat(channelId, 'group', source.groupId);
       default:
         throw new Error(
-          `unknown source "${(source as any).type || String(source)}"`
+          `unknown source "${(source as any).type || String(source)}"`,
         );
     }
   }

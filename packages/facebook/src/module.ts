@@ -42,12 +42,10 @@ const webhookRouteFactory = serviceProviderFactory({
     name: FACEBOOK,
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Facebook {
   export const Bot = BotP;
   export type Bot = BotP;
@@ -68,7 +66,7 @@ namespace Facebook {
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
-    configs: FacebookConfigs
+    configs: FacebookConfigs,
   ): SociablyPlatform<
     FacebookEventContext,
     null,
@@ -119,7 +117,7 @@ namespace Facebook {
     } else if (configs.multiAgentSettings) {
       if (configs.multiAgentSettings.length === 0) {
         throw new Error(
-          'configs.multiAgentSettings must have at least one page settings'
+          'configs.multiAgentSettings must have at least one page settings',
         );
       }
 
@@ -131,7 +129,7 @@ namespace Facebook {
       });
     } else {
       throw new Error(
-        'Facebook platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
+        'Facebook platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option',
       );
     }
 

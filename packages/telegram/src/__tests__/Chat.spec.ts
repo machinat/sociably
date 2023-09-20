@@ -4,7 +4,7 @@ import ChatProfile from '../ChatProfile.js';
 test('marshallable type meta', () => {
   expect(TelegramChat.typeName).toBe('TgChat');
   expect(TelegramChat.fromJSONValue({ bot: 12345, id: 67890 })).toEqual(
-    new TelegramChat(12345, 67890)
+    new TelegramChat(12345, 67890),
   );
 });
 

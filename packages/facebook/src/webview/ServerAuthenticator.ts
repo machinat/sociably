@@ -16,9 +16,7 @@ import { AgentSettingsAccessorI } from '../interface.js';
 import { getAuthContextDetails } from './utils.js';
 import type { FacebookAuthContext, FacebookAuthData } from './types.js';
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class FacebookServerAuthenticator
   implements ServerAuthenticator<never, FacebookAuthData, FacebookAuthContext>
 {
@@ -37,7 +35,7 @@ export class FacebookServerAuthenticator
     bot: BotP,
     profiler: ProfilerP,
     basicAuthenticator: BasicAuthenticator,
-    settingsAccessor: AgentSettingsAccessorI
+    settingsAccessor: AgentSettingsAccessorI,
   ) {
     this.profiler = profiler;
     this.basicAuthenticator = basicAuthenticator;
@@ -78,7 +76,7 @@ export class FacebookServerAuthenticator
     return this.basicAuthenticator.getAuthUrl<FacebookAuthData>(
       FACEBOOK,
       { page: user.pageId, user: user.id },
-      redirectUrl
+      redirectUrl,
     );
   }
 
@@ -92,7 +90,7 @@ export class FacebookServerAuthenticator
   }
 
   async verifyRefreshment(
-    data: FacebookAuthData
+    data: FacebookAuthData,
   ): Promise<VerifyResult<FacebookAuthData>> {
     return this._verifyUser(data.page, data.user);
   }
@@ -107,14 +105,14 @@ export class FacebookServerAuthenticator
 
   private async _verifyUser(
     pageId: string,
-    userId: string
+    userId: string,
   ): Promise<VerifyResult<FacebookAuthData>> {
     try {
       const [settings, userProfile] = await Promise.all([
         this.settingsAccessor.getAgentSettings(new FacebookPage(pageId)),
         this.profiler.getUserProfile(
           new FacebookPage(pageId),
-          new FacebookUser(pageId, userId)
+          new FacebookUser(pageId, userId),
         ),
       ]);
 

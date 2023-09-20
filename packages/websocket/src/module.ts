@@ -33,7 +33,7 @@ import type {
 } from './types.js';
 
 const wsServerFactory = serviceProviderFactory({ lifetime: 'singleton' })(
-  createWsServer
+  createWsServer,
 );
 
 const upgradeRouteFactory = serviceProviderFactory({
@@ -44,12 +44,10 @@ const upgradeRouteFactory = serviceProviderFactory({
     name: WEBSOCKET,
     path: configs.entryPath || '.',
     handler: (req, ns, head) => server.handleUpgrade(req, ns, head),
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace WebSocket {
   export const Bot = BotP;
   export type Bot = BotP;
@@ -85,50 +83,48 @@ namespace WebSocket {
   export type ServerId = string;
 
   export const initModule = <User extends null | SociablyUser, Auth>(
-    configs: WebSocketConfigs<User, Auth> = {}
+    configs: WebSocketConfigs<User, Auth> = {},
   ): SociablyPlatform<
     WebSocketEventContext<User, Auth>,
     null,
     WebSocketJob,
     WebSocketDispatchFrame,
     WebSocketResult
-  > => {
-    return {
-      name: WEBSOCKET,
-      utilitiesInterface: PlatformUtilitiesI,
-      eventMiddlewares: configs.eventMiddlewares,
-      dispatchMiddlewares: configs.dispatchMiddlewares,
-      provisions: [
-        { provide: ConfigsI, withValue: configs },
-        { provide: WsServerI, withProvider: wsServerFactory },
+  > => ({
+    name: WEBSOCKET,
+    utilitiesInterface: PlatformUtilitiesI,
+    eventMiddlewares: configs.eventMiddlewares,
+    dispatchMiddlewares: configs.dispatchMiddlewares,
+    provisions: [
+      { provide: ConfigsI, withValue: configs },
+      { provide: WsServerI, withProvider: wsServerFactory },
 
-        BotP,
-        {
-          provide: BaseBot.PlatformMap,
-          withProvider: BotP,
-          platform: WEBSOCKET,
-        },
+      BotP,
+      {
+        provide: BaseBot.PlatformMap,
+        withProvider: BotP,
+        platform: WEBSOCKET,
+      },
 
-        ServerP,
-        { provide: BrokerI, withProvider: LocalOnlyBrokerP },
+      ServerP,
+      { provide: BrokerI, withProvider: LocalOnlyBrokerP },
 
-        ReceiverP,
-        {
-          provide: Http.UpgradeRouteList,
-          withProvider: upgradeRouteFactory,
-        },
+      ReceiverP,
+      {
+        provide: Http.UpgradeRouteList,
+        withProvider: upgradeRouteFactory,
+      },
 
-        { provide: BaseMarshaler.TypeList, withValue: WebSocketConnection },
-      ],
+      { provide: BaseMarshaler.TypeList, withValue: WebSocketConnection },
+    ],
 
-      startHook: serviceContainer({ deps: [BotP] })(async (bot) => {
-        await bot.start();
-      }),
-      stopHook: serviceContainer({ deps: [BotP] })(async (bot) => {
-        await bot.stop();
-      }),
-    };
-  };
+    startHook: serviceContainer({ deps: [BotP] })(async (bot) => {
+      await bot.start();
+    }),
+    stopHook: serviceContainer({ deps: [BotP] })(async (bot) => {
+      await bot.stop();
+    }),
+  });
 }
 
 export default WebSocket;

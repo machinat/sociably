@@ -38,8 +38,8 @@ test('rendering value', async () => {
 
   await expect(
     renderUnitElement(
-      <Location latitude={0} longitude={90} name="North Pole" />
-    )
+      <Location latitude={0} longitude={90} name="North Pole" />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -74,8 +74,8 @@ test('rendering value', async () => {
         name="Somewhere"
         address="over the rainbow"
         replyTo="REPLY_TO_MESSAGE_ID"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

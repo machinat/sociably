@@ -56,17 +56,16 @@ export const AuthHttpOperatorP = serviceProviderClass({
       webviewPath,
       ...otherOptions
     },
-    { entryUrl }
-  ) => {
-    return new AuthHttpOperator({
+    { entryUrl },
+  ) =>
+    new AuthHttpOperator({
       ...otherOptions,
       serverUrl: entryUrl,
       secret: authSecret,
       apiPath: authApiPath,
       // NOTE: set redirectUrl to the root pages directory
       redirectUrl: joinPath(webviewPath ?? '.', '/'),
-    });
-  },
+    }),
 })(WebviewAuthHttpOperator);
 
 export class WebviewBasicServerAuthenticator extends BasicAuthenticator {}
@@ -74,13 +73,12 @@ export class WebviewBasicServerAuthenticator extends BasicAuthenticator {}
 export const WebviewBasicAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [StateController, Auth.HttpOperator, ConfigsI],
-  factory: (stateController, httpOperator, configs) => {
-    return new WebviewBasicServerAuthenticator(stateController, httpOperator, {
+  factory: (stateController, httpOperator, configs) =>
+    new WebviewBasicServerAuthenticator(stateController, httpOperator, {
       ...configs.basicAuth,
       loginDuration:
         configs.basicAuth?.loginDuration || configs.dataCookieMaxAge,
-    });
-  },
+    }),
 })(WebviewBasicServerAuthenticator);
 
 // next interfaces
@@ -93,7 +91,7 @@ export const NextReceiverP = serviceProviderClass({
   factory: (
     server,
     { noPrepareNext, nextRequestHandler },
-    { initScope, popError }
+    { initScope, popError },
   ) =>
     new WebviewNextReceiver(server, {
       noPrepare: noPrepareNext,
@@ -130,7 +128,7 @@ export const SocketServerP = serviceProviderClass({
     authController,
     marshaler,
     { secure = true, heartbeatInterval },
-    { entryUrl }
+    { entryUrl },
   ) => {
     const serverHost = new URL(entryUrl).host;
     return new WebviewSocketServer({

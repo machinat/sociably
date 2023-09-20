@@ -13,9 +13,7 @@ import type {
 } from './types.js';
 
 // HACK: an alia of Fragment with script types
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const BLOCK = Sociably.Fragment as unknown as <
   Vars = any,
   Input = any,
@@ -23,12 +21,10 @@ export const BLOCK = Sociably.Fragment as unknown as <
   Yield = any,
   Meta = any,
 >(
-  _props: BlockProps<Vars, Input, Return, Yield, Meta>
+  _props: BlockProps<Vars, Input, Return, Yield, Meta>,
 ) => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const IF = <
   Vars = any,
   Input = any,
@@ -36,12 +32,10 @@ export const IF = <
   Yield = any,
   Meta = any,
 >(
-  _props: IfProps<Vars, Input, Return, Yield, Meta>
+  _props: IfProps<Vars, Input, Return, Yield, Meta>,
 ): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const ELSE_IF = <
   Vars = any,
   Input = any,
@@ -49,12 +43,10 @@ export const ELSE_IF = <
   Yield = any,
   Meta = any,
 >(
-  _props: IfProps<Vars, Input, Return, Yield, Meta>
+  _props: IfProps<Vars, Input, Return, Yield, Meta>,
 ): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const ELSE = <
   Vars = any,
   Input = any,
@@ -62,12 +54,10 @@ export const ELSE = <
   Yield = any,
   Meta = any,
 >(
-  _props: BlockProps<Vars, Input, Return, Yield, Meta>
+  _props: BlockProps<Vars, Input, Return, Yield, Meta>,
 ): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const WHILE = <
   Vars = any,
   Input = any,
@@ -75,43 +65,31 @@ export const WHILE = <
   Yield = any,
   Meta = any,
 >(
-  _props: WhileProps<Vars, Input, Return, Yield, Meta>
+  _props: WhileProps<Vars, Input, Return, Yield, Meta>,
 ): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const PROMPT = <Vars = any, Input = any, Meta = any>(
-  _props: PromptProps<Vars, Input, Meta>
+  _props: PromptProps<Vars, Input, Meta>,
 ): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const LABEL = (_props: LabelProps): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const CALL = <Vars = any, Script extends AnyScriptLibrary = any>(
-  _props: CallProps<Vars, Script>
+  _props: CallProps<Vars, Script>,
 ): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const EFFECT = <Vars = any, Yield = any, Meta = any>(
-  _props: EffectProps<Vars, Yield, Meta>
+  _props: EffectProps<Vars, Yield, Meta>,
 ): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const RETURN = <Vars = any, Return = any, Meta = any>(
-  _props: ReturnProps<Vars, Return, Meta>
+  _props: ReturnProps<Vars, Return, Meta>,
 ): null => null;
 
-/**
- * @category Keyword
- */
+/** @category Keyword */
 export const GOTO = (_props: GotoProps): null => null;

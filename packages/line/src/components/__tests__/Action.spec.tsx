@@ -21,7 +21,7 @@ test.each(
     CameraAction,
     CameraRollAction,
     LocationAction,
-  ].map((C) => [C.name, C])
+  ].map((C) => [C.name, C]),
 )('%s is valid native Component', (_, Action: any) => {
   expect(isNativeType(<Action />)).toBe(true);
   expect(Action.$$platform).toBe('line');
@@ -35,8 +35,8 @@ test('<PostbackAction/>', async () => {
         data="__POSTBACK_FOO__"
         label="Hello!"
         displayText="WORLD!"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -82,8 +82,8 @@ test('<MessageAction/>', async () => {
 test('<UriAction/>', async () => {
   await expect(
     renderPartElement(
-      <UriAction uri="http://sociably.js.org" label="Try it!" />
-    )
+      <UriAction uri="http://sociably.js.org" label="Try it!" />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

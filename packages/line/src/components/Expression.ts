@@ -12,9 +12,7 @@ import {
   QuickReplyPartValue,
 } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ExpressionProps = {
   /** Content nodes. */
   children: SociablyNode;
@@ -24,6 +22,7 @@ export type ExpressionProps = {
 
 /**
  * Append quick replies to the children content.
+ *
  * @category Component
  * @props {@link ExpressionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#quick-reply).
@@ -32,7 +31,7 @@ export const Expression: LineComponent<ExpressionProps> = makeLineComponent(
   async function Expression(
     { props: { children, quickReplies } },
     _path,
-    render
+    render,
   ) {
     const [segments, replySegments] = await Promise.all([
       render<LineSegmentValue>(children, '.children'),
@@ -88,7 +87,7 @@ export const Expression: LineComponent<ExpressionProps> = makeLineComponent(
             ...messageSegment.value.params,
             quickReply: {
               items: replySegments.map(
-                (segment) => segment.value as QuickReplyPartValue
+                (segment) => segment.value as QuickReplyPartValue,
               ),
             },
           },
@@ -99,5 +98,5 @@ export const Expression: LineComponent<ExpressionProps> = makeLineComponent(
     }
 
     return hoistedSegments;
-  }
+  },
 );

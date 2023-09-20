@@ -3,13 +3,11 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
 import { WhatsAppComponent, WhatsAppSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type TextProps = {
   /**
-   * The textual content which can contain URLs (http:// or https://) and
-   * text formatting. Maximum length: 4096 characters.
+   * The textual content which can contain URLs (http:// or https://) and text
+   * formatting. Maximum length: 4096 characters.
    */
   children: SociablyNode;
   /**
@@ -23,6 +21,7 @@ export type TextProps = {
 
 /**
  * Pass a text parameter into the body or header of a customized template
+ *
  * @category Component
  * @props {@link TextProps}
  */

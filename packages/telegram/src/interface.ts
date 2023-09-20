@@ -7,18 +7,14 @@ import type {
   TelegramAgentSettings,
 } from './types.js';
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ConfigsI = serviceInterface<TelegramConfigs>({
   name: 'TelegramConfigs',
 });
 
 export type ConfigsI = TelegramConfigs;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const PlatformUtilitiesI = serviceInterface<TelegramPlatformUtilities>({
   name: 'TelegramPlatformUtilities',
 });
@@ -28,9 +24,7 @@ export type AgentSettingsAccessorI = AgentSettingsAccessor<
   TelegramAgentSettings
 >;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const AgentSettingsAccessorI = serviceInterface<AgentSettingsAccessorI>({
   name: 'TelegramAgentSettingsAccessor',
 });

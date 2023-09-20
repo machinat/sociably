@@ -40,7 +40,7 @@ describe('.detectText()', () => {
     ['富-爸+霸子', 'fooBarBaz', 'zh-TW'],
   ])('match intent', async (text, expectedType, language) => {
     await expect(
-      rocognizer.detectText(thread, text, { language })
+      rocognizer.detectText(thread, text, { language }),
     ).resolves.toEqual({
       type: expectedType,
       language: language || 'en',

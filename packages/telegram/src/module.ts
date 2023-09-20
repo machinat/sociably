@@ -44,12 +44,10 @@ const webhookRouteFactory = serviceProviderFactory({
     name: TELEGRAM,
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Telegram {
   export const Bot = BotP;
   export type Bot = BotP;
@@ -70,7 +68,7 @@ namespace Telegram {
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
-    configs: ConfigsI
+    configs: ConfigsI,
   ): SociablyPlatform<
     TelegramEventContext,
     null,
@@ -122,7 +120,7 @@ namespace Telegram {
     } else if (configs.multiAgentSettings) {
       if (configs.multiAgentSettings.length === 0) {
         throw new Error(
-          'configs.multiAgentSettings must have at least one page settings'
+          'configs.multiAgentSettings must have at least one page settings',
         );
       }
 
@@ -134,7 +132,7 @@ namespace Telegram {
       });
     } else {
       throw new Error(
-        'Telegram platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
+        'Telegram platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option',
       );
     }
 

@@ -14,7 +14,7 @@ const p = async (node, path, render) => {
   for (const segment of contentSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <p/>`
+        `non-textual node ${formatNode(segment.node)} is placed in <p/>`,
       );
     }
   }
@@ -37,7 +37,7 @@ const plainText = (tag) => async (node, path, render) => {
   for (const segment of contentSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`
+        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
       );
     }
   }
@@ -75,7 +75,7 @@ const generalComponentDelegator = async (node, path, render) => {
 
   if (!objectHasOwnProperty(generalComponents, type)) {
     throw new Error(
-      `"${type}" is not a valid general component tag on LINE platform`
+      `"${type}" is not a valid general component tag on LINE platform`,
     );
   }
 

@@ -3,15 +3,13 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent, MessageSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ButtonTemplateProps = {
   /**
    * Alternative text. Displayed on devices that do not support template
-   * messages. Max character limit: 400.
-   * If a function is given, the return value would be used. The rendered
-   * template object is passed as the first param.
+   * messages. Max character limit: 400. If a function is given, the return
+   * value would be used. The rendered template object is passed as the first
+   * param.
    */
   altText: string | ((template: Record<string, any>) => string);
   /** Image URL (Max character limit: 1,000) */
@@ -23,16 +21,15 @@ export type ButtonTemplateProps = {
   imageAspectRatio?: 'rectangle' | 'square';
   /**
    * Size of the image. Default to `'cover'`.
-   * - cover: The image fills the entire image area. Parts of the image that do
-   * not fit in the area are not displayed.
-   * - contain: The entire image is displayed in the image area. A background is
-   * displayed in the unused areas to the left and right of vertical images and
-   * in the areas above and below horizontal images.
+   *
+   * - Cover: The image fills the entire image area. Parts of the image that do
+   *   not fit in the area are not displayed.
+   * - Contain: The entire image is displayed in the image area. A background is
+   *   displayed in the unused areas to the left and right of vertical images
+   *   and in the areas above and below horizontal images.
    */
   imageSize?: 'contain' | 'cover';
-  /**
-   * Background color of the image. Specify a RGB color value. Default: #FFFFFF.
-   */
+  /** Background color of the image. Specify a RGB color value. Default: #FFFFFF. */
   imageBackgroundColor?: string;
   title?: string;
   /** Texual nodes of message text. */
@@ -51,6 +48,7 @@ export type ButtonTemplateProps = {
 
 /**
  * Template with an image, title, text, and multiple action buttons.
+ *
  * @category Component
  * @props {@link ButtonTemplateProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#buttons).

@@ -10,19 +10,19 @@ function filter<
   T,
   Predicator extends ServiceContainer<PredicateFn<T>, unknown[]>,
 >(
-  predicator: Predicator
+  predicator: Predicator,
 ): Predicator extends ServiceContainer<(v: any) => v is infer U, unknown[]>
   ? OperatorFunction<T, U>
   : OperatorFunction<T, T>;
 
 function filter<T, Predicator extends PredicateFn<T>>(
-  predicator: Predicator
+  predicator: Predicator,
 ): Predicator extends (v: any) => v is infer U
   ? OperatorFunction<T, U>
   : OperatorFunction<T, T>;
 
 function filter<T, R = T>(
-  predicator: MaybeContainer<PredicateFn<T>>
+  predicator: MaybeContainer<PredicateFn<T>>,
 ): OperatorFunction<T, R> {
   const injectPredicate = injectMaybe(predicator);
 

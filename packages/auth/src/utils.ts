@@ -30,7 +30,7 @@ export const setCookie = (
   res: ServerResponse,
   key: string,
   value: string,
-  options: CookieSerializeOptions
+  options: CookieSerializeOptions,
 ): void => {
   const cookieDesc = serializeCookie(key, value, options);
   const cookiesAlreadySet = res.getHeader(SET_COOKIE);
@@ -41,7 +41,7 @@ export const setCookie = (
       ? [...cookiesAlreadySet, cookieDesc]
       : typeof cookiesAlreadySet === 'string'
       ? [cookiesAlreadySet, cookieDesc]
-      : cookieDesc
+      : cookieDesc,
   );
 };
 
@@ -52,7 +52,7 @@ export const isSubdomain = (domain: string, subdomain: string): boolean =>
 
 export const isSubpath = (
   path: null | string,
-  subpath: null | string
+  subpath: null | string,
 ): boolean =>
   !!(path && subpath) && !posixPath.relative(path, subpath).startsWith('..');
 
@@ -61,7 +61,7 @@ const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 export const respondApiOk = (
   res: ServerResponse,
   platform: string,
-  token: string
+  token: string,
 ): void => {
   res.writeHead(200, CONTENT_TYPE_JSON);
   const body: AuthApiResponseBody = { platform, token };
@@ -72,7 +72,7 @@ export const respondApiError = (
   res: ServerResponse,
   platform: undefined | string,
   code: number,
-  reason: string
+  reason: string,
 ): void => {
   res.writeHead(code, CONTENT_TYPE_JSON);
   const body: AuthApiErrorBody = { platform, error: { code, reason } };

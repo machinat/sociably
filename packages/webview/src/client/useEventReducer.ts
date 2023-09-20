@@ -12,22 +12,22 @@ function useEventReducer<
 >(
   client: Client,
   reducer: (value: T, context: EventContextOfClient<Client>) => T,
-  initialValue: T
+  initialValue: T,
 ): T;
 
 function useEventReducer<T>(
   client: WebviewClient<AnyClientAuthenticator, EventValue>,
   reducer: (
     value: T,
-    context: ClientEventContext<AnyClientAuthenticator, EventValue>
+    context: ClientEventContext<AnyClientAuthenticator, EventValue>,
   ) => T,
-  initialValue: T
+  initialValue: T,
 ): T {
   const [data, dispatchEvent] = useReducer(reducer, initialValue);
 
   useEffect(() => {
     const eventListener = (
-      context: ClientEventContext<AnyClientAuthenticator, EventValue>
+      context: ClientEventContext<AnyClientAuthenticator, EventValue>,
     ) => {
       dispatchEvent(context);
     };

@@ -2,9 +2,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent.js';
 import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type LikeProps = {
   /** The tweet id to be liked */
   tweetId: string;
@@ -12,6 +10,7 @@ export type LikeProps = {
 
 /**
  * Like a tweet
+ *
  * @category Component
  * @props {@link LikeProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction).

@@ -4,9 +4,7 @@ import IntentRecognizerI from '@sociably/core/base/IntentRecognizer';
 import RecognizerP from './recognizer.js';
 import { ConfigsI } from './interface.js';
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Dialogflow {
   export const Recognizer = RecognizerP;
   export type Recognizer = RecognizerP;

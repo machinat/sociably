@@ -2,9 +2,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent.js';
 import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type UnmuteProps = {
   /** The user id to be unmuted */
   userId: string;
@@ -12,6 +10,7 @@ export type UnmuteProps = {
 
 /**
  * Unmute a user
+ *
  * @category Component
  * @props {@link UnmuteProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/users/mutes/introduction).

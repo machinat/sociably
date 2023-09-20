@@ -36,14 +36,14 @@ test('with user data only', () => {
   expect(profile.name).toBe('Twitter API');
   expect(profile.screenName).toBe('TwitterAPI');
   expect(profile.description).toBe(
-    "The Real Twitter API. Tweets about API changes, service issues and our Developer Platform. Don't get an answer? It's on my website."
+    "The Real Twitter API. Tweets about API changes, service issues and our Developer Platform. Don't get an answer? It's on my website.",
   );
   expect(profile.lastName).toBe(undefined);
   expect(profile.firstName).toBe(undefined);
   expect(profile.timeZone).toBe(undefined);
   expect(profile.languageCode).toBe(undefined);
   expect(profile.avatarUrl).toBe(
-    'https://pbs.twimg.com/profile_images/942858479592554497/BbazLO9L_normal.jpg'
+    'https://pbs.twimg.com/profile_images/942858479592554497/BbazLO9L_normal.jpg',
   );
 
   expect(profile.typeName()).toBe('TwtrUserProfile');
@@ -62,14 +62,14 @@ test('with user data and settings data', () => {
   expect(profile.name).toBe('Twitter API');
   expect(profile.screenName).toBe('TwitterAPI');
   expect(profile.description).toBe(
-    "The Real Twitter API. Tweets about API changes, service issues and our Developer Platform. Don't get an answer? It's on my website."
+    "The Real Twitter API. Tweets about API changes, service issues and our Developer Platform. Don't get an answer? It's on my website.",
   );
   expect(profile.lastName).toBe(undefined);
   expect(profile.firstName).toBe(undefined);
   expect(profile.timeZone).toBe(-8);
   expect(profile.languageCode).toBe('en');
   expect(profile.avatarUrl).toBe(
-    'https://pbs.twimg.com/profile_images/942858479592554497/BbazLO9L_normal.jpg'
+    'https://pbs.twimg.com/profile_images/942858479592554497/BbazLO9L_normal.jpg',
   );
 
   expect(profile.typeName()).toBe('TwtrUserProfile');
@@ -83,10 +83,13 @@ test('marshall type metadata', () => {
   expect(TwitterUserProfile.typeName).toBe('TwtrUserProfile');
 
   expect(
-    TwitterUserProfile.fromJSONValue({ user: userData, settings: undefined })
+    TwitterUserProfile.fromJSONValue({ user: userData, settings: undefined }),
   ).toStrictEqual(new TwitterUserProfile(userData));
 
   expect(
-    TwitterUserProfile.fromJSONValue({ user: userData, settings: settingsData })
+    TwitterUserProfile.fromJSONValue({
+      user: userData,
+      settings: settingsData,
+    }),
   ).toStrictEqual(new TwitterUserProfile(userData, settingsData));
 });

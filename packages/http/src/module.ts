@@ -18,9 +18,7 @@ const httpServerFactory = serviceProviderFactory({
   lifetime: 'singleton',
 })(() => createServer());
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Http {
   export const Configs = ConfigsI;
   export type Configs = ConfigsI;

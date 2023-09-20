@@ -12,8 +12,8 @@ it('is valid native unit component', () => {
 it('%s render match snapshot', async () => {
   await expect(
     renderUnitElement(
-      <Audio originalContentUrl="https://..." duration={6666} />
-    )
+      <Audio originalContentUrl="https://..." duration={6666} />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

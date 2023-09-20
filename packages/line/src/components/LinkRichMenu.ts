@@ -3,9 +3,7 @@ import makeLineComponent from '../utils/makeLineComponent.js';
 import LineChat from '../Chat.js';
 import { LineComponent, ChatActionSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type LinkRichMenuProps = {
   /** ID of a rich menu. */
   id: string;
@@ -13,6 +11,7 @@ export type LinkRichMenuProps = {
 
 /**
  * Links a rich menu to one or multiple users.
+ *
  * @category Component
  * @props {@link LinkRichMenuProps}
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/)
@@ -30,7 +29,7 @@ export const LinkRichMenu: LineComponent<
       getChatRequest: (thread: LineChat) => {
         if (thread.type !== 'user') {
           throw new TypeError(
-            '<LinkRichMenu /> can only be sent to an user chat'
+            '<LinkRichMenu /> can only be sent to an user chat',
           );
         }
 

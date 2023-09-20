@@ -30,6 +30,6 @@ test('marshall type metadata', () => {
   expect(TwitterChat.typeName).toBe('TwtrChat');
 
   expect(
-    TwitterChat.fromJSONValue({ agent: '1234567890', user: '9876543210' })
+    TwitterChat.fromJSONValue({ agent: '1234567890', user: '9876543210' }),
   ).toStrictEqual(new TwitterChat('1234567890', '9876543210'));
 });

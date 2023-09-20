@@ -2,7 +2,7 @@ import { when } from '../../../utils.js';
 import { CreateAppContext } from '../../../types.js';
 
 export default ({ platforms }: CreateAppContext): string => when(
-  platforms.includes('instagram')
+  platforms.includes('instagram'),
 )`
 #!/usr/bin/env node
 import Instagram from '@sociably/instagram';

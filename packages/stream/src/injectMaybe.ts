@@ -5,7 +5,7 @@ import { STREAMING_KEY_I } from './interface.js';
 type Fn<Args extends unknown[], Result> = (...args: Args) => Result;
 
 const injectMaybe = <Args extends unknown[], Result>(
-  fnOrContainer: MaybeContainer<Fn<Args, Result>>
+  fnOrContainer: MaybeContainer<Fn<Args, Result>>,
 ): ((frame: StreamingFrame<unknown>) => (...args: Args) => Result) => {
   if (!isServiceContainer(fnOrContainer)) {
     return () => fnOrContainer;

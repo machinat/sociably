@@ -28,7 +28,7 @@ export class ScriptProcessor<
   constructor(
     stateController: StateControllerI,
     scope: ServiceScope,
-    libAccessor: LibraryAccessorI
+    libAccessor: LibraryAccessorI,
   ) {
     this._stateContoller = stateController;
     this._serviceScope = scope;
@@ -42,7 +42,7 @@ export class ScriptProcessor<
       goto,
       params = {} as ParamsOfScript<StartingScript>,
       isPrompting = false,
-    }: StartRuntimeOptions<ParamsOfScript<StartingScript>> = {}
+    }: StartRuntimeOptions<ParamsOfScript<StartingScript>> = {},
   ): Promise<ScriptRuntime<Script>> {
     if (!this._libAccessor.getScript(script.name)) {
       throw new Error(`script ${script.name} is not registered as libs`);
@@ -55,7 +55,7 @@ export class ScriptProcessor<
     if (state) {
       const scriptName = state.callStack[0].name;
       throw new Error(
-        `script [${scriptName}] is already running on thread [${thread.uid}], exit the current runtime before start new one`
+        `script [${scriptName}] is already running on thread [${thread.uid}], exit the current runtime before start new one`,
       );
     }
 
@@ -71,7 +71,7 @@ export class ScriptProcessor<
         } as CallStatus<StartingScript>,
       ],
       undefined,
-      isPrompting
+      isPrompting,
     );
 
     await runtime.run();
@@ -79,7 +79,7 @@ export class ScriptProcessor<
   }
 
   async getRuntime(
-    thread: SociablyThread
+    thread: SociablyThread,
   ): Promise<null | ScriptRuntime<Script>> {
     const state = await this._stateContoller
       .threadState(thread)
@@ -95,7 +95,7 @@ export class ScriptProcessor<
       const script = this._libAccessor.getScript(name);
       if (!script) {
         throw new Error(
-          `script ${name} is not registered, the linked libs might have been changed`
+          `script ${name} is not registered, the linked libs might have been changed`,
         );
       }
 
@@ -108,13 +108,13 @@ export class ScriptProcessor<
       thread,
       stack,
       state.timestamp,
-      true
+      true,
     );
   }
 
   async continue(
     thread: SociablyThread,
-    input: InputOfScript<Script>
+    input: InputOfScript<Script>,
   ): Promise<null | ScriptRuntime<Script>> {
     const runtime = await this.getRuntime(thread);
     if (!runtime) {

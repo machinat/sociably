@@ -21,9 +21,7 @@ import createEvent from './utils/createEvent.js';
 import { createThreadTopicKey, createUserTopicKey } from './utils/topicKey.js';
 import type { WebviewEventContext } from './types.js';
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class WebviewReceiver<
   Authenticator extends AnyServerAuthenticator,
   Value extends EventValue,
@@ -44,7 +42,7 @@ export class WebviewReceiver<
       WebviewEventContext<Authenticator, Value>,
       null
     >,
-    popError: PopErrorFn
+    popError: PopErrorFn,
   ) {
     this._bot = bot;
     this._server = server;
@@ -59,7 +57,7 @@ export class WebviewReceiver<
           const connection = new WebviewConnection(this._server.id, connId);
           this._issueEvent(value, connection, user, request, authContext);
         });
-      }
+      },
     );
 
     this._server.on('connect', ({ connId, user, request, authContext }) => {
@@ -73,13 +71,13 @@ export class WebviewReceiver<
       if (authContext.user) {
         this._server.subscribeTopic(
           connection,
-          createUserTopicKey(authContext.user)
+          createUserTopicKey(authContext.user),
         );
       }
       if (authContext.thread) {
         this._server.subscribeTopic(
           connection,
-          createThreadTopicKey(authContext.thread)
+          createThreadTopicKey(authContext.thread),
         );
       }
 
@@ -108,7 +106,7 @@ export class WebviewReceiver<
     connection: WebviewConnection,
     user: UserOfAuthenticator<Authenticator>,
     request: HttpRequestInfo,
-    authContext: ContextOfAuthenticator<Authenticator>
+    authContext: ContextOfAuthenticator<Authenticator>,
   ) {
     this._popEvent({
       platform: WEBVIEW,
@@ -132,7 +130,7 @@ export const ReceiverP = serviceProviderClass({
     bot,
     server: WebviewSocketServer<AnyServerAuthenticator>,
     { popError },
-    { popEventWrapper }
+    { popEventWrapper },
   ) => new WebviewReceiver(bot, server, popEventWrapper, popError),
 })(WebviewReceiver);
 

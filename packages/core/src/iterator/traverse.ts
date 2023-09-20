@@ -8,7 +8,7 @@ const traverse = <Context>(
   children: SociablyNode,
   prefix: string,
   context: Context,
-  callback: TraverseNodeCallback<Context>
+  callback: TraverseNodeCallback<Context>,
 ): number => {
   let count = 0;
   if (Array.isArray(children)) {
@@ -22,14 +22,14 @@ const traverse = <Context>(
         children.props.children,
         prefix + ITER_SEPARATOR,
         context,
-        callback
+        callback,
       );
     }
   } else if (!isEmpty(children)) {
     callback(
       children,
       prefix.endsWith(':') ? `${prefix + ITER_SEPARATOR}0` : prefix,
-      context
+      context,
     );
     return 1;
   }

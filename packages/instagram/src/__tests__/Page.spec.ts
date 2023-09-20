@@ -22,6 +22,6 @@ test('attributes', () => {
     }
   `);
   expect(InstagramAgent.fromJSONValue(agent.toJSONValue())).toStrictEqual(
-    new InstagramAgent('12345')
+    new InstagramAgent('12345'),
   );
 });

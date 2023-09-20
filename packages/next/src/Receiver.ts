@@ -24,9 +24,7 @@ type NextReceiverOptions = {
   popError?: PopErrorFn | null;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class NextReceiver {
   private nextServer: NextServer;
   private defaultNextHandler: ReturnType<NextServer['getRequestHandler']>;
@@ -40,7 +38,7 @@ export class NextReceiver {
 
   constructor(
     nextApp: NextServer,
-    { noPrepare, handleRequest, initScope, popError }: NextReceiverOptions = {}
+    { noPrepare, handleRequest, initScope, popError }: NextReceiverOptions = {},
   ) {
     this.nextServer = nextApp;
     this.defaultNextHandler = nextApp.getRequestHandler();
@@ -69,7 +67,7 @@ export class NextReceiver {
   handleRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    routing: RoutingInfo
+    routing: RoutingInfo,
   ): void {
     this.handleRequestImpl(req, res, routing).catch(this.popError);
   }
@@ -82,7 +80,7 @@ export class NextReceiver {
     req: IncomingMessage,
     socket: NetSocket,
     _head: Buffer,
-    { trailingPath }: RoutingInfo
+    { trailingPath }: RoutingInfo,
   ): void {
     if (trailingPath !== '_next/webpack-hmr') {
       socket.write(
@@ -90,12 +88,12 @@ export class NextReceiver {
           'Connection: close\r\n' +
           'Content-Type: text/html\r\n' +
           `Content-Length: 9\r\n` +
-          `\r\nNot Found`
+          `\r\nNot Found`,
       );
       socket.destroy();
     } else {
       this.defaultNextHandler(req, new ServerResponse(req)).catch(
-        this.popError
+        this.popError,
       );
     }
   }
@@ -107,7 +105,7 @@ export class NextReceiver {
   private async handleRequestImpl(
     req: IncomingMessage,
     res: ServerResponse,
-    { trailingPath }: RoutingInfo
+    { trailingPath }: RoutingInfo,
   ) {
     if (!this.isPrepared) {
       res.writeHead(503);
@@ -132,7 +130,7 @@ export class NextReceiver {
 
       const response = await maybeInjectContainer(
         this.initScope(),
-        this.requestHandler
+        this.requestHandler,
       )(request);
 
       if (response.ok) {
@@ -149,7 +147,7 @@ export class NextReceiver {
             res,
             page || trailingPath,
             query || parsedUrl.query,
-            parsedUrl
+            parsedUrl,
           );
         } else {
           this.defaultNextHandler(req, res, parsedUrl);
@@ -171,7 +169,7 @@ export class NextReceiver {
           req,
           res,
           trailingPath,
-          parsedUrl.query
+          parsedUrl.query,
         );
       }
     } catch (err) {
@@ -183,7 +181,7 @@ export class NextReceiver {
         req,
         res,
         trailingPath,
-        parsedUrl.query
+        parsedUrl.query,
       );
     }
   }

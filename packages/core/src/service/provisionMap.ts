@@ -8,7 +8,7 @@ import type {
 
 const mergeSingular = <T>(
   base: Map<Interfaceable<unknown>, T>,
-  mergee: Map<Interfaceable<unknown>, T>
+  mergee: Map<Interfaceable<unknown>, T>,
 ) => {
   for (const [target, value] of mergee) {
     base.set(target, value);
@@ -17,7 +17,7 @@ const mergeSingular = <T>(
 
 const mergeMulti = <T>(
   base: Map<Interfaceable<unknown>, T[]>,
-  mergee: Map<Interfaceable<unknown>, T[]>
+  mergee: Map<Interfaceable<unknown>, T[]>,
 ) => {
   for (const [target, values] of mergee) {
     const baseRegistered = base.get(target);
@@ -31,7 +31,7 @@ const mergeMulti = <T>(
 
 const mergePolymorphic = <T>(
   base: Map<Interfaceable<unknown>, Map<string, T>>,
-  mergee: Map<Interfaceable<unknown>, Map<string, T>>
+  mergee: Map<Interfaceable<unknown>, Map<string, T>>,
 ) => {
   for (const [target, platforms] of mergee) {
     const baseBranches = base.get(target);
@@ -61,7 +61,7 @@ export default class ProvisionMap<T> {
   getSingular(
     target:
       | SingularServiceInterface<unknown>
-      | ServiceProvider<unknown, unknown[]>
+      | ServiceProvider<unknown, unknown[]>,
   ): null | T {
     return this._singularMapping.get(target) || null;
   }
@@ -78,7 +78,7 @@ export default class ProvisionMap<T> {
     target:
       | SingularServiceInterface<unknown>
       | ServiceProvider<unknown, unknown[]>,
-    value: T
+    value: T,
   ): null | T {
     const registered = this._singularMapping.get(target);
     this._singularMapping.set(target, value);
@@ -100,7 +100,7 @@ export default class ProvisionMap<T> {
   setPolymorphic(
     target: PolymorphicServiceInterface<unknown>,
     value: T,
-    platform: string
+    platform: string,
   ): null | T {
     const registered = this._polymorphicMapping.get(target);
     if (!registered) {

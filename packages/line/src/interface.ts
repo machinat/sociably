@@ -8,34 +8,28 @@ import type {
   LineLoginChannelSettings,
 } from './types.js';
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ConfigsI = serviceInterface<LineConfigs>({
   name: 'LineConfigs',
 });
 
 export type ConfigsI = LineConfigs;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const PlatformUtilitiesI = serviceInterface<LinePlatformUtilities>({
   name: 'LinePlatformUtilities',
 });
 
 export type AgentSettingsAccessorI = {
   getLineChatChannelSettingsByBotUserId(
-    botUserId: string
+    botUserId: string,
   ): Promise<null | LineChatChannelSettings>;
   getLineLoginChannelSettings(
-    channelId: string
+    channelId: string,
   ): Promise<null | LineLoginChannelSettings>;
 } & AgentSettingsAccessor<LineChannel, LineChatChannelSettings>;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const AgentSettingsAccessorI = serviceInterface<AgentSettingsAccessorI>({
   name: 'LineAgentSettingsAccessor',
 });

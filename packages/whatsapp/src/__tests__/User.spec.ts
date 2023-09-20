@@ -8,7 +8,7 @@ test('with profile', () => {
   expect(user.numberId).toBe('1234567890');
   expect(user.profileData).toEqual({ name: 'Jojo' });
   expect(user.profile).toStrictEqual(
-    new UserProfile('1234567890', { name: 'Jojo' })
+    new UserProfile('1234567890', { name: 'Jojo' }),
   );
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
   expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
@@ -46,6 +46,6 @@ test('marshallable', () => {
   `);
 
   expect(WhatsAppUser.fromJSONValue(user.toJSONValue())).toStrictEqual(
-    new WhatsAppUser('1234567890')
+    new WhatsAppUser('1234567890'),
   );
 });

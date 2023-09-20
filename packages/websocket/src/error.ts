@@ -6,7 +6,7 @@ export default class SocketError extends Error {
   // TODO: error code
   constructor(
     /* code: number, */
-    reason: string
+    reason: string,
   ) {
     super(reason);
 

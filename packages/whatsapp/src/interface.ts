@@ -7,18 +7,14 @@ import type {
   WhatsAppAgentSettings,
 } from './types.js';
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ConfigsI = serviceInterface<WhatsAppConfigs>({
   name: 'WhatsAppConfigs',
 });
 
 export type ConfigsI = WhatsAppConfigs;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const PlatformUtilitiesI = serviceInterface<WhatsAppPlatformUtilities>({
   name: 'WhatsAppPlatformUtilities',
 });
@@ -28,9 +24,7 @@ export type AgentSettingsAccessorI = AgentSettingsAccessor<
   WhatsAppAgentSettings
 >;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const AgentSettingsAccessorI = serviceInterface<AgentSettingsAccessorI>({
   name: 'WhatsAppAgentSettingsAccessor',
 });

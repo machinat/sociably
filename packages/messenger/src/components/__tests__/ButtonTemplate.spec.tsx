@@ -19,8 +19,8 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <ButtonTemplate buttons={buttons}>hello button template</ButtonTemplate>
-    )
+      <ButtonTemplate buttons={buttons}>hello button template</ButtonTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -92,8 +92,8 @@ it('match snapshot', async () => {
         foo
         {'bar'}
         <>baz</>
-      </ButtonTemplate>
-    )
+      </ButtonTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -171,10 +171,10 @@ it('throw if children is empty', async () => {
     renderUnitElement(
       <ButtonTemplate buttons={<PostbackButton title="foo" payload="foo" />}>
         {null}
-      </ButtonTemplate>
-    )
+      </ButtonTemplate>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""children" prop should not be empty"`
+    `""children" prop should not be empty"`,
   );
 });
 
@@ -184,9 +184,9 @@ it('throw if none texual child received', async () => {
       <ButtonTemplate buttons={[]}>
         foo
         <UrlButton title="" url="" />
-      </ButtonTemplate>
-    )
+      </ButtonTemplate>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <UrlButton /> received, only textual nodes allowed"`
+    `"non-textual node <UrlButton /> received, only textual nodes allowed"`,
   );
 });

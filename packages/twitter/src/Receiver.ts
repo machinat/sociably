@@ -50,7 +50,7 @@ const handleWebhook = ({
         !verifyPayload(
           appSecret,
           `crc_token=${crcToken}&nonce=${nonce}`,
-          headers['x-twitter-webhooks-signature']
+          headers['x-twitter-webhooks-signature'],
         )
       ) {
         return { code: 401 };
@@ -78,7 +78,7 @@ const handleWebhook = ({
       !verifyPayload(
         appSecret,
         rawBody,
-        headers['x-twitter-webhooks-signature']
+        headers['x-twitter-webhooks-signature'],
       )
     ) {
       return { code: 401 };
@@ -104,12 +104,12 @@ const handleWebhook = ({
           reply: async (message: SociablyNode) => {
             if (!event.thread) {
               throw new Error(
-                `Cannot reply to ${event.type} event with no chat thread info`
+                `Cannot reply to ${event.type} event with no chat thread info`,
               );
             }
             return bot.render(event.thread, message);
           },
-        })
+        }),
       );
     }
 
@@ -120,6 +120,7 @@ const handleWebhook = ({
 
 /**
  * TwitterReceiver receive and pop events from Twitter platform.
+ *
  * @category Provider
  */
 export class TwitterReceiver extends WebhookReceiver {

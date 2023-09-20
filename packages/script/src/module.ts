@@ -8,7 +8,7 @@ type ScriptModuleConfigs = {
 };
 
 const createScriptAccessorOfLibs = (
-  libs: AnyScriptLibrary[]
+  libs: AnyScriptLibrary[],
 ): LibraryAccessorI => {
   const libMap = new Map(libs.map((lib) => [lib.name, lib]));
   return {
@@ -16,9 +16,7 @@ const createScriptAccessorOfLibs = (
   };
 };
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Script {
   export const Processor = ProcessorP;
   export type Processor<Script extends AnyScriptLibrary> = ProcessorP<Script>;

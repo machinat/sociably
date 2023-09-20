@@ -15,7 +15,7 @@ test('render shallow element match snapshot', async () => {
       <code>foo.bar()</code>,
       <pre>foo.bar('hello world')</pre>,
       <br />,
-    ].map((ele) => renderer.render(ele, null, null))
+    ].map((ele) => renderer.render(ele, null, null)),
   );
 
   expect(results).toMatchSnapshot();
@@ -54,7 +54,7 @@ test('render nested elements match snapshot', async () => {
       <pre>May the force be with you!</pre> Test over
     </p>,
     null,
-    null
+    null,
   );
   expect(segments).toMatchSnapshot();
   expect(segments?.map((seg) => seg.value)).toMatchInlineSnapshot(`
@@ -78,7 +78,7 @@ test('<p/> renders into individual text segment', async () => {
       <p>baz</p>
     </>,
     null,
-    null
+    null,
   );
 
   expect(segments).toMatchSnapshot();
@@ -101,39 +101,39 @@ test('throw if non-texual value received', async () => {
   );
 
   await expect(
-    renderer.render(<p>{children}</p>, null, null)
+    renderer.render(<p>{children}</p>, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <p/>"`
+    `"non-textual node <img /> is placed in <p/>"`,
   );
   await expect(
-    renderer.render(<b>{children}</b>, null, null)
+    renderer.render(<b>{children}</b>, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <b/>"`
+    `"non-textual node <img /> is placed in <b/>"`,
   );
   await expect(
-    renderer.render(<i>{children}</i>, null, null)
+    renderer.render(<i>{children}</i>, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <i/>"`
+    `"non-textual node <img /> is placed in <i/>"`,
   );
   await expect(
-    renderer.render(<s>{children}</s>, null, null)
+    renderer.render(<s>{children}</s>, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <s/>"`
+    `"non-textual node <img /> is placed in <s/>"`,
   );
   await expect(
-    renderer.render(<u>{children}</u>, null, null)
+    renderer.render(<u>{children}</u>, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <u/>"`
+    `"non-textual node <img /> is placed in <u/>"`,
   );
   await expect(
-    renderer.render(<code>{children}</code>, null, null)
+    renderer.render(<code>{children}</code>, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <code/>"`
+    `"non-textual node <img /> is placed in <code/>"`,
   );
   await expect(
-    renderer.render(<pre>{children}</pre>, null, null)
+    renderer.render(<pre>{children}</pre>, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <pre/>"`
+    `"non-textual node <img /> is placed in <pre/>"`,
   );
 });
 
@@ -154,7 +154,7 @@ test('media elements match snapshot', async () => {
       <file src="http://profile.my.bot" />
     </>,
     null,
-    null
+    null,
   );
   expect(segments).toMatchSnapshot();
   expect(segments?.map((seg) => seg.value)).toMatchInlineSnapshot(`

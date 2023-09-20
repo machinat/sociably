@@ -37,7 +37,7 @@ test.each(
     FlexFooter,
     FlexBubbleContainer,
     FlexCarouselContainer,
-  ].map((C) => [C.name, C] as const)
+  ].map((C) => [C.name, C] as const),
 )('%s is valid native Component', (_, FlexComponent) => {
   expect(isNativeType(<FlexComponent />)).toBe(true);
   expect(FlexComponent.$$platform).toBe('line');
@@ -157,7 +157,7 @@ it.each([
                 <FlexIcon
                   size="sm"
                   url="https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
-                />
+                />,
               )}
               <FlexIcon
                 size="sm"

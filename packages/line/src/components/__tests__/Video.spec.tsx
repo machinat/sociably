@@ -12,8 +12,8 @@ it('is valid native unit component', () => {
 it('%s render match snapshot', async () => {
   await expect(
     renderUnitElement(
-      <Video originalContentUrl="https://..." previewImageUrl="https://..." />
-    )
+      <Video originalContentUrl="https://..." previewImageUrl="https://..." />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

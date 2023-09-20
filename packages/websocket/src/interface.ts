@@ -9,52 +9,40 @@ import type {
   WebSocketClusterBroker,
 } from './types.js';
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const WsServerI = serviceInterface<WsServer>({
   name: 'WebSocketWsServer',
 });
 
 export type WsServerI = WsServer;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const UpgradeVerifierI = serviceInterface<VerifyUpgradeFn>({
   name: 'WebSocketUpgradeVerifier',
 });
 
 export type UpgradeVerifierI = VerifyUpgradeFn;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const LoginVerifierI = serviceInterface<AnyVerifyLoginFn>({
   name: 'WebSocketLoginVerifier',
 });
 
 export type LoginVerifierI = AnyVerifyLoginFn;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ServerIdI = serviceInterface<string>({
   name: 'WebSocketServerId',
 });
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const PlatformUtilitiesI = serviceInterface<
   WebSocketPlatformUtilities<SociablyUser, unknown>
 >({
   name: 'WebSocketPlatformUtilities',
 });
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ConfigsI = serviceInterface<
   WebSocketConfigs<SociablyUser, unknown>
 >({
@@ -63,9 +51,7 @@ export const ConfigsI = serviceInterface<
 
 export type ConfigsI = WebSocketConfigs<SociablyUser, unknown>;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const BrokerI = serviceInterface<WebSocketClusterBroker>({
   name: 'WebSocketClusterBroker',
 });

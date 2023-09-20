@@ -20,8 +20,8 @@ it('match snapshot', async () => {
         summary={{ total_cost: 56.14 }}
       >
         <ReceiptItem title="Woody" price={9.99} />
-      </ReceiptTemplate>
-    )
+      </ReceiptTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -97,8 +97,8 @@ it('match snapshot', async () => {
         <ReceiptItem title="Woody" price={9.99} />
         <ReceiptItem title="Buzz Lightyear" price={9.99} />
         <ReceiptItem title="Slinky Dog" price={9.99} />
-      </ReceiptTemplate>
-    )
+      </ReceiptTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -223,8 +223,8 @@ it('match snapshot', async () => {
           currency="USD"
           imageUrl="http://i.robot/avatar"
         />
-      </ReceiptTemplate>
-    )
+      </ReceiptTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -342,10 +342,10 @@ it('match snapshot', async () => {
 
 it('accept Date object for timestamp prop', async () => {
   const segsA = await renderUnitElement(
-    <ReceiptTemplate timestamp={new Date(1535622297000)} {...{}} />
+    <ReceiptTemplate timestamp={new Date(1535622297000)} {...{}} />,
   );
   const segsB = await renderUnitElement(
-    <ReceiptTemplate timestamp="1535622297" {...{}} />
+    <ReceiptTemplate timestamp="1535622297" {...{}} />,
   );
   expect(segsA?.[0].value).toEqual(segsB?.[0].value);
 });

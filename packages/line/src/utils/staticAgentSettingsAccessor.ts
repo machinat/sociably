@@ -11,7 +11,7 @@ const getLoginChannelIdFromLiffId = (liffId: string): string =>
 export const createSingleStaticAgentSettingsAccessor = (
   agentSettings: Omit<LineChatChannelSettings, 'botUserId'> & {
     botUserId?: string;
-  }
+  },
 ): AgentSettingsAccessorI => {
   const liffIds = agentSettings.liff ? Object.values(agentSettings.liff) : [];
   const loginChannelIds = liffIds.map(getLoginChannelIdFromLiffId);
@@ -45,7 +45,7 @@ type SettingsWithBotUserId = LineChatChannelSettings & {
 };
 
 export const createMultiStaticNumberSettingsAccessor = (
-  providerSettingsList: LineProviderSettings[]
+  providerSettingsList: LineProviderSettings[],
 ): AgentSettingsAccessorI => {
   const messagingChannelsSettings = new Map<string, SettingsWithBotUserId>();
   const loginChannelsSettings = new Map<string, LineLoginChannelSettings>();
@@ -77,7 +77,7 @@ export const createMultiStaticNumberSettingsAccessor = (
         if (loginChannelSettings) {
           if (loginChannelSettings.providerId !== providerId) {
             throw new Error(
-              `Provider ID mismatch: ${loginChannelSettings.providerId} !== ${providerId}`
+              `Provider ID mismatch: ${loginChannelSettings.providerId} !== ${providerId}`,
             );
           }
 
@@ -104,7 +104,7 @@ export const createMultiStaticNumberSettingsAccessor = (
       messagingChannelsSettings.get(channelId) || null,
     getAgentSettingsBatch: async (channels) =>
       channels.map(
-        ({ id: channelId }) => messagingChannelsSettings.get(channelId) || null
+        ({ id: channelId }) => messagingChannelsSettings.get(channelId) || null,
       ),
     getLineChatChannelSettingsByBotUserId: async (botUserId) => {
       for (const settings of messagingChannelsSettings.values()) {
@@ -114,8 +114,7 @@ export const createMultiStaticNumberSettingsAccessor = (
       }
       return null;
     },
-    getLineLoginChannelSettings: async (loginChannelId) => {
-      return loginChannelsSettings.get(loginChannelId) || null;
-    },
+    getLineLoginChannelSettings: async (loginChannelId) =>
+      loginChannelsSettings.get(loginChannelId) || null,
   };
 };

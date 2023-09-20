@@ -2,9 +2,7 @@ import type { ServiceModule } from '@sociably/core';
 import StateControllerI from '@sociably/core/base/StateController';
 import { ControllerP } from './controller.js';
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace InMemoryState {
   export const Controller = ControllerP;
   export type Controller = ControllerP;

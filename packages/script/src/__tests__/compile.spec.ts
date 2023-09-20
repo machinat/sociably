@@ -25,7 +25,7 @@ describe('compile conditions segment', () => {
           fallbackBody: null,
         },
       ],
-      { scriptName: 'MyScript' }
+      { scriptName: 'MyScript' },
     );
     expect(commands).toEqual([
       {
@@ -57,7 +57,7 @@ describe('compile conditions segment', () => {
       new Map([
         ['ask1', 4],
         ['ask2', 7],
-      ])
+      ]),
     );
   });
 
@@ -88,7 +88,7 @@ describe('compile conditions segment', () => {
           ],
         },
       ],
-      { scriptName: 'MyScript' }
+      { scriptName: 'MyScript' },
     );
     expect(commands).toEqual([
       {
@@ -124,7 +124,7 @@ describe('compile conditions segment', () => {
         ['ask1', 6],
         ['ask2', 9],
         ['ask3', 3],
-      ])
+      ]),
     );
   });
 });
@@ -144,7 +144,7 @@ it('compile while segment', () => {
         ],
       },
     ],
-    { scriptName: 'MyScript' }
+    { scriptName: 'MyScript' },
   );
   expect(commands).toEqual([
     {
@@ -161,7 +161,7 @@ it('compile while segment', () => {
 
   expect(commands[0].condition({})).toBe(true);
   expect(commands[1].getContent({ vars: { target: 'world' } })).toBe(
-    'hello world'
+    'hello world',
   );
 });
 
@@ -200,7 +200,7 @@ it('compile other segments type', () => {
       { type: 'effect', setVars: () => ({ foo: 'baz' }) },
       { type: 'return', getValue: () => 'foo' },
     ],
-    { scriptName: 'MyScript' }
+    { scriptName: 'MyScript' },
   );
   expect(commands).toEqual([
     { type: 'content', getContent: expect.any(Function) },
@@ -227,7 +227,7 @@ it('compile other segments type', () => {
       ['ask_something', 2],
       ['order_something', 4],
       ['end', 7],
-    ])
+    ]),
   );
   expect(commands[0].getContent({})).toBe('hello');
   expect(commands[1].getContent({})).toBe('who r u');
@@ -250,7 +250,7 @@ it('throw if conditions key duplicated', () => {
         { type: 'prompt', key: 'who' },
       ],
 
-      { scriptName: 'MyScript' }
-    )
+      { scriptName: 'MyScript' },
+    ),
   ).toThrowErrorMatchingInlineSnapshot(`"key "who" duplicated in MyScript"`);
 });

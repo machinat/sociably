@@ -3,9 +3,7 @@ import { serviceProviderClass } from '@sociably/core/service';
 import { BrokerI } from '../interface.js';
 import type { ConnIdentifier } from '../types.js';
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class LocalOnlyBroker implements BrokerI {
   start(): Promise<void> {
     return Promise.resolve();

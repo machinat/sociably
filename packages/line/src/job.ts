@@ -8,7 +8,7 @@ import LineChannel from './Channel.js';
 const createMessageJob = (
   thread: LineChat,
   messages: MessageParams[],
-  replyToken: undefined | string
+  replyToken: undefined | string,
 ): LineJob => ({
   method: 'POST',
   url: replyToken ? PATH_REPLY : PATH_PUSH,
@@ -23,7 +23,7 @@ export const createChatJobs = (replyToken: undefined | string) => {
 
   return (
     thread: LineChat,
-    segments: DispatchableSegment<LineSegmentValue>[]
+    segments: DispatchableSegment<LineSegmentValue>[],
   ): LineJob[] => {
     const jobs: LineJob[] = [];
     let messagesBuffer: MessageParams[] = [];
@@ -35,7 +35,7 @@ export const createChatJobs = (replyToken: undefined | string) => {
         messagesBuffer.push(
           typeof value === 'string'
             ? { type: 'text', text: value }
-            : value.params
+            : value.params,
         );
 
         // flush messages buffer if accumlated to 5 or at the end of loop
@@ -44,8 +44,8 @@ export const createChatJobs = (replyToken: undefined | string) => {
             createMessageJob(
               thread,
               messagesBuffer,
-              totalJobsCount === 0 ? replyToken : undefined
-            )
+              totalJobsCount === 0 ? replyToken : undefined,
+            ),
           );
           messagesBuffer = [];
           totalJobsCount += 1;
@@ -57,8 +57,8 @@ export const createChatJobs = (replyToken: undefined | string) => {
             createMessageJob(
               thread,
               messagesBuffer,
-              totalJobsCount === 0 ? replyToken : undefined
-            )
+              totalJobsCount === 0 ? replyToken : undefined,
+            ),
           );
           messagesBuffer = [];
           totalJobsCount += 1;
@@ -66,7 +66,7 @@ export const createChatJobs = (replyToken: undefined | string) => {
 
         if (!value.getChatRequest) {
           throw new Error(
-            `${formatNode(node)} is not valid to be sent in a chat`
+            `${formatNode(node)} is not valid to be sent in a chat`,
           );
         }
 
@@ -93,7 +93,7 @@ export const createMulticastJobs =
   (targets: string[]) =>
   (
     channel: LineChannel,
-    segments: DispatchableSegment<LineSegmentValue>[]
+    segments: DispatchableSegment<LineSegmentValue>[],
   ): LineJob[] => {
     const jobs: LineJob[] = [];
     let messages: MessageParams[] = [];
@@ -105,7 +105,7 @@ export const createMulticastJobs =
         messages.push(
           typeof value === 'string'
             ? { type: 'text', text: value }
-            : value.params
+            : value.params,
         );
 
         // flush messages buffer if accumlated to 5 or at the end of loop
@@ -136,7 +136,7 @@ export const createMulticastJobs =
 
         if (!value.getBulkRequest) {
           throw new Error(
-            `${formatNode(node)} is not valid to be sent by multicast`
+            `${formatNode(node)} is not valid to be sent by multicast`,
           );
         }
 

@@ -18,7 +18,7 @@ export const serializeScriptStatus = <Vars>({
 }: CallStatus<Vars>): SerializedCallStatus<Vars> => {
   invariant(
     stopAt,
-    'call status is not stopped at any break point when serialize'
+    'call status is not stopped at any break point when serialize',
   );
 
   return {

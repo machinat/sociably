@@ -5,9 +5,7 @@ import IntentRecognizerI, {
 import RecognizerP, { RegexIntentRecognizer } from './recognizer.js';
 import { ConfigsI } from './interface.js';
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace RegexIntentRecognition {
   export const Recognizer = RecognizerP;
   type Recognizer<

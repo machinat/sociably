@@ -21,9 +21,7 @@ export type UserProfiler<
 
 type AnyUserProfiler = UserProfiler<SociablyChannel, SociablyUser>;
 
-/**
- * @category Base
- */
+/** @category Base */
 export class BaseProfiler implements AnyUserProfiler {
   static PlatformMap = serviceInterface<AnyUserProfiler>({
     name: 'ProfilerPlatformMap',
@@ -38,17 +36,17 @@ export class BaseProfiler implements AnyUserProfiler {
 
   async getUserProfile(
     channel: SociablyChannel,
-    user: SociablyUser
+    user: SociablyUser,
   ): Promise<null | SociablyProfile> {
     if (channel.platform !== user.platform) {
       throw new TypeError(
-        `channel (${channel.platform}) and user (${user.platform}) platforms mismatch`
+        `channel (${channel.platform}) and user (${user.platform}) platforms mismatch`,
       );
     }
     const profiler = this._platformMapping.get(user.platform);
     if (!profiler) {
       throw new TypeError(
-        `getting profile on "${user.platform}" platform is not supported`
+        `getting profile on "${user.platform}" platform is not supported`,
       );
     }
 

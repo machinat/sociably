@@ -5,9 +5,7 @@ import type WhatsAppAgent from './Agent.js';
 import type WhatsAppUser from './User.js';
 import WhatsAppUserProfile from './UserProfile.js';
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class WhatsAppProfiler
   implements UserProfiler<WhatsAppAgent, WhatsAppUser>
 {
@@ -16,14 +14,14 @@ export class WhatsAppProfiler
   // eslint-disable-next-line class-methods-use-this
   async getUserProfile(
     _agent: unknown,
-    user: WhatsAppUser
+    user: WhatsAppUser,
   ): Promise<null | WhatsAppUserProfile> {
     return user.profile;
   }
 }
 
 const ProfilerP = serviceProviderClass({ lifetime: 'scoped' })(
-  WhatsAppProfiler
+  WhatsAppProfiler,
 );
 
 type ProfilerP = WhatsAppProfiler;

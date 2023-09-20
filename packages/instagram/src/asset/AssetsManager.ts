@@ -31,8 +31,9 @@ export type DefaultSettings = {
 };
 
 /**
- * InstagramAssetsManager stores name-to-id mapping for assets created on
- * Meta platform.
+ * InstagramAssetsManager stores name-to-id mapping for assets created on Meta
+ * platform.
+ *
  * @category Provider
  */
 export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgent> {
@@ -43,7 +44,7 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
     stateManager: StateControllerI,
     bot: BotP,
     agentSettingsAccessor: AgentSettingsAccessorI,
-    defaultSettings: DefaultSettings = {}
+    defaultSettings: DefaultSettings = {},
   ) {
     super(stateManager, bot, IG);
     this.defaultSettings = defaultSettings;
@@ -65,7 +66,7 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
   async getAssetId(
     agent: string | InstagramAgent,
     resource: string,
-    assetTag: string
+    assetTag: string,
   ): Promise<string | undefined> {
     const pageId = await this.getBoundPageIdOfAgent(agent);
     return super.getAssetId(pageId, resource, assetTag);
@@ -75,7 +76,7 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
     agent: string | InstagramAgent,
     resource: string,
     assetTag: string,
-    assetId: string
+    assetId: string,
   ) {
     const pageId = await this.getBoundPageIdOfAgent(agent);
     return super.saveAssetId(pageId, resource, assetTag, assetId);
@@ -84,7 +85,7 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
   async unsaveAssetId(
     agent: string | InstagramAgent,
     resource: string,
-    assetTag: string
+    assetTag: string,
   ) {
     const pageId = await this.getBoundPageIdOfAgent(agent);
     return super.unsaveAssetId(pageId, resource, assetTag);
@@ -96,7 +97,8 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
   }
 
   /**
-   * Set webhook subscription of an app. Check https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge/
+   * Set webhook subscription of an app. Check
+   * https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge/
    * for references
    */
   async setAppSubscription({
@@ -109,7 +111,7 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
   }: Partial<SetMetaAppSubscriptionOptions> = {}): Promise<void> {
     if (!appId || !webhookVerifyToken || !webhookUrl || !fields?.length) {
       throw new Error(
-        'appId, webhookUrl, webhookVerifyToken or fields is empty'
+        'appId, webhookUrl, webhookVerifyToken or fields is empty',
       );
     }
     return super.setAppSubscription({
@@ -133,7 +135,8 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
   }
 
   /**
-   * Set app subscription of a instagram account. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
+   * Set app subscription of a instagram account. Check
+   * https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
   async setSubscribedApp(
@@ -141,18 +144,19 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
     {
       fields = this.defaultSettings.subscriptionFields,
       accessToken,
-    }: SetSubscribedAppOptions = {}
+    }: SetSubscribedAppOptions = {},
   ): Promise<void> {
     return super.setSubscribedApp(agent, { fields, accessToken });
   }
 
   /**
-   * Set Messenger profile of an Instagram account. Check https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/
+   * Set Messenger profile of an Instagram account. Check
+   * https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/
    * for references.
    */
   async setMessengerProfile(
     agent: string | InstagramAgent,
-    { platform = 'instagram', ...profileData }: SetMessengerProfileOptions
+    { platform = 'instagram', ...profileData }: SetMessengerProfileOptions,
   ): Promise<void> {
     return super.setMessengerProfile(agent, { platform, ...profileData });
   }
@@ -172,7 +176,7 @@ const AssetsManagerP = serviceProviderClass({
     bot,
     connector,
     agentSettingsAccessor,
-    { appId, webhookVerifyToken, webhookPath, subscriptionFields }
+    { appId, webhookVerifyToken, webhookPath, subscriptionFields },
   ) =>
     new InstagramAssetsManager(stateController, bot, agentSettingsAccessor, {
       appId,

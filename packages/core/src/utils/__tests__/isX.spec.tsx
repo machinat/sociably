@@ -252,8 +252,8 @@ describe('isProviderType', () => {
       isProviderType(
         <Sociably.Provider provide={fooInterface} value="foo">
           <a />
-        </Sociably.Provider>
-      )
+        </Sociably.Provider>,
+      ),
     ).toBe(true);
   });
 

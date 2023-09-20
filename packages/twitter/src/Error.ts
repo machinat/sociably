@@ -10,7 +10,7 @@ export default class TwitterApiError extends Error {
     super(
       body?.detail ||
         body?.errors?.[0].message ||
-        `API returns status ${code} (${STATUS_CODES[code]})`
+        `API returns status ${code} (${STATUS_CODES[code]})`,
     );
     this.statusCode = code;
     this.name = `TwitterApiError (${body?.title || STATUS_CODES[code]})`;

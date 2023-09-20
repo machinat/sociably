@@ -33,9 +33,7 @@ type SendResult = {
 const toConnection = ({ serverId, id }: ConnIdentifier) =>
   new WebSocketConnection(serverId, id);
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class WebSocketBot
   implements SociablyBot<WebSocketConnection, WebSocketJob, WebSocketResult>
 {
@@ -57,7 +55,7 @@ export class WebSocketBot
       WebSocketJob,
       WebSocketDispatchFrame,
       WebSocketResult
-    >
+    >,
   ) {
     this._server = server;
 
@@ -68,9 +66,9 @@ export class WebSocketBot
       WEBSOCKET,
       () => {
         throw new TypeError(
-          'general component not supported at websocket platform'
+          'general component not supported at websocket platform',
         );
-      }
+      },
     );
 
     this.engine = new Engine(
@@ -79,7 +77,7 @@ export class WebSocketBot
       queue,
       worker,
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   }
 
@@ -95,14 +93,14 @@ export class WebSocketBot
 
   render(
     thread: WebSocketConnection,
-    message: SociablyNode
+    message: SociablyNode,
   ): Promise<null | WebSocketDispatchResponse> {
     return this.engine.render<WebSocketConnection>(thread, message, createJobs);
   }
 
   async send(
     connection: WebSocketConnection,
-    content: EventInput | EventInput[]
+    content: EventInput | EventInput[],
   ): Promise<SendResult> {
     const {
       results: [{ connections }],
@@ -118,7 +116,7 @@ export class WebSocketBot
 
   async sendTopic(
     key: string,
-    content: EventInput | EventInput[]
+    content: EventInput | EventInput[],
   ): Promise<SendResult> {
     const {
       results: [{ connections }],
@@ -134,21 +132,21 @@ export class WebSocketBot
 
   disconnect(
     connection: WebSocketConnection,
-    reason?: string
+    reason?: string,
   ): Promise<boolean> {
     return this._server.disconnect(connection, reason);
   }
 
   subscribeTopic(
     connection: WebSocketConnection,
-    topic: string
+    topic: string,
   ): Promise<boolean> {
     return this._server.subscribeTopic(connection, topic);
   }
 
   unsubscribeTopic(
     connection: WebSocketConnection,
-    topic: string
+    topic: string,
   ): Promise<boolean> {
     return this._server.unsubscribeTopic(connection, topic);
   }
@@ -165,7 +163,7 @@ export const BotP = serviceProviderClass({
     new WebSocketBot(
       server,
       moduleUtils?.initScope,
-      platformUtils?.dispatchWrapper
+      platformUtils?.dispatchWrapper,
     ),
 })(WebSocketBot);
 

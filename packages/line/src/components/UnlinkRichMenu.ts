@@ -10,7 +10,7 @@ const UNLINK_RICHMENU_VALUE = {
   getChatRequest(thread: LineChat) {
     if (thread.type !== 'user') {
       throw new TypeError(
-        '<UnlinkRichMenu /> can only be sent to an user chat'
+        '<UnlinkRichMenu /> can only be sent to an user chat',
       );
     }
 
@@ -32,6 +32,7 @@ const UNLINK_RICHMENU_VALUE = {
 
 /**
  * Uninks the rich menu bound to one or multiple users.
+ *
  * @category Component
  * @props `{}`
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-rich-menus/)

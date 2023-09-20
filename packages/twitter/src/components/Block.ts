@@ -2,9 +2,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent.js';
 import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type BlockProps = {
   /** The user id to be blocked */
   userId: string;
@@ -12,6 +10,7 @@ export type BlockProps = {
 
 /**
  * Block a user
+ *
  * @category Component
  * @props {@link BlockProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/users/blocks/introduction).

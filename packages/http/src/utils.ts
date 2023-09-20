@@ -5,7 +5,7 @@ import type { Socket } from 'net';
 
 export const getTrailingPath = (
   parent: string,
-  child: string
+  child: string,
 ): string | undefined => {
   const relativePath = posixPath.relative(parent, child);
   return relativePath === '' || !relativePath.startsWith('..')
@@ -30,7 +30,7 @@ export const respondUpgrade = (socket: Socket, code: number): void => {
       'Connection: close\r\n' +
       'Content-Type: text/html\r\n' +
       `Content-Length: ${Buffer.byteLength(codeName)}\r\n` +
-      `\r\n${codeName}`
+      `\r\n${codeName}`,
   );
   socket.destroy();
 };
@@ -40,7 +40,7 @@ export const formatRoute = ({ name, path }: Routing): string =>
 
 export const checkRoutePath = (
   existedRoutings: readonly Routing[],
-  newRoute: Routing
+  newRoute: Routing,
 ): null | Error => {
   if (newRoute.path.startsWith('/')) {
     return new Error('route path should be a relative path');
@@ -56,8 +56,8 @@ export const checkRoutePath = (
     ) {
       return new Error(
         `route ${formatRoute(newRoute)} is conflicted with route ${formatRoute(
-          route
-        )}`
+          route,
+        )}`,
       );
     }
   }

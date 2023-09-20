@@ -45,7 +45,7 @@ class WebSocketWorker implements SociablyWorker<WebSocketJob, WebSocketResult> {
   _executeJobsCallback = this._executeJobs.bind(this);
 
   async _executeJobs(
-    jobs: WebSocketJob[]
+    jobs: WebSocketJob[],
   ): Promise<JobResponse<WebSocketJob, WebSocketResult>[]> {
     const promises = jobs.map((job) => this.server.dispatch(job));
     const socketsMetrix = await Promise.all(promises);

@@ -20,14 +20,15 @@ export type StateAccessor = {
    * Update the value of a specific key by an undator funcction. The updator
    * receives the original value (`undefined` if not existed) and return the new
    * value. Depends on the new value, 3 kinds of action will be executed:
+   *
    * - `undefined`; delete the data on the key.
-   * - original value (compared with `===`); no changes.
-   * - any other value; the new value will be stored.
+   * - Original value (compared with `===`); no changes.
+   * - Any other value; the new value will be stored.
    */
   update<T>(key: string, updator: (state: undefined | T) => T): Promise<T>;
   update<T>(
     key: string,
-    updator: (state: undefined | T) => undefined | T
+    updator: (state: undefined | T) => undefined | T,
   ): Promise<undefined | T>;
   delete(key: string): Promise<boolean>;
   keys(): Promise<string[]>;
@@ -35,37 +36,27 @@ export type StateAccessor = {
   clear(): Promise<undefined | number>;
 };
 
-/**
- * @category Base
- */
+/** @category Base */
 export type BaseStateController = {
-  /**
-   * Return the {@link StateAccessor} for a SociablyChannel
-   */
+  /** Return the {@link StateAccessor} for a SociablyChannel */
   channelState(
     /** The channel object */
-    channel: SociablyChannel
+    channel: SociablyChannel,
   ): StateAccessor;
 
-  /**
-   * Return the {@link StateAccessor} for a SociablyThread
-   */
+  /** Return the {@link StateAccessor} for a SociablyThread */
   threadState(
     /** The thread object */
-    thread: SociablyThread
+    thread: SociablyThread,
   ): StateAccessor;
 
-  /**
-   * Return the {@link StateAccessor} for a SociablyUser
-   */
+  /** Return the {@link StateAccessor} for a SociablyUser */
   userState(
     /** The user object */
-    user: SociablyUser
+    user: SociablyUser,
   ): StateAccessor;
 
-  /**
-   * Return the {@link StateAccessor} for a global name
-   */
+  /** Return the {@link StateAccessor} for a global name */
   globalState(name: string): StateAccessor;
 };
 

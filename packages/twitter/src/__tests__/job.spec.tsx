@@ -86,10 +86,10 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
                 null as never,
               ][i],
               request,
-              [['11111', '22222'], null, ['33333'], ['44444'], null][i]
+              [['11111', '22222'], null, ['33333'], ['44444'], null][i],
             )
-          : request
-      )
+          : request,
+      ),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -267,10 +267,10 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
                 ['33333'],
                 ['44444', '55555', '66666', '77777'],
                 ['88888'],
-              ][i]
+              ][i],
             )
-          : request
-      )
+          : request,
+      ),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -394,10 +394,10 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           ? accomplishRequest(
               [target, new TweetTarget('12345', '23456')][i],
               request,
-              [null, ['11111']][i]
+              [null, ['11111']][i],
             )
-          : request
-      )
+          : request,
+      ),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -510,10 +510,10 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
                 new TweetTarget('12345', '67890'),
               ][i],
               request,
-              [null, ['11111'], null, ['22222'], ['33333'], ['44444']][i]
+              [null, ['11111'], null, ['22222'], ['33333'], ['44444']][i],
             )
-          : request
-      )
+          : request,
+      ),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -642,9 +642,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             accomplishRequest: null,
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"direct message feature <foo /> cannot be used while tweeting"`
+      `"direct message feature <foo /> cannot be used while tweeting"`,
     );
   });
 });
@@ -692,10 +692,10 @@ describe('createDmSegmentValue(chat, segment)', () => {
           ? accomplishRequest(
               chat,
               request,
-              i === 1 ? ['11111'] : i === 2 ? ['22222'] : null
+              i === 1 ? ['11111'] : i === 2 ? ['22222'] : null,
             )
-          : request
-      )
+          : request,
+      ),
     ).toMatchInlineSnapshot(`
       [
         {
@@ -790,9 +790,9 @@ describe('createDmSegmentValue(chat, segment)', () => {
             accomplishRequest: null,
           },
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"tweeting feature <foo /> cannot be used while tweeting"`
+      `"tweeting feature <foo /> cannot be used while tweeting"`,
     );
   });
 });
@@ -801,7 +801,7 @@ describe('createWelcomeMessageJobs', () => {
   test('with text segment', async () => {
     const jobs = createWelcomeMessageJobs('foo')(
       new TweetTarget('1234567890'),
-      [{ type: 'text', node: 'Foo!', value: 'Foo!', path: '$' }]
+      [{ type: 'text', node: 'Foo!', value: 'Foo!', path: '$' }],
     );
     expect(jobs).toMatchSnapshot();
 
@@ -840,7 +840,7 @@ describe('createWelcomeMessageJobs', () => {
           },
           path: '$',
         },
-      ]
+      ],
     );
     expect(jobs).toMatchSnapshot();
 
@@ -881,7 +881,7 @@ describe('createWelcomeMessageJobs', () => {
           }),
           path: '$',
         },
-      ]
+      ],
     );
     expect(jobs).toMatchSnapshot();
 
@@ -927,9 +927,9 @@ describe('createWelcomeMessageJobs', () => {
           },
           path: '$',
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<foo /> cannot be used as welcome message"`
+      `"<foo /> cannot be used as welcome message"`,
     );
 
     expect(() =>
@@ -949,9 +949,9 @@ describe('createWelcomeMessageJobs', () => {
           },
           path: '$',
         },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<foo /> cannot be used as welcome message"`
+      `"<foo /> cannot be used as welcome message"`,
     );
   });
 
@@ -960,9 +960,9 @@ describe('createWelcomeMessageJobs', () => {
       createWelcomeMessageJobs('foo')(new TweetTarget('1234567890'), [
         { type: 'text', node: 'Bar!', value: 'Bar!', path: '$:1' },
         { type: 'text', node: 'Baz!', value: 'Baz!', path: '$:1' },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"welcome message should contain only one direct message"`
+      `"welcome message should contain only one direct message"`,
     );
 
     const creator = createWelcomeMessageJobs('foo');
@@ -973,9 +973,9 @@ describe('createWelcomeMessageJobs', () => {
     expect(() =>
       creator(new TweetTarget('1234567890'), [
         { type: 'text', node: 'Baz!', value: 'Baz!', path: '$:2' },
-      ])
+      ]),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"welcome message should contain only one direct message"`
+      `"welcome message should contain only one direct message"`,
     );
   });
 });

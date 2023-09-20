@@ -15,7 +15,7 @@ export type RoutingInfo = {
 export type RequestHandler = (
   req: IncomingMessage,
   res: ServerResponse,
-  routingInfo: RoutingInfo
+  routingInfo: RoutingInfo,
 ) => void;
 
 export type RequestRoute = {
@@ -35,7 +35,7 @@ export type UpgradeHandler = (
   req: IncomingMessage,
   socket: Socket,
   head: Buffer,
-  routingInfo: RoutingInfo
+  routingInfo: RoutingInfo,
 ) => void;
 
 export type UpgradeRoute = {
@@ -65,6 +65,9 @@ export type HttpConfigs = {
   listenOptions?: ServerListenOptions;
   /** Set to `true` to prevent listening HTTP request when app start */
   noServer?: boolean;
-  /** The external entry point URL of the server. If the URL contain a pathname, it must be a directory ends with `/` */
+  /**
+   * The external entry point URL of the server. If the URL contain a pathname,
+   * it must be a directory ends with `/`
+   */
   entryUrl: string;
 };

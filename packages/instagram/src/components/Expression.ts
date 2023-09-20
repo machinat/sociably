@@ -8,8 +8,9 @@ import makeInstagramComponent from '../utils/makeInstagramComponent.js';
 
 export type ExpressionProps = Omit<MessengerExpressionProps, 'tag'> & {
   /**
-   * Human agent support for issues that cannot be resolved within the 24 hour standard messaging window, such
-   * as resolving issues outside normal business hours or issues requiring more than 24 hours to resolve
+   * Human agent support for issues that cannot be resolved within the 24 hour
+   * standard messaging window, such as resolving issues outside normal business
+   * hours or issues requiring more than 24 hours to resolve
    */
   tag?: 'HUMAN_AGENT';
 };
@@ -17,6 +18,7 @@ export type ExpressionProps = Omit<MessengerExpressionProps, 'tag'> & {
 /**
  * Annotate all the children content with the message settings attributes and
  * append quick replies after the content.
+ *
  * @category Component
  * @props {@link ExpressionProps}
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
@@ -25,7 +27,7 @@ export type ExpressionProps = Omit<MessengerExpressionProps, 'tag'> & {
 export const Expression = makeInstagramComponent(function Expression(
   node: NativeElement<ExpressionProps, AnyNativeComponent>,
   path: string,
-  innerRender: InnerRenderFn
+  innerRender: InnerRenderFn,
 ) {
   return MessengerExpression(node, path, innerRender);
 });

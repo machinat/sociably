@@ -94,8 +94,8 @@ test('rendering value', async () => {
           { url: 'URL2', type: 'HOME' },
         ]}
         replyTo="REPLY_TO_MESSAGE_ID"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

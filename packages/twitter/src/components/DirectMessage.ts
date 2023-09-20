@@ -5,21 +5,32 @@ import makeTwitterComponent from '../utils/makeTwitterComponent.js';
 import createDmSegmentValue from '../utils/createDmSegmentValue.js';
 import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type DirectMessageProps = {
   /** Texual content of the direct message */
   children?: SociablyNode;
-  /** The media attached to the message. Should contain exactly one {@link Photo}, {@link Video} or {@link AnimatedGif} */
+  /**
+   * The media attached to the message. Should contain exactly one {@link Photo},
+   * {@link Video} or {@link AnimatedGif}
+   */
   media?: SociablyNode;
-  /** The twitter place represent the location. You can search places using [`geo/search API`](https://developer.twitter.com/en/docs/twitter-api/v1/geo/places-near-location/api-reference/get-geo-search) */
+  /**
+   * The twitter place represent the location. You can search places using
+   * [`geo/search
+   * API`](https://developer.twitter.com/en/docs/twitter-api/v1/geo/places-near-location/api-reference/get-geo-search)
+   */
   placeId?: string;
   /** The coordinates of the location */
   coordinates?: { latitude: number; longitude: number };
-  /** Url buttons to be attached below the messages. Should contain only {@link UrlButton} */
+  /**
+   * Url buttons to be attached below the messages. Should contain only
+   * {@link UrlButton}
+   */
   buttons?: SociablyNode;
-  /** Quick replies to be attached after the messages. Should contain only {@link QuickReply} */
+  /**
+   * Quick replies to be attached after the messages. Should contain only
+   * {@link QuickReply}
+   */
   quickReplies?: SociablyNode;
   /** The custome profile to send the messages with */
   customProfileId?: string;
@@ -27,6 +38,7 @@ export type DirectMessageProps = {
 
 /**
  * Send a direct message
+ *
  * @category Component
  * @props {@link DirectMessageProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/message-attachments/guides/attaching-location).
@@ -51,7 +63,7 @@ export const DirectMessage: TwitterComponent<
     (placeId && coordinates)
   ) {
     throw new TypeError(
-      'there should be exactly one of "media", "placeId" or "coordinates" prop'
+      'there should be exactly one of "media", "placeId" or "coordinates" prop',
     );
   }
 
@@ -75,8 +87,8 @@ export const DirectMessage: TwitterComponent<
     if (segment.type !== 'text') {
       throw new TypeError(
         `non-texual element ${formatNode(
-          segment.node
-        )} can't be placed under <DirectMessage/>`
+          segment.node,
+        )} can't be placed under <DirectMessage/>`,
       );
     }
   }
@@ -88,13 +100,13 @@ export const DirectMessage: TwitterComponent<
       mediaSegments[0].value.type !== 'media')
   ) {
     throw new TypeError(
-      `"media" prop should contain only 1 "Photo", "Video" or "AnimatedGif"`
+      `"media" prop should contain only 1 "Photo", "Video" or "AnimatedGif"`,
     );
   }
 
   const dmSegmentValue = createDmSegmentValue(
     contentSegments?.[0].value as string,
-    mediaSegments?.[0].value.attachment
+    mediaSegments?.[0].value.attachment,
   );
 
   const messageCreateParams =
@@ -135,7 +147,7 @@ export const DirectMessage: TwitterComponent<
   }
   if (buttonsSegments) {
     messageCreateParams.message_data.ctas = buttonsSegments.map(
-      ({ value }) => value
+      ({ value }) => value,
     );
   }
 

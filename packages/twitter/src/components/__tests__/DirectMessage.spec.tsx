@@ -46,7 +46,7 @@ test('rendering with plain text', async () => {
   segments = await render(
     <DirectMessage customProfileId="11111">
       <foo />
-    </DirectMessage>
+    </DirectMessage>,
   );
   expect(segments).toMatchSnapshot();
   ({ request, accomplishRequest } = (segments as any)[0].value);
@@ -76,12 +76,12 @@ test('rendering with plain text', async () => {
 
 test('rendering with media', async () => {
   const segments = await render(
-    <DirectMessage media={<Photo mediaId="11111" />} />
+    <DirectMessage media={<Photo mediaId="11111" />} />,
   );
   expect(segments).toMatchSnapshot();
   const { request, accomplishRequest } = (segments as any)[0].value;
   expect(
-    accomplishRequest(new TwitterChat('12345', '67890'), request, ['11111'])
+    accomplishRequest(new TwitterChat('12345', '67890'), request, ['11111']),
   ).toMatchInlineSnapshot(`
     {
       "method": "POST",
@@ -121,7 +121,7 @@ test('rendering with buttons', async () => {
       }
     >
       Guess one
-    </DirectMessage>
+    </DirectMessage>,
   );
   expect(segments).toMatchSnapshot();
   const { request, accomplishRequest } = (segments as any)[0].value;
@@ -177,7 +177,7 @@ test('rendering with quick replies', async () => {
       }
     >
       Guess one
-    </DirectMessage>
+    </DirectMessage>,
   );
   expect(segments).toMatchSnapshot();
   const { request, accomplishRequest } = (segments as any)[0].value;
@@ -226,7 +226,7 @@ test('rendering with quick replies', async () => {
 
 test('rendering with placeId', async () => {
   const segments = await render(
-    <DirectMessage placeId="12345">Hello there</DirectMessage>
+    <DirectMessage placeId="12345">Hello there</DirectMessage>,
   );
   expect(segments).toMatchSnapshot();
   const { request, accomplishRequest } = (segments as any)[0].value;
@@ -265,7 +265,7 @@ test('rendering with placeId', async () => {
 
 test('rendering with coordinates', async () => {
   const segments = await render(
-    <DirectMessage coordinates={{ latitude: 25.1, longitude: 121.6 }} />
+    <DirectMessage coordinates={{ latitude: 25.1, longitude: 121.6 }} />,
   );
   expect(segments).toMatchSnapshot();
   const { request, accomplishRequest } = (segments as any)[0].value;
@@ -308,9 +308,9 @@ test('rendering with coordinates', async () => {
 
 it('throw if no content and attachment available', async () => {
   await expect(
-    render(<DirectMessage />)
+    render(<DirectMessage />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"no text or attachment in <DirectMessage/>"`
+    `"no text or attachment in <DirectMessage/>"`,
   );
 });
 
@@ -320,15 +320,15 @@ it('throw if "media", "placeId" and "coordinates" are duplicated', async () => {
       <DirectMessage
         placeId="12345"
         coordinates={{ latitude: 25.1, longitude: 121.6 }}
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be exactly one of "media", "placeId" or "coordinates" prop"`
+    `"there should be exactly one of "media", "placeId" or "coordinates" prop"`,
   );
   await expect(
-    render(<DirectMessage placeId="12345" media={<Photo mediaId="11111" />} />)
+    render(<DirectMessage placeId="12345" media={<Photo mediaId="11111" />} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"there should be exactly one of "media", "placeId" or "coordinates" prop"`
+    `"there should be exactly one of "media", "placeId" or "coordinates" prop"`,
   );
 });
 
@@ -337,32 +337,32 @@ it('throw if invalid content received', async () => {
     render(
       <DirectMessage>
         <Photo mediaId="11111" />
-      </DirectMessage>
-    )
+      </DirectMessage>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-texual element <Photo /> can't be placed under <DirectMessage/>"`
+    `"non-texual element <Photo /> can't be placed under <DirectMessage/>"`,
   );
   await expect(
     render(
       <DirectMessage>
         <Sociably.Pause />
-      </DirectMessage>
-    )
+      </DirectMessage>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-texual element <Pause /> can't be placed under <DirectMessage/>"`
+    `"non-texual element <Pause /> can't be placed under <DirectMessage/>"`,
   );
 });
 
 it('throw if invalid media received', async () => {
   await expect(
-    render(<DirectMessage media="foo" />)
+    render(<DirectMessage media="foo" />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`
+    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`,
   );
   await expect(
-    render(<DirectMessage media={<Sociably.Pause />} />)
+    render(<DirectMessage media={<Sociably.Pause />} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`
+    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`,
   );
 });
 
@@ -376,9 +376,9 @@ it('throw if more than 1 media', async () => {
             <Photo mediaId="22222" />
           </>
         }
-      />
-    )
+      />,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`
+    `""media" prop should contain only 1 "Photo", "Video" or "AnimatedGif""`,
   );
 });

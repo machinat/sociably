@@ -18,6 +18,7 @@ type FacebookReceiverOptions = {
 
 /**
  * FacebookReceiver receive and pop events from Facebook platform.
+ *
  * @category Provider
  */
 export class FacebookReceiver extends MetaWebhookReceiver<FacebookEventContext> {
@@ -45,7 +46,7 @@ export class FacebookReceiver extends MetaWebhookReceiver<FacebookEventContext> 
             const rawEvents = isStandby ? stanby : messaging;
 
             return rawEvents.map((rawEvent) =>
-              eventFactory(pageId, isStandby, rawEvent)
+              eventFactory(pageId, isStandby, rawEvent),
             );
           },
           popEvent: popEventWrapper(async () => null),
@@ -66,7 +67,7 @@ const ReceiverP = serviceProviderClass({
       appSecret,
     },
     bot,
-    { popEventWrapper }
+    { popEventWrapper },
   ) =>
     new FacebookReceiver({
       bot,

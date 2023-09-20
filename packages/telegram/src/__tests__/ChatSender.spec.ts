@@ -4,7 +4,7 @@ import TelegramChatProfile from '../ChatProfile.js';
 test('marshallable type meta', () => {
   expect(TelegramChatSender.typeName).toBe('TgChatSender');
   expect(
-    TelegramChatSender.fromJSONValue({ type: 'channel', id: 12345 })
+    TelegramChatSender.fromJSONValue({ type: 'channel', id: 12345 }),
   ).toEqual(new TelegramChatSender({ type: 'channel', id: 12345 }));
 });
 

@@ -1,10 +1,11 @@
 import Stream from '../stream.js';
 import { StreamingFrame, OperatorFunction } from '../types.js';
 
-const doAsyncByKey = <T, R>(
-  effect: (frame: StreamingFrame<T>, observer: Stream<R>) => Promise<void>
-): OperatorFunction<T, R> => {
-  return (input: Stream<T>) => {
+const doAsyncByKey =
+  <T, R>(
+    effect: (frame: StreamingFrame<T>, observer: Stream<R>) => Promise<void>,
+  ): OperatorFunction<T, R> =>
+  (input: Stream<T>) => {
     const buffersByThread = new Map<string, StreamingFrame<T>[]>();
     const destination = new Stream<R>();
 
@@ -47,11 +48,10 @@ const doAsyncByKey = <T, R>(
 
       (errFrame: StreamingFrame<Error>) => {
         destination.error(errFrame);
-      }
+      },
     );
 
     return destination;
   };
-};
 
 export default doAsyncByKey;

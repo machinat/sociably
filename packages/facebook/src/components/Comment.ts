@@ -17,12 +17,13 @@ export type CommentProps = {
   children?: SociablyNode;
   /** A PagePhoto element to be attached with the comment */
   photo?: SociablyNode;
-  /** The URL of an image to include as a photo comment.  */
+  /** The URL of an image to include as a photo comment. */
   gifShareUrl?: string;
 };
 
 /**
  * Comment on a Facebook instance
+ *
  * @category Component
  * @props {@link CommentProps}
  * @guides Check official [reference](https://developers.facebook.com/docs/graph-api/reference/v15.0/object/comments).
@@ -52,18 +53,18 @@ export const Comment: FacebookComponent<
       photoSeg.value.apiPath !== PATH_PHOTOS
     ) {
       throw new TypeError(
-        '"photo" should contain exactly one <PagePhoto/> element'
+        '"photo" should contain exactly one <PagePhoto/> element',
       );
     }
   }
   if (!messageSegments && !photoSegments && !gifShareUrl) {
     throw new TypeError(
-      'there should be at least one of "children", "photo" or "gifShareUrl" prop'
+      'there should be at least one of "children", "photo" or "gifShareUrl" prop',
     );
   }
   if (photoSegments && gifShareUrl) {
     throw new TypeError(
-      '"photo" and "gifShareUrl" props can\'t be set together'
+      '"photo" and "gifShareUrl" props can\'t be set together',
     );
   }
 

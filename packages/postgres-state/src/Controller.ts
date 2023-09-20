@@ -39,9 +39,7 @@ export type TableNamingOptions = {
   userStateTableName?: string;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class PostgresStateController implements BaseStateController {
   private _pool: Pool;
   private _marshaler: BaseMarshaler;
@@ -60,7 +58,7 @@ export class PostgresStateController implements BaseStateController {
       channelStateTableName = DEFAULT_CHANNEL_STATE_TABLE_NAME,
       threadStateTableName = DEFAULT_THREAD_STATE_TABLE_NAME,
       userStateTableName = DEFAULT_USER_STATE_TABLE_NAME,
-    }: TableNamingOptions = {}
+    }: TableNamingOptions = {},
   ) {
     this._pool = pool;
     this._marshaler = marshaler || {
@@ -81,7 +79,7 @@ export class PostgresStateController implements BaseStateController {
       this._marshaler,
       getInstanceStateIdentifierFields(channel.uniqueIdentifier),
       this.schemaName,
-      this.channelStateTableName
+      this.channelStateTableName,
     );
   }
 
@@ -91,7 +89,7 @@ export class PostgresStateController implements BaseStateController {
       this._marshaler,
       getInstanceStateIdentifierFields(thread.uniqueIdentifier),
       this.schemaName,
-      this.threadStateTableName
+      this.threadStateTableName,
     );
   }
 
@@ -101,7 +99,7 @@ export class PostgresStateController implements BaseStateController {
       this._marshaler,
       getInstanceStateIdentifierFields(user.uniqueIdentifier),
       this.schemaName,
-      this.userStateTableName
+      this.userStateTableName,
     );
   }
 
@@ -111,7 +109,7 @@ export class PostgresStateController implements BaseStateController {
       this._marshaler,
       getGlobalStateIdentifierFields(name),
       this.schemaName,
-      this.globalStateTableName
+      this.globalStateTableName,
     );
   }
 
@@ -154,7 +152,7 @@ export class PostgresStateController implements BaseStateController {
           "${FIELD_STATE_ID}",
           "${FIELD_STATE_KEY}"
         )
-      );`
+      );`,
         )
         .join('')}
     `);

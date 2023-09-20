@@ -18,6 +18,7 @@ type WhatsAppReceiverOptions = {
 
 /**
  * WhatsAppReceiver receive and pop events from WhatsApp platform.
+ *
  * @category Provider
  */
 export class WhatsAppReceiver extends MetaWebhookReceiver<WhatsAppEventContext> {
@@ -58,7 +59,7 @@ const ReceiverP = serviceProviderClass({
       appSecret,
     },
     bot,
-    { popEventWrapper }
+    { popEventWrapper },
   ) =>
     new WhatsAppReceiver({
       bot,

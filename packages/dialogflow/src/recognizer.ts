@@ -41,9 +41,7 @@ type DetectIntentOptions = {
   resetContexts?: boolean;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class DialogflowIntentRecognizer<
   Recognition extends RecognitionData<string, string> = RecognitionData<
     string,
@@ -63,7 +61,7 @@ export class DialogflowIntentRecognizer<
   constructor(
     options: Recognition extends RecognitionData<infer Language, infer Intent>
       ? DialogflowConfigs<Language, Intent>
-      : never
+      : never,
   ) {
     const {
       projectId,
@@ -92,7 +90,7 @@ export class DialogflowIntentRecognizer<
   async detectText(
     thread: SociablyThread,
     text: string,
-    options?: DetectIntentOptions
+    options?: DetectIntentOptions,
   ): Promise<DetectIntentResult<Recognition, DetactIntentPayload>> {
     const client = new SessionsClient(this._clientOptions);
 
@@ -103,7 +101,7 @@ export class DialogflowIntentRecognizer<
           this.projectId,
           this.environment,
           '-',
-          thread.uid
+          thread.uid,
         );
 
     const [{ responseId, webhookStatus, queryResult }] =
@@ -122,14 +120,14 @@ export class DialogflowIntentRecognizer<
                   ? client.projectAgentSessionContextPath(
                       this.projectId,
                       thread.uid,
-                      contextName
+                      contextName,
                     )
                   : client.projectAgentEnvironmentUserSessionContextPath(
                       this.projectId,
                       this.environment,
                       '-',
                       thread.uid,
-                      contextName
+                      contextName,
                     ),
               })),
             }
@@ -166,7 +164,7 @@ export class DialogflowIntentRecognizer<
 
     const projectPath = agentsClient.projectPath(this.projectId);
     const supportedLanguages = agentData.languages.filter(
-      (lang) => lang !== agentData.defaultLanguage
+      (lang) => lang !== agentData.defaultLanguage,
     );
 
     // get agent if existed
@@ -216,7 +214,7 @@ export class DialogflowIntentRecognizer<
   }
 
   private async _updateVersion(
-    agentData: RecognitionData
+    agentData: RecognitionData,
   ): Promise<[DialogFlowVersion, boolean]> {
     const versionsClient = new VersionsClient(this._clientOptions);
     const intentsClient = new IntentsClient(this._clientOptions);
@@ -240,7 +238,7 @@ export class DialogflowIntentRecognizer<
 
     const versionDesc = getRecognitionDataId(agentData);
     const existedVersion = versions.find(
-      (ver) => ver.description === versionDesc
+      (ver) => ver.description === versionDesc,
     );
     if (existedVersion) {
       return [existedVersion, false];
@@ -308,7 +306,7 @@ export class DialogflowIntentRecognizer<
       [environment] = await environmentsClient.getEnvironment({
         name: environmentsClient.projectAgentEnvironmentPath(
           this.projectId,
-          this.environment
+          this.environment,
         ),
       });
     } catch (err) {

@@ -5,7 +5,7 @@ import { renderUnitElement } from './utils.js';
 
 it('is a valid component', () => {
   expect(isNativeType(<Image originalContentUrl="" previewImageUrl="" />)).toBe(
-    true
+    true,
   );
   expect(Image.$$platform).toBe('line');
   expect(Image.$$name).toBe('Image');
@@ -14,8 +14,8 @@ it('is a valid component', () => {
 it('match snapshot', async () => {
   await expect(
     renderUnitElement(
-      <Image originalContentUrl="https://..." previewImageUrl="https://..." />
-    )
+      <Image originalContentUrl="https://..." previewImageUrl="https://..." />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

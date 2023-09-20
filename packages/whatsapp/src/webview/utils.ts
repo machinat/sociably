@@ -6,7 +6,7 @@ import WhatsAppAgent from '../Agent.js';
 import type { WhatsAppAuthContext, WhatsAppAuthData } from './types.js';
 
 export const getAuthContextDetails = (
-  data: WhatsAppAuthData
+  data: WhatsAppAuthData,
 ): ContextDetails<WhatsAppAuthContext> => {
   const {
     agent: { id: agentNumberId, num: agentNumber },

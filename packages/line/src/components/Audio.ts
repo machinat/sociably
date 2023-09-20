@@ -2,9 +2,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent, MessageSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type AudioProps = {
   /** URL of audio file (Max character limit: 1000) */
   originalContentUrl: string;
@@ -14,6 +12,7 @@ export type AudioProps = {
 
 /**
  * Audio sends an audio message.
+ *
  * @category Component
  * @props {@link AudioProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#video-message).

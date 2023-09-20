@@ -20,6 +20,7 @@ const PROFILE_FIELDS = [
 
 /**
  * InstagramProfiler fetch user profile from Meta API.
+ *
  * @category Provider
  */
 export class InstagramProfiler
@@ -36,7 +37,7 @@ export class InstagramProfiler
 
   async getUserProfile(
     agent: string | InstagramAgent,
-    user: string | InstagramUser
+    user: string | InstagramUser,
   ): Promise<null | InstagramUserProfile> {
     const userId = typeof user === 'string' ? user : user.id;
 

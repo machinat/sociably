@@ -49,7 +49,7 @@ const debounce = <T>(t: number): OperatorFunction<T, T[]> => {
           });
         }
       },
-      (frame) => destination.error(frame)
+      (frame) => destination.error(frame),
     );
 
     return destination;

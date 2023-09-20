@@ -16,9 +16,7 @@ import { AgentSettingsAccessorI } from '../interface.js';
 import { getAuthContextDetails } from './utils.js';
 import type { InstagramAuthContext, InstagramAuthData } from './types.js';
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class InstagramServerAuthenticator
   implements
     ServerAuthenticator<never, InstagramAuthData, InstagramAuthContext>
@@ -38,7 +36,7 @@ export class InstagramServerAuthenticator
     bot: BotP,
     profiler: ProfilerP,
     basicAuthenticator: BasicAuthenticator,
-    settingsAccessor: AgentSettingsAccessorI
+    settingsAccessor: AgentSettingsAccessorI,
   ) {
     this.profiler = profiler;
     this.basicAuthenticator = basicAuthenticator;
@@ -85,7 +83,7 @@ export class InstagramServerAuthenticator
     const settings = await this.settingsAccessor.getAgentSettings(agent);
     if (!settings) {
       throw new Error(
-        `instagram agent account "${agent.username}" not registered`
+        `instagram agent account "${agent.username}" not registered`,
       );
     }
 
@@ -98,7 +96,7 @@ export class InstagramServerAuthenticator
         },
         user: user.id,
       },
-      redirectUrl
+      redirectUrl,
     );
   }
 
@@ -120,7 +118,7 @@ export class InstagramServerAuthenticator
 
   // eslint-disable-next-line class-methods-use-this
   checkAuthData(
-    data: InstagramAuthData
+    data: InstagramAuthData,
   ): CheckDataResult<InstagramAuthContext> {
     return {
       ok: true,
@@ -130,7 +128,7 @@ export class InstagramServerAuthenticator
 
   private async verifyUser(
     agentId: string,
-    userId: string
+    userId: string,
   ): Promise<VerifyResult<InstagramAuthData>> {
     try {
       const [settings, userProfile] = await Promise.all([

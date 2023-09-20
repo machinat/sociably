@@ -3,9 +3,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { PATH_PASS_THREAD_CONTROL } from '../constant.js';
 import type { PassThreadControlValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type PassThreadControlProps = {
   /**
    * The app ID to pass thread control to. Required if the Primary Receiver is
@@ -23,7 +21,7 @@ export type PassThreadControlProps = {
 
 export function PassThreadControl(
   node: NativeElement<PassThreadControlProps, AnyNativeComponent>,
-  path: string
+  path: string,
 ): UnitSegment<PassThreadControlValue>[] {
   const { targetAppId, metadata } = node.props;
   return [

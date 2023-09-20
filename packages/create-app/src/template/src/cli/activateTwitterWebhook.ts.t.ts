@@ -2,7 +2,7 @@ import { when } from '../../../utils.js';
 import { CreateAppContext } from '../../../types.js';
 
 export default ({ platforms }: CreateAppContext): string => when(
-  platforms.includes('twitter')
+  platforms.includes('twitter'),
 )`
 #!/usr/bin/env node
 import Twitter from '@sociably/twitter';

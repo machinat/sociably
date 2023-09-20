@@ -23,9 +23,9 @@ export const SOCKET_CLOSED = 3;
  *
  * [frameType, sequence, body]
  *
- * frameType: string, type of a frame
- * sequence: number, the message sequence on the socket it transmitted on
- * body: object, body object correponded to the frame type
+ * FrameType: string, type of a frame sequence: number, the message sequence on
+ * the socket it transmitted on body: object, body object correponded to the
+ * frame type
  */
 const FRAME_EVENTS = 'events';
 const FRAME_REJECT = 'reject';
@@ -33,26 +33,20 @@ const FRAME_LOGIN = 'login';
 const FRAME_CONNECT = 'connect';
 const FRAME_DISCONNECT = 'disconnect';
 
-/**
- * Event frame carries events delivered on a specified connection
- */
+/** Event frame carries events delivered on a specified connection */
 export type EventsBody = {
   connId: string;
   values: EventInput[];
 };
 
-/**
- * Reject frame reject an illegal frame transmitted before
- */
+/** Reject frame reject an illegal frame transmitted before */
 export type RejectBody = {
   seq: number; // seq of the rejected frame
   // code: number,
   reason: string;
 };
 
-/**
- * Login frame request for signing in a connection
- */
+/** Login frame request for signing in a connection */
 export type LoginBody = {
   credential?: any;
 };
@@ -82,54 +76,41 @@ export type DisconnectBody = {
  *
  * Connect Handshake: this initiate a connection
  *
- *  +---------+             +---------+
- *  | Client  |             | Server  |
- *  +---------+             +---------+
- *       |                        |
- *       | LOGIN                  |
- *       |----------------------->|
- *       |                        |
- *       |                        | verify auth
- *       |                        |------------
- *       |                        |           |
- *       |                        |<-----------
- *       |                        | --------------------------\
- *       |                        |-| or initiative by Server |
- *       |                        | |-------------------------|
- *       |                        |
- *       |                CONNECT |
- *       |<-----------------------|
- *       |                        |
- *       | CONNECT                |
- *       |----------------------->|
- *       |                        | -----------------------\
- *       |                        |-| ok to emit event now |
- *       |                        | |----------------------|
- *       |               DISPATCH |
- *       |<-----------------------|
- *       |                        |
+ * +---------+ +---------+ | Client | | Server | +---------+ +---------+ | | |
+ * LOGIN | |----------------------->| | | | | verify auth | |------------ | | |
+ *
+ * | |<----------- | | --------------------------\
+ * | |-| or initiative by Server | | | |-------------------------| | | | CONNECT
+ * | |<-----------------------| | | | CONNECT | |----------------------->| | |
+ *
+ * -----------------------\
+ *
+ * | |-| ok to emit event now | | | |----------------------| | DISPATCH |
+ * |<-----------------------| | |
  *
  * Disconnect Handshake: disconnect a connected connection, this can be initiate
- *                       on both Client and Server
+ * on both Client and Server
  *
  *                        +---------+                +---------+
- *                        | Client  |                | Server  |
- *                        +---------+                +---------+
- *                             |                           |
- *                             |                DISCONNECT |
- *                             |<--------------------------|
- * --------------------------\ |                           |
- * | event before DISCONNECT |-|                           |
- * | echoed back still count | |                           |
- * |-------------------------| |                           |
- *                             |                           |
- *                             | DISPATCH                  |
- *                             |-------------------------->|
- *                             |                           |
- *                             | DISCONNECT                |
- *                             |-------------------------->|
- *                             |                           |
+ *                | Client  |                | Server  |
+ *                +---------+                +---------+
+ *                     |                           |
+ *                     |                DISCONNECT |
+ *                     |<--------------------------|
  *
+ * --------------------------\ | |
+ *
+ * | event before DISCONNECT |-| |
+ * | echoed back still count | | |
+ * |-------------------------| | |
+ *
+ *                             |                           |
+ *                     | DISPATCH                  |
+ *                     |-------------------------->|
+ *                     |                           |
+ *                     | DISCONNECT                |
+ *                     |-------------------------->|
+ *                     |                           |
  */
 const STATE_CONNECTED_OK = 0;
 
@@ -156,7 +137,7 @@ function handleWsOpen(this: WsSocket & WithSocket) {
 function handleWsClose(
   this: WsSocket & WithSocket,
   code: number,
-  reason: string
+  reason: string,
 ) {
   const { socket } = this;
   socket._emitClose(code, reason);
@@ -299,7 +280,7 @@ class Socket extends EventEmitter {
     if (state === undefined) {
       // throw if not even connecting
       throw new SocketError(
-        `connection [${connId}] not existed or already disconnected`
+        `connection [${connId}] not existed or already disconnected`,
       );
     } else if (state & FLAG_DISCONNECT_SENT) {
       // return nothing while waiting for echo
@@ -526,7 +507,7 @@ class Socket extends EventEmitter {
       this._outdateHandshakeCallback,
       HANDSHAKE_TIMEOUT,
       connectionId,
-      seq
+      seq,
     );
     this._handshakeTimeouts.set(connectionId, timeoutId);
   }

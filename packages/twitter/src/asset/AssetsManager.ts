@@ -28,6 +28,7 @@ const makeResourceToken = (agentId: string, resource: string): string =>
 
 /**
  * TwitterAssetsManager stores ids of assets created at Twitter platform.
+ *
  * @category Provider
  */
 export class TwitterAssetsManager {
@@ -42,7 +43,7 @@ export class TwitterAssetsManager {
   async getAssetId(
     agent: string | TwitterUser,
     resource: string,
-    assetTag: string
+    assetTag: string,
   ): Promise<undefined | string> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
     const existed = await this._stateController
@@ -55,7 +56,7 @@ export class TwitterAssetsManager {
     agent: string | TwitterUser,
     resource: string,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
     const isUpdated = await this._stateController
@@ -66,7 +67,7 @@ export class TwitterAssetsManager {
 
   getAllAssets(
     agent: string | TwitterUser,
-    resource: string
+    resource: string,
   ): Promise<null | Map<string, string>> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
     return this._stateController
@@ -77,7 +78,7 @@ export class TwitterAssetsManager {
   async unsaveAssetId(
     agent: string | TwitterUser,
     resource: string,
-    assetTag: string
+    assetTag: string,
   ): Promise<boolean> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
     const isDeleted = await this._stateController
@@ -90,7 +91,7 @@ export class TwitterAssetsManager {
   // media
   getMedia(
     agent: string | TwitterUser,
-    assetTag: string
+    assetTag: string,
   ): Promise<undefined | string> {
     return this.getAssetId(agent, MEDIA, assetTag);
   }
@@ -98,13 +99,13 @@ export class TwitterAssetsManager {
   saveMedia(
     agent: string | TwitterUser,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     return this.saveAssetId(agent, MEDIA, assetTag, id);
   }
 
   getAllMedia(
-    agent: string | TwitterUser
+    agent: string | TwitterUser,
   ): Promise<null | Map<string, string>> {
     return this.getAllAssets(agent, MEDIA);
   }
@@ -116,7 +117,7 @@ export class TwitterAssetsManager {
   async uploadMedia(
     agent: string | TwitterUser,
     assetTag: string,
-    media: SociablyNode
+    media: SociablyNode,
   ): Promise<RenderMediaResponse> {
     const results = await this._bot.uploadMedia(agent, media);
     if (!results) {
@@ -132,7 +133,7 @@ export class TwitterAssetsManager {
   // welcome message
   getWelcomeMessage(
     agent: string | TwitterUser,
-    assetTag: string
+    assetTag: string,
   ): Promise<undefined | string> {
     return this.getAssetId(agent, WELCOME_MESSAGE, assetTag);
   }
@@ -140,20 +141,20 @@ export class TwitterAssetsManager {
   saveWelcomeMessage(
     agent: string | TwitterUser,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     return this.saveAssetId(agent, WELCOME_MESSAGE, assetTag, id);
   }
 
   getAllWelcomeMessages(
-    agent: string | TwitterUser
+    agent: string | TwitterUser,
   ): Promise<null | Map<string, string>> {
     return this.getAllAssets(agent, WELCOME_MESSAGE);
   }
 
   unsaveWelcomeMessage(
     agent: string | TwitterUser,
-    assetTag: string
+    assetTag: string,
   ): Promise<boolean> {
     return this.unsaveAssetId(agent, WELCOME_MESSAGE, assetTag);
   }
@@ -161,12 +162,12 @@ export class TwitterAssetsManager {
   async createWelcomeMessage(
     agent: string | TwitterUser,
     assetTag: string,
-    message: SociablyNode
+    message: SociablyNode,
   ): Promise<undefined | string> {
     const result = await this._bot.createWelcomeMessage(
       agent,
       assetTag,
-      message
+      message,
     );
     if (!result) {
       throw new Error('message content is empty');
@@ -179,7 +180,7 @@ export class TwitterAssetsManager {
 
   async deleteWelcomeMessage(
     agent: string | TwitterUser,
-    assetTag: string
+    assetTag: string,
   ): Promise<string> {
     const welcomeId = await this.getWelcomeMessage(agent, assetTag);
     if (!welcomeId) {
@@ -199,7 +200,7 @@ export class TwitterAssetsManager {
   // custome profile
   getCustomProfile(
     agent: string | TwitterUser,
-    assetTag: string
+    assetTag: string,
   ): Promise<undefined | string> {
     return this.getAssetId(agent, CUSTOM_PROFILE, assetTag);
   }
@@ -207,20 +208,20 @@ export class TwitterAssetsManager {
   saveCustomProfile(
     agent: string | TwitterUser,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     return this.saveAssetId(agent, CUSTOM_PROFILE, assetTag, id);
   }
 
   getAllCustomProfiles(
-    agent: string | TwitterUser
+    agent: string | TwitterUser,
   ): Promise<null | Map<string, string>> {
     return this.getAllAssets(agent, CUSTOM_PROFILE);
   }
 
   unsaveCustomProfile(
     agent: string | TwitterUser,
-    assetTag: string
+    assetTag: string,
   ): Promise<boolean> {
     return this.unsaveAssetId(agent, CUSTOM_PROFILE, assetTag);
   }
@@ -229,7 +230,7 @@ export class TwitterAssetsManager {
     agent: string | TwitterUser,
     assetTag: string,
     name: string,
-    mediaId: string
+    mediaId: string,
   ): Promise<string> {
     const {
       custom_profile: { id: customProfileId },
@@ -251,7 +252,7 @@ export class TwitterAssetsManager {
 
   async deleteCustomProfile(
     agent: string | TwitterUser,
-    assetTag: string
+    assetTag: string,
   ): Promise<string> {
     const customProfileId = await this.getCustomProfile(agent, assetTag);
     if (!customProfileId) {

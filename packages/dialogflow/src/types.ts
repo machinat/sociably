@@ -18,11 +18,21 @@ export type DialogflowConfigs<
   agentTimeZone?: string;
   /** The environment to be used by the module. Default to 'sociably-entry' */
   environment?: string;
-  /** Set to true to prevent the package from editing DialogFlow data, i.e. you have to mangage the DialogFlow project on your own */
+  /**
+   * Set to true to prevent the package from editing DialogFlow data, i.e. you
+   * have to mangage the DialogFlow project on your own
+   */
   manualMode?: boolean;
-  /** If it's set to true, the default agent is used to detect intent instead under the environment. */
+  /**
+   * If it's set to true, the default agent is used to detect intent instead
+   * under the environment.
+   */
   useDefaultAgent?: boolean;
-  /** The constructor options of a GCP client. Omit this if you already set the `GOOGLE_APPLICATION_CREDENTIALS` env. Check https://github.com/googleapis/gax-nodejs/blob/main/client-libraries.md#constructor-options */
+  /**
+   * The constructor options of a GCP client. Omit this if you already set the
+   * `GOOGLE_APPLICATION_CREDENTIALS` env. Check
+   * https://github.com/googleapis/gax-nodejs/blob/main/client-libraries.md#constructor-options
+   */
   clientOptions?: ClientOptions;
 };
 

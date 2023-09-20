@@ -17,14 +17,14 @@ export class MemoServerAuthenticator
 
   async delegateAuthRequest(
     req: IncomingMessage,
-    res: ServerResponse
+    res: ServerResponse,
   ): Promise<void> {
     res.writeHead(403);
     res.end();
   }
 
   async verifyCredential(
-    data: MemoAuthData
+    data: MemoAuthData,
   ): Promise<VerifyResult<MemoAuthData>> {
     return {
       ok: true as const,
@@ -33,7 +33,7 @@ export class MemoServerAuthenticator
   }
 
   async verifyRefreshment(
-    data: MemoAuthData
+    data: MemoAuthData,
   ): Promise<VerifyResult<MemoAuthData>> {
     return {
       ok: true as const,
@@ -57,7 +57,7 @@ export class MemoServerAuthenticator
 }
 
 const ServerAuthenticatorP = serviceProviderClass({ lifetime: 'transient' })(
-  MemoServerAuthenticator
+  MemoServerAuthenticator,
 );
 type ServerAuthenticatorP = MemoServerAuthenticator;
 

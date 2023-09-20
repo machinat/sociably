@@ -8,7 +8,7 @@ import type { VerifyLoginFn, HttpRequestInfo } from '@sociably/websocket';
 
 const useAuthLogin =
   <Authenticator extends AnyServerAuthenticator>(
-    controller: AuthController<Authenticator>
+    controller: AuthController<Authenticator>,
   ): VerifyLoginFn<
     UserOfAuthenticator<Authenticator>,
     ContextOfAuthenticator<Authenticator>,

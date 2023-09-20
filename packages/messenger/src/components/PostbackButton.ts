@@ -1,9 +1,7 @@
 import type { NativeElement, AnyNativeComponent } from '@sociably/core';
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type PostbackButtonProps = {
   /** Button title. 20 character limit. */
   title: string;
@@ -13,7 +11,7 @@ export type PostbackButtonProps = {
 
 export function PostbackButton(
   node: NativeElement<PostbackButtonProps, AnyNativeComponent>,
-  path: string
+  path: string,
 ): PartSegment<{}>[] {
   const { title, payload } = node.props;
   return [

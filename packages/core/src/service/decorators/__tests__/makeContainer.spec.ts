@@ -57,7 +57,7 @@ describe('serviceContainer({ deps })(fn)', () => {
     expect(() => {
       serviceContainer({ deps: [NoneService as never] })((_whatever) => 'boom');
     }).toThrowErrorMatchingInlineSnapshot(
-      `"NoneService is not a valid interface"`
+      `"NoneService is not a valid interface"`,
     );
   });
 });

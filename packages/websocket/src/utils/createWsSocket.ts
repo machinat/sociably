@@ -7,10 +7,10 @@ const createWsSocket: (
   wsServer: WsServer,
   req: IncomingMessage,
   ns: NetSocket,
-  head: Buffer
+  head: Buffer,
 ) => Promise<WebSocket> = thenifiedly.factory(
   (cb, [wsServer, req, ns, head]) => wsServer.handleUpgrade(req, ns, head, cb),
-  { beginningError: false }
+  { beginningError: false },
 );
 
 export default createWsSocket;

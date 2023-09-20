@@ -30,13 +30,15 @@ const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
 
 /**
  * MessengerAssetsManager manage assets of Messenger platform.
+ *
  * @category Provider
  */
 export class MessengerAssetsManager<
-  Channel extends MetaApiChannel
+  Channel extends MetaApiChannel,
 > extends MetaAssetsManager<Channel, MessengerBot<Channel>> {
   /**
-   * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
+   * Set app subscription of a page. Check
+   * https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
   async setSubscribedApp(
@@ -44,7 +46,7 @@ export class MessengerAssetsManager<
     {
       fields = MESSENGER_PAGE_SUBSCRIPTION_FIELDS,
       accessToken,
-    }: SetSubscribedAppOptions
+    }: SetSubscribedAppOptions,
   ): Promise<void> {
     await this.bot.requestApi({
       channel,
@@ -58,12 +60,13 @@ export class MessengerAssetsManager<
   }
 
   /**
-   * Delete app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
+   * Delete app subscription of a page. Check
+   * https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
   async deleteSubscribedApp(
     channel: string | Channel,
-    { accessToken }: { accessToken?: string } = {}
+    { accessToken }: { accessToken?: string } = {},
   ): Promise<void> {
     await this.bot.requestApi({
       channel,
@@ -74,12 +77,13 @@ export class MessengerAssetsManager<
   }
 
   /**
-   * Set Messenger profile of a page. Check https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/
+   * Set Messenger profile of a page. Check
+   * https://developers.facebook.com/docs/messenger-platform/reference/messenger-profile-api/
    * for references.
    */
   async setMessengerProfile(
     channel: string | Channel,
-    { platform, accessToken, ...profileData }: SetMessengerProfileOptions
+    { platform, accessToken, ...profileData }: SetMessengerProfileOptions,
   ): Promise<void> {
     const newSettings = snakecaseKeys(profileData);
 
@@ -141,7 +145,7 @@ export class MessengerAssetsManager<
 
   getAttachment(
     channel: string | Channel,
-    assetTag: string
+    assetTag: string,
   ): Promise<undefined | string> {
     return this.getAssetId(channel, ATTACHMENT, assetTag);
   }
@@ -149,20 +153,20 @@ export class MessengerAssetsManager<
   saveAttachment(
     channel: string | Channel,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     return this.saveAssetId(channel, ATTACHMENT, assetTag, id);
   }
 
   getAllAttachments(
-    channel: string | Channel
+    channel: string | Channel,
   ): Promise<null | Map<string, string>> {
     return this.getAllAssets(channel, ATTACHMENT);
   }
 
   unsaveAttachment(
     channel: string | Channel,
-    assetTag: string
+    assetTag: string,
   ): Promise<boolean> {
     return this.unsaveAssetId(channel, ATTACHMENT, assetTag);
   }
@@ -171,7 +175,7 @@ export class MessengerAssetsManager<
   async uploadChatAttachment(
     channel: string | Channel,
     assetTag: string,
-    node: SociablyNode
+    node: SociablyNode,
   ): Promise<string> {
     const result = await this.bot.uploadChatAttachment(channel, node);
     if (result === null) {

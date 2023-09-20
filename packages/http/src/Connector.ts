@@ -31,9 +31,7 @@ type ConnectorOptions = {
   upgradeRoutes?: (UpgradeRoute | DefaultUpgradeRoute)[];
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class HttpConnector {
   basePath: string;
   entryUrl: string;
@@ -61,7 +59,7 @@ export class HttpConnector {
             throw new Error(
               `multiple default request routes received: ${
                 this.defaultRequestRoute.name || 'unknown'
-              }, ${route.name || 'unknown'}`
+              }, ${route.name || 'unknown'}`,
             );
           }
 
@@ -81,7 +79,7 @@ export class HttpConnector {
         if (route.default) {
           if (this.defaultUpgradeRoute) {
             throw new Error(
-              `multiple default upgrade routes received: "${this.defaultUpgradeRoute.name}", "${route.name}"`
+              `multiple default upgrade routes received: "${this.defaultUpgradeRoute.name}", "${route.name}"`,
             );
           }
 
@@ -118,7 +116,7 @@ export class HttpConnector {
     for (const { path: routePath, handler } of this.requestRoutes) {
       const matchedRoutingInfo = this._getMatchedRoutingInfo(
         pathname,
-        routePath
+        routePath,
       );
       if (matchedRoutingInfo) {
         handler(req, res, matchedRoutingInfo);
@@ -151,7 +149,7 @@ export class HttpConnector {
     for (const { path: routePath, handler } of this.upgradeRoutes) {
       const matchedRoutingInfo = this._getMatchedRoutingInfo(
         pathname,
-        routePath
+        routePath,
       );
       if (matchedRoutingInfo) {
         handler(req, socket, head, matchedRoutingInfo);
@@ -178,11 +176,11 @@ export class HttpConnector {
 
   private _getMatchedRoutingInfo(
     pathname: string,
-    routePath: string
+    routePath: string,
   ): null | RoutingInfo {
     const trailingPath = getTrailingPath(
       resolvePath(this.basePath, routePath),
-      pathname
+      pathname,
     );
     return trailingPath === undefined
       ? null

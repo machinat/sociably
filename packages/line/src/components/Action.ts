@@ -2,9 +2,7 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
 import type { LineComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type PostbackActionProps = {
   /** Label for the action */
   label?: string;
@@ -24,6 +22,7 @@ export type PostbackActionProps = {
 /**
  * When a control associated with this action is tapped, a postback event is
  * returned via webhook with the specified string in the data property.
+ *
  * @category Component
  * @props {@link PostbackActionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#postback-action).
@@ -43,9 +42,7 @@ export const PostbackAction: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type MessageActionProps = {
   /** Label for the action */
   label?: string;
@@ -56,6 +53,7 @@ export type MessageActionProps = {
 /**
  * When a control associated with this action is tapped, the string in the
  * `text` property is sent as a message from the user.
+ *
  * @category Component
  * @props {@link MessageActionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#message-action).
@@ -74,9 +72,7 @@ export const MessageAction: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type UriActionProps = {
   /** Label for the action */
   label?: string;
@@ -90,6 +86,7 @@ export type UriActionProps = {
 /**
  * When a control associated with this action is tapped, the URI specified in
  * the `uri` property is opened.
+ *
  * @category Component
  * @props {@link UriActionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#uri-action).
@@ -124,11 +121,9 @@ const dateToStringByMode = (mode, d) =>
     ? fullDate(d)
     : fullHourMinute(d);
 
-/**
- * @category Props
- */
+/** @category Props */
 export type DateTimePickerActionProps = {
-  /** Label for the action  */
+  /** Label for the action */
   label?: string;
   /**
    * String returned via webhook in the postback.data property of the postback
@@ -156,6 +151,7 @@ export type DateTimePickerActionProps = {
  * returned via webhook with the date and time selected by the user from the
  * date and time selection dialog. The datetime picker action does not support
  * time zones.
+ *
  * @category Component
  * @props {@link DateTimePickerActionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#datetime-picker-action).
@@ -179,9 +175,7 @@ export const DateTimePickerAction: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type CameraActionProps = {
   /** Label for the action. Max character limit: 20 */
   label?: string;
@@ -190,6 +184,7 @@ export type CameraActionProps = {
 /**
  * This action can be configured only with quick reply buttons. When a button
  * associated with this action is tapped, the camera screen in LINE is opened.
+ *
  * @category Component
  * @props {@link CameraActionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#camera-action).
@@ -206,9 +201,7 @@ export const CameraAction: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type CameraRollActionProps = {
   /** Label for the action. Max character limit: 20 */
   label?: string;
@@ -218,6 +211,7 @@ export type CameraRollActionProps = {
  * This action can be configured only with quick reply buttons. When a button
  * associated with this action is tapped, the camera roll screen in LINE is
  * opened.
+ *
  * @category Component
  * @props {@link CameraRollActionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#camera-roll-action).
@@ -234,9 +228,7 @@ export const CameraRollAction: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type LocationActionProps = {
   /** Label for the action. Max character limit: 20 */
   label?: string;
@@ -244,7 +236,9 @@ export type LocationActionProps = {
 
 /**
  * This action can be configured only with quick reply buttons. When a button
- * associated with this action is tapped, the location screen in LINE is opened.
+ * associated with this action is tapped, the location screen in LINE is
+ * opened.
+ *
  * @category Component
  * @props {@link LocationActionProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#camera-roll-action).

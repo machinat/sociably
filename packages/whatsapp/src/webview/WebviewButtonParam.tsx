@@ -26,7 +26,7 @@ const WebviewButtonParam =
 
     const urlPostfix = authenticator.getAuthUrlPostfix(
       thread,
-      page ? posixPath.join('.', page) : undefined
+      page ? posixPath.join('.', page) : undefined,
     );
     return <UrlButtonParam urlPostfix={urlPostfix} index={index} />;
   };

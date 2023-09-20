@@ -6,7 +6,7 @@ const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 
 export function PhoneReply(
   node: NativeElement<{}, AnyNativeComponent>,
-  path: string
+  path: string,
 ): PartSegment<{}>[] {
   return [makePartSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
 }

@@ -31,7 +31,7 @@ test('api request getter', async () => {
   const { getChatRequest } = segemnts?.[0].value as ChatActionSegmentValue;
 
   expect(
-    getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_'))
+    getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'group', '_GROUP_ID_')),
   ).toEqual({
     method: 'POST',
     url: 'v2/bot/group/_GROUP_ID_/leave',
@@ -39,7 +39,7 @@ test('api request getter', async () => {
   });
 
   expect(
-    getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_'))
+    getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'room', '_ROOM_ID_')),
   ).toEqual({
     method: 'POST',
     url: 'v2/bot/room/_ROOM_ID_/leave',
@@ -53,8 +53,8 @@ test('getChatRequest throw if type of thread is user', async () => {
 
   expect(
     () =>
-      getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_'))
+      getChatRequest?.(new LineChat('_BOT_CHANNEL_ID_', 'user', '_USER_ID_')),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"<Leave /> cannot be used within an user thread"`
+    `"<Leave /> cannot be used within an user thread"`,
   );
 });

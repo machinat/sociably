@@ -68,5 +68,5 @@ export type IntermediateSegment<UnitValue, PartValue = any> =
 
 export type InnerRenderFn = <UnitValue, PartValue = any>(
   node: SociablyNode,
-  path: string
+  path: string,
 ) => Promise<null | IntermediateSegment<UnitValue, PartValue>[]>;

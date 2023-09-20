@@ -69,7 +69,7 @@ class LineClientAuthenticator
   async init(
     _url: string,
     _err: null | Error,
-    data: null | LineAuthData
+    data: null | LineAuthData,
   ): Promise<{ forceSignIn: boolean }> {
     const searchParams = new URLSearchParams(window.location.search);
     this.liffId =
@@ -80,7 +80,7 @@ class LineClientAuthenticator
 
     if (!this.liffId) {
       throw new Error(
-        'liff id is required on either `options.liffId` or `liffId` query param'
+        'liff id is required on either `options.liffId` or `liffId` query param',
       );
     }
 

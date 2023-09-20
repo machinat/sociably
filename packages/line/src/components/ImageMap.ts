@@ -12,9 +12,7 @@ import {
   ImagemapMessageParams,
 } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ImageMapAreaProps = {
   /**
    * An {@link UriAction} or {@link MessageAction} element to be triggered when
@@ -39,6 +37,7 @@ export type ImageMapAreaProps = {
 
 /**
  * ImageMapArea specifies the actions and tappable areas of an imagemap.
+ *
  * @category Component
  * @props {@link ImageMapAreaProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#imagemap-action-objects).
@@ -77,14 +76,12 @@ export const ImageMapArea: LineComponent<
               width,
               height,
             },
-          }
+          },
     ),
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ImageMapVideoAreaProps = {
   /** URL of the video file (Max character limit: 1000) */
   originalContentUrl: string;
@@ -111,6 +108,7 @@ export type ImageMapVideoAreaProps = {
 /**
  * ImageMapVideoAreaProps play a video on the image and display a label with a
  * hyperlink after the video is finished.
+ *
  * @category Component
  * @props {@link ImageMapVideoAreaProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#imagemap-message).
@@ -143,9 +141,7 @@ export const ImageMapVideoArea: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ImageMapProps = {
   /** ImageMapArea elements for the actions on touching. */
   children: SociablyNode;
@@ -166,6 +162,7 @@ export type ImageMapProps = {
  * Imagemap messages are messages configured with an image that has multiple
  * tappable areas. You can assign one tappable area for the entire image or
  * different tappable areas on divided areas of the image.
+ *
  * @category Component
  * @props {@link ImageMapProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#imagemap-message).

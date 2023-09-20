@@ -25,7 +25,7 @@ class MemoCacheTarget
       scope === MemoCacheTargetType.LocalStorage
         ? 'localStorage'
         : 'sessionStorage',
-      id
+      id,
     );
   }
 

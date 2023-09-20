@@ -2,9 +2,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent.js';
 import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type CancelRetweetProps = {
   /** The retweeted tweet id to be canceled */
   tweetId: string;
@@ -12,6 +10,7 @@ export type CancelRetweetProps = {
 
 /**
  * CancelRetweet a tweet
+ *
  * @category Component
  * @props {@link CancelRetweetProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/tweets/retweets/introduction).

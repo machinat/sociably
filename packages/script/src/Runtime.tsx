@@ -44,7 +44,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
     thread: SociablyThread,
     stack: CallStatus<unknown>[],
     promptTimestamp: undefined | number,
-    isPrompting: boolean
+    isPrompting: boolean,
   ) {
     this.thread = thread;
     this.callStack = stack;
@@ -79,7 +79,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   }
 
   async run(
-    input?: InputOfScript<Script>
+    input?: InputOfScript<Script>,
   ): Promise<RuntimeResult<ReturnOfScript<Script>, YieldOfScript<Script>>> {
     if (!this.callStack) {
       return {
@@ -101,7 +101,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
         this.thread,
         this.callStack,
         this._isPrompting,
-        input
+        input,
       );
 
     this.callStack = callStack;
@@ -121,7 +121,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
 
   resetCallStack(
     callStack: CallStatus<unknown>[],
-    { isPrompting = false }: { isPrompting?: boolean } = {}
+    { isPrompting = false }: { isPrompting?: boolean } = {},
   ): void {
     this.callStack = callStack;
     this._isPrompting = isPrompting;
@@ -145,7 +145,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
 
   async _save(
     callStack: null | CallStatus<unknown>[],
-    saveTimestamp: undefined | number
+    saveTimestamp: undefined | number,
   ): Promise<boolean> {
     if (!callStack && !saveTimestamp) {
       return false;
@@ -162,7 +162,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
         ) {
           throw new Error(
             'runtime state have changed while execution, there are maybe ' +
-              'mutiple runtimes of the same thread executing at the same time'
+              'mutiple runtimes of the same thread executing at the same time',
           );
         }
 

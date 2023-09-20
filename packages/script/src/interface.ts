@@ -2,9 +2,7 @@
 import { serviceInterface } from '@sociably/core/service';
 import type { AnyScriptLibrary } from './types.js';
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const LibraryAccessorI = serviceInterface<LibraryAccessorI>({
   name: 'ScriptLibraryAccessor',
 });

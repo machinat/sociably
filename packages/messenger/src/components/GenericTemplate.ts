@@ -15,6 +15,7 @@ import type { MessageValue } from '../types.js';
 
 /**
  * At least one property must be set in addition to title.
+ *
  * @category Props
  */
 export type GenericItemProps = {
@@ -30,8 +31,8 @@ export type GenericItemProps = {
    */
   buttons?: SociablyNode;
   /**
-   * One {@link UrlButton} element to act as the default action executed when
-   * the template is tapped.
+   * One {@link UrlButton} element to act as the default action executed when the
+   * template is tapped.
    */
   defaultAction?: SociablyNode;
 };
@@ -39,7 +40,7 @@ export type GenericItemProps = {
 export async function GenericItem(
   node: NativeElement<GenericItemProps, AnyNativeComponent>,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ): Promise<PartSegment<{}>[]> {
   const {
     buttons,
@@ -54,7 +55,7 @@ export async function GenericItem(
 
   const defaultActionSegments = await render(
     defaultActionProp,
-    '.defaultAction'
+    '.defaultAction',
   );
 
   let defaultAction;
@@ -75,9 +76,7 @@ export async function GenericItem(
   ];
 }
 
-/**
- * @category Props
- */
+/** @category Props */
 export type GenericTemplateProps = {
   /**
    * {@link GenericItem} elements under the template. Specifying multiple
@@ -96,7 +95,7 @@ export type GenericTemplateProps = {
 export async function GenericTemplate(
   node: NativeElement<GenericTemplateProps, AnyNativeComponent>,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ): Promise<UnitSegment<MessageValue>[]> {
   const { children, sharable, imageAspectRatio } = node.props;
   const elementsSegments = await render(children, '.children');

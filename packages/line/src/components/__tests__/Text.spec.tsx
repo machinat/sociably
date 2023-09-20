@@ -46,8 +46,8 @@ describe('Text', () => {
       renderUnitElement(
         <Text>
           FOO {'BAR'} <b>BAZ</b>
-        </Text>
-      )
+        </Text>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -77,8 +77,8 @@ describe('Text', () => {
         <Text>
           foo <Emoji productId="_PRUDUCT_1_" emojiId="_EMOJI_1_" /> bar{' '}
           <Emoji productId="_PRUDUCT_2_" emojiId="_EMOJI_2_" /> baz
-        </Text>
-      )
+        </Text>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -127,8 +127,8 @@ describe('Text', () => {
           <Emoji productId="_PRUDUCT_2_" emojiId="_EMOJI_2_" /> bar{' '}
           <Emoji productId="_PRUDUCT_3_" emojiId="_EMOJI_3_" /> <s>baz</s>{' '}
           <Emoji productId="_PRUDUCT_4_" emojiId="_EMOJI_4_" />
-        </Text>
-      )
+        </Text>,
+      ),
     ).resolves.toMatchInlineSnapshot(`
       [
         {
@@ -203,28 +203,28 @@ describe('Text', () => {
       renderUnitElement(
         <Text>
           FOO <Sociably.Pause />
-        </Text>
-      )
+        </Text>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"<Pause /> can't be placed in <Text/>, only textual node and <Emoji/> allowed"`
+      `"<Pause /> can't be placed in <Text/>, only textual node and <Emoji/> allowed"`,
     );
     await expect(
       renderUnitElement(
         <Text>
           FOO <UriAction uri="" />
-        </Text>
-      )
+        </Text>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"<UriAction /> can't be placed in <Text/>, only textual node and <Emoji/> allowed"`
+      `"<UriAction /> can't be placed in <Text/>, only textual node and <Emoji/> allowed"`,
     );
     await expect(
       renderUnitElement(
         <Text>
           FOO <Image previewImageUrl="" originalContentUrl="" />
-        </Text>
-      )
+        </Text>,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"<Image /> can't be placed in <Text/>, only textual node and <Emoji/> allowed"`
+      `"<Image /> can't be placed in <Text/>, only textual node and <Emoji/> allowed"`,
     );
   });
 });

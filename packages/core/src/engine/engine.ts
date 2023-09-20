@@ -39,7 +39,7 @@ export default class SociablyEngine<
   private _initScope: InitScopeFn;
   private _dispatcher: (
     frame: DispatchFrame<null | Target, Job>,
-    scope: ServiceScope
+    scope: ServiceScope,
   ) => Promise<DispatchResponse<Job, Result>>;
 
   constructor(
@@ -52,7 +52,7 @@ export default class SociablyEngine<
       Job,
       DispatchFrame<null | Target, Job>,
       Result
-    > = (dispatch) => dispatch
+    > = (dispatch) => dispatch,
   ) {
     this.platform = platform;
     this.renderer = renderer;
@@ -72,20 +72,19 @@ export default class SociablyEngine<
   }
 
   /**
-   * renders sociably element tree into tasks to be executed. There are
-   * three kinds of task: "dispatch" contains the jobs to be executed on the
-   * certain platform, "pause" represent the interval made by <Pause />
-   * element which should be waited between "dispatch" tasks, "thunk" holds a
-   * function registered by service which will be excuted after all jobs
-   * dispatched.
+   * Renders sociably element tree into tasks to be executed. There are three
+   * kinds of task: "dispatch" contains the jobs to be executed on the certain
+   * platform, "pause" represent the interval made by <Pause /> element which
+   * should be waited between "dispatch" tasks, "thunk" holds a function
+   * registered by service which will be excuted after all jobs dispatched.
    */
   async render<T extends Target>(
     target: T,
     node: SociablyNode,
     createJobs: (
       target: T,
-      segments: DispatchableSegment<SegmentValue>[]
-    ) => Job[]
+      segments: DispatchableSegment<SegmentValue>[],
+    ) => Job[],
   ): Promise<null | DispatchResponse<Job, Result>> {
     const scope = this._initScope();
     const segments = await this.renderer.render(node, scope, [
@@ -148,12 +147,10 @@ export default class SociablyEngine<
     return this._dispatcher(frame, scope);
   }
 
-  /**
-   * dispatch jobs directly without rendering procedures.
-   */
+  /** Dispatch jobs directly without rendering procedures. */
   async dispatchJobs(
     target: null | Target,
-    jobs: Job[]
+    jobs: Job[],
   ): Promise<DispatchResponse<Job, Result>> {
     const frame: DispatchFrame<null | Target, Job> = {
       platform: this.platform,
@@ -166,7 +163,7 @@ export default class SociablyEngine<
   }
 
   async _execute(
-    frame: DispatchFrame<Target, Job>
+    frame: DispatchFrame<Target, Job>,
   ): Promise<DispatchResponse<Job, Result>> {
     const { tasks } = frame;
     const results: Result[] = [];
@@ -215,7 +212,7 @@ export default class SociablyEngine<
           } catch (err) {
             errors.push(err);
           }
-        })
+        }),
       );
 
       if (errors.length > 0) {

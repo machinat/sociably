@@ -46,7 +46,7 @@ Example
       },
     },
     importMeta: import.meta,
-  }
+  },
 );
 
 const [projectInput] = cli.input;

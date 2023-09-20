@@ -2,13 +2,13 @@ import { FacebookPageSettings } from '../types.js';
 import { AgentSettingsAccessorI } from '../interface.js';
 
 const createStaticAgentSettingsAccessor = (
-  settings: FacebookPageSettings[]
+  settings: FacebookPageSettings[],
 ): AgentSettingsAccessorI => ({
   getAgentSettings: async (page) =>
     settings.find(({ pageId }) => pageId === page.id) || null,
   getAgentSettingsBatch: async (pages) =>
     pages.map(
-      (page) => settings.find(({ pageId }) => pageId === page.id) || null
+      (page) => settings.find(({ pageId }) => pageId === page.id) || null,
     ),
 });
 

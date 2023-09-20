@@ -24,13 +24,13 @@ test('rendering', async () => {
     <Expression customProfileId="11111">
       <p>Hello</p>
       <p>World</p>
-    </Expression>
+    </Expression>,
   );
   expect(segments).toMatchSnapshot();
   expect(
     (segments as any).map(({ value: { request, accomplishRequest } }) =>
-      accomplishRequest(new TwitterChat('12345', '67890'), request, null)
-    )
+      accomplishRequest(new TwitterChat('12345', '67890'), request, null),
+    ),
   ).toMatchInlineSnapshot(`
     [
       {
@@ -88,13 +88,13 @@ test('rendering with quick replies', async () => {
     >
       <p>Hello World</p>
       <p>Choose One</p>
-    </Expression>
+    </Expression>,
   );
   expect(segments).toMatchSnapshot();
   expect(
     (segments as any).map(({ value: { request, accomplishRequest } }) =>
-      accomplishRequest(new TwitterChat('12345', '67890'), request, null)
-    )
+      accomplishRequest(new TwitterChat('12345', '67890'), request, null),
+    ),
   ).toMatchInlineSnapshot(`
     [
       {
@@ -164,15 +164,15 @@ test('rendering with media content', async () => {
     <Expression quickReplies={<QuickReply label="foo" />}>
       <p>Hello</p>
       <Photo shared url="http://foo.bar/baz.png" />
-    </Expression>
+    </Expression>,
   );
   expect(segments).toMatchSnapshot();
 
   const chat = new TwitterChat('12345', '67890');
   expect(
     (segments as any).map(({ value: { request, accomplishRequest } }, i) =>
-      accomplishRequest(chat, request, i === 1 ? ['11111'] : null)
-    )
+      accomplishRequest(chat, request, i === 1 ? ['11111'] : null),
+    ),
   ).toMatchInlineSnapshot(`
     [
       {
@@ -235,19 +235,19 @@ test('rendering with media content', async () => {
 it('throw if no message to attach quick replies', async () => {
   await expect(
     render(
-      <Expression quickReplies={<QuickReply label="foo" />}>{null}</Expression>
-    )
+      <Expression quickReplies={<QuickReply label="foo" />}>{null}</Expression>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"no message content available to attach quick replies"`
+    `"no message content available to attach quick replies"`,
   );
   await expect(
     render(
       <Expression quickReplies={<QuickReply label="foo" />}>
         <Typing />
-      </Expression>
-    )
+      </Expression>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"no message content available to attach quick replies"`
+    `"no message content available to attach quick replies"`,
   );
 });
 

@@ -71,7 +71,7 @@ const handleWebhook = ({
 
     const settings =
       await agentSettingsAccessor.getLineChatChannelSettingsByBotUserId(
-        destination
+        destination,
       );
     if (!settings) {
       return { code: 404 };
@@ -101,7 +101,7 @@ const handleWebhook = ({
           event,
           metadata,
           reply: replyClosure(bot, event),
-        })
+        }),
       );
     }
 
@@ -110,9 +110,7 @@ const handleWebhook = ({
   };
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class LineReceiver extends WebhookReceiver {
   constructor({
     bot,
@@ -126,7 +124,7 @@ export class LineReceiver extends WebhookReceiver {
         agentSettingsAccessor,
         popEventWrapper,
         shouldVerifyRequest,
-      })
+      }),
     );
   }
 }
@@ -138,7 +136,7 @@ const ReceiverP = serviceProviderClass({
     { shouldVerifyRequest },
     bot,
     agentSettingsAccessor,
-    { popEventWrapper }
+    { popEventWrapper },
   ) =>
     new LineReceiver({
       bot,

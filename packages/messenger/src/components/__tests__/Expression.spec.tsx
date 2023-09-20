@@ -90,10 +90,10 @@ it.each([
 
 it('returns null if empty children received', async () => {
   await expect(
-    renderUnitElement(<Expression>{undefined}</Expression>)
+    renderUnitElement(<Expression>{undefined}</Expression>),
   ).resolves.toBe(null);
   await expect(
-    renderUnitElement(<Expression>{null}</Expression>)
+    renderUnitElement(<Expression>{null}</Expression>),
   ).resolves.toBe(null);
 });
 
@@ -103,7 +103,7 @@ it('hoist text value into message object', async () => {
       foo
       <p>bar</p>
       {'baz'}
-    </Expression>
+    </Expression>,
   );
 
   expect(segments).toMatchInlineSnapshot(`
@@ -181,7 +181,7 @@ it('add attributes to message value', async () => {
       foo
       <p>bar</p>
       {'baz'}
-    </Expression>
+    </Expression>,
   );
 
   segments!.forEach((segment) => {
@@ -213,7 +213,7 @@ it('add persona_id to typeing_on/typeing_off sender action', async () => {
       <TypingOn />
       <TypingOff />
       <MarkSeen />
-    </Expression>
+    </Expression>,
   );
 
   expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
@@ -266,7 +266,7 @@ it('adds metadata to last message action', async () => {
       foo
       <p>bar</p>
       <TypingOn />
-    </Expression>
+    </Expression>,
   );
 
   expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
@@ -325,7 +325,7 @@ it('adds quickReplies to last message action', async () => {
       <p>foo</p>
       bar
       <TypingOn />
-    </Expression>
+    </Expression>,
   );
 
   expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
@@ -394,7 +394,7 @@ it('do nothing to non-messgae value', async () => {
     >
       <PassThreadControl targetAppId={123} />
       foo
-    </Expression>
+    </Expression>,
   );
 
   expect(segments?.[0].value).toMatchInlineSnapshot(`

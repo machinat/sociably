@@ -15,7 +15,7 @@ const p = async (node, path, render) => {
   for (const segment of childrenSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <p/>`
+        `non-textual node ${formatNode(segment.node)} is placed in <p/>`,
       );
     }
   }
@@ -38,7 +38,7 @@ const transormText = (tag, transformer) => async (node, path, render) => {
   for (const segment of childrenSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`
+        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
       );
     }
   }
@@ -95,7 +95,7 @@ const generalComponentDelegator = async (element, render, path) => {
   const { type } = element;
   invariant(
     hasOwnProperty.call(generalComponents, type),
-    `"${type}" is not valid general component tag on WhatsApp platform`
+    `"${type}" is not valid general component tag on WhatsApp platform`,
   );
 
   const segments = await generalComponents[type](element, render, path);

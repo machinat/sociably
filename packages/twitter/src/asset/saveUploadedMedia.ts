@@ -10,7 +10,7 @@ import AssetsManagerP from './AssetsManager.js';
 const updateAssetsFromSuccessfulJobs = async (
   manager: AssetsManagerP,
   jobs: TwitterJob[],
-  results: (void | TwitterApiResult)[]
+  results: (void | TwitterApiResult)[],
 ) => {
   const updatingPromises: Promise<boolean>[] = [];
 
@@ -28,8 +28,8 @@ const updateAssetsFromSuccessfulJobs = async (
               manager.saveMedia(
                 target.agent,
                 assetTag,
-                mediaResult.media_id_string
-              )
+                mediaResult.media_id_string,
+              ),
             );
           }
         }
@@ -41,8 +41,8 @@ const updateAssetsFromSuccessfulJobs = async (
 };
 
 /**
- * saveUplodedMedia save the id of uploaded media with the `assetTag` prop.
- * The media id can then be retrieved by the tag through
+ * SaveUplodedMedia save the id of uploaded media with the `assetTag` prop. The
+ * media id can then be retrieved by the tag through
  * {@link TwitterAssetsManager.getMedia}.
  */
 const saveUplodedMedia =

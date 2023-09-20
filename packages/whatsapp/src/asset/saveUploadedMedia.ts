@@ -8,7 +8,7 @@ import WhatsAppAgent from '../Agent.js';
 const updateAssetsFromSuccessfulJobs = async (
   manager: AssetsManagerP,
   jobs: MetaApiJob[],
-  results: (void | MetaApiResult)[]
+  results: (void | MetaApiResult)[],
 ) => {
   const updatingAssets: Promise<boolean>[] = [];
 
@@ -20,7 +20,7 @@ const updateAssetsFromSuccessfulJobs = async (
 
       if (assetTag && body.id) {
         updatingAssets.push(
-          manager.saveMedia(channel as WhatsAppAgent, assetTag, body.id)
+          manager.saveMedia(channel as WhatsAppAgent, assetTag, body.id),
         );
       }
     }
@@ -30,8 +30,8 @@ const updateAssetsFromSuccessfulJobs = async (
 };
 
 /**
- * saveUploadedMedia save the id of uploaded attachments with `assetTag`
- *  props. The attachment id can then be retrieved by the tag through
+ * SaveUploadedMedia save the id of uploaded attachments with `assetTag` props.
+ * The attachment id can then be retrieved by the tag through
  * {@link WhatsAppAssetsManager.getMedia}.
  */
 const saveUploadedMedia =

@@ -15,7 +15,7 @@ export const when =
   };
 
 export const polishFileContent = (
-  input: null | string | boolean
+  input: null | string | boolean,
 ): null | string | boolean => {
   if (typeof input !== 'string') {
     return input;

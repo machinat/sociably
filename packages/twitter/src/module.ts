@@ -43,12 +43,10 @@ const webhookRouteFactory = serviceProviderFactory({
     name: TWITTER,
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Twitter {
   export const Bot = BotP;
   export type Bot = BotP;
@@ -69,7 +67,7 @@ namespace Twitter {
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
-    configs: ConfigsI
+    configs: ConfigsI,
   ): SociablyPlatform<
     TwitterEventContext,
     null,
@@ -119,7 +117,7 @@ namespace Twitter {
     } else if (configs.multiAgentSettings) {
       if (configs.multiAgentSettings.length === 0) {
         throw new Error(
-          'configs.multiAgentSettings must have at least one page settings'
+          'configs.multiAgentSettings must have at least one page settings',
         );
       }
 
@@ -131,7 +129,7 @@ namespace Twitter {
       });
     } else {
       throw new Error(
-        'Twitter platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
+        'Twitter platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option',
       );
     }
 

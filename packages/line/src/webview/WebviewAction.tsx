@@ -21,7 +21,7 @@ const WebviewAction =
     const url = await authenticator.getLiffUrl(
       new LineChannel(target.channelId),
       page,
-      target
+      target,
     );
     return <UriAction label={label} uri={url} />;
   };

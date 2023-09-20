@@ -4,7 +4,7 @@ import map from './map.js';
 const identity = <T>(x: T) => x;
 
 const toArray = (
-  children: SociablyNode
+  children: SociablyNode,
 ): SociablyRenderable[] | null | undefined =>
   map<SociablyRenderable, undefined>(children, identity, '$', undefined);
 

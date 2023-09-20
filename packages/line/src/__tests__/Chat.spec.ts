@@ -91,7 +91,7 @@ describe('LineChat.fromMessagingSource(channelId, source)', () => {
       LineChat.fromMessagingSource('_CHANNEL_ID_', {
         type: 'user',
         userId: 'john_doe',
-      })
+      }),
     ).toEqual(new LineChat('_CHANNEL_ID_', 'user', 'john_doe'));
   });
 
@@ -101,7 +101,7 @@ describe('LineChat.fromMessagingSource(channelId, source)', () => {
         type: 'room',
         roomId: '_ROOM_ID_',
         userId: 'john_doe',
-      })
+      }),
     ).toEqual(new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'));
   });
 
@@ -111,7 +111,7 @@ describe('LineChat.fromMessagingSource(channelId, source)', () => {
         type: 'group',
         groupId: '_GROUP_ID_',
         userId: 'john_doe',
-      })
+      }),
     ).toEqual(new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'));
   });
 });
@@ -120,7 +120,7 @@ test('LineChat.fromUser(channelId, user)', () => {
   expect(
     LineChat.fromUser(
       '_CHANNEL_ID_',
-      new LineUser('_PORVIDER_ID_', '_USER_ID_')
-    )
+      new LineUser('_PORVIDER_ID_', '_USER_ID_'),
+    ),
   ).toEqual(new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'));
 });

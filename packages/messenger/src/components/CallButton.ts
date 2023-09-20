@@ -1,9 +1,7 @@
 import { NativeElement, AnyNativeComponent } from '@sociably/core';
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type CallButtonProps = {
   /** Button title, 20 character limit. */
   title: string;
@@ -16,7 +14,7 @@ export type CallButtonProps = {
 
 export function CallButton(
   node: NativeElement<CallButtonProps, AnyNativeComponent>,
-  path: string
+  path: string,
 ): PartSegment<{}>[] {
   const { title, number } = node.props;
   return [

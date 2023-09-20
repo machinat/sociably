@@ -15,7 +15,7 @@ const request = async (
   method: string,
   apiUrl: string,
   params: unknown | null,
-  accessToken?: string
+  accessToken?: string,
 ): Promise<LineResult> => {
   const requestUrl = new URL(apiUrl, API_HOST);
   const headers: Record<string, string> = {
@@ -73,7 +73,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
 
   constructor(
     settingsAccessor: AgentSettingsAccessorI,
-    maxConnections: number
+    maxConnections: number,
   ) {
     this.connectionCount = 0;
     this.maxConnections = maxConnections;
@@ -136,7 +136,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
   private async _consumeJobAt(
     queue: Queue<LineJob, LineResult>,
     idx: number,
-    executionKey: undefined | string
+    executionKey: undefined | string,
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);
@@ -166,7 +166,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
 
     if (!accessTokenToUse && chatChannelId) {
       const settings = await this._settingsAccessor.getAgentSettings(
-        new LineChannel(chatChannelId)
+        new LineChannel(chatChannelId),
       );
       if (!settings) {
         throw new Error(`Channel "${chatChannelId}" settings not found`);

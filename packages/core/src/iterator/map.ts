@@ -11,7 +11,7 @@ type MapTraverseContext<Mapped, Payload> = {
 const mapCallback = <Mapped, Payload>(
   child: SociablyRenderable,
   path: string,
-  context: MapTraverseContext<Mapped, Payload>
+  context: MapTraverseContext<Mapped, Payload>,
 ) => {
   const { mapper, payload, mappedArray } = context;
   const mapped = mapper(child, path, payload);
@@ -22,7 +22,7 @@ const map = <Mapped, Payload>(
   children: SociablyNode,
   mapper: NodeMapper<Mapped, Payload>,
   prefix: string,
-  payload: Payload
+  payload: Payload,
 ): Mapped[] | null | undefined => {
   if (children === undefined || children === null) {
     return children;

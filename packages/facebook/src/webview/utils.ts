@@ -7,7 +7,7 @@ import UserProfile from '../UserProfile.js';
 import type { FacebookAuthContext, FacebookAuthData } from './types.js';
 
 export const getAuthContextDetails = (
-  data: FacebookAuthData
+  data: FacebookAuthData,
 ): ContextDetails<FacebookAuthContext> => {
   const { page: pageId, user: userId, profile: profileData } = data;
   return {

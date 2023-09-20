@@ -14,9 +14,7 @@ const createRedisClient = serviceProviderFactory({
   deps: [ConfigsI],
 })(({ connectOptions }) => redis.createClient(connectOptions));
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace RedisState {
   export const Controller = ControllerP;
   export type Controller = ControllerP;
@@ -44,7 +42,7 @@ namespace RedisState {
             client.once('error', reject);
           });
         }
-      }
+      },
     ),
     stopHook: serviceContainer({ deps: [ClientI] })(async (client: ClientI) => {
       client.quit();

@@ -37,7 +37,7 @@ export class RedisStateAccessor implements StateAccessor {
       'hset',
       this._stateKey,
       key,
-      this._stringifyValue(state)
+      this._stringifyValue(state),
     );
 
     return !newFieldCount;
@@ -46,7 +46,7 @@ export class RedisStateAccessor implements StateAccessor {
   update<T>(key: string, updator: (value: undefined | T) => T): Promise<T>;
   async update<T>(
     key: string,
-    updator: (value: undefined | T) => undefined | T
+    updator: (value: undefined | T) => undefined | T,
   ): Promise<undefined | T> {
     const currentData = await this._callClient('hget', this._stateKey, key);
 
@@ -60,7 +60,7 @@ export class RedisStateAccessor implements StateAccessor {
         'hset',
         this._stateKey,
         key,
-        this._stringifyValue(newValue)
+        this._stringifyValue(newValue),
       );
     }
 
@@ -87,7 +87,7 @@ export class RedisStateAccessor implements StateAccessor {
       Object.entries<string>(result).map(([key, value]) => [
         key,
         this._parseValue(value),
-      ])
+      ]),
     );
   }
 
@@ -107,9 +107,7 @@ export class RedisStateAccessor implements StateAccessor {
 
 const identity = (x) => x;
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class RedisStateController implements BaseStateController {
   private _client: RedisClient;
   private _marshaler: BaseMarshaler;
@@ -128,7 +126,7 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$C:${channelUid}`
+      `$C:${channelUid}`,
     );
   }
 
@@ -138,7 +136,7 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$T:${threadUid}`
+      `$T:${threadUid}`,
     );
   }
 
@@ -148,7 +146,7 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$U:${userUid}`
+      `$U:${userUid}`,
     );
   }
 
@@ -156,7 +154,7 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$G:${name}`
+      `$G:${name}`,
     );
   }
 
@@ -169,7 +167,7 @@ export class RedisStateController implements BaseStateController {
     const result = await thenifiedly.callMethod(
       method,
       this._client,
-      ...params
+      ...params,
     );
     return result;
   }

@@ -10,8 +10,8 @@ it('match snapshot', async () => {
       <PassThreadControl
         targetAppId={'Legolas' as never}
         metadata="you have my bow"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

@@ -11,7 +11,7 @@ import type {
 } from './types.js';
 
 export const transformRefChatTypeEnumToName = (
-  referer: RefChatType
+  referer: RefChatType,
 ): LiffRefChatType =>
   referer === RefChatType.Utou
     ? 'utou'

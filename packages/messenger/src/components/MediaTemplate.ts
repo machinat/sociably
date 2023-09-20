@@ -11,9 +11,7 @@ import {
 import { PATH_MESSAGES } from '../constant.js';
 import type { MessageValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type MediaTemplateProps = {
   /** The type of media being sent */
   mediaType: 'image' | 'video';
@@ -33,7 +31,7 @@ export type MediaTemplateProps = {
 export async function MediaTemplate(
   node: NativeElement<MediaTemplateProps, AnyNativeComponent>,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ): Promise<UnitSegment<MessageValue>[]> {
   const { buttons, mediaType, attachmentId, url, sharable } = node.props;
   const buttonSegments = await render(buttons, '.buttons');

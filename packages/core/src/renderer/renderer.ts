@@ -57,12 +57,12 @@ type RenderTraverseContext<Value> = {
 type GeneralComponentDelegate<Value> = (
   element: GeneralElement,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ) => Promise<null | IntermediateSegment<Value>[]>;
 
 export default class SociablyRenderer<
   Value,
-  Component extends NativeComponent<unknown, IntermediateSegment<Value>>
+  Component extends NativeComponent<unknown, IntermediateSegment<Value>>,
 > {
   platform: string;
   generalComponentDelegator: GeneralComponentDelegate<Value>;
@@ -71,7 +71,7 @@ export default class SociablyRenderer<
 
   constructor(
     platform: string,
-    generalComponentDelegator: GeneralComponentDelegate<Value>
+    generalComponentDelegator: GeneralComponentDelegate<Value>,
   ) {
     this.platform = platform;
     this.generalComponentDelegator = generalComponentDelegator;
@@ -81,14 +81,14 @@ export default class SociablyRenderer<
   async render(
     node: SociablyNode,
     scopeInput: null | ServiceScope,
-    runtimeProvisions: null | [Interfaceable<unknown>, unknown][]
+    runtimeProvisions: null | [Interfaceable<unknown>, unknown][],
   ): Promise<null | OutputSegment<Value>[]> {
     const scope = scopeInput || createEmptyScope();
     const intermediates = await this._renderImpl(
       scope,
       new Map(runtimeProvisions),
       ROOT_SIGN,
-      node
+      node,
     );
     if (!intermediates) {
       return null;
@@ -100,8 +100,8 @@ export default class SociablyRenderer<
       invariant(
         segment.type !== 'part',
         `${formatNode(
-          segment.node
-        )} is a part element and should not be placed at surface level`
+          segment.node,
+        )} is a part element and should not be placed at surface level`,
       );
 
       if (segment.type !== 'break') {
@@ -113,7 +113,7 @@ export default class SociablyRenderer<
   }
 
   private _checkNativeComponentPlatform(
-    Component: NativeComponent<unknown, IntermediateSegment<Value>>
+    Component: NativeComponent<unknown, IntermediateSegment<Value>>,
   ) {
     return Component.$$platform === this.platform;
   }
@@ -123,7 +123,7 @@ export default class SociablyRenderer<
     servicesProvided: Map<Interfaceable<unknown>, unknown>,
     location: string,
     node: SociablyNode,
-    path?: string
+    path?: string,
   ): Promise<null | IntermediateSegment<Value>[]> {
     if (isEmpty(node)) {
       return null;
@@ -136,7 +136,7 @@ export default class SociablyRenderer<
       node,
       currentPath,
       { renderings, scope, servicesProvided },
-      this._traverseCallback
+      this._traverseCallback,
     );
 
     const rendered = await Promise.all(renderings);
@@ -178,7 +178,7 @@ export default class SociablyRenderer<
   private _renderingTraverser(
     node: SociablyRenderable,
     path: string,
-    context: RenderTraverseContext<Value>
+    context: RenderTraverseContext<Value>,
   ) {
     const { renderings, scope, servicesProvided } = context;
 
@@ -193,14 +193,14 @@ export default class SociablyRenderer<
             value: typeof node === 'string' ? node : String(node),
             path,
           },
-        ])
+        ]),
       );
       return;
     }
 
     invariant(
       isElement(node),
-      `${formatNode(node)} at poistion '${path}' is not valid element`
+      `${formatNode(node)} at poistion '${path}' is not valid element`,
     );
 
     if (isGeneralType(node)) {
@@ -213,8 +213,8 @@ export default class SociablyRenderer<
           this,
           scope,
           servicesProvided,
-          `${path}#${node.type}`
-        )
+          `${path}#${node.type}`,
+        ),
       );
 
       renderings.push(renderPromise);
@@ -230,7 +230,7 @@ export default class SociablyRenderer<
             value: rawEle.props.value as Value,
             path,
           },
-        ])
+        ]),
       );
     } else if (isPauseType(node)) {
       // add a PauseSegment
@@ -255,7 +255,7 @@ export default class SociablyRenderer<
               : timingFn,
             path,
           },
-        ])
+        ]),
       );
     } else if (isThunkType(node)) {
       // add a ThunkSegment
@@ -269,7 +269,7 @@ export default class SociablyRenderer<
             value: thunkEle.props.effect,
             path,
           },
-        ])
+        ]),
       );
     } else if (isProviderType(node)) {
       // traverse the children with the provided service added
@@ -285,7 +285,7 @@ export default class SociablyRenderer<
         children,
         `${path}.children`,
         { ...context, servicesProvided: newProvided },
-        this._traverseCallback
+        this._traverseCallback,
       );
     } else if (isNativeType<Component>(node)) {
       // render native element of the platform
@@ -294,8 +294,8 @@ export default class SociablyRenderer<
       invariant(
         this._checkNativeComponentPlatform(nativeComponent),
         `native component ${formatNode(
-          node
-        )} at '${path}' is not supported by ${this.platform}`
+          node,
+        )} at '${path}' is not supported by ${this.platform}`,
       );
 
       const pathInner = `${path}#${nativeComponent.$$name}`;
@@ -303,7 +303,7 @@ export default class SociablyRenderer<
       const renderPromise = nativeComponent.$$render(
         node,
         path,
-        this._renderImpl.bind(this, scope, servicesProvided, pathInner)
+        this._renderImpl.bind(this, scope, servicesProvided, pathInner),
       );
 
       renderings.push(renderPromise);
@@ -318,8 +318,8 @@ export default class SociablyRenderer<
           containerEle,
           scope,
           servicesProvided,
-          path
-        )
+          path,
+        ),
       );
     } else if (typeof node.type === 'function') {
       // handle element with custom functional component type
@@ -333,16 +333,16 @@ export default class SociablyRenderer<
           functionEle,
           scope,
           servicesProvided,
-          path
-        )
+          path,
+        ),
       );
     } else {
       // throw if invalid element met
       invariant(
         false,
         `${String(
-          (node as SociablyElement<unknown, unknown>).type
-        )} at poistion '${path}' is not valid element type`
+          (node as SociablyElement<unknown, unknown>).type,
+        )} at poistion '${path}' is not valid element type`,
       );
     }
   }
@@ -351,7 +351,7 @@ export default class SociablyRenderer<
     node: FunctionalElement<unknown, FunctionalComponent<unknown>>,
     scope: ServiceScope,
     servicesProvided: Map<Interfaceable<unknown>, unknown>,
-    path: string
+    path: string,
   ): Promise<null | IntermediateSegment<Value>[]> {
     const { type: component, props } = node;
     const rendered = await component(props, { path, platform: this.platform });
@@ -361,7 +361,7 @@ export default class SociablyRenderer<
       servicesProvided,
       path,
       rendered as SociablyNode,
-      COMPONENT_SEPARATOR + component.name
+      COMPONENT_SEPARATOR + component.name,
     );
 
     return segments;
@@ -371,7 +371,7 @@ export default class SociablyRenderer<
     node: ContainerElement<unknown, ContainerComponent<unknown>>,
     scope: ServiceScope,
     servicesProvided: Map<Interfaceable<unknown>, unknown>,
-    path: string
+    path: string,
   ): Promise<null | IntermediateSegment<Value>[]> {
     const { type: container, props } = node;
     const component = scope.injectContainer(container, servicesProvided);
@@ -383,7 +383,7 @@ export default class SociablyRenderer<
       servicesProvided,
       path,
       rendered,
-      COMPONENT_SEPARATOR + container.name
+      COMPONENT_SEPARATOR + container.name,
     );
 
     return segments;

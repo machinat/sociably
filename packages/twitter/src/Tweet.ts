@@ -40,22 +40,35 @@ export default class Tweet {
     return new Date(this.data.created_at);
   }
 
-  /** The text of the status update. See [twitter-text](https://github.com/twitter/twitter-text/blob/master/rb/lib/twitter-text/regex.rb) for details on what characters are currently considered valid */
+  /**
+   * The text of the status update. See
+   * [twitter-text](https://github.com/twitter/twitter-text/blob/master/rb/lib/twitter-text/regex.rb)
+   * for details on what characters are currently considered valid
+   */
   get text(): string {
     return this.data.text;
   }
 
-  /** Utility used to post the Tweet, as an HTML-formatted string. Tweets from the Twitter website have a source value of `'web'` */
+  /**
+   * Utility used to post the Tweet, as an HTML-formatted string. Tweets from
+   * the Twitter website have a source value of `'web'`
+   */
   get source(): string {
     return this.data.source;
   }
 
-  /** Indicates whether the value of the text parameter was truncated. In most cases, it's `false`  */
+  /**
+   * Indicates whether the value of the text parameter was truncated. In most
+   * cases, it's `false`
+   */
   get truncated(): boolean {
     return this.data.truncated;
   }
 
-  /** The place that the tweet is associated (but not necessarily originating from) */
+  /**
+   * The place that the tweet is associated (but not necessarily originating
+   * from)
+   */
   get place(): null | Place {
     return this.data.place
       ? {
@@ -67,13 +80,16 @@ export default class Tweet {
           countryCode: this.data.place.country_code,
           country: this.data.place.country,
           boundingCoordinates: this.data.place.bounding_box.coordinates.map(
-            ([longitude, latitude]) => ({ longitude, latitude })
+            ([longitude, latitude]) => ({ longitude, latitude }),
           ),
         }
       : null;
   }
 
-  /** Represents the geographic location of this Tweet as reported by the user or client application */
+  /**
+   * Represents the geographic location of this Tweet as reported by the user or
+   * client application
+   */
   get coordinates(): null | Coordinates {
     if (!this.data.coordinates) {
       return null;
@@ -82,7 +98,10 @@ export default class Tweet {
     return { longitude, latitude };
   }
 
-  /** Indicates approximately how many times this Tweet has been quoted by Twitter users */
+  /**
+   * Indicates approximately how many times this Tweet has been quoted by
+   * Twitter users
+   */
   get quoteCount(): undefined | number {
     return this.data.quote_count;
   }
@@ -97,7 +116,10 @@ export default class Tweet {
     return this.data.retweet_count;
   }
 
-  /** Indicates approximately how many times this Tweet has been liked by Twitter users */
+  /**
+   * Indicates approximately how many times this Tweet has been liked by Twitter
+   * users
+   */
   get favoriteCount(): undefined | number {
     return this.data.favorite_count;
   }
@@ -112,17 +134,30 @@ export default class Tweet {
     return this.data.retweeted;
   }
 
-  /** This field only surfaces when a Tweet contains a link. The meaning of the field doesn’t pertain to the Tweet content itself, but instead it is an indicator that the URL contained in the Tweet may contain content or media identified as sensitive content */
+  /**
+   * This field only surfaces when a Tweet contains a link. The meaning of the
+   * field doesn’t pertain to the Tweet content itself, but instead it is an
+   * indicator that the URL contained in the Tweet may contain content or media
+   * identified as sensitive content
+   */
   get possiblySensitive(): undefined | boolean {
     return this.data.possibly_sensitive;
   }
 
-  /** Indicates the maximum value of the filter_level parameter which may be used and still stream this Tweet. So a value of medium will be streamed on none, low, and medium streams */
+  /**
+   * Indicates the maximum value of the filter_level parameter which may be used
+   * and still stream this Tweet. So a value of medium will be streamed on none,
+   * low, and medium streams
+   */
   get filterLevel(): string {
     return this.data.filter_level;
   }
 
-  /** When present, indicates a BCP 47 language identifier corresponding to the machine-detected language of the Tweet text, or `'und'` if no language could be detected */
+  /**
+   * When present, indicates a BCP 47 language identifier corresponding to the
+   * machine-detected language of the Tweet text, or `'und'` if no language
+   * could be detected
+   */
   get languageCode(): undefined | string {
     return this.data.lang;
   }
@@ -179,7 +214,11 @@ export default class Tweet {
     return this.data.quoted_status ? new Tweet(this.data.quoted_status) : null;
   }
 
-  /** The original Tweet that was retweeted. Note that retweets of retweets do not show representations of the intermediary retweet, but only the original Tweet */
+  /**
+   * The original Tweet that was retweeted. Note that retweets of retweets do
+   * not show representations of the intermediary retweet, but only the original
+   * Tweet
+   */
   get retweetedStatus(): null | Tweet {
     return this.data.retweeted_status
       ? new Tweet(this.data.retweeted_status)

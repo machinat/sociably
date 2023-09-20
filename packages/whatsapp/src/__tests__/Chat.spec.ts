@@ -30,6 +30,6 @@ test('constructing', () => {
 
 test('from user', () => {
   expect(
-    WhatsAppChat.fromUser('1234567890', new WhatsAppUser('9876543210'))
+    WhatsAppChat.fromUser('1234567890', new WhatsAppUser('9876543210')),
   ).toEqual(new WhatsAppChat('1234567890', '9876543210'));
 });

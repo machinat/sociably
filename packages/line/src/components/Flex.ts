@@ -15,15 +15,11 @@ type FlexFullSize = 'xxs' | FlexSize | '3xl' | '4xl' | '5xl';
 type FlexAlign = 'start' | 'end' | 'center';
 type FlexGravity = 'top' | 'bottom' | 'center';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexButtonProps = {
   /** An {@link Action} element performed when this button is tapped. */
   action?: SociablyNode;
-  /**
-   * The ratio of the width or height of this component within the parent box.
-   */
+  /** The ratio of the width or height of this component within the parent box. */
   flex?: number;
   /**
    * Minimum space between this component and the previous component in the
@@ -65,6 +61,7 @@ export type FlexButtonProps = {
 /**
  * FlexButton renders a button. When the user taps a button, a specified action
  * is performed.
+ *
  * @category Component
  * @props {@link FlexButtonProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#button).
@@ -112,19 +109,16 @@ export const FlexButton: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexFillerProps = {
-  /**
-   * The ratio of the width or height of this component within the parent box.
-   */
+  /** The ratio of the width or height of this component within the parent box. */
   flex?: number;
 };
 
 /**
- * FlexFiller is used to create a space. You can put a space between,
- * before, or after components by inserting a filler anywhere within a box.
+ * FlexFiller is used to create a space. You can put a space between, before, or
+ * after components by inserting a filler anywhere within a box.
+ *
  * @category Component
  * @props {@link FlexFillerProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#filler).
@@ -141,9 +135,7 @@ export const FlexFiller: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexIconProps = {
   /** Image URL */
   url: string;
@@ -177,6 +169,7 @@ export type FlexIconProps = {
 
 /**
  * FlexIconProps renders an icon for decorating the adjacent text.
+ *
  * @category Component
  * @props {@link FlexIconProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#icon).
@@ -212,15 +205,11 @@ export const FlexIcon: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexImageProps = {
   /** Image URL */
   url: string;
-  /**
-   * The ratio of the width or height of this component within the parent box.
-   */
+  /** The ratio of the width or height of this component within the parent box. */
   flex?: number;
   /**
    * Minimum space between this component and the previous component in the
@@ -265,6 +254,7 @@ export type FlexImageProps = {
 
 /**
  * FlexImage renders an image.
+ *
  * @category Component
  * @props {@link FlexImageProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#f-image).
@@ -316,9 +306,7 @@ export const FlexImage: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlextSeparatorProps = {
   /**
    * Minimum space between this component and the previous component in the
@@ -331,6 +319,7 @@ export type FlextSeparatorProps = {
 
 /**
  * FlexImage renders an image.
+ *
  * @category Component
  * @props {@link FlextSeparatorProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#separator).
@@ -349,9 +338,7 @@ export const FlexSeparator: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexSpacerProps = {
   /** Size of the space. */
   size?: FlexSize;
@@ -359,6 +346,7 @@ export type FlexSpacerProps = {
 
 /**
  * Not recommended. Use box padding instead.
+ *
  * @category Component
  * @props {@link FlexSpacerProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#spacer).
@@ -375,15 +363,11 @@ export const FlexSpacer: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexTextProps = {
   /** Texual nodes and {@link FlexSpan} elements as the content text. */
   children: SociablyNode;
-  /**
-   * The ratio of the width or height of this component within the parent box.
-   */
+  /** The ratio of the width or height of this component within the parent box. */
   flex?: number;
   /**
    * Minimum space between this component and the previous component in the
@@ -434,6 +418,7 @@ export type FlexTextProps = {
 
 /**
  * FlexText renders a text string in one row.
+ *
  * @category Component
  * @props {@link FlexTextProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#f-text).
@@ -482,8 +467,8 @@ export const FlexText: LineComponent<
         invariant(
           type === 'break',
           `invalid children ${formatNode(
-            spanNode
-          )} received, only <FlexSpan/> and text allowed`
+            spanNode,
+          )} received, only <FlexSpan/> and text allowed`,
         );
       }
       return spans;
@@ -519,9 +504,7 @@ export const FlexText: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexSpanProps = {
   /** Content textual nodes. */
   children: SociablyNode;
@@ -538,8 +521,9 @@ export type FlexSpanProps = {
 };
 
 /**
- * FlexSpan renders multiple text strings with different designs in one row.
- * A FlexSpan element can only be placed under FlexText children.
+ * FlexSpan renders multiple text strings with different designs in one row. A
+ * FlexSpan element can only be placed under FlexText children.
+ *
  * @category Component
  * @props {@link FlexSpanProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#span).
@@ -566,21 +550,15 @@ export const FlexSpan: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexBoxProps = {
   /** Content nodes. */
   children: SociablyNode;
   /** The layout style of components in this box. */
   layout?: 'horizontal' | 'vertical' | 'baseline';
-  /**
-   * The ratio of the width or height of this component within the parent box.
-   */
+  /** The ratio of the width or height of this component within the parent box. */
   flex?: number;
-  /**
-   * Minimum space between components in this box. The default value is none.
-   */
+  /** Minimum space between components in this box. The default value is none. */
   spacing?: 'none' | FlexSize;
   /**
    * Minimum space between this component and the previous component in the
@@ -609,9 +587,7 @@ export type FlexBoxProps = {
    * end of the child element.
    */
   paddingEnd?: number | string | 'none' | FlexSize;
-  /**
-   * Reference position for placing this box. The default value is `relative`.
-   */
+  /** Reference position for placing this box. The default value is `relative`. */
   position?: 'relative' | 'absolute';
   /** The top offset. */
   offsetTop?: number | string | 'none' | FlexSize;
@@ -657,6 +633,7 @@ export type FlexBoxProps = {
 /**
  * FlexBox is a component that defines the layout of child components. You can
  * also include a box in a box.
+ *
  * @category Component
  * @props {@link FlexBoxProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#box).
@@ -736,9 +713,7 @@ type BubbleBlock = {
   style?: BlockStyle;
 };
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexBlockProps = {
   /** Exactly one content node of the block. */
   children: SociablyNode;
@@ -782,6 +757,7 @@ const createBlockComponent = (section, _childrenType) => {
 
 /**
  * Header block. Specify a {@link FlexBox} in the children.
+ *
  * @category Component
  * @props {@link FlexBlockProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#bubble).
@@ -793,6 +769,7 @@ export const FlexHeader: LineComponent<
 
 /**
  * Hero block. Specify a {@link FlexBox} or {@link FlexImage} in the children.
+ *
  * @category Component
  * @props {@link FlexBlockProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#bubble).
@@ -804,6 +781,7 @@ export const FlexHero: LineComponent<
 
 /**
  * Body block. Specify a {@link FlexBox} in the children.
+ *
  * @category Component
  * @props {@link FlexBlockProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#bubble).
@@ -815,6 +793,7 @@ export const FlexBody: LineComponent<
 
 /**
  * Footer block. Specify a {@link FlexBox} in the children.
+ *
  * @category Component
  * @props {@link FlexBlockProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#bubble).
@@ -824,9 +803,7 @@ export const FlexFooter: LineComponent<
   PartSegment<any>
 > = createBlockComponent('footer', FlexBox);
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexBubbleContainerProps = {
   /**
    * Bubble block elements including {@link FlexHeader}, {@link FlexHero},
@@ -849,6 +826,7 @@ export type FlexBubbleContainerProps = {
  * FlexBubbleContainer is a container that contains one message bubble. It can
  * contain four blocks: header, hero, body, and footer. The maximum size of JSON
  * data that defines a bubble is 10 KB.
+ *
  * @category Component
  * @props {@link FlexBubbleContainerProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#bubble).
@@ -880,15 +858,13 @@ export const FlexBubbleContainer: LineComponent<
       direction: direction || rightToLeft ? 'rtl' : 'ltr',
       action: actionSegments?.[0].value,
       styles: undefined as undefined | Record<string, BlockStyle>,
-    }
+    },
   );
 
   return [makePartSegment(node, path, bubbleObject)];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexCarouselContainerProps = {
   /** {@link FlexBubbleContainer} elements in the carousel. Max: 10 bubbles */
   children: SociablyNode;
@@ -897,6 +873,7 @@ export type FlexCarouselContainerProps = {
 /**
  * A carousel is a container that contains multiple bubbles as child elements.
  * Users can scroll horizontally through the bubbles.
+ *
  * @category Component
  * @props {@link FlexCarouselContainerProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#f-carousel).
@@ -916,9 +893,7 @@ export const FlexCarouselContainer: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type FlexMessageProps = {
   /** {@link FlexBubbleContainer} or {@link FlexCarouselContainer} element. */
   children: SociablyNode;
@@ -929,6 +904,7 @@ export type FlexMessageProps = {
 /**
  * Flex Messages are messages with a customizable layout. You can customize the
  * layout freely based on the specification for CSS Flexible Box (CSS Flexbox).
+ *
  * @category Component
  * @props {@link FlexMessageProps}
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-flex-messages/)

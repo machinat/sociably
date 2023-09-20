@@ -25,6 +25,6 @@ test('WebSocketConnection(serverId, connId)', () => {
     }
   `);
   expect(WebSocketConnection.fromJSONValue(thread.toJSONValue())).toStrictEqual(
-    thread
+    thread,
   );
 });

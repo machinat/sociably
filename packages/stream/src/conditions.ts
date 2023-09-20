@@ -9,7 +9,7 @@ function conditions<
   Predicators extends readonly MaybeContainer<PredicateFn<T>>[],
 >(
   source: Stream<T>,
-  predicators: Predicators
+  predicators: Predicators,
 ): {
   [I in keyof Predicators]: Predicators[I] extends MaybeContainer<
     (v: unknown) => v is infer U
@@ -20,17 +20,17 @@ function conditions<
 
 function conditions<T>(
   source: Stream<T>,
-  predicators: MaybeContainer<PredicateFn<T>>[]
+  predicators: MaybeContainer<PredicateFn<T>>[],
 ): Stream<T>[];
 
 function conditions<T>(
   source: Stream<T>,
-  predicators: MaybeContainer<PredicateFn<T>>[]
+  predicators: MaybeContainer<PredicateFn<T>>[],
 ): Record<number, Stream<T>> {
   const destinations = predicators.map(() => new Stream<T>());
 
   const injectablePredicators = predicators.map((predicateFnOrContainer) =>
-    injectMaybe(predicateFnOrContainer)
+    injectMaybe(predicateFnOrContainer),
   );
 
   source._subscribe(
@@ -56,7 +56,7 @@ function conditions<T>(
       for (const destination of destinations) {
         destination.error(frame);
       }
-    }
+    },
   );
 
   return destinations;

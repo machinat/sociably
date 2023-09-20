@@ -18,9 +18,7 @@ import type {
   TwitterAuthCredential,
 } from './types.js';
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class TwitterServerAuthenticator
   implements ServerAuthenticator<never, TwitterAuthData, TwitterAuthContext>
 {
@@ -37,7 +35,7 @@ export class TwitterServerAuthenticator
   constructor(
     bot: BotP,
     profiler: ProfilerP,
-    basicAuthenticator: BasicAuthenticator
+    basicAuthenticator: BasicAuthenticator,
   ) {
     this.profiler = profiler;
     this.basicAuthenticator = basicAuthenticator;
@@ -76,7 +74,7 @@ export class TwitterServerAuthenticator
     return this.basicAuthenticator.getAuthUrl<TwitterAuthCredential>(
       TWITTER,
       { agent: agentId, user: userId },
-      redirectUrl
+      redirectUrl,
     );
   }
 
@@ -111,7 +109,7 @@ export class TwitterServerAuthenticator
     try {
       const userProfile = await this.profiler.getUserProfile(
         new TwitterUser(agentId),
-        new TwitterUser(userId)
+        new TwitterUser(userId),
       );
       return {
         ok: true as const,

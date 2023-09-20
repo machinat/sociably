@@ -6,34 +6,34 @@ export default ({
   withWebview,
 }: CreateAppContext): string => `${when(platforms.includes('facebook'))`
 import type { FacebookEventContext } from '@sociably/facebook';${when(
-  withWebview
+  withWebview,
 )`
 import type FacebookWebview from '@sociably/facebook/webview';`}`}${when(
-  platforms.includes('instagram')
+  platforms.includes('instagram'),
 )`
 import type { InstagramEventContext } from '@sociably/instagram';${when(
-  withWebview
+  withWebview,
 )`
 import type InstagramWebview from '@sociably/instagram/webview';`}`}${when(
-  platforms.includes('whatsapp')
+  platforms.includes('whatsapp'),
 )`
 import type { WhatsAppEventContext } from '@sociably/whatsapp';${when(
-  withWebview
+  withWebview,
 )`
 import type WhatsAppWebview from '@sociably/whatsapp/webview';`}`}${when(
-  platforms.includes('twitter')
+  platforms.includes('twitter'),
 )`
 import type { TwitterEventContext } from '@sociably/twitter';${when(
-  withWebview
+  withWebview,
 )`
 import type TwitterWebview from '@sociably/twitter/webview';`}`}${when(
-  platforms.includes('telegram')
+  platforms.includes('telegram'),
 )`
 import type { TelegramEventContext } from '@sociably/telegram';${when(
-  withWebview
+  withWebview,
 )`
 import type TelegramWebview from '@sociably/telegram/webview';`}`}${when(
-  platforms.includes('line')
+  platforms.includes('line'),
 )`
 import type { LineEventContext } from '@sociably/line';${when(withWebview)`
 import type LineWebview from '@sociably/line/webview';`}`}${when(withWebview)`
@@ -49,7 +49,7 @@ export type ChatEventContext =${when(platforms.includes('facebook'))`
 ${when(withWebview)`
 
 export type WebAppEventContext = WebviewEventContext<${when(
-  platforms.includes('facebook')
+  platforms.includes('facebook'),
 )`
     | FacebookWebview`}${when(platforms.includes('instagram'))`
     | InstagramWebview`}${when(platforms.includes('whatsapp'))`

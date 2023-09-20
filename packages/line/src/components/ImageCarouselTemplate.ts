@@ -8,9 +8,7 @@ import {
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent, MessageSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ImageCarouselItemProps = {
   /** Image URL (Max character limit: 1,000) */
   imageUrl: string;
@@ -20,6 +18,7 @@ export type ImageCarouselItemProps = {
 
 /**
  * Column items of {@link ImageCarouselTemplate}.
+ *
  * @category Component
  * @props {@link ImageCarouselItemProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#column-object-for-image-carousel).
@@ -40,19 +39,17 @@ export const ImageCarouselItem: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ImageCarouselTemplateProps = {
-  /** {@link ImageCarouselItem} elements displayed as image columns in the
+  /**
+   * {@link ImageCarouselItem} elements displayed as image columns in the
    * carousel. Max 10 columns.
    */
   children: SociablyNode;
   /**
    * Alternative text. Displayed on devices that do not support template
-   * messages. Max character limit: 400
-   * If a function is given, the return value would be used. The rendered
-   * template object is passed as the first param.
+   * messages. Max character limit: 400 If a function is given, the return value
+   * would be used. The rendered template object is passed as the first param.
    */
   altText: string | ((template: Record<string, any>) => string);
 };
@@ -60,6 +57,7 @@ export type ImageCarouselTemplateProps = {
 /**
  * Template with multiple images which can be cycled like a carousel. The images
  * are shown in order when scrolling horizontally.
+ *
  * @category Component
  * @props {@link ImageCarouselTemplateProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#image-carousel).

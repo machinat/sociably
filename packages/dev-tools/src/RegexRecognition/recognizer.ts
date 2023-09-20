@@ -46,11 +46,11 @@ export class RegexIntentRecognizer<
                   .toLowerCase()
                   .replace(specialCharacterMatcher, ' ')
                   .trim()
-                  .replace(/\s+/g, `[${SPECIAL_CHARACTER}\\s]+`)
+                  .replace(/\s+/g, `[${SPECIAL_CHARACTER}\\s]+`),
               )
               .join('|')})($|[${SPECIAL_CHARACTER}\\s])`,
-            'i'
-          )
+            'i',
+          ),
         );
       });
     });
@@ -59,7 +59,7 @@ export class RegexIntentRecognizer<
   async detectText(
     _,
     text: string,
-    options?: DetectTextOptions
+    options?: DetectTextOptions,
   ): Promise<DetectIntentResult<Recognition, null>> {
     const language = options?.language || this.defaultLanguage;
     const matchers = this._matchersByLanguages.get(language);
@@ -88,5 +88,5 @@ export class RegexIntentRecognizer<
 }
 
 export default serviceProviderClass({ deps: [ConfigsI] })(
-  RegexIntentRecognizer
+  RegexIntentRecognizer,
 );

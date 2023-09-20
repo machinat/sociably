@@ -7,13 +7,13 @@ export type MapFn<T, R> = (value: T) => R | Promise<R>;
 
 /** @category Operator */
 function map<T, R>(
-  mapper: ServiceContainer<MapFn<T, R>, unknown[]>
+  mapper: ServiceContainer<MapFn<T, R>, unknown[]>,
 ): OperatorFunction<T, R>;
 
 function map<T, R>(mapper: MapFn<T, R>): OperatorFunction<T, R>;
 
 function map<T, R>(
-  mapper: MaybeContainer<MapFn<T, R>>
+  mapper: MaybeContainer<MapFn<T, R>>,
 ): OperatorFunction<T, R> {
   const injectMapper = injectMaybe(mapper);
 

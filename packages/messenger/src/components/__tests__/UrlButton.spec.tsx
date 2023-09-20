@@ -7,8 +7,8 @@ const UrlButton = makeTestComponent(_UrlButton);
 it('match snapshot', async () => {
   await expect(
     renderPartElement(
-      <UrlButton title="my button" url="http://sociably.js.org" />
-    )
+      <UrlButton title="my button" url="http://sociably.js.org" />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -40,8 +40,8 @@ it('match snapshot', async () => {
         messengerExtensions
         fallbackUrl="http://..."
         hideShareButton
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

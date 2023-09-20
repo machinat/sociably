@@ -32,7 +32,7 @@ describe('<UnlinkRichMenu/>', () => {
     const { getChatRequest } = segments?.[0].value as ChatActionSegmentValue;
 
     expect(
-      getChatRequest?.(new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'))
+      getChatRequest?.(new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_')),
     ).toEqual({
       method: 'DELETE',
       url: 'v2/bot/user/_USER_ID_/richmenu',
@@ -45,16 +45,16 @@ describe('<UnlinkRichMenu/>', () => {
     const { getChatRequest } = segments?.[0].value as ChatActionSegmentValue;
 
     expect(
-      () => getChatRequest?.(new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'))
+      () => getChatRequest?.(new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_')),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<UnlinkRichMenu /> can only be sent to an user chat"`
+      `"<UnlinkRichMenu /> can only be sent to an user chat"`,
     );
 
     expect(
       () =>
-        getChatRequest?.(new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'))
+        getChatRequest?.(new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_')),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<UnlinkRichMenu /> can only be sent to an user chat"`
+      `"<UnlinkRichMenu /> can only be sent to an user chat"`,
     );
   });
 

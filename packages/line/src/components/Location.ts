@@ -3,9 +3,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent, MessageSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type LocationProps = {
   title: string;
   address: string;
@@ -15,6 +13,7 @@ export type LocationProps = {
 
 /**
  * Location sends a user location message.
+ *
  * @category Component
  * @props {@link LocationProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#location-message).

@@ -30,7 +30,7 @@ export class InMemoryStateAccessor implements StateAccessor {
   update<T>(key: string, updator: (value: undefined | T) => T): Promise<T>;
   async update<T>(
     key: string,
-    updator: (originalValue: undefined | T) => undefined | T
+    updator: (originalValue: undefined | T) => undefined | T,
   ): Promise<undefined | T> {
     const originalValue = this._stateData.get(key) as undefined | T;
     const nextValue = updator(originalValue);
@@ -63,9 +63,7 @@ export class InMemoryStateAccessor implements StateAccessor {
   }
 }
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class InMemoryStateController implements BaseStateController {
   private _channelStates: Map<string, Map<string, unknown>>;
   private _threadStates: Map<string, Map<string, unknown>>;

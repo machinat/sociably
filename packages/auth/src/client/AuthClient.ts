@@ -46,7 +46,7 @@ const deleteCookie = (name: string, domain?: string, path?: string) => {
 };
 
 const getAuthPayload = (
-  token: string
+  token: string,
 ): [null | AuthError, AuthTokenPayload<unknown>] => {
   try {
     const payload = decodeJwt(`${token}.`, { json: true });
@@ -214,9 +214,7 @@ class AuthClient<
     return this._authPromise;
   }
 
-  /**
-   * Sign out user.
-   */
+  /** Sign out user. */
   signOut(): void {
     if (this._authData) {
       const { scope } = this._authData.payload;
@@ -229,7 +227,7 @@ class AuthClient<
   }
 
   private async _authFlow(
-    platformInput: undefined | string
+    platformInput: undefined | string,
   ): Promise<AuthResult<Authenticator>> {
     const beginTime = Date.now();
 
@@ -266,7 +264,7 @@ class AuthClient<
       !this._initiatingPlatforms.has(authenticator.platform)
     ) {
       const platformAuthEntry = this._getAuthEntry(
-        `${authenticator.platform}/`
+        `${authenticator.platform}/`,
       );
       this._initiatingPlatforms.add(authenticator.platform);
 
@@ -274,7 +272,7 @@ class AuthClient<
         ({ forceSignIn } = await authenticator.init(
           platformAuthEntry,
           existedErr,
-          existedAuth?.payload.data || null
+          existedAuth?.payload.data || null,
         ));
       } finally {
         this._initiatingPlatforms.delete(authenticator.platform);
@@ -347,12 +345,12 @@ class AuthClient<
   }
 
   private async _authenticate(
-    authenticator: AnyClientAuthenticator
+    authenticator: AnyClientAuthenticator,
   ): Promise<[Error | null, string]> {
     const { platform } = authenticator;
 
     const result = await authenticator.fetchCredential(
-      this._getAuthEntry(platform)
+      this._getAuthEntry(platform),
     );
 
     if (!result.ok) {
@@ -375,7 +373,7 @@ class AuthClient<
   private _setAuth(
     token: string,
     payload: AuthTokenPayload<unknown>,
-    context: AnyAuthContext
+    context: AnyAuthContext,
   ) {
     this._authData = { token, payload, context };
     this._clearTimeouts();
@@ -386,13 +384,13 @@ class AuthClient<
     this._refreshTimeoutId = setTimeout(
       this._refreshFlowCallback,
       (exp - this.refreshLeadTime) * 1000 - now,
-      token
+      token,
     );
 
     this._expireTimeoutId = setTimeout(
       this._expireTokenCallback,
       exp * 1000 - now,
-      token
+      token,
     );
   }
 
@@ -459,7 +457,7 @@ class AuthClient<
   };
 
   private _getAuthenticator(
-    platform: undefined | string
+    platform: undefined | string,
   ): [null | AuthError, Authenticator] {
     if (!platform) {
       return [
@@ -469,7 +467,7 @@ class AuthClient<
     }
 
     const authenticator = this.authenticators.find(
-      (p) => p.platform === platform
+      (p) => p.platform === platform,
     );
     if (!authenticator) {
       return [
@@ -485,14 +483,14 @@ class AuthClient<
     const rootUrl = new URL(this.serverUrl, window.location.href);
     const platformApiUrl = new URL(
       rootUrl.pathname.replace(/\/?$/, `/${route}`),
-      rootUrl
+      rootUrl,
     );
     return platformApiUrl.href;
   }
 
   private async _callAuthPrivateApi(
     api: string,
-    body: SignRequestBody<unknown> | RefreshRequestBody | VerifyRequestBody
+    body: SignRequestBody<unknown> | RefreshRequestBody | VerifyRequestBody,
   ): Promise<[null | AuthError, AuthApiResponseBody]> {
     const res = await fetch(this._getAuthEntry(api), {
       method: 'POST',
@@ -512,7 +510,7 @@ class AuthClient<
   }
 
   private _getAuthContext(
-    payload: AuthTokenPayload<unknown>
+    payload: AuthTokenPayload<unknown>,
   ): [null | AuthError, AnyAuthContext] {
     const { platform, data, iat, exp } = payload;
     const [err, authenticator] = this._getAuthenticator(platform);

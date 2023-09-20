@@ -12,9 +12,7 @@ type GetUserProfileOptions = {
   withSettings?: boolean;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
   bot: BotP;
   platform = TWITTER;
@@ -23,9 +21,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
     this.bot = bot;
   }
 
-  /**
-   * Get profile of the user.
-   */
+  /** Get profile of the user. */
   async getUserProfile(
     agent: string | TwitterUser,
     user: string | TwitterUser,
@@ -33,7 +29,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
       withEntities = false,
       fromApi = false,
       withSettings = false,
-    }: GetUserProfileOptions = {}
+    }: GetUserProfileOptions = {},
   ): Promise<TwitterUserProfile> {
     if (!fromApi && typeof user === 'object' && user.profile && !withSettings) {
       return user.profile;

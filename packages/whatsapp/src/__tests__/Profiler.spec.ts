@@ -10,14 +10,14 @@ it('simply get profile from user', async () => {
   await expect(
     profiler.getUserProfile(
       new WhatsAppAgent('9876543210'),
-      new WhatsAppUser('1234567890')
-    )
+      new WhatsAppUser('1234567890'),
+    ),
   ).resolves.toBe(null);
 
   await expect(
     profiler.getUserProfile(
       new WhatsAppAgent('9876543210'),
-      new WhatsAppUser('1234567890', { name: 'Joseph' })
-    )
+      new WhatsAppUser('1234567890', { name: 'Joseph' }),
+    ),
   ).resolves.toStrictEqual(new UserProfile('1234567890', { name: 'Joseph' }));
 });

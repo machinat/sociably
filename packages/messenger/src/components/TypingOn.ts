@@ -12,7 +12,7 @@ const TYPING_ON_VALUE = {
 
 export function TypingOn(
   node: NativeElement<{}, AnyNativeComponent>,
-  path: string
+  path: string,
 ): UnitSegment<SenderActionValue>[] {
   return [makeUnitSegment(node, path, TYPING_ON_VALUE)];
 }

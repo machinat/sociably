@@ -48,7 +48,7 @@ const handleWebhook = ({
     }
 
     const agentSettings = await agentSettingsAccessor.getAgentSettings(
-      new TelegramUser(botId, true)
+      new TelegramUser(botId, true),
     );
     if (!agentSettings) {
       return { code: 404 };
@@ -75,9 +75,7 @@ const handleWebhook = ({
       bot,
       event,
       metadata,
-      reply: (message) => {
-        return bot.render(event.thread ?? event.channel, message);
-      },
+      reply: (message) => bot.render(event.thread ?? event.channel, message),
     });
     return { code: 200 };
   };
@@ -85,6 +83,7 @@ const handleWebhook = ({
 
 /**
  * TelegramReceiver receive and pop events from Telegram platform.
+ *
  * @category Provider
  */
 export class TelegramReceiver extends WebhookReceiver {
@@ -100,16 +99,15 @@ const ReceiverP = serviceProviderClass({
     { secretToken, shouldVerifySecretToken },
     bot,
     agentSettingsAccessor,
-    { popEventWrapper }
-  ) => {
-    return new TelegramReceiver({
+    { popEventWrapper },
+  ) =>
+    new TelegramReceiver({
       bot,
       secretToken,
       agentSettingsAccessor,
       shouldVerifySecretToken,
       popEventWrapper,
-    });
-  },
+    }),
 })(TelegramReceiver);
 
 type ReceiverP = TelegramReceiver;

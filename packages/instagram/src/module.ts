@@ -42,12 +42,10 @@ const webhookRouteFactory = serviceProviderFactory({
     name: INSTAGRAM,
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Instagram {
   export const Bot = BotP;
   export type Bot = BotP;
@@ -68,7 +66,7 @@ namespace Instagram {
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
-    configs: InstagramConfigs
+    configs: InstagramConfigs,
   ): SociablyPlatform<
     InstagramEventContext,
     null,
@@ -119,7 +117,7 @@ namespace Instagram {
     } else if (configs.multiAgentSettings) {
       if (configs.multiAgentSettings.length === 0) {
         throw new Error(
-          'configs.multiAgentSettings must have at least one agent settings'
+          'configs.multiAgentSettings must have at least one agent settings',
         );
       }
 
@@ -131,7 +129,7 @@ namespace Instagram {
       });
     } else {
       throw new Error(
-        'Instagram platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
+        'Instagram platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option',
       );
     }
 

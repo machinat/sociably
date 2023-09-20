@@ -80,29 +80,29 @@ export class AuthHttpOperator {
     this.apiUrl = new URL(apiPath || '', serverUrl);
     invariant(
       !secure || this.apiUrl.protocol === 'https:',
-      'protocol of options.serverUrl should be "https" when options.secure is set to true'
+      'protocol of options.serverUrl should be "https" when options.secure is set to true',
     );
     invariant(
       !cookieDomain || isSubdomain(cookieDomain, this.apiUrl.hostname),
-      'options.serverUrl should be under a subdomain of options.cookieDomain'
+      'options.serverUrl should be under a subdomain of options.cookieDomain',
     );
     invariant(
       isSubpath(cookiePath, this.apiUrl.pathname),
-      'options.apiPath should be a subpath of options.cookiePath'
+      'options.apiPath should be a subpath of options.cookiePath',
     );
 
     this.redirectUrl = new URL(redirectUrl || '', serverUrl);
     invariant(
       !secure || this.redirectUrl.protocol === 'https:',
-      'protocol of options.redirectUrl should be "https" when options.secure is set to true'
+      'protocol of options.redirectUrl should be "https" when options.secure is set to true',
     );
     invariant(
       !cookieDomain || isSubdomain(cookieDomain, this.redirectUrl.hostname),
-      'options.redirectUrl should be under a subdomain of options.cookieDomain'
+      'options.redirectUrl should be under a subdomain of options.cookieDomain',
     );
     invariant(
       isSubpath(cookiePath, this.redirectUrl.pathname),
-      'options.redirectUrl should be under a subpath of options.cookiePath'
+      'options.redirectUrl should be under a subpath of options.cookiePath',
     );
 
     this.secret = secret;
@@ -121,7 +121,7 @@ export class AuthHttpOperator {
 
   async getState<State>(
     req: IncomingMessage,
-    platformAsserted: string
+    platformAsserted: string,
   ): Promise<null | State> {
     let encodedState: string;
     const cookies = getCookies(req);
@@ -142,12 +142,12 @@ export class AuthHttpOperator {
   async issueState<State>(
     res: ServerResponse,
     platform: string,
-    state: State
+    state: State,
   ): Promise<string> {
     const encodedState = await thenifiedly.call(
       signJwt,
       { platform, state } as StatePayload<State>,
-      this.secret
+      this.secret,
     );
 
     setCookie(res, STATE_COOKIE_KEY, encodedState, {
@@ -170,7 +170,7 @@ export class AuthHttpOperator {
   async getAuth<Data>(
     req: IncomingMessage,
     platformAsserted: string,
-    { acceptRefreshable }: { acceptRefreshable?: boolean } = {}
+    { acceptRefreshable }: { acceptRefreshable?: boolean } = {},
   ): Promise<null | Data> {
     const cookies = getCookies(req);
     if (!cookies) {
@@ -189,7 +189,7 @@ export class AuthHttpOperator {
           verifyJWT,
           `${contentVal}.${sigVal}`,
           this.secret,
-          { ignoreExpiration: acceptRefreshable }
+          { ignoreExpiration: acceptRefreshable },
         );
 
       return platform !== platformAsserted ||
@@ -205,7 +205,7 @@ export class AuthHttpOperator {
     res: ServerResponse,
     platform: string,
     data: Data,
-    initiateAt?: number
+    initiateAt?: number,
   ): Promise<string> {
     const payload: AuthPayload<Data> = {
       platform,
@@ -250,7 +250,7 @@ export class AuthHttpOperator {
 
   async getError(
     req: IncomingMessage,
-    platformAsserted: string
+    platformAsserted: string,
   ): Promise<null | ErrorMessage> {
     let errEncoded: string;
     const cookies = getCookies(req);
@@ -262,7 +262,7 @@ export class AuthHttpOperator {
       const { platform, error }: ErrorTokenPayload = await thenifiedly.call(
         verifyJWT,
         errEncoded,
-        this.secret
+        this.secret,
       );
 
       return platform === platformAsserted ? error : null;
@@ -275,7 +275,7 @@ export class AuthHttpOperator {
     res: ServerResponse,
     platform: string,
     code: number,
-    reason: string
+    reason: string,
   ): Promise<string> {
     const errEncoded = await thenifiedly.call(
       signJwt,
@@ -287,7 +287,7 @@ export class AuthHttpOperator {
           path: this.baseCookieOptions.path,
         },
       } as ErrorPayload,
-      this.secret
+      this.secret,
     );
 
     setCookie(res, ERROR_COOKIE_KEY, errEncoded, {
@@ -317,7 +317,7 @@ export class AuthHttpOperator {
   getAuthUrl(platform: string, subpath?: string): string {
     return new URL(
       joinPath(this.apiUrl.pathname, platform, subpath ?? ''),
-      this.apiUrl
+      this.apiUrl,
     ).href;
   }
 
@@ -328,7 +328,7 @@ export class AuthHttpOperator {
   redirect(
     res: ServerResponse,
     url?: string,
-    { assertInternal }: { assertInternal?: boolean } = {}
+    { assertInternal }: { assertInternal?: boolean } = {},
   ): boolean {
     const redirectTarget = new URL(url ?? '', this.redirectUrl);
 
@@ -357,7 +357,7 @@ export class AuthHttpOperator {
   signToken(
     platform: string,
     payload: unknown,
-    options?: JsonWebToken.SignOptions
+    options?: JsonWebToken.SignOptions,
   ): string {
     return signJwt({ platform, payload }, this.secret, options);
   }

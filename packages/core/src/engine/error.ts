@@ -10,7 +10,7 @@ class DispatchError<Job, Result> extends Error {
     errors: Error[],
     tasks: SociablyTask<Job>[],
     jobs: Job[],
-    results: (void | Result)[]
+    results: (void | Result)[],
   ) {
     const message = errors
       ? errors.reduce(
@@ -18,7 +18,7 @@ class DispatchError<Job, Result> extends Error {
             `${msg}\n\t${idx + 1}) ${err.name}: ${
               err.message || err.toString()
             }`,
-          'Errors happen while sending:'
+          'Errors happen while sending:',
         )
       : 'Unknown error happen while sending';
 

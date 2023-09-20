@@ -11,7 +11,7 @@ export type ReduceTraverseContext<Reduced, Payload> = {
 const reduceCallback = <Reduced, Payload>(
   child: SociablyRenderable,
   path: string,
-  context: ReduceTraverseContext<Reduced, Payload>
+  context: ReduceTraverseContext<Reduced, Payload>,
 ) => {
   const { reduced, reducer, payload } = context;
   context.reduced = reducer(reduced, child, path, payload); // eslint-disable-line no-param-reassign
@@ -22,7 +22,7 @@ const reduce = <Reduced, Payload>(
   reducer: NodeReducer<Reduced, Payload>,
   initial: Reduced,
   prefix: string,
-  payload: Payload
+  payload: Payload,
 ): Reduced => {
   if (children === undefined || children === null) {
     return initial;

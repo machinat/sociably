@@ -19,8 +19,8 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <MediaTemplate mediaType="image" url="http://..." buttons={buttons} />
-    )
+      <MediaTemplate mediaType="image" url="http://..." buttons={buttons} />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -99,8 +99,8 @@ it('match snapshot', async () => {
         attachmentId="__ID__"
         sharable
         buttons={buttons}
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

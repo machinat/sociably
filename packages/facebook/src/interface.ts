@@ -7,18 +7,14 @@ import type {
   FacebookPageSettings,
 } from './types.js';
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ConfigsI = serviceInterface<FacebookConfigs>({
   name: 'FacebookConfigs',
 });
 
 export type ConfigsI = FacebookConfigs;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const PlatformUtilitiesI = serviceInterface<FacebookPlatformUtilities>({
   name: 'FacebookPlatformUtilities',
 });
@@ -28,9 +24,7 @@ export type AgentSettingsAccessorI = AgentSettingsAccessor<
   FacebookPageSettings
 >;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const AgentSettingsAccessorI = serviceInterface<
   AgentSettingsAccessor<FacebookPage, FacebookPageSettings>
 >({

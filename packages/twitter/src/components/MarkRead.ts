@@ -4,12 +4,16 @@ import makeTwitterComponent from '../utils/makeTwitterComponent.js';
 import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
 export type MarkReadProps = {
-  /** The message ID of the most recent message to be marked read. All messages before it will be marked read as well */
+  /**
+   * The message ID of the most recent message to be marked read. All messages
+   * before it will be marked read as well
+   */
   messageId: string;
 };
 
 /**
  * Mark messages as read in the direct message chat
+ *
  * @category Component
  * @props {@link MarkReadProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/message-attachments/guides/attaching-location).

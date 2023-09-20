@@ -14,7 +14,7 @@ describe('<p/>', () => {
         <p>baz</p>
       </>,
       null,
-      null
+      null,
     );
 
     expect(segments).toMatchSnapshot();
@@ -38,10 +38,10 @@ describe('<p/>', () => {
           <img />
         </p>,
         null,
-        null
-      )
+        null,
+      ),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <img /> is placed in <p/>"`
+      `"non-textual node <img /> is placed in <p/>"`,
     );
   });
 });
@@ -57,7 +57,7 @@ describe('text components', () => {
         <code>foo.bar()</code>,
         <pre>foo.bar('hello world')</pre>,
         <br />,
-      ].map((element) => renderer.render(element, null, null))
+      ].map((element) => renderer.render(element, null, null)),
     );
 
     expect(results).toMatchSnapshot();
@@ -92,7 +92,7 @@ describe('text components', () => {
         <pre>May the force be with you!</pre> Bye!
       </p>,
       null,
-      null
+      null,
     );
 
     await expect(promise).resolves.toMatchSnapshot();
@@ -118,39 +118,39 @@ describe('text components', () => {
     );
 
     await expect(
-      renderer.render(<p>{children}</p>, null, null)
+      renderer.render(<p>{children}</p>, null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <img /> is placed in <p/>"`
+      `"non-textual node <img /> is placed in <p/>"`,
     );
     await expect(
-      renderer.render(<b>{children}</b>, null, null)
+      renderer.render(<b>{children}</b>, null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <img /> is placed in <b/>"`
+      `"non-textual node <img /> is placed in <b/>"`,
     );
     await expect(
-      renderer.render(<i>{children}</i>, null, null)
+      renderer.render(<i>{children}</i>, null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <img /> is placed in <i/>"`
+      `"non-textual node <img /> is placed in <i/>"`,
     );
     await expect(
-      renderer.render(<s>{children}</s>, null, null)
+      renderer.render(<s>{children}</s>, null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <img /> is placed in <s/>"`
+      `"non-textual node <img /> is placed in <s/>"`,
     );
     await expect(
-      renderer.render(<u>{children}</u>, null, null)
+      renderer.render(<u>{children}</u>, null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <img /> is placed in <u/>"`
+      `"non-textual node <img /> is placed in <u/>"`,
     );
     await expect(
-      renderer.render(<code>{children}</code>, null, null)
+      renderer.render(<code>{children}</code>, null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <img /> is placed in <code/>"`
+      `"non-textual node <img /> is placed in <code/>"`,
     );
     await expect(
-      renderer.render(<pre>{children}</pre>, null, null)
+      renderer.render(<pre>{children}</pre>, null, null),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"non-textual node <img /> is placed in <pre/>"`
+      `"non-textual node <img /> is placed in <pre/>"`,
     );
   });
 

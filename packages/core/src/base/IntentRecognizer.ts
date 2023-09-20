@@ -32,9 +32,7 @@ export type DetectTextOptions = {
   language?: string;
 };
 
-/**
- * @category Base
- */
+/** @category Base */
 export type IntentRecognizer<
   Recognition extends RecognitionData<string, string> = RecognitionData<
     string,
@@ -45,7 +43,7 @@ export type IntentRecognizer<
   detectText(
     thread: SociablyThread,
     text: string,
-    options?: DetectTextOptions
+    options?: DetectTextOptions,
   ): Promise<DetectIntentResult<Recognition, Payload>>;
 };
 

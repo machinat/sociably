@@ -34,7 +34,7 @@ export class FileStateAccessor implements StateAccessor {
   constructor(
     marshaler: BaseMarshaler,
     getData: () => Promise<Record<string, unknown>>,
-    updateData: (data: Record<string, unknown>) => void
+    updateData: (data: Record<string, unknown>) => void,
   ) {
     this._marshaler = marshaler;
     this._getData = getData;
@@ -58,7 +58,7 @@ export class FileStateAccessor implements StateAccessor {
   update<T>(key: string, updator: (value: undefined | T) => T): Promise<T>;
   async update<T>(
     key: string,
-    updator: (value: undefined | T) => undefined | T
+    updator: (value: undefined | T) => undefined | T,
   ): Promise<undefined | T> {
     const data = await this._getData();
     const currentValue = this._marshaler.unmarshal(data[key]);
@@ -81,7 +81,7 @@ export class FileStateAccessor implements StateAccessor {
       Object.entries(data).map(([key, value]) => [
         key,
         this._marshaler.unmarshal(value),
-      ])
+      ]),
     );
   }
 
@@ -110,9 +110,7 @@ type StorageData = {
 };
 
 const identity = (x) => x;
-/**
- * @category Provider
- */
+/** @category Provider */
 export class FileStateController implements BaseStateController {
   path: string;
   marshaler: BaseMarshaler;
@@ -129,7 +127,7 @@ export class FileStateController implements BaseStateController {
   constructor(
     options: FileStateConfigs,
     marshaler?: null | BaseMarshaler,
-    serializer?: null | SerializerI
+    serializer?: null | SerializerI,
   ) {
     this.path = options.path;
     this.marshaler = marshaler || { marshal: identity, unmarshal: identity };
@@ -144,7 +142,7 @@ export class FileStateController implements BaseStateController {
     return new FileStateAccessor(
       this.marshaler,
       this._getDataCallback('channelStates', channelUid),
-      this._updateDataCallback('channelStates', channelUid)
+      this._updateDataCallback('channelStates', channelUid),
     );
   }
 
@@ -153,7 +151,7 @@ export class FileStateController implements BaseStateController {
     return new FileStateAccessor(
       this.marshaler,
       this._getDataCallback('threadStates', threadUid),
-      this._updateDataCallback('threadStates', threadUid)
+      this._updateDataCallback('threadStates', threadUid),
     );
   }
 
@@ -162,7 +160,7 @@ export class FileStateController implements BaseStateController {
     return new FileStateAccessor(
       this.marshaler,
       this._getDataCallback('userStates', userUid),
-      this._updateDataCallback('userStates', userUid)
+      this._updateDataCallback('userStates', userUid),
     );
   }
 
@@ -170,7 +168,7 @@ export class FileStateController implements BaseStateController {
     return new FileStateAccessor(
       this.marshaler,
       this._getDataCallback('globalStates', name),
-      this._updateDataCallback('globalStates', name)
+      this._updateDataCallback('globalStates', name),
     );
   }
 

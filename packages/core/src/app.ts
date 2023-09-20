@@ -71,7 +71,7 @@ export default class SociablyApp<
       this._status === ENUM_UNSTARTED,
       `app is ${
         this._status === ENUM_STARTING ? 'starting' : 'already started'
-      }`
+      }`,
     );
     this._status = ENUM_STARTING;
 
@@ -117,8 +117,8 @@ export default class SociablyApp<
           utilitiesInterface,
           this._createPlatformUtilities(
             eventMiddlewares || [],
-            dispatchMiddlewares || []
-          )
+            dispatchMiddlewares || [],
+          ),
         );
 
         if (startHook) {
@@ -138,7 +138,7 @@ export default class SociablyApp<
     const bootstrapScope = this.serviceSpace.bootstrap(bootstrapProvisions);
 
     await Promise.all(
-      startHooks.map((hook) => bootstrapScope.injectContainer(hook))
+      startHooks.map((hook) => bootstrapScope.injectContainer(hook)),
     );
 
     this._status = ENUM_STARTED;
@@ -149,7 +149,7 @@ export default class SociablyApp<
     const stopHooks = [...(platforms || []), ...(modules || [])]
       .map((m) => m.stopHook)
       .filter(
-        (hook): hook is ServiceContainer<Promise<void>, unknown[]> => !!hook
+        (hook): hook is ServiceContainer<Promise<void>, unknown[]> => !!hook,
       );
 
     const stopScope = this.serviceSpace.createScope();
@@ -157,7 +157,7 @@ export default class SociablyApp<
   }
 
   useServices<Deps extends ServiceDependency<any>[]>(
-    dependencies: Deps
+    dependencies: Deps,
   ): ResolveDependencies<Deps> {
     invariant(this.isStarted, 'app is not started');
 
@@ -233,7 +233,7 @@ export default class SociablyApp<
     >[],
     dispatchMiddlewares: MaybeContainer<
       DispatchMiddleware<unknown, AnyDispatchFrame, unknown>
-    >[]
+    >[],
   ): AnyPlatformUtilities {
     return {
       popEventWrapper: this._createPopEventWrapper(eventMiddlewares || []),
@@ -242,7 +242,7 @@ export default class SociablyApp<
   }
 
   private _createPopEventWrapper(
-    middlewares: MaybeContainer<EventMiddleware<AnyEventContext, unknown>>[]
+    middlewares: MaybeContainer<EventMiddleware<AnyEventContext, unknown>>[],
   ): PopEventWrapper<AnyEventContext, unknown> {
     return (makeResponse) => {
       const handlePopping = async (ctx: Context, scope?: ServiceScope) => {
@@ -269,7 +269,7 @@ export default class SociablyApp<
             ctx,
             idx + 1 < middlewares.length
               ? execute(idx + 1, scope)
-              : finalHandler(scope)
+              : finalHandler(scope),
           );
         };
 
@@ -289,7 +289,7 @@ export default class SociablyApp<
   private _createDispatchWrapper(
     middlewares: MaybeContainer<
       DispatchMiddleware<unknown, AnyDispatchFrame, unknown>
-    >[]
+    >[],
   ): DispatchWrapper<unknown, AnyDispatchFrame, unknown> {
     return (dispatch) => {
       if (middlewares.length === 0) {
@@ -304,7 +304,7 @@ export default class SociablyApp<
 
         return middleware(
           frame,
-          idx + 1 < middlewares.length ? execute(idx + 1, scope) : dispatch
+          idx + 1 < middlewares.length ? execute(idx + 1, scope) : dispatch,
         );
       };
 

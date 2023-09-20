@@ -7,7 +7,7 @@ export type EffectFn<T> = (val: T) => unknown | Promise<unknown>;
 
 /** @category Operator */
 function tap<T>(
-  effecter: ServiceContainer<EffectFn<T>, unknown[]>
+  effecter: ServiceContainer<EffectFn<T>, unknown[]>,
 ): OperatorFunction<T, T>;
 
 function tap<T>(effecter: EffectFn<T>): OperatorFunction<T, T>;

@@ -9,6 +9,7 @@ export type ReadProps = {
 
 /**
  * Send a location
+ *
  * @category Component
  * @props {@link ReadProps}
  */

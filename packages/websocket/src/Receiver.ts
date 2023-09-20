@@ -21,9 +21,7 @@ import type {
   EventInput,
 } from './types.js';
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
   private _bot: BotP;
   private _server: ServerP<User, Auth>;
@@ -35,7 +33,7 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
     bot: BotP,
     server: ServerP<User, Auth>,
     popEventWrapper: PopEventWrapper<WebSocketEventContext<any, any>, null>,
-    popError: PopErrorFn
+    popError: PopErrorFn,
   ) {
     this._bot = bot;
     this._server = server;
@@ -48,10 +46,10 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
       (values, { connId, user, request, authContext }) => {
         values.forEach((value) => {
           this._issueEvent(value, connId, user, request, authContext).catch(
-            this._popError
+            this._popError,
           );
         });
-      }
+      },
     );
 
     this._server.on('connect', ({ connId, user, request, authContext }) => {
@@ -62,7 +60,7 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
       };
 
       this._issueEvent(value, connId, user, request, authContext).catch(
-        this._popError
+        this._popError,
       );
     });
 
@@ -75,7 +73,7 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
       };
 
       this._issueEvent(value, connId, user, request, authContext).catch(
-        this._popError
+        this._popError,
       );
     });
 
@@ -89,7 +87,7 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
     connId: string,
     user: User,
     request: HttpRequestInfo,
-    auth: Auth
+    auth: Auth,
   ) {
     const thread = new WebSocketConnection(this._server.id, connId);
     await this._popEvent({

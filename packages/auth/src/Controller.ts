@@ -41,9 +41,7 @@ type AuthVerifyResult<Authenticator extends AnyServerAuthenticator> =
     }
   | { ok: false; token: undefined | string; code: number; reason: string };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class AuthController<Authenticator extends AnyServerAuthenticator> {
   authenticators: Authenticator[];
   secret: string;
@@ -53,7 +51,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
   constructor(operator: OperatorP, authenticators: Authenticator[]) {
     invariant(
       authenticators && authenticators.length > 0,
-      'options.authenticators must not be empty'
+      'options.authenticators must not be empty',
     );
 
     this.operator = operator;
@@ -65,7 +63,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
   async handleRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    routingInfo?: RoutingInfo
+    routingInfo?: RoutingInfo,
   ): Promise<void> {
     const { pathname } = parseUrl(req.url!);
     const subpath =
@@ -95,7 +93,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
           res,
           undefined,
           404,
-          `invalid auth api route "${subpath}"`
+          `invalid auth api route "${subpath}"`,
         );
       }
       return;
@@ -115,7 +113,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
         basePath: routingInfo?.basePath || '/',
         matchedPath: joinPath(
           routingInfo?.matchedPath || this.apiPathname.slice(1),
-          platform
+          platform,
         ),
         trailingPath: getRelativePath(platform, subpath),
       });
@@ -131,14 +129,14 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
         res,
         platform,
         501,
-        'connection not closed by authenticator'
+        'connection not closed by authenticator',
       );
     }
   }
 
   async verifyAuth(
     req: HttpRequestInfo,
-    tokenProvided?: string
+    tokenProvided?: string,
   ): Promise<AuthVerifyResult<Authenticator>> {
     let token = tokenProvided;
     if (!token) {
@@ -251,7 +249,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
       const token = await this.operator.issueAuth(
         res,
         platform,
-        verifyResult.data
+        verifyResult.data,
       );
 
       respondApiOk(res, platform, token);
@@ -262,7 +260,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
 
   private async _handleRefreshRequest(
     req: IncomingMessage,
-    res: ServerResponse
+    res: ServerResponse,
   ) {
     // get signature from cookie
     const signature = getSignature(req);
@@ -315,7 +313,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
           res,
           platform,
           refreshResult.data,
-          init
+          init,
         );
         respondApiOk(res, platform, newToken);
       } else {
@@ -328,7 +326,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
 
   private async _handleVerifyRequest(
     req: IncomingMessage,
-    res: ServerResponse
+    res: ServerResponse,
   ) {
     // get signature from cookie
     const signature = getSignature(req);
@@ -374,14 +372,14 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
   private async _verifyToken(
     token: string,
     signature: string,
-    jwtVerifyOptions?: JsonWebToken.VerifyOptions
+    jwtVerifyOptions?: JsonWebToken.VerifyOptions,
   ): Promise<[null | AuthError, AuthTokenPayload<unknown>]> {
     try {
       const payload: AuthTokenPayload<unknown> = await thenifiedly.call(
         verifyJwt,
         `${token}.${signature}`,
         this.secret,
-        jwtVerifyOptions
+        jwtVerifyOptions,
       );
 
       return [null, payload];
@@ -396,7 +394,7 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
         new AuthError(
           typeof payload === 'string' ? undefined : payload?.platform,
           code,
-          err.message
+          err.message,
         ),
         null as never,
       ];

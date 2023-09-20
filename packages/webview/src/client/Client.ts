@@ -89,7 +89,7 @@ class WebviewClient<
     this._connector = new Connector<UserOfAuthenticator<Authenticator>>(
       webSocketUrl || `/${DEFAULT_WEBSOCKET_ROUTE}`,
       this._getLoginAuth.bind(this),
-      new BaseMarshaler(marshalTypes)
+      new BaseMarshaler(marshalTypes),
     )
       .on('connect', this._handleConnect.bind(this))
       .on('events', this._handleEvent.bind(this))
@@ -109,9 +109,7 @@ class WebviewClient<
     this._connector.close(code, reason);
   }
 
-  /**
-   * Try close the webview. Return whether it's supported by current platform
-   */
+  /** Try close the webview. Return whether it's supported by current platform */
   closeWebview(): boolean {
     const authenticator = this._authClient.getAuthenticator();
     if (!authenticator) {
@@ -152,7 +150,7 @@ class WebviewClient<
           payload: null,
         },
         this._thread,
-        user
+        user,
       ),
       auth: this.authContext as ContextOfAuthenticator<Authenticator>,
       authenticator: this._authClient.getAuthenticator()!,
@@ -181,7 +179,7 @@ class WebviewClient<
           payload: { reason },
         },
         thread!,
-        this._user!
+        this._user!,
       ),
       auth: this.authContext as ContextOfAuthenticator<Authenticator>,
       authenticator: this._authClient.getAuthenticator()!,

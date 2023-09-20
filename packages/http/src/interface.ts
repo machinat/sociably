@@ -14,18 +14,14 @@ export const ServerI = serviceInterface<Server>({
 
 export type ServerI = Server;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ConfigsI = serviceInterface<HttpConfigs>({
   name: 'HttpConfigs',
 });
 
 export type ConfigsI = HttpConfigs;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const RequestRouteListI = serviceInterface<
   RequestRoute | DefaultRequestRoute
 >({
@@ -35,9 +31,7 @@ export const RequestRouteListI = serviceInterface<
 
 export type RequestRouteListI = (RequestRoute | DefaultRequestRoute)[];
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const UpgradeRouteListI = serviceInterface<
   UpgradeRoute | DefaultUpgradeRoute
 >({

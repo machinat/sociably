@@ -10,7 +10,7 @@ const rejectUpgrade = (ns: NetSocket, code: number, message?: string): void => {
       'Connection: close\r\n' +
       'Content-Type: text/html\r\n' +
       `Content-Length: ${Buffer.byteLength(body)}\r\n` +
-      `\r\n${body}`
+      `\r\n${body}`,
   );
 
   ns.destroy();

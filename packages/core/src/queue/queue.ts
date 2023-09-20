@@ -3,7 +3,7 @@ import Denque from 'denque';
 import type { JobBatchResponse, JobResponse } from './types.js';
 
 type BatchResolveCallback<Job, Result> = (
-  batch: JobBatchResponse<Job, Result>
+  batch: JobBatchResponse<Job, Result>,
 ) => void;
 
 type BatchRequest<Job, Result> = {
@@ -24,7 +24,7 @@ type JobBox<Job, Result> = {
 };
 
 type ConsumeJobsFn<Job, Result> = (
-  job: Job[]
+  job: Job[],
 ) => Promise<JobResponse<Job, Result>[]>;
 
 const reduceRequestsOfBoxes = <Job, Result, Acc>(
@@ -34,9 +34,9 @@ const reduceRequestsOfBoxes = <Job, Result, Acc>(
     request: BatchRequest<Job, Result>,
     boxes: JobBox<Job, Result>[],
     begin: number,
-    count: number
+    count: number,
   ) => Acc,
-  initial: Acc
+  initial: Acc,
 ): Acc => {
   let jobBegin = 0;
   let lastRequest = boxes[0].request;
@@ -61,7 +61,7 @@ const reduceRequestsOfBoxes = <Job, Result, Acc>(
 
 const addAcquireCountReducer = <Job, Result>(
   _: void,
-  request: BatchRequest<Job, Result>
+  request: BatchRequest<Job, Result>,
 ) => {
   request.acquiredCount += 1;
 };
@@ -82,7 +82,7 @@ export default class SociablyQueue<Job, Result> {
     request: BatchRequest<Job, Result>,
     boxes: JobBox<Job, Result>[],
     begin: number,
-    count: number
+    count: number,
   ) => JobResponse<Job, Result>[];
 
   private _failJobsReducerCallback: (
@@ -90,7 +90,7 @@ export default class SociablyQueue<Job, Result> {
     request: BatchRequest<Job, Result>,
     boxes: JobBox<Job, Result>[],
     begin: number,
-    count: number
+    count: number,
   ) => Error;
 
   constructor() {
@@ -108,7 +108,7 @@ export default class SociablyQueue<Job, Result> {
   }
 
   removeJobsListener(
-    listenerToRemove: (queue: SociablyQueue<Job, Result>) => void
+    listenerToRemove: (queue: SociablyQueue<Job, Result>) => void,
   ): boolean {
     const listeners = this._jobListeners;
     for (let i = 0; i < listeners.length; i += 1) {
@@ -135,7 +135,7 @@ export default class SociablyQueue<Job, Result> {
   async acquireAt(
     idx: number,
     count: number,
-    consume: ConsumeJobsFn<Job, Result>
+    consume: ConsumeJobsFn<Job, Result>,
   ): Promise<undefined | JobResponse<Job, Result>[]> {
     const boxes = this._queuedJobs.remove(idx, count);
     if (boxes === undefined) {
@@ -158,7 +158,7 @@ export default class SociablyQueue<Job, Result> {
 
   acquire(
     count: number,
-    consume: (jobs: Job[]) => Promise<JobResponse<Job, Result>[]>
+    consume: (jobs: Job[]) => Promise<JobResponse<Job, Result>[]>,
   ): Promise<undefined | JobResponse<Job, Result>[]> {
     return this.acquireAt(0, count, consume);
   }
@@ -204,7 +204,7 @@ export default class SociablyQueue<Job, Result> {
 
   private _finishJobs(
     boxes: JobBox<Job, Result>[],
-    jobResps: JobResponse<Job, Result>[]
+    jobResps: JobResponse<Job, Result>[],
   ) {
     reduceRequestsOfBoxes(boxes, this._finishJobsReducerCallback, jobResps);
   }
@@ -214,7 +214,7 @@ export default class SociablyQueue<Job, Result> {
     request: BatchRequest<Job, Result>,
     boxes: JobBox<Job, Result>[],
     begin: number,
-    count: number
+    count: number,
   ) {
     const { begin: requestBegin, end: requestEnd } = request;
 
@@ -276,7 +276,7 @@ export default class SociablyQueue<Job, Result> {
     request: BatchRequest<Job, Result>,
     boxes: JobBox<Job, Result>[],
     begin: number,
-    count: number
+    count: number,
   ) {
     this._removeJobsOfRequest(request);
 

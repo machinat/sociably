@@ -2,7 +2,7 @@ import type { MediaSource, MediaType } from '../types.js';
 
 const annotateTweetMedia = (
   mediaType: MediaType,
-  source: MediaSource
+  source: MediaSource,
 ): MediaSource =>
   source.type === 'id'
     ? source

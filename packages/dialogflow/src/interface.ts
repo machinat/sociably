@@ -1,9 +1,7 @@
 import { serviceInterface } from '@sociably/core/service';
 import type { DialogflowConfigs } from './types.js';
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ConfigsI = serviceInterface<DialogflowConfigs<string, string>>({
   name: 'DialogflowConfigs',
 });

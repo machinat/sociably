@@ -19,7 +19,7 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
     marshaler: BaseMarshaler,
     getIdentifierFields: IdentifierFieldsGetter,
     schemaName: undefined | string,
-    tableName: string
+    tableName: string,
   ) {
     this._pool = pool;
     this._marshaler = marshaler;
@@ -32,7 +32,7 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
     const {
       rows: [stateEntity],
     } = await this._pool.query<InstanceStateEntity>(
-      this._selectStateEntitiesQuery(key)
+      this._selectStateEntitiesQuery(key),
     );
 
     if (!stateEntity) {
@@ -47,7 +47,7 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
     const {
       rows: [{ inserted }],
     } = await this._pool.query<{ inserted: boolean }>(
-      this._setStateDataQuery(key, dataValue)
+      this._setStateDataQuery(key, dataValue),
     );
 
     return !inserted;
@@ -56,7 +56,7 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
   update<T>(key: string, updator: (value: undefined | T) => T): Promise<T>;
   async update<T>(
     key: string,
-    updator: (value: undefined | T) => undefined | T
+    updator: (value: undefined | T) => undefined | T,
   ): Promise<undefined | T> {
     const client = await this._pool.connect();
     try {
@@ -64,7 +64,7 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
       const {
         rows: [stateEntity],
       } = await client.query<InstanceStateEntity>(
-        this._selectStateEntitiesQuery(key, true)
+        this._selectStateEntitiesQuery(key, true),
       );
 
       const currentValue = stateEntity
@@ -74,11 +74,11 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
 
       if (newValue === undefined) {
         await client.query<InstanceStateEntity>(
-          this._deleteStateEntitiesQuery(key)
+          this._deleteStateEntitiesQuery(key),
         );
       } else if (newValue !== currentValue) {
         await client.query<InstanceStateEntity>(
-          this._setStateDataQuery(key, this._prepareDataValueToSave(newValue))
+          this._setStateDataQuery(key, this._prepareDataValueToSave(newValue)),
         );
       }
 
@@ -94,33 +94,33 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
 
   async delete(key: string): Promise<boolean> {
     const result = await this._pool.query<InstanceStateEntity>(
-      this._deleteStateEntitiesQuery(key)
+      this._deleteStateEntitiesQuery(key),
     );
     return result.rowCount > 0;
   }
 
   async keys(): Promise<string[]> {
     const result = await this._pool.query<InstanceStateEntity>(
-      this._selectStateEntitiesQuery(null)
+      this._selectStateEntitiesQuery(null),
     );
     return result.rows.map(({ key }) => key);
   }
 
   async getAll<T>(): Promise<Map<string, T>> {
     const result = await this._pool.query<InstanceStateEntity>(
-      this._selectStateEntitiesQuery(null)
+      this._selectStateEntitiesQuery(null),
     );
     return new Map(
       result.rows.map(({ key, data }) => [
         key,
         this._getUnmarshaledDataValue<T>(data.value),
-      ])
+      ]),
     );
   }
 
   async clear(): Promise<undefined> {
     await this._pool.query<InstanceStateEntity>(
-      this._deleteStateEntitiesQuery(null)
+      this._deleteStateEntitiesQuery(null),
     );
     return undefined;
   }

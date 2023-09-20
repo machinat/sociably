@@ -30,8 +30,8 @@ it('match snpshot', async () => {
         title="a piece of cake"
         payload="🍰"
         imageUrl="http://cake.it"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

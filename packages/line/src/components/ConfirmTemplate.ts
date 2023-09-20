@@ -3,20 +3,15 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent, MessageSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ConfirmTemplateProps = {
   /**
    * Alternative text. Displayed on devices that do not support template
-   * messages. Max character limit: 400
-   * If a function is given, the return value would be used. The rendered
-   * template object is passed as the first param.
+   * messages. Max character limit: 400 If a function is given, the return value
+   * would be used. The rendered template object is passed as the first param.
    */
   altText: string | ((template: Record<string, any>) => string);
-  /**
-   * Exactly 2 {@link Action} elements displayed as the buttons at the template.
-   */
+  /** Exactly 2 {@link Action} elements displayed as the buttons at the template. */
   actions: SociablyNode;
   /** Texual nodes of message text. */
   children: string;
@@ -24,6 +19,7 @@ export type ConfirmTemplateProps = {
 
 /**
  * Template with two action buttons.
+ *
  * @category Component
  * @props {@link ConfirmTemplateProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#confirm).

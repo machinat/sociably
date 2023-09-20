@@ -17,6 +17,7 @@ export type LocationProps = {
 
 /**
  * Send a location
+ *
  * @category Component
  * @props {@link LocationProps}
  */

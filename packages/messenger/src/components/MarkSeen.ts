@@ -12,7 +12,7 @@ const MARK_SEEN_VALUE = {
 
 export function MarkSeen(
   node: NativeElement<{}, AnyNativeComponent>,
-  path: string
+  path: string,
 ): UnitSegment<SenderActionValue>[] {
   return [makeUnitSegment(node, path, MARK_SEEN_VALUE)];
 }

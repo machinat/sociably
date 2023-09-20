@@ -12,9 +12,7 @@ import {
 import { PATH_MESSAGES } from '../constant.js';
 import type { MessageValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ButtonTemplateProps = {
   /**
    * Textual node with content up to 640 characters. Text will appear above the
@@ -29,7 +27,7 @@ export type ButtonTemplateProps = {
 export async function ButtonTemplate(
   node: NativeElement<ButtonTemplateProps, AnyNativeComponent>,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ): Promise<UnitSegment<MessageValue>[]> {
   const { children, buttons, sharable } = node.props;
   const textSegments = await render(children, '.children');
@@ -41,8 +39,8 @@ export async function ButtonTemplate(
     if (segment.type !== 'text') {
       throw new TypeError(
         `non-textual node ${formatNode(
-          segment.node
-        )} received, only textual nodes allowed`
+          segment.node,
+        )} received, only textual nodes allowed`,
       );
     }
   }

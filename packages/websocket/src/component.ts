@@ -8,9 +8,7 @@ import {
 import { WEBSOCKET } from './constant.js';
 import type { EventInput } from './types.js';
 
-/**
- * @category Component
- */
+/** @category Component */
 export const Event: NativeComponent<
   EventInput,
   UnitSegment<EventInput>

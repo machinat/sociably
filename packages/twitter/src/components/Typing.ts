@@ -6,6 +6,7 @@ import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
 /**
  * Display typing action in the direct message chat
+ *
  * @category Component
  * @props {@link TypingProps}
  * @guides Check official [reference](https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/typing-indicator-and-read-receipts/api-reference/new-typing-indicator).

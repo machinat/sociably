@@ -19,7 +19,7 @@ class WebhookReceiver {
   async handleRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    routingInfo: RoutingInfo
+    routingInfo: RoutingInfo,
   ): Promise<void> {
     try {
       let body: undefined | string;
@@ -54,7 +54,7 @@ class WebhookReceiver {
           ? resBody
           : resBody
           ? JSON.stringify(resBody)
-          : undefined
+          : undefined,
       );
     } catch (err) {
       res.statusCode = 500;
@@ -62,7 +62,7 @@ class WebhookReceiver {
         JSON.stringify({
           code: 500,
           message: err.message,
-        })
+        }),
       );
     }
   }

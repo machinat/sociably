@@ -67,7 +67,7 @@ type ServerEvents<User extends null | SociablyUser, Auth> = {
   events: (events: EventInput[], conn: ConnectionInfo<User, Auth>) => void;
   disconnect: (
     reason: { reason?: string },
-    conn: ConnectionInfo<User, Auth>
+    conn: ConnectionInfo<User, Auth>,
   ) => void;
   error: (err: Error) => void;
 };
@@ -82,9 +82,7 @@ type ServerOptions<User extends null | SociablyUser, Auth> = {
   heartbeatInterval?: number;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class WebSocketServer<
   User extends null | SociablyUser,
   Auth,
@@ -131,7 +129,7 @@ export class WebSocketServer<
 
     this._heartbeatIntervalId = setInterval(
       this._heartbeat.bind(this),
-      heartbeatInterval || DEFAULT_HEARTBEAT_INTERVAL
+      heartbeatInterval || DEFAULT_HEARTBEAT_INTERVAL,
     ).unref();
 
     broker.onRemoteEvent(this._handleRemoteEvent.bind(this));
@@ -148,7 +146,7 @@ export class WebSocketServer<
   async handleUpgrade(
     req: IncomingMessage,
     ns: NetSocket,
-    head: Buffer
+    head: Buffer,
   ): Promise<void> {
     const requestInfo: UpgradeRequestInfo = {
       method: req.method!,
@@ -200,7 +198,7 @@ export class WebSocketServer<
 
   async unsubscribeTopic(
     conn: ConnIdentifier,
-    topic: string
+    topic: string,
   ): Promise<boolean> {
     if (this.id !== conn.serverId) {
       return this._broker.unsubscribeTopicRemote(conn, topic);
@@ -311,7 +309,7 @@ export class WebSocketServer<
 
   private async _dispatchLocal(
     connStates: ConnectionState<User, Auth>[],
-    values: EventInput[]
+    values: EventInput[],
   ): Promise<ConnIdentifier[]> {
     const promises: Promise<number | null>[] = [];
     const sentThreads: ConnIdentifier[] = [];
@@ -333,7 +331,7 @@ export class WebSocketServer<
           .catch((err) => {
             this._handleError(err);
             return null;
-          })
+          }),
       );
 
       sentThreads.push({ serverId: this.id, id: connId });
@@ -378,7 +376,7 @@ export class WebSocketServer<
         }
 
         this._dispatchLocal([connState], values).catch(
-          this._handleErrorCallback
+          this._handleErrorCallback,
         );
       }
     } else if (target.type === 'topic') {
@@ -388,11 +386,11 @@ export class WebSocketServer<
       }
 
       this._dispatchLocal(subsrcibingConns, values).catch(
-        this._handleErrorCallback
+        this._handleErrorCallback,
       );
     } else {
       throw new Error(
-        `unknown target received ${(target as any)?.type || String(target)}`
+        `unknown target received ${(target as any)?.type || String(target)}`,
       );
     }
   }
@@ -481,7 +479,7 @@ export class WebSocketServer<
           type,
           payload: this.marshaler.unmarshal(payload),
         })),
-        connState.info
+        connState.info,
       );
     }
   }
@@ -536,7 +534,7 @@ export const ServerP = serviceProviderClass({
     verifyUpgrade,
     verifyLogin,
     marshaler,
-    { heartbeatInterval }
+    { heartbeatInterval },
   ) =>
     new WebSocketServer({
       id: serverId || undefined,

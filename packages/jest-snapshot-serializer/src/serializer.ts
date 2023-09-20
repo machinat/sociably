@@ -3,7 +3,7 @@ const sociablyElementSerializer = {
     // eslint-disable-next-line @typescript-eslint/ban-types
     element: { type?: symbol | Function | Record<string, unknown> },
     serialize,
-    indent
+    indent,
   ) {
     const type =
       element.type === Symbol.for('fragment.element.sociably')
@@ -30,7 +30,7 @@ const sociablyElementSerializer = {
         type,
         $$typeof: Symbol.for('react.element'),
       },
-      indent
+      indent,
     );
   },
 

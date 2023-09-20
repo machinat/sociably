@@ -3,9 +3,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import { PATH_REQUEST_THREAD_CONTROL } from '../constant.js';
 import type { RequestThreadControlValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type RequestThreadControlProps = {
   /**
    * Metadata passed back to the primary app in the request_thread_control
@@ -16,7 +14,7 @@ export type RequestThreadControlProps = {
 
 export function RequestThreadControl(
   node: NativeElement<RequestThreadControlProps, AnyNativeComponent>,
-  path: string
+  path: string,
 ): UnitSegment<RequestThreadControlValue>[] {
   return [
     makeUnitSegment(node, path, {

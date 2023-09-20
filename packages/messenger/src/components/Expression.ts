@@ -19,34 +19,29 @@ import type {
   NotificationType,
 } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ExpressionProps = {
   /** Content nodes to be annotated. */
   children: SociablyNode;
   /**
    * The messaging type of the message being sent. For more information, see
-   * [Sending Messages - Messaging Types](https://developers.facebook.com/docs/messenger-platform/send-messages/#messaging_types).
+   * [Sending Messages - Messaging
+   * Types](https://developers.facebook.com/docs/messenger-platform/send-messages/#messaging_types).
    * Default to 'RESPONSE'.
    */
   messagingType?: MessagingType;
   /**
    * The message tag to use when messagingType set to 'MESSAGE_TAG'. For more
-   * information, see [Message Tags](https://developers.facebook.com/docs/messenger-platform/send-messages/message-tags).
+   * information, see [Message
+   * Tags](https://developers.facebook.com/docs/messenger-platform/send-messages/message-tags).
    */
   tag?: MessageTags;
   /**
-   * Push notification type.
-   *  REGULAR: sound/vibration
-   *  SILENT_PUSH: on-screen notification only
-   *  NO_PUSH: no notification
-   * Defaults to 'REGULAR'.
+   * Push notification type. REGULAR: sound/vibration SILENT_PUSH: on-screen
+   * notification only NO_PUSH: no notification Defaults to 'REGULAR'.
    */
   notificationType?: NotificationType;
-  /**
-   * Custom string that is delivered as a message echo. 1000 character limit.
-   */
+  /** Custom string that is delivered as a message echo. 1000 character limit. */
   metadata?: string;
   /** {@link QuickReply} elements to be sent with messages. */
   quickReplies?: SociablyNode;
@@ -67,7 +62,7 @@ export async function Expression(
     },
   }: NativeElement<ExpressionProps, AnyNativeComponent>,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ): Promise<null | OutputSegment<MessengerSegmentValue>[]> {
   const [childrenSegments, quickReplySegments] = await Promise.all([
     render<MessengerSegmentValue>(children, '.children'),
@@ -84,7 +79,7 @@ export async function Expression(
   for (const segment of childrenSegments) {
     if (segment.type === 'part') {
       throw new TypeError(
-        `${formatNode(segment.node)} can not be placed in <Expression/>`
+        `${formatNode(segment.node)} can not be placed in <Expression/>`,
       );
     }
 
@@ -112,7 +107,7 @@ export async function Expression(
       const { value } = segment;
       if (value.type !== 'message') {
         throw new TypeError(
-          `${formatNode(segment.node)} can not be placed in <Expression/>`
+          `${formatNode(segment.node)} can not be placed in <Expression/>`,
         );
       }
 

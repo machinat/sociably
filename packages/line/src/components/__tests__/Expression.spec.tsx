@@ -19,8 +19,8 @@ it('return segments from children', async () => {
         <p>foo</p>
         <p>bar</p>
         <p>baz</p>
-      </Expression>
-    )
+      </Expression>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -78,8 +78,8 @@ it('hoist children rendered text into text message object', async () => {
         bar
         <Sociably.Pause />
         baz
-      </Expression>
-    )
+      </Expression>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -156,8 +156,8 @@ it('attach quickReply to last message', async () => {
         <p>How much you wanna risk</p>
         I'm not looking for
         <LinkRichMenu id="somebody_with_superhuman_gift" />
-      </Expression>
-    )
+      </Expression>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -247,6 +247,6 @@ it('attach quickReply to last message', async () => {
 
 it('return null if children is empty', async () => {
   await expect(
-    renderUnitElement(<Expression quickReplies={[]}>{undefined}</Expression>)
+    renderUnitElement(<Expression quickReplies={[]}>{undefined}</Expression>),
   ).resolves.toBe(null);
 });

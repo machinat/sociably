@@ -37,7 +37,7 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
   events: (events: EventInput[], ctx: ConnectorContext<User>) => void;
   disconnect: (
     reason: { reason?: string },
-    ctx: ConnectorContext<User>
+    ctx: ConnectorContext<User>,
   ) => void;
   error: (err: Error) => void;
 }> {
@@ -58,7 +58,7 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
   constructor(
     serverUrl: string,
     login: ClientLoginFn<User, unknown>,
-    marshaler: Marshaler
+    marshaler: Marshaler,
   ) {
     super();
 
@@ -92,8 +92,8 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
         },
         Math.min(
           this._reconnectCount * RECONNECT_INTERVAL_BASE,
-          MAX_RECONNECT_INTERVAL
-        )
+          MAX_RECONNECT_INTERVAL,
+        ),
       );
 
       this._reconnectCount += 1;
@@ -107,7 +107,7 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
     const { user, credential } = await this._login();
 
     const socket = await createClientSocket(
-      new URL(this._serverUrl, `wss://${host}${pathname}`).href
+      new URL(this._serverUrl, `wss://${host}${pathname}`).href,
     );
 
     this._user = user;
@@ -162,7 +162,7 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
   private _handleConnect(
     { connId, seq }: ConnectBody,
     _seq: number,
-    socket: Socket
+    socket: Socket,
   ) {
     // for muliplexing, ignore CONNECT for other LOGIN
     if (seq !== this._loginSeq) {
@@ -196,7 +196,7 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
           type,
           payload: this._marshaler.unmarshal(payload),
         })),
-        { connId, user: this._user }
+        { connId, user: this._user },
       );
     }
   }

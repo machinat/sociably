@@ -18,6 +18,7 @@ type InstagramReceiverOptions = {
 
 /**
  * InstagramReceiver receive and pop events from Meta webhook.
+ *
  * @category Provider
  */
 export class InstagramReceiver extends MetaWebhookReceiver<InstagramEventContext> {
@@ -45,7 +46,7 @@ export class InstagramReceiver extends MetaWebhookReceiver<InstagramEventContext
             const rawEvents = isStandby ? stanby : messaging;
 
             return rawEvents.map((rawEvent) =>
-              eventFactory(agentId, isStandby, rawEvent)
+              eventFactory(agentId, isStandby, rawEvent),
             );
           },
           popEvent: popEventWrapper(async () => null),
@@ -66,7 +67,7 @@ const ReceiverP = serviceProviderClass({
       appSecret,
     },
     bot,
-    { popEventWrapper }
+    { popEventWrapper },
   ) =>
     new InstagramReceiver({
       bot,

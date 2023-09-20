@@ -103,7 +103,7 @@ export type ServerAuthenticator<
   delegateAuthRequest(
     req: IncomingMessage,
     res: ServerResponse,
-    routingInfo: DelegateRoutingInfo
+    routingInfo: DelegateRoutingInfo,
   ): Promise<void>;
 
   /**
@@ -137,9 +137,7 @@ export type AuthenticatorCredentialResult<Credential> =
   | ErrorResult;
 
 export type AuthenticatorInitResult = {
-  /**
-   * Force to start sign in flow even when there is error or auth data already.
-   */
+  /** Force to start sign in flow even when there is error or auth data already. */
   forceSignIn: boolean;
 };
 
@@ -158,7 +156,7 @@ export type ClientAuthenticator<
   init(
     authEntry: string,
     currentError: null | AuthError,
-    currentAuthData: null | Data
+    currentAuthData: null | Data,
   ): Promise<AuthenticatorInitResult>;
 
   /**
@@ -167,7 +165,7 @@ export type ClientAuthenticator<
    * redirecting user-agent, just set the location and pend resolving.
    */
   fetchCredential(
-    entry: string
+    entry: string,
   ): Promise<AuthenticatorCredentialResult<Credential>>;
 
   /**
@@ -211,7 +209,10 @@ export type AuthConfigs = {
   secret: string;
   /** The path to the auth api. Default to `.` */
   apiPath?: string;
-  /** The web page entry point to redirect the authorized users to. Can be absolute or relative to `serverUrl` */
+  /**
+   * The web page entry point to redirect the authorized users to. Can be
+   * absolute or relative to `serverUrl`
+   */
   redirectRoot?: string;
   /** The lifetime of the token in seconds. Default to an hour */
   tokenLifetime?: number;
@@ -229,7 +230,10 @@ export type AuthConfigs = {
   secure?: boolean;
   /** Initiate basic auth service */
   basicAuth?: {
-    /** The user needs to enter a verify code in `strict` mode. Default to `strict` */
+    /**
+     * The user needs to enter a verify code in `strict` mode. Default to
+     * `strict`
+     */
     mode?: 'loose' | 'strict';
     /** The app name to show while login using basic auth flow */
     appName?: string;

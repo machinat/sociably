@@ -2,9 +2,7 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
 import { WhatsAppComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type CurrencyParamProps = {
   /** Currency code as defined in ISO 4217 */
   code: string;
@@ -16,6 +14,7 @@ export type CurrencyParamProps = {
 
 /**
  * Pass a currency parameter into the body or header of a customized template
+ *
  * @category Component
  * @props {@link CurrencyParamProps}
  */

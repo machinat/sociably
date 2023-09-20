@@ -36,8 +36,8 @@ test('rendering value', async () => {
     renderUnitElement(
       <Text>
         FOO {'BAR'} <>BAZ</>
-      </Text>
-    )
+      </Text>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -68,8 +68,8 @@ test('rendering value', async () => {
     renderUnitElement(
       <Text previewUrl replyTo="REPLY_TO_MESSAGE_ID">
         FOO
-      </Text>
-    )
+      </Text>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -103,9 +103,9 @@ test('throw if non textual children received', async () => {
     renderUnitElement(
       <Text>
         <Text replyTo="REPLY_TO_MESSAGE_ID">BOO</Text>
-      </Text>
-    )
+      </Text>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""children" prop should contain only texual content"`
+    `""children" prop should contain only texual content"`,
   );
 });

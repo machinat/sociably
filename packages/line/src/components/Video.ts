@@ -2,9 +2,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent, MessageSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type VideoProps = {
   /** URL of video file (Max character limit: 1000) */
   originalContentUrl: string;
@@ -20,6 +18,7 @@ export type VideoProps = {
 
 /**
  * Video sends an video message.
+ *
  * @category Component
  * @props {@link VideoProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#video-message).

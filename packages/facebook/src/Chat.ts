@@ -17,7 +17,7 @@ class FacebookChat<Type extends ChatType = ChatType>
 {
   static typeName = 'FbChat';
   static fromJSONValue<Type extends ChatType = ChatType>(
-    value: ChatValue
+    value: ChatValue,
   ): FacebookChat<Type> {
     const { page, target } = value;
     return new FacebookChat(page, target);

@@ -82,6 +82,7 @@ type CommentResult = {
 
 /**
  * FacebookBot render messages and make API call to Facebook platform.
+ *
  * @category Provider
  */
 export class FacebookBot
@@ -129,7 +130,7 @@ export class FacebookBot
       queue,
       worker,
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   }
 
@@ -143,13 +144,13 @@ export class FacebookBot
 
   async render(
     target: FacebookDispatchTarget,
-    node: SociablyNode
+    node: SociablyNode,
   ): Promise<null | MetaApiDispatchResponse> {
     if (target instanceof FacebookChat) {
       return this.engine.render(
         target,
         node,
-        createChatJobs<FacebookPage, FacebookChat>(target.page)
+        createChatJobs<FacebookPage, FacebookChat>(target.page),
       );
     }
     if (target instanceof FacebookPage) {
@@ -165,12 +166,12 @@ export class FacebookBot
   async message(
     chat: FacebookChat,
     messages: SociablyNode,
-    options?: MessagingOptions
+    options?: MessagingOptions,
   ): Promise<null | MetaApiDispatchResponse> {
     return this.engine.render(
       chat,
       messages,
-      createChatJobs<FacebookPage, FacebookChat>(chat.page, options)
+      createChatJobs<FacebookPage, FacebookChat>(chat.page, options),
     );
   }
 
@@ -178,14 +179,17 @@ export class FacebookBot
   async uploadChatAttachment(
     /** The {@link FacebookPage} that owns the attachment */
     pageInput: string | FacebookPage,
-    /** An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be uploaded */ node: SociablyNode
+    /**
+     * An {@link Image}, {@link Audio}, {@link Video} or {@link File} element to be
+     * uploaded
+     */ node: SociablyNode,
   ): Promise<null | UploadAttachmentResult> {
     const page =
       typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
     const response = await this.engine.render(
       page,
       node,
-      createUploadChatAttachmentJobs()
+      createUploadChatAttachmentJobs(),
     );
     const result = response?.results[0].body;
     return result ? { attachmentId: result.attachment_id } : null;
@@ -196,7 +200,7 @@ export class FacebookBot
     /** The {@link FacebookPage} to post */
     pageInput: string | FacebookPage,
     /** Text, a {@link PagePost} or a {@link PagePhoto} to post */
-    node: SociablyNode
+    node: SociablyNode,
   ): Promise<null | PagePostResult> {
     const page =
       typeof pageInput === 'string' ? new FacebookPage(pageInput) : pageInput;
@@ -232,7 +236,7 @@ export class FacebookBot
     /** The target thread to interact with */
     target: InteractTarget,
     /** {@link Comment} or {@link Reaction} */
-    node: SociablyNode
+    node: SociablyNode,
   ): Promise<null | CommentResult[]> {
     const response = await this.engine.render(target, node, createInteractJobs);
     if (!response) {
@@ -298,7 +302,7 @@ const BotP = serviceProviderClass({
     { appSecret, appId, apiBatchRequestInterval },
     agentSettingsAccessor,
     moduleUitils,
-    platformUtils
+    platformUtils,
   ) =>
     new FacebookBot({
       agentSettingsAccessor,

@@ -2,9 +2,7 @@ import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeTwitterComponent from '../utils/makeTwitterComponent.js';
 import { TwitterSegmentValue, TwitterComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type UnfollowProps = {
   /** The user id to unfollow */
   userId: string;
@@ -12,6 +10,7 @@ export type UnfollowProps = {
 
 /**
  * Unfollow a user
+ *
  * @category Component
  * @props {@link UnfollowProps}
  * @guides Check official [guide](https://developer.twitter.com/en/docs/twitter-api/users/follows/introduction).

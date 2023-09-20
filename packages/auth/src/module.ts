@@ -21,12 +21,10 @@ const authRouteFactory = serviceProviderFactory({
     handler: (req, res, routingInfo) => {
       controller.handleRequest(req, res, routingInfo);
     },
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Auth {
   export const Controller = ControllerP;
   export type Controller<Authenticator extends AnyServerAuthenticator> =

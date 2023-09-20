@@ -240,7 +240,7 @@ export type LineDispatchMiddleware = DispatchMiddleware<
 >;
 
 export type LineChatChannelSettings = {
-  /** The provider ID of the business  */
+  /** The provider ID of the business */
   providerId: string;
   /** The ID of the messaging channel */
   channelId: string;
@@ -257,7 +257,7 @@ export type LineChatChannelSettings = {
 };
 
 export type LineLoginChannelSettings = {
-  /** The provider ID of the business  */
+  /** The provider ID of the business */
   providerId: string;
   /** The ID of the login channel */
   channelId: string;
@@ -266,7 +266,7 @@ export type LineLoginChannelSettings = {
 };
 
 export type LineProviderSettings = {
-  /** The provider ID of the business  */
+  /** The provider ID of the business */
   providerId: string;
   channels: Omit<LineChatChannelSettings, 'providerId'>[];
   fallbackLiff?: string;

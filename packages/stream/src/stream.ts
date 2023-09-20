@@ -8,7 +8,7 @@ export default class Stream<T> {
   private _eventSubject: RxSubject<StreamingFrame<T>>;
   private _errorSubject: RxSubject<StreamingFrame<Error>>;
   private _errorListeners: ((
-    frame: StreamingFrame<Error>
+    frame: StreamingFrame<Error>,
   ) => (err: Error) => unknown | Promise<unknown>)[];
 
   constructor() {
@@ -32,26 +32,24 @@ export default class Stream<T> {
     }
   }
 
-  /**
-   * pipe through a series of operators and return the piped stream.
-   */
+  /** Pipe through a series of operators and return the piped stream. */
   pipe<A>(fn1: OperatorFunction<T, A>): Stream<A>;
   pipe<A, B>(
     fn1: OperatorFunction<T, A>,
-    fn2: OperatorFunction<A, B>
+    fn2: OperatorFunction<A, B>,
   ): Stream<B>;
 
   pipe<A, B, C>(
     fn1: OperatorFunction<T, A>,
     fn2: OperatorFunction<A, B>,
-    fn3: OperatorFunction<B, C>
+    fn3: OperatorFunction<B, C>,
   ): Stream<C>;
 
   pipe<A, B, C, D>(
     fn1: OperatorFunction<T, A>,
     fn2: OperatorFunction<A, B>,
     fn3: OperatorFunction<B, C>,
-    fn4: OperatorFunction<C, D>
+    fn4: OperatorFunction<C, D>,
   ): Stream<D>;
 
   pipe<A, B, C, D, E>(
@@ -59,7 +57,7 @@ export default class Stream<T> {
     fn2: OperatorFunction<A, B>,
     fn3: OperatorFunction<B, C>,
     fn4: OperatorFunction<C, D>,
-    fn5: OperatorFunction<D, E>
+    fn5: OperatorFunction<D, E>,
   ): Stream<E>;
 
   pipe<A, B, C, D, E, F>(
@@ -68,7 +66,7 @@ export default class Stream<T> {
     fn3: OperatorFunction<B, C>,
     fn4: OperatorFunction<C, D>,
     fn5: OperatorFunction<D, E>,
-    fn6: OperatorFunction<E, F>
+    fn6: OperatorFunction<E, F>,
   ): Stream<F>;
 
   pipe(...fns: OperatorFunction<unknown, unknown>[]): Stream<unknown>;
@@ -77,12 +75,10 @@ export default class Stream<T> {
     return pipe(...fns)(this);
   }
 
-  /**
-   * This is an interal API used by operators.
-   */
+  /** This is an interal API used by operators. */
   _subscribe(
     nextListener: (frame: StreamingFrame<T>) => void,
-    errorListener: (frame: StreamingFrame<Error>) => void
+    errorListener: (frame: StreamingFrame<Error>) => void,
   ): void {
     if (nextListener) {
       this._eventSubject.subscribe(nextListener);
@@ -99,13 +95,14 @@ export default class Stream<T> {
    *
    * If an error is thrown in the event subscriber, it's handled by the
    * following order:
-   *   1. Be catched the errorCatcher parameter if given.
-   *   2. Be catched by error listeners registered by `catch` method
-   *   3. Throw immediately.
+   *
+   * 1. Be catched the errorCatcher parameter if given.
+   * 2. Be catched by error listeners registered by `catch` method
+   * 3. Throw immediately.
    */
   subscribe(
     subscriber: MaybeContainer<(value: T) => void>,
-    errorCatcher?: MaybeContainer<(err: Error) => void>
+    errorCatcher?: MaybeContainer<(err: Error) => void>,
   ): Stream<T> {
     const emitEvent = injectMaybe(subscriber);
     const catchError = errorCatcher ? injectMaybe(errorCatcher) : null;
@@ -131,12 +128,13 @@ export default class Stream<T> {
   /**
    * Catch unstream errors and event subscriber errors. Upstream errors are
    * handled by the folowing order:
-   *   1. Be catched by error listeners registered by this method
-   *   2. Go down to piped streams.
-   *   3. If no piped stream, throw immediately.
+   *
+   * 1. Be catched by error listeners registered by this method
+   * 2. Go down to piped streams.
+   * 3. If no piped stream, throw immediately.
    */
   catch(
-    errorListener: MaybeContainer<(err: Error) => unknown | Promise<unknown>>
+    errorListener: MaybeContainer<(err: Error) => unknown | Promise<unknown>>,
   ): Stream<T> {
     this._errorListeners.push(injectMaybe(errorListener));
     return this;

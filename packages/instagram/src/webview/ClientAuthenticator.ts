@@ -32,7 +32,7 @@ export default class InstagramClientAuthenticator
   }
 
   checkAuthData(
-    data: InstagramAuthData
+    data: InstagramAuthData,
   ): CheckDataResult<InstagramAuthContext> {
     return {
       ok: true,

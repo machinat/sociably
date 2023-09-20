@@ -8,9 +8,7 @@ import {
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent, MessageSegmentValue } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type CarouselItemProps = {
   /**
    * {@link Action} elements displayed as the buttons at the template. Max 3
@@ -25,8 +23,8 @@ export type CarouselItemProps = {
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
   /**
-   * Background color of the image. Specify a RGB color value. The default
-   * value is #FFFFFF (white).
+   * Background color of the image. Specify a RGB color value. The default value
+   * is #FFFFFF (white).
    */
   imageBackgroundColor?: string;
   title?: string;
@@ -36,6 +34,7 @@ export type CarouselItemProps = {
 
 /**
  * Column items of {@link CarouselTemplate}.
+ *
  * @category Component
  * @props {@link CarouselItemProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#column-object-for-carousel).
@@ -72,9 +71,7 @@ export const CarouselItem: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type CarouselTemplateProps = {
   /**
    * {@link CarouselItem} elements displayed as bubble columns in the carousel.
@@ -83,9 +80,8 @@ export type CarouselTemplateProps = {
   children: SociablyNode;
   /**
    * Alternative text. Displayed on devices that do not support template
-   * messages. Max character limit: 400
-   * If a function is given, the return value would be used. The rendered
-   * template object is passed as the first param.
+   * messages. Max character limit: 400 If a function is given, the return value
+   * would be used. The rendered template object is passed as the first param.
    */
   altText: string | ((template: Record<string, any>) => string);
   /**
@@ -95,11 +91,12 @@ export type CarouselTemplateProps = {
   imageAspectRatio?: 'rectangle' | 'square';
   /**
    * Size of the image. Default to `'cover'`.
-   * - cover:   The image fills the entire image area. Parts of the image that
-   *            do not fit in the area are not displayed.
-   * - contain: The entire image is displayed in the image area. A background is
-   *            displayed in the unused areas to the left and right of vertical
-   *            images and in the areas above and below horizontal images.
+   *
+   * - Cover: The image fills the entire image area. Parts of the image that do
+   *   not fit in the area are not displayed.
+   * - Contain: The entire image is displayed in the image area. A background is
+   *   displayed in the unused areas to the left and right of vertical images
+   *   and in the areas above and below horizontal images.
    */
   imageSize?: 'contain' | 'cover';
 };
@@ -107,6 +104,7 @@ export type CarouselTemplateProps = {
 /**
  * Template with multiple columns which can be cycled like a carousel. The
  * columns are shown in order when scrolling horizontally.
+ *
  * @category Component
  * @props {@link CarouselTemplateProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#carousel).

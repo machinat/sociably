@@ -46,8 +46,8 @@ const createSociablyApp = async ({
 }: CreateAppOptions): Promise<number> => {
   console.log(
     `Create a ${chalk.yellow('Sociably')} app in ${chalk.green(
-      projectPath
-    )}...\n`
+      projectPath,
+    )}...\n`,
   );
   const projectName = basename(projectPath);
 
@@ -56,10 +56,10 @@ const createSociablyApp = async ({
     if (!supportedPlatforms.includes(platform)) {
       console.log(
         `${chalk.redBright(
-          'Error:'
+          'Error:',
         )} '${platform}' is not a supported platform, only ${supportedPlatforms
           .map((p) => `'${p}'`)
-          .join(', ')} are supported now`
+          .join(', ')} are supported now`,
       );
       return 1;
     }
@@ -68,8 +68,8 @@ const createSociablyApp = async ({
   if (recognizer !== 'regex' && recognizer !== 'dialogflow') {
     console.log(
       `${chalk.redBright(
-        'Error:'
-      )} "${recognizer}" is not a supported recognizer, only 'regex' and 'dialogflow' are supported now`
+        'Error:',
+      )} "${recognizer}" is not a supported recognizer, only 'regex' and 'dialogflow' are supported now`,
     );
     return 1;
   }
@@ -84,8 +84,8 @@ const createSociablyApp = async ({
   if (fileExistsSync(projectPath)) {
     console.log(
       `${chalk.redBright('Error:')} project directory ${chalk.green(
-        projectPath
-      )} already exists`
+        projectPath,
+      )} already exists`,
     );
     return 1;
   }
@@ -95,7 +95,7 @@ const createSociablyApp = async ({
     `${`${process.platform === 'win32' ? '' : '/'}${
       /file:\/{2,3}(.+)\/[^/]/.exec(import.meta.url)![1]
     }`}/template/**/*.t.+(ts|js)`,
-    { nodir: true }
+    { nodir: true },
   );
 
   // write file content
@@ -109,11 +109,11 @@ const createSociablyApp = async ({
               `${process.platform === 'win32' ? '' : '/'}${
                 /file:\/{2,3}(.+)\/[^/]/.exec(import.meta.url)![1]
               }`,
-              'template'
+              'template',
             ),
-            file
-          )
-        )
+            file,
+          ),
+        ),
       );
 
       const templateJsName = file.replace(/\.ts$/, '.js');
@@ -145,13 +145,13 @@ const createSociablyApp = async ({
               `${process.platform === 'win32' ? '' : '/'}${
                 /file:\/{2,3}(.+)\/[^/]/.exec(import.meta.url)![1]
               }`,
-              '..'
+              '..',
             ),
             'binaries',
-            binary
+            binary,
           ),
           targetPath,
-          mode
+          mode,
         );
       } else if (typeof content === 'string') {
         const ext = extname(targetPath);
@@ -168,11 +168,11 @@ const createSociablyApp = async ({
           mode,
         });
       }
-    })
+    }),
   );
 
   console.log(
-    `Install ${chalk.yellow('Sociably')} framework and other dependencies...\n`
+    `Install ${chalk.yellow('Sociably')} framework and other dependencies...\n`,
   );
 
   const sociablyDeps = [
@@ -196,7 +196,7 @@ const createSociablyApp = async ({
   const npmInstallProcess = spawnChildProcess(
     'npm',
     ['install', ...sociablyDeps],
-    { cwd: projectPath, shell: true, stdio: 'inherit' }
+    { cwd: projectPath, shell: true, stdio: 'inherit' },
   );
 
   const installCode = await thenifiedly.tillEvent('close', npmInstallProcess);
@@ -209,7 +209,7 @@ const createSociablyApp = async ({
 
   const gitInitProcess = spawnChildProcess(
     'git init && git add . && git commit -m "Init project with Create Sociably App"',
-    { cwd: projectPath, shell: true, stdio: 'inherit' }
+    { cwd: projectPath, shell: true, stdio: 'inherit' },
   );
 
   const gitInitCode = await thenifiedly.tillEvent('close', gitInitProcess);
@@ -219,7 +219,7 @@ const createSociablyApp = async ({
 
   console.log(`
 ${chalk.greenBright('Success!')} Created ${chalk.bold(
-    projectName
+    projectName,
   )} at ${chalk.green(projectPath)}
 Inside that directory, you can run several commands:
 
@@ -237,7 +237,7 @@ Inside that directory, you can run several commands:
 
 You have to fill chat platforms settings in ${chalk.green('.env')} file first.
 Check the \`${chalk.bold('Environments Setup')}\` guide in ${chalk.green(
-    'README.md'
+    'README.md',
   )}.
 After that, you can begin by typing:
 

@@ -17,9 +17,7 @@ import type {
   WhatsAppAuthCrendential,
 } from './types.js';
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class WhatsAppServerAuthenticator
   implements ServerAuthenticator<never, WhatsAppAuthData, WhatsAppAuthContext>
 {
@@ -38,7 +36,7 @@ export class WhatsAppServerAuthenticator
   constructor(
     bot: BotP,
     basicAuthenticator: BasicAuthenticator,
-    numberSettingsAccessor: AgentSettingsAccessorI
+    numberSettingsAccessor: AgentSettingsAccessorI,
   ) {
     this.bot = bot;
     this.basicAuthenticator = basicAuthenticator;
@@ -61,7 +59,7 @@ export class WhatsAppServerAuthenticator
         user: userNumberId,
       }) => {
         const settings = await this.numberSettingsAccessor.getAgentSettings(
-          new WhatsAppAgent(agentNumberId)
+          new WhatsAppAgent(agentNumberId),
         );
         if (!settings) {
           return {
@@ -101,8 +99,8 @@ export class WhatsAppServerAuthenticator
           agent: chat.agentNumberId,
           user: chat.userNumberId,
         },
-        redirectUrl
-      )
+        redirectUrl,
+      ),
     );
     return `${url.pathname}${url.search}${url.hash}`;
   }
@@ -117,12 +115,11 @@ export class WhatsAppServerAuthenticator
   }
 
   async verifyRefreshment(
-    data: WhatsAppAuthData
+    data: WhatsAppAuthData,
   ): Promise<VerifyResult<WhatsAppAuthData>> {
     const agent = new WhatsAppAgent(data.agent.id);
-    const numberSettings = await this.numberSettingsAccessor.getAgentSettings(
-      agent
-    );
+    const numberSettings =
+      await this.numberSettingsAccessor.getAgentSettings(agent);
 
     if (!numberSettings) {
       return {

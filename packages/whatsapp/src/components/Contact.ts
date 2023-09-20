@@ -83,6 +83,7 @@ const transformSnakeCaseKeys = (obj: Record<string, unknown>) =>
 
 /**
  * Send a contact
+ *
  * @category Component
  * @props {@link ContactProps}
  */

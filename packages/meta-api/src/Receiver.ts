@@ -118,7 +118,7 @@ const handleWebhook = <Context extends MetaApiEventContext>({
                 event.thread
                   ? bot.render(event.thread, message)
                   : Promise.resolve(null),
-            } as Context)
+            } as Context),
           );
         }
       }
@@ -138,6 +138,7 @@ const MetaListeningPlatformsI = serviceInterface<
 
 /**
  * MetaWebhookReceiver receive and pop events from Meta platforms.
+ *
  * @category Provider
  */
 export class MetaWebhookReceiver<
@@ -154,12 +155,12 @@ export class MetaWebhookReceiver<
   }: MetaWebhookReceiverOptions<Context>) {
     invariant(
       !shouldVerifyRequest || appSecret,
-      'appSecret should not be empty if shouldVerifyRequest set to true'
+      'appSecret should not be empty if shouldVerifyRequest set to true',
     );
 
     invariant(
       !shouldHandleChallenge || webhookVerifyToken,
-      'webhookVerifyToken should not be empty if shouldHandleChallenge set to true'
+      'webhookVerifyToken should not be empty if shouldHandleChallenge set to true',
     );
 
     super(
@@ -169,7 +170,7 @@ export class MetaWebhookReceiver<
         webhookVerifyToken,
         appSecret,
         listeningPlatforms,
-      })
+      }),
     );
   }
 }

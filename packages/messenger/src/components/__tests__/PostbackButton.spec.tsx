@@ -7,8 +7,8 @@ const PostbackButton = makeTestComponent(_PostbackButton);
 it('match snapshot', async () => {
   await expect(
     renderPartElement(
-      <PostbackButton title="my button" payload="_MY_PAYLOAD_" />
-    )
+      <PostbackButton title="my button" payload="_MY_PAYLOAD_" />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

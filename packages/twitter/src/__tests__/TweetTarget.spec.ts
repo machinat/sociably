@@ -43,10 +43,10 @@ test('marshall type metadata', () => {
   expect(TweetTarget.typeName).toBe('TwtrTweetTarget');
 
   expect(
-    TweetTarget.fromJSONValue({ agent: '1234567890', tweet: '1111111111' })
+    TweetTarget.fromJSONValue({ agent: '1234567890', tweet: '1111111111' }),
   ).toStrictEqual(new TweetTarget('1234567890', '1111111111'));
 
   expect(TweetTarget.fromJSONValue({ agent: '1234567890' })).toStrictEqual(
-    new TweetTarget('1234567890')
+    new TweetTarget('1234567890'),
   );
 });

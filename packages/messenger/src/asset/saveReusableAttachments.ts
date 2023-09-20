@@ -6,7 +6,7 @@ import MessengerAssetsManager from './AssetsManager.js';
 const updateAssetsFromSuccessfulJobs = async (
   manager: MessengerAssetsManager<MetaApiChannel>,
   jobs: MetaApiJob[],
-  results: (void | MetaApiResult)[]
+  results: (void | MetaApiResult)[],
 ) => {
   const updatingAssets: Promise<boolean>[] = [];
 
@@ -21,8 +21,8 @@ const updateAssetsFromSuccessfulJobs = async (
           manager.saveAttachment(
             (channel as MetaApiChannel).id,
             assetTag,
-            body.attachment_id
-          )
+            body.attachment_id,
+          ),
         );
       }
     }
@@ -31,13 +31,13 @@ const updateAssetsFromSuccessfulJobs = async (
 };
 
 /**
- * saveReusableAttachments save the id of uploaded attachments with `assetTag`
- *  props. The attachment id can then be retrieved by the tag through
+ * SaveReusableAttachments save the id of uploaded attachments with `assetTag`
+ * props. The attachment id can then be retrieved by the tag through
  * {@link FacebookAssetsManager.getAttachment}.
  */
 const saveReusableAttachments =
   (
-    manager: MessengerAssetsManager<MetaApiChannel>
+    manager: MessengerAssetsManager<MetaApiChannel>,
   ): DispatchMiddleware<
     MetaApiJob,
     DispatchFrame<SociablyThread, MetaApiJob>,

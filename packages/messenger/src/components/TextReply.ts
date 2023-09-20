@@ -1,9 +1,7 @@
 import type { NativeElement, AnyNativeComponent } from '@sociably/core';
 import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type TextReplyProps = {
   /** The text to display on the quick reply button. 20 character limit. */
   title: string;
@@ -22,7 +20,7 @@ export type TextReplyProps = {
 
 export function TextReply(
   node: NativeElement<TextReplyProps, AnyNativeComponent>,
-  path: string
+  path: string,
 ): PartSegment<{}>[] {
   const { title, payload, imageUrl } = node.props;
   return [

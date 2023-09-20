@@ -17,9 +17,7 @@ const createMessengerEvent = createEventFactory<
 const createEvent = (
   pageId: string,
   isStandBy: boolean,
-  rawEvent: FacebookRawEvent
-) => {
-  return createMessengerEvent(pageId, isStandBy, rawEvent);
-};
+  rawEvent: FacebookRawEvent,
+) => createMessengerEvent(pageId, isStandBy, rawEvent);
 
 export default createEvent;

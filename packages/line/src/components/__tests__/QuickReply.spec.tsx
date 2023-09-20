@@ -15,8 +15,8 @@ it('match snapshot', async () => {
     renderPartElement(
       <QuickReply imageUrl="https://...">
         <UriAction uri="https://..." label="foo" />
-      </QuickReply>
-    )
+      </QuickReply>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

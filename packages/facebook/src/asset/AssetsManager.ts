@@ -28,6 +28,7 @@ export type DefaultSettings = {
 /**
  * FacebookAssetsManager stores name-to-id mapping for assets created in
  * Facebook platform.
+ *
  * @category Provider
  */
 export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> {
@@ -36,14 +37,15 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   constructor(
     stateManager: StateControllerI,
     bot: BotP,
-    defaultSettings: DefaultSettings = {}
+    defaultSettings: DefaultSettings = {},
   ) {
     super(stateManager, bot, FB);
     this.defaultSettings = defaultSettings;
   }
 
   /**
-   * Set webhook subscription of an app. Check https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge/
+   * Set webhook subscription of an app. Check
+   * https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge/
    * for references
    */
   async setAppSubscription({
@@ -56,7 +58,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   }: Partial<SetMetaAppSubscriptionOptions> = {}) {
     if (!appId || !webhookVerifyToken || !webhookUrl || !fields?.length) {
       throw new Error(
-        'appId, webhookUrl, webhookVerifyToken or fields is empty'
+        'appId, webhookUrl, webhookVerifyToken or fields is empty',
       );
     }
     return super.setAppSubscription({
@@ -80,7 +82,8 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   }
 
   /**
-   * Set app subscription of a page. Check https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
+   * Set app subscription of a page. Check
+   * https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
   async setSubscribedApp(
@@ -88,7 +91,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     {
       fields = this.defaultSettings.subscriptionFields,
       accessToken,
-    }: SetSubscribedAppOptions = {}
+    }: SetSubscribedAppOptions = {},
   ) {
     return super.setSubscribedApp(page, {
       fields,
@@ -98,13 +101,13 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
 
   getPersona(
     page: string | FacebookPage,
-    assetTag: string
+    assetTag: string,
   ): Promise<undefined | string> {
     return this.getAssetId(page, PERSONA, assetTag);
   }
 
   getAllPersonas(
-    page: string | FacebookPage
+    page: string | FacebookPage,
   ): Promise<null | Map<string, string>> {
     return this.getAllAssets(page, PERSONA);
   }
@@ -112,20 +115,21 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   savePersona(
     page: string | FacebookPage,
     assetTag: string,
-    id: string
+    id: string,
   ): Promise<boolean> {
     return this.saveAssetId(page, PERSONA, assetTag, id);
   }
 
   unsavePersona(
     page: string | FacebookPage,
-    assetTag: string
+    assetTag: string,
   ): Promise<boolean> {
     return this.unsaveAssetId(page, PERSONA, assetTag);
   }
 
   /**
-   * Create and save a Messenger persona. Check https://developers.facebook.com/docs/messenger-platform/reference/personas-api
+   * Create and save a Messenger persona. Check
+   * https://developers.facebook.com/docs/messenger-platform/reference/personas-api
    * for details
    */
   async createPersona(
@@ -142,7 +146,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
       profilePictureUrl?: string;
       /** Specify the access token to be used on the API call */
       accessToken?: string;
-    }
+    },
   ): Promise<string> {
     const { id: personaId } = await this.bot.requestApi<{ id: string }>({
       channel: page,
@@ -160,7 +164,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   async deletePersona(
     page: string | FacebookPage,
     assetTag: string,
-    options?: { accessToken?: string }
+    options?: { accessToken?: string },
   ): Promise<boolean> {
     const personaId = await this.getPersona(page, assetTag);
     if (!personaId) {
@@ -185,7 +189,7 @@ const AssetsManagerP = serviceProviderClass({
     stateController,
     bot,
     connector,
-    { appId, webhookVerifyToken, webhookPath, subscriptionFields }
+    { appId, webhookVerifyToken, webhookPath, subscriptionFields },
   ) =>
     new FacebookAssetsManager(stateController, bot, {
       appId,

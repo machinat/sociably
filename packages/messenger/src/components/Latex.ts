@@ -10,9 +10,7 @@ import {
   InnerRenderFn,
 } from '@sociably/core/renderer';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type LatexProps = {
   /** Texual node to be wrapped in the LATEX block. */
   children: SociablyNode;
@@ -24,7 +22,7 @@ const LATEX_END = '\\)';
 export async function Latex(
   node: NativeElement<LatexProps, AnyNativeComponent>,
   path: string,
-  render: InnerRenderFn
+  render: InnerRenderFn,
 ): Promise<null | TextSegment[]> {
   const segments = await render(node.props.children, '.children');
   if (segments === null) {
@@ -35,8 +33,8 @@ export async function Latex(
     if (segment.type !== 'text') {
       throw new TypeError(
         `non-textual node ${formatNode(
-          segment.node
-        )} received, only textual nodes allowed`
+          segment.node,
+        )} received, only textual nodes allowed`,
       );
     }
   }

@@ -37,7 +37,7 @@ it('parse content fn', () => {
       {() => 'foo'}
       {() => 'bar'}
       {() => 'baz'}
-    </>
+    </>,
   );
   expect(segments).toEqual([
     { type: 'content', getContent: expect.any(Function) },
@@ -73,7 +73,7 @@ describe('parse <IF/>', () => {
       <>
         <IF condition={() => true}>{() => 'foo'}</IF>
         <ELSE>{() => 'bar'}</ELSE>
-      </>
+      </>,
     );
     expect(segments).toEqual([
       {
@@ -97,7 +97,7 @@ describe('parse <IF/>', () => {
         <ELSE_IF condition={() => false}>{() => 'bar'}</ELSE_IF>
         <ELSE_IF condition={() => true}>{() => 'baz'}</ELSE_IF>
         <ELSE>{() => 'boom boom pow'}</ELSE>
-      </>
+      </>,
     );
     expect(segments).toEqual([
       {
@@ -139,8 +139,8 @@ describe('parse <IF/>', () => {
             <ELSE>{() => 'baaaz'}</ELSE>
             {() => 'baaaaz'}
           </ELSE>
-        </>
-      )
+        </>,
+      ),
     ).toMatchSnapshot();
   });
 
@@ -157,17 +157,17 @@ describe('parse <IF/>', () => {
 
   it('throw if condition is not a function', () => {
     expect(() =>
-      parse(<IF condition={null as never}>{[]}</IF>)
+      parse(<IF condition={null as never}>{[]}</IF>),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "condition" of <IF/> should be a function"`
+      `"prop "condition" of <IF/> should be a function"`,
     );
   });
 
   it('throw if <ELSE/> is not behind <IF/> or <IF_ELSE/>', () => {
     expect(() =>
-      parse(<ELSE>{() => 'baz'}</ELSE>)
+      parse(<ELSE>{() => 'baz'}</ELSE>),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<ELSE/> should be placed right after <IF/> or <ELSE_IF> block"`
+      `"<ELSE/> should be placed right after <IF/> or <ELSE_IF> block"`,
     );
   });
 
@@ -178,10 +178,10 @@ describe('parse <IF/>', () => {
           <IF condition={() => true}>{() => 'foo'}</IF>
           <ELSE>{() => 'bar'}</ELSE>
           <ELSE>{() => 'baz'}</ELSE>
-        </>
-      )
+        </>,
+      ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<ELSE/> should be placed right after <IF/> or <ELSE_IF> block"`
+      `"<ELSE/> should be placed right after <IF/> or <ELSE_IF> block"`,
     );
   });
 
@@ -192,10 +192,10 @@ describe('parse <IF/>', () => {
           <IF condition={() => true}>{() => 'foo'}</IF>
           <ELSE>{() => 'baz'}</ELSE>
           <ELSE_IF condition={() => true}>{() => 'bar'}</ELSE_IF>
-        </>
-      )
+        </>,
+      ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"<ELSE_IF/> should be placed right after <IF/> or <ELSE_IF> block"`
+      `"<ELSE_IF/> should be placed right after <IF/> or <ELSE_IF> block"`,
     );
   });
 
@@ -205,10 +205,10 @@ describe('parse <IF/>', () => {
         <>
           <IF condition={() => true}>{() => 'foo'}</IF>
           <ELSE_IF condition={null as never}>{() => 'bar'}</ELSE_IF>
-        </>
-      )
+        </>,
+      ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "condition" of <ELSE_IF/> should be a function"`
+      `"prop "condition" of <ELSE_IF/> should be a function"`,
     );
   });
 });
@@ -216,7 +216,7 @@ describe('parse <IF/>', () => {
 describe('parse <WHILE/>', () => {
   it('parse ok', () => {
     const segments: any = parse(
-      <WHILE condition={() => true}>{() => 'Gee'}</WHILE>
+      <WHILE condition={() => true}>{() => 'Gee'}</WHILE>,
     );
     expect(segments).toEqual([
       {
@@ -233,7 +233,7 @@ describe('parse <WHILE/>', () => {
     const segments: any = parse(
       <WHILE condition={() => true}>
         <WHILE condition={() => false}>{() => 'Goo'}</WHILE>
-      </WHILE>
+      </WHILE>,
     );
     expect(segments).toEqual([
       {
@@ -255,9 +255,9 @@ describe('parse <WHILE/>', () => {
 
   it('throw if condition prop is not a function', () => {
     expect(() =>
-      parse(<WHILE condition={'true' as never}>{() => 'foo'}</WHILE>)
+      parse(<WHILE condition={'true' as never}>{() => 'foo'}</WHILE>),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "condition" of <WHILE/> should be a function"`
+      `"prop "condition" of <WHILE/> should be a function"`,
     );
   });
 });
@@ -272,8 +272,8 @@ describe('parse <EFFECT/>', () => {
           <EFFECT yield={yieldSomething} set={helloSetter} />
           <EFFECT set={helloSetter} />
           <EFFECT yield={yieldSomething} />
-        </>
-      )
+        </>,
+      ),
     ).toEqual([
       { type: 'effect', setVars: helloSetter, yieldValue: yieldSomething },
       { type: 'effect', setVars: helloSetter },
@@ -295,8 +295,8 @@ describe('parse <PROMPT/>', () => {
           <PROMPT set={answerSetter} key="what" />
           {() => 'how can you do this to me?'}
           <PROMPT set={answerSetter} key="how" />
-        </>
-      )
+        </>,
+      ),
     ).toEqual([
       { type: 'content', getContent: expect.any(Function) },
       { type: 'prompt', key: 'where', setVars: answerSetter },
@@ -309,12 +309,12 @@ describe('parse <PROMPT/>', () => {
 
   it('throw if key is empty', () => {
     expect(() =>
-      parse(<PROMPT key={undefined as never} />)
+      parse(<PROMPT key={undefined as never} />),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <PROMPT/> cannot be empty"`
+      `"prop "key" of <PROMPT/> cannot be empty"`,
     );
     expect(() => parse(<PROMPT key="" />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <PROMPT/> cannot be empty"`
+      `"prop "key" of <PROMPT/> cannot be empty"`,
     );
   });
 });
@@ -327,8 +327,8 @@ describe('parse <LABEL/> & <GOTO/>', () => {
           <LABEL key="foo" />
           {() => 'foo'}
           <GOTO key="foo" />
-        </>
-      )
+        </>,
+      ),
     ).toEqual([
       { type: 'label', key: 'foo' },
       { type: 'content', getContent: expect.any(Function) },
@@ -344,8 +344,8 @@ describe('parse <LABEL/> & <GOTO/>', () => {
           <LABEL key="baz" />
           <GOTO key="bar" />
           {() => 'baz'}
-        </>
-      )
+        </>,
+      ),
     ).toEqual([
       { type: 'label', key: 'bar' },
       { type: 'goto', key: 'baz' },
@@ -358,20 +358,20 @@ describe('parse <LABEL/> & <GOTO/>', () => {
 
   it('throw if key is empyt', () => {
     expect(() =>
-      parse(<LABEL key={undefined as never} />)
+      parse(<LABEL key={undefined as never} />),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <LABEL/> cannot be empty"`
+      `"prop "key" of <LABEL/> cannot be empty"`,
     );
     expect(() => parse(<LABEL key="" />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <LABEL/> cannot be empty"`
+      `"prop "key" of <LABEL/> cannot be empty"`,
     );
     expect(() =>
-      parse(<GOTO key={undefined as never} />)
+      parse(<GOTO key={undefined as never} />),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <GOTO/> cannot be empty"`
+      `"prop "key" of <GOTO/> cannot be empty"`,
     );
     expect(() => parse(<GOTO key="" />)).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <GOTO/> cannot be empty"`
+      `"prop "key" of <GOTO/> cannot be empty"`,
     );
   });
 });
@@ -385,8 +385,8 @@ describe('parse <CALL/>', () => {
         <>
           {() => 'hello'}
           <CALL script={AnotherScript} key="waiting" />
-        </>
-      )
+        </>,
+      ),
     ).toEqual([
       { type: 'content', getContent: expect.any(Function) },
       {
@@ -406,8 +406,8 @@ describe('parse <CALL/>', () => {
             goto="foo"
             key="waiting"
           />
-        </>
-      )
+        </>,
+      ),
     ).toEqual([
       { type: 'content', getContent: expect.any(Function) },
       {
@@ -427,18 +427,18 @@ describe('parse <CALL/>', () => {
         <CALL
           script={{ something: 'wrong' } as any}
           key="call_another_script"
-        />
-      )
+        />,
+      ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"invalid "script" prop received on <CALL/>"`
+      `"invalid "script" prop received on <CALL/>"`,
     );
   });
 
   it('throw if key is empty', () => {
     expect(() =>
-      parse(<CALL key={undefined as never} script={AnotherScript} />)
+      parse(<CALL key={undefined as never} script={AnotherScript} />),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"prop "key" of <CALL/> cannot be empty"`
+      `"prop "key" of <CALL/> cannot be empty"`,
     );
   });
 
@@ -449,10 +449,10 @@ describe('parse <CALL/>', () => {
           script={AnotherScript}
           key="call_another_script"
           goto="not_existed_key"
-        />
-      )
+        />,
+      ),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"key "not_existed_key" not found in AnotherScript"`
+      `"key "not_existed_key" not found in AnotherScript"`,
     );
   });
 });
@@ -464,8 +464,8 @@ test('parse <RETURN/>', () => {
         {() => 'foo'}
         <RETURN />
         {() => 'bar'}
-      </>
-    )
+      </>,
+    ),
   ).toEqual([
     { type: 'content', getContent: expect.any(Function) },
     { type: 'return' },
@@ -560,22 +560,22 @@ test('parse whole script', () => {
           set={() => ({ foo: 'bae' })}
         />
         {() => 'ad minim veniam'}
-      </>
-    )
+      </>,
+    ),
   ).toMatchSnapshot();
 });
 
 it('throw if invalid syntax node received', () => {
   expect(() => parse('hello' as never)).toThrowErrorMatchingInlineSnapshot(
-    `"invalid script node: "hello""`
+    `"invalid script node: "hello""`,
   );
 
   expect(() => parse(<world />)).toThrowErrorMatchingInlineSnapshot(
-    `"unknown keyword: <world />"`
+    `"unknown keyword: <world />"`,
   );
 
   const Foo = () => <></>;
   expect(() => parse(<Foo />)).toThrowErrorMatchingInlineSnapshot(
-    `"unknown keyword: <Foo />"`
+    `"unknown keyword: <Foo />"`,
   );
 });

@@ -4,7 +4,7 @@ import annotateDmMedia from './annotateDmMedia.js';
 
 const createDmSegmentValue = (
   text?: string,
-  media?: MediaAttachment
+  media?: MediaAttachment,
 ): DirectMessageSegmentValue => ({
   type: 'dm',
   request: {

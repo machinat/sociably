@@ -135,13 +135,13 @@ export type VerifyLoginFn<
   Credential,
 > = (
   request: UpgradeRequestInfo,
-  credential: Credential
+  credential: Credential,
 ) => Promise<OkVerifyLoginResult<User, AuthContext> | FailVerifyLoginResult>;
 
 export type AnyVerifyLoginFn = VerifyLoginFn<any, unknown, unknown>;
 
 export type VerifyUpgradeFn = (
-  request: UpgradeRequestInfo
+  request: UpgradeRequestInfo,
 ) => boolean | Promise<boolean>;
 
 export type ClientLoginFn<

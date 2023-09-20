@@ -29,15 +29,15 @@ type ContainerFn<T, Deps extends AnyDep[]> = ServiceContainer<
   ((...args: ResolveDependencies<Deps>) => T);
 
 function serviceContainer<A extends AnyDep>(
-  opts: ContainerOptions<[A]>
+  opts: ContainerOptions<[A]>,
 ): <T>(fn: FactoryFn<T, [A]>) => ContainerFn<T, [A]>;
 
 function serviceContainer<A extends AnyDep, B extends AnyDep>(
-  opts: ContainerOptions<[A, B]>
+  opts: ContainerOptions<[A, B]>,
 ): <T>(fn: FactoryFn<T, [A, B]>) => ContainerFn<T, [A, B]>;
 
 function serviceContainer<A extends AnyDep, B extends AnyDep, C extends AnyDep>(
-  opts: ContainerOptions<[A, B, C]>
+  opts: ContainerOptions<[A, B, C]>,
 ): <T>(fn: FactoryFn<T, [A, B, C]>) => ContainerFn<T, [A, B, C]>;
 
 function serviceContainer<
@@ -46,7 +46,7 @@ function serviceContainer<
   C extends AnyDep,
   D extends AnyDep,
 >(
-  opts: ContainerOptions<[A, B, C, D]>
+  opts: ContainerOptions<[A, B, C, D]>,
 ): <T>(fn: FactoryFn<T, [A, B, C, D]>) => ContainerFn<T, [A, B, C, D]>;
 
 function serviceContainer<
@@ -56,7 +56,7 @@ function serviceContainer<
   D extends AnyDep,
   E extends AnyDep,
 >(
-  opts: ContainerOptions<[A, B, C, D, E]>
+  opts: ContainerOptions<[A, B, C, D, E]>,
 ): <T>(fn: FactoryFn<T, [A, B, C, D, E]>) => ContainerFn<T, [A, B, C, D, E]>;
 
 function serviceContainer<
@@ -67,9 +67,9 @@ function serviceContainer<
   E extends AnyDep,
   F extends AnyDep,
 >(
-  opts: ContainerOptions<[A, B, C, D, E, F]>
+  opts: ContainerOptions<[A, B, C, D, E, F]>,
 ): <T>(
-  fn: FactoryFn<T, [A, B, C, D, E, F]>
+  fn: FactoryFn<T, [A, B, C, D, E, F]>,
 ) => ContainerFn<T, [A, B, C, D, E, F]>;
 
 function serviceContainer<
@@ -81,9 +81,9 @@ function serviceContainer<
   F extends AnyDep,
   G extends AnyDep,
 >(
-  opts: ContainerOptions<[A, B, C, D, E, F, G]>
+  opts: ContainerOptions<[A, B, C, D, E, F, G]>,
 ): <T>(
-  fn: FactoryFn<T, [A, B, C, D, E, F, G]>
+  fn: FactoryFn<T, [A, B, C, D, E, F, G]>,
 ) => ContainerFn<T, [A, B, C, D, E, F, G]>;
 
 function serviceContainer<
@@ -96,9 +96,9 @@ function serviceContainer<
   G extends AnyDep,
   H extends AnyDep,
 >(
-  opts: ContainerOptions<[A, B, C, D, E, F, G, H]>
+  opts: ContainerOptions<[A, B, C, D, E, F, G, H]>,
 ): <T>(
-  fn: FactoryFn<T, [A, B, C, D, E, F, G, H]>
+  fn: FactoryFn<T, [A, B, C, D, E, F, G, H]>,
 ) => ContainerFn<T, [A, B, C, D, E, F, G, H]>;
 
 function serviceContainer<
@@ -112,9 +112,9 @@ function serviceContainer<
   H extends AnyDep,
   I extends AnyDep,
 >(
-  opts: ContainerOptions<[A, B, C, D, E, F, G, H, I]>
+  opts: ContainerOptions<[A, B, C, D, E, F, G, H, I]>,
 ): <T>(
-  fn: FactoryFn<T, [A, B, C, D, E, F, G, H, I]>
+  fn: FactoryFn<T, [A, B, C, D, E, F, G, H, I]>,
 ) => ContainerFn<T, [A, B, C, D, E, F, G, H, I]>;
 
 function serviceContainer<
@@ -129,13 +129,15 @@ function serviceContainer<
   I extends AnyDep,
   J extends AnyDep,
 >(
-  opts: ContainerOptions<[A, B, C, D, E, F, G, H, I, J]>
+  opts: ContainerOptions<[A, B, C, D, E, F, G, H, I, J]>,
 ): <T>(
-  fn: FactoryFn<T, [A, B, C, D, E, F, G, H, I, J]>
+  fn: FactoryFn<T, [A, B, C, D, E, F, G, H, I, J]>,
 ) => ContainerFn<T, [A, B, C, D, E, F, G, H, I, J]>;
 
 /**
- * serviceContainer marks a function as a container and annotate the dependencies.
+ * ServiceContainer marks a function as a container and annotate the
+ * dependencies.
+ *
  * @category Service Registry
  */
 function serviceContainer<Deps extends AnyDep[]>({

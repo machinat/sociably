@@ -41,9 +41,9 @@ it('throw if non-texual node in children', async () => {
         abcd
         <Image attachmentId="123" />
         efgh
-      </Latex>
-    )
+      </Latex>,
+    ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <Image /> received, only textual nodes allowed"`
+    `"non-textual node <Image /> received, only textual nodes allowed"`,
   );
 });

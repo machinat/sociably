@@ -20,7 +20,10 @@ export default class TwitterTweetTarget
 
   /** The id of the agent user */
   agentId: string;
-  /** The tweet to reply. If it's empty, the tweet is created under agent user's page  */
+  /**
+   * The tweet to reply. If it's empty, the tweet is created under agent user's
+   * page
+   */
   tweetId?: string;
 
   readonly platform = TWITTER;

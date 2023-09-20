@@ -4,7 +4,7 @@ import TelegramUserProfile from '../UserProfile.js';
 test('marshallable type meta', () => {
   expect(TelegramUser.typeName).toBe('TgUser');
   expect(TelegramUser.fromJSONValue({ id: 12345 })).toEqual(
-    new TelegramUser(12345)
+    new TelegramUser(12345),
   );
 });
 
@@ -98,7 +98,7 @@ test('user with raw data', () => {
     }
   `);
   expect(TelegramUser.fromJSONValue(user.toJSONValue())).toStrictEqual(
-    new TelegramUser(12345)
+    new TelegramUser(12345),
   );
 });
 

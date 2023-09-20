@@ -25,7 +25,10 @@ export type EventContextOfClient<
   : never;
 
 export type ClientOptions<Authenticator extends AnyClientAuthenticator> = {
-  /** Secify the platform to login. Default to the value of `platform` querystring */
+  /**
+   * Secify the platform to login. Default to the value of `platform`
+   * querystring
+   */
   platform?: string;
   /** URL string to connect WebSocket backend. Default to `"/websocket"` */
   webSocketUrl?: string;

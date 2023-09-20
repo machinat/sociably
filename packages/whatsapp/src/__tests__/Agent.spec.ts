@@ -26,6 +26,6 @@ test('marshallable', () => {
   `);
 
   expect(WhatsAppAgent.fromJSONValue(user.toJSONValue())).toStrictEqual(
-    new WhatsAppAgent('1234567890')
+    new WhatsAppAgent('1234567890'),
   );
 });

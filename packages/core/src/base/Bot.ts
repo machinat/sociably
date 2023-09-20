@@ -9,9 +9,7 @@ const BotPlatformMapI = serviceInterface<BaseBotI>({
   polymorphic: true,
 });
 
-/**
- * @category Base
- */
+/** @category Base */
 export class BaseBot implements BaseBotI {
   static PlatformMap = BotPlatformMapI;
 
@@ -23,12 +21,12 @@ export class BaseBot implements BaseBotI {
 
   async render(
     thread: SociablyThread,
-    node: SociablyNode
+    node: SociablyNode,
   ): Promise<null | DispatchResponse<unknown, unknown>> {
     const bot = this._platformMapping.get(thread.platform);
     if (!bot) {
       throw new TypeError(
-        `thread of platform '${thread.platform}' is not supported`
+        `thread of platform '${thread.platform}' is not supported`,
       );
     }
 

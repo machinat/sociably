@@ -157,8 +157,8 @@ it('match snapshot', async () => {
     renderUnitElement(
       <GenericTemplate imageAspectRatio="square" sharable>
         {items}
-      </GenericTemplate>
-    )
+      </GenericTemplate>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

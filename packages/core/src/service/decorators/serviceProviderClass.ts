@@ -15,7 +15,10 @@ type ClassProviderOptions<T, Deps extends AnyDep[]> = {
   name?: string;
   /** The interfaces of the required dependencies */
   deps?: Deps;
-  /** The factory function to create the instance, default to `(...deps) => new Klazz(...deps)` */
+  /**
+   * The factory function to create the instance, default to `(...deps) => new
+   * Klazz(...deps)`
+   */
   factory?: (...args: ResolveDependencies<Deps>) => T;
   /** The lifetime of the instance, default to 'singleton' */
   lifetime?: ServiceLifetime;
@@ -24,15 +27,15 @@ type ClassProviderOptions<T, Deps extends AnyDep[]> = {
 type Constructor<T> = new (...args: any[]) => T;
 
 function serviceProviderClass<_T, A extends AnyDep>(
-  opts: ClassProviderOptions<_T, [A]>
+  opts: ClassProviderOptions<_T, [A]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A]>> & Klazz;
 
 function serviceProviderClass<_T, A extends AnyDep, B extends AnyDep>(
-  opts: ClassProviderOptions<_T, [A, B]>
+  opts: ClassProviderOptions<_T, [A, B]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B]>> & Klazz;
 
 function serviceProviderClass<
@@ -41,9 +44,9 @@ function serviceProviderClass<
   B extends AnyDep,
   C extends AnyDep,
 >(
-  opts: ClassProviderOptions<_T, [A, B, C]>
+  opts: ClassProviderOptions<_T, [A, B, C]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C]>> & Klazz;
 
 function serviceProviderClass<
@@ -53,9 +56,9 @@ function serviceProviderClass<
   C extends AnyDep,
   D extends AnyDep,
 >(
-  opts: ClassProviderOptions<_T, [A, B, C, D]>
+  opts: ClassProviderOptions<_T, [A, B, C, D]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D]>> & Klazz;
 
 function serviceProviderClass<
@@ -66,9 +69,9 @@ function serviceProviderClass<
   D extends AnyDep,
   E extends AnyDep,
 >(
-  opts: ClassProviderOptions<_T, [A, B, C, D, E]>
+  opts: ClassProviderOptions<_T, [A, B, C, D, E]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E]>> & Klazz;
 
 function serviceProviderClass<
@@ -80,9 +83,9 @@ function serviceProviderClass<
   E extends AnyDep,
   F extends AnyDep,
 >(
-  opts: ClassProviderOptions<_T, [A, B, C, D, E, F]>
+  opts: ClassProviderOptions<_T, [A, B, C, D, E, F]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F]>> & Klazz;
 
 function serviceProviderClass<
@@ -95,9 +98,9 @@ function serviceProviderClass<
   F extends AnyDep,
   G extends AnyDep,
 >(
-  opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G]>
+  opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F, G]>> & Klazz;
 
 function serviceProviderClass<
@@ -111,9 +114,9 @@ function serviceProviderClass<
   G extends AnyDep,
   H extends AnyDep,
 >(
-  opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H]>
+  opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F, G, H]>> & Klazz;
 
 function serviceProviderClass<
@@ -128,9 +131,9 @@ function serviceProviderClass<
   H extends AnyDep,
   I extends AnyDep,
 >(
-  opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H, I]>
+  opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H, I]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F, G, H, I]>> &
   Klazz;
 
@@ -147,15 +150,16 @@ function serviceProviderClass<
   I extends AnyDep,
   J extends AnyDep,
 >(
-  opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H, I, J]>
+  opts: ClassProviderOptions<_T, [A, B, C, D, E, F, G, H, I, J]>,
 ): <T extends _T, Klazz extends Constructor<T>>(
-  klazz: Klazz & Constructor<T>
+  klazz: Klazz & Constructor<T>,
 ) => ServiceProvider<T, ResolveDependencies<[A, B, C, D, E, F, G, H, I, J]>> &
   Klazz;
 
 /**
- * serviceProviderClass annotate a class as a provider serving for the instance
+ * ServiceProviderClass annotate a class as a provider serving for the instance
  * type, and also an interface can be implemented.
+ *
  * @category Service Registry
  */
 function serviceProviderClass<_T, Deps extends AnyDep[]>({
@@ -165,7 +169,7 @@ function serviceProviderClass<_T, Deps extends AnyDep[]>({
   lifetime = 'singleton',
 }: ClassProviderOptions<_T, Deps> = {}) {
   return <T extends _T, Klazz extends Constructor<T>>(
-    klazz: Klazz & Constructor<T>
+    klazz: Klazz & Constructor<T>,
   ): ServiceProvider<T, ResolveDependencies<Deps>> & Klazz => {
     validateLifetime(lifetime);
     const requirements = deps.map(polishServiceRequirement);
@@ -182,7 +186,7 @@ function serviceProviderClass<_T, Deps extends AnyDep[]>({
         },
         $$lifetime: { value: lifetime, configurable: true },
         $$multi: { value: false, configurable: true },
-      }
+      },
     );
   };
 }

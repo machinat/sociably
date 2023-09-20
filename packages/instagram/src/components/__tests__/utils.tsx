@@ -15,5 +15,5 @@ export const renderUnitElement = (element) =>
   new Renderer('instagram', renderGeneralComponents).render(
     element,
     null,
-    null
+    null,
   );

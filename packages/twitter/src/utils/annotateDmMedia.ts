@@ -2,7 +2,7 @@ import type { MediaSource, MediaType } from '../types.js';
 
 const annotateDmMedia = (
   mediaType: MediaType,
-  source: MediaSource
+  source: MediaSource,
 ): MediaSource =>
   source.type === 'id'
     ? source

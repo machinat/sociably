@@ -40,7 +40,7 @@ class TelegramUser
     id: number,
     isBot?: boolean,
     rawData?: RawUser,
-    avatarUrl?: string
+    avatarUrl?: string,
   ) {
     this.id = id;
     this.data = rawData || null;

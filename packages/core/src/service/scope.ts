@@ -12,8 +12,8 @@ import type {
 } from './types.js';
 
 /**
- * ServiceScope hpld the scope cache for later injection, any container
- * executed under the same scope share the same singleton and scoped services.
+ * ServiceScope hpld the scope cache for later injection, any container executed
+ * under the same scope share the same singleton and scoped services.
  */
 export default class ServiceScope {
   static $$typeof: typeof SOCIABLY_SERVICE_INTERFACE =
@@ -30,7 +30,7 @@ export default class ServiceScope {
   constructor(
     maker: ServiceMaker,
     singletonCache: ServiceCache,
-    scopedCache?: ServiceCache
+    scopedCache?: ServiceCache,
   ) {
     this.maker = maker;
     this.singletonCache = singletonCache;
@@ -39,7 +39,7 @@ export default class ServiceScope {
 
   useServices<Deps extends ServiceDependency<any>[]>(
     dependencies: Deps,
-    runtimeProvisions?: Map<Interfaceable<unknown>, unknown>
+    runtimeProvisions?: Map<Interfaceable<unknown>, unknown>,
   ): ResolveDependencies<Deps> {
     const requirements = dependencies.map(polishServiceRequirement);
 
@@ -53,7 +53,7 @@ export default class ServiceScope {
       ENUM_PHASE_INJECTION,
       this.singletonCache,
       this.scopeCache,
-      provisions
+      provisions,
     );
 
     return services as any;
@@ -61,7 +61,7 @@ export default class ServiceScope {
 
   injectContainer<T>(
     container: ServiceContainer<T, unknown[]>,
-    runtimeProvisions?: Map<Interfaceable<unknown>, unknown>
+    runtimeProvisions?: Map<Interfaceable<unknown>, unknown>,
   ): T {
     invariant(isServiceContainer(container), 'invalid container');
 

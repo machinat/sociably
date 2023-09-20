@@ -3,9 +3,7 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 import makeTelegramComponent from '../utils/makeTelegramComponent.js';
 import type { TelegramComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type UrlButtonProps = {
   /** Label text on the button. */
   text: string;
@@ -15,9 +13,17 @@ export type UrlButtonProps = {
   login?: boolean;
   /** Login mode only. New text of the button in forwarded messages. */
   forwardText?: string;
-  /** Login mode only. Username of a bot, which will be used for user authorization. If not specified, the current bot's username will be assumed. The url's domain must be the same as the domain linked with the bot. */
+  /**
+   * Login mode only. Username of a bot, which will be used for user
+   * authorization. If not specified, the current bot's username will be
+   * assumed. The url's domain must be the same as the domain linked with the
+   * bot.
+   */
   botUserName?: string;
-  /** Login mode only. Pass True to request the permission for your bot to send messages to the user. */
+  /**
+   * Login mode only. Pass True to request the permission for your bot to send
+   * messages to the user.
+   */
   requestWriteAccess?: boolean;
 };
 
@@ -25,6 +31,7 @@ export type UrlButtonProps = {
  * The url will be opened by the client when button is pressed. If `login` is
  * set, the authorization data will be provided within querystrings. The `login`
  * mode is an easier replacement for the Telegram Login Widget.
+ *
  * @category Component
  * @props {@link UrlButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
@@ -50,14 +57,12 @@ export const UrlButton: TelegramComponent<
               request_write_access: requestWriteAccess,
             },
           }
-        : { text, url }
+        : { text, url },
     ),
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type CallbackButtonProps = {
   /** Label text on the button. */
   text: string;
@@ -67,6 +72,7 @@ export type CallbackButtonProps = {
 
 /**
  * A {@link CallbackQueryEvent} will be triggered when button is pressed.
+ *
  * @category Component
  * @props {@link CallbackButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
@@ -80,15 +86,19 @@ export const CallbackButton: TelegramComponent<
   return [makePartSegment(node, path, { text, callback_data: data })];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type SwitchQueryButtonProps = {
   /** Label text on the button. */
   text: string;
-  /** The inline query to be inserted in the input field after the bot's username. Default to empty string. */
+  /**
+   * The inline query to be inserted in the input field after the bot's
+   * username. Default to empty string.
+   */
   query?: string;
-  /** If set to true, the query will be inserted in the current chat's input field. Default to false. */
+  /**
+   * If set to true, the query will be inserted in the current chat's input
+   * field. Default to false.
+   */
   currentChat?: boolean;
 };
 
@@ -96,6 +106,7 @@ export type SwitchQueryButtonProps = {
  * Pressing the button will prompt the user to select one of their chats, open
  * that chat and insert the bot's username and the specified inline query in the
  * input field.
+ *
  * @category Component
  * @props {@link SwitchQueryButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
@@ -112,21 +123,22 @@ export const SwitchQueryButton: TelegramComponent<
       path,
       currentChat
         ? { text, switch_inline_query_current_chat: query || '' }
-        : { text, switch_inline_query: query || '' }
+        : { text, switch_inline_query: query || '' },
     ),
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type GameButtonProps = {
   /** Label text on the button. */
   text: string;
 };
 
 /**
- * Description of the game that will be launched when the user presses the button. This type of button must always be the **first button** in the first row.
+ * Description of the game that will be launched when the user presses the
+ * button. This type of button must always be the **first button** in the first
+ * row.
+ *
  * @category Component
  * @props {@link GameButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
@@ -144,16 +156,17 @@ export const GameButton: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type PayButtonProps = {
   /** Label text on the button. */
   text: string;
 };
 
 /**
- * Description of the game that will be launched when the user presses the button. This type of button must always be the **first button** in the first row.
+ * Description of the game that will be launched when the user presses the
+ * button. This type of button must always be the **first button** in the first
+ * row.
+ *
  * @category Component
  * @props {@link PayButtonProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
@@ -178,16 +191,16 @@ export type InlineButton =
   | typeof SwitchQueryButton
   | typeof PayButton;
 
-/**
- * @category Props
- */
+/** @category Props */
 export type KeyboardRowProps = {
-  /**	Button elements contained by the row. */
+  /** Button elements contained by the row. */
   children: SociablyNode;
 };
 
 /**
- * Represent a row of buttons within {@link InlineKeyboard} or {@link ReplyKeyboard}.
+ * Represent a row of buttons within {@link InlineKeyboard} or
+ * {@link ReplyKeyboard}.
+ *
  * @category Component
  * @props {@link KeyboardRowProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#replykeyboardmarkup).
@@ -207,14 +220,12 @@ export const KeyboardRow: TelegramComponent<
     makePartSegment(
       node,
       path,
-      buttonsSegments.map(({ value }) => value)
+      buttonsSegments.map(({ value }) => value),
     ),
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type InlineKeyboardProps = {
   /**
    * {@link InlineButton} elements within the keyboard. By default a button take
@@ -225,7 +236,6 @@ export type InlineKeyboardProps = {
 };
 
 /**
- *
  * @category Component
  * @props {@link InlineKeyboardProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#inlinekeyboardbutton).
@@ -244,22 +254,22 @@ export const InlineKeyboard: TelegramComponent<
   return [
     makePartSegment(node, path, {
       inline_keyboard: buttonsSegments.map(({ value }) =>
-        Array.isArray(value) ? value : [value]
+        Array.isArray(value) ? value : [value],
       ),
     }),
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type TextReplyProps = {
-  /**	Text of the button */
+  /** Text of the button */
   text: string;
 };
 
 /**
- * Text of button will be sent as a message by the user when the button is pressed
+ * Text of button will be sent as a message by the user when the button is
+ * pressed
+ *
  * @category Component
  * @props {@link TextReplyProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
@@ -272,16 +282,16 @@ export const TextReply: TelegramComponent<
   return [makePartSegment(node, path, { text })];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ContactReplyProps = {
-  /**	Text of the button. */
+  /** Text of the button. */
   text: string;
 };
 
 /**
- * The user's phone number will be sent as a contact when the button is pressed. Available in private chats only
+ * The user's phone number will be sent as a contact when the button is pressed.
+ * Available in private chats only
+ *
  * @category Component
  * @props {@link ContactReplyProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
@@ -294,16 +304,16 @@ export const ContactReply: TelegramComponent<
   return [makePartSegment(node, path, { text, request_contact: true })];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type LocationReplyProps = {
-  /**	Text of the button. */
+  /** Text of the button. */
   text: string;
 };
 
 /**
- * The user's current location will be sent when the button is pressed. Available in private chats only
+ * The user's current location will be sent when the button is pressed.
+ * Available in private chats only
+ *
  * @category Component
  * @props {@link LocationReplyProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
@@ -316,18 +326,22 @@ export const LocationReply: TelegramComponent<
   return [makePartSegment(node, path, { text, request_location: true })];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type PollReplyProps = {
-  /**	Text of the button */
+  /** Text of the button */
   text: string;
-  /** If quiz is passed, the user will be allowed to create only polls in the quiz mode. If regular is passed, only regular polls will be allowed. Otherwise, the user will be allowed to create a poll of any type. */
+  /**
+   * If quiz is passed, the user will be allowed to create only polls in the
+   * quiz mode. If regular is passed, only regular polls will be allowed.
+   * Otherwise, the user will be allowed to create a poll of any type.
+   */
   type?: 'regular' | 'quiz';
 };
 
 /**
- * The user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only
+ * The user will be asked to create a poll and send it to the bot when the
+ * button is pressed. Available in private chats only
+ *
  * @category Component
  * @props {@link PollReplyProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#keyboardbutton).
@@ -346,26 +360,38 @@ export type ReplyButton =
   | typeof ContactReply
   | typeof PollReply;
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ReplyKeyboardProps = {
   /**
-   * {@link ReplyButton} elements within the keyboard. By default a button take
-   * a row, wrap the buttons with {@link KeyboardRow} to display multiple
-   * buttons in a row.
+   * {@link ReplyButton} elements within the keyboard. By default a button take a
+   * row, wrap the buttons with {@link KeyboardRow} to display multiple buttons
+   * in a row.
    */
   children: SociablyNode;
-  /** Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). Defaults to false, in which case the custom keyboard is always of the same height as the app's standard keyboard. */
+  /**
+   * Requests clients to resize the keyboard vertically for optimal fit (e.g.,
+   * make the keyboard smaller if there are just two rows of buttons). Defaults
+   * to false, in which case the custom keyboard is always of the same height as
+   * the app's standard keyboard.
+   */
   resizeKeyboard?: boolean;
-  /** Requests clients to hide the keyboard as soon as it's been used. The keyboard will still be available, but clients will automatically display the usual letter-keyboard in the chat – the user can press a special button in the input field to see the custom keyboard again. Defaults to false. */
+  /**
+   * Requests clients to hide the keyboard as soon as it's been used. The
+   * keyboard will still be available, but clients will automatically display
+   * the usual letter-keyboard in the chat – the user can press a special button
+   * in the input field to see the custom keyboard again. Defaults to false.
+   */
   oneTimeKeyboard?: boolean;
-  /** Use this parameter if you want to show the keyboard to specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
+  /**
+   * Use this parameter if you want to show the keyboard to specific users only.
+   * Targets: 1) users that are @mentioned in the text of the Message object; 2)
+   * if the bot's message is a reply (has reply_to_message_id), sender of the
+   * original message.
+   */
   selective?: boolean;
 };
 
 /**
- *
  * @category Component
  * @props {@link ReplyKeyboardProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#replykeyboardmarkup).
@@ -384,7 +410,7 @@ export const ReplyKeyboard: TelegramComponent<
   return [
     makePartSegment(node, path, {
       keyboard: rowsSegments.map(({ value }) =>
-        Array.isArray(value) ? value : [value]
+        Array.isArray(value) ? value : [value],
       ),
       resize_keyboard: resizeKeyboard,
       one_time_keyboard: oneTimeKeyboard,
@@ -393,16 +419,22 @@ export const ReplyKeyboard: TelegramComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type RemoveReplyKeyboardProps = {
-  /**	Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
+  /**
+   * Use this parameter if you want to remove the keyboard for specific users
+   * only. Targets: 1) users that are @mentioned in the text of the Message
+   * object; 2) if the bot's message is a reply (has reply_to_message_id),
+   * sender of the original message.
+   */
   selective?: boolean;
 };
 
 /**
- * Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use `oneTimeBeyboard` in {@link ReplyKeyboard})
+ * Requests clients to remove the custom keyboard (user will not be able to
+ * summon this keyboard; if you want to hide the keyboard from sight but keep it
+ * accessible, use `oneTimeBeyboard` in {@link ReplyKeyboard})
+ *
  * @category Component
  * @props {@link RemoveReplyKeyboardProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#replykeyboardremove).
@@ -415,16 +447,22 @@ export const RemoveReplyKeyboard: TelegramComponent<
   return [makePartSegment(node, path, { remove_keyboard: true, selective })];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type ForceReplyProps = {
-  /**	Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message. */
+  /**
+   * Use this parameter if you want to remove the keyboard for specific users
+   * only. Targets: 1) users that are @mentioned in the text of the Message
+   * object; 2) if the bot's message is a reply (has reply_to_message_id),
+   * sender of the original message.
+   */
   selective?: boolean;
 };
 
 /**
- * Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use `oneTimeBeyboard` in {@link ReplyKeyboard})
+ * Requests clients to remove the custom keyboard (user will not be able to
+ * summon this keyboard; if you want to hide the keyboard from sight but keep it
+ * accessible, use `oneTimeBeyboard` in {@link ReplyKeyboard})
+ *
  * @category Component
  * @props {@link ForceReplyProps}
  * @guides Check official [reference](https://core.telegram.org/bots/api#replykeyboardremove).

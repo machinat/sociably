@@ -6,7 +6,7 @@ const RequestThreadControl = makeTestComponent(_RequestThreadControl);
 
 it('match snapshot', async () => {
   await expect(
-    renderUnitElement(<RequestThreadControl metadata="give me the ring" />)
+    renderUnitElement(<RequestThreadControl metadata="give me the ring" />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

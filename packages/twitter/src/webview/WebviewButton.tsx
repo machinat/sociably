@@ -5,7 +5,10 @@ import { UrlButton } from '../components/index.js';
 import ServerAuthenticator from './ServerAuthenticator.js';
 
 type WebviewButtonProps = {
-  /** The text that will be displayed to the user on each button. Max string length of 36 characters */
+  /**
+   * The text that will be displayed to the user on each button. Max string
+   * length of 36 characters
+   */
   label: string;
   /** The webview page to open */
   page?: string;
@@ -21,7 +24,7 @@ const WebviewButton =
     const url = authenticator.getAuthUrl(
       thread.agentId,
       thread.userId,
-      page ? posixPath.join('.', page) : undefined
+      page ? posixPath.join('.', page) : undefined,
     );
     return <UrlButton label={label} url={url} />;
   };

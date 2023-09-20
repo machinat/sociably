@@ -6,7 +6,7 @@ import type TelegramUser from './User.js';
 
 export const createChatJob = (
   chat: TelegramChat,
-  segments: DispatchableSegment<TelegramSegmentValue>[]
+  segments: DispatchableSegment<TelegramSegmentValue>[],
 ): TelegramJob[] => {
   const jobs: TelegramJob[] = [];
 
@@ -44,7 +44,7 @@ export const createChatJob = (
 
 export const createBotScopeJobs = (
   botUser: TelegramUser,
-  segments: DispatchableSegment<TelegramSegmentValue>[]
+  segments: DispatchableSegment<TelegramSegmentValue>[],
 ): TelegramJob[] => {
   const jobs: TelegramJob[] = [];
 
@@ -59,8 +59,8 @@ export const createBotScopeJobs = (
           method.startsWith('edit')
             ? 'inlineMessageId is required to edit an inline message'
             : `${formatNode(
-                segment.node
-              )} is invalid to be rendered without target chat`
+                segment.node,
+              )} is invalid to be rendered without target chat`,
         );
       }
 

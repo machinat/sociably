@@ -7,6 +7,6 @@ export default serviceContainer({
   deps: [AssetsManagerP],
 })<FacebookDispatchMiddleware>(
   saveReusableAttachments as (
-    manager: AssetsManagerP
-  ) => FacebookDispatchMiddleware
+    manager: AssetsManagerP,
+  ) => FacebookDispatchMiddleware,
 );

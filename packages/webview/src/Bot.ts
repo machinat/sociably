@@ -39,9 +39,7 @@ type SendResult = {
 const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
   new WebviewConnection(serverId, id);
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class WebviewBot
   implements SociablyBot<WebviewConnection, WebSocketJob, WebSocketResult>
 {
@@ -63,7 +61,7 @@ export class WebviewBot
       WebSocketJob,
       WebviewDispatchFrame,
       WebSocketResult
-    >
+    >,
   ) {
     this._server = server;
 
@@ -72,7 +70,7 @@ export class WebviewBot
 
     const renderer = new Renderer<EventInput, WebviewComponent>(WEBVIEW, () => {
       throw new TypeError(
-        'general component not supported at websocket platform'
+        'general component not supported at websocket platform',
       );
     });
 
@@ -82,7 +80,7 @@ export class WebviewBot
       queue,
       worker,
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   }
 
@@ -98,14 +96,14 @@ export class WebviewBot
 
   render(
     thread: WebviewConnection,
-    message: SociablyNode
+    message: SociablyNode,
   ): Promise<null | WebSocketDispatchResponse> {
     return this.engine.render<WebviewConnection>(thread, message, createJobs);
   }
 
   async send(
     thread: WebviewConnection,
-    content: EventInput | EventInput[]
+    content: EventInput | EventInput[],
   ): Promise<SendResult> {
     const response = await this.engine.dispatchJobs(thread, [
       { target: thread, values: Array.isArray(content) ? content : [content] },
@@ -118,7 +116,7 @@ export class WebviewBot
 
   async sendTopic(
     topicKey: string,
-    content: EventInput | EventInput[]
+    content: EventInput | EventInput[],
   ): Promise<SendResult> {
     const response = await this.engine.dispatchJobs(null, [
       {
@@ -134,14 +132,14 @@ export class WebviewBot
 
   async sendUser(
     user: SociablyUser,
-    content: EventInput | EventInput[]
+    content: EventInput | EventInput[],
   ): Promise<SendResult> {
     return this.sendTopic(createUserTopicKey(user), content);
   }
 
   async sendThread(
     thread: SociablyThread,
-    content: EventInput | EventInput[]
+    content: EventInput | EventInput[],
   ): Promise<SendResult> {
     return this.sendTopic(createThreadTopicKey(thread), content);
   }
@@ -152,14 +150,14 @@ export class WebviewBot
 
   subscribeTopic(
     connection: WebviewConnection,
-    topic: string
+    topic: string,
   ): Promise<boolean> {
     return this._server.subscribeTopic(connection, topic);
   }
 
   unsubscribeTopic(
     connection: WebviewConnection,
-    topic: string
+    topic: string,
   ): Promise<boolean> {
     return this._server.unsubscribeTopic(connection, topic);
   }
@@ -175,12 +173,12 @@ export const BotP = serviceProviderClass({
   factory: (
     server: WebviewSocketServer<AnyServerAuthenticator>,
     moduleUitils,
-    platformUtils
+    platformUtils,
   ) =>
     new WebviewBot(
       server,
       moduleUitils?.initScope,
-      platformUtils?.dispatchWrapper
+      platformUtils?.dispatchWrapper,
     ),
 })(WebviewBot);
 

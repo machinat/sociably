@@ -18,12 +18,12 @@ const hasOwnProperty = (obj, prop) =>
 const printInterface = (obj) => obj?.$$name || obj?.name || String(obj);
 
 const isPolymorphic = <T>(
-  target: ServiceBinding<T>
+  target: ServiceBinding<T>,
 ): target is PolymorphicProviderBinding<T> | PolymorphicValueBinding<T> =>
   !!target.provide.$$polymorphic;
 
 const resolveBindings = (
-  provisions: ServiceProvision<unknown>[]
+  provisions: ServiceProvision<unknown>[],
 ): ProvisionMap<ServiceBinding<unknown>> => {
   const provisionMapping = new ProvisionMap<ServiceBinding<unknown>>();
 
@@ -40,9 +40,9 @@ const resolveBindings = (
         throw new TypeError(
           isInterfaceable(provision)
             ? `${printInterface(
-                provision
+                provision,
               )} is an interface and cannot be provided directly`
-            : `invalid service interface ${printInterface(provision.provide)}`
+            : `invalid service interface ${printInterface(provision.provide)}`,
         );
       }
 
@@ -56,7 +56,7 @@ const resolveBindings = (
         throw new TypeError(
           'withProvider' in provision
             ? `invalid provider ${printInterface(provision.withProvider)}`
-            : `either withProvider or withValue must be provided within binding`
+            : `either withProvider or withValue must be provided within binding`,
         );
       }
 
@@ -68,7 +68,7 @@ const resolveBindings = (
       const replaced = provisionMapping.setPolymorphic(
         target,
         binding,
-        platform
+        platform,
       );
 
       if (replaced) {
@@ -76,8 +76,8 @@ const resolveBindings = (
           `${target.$$name} is already bound to ${printInterface(
             'withProvider' in replaced
               ? replaced.withProvider
-              : replaced.withValue
-          )} on '${platform}' platform`
+              : replaced.withValue,
+          )} on '${platform}' platform`,
         );
       }
     } else if (binding.provide.$$multi) {
@@ -90,8 +90,8 @@ const resolveBindings = (
           `${target.$$name} is already bound to ${printInterface(
             'withProvider' in replaced
               ? replaced.withProvider
-              : replaced.withValue
-          )}`
+              : replaced.withValue,
+          )}`,
         );
       }
     }
@@ -107,7 +107,7 @@ export default class ServiceSpace {
 
   constructor(
     base: null | ServiceSpace,
-    provisions: ServiceProvision<unknown>[]
+    provisions: ServiceProvision<unknown>[],
   ) {
     const baseMapping = base
       ? new ProvisionMap(base.provisionsMapping)
@@ -120,7 +120,7 @@ export default class ServiceSpace {
   }
 
   bootstrap(
-    bootstrapTimeProvisions = new Map<Interfaceable<unknown>, unknown>()
+    bootstrapTimeProvisions = new Map<Interfaceable<unknown>, unknown>(),
   ): ServiceScope {
     const singletonCache = new Map();
     const scopedCache = new Map();
@@ -128,7 +128,7 @@ export default class ServiceSpace {
     const bootstrapScope = new ServiceScope(
       this.maker,
       singletonCache,
-      scopedCache
+      scopedCache,
     );
 
     const provisionMap = new Map(bootstrapTimeProvisions);
@@ -145,7 +145,7 @@ export default class ServiceSpace {
             ENUM_PHASE_BOOTSTRAP,
             singletonCache,
             scopedCache,
-            provisionMap
+            provisionMap,
           );
         }
       }
@@ -168,7 +168,7 @@ export default class ServiceSpace {
   private _verifyDependencies(
     provider: ServiceProvider<unknown, unknown[]>,
     bootstrapProvisions: null | Map<Interfaceable<unknown>, unknown>,
-    refLock: ServiceProvider<unknown, unknown[]>[]
+    refLock: ServiceProvider<unknown, unknown[]>[],
   ) {
     const subRefLock = [...refLock, provider];
 
@@ -208,14 +208,14 @@ export default class ServiceSpace {
               throw new Error(
                 `${argProviderName} is circular dependent (${subRefLock
                   .map(({ $$name: name }) => name)
-                  .join(' > ')} > ${argProviderName})`
+                  .join(' > ')} > ${argProviderName})`,
               );
             }
 
             this._verifyDependencies(
               argProvider,
               bootstrapProvisions,
-              subRefLock
+              subRefLock,
             );
           }
         }

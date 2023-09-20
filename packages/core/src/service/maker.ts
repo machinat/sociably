@@ -18,9 +18,9 @@ type PhaseEnum =
 
 /**
  * MakeContext is the context passed down through the service dependencies
- * making tree. A MakeContext is created every time when a container is
- * executed or services being required with app.use(). The context itself
- * should not be modified within the making tree.
+ * making tree. A MakeContext is created every time when a container is executed
+ * or services being required with app.use(). The context itself should not be
+ * modified within the making tree.
  */
 type MakeContext = {
   phase: PhaseEnum;
@@ -30,9 +30,7 @@ type MakeContext = {
   runtimeProvisions: null | Map<Interfaceable<unknown>, unknown>;
 };
 
-/**
- * ServiceMaker makes services according to the services mapping resolved.
- */
+/** ServiceMaker makes services according to the services mapping resolved. */
 export default class ServiceMaker {
   provisionMapping: ProvisionMap<ServiceBinding<unknown>>;
 
@@ -45,7 +43,7 @@ export default class ServiceMaker {
     phase: PhaseEnum,
     singletonCache: ServiceCache,
     scopedCache: ServiceCache,
-    runtimeProvisions: null | Map<Interfaceable<unknown>, unknown>
+    runtimeProvisions: null | Map<Interfaceable<unknown>, unknown>,
   ): unknown[] {
     const services = this._makeRequirements(requirements, {
       phase,
@@ -63,7 +61,7 @@ export default class ServiceMaker {
     phase: PhaseEnum,
     singletonCache: ServiceCache,
     scopedCache: ServiceCache,
-    runtimeProvisions: null | Map<Interfaceable<unknown>, unknown>
+    runtimeProvisions: null | Map<Interfaceable<unknown>, unknown>,
   ): unknown {
     const instance = this._makeProvider(provider, {
       phase,
@@ -86,7 +84,7 @@ export default class ServiceMaker {
 
   private _makeProvider(
     provider: ServiceProvider<unknown, unknown[]>,
-    context: MakeContext
+    context: MakeContext,
   ) {
     const { $$lifetime: lifetime } = provider;
     const { singletonCache, scopedCache, transientCache, phase } = context;
@@ -108,7 +106,7 @@ export default class ServiceMaker {
       throw new TypeError(
         `${lifetime} service ${provider.$$name} should not be created in ${
           phase === ENUM_PHASE_INIT_SCOPE ? 'begin scope' : 'inject'
-        } phase`
+        } phase`,
       );
     }
 
@@ -122,7 +120,7 @@ export default class ServiceMaker {
 
   private _makeRequirements(
     deps: ServiceRequirement<Interfaceable<unknown>>[],
-    context: MakeContext
+    context: MakeContext,
   ) {
     const { runtimeProvisions } = context;
     const args: (unknown | unknown[] | Map<string, unknown>)[] = [];
@@ -135,7 +133,7 @@ export default class ServiceMaker {
       } else if (target.$$multi) {
         const resolvedList = this.provisionMapping.getMulti(target);
         args.push(
-          resolvedList.map((binding) => this._makeBinding(binding, context))
+          resolvedList.map((binding) => this._makeBinding(binding, context)),
         );
       } else if (target.$$polymorphic) {
         const platformBindings = this.provisionMapping.getPolymorphic(target);

@@ -15,7 +15,7 @@ const p = async (node, path, render) => {
   for (const segment of childrenSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <p/>`
+        `non-textual node ${formatNode(segment.node)} is placed in <p/>`,
       );
     }
   }
@@ -38,7 +38,7 @@ const transormText = (tag, transformer) => async (node, path, render) => {
   for (const segment of childrenSegments) {
     if (segment.type !== 'text') {
       throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`
+        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
       );
     }
   }
@@ -97,7 +97,7 @@ const renderGeneralComponents = async (element, render, path) => {
   const { type } = element;
   invariant(
     hasOwnProperty.call(generalComponents, type),
-    `"${type}" is not a valid general component tag on Facebook platform`
+    `"${type}" is not a valid general component tag on Facebook platform`,
   );
 
   const segments = await generalComponents[type](element, render, path);

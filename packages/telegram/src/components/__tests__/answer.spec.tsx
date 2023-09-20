@@ -55,7 +55,7 @@ const renderer = new Renderer('telegram', async () => null);
 
 test('AnswerCallbackQuery match snapshot', async () => {
   await expect(
-    renderer.render(<AnswerCallbackQuery queryId="12345" />, null, [])
+    renderer.render(<AnswerCallbackQuery queryId="12345" />, null, []),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -82,8 +82,8 @@ test('AnswerCallbackQuery match snapshot', async () => {
     renderer.render(
       <AnswerCallbackQuery queryId="12345" text="foo" showAlert />,
       null,
-      []
-    )
+      [],
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -117,8 +117,8 @@ test('AnswerCallbackQuery match snapshot', async () => {
       />,
 
       null,
-      []
-    )
+      [],
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -267,8 +267,8 @@ test('AnswerInlineQuery match snapshot', async () => {
         />
       </AnswerInlineQuery>,
       null,
-      []
-    )
+      [],
+    ),
   ).resolves.toMatchSnapshot();
 
   const inlineKeyboard = (
@@ -391,8 +391,8 @@ test('AnswerInlineQuery match snapshot', async () => {
         />
       </AnswerInlineQuery>,
       null,
-      []
-    )
+      [],
+    ),
   ).resolves.toMatchSnapshot();
 
   await expect(
@@ -404,8 +404,8 @@ test('AnswerInlineQuery match snapshot', async () => {
       />,
 
       null,
-      []
-    )
+      [],
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -436,7 +436,7 @@ test('AnswerInlineQuery match snapshot', async () => {
 
 test('AnswerShippingQuery match snapshot', async () => {
   await expect(
-    renderer.render(<AnswerShippingQuery queryId="12345" ok />, null, [])
+    renderer.render(<AnswerShippingQuery queryId="12345" ok />, null, []),
   ).resolves.toMatchSnapshot();
   await expect(
     renderer.render(
@@ -449,28 +449,28 @@ test('AnswerShippingQuery match snapshot', async () => {
         ]}
       />,
       null,
-      []
-    )
+      [],
+    ),
   ).resolves.toMatchSnapshot();
   await expect(
     renderer.render(
       <AnswerShippingQuery queryId="12345" ok={false} errorMessage="NOOO" />,
       null,
-      []
-    )
+      [],
+    ),
   ).resolves.toMatchSnapshot();
 });
 
 test('AnswerPreCheckoutQuery match snapshot', async () => {
   await expect(
-    renderer.render(<AnswerPreCheckoutQuery queryId="12345" ok />, null, [])
+    renderer.render(<AnswerPreCheckoutQuery queryId="12345" ok />, null, []),
   ).resolves.toMatchSnapshot();
 
   await expect(
     renderer.render(
       <AnswerPreCheckoutQuery queryId="12345" ok={false} errorMessage="NOOO" />,
       null,
-      []
-    )
+      [],
+    ),
   ).resolves.toMatchSnapshot();
 });

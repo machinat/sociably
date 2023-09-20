@@ -4,7 +4,7 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 
 export const LogoutButton = function LogoutButton(
   node: NativeElement<{}, AnyNativeComponent>,
-  path: string
+  path: string,
 ): PartSegment<{}>[] {
   return [makePartSegment(node, path, { type: 'account_unlink' })];
 };

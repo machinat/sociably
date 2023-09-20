@@ -58,11 +58,11 @@ const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',
   deps: [ConfigsI],
 })(({ nextServerOptions }) =>
-  createNextServer((nextServerOptions || {}) as {})
+  createNextServer((nextServerOptions || {}) as {}),
 );
 
 const wsServerFactory = serviceProviderFactory({ lifetime: 'singleton' })(
-  createWsServer
+  createWsServer,
 );
 
 const webSocketRouteFactory = serviceProviderFactory({
@@ -73,7 +73,7 @@ const webSocketRouteFactory = serviceProviderFactory({
     name: 'websocket',
     path: webSocketPath,
     handler: (req, ns, head) => server.handleUpgrade(req, ns, head),
-  })
+  }),
 );
 
 const authRouteFactory = serviceProviderFactory({
@@ -86,7 +86,7 @@ const authRouteFactory = serviceProviderFactory({
     handler: (req, res, routingInfo) => {
       controller.handleRequest(req, res, routingInfo);
     },
-  })
+  }),
 );
 
 const nextRequestRouteFactory = serviceProviderFactory({
@@ -103,7 +103,7 @@ const nextRequestRouteFactory = serviceProviderFactory({
         name: 'next',
         default: true,
         handler: receiver.handleRequestCallback(),
-      }
+      },
 );
 
 const hmrRouteFactory = serviceProviderFactory({
@@ -120,12 +120,10 @@ const hmrRouteFactory = serviceProviderFactory({
         name: 'webpack-hmr',
         default: true,
         handler: receiver.handleHmrUpgradeCallback(),
-      }
+      },
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Webview {
   export const Configs = ConfigsI;
   export type Configs<
@@ -171,7 +169,7 @@ namespace Webview {
     Authenticator extends AnyServerAuthenticator,
     Value extends EventValue = EventValue,
   >(
-    configs: WebviewConfigs<Authenticator, Value>
+    configs: WebviewConfigs<Authenticator, Value>,
   ): SociablyPlatform<
     WebviewEventContext<Authenticator, Value>,
     null,
@@ -215,7 +213,7 @@ namespace Webview {
         {
           provide: Http.RequestRouteList,
           withProvider: nextRequestRouteFactory,
-        }
+        },
       );
       if (configs.nextServerOptions?.dev) {
         provisions.push({
@@ -231,7 +229,7 @@ namespace Webview {
         ...configs.authPlatforms.map((provider) => ({
           provide: Auth.AuthenticatorList,
           withProvider: provider,
-        }))
+        })),
       );
     }
 

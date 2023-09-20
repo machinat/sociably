@@ -12,7 +12,7 @@ const createEvent = <
 >(
   value: EventInput,
   connection: WebviewConnection,
-  user: User
+  user: User,
 ): WebviewEvent<Value, User> => {
   const event: WebviewEvent<Value, User> = Object.create(WebviewEventProto);
 

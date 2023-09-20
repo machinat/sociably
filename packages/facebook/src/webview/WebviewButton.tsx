@@ -12,7 +12,10 @@ type WebviewButtonProps = {
   page?: string;
   /** Height of the Webview. */
   webviewHeightRatio?: 'compact' | 'tall' | 'full';
-  /** Set to `true` to disable the share button in the Webview (for sensitive info) */
+  /**
+   * Set to `true` to disable the share button in the Webview (for sensitive
+   * info)
+   */
   hideShareButton?: boolean;
 };
 
@@ -30,13 +33,13 @@ const WebviewButton =
       !('id' in thread.target)
     ) {
       throw new Error(
-        'WebviewButton can only be used in the FacebookChat with a user ID'
+        'WebviewButton can only be used in the FacebookChat with a user ID',
       );
     }
 
     const url = authenticator.getAuthUrl(
       new FacebookUser(thread.pageId, thread.target.id),
-      page ? posixPath.join('.', page) : undefined
+      page ? posixPath.join('.', page) : undefined,
     );
     return (
       <UrlButton

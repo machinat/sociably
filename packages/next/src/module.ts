@@ -26,7 +26,7 @@ const requestRouteFactory = serviceProviderFactory({
     name: 'next',
     path: configs.entryPath || '.',
     handler: receiver.handleRequestCallback(),
-  })
+  }),
 );
 
 const hmrRouteFactory = serviceProviderFactory({
@@ -37,12 +37,10 @@ const hmrRouteFactory = serviceProviderFactory({
     name: 'webpack-hmr',
     path: configs.entryPath || '.',
     handler: receiver.handleHmrUpgradeCallback(),
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Next {
   export const Receiver = ReceiverP;
   export type Receiver = ReceiverP;
@@ -71,10 +69,10 @@ namespace Next {
     return {
       provisions,
       startHook: serviceContainer({ deps: [ReceiverP] })((receiver) =>
-        receiver.prepare()
+        receiver.prepare(),
       ),
       stopHook: serviceContainer({ deps: [ReceiverP] })((receiver) =>
-        receiver.close()
+        receiver.close(),
       ),
     };
   };

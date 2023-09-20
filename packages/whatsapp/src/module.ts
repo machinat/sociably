@@ -45,12 +45,10 @@ const webhookRouteFactory = serviceProviderFactory({
     name: WHATSAPP,
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace WhatsApp {
   export const Bot = BotP;
   export type Bot = BotP;
@@ -71,7 +69,7 @@ namespace WhatsApp {
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
-    configs: WhatsAppConfigs
+    configs: WhatsAppConfigs,
   ): SociablyPlatform<
     WhatsAppEventContext,
     null,
@@ -129,7 +127,7 @@ namespace WhatsApp {
       });
     } else {
       throw new Error(
-        'WhatsApp platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
+        'WhatsApp platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option',
       );
     }
 

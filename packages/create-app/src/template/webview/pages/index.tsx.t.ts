@@ -2,28 +2,28 @@ import { when } from '../../../utils.js';
 import { CreateAppContext } from '../../../types.js';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => when(
-  withWebview
+  withWebview,
 )`
 import React from 'react';
 import { default as Head } from 'next/head.js';
 import { default as getConfig } from 'next/config.js';
 import { useClient, useEventReducer } from '@sociably/webview/client';${when(
-  platforms.includes('facebook')
+  platforms.includes('facebook'),
 )`
 import FacebookWebview from '@sociably/facebook/webview/client';`}${when(
-  platforms.includes('instagram')
+  platforms.includes('instagram'),
 )`
 import InstagramWebview from '@sociably/instagram/webview/client';`}${when(
-  platforms.includes('whatsapp')
+  platforms.includes('whatsapp'),
 )`
 import WhatsAppWebview from '@sociably/whatsapp/webview/client';`}${when(
-  platforms.includes('twitter')
+  platforms.includes('twitter'),
 )`
 import TwitterWebview from '@sociably/twitter/webview/client';`}${when(
-  platforms.includes('telegram')
+  platforms.includes('telegram'),
 )`
 import TelegramWebview from '@sociably/telegram/webview/client';`}${when(
-  platforms.includes('line')
+  platforms.includes('line'),
 )`
 import LineWebview from '@sociably/line/webview/client';`}
 
@@ -43,7 +43,7 @@ const WebAppHome = () => {
       new WhatsAppWebview(),`}${when(platforms.includes('twitter'))`
       new TwitterWebview(),`}${when(platforms.includes('telegram'))`
       new TelegramWebview({ botId: TELEGRAM_BOT_ID }),`}${when(
-      platforms.includes('line')
+      platforms.includes('line'),
     )`
       new LineWebview({ liffId: LINE_LIFF_ID }),`}
     ],

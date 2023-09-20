@@ -25,7 +25,7 @@ const build = <
   Meta = void,
 >(
   { name: scriptName, initVars, meta }: ScriptBuildOtions<Params, Vars, Meta>,
-  src: SociablyElement<unknown, unknown>
+  src: SociablyElement<unknown, unknown>,
 ): ScriptLibrary<Vars, Input, Params, Return, Yield, Meta> => {
   const segments = parseScript<Vars, Input, Return, Yield, Meta>(src);
   const compiled = compile<Vars, Input, Return, Yield, Meta>(segments, {

@@ -16,14 +16,14 @@ import type {
 } from './types.js';
 
 export const isServiceContainer = <T>(
-  target: MaybeContainer<T>
+  target: MaybeContainer<T>,
 ): target is ServiceContainer<T, unknown[]> =>
   typeof target === 'function' &&
   '$$typeof' in target &&
   target.$$typeof === SOCIABLY_SERVICE_CONTAINER;
 
 export const isServiceProvider = (
-  target: any
+  target: any,
 ): target is ServiceProvider<unknown, unknown[]> =>
   (typeof target === 'function' ||
     (typeof target === 'object' && target !== null)) &&
@@ -31,7 +31,7 @@ export const isServiceProvider = (
 
 export const maybeInjectContainer = <T>(
   scope: ServiceScope,
-  maybeContainer: MaybeContainer<T>
+  maybeContainer: MaybeContainer<T>,
 ): T =>
   isServiceContainer(maybeContainer)
     ? scope.injectContainer(maybeContainer)
@@ -47,7 +47,7 @@ export const createEmptyScope = (): ServiceScope =>
   new ServiceScope(new ServiceMaker(new ProvisionMap()), new Map());
 
 export const polishServiceRequirement = <T>(
-  dep: Interfaceable<T> | ServiceRequirement<Interfaceable<T>>
+  dep: Interfaceable<T> | ServiceRequirement<Interfaceable<T>>,
 ): ServiceRequirement<Interfaceable<T>> => {
   if (isInterfaceable(dep)) {
     return { require: dep, optional: false };
@@ -55,7 +55,7 @@ export const polishServiceRequirement = <T>(
 
   invariant(
     isInterfaceable(dep?.require),
-    `${(dep as any).name || String(dep)} is not a valid interface`
+    `${(dep as any).name || String(dep)} is not a valid interface`,
   );
 
   return dep;
@@ -66,6 +66,6 @@ export const validateLifetime = (lifetime: string): void => {
     lifetime === 'singleton' ||
       lifetime === 'scoped' ||
       lifetime === 'transient',
-    `${lifetime} is not valid service lifetime`
+    `${lifetime} is not valid service lifetime`,
   );
 };

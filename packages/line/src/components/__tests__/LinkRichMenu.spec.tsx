@@ -13,7 +13,7 @@ it('is valid native unit component with entry getter', () => {
 
 it('render ok', async () => {
   await expect(
-    renderUnitElement(<LinkRichMenu id="_RICH_MENU_ID_" />)
+    renderUnitElement(<LinkRichMenu id="_RICH_MENU_ID_" />),
   ).resolves.toEqual([
     {
       type: 'unit',
@@ -30,12 +30,12 @@ it('render ok', async () => {
 
 test('getChatRequest', async () => {
   const segments = await renderUnitElement(
-    <LinkRichMenu id="_RICH_MENU_ID_" />
+    <LinkRichMenu id="_RICH_MENU_ID_" />,
   );
   const { getChatRequest } = segments?.[0].value as ChatActionSegmentValue;
 
   expect(
-    getChatRequest?.(new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'))
+    getChatRequest?.(new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_')),
   ).toEqual({
     method: 'POST',
     url: 'v2/bot/user/_USER_ID_/richmenu/_RICH_MENU_ID_',
@@ -45,26 +45,26 @@ test('getChatRequest', async () => {
 
 test('getChatRequest throw if type of thread is not user', async () => {
   const segments = await renderUnitElement(
-    <LinkRichMenu id="_RICH_MENU_ID_" />
+    <LinkRichMenu id="_RICH_MENU_ID_" />,
   );
   const { getChatRequest } = segments?.[0].value as ChatActionSegmentValue;
 
   expect(
-    () => getChatRequest?.(new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'))
+    () => getChatRequest?.(new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_')),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"<LinkRichMenu /> can only be sent to an user chat"`
+    `"<LinkRichMenu /> can only be sent to an user chat"`,
   );
 
   expect(
-    () => getChatRequest?.(new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'))
+    () => getChatRequest?.(new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_')),
   ).toThrowErrorMatchingInlineSnapshot(
-    `"<LinkRichMenu /> can only be sent to an user chat"`
+    `"<LinkRichMenu /> can only be sent to an user chat"`,
   );
 });
 
 test('bulk api getter', async () => {
   const segments = await renderUnitElement(
-    <LinkRichMenu id="_RICH_MENU_ID_" />
+    <LinkRichMenu id="_RICH_MENU_ID_" />,
   );
   const { getBulkRequest } = segments?.[0].value as ChatActionSegmentValue;
 

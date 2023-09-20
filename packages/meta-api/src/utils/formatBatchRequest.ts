@@ -13,7 +13,9 @@ const encodeParams = (fields: Record<string, unknown>): string => {
       body = appendField(
         body,
         key,
-        typeof fieldValue === 'string' ? fieldValue : JSON.stringify(fieldValue)
+        typeof fieldValue === 'string'
+          ? fieldValue
+          : JSON.stringify(fieldValue),
       );
     }
   }
@@ -23,7 +25,7 @@ const encodeParams = (fields: Record<string, unknown>): string => {
 const formatRequestParams = (
   { method, url, params }: MetaApiJobRequest,
   accessToken: string,
-  appSecretProof: string
+  appSecretProof: string,
 ): MetaBatchRequest =>
   method === 'GET' || method === 'DELETE'
     ? {

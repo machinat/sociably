@@ -4,7 +4,7 @@ import Stream from './stream.js';
 import { EventContextOfApp } from './types.js';
 
 const fromApp = <App extends SociablyApp<any>>(
-  app: App
+  app: App,
 ): Stream<EventContextOfApp<App>> => {
   const subject = new Stream<EventContextOfApp<App>>();
 
@@ -16,8 +16,8 @@ const fromApp = <App extends SociablyApp<any>>(
           value: context,
           key: context.event.thread?.uid,
         });
-      }
-    )
+      },
+    ),
   );
 
   app.onError(
@@ -28,8 +28,8 @@ const fromApp = <App extends SociablyApp<any>>(
           value: error,
           key: undefined,
         });
-      }
-    )
+      },
+    ),
   );
 
   return subject;

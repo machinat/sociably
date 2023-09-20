@@ -29,7 +29,7 @@ test('rendering', async () => {
   `);
 
   await expect(
-    renderPartElement(<QuickReply label="Hi" description="I'm friendly" />)
+    renderPartElement(<QuickReply label="Hi" description="I'm friendly" />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -54,8 +54,8 @@ test('rendering', async () => {
         label="Hi"
         description="I'm a friend"
         metadata="friendly handshake"
-      />
-    )
+      />,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

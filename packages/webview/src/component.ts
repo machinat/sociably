@@ -4,9 +4,7 @@ import { UnitSegment, makeNativeComponent } from '@sociably/core/renderer';
 import { EventInput, Event as WebSocketEvent } from '@sociably/websocket';
 import { WEBVIEW } from './constant.js';
 
-/**
- * @category Component
- */
+/** @category Component */
 export const Event: NativeComponent<
   EventInput,
   UnitSegment<EventInput>

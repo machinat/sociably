@@ -23,24 +23,23 @@ type EmojiPlaceHolder = {
   emojiId: string;
 };
 
-/**
- * @category Props
- */
+/** @category Props */
 export type EmojiProps = {
   /**
-   * Product ID for a set of LINE emoji. See Sendable
-   * [LINE emoji list](https://d.line-scdn.net/r/devcenter/sendable_line_emoji_list.pdf).
+   * Product ID for a set of LINE emoji. See Sendable [LINE emoji
+   * list](https://d.line-scdn.net/r/devcenter/sendable_line_emoji_list.pdf).
    */
   productId: string;
   /**
-   * ID for a LINE emoji inside a set. See Sendable
-   * [LINE emoji list](https://d.line-scdn.net/r/devcenter/sendable_line_emoji_list.pdf).
+   * ID for a LINE emoji inside a set. See Sendable [LINE emoji
+   * list](https://d.line-scdn.net/r/devcenter/sendable_line_emoji_list.pdf).
    */
   emojiId: string;
 };
 
 /**
  * Insert a LINE emoji within a {@link Text} element.
+ *
  * @category Component
  * @props {@link EmojiProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#text-message).
@@ -59,9 +58,7 @@ export const Emoji: LineComponent<
   ];
 });
 
-/**
- * @category Props
- */
+/** @category Props */
 export type TextProps = {
   /** The text content which may contains `Emoji` element inside */
   children: SociablyNode;
@@ -69,6 +66,7 @@ export type TextProps = {
 
 /**
  * Insert a LINE emoji within a {@link Text} element.
+ *
  * @category Component
  * @props {@link EmojiProps}
  * @guides Check official [reference](https://developers.line.biz/en/reference/messaging-api/#text-message).
@@ -79,7 +77,7 @@ export const Text: LineComponent<
 > = makeLineComponent(async function Text(node, path, render) {
   const childrenSegments = await render<unknown, EmojiPlaceHolder>(
     node.props.children,
-    '.children'
+    '.children',
   );
   if (!childrenSegments) {
     return null;
@@ -105,8 +103,8 @@ export const Text: LineComponent<
     } else {
       throw new TypeError(
         `${formatNode(
-          seg.node
-        )} can't be placed in <Text/>, only textual node and <Emoji/> allowed`
+          seg.node,
+        )} can't be placed in <Text/>, only textual node and <Emoji/> allowed`,
       );
     }
   }

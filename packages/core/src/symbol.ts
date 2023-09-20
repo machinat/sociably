@@ -13,13 +13,13 @@ export const SOCIABLY_RAW_TYPE = Symbol.for('raw.element.sociably');
 export const SOCIABLY_NATIVE_TYPE = Symbol.for('native.component.sociably');
 
 export const SOCIABLY_SERVICE_CONTAINER = Symbol.for(
-  'container.service.sociably'
+  'container.service.sociably',
 );
 
 export const SOCIABLY_SERVICE_INTERFACE = Symbol.for(
-  'interface.service.sociably'
+  'interface.service.sociably',
 );
 
 export const SOCIABLY_SERVICE_PROVIDER = Symbol.for(
-  'provider.service.sociably'
+  'provider.service.sociably',
 );

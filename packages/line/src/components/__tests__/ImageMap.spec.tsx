@@ -14,10 +14,10 @@ import { renderUnitElement } from './utils.js';
 it('is a valid component', () => {
   expect(isNativeType(<ImageMap {...({} as ImageMapProps)} />)).toBe(true);
   expect(isNativeType(<ImageMapArea {...({} as ImageMapAreaProps)} />)).toBe(
-    true
+    true,
   );
   expect(
-    isNativeType(<ImageMapVideoArea {...({} as ImageMapVideoAreaProps)} />)
+    isNativeType(<ImageMapVideoArea {...({} as ImageMapVideoAreaProps)} />),
   ).toBe(true);
   expect(ImageMap.$$platform).toBe('line');
   expect(ImageMapArea.$$platform).toBe('line');
@@ -46,8 +46,8 @@ it('match snapshot', async () => {
           height={789}
           action={<UriAction label="foo" uri="https://..." />}
         />
-      </ImageMap>
-    )
+      </ImageMap>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -147,8 +147,8 @@ it('match snapshot', async () => {
           height={321}
           action={<MessageAction label="foo" text="bar" />}
         />
-      </ImageMap>
-    )
+      </ImageMap>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
@@ -246,8 +246,8 @@ it('match snapshot', async () => {
           height={789}
           action={<UriAction label="foo" uri="https://..." />}
         />
-      </ImageMap>
-    )
+      </ImageMap>,
+    ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {

@@ -51,9 +51,7 @@ type ApiCallOptions = {
   accessToken?: string;
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
   maxRequestConnections: number;
   engine: Engine<
@@ -78,7 +76,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
     const worker = new LineWorker(agentSettingsAccessor, maxRequestConnections);
     const renderer = new Renderer<LineSegmentValue, LineComponent<unknown>>(
       LINE,
-      generalElementDelegate
+      generalElementDelegate,
     );
 
     this.engine = new Engine(
@@ -87,7 +85,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
       queue,
       worker,
       initScope,
-      dispatchWrapper
+      dispatchWrapper,
     );
   }
 
@@ -102,19 +100,19 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
   render(
     chat: LineChat,
     message: SociablyNode,
-    options?: { replyToken?: string }
+    options?: { replyToken?: string },
   ): Promise<null | LineDispatchResponse> {
     return this.engine.render(
       chat,
       message,
-      createChatJobs(options?.replyToken)
+      createChatJobs(options?.replyToken),
     );
   }
 
   renderMulticast(
     channel: LineChannel,
     targets: string[],
-    message: SociablyNode
+    message: SociablyNode,
   ): Promise<null | LineDispatchResponse> {
     return this.engine.render(channel, message, createMulticastJobs(targets));
   }
@@ -160,7 +158,7 @@ const BotP = serviceProviderClass({
     { maxRequestConnections },
     agentSettingsAccessor,
     moduleUtils,
-    platformUtils
+    platformUtils,
   ) =>
     new LineBot({
       agentSettingsAccessor,

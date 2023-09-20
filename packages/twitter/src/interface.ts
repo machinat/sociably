@@ -7,18 +7,14 @@ import type {
   TwitterAgentSettings,
 } from './types.js';
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const ConfigsI = serviceInterface<TwitterPlatformConfigs>({
   name: 'TwitterConfigs',
 });
 
 export type ConfigsI = TwitterPlatformConfigs;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const PlatformUtilitiesI = serviceInterface<TwitterPlatformUtilities>({
   name: 'TwitterPlatformUtilities',
 });
@@ -28,9 +24,7 @@ export type AgentSettingsAccessorI = AgentSettingsAccessor<
   TwitterAgentSettings
 >;
 
-/**
- * @category Interface
- */
+/** @category Interface */
 export const AgentSettingsAccessorI = serviceInterface<AgentSettingsAccessorI>({
   name: 'TwitterAgentSettingsAccessor',
 });

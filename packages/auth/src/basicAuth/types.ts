@@ -67,16 +67,16 @@ type ErrorResult = {
 
 export type CheckCurrentAuthUsabilityFn<Credential, Data> = (
   credential: Credential,
-  data: Data
+  data: Data,
 ) => { ok: boolean };
 
 export type VerifyCredentialFn<Credential, Data> = (
-  credential: Credential
+  credential: Credential,
 ) => Promise<{ ok: true; data: Data } | ErrorResult>;
 
 export type CheckAuthDataFn<Data, Thread extends SociablyThread> = (
   /** The auth data to be checked */
-  data: Data
+  data: Data,
 ) =>
   | {
       ok: true;

@@ -23,6 +23,7 @@ type ProfilerOptions = {
 
 /**
  * FacebookProfiler fetch user profile from Facebook platform.
+ *
  * @category Provider
  */
 export class FacebookProfiler
@@ -42,7 +43,7 @@ export class FacebookProfiler
 
   async getUserProfile(
     page: string | FacebookPage,
-    user: string | FacebookUser
+    user: string | FacebookUser,
   ): Promise<null | FacebookUserProfile> {
     const userId = typeof user === 'string' ? user : user.id;
     let rawProfile: RawUserProfile;

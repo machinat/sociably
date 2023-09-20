@@ -33,9 +33,7 @@ type VerifyTokenResult = {
   /* eslint-enable camelcase */
 };
 
-/**
- * @category Provider
- */
+/** @category Provider */
 export class LineServerAuthenticator
   implements
     ServerAuthenticator<LineAuthCredential, LineAuthData, LineAuthContext>
@@ -52,19 +50,19 @@ export class LineServerAuthenticator
   async getLiffUrl(
     channel: LineChannel,
     path?: string,
-    chat?: LineChat
+    chat?: LineChat,
   ): Promise<string> {
     const setting = await this.agentSettingsAccessor.getAgentSettings(channel);
     if (!setting?.liff) {
       throw new Error(
-        `liff setting for messaging channel "${channel.id}" not found`
+        `liff setting for messaging channel "${channel.id}" not found`,
       );
     }
 
     const liffId = setting.liff.default;
     const liffUrl = new URL(
       joinPath(liffId, path || ''),
-      'https://liff.line.me'
+      'https://liff.line.me',
     );
 
     liffUrl.searchParams.set(CHAT_CHANNEL_QUERY_KEY, channel.id);
@@ -82,14 +80,14 @@ export class LineServerAuthenticator
   // eslint-disable-next-line class-methods-use-this
   async delegateAuthRequest(
     req: IncomingMessage,
-    res: ServerResponse
+    res: ServerResponse,
   ): Promise<void> {
     res.writeHead(403);
     res.end();
   }
 
   async verifyCredential(
-    credential: LineAuthCredential
+    credential: LineAuthCredential,
   ): Promise<LineVerifyAuthResult> {
     const {
       accessToken,
@@ -120,7 +118,7 @@ export class LineServerAuthenticator
       this._verifyAccessToken(accessToken).then((result) =>
         result.ok
           ? this._verifyChannel(result.tokenInfo.client_id, chatChannelId)
-          : result
+          : result,
       ),
       this._verifyUser(accessToken, userId),
       chatChannelId
@@ -131,14 +129,14 @@ export class LineServerAuthenticator
               ? new LineChat(chatChannelId, 'room', roomId)
               : new LineChat(chatChannelId, 'user', userId),
             userId,
-            refererType
+            refererType,
           )
         : null,
     ]);
 
     if (!clientResult.ok || !userResult.ok || (chatResult && !chatResult.ok)) {
       return [clientResult, userResult, chatResult].find(
-        (result) => !result?.ok
+        (result) => !result?.ok,
       ) as LineVerifyAuthResult;
     }
 
@@ -179,14 +177,14 @@ export class LineServerAuthenticator
               ? new LineChat(data.chan, 'room', data.room)
               : new LineChat(data.chan, 'user', data.user),
             data.user,
-            data.ref
+            data.ref,
           )
         : null,
     ]);
 
     if (!channelResult.ok || (chatResult && !chatResult.ok)) {
       return [channelResult, chatResult].find(
-        (result) => !result?.ok
+        (result) => !result?.ok,
       ) as LineVerifyAuthResult;
     }
     if (channelResult.loginChannelSettings.providerId !== data.provider) {
@@ -204,7 +202,7 @@ export class LineServerAuthenticator
   private async _verifyChat(
     chat: LineChat,
     userId: string,
-    refererType: RefChatType
+    refererType: RefChatType,
   ) {
     if (
       refererType === RefChatType.None ||
@@ -317,11 +315,11 @@ export class LineServerAuthenticator
 
   private async _verifyChannel(
     loginChannelId: string,
-    chatChannelId: undefined | string
+    chatChannelId: undefined | string,
   ) {
     const loginChannelSettings =
       await this.agentSettingsAccessor.getLineLoginChannelSettings(
-        loginChannelId
+        loginChannelId,
       );
     if (!loginChannelSettings) {
       return {

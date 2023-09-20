@@ -8,7 +8,7 @@ function mixin<T, U, V, W, X, Y>(
   v: V,
   w: W,
   x: X,
-  y: Y
+  y: Y,
 ): T & U & V & W & X & Y;
 
 function mixin(...prototypes: any[]) {
@@ -16,8 +16,8 @@ function mixin(...prototypes: any[]) {
     {},
     Object.assign(
       {},
-      ...prototypes.map((proto) => Object.getOwnPropertyDescriptors(proto))
-    )
+      ...prototypes.map((proto) => Object.getOwnPropertyDescriptors(proto)),
+    ),
   );
 }
 

@@ -16,14 +16,14 @@ export class NoneServerAuthenticator
 
   async delegateAuthRequest(
     req: IncomingMessage,
-    res: ServerResponse
+    res: ServerResponse,
   ): Promise<void> {
     res.writeHead(403);
     res.end();
   }
 
   async verifyCredential(
-    data: NoneAuthData
+    data: NoneAuthData,
   ): Promise<VerifyResult<NoneAuthData>> {
     return {
       ok: true as const,
@@ -32,7 +32,7 @@ export class NoneServerAuthenticator
   }
 
   async verifyRefreshment(
-    data: NoneAuthData
+    data: NoneAuthData,
   ): Promise<VerifyResult<NoneAuthData>> {
     return {
       ok: true as const,
@@ -53,7 +53,7 @@ export class NoneServerAuthenticator
 }
 
 const ServerAuthenticatorP = serviceProviderClass({ lifetime: 'transient' })(
-  NoneServerAuthenticator
+  NoneServerAuthenticator,
 );
 type ServerAuthenticatorP = NoneServerAuthenticator;
 

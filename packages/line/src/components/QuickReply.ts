@@ -4,9 +4,7 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
 import { LineComponent } from '../types.js';
 
-/**
- * @category Props
- */
+/** @category Props */
 export type QuickReplyProps = {
   /** URL of the icon that is displayed at the beginning of the button. */
   imageUrl?: string;
@@ -17,6 +15,7 @@ export type QuickReplyProps = {
 /**
  * QuickReply add a button at the bottom of screen after the {@link Expression}
  * containing it is displayed.
+ *
  * @category Component
  * @props {@link QuickReplyProps}
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/using-quick-reply/)

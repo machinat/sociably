@@ -42,12 +42,10 @@ const webhookRouteFactory = serviceProviderFactory({
     name: LINE,
     path: configs.webhookPath || '.',
     handler: receiver.handleRequestCallback(),
-  })
+  }),
 );
 
-/**
- * @category Root
- */
+/** @category Root */
 namespace Line {
   export const Bot = BotP;
   export type Bot = BotP;
@@ -68,7 +66,7 @@ namespace Line {
   export type AgentSettingsAccessor = AgentSettingsAccessorI;
 
   export const initModule = (
-    configs: ConfigsI
+    configs: ConfigsI,
   ): SociablyPlatform<
     LineEventContext,
     null,
@@ -115,7 +113,7 @@ namespace Line {
       provisions.push({
         provide: AgentSettingsAccessorI,
         withValue: createSingleStaticAgentSettingsAccessor(
-          configs.agentSettings
+          configs.agentSettings,
         ),
       });
     } else if (configs.multiAgentSettings) {
@@ -131,7 +129,7 @@ namespace Line {
       });
     } else {
       throw new Error(
-        'Line platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option'
+        'Line platform requires one of `agentSettings`, `multiAgentSettings` or `agentSettingsService` option',
       );
     }
 
