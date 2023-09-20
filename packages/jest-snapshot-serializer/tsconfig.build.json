@@ -3,6 +3,7 @@
   "include": ["src/**/*.ts"],
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node",
     "types": ["jest"],
     "rootDir": "./src",
     "outDir": "./lib",
@@ -12,7 +13,5 @@
       "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"]
     }
   },
-  "references": [
-    { "path": "../core/tsconfig.build.json" }
-  ]
+  "references": [{ "path": "../core/tsconfig.build.json" }]
 }
