@@ -359,7 +359,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
         header: {
           format: 'text',
           text: 'This is a {{1}} header',
-          examples: [['cool'], ['good'], ['fantasy']],
+          examples: ['cool', 'good', 'fantasy'],
         },
         body: {
           text: 'This is a {{1}} body for {{2}}',
@@ -463,7 +463,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
             text: 'Get Coupon',
             examples: ['_COUPON_CODE_'],
           },
-          { type: 'phone_number', phoneNumber: '+1234567890' },
+          { type: 'phone_number', text: 'Call Me', phoneNumber: '+1234567890' },
           { type: 'mpm', text: 'Buy Products' },
         ],
       }),
@@ -514,7 +514,11 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
                 text: 'Get Coupon',
                 example: ['_COUPON_CODE_'],
               },
-              { type: 'phone_number', phone_number: '+1234567890' },
+              {
+                type: 'phone_number',
+                text: 'Call Me',
+                phone_number: '+1234567890',
+              },
               { type: 'mpm', text: 'Buy Products' },
             ],
           },

@@ -50,6 +50,8 @@ export type CopyCodeTemplateButton = {
 /** A button calls to a phon number when being tapped */
 export type PhoneNaumberTemplateButton = {
   type: 'phone_number';
+  /** The button title */
+  text: string;
   /** The phone number to call */
   phoneNumber: string;
 };
@@ -98,7 +100,7 @@ export type CreatePredefinedTemplateOptions = {
          */
         text: string;
         /** If parameters are used in `text`, provider examples for the parameter */
-        examples: string[][];
+        examples: string[];
       }
     | {
         /** Display media in the header */
@@ -270,7 +272,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
           format: 'text',
           text: header.text,
           example: {
-            header_text: header.examples.map(([exampleStr]) => exampleStr),
+            header_text: header.examples,
           },
         });
       } else if (header.format === 'location') {
