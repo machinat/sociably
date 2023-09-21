@@ -525,3 +525,34 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
     });
   });
 });
+
+describe('.deletePredefinedTemplate(businessAccountId, options)', () => {
+  it('make calls to graph API', async () => {
+    const manager = new WhatsAppAssetsManager(stateController, bot);
+    bot.requestApi.mock.fake(async () => ({}));
+
+    await expect(
+      manager.deletePredefinedTemplate('_BUSINESS_ACCOUNT_ID_', {
+        name: 'MyVeryGoodTemplate',
+      }),
+    ).resolves.toBe(undefined);
+    await expect(
+      manager.deletePredefinedTemplate('_BUSINESS_ACCOUNT_ID_', {
+        name: 'MyGoooooodTemplate',
+        id: '_TEMPLATE_ID_',
+      }),
+    ).resolves.toBe(undefined);
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+      method: 'DELETE',
+      url: '_BUSINESS_ACCOUNT_ID_/message_templates',
+      params: { name: 'MyVeryGoodTemplate' },
+    });
+    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      method: 'DELETE',
+      url: '_BUSINESS_ACCOUNT_ID_/message_templates',
+      params: { name: 'MyGoooooodTemplate', hsm_id: '_TEMPLATE_ID_' },
+    });
+  });
+});

@@ -146,6 +146,16 @@ export type CreatePredefinedTemplateOptions = {
     | CatalogTemplateButton
     | MultiProductTemplateButton
   )[];
+  /**
+   * Set to true to allow assigning a category based on template guidelines and
+   * the template's contents during the validation process. This can prevent the
+   * template status from immediately being set to REJECTED upon creation due to
+   * miscategorization.
+   *
+   * If omitted, template will not be auto-assigned a category and its status
+   * may be set to REJECTED if determined to be miscategorized.
+   */
+  allowCategoryChange?: boolean;
   /** The appId is required when uploading a file example */
   appId?: string;
 };
@@ -348,6 +358,26 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
       },
     });
     return { id: result.id };
+  }
+
+  /** Delete a created predefined template */
+  async deletePredefinedTemplate(
+    businessAccountId: string,
+    {
+      name,
+      id,
+    }: {
+      /** Name of template to be deleted. */
+      name: string;
+      /** ID of template to be deleted. Required if deleting a template by ID. */
+      id?: string;
+    },
+  ): Promise<void> {
+    await this.bot.requestApi({
+      method: 'DELETE',
+      url: `${businessAccountId}/message_templates`,
+      params: { name, hsm_id: id },
+    });
   }
 
   private async uploadApplicationFile(
