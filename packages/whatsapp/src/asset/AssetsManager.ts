@@ -41,8 +41,6 @@ export type UrlTemplateButton = {
 /** A button copies a coupon code then being tapped */
 export type CopyCodeTemplateButton = {
   type: 'copy_code';
-  /** The button title */
-  text: string;
   /** Provide an example code */
   examples: string[];
 };

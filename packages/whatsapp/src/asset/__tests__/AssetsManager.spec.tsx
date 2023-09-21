@@ -460,7 +460,6 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
         buttons: [
           {
             type: 'copy_code',
-            text: 'Get Coupon',
             examples: ['_COUPON_CODE_'],
           },
           { type: 'phone_number', text: 'Call Me', phoneNumber: '+1234567890' },
@@ -511,7 +510,6 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
             buttons: [
               {
                 type: 'copy_code',
-                text: 'Get Coupon',
                 example: ['_COUPON_CODE_'],
               },
               {
