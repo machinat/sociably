@@ -440,6 +440,9 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
       .post(`/${bot.graphApiVersion}/_UPLOAD_ID_`, 'foo', {
         reqheaders: {
           Authorization: 'OAuth _ROOT_ACCESS_TOKEN_',
+          'Content-Type': 'image/png',
+          'Content-Length': '3',
+          file_offset: '0',
         },
       })
       .reply(200, { h: '.....' });

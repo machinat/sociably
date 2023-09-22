@@ -386,7 +386,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
   private async uploadApplicationFile(
     data: string | Buffer | Readable,
     contentType: string,
-    contentLength?: number,
+    contentLengthInput?: number,
     fileName?: string,
     appIdInput?: string,
   ) {
@@ -395,15 +395,22 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
       throw new TypeError(`'appId' is required when uploading a file example`);
     }
 
+    const contentLength =
+      contentLengthInput ??
+      (typeof data === 'string' || Buffer.isBuffer(data)
+        ? Buffer.from(data).length
+        : undefined);
+    if (contentLength === undefined) {
+      throw new Error(
+        `'contentLength' is required when uploading with a stream`,
+      );
+    }
+
     const { id: uploadId } = await this.bot.requestApi({
       method: 'POST',
       url: `${appId}/uploads`,
       params: {
-        file_length:
-          contentLength ??
-          (typeof data === 'string' || Buffer.isBuffer(data)
-            ? Buffer.from(data).length
-            : undefined),
+        file_length: contentLength,
         file_type: contentType,
         file_name: fileName,
       },
@@ -415,6 +422,8 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
         method: 'POST',
         headers: {
           Authorization: `OAuth ${this.bot.accessToken}`,
+          'Content-Type': contentType,
+          'Content-Length': String(contentLength),
           file_offset: '0',
         },
         body: data,
