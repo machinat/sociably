@@ -1,4 +1,5 @@
 import moxy from '@moxyjs/moxy';
+import nock from 'nock';
 import Sociably from '@sociably/core';
 import type StateControllerI from '@sociably/core/base/StateController';
 import type { WhatsAppBot } from '../../Bot.js';
@@ -24,6 +25,8 @@ const stateController = moxy<StateControllerI>({
 } as never);
 
 const bot = moxy<WhatsAppBot>({
+  graphApiVersion: 'v17.0',
+  accessToken: '_ROOT_ACCESS_TOKEN_',
   uploadMedia() {
     return { jobs: [{}], results: [{}] };
   },
@@ -433,7 +436,13 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
     bot.requestApi.mock.fake(async () => ({ id: '_TEMPLATE_ID_2_' }));
     // mock uploading api
     bot.requestApi.mock.fakeOnce(async () => ({ id: '_UPLOAD_ID_' }));
-    bot.requestApi.mock.fakeOnce(async () => ({}));
+    const uploadApiCall = nock(`https://graph.facebook.com`)
+      .post(`/${bot.graphApiVersion}/_UPLOAD_ID_`, 'foo', {
+        reqheaders: {
+          Authorization: 'OAuth _ROOT_ACCESS_TOKEN_',
+        },
+      })
+      .reply(200, { h: '.....' });
 
     await expect(
       manager.createPredefinedTemplate('_BUSINESS_ACCOUNT_ID_', {
@@ -468,7 +477,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
       }),
     ).resolves.toEqual({ id: '_TEMPLATE_ID_2_' });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(3);
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
       method: 'POST',
       url: '_APP_ID_/uploads',
@@ -479,13 +488,6 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
       },
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      method: 'POST',
-      url: '_UPLOAD_ID_',
-      file: {
-        data: Buffer.from('foo'),
-      },
-    });
-    expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
       method: 'POST',
       url: '_BUSINESS_ACCOUNT_ID_/message_templates',
       params: {
@@ -523,6 +525,8 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
         ],
       },
     });
+
+    expect(uploadApiCall.isDone()).toBe(true);
   });
 });
 

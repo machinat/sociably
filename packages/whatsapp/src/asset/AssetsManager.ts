@@ -1,4 +1,5 @@
 import type { Readable } from 'stream';
+import fetch from 'node-fetch';
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { serviceProviderClass } from '@sociably/core/service';
@@ -8,6 +9,8 @@ import {
   MetaAssetsManager,
   SetMetaAppSubscriptionOptions,
   DeleteMetaAppSubscriptionOptions,
+  MetaApiError,
+  GraphApiErrorBody,
 } from '@sociably/meta-api';
 import BotP from '../Bot.js';
 import WhatsAppAgent from '../Agent.js';
@@ -406,15 +409,22 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
       },
     });
 
-    // NOTE: id may looks like upload:aAbB123...?sig=ARaWYGLNwMPJwxB51JM
-    const [idPart, queryPart] = uploadId.split('?');
+    const res = await fetch(
+      `https://graph.facebook.com/${this.bot.graphApiVersion}/${uploadId}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `OAuth ${this.bot.accessToken}`,
+          file_offset: '0',
+        },
+        body: data,
+      },
+    );
+    const body = await res.json();
 
-    await this.bot.requestApi({
-      method: 'POST',
-      url: `${encodeURIComponent(idPart)}${queryPart ? `?${queryPart}` : ''}`,
-      file: { data },
-    });
-
+    if (!res.ok) {
+      throw new MetaApiError(body as GraphApiErrorBody);
+    }
     return uploadId;
   }
 }

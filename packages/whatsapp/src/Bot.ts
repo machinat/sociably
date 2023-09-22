@@ -65,6 +65,8 @@ type ApiCallOptions = {
 export class WhatsAppBot
   implements SociablyBot<WhatsAppChat, MetaApiJob, MetaApiResult>
 {
+  graphApiVersion: string;
+  accessToken: string;
   worker: MetaApiWorker;
   engine: Engine<
     WhatsAppChat | WhatsAppAgent,
@@ -86,6 +88,8 @@ export class WhatsAppBot
     dispatchWrapper,
   }: WhatsAppBotOptions) {
     invariant(accessToken, 'options.accessToken should not be empty');
+    this.graphApiVersion = graphApiVersion;
+    this.accessToken = accessToken;
 
     const renderer = new Renderer<
       WhatsAppSegmentValue,

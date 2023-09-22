@@ -73,6 +73,7 @@ export class InstagramBot
     MessengerBot<MetaApiChannel>,
     SociablyBot<InstagramChat, MetaApiJob, MetaApiResult>
 {
+  graphApiVersion: string;
   worker: MetaApiWorker;
   engine: Engine<
     InstagramThread,
@@ -93,6 +94,8 @@ export class InstagramBot
     initScope,
     dispatchWrapper,
   }: InstagramBotOptions) {
+    this.graphApiVersion = graphApiVersion;
+
     const renderer = new Renderer<
       InstagramSegmentValue,
       InstagramComponent<unknown>

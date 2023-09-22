@@ -90,6 +90,7 @@ export class FacebookBot
     MessengerBot<FacebookPage>,
     SociablyBot<FacebookThread, MetaApiJob, MetaApiResult>
 {
+  graphApiVersion: string;
   worker: MetaApiWorker;
   engine: Engine<
     FacebookDispatchTarget,
@@ -110,6 +111,8 @@ export class FacebookBot
     initScope,
     dispatchWrapper,
   }: FacebookBotOptions) {
+    this.graphApiVersion = graphApiVersion;
+
     const renderer = new Renderer<
       FacebookSegmentValue,
       FacebookComponent<unknown>
