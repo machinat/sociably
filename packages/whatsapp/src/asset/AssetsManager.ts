@@ -434,7 +434,8 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
     if (!res.ok) {
       throw new MetaApiError(body as GraphApiErrorBody);
     }
-    return uploadId;
+    const { h: fileHandle } = body as { h: string };
+    return fileHandle;
   }
 }
 

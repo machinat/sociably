@@ -445,7 +445,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
           file_offset: '0',
         },
       })
-      .reply(200, { h: '.....' });
+      .reply(200, { h: '_FILE_HANDLE_' });
 
     await expect(
       manager.createPredefinedTemplate('_BUSINESS_ACCOUNT_ID_', {
@@ -502,7 +502,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
             type: 'header',
             format: 'image',
             example: {
-              header_handle: ['http://foo.bar/baz.png', '_UPLOAD_ID_'],
+              header_handle: ['http://foo.bar/baz.png', '_FILE_HANDLE_'],
             },
           },
           {
