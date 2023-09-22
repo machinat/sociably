@@ -1,6 +1,6 @@
 {
   "name": "@sociably/instagram",
-  "version": "0.9.0-alpha.26",
+  "version": "0.9.0-alpha.30",
   "type": "module",
   "description": "Instagram platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@sociably/messenger": "^0.9.0-alpha.26",
-    "@sociably/meta-api": "^0.9.0-alpha.26",
+    "@sociably/meta-api": "^0.9.0-alpha.30",
     "invariant": "^2.2.4",
     "warning": "^4.0.2"
   },
