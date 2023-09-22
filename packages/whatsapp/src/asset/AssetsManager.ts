@@ -406,9 +406,12 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
       },
     });
 
+    // NOTE: id may looks like upload:aAbB123...?sig=ARaWYGLNwMPJwxB51JM
+    const [idPart, queryPart] = uploadId.split('?');
+
     await this.bot.requestApi({
       method: 'POST',
-      url: encodeURIComponent(uploadId),
+      url: `${encodeURIComponent(idPart)}${queryPart ? `?${queryPart}` : ''}`,
       file: { data },
     });
 
