@@ -408,7 +408,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
 
     await this.bot.requestApi({
       method: 'POST',
-      url: uploadId,
+      url: encodeURIComponent(uploadId),
       file: { data },
     });
 
