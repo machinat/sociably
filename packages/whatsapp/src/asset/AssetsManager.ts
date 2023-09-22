@@ -44,7 +44,7 @@ export type UrlTemplateButton = {
 /** A button copies a coupon code then being tapped */
 export type CopyCodeTemplateButton = {
   type: 'copy_code';
-  /** Provide an example code */
+  /** Provide an example code. Maximum 15 characters. */
   examples: string[];
 };
 
@@ -333,17 +333,12 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
       components.push({
         type: 'buttons',
         buttons: buttons.map((button) => ({
-          type: button.type === 'copy_code' ? 'COPY_CODE' : button.type,
+          type: button.type,
           text: 'text' in button ? button.text : undefined,
           url: 'url' in button ? button.url : undefined,
           phone_number:
             'phoneNumber' in button ? button.phoneNumber : undefined,
-          example:
-            'examples' in button
-              ? button.type === 'copy_code'
-                ? button.examples[0]
-                : button.examples
-              : undefined,
+          example: 'examples' in button ? button.examples : undefined,
         })),
       });
     }
