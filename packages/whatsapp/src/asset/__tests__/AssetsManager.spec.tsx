@@ -513,7 +513,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
             type: 'buttons',
             buttons: [
               {
-                type: 'copy_code',
+                type: 'COPY_CODE',
                 example: '_COUPON_CODE_',
               },
               {
