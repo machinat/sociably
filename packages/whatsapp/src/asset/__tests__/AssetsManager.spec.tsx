@@ -455,7 +455,6 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
         header: {
           format: 'image',
           examples: [
-            { url: 'http://foo.bar/baz.png' },
             {
               file: {
                 data: Buffer.from('foo'),
@@ -502,7 +501,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
             type: 'header',
             format: 'image',
             example: {
-              header_handle: ['http://foo.bar/baz.png', '_FILE_HANDLE_'],
+              header_handle: ['_FILE_HANDLE_'],
             },
           },
           {
@@ -515,7 +514,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
             buttons: [
               {
                 type: 'copy_code',
-                example: ['_COUPON_CODE_'],
+                example: '_COUPON_CODE_',
               },
               {
                 type: 'phone_number',

@@ -108,8 +108,7 @@ export type CreatePredefinedTemplateOptions = {
         format: 'image' | 'video' | 'document';
         /** Provide examples with file url or uploading a file */
         examples: {
-          url?: string;
-          file?: {
+          file: {
             /** The binary file content */
             data: string | Buffer | Readable;
             /** The MIME content type of the file */
@@ -293,22 +292,16 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
         const { format, examples } = header;
 
         const headerHandleProcessing: (string | Promise<string>)[] = [];
-        for (const { url, file } of examples) {
-          if (url) {
-            headerHandleProcessing.push(url);
-          } else if (file) {
-            headerHandleProcessing.push(
-              this.uploadApplicationFile(
-                file.data,
-                file.contentType,
-                file.contentLength,
-                file.fileName,
-                options.appId,
-              ),
-            );
-          } else {
-            throw new TypeError(`no data source in the header example`);
-          }
+        for (const { file } of examples) {
+          headerHandleProcessing.push(
+            this.uploadApplicationFile(
+              file.data,
+              file.contentType,
+              file.contentLength,
+              file.fileName,
+              options.appId,
+            ),
+          );
         }
 
         const headerHandle = await Promise.all(headerHandleProcessing);
@@ -345,7 +338,12 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
           url: 'url' in button ? button.url : undefined,
           phone_number:
             'phoneNumber' in button ? button.phoneNumber : undefined,
-          example: 'examples' in button ? button.examples : undefined,
+          example:
+            'examples' in button
+              ? button.type === 'copy_code'
+                ? button.examples[0]
+                : button.examples
+              : undefined,
         })),
       });
     }
