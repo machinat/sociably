@@ -69,6 +69,7 @@ const {
   INSTAGRAM_ACCESS_TOKEN,
   INSTAGRAM_AGENT_USERNAME,`}${when(platforms.includes('whatsapp'))`
   // whatsapp
+  WHATSAPP_BUSINESS_ACCOUNT_ID,
   WHATSAPP_PHONE_NUMBER,
   WHATSAPP_NUMBER_ID,
   WHATSAPP_ACCESS_TOKEN,`}${when(platforms.includes('twitter'))`
@@ -167,6 +168,7 @@ ${when(recognizer === 'dialogflow')`
         accessToken: WHATSAPP_ACCESS_TOKEN,
         webhookVerifyToken: META_WEBHOOK_VERIFY_TOKEN,
         agentSettings: {
+          budsinessAccountId: WHATSAPP_BUSINESS_ACCOUNT_ID,
           phoneNumber: WHATSAPP_PHONE_NUMBER,
           numberId: WHATSAPP_NUMBER_ID,
         },
@@ -221,8 +223,7 @@ ${when(recognizer === 'dialogflow')`
           TwitterWebview,`}${when(platforms.includes('telegram'))`
           TelegramWebview,`}${when(platforms.includes('line'))`
           LineWebview,`}
-        ],${when(platforms.includes('facebook'))`
-        cookieSameSite: 'none',`}
+        ],
         noNextServer: options?.noServer,
         nextServerOptions: {
           dev: DEV,

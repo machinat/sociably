@@ -4,7 +4,7 @@ import { when } from '../../../utils.js';
 export default ({ platforms }: CreateAppContext): string => `
 import Sociably, { serviceContainer } from '@sociably/core';
 import About from '../scenes/About.js';
-import WithMainMenu from '../components/WithMainMenu.js';
+import HelloWithMenu from '../components/HelloWithMenu.js';
 import useIntent from '../services/useIntent.js';
 import useUserProfile from '../services/useUserProfile.js';
 import { ChatEventContext } from '../types.js';
@@ -25,7 +25,7 @@ const handleChat = serviceContainer({
       if (intent.type === 'greeting') {
         const profile = await getUserProfile(event.channel, event.user);
         return reply(
-          <WithMainMenu text={\`Hello \${profile?.name || 'there'}!\`} />
+          <HelloWithMenu target={profile?.name || 'there'} />
         );
       }
 
@@ -34,7 +34,7 @@ const handleChat = serviceContainer({
       }
 
       return reply(
-        <WithMainMenu text={\`Hello \${event.type === 'text' ? event.text : 'World'}!\`} />
+        <HelloWithMenu text={event.type === 'text' ? event.text : 'World'} />
       );
     }
 )

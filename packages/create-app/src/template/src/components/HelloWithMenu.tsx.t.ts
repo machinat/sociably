@@ -28,11 +28,11 @@ import * as Line from '@sociably/line/components';${when(withWebview)`
 import { WebviewAction as LineWebviewAction } from '@sociably/line/webview';`}`}
 
 
-type WithMainMenuProps = {
-  text: string;
+type HelloWithMenuProps = {
+  target: string;
 };
 
-const WithMainMenu = ({ text }: WithMainMenuProps, { platform }) => {${when(
+const HelloWithMenu = ({ target }: HelloWithMenuProps, { platform }) => {${when(
   withWebview,
 )`
   const webviewText = 'Open Webview ↗️';`}
@@ -52,7 +52,7 @@ ${when(platforms.includes('facebook'))`
           </>`}
         `}}
       >
-        {text}
+        Hello {target}!
       </Facebook.ButtonTemplate>
     );
   }`}
@@ -61,13 +61,15 @@ ${when(platforms.includes('facebook'))`
     return (
       <Instagram.GenericTemplate>
         <Instagram.GenericItem
-          title={text}
-          buttons={
-            <>
-              <Instagram.PostbackButton title={aboutText} payload={aboutData} />
+          title={\`Hello \${target}!\`}
+          buttons={${`${when(withWebview)`
+            <>`}
+              <Instagram.PostbackButton title={aboutText} payload={aboutData} />${when(
+                withWebview,
+              )`
               <InstagramWebviewButton title={webviewText} />
-            </>
-          }
+            </>`}
+          `}}
         />
       </Instagram.GenericTemplate>
     );
@@ -75,15 +77,17 @@ ${when(platforms.includes('facebook'))`
   ${when(platforms.includes('whatsapp'))`
   if (platform === "whatsapp") {
     return (
-      <WhatsApp.ButtonsTemplate
-        buttons={
-          <>
-            <WhatsApp.ReplyButton title={aboutText} data={aboutData} />
-          </>
-        }
-      >
-        {text}
-      </WhatsApp.ButtonsTemplate>
+      <WhatsApp.PredefinedTemplate
+        name="hello_world_example"
+        language="en"
+        bodyParams={<WhatsApp.TextParam>{target}</WhatsApp.TextParam>}
+        buttonParams={${`${when(withWebview)`
+          <>`}
+            <WhatsApp.QuickReplyParam payload={aboutData} />${when(withWebview)`
+            <WhatsAppWebviewButtonParam />
+          </>`}
+        `}}
+      />
     );
   }`}
 ${when(platforms.includes('twitter'))`
@@ -112,7 +116,7 @@ ${when(platforms.includes('telegram'))`
           </Telegram.InlineKeyboard>
         }
       >
-        {text}
+        Hello {target}!
       </Telegram.Text>
     );
   }`}
@@ -120,7 +124,7 @@ ${when(platforms.includes('line'))`
   if (platform === 'line') {
     return (
       <Line.ButtonTemplate
-        altText={(template) => template.text}
+        text={\`Hello \${target}!\`}
         actions={${`${when(withWebview)`
           <>`}
             <Line.PostbackAction
@@ -131,14 +135,12 @@ ${when(platforms.includes('line'))`
             <LineWebviewAction label={webviewText} />
           </>`}
         `}}
-      >
-        {text}
-      </Line.ButtonTemplate>
+      />
     );
   }`}
 
-  return <p>{text}</p>;
+  return <p>Hello <b>{target}</b>!</p>;
 };
 
-export default WithMainMenu;
+export default HelloWithMenu;
 `;

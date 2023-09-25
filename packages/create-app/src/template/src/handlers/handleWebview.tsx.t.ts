@@ -3,7 +3,7 @@ import { when } from '../../../utils.js';
 
 export default ({ withWebview }: CreateAppContext): string => when(withWebview)`
 import Sociably, { serviceContainer, BaseBot } from '@sociably/core';
-import WithMainMenu from '../components/WithMainMenu.js';
+import HelloWithMenu from '../components/HelloWithMenu.js';
 import { WebAppEventContext } from '../types.js';
 
 const handleWebview = serviceContainer({ deps: [BaseBot] })(
@@ -22,7 +22,7 @@ const handleWebview = serviceContainer({ deps: [BaseBot] })(
         // reflect hello to chatroom
         await baseBot.render(
           auth.thread,
-          <WithMainMenu text={\`Hello \${event.payload as string}!\`} />
+          <HelloWithMenu text={event.payload as string} />
           );
       }
     }

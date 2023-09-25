@@ -118,7 +118,29 @@ ${when(platforms.includes('instagram'))`
 
 ${when(platforms.includes('whatsapp'))`
   // WhatsApp
-  await whatsappManager.deleteAppSubscription();`}
+  await whatsappManager.deleteAppSubscription();
+  await whatsappManager.createPredefinedTemplate(WHATSAPP_BUSINESS_ACCOUNT_ID, {
+    category: 'marketing',
+    name: 'hello_world_example',
+    language: 'en',
+    body: {
+      text: 'Hello, {{1}}!',
+      examples: [['John'], ['there']],
+    },
+    buttons: [
+      {
+        type: 'quick_reply',
+        text: 'About',
+      },
+      {
+        type: 'url',
+        text: 'Open Webview',
+        url: \`https://\${DOMAIN}/webview/{{1}}\`,
+        examples: [\`https://\${DOMAIN}/webview/index\`],
+      },
+    ],
+    allowCategoryChange: true,
+  });`}
 
 ${when(platforms.includes('twitter'))``}
 
