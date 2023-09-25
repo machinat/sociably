@@ -108,11 +108,12 @@ export type LocationMessageParams = {
 export type ImagemapMessageParams = {
   type: 'imagemap';
   altText: string;
+  baseUrl: string;
   baseSize: {
     width: 1040;
     height: number;
   };
-  video: {
+  video?: {
     originalContentUrl: string;
     previewImageUrl: string;
     area: {

@@ -1,7 +1,11 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
-import { LineComponent, MessageSegmentValue } from '../types.js';
+import {
+  LineComponent,
+  MessageSegmentValue,
+  TemplateMessageParams,
+} from '../types.js';
 
 /** @category Props */
 export type ButtonTemplateProps = {
@@ -11,7 +15,7 @@ export type ButtonTemplateProps = {
    * value would be used. The rendered template object is passed as the first
    * param.
    */
-  altText: string | ((template: Record<string, any>) => string);
+  altText?: string | ((message: TemplateMessageParams) => string);
   /** Image URL (Max character limit: 1,000) */
   thumbnailImageUrl?: string;
   /**
@@ -32,8 +36,11 @@ export type ButtonTemplateProps = {
   /** Background color of the image. Specify a RGB color value. Default: #FFFFFF. */
   imageBackgroundColor?: string;
   title?: string;
-  /** Texual nodes of message text. */
-  children: SociablyNode;
+  /**
+   * Message text Max character limit: 160 (no image or title) or 60 (message
+   * with an image or title)
+   */
+  text: string;
   /**
    * {@link Action} elements displayed as the buttons at the template. Max 4
    * buttons.
@@ -66,35 +73,39 @@ export const ButtonTemplate: LineComponent<
     imageSize,
     imageBackgroundColor,
     title,
-    children,
+    text,
   } = node.props;
 
-  const [defaultActionSegments, actionSegments, textSegments] =
-    await Promise.all([
-      render(defaultAction, '.defaultAction'),
-      render(actions, '.actions'),
-      render(children, '.children'),
-    ]);
+  const [defaultActionSegments, actionSegments] = await Promise.all([
+    render(defaultAction, '.defaultAction'),
+    render(actions, '.actions'),
+  ]);
 
-  const template = {
-    type: 'buttons',
-    thumbnailImageUrl,
-    imageAspectRatio,
-    imageSize,
-    imageBackgroundColor,
-    title,
-    text: textSegments?.[0].value,
-    defaultAction: defaultActionSegments?.[0].value,
-    actions: actionSegments?.map((seg) => seg.value),
+  const templateMessage: TemplateMessageParams = {
+    type: 'template',
+    altText: '',
+    template: {
+      type: 'buttons',
+      thumbnailImageUrl,
+      imageAspectRatio,
+      imageSize,
+      imageBackgroundColor,
+      title,
+      text,
+      defaultAction: defaultActionSegments?.[0].value,
+      actions: actionSegments?.map((seg) => seg.value),
+    },
   };
 
   return [
     makeUnitSegment(node, path, {
       type: 'message',
       params: {
-        type: 'template',
-        altText: typeof altText === 'function' ? altText(template) : altText,
-        template,
+        ...templateMessage,
+        altText:
+          typeof altText === 'function'
+            ? altText(templateMessage)
+            : altText || `${title ?? ''}\n${text}`,
       },
     }),
   ];

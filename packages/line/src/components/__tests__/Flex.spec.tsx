@@ -1,3 +1,4 @@
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Flex, {
@@ -19,6 +20,7 @@ import Flex, {
 } from '../Flex.js';
 import { UriAction } from '../Action.js';
 import { renderUnitElement } from './utils.js';
+import { MessageSegmentValue, FlexMessageParams } from '../../types.js';
 
 test.each(
   [
@@ -309,4 +311,24 @@ it.each([
   ]);
 
   expect(segments?.[0].value).toMatchSnapshot();
+});
+
+test('altText as function', async () => {
+  const altTextGetter = moxy(() => 'ALT_TEXT_FOO');
+
+  const segments = await renderUnitElement(
+    <FlexMessage altText={altTextGetter}>
+      <FlexBubbleContainer>
+        <FlexBody>
+          <FlexText>hello world</FlexText>
+        </FlexBody>
+      </FlexBubbleContainer>
+    </FlexMessage>,
+  );
+  const messageSegValue = segments?.[0].value as MessageSegmentValue;
+  const flexMessage = messageSegValue.params as FlexMessageParams;
+
+  expect(flexMessage.altText).toBe('ALT_TEXT_FOO');
+  expect(altTextGetter).toHaveBeenCalledTimes(1);
+  expect(altTextGetter).toHaveBeenCalledWith({ ...flexMessage, altText: '' });
 });

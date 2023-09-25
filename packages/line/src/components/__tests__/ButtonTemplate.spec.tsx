@@ -24,14 +24,13 @@ it('match snapshot', async () => {
         imageSize="contain"
         imageBackgroundColor="#aaaaaa"
         title="HELLO"
+        text="world"
         defaultAction={<UriAction uri="https://..." label="???" />}
         actions={[
           <UriAction uri="https://..." label="foo" />,
           <UriAction uri="https://..." label="bar" />,
         ]}
-      >
-        world
-      </ButtonTemplate>,
+      />,
     ),
   ).resolves.toMatchInlineSnapshot(`
     [
@@ -59,11 +58,10 @@ it('match snapshot', async () => {
           imageAspectRatio="square"
           imageBackgroundColor="#aaaaaa"
           imageSize="contain"
+          text="world"
           thumbnailImageUrl="https://..."
           title="HELLO"
-        >
-          world
-        </ButtonTemplate>,
+        />,
         "path": "$",
         "type": "unit",
         "value": {
@@ -104,24 +102,38 @@ it('match snapshot', async () => {
   `);
 });
 
+test('default altText', async () => {
+  const segemnts = await renderUnitElement(
+    <ButtonTemplate
+      title="HELLO"
+      text="world"
+      actions={[
+        <UriAction uri="https://..." label="foo" />,
+        <UriAction uri="https://..." label="bar" />,
+      ]}
+    />,
+  );
+
+  expect((segemnts?.[0].value as any).params.altText).toBe('HELLO\nworld');
+});
+
 test('altText as function', async () => {
   const altTextGetter = moxy(() => 'ALT_TEXT_FOO');
 
   const segemnts = await renderUnitElement(
     <ButtonTemplate
       altText={altTextGetter}
+      text="hello world"
       actions={[
         <UriAction uri="https://..." label="foo" />,
         <UriAction uri="https://..." label="bar" />,
       ]}
-    >
-      hello world
-    </ButtonTemplate>,
+    />,
   );
   const messageSegValue = segemnts?.[0].value as MessageSegmentValue;
   const templateValue = messageSegValue.params as TemplateMessageParams;
 
   expect(templateValue.altText).toBe('ALT_TEXT_FOO');
   expect(altTextGetter).toHaveBeenCalledTimes(1);
-  expect(altTextGetter).toHaveBeenCalledWith(templateValue.template);
+  expect(altTextGetter).toHaveBeenCalledWith({ ...templateValue, altText: '' });
 });

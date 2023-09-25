@@ -6,7 +6,11 @@ import {
   PartSegment,
 } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
-import { LineComponent, MessageSegmentValue } from '../types.js';
+import {
+  LineComponent,
+  MessageSegmentValue,
+  TemplateMessageParams,
+} from '../types.js';
 
 /** @category Props */
 export type CarouselItemProps = {
@@ -28,8 +32,11 @@ export type CarouselItemProps = {
    */
   imageBackgroundColor?: string;
   title?: string;
-  /** Texual nodes of message text. */
-  children: string;
+  /**
+   * Message text Max character limit: 120 (no image or title) or 60 (message
+   * with an image or title)
+   */
+  text: string;
 };
 
 /**
@@ -49,22 +56,20 @@ export const CarouselItem: LineComponent<
     thumbnailImageUrl,
     imageBackgroundColor,
     title,
-    children,
+    text,
   } = node.props;
 
-  const [defaultActionSegments, actionSegments, textSegments] =
-    await Promise.all([
-      render(defaultAction, '.defaultAction'),
-      render(actions, '.actions'),
-      render(children, '.children'),
-    ]);
+  const [defaultActionSegments, actionSegments] = await Promise.all([
+    render(defaultAction, '.defaultAction'),
+    render(actions, '.actions'),
+  ]);
 
   return [
     makePartSegment(node, path, {
       thumbnailImageUrl,
       imageBackgroundColor,
       title,
-      text: textSegments?.[0].value,
+      text,
       defaultAction: defaultActionSegments?.[0].value,
       actions: actionSegments?.map((segment) => segment.value),
     }),
@@ -83,7 +88,7 @@ export type CarouselTemplateProps = {
    * messages. Max character limit: 400 If a function is given, the return value
    * would be used. The rendered template object is passed as the first param.
    */
-  altText: string | ((template: Record<string, any>) => string);
+  altText?: string | ((message: TemplateMessageParams) => string);
   /**
    * Aspect ratio of the image, rectangle: 1.51:1, square: 1:1. Default to
    * `'rectangle'`.
@@ -116,20 +121,29 @@ export const CarouselTemplate: LineComponent<
   const { children, altText, imageAspectRatio, imageSize } = node.props;
   const columnSegments = await render(children, '.children');
 
-  const template = {
-    type: 'carousel',
-    imageAspectRatio,
-    imageSize,
-    columns: columnSegments?.map((segment) => segment.value),
+  const templateMessage: TemplateMessageParams = {
+    type: 'template',
+    altText: '',
+    template: {
+      type: 'carousel',
+      imageAspectRatio,
+      imageSize,
+      columns: columnSegments?.map((segment) => segment.value) || [],
+    },
   };
 
   return [
     makeUnitSegment(node, path, {
       type: 'message',
       params: {
-        type: 'template',
-        altText: typeof altText === 'function' ? altText(template) : altText,
-        template,
+        ...templateMessage,
+        altText:
+          typeof altText === 'function'
+            ? altText(templateMessage)
+            : altText ||
+              templateMessage.template.columns
+                .map((column) => `${column.title}\n${column.text}\n`)
+                .join('\n'),
       },
     }),
   ];

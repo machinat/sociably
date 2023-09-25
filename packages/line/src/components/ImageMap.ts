@@ -146,9 +146,9 @@ export type ImageMapProps = {
   /** ImageMapArea elements for the actions on touching. */
   children: SociablyNode;
   /** Base URL of the image */
-  baseUrl?: string;
+  baseUrl: string;
   /** Alternative text. */
-  altText: string;
+  altText?: string | ((message: ImagemapMessageParams) => string);
   /**
    * Height of base image. Set to the height that corresponds to a width of 1040
    * pixels.
@@ -175,24 +175,30 @@ export const ImageMap: LineComponent<
   const { baseUrl, altText, height, children, video } = node.props;
 
   const videoSegments = await render(video, '.video');
-  const videoValue = videoSegments?.[0].value as ImagemapMessageParams['video'];
+  const videoValue: ImagemapMessageParams['video'] | undefined =
+    videoSegments?.[0].value;
 
   const actionSegments = await render(children, '.children');
   const actionValues = actionSegments?.map((segment) => segment.value);
+  const message: ImagemapMessageParams = {
+    type: 'imagemap',
+    baseUrl,
+    altText: '',
+    baseSize: {
+      width: 1040,
+      height,
+    },
+    actions: actionValues || [],
+    video: videoValue,
+  };
 
   return [
     makeUnitSegment(node, path, {
       type: 'message',
       params: {
-        type: 'imagemap',
-        baseUrl,
-        altText,
-        baseSize: {
-          width: 1040,
-          height,
-        },
-        actions: actionValues || [],
-        video: videoValue,
+        ...message,
+        altText:
+          typeof altText === 'function' ? altText(message) : altText || baseUrl,
       },
     }),
   ];

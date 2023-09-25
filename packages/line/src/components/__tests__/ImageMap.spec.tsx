@@ -1,3 +1,4 @@
+import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import {
@@ -10,6 +11,7 @@ import {
 } from '../ImageMap.js';
 import { UriAction, MessageAction } from '../Action.js';
 import { renderUnitElement } from './utils.js';
+import { MessageSegmentValue, ImagemapMessageParams } from '../../types.js';
 
 it('is a valid component', () => {
   expect(isNativeType(<ImageMap {...({} as ImageMapProps)} />)).toBe(true);
@@ -329,4 +331,29 @@ it('match snapshot', async () => {
       },
     ]
   `);
+});
+
+test('altText as function', async () => {
+  const altTextGetter = moxy(() => 'ALT_TEXT_FOO');
+
+  const segemnts = await renderUnitElement(
+    <ImageMap altText={altTextGetter} baseUrl="https://..." height={999}>
+      <ImageMapArea
+        x={978}
+        y={654}
+        width={456}
+        height={789}
+        action={<UriAction label="foo" uri="https://..." />}
+      />
+    </ImageMap>,
+  );
+  const messageSegValue = segemnts?.[0].value as MessageSegmentValue;
+  const imageMapMessage = messageSegValue.params as ImagemapMessageParams;
+
+  expect(imageMapMessage.altText).toBe('ALT_TEXT_FOO');
+  expect(altTextGetter).toHaveBeenCalledTimes(1);
+  expect(altTextGetter).toHaveBeenCalledWith({
+    ...imageMapMessage,
+    altText: '',
+  });
 });

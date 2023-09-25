@@ -101,6 +101,19 @@ it('match snapshot', async () => {
   `);
 });
 
+test('default altText', async () => {
+  const segemnts = await renderUnitElement(
+    <ImageCarouselTemplate>
+      <ImageCarouselItem
+        imageUrl="https://..."
+        action={<UriAction uri="https://..." label="foo" />}
+      />
+    </ImageCarouselTemplate>,
+  );
+
+  expect((segemnts?.[0].value as any).params.altText).toBe('https://...');
+});
+
 test('altText as function', async () => {
   const altTextGetter = moxy(() => 'ALT_TEXT_FOO');
 
@@ -117,5 +130,5 @@ test('altText as function', async () => {
 
   expect(templateValue.altText).toBe('ALT_TEXT_FOO');
   expect(altTextGetter).toHaveBeenCalledTimes(1);
-  expect(altTextGetter).toHaveBeenCalledWith(templateValue.template);
+  expect(altTextGetter).toHaveBeenCalledWith({ ...templateValue, altText: '' });
 });

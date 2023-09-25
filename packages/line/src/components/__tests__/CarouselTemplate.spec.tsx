@@ -33,24 +33,23 @@ it('match snapshot', async () => {
         imageSize="contain"
       >
         <CarouselItem
+          text="Burger"
           actions={[
             <UriAction uri="https://..." label="with fries" />,
             <UriAction uri="https://..." label="with salad" />,
           ]}
-        >
-          Burger
-        </CarouselItem>
+        />
+
         <CarouselItem
           thumbnailImageUrl="https://..."
           imageBackgroundColor="#bbbbbb"
           title="Pasta"
+          text="Naporitan"
           actions={[
             <UriAction uri="https://..." label="with soup" />,
             <UriAction uri="https://..." label="with salad" />,
           ]}
-        >
-          Naporitan
-        </CarouselItem>
+        />
       </CarouselTemplate>,
     ),
   ).resolves.toMatchInlineSnapshot(`
@@ -74,9 +73,8 @@ it('match snapshot', async () => {
                 />,
               ]
             }
-          >
-            Burger
-          </CarouselItem>
+            text="Burger"
+          />
           <CarouselItem
             actions={
               [
@@ -91,11 +89,10 @@ it('match snapshot', async () => {
               ]
             }
             imageBackgroundColor="#bbbbbb"
+            text="Naporitan"
             thumbnailImageUrl="https://..."
             title="Pasta"
-          >
-            Naporitan
-          </CarouselItem>
+          />
         </CarouselTemplate>,
         "path": "$",
         "type": "unit",
@@ -156,6 +153,24 @@ it('match snapshot', async () => {
   `);
 });
 
+test('default altText', async () => {
+  const segemnts = await renderUnitElement(
+    <CarouselTemplate imageAspectRatio="square" imageSize="contain">
+      <CarouselItem
+        title="HELLO"
+        text="world"
+        actions={<UriAction uri="https://..." label="with fries" />}
+      />
+    </CarouselTemplate>,
+  );
+
+  expect((segemnts?.[0].value as any).params.altText).toMatchInlineSnapshot(`
+    "HELLO
+    world
+    "
+  `);
+});
+
 test('altText as function', async () => {
   const altTextGetter = moxy(() => 'ALT_TEXT_FOO');
 
@@ -166,10 +181,9 @@ test('altText as function', async () => {
       imageSize="contain"
     >
       <CarouselItem
+        text="Burger"
         actions={<UriAction uri="https://..." label="with fries" />}
-      >
-        Burger
-      </CarouselItem>
+      />
     </CarouselTemplate>,
   );
   const messageSegValue = segemnts?.[0].value as MessageSegmentValue;
@@ -177,5 +191,5 @@ test('altText as function', async () => {
 
   expect(templateValue.altText).toBe('ALT_TEXT_FOO');
   expect(altTextGetter).toHaveBeenCalledTimes(1);
-  expect(altTextGetter).toHaveBeenCalledWith(templateValue.template);
+  expect(altTextGetter).toHaveBeenCalledWith({ ...templateValue, altText: '' });
 });

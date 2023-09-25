@@ -8,7 +8,11 @@ import {
 } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
 import makeLineComponent from '../utils/makeLineComponent.js';
-import type { LineComponent, MessageSegmentValue } from '../types.js';
+import type {
+  LineComponent,
+  MessageSegmentValue,
+  FlexMessageParams,
+} from '../types.js';
 
 type FlexSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 type FlexFullSize = 'xxs' | FlexSize | '3xl' | '4xl' | '5xl';
@@ -898,7 +902,7 @@ export type FlexMessageProps = {
   /** {@link FlexBubbleContainer} or {@link FlexCarouselContainer} element. */
   children: SociablyNode;
   /** Alternative text. Max character limit: 400 */
-  altText: string;
+  altText: string | ((message: FlexMessageParams) => string);
 };
 
 /**
@@ -918,10 +922,19 @@ export const FlexMessage: LineComponent<
   const contentSegments = await render(children, '.children');
   const contentValue = contentSegments?.[0].value;
 
+  const message: FlexMessageParams = {
+    type: 'flex',
+    altText: '',
+    contents: contentValue,
+  };
+
   return [
     makeUnitSegment(node, path, {
       type: 'message',
-      params: { type: 'flex' as const, altText, contents: contentValue },
+      params: {
+        ...message,
+        altText: typeof altText === 'function' ? altText(message) : altText,
+      },
     }),
   ];
 });

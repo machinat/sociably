@@ -1,7 +1,11 @@
 import { SociablyNode } from '@sociably/core';
 import { makeUnitSegment, UnitSegment } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
-import { LineComponent, MessageSegmentValue } from '../types.js';
+import {
+  LineComponent,
+  MessageSegmentValue,
+  TemplateMessageParams,
+} from '../types.js';
 
 /** @category Props */
 export type ConfirmTemplateProps = {
@@ -10,11 +14,11 @@ export type ConfirmTemplateProps = {
    * messages. Max character limit: 400 If a function is given, the return value
    * would be used. The rendered template object is passed as the first param.
    */
-  altText: string | ((template: Record<string, any>) => string);
+  altText?: string | ((message: TemplateMessageParams) => string);
   /** Exactly 2 {@link Action} elements displayed as the buttons at the template. */
   actions: SociablyNode;
-  /** Texual nodes of message text. */
-  children: string;
+  /** Message text Max character limit: 240 */
+  text: string;
 };
 
 /**
@@ -28,25 +32,27 @@ export const ConfirmTemplate: LineComponent<
   ConfirmTemplateProps,
   UnitSegment<MessageSegmentValue>
 > = makeLineComponent(async function ConfirmTemplate(node, path, render) {
-  const { actions, altText, children } = node.props;
-  const [actionSegments, textSegments] = await Promise.all([
-    render(actions, '.actions'),
-    render(children, '.children'),
-  ]);
-
-  const template = {
-    type: 'confirm',
-    text: textSegments?.[0].value,
-    actions: actionSegments?.map((segment) => segment.value),
+  const { actions, altText, text } = node.props;
+  const actionSegments = await render(actions, '.actions');
+  const templateMessage: TemplateMessageParams = {
+    type: 'template',
+    altText: '',
+    template: {
+      type: 'confirm',
+      text,
+      actions: actionSegments?.map((segment) => segment.value) || [],
+    },
   };
 
   return [
     makeUnitSegment(node, path, {
       type: 'message',
       params: {
-        type: 'template',
-        altText: typeof altText === 'function' ? altText(template) : altText,
-        template,
+        ...templateMessage,
+        altText:
+          typeof altText === 'function'
+            ? altText(templateMessage)
+            : altText || text,
       },
     }),
   ];

@@ -6,7 +6,11 @@ import {
   PartSegment,
 } from '@sociably/core/renderer';
 import makeLineComponent from '../utils/makeLineComponent.js';
-import { LineComponent, MessageSegmentValue } from '../types.js';
+import {
+  LineComponent,
+  MessageSegmentValue,
+  TemplateMessageParams,
+} from '../types.js';
 
 /** @category Props */
 export type ImageCarouselItemProps = {
@@ -51,7 +55,7 @@ export type ImageCarouselTemplateProps = {
    * messages. Max character limit: 400 If a function is given, the return value
    * would be used. The rendered template object is passed as the first param.
    */
-  altText: string | ((template: Record<string, any>) => string);
+  altText?: string | ((message: TemplateMessageParams) => string);
 };
 
 /**
@@ -69,18 +73,27 @@ export const ImageCarouselTemplate: LineComponent<
   const { children, altText } = node.props;
   const columnSegments = await render(children, '.children');
 
-  const template = {
-    type: 'image_carousel',
-    columns: columnSegments?.map((segment) => segment.value),
+  const templateMessage: TemplateMessageParams = {
+    type: 'template',
+    altText: '',
+    template: {
+      type: 'image_carousel',
+      columns: columnSegments?.map((segment) => segment.value) || [],
+    },
   };
 
   return [
     makeUnitSegment(node, path, {
       type: 'message',
       params: {
-        type: 'template',
-        altText: typeof altText === 'function' ? altText(template) : altText,
-        template,
+        ...templateMessage,
+        altText:
+          typeof altText === 'function'
+            ? altText(templateMessage)
+            : altText ||
+              templateMessage.template.columns
+                .map(({ imageUrl }) => imageUrl)
+                .join('\n'),
       },
     }),
   ];
