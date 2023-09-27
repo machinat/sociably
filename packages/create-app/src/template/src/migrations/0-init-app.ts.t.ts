@@ -23,10 +23,10 @@ import Line from '@sociably/line';`}
 const {
   DOMAIN,${when(platforms.includes('facebook'))`
   FACEBOOK_PAGE_ID,`}${when(platforms.includes('instagram'))`
-  INSTAGRAM_AGENT_ID,`}${when(platforms.includes('twitter'))`
+  INSTAGRAM_AGENT_ID,`}${when(platforms.includes('whatsapp'))`
+  WHATSAPP_BUSINESS_ACCOUNT_ID,`}${when(platforms.includes('twitter'))`
   TWITTER_WEBHOOK_ENV,`}${when(platforms.includes('telegram'))`
-  TELEGRAM_BOT_TOKEN,
-  TELEGRAM_SECRET_PATH,`}${when(platforms.includes('line'))`
+  TELEGRAM_BOT_TOKEN,`}${when(platforms.includes('line'))`
   LINE_CHANNEL_ID,`}
 } = process.env as Record<string, string>;
 

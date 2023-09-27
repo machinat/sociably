@@ -25,7 +25,7 @@ const handleChat = serviceContainer({
       if (intent.type === 'greeting') {
         const profile = await getUserProfile(event.channel, event.user);
         return reply(
-          <HelloWithMenu target={profile?.name || 'there'} />
+          <HelloWithMenu to={profile?.name || 'there'} />
         );
       }
 
@@ -34,7 +34,7 @@ const handleChat = serviceContainer({
       }
 
       return reply(
-        <HelloWithMenu text={event.type === 'text' ? event.text : 'World'} />
+        <HelloWithMenu to={event.type === 'text' ? event.text : 'World'} />
       );
     }
 )

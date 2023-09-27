@@ -2,9 +2,7 @@ import { when } from '../../../utils.js';
 import { CreateAppContext } from '../../../types.js';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
-import Sociably, { SociablyNode } from '@sociably/core';${when(
-  platforms.includes('facebook'),
-)`
+import Sociably from '@sociably/core';${when(platforms.includes('facebook'))`
 import * as Facebook from '@sociably/facebook/components';${when(withWebview)`
 import { WebviewButton as FacebookWebviewButton } from '@sociably/facebook/webview';`}`}${when(
   platforms.includes('instagram'),
@@ -13,7 +11,8 @@ import * as Instagram from '@sociably/instagram/components';${when(withWebview)`
 import { WebviewButton as InstagramWebviewButton } from '@sociably/instagram/webview';`}`}${when(
   platforms.includes('whatsapp'),
 )`
-import * as WhatsApp from '@sociably/whatsapp/components';`}${when(
+import * as WhatsApp from '@sociably/whatsapp/components';${when(withWebview)`
+import { WebviewButtonParam as WhatsAppWebviewButtonParam } from '@sociably/whatsapp/webview';`}`}${when(
   platforms.includes('twitter'),
 )`
 import * as Twitter from '@sociably/twitter/components';${when(withWebview)`
@@ -29,10 +28,10 @@ import { WebviewAction as LineWebviewAction } from '@sociably/line/webview';`}`}
 
 
 type HelloWithMenuProps = {
-  target: string;
+  to: string;
 };
 
-const HelloWithMenu = ({ target }: HelloWithMenuProps, { platform }) => {${when(
+const HelloWithMenu = ({ to: target }: HelloWithMenuProps, { platform }) => {${when(
   withWebview,
 )`
   const webviewText = 'Open Webview ↗️';`}

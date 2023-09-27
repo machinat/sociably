@@ -22,7 +22,7 @@ const handleWebview = serviceContainer({ deps: [BaseBot] })(
         // reflect hello to chatroom
         await baseBot.render(
           auth.thread,
-          <HelloWithMenu text={event.payload as string} />
+          <HelloWithMenu to={event.payload as string} />
           );
       }
     }
