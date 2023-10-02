@@ -5,7 +5,7 @@ import { PATH_PHOTOS } from '../constant.js';
 import type {
   FacebookComponent,
   CommentValue,
-  PagePhotoValue,
+  PostPhotoValue,
 } from '../types.js';
 
 export type CommentProps = {
@@ -15,7 +15,7 @@ export type CommentProps = {
    * review.
    */
   children?: SociablyNode;
-  /** A PagePhoto element to be attached with the comment */
+  /** A PostPhoto element to be attached with the comment */
   photo?: SociablyNode;
   /** The URL of an image to include as a photo comment. */
   gifShareUrl?: string;
@@ -35,7 +35,7 @@ export const Comment: FacebookComponent<
   const { children, photo, gifShareUrl } = node.props;
   const [messageSegments, photoSegments] = await Promise.all([
     render(children, '.children'),
-    render<PagePhotoValue, never>(photo, '.photo'),
+    render<PostPhotoValue, never>(photo, '.photo'),
   ]);
 
   if (
@@ -49,11 +49,11 @@ export const Comment: FacebookComponent<
     if (
       photoSegments.length > 1 ||
       (photoSeg.type !== 'unit' && photoSeg.type !== 'raw') ||
-      photoSeg.value.type !== 'page' ||
+      photoSeg.value.type !== 'post' ||
       photoSeg.value.apiPath !== PATH_PHOTOS
     ) {
       throw new TypeError(
-        '"photo" should contain exactly one <PagePhoto/> element',
+        '"photo" should contain exactly one <PostPhoto/> element',
       );
     }
   }
@@ -75,7 +75,7 @@ export const Comment: FacebookComponent<
         attachment_share_url: gifShareUrl,
         message: messageSegments?.[0].value,
       },
-      photo: photoSegments?.[0].value as undefined | PagePhotoValue,
+      photo: photoSegments?.[0].value as undefined | PostPhotoValue,
     }),
   ];
 });

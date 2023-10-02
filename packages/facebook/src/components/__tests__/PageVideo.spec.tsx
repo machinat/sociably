@@ -1,22 +1,22 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PageVideo } from '../PageVideo.js';
+import { PostVideo } from '../PostVideo.js';
 
 import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
-  expect(isNativeType(<PageVideo />)).toBe(true);
-  expect(PageVideo.$$platform).toBe('facebook');
-  expect(PageVideo.$$name).toBe('PageVideo');
+  expect(isNativeType(<PostVideo />)).toBe(true);
+  expect(PostVideo.$$platform).toBe('facebook');
+  expect(PostVideo.$$name).toBe('PostVideo');
 });
 
 it('match snapshot', async () => {
   await expect(
-    renderUnitElement(<PageVideo url="http://sociably.js/yoyoyo.mp4" />),
+    renderUnitElement(<PostVideo url="http://sociably.js/yoyoyo.mp4" />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PageVideo
+        "node": <PostVideo
           url="http://sociably.js/yoyoyo.mp4"
         />,
         "path": "$",
@@ -30,7 +30,7 @@ it('match snapshot', async () => {
             "url": "http://sociably.js/yoyoyo.mp4",
           },
           "thumbnailFile": undefined,
-          "type": "page",
+          "type": "post",
         },
       },
     ]
@@ -38,12 +38,12 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <PageVideo file={{ data: Buffer.from('🤟'), contentLength: 4 }} />,
+      <PostVideo file={{ data: Buffer.from('🤟'), contentLength: 4 }} />,
     ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PageVideo
+        "node": <PostVideo
           file={
             {
               "contentLength": 4,
@@ -81,7 +81,7 @@ it('match snapshot', async () => {
             "url": undefined,
           },
           "thumbnailFile": undefined,
-          "type": "page",
+          "type": "post",
         },
       },
     ]
@@ -89,7 +89,7 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <PageVideo
+      <PostVideo
         url="http://sociably.js/rocknroll.mp4"
         title="LET'S ROCK 🤟"
         socialActions
@@ -109,7 +109,7 @@ it('match snapshot', async () => {
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PageVideo
+        "node": <PostVideo
           backdatedPost={
             {
               "backdatedTime": 2022-01-01T00:00:00.000Z,
@@ -179,7 +179,7 @@ it('match snapshot', async () => {
               "type": "Buffer",
             },
           },
-          "type": "page",
+          "type": "post",
         },
       },
     ]
@@ -188,7 +188,7 @@ it('match snapshot', async () => {
 
 it('throw if there is no source prop', async () => {
   await expect(
-    renderUnitElement(<PageVideo />),
+    renderUnitElement(<PostVideo />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"There should be exactly one source prop: "url" or "file""`,
   );
@@ -197,7 +197,7 @@ it('throw if there is no source prop', async () => {
 it('throw if multiple source props are set', async () => {
   await expect(
     renderUnitElement(
-      <PageVideo
+      <PostVideo
         file={{ data: Buffer.from('foo'), contentLength: 3 }}
         url="http://..."
       />,

@@ -4,9 +4,9 @@ import { MetaApiUploadingFile } from '@sociably/meta-api';
 import makeFacebookComponent from '../utils/makeFacebookComponent.js';
 import getUnixTimestamp from '../utils/getUnixTimestamp.js';
 import { PATH_PHOTOS } from '../constant.js';
-import type { FacebookComponent, PagePhotoValue } from '../types.js';
+import type { FacebookComponent, PostPhotoValue } from '../types.js';
 
-export type PagePhotoProps = {
+export type PostPhotoProps = {
   /**
    * The URL of a photo that is already uploaded to the Internet. You must
    * specify this or a file attachment
@@ -228,13 +228,13 @@ export type PagePhotoProps = {
  * Publish a photo to the page
  *
  * @category Component
- * @props {@link PagePhotoProps}
+ * @props {@link PostPhotoProps}
  * @guides Check official [reference](https://developers.facebook.com/docs/graph-api/reference/photo/).
  */
-export const PagePhoto: FacebookComponent<
-  PagePhotoProps,
-  UnitSegment<PagePhotoValue>
-> = makeFacebookComponent(function PagePhoto(node, path) {
+export const PostPhoto: FacebookComponent<
+  PostPhotoProps,
+  UnitSegment<PostPhotoValue>
+> = makeFacebookComponent(function PostPhoto(node, path) {
   const {
     url,
     file,
@@ -257,7 +257,7 @@ export const PagePhoto: FacebookComponent<
 
   return [
     makeUnitSegment(node, path, {
-      type: 'page',
+      type: 'post',
       apiPath: PATH_PHOTOS,
       params: {
         url,

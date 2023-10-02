@@ -7,7 +7,7 @@ import getUnixTimestamp from '../utils/getUnixTimestamp.js';
 import { PATH_FEED, PATH_PHOTOS } from '../constant.js';
 import type {
   FacebookComponent,
-  PagePostValue,
+  PostValue,
   FacebookSegmentValue,
 } from '../types.js';
 
@@ -35,13 +35,13 @@ type GeoLocation = {
   neighborhoods: Record<string, string>;
 };
 
-export type PagePostProps = {
+export type PostProps = {
   /**
    * The main body of the post. The message can contain mentions of Facebook
    * Pages, @[page-id].
    */
   children?: SociablyNode;
-  /** Multiple {@link PagePhoto} elements to be attached with the post */
+  /** Multiple {@link PostPhoto} elements to be attached with the post */
   photos?: SociablyNode;
   /** The URL of a link to attach to the post. */
   link?: string;
@@ -245,13 +245,13 @@ export type PagePostProps = {
  * Publish a video to the page
  *
  * @category Component
- * @props {@link PagePostProps}
+ * @props {@link PostProps}
  * @guides Check official [reference](https://developers.facebook.com/docs/graph-api/reference/page/videos/).
  */
-export const PagePost: FacebookComponent<
-  PagePostProps,
-  UnitSegment<PagePostValue>
-> = makeFacebookComponent(async function PagePost(node, path, render) {
+export const Post: FacebookComponent<
+  PostProps,
+  UnitSegment<PostValue>
+> = makeFacebookComponent(async function Post(node, path, render) {
   const {
     link,
     children,
@@ -286,11 +286,11 @@ export const PagePost: FacebookComponent<
     for (const seg of photosSegments) {
       if (
         (seg.type !== 'unit' && seg.type !== 'raw') ||
-        seg.value.type !== 'page' ||
+        seg.value.type !== 'post' ||
         seg.value.apiPath !== PATH_PHOTOS
       ) {
         throw new TypeError(
-          '"photos" prop should contain only PagePhoto elements',
+          '"photos" prop should contain only PostPhoto elements',
         );
       }
     }
@@ -298,7 +298,7 @@ export const PagePost: FacebookComponent<
 
   return [
     makeUnitSegment(node, path, {
-      type: 'page',
+      type: 'post',
       apiPath: PATH_FEED,
       params: {
         ...snakecaseKeys(restParams, { deep: true }),

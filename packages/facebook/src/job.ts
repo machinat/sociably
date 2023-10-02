@@ -34,7 +34,7 @@ export const createPostJobs = (
   }
 
   if (
-    value.type !== 'page' ||
+    value.type !== 'post' ||
     (value.apiPath !== PATH_FEED && value.apiPath !== PATH_PHOTOS)
   ) {
     throw new TypeError(`invalid feed element ${formatNode(node || value)}`);

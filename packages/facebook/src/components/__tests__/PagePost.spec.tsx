@@ -1,24 +1,24 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PagePhoto } from '../PagePhoto.js';
-import { PagePost } from '../PagePost.js';
+import { PostPhoto } from '../PostPhoto.js';
+import { Post } from '../Post.js';
 
 import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
-  expect(isNativeType(<PagePost />)).toBe(true);
-  expect(PagePost.$$platform).toBe('facebook');
-  expect(PagePost.$$name).toBe('PagePost');
+  expect(isNativeType(<Post />)).toBe(true);
+  expect(Post.$$platform).toBe('facebook');
+  expect(Post.$$name).toBe('Post');
 });
 
 it('match snapshot', async () => {
-  await expect(renderUnitElement(<PagePost>HELLO WORLD</PagePost>)).resolves
+  await expect(renderUnitElement(<Post>HELLO WORLD</Post>)).resolves
     .toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePost>
+        "node": <Post>
           HELLO WORLD
-        </PagePost>,
+        </Post>,
         "path": "$",
         "type": "unit",
         "value": {
@@ -35,17 +35,17 @@ it('match snapshot', async () => {
             "scheduled_publish_time": undefined,
           },
           "photos": undefined,
-          "type": "page",
+          "type": "post",
         },
       },
     ]
   `);
 
-  await expect(renderUnitElement(<PagePost link="https://sociably.js.org" />))
+  await expect(renderUnitElement(<Post link="https://sociably.js.org" />))
     .resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePost
+        "node": <Post
           link="https://sociably.js.org"
         />,
         "path": "$",
@@ -64,17 +64,17 @@ it('match snapshot', async () => {
             "scheduled_publish_time": undefined,
           },
           "photos": undefined,
-          "type": "page",
+          "type": "post",
         },
       },
     ]
   `);
 
-  await expect(renderUnitElement(<PagePost objectAttachment="1234" />)).resolves
+  await expect(renderUnitElement(<Post objectAttachment="1234" />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePost
+        "node": <Post
           objectAttachment="1234"
         />,
         "path": "$",
@@ -93,7 +93,7 @@ it('match snapshot', async () => {
             "scheduled_publish_time": undefined,
           },
           "photos": undefined,
-          "type": "page",
+          "type": "post",
         },
       },
     ]
@@ -101,16 +101,14 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <PagePost
-        photos={<PagePhoto url="https://sociably.js.org/logo.png" />}
-      />,
+      <Post photos={<PostPhoto url="https://sociably.js.org/logo.png" />} />,
     ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePost
+        "node": <Post
           photos={
-            <PagePhoto
+            <PostPhoto
               url="https://sociably.js.org/logo.png"
             />
           }
@@ -140,10 +138,10 @@ it('match snapshot', async () => {
                 "url": "https://sociably.js.org/logo.png",
                 "vault_image_id": undefined,
               },
-              "type": "page",
+              "type": "post",
             },
           ],
-          "type": "page",
+          "type": "post",
         },
       },
     ]
@@ -151,7 +149,7 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <PagePost
+      <Post
         link="http://sociably.js"
         linkAttachment={{
           name: 'Sociably',
@@ -170,12 +168,12 @@ it('match snapshot', async () => {
         multiShareEndCard
       >
         HELLO SOCIAL MEDIA
-      </PagePost>,
+      </Post>,
     ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePost
+        "node": <Post
           backdatedTime={2022-01-01T00:00:00.000Z}
           childAttachments={
             [
@@ -219,7 +217,7 @@ it('match snapshot', async () => {
           scheduledPublishTime={2022-10-10T00:00:00.000Z}
         >
           HELLO SOCIAL MEDIA
-        </PagePost>,
+        </Post>,
         "path": "$",
         "type": "unit",
         "value": {
@@ -262,7 +260,7 @@ it('match snapshot', async () => {
             "scheduled_publish_time": 1665360000,
           },
           "photos": undefined,
-          "type": "page",
+          "type": "post",
         },
       },
     ]
@@ -271,7 +269,7 @@ it('match snapshot', async () => {
 
 it('throw if there is no content prop', async () => {
   await expect(
-    renderUnitElement(<PagePost />),
+    renderUnitElement(<Post />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"At least one of "link", "message", "photos" or "objectAttachment" prop must be be set"`,
   );
@@ -280,9 +278,9 @@ it('throw if there is no content prop', async () => {
 it('throw if "children" prop contain non texual content', async () => {
   await expect(
     renderUnitElement(
-      <PagePost>
+      <Post>
         <Sociably.Pause />
-      </PagePost>,
+      </Post>,
     ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `""children" prop should contain only texual content"`,
@@ -290,25 +288,25 @@ it('throw if "children" prop contain non texual content', async () => {
 
   await expect(
     renderUnitElement(
-      <PagePost>
-        <PagePhoto url="http://..." />
-      </PagePost>,
+      <Post>
+        <PostPhoto url="http://..." />
+      </Post>,
     ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `""children" prop should contain only texual content"`,
   );
 });
 
-it('throw if "photo" prop contain non PagePhoto content', async () => {
+it('throw if "photo" prop contain non PostPhoto content', async () => {
   await expect(
-    renderUnitElement(<PagePost photos={<Sociably.Pause />} />),
+    renderUnitElement(<Post photos={<Sociably.Pause />} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""photos" prop should contain only PagePhoto elements"`,
+    `""photos" prop should contain only PostPhoto elements"`,
   );
 
   await expect(
-    renderUnitElement(<PagePost photos={<>foo</>} />),
+    renderUnitElement(<Post photos={<>foo</>} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""photos" prop should contain only PagePhoto elements"`,
+    `""photos" prop should contain only PostPhoto elements"`,
   );
 });

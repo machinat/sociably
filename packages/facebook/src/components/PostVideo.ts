@@ -4,9 +4,9 @@ import { MetaApiUploadingFile } from '@sociably/meta-api';
 import makeFacebookComponent from '../utils/makeFacebookComponent.js';
 import getUnixTimestamp from '../utils/getUnixTimestamp.js';
 import { PATH_VIDEOS } from '../constant.js';
-import type { FacebookComponent, PageVideoValue } from '../types.js';
+import type { FacebookComponent, PostVideoValue } from '../types.js';
 
-export type PageVideoProps = {
+export type PostVideoProps = {
   /** Accessible URL of a video file. Cannot be used with upload_phase. */
   url?: string;
   /** Video file data */
@@ -290,13 +290,13 @@ export type PageVideoProps = {
  * Publish a video to the page
  *
  * @category Component
- * @props {@link PageVideoProps}
+ * @props {@link PostVideoProps}
  * @guides Check official [reference](https://developers.facebook.com/docs/graph-api/reference/page/videos/).
  */
-export const PageVideo: FacebookComponent<
-  PageVideoProps,
-  UnitSegment<PageVideoValue>
-> = makeFacebookComponent(function PageVideo(node, path) {
+export const PostVideo: FacebookComponent<
+  PostVideoProps,
+  UnitSegment<PostVideoValue>
+> = makeFacebookComponent(function PostVideo(node, path) {
   const { url, file, thumbnailFile, backdatedPost, ...restParams } = node.props;
 
   if ((!url && !file) || (url && file)) {
@@ -307,7 +307,7 @@ export const PageVideo: FacebookComponent<
 
   return [
     makeUnitSegment(node, path, {
-      type: 'page',
+      type: 'post',
       apiPath: PATH_VIDEOS,
       params: {
         url,

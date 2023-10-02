@@ -65,30 +65,30 @@ export type CommentValue = {
   type: 'comment';
   params: Record<string, unknown>;
   file?: undefined;
-  photo?: PagePhotoValue;
+  photo?: PostPhotoValue;
 };
 
-export type PagePhotoValue = {
-  type: 'page';
+export type PostPhotoValue = {
+  type: 'post';
   apiPath: typeof PATH_PHOTOS;
   params: Record<string, unknown>;
   file?: MetaApiUploadingFile;
 };
 
-export type PageVideoValue = {
-  type: 'page';
+export type PostVideoValue = {
+  type: 'post';
   apiPath: typeof PATH_VIDEOS;
   params: Record<string, unknown>;
   file?: MetaApiUploadingFile;
   thumbnailFile?: MetaApiUploadingFile;
 };
 
-export type PagePostValue = {
-  type: 'page';
+export type PostValue = {
+  type: 'post';
   apiPath: typeof PATH_FEED;
   params: Record<string, unknown>;
   file?: MetaApiUploadingFile;
-  photos?: PagePhotoValue[];
+  photos?: PostPhotoValue[];
 };
 
 export type HandoverProtocolValue =
@@ -100,9 +100,9 @@ export type FacebookSegmentValue =
   | MessageValue
   | SenderActionValue
   | HandoverProtocolValue
-  | PagePostValue
-  | PagePhotoValue
-  | PageVideoValue
+  | PostValue
+  | PostPhotoValue
+  | PostVideoValue
   | CommentValue;
 
 export type FacebookIntermediateSegment =

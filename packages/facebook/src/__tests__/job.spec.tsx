@@ -4,7 +4,7 @@ import { createPostJobs, createInteractJobs } from '../job.js';
 import { PATH_FEED, PATH_PHOTOS } from '../constant.js';
 import FacebookPage from '../Page.js';
 import FacebookInteractTarget from '../InteractTarget.js';
-import { PagePhotoValue, PagePostValue } from '../types.js';
+import { PostPhotoValue, PostValue } from '../types.js';
 
 const _Date = Date;
 const timeNow = 1667114251924;
@@ -69,7 +69,7 @@ describe('createPostJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            type: 'page',
+            type: 'post',
             apiPath: PATH_FEED,
             params: {
               object_attachment: '1234567890',
@@ -106,7 +106,7 @@ describe('createPostJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            type: 'page',
+            type: 'post',
             apiPath: PATH_FEED,
             params: {
               link: 'http://sociably.js.org',
@@ -161,7 +161,7 @@ describe('createPostJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            type: 'page',
+            type: 'post',
             apiPath: PATH_PHOTOS,
             params: {},
             file: {
@@ -211,7 +211,7 @@ describe('createPostJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            type: 'page',
+            type: 'post',
             apiPath: PATH_PHOTOS,
             params: {
               url: 'http://foo.bar/baz.jpg',
@@ -241,16 +241,16 @@ describe('createPostJobs()', () => {
   });
 
   it('create page post job with photos', () => {
-    const photos: PagePhotoValue[] = [
+    const photos: PostPhotoValue[] = [
       {
-        type: 'page',
+        type: 'post',
         apiPath: PATH_PHOTOS,
         params: {
           url: 'http://sociably.com/foo.jpg',
         },
       },
       {
-        type: 'page',
+        type: 'post',
         apiPath: PATH_PHOTOS,
         params: {},
         file: {
@@ -258,8 +258,8 @@ describe('createPostJobs()', () => {
         },
       },
     ];
-    const postSegmentValue: PagePostValue = {
-      type: 'page',
+    const postSegmentValue: PostValue = {
+      type: 'post',
       apiPath: PATH_FEED,
       params: {
         message: 'foo',
@@ -388,12 +388,12 @@ describe('createPostJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            type: 'page',
+            type: 'post',
             apiPath: PATH_FEED,
             params: { message: 'foo', scheduled_publish_time: 1666666666 },
             photos: [
               {
-                type: 'page',
+                type: 'post',
                 apiPath: PATH_PHOTOS,
                 params: { url: 'http://sociably.com/foo.jpg' },
               },
@@ -485,7 +485,7 @@ describe('createPostJobs()', () => {
           path: '?',
           node: <Foo />,
           value: {
-            type: 'page',
+            type: 'post',
             apiPath: 'me/videos',
             params: { message: 'foo' },
           },
@@ -579,7 +579,7 @@ describe('createInteractJobs()', () => {
           type: 'comment',
           params: { message: 'hello' },
           photo: {
-            type: 'page',
+            type: 'post',
             apiPath: 'me/photos',
             params: {},
             file: {
@@ -681,7 +681,7 @@ describe('createInteractJobs()', () => {
           type: 'comment',
           params: { message: 'baz' },
           photo: {
-            type: 'page',
+            type: 'post',
             apiPath: 'me/photos',
             params: {
               url: 'http://sociably.js',
@@ -847,7 +847,7 @@ describe('createInteractJobs()', () => {
           node: <Foo />,
           path: '?',
           value: {
-            type: 'page',
+            type: 'post',
             apiPath: PATH_FEED,
             params: { message: 'foo' },
           },

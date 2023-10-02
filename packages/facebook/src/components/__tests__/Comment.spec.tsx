@@ -1,6 +1,6 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PagePhoto } from '../PagePhoto.js';
+import { PostPhoto } from '../PostPhoto.js';
 import { Comment } from '../Comment.js';
 import { renderUnitElement } from './utils.js';
 
@@ -34,14 +34,14 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <Comment photo={<PagePhoto url="http://sociably.js/good.jpg" />} />,
+      <Comment photo={<PostPhoto url="http://sociably.js/good.jpg" />} />,
     ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
         "node": <Comment
           photo={
-            <PagePhoto
+            <PostPhoto
               url="http://sociably.js/good.jpg"
             />
           }
@@ -62,7 +62,7 @@ it('match snapshot', async () => {
               "url": "http://sociably.js/good.jpg",
               "vault_image_id": undefined,
             },
-            "type": "page",
+            "type": "post",
           },
           "type": "comment",
         },
@@ -111,7 +111,7 @@ it('throw if gifShareUrl and photo props exist at the same time', async () => {
   await expect(
     renderUnitElement(
       <Comment
-        photo={<PagePhoto />}
+        photo={<PostPhoto />}
         gifShareUrl="http://sociably.js/unblievable.gif"
       />,
     ),
@@ -120,16 +120,16 @@ it('throw if gifShareUrl and photo props exist at the same time', async () => {
   );
 });
 
-it('throw if photo prop contain non PagePhoto content', async () => {
+it('throw if photo prop contain non PostPhoto content', async () => {
   await expect(
     renderUnitElement(<Comment photo={<>foo</>} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""photo" should contain exactly one <PagePhoto/> element"`,
+    `""photo" should contain exactly one <PostPhoto/> element"`,
   );
 
   await expect(
     renderUnitElement(<Comment photo={<Sociably.Pause />} />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `""photo" should contain exactly one <PagePhoto/> element"`,
+    `""photo" should contain exactly one <PostPhoto/> element"`,
   );
 });

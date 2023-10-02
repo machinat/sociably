@@ -1,22 +1,22 @@
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
-import { PagePhoto } from '../PagePhoto.js';
+import { PostPhoto } from '../PostPhoto.js';
 
 import { renderUnitElement } from './utils.js';
 
 it('is valid root Component', () => {
-  expect(isNativeType(<PagePhoto />)).toBe(true);
-  expect(PagePhoto.$$platform).toBe('facebook');
-  expect(PagePhoto.$$name).toBe('PagePhoto');
+  expect(isNativeType(<PostPhoto />)).toBe(true);
+  expect(PostPhoto.$$platform).toBe('facebook');
+  expect(PostPhoto.$$name).toBe('PostPhoto');
 });
 
 it('match snapshot', async () => {
   await expect(
-    renderUnitElement(<PagePhoto url="http://sociably.js/awesome.jpg" />),
+    renderUnitElement(<PostPhoto url="http://sociably.js/awesome.jpg" />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePhoto
+        "node": <PostPhoto
           url="http://sociably.js/awesome.jpg"
         />,
         "path": "$",
@@ -30,18 +30,18 @@ it('match snapshot', async () => {
             "url": "http://sociably.js/awesome.jpg",
             "vault_image_id": undefined,
           },
-          "type": "page",
+          "type": "post",
         },
       },
     ]
   `);
 
   await expect(
-    renderUnitElement(<PagePhoto file={{ data: Buffer.from('COOL') }} />),
+    renderUnitElement(<PostPhoto file={{ data: Buffer.from('COOL') }} />),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePhoto
+        "node": <PostPhoto
           file={
             {
               "data": {
@@ -77,17 +77,17 @@ it('match snapshot', async () => {
             "url": undefined,
             "vault_image_id": undefined,
           },
-          "type": "page",
+          "type": "post",
         },
       },
     ]
   `);
 
-  await expect(renderUnitElement(<PagePhoto vaultImageId="1234" />)).resolves
+  await expect(renderUnitElement(<PostPhoto vaultImageId="1234" />)).resolves
     .toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePhoto
+        "node": <PostPhoto
           vaultImageId="1234"
         />,
         "path": "$",
@@ -101,7 +101,7 @@ it('match snapshot', async () => {
             "url": undefined,
             "vault_image_id": "1234",
           },
-          "type": "page",
+          "type": "post",
         },
       },
     ]
@@ -109,7 +109,7 @@ it('match snapshot', async () => {
 
   await expect(
     renderUnitElement(
-      <PagePhoto
+      <PostPhoto
         url="http://sociably.js/cooool.jpg"
         caption="COOOL"
         allowSphericalPhoto
@@ -130,7 +130,7 @@ it('match snapshot', async () => {
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <PagePhoto
+        "node": <PostPhoto
           allowSphericalPhoto={true}
           altTextCustom="COOL"
           backdatedTime={2022-01-01T00:00:00.000Z}
@@ -174,7 +174,7 @@ it('match snapshot', async () => {
             "url": "http://sociably.js/cooool.jpg",
             "vault_image_id": undefined,
           },
-          "type": "page",
+          "type": "post",
         },
       },
     ]
@@ -183,7 +183,7 @@ it('match snapshot', async () => {
 
 it('throw if there is no source prop', async () => {
   await expect(
-    renderUnitElement(<PagePhoto />),
+    renderUnitElement(<PostPhoto />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
   );
@@ -192,19 +192,19 @@ it('throw if there is no source prop', async () => {
 it('throw if multiple source props are set', async () => {
   await expect(
     renderUnitElement(
-      <PagePhoto vaultImageId="123" file={{ data: Buffer.from('foo') }} />,
+      <PostPhoto vaultImageId="123" file={{ data: Buffer.from('foo') }} />,
     ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
   );
   await expect(
-    renderUnitElement(<PagePhoto vaultImageId="123" url="http://..." />),
+    renderUnitElement(<PostPhoto vaultImageId="123" url="http://..." />),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
   );
   await expect(
     renderUnitElement(
-      <PagePhoto file={{ data: Buffer.from('foo') }} url="http://..." />,
+      <PostPhoto file={{ data: Buffer.from('foo') }} url="http://..." />,
     ),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"There should be exactly one source prop: "url", "file" or "vaultImageId""`,
