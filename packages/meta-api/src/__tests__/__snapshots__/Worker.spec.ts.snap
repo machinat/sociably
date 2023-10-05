@@ -416,7 +416,7 @@ exports[`use querystring params for GET request 1`] = `
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in different batches 1`] = `
+exports[`using API result in following request registerResultKey & consumeResult in different batches 1`] = `
 {
   "batch": [
     {
@@ -1357,7 +1357,7 @@ exports[`using API result in following request registerResult & consumeResult in
           "uid": "foo",
         },
         "key": "foo_thread",
-        "registerResult": "image_1",
+        "registerResultKey": "image_1",
         "request": {
           "method": "POST",
           "params": {
@@ -1382,7 +1382,7 @@ exports[`using API result in following request registerResult & consumeResult in
           "uid": "foo",
         },
         "key": "foo_thread",
-        "registerResult": "image_2",
+        "registerResultKey": "image_2",
         "request": {
           "method": "POST",
           "params": {
@@ -1482,21 +1482,21 @@ exports[`using API result in following request registerResult & consumeResult in
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in different batches 2`] = `
+exports[`using API result in following request registerResultKey & consumeResult in different batches 2`] = `
 {
   "access_token": "access_token_foo",
   "batch": "[{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"GET","relative_url":"1234567890?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","omit_response_on_success":false},{"method":"POST","relative_url":"1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","body":"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg","name":"foo_thread-1","omit_response_on_success":false}]",
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in different batches 3`] = `
+exports[`using API result in following request registerResultKey & consumeResult in different batches 3`] = `
 {
   "access_token": "access_token_foo",
   "batch": "[{"method":"POST","relative_url":"1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","body":"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg","name":"foo_thread-1","omit_response_on_success":false},{"method":"POST","relative_url":"1234567890/messages?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","body":"to=9876543210&type=image&images=%5B%7B%22id%22%3A%221111111111%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-1%3A%24.id%7D%22%7D%5D","depends_on":"foo_thread-1","name":"foo_thread-2","omit_response_on_success":false}]",
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in the same batch 1`] = `
+exports[`using API result in following request registerResultKey & consumeResult in the same batch 1`] = `
 {
   "batch": [
     {
@@ -1506,7 +1506,7 @@ exports[`using API result in following request registerResult & consumeResult in
           "uid": "foo",
         },
         "key": "foo_thread",
-        "registerResult": "image_1",
+        "registerResultKey": "image_1",
         "request": {
           "method": "POST",
           "params": {
@@ -1531,7 +1531,7 @@ exports[`using API result in following request registerResult & consumeResult in
           "uid": "foo",
         },
         "key": "foo_thread",
-        "registerResult": "image_2",
+        "registerResultKey": "image_2",
         "request": {
           "method": "POST",
           "params": {
@@ -1631,7 +1631,7 @@ exports[`using API result in following request registerResult & consumeResult in
 }
 `;
 
-exports[`using API result in following request registerResult & consumeResult in the same batch 2`] = `
+exports[`using API result in following request registerResultKey & consumeResult in the same batch 2`] = `
 {
   "access_token": "access_token_foo",
   "batch": "[{"method":"POST","relative_url":"1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","body":"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fa%2Ffile.jpg","name":"foo_thread-1","omit_response_on_success":false},{"method":"POST","relative_url":"1234567890/media?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","body":"type=image%2Fjpeg&file=%40%2Fpretend%2Fto%2Fupload%2Fb%2Ffile.jpg","depends_on":"foo_thread-1","name":"foo_thread-2","omit_response_on_success":false},{"method":"POST","relative_url":"1234567890/messages?access_token=access_token_foo&appsecret_proof=c75729ba2a8b2a96a945b4f86274bd417c62a7f1a301a0f6913e180efdab0e2e","body":"to=9876543210&type=image&images=%5B%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-1%3A%24.id%7D%22%7D%2C%7B%22id%22%3A%22%7Bresult%3Dfoo_thread-2%3A%24.id%7D%22%7D%5D","depends_on":"foo_thread-2","name":"foo_thread-3","omit_response_on_success":false}]",
@@ -1648,7 +1648,7 @@ exports[`using API result in following request when job key is undeinfed 1`] = `
           "uid": "foo",
         },
         "key": undefined,
-        "registerResult": "image_1",
+        "registerResultKey": "image_1",
         "request": {
           "method": "POST",
           "params": {
@@ -1673,7 +1673,7 @@ exports[`using API result in following request when job key is undeinfed 1`] = `
           "uid": "foo",
         },
         "key": undefined,
-        "registerResult": "image_2",
+        "registerResultKey": "image_2",
         "request": {
           "method": "POST",
           "params": {

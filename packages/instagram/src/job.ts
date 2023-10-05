@@ -66,7 +66,7 @@ export const createPostJobs =
         url: `${agent.id}/media`,
         params: item.params,
       },
-      registerResult: getTimeId(),
+      registerResultKey: getTimeId(),
     }));
 
     const containerResultKey = getTimeId();
@@ -79,10 +79,12 @@ export const createPostJobs =
           url: `${agent.id}/media`,
           params: value.params,
         },
-        registerResult: containerResultKey,
+        registerResultKey: containerResultKey,
         consumeResult: carouselItemJobs
           ? {
-              keys: carouselItemJobs.map((job) => job.registerResult as string),
+              keys: carouselItemJobs.map(
+                (job) => job.registerResultKey as string,
+              ),
               accomplishRequest: accomplishPostCarouselRequest,
             }
           : undefined,

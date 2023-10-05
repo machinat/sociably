@@ -35,7 +35,7 @@ export type MetaApiJob = {
   key?: string;
   file?: MetaApiUploadingFile;
   assetTag?: string;
-  registerResult?: string;
+  registerResultKey?: string;
   consumeResult?: {
     keys: string[];
     accomplishRequest: AccomplishRequestFn;

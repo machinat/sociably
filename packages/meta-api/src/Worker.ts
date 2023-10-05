@@ -205,7 +205,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         request: requestInput,
         key,
         file,
-        registerResult,
+        registerResultKey,
         consumeResult,
         channel,
         accessToken: accessTokenInput,
@@ -279,11 +279,11 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         }
 
         // register to use/cache the result
-        if (registerResult) {
+        if (registerResultKey) {
           if (!batchRequest.name) {
             batchRequest.name = makeRequestName('#request', i);
           }
-          resultRegistry.set(registerResult, {
+          resultRegistry.set(registerResultKey, {
             name: batchRequest.name,
             idx: i,
           });

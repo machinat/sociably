@@ -283,7 +283,7 @@ describe('createPostJobs()', () => {
             "platform": "facebook",
           },
           "file": undefined,
-          "registerResult": "l9v0s5g4-0",
+          "registerResultKey": "l9v0s5g4-0",
           "request": {
             "method": "POST",
             "params": {
@@ -310,7 +310,7 @@ describe('createPostJobs()', () => {
               "type": "Buffer",
             },
           },
-          "registerResult": "l9v0s5g4-1",
+          "registerResultKey": "l9v0s5g4-1",
           "request": {
             "method": "POST",
             "params": {
@@ -349,8 +349,8 @@ describe('createPostJobs()', () => {
     getRegisteredResult.mock.fakeReturnValueOnce('_PHOTO_ID_2_');
 
     const cunsumingPhotoResults = jobs[2].consumeResult;
-    expect(cunsumingPhotoResults?.keys).toContain(jobs[0].registerResult);
-    expect(cunsumingPhotoResults?.keys).toContain(jobs[1].registerResult);
+    expect(cunsumingPhotoResults?.keys).toContain(jobs[0].registerResultKey);
+    expect(cunsumingPhotoResults?.keys).toContain(jobs[1].registerResultKey);
     expect(
       cunsumingPhotoResults?.accomplishRequest(
         jobs[2].request,
@@ -410,7 +410,7 @@ describe('createPostJobs()', () => {
             "platform": "facebook",
           },
           "file": undefined,
-          "registerResult": "l9v0s5g4-2",
+          "registerResultKey": "l9v0s5g4-2",
           "request": {
             "method": "POST",
             "params": {
@@ -517,7 +517,7 @@ describe('createInteractJobs()', () => {
             "platform": "facebook",
           },
           "consumeResult": undefined,
-          "registerResult": undefined,
+          "registerResultKey": undefined,
           "request": {
             "method": "POST",
             "params": {
@@ -555,7 +555,7 @@ describe('createInteractJobs()', () => {
             "platform": "facebook",
           },
           "consumeResult": undefined,
-          "registerResult": undefined,
+          "registerResultKey": undefined,
           "request": {
             "method": "POST",
             "params": {
@@ -607,7 +607,7 @@ describe('createInteractJobs()', () => {
               "type": "Buffer",
             },
           },
-          "registerResult": "l9v0s5g4-3",
+          "registerResultKey": "l9v0s5g4-3",
           "request": {
             "method": "POST",
             "params": {},
@@ -626,7 +626,7 @@ describe('createInteractJobs()', () => {
               "l9v0s5g4-3",
             ],
           },
-          "registerResult": undefined,
+          "registerResultKey": undefined,
           "request": {
             "method": "POST",
             "params": {
@@ -638,7 +638,7 @@ describe('createInteractJobs()', () => {
       ]
     `);
     const consumePhotoResult = jobs[1].consumeResult;
-    expect(consumePhotoResult?.keys).toEqual([jobs[0].registerResult]);
+    expect(consumePhotoResult?.keys).toEqual([jobs[0].registerResultKey]);
 
     getRegisteredResult.mock.fakeReturnValue('_PHOTO_ID_');
     expect(
@@ -699,7 +699,7 @@ describe('createInteractJobs()', () => {
             "platform": "facebook",
           },
           "consumeResult": undefined,
-          "registerResult": "l9v0s5g4-4",
+          "registerResultKey": "l9v0s5g4-4",
           "request": {
             "method": "POST",
             "params": {
@@ -720,7 +720,7 @@ describe('createInteractJobs()', () => {
               "l9v0s5g4-4",
             ],
           },
-          "registerResult": "l9v0s5g4-5",
+          "registerResultKey": "l9v0s5g4-5",
           "request": {
             "method": "POST",
             "params": {
@@ -736,7 +736,7 @@ describe('createInteractJobs()', () => {
             "platform": "facebook",
           },
           "file": undefined,
-          "registerResult": "l9v0s5g4-6",
+          "registerResultKey": "l9v0s5g4-6",
           "request": {
             "method": "POST",
             "params": {
@@ -758,7 +758,7 @@ describe('createInteractJobs()', () => {
               "l9v0s5g4-5",
             ],
           },
-          "registerResult": undefined,
+          "registerResultKey": undefined,
           "request": {
             "method": "POST",
             "params": {
@@ -771,7 +771,7 @@ describe('createInteractJobs()', () => {
     `);
 
     const consumeResult2 = jobs[1].consumeResult;
-    expect(consumeResult2?.keys).toEqual([jobs[0].registerResult]);
+    expect(consumeResult2?.keys).toEqual([jobs[0].registerResultKey]);
 
     getRegisteredResult.mock.fakeReturnValue('_COMMENT_ID_1_');
     expect(
@@ -796,8 +796,8 @@ describe('createInteractJobs()', () => {
     );
 
     const consumeResult3 = jobs[3].consumeResult;
-    const comment2ResultKey = jobs[1].registerResult;
-    const photoResultKey = jobs[2].registerResult;
+    const comment2ResultKey = jobs[1].registerResultKey;
+    const photoResultKey = jobs[2].registerResultKey;
     expect(consumeResult3?.keys).toContain(comment2ResultKey);
     expect(consumeResult3?.keys).toContain(photoResultKey);
 

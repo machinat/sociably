@@ -149,7 +149,7 @@ describe('createChatJobs', () => {
           data: '_IMAGE_BLOB_DATA_',
           contentType: 'image/jpeg',
         },
-        registerResult: expect.any(String),
+        registerResultKey: expect.any(String),
       },
       {
         channel: agent,
@@ -183,7 +183,7 @@ describe('createChatJobs', () => {
           contentType: 'audio/mp3',
         },
         assetTag: 'foo_mp3',
-        registerResult: expect.any(String),
+        registerResultKey: expect.any(String),
       },
       {
         channel: agent,
@@ -205,9 +205,9 @@ describe('createChatJobs', () => {
       },
     ]);
 
-    expect(jobs[0].registerResult).toBe(jobs[1].consumeResult?.keys[0]);
-    expect(jobs[2].registerResult).toBe(jobs[3].consumeResult?.keys[0]);
-    expect(jobs[0].registerResult).not.toBe(jobs[2].registerResult);
+    expect(jobs[0].registerResultKey).toBe(jobs[1].consumeResult?.keys[0]);
+    expect(jobs[2].registerResultKey).toBe(jobs[3].consumeResult?.keys[0]);
+    expect(jobs[0].registerResultKey).not.toBe(jobs[2].registerResultKey);
 
     const getResultValue = moxy();
     getResultValue.mock.fakeReturnValueOnce('1111111111');
@@ -216,7 +216,7 @@ describe('createChatJobs', () => {
     expect(
       jobs[1].consumeResult?.accomplishRequest(
         jobs[1].request,
-        [jobs[0].registerResult!],
+        [jobs[0].registerResultKey!],
         getResultValue,
       ),
     ).toEqual({
@@ -232,7 +232,7 @@ describe('createChatJobs', () => {
     expect(
       jobs[3].consumeResult?.accomplishRequest(
         jobs[3].request,
-        [jobs[2].registerResult!],
+        [jobs[2].registerResultKey!],
         getResultValue,
       ),
     ).toEqual({
@@ -249,12 +249,12 @@ describe('createChatJobs', () => {
     expect(getResultValue).toHaveBeenCalledTimes(2);
     expect(getResultValue).toHaveBeenNthCalledWith(
       1,
-      jobs[0].registerResult,
+      jobs[0].registerResultKey,
       '$.id',
     );
     expect(getResultValue).toHaveBeenNthCalledWith(
       2,
-      jobs[2].registerResult,
+      jobs[2].registerResultKey,
       '$.id',
     );
   });

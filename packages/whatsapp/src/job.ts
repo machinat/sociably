@@ -45,7 +45,7 @@ export const createChatJobs = (
           },
           file,
           assetTag,
-          registerResult: mediaResultKey,
+          registerResultKey: mediaResultKey,
         });
       }
 

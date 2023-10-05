@@ -101,7 +101,7 @@ export const createPostJobs = (
       },
     },
     file: photoValue.file,
-    registerResult: photoResultKeys[i],
+    registerResultKey: photoResultKeys[i],
   }));
   return [...photoJobs, postJob];
 };
@@ -166,7 +166,7 @@ export const createInteractJobs = (
           url: initialCommentApiPath,
           params: { message: segValue },
         },
-        registerResult: registerResultKey,
+        registerResultKey,
         consumeResult: consumeLastResult,
       });
     } else if (segValue.type === 'comment') {
@@ -181,7 +181,7 @@ export const createInteractJobs = (
               params: photo.params,
             },
             file: photo.file,
-            registerResult: getTimeId(),
+            registerResultKey: getTimeId(),
           }
         : null;
 
@@ -192,12 +192,12 @@ export const createInteractJobs = (
           url: initialCommentApiPath,
           params: { ...params },
         },
-        registerResult: registerResultKey,
+        registerResultKey,
         consumeResult: photoJob
           ? {
               keys: lastRegisteredResult
-                ? [photoJob.registerResult, lastRegisteredResult]
-                : [photoJob.registerResult],
+                ? [photoJob.registerResultKey, lastRegisteredResult]
+                : [photoJob.registerResultKey],
               accomplishRequest: accomplishPhotoCommentRequest,
             }
           : consumeLastResult,

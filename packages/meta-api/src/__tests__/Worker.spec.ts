@@ -1018,7 +1018,7 @@ describe('using API result in following request', () => {
           file: '@/pretend/to/upload/a/file.jpg',
         },
       },
-      registerResult: 'image_1',
+      registerResultKey: 'image_1',
       channel: { uid: 'foo' },
     },
     {
@@ -1031,7 +1031,7 @@ describe('using API result in following request', () => {
           file: '@/pretend/to/upload/b/file.jpg',
         },
       },
-      registerResult: 'image_2',
+      registerResultKey: 'image_2',
       channel: { uid: 'foo' },
     },
     {
@@ -1073,7 +1073,7 @@ describe('using API result in following request', () => {
     body: decodeURIComponent(request.body),
   });
 
-  test('registerResult & consumeResult in the same batch', async () => {
+  test('registerResultKey & consumeResult in the same batch', async () => {
     const worker = new MetaApiWorker({
       appId,
       appSecret,
@@ -1187,7 +1187,7 @@ describe('using API result in following request', () => {
     expect(apiCall.isDone()).toBe(true);
   });
 
-  test('registerResult & consumeResult in different batches', async () => {
+  test('registerResultKey & consumeResult in different batches', async () => {
     const worker = new MetaApiWorker({
       appId,
       appSecret,

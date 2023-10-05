@@ -39,7 +39,7 @@ describe('createPostJobs', () => {
           },
           url: '1234567890/media',
         },
-        registerResult: expect.any(String),
+        registerResultKey: expect.any(String),
       },
       {
         channel: agent,
@@ -52,7 +52,7 @@ describe('createPostJobs', () => {
         },
         consumeResult: {
           accomplishRequest: expect.any(Function),
-          keys: [jobs[0].registerResult],
+          keys: [jobs[0].registerResultKey],
         },
       },
     ]);
@@ -61,7 +61,7 @@ describe('createPostJobs', () => {
     expect(
       jobs[1].consumeResult?.accomplishRequest(
         jobs[1].request,
-        [jobs[0].registerResult!],
+        [jobs[0].registerResultKey!],
         getResult,
       ),
     ).toEqual({
@@ -70,7 +70,7 @@ describe('createPostJobs', () => {
       url: '1234567890/media_publish',
     });
     expect(getResult).toHaveBeenCalledTimes(1);
-    expect(getResult).toHaveBeenCalledWith(jobs[0].registerResult!, '$.id');
+    expect(getResult).toHaveBeenCalledWith(jobs[0].registerResultKey!, '$.id');
   });
 
   it('create jobs for carousel post', () => {
@@ -124,7 +124,7 @@ describe('createPostJobs', () => {
           },
           url: '1234567890/media',
         },
-        registerResult: expect.any(String),
+        registerResultKey: expect.any(String),
       },
       {
         channel: agent,
@@ -138,7 +138,7 @@ describe('createPostJobs', () => {
           },
           url: '1234567890/media',
         },
-        registerResult: expect.any(String),
+        registerResultKey: expect.any(String),
       },
       {
         channel: agent,
@@ -152,9 +152,9 @@ describe('createPostJobs', () => {
           },
           url: '1234567890/media',
         },
-        registerResult: expect.any(String),
+        registerResultKey: expect.any(String),
         consumeResult: {
-          keys: [jobs[0].registerResult, jobs[1].registerResult],
+          keys: [jobs[0].registerResultKey, jobs[1].registerResultKey],
           accomplishRequest: expect.any(Function),
         },
       },
@@ -169,7 +169,7 @@ describe('createPostJobs', () => {
         },
         consumeResult: {
           accomplishRequest: expect.any(Function),
-          keys: [jobs[2].registerResult],
+          keys: [jobs[2].registerResultKey],
         },
       },
     ]);
@@ -179,7 +179,7 @@ describe('createPostJobs', () => {
     expect(
       jobs[2].consumeResult?.accomplishRequest(
         jobs[2].request,
-        [jobs[0].registerResult!, jobs[1].registerResult!],
+        [jobs[0].registerResultKey!, jobs[1].registerResultKey!],
         getResult,
       ),
     ).toEqual({
@@ -194,7 +194,7 @@ describe('createPostJobs', () => {
     expect(
       jobs[3].consumeResult?.accomplishRequest(
         jobs[3].request,
-        [jobs[2].registerResult!],
+        [jobs[2].registerResultKey!],
         getResult,
       ),
     ).toEqual({
@@ -203,9 +203,9 @@ describe('createPostJobs', () => {
       url: '1234567890/media_publish',
     });
     expect(getResult).toHaveBeenCalledTimes(3);
-    expect(getResult).toHaveBeenCalledWith(jobs[0].registerResult!, '$.id');
-    expect(getResult).toHaveBeenCalledWith(jobs[1].registerResult!, '$.id');
-    expect(getResult).toHaveBeenCalledWith(jobs[2].registerResult!, '$.id');
+    expect(getResult).toHaveBeenCalledWith(jobs[0].registerResultKey!, '$.id');
+    expect(getResult).toHaveBeenCalledWith(jobs[1].registerResultKey!, '$.id');
+    expect(getResult).toHaveBeenCalledWith(jobs[2].registerResultKey!, '$.id');
   });
 
   it('throw if invalid segment type received', () => {
