@@ -1,4 +1,3 @@
-import { AgentSettingsAccessor } from '@sociably/core';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import Renderer from '@sociably/core/renderer';
@@ -31,6 +30,7 @@ import {
   PlatformUtilitiesI,
   AgentSettingsAccessorI,
 } from './interface.js';
+import { createPostJobs } from './job.js';
 import InstagramAgent from './Agent.js';
 import InstagramChat from './Chat.js';
 import type {
@@ -38,7 +38,7 @@ import type {
   InstagramSegmentValue,
   InstagramDispatchFrame,
   InstagramMessagingOptions,
-  InstagramAgentSettings,
+  InstgramAgentSettingsAccessor,
   InstagramThread,
 } from './types.js';
 
@@ -47,10 +47,7 @@ type InstagramBotOptions = {
   appSecret: string;
   graphApiVersion?: string;
   apiBatchRequestInterval?: number;
-  agentSettingsAccessor: AgentSettingsAccessor<
-    InstagramAgent,
-    InstagramAgentSettings
-  >;
+  agentSettingsAccessor: InstgramAgentSettingsAccessor;
   initScope?: InitScopeFn;
   dispatchWrapper?: DispatchWrapper<
     MetaApiJob,
@@ -74,6 +71,7 @@ export class InstagramBot
     SociablyBot<InstagramChat, MetaApiJob, MetaApiResult>
 {
   graphApiVersion: string;
+  agentSettingsAccessor: InstgramAgentSettingsAccessor;
   worker: MetaApiWorker;
   engine: Engine<
     InstagramThread,
@@ -95,6 +93,7 @@ export class InstagramBot
     dispatchWrapper,
   }: InstagramBotOptions) {
     this.graphApiVersion = graphApiVersion;
+    this.agentSettingsAccessor = agentSettingsAccessor;
 
     const renderer = new Renderer<
       InstagramSegmentValue,
@@ -129,17 +128,15 @@ export class InstagramBot
   }
 
   async render(
-    target: InstagramChat,
+    target: InstagramThread,
     node: SociablyNode,
   ): Promise<null | MetaApiDispatchResponse> {
     if (target instanceof InstagramChat) {
-      return this.engine.render(
-        target,
-        node,
-        createChatJobs<InstagramAgent, InstagramChat>(target.agent),
-      );
+      return this.message(target, node);
     }
-
+    if (target instanceof InstagramAgent) {
+      return this.renderPost(target, node);
+    }
     throw new TypeError('invalid rendering target');
   }
 
@@ -154,6 +151,37 @@ export class InstagramBot
       messages,
       createChatJobs<InstagramAgent, InstagramChat>(chat.agent, options),
     );
+  }
+
+  /** Post on Instagram */
+  async post(
+    /** The agent to make the post */
+    agent: InstagramAgent,
+    /**
+     * An {@link ImagePost}, {@link VideoPost}, {@link ImageStory},
+     * {@link VideoStory}, {@link CarouselPost} or {@link Reel} element to post
+     */
+    post: SociablyNode,
+  ): Promise<{ id: string }> {
+    const response = await this.renderPost(agent, post);
+    if (!response) {
+      throw new Error('post content is empty');
+    }
+    return response.results[response.results.length - 1].body as { id: string };
+  }
+
+  private async renderPost(agent: InstagramAgent, post: SociablyNode) {
+    const settings = await this.agentSettingsAccessor.getAgentSettings(agent);
+    if (!settings?.userAccessToken) {
+      throw new Error(`user access token is not provided to make a post`);
+    }
+
+    const response = await this.engine.render(
+      agent,
+      post,
+      createPostJobs(settings.userAccessToken),
+    );
+    return response;
   }
 
   /** Upload a media chat attachment for later use */

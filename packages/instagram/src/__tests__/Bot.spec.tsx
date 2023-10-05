@@ -8,7 +8,12 @@ import _Engine from '@sociably/core/engine';
 import * as MetaApiModule from '@sociably/meta-api';
 import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
 import { InstagramBot } from '../Bot.js';
-import { Image, Expression, TextReply } from '../components/index.js';
+import {
+  Image,
+  Expression,
+  TextReply,
+  ImagePost,
+} from '../components/index.js';
 import InstagramChat from '../Chat.js';
 import InstagramAgent from '../Agent.js';
 
@@ -40,25 +45,24 @@ const dispatchWrapper = moxy((x) => x);
 const accountId = '1234567890';
 const pageId = '1111111111';
 const accessToken = '_ACCESS_TOKEN_';
+const userAccessToken = '_USER_ACCESS_TOKEN_';
 const appId = '_APP_ID_';
 const appSecret = '_APP_SECRET_';
 const username = 'jojodoe666';
 
-const agentSettingsAccessor = {
-  getAgentSettings: async () => ({ accountId, pageId, accessToken, username }),
-  getAgentSettingsBatch: async () => [
-    { accountId, pageId, accessToken, username },
-  ],
+const agentSettings = {
+  accountId,
+  pageId,
+  accessToken,
+  username,
+  userAccessToken,
 };
+const agentSettingsAccessor = moxy({
+  getAgentSettings: async () => agentSettings,
+  getAgentSettingsBatch: async () => [agentSettings],
+});
 
 const agent = new InstagramAgent(accountId);
-
-const message = (
-  <Expression quickReplies={<TextReply title="Hi!" payload="👋" />}>
-    Hello <b>World!</b>
-    <Image url="https://sociably.io/greeting.png" />
-  </Expression>
-);
 
 let graphApi;
 const bodySpy = moxy(() => true);
@@ -150,8 +154,15 @@ test('.start() and .stop() start/stop engine', () => {
   expect(bot.engine.stop).toHaveBeenCalledTimes(1);
 });
 
-describe('.message(thread, message, options)', () => {
+describe('.message(thread, content)', () => {
   const bot = new InstagramBot({ agentSettingsAccessor, appId, appSecret });
+
+  const message = (
+    <Expression quickReplies={<TextReply title="Hi!" payload="👋" />}>
+      Hello <b>World!</b>
+      <Image url="https://sociably.io/greeting.png" />
+    </Expression>
+  );
 
   let apiStatus;
   beforeEach(() => {
@@ -258,6 +269,60 @@ describe('.message(thread, message, options)', () => {
         },
       ]
     `);
+
+    expect(apiStatus.isDone()).toBe(true);
+  });
+});
+
+describe('.post(agent, content)', () => {
+  const bot = new InstagramBot({ agentSettingsAccessor, appId, appSecret });
+
+  let apiStatus;
+  beforeEach(() => {
+    apiStatus = graphApi.reply(200, [
+      { code: 200, body: '{"id":1111111111}' },
+      { code: 200, body: '{"id":2222222222}' },
+    ]);
+    bot.start();
+  });
+
+  afterEach(() => {
+    bot.stop();
+  });
+
+  it('throw if userAccessToken for the agent is unavailable', async () => {
+    agentSettingsAccessor.getAgentSettings.mock.fakeOnce(async () => ({
+      ...agentSettings,
+      userAccessToken: undefined,
+    }));
+
+    await expect(
+      bot.post(agent, <ImagePost url="http://..." />),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"user access token is not provided to make a post"`,
+    );
+  });
+
+  it('throw if content is empty', async () => {
+    const empties = [undefined, null, [], <></>];
+    for (const empty of empties) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(bot.post(agent, empty)).rejects.toThrowError(
+        'post content is empty',
+      );
+    }
+  });
+
+  it('make the post through media APIs', async () => {
+    await expect(
+      bot.post(agent, <ImagePost url="http://..." />),
+    ).resolves.toEqual({ id: 2222222222 });
+
+    expect(bodySpy).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+
+    const requests = JSON.parse(body.batch);
+    expect(requests).toMatchSnapshot();
 
     expect(apiStatus.isDone()).toBe(true);
   });

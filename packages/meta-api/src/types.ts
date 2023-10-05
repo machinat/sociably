@@ -14,7 +14,7 @@ export type MetaApiJobRequest = {
   params?: Record<string, unknown>;
 };
 
-type AccomplishRequestFn = (
+export type AccomplishRequestFn = (
   request: MetaApiJobRequest,
   keys: string[],
   getResultValue: (key: string, path: string) => string | null,

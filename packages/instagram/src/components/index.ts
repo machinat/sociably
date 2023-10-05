@@ -331,3 +331,12 @@ export const RequestOneTimeNotif: NativeComponent<
   MessengerIntermediateSegment
 > = makeInstagramComponent(Messenger.RequestOneTimeNotif);
 export type RequestOneTimeNotifProps = Messenger.RequestOneTimeNotifProps;
+
+// posts
+
+export * from './ImagePost.js';
+export * from './ImageStory.js';
+export * from './VideoPost.js';
+export * from './VideoStory.js';
+export * from './CarouselPost.js';
+export * from './Reel.js';

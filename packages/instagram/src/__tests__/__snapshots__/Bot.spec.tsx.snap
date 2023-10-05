@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`.message(thread, message, options) message options 1`] = `
+exports[`.message(thread, content) message options 1`] = `
 {
   "jobs": [
     {
@@ -170,14 +170,14 @@ exports[`.message(thread, message, options) message options 1`] = `
 }
 `;
 
-exports[`.message(thread, message, options) message options 2`] = `
+exports[`.message(thread, content) message options 2`] = `
 {
   "access_token": "_ACCESS_TOKEN_",
   "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&messaging_type=MESSAGE_TAG&tag=HUMAN_AGENT&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"ig.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&messaging_type=MESSAGE_TAG&tag=HUMAN_AGENT&notification_type=SILENT_PUSH&persona_id=billy17&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"ig.1234567890.9876543210-1","name":"ig.1234567890.9876543210-2","omit_response_on_success":false}]",
 }
 `;
 
-exports[`.message(thread, message, options) send messages to me/messages api 1`] = `
+exports[`.message(thread, content) send messages to me/messages api 1`] = `
 {
   "jobs": [
     {
@@ -347,11 +347,31 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
 }
 `;
 
-exports[`.message(thread, message, options) send messages to me/messages api 2`] = `
+exports[`.message(thread, content) send messages to me/messages api 2`] = `
 {
   "access_token": "_ACCESS_TOKEN_",
   "batch": "[{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22text%22%3A%22Hello%20World!%22%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","name":"ig.1234567890.9876543210-1","omit_response_on_success":false},{"method":"POST","relative_url":"me/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f","body":"message=%7B%22attachment%22%3A%7B%22type%22%3A%22image%22%2C%22payload%22%3A%7B%22url%22%3A%22https%3A%2F%2Fsociably.io%2Fgreeting.png%22%7D%7D%2C%22quick_replies%22%3A%5B%7B%22content_type%22%3A%22text%22%2C%22title%22%3A%22Hi!%22%2C%22payload%22%3A%22%F0%9F%91%8B%22%7D%5D%7D&recipient=%7B%22id%22%3A%229876543210%22%7D","depends_on":"ig.1234567890.9876543210-1","name":"ig.1234567890.9876543210-2","omit_response_on_success":false}]",
 }
+`;
+
+exports[`.post(agent, content) make the post through media APIs 1`] = `
+[
+  {
+    "body": "image_url=http%3A%2F%2F...",
+    "method": "POST",
+    "name": "ig.1234567890-1",
+    "omit_response_on_success": false,
+    "relative_url": "1234567890/media?access_token=_USER_ACCESS_TOKEN_&appsecret_proof=156ef2b41e64bbbffefc73722f8940809ff8267a5bbdf676f290c3aee710ad8f",
+  },
+  {
+    "body": "creation_id=%7Bresult%3Dig.1234567890-1%3A%24.id%7D",
+    "depends_on": "ig.1234567890-1",
+    "method": "POST",
+    "name": "ig.1234567890-2",
+    "omit_response_on_success": false,
+    "relative_url": "1234567890/media_publish?access_token=_USER_ACCESS_TOKEN_&appsecret_proof=156ef2b41e64bbbffefc73722f8940809ff8267a5bbdf676f290c3aee710ad8f",
+  },
+]
 `;
 
 exports[`.uploadChatAttachment(agent, message) call message_attachments api 1`] = `

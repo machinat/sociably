@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`match snapshot 1`] = `
+[
+  {
+    "node": <CarouselPost>
+      <ImagePost
+        url="http://abc.com/..."
+      />
+      <ImagePost
+        url="http://xyz.com/..."
+      />
+    </CarouselPost>,
+    "path": "$",
+    "type": "unit",
+    "value": {
+      "params": {
+        "caption": undefined,
+        "children": [
+          {
+            "caption": undefined,
+            "image_url": "http://abc.com/...",
+            "location_id": undefined,
+            "product_tags": undefined,
+            "user_tags": undefined,
+          },
+          {
+            "caption": undefined,
+            "image_url": "http://xyz.com/...",
+            "location_id": undefined,
+            "product_tags": undefined,
+            "user_tags": undefined,
+          },
+        ],
+        "location_id": undefined,
+        "media_type": "CAROUSEL",
+      },
+      "type": "post",
+    },
+  },
+]
+`;
+
+exports[`match snapshot 2`] = `
+[
+  {
+    "node": <CarouselPost
+      caption="This is a #carousel post with #videos"
+      locationId="1234567890"
+    >
+      <VideoPost
+        url="http://abc.com/..."
+      />
+      <VideoPost
+        url="http://xyz.com/..."
+      />
+    </CarouselPost>,
+    "path": "$",
+    "type": "unit",
+    "value": {
+      "params": {
+        "caption": "This is a #carousel post with #videos",
+        "children": [
+          {
+            "caption": undefined,
+            "location_id": undefined,
+            "media_type": "VIDEO",
+            "product_tags": undefined,
+            "thumb_offset": undefined,
+            "user_tags": undefined,
+            "video_url": "http://abc.com/...",
+          },
+          {
+            "caption": undefined,
+            "location_id": undefined,
+            "media_type": "VIDEO",
+            "product_tags": undefined,
+            "thumb_offset": undefined,
+            "user_tags": undefined,
+            "video_url": "http://xyz.com/...",
+          },
+        ],
+        "location_id": "1234567890",
+        "media_type": "CAROUSEL",
+      },
+      "type": "post",
+    },
+  },
+]
+`;

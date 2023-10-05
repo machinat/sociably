@@ -5,6 +5,7 @@ import type {
   DispatchMiddleware,
   PlatformUtilities,
   SociablyNode,
+  AgentSettingsAccessor,
 } from '@sociably/core';
 import type { DispatchFrame } from '@sociably/core/engine';
 import type { MaybeContainer, Interfaceable } from '@sociably/core/service';
@@ -14,7 +15,6 @@ import type {
   MetaApiJob,
   MetaApiResult,
   MetaApiDispatchResponse,
-  MetaApiUploadingFile,
 } from '@sociably/meta-api';
 import {
   MessageValue,
@@ -57,12 +57,10 @@ export type MessagingTarget =
 // TODO: type the raw event object
 export type InstagramRawEvent = any;
 
-export type BaseSegmentValue = {
-  type: string;
-  apiPath: string;
+export type PostSegmentValue = {
+  type: 'post';
   params: Record<string, unknown>;
-  file?: MetaApiUploadingFile;
-  assetTag?: string;
+  carouselItems?: PostSegmentValue[];
 };
 
 export type HandoverProtocolValue =
@@ -73,7 +71,8 @@ export type HandoverProtocolValue =
 export type InstagramSegmentValue =
   | MessageValue
   | SenderActionValue
-  | HandoverProtocolValue;
+  | HandoverProtocolValue
+  | PostSegmentValue;
 
 export type InstagramComponent<
   Props,
@@ -122,7 +121,14 @@ export type InstagramAgentSettings = {
   accessToken: string;
   /** The username of Instagram account */
   username: string;
+  /** The user access token to perform more actions like post */
+  userAccessToken?: string;
 };
+
+export type InstgramAgentSettingsAccessor = AgentSettingsAccessor<
+  InstagramAgent,
+  InstagramAgentSettings
+>;
 
 export type InstagramConfigs = {
   /** Instagram integration settings in single agent mode */
