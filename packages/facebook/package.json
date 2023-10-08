@@ -1,6 +1,6 @@
 {
   "name": "@sociably/facebook",
-  "version": "0.9.0-alpha.33",
+  "version": "0.9.0-alpha.40",
   "type": "module",
   "description": "Facebook platform of Sociably.js",
   "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@sociably/messenger": "^0.9.0-alpha.26",
-    "@sociably/meta-api": "^0.9.0-alpha.30",
+    "@sociably/meta-api": "^0.9.0-alpha.40",
     "bowser": "^2.11.0",
     "camelcase-keys": "^8.0.2",
     "invariant": "^2.2.4",
