@@ -8,12 +8,12 @@ import type {
 } from '@sociably/auth';
 import MemoCacheTarget from './CacheTarget.js';
 import type { MemoAuthData, MemoAuthContext } from './types.js';
-import { WEBVIEW } from '../../constant.js';
+import { MEMO } from './constant.js';
 
 export class MemoServerAuthenticator
   implements ServerAuthenticator<MemoAuthData, MemoAuthData, MemoAuthContext>
 {
-  readonly platform = WEBVIEW;
+  readonly platform = MEMO;
 
   async delegateAuthRequest(
     req: IncomingMessage,

@@ -7,12 +7,12 @@ import type {
   CheckDataResult,
 } from '@sociably/auth';
 import type { NoneAuthData, NoneAuthContext } from './types.js';
-import { WEBVIEW } from '../../constant.js';
+import { NONE } from './constant.js';
 
 export class NoneServerAuthenticator
   implements ServerAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>
 {
-  readonly platform = WEBVIEW;
+  readonly platform = NONE;
 
   async delegateAuthRequest(
     req: IncomingMessage,

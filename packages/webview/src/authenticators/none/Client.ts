@@ -8,7 +8,7 @@ import type {
 import WebviewConnection from '../../Connection.js';
 import { WebviewClientAuthenticator } from '../../types.js';
 import type { NoneAuthData, NoneAuthContext } from './types.js';
-import { WEBVIEW } from '../../constant.js';
+import { NONE } from './constant.js';
 
 const USER_KEY = 'none_user';
 const THREAD_KEY = 'none_thread';
@@ -17,7 +17,7 @@ class NoneClientAuthenticator
   implements
     WebviewClientAuthenticator<NoneAuthData, NoneAuthData, NoneAuthContext>
 {
-  readonly platform = WEBVIEW;
+  readonly platform = NONE;
   readonly marshalTypes = [WebviewConnection];
 
   async init(): Promise<{ forceSignIn: boolean }> {

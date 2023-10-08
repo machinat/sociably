@@ -9,7 +9,7 @@ import MemoCacheTarget from './CacheTarget.js';
 import WebviewConnection from '../../Connection.js';
 import { WebviewClientAuthenticator } from '../../types.js';
 import type { MemoAuthData, MemoAuthContext } from './types.js';
-import { WEBVIEW } from '../../constant.js';
+import { MEMO } from './constant.js';
 
 const USER_KEY = 'momoized_user';
 const THREAD_KEY = 'memo_thread';
@@ -18,7 +18,7 @@ class MemoClientAuthenticator
   implements
     WebviewClientAuthenticator<MemoAuthData, MemoAuthData, MemoAuthContext>
 {
-  readonly platform = WEBVIEW;
+  readonly platform = MEMO;
   readonly marshalTypes = [WebviewConnection, MemoCacheTarget];
 
   async init(): Promise<{ forceSignIn: boolean }> {
