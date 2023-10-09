@@ -35,6 +35,9 @@ export const createSingleStaticAgentSettingsAccessor = (
             channelId: loginChannelId,
             liffIds,
             refChatChannelIds: [agentSettings.channelId],
+            linkedChatChannelId: agentSettings.isLinkedWithLoginChannel
+              ? agentSettings.channelId
+              : undefined,
           }
         : null,
   };
@@ -51,24 +54,11 @@ export const createMultiStaticNumberSettingsAccessor = (
   const loginChannelsSettings = new Map<string, LineLoginChannelSettings>();
 
   for (const { providerId, channels, fallbackLiff } of providerSettingsList) {
-    for (const {
-      channelId,
-      channelSecret,
-      accessToken,
-      botUserId,
-      liff,
-    } of channels) {
-      const agentSettings = {
-        providerId,
-        channelId,
-        channelSecret,
-        accessToken,
-        botUserId,
-        liff,
-      };
-      messagingChannelsSettings.set(channelId, agentSettings);
+    for (const channelDetails of channels) {
+      const agentSettings = { providerId, ...channelDetails };
+      messagingChannelsSettings.set(agentSettings.channelId, agentSettings);
 
-      const liffSettings = liff ?? fallbackLiff;
+      const liffSettings = agentSettings.liff ?? fallbackLiff;
       const liffIds = liffSettings ? Object.values(liffSettings) : [];
       const loginChannelIds = liffIds.map(getLoginChannelIdFromLiffId);
 
@@ -85,14 +75,28 @@ export const createMultiStaticNumberSettingsAccessor = (
             ...new Set([...loginChannelSettings.liffIds, ...liffIds]),
           ];
           loginChannelSettings.refChatChannelIds = [
-            ...new Set([...loginChannelSettings.refChatChannelIds, channelId]),
+            ...new Set([
+              ...loginChannelSettings.refChatChannelIds,
+              agentSettings.channelId,
+            ]),
           ];
+          if (agentSettings.isLinkedWithLoginChannel) {
+            if (loginChannelSettings.linkedChatChannelId) {
+              throw new Error(
+                `Login channel ${loginChannelId} is already linked with ${loginChannelSettings.linkedChatChannelId}`,
+              );
+            }
+            loginChannelSettings.linkedChatChannelId = agentSettings.channelId;
+          }
         } else {
           loginChannelsSettings.set(loginChannelId, {
             providerId,
             channelId: loginChannelId,
             liffIds,
-            refChatChannelIds: [channelId],
+            refChatChannelIds: [agentSettings.channelId],
+            linkedChatChannelId: agentSettings.isLinkedWithLoginChannel
+              ? agentSettings.channelId
+              : undefined,
           });
         }
       }

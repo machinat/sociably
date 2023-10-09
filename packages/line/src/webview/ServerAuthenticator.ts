@@ -99,6 +99,10 @@ export class LineServerAuthenticator
       groupId,
       roomId,
     } = credential;
+    if (!accessToken) {
+      return { ok: false, code: 400, reason: 'access token is empty' };
+    }
+
     const refererType =
       contextType === 'utou'
         ? RefChatType.Utou
@@ -110,17 +114,13 @@ export class LineServerAuthenticator
         ? RefChatType.External
         : RefChatType.None;
 
-    if (!accessToken) {
-      return { ok: false, code: 400, reason: 'access token is empty' };
-    }
-
-    const [clientResult, userResult, chatResult] = await Promise.all([
-      this._verifyAccessToken(accessToken).then((result) =>
+    const [channelResult, userResult, chatResult] = await Promise.all([
+      this.verifyAccessToken(accessToken).then((result) =>
         result.ok
-          ? this._verifyChannel(result.tokenInfo.client_id, chatChannelId)
+          ? this.verifyChannel(result.tokenInfo.client_id, chatChannelId)
           : result,
       ),
-      this._verifyUser(accessToken, userId),
+      this.verifyUser(accessToken, userId),
       chatChannelId
         ? this._verifyChat(
             groupId
@@ -134,21 +134,25 @@ export class LineServerAuthenticator
         : null,
     ]);
 
-    if (!clientResult.ok || !userResult.ok || (chatResult && !chatResult.ok)) {
-      return [clientResult, userResult, chatResult].find(
+    if (!channelResult.ok || !userResult.ok || (chatResult && !chatResult.ok)) {
+      return [channelResult, userResult, chatResult].find(
         (result) => !result?.ok,
       ) as LineVerifyAuthResult;
     }
 
     const {
-      loginChannelSettings: { channelId: loginChannelId, providerId },
-    } = clientResult;
+      loginChannelSettings: {
+        channelId: loginChannelId,
+        providerId,
+        linkedChatChannelId,
+      },
+    } = channelResult;
     const chat = chatResult?.chat;
 
     return {
       ok: true,
       data: {
-        chan: chatChannelId,
+        chan: chatChannelId || linkedChatChannelId,
         group: chat?.type === 'group' ? chat.id : undefined,
         room: chat?.type === 'room' ? chat.id : undefined,
         provider: providerId,
@@ -168,7 +172,7 @@ export class LineServerAuthenticator
 
   async verifyRefreshment(data: LineAuthData): Promise<LineVerifyAuthResult> {
     const [channelResult, chatResult] = await Promise.all([
-      this._verifyChannel(data.client, data.chan),
+      this.verifyChannel(data.client, data.chan),
       data.chan
         ? this._verifyChat(
             data.group
@@ -218,10 +222,9 @@ export class LineServerAuthenticator
       };
     }
 
-    const messagingChannelSettings =
+    const chatChannelSettings =
       await this.agentSettingsAccessor.getAgentSettings(chat.channel);
-
-    if (!messagingChannelSettings) {
+    if (!chatChannelSettings) {
       return {
         ok: false as const,
         code: 404,
@@ -262,7 +265,7 @@ export class LineServerAuthenticator
     }
   }
 
-  private async _verifyUser(loginToken: string, userId: string) {
+  private async verifyUser(loginToken: string, userId: string) {
     try {
       const profile = await this.bot.requestApi<LineRawUserProfile>({
         accessToken: loginToken,
@@ -293,7 +296,7 @@ export class LineServerAuthenticator
     }
   }
 
-  private async _verifyAccessToken(accessToken: string) {
+  private async verifyAccessToken(accessToken: string) {
     try {
       const tokenInfo = await this.bot.requestApi<VerifyTokenResult>({
         method: 'GET',
@@ -313,7 +316,7 @@ export class LineServerAuthenticator
     }
   }
 
-  private async _verifyChannel(
+  private async verifyChannel(
     loginChannelId: string,
     chatChannelId: undefined | string,
   ) {

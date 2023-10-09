@@ -255,6 +255,8 @@ export type LineChatChannelSettings = {
    */
   botUserId: string;
   liff?: { default: string };
+  /** Whether if the messaging channel is linked with the login channel */
+  isLinkedWithLoginChannel?: boolean;
 };
 
 export type LineLoginChannelSettings = {
@@ -264,6 +266,8 @@ export type LineLoginChannelSettings = {
   channelId: string;
   liffIds: string[];
   refChatChannelIds: string[];
+  /** The messaging API channel id linked with the login channel */
+  linkedChatChannelId?: string;
 };
 
 export type LineProviderSettings = {

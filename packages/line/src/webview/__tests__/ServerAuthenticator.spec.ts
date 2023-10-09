@@ -43,23 +43,27 @@ const httpOperator = moxy<AuthHttpOperator>({
     `https://sociably.io/my_app/webview${path ? `/${path}` : ''}`,
 } as never);
 
+const agentSettings = {
+  providerId,
+  channelId: botChannelId,
+  accessToken: '_ACCESS_TOKEN_',
+  channelSecret: '_CHANNEL_SECRET_',
+  botUserId: '_BOT_USER_ID_',
+  liff: { default: `${loginChannelId}-_LIFF_1_` },
+};
+
+const loginChannelSettings = {
+  providerId,
+  channelId: loginChannelId,
+  liffIds: [`${loginChannelId}-_LIFF_1_`],
+  refChatChannelIds: [botChannelId],
+};
+
 const agentSettingsAccessor = moxy({
-  getAgentSettings: async () => ({
-    providerId,
-    channelId: botChannelId,
-    accessToken: '_ACCESS_TOKEN_',
-    channelSecret: '_CHANNEL_SECRET_',
-    botUserId: '_BOT_USER_ID_',
-    liff: { default: `${loginChannelId}-_LIFF_1_` },
-  }),
-  getAgentSettingsBatch: async () => [],
+  getAgentSettings: async () => agentSettings,
+  getAgentSettingsBatch: async () => [agentSettings],
   getLineChatChannelSettingsByBotUserId: async () => null,
-  getLineLoginChannelSettings: async () => ({
-    providerId,
-    channelId: loginChannelId,
-    liffIds: [`${loginChannelId}-_LIFF_1_`],
-    refChatChannelIds: [botChannelId],
-  }),
+  getLineLoginChannelSettings: async () => loginChannelSettings,
 });
 
 beforeEach(() => {
@@ -228,6 +232,44 @@ describe('.verifyCredential(credential)', () => {
       channel: botChannel,
       method: 'GET',
       url: `v2/bot/profile/${userId}`,
+    });
+  });
+
+  it('use bound chat channel id if available', async () => {
+    agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue({
+      ...agentSettings,
+      isLinkedWithLoginChannel: true,
+    });
+    agentSettingsAccessor.getLineLoginChannelSettings.mock.fakeResolvedValue({
+      ...loginChannelSettings,
+      linkedChatChannelId: botChannelId,
+    });
+
+    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+
+    await expect(
+      authenticator.verifyCredential({
+        ...credential,
+        contextType: 'utou',
+      }),
+    ).resolves.toEqual({
+      ok: true,
+      data: {
+        provider: providerId,
+        chan: botChannelId,
+        client: loginChannelId,
+        ref: RefChatType.Utou,
+        os: LiffOs.Ios,
+        lang: 'zh-TW',
+        user: userId,
+      },
+    });
+
+    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(bot.requestApi).toHaveBeenCalledWith({
+      accessToken: credential.accessToken,
+      method: 'GET',
+      url: `v2/profile`,
     });
   });
 

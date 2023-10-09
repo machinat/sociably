@@ -17,6 +17,7 @@ import { LineBot } from '../Bot.js';
 import LineChannel from '../Channel.js';
 import LineUser from '../User.js';
 import LineChat from '../Chat.js';
+import { LineChatChannelSettings } from '../types.js';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
@@ -105,14 +106,13 @@ describe('initModule(configs)', () => {
   });
 
   test('with options.agentSettings', async () => {
-    const configs = {
-      agentSettings: {
-        providerId: '_PROVIDER_ID_',
-        channelId: '_CHANNEL_ID_',
-        channelSecret: '_CHANNEL_SECRET_',
-        accessToken: '_ACCESS_TOKEN_',
-        liff: { default: '_LOGIN_CHANNEL_ID_-_LIFF_SHORT_ID_' },
-      },
+    const agentSettings: Omit<LineChatChannelSettings, 'botUserId'> = {
+      providerId: '_PROVIDER_ID_',
+      channelId: '_CHANNEL_ID_',
+      channelSecret: '_CHANNEL_SECRET_',
+      accessToken: '_ACCESS_TOKEN_',
+      liff: { default: '_LOGIN_CHANNEL_ID_-_LIFF_SHORT_ID_' },
+      isLinkedWithLoginChannel: true,
     };
 
     const app = Sociably.createApp({
@@ -120,14 +120,14 @@ describe('initModule(configs)', () => {
         Http.initModule({ entryUrl: 'https://sociably.io', noServer: true }),
         InMemoryState.initModule(),
       ],
-      platforms: [Line.initModule(configs)],
+      platforms: [Line.initModule({ agentSettings })],
     });
     await app.start();
 
     const [settingsAccessor] = app.useServices([AgentSettingsAccessorI]);
 
     const expectedAgentSettings = {
-      ...configs.agentSettings,
+      ...agentSettings,
       botUserId: '',
     };
 
@@ -156,6 +156,7 @@ describe('initModule(configs)', () => {
       channelId: '_LOGIN_CHANNEL_ID_',
       liffIds: ['_LOGIN_CHANNEL_ID_-_LIFF_SHORT_ID_'],
       refChatChannelIds: ['_CHANNEL_ID_'],
+      linkedChatChannelId: '_CHANNEL_ID_',
     });
     await expect(
       settingsAccessor.getLineLoginChannelSettings('_WRONG_CHANNEL_'),
@@ -199,6 +200,7 @@ describe('initModule(configs)', () => {
                   channelSecret: '_CHANNEL_SECRET_3_',
                   accessToken: '_ACCESS_TOKEN_3_',
                   liff: { default: '_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_' },
+                  isLinkedWithLoginChannel: true,
                 },
               ],
             },
@@ -233,6 +235,7 @@ describe('initModule(configs)', () => {
       channelSecret: '_CHANNEL_SECRET_3_',
       accessToken: '_ACCESS_TOKEN_3_',
       liff: { default: '_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_' },
+      isLinkedWithLoginChannel: true,
     };
 
     await expect(
@@ -288,6 +291,7 @@ describe('initModule(configs)', () => {
       channelId: '_LOGIN_CHANNEL_ID_2_',
       liffIds: ['_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_'],
       refChatChannelIds: ['_CHANNEL_ID_3_'],
+      linkedChatChannelId: '_CHANNEL_ID_3_',
     });
     await expect(
       settingsAccessor.getLineLoginChannelSettings('_WRONG_CHANNEL_'),
