@@ -1,4 +1,5 @@
 export { default } from './module.js';
+export { default as WhatsAppAgent } from './Agent.js';
 export { default as WhatsAppChat } from './Chat.js';
 export { default as WhatsAppUser } from './User.js';
 export { default as WhatsAppUserProfile } from './UserProfile.js';
