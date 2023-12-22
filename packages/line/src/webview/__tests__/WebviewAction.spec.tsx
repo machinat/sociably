@@ -34,17 +34,32 @@ test('rendering to UrlButton', async () => {
     />
   `);
 
-  expect(authenticator.getLiffUrl).toHaveBeenCalledTimes(2);
-  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(
-    1,
-    chat.channel,
-    undefined,
-    chat,
+  authenticator.getLiffUrl.mock.fakeReturnValue(
+    `https://liff.line.me/1234567890-C0mP4cT/foo?bar=baz`,
   );
-  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(
-    2,
-    chat.channel,
-    '/foo?bar=baz',
+  await expect(
+    WebviewAction(
+      authenticator,
+      chat,
+    )({ label: 'Foo', page: '/foo?bar=baz', liffAppChoice: 'compact' }),
+  ).resolves.toMatchInlineSnapshot(`
+    <UriAction
+      label="Foo"
+      uri="https://liff.line.me/1234567890-C0mP4cT/foo?bar=baz"
+    />
+  `);
+
+  expect(authenticator.getLiffUrl).toHaveBeenCalledTimes(3);
+  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(1, chat.channel, {
     chat,
-  );
+  });
+  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(2, chat.channel, {
+    path: '/foo?bar=baz',
+    chat,
+  });
+  expect(authenticator.getLiffUrl).toHaveBeenNthCalledWith(3, chat.channel, {
+    path: '/foo?bar=baz',
+    chat,
+    liffAppChoice: 'compact',
+  });
 });

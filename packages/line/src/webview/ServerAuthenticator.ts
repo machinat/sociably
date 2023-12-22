@@ -8,7 +8,7 @@ import LineChat from '../Chat.js';
 import BotP from '../Bot.js';
 import { LINE } from '../constant.js';
 import LineApiError from '../error.js';
-import { LineRawUserProfile } from '../types.js';
+import { LineRawUserProfile, LiffAppChoiceSetting } from '../types.js';
 import {
   LiffOs,
   RefChatType,
@@ -33,6 +33,12 @@ type VerifyTokenResult = {
   /* eslint-enable camelcase */
 };
 
+export type LiffUrlOptions = {
+  path?: string;
+  chat?: LineChat;
+  liffAppChoice?: keyof LiffAppChoiceSetting;
+};
+
 /** @category Provider */
 export class LineServerAuthenticator
   implements
@@ -49,17 +55,16 @@ export class LineServerAuthenticator
 
   async getLiffUrl(
     channel: LineChannel,
-    path?: string,
-    chat?: LineChat,
+    { path, chat, liffAppChoice = 'default' }: LiffUrlOptions = {},
   ): Promise<string> {
     const setting = await this.agentSettingsAccessor.getAgentSettings(channel);
-    if (!setting?.liff) {
+    if (!setting?.liffApps) {
       throw new Error(
         `liff setting for messaging channel "${channel.id}" not found`,
       );
     }
 
-    const liffId = setting.liff.default;
+    const liffId = setting.liffApps[liffAppChoice] || setting.liffApps.default;
     const liffUrl = new URL(
       joinPath(liffId, path || ''),
       'https://liff.line.me',

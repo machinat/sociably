@@ -240,6 +240,13 @@ export type LineDispatchMiddleware = DispatchMiddleware<
   LineResult
 >;
 
+export type LiffAppChoiceSetting = {
+  default: string;
+  full?: string;
+  tall?: string;
+  compact?: string;
+};
+
 export type LineChatChannelSettings = {
   /** The provider ID of the business */
   providerId: string;
@@ -254,7 +261,7 @@ export type LineChatChannelSettings = {
    * https://api.line.me/v2/bot/info API
    */
   botUserId: string;
-  liff?: { default: string };
+  liffApps?: LiffAppChoiceSetting;
   /** Whether if the messaging channel is linked with the login channel */
   isLinkedWithLoginChannel?: boolean;
 };
@@ -274,7 +281,7 @@ export type LineProviderSettings = {
   /** The provider ID of the business */
   providerId: string;
   channels: Omit<LineChatChannelSettings, 'providerId'>[];
-  fallbackLiff?: string;
+  fallbackLiffApps?: LiffAppChoiceSetting;
 };
 
 export type LineConfigs = {

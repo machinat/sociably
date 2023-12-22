@@ -49,7 +49,10 @@ const agentSettings = {
   accessToken: '_ACCESS_TOKEN_',
   channelSecret: '_CHANNEL_SECRET_',
   botUserId: '_BOT_USER_ID_',
-  liff: { default: `${loginChannelId}-_LIFF_1_` },
+  liffApps: {
+    default: `${loginChannelId}-_LIFF_1_`,
+    compact: `${loginChannelId}-_LIFF_2_`,
+  },
 };
 
 const loginChannelSettings = {
@@ -88,41 +91,44 @@ describe('.getLiffUrl(channel, path, chat)', () => {
       `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`,
     );
     await expect(
-      authenticator.getLiffUrl(botChannel, '/foo'),
+      authenticator.getLiffUrl(botChannel, { liffAppChoice: 'compact' }),
+    ).resolves.toMatchInlineSnapshot(
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_2_?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_2_"`,
+    );
+    await expect(
+      authenticator.getLiffUrl(botChannel, { path: '/foo' }),
     ).resolves.toMatchInlineSnapshot(
       `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`,
     );
     await expect(
-      authenticator.getLiffUrl(botChannel, 'foo?bar=baz'),
+      authenticator.getLiffUrl(botChannel, { path: 'foo?bar=baz' }),
     ).resolves.toMatchInlineSnapshot(
       `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`,
     );
     await expect(
-      authenticator.getLiffUrl(
-        botChannel,
-        'foo?bar=baz',
-        new LineChat('_BOT_CHAN_ID_', 'user', '_USER_ID_'),
-      ),
+      authenticator.getLiffUrl(botChannel, {
+        path: 'foo?bar=baz',
+        chat: new LineChat('_BOT_CHAN_ID_', 'user', '_USER_ID_'),
+      }),
     ).resolves.toMatchInlineSnapshot(
       `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_"`,
     );
     await expect(
-      authenticator.getLiffUrl(
-        botChannel,
-        'foo?bar=baz',
-        new LineChat('_BOT_CHAN_ID_', 'group', '_GROUP_ID_'),
-      ),
+      authenticator.getLiffUrl(botChannel, {
+        path: 'foo?bar=baz',
+        chat: new LineChat('_BOT_CHAN_ID_', 'group', '_GROUP_ID_'),
+      }),
     ).resolves.toMatchInlineSnapshot(
       `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_&groupId=_GROUP_ID_"`,
     );
     await expect(
-      authenticator.getLiffUrl(
-        botChannel,
-        'foo?bar=baz',
-        new LineChat('_BOT_CHAN_ID_', 'room', '_ROOM_ID_'),
-      ),
+      authenticator.getLiffUrl(botChannel, {
+        path: 'foo?bar=baz',
+        chat: new LineChat('_BOT_CHAN_ID_', 'room', '_ROOM_ID_'),
+        liffAppChoice: 'compact',
+      }),
     ).resolves.toMatchInlineSnapshot(
-      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_1_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_1_&roomId=_ROOM_ID_"`,
+      `"https://liff.line.me/_LOGIN_CHAN_ID_-_LIFF_2_/foo?bar=baz&chatChannelId=_BOT_CHAN_ID_&liffId=_LOGIN_CHAN_ID_-_LIFF_2_&roomId=_ROOM_ID_"`,
     );
   });
 

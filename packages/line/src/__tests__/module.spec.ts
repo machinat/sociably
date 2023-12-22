@@ -111,7 +111,10 @@ describe('initModule(configs)', () => {
       channelId: '_CHANNEL_ID_',
       channelSecret: '_CHANNEL_SECRET_',
       accessToken: '_ACCESS_TOKEN_',
-      liff: { default: '_LOGIN_CHANNEL_ID_-_LIFF_SHORT_ID_' },
+      liffApps: {
+        default: '_LOGIN_CHANNEL_-_FULL_LIFF_',
+        compact: '_LOGIN_CHANNEL_-_COMPACT_LIFF_',
+      },
       isLinkedWithLoginChannel: true,
     };
 
@@ -150,11 +153,14 @@ describe('initModule(configs)', () => {
     ).resolves.toEqual(expectedAgentSettings);
 
     await expect(
-      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_'),
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_'),
     ).resolves.toEqual({
       providerId: '_PROVIDER_ID_',
-      channelId: '_LOGIN_CHANNEL_ID_',
-      liffIds: ['_LOGIN_CHANNEL_ID_-_LIFF_SHORT_ID_'],
+      channelId: '_LOGIN_CHANNEL_',
+      liffIds: [
+        '_LOGIN_CHANNEL_-_FULL_LIFF_',
+        '_LOGIN_CHANNEL_-_COMPACT_LIFF_',
+      ],
       refChatChannelIds: ['_CHANNEL_ID_'],
       linkedChatChannelId: '_CHANNEL_ID_',
     });
@@ -180,16 +186,22 @@ describe('initModule(configs)', () => {
                   channelId: '_CHANNEL_ID_1_',
                   channelSecret: '_CHANNEL_SECRET_1_',
                   accessToken: '_ACCESS_TOKEN_1_',
-                  liff: { default: '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_1_' },
+                  liffApps: {
+                    default: '_LOGIN_CHANNEL_1_-_FULL_LIFF_1_',
+                    compact: '_LOGIN_CHANNEL_1_-_COMPACT_LIFF_1_',
+                  },
                 },
                 {
                   botUserId: '_BOT_ID_2_',
                   channelId: '_CHANNEL_ID_2_',
                   channelSecret: '_CHANNEL_SECRET_2_',
                   accessToken: '_ACCESS_TOKEN_2_',
-                  liff: { default: '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_2_' },
                 },
               ],
+              fallbackLiffApps: {
+                default: '_LOGIN_CHANNEL_1_-_FULL_LIFF_2_',
+                compact: '_LOGIN_CHANNEL_1_-_COMPACT_LIFF_2_',
+              },
             },
             {
               providerId: '_PROVIDER_ID_2_',
@@ -199,7 +211,10 @@ describe('initModule(configs)', () => {
                   channelId: '_CHANNEL_ID_3_',
                   channelSecret: '_CHANNEL_SECRET_3_',
                   accessToken: '_ACCESS_TOKEN_3_',
-                  liff: { default: '_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_' },
+                  liffApps: {
+                    default: '_LOGIN_CHANNEL_2_-_FULL_LIFF_3_',
+                    compact: '_LOGIN_CHANNEL_2_-_COMPACT_LIFF_3_',
+                  },
                   isLinkedWithLoginChannel: true,
                 },
               ],
@@ -218,7 +233,10 @@ describe('initModule(configs)', () => {
       channelId: '_CHANNEL_ID_1_',
       channelSecret: '_CHANNEL_SECRET_1_',
       accessToken: '_ACCESS_TOKEN_1_',
-      liff: { default: '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_1_' },
+      liffApps: {
+        default: '_LOGIN_CHANNEL_1_-_FULL_LIFF_1_',
+        compact: '_LOGIN_CHANNEL_1_-_COMPACT_LIFF_1_',
+      },
     };
     const expectedChannel2Settings = {
       botUserId: '_BOT_ID_2_',
@@ -226,7 +244,10 @@ describe('initModule(configs)', () => {
       channelId: '_CHANNEL_ID_2_',
       channelSecret: '_CHANNEL_SECRET_2_',
       accessToken: '_ACCESS_TOKEN_2_',
-      liff: { default: '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_2_' },
+      liffApps: {
+        default: '_LOGIN_CHANNEL_1_-_FULL_LIFF_2_',
+        compact: '_LOGIN_CHANNEL_1_-_COMPACT_LIFF_2_',
+      },
     };
     const expectedChannel3Settings = {
       botUserId: '_BOT_ID_3_',
@@ -234,8 +255,11 @@ describe('initModule(configs)', () => {
       channelId: '_CHANNEL_ID_3_',
       channelSecret: '_CHANNEL_SECRET_3_',
       accessToken: '_ACCESS_TOKEN_3_',
-      liff: { default: '_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_' },
       isLinkedWithLoginChannel: true,
+      liffApps: {
+        default: '_LOGIN_CHANNEL_2_-_FULL_LIFF_3_',
+        compact: '_LOGIN_CHANNEL_2_-_COMPACT_LIFF_3_',
+      },
     };
 
     await expect(
@@ -274,22 +298,27 @@ describe('initModule(configs)', () => {
     ).resolves.toEqual(expectedChannel3Settings);
 
     await expect(
-      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_1_'),
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_1_'),
     ).resolves.toEqual({
       providerId: '_PROVIDER_ID_1_',
-      channelId: '_LOGIN_CHANNEL_ID_1_',
+      channelId: '_LOGIN_CHANNEL_1_',
       liffIds: [
-        '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_1_',
-        '_LOGIN_CHANNEL_ID_1_-_LIFF_SHORT_ID_2_',
+        '_LOGIN_CHANNEL_1_-_FULL_LIFF_1_',
+        '_LOGIN_CHANNEL_1_-_COMPACT_LIFF_1_',
+        '_LOGIN_CHANNEL_1_-_FULL_LIFF_2_',
+        '_LOGIN_CHANNEL_1_-_COMPACT_LIFF_2_',
       ],
       refChatChannelIds: ['_CHANNEL_ID_1_', '_CHANNEL_ID_2_'],
     });
     await expect(
-      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_ID_2_'),
+      settingsAccessor.getLineLoginChannelSettings('_LOGIN_CHANNEL_2_'),
     ).resolves.toEqual({
       providerId: '_PROVIDER_ID_2_',
-      channelId: '_LOGIN_CHANNEL_ID_2_',
-      liffIds: ['_LOGIN_CHANNEL_ID_2_-_LIFF_SHORT_ID_3_'],
+      channelId: '_LOGIN_CHANNEL_2_',
+      liffIds: [
+        '_LOGIN_CHANNEL_2_-_FULL_LIFF_3_',
+        '_LOGIN_CHANNEL_2_-_COMPACT_LIFF_3_',
+      ],
       refChatChannelIds: ['_CHANNEL_ID_3_'],
       linkedChatChannelId: '_CHANNEL_ID_3_',
     });

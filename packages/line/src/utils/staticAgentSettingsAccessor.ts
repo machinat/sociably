@@ -13,7 +13,9 @@ export const createSingleStaticAgentSettingsAccessor = (
     botUserId?: string;
   },
 ): AgentSettingsAccessorI => {
-  const liffIds = agentSettings.liff ? Object.values(agentSettings.liff) : [];
+  const liffIds = agentSettings.liffApps
+    ? Object.values(agentSettings.liffApps)
+    : [];
   const loginChannelIds = liffIds.map(getLoginChannelIdFromLiffId);
 
   const polishedChannelSettings = {
@@ -53,12 +55,20 @@ export const createMultiStaticNumberSettingsAccessor = (
   const messagingChannelsSettings = new Map<string, SettingsWithBotUserId>();
   const loginChannelsSettings = new Map<string, LineLoginChannelSettings>();
 
-  for (const { providerId, channels, fallbackLiff } of providerSettingsList) {
+  for (const {
+    providerId,
+    channels,
+    fallbackLiffApps,
+  } of providerSettingsList) {
     for (const channelDetails of channels) {
-      const agentSettings = { providerId, ...channelDetails };
+      const agentSettings: SettingsWithBotUserId = {
+        providerId,
+        ...channelDetails,
+        liffApps: channelDetails.liffApps ?? fallbackLiffApps,
+      };
       messagingChannelsSettings.set(agentSettings.channelId, agentSettings);
 
-      const liffSettings = agentSettings.liff ?? fallbackLiff;
+      const liffSettings = agentSettings.liffApps ?? fallbackLiffApps;
       const liffIds = liffSettings ? Object.values(liffSettings) : [];
       const loginChannelIds = liffIds.map(getLoginChannelIdFromLiffId);
 
@@ -81,7 +91,11 @@ export const createMultiStaticNumberSettingsAccessor = (
             ]),
           ];
           if (agentSettings.isLinkedWithLoginChannel) {
-            if (loginChannelSettings.linkedChatChannelId) {
+            if (
+              loginChannelSettings.linkedChatChannelId &&
+              loginChannelSettings.linkedChatChannelId !==
+                agentSettings.channelId
+            ) {
               throw new Error(
                 `Login channel ${loginChannelId} is already linked with ${loginChannelSettings.linkedChatChannelId}`,
               );

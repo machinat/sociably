@@ -2,6 +2,7 @@ import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
 import { UriAction } from '../components/index.js';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
+import { LiffAppChoiceSetting } from '../types.js';
 import ServerAuthenticator from './ServerAuthenticator.js';
 
 type WebviewActionProps = {
@@ -9,19 +10,20 @@ type WebviewActionProps = {
   label?: string;
   /** The webview page to open */
   page?: string;
+  /** Choose the LIFF App to use */
+  liffAppChoice?: keyof LiffAppChoiceSetting;
 };
 
 const WebviewAction =
-  (authenticator: ServerAuthenticator, target: RenderingTarget) =>
-  async ({ label, page }: WebviewActionProps) => {
-    if (!target || !(target instanceof LineChat)) {
+  (authenticator: ServerAuthenticator, targetChat: RenderingTarget) =>
+  async ({ label, page, liffAppChoice }: WebviewActionProps) => {
+    if (!targetChat || !(targetChat instanceof LineChat)) {
       throw new Error('WebviewAction can only be used in a LineChat');
     }
 
     const url = await authenticator.getLiffUrl(
-      new LineChannel(target.channelId),
-      page,
-      target,
+      new LineChannel(targetChat.channelId),
+      { path: page, chat: targetChat, liffAppChoice },
     );
     return <UriAction label={label} uri={url} />;
   };
