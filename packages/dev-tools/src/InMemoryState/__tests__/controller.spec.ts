@@ -9,10 +9,6 @@ const fooInstance = {
   $$typeofUser: true as const,
   platform: 'test',
   uid: 'test.foo',
-  uniqueIdentifier: {
-    platform: 'test',
-    id: 'foo',
-  },
 };
 
 test.each([
@@ -52,6 +48,16 @@ test.each([
       ['key2', 'baz'],
     ]),
   );
+  expect(fooState.getAllKeysStartWith('key')).resolves.toEqual(
+    new Map([
+      ['key1', 'bar'],
+      ['key2', 'baz'],
+    ]),
+  );
+  expect(fooState.getAllKeysStartWith('key1')).resolves.toEqual(
+    new Map([['key1', 'bar']]),
+  );
+  expect(fooState.getAllKeysStartWith('xxx')).resolves.toEqual(new Map());
 
   await expect(
     barState.set('key1', { foo: { bar: { baz: 'bae' } } }),

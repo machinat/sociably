@@ -710,7 +710,6 @@ describe('.dispatchJobs(target, tasks, node)', () => {
   const target = {
     platform: 'test',
     uid: 'test.foo',
-    uniqueIdentifier: { platform: 'test', id: 'foo' },
   };
   const jobs = [{ id: 1 }, { id: 2 }, { id: 3 }];
 

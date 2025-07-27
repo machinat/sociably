@@ -23,12 +23,6 @@ test('with id only', () => {
   expect(user.profile).toBe(null);
 
   expect(user.uid).toBe('twtr.6253282');
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "6253282",
-      "platform": "twitter",
-    }
-  `);
 
   expect(user.typeName()).toBe('TwtrUser');
   expect(user.toJSONValue()).toEqual({ id: '6253282' });
@@ -42,12 +36,6 @@ test('with user data', () => {
   expect(user.profile).toStrictEqual(new TwitterUserProfile(userData));
 
   expect(user.uid).toBe('twtr.6253282');
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "6253282",
-      "platform": "twitter",
-    }
-  `);
 
   expect(user.typeName()).toBe('TwtrUser');
   expect(user.toJSONValue()).toEqual({ id: '6253282' });

@@ -9,12 +9,6 @@ test('attributes', () => {
 
   expect(page.id).toBe('12345');
 
-  expect(page.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "12345",
-      "platform": "facebook",
-    }
-  `);
   expect(page.toJSONValue()).toMatchInlineSnapshot(`
     {
       "page": "12345",

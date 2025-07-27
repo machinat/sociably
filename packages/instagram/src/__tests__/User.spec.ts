@@ -7,14 +7,6 @@ test('properties', () => {
   expect(user.agentId).toBe('1234567890');
   expect(user.id).toBe('foo');
   expect(user.uid).toMatchInlineSnapshot(`"ig.1234567890.foo"`);
-
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "foo",
-      "platform": "instagram",
-      "scopeId": "1234567890",
-    }
-  `);
 });
 
 test('marshallable', () => {

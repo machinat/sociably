@@ -165,12 +165,6 @@ export type RawProps = {
 };
 export type RawElement = SociablyElement<RawProps, typeof SOCIABLY_RAW_TYPE>;
 
-export type UniqueOmniIdentifier = {
-  readonly platform: string;
-  readonly scopeId?: string | number;
-  readonly id: string | number;
-};
-
 /**
  * A channel represents an instance that user can communicate with. It could be
  * a phone number, an email address, an account on social media, etc. depending
@@ -179,11 +173,6 @@ export type UniqueOmniIdentifier = {
 export type SociablyChannel = {
   readonly $$typeofChannel: true;
   readonly platform: string;
-  /**
-   * A set of attributes to identify the channel. All the attributes together
-   * can be used as an unique key of the channel
-   */
-  readonly uniqueIdentifier: UniqueOmniIdentifier;
   /**
    * The unique string id of the channel. It's promised to be unique while using
    * Sociably
@@ -199,11 +188,6 @@ export type SociablyThread = {
   readonly $$typeofThread: true;
   readonly platform: string;
   /**
-   * A set of attributes to identify the thread. All the attributes together can
-   * be used as an unique key of the thread
-   */
-  readonly uniqueIdentifier: UniqueOmniIdentifier;
-  /**
    * The unique string id of the thread. It's promised to be unique while using
    * Sociably
    */
@@ -214,11 +198,6 @@ export type SociablyThread = {
 export type SociablyUser = {
   readonly $$typeofUser: true;
   readonly platform: string;
-  /**
-   * A set of attributes to identify the user. All the attributes together can
-   * be used as an unique key of the user
-   */
-  readonly uniqueIdentifier: UniqueOmniIdentifier;
   /**
    * The unique string id of the user. It's promised to be unique while using
    * Sociably

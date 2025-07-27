@@ -1,4 +1,4 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import type { ConnectionTarget } from '@sociably/websocket';
 import { WEBVIEW } from './constant.js';
@@ -29,14 +29,6 @@ class WebviewConnection
   constructor(serverId: string, id: string) {
     this.serverId = serverId;
     this.id = id;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: WEBVIEW,
-      scopeId: this.serverId,
-      id: this.id,
-    };
   }
 
   get uid(): string {

@@ -6,13 +6,6 @@ test('with no reply tweet', () => {
   expect(user.agentId).toBe('1234567890');
   expect(user.tweetId).toBe(undefined);
   expect(user.uid).toBe('twtr.1234567890.-');
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "-",
-      "platform": "twitter",
-      "scopeId": "1234567890",
-    }
-  `);
 
   expect(user.typeName()).toBe('TwtrTweetTarget');
   expect(user.toJSONValue()).toEqual({ agent: '1234567890' });
@@ -24,13 +17,6 @@ test('with reply tweet id', () => {
   expect(user.agentId).toBe('1234567890');
   expect(user.tweetId).toBe('1111111111');
   expect(user.uid).toBe('twtr.1234567890.1111111111');
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "1111111111",
-      "platform": "twitter",
-      "scopeId": "1234567890",
-    }
-  `);
 
   expect(user.typeName()).toBe('TwtrTweetTarget');
   expect(user.toJSONValue()).toEqual({

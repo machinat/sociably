@@ -31,9 +31,9 @@ const location = moxy(parseUrl('https://sociably.io/hello'));
 (global as any).window = { location } as never;
 
 const user = {
+  $$typeofUser: true as const,
   platform: 'test',
   uid: 'test.john_doe',
-  uniqueIdentifier: { platform: 'test', id: 'john_doe' },
 };
 const login = moxy(async () => ({
   user,

@@ -10,12 +10,6 @@ test('attributes', () => {
   expect(agent.id).toBe('12345');
   expect(agent.username).toBe('jojodoe123');
 
-  expect(agent.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "12345",
-      "platform": "instagram",
-    }
-  `);
   expect(agent.toJSONValue()).toMatchInlineSnapshot(`
     {
       "id": "12345",

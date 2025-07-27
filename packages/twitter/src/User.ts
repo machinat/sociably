@@ -1,8 +1,4 @@
-import type {
-  SociablyUser,
-  SociablyChannel,
-  UniqueOmniIdentifier,
-} from '@sociably/core';
+import type { SociablyUser, SociablyChannel } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import UserProfile from './UserProfile.js';
 import { TWITTER, TWTR } from './constant.js';
@@ -33,13 +29,6 @@ export default class TwitterUser
   constructor(id: string, rawData?: RawUser) {
     this.id = id;
     this.data = rawData || null;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: TWITTER,
-      id: this.id,
-    };
   }
 
   get uid(): string {

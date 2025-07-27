@@ -1,4 +1,3 @@
-import type { UniqueOmniIdentifier } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { MetaApiChannel } from '@sociably/meta-api';
 import { FACEBOOK, FB } from './constant.js';
@@ -22,13 +21,6 @@ class FacebookPage
 
   constructor(pageId: string) {
     this.id = pageId;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: FACEBOOK,
-      id: this.id,
-    };
   }
 
   get uid(): string {

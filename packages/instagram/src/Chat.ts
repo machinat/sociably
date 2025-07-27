@@ -1,4 +1,3 @@
-import type { UniqueOmniIdentifier } from '@sociably/core';
 import { MessengerChat } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import InstagramAgent from './Agent.js';
@@ -49,14 +48,6 @@ class InstagramChat implements MessengerChat, MarshallableInstance<ChatValue> {
 
   get agent(): InstagramAgent {
     return new InstagramAgent(this.agentId);
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: INSTAGRAM,
-      scopeId: this.agentId,
-      id: this.id,
-    };
   }
 
   get uid(): string {

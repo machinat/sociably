@@ -85,6 +85,15 @@ export class FileStateAccessor implements StateAccessor {
     );
   }
 
+  async getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>> {
+    const data = await this._getData();
+    return new Map(
+      Object.entries(data)
+        .filter(([key]) => key.startsWith(prefix))
+        .map(([key, value]) => [key, this._marshaler.unmarshal(value)]),
+    );
+  }
+
   async delete(key: string): Promise<boolean> {
     const data = await this._getData();
     const isExisted = objectHasOwnProperty(data, key);
@@ -164,11 +173,11 @@ export class FileStateController implements BaseStateController {
     );
   }
 
-  globalState(name: string): FileStateAccessor {
+  globalState(stateId: string): FileStateAccessor {
     return new FileStateAccessor(
       this.marshaler,
-      this._getDataCallback('globalStates', name),
-      this._updateDataCallback('globalStates', name),
+      this._getDataCallback('globalStates', stateId),
+      this._updateDataCallback('globalStates', stateId),
     );
   }
 

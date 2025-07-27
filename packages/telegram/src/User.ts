@@ -1,8 +1,4 @@
-import type {
-  SociablyUser,
-  SociablyChannel,
-  UniqueOmniIdentifier,
-} from '@sociably/core';
+import type { SociablyUser, SociablyChannel } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TELEGRAM, TG } from './constant.js';
 import UserProfile from './UserProfile.js';
@@ -55,13 +51,6 @@ class TelegramUser
   /** Profile of the user */
   get profile(): null | UserProfile {
     return this.data ? new UserProfile(this.data) : null;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: TELEGRAM,
-      id: this.id,
-    };
   }
 
   /** Unique id of the user */

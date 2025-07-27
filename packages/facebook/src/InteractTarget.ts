@@ -1,4 +1,4 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import FacebookPage from './Page.js';
 import { FACEBOOK, FB } from './constant.js';
@@ -33,14 +33,6 @@ class FacebookInteractTarget
 
   get page(): FacebookPage {
     return new FacebookPage(this.pageId);
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: FACEBOOK,
-      scopeId: this.pageId,
-      id: this.id,
-    };
   }
 
   get uid(): string {

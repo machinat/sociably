@@ -1,8 +1,4 @@
-import {
-  SociablyThread,
-  SociablyUser,
-  UniqueOmniIdentifier,
-} from '@sociably/core';
+import { SociablyThread, SociablyUser } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { WEBVIEW } from '../../constant.js';
 import { MEMO } from './constant.js';
@@ -44,14 +40,6 @@ class MemoCacheTarget
 
   get uid(): string {
     return `${WEBVIEW}.${MEMO}.${this.id}`;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: WEBVIEW,
-      scopeId: this.scope,
-      id: this.id,
-    };
   }
 
   toJSONValue(): MemoCacheTargetValue {

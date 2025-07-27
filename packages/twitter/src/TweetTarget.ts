@@ -1,4 +1,4 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import TwitterUser from './User.js';
 import { TWITTER, TWTR } from './constant.js';
@@ -32,14 +32,6 @@ export default class TwitterTweetTarget
   constructor(agentId: string, tweetId?: string) {
     this.agentId = agentId;
     this.tweetId = tweetId;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: TWITTER,
-      scopeId: this.agentId,
-      id: this.tweetId || DEFAULT_FEED_SIGN,
-    };
   }
 
   get uid(): string {

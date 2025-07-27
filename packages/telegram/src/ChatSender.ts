@@ -1,4 +1,4 @@
-import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyUser } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TELEGRAM, TG } from './constant.js';
 import ChatProfile from './ChatProfile.js';
@@ -35,13 +35,6 @@ class TelegramChatSender
   /** Type of the chat */
   get type(): 'supergroup' | 'channel' {
     return this.data.type as 'supergroup' | 'channel';
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: TELEGRAM,
-      id: this.id,
-    };
   }
 
   /** Unique id of the chat sender user */

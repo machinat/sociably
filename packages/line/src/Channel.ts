@@ -1,4 +1,4 @@
-import type { SociablyChannel, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyChannel } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant.js';
 
@@ -21,13 +21,6 @@ class LineChannel
 
   constructor(id: string) {
     this.id = id;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: LINE,
-      id: this.id,
-    };
   }
 
   get uid(): string {

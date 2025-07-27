@@ -33,6 +33,7 @@ export type StateAccessor = {
   delete(key: string): Promise<boolean>;
   keys(): Promise<string[]>;
   getAll<T>(): Promise<Map<string, T>>;
+  getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>>;
   clear(): Promise<undefined | number>;
 };
 
@@ -56,8 +57,8 @@ export type BaseStateController = {
     user: SociablyUser,
   ): StateAccessor;
 
-  /** Return the {@link StateAccessor} for a global name */
-  globalState(name: string): StateAccessor;
+  /** Return the {@link StateAccessor} for a global state */
+  globalState(stateId: string): StateAccessor;
 };
 
 const StateControllerI = serviceInterface<BaseStateController>({

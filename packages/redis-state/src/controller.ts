@@ -26,7 +26,7 @@ export class RedisStateAccessor implements StateAccessor {
     this._stateKey = key;
   }
 
-  async get<T>(key: string): Promise<T> {
+  async get<T>(key: string): Promise<undefined | T> {
     const result = await this._callClient('hget', this._stateKey, key);
 
     return result ? this._parseValue(result) : undefined;
@@ -91,6 +91,30 @@ export class RedisStateAccessor implements StateAccessor {
     );
   }
 
+  async getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>> {
+    let start = 0;
+    const result = new Map<string, T>();
+
+    do {
+      // eslint-disable-next-line no-await-in-loop
+      const [nextCursor, keysAndValues] = await this._callClient(
+        'hscan',
+        this._stateKey,
+        `${start}`,
+        'MATCH',
+        `${prefix}*`,
+      );
+      start = parseInt(nextCursor, 10);
+      for (let i = 0; i < keysAndValues.length; i += 2) {
+        const key = keysAndValues[i];
+        const value = keysAndValues[i + 1];
+        result.set(key, this._parseValue(value));
+      }
+    } while (start !== 0);
+
+    return result;
+  }
+
   async clear(): Promise<undefined> {
     await this._callClient('del', this._stateKey);
     return undefined;
@@ -126,7 +150,7 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$C:${channelUid}`,
+      `$channel:${channelUid}`,
     );
   }
 
@@ -136,7 +160,7 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$T:${threadUid}`,
+      `$thread:${threadUid}`,
     );
   }
 
@@ -146,15 +170,15 @@ export class RedisStateController implements BaseStateController {
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$U:${userUid}`,
+      `$user:${userUid}`,
     );
   }
 
-  globalState(name: string): RedisStateAccessor {
+  globalState(stateId: string): RedisStateAccessor {
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$G:${name}`,
+      `$global:${stateId}`,
     );
   }
 

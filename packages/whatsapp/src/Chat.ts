@@ -1,4 +1,4 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { WHATSAPP, WA } from './constant.js';
 import WhatsAppAgent from './Agent.js';
@@ -31,14 +31,6 @@ class WhatsAppChat
   constructor(agentNumberId: string, userNumberId: string) {
     this.agentNumberId = agentNumberId;
     this.userNumberId = userNumberId;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: WHATSAPP,
-      scopeId: this.agentNumberId,
-      id: this.userNumberId,
-    };
   }
 
   get uid(): string {

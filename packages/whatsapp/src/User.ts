@@ -1,4 +1,4 @@
-import type { SociablyUser, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyUser } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import UserProfile from './UserProfile.js';
 import { WHATSAPP, WA } from './constant.js';
@@ -32,13 +32,6 @@ class WhatsAppUser
     return this.profileData
       ? new UserProfile(this.numberId, this.profileData)
       : null;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: WHATSAPP,
-      id: this.numberId,
-    };
   }
 
   get uid(): string {

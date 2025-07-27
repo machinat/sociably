@@ -11,13 +11,6 @@ test('from id', () => {
   expect(chat.type).toBe('user');
   expect(chat.target).toEqual({ id: '67890' });
 
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "67890",
-      "platform": "instagram",
-      "scopeId": "12345",
-    }
-  `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "agent": "12345",
@@ -42,13 +35,6 @@ test('from comment', () => {
   expect(chat.type).toBe('comment');
   expect(chat.target).toEqual({ comment_id: '_COMMENT_ID_' });
 
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "_COMMENT_ID_",
-      "platform": "instagram",
-      "scopeId": "12345",
-    }
-  `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "agent": "12345",

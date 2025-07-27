@@ -6,13 +6,6 @@ test('preperties', () => {
   expect(user.platform).toBe('line');
   expect(user.id).toBe('_CHANNEL_ID_');
   expect(user.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_"`);
-
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "_CHANNEL_ID_",
-      "platform": "line",
-    }
-  `);
 });
 
 test('marshallable', () => {

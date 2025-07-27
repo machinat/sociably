@@ -7,14 +7,6 @@ test('properties', () => {
   expect(user.pageId).toBe('1234567890');
   expect(user.id).toBe('foo');
   expect(user.uid).toMatchInlineSnapshot(`"fb.1234567890.foo"`);
-
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "foo",
-      "platform": "facebook",
-      "scopeId": "1234567890",
-    }
-  `);
 });
 
 test('marshallable', () => {

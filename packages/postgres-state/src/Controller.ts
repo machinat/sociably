@@ -15,8 +15,6 @@ import {
   DEFAULT_CHANNEL_STATE_TABLE_NAME,
   DEFAULT_THREAD_STATE_TABLE_NAME,
   DEFAULT_USER_STATE_TABLE_NAME,
-  FIELD_STATE_PLATFORM,
-  FIELD_STATE_SCOPE_ID,
   FIELD_STATE_DATA,
   FIELD_STATE_KEY,
   FIELD_STATE_ID,
@@ -25,8 +23,6 @@ import {
 } from './constants.js';
 import PostgresStateAccessor from './StateAccessor.js';
 import tableId from './utils/tableId.js';
-import getGlobalStateIdentifierFields from './utils/getGlobalStateIdentifierFields.js';
-import getInstanceStateIdentifierFields from './utils/getInstanceStateIdentifierFields.js';
 import { ConnectionPoolI, ConfigsI } from './interface.js';
 
 const identity = (x) => x;
@@ -77,9 +73,9 @@ export class PostgresStateController implements BaseStateController {
     return new PostgresStateAccessor(
       this._pool,
       this._marshaler,
-      getInstanceStateIdentifierFields(channel.uniqueIdentifier),
       this.schemaName,
       this.channelStateTableName,
+      channel.uid,
     );
   }
 
@@ -87,9 +83,9 @@ export class PostgresStateController implements BaseStateController {
     return new PostgresStateAccessor(
       this._pool,
       this._marshaler,
-      getInstanceStateIdentifierFields(thread.uniqueIdentifier),
       this.schemaName,
       this.threadStateTableName,
+      thread.uid,
     );
   }
 
@@ -97,19 +93,19 @@ export class PostgresStateController implements BaseStateController {
     return new PostgresStateAccessor(
       this._pool,
       this._marshaler,
-      getInstanceStateIdentifierFields(user.uniqueIdentifier),
       this.schemaName,
       this.userStateTableName,
+      user.uid,
     );
   }
 
-  globalState(name: string): StateAccessor {
+  globalState(stateId: string): StateAccessor {
     return new PostgresStateAccessor(
       this._pool,
       this._marshaler,
-      getGlobalStateIdentifierFields(name),
       this.schemaName,
       this.globalStateTableName,
+      stateId,
     );
   }
 
@@ -120,35 +116,21 @@ export class PostgresStateController implements BaseStateController {
           ? `CREATE SCHEMA IF NOT EXISTS "${this.schemaName}";`
           : ''
       }
-      CREATE TABLE IF NOT EXISTS ${this._tableId(this.globalStateTableName)} (
-        "${FIELD_STATE_ID}" varchar(255),
-        "${FIELD_STATE_KEY}" varchar(255),
-        "${FIELD_STATE_DATA}" jsonb,
-        "${FIELD_CREATED_AT}" timestamp DEFAULT current_timestamp,
-        "${FIELD_UPDATED_AT}" timestamp DEFAULT current_timestamp,
-        PRIMARY KEY (
-          "${FIELD_STATE_ID}",
-          "${FIELD_STATE_KEY}"
-        )
-      );
       ${[
         this.channelStateTableName,
         this.threadStateTableName,
         this.userStateTableName,
+        this.globalStateTableName,
       ]
         .map(
           (tableName) => `
       CREATE TABLE IF NOT EXISTS ${this._tableId(tableName)} (
-        "${FIELD_STATE_PLATFORM}" varchar(30),
-        "${FIELD_STATE_SCOPE_ID}" varchar(255),
         "${FIELD_STATE_ID}" varchar(255),
         "${FIELD_STATE_KEY}" varchar(255),
         "${FIELD_STATE_DATA}" jsonb,
         "${FIELD_CREATED_AT}" timestamp DEFAULT current_timestamp,
         "${FIELD_UPDATED_AT}" timestamp DEFAULT current_timestamp,
         PRIMARY KEY (
-          "${FIELD_STATE_PLATFORM}",
-          "${FIELD_STATE_SCOPE_ID}",
           "${FIELD_STATE_ID}",
           "${FIELD_STATE_KEY}"
         )

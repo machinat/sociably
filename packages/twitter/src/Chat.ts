@@ -1,4 +1,4 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import TwitterUser from './User.js';
 import { TWITTER, TWTR } from './constant.js';
@@ -27,14 +27,6 @@ export default class TwitterChat
   constructor(agentId: string, userId: string) {
     this.agentId = agentId;
     this.userId = userId;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: TWITTER,
-      scopeId: this.agentId,
-      id: this.userId,
-    };
   }
 
   /** The unique id of the direct message thread */

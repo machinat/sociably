@@ -1,7 +1,5 @@
 import { PoolConfig } from 'pg';
 import {
-  FIELD_STATE_PLATFORM,
-  FIELD_STATE_SCOPE_ID,
   FIELD_STATE_DATA,
   FIELD_STATE_KEY,
   FIELD_STATE_ID,
@@ -28,10 +26,4 @@ export type BasicStateEntity = {
   [FIELD_STATE_ID]: string;
   [FIELD_STATE_KEY]: string;
   [FIELD_STATE_DATA]: { value: unknown };
-};
-
-export type InstanceStateEntity = BasicStateEntity & {
-  [FIELD_STATE_PLATFORM]: string;
-  // NOTE: use '' when `scopeId` is null, cuz null can't be identified by unique index
-  [FIELD_STATE_SCOPE_ID]: string;
 };

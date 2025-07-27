@@ -1,4 +1,4 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { LINE } from './constant.js';
 import LineChannel from './Channel.js';
@@ -49,14 +49,6 @@ class LineChat implements SociablyThread, MarshallableInstance<LineChatValue> {
     this.channelId = channelId;
     this.type = type;
     this.id = id;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: LINE,
-      scopeId: this.channelId,
-      id: this.id,
-    };
   }
 
   get uid(): string {

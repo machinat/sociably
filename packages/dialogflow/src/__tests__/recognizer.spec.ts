@@ -61,10 +61,6 @@ const thread: SociablyThread = {
   $$typeofThread: true,
   platform: 'test',
   uid: 'foo.chat',
-  uniqueIdentifier: {
-    platform: 'test',
-    id: 'foo',
-  },
 };
 
 test('throw if porjectId is empty', () => {

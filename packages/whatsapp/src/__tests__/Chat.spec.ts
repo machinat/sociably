@@ -8,13 +8,6 @@ test('constructing', () => {
   expect(chat.typeName()).toBe('WaChat');
 
   expect(chat.uid).toMatchInlineSnapshot(`"wa.1234567890.9876543210"`);
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "9876543210",
-      "platform": "whatsapp",
-      "scopeId": "1234567890",
-    }
-  `);
 
   expect(chat.agentNumberId).toBe('1234567890');
   expect(chat.userNumberId).toBe('9876543210');

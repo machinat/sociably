@@ -7,9 +7,7 @@ import {
   DEFAULT_CHANNEL_STATE_TABLE_NAME,
   DEFAULT_THREAD_STATE_TABLE_NAME,
   DEFAULT_USER_STATE_TABLE_NAME,
-  FIELD_STATE_PLATFORM,
   FIELD_STATE_KEY,
-  FIELD_STATE_SCOPE_ID,
   FIELD_STATE_ID,
   FIELD_STATE_DATA,
   FIELD_CREATED_AT,
@@ -110,7 +108,7 @@ describe.each<[string, Record<string, string>]>([
       string, // test name
       StateAccessor, // state accessor object
       string, // table name
-      Record<string, unknown>, // identifier fields in DB
+      string, // expected state id
     ]
   >([
     [
@@ -118,127 +116,87 @@ describe.each<[string, Record<string, string>]>([
       controller.channelState({
         platform: 'test',
         uid: 'test.foo',
-        uniqueIdentifier: { platform: 'test', id: 'foo' },
       } as SociablyChannel),
       `${schemaPrefix}"${channelStateTableName}"`,
-      {
-        [FIELD_STATE_PLATFORM]: 'test',
-        [FIELD_STATE_SCOPE_ID]: '',
-        [FIELD_STATE_ID]: 'foo',
-      },
+      'test.foo',
     ],
     [
       'channel state with scope id',
       controller.channelState({
         platform: 'test',
         uid: 'test.foo.1',
-        uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
       } as SociablyChannel),
       `${schemaPrefix}"${channelStateTableName}"`,
-      {
-        [FIELD_STATE_PLATFORM]: 'test',
-        [FIELD_STATE_SCOPE_ID]: 'foo',
-        [FIELD_STATE_ID]: '1',
-      },
+      'test.foo.1',
     ],
     [
       'thread state',
       controller.threadState({
         platform: 'test',
         uid: 'test.foo',
-        uniqueIdentifier: { platform: 'test', id: 'foo' },
       } as SociablyThread),
       `${schemaPrefix}"${threadStateTableName}"`,
-      {
-        [FIELD_STATE_PLATFORM]: 'test',
-        [FIELD_STATE_SCOPE_ID]: '',
-        [FIELD_STATE_ID]: 'foo',
-      },
+      'test.foo',
     ],
     [
       'thread state with scope id',
       controller.threadState({
         platform: 'test',
         uid: 'test.foo.1',
-        uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
       } as SociablyThread),
       `${schemaPrefix}"${threadStateTableName}"`,
-      {
-        [FIELD_STATE_PLATFORM]: 'test',
-        [FIELD_STATE_SCOPE_ID]: 'foo',
-        [FIELD_STATE_ID]: '1',
-      },
+      'test.foo.1',
     ],
     [
       'user state',
       controller.userState({
         platform: 'test',
-        uid: 'test.foo',
-        uniqueIdentifier: { platform: 'test', id: 'foo' },
+        uid: 'test.foo.john',
       } as SociablyUser),
       `${schemaPrefix}"${userStateTableName}"`,
-      {
-        [FIELD_STATE_PLATFORM]: 'test',
-        [FIELD_STATE_SCOPE_ID]: '',
-        [FIELD_STATE_ID]: 'foo',
-      },
+      'test.foo.john',
     ],
     [
       'user state with scope id',
       controller.userState({
         platform: 'test',
-        uid: 'test.foo.1',
-        uniqueIdentifier: { platform: 'test', scopeId: 'foo', id: 1 },
+        uid: 'test.foo.jane',
       } as SociablyUser),
       `${schemaPrefix}"${userStateTableName}"`,
-      {
-        [FIELD_STATE_PLATFORM]: 'test',
-        [FIELD_STATE_SCOPE_ID]: 'foo',
-        [FIELD_STATE_ID]: '1',
-      },
+      'test.foo.jane',
     ],
     [
       'global state',
       controller.globalState('MY_SUPER_STATE'),
       `${schemaPrefix}"${globalStateTableName}"`,
-      {
-        [FIELD_STATE_ID]: 'MY_SUPER_STATE',
-      },
+      'MY_SUPER_STATE',
     ],
-  ])('%s', (__, state, tableId, idFields) => {
-    const idKeys = Object.keys(idFields);
-    const insertStateEntities = (pairs) => {
-      const w = 2 + idKeys.length;
-      return pgPool.query({
+  ])('%s', (__, state, tableId, stateId) => {
+    const insertStateEntities = (pairs: [string, unknown][]) =>
+      pgPool.query({
         text: `
           INSERT INTO ${tableId} (
+          "${FIELD_STATE_ID}",
             "${FIELD_STATE_KEY}",
-            "${FIELD_STATE_DATA}",
-            ${idKeys.map((name) => `"${name}"`).join(', ')}
+            "${FIELD_STATE_DATA}"
           ) VALUES ${pairs
-            .map(
-              (_p, i) =>
-                `($${i * w + 1}, $${i * w + 2}, ${idKeys
-                  .map((_n, j) => `$${i * w + j + 3}`)
-                  .join(', ')})`,
-            )
+            .map((_p, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`)
             .join(', ')};
         `,
-        values: pairs
-          .map(([key, value]) => [key, { value }, ...Object.values(idFields)])
-          .flat(),
+        values: pairs.flatMap(([key, value]) => [
+          stateId,
+          key,
+          JSON.stringify({ value }),
+        ]),
       });
-    };
 
     const getStateEntities = async () => {
       const result = await pgPool.query({
         text: `
             SELECT * FROM ${tableId} WHERE
-            ${Object.keys(idFields)
-              .map((k, i) => `"${k}"=$${i + 1}`)
-              .join(' AND ')}
+            "${FIELD_STATE_ID}" = $1;
           `,
-        values: Object.values(idFields),
+        values: [stateId],
       });
       return result.rows;
     };
@@ -266,7 +224,7 @@ describe.each<[string, Record<string, string>]>([
       await pgPool.query(`DELETE FROM ${tableId};`);
     });
 
-    test('.get()', async () => {
+    test('.get(key)', async () => {
       await Promise.all(
         (
           [
@@ -288,7 +246,7 @@ describe.each<[string, Record<string, string>]>([
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
     });
 
-    test('.set()', async () => {
+    test('.set(key, value)', async () => {
       await Promise.all(
         (
           [
@@ -310,7 +268,7 @@ describe.each<[string, Record<string, string>]>([
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
     });
 
-    describe('.update()', () => {
+    describe('.update(key, updater)', () => {
       it('update value', async () => {
         const cases = [
           ['key1', undefined, 'foo'],
@@ -350,7 +308,7 @@ describe.each<[string, Record<string, string>]>([
         await expect(getStateEntities()).resolves.toEqual(
           expect.arrayContaining(
             cases.map(([key, , newValue]) => ({
-              ...idFields,
+              [FIELD_STATE_ID]: stateId,
               [FIELD_STATE_KEY]: key,
               [FIELD_STATE_DATA]: { value: newValue },
               [FIELD_CREATED_AT]: expect.any(Date),
@@ -414,7 +372,7 @@ describe.each<[string, Record<string, string>]>([
         await expect(getStateEntities()).resolves.toEqual(
           expect.arrayContaining(
             cases.map(([key, value]) => ({
-              ...idFields,
+              [FIELD_STATE_ID]: stateId,
               [FIELD_STATE_KEY]: key,
               [FIELD_STATE_DATA]: { value },
               [FIELD_CREATED_AT]: expect.any(Date),
@@ -425,7 +383,7 @@ describe.each<[string, Record<string, string>]>([
       });
     });
 
-    test('.delete()', async () => {
+    test('.delete(key)', async () => {
       await Promise.all(
         (
           [
@@ -488,6 +446,27 @@ describe.each<[string, Record<string, string>]>([
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
     });
 
+    test('.getAllKeysStartWith(prefix)', async () => {
+      await expect(state.getAllKeysStartWith('key')).resolves.toEqual(
+        new Map<string, unknown>([
+          ['key2', 'foo'],
+          ['key3', 123],
+          ['key4', { bar: 'baz' }],
+          ['key5', [{ a: 0 }, { b: 1 }, { c: 2 }]],
+          ['key6', null],
+        ]),
+      );
+
+      await expect(state.getAllKeysStartWith('key2')).resolves.toEqual(
+        new Map([['key2', 'foo']]),
+      );
+
+      expect(
+        getIdenticalQueryCallsText(pgPool.query.mock.calls),
+      ).toMatchSnapshot();
+      expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
+    });
+
     test('custom marshaler', async () => {
       marshaler.marshal.mock.fake((value) => ({ hello: value }));
       marshaler.unmarshal.mock.fake(({ hello }) => hello);
@@ -495,7 +474,7 @@ describe.each<[string, Record<string, string>]>([
       await expect(state.set('key1', 'foo')).resolves.toBe(false);
       await expect(state.get('key1')).resolves.toBe('foo');
       await expect(getStateEntityOfKey('key1')).resolves.toEqual({
-        ...idFields,
+        [FIELD_STATE_ID]: stateId,
         [FIELD_STATE_KEY]: 'key1',
         [FIELD_STATE_DATA]: { value: { hello: 'foo' } },
         [FIELD_CREATED_AT]: expect.any(Date),
@@ -509,7 +488,7 @@ describe.each<[string, Record<string, string>]>([
 
       expect(updater).toHaveBeenCalledWith('foo');
       await expect(getStateEntityOfKey('key1')).resolves.toEqual({
-        ...idFields,
+        [FIELD_STATE_ID]: stateId,
         [FIELD_STATE_KEY]: 'key1',
         [FIELD_STATE_DATA]: { value: { hello: { bar: 'baz' } } },
         [FIELD_CREATED_AT]: expect.any(Date),

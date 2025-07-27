@@ -11,14 +11,14 @@ const bot = moxy<WebviewBot>({
 } as never);
 
 const authUser = {
+  $$typeofUser: true as const,
   platform: 'test' as const,
   uid: 'test.john_doe',
-  uniqueIdentifier: { platform: 'test', id: 'john_doe' },
 };
 const authThread = {
+  $$typeofThread: true as const,
   platform: 'test' as const,
   uid: 'test.me.john_doe',
-  uniqueIdentifier: { platform: 'test', scopeId: 'me', id: 'john_doe' },
 };
 const authContext = {
   platform: 'test' as const,

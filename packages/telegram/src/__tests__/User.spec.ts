@@ -20,12 +20,6 @@ test('user with id only', () => {
   expect(user.isBot).toBe(false);
 
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": 12345,
-      "platform": "telegram",
-    }
-  `);
 
   expect(user.typeName()).toBe('TgUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
@@ -48,12 +42,6 @@ test('bot user', () => {
   expect(bot.isBot).toBe(true);
 
   expect(bot.uid).toMatchInlineSnapshot(`"tg.12345"`);
-  expect(bot.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": 12345,
-      "platform": "telegram",
-    }
-  `);
 
   expect(bot.typeName()).toBe('TgUser');
   expect(bot.toJSONValue()).toMatchInlineSnapshot(`
@@ -83,12 +71,6 @@ test('user with raw data', () => {
   expect(user.type).toBe('user');
 
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": 12345,
-      "platform": "telegram",
-    }
-  `);
 
   expect(user.typeName()).toBe('TgUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
@@ -113,12 +95,6 @@ test('user with photo url', () => {
   expect(user.type).toBe('user');
 
   expect(user.uid).toMatchInlineSnapshot(`"tg.12345"`);
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": 12345,
-      "platform": "telegram",
-    }
-  `);
 
   expect(user.typeName()).toBe('TgUser');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`

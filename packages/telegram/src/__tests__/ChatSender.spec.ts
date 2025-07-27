@@ -23,12 +23,6 @@ test('supergroup sender', () => {
   expect(sender.profile).toStrictEqual(new TelegramChatProfile(data));
 
   expect(sender.uid).toMatchInlineSnapshot(`"tg.12345"`);
-  expect(sender.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": 12345,
-      "platform": "telegram",
-    }
-  `);
 
   expect(sender.typeName()).toBe('TgChatSender');
   expect(sender.toJSONValue()).toMatchInlineSnapshot(`

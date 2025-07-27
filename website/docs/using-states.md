@@ -35,7 +35,7 @@ Sociably.createApp({
     //...
   ],
   //...
-})
+});
 ```
 
 For now the following state modules are officially supported,
@@ -90,7 +90,7 @@ app.onEvent(
 
         if (matchAdding) {
           const newBookmark = matchAdding[1];
-  
+
           const bookmarks = await stateController
             .threadState(event.thread)
             .update(
@@ -118,11 +118,10 @@ This mechanism makes it easy to update an array or object state value.
 If no value has been saved, the updater receives an `undefined` value.
 And if the updater returns `undefined`, the value on the key will be deleted.
 
-We can use _default parameter_ to handle `undefined` value elegantly: 
+We can use _default parameter_ to handle `undefined` value elegantly:
 
 ```js
-(currentBookmarks = []) =>
-  [...currentBookmarks, newBookmark]
+(currentBookmarks = []) => [...currentBookmarks, newBookmark];
 ```
 
 #### Cancel Updating
@@ -132,12 +131,10 @@ If the same value is returned, no saving action will be made.
 For example, this updating call is NOT going to work:
 
 ```js
-await stateController
-  .threadState(event.thread)
-  .update('my_data', (data) => {
-    data.foo = 'bar';
-    return data; // the value is the same object
-  });
+await stateController.threadState(event.thread).update('my_data', (data) => {
+  data.foo = 'bar';
+  return data; // the value is the same object
+});
 ```
 
 _So do not mutate the value in the updater. Always return a new one._
@@ -145,7 +142,7 @@ _So do not mutate the value in the updater. Always return a new one._
 ### User State
 
 Sometimes you might want to use the user state instead of chat state.
-Their scopes are different  since a user can show up in many chatrooms.
+Their scopes are different since a user can show up in many chatrooms.
 
 To access the user state, use the `controller.userState(user)` method.
 For example:
@@ -163,7 +160,7 @@ app.onEvent(
             // highlight-next-line
             .userState(event.user)
             .update('nickname', () => nickname);
-  
+
           return reply(`OK ${nickname}!`);
         }
       }
@@ -183,7 +180,7 @@ The state accessor usage is exactly the same with thread state.
 ### Global State
 
 If you want to use state at the global scope,
-use `controller.globalState(name)`.
+use `controller.globalState(stateId)`.
 For example:
 
 ```js

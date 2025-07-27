@@ -1,4 +1,3 @@
-import type { UniqueOmniIdentifier } from '@sociably/core';
 import type { MetaApiChannel } from '@sociably/meta-api';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { INSTAGRAM, IG } from './constant.js';
@@ -23,13 +22,6 @@ class InstagramAgent
   constructor(id: string, username?: string) {
     this.id = id;
     this.username = username;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: INSTAGRAM,
-      id: this.id,
-    };
   }
 
   get uid(): string {

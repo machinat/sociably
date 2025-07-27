@@ -1,4 +1,4 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { TELEGRAM, TG } from './constant.js';
 import ChatProfile from './ChatProfile.js';
@@ -44,14 +44,6 @@ class TelegramChat
   /** Type of chat */
   get type(): undefined | TelegramChatType {
     return this.data?.type;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: TELEGRAM,
-      scopeId: this.botId,
-      id: this.id,
-    };
   }
 
   /** Unique id of the chat thread */

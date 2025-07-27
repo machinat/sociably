@@ -1,53 +1,52 @@
 import { Pool } from 'pg';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import type { StateAccessor } from '@sociably/core/base/StateController';
-import { FIELD_STATE_DATA, FIELD_UPDATED_AT } from './constants.js';
+import {
+  FIELD_STATE_DATA,
+  FIELD_STATE_ID,
+  FIELD_STATE_KEY,
+  FIELD_UPDATED_AT,
+} from './constants.js';
 import tableId from './utils/tableId.js';
-import { InstanceStateEntity } from './types.js';
-
-type IdentifierFieldsGetter = (key: null | string) => [string, string][];
+import type { BasicStateEntity } from './types.js';
 
 export class PostgresInstanceStateAccessor implements StateAccessor {
   private _pool: Pool;
   private _marshaler: BaseMarshaler;
   private _schemaName?: string;
   private _tableName: string;
-  private _getIdentifierFields: IdentifierFieldsGetter;
+  private _stateId: string;
 
   constructor(
     pool: Pool,
     marshaler: BaseMarshaler,
-    getIdentifierFields: IdentifierFieldsGetter,
     schemaName: undefined | string,
     tableName: string,
+    stateId: string,
   ) {
     this._pool = pool;
     this._marshaler = marshaler;
-    this._getIdentifierFields = getIdentifierFields;
     this._tableName = tableName;
     this._schemaName = schemaName;
+    this._stateId = stateId;
   }
 
   async get<T>(key: string): Promise<undefined | T> {
     const {
       rows: [stateEntity],
-    } = await this._pool.query<InstanceStateEntity>(
-      this._selectStateEntitiesQuery(key),
-    );
+    } = await this._pool.query<BasicStateEntity>(this._selectStatesQuery(key));
 
     if (!stateEntity) {
       return undefined;
     }
-    return this._getUnmarshaledDataValue(stateEntity.data.value);
+    return this._getUnmarshaledValue(stateEntity.data);
   }
 
   async set<T>(key: string, state: T): Promise<boolean> {
-    const dataValue = this._prepareDataValueToSave(state);
-
     const {
       rows: [{ inserted }],
     } = await this._pool.query<{ inserted: boolean }>(
-      this._setStateDataQuery(key, dataValue),
+      this._setStateDataQuery(key, state),
     );
 
     return !inserted;
@@ -63,22 +62,22 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
       await client.query('BEGIN');
       const {
         rows: [stateEntity],
-      } = await client.query<InstanceStateEntity>(
-        this._selectStateEntitiesQuery(key, true),
+      } = await client.query<BasicStateEntity>(
+        this._selectStatesQuery(key, true),
       );
 
       const currentValue = stateEntity
-        ? this._getUnmarshaledDataValue<T>(stateEntity.data.value)
+        ? this._getUnmarshaledValue<T>(stateEntity.data)
         : undefined;
       const newValue = updator(currentValue);
 
       if (newValue === undefined) {
-        await client.query<InstanceStateEntity>(
+        await client.query<BasicStateEntity>(
           this._deleteStateEntitiesQuery(key),
         );
       } else if (newValue !== currentValue) {
-        await client.query<InstanceStateEntity>(
-          this._setStateDataQuery(key, this._prepareDataValueToSave(newValue)),
+        await client.query<BasicStateEntity>(
+          this._setStateDataQuery(key, newValue),
         );
       }
 
@@ -93,104 +92,133 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
   }
 
   async delete(key: string): Promise<boolean> {
-    const result = await this._pool.query<InstanceStateEntity>(
+    const result = await this._pool.query<BasicStateEntity>(
       this._deleteStateEntitiesQuery(key),
     );
     return result.rowCount > 0;
   }
 
   async keys(): Promise<string[]> {
-    const result = await this._pool.query<InstanceStateEntity>(
-      this._selectStateEntitiesQuery(null),
+    const result = await this._pool.query<BasicStateEntity>(
+      this._selectStatesQuery(null),
     );
     return result.rows.map(({ key }) => key);
   }
 
   async getAll<T>(): Promise<Map<string, T>> {
-    const result = await this._pool.query<InstanceStateEntity>(
-      this._selectStateEntitiesQuery(null),
+    const result = await this._pool.query<BasicStateEntity>(
+      this._selectStatesQuery(null),
     );
     return new Map(
       result.rows.map(({ key, data }) => [
         key,
-        this._getUnmarshaledDataValue<T>(data.value),
+        this._getUnmarshaledValue<T>(data),
+      ]),
+    );
+  }
+
+  async getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>> {
+    const result = await this._pool.query<BasicStateEntity>(
+      this._selectStatesQuery(null, false, [
+        {
+          text: `"${FIELD_STATE_KEY}" LIKE`,
+          value: `${prefix}%`,
+        },
+      ]),
+    );
+    return new Map(
+      result.rows.map(({ key, data }) => [
+        key,
+        this._getUnmarshaledValue<T>(data),
       ]),
     );
   }
 
   async clear(): Promise<undefined> {
-    await this._pool.query<InstanceStateEntity>(
+    await this._pool.query<BasicStateEntity>(
       this._deleteStateEntitiesQuery(null),
     );
     return undefined;
   }
 
-  private _prepareDataValueToSave<T>(value: T) {
-    return this._marshaler.marshal(value);
+  private _prepareDataToSave<T>(value: T) {
+    return { value: this._marshaler.marshal(value) };
   }
 
-  private _getUnmarshaledDataValue<T>(value: unknown): T {
-    return this._marshaler.unmarshal(value);
+  private _getUnmarshaledValue<T>(data: { value: unknown }): T {
+    return this._marshaler.unmarshal(data.value);
   }
 
-  private _getKeyFieldFilterPart(key: null | string) {
-    const keyFieldPairs = this._getIdentifierFields(key);
-
+  /* eslint-disable no-plusplus */
+  private _getFilter(
+    key: null | string,
+    additionalFilters: { text: string; value: unknown }[] = [],
+  ) {
+    let paramsCount = 1;
     return {
-      text: keyFieldPairs.map(([k], i) => `"${k}" = $${i + 1}`).join(' AND '),
-      params: keyFieldPairs.map(([, v]) => v),
+      filterText: `"${FIELD_STATE_ID}" = $${paramsCount++}${
+        key ? ` AND "${FIELD_STATE_KEY}" = $${paramsCount++}` : ''
+      }${additionalFilters
+        .map(({ text }) => ` AND ${text} $${paramsCount++}`)
+        .join('')}`,
+      filterParams: [
+        this._stateId,
+        ...(key ? [key] : []),
+        ...additionalFilters.map(({ value }) => value),
+      ],
     };
   }
+  /* eslint-enable no-plusplus */
 
   private _tableId() {
     return tableId(this._schemaName, this._tableName);
   }
 
-  private _selectStateEntitiesQuery(key: null | string, forUpdate?: boolean) {
-    const keyFieldFilter = this._getKeyFieldFilterPart(key);
+  private _selectStatesQuery(
+    key: null | string,
+    forUpdate?: boolean,
+    additionalFilters?: { text: string; value: unknown }[],
+  ) {
+    const { filterText, filterParams } = this._getFilter(
+      key,
+      additionalFilters,
+    );
     return {
       text: `
         SELECT * FROM ${this._tableId()}
-        WHERE ${keyFieldFilter.text}${forUpdate ? ' FOR UPDATE' : ''};
+        WHERE ${filterText}${forUpdate ? ' FOR UPDATE' : ''};
       `,
-      values: keyFieldFilter.params,
+      values: filterParams,
     };
   }
 
   private _setStateDataQuery(key: string, value: unknown) {
-    const keyFieldPairs = this._getIdentifierFields(key);
-    const keyFieldNamesStr = keyFieldPairs
-      .map(([name]) => `"${name}"`)
-      .join(', ');
-
     return {
       text: `
         INSERT INTO ${this._tableId()} (
-          "${FIELD_STATE_DATA}",
-          ${keyFieldNamesStr}
+          "${FIELD_STATE_ID}",
+          "${FIELD_STATE_KEY}",
+          "${FIELD_STATE_DATA}"
         )
-        VALUES (
-          $1,
-          ${keyFieldPairs.map((_, i) => `$${i + 2}`).join(', ')}
-        )
-        ON CONFLICT (${keyFieldNamesStr}) DO UPDATE
-        SET
+        VALUES ($1, $2, $3)
+        ON CONFLICT ("${FIELD_STATE_ID}", "${FIELD_STATE_KEY}")
+        DO UPDATE SET
           "${FIELD_STATE_DATA}" = EXCLUDED."${FIELD_STATE_DATA}",
           "${FIELD_UPDATED_AT}" = current_timestamp
         RETURNING (xmax = 0) AS inserted;
       `,
-      values: [{ value }, ...keyFieldPairs.map(([, v]) => v)],
+      values: [this._stateId, key, this._prepareDataToSave(value)],
     };
   }
 
   private _deleteStateEntitiesQuery(key: null | string) {
-    const keyFieldFilter = this._getKeyFieldFilterPart(key);
+    const { filterText, filterParams } = this._getFilter(key);
     return {
       text: `
         DELETE FROM ${this._tableId()}
-        WHERE ${keyFieldFilter.text};
+        WHERE ${filterText};
       `,
-      values: keyFieldFilter.params,
+      values: filterParams,
     };
   }
 }

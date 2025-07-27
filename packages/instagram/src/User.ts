@@ -1,4 +1,3 @@
-import type { UniqueOmniIdentifier } from '@sociably/core';
 import { MessengerUser } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import InstagramAgent from './Agent.js';
@@ -27,14 +26,6 @@ export default class InstagramUser
   constructor(agentId: string, id: string) {
     this.agentId = agentId;
     this.id = id;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: INSTAGRAM,
-      scopeId: this.agentId,
-      id: this.id,
-    };
   }
 
   get uid(): string {

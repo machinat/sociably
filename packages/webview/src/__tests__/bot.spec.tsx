@@ -176,7 +176,6 @@ test('#sendUser()', async () => {
     $$typeofUser: true,
     platform: 'test',
     uid: 'test.jojo_doe',
-    uniqueIdentifier: { platform: 'test', id: 'jojo_doe' },
   };
 
   await expect(bot.sendUser(user, { type: 'foo' })).resolves.toEqual({
@@ -241,10 +240,6 @@ test('#sendThread()', async () => {
     $$typeofThread: true,
     platform: 'test',
     uid: 'test.me.jojo_doe',
-    uniqueIdentifier: {
-      platform: 'test',
-      id: 'me.jojo_doe',
-    },
   };
 
   await expect(bot.sendThread(thread, { type: 'foo' })).resolves.toEqual({

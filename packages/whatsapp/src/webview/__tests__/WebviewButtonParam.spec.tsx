@@ -80,7 +80,6 @@ test('throw if thread is not a WhatsAppChat', () => {
   const wrongThread = {
     platform: 'test',
     uid: 'test.foo',
-    uniqueIdentifier: { platform: 'test', id: 'foo' },
   };
   expect(() =>
     WebviewButtonParam(authenticator, wrongThread as never)({}),

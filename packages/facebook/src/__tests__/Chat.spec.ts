@@ -11,13 +11,6 @@ test('from id', () => {
   expect(chat.type).toBe('user');
   expect(chat.target).toEqual({ id: '67890' });
 
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "67890",
-      "platform": "facebook",
-      "scopeId": "12345",
-    }
-  `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "page": "12345",
@@ -40,13 +33,6 @@ test('from user_ref', () => {
   expect(chat.type).toBe('user_ref');
   expect(chat.target).toEqual({ user_ref: '_USER_REF_' });
 
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "_USER_REF_",
-      "platform": "facebook",
-      "scopeId": "12345",
-    }
-  `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "page": "12345",
@@ -69,13 +55,6 @@ test('from post', () => {
   expect(chat.type).toBe('post');
   expect(chat.target).toEqual({ post_id: '_POST_ID_' });
 
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "_POST_ID_",
-      "platform": "facebook",
-      "scopeId": "12345",
-    }
-  `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "page": "12345",
@@ -100,13 +79,6 @@ test('from comment', () => {
   expect(chat.type).toBe('comment');
   expect(chat.target).toEqual({ comment_id: '_COMMENT_ID_' });
 
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "_COMMENT_ID_",
-      "platform": "facebook",
-      "scopeId": "12345",
-    }
-  `);
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "page": "12345",

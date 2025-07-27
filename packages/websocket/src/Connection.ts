@@ -1,4 +1,4 @@
-import type { SociablyThread, UniqueOmniIdentifier } from '@sociably/core';
+import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import { WEBSOCKET } from './constant.js';
 import type { ConnectionTarget } from './types.js';
@@ -30,14 +30,6 @@ class WebSocketConnection
   constructor(serverId: string, id: string) {
     this.serverId = serverId;
     this.id = id;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: WEBSOCKET,
-      scopeId: this.serverId,
-      id: this.id,
-    };
   }
 
   get uid(): string {

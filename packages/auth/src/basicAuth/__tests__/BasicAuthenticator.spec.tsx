@@ -42,7 +42,6 @@ const thread = {
   $$typeofThread: true as const,
   platform: 'test',
   uid: 'test.foo',
-  uniqueIdentifier: { platform: 'test', id: 'foo' },
 };
 
 const delegateOptions = moxy({

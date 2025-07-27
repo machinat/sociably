@@ -11,13 +11,6 @@ test('with id only', () => {
   expect(chat.user).toEqual(new TwitterUser('9876543210'));
 
   expect(chat.uid).toBe('twtr.1234567890.9876543210');
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "9876543210",
-      "platform": "twitter",
-      "scopeId": "1234567890",
-    }
-  `);
 
   expect(chat.typeName()).toBe('TwtrChat');
   expect(chat.toJSONValue()).toEqual({

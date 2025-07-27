@@ -34,27 +34,27 @@ const initialContent = `
 }`;
 
 const booChannel = {
+  $$typeofChannel: true as const,
   platform: 'test',
   uid: 'test.boo',
-  uniqueIdentifier: { platform: 'test', id: 'boo' },
 };
 const fooThread = {
+  $$typeofThread: true as const,
   platform: 'test',
   uid: 'test.foo',
-  uniqueIdentifier: { platform: 'test', id: 'foo' },
 };
 const barUser = {
+  $$typeofUser: true as const,
   platform: 'test',
   uid: 'test.bar',
-  uniqueIdentifier: { platform: 'test', id: 'bar' },
 };
 const unknownThread = {
+  $$typeofThread: true as const,
   platform: 'test',
   uid: 'test.unknown',
-  uniqueIdentifier: { platform: 'test', id: 'unknown' },
 };
 
-describe('.get()', () => {
+describe('.get(key)', () => {
   test('get value from storage file', async () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
@@ -162,6 +162,48 @@ describe('.getAll()', () => {
         "userStates": {},
       }
     `);
+  });
+});
+
+describe('.getAllKeysStartWith(prefix)', () => {
+  test('get all keys start with prefix from storage file', async () => {
+    const tmpPath = tmpNameSync();
+    fs.writeFileSync(tmpPath, initialContent);
+
+    const controller = new FileStateController({ path: tmpPath });
+
+    await expect(
+      controller.channelState(booChannel).getAllKeysStartWith('key'),
+    ).resolves.toEqual(
+      new Map<string, unknown>([
+        ['key1', 'boo'],
+        ['key2', true],
+      ]),
+    );
+    await expect(
+      controller.threadState(fooThread).getAllKeysStartWith('key'),
+    ).resolves.toEqual(
+      new Map<string, unknown>([
+        ['key1', 'foo'],
+        ['key2', 123],
+      ]),
+    );
+    await expect(
+      controller.userState(barUser).getAllKeysStartWith('key'),
+    ).resolves.toEqual(
+      new Map<string, unknown>([
+        ['key1', 'bar'],
+        ['key2', 456],
+      ]),
+    );
+    await expect(
+      controller.globalState('baz').getAllKeysStartWith('key'),
+    ).resolves.toEqual(
+      new Map<string, unknown>([
+        ['key1', { baz: true }],
+        ['key2', [7, 8, 9]],
+      ]),
+    );
   });
 });
 

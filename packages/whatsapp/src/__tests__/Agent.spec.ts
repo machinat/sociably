@@ -7,12 +7,6 @@ test('attributes', () => {
   expect(user.id).toBe('1234567890');
 
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "1234567890",
-      "platform": "whatsapp",
-    }
-  `);
 });
 
 test('marshallable', () => {

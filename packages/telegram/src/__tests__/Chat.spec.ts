@@ -26,13 +26,6 @@ test('private chat', () => {
   expect(chat.profile).toStrictEqual(new ChatProfile(data));
 
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": 67890,
-      "platform": "telegram",
-      "scopeId": 12345,
-    }
-  `);
 
   expect(chat.typeName()).toBe('TgChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
@@ -55,13 +48,6 @@ test('group chat', () => {
   expect(chat.profile).toStrictEqual(new ChatProfile(data));
 
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": 67890,
-      "platform": "telegram",
-      "scopeId": 12345,
-    }
-  `);
 
   expect(chat.typeName()).toBe('TgChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
@@ -83,13 +69,6 @@ test('without raw data', () => {
   expect(chat.profile).toBe(null);
 
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": 67890,
-      "platform": "telegram",
-      "scopeId": 12345,
-    }
-  `);
 
   expect(chat.typeName()).toBe('TgChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
@@ -109,13 +88,6 @@ test('without raw data', () => {
   expect(chat.profile).toBe(null);
 
   expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.@foo_channel"`);
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "@foo_channel",
-      "platform": "telegram",
-      "scopeId": 12345,
-    }
-  `);
 
   expect(chat.typeName()).toBe('TgChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`

@@ -9,13 +9,6 @@ test('WebSocketConnection(serverId, connId)', () => {
   expect(thread.id).toBe('#conn');
 
   expect(thread.uid).toMatchInlineSnapshot(`"websocket.#server.#conn"`);
-  expect(thread.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "#conn",
-      "platform": "websocket",
-      "scopeId": "#server",
-    }
-  `);
 
   expect(thread.typeName()).toBe('WebSocketConnection');
   expect(thread.toJSONValue()).toMatchInlineSnapshot(`

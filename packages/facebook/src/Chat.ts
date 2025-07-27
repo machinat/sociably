@@ -1,4 +1,3 @@
-import type { UniqueOmniIdentifier } from '@sociably/core';
 import { MessengerChat } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
 import FacebookPage from './Page.js';
@@ -63,14 +62,6 @@ class FacebookChat<Type extends ChatType = ChatType>
 
   get agent(): FacebookPage {
     return this.page;
-  }
-
-  get uniqueIdentifier(): UniqueOmniIdentifier {
-    return {
-      platform: FACEBOOK,
-      scopeId: this.pageId,
-      id: this.id,
-    };
   }
 
   get uid(): string {

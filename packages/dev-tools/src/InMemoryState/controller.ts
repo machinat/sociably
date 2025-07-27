@@ -56,6 +56,16 @@ export class InMemoryStateAccessor implements StateAccessor {
     return this._stateData as Map<string, T>;
   }
 
+  async getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>> {
+    const result = new Map<string, T>();
+    for (const [key, value] of this._stateData.entries()) {
+      if (key.startsWith(prefix)) {
+        result.set(key, value as T);
+      }
+    }
+    return result;
+  }
+
   async clear(): Promise<number> {
     const deletedCount = this._stateData.size;
     this._stateData.clear();
@@ -119,14 +129,14 @@ export class InMemoryStateController implements BaseStateController {
     return new InMemoryStateAccessor(newStateData);
   }
 
-  globalState(name: string): InMemoryStateAccessor {
-    const data = this._globalStates.get(name);
+  globalState(stateId: string): InMemoryStateAccessor {
+    const data = this._globalStates.get(stateId);
     if (data) {
       return new InMemoryStateAccessor(data);
     }
 
     const newStateData = new Map();
-    this._globalStates.set(name, newStateData);
+    this._globalStates.set(stateId, newStateData);
 
     return new InMemoryStateAccessor(newStateData);
   }

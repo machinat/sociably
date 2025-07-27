@@ -16,6 +16,7 @@ const client = moxy<RedisClient>({
   del: resolveCallback(1),
   hkeys: resolveCallback([]),
   hgetall: resolveCallback(null),
+  hscan: resolveCallback(['0', []]),
   set: resolveCallback('OK'),
   expire: resolveCallback(1),
 } as never);
@@ -33,61 +34,65 @@ beforeEach(() => {
 const controller = new RedisStateController(client, marshaler);
 
 const fooInstance = {
+  $$typeofChannel: true as const,
+  $$typeofUser: true as const,
+  $$typeofThread: true as const,
   platform: 'test',
   uid: 'test.foo',
-  uniqueIdentifier: { platform: 'test', id: 'foo' },
 };
 const barInstance = {
+  $$typeofChannel: true as const,
+  $$typeofUser: true as const,
+  $$typeofThread: true as const,
   platform: 'test',
   uid: 'test.bar',
-  uniqueIdentifier: { platform: 'test', id: 'bar' },
 };
 
 describe.each([
   [
     'channel state',
-    '$C',
+    '$channel',
     controller.channelState(fooInstance),
     controller.channelState(barInstance),
   ],
   [
     'channel state using uid',
-    '$C',
+    '$channel',
     controller.channelState('test.foo'),
     controller.channelState('test.bar'),
   ],
   [
     'thread state',
-    '$T',
+    '$thread',
     controller.threadState(fooInstance),
     controller.threadState(barInstance),
   ],
   [
     'thread state using uid',
-    '$T',
+    '$thread',
     controller.threadState('test.foo'),
     controller.threadState('test.bar'),
   ],
   [
     'user state',
-    '$U',
+    '$user',
     controller.userState(fooInstance),
     controller.userState(barInstance),
   ],
   [
     'user state using uid',
-    '$U',
+    '$user',
     controller.userState('test.foo'),
     controller.userState('test.bar'),
   ],
   [
     'global state',
-    '$G',
+    '$global',
     controller.globalState('test.foo'),
     controller.globalState('test.bar'),
   ],
 ])('%s', (_, prefix, fooState, barState) => {
-  test('.get()', async () => {
+  test('.get(key)', async () => {
     await expect(fooState.get('key1')).resolves.toBe(undefined);
     expect(client.hget).toHaveBeenCalledTimes(1);
     expect(client.hget).toHaveBeenCalledWith(
@@ -117,7 +122,7 @@ describe.each([
     );
   });
 
-  test('.set()', async () => {
+  test('.set(key, value)', async () => {
     await expect(fooState.set('key1', 'foo')).resolves.toBe(false);
     expect(client.hset).toHaveBeenCalledTimes(1);
     expect(client.hset).toHaveBeenCalledWith(
@@ -148,7 +153,7 @@ describe.each([
     );
   });
 
-  describe('.update()', () => {
+  describe('.update(key, updator)', () => {
     it('update value', async () => {
       const updator = moxy(() => 'foo');
       await expect(fooState.update('key1', updator)).resolves.toBe('foo');
@@ -214,7 +219,7 @@ describe.each([
     });
   });
 
-  test('.delete()', async () => {
+  test('.delete(key)', async () => {
     await expect(fooState.delete('key1')).resolves.toBe(true);
     expect(client.hdel).toHaveBeenCalledTimes(1);
     expect(client.hdel).toHaveBeenCalledWith(
@@ -307,6 +312,31 @@ describe.each([
       `${prefix}:test.bar`,
       expect.any(Function),
     );
+  });
+
+  test('.getAllKeysStartWith(prefix)', async () => {
+    await expect(fooState.getAllKeysStartWith('key')).resolves.toEqual(
+      new Map(),
+    );
+    expect(client.hscan).toHaveBeenCalledTimes(1);
+    expect(client.hscan).toHaveBeenCalledWith(
+      `${prefix}:test.foo`,
+      '0',
+      'MATCH',
+      'key*',
+      expect.any(Function),
+    );
+
+    client.hscan.mock.fake(
+      resolveCallback(['0', ['key1', '"foo"', 'key2', '{"bar":"baz"}']]),
+    );
+    await expect(fooState.getAllKeysStartWith('key')).resolves.toEqual(
+      new Map([
+        ['key1', 'foo'],
+        ['key2', { bar: 'baz' }],
+      ] as [string, any][]),
+    );
+    expect(client.hscan).toHaveBeenCalledTimes(2);
   });
 
   test('custom marshaler', async () => {

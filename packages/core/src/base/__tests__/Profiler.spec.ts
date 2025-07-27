@@ -19,30 +19,30 @@ const barProfiler = moxy({
 });
 
 const fooChannel = {
+  $$typeofChannel: true as const,
   platform: 'foo',
   uid: 'foo.0',
-  uniqueIdentifier: { platform: 'foo', id: '0' },
 };
 const barChannel = {
+  $$typeofChannel: true as const,
   platform: 'bar',
   uid: 'bar.0',
-  uniqueIdentifier: { platform: 'bar', id: '0' },
 };
 
 const fooUser1 = {
+  $$typeofUser: true as const,
   platform: 'foo',
   uid: 'foo.1',
-  uniqueIdentifier: { platform: 'foo', id: '1' },
 };
 const fooUser2 = {
+  $$typeofUser: true as const,
   platform: 'foo',
   uid: 'foo.2',
-  uniqueIdentifier: { platform: 'foo', id: '2' },
 };
 const barUser1 = {
+  $$typeofUser: true as const,
   platform: 'bar',
   uid: 'bar.1',
-  uniqueIdentifier: { platform: 'bar', id: '1' },
 };
 
 const profiler = new BaseProfiler(
@@ -95,14 +95,14 @@ it('throw if paltform of channel and user are not equal', async () => {
 
 it('throw if user from unsupported platform received', async () => {
   const bazChannel = {
+    $$typeofChannel: true as const,
     platform: 'baz',
     uid: 'baz.0',
-    uniqueIdentifier: { platform: 'baz', id: '0' },
   };
   const bazUser = {
+    $$typeofUser: true as const,
     platform: 'baz',
     uid: 'baz.1',
-    uniqueIdentifier: { platform: 'baz', id: '1' },
   };
 
   await expect(

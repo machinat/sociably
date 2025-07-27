@@ -11,12 +11,6 @@ test('with profile', () => {
     new UserProfile('1234567890', { name: 'Jojo' }),
   );
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "1234567890",
-      "platform": "whatsapp",
-    }
-  `);
 });
 
 test('with no profile', () => {
@@ -27,12 +21,6 @@ test('with no profile', () => {
   expect(user.profileData).toBe(undefined);
   expect(user.profile).toBe(null);
   expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
-  expect(user.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "1234567890",
-      "platform": "whatsapp",
-    }
-  `);
 });
 
 test('marshallable', () => {

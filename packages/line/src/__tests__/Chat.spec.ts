@@ -10,13 +10,6 @@ test('user chat', () => {
 
   expect(chat.platform).toBe('line');
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._USER_ID_"`);
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "_USER_ID_",
-      "platform": "line",
-      "scopeId": "_CHANNEL_ID_",
-    }
-  `);
 
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
@@ -38,13 +31,6 @@ test('room chat', () => {
 
   expect(chat.platform).toBe('line');
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._ROOM_ID_"`);
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "_ROOM_ID_",
-      "platform": "line",
-      "scopeId": "_CHANNEL_ID_",
-    }
-  `);
 
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
@@ -66,13 +52,6 @@ test('group chat', () => {
 
   expect(chat.platform).toBe('line');
   expect(chat.uid).toMatchInlineSnapshot(`"line._CHANNEL_ID_._GROUP_ID_"`);
-  expect(chat.uniqueIdentifier).toMatchInlineSnapshot(`
-    {
-      "id": "_GROUP_ID_",
-      "platform": "line",
-      "scopeId": "_CHANNEL_ID_",
-    }
-  `);
 
   expect(chat.typeName()).toBe('LineChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
