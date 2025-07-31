@@ -1,9 +1,9 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import { Pool as _Pool } from 'pg';
 import Sociably from '@sociably/core';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import PostgresState from '../module.js';
-import { ControllerP as PostgresStateController } from '../Controller.js';
+import { RepositoryP as PostgresStateRepository } from '../PostgresStateRepository.js';
 
 const Pool = _Pool as Moxy<typeof _Pool>;
 
@@ -14,7 +14,7 @@ jest.mock('pg', () =>
 );
 
 test('export interfaces', () => {
-  expect(PostgresState.Controller).toBe(PostgresStateController);
+  expect(PostgresState.Controller).toBe(PostgresStateRepository);
   expect(PostgresState.Configs).toMatchInlineSnapshot(`
     {
       "$$multi": false,
@@ -44,12 +44,12 @@ test('provisions', async () => {
   await app.start();
 
   const [controller, pool, configs] = app.useServices([
-    PostgresStateController,
+    PostgresStateRepository,
     PostgresState.ConnectionPool,
     PostgresState.Configs,
   ]);
 
-  expect(controller).toBeInstanceOf(PostgresStateController);
+  expect(controller).toBeInstanceOf(PostgresStateRepository);
   expect(pool).toBe(Pool.mock.calls[0].instance);
   expect(configs).toEqual({
     connectOptions: { host: 'my.postgres.com', port: 5432 },
@@ -71,6 +71,6 @@ test('provide base state controller', async () => {
   });
   await app.start();
 
-  const [controller] = app.useServices([StateControllerI]);
-  expect(controller).toBeInstanceOf(PostgresStateController);
+  const [controller] = app.useServices([StateRepositoryI]);
+  expect(controller).toBeInstanceOf(PostgresStateRepository);
 });

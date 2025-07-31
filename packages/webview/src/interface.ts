@@ -1,5 +1,5 @@
 import { join as joinPath } from 'path';
-import { Marshaler, StateController } from '@sociably/core';
+import { Marshaler, StateRepository } from '@sociably/core';
 import ModuleUtilities from '@sociably/core/base/ModuleUtilities';
 import { serviceInterface, serviceProviderClass } from '@sociably/core/service';
 import Http from '@sociably/http';
@@ -32,7 +32,7 @@ export class WebviewAuthController<
   Authenticator extends AnyServerAuthenticator,
 > extends AuthController<Authenticator> {}
 
-export const AuthControllerP = serviceProviderClass({
+export const AuthRepositoryP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [Auth.HttpOperator, Auth.AuthenticatorList],
   factory: (operator, authenticators) => {
@@ -72,9 +72,9 @@ export class WebviewBasicServerAuthenticator extends BasicAuthenticator {}
 
 export const WebviewBasicAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [StateController, Auth.HttpOperator, ConfigsI],
-  factory: (stateController, httpOperator, configs) =>
-    new WebviewBasicServerAuthenticator(stateController, httpOperator, {
+  deps: [StateRepository, Auth.HttpOperator, ConfigsI],
+  factory: (stateRepository, httpOperator, configs) =>
+    new WebviewBasicServerAuthenticator(stateRepository, httpOperator, {
       ...configs.basicAuth,
       loginDuration:
         configs.basicAuth?.loginDuration || configs.dataCookieMaxAge,

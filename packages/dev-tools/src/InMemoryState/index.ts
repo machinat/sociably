@@ -1,2 +1,2 @@
 export { default } from './module.js';
-export { InMemoryStateController } from './controller.js';
+export { InMemoryStateRepository } from './InMemoryStateRepository.js';

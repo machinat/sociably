@@ -27,17 +27,22 @@ import BarService from './services/Bar';
 
 const app = Sociably.createApp({
   platforms: [
-    Facebook.initModule({/*...*/}),
-    Telegram.initModule({/*...*/}),
+    Facebook.initModule({
+      /*...*/
+    }),
+    Telegram.initModule({
+      /*...*/
+    }),
   ],
   modules: [
-    Http.initModule({/*...*/}),
-    FileState.initModule({/*...*/})
+    Http.initModule({
+      /*...*/
+    }),
+    FileState.initModule({
+      /*...*/
+    }),
   ],
-  services: [
-    FooService,
-    BarService,
-  ],
+  services: [FooService, BarService],
 });
 app.start();
 ```
@@ -62,7 +67,9 @@ import Sociably from '@sociably/core';
 import Facebook from '@sociably/facebook';
 import Telegram from '@sociably/telegram';
 
-const app = Sociably.createApp({/* ... */});
+const app = Sociably.createApp({
+  /* ... */
+});
 
 app.start().then(() => {
   const [facebookBot, telegramBot] = app.useServices([
@@ -89,7 +96,7 @@ import FooService from './services/Foo';
 import BarService from './services/Bar';
 
 const fooBarContainer = serviceContainer({
-  deps: [FooService, BarService]
+  deps: [FooService, BarService],
 })((foo, bar) => {
   // do something with foo & bar ...
 });
@@ -109,11 +116,11 @@ import { serviceContainer, BaseProfiler } from '@sociably/core';
 app.onEvent(
   serviceContainer({ deps: [BaseProfiler] })(
     (profiler) =>
-    async ({ event, reply } ) => {
-      const profile = await profiler.getUserProfile(event.user);
-      await reply(<p>Hello {profile.lastName}!</p>)
-    }
-  )
+      async ({ event, reply }) => {
+        const profile = await profiler.getUserProfile(event.user);
+        await reply(<p>Hello {profile.lastName}!</p>);
+      },
+  ),
 );
 ```
 
@@ -132,13 +139,13 @@ You can mark a dependency as optional to prevent it.
 
 ```js
 serviceContainer({
-  deps: [{ require: FooService, optional: true }]
+  deps: [{ require: FooService, optional: true }],
 })((foo) => (ctx) => {
   // foo would be null if not registered
   if (foo) {
     // ...
   }
-})
+});
 ```
 
 ### Standard Services
@@ -153,32 +160,29 @@ import {
   serviceContainer,
   IntentRecognizer,
   BaseProfiler,
-  StateController,
+  StateRepository,
 } from '@sociably/core';
 
 app.onEvent(
   serviceContainer({
-    deps: [IntentRecognizer, BaseProfiler, StateController],
-  })(
-    (recognizer, profiler, stateController) =>
-    async (context) => {
-      const { bot, event } = context;
-      const { thread, user } = event;
+    deps: [IntentRecognizer, BaseProfiler, StateRepository],
+  })((recognizer, profiler, stateRepository) => async (context) => {
+    const { bot, event } = context;
+    const { thread, user } = event;
 
-      if (event.type === 'text') {
-        const intent = await recognizer.detectText(thread, event.text);
+    if (event.type === 'text') {
+      const intent = await recognizer.detectText(thread, event.text);
 
-        if (intent.type === 'hello') {
-          const profile = await profiler.getUserProfile(user);
-          await bot.render(thread, `Hello ${profile?.name || 'there'}!`);
+      if (intent.type === 'hello') {
+        const profile = await profiler.getUserProfile(user);
+        await bot.render(thread, `Hello ${profile?.name || 'there'}!`);
 
-          await stateController
-            .threadState(thread)
-            .update('hello_count', (count = 0) => count + 1);
-        }
+        await stateRepository
+          .threadState(thread)
+          .update('hello_count', (count = 0) => count + 1);
       }
     }
-  )
+  }),
 );
 ```
 
@@ -186,7 +190,7 @@ Here are the list of the standard services:
 
 - [`BaseBot`](pathname:///api/modules/core_base_bot): Render messages on a platform-agnostic thread.
 - [`BaseProfiler`](pathname:///api/modules/core_base_profiler): Fetch profile of a platform-agnostic user.
-- [`StateController`](pathname:///api/modules/core_base_statecontroller): Save and load thread/user/global state from the storage. We'll introduce it in the [Using State](using-states.md) doc.
+- [`StateRepository`](pathname:///api/modules/core_base_staterepository): Save and load thread/user/global state from the storage. We'll introduce it in the [Using State](using-states.md) doc.
 - [`IntentRecognizer`](pathname:///api/modules/core_base_intentrecognizer): Recognize the intent of a message. We'll introduce it in the [Recognizing Intent](recognizing-intent.md) doc.
 
 ### Register Services
@@ -198,29 +202,26 @@ import FacebookAssetsManager from '@sociably/facebook/asset';
 import FooService from './foo';
 
 Sociably.createApp({
-  platforms: [/*...*/],
-  modules: [/*...*/],
-  services: [
-    FacebookAssetsManager,
-    FooService,
+  platforms: [
+    /*...*/
   ],
-})
+  modules: [
+    /*...*/
+  ],
+  services: [FacebookAssetsManager, FooService],
+});
 ```
 
 The services then can be required via `app.useServices()` or a container.
 
 ```js
-const [foo, assets] = app.useServices([
-  FooService,
-  FacebookAssetsManager,
-]);
+const [foo, assets] = app.useServices([FooService, FacebookAssetsManager]);
 
 serviceContainer({ deps: [FooService, FacebookAssetsManager] })(
-  (foo, assetsManager) =>
-  (ctx) => {
+  (foo, assetsManager) => (ctx) => {
     // ...
-  }
-)
+  },
+);
 ```
 
 ## Providing Services
@@ -325,9 +326,7 @@ Sociably.createApp({
 });
 // is equivalent to
 Sociably.crrateApp({
-  services: [
-    { provide: MyService, withProvider: MyService },
-  ],
+  services: [{ provide: MyService, withProvider: MyService }],
 });
 ```
 
@@ -337,9 +336,7 @@ so we can swap the service implementation.
 
 ```js
 const app = Sociably.crrateApp({
-  services: [
-    { provide: MyService, withProvider: AnotherService },
-  ],
+  services: [{ provide: MyService, withProvider: AnotherService }],
 });
 
 const [myService] = app.useServices([MyService]);
@@ -359,9 +356,7 @@ import MyServiceImpl from './MyServiceImpl';
 const MyService = serviceInterface({ name: 'MyService' });
 
 Sociably.crrateApp({
-  services: [
-    { provide: MyService, withProvider: MyServiceImpl },
-  ],
+  services: [{ provide: MyService, withProvider: MyServiceImpl }],
 });
 
 const [myService] = app.useServices([MyService]);
@@ -374,12 +369,10 @@ An interface can be bound with the value directly instead of a provider.
 This is especially useful to pass configurations in a decoupled way:
 
 ```js
-const BotName = serviceInterface({ name: 'BotName' })
+const BotName = serviceInterface({ name: 'BotName' });
 
 Sociably.crrateApp({
-  services: [
-    { provide: BotName, withValue: 'David' },
-  ],
+  services: [{ provide: BotName, withValue: 'David' }],
 });
 
 const [botName] = app.useServices([BotName]);
@@ -395,7 +388,7 @@ Like this:
 ```js
 import { serviceInterface } from '@sociably/core';
 
-const MyFavoriteFood = serviceInterface({ name: 'MyService', multi: true })
+const MyFavoriteFood = serviceInterface({ name: 'MyService', multi: true });
 
 Sociably.crrateApp({
   services: [

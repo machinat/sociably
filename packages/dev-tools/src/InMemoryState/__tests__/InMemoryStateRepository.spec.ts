@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
-import { InMemoryStateController } from '../controller.js';
+import { InMemoryStateRepository } from '../InMemoryStateRepository.js';
 
-const controller = new InMemoryStateController();
+const repository = new InMemoryStateRepository();
 
 const fooInstance = {
   $$typeofChannel: true as const,
@@ -14,16 +14,16 @@ const fooInstance = {
 test.each([
   [
     'channel',
-    controller.channelState(fooInstance),
-    controller.channelState('teat.bar'),
+    repository.channelState(fooInstance),
+    repository.channelState('teat.bar'),
   ],
   [
     'thread',
-    controller.threadState(fooInstance),
-    controller.threadState('teat.bar'),
+    repository.threadState(fooInstance),
+    repository.threadState('teat.bar'),
   ],
-  ['user', controller.userState(fooInstance), controller.userState('test.bar')],
-  ['global', controller.globalState('FOO'), controller.globalState('BAR')],
+  ['user', repository.userState(fooInstance), repository.userState('test.bar')],
+  ['global', repository.globalState('FOO'), repository.globalState('BAR')],
 ])('%s state', async (_, fooState, barState) => {
   const updator = moxy(() => undefined);
 

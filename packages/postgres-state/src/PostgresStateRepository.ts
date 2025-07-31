@@ -7,9 +7,9 @@ import type {
 import { serviceProviderClass } from '@sociably/core/service';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import type {
-  BaseStateController,
+  BaseStateRepository,
   StateAccessor,
-} from '@sociably/core/base/StateController';
+} from '@sociably/core/base/StateRepository';
 import {
   DEFAULT_GLOBAL_STATE_TABLE_NAME,
   DEFAULT_CHANNEL_STATE_TABLE_NAME,
@@ -21,7 +21,7 @@ import {
   FIELD_CREATED_AT,
   FIELD_UPDATED_AT,
 } from './constants.js';
-import PostgresStateAccessor from './StateAccessor.js';
+import PostgresStateAccessor from './PostgresStateAccessor.js';
 import tableId from './utils/tableId.js';
 import { ConnectionPoolI, ConfigsI } from './interface.js';
 
@@ -36,7 +36,7 @@ export type TableNamingOptions = {
 };
 
 /** @category Provider */
-export class PostgresStateController implements BaseStateController {
+export class PostgresStateRepository implements BaseStateRepository {
   private _pool: Pool;
   private _marshaler: BaseMarshaler;
   schemaName?: string;
@@ -154,9 +154,9 @@ export class PostgresStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = serviceProviderClass({
+export const RepositoryP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ConnectionPoolI, { require: BaseMarshaler, optional: true }, ConfigsI],
-})(PostgresStateController);
+})(PostgresStateRepository);
 
-export type ControllerP = PostgresStateController;
+export type RepositoryP = PostgresStateRepository;

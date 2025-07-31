@@ -411,12 +411,12 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
   }
 }
 
-const ControllerP = serviceProviderClass({
+const RepositoryP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [OperatorP, AuthenticatorListI],
 })(AuthController);
 
-type ControllerP<Authenticator extends AnyServerAuthenticator> =
+type RepositoryP<Authenticator extends AnyServerAuthenticator> =
   AuthController<Authenticator>;
 
-export default ControllerP;
+export default RepositoryP;

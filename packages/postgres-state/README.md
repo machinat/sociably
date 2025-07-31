@@ -1,6 +1,6 @@
 # Postgres State Module
 
-This module implement the [`BaseStateController`](https://sociably.js.org/api/modules/core_base_statecontroller.html)
+This module implement the [`BaseStateRepository`](https://sociably.js.org/api/modules/core_base_staterepository.html)
 interface with PostgreSQL database.
 
 ## Install

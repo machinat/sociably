@@ -1,13 +1,13 @@
 import Sociably from '@sociably/core';
-import BaseStateControllerI from '@sociably/core/base/StateController';
+import BaseStateRepositoryI from '@sociably/core/base/StateRepository';
 import { tmpNameSync } from 'tmp';
 import FileState from '../module.js';
-import { ControllerP as FileStateController } from '../controller.js';
+import { RepositoryP as FileStateRepository } from '../FileStateRepository.js';
 
 const storageFilePath = tmpNameSync();
 
 test('export interfaces', () => {
-  expect(FileState.Controller).toBe(FileStateController);
+  expect(FileState.Controller).toBe(FileStateRepository);
   expect(FileState.Configs).toMatchInlineSnapshot(`
     {
       "$$multi": false,
@@ -35,13 +35,13 @@ test('provisions', async () => {
 
   const [fileController, baseController, configs, defaultSerializer] =
     app.useServices([
-      FileStateController,
-      BaseStateControllerI,
+      FileStateRepository,
+      BaseStateRepositoryI,
       FileState.Configs,
       FileState.Serializer,
     ]);
 
-  expect(fileController).toBeInstanceOf(FileStateController);
+  expect(fileController).toBeInstanceOf(FileStateRepository);
   expect(baseController).toBe(fileController);
   expect(configs).toEqual({ path: storageFilePath });
 

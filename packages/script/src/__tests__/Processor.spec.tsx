@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import Sociably, { SociablyThread } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
 import { traverse as traverseMessage } from '@sociably/core/iterator';
-import { InMemoryStateController } from '@sociably/dev-tools/InMemoryState';
+import { InMemoryStateRepository } from '@sociably/dev-tools/InMemoryState';
 import { ScriptProcessor } from '../Processor.js';
 import build from '../build.js';
 import { SCRIPT_RUNTIME_STATE_KEY } from '../constant.js';
@@ -130,9 +130,9 @@ beforeEach(() => {
 
 describe('.start(thread, Script)', () => {
   test('start script from begin', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -172,7 +172,7 @@ describe('.start(thread, Script)', () => {
 
     expect(runtime.requireSaving).toBe(false);
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -194,9 +194,9 @@ describe('.start(thread, Script)', () => {
   });
 
   test('start script at label', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -232,7 +232,7 @@ describe('.start(thread, Script)', () => {
     const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -252,9 +252,9 @@ describe('.start(thread, Script)', () => {
   });
 
   test('init script with params specified', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -293,7 +293,7 @@ describe('.start(thread, Script)', () => {
     const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -315,9 +315,9 @@ describe('.start(thread, Script)', () => {
   });
 
   it('throw if script is not registered', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -332,15 +332,15 @@ describe('.start(thread, Script)', () => {
   });
 
   it('throw if there is already script processing in the thread', async () => {
-    const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    await stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -355,15 +355,15 @@ describe('.start(thread, Script)', () => {
 
 describe('.continue(thread, input)', () => {
   it('continue from prompt point', async () => {
-    const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    await stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -395,7 +395,7 @@ describe('.continue(thread, input)', () => {
     const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -433,8 +433,8 @@ describe('.continue(thread, input)', () => {
   });
 
   it('continue under subscript', async () => {
-    const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    await stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'call_1' },
@@ -444,7 +444,7 @@ describe('.continue(thread, input)', () => {
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -476,7 +476,7 @@ describe('.continue(thread, input)', () => {
     const thunk = findThunkElementInMessage(message);
     await thunk.props.effect();
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toMatchInlineSnapshot(
       { timestamp: expect.any(Number) } as any,
       `
@@ -510,9 +510,9 @@ describe('.continue(thread, input)', () => {
   });
 
   it('return null if no executing runtime on chanel', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -522,15 +522,15 @@ describe('.continue(thread, input)', () => {
   });
 
   it('throw if unknown script name received', async () => {
-    const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    await stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -544,15 +544,15 @@ describe('.continue(thread, input)', () => {
 
 describe('.getRuntime(thread)', () => {
   test('manually call runtime.run()', async () => {
-    const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    await stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -632,9 +632,9 @@ describe('.getRuntime(thread)', () => {
   });
 
   it('return null if no executing runtime on chanel', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -642,15 +642,15 @@ describe('.getRuntime(thread)', () => {
   });
 
   it('throw if unknown script name received', async () => {
-    const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    await stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'UnknownScript', vars: { foo: 'bar' }, stopAt: '?' }],
       timestamp: 1587205023190,
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -664,15 +664,15 @@ describe('.getRuntime(thread)', () => {
 
 describe('Runtime.exit(thread)', () => {
   it('delete saved runtime state', async () => {
-    const stateController = new InMemoryStateController();
-    await stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    await stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [{ name: 'MyScript', vars: { foo: 'bar' }, stopAt: 'ask_3' }],
       timestamp: 1587205023190,
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -681,14 +681,14 @@ describe('Runtime.exit(thread)', () => {
     await expect(runtime.exit()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toBe(undefined);
   });
 
   it('return false if no saved runtime state', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -697,16 +697,16 @@ describe('Runtime.exit(thread)', () => {
     await expect(runtime.exit()).resolves.toBe(false);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toBe(undefined);
   });
 });
 
 describe('Runtime.save(runtime)', () => {
   test('save newly initiated runtime', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -717,7 +717,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toEqual({
       callStack: [{ name: 'MyScript', stopAt: 'ask_2', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
@@ -726,14 +726,14 @@ describe('Runtime.save(runtime)', () => {
   });
 
   test('save continued runtime', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
 
-    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       callStack: [{ name: 'MyScript', stopAt: 'ask_3', vars: { foo: 'bar' } }],
       timestamp: expect.any(Number),
       version: '0',
@@ -744,7 +744,7 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(true);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toEqual({
       callStack: [
         { name: 'MyScript', stopAt: 'call_1', vars: { foo: 'bar' } },
@@ -756,9 +756,9 @@ describe('Runtime.save(runtime)', () => {
   });
 
   test('do nothing if newly initiated runtime is finished', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -773,14 +773,14 @@ describe('Runtime.save(runtime)', () => {
     await expect(runtime.save()).resolves.toBe(false);
 
     await expect(
-      stateController.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
+      stateRepository.threadState(thread).get(SCRIPT_RUNTIME_STATE_KEY),
     ).resolves.toBe(undefined);
   });
 
   test('throw if newly initiated runtime save while runtime state existing', async () => {
-    const stateController = new InMemoryStateController();
+    const stateRepository = new InMemoryStateRepository();
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
@@ -789,7 +789,7 @@ describe('Runtime.save(runtime)', () => {
       goto: '#3',
     });
 
-    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },
@@ -803,8 +803,8 @@ describe('Runtime.save(runtime)', () => {
   });
 
   test('throw if continued runtime save while no runtime state existing', async () => {
-    const stateController = new InMemoryStateController();
-    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -813,13 +813,13 @@ describe('Runtime.save(runtime)', () => {
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
     const runtime = (await processor.getRuntime(thread))!;
 
-    stateController.threadState(thread).delete(SCRIPT_RUNTIME_STATE_KEY);
+    stateRepository.threadState(thread).delete(SCRIPT_RUNTIME_STATE_KEY);
     await runtime.run();
 
     await expect(runtime.save()).rejects.toMatchInlineSnapshot(
@@ -828,8 +828,8 @@ describe('Runtime.save(runtime)', () => {
   });
 
   test('throw if saveTimestamp not match', async () => {
-    const stateController = new InMemoryStateController();
-    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    const stateRepository = new InMemoryStateRepository();
+    stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 2 }, stopAt: 'ask_5' },
@@ -838,13 +838,13 @@ describe('Runtime.save(runtime)', () => {
     });
 
     const processor = new ScriptProcessor(
-      stateController,
+      stateRepository,
       scope,
       scriptAccessor,
     );
     const runtime = (await processor.getRuntime(thread))!;
 
-    stateController.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
+    stateRepository.threadState(thread).set(SCRIPT_RUNTIME_STATE_KEY, {
       version: '0',
       callStack: [
         { name: 'MyScript', vars: { foo: 'bar', i: 4 }, stopAt: 'ask_5' },

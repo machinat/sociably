@@ -5,7 +5,7 @@ import { getClientIp } from 'request-ip';
 import Sociably, {
   serviceProviderClass,
   SociablyThread,
-  StateController,
+  StateRepository,
 } from '@sociably/core';
 import type { RoutingInfo } from '@sociably/http';
 import HttpOperator from '../HttpOperator.js';
@@ -53,7 +53,7 @@ type InitPayload<Credential> = {
 export class BasicAuthenticator {
   mode: 'strict' | 'loose';
   operator: HttpOperator;
-  stateController: StateController;
+  stateRepository: StateRepository;
   appName?: string;
   appIconUrl?: string;
   loginCodeDigits: number;
@@ -62,7 +62,7 @@ export class BasicAuthenticator {
   loginDurationTime: number;
 
   constructor(
-    stateController: StateController,
+    stateRepository: StateRepository,
     operator: HttpOperator,
     {
       appName,
@@ -75,7 +75,7 @@ export class BasicAuthenticator {
     }: BasicAuthOptions = {},
   ) {
     this.mode = mode;
-    this.stateController = stateController;
+    this.stateRepository = stateRepository;
     this.operator = operator;
     this.appName = appName;
     this.appIconUrl = appIconUrl;
@@ -402,7 +402,7 @@ export class BasicAuthenticator {
     incremental: boolean,
   ): Promise<number> {
     const now = Date.now();
-    const recordsState = this.stateController.globalState(VERIFY_RECORDS_SPACE);
+    const recordsState = this.stateRepository.globalState(VERIFY_RECORDS_SPACE);
 
     const verifyCount = await recordsState.update<number>(
       `${threadUid}:${timestamp}`,
@@ -455,9 +455,9 @@ export class BasicAuthenticator {
 }
 
 const AuthenticatorP = serviceProviderClass({
-  deps: [StateController, HttpOperator, ConfigsI],
-  factory: (stateController, httpOperator, configs) =>
-    new BasicAuthenticator(stateController, httpOperator, {
+  deps: [StateRepository, HttpOperator, ConfigsI],
+  factory: (stateRepository, httpOperator, configs) =>
+    new BasicAuthenticator(stateRepository, httpOperator, {
       ...configs.basicAuth,
       loginDuration:
         configs.basicAuth?.loginDuration || configs.dataCookieMaxAge,

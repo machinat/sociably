@@ -34,7 +34,7 @@ import {
   WebviewSocketServer,
   SocketServerP,
   WebviewAuthController,
-  AuthControllerP,
+  AuthRepositoryP,
   AuthHttpOperatorP,
   WebviewBasicAuthenticatorP,
   NextReceiverP,
@@ -201,7 +201,7 @@ namespace Webview {
       { provide: BaseMarshaler.TypeList, withValue: MemoCacheTarget },
 
       { provide: Auth.HttpOperator, withProvider: AuthHttpOperatorP },
-      { provide: Auth.Controller, withProvider: AuthControllerP },
+      { provide: Auth.Controller, withProvider: AuthRepositoryP },
       { provide: Http.RequestRouteList, withProvider: authRouteFactory },
     ];
 

@@ -1,21 +1,21 @@
 import Sociably from '@sociably/core';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import InMemoryState from '../module.js';
-import { ControllerP as InMemoryStateController } from '../controller.js';
+import { RepositoryP as InMemoryStateRepository } from '../InMemoryStateRepository.js';
 
 test('provisions', async () => {
   const app = Sociably.createApp({ modules: [InMemoryState.initModule()] });
   await app.start();
 
-  const [controller] = app.useServices([InMemoryStateController]);
+  const [controller] = app.useServices([InMemoryStateRepository]);
 
-  expect(controller).toBeInstanceOf(InMemoryStateController);
+  expect(controller).toBeInstanceOf(InMemoryStateRepository);
 });
 
 test('provide base state controller', async () => {
   const app = Sociably.createApp({ modules: [InMemoryState.initModule()] });
   await app.start();
 
-  const [controller] = app.useServices([StateControllerI]);
-  expect(controller).toBeInstanceOf(InMemoryStateController);
+  const [controller] = app.useServices([StateRepositoryI]);
+  expect(controller).toBeInstanceOf(InMemoryStateRepository);
 });

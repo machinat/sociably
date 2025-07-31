@@ -1,7 +1,7 @@
 import fs from 'fs';
 import moxy from '@moxyjs/moxy';
 import { tmpNameSync } from 'tmp';
-import { FileStateController } from '../controller.js';
+import { FileStateRepository } from '../FileStateRepository.js';
 
 const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
@@ -59,24 +59,24 @@ describe('.get(key)', () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
 
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    const channelState = controller.channelState(booChannel);
+    const channelState = repository.channelState(booChannel);
     await expect(channelState.get('key1')).resolves.toBe('boo');
     await expect(channelState.get('key2')).resolves.toBe(true);
     await expect(channelState.get('key3')).resolves.toBe(undefined);
 
-    const fooThreadState = controller.threadState(fooThread);
+    const fooThreadState = repository.threadState(fooThread);
     await expect(fooThreadState.get('key1')).resolves.toBe('foo');
     await expect(fooThreadState.get('key2')).resolves.toBe(123);
     await expect(fooThreadState.get('key3')).resolves.toBe(undefined);
 
-    const barUserState = controller.userState(barUser);
+    const barUserState = repository.userState(barUser);
     await expect(barUserState.get('key1')).resolves.toBe('bar');
     await expect(barUserState.get('key2')).resolves.toBe(456);
     await expect(barUserState.get('key3')).resolves.toBe(undefined);
 
-    const bazGlobalState = controller.globalState('baz');
+    const bazGlobalState = repository.globalState('baz');
     await expect(bazGlobalState.get('key1')).resolves.toEqual({ baz: true });
     await expect(bazGlobalState.get('key2')).resolves.toEqual([7, 8, 9]);
     await expect(bazGlobalState.get('key3')).resolves.toBe(undefined);
@@ -84,8 +84,8 @@ describe('.get(key)', () => {
 
   test('when sotrage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const controller = new FileStateController({ path: tmpPath });
-    await expect(controller.threadState(fooThread).get('key')).resolves.toBe(
+    const repository = new FileStateRepository({ path: tmpPath });
+    await expect(repository.threadState(fooThread).get('key')).resolves.toBe(
       undefined,
     );
     await delay(50);
@@ -104,16 +104,16 @@ describe('.getAll()', () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
 
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    await expect(controller.channelState(booChannel).getAll()).resolves
+    await expect(repository.channelState(booChannel).getAll()).resolves
       .toMatchInlineSnapshot(`
                       Map {
                         "key1" => "boo",
                         "key2" => true,
                       }
                   `);
-    await expect(controller.threadState(fooThread).getAll()).resolves
+    await expect(repository.threadState(fooThread).getAll()).resolves
       .toMatchInlineSnapshot(`
                       Map {
                         "key1" => "foo",
@@ -121,14 +121,14 @@ describe('.getAll()', () => {
                       }
                   `);
 
-    await expect(controller.userState(barUser).getAll()).resolves
+    await expect(repository.userState(barUser).getAll()).resolves
       .toMatchInlineSnapshot(`
                       Map {
                         "key1" => "bar",
                         "key2" => 456,
                       }
                   `);
-    await expect(controller.globalState('baz').getAll()).resolves
+    await expect(repository.globalState('baz').getAll()).resolves
       .toMatchInlineSnapshot(`
       Map {
         "key1" => {
@@ -143,15 +143,15 @@ describe('.getAll()', () => {
     `);
 
     await expect(
-      controller.threadState(unknownThread).getAll(),
+      repository.threadState(unknownThread).getAll(),
     ).resolves.toEqual(new Map());
   });
 
   test('when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    await expect(controller.threadState(fooThread).getAll()).resolves.toEqual(
+    await expect(repository.threadState(fooThread).getAll()).resolves.toEqual(
       new Map(),
     );
     await delay(50);
@@ -170,10 +170,10 @@ describe('.getAllKeysStartWith(prefix)', () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
 
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
     await expect(
-      controller.channelState(booChannel).getAllKeysStartWith('key'),
+      repository.channelState(booChannel).getAllKeysStartWith('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', 'boo'],
@@ -181,7 +181,7 @@ describe('.getAllKeysStartWith(prefix)', () => {
       ]),
     );
     await expect(
-      controller.threadState(fooThread).getAllKeysStartWith('key'),
+      repository.threadState(fooThread).getAllKeysStartWith('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', 'foo'],
@@ -189,7 +189,7 @@ describe('.getAllKeysStartWith(prefix)', () => {
       ]),
     );
     await expect(
-      controller.userState(barUser).getAllKeysStartWith('key'),
+      repository.userState(barUser).getAllKeysStartWith('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', 'bar'],
@@ -197,7 +197,7 @@ describe('.getAllKeysStartWith(prefix)', () => {
       ]),
     );
     await expect(
-      controller.globalState('baz').getAllKeysStartWith('key'),
+      repository.globalState('baz').getAllKeysStartWith('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', { baz: true }],
@@ -211,34 +211,34 @@ describe('.keys()', () => {
   test('return keys from storage file', async () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    await expect(controller.channelState(booChannel).keys()).resolves.toEqual([
+    await expect(repository.channelState(booChannel).keys()).resolves.toEqual([
       'key1',
       'key2',
     ]);
-    await expect(controller.threadState(fooThread).keys()).resolves.toEqual([
+    await expect(repository.threadState(fooThread).keys()).resolves.toEqual([
       'key1',
       'key2',
     ]);
-    await expect(controller.userState(barUser).keys()).resolves.toEqual([
+    await expect(repository.userState(barUser).keys()).resolves.toEqual([
       'key1',
       'key2',
     ]);
-    await expect(controller.globalState('baz').keys()).resolves.toEqual([
+    await expect(repository.globalState('baz').keys()).resolves.toEqual([
       'key1',
       'key2',
     ]);
-    await expect(controller.threadState(unknownThread).keys()).resolves.toEqual(
+    await expect(repository.threadState(unknownThread).keys()).resolves.toEqual(
       [],
     );
   });
 
   test('when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    await expect(controller.threadState(fooThread).keys()).resolves.toEqual([]);
+    await expect(repository.threadState(fooThread).keys()).resolves.toEqual([]);
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
@@ -255,21 +255,21 @@ describe('.set()', () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
 
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    const booChannelState = controller.channelState(booChannel);
+    const booChannelState = repository.channelState(booChannel);
     await expect(booChannelState.set('key1', ['bar'])).resolves.toBe(true);
     await expect(booChannelState.get('key1')).resolves.toEqual(['bar']);
 
-    const fooThreadState = controller.threadState(fooThread);
+    const fooThreadState = repository.threadState(fooThread);
     await expect(fooThreadState.set('key1', 'bar')).resolves.toBe(true);
     await expect(fooThreadState.get('key1')).resolves.toBe('bar');
 
-    const barUserState = controller.userState(barUser);
+    const barUserState = repository.userState(barUser);
     await expect(barUserState.set('key3', 'bar')).resolves.toBe(false);
     await expect(barUserState.get('key3')).resolves.toBe('bar');
 
-    const barGlobalState = controller.globalState('BAR');
+    const barGlobalState = repository.globalState('BAR');
     await expect(barGlobalState.set('key1', { bar: 'y' })).resolves.toBe(false);
     await expect(barGlobalState.get('key1')).resolves.toEqual({ bar: 'y' });
 
@@ -323,10 +323,10 @@ describe('.set()', () => {
 
   test('write value when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
     await expect(
-      controller.threadState(fooThread).set('bar', 'baz'),
+      repository.threadState(fooThread).set('bar', 'baz'),
     ).resolves.toBe(false);
 
     await delay(50);
@@ -349,9 +349,9 @@ describe('.delete()', () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
 
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    const fooThreadState = controller.threadState(fooThread);
+    const fooThreadState = repository.threadState(fooThread);
     await expect(fooThreadState.delete('key3')).resolves.toBe(false);
     await expect(fooThreadState.get('key3')).resolves.toBe(undefined);
 
@@ -362,11 +362,11 @@ describe('.delete()', () => {
     await expect(fooThreadState.get('key1')).resolves.toBe(undefined);
     await expect(fooThreadState.delete('key1')).resolves.toBe(false);
 
-    await expect(controller.userState(barUser).delete('key1')).resolves.toBe(
+    await expect(repository.userState(barUser).delete('key1')).resolves.toBe(
       true,
     );
     await expect(
-      controller.channelState(booChannel).delete('key3'),
+      repository.channelState(booChannel).delete('key3'),
     ).resolves.toBe(false);
 
     await delay(50);
@@ -402,9 +402,9 @@ describe('.delete()', () => {
 
   test('delete when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    await expect(controller.threadState(fooThread).delete('key')).resolves.toBe(
+    await expect(repository.threadState(fooThread).delete('key')).resolves.toBe(
       false,
     );
     await delay(50);
@@ -423,22 +423,22 @@ describe('.clear()', () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
 
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    const booChannelState = controller.channelState(booChannel);
+    const booChannelState = repository.channelState(booChannel);
     await expect(booChannelState.clear()).resolves.toBe(2);
     await expect(booChannelState.get('key1')).resolves.toBe(undefined);
     await expect(booChannelState.get('key2')).resolves.toBe(undefined);
 
-    const fooThreadState = controller.threadState(fooThread);
+    const fooThreadState = repository.threadState(fooThread);
     await expect(fooThreadState.clear()).resolves.toBe(2);
     await expect(fooThreadState.get('key1')).resolves.toBe(undefined);
 
-    const barUserState = controller.userState(barUser);
+    const barUserState = repository.userState(barUser);
     await expect(barUserState.clear()).resolves.toBe(2);
     await expect(barUserState.get('key1')).resolves.toBe(undefined);
 
-    await expect(controller.globalState('zab').clear()).resolves.toBe(0);
+    await expect(repository.globalState('zab').clear()).resolves.toBe(0);
 
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
@@ -464,9 +464,9 @@ describe('.clear()', () => {
 
   test('clear when storage file is empty', async () => {
     const tmpPath = tmpNameSync();
-    const controller = new FileStateController({ path: tmpPath });
+    const repository = new FileStateRepository({ path: tmpPath });
 
-    await expect(controller.threadState(fooThread).clear()).resolves.toBe(0);
+    await expect(repository.threadState(fooThread).clear()).resolves.toBe(0);
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
@@ -482,9 +482,9 @@ test('reflect content changes on storage file', async () => {
   const tmpPath = tmpNameSync();
   fs.writeFileSync(tmpPath, initialContent);
 
-  const controller = new FileStateController({ path: tmpPath });
+  const repository = new FileStateRepository({ path: tmpPath });
 
-  const fooThreadState = controller.threadState(fooThread);
+  const fooThreadState = repository.threadState(fooThread);
 
   await expect(fooThreadState.get('key1')).resolves.toBe('foo');
   await expect(fooThreadState.getAll()).resolves.toEqual(
@@ -537,9 +537,9 @@ test('custom marshaler', async () => {
      }`,
   );
 
-  const controller = new FileStateController({ path: tmpPath }, marshaler);
+  const repository = new FileStateRepository({ path: tmpPath }, marshaler);
 
-  const fooState = controller.threadState(fooThread);
+  const fooState = repository.threadState(fooThread);
 
   await expect(fooState.get('key1')).resolves.toBe(123);
   expect(marshaler.unmarshal).toHaveBeenCalledWith({
@@ -600,13 +600,13 @@ test('custom serializer', async () => {
   const tmpPath = tmpNameSync();
   fs.writeFileSync(tmpPath, '_MAGICALLY_ENCODED_DATA_');
 
-  const controller = new FileStateController(
+  const repository = new FileStateRepository(
     { path: tmpPath },
     undefined,
     serializer,
   );
 
-  const fooThreadState = controller.threadState(fooThread);
+  const fooThreadState = repository.threadState(fooThread);
   await expect(fooThreadState.get('from')).resolves.toBe('MAGIC');
   expect(serializer.parse).toHaveBeenCalledWith('_MAGICALLY_ENCODED_DATA_');
 

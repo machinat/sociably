@@ -18,7 +18,7 @@ Check the [package references](https://sociably.js.org/api/modules/dev_tools.htm
 
 ### In-Memory State
 
-An in-memory implementation of [`StateController`](https://sociably.js.org/api/modules/core_base_statecontroller.html). Check the [Using State](https://sociably.js.org/docs/using-states) document for usage guides.
+An in-memory implementation of [`StateRepository`](https://sociably.js.org/api/modules/core_base_staterepository.html). Check the [Using State](https://sociably.js.org/docs/using-states) document for usage guides.
 
 #### Setup
 
@@ -27,15 +27,13 @@ import Sociably from '@sociably/core';
 import { InMemoryState } from '@sociably/dev-tools';
 
 const app = Sociably.createApp({
-  modules: [
-    InMemoryState.initModule(),
-  ],
+  modules: [InMemoryState.initModule()],
 });
 ```
 
 ### File State
 
-An implementation of [`StateController`](https://sociably.js.org/api/modules/core_base_statecontroller.html) that stores state data in a local file for easy debugging. Check the [Using State](https://sociably.js.org/docs/using-states) document for usage guides.
+An implementation of [`StateRepository`](https://sociably.js.org/api/modules/core_base_staterepository.html) that stores state data in a local file for easy debugging. Check the [Using State](https://sociably.js.org/docs/using-states) document for usage guides.
 
 #### Setup
 
@@ -52,7 +50,7 @@ const app = Sociably.createApp({
   ],
   services: [
     // you can swap the serializer
-    { provide: FileState.Serializer, withValue: YAML }
+    { provide: FileState.Serializer, withValue: YAML },
   ],
 });
 ```

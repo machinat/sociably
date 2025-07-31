@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import type StateControllerI from '@sociably/core/base/StateController';
+import type StateRepositoryI from '@sociably/core/base/StateRepository';
 import TwitterUser from '../../User.js';
 import type { TwitterBot } from '../../Bot.js';
 import { Photo } from '../../components/Media.js';
@@ -15,7 +15,7 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateController = moxy<StateControllerI>({
+const stateRepository = moxy<StateRepositoryI>({
   globalState() {
     return state;
   },
@@ -31,13 +31,13 @@ const bot = moxy<TwitterBot>({
 const agent = new TwitterUser('1234567890');
 
 beforeEach(() => {
-  stateController.mock.reset();
+  stateRepository.mock.reset();
   state.mock.reset();
   bot.mock.reset();
 });
 
 test('get asset id', async () => {
-  const manager = new TwitterAssetsManager(bot, stateController);
+  const manager = new TwitterAssetsManager(bot, stateRepository);
 
   await expect(
     Promise.all([
@@ -48,8 +48,8 @@ test('get asset id', async () => {
     ]),
   ).resolves.toEqual([undefined, undefined, undefined, undefined]);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
-  expect(stateController.globalState.mock.calls.map((c) => c.args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
+  expect(stateRepository.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$twtr.foo.1234567890",
@@ -85,12 +85,12 @@ test('get asset id', async () => {
     '_WELCOME_MESSAGE_ID_',
   ]);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(8);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(8);
   expect(state.get).toHaveBeenCalledTimes(8);
 });
 
 test('save asset id', async () => {
-  const manager = new TwitterAssetsManager(bot, stateController);
+  const manager = new TwitterAssetsManager(bot, stateRepository);
 
   await expect(
     Promise.all([
@@ -109,8 +109,8 @@ test('save asset id', async () => {
     ]),
   ).resolves.toEqual([false, false, false, false]);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
-  expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
+  expect(stateRepository.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     [
       "$twtr.foo.1234567890",
@@ -146,12 +146,12 @@ test('save asset id', async () => {
     ]),
   ).resolves.toEqual([true, true, true, true]);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(8);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(8);
   expect(state.set).toHaveBeenCalledTimes(8);
 });
 
 test('get all assets', async () => {
-  const manager = new TwitterAssetsManager(bot, stateController);
+  const manager = new TwitterAssetsManager(bot, stateRepository);
 
   await expect(
     Promise.all([
@@ -162,8 +162,8 @@ test('get all assets', async () => {
     ]),
   ).resolves.toEqual([null, null, null, null]);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
-  expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
+  expect(stateRepository.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     [
       "$twtr.foo.1234567890",
@@ -189,12 +189,12 @@ test('get all assets', async () => {
     ]),
   ).resolves.toEqual([assetsMap, assetsMap, assetsMap, assetsMap]);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(8);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(8);
   expect(state.getAll).toHaveBeenCalledTimes(8);
 });
 
 test('unsave asset id', async () => {
-  const manager = new TwitterAssetsManager(bot, stateController);
+  const manager = new TwitterAssetsManager(bot, stateRepository);
 
   await expect(
     Promise.all([
@@ -205,8 +205,8 @@ test('unsave asset id', async () => {
     ]),
   ).resolves.toEqual([true, true, true, true]);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
-  expect(stateController.globalState.mock.calls.map(({ args }) => args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
+  expect(stateRepository.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     [
       "$twtr.foo.1234567890",
@@ -233,13 +233,13 @@ test('unsave asset id', async () => {
     ]),
   ).resolves.toEqual([false, false, false, false]);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(8);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(8);
   expect(state.delete).toHaveBeenCalledTimes(8);
 });
 
 describe('.uploadMedia(tag, media)', () => {
   it('render and save media', async () => {
-    const manager = new TwitterAssetsManager(bot, stateController);
+    const manager = new TwitterAssetsManager(bot, stateRepository);
     const photo = <Photo url="https://sociably.io/img/foo.jpg" />;
     const uploadResponse = {
       type: 'photo',
@@ -264,7 +264,7 @@ describe('.uploadMedia(tag, media)', () => {
     expect(bot.uploadMedia).toHaveBeenCalledWith(agent, photo);
 
     expect(
-      stateController.globalState.mock.calls[0].args[0],
+      stateRepository.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"$twtr.media.1234567890"`);
 
     expect(state.set).toHaveBeenCalledTimes(1);
@@ -272,7 +272,7 @@ describe('.uploadMedia(tag, media)', () => {
   });
 
   it('throw if media is empty', async () => {
-    const manager = new TwitterAssetsManager(bot, stateController);
+    const manager = new TwitterAssetsManager(bot, stateRepository);
 
     await expect(
       manager.uploadMedia(agent, 'foo', null),
@@ -283,7 +283,7 @@ describe('.uploadMedia(tag, media)', () => {
 });
 
 test('.createWelcomeMessage(name, message)', async () => {
-  const manager = new TwitterAssetsManager(bot, stateController);
+  const manager = new TwitterAssetsManager(bot, stateRepository);
 
   bot.createWelcomeMessage.mock.fake(async () => ({
     welcome_message: {
@@ -309,7 +309,7 @@ test('.createWelcomeMessage(name, message)', async () => {
   );
 
   expect(
-    stateController.globalState.mock.calls[0].args[0],
+    stateRepository.globalState.mock.calls[0].args[0],
   ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_welcome_message', '844385345234');
 
@@ -323,7 +323,7 @@ test('.createWelcomeMessage(name, message)', async () => {
 });
 
 test('.deleteWelcomeMessage(name)', async () => {
-  const manager = new TwitterAssetsManager(bot, stateController);
+  const manager = new TwitterAssetsManager(bot, stateRepository);
 
   state.get.mock.fake(async () => '1234567890');
   bot.requestApi.mock.fake(async () => ({}));
@@ -340,7 +340,7 @@ test('.deleteWelcomeMessage(name)', async () => {
   });
 
   expect(
-    stateController.globalState.mock.calls[0].args[0],
+    stateRepository.globalState.mock.calls[0].args[0],
   ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
   expect(state.delete).toHaveBeenCalledWith('my_welcome_message');
 
@@ -356,7 +356,7 @@ test('.deleteWelcomeMessage(name)', async () => {
 });
 
 test('.createCustomProfile(tag, name, img)', async () => {
-  const manager = new TwitterAssetsManager(bot, stateController);
+  const manager = new TwitterAssetsManager(bot, stateRepository);
 
   bot.requestApi.mock.fake(async () => ({
     custom_profile: {
@@ -393,7 +393,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
   });
 
   expect(
-    stateController.globalState.mock.calls[0].args[0],
+    stateRepository.globalState.mock.calls[0].args[0],
   ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_custom_profile', '1234567890');
 
@@ -402,7 +402,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
 });
 
 test('.deleteCustomProfile(name)', async () => {
-  const manager = new TwitterAssetsManager(bot, stateController);
+  const manager = new TwitterAssetsManager(bot, stateRepository);
 
   state.get.mock.fake(async () => '1234567890');
   bot.requestApi.mock.fake(async () => ({}));
@@ -419,7 +419,7 @@ test('.deleteCustomProfile(name)', async () => {
   });
 
   expect(
-    stateController.globalState.mock.calls[0].args[0],
+    stateRepository.globalState.mock.calls[0].args[0],
   ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
   expect(state.delete).toHaveBeenCalledWith('my_custom_profile');
 

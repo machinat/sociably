@@ -2,7 +2,7 @@ export default (): string => `
 import {
   serviceProviderFactory,
   BaseProfiler,
-  StateController,
+  StateRepository,
   SociablyChannel,
   SociablyUser,
   SociablyProfile
@@ -13,13 +13,13 @@ type ProfileCache = {
 }
 
 const useUserProfile =
-  (profiler: BaseProfiler, stateController: StateController) =>
+  (profiler: BaseProfiler, stateRepository: StateRepository) =>
   async (channel: SociablyChannel, user: SociablyUser | null) => {
     if (!user) {
       return null;
     }
 
-    const userState = stateController.userState(user);
+    const userState = stateRepository.userState(user);
     const cached = await userState.get<ProfileCache>(
       'profile_cache'
     );
@@ -36,6 +36,6 @@ const useUserProfile =
   };
 
 export default serviceProviderFactory({
-  deps: [BaseProfiler, StateController],
+  deps: [BaseProfiler, StateRepository],
 })(useUserProfile);
 `;

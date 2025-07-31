@@ -47,16 +47,16 @@ please check the references for more details:
 ## Get Chat State
 
 Once you set the state provider up,
-you can use the `StateController` service to access the state.
+you can use the `StateRepository` service to access the state.
 For example:
 
 ```js
-import { serviceContainer, StateController } from '@sociably/core';
+import { serviceContainer, StateRepository } from '@sociably/core';
 
 app.onEvent(
-  serviceContainer({ deps: [StateController] })(
-    (stateController) => async ({ event, reply }) => {
-      const bookmarks = await stateController
+  serviceContainer({ deps: [StateRepository] })(
+    (stateRepository) => async ({ event, reply }) => {
+      const bookmarks = await stateRepository
         .threadState(event.thread)
         .get('bookmarks');
 
@@ -70,7 +70,7 @@ app.onEvent(
 );
 ```
 
-`controller.threadState(thread)` method returns an accessor to the chat state.
+`repository.threadState(thread)` method returns an accessor to the chat state.
 The state data is stored in key-value pairs, like a JavaScript `Map`.
 
 `accessor.get(key)` resolves the value saved on a key.
@@ -83,15 +83,15 @@ For example:
 
 ```js
 app.onEvent(
-  serviceContainer({ deps: [StateController] })(
-    (stateController) => async ({ event, reply } ) => {
+  serviceContainer({ deps: [StateRepository] })(
+    (stateRepository) => async ({ event, reply } ) => {
       if (event.type === 'text') {
         const matchAdding = event.text.match(/^add (.*)$/i);
 
         if (matchAdding) {
           const newBookmark = matchAdding[1];
 
-          const bookmarks = await stateController
+          const bookmarks = await stateRepository
             .threadState(event.thread)
             .update(
               'bookmarks',
@@ -131,7 +131,7 @@ If the same value is returned, no saving action will be made.
 For example, this updating call is NOT going to work:
 
 ```js
-await stateController.threadState(event.thread).update('my_data', (data) => {
+await stateRepository.threadState(event.thread).update('my_data', (data) => {
   data.foo = 'bar';
   return data; // the value is the same object
 });
@@ -144,19 +144,19 @@ _So do not mutate the value in the updater. Always return a new one._
 Sometimes you might want to use the user state instead of chat state.
 Their scopes are different since a user can show up in many chatrooms.
 
-To access the user state, use the `controller.userState(user)` method.
+To access the user state, use the `repository.userState(user)` method.
 For example:
 
 ```js
 app.onEvent(
-  serviceContainer({ deps: [StateController] })(
-    (stateController) => async ({ event, reply }) => {
+  serviceContainer({ deps: [StateRepository] })(
+    (stateRepository) => async ({ event, reply }) => {
       if (event.type === 'text') {
         const matchCallMe = event.text.match(/^call me (.*)$/i);
 
         if (matchCallMe) {
           const nickname = matchCallMe[1];
-          await stateController
+          await stateRepository
             // highlight-next-line
             .userState(event.user)
             .update('nickname', () => nickname);
@@ -165,7 +165,7 @@ app.onEvent(
         }
       }
 
-      const nickname = await stateController
+      const nickname = await stateRepository
         // highlight-next-line
         .userState(event.user)
         .get('nickname');
@@ -180,11 +180,11 @@ The state accessor usage is exactly the same with thread state.
 ### Global State
 
 If you want to use state at the global scope,
-use `controller.globalState(stateId)`.
+use `repository.globalState(stateId)`.
 For example:
 
 ```js
-const newYorkWeather = await stateController
+const newYorkWeather = await stateRepository
   .globalState('weathers')
   .get('new_york');
 ```

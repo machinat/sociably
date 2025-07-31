@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import type { RedisClient } from 'redis';
 import moxy from '@moxyjs/moxy';
-import { RedisStateController } from '../controller.js';
+import { RedisStateRepository } from '../RedisStateRepository.js';
 
 const resolveCallback =
   (result) =>
@@ -31,7 +31,7 @@ beforeEach(() => {
   marshaler.mock.reset();
 });
 
-const controller = new RedisStateController(client, marshaler);
+const repository = new RedisStateRepository(client, marshaler);
 
 const fooInstance = {
   $$typeofChannel: true as const,
@@ -52,44 +52,44 @@ describe.each([
   [
     'channel state',
     '$channel',
-    controller.channelState(fooInstance),
-    controller.channelState(barInstance),
+    repository.channelState(fooInstance),
+    repository.channelState(barInstance),
   ],
   [
     'channel state using uid',
     '$channel',
-    controller.channelState('test.foo'),
-    controller.channelState('test.bar'),
+    repository.channelState('test.foo'),
+    repository.channelState('test.bar'),
   ],
   [
     'thread state',
     '$thread',
-    controller.threadState(fooInstance),
-    controller.threadState(barInstance),
+    repository.threadState(fooInstance),
+    repository.threadState(barInstance),
   ],
   [
     'thread state using uid',
     '$thread',
-    controller.threadState('test.foo'),
-    controller.threadState('test.bar'),
+    repository.threadState('test.foo'),
+    repository.threadState('test.bar'),
   ],
   [
     'user state',
     '$user',
-    controller.userState(fooInstance),
-    controller.userState(barInstance),
+    repository.userState(fooInstance),
+    repository.userState(barInstance),
   ],
   [
     'user state using uid',
     '$user',
-    controller.userState('test.foo'),
-    controller.userState('test.bar'),
+    repository.userState('test.foo'),
+    repository.userState('test.bar'),
   ],
   [
     'global state',
     '$global',
-    controller.globalState('test.foo'),
-    controller.globalState('test.bar'),
+    repository.globalState('test.foo'),
+    repository.globalState('test.bar'),
   ],
 ])('%s', (_, prefix, fooState, barState) => {
   test('.get(key)', async () => {
@@ -383,11 +383,11 @@ describe.each([
 });
 
 test('.callClient(method, ...params)', async () => {
-  await expect(controller.callClient('set', 'foo', 'bar')).resolves.toBe('OK');
+  await expect(repository.callClient('set', 'foo', 'bar')).resolves.toBe('OK');
   expect(client.set).toHaveBeenCalledTimes(1);
   expect(client.set).toHaveBeenCalledWith('foo', 'bar', expect.any(Function));
 
-  await expect(controller.callClient('expire', 'foo', 100)).resolves.toBe(1);
+  await expect(repository.callClient('expire', 'foo', 100)).resolves.toBe(1);
   expect(client.expire).toHaveBeenCalledTimes(1);
   expect(client.expire).toHaveBeenCalledWith('foo', 100, expect.any(Function));
 });

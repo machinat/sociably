@@ -28,7 +28,7 @@ export {
 } from './service/index.js';
 export { default as BaseBot } from './base/Bot.js';
 export { default as BaseProfiler } from './base/Profiler.js';
-export { default as StateController } from './base/StateController.js';
+export { default as StateRepository } from './base/StateRepository.js';
 export { default as IntentRecognizer } from './base/IntentRecognizer.js';
 export { default as Marshaler } from './base/Marshaler.js';
 export { default as RenderingTarget } from './base/RenderingTarget.js';

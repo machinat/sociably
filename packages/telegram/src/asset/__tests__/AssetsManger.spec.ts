@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import type StateControllerI from '@sociably/core/base/StateController';
+import type StateRepositoryI from '@sociably/core/base/StateRepository';
 import { TelegramBot } from '../../Bot.js';
 import TelegramUser from '../../User.js';
 import { TelegramAssetsManager } from '../AssetsManager.js';
@@ -13,7 +13,7 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateController = moxy<StateControllerI>({
+const stateRepository = moxy<StateRepositoryI>({
   globalState() {
     return state;
   },
@@ -25,20 +25,20 @@ const bot = moxy<TelegramBot>({
 const botUser = new TelegramUser(12345, true);
 
 beforeEach(() => {
-  stateController.mock.reset();
+  stateRepository.mock.reset();
   state.mock.reset();
   bot.mock.reset();
 });
 
 test('get asset id', async () => {
-  const manager = new TelegramAssetsManager(bot, stateController);
+  const manager = new TelegramAssetsManager(bot, stateRepository);
 
   await expect(manager.getAssetId(botUser, 'foo', 'bar')).resolves.toBe(
     undefined,
   );
   await expect(manager.getFile(botUser, 'my_file')).resolves.toBe(undefined);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
   expect(state.get).toHaveBeenCalledTimes(2);
 
   state.get.mock.fakeReturnValue('_FOO_BAR_ID_');
@@ -49,8 +49,8 @@ test('get asset id', async () => {
   state.get.mock.fakeReturnValue('_FILE_ID_');
   await expect(manager.getFile(botUser, 'my_file')).resolves.toBe('_FILE_ID_');
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
-  expect(stateController.globalState.mock.calls.map((c) => c.args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
+  expect(stateRepository.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$tg.foo.12345",
@@ -68,7 +68,7 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const manager = new TelegramAssetsManager(bot, stateController);
+  const manager = new TelegramAssetsManager(bot, stateRepository);
 
   await expect(manager.saveAssetId(botUser, 'foo', 'bar', 'baz')).resolves.toBe(
     false,
@@ -77,8 +77,8 @@ test('set asset id', async () => {
     false,
   );
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+  expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$tg.foo.12345",
@@ -101,12 +101,12 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new TelegramAssetsManager(bot, stateController);
+  const manager = new TelegramAssetsManager(bot, stateRepository);
 
   await expect(manager.getAllAssets(botUser, 'foo')).resolves.toBe(null);
   await expect(manager.getAllFiles(botUser)).resolves.toBe(null);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
   expect(state.getAll).toHaveBeenCalledTimes(2);
 
   const resources = new Map([
@@ -120,8 +120,8 @@ test('get all assets', async () => {
   );
   await expect(manager.getAllFiles(botUser)).resolves.toEqual(resources);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
+  expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$tg.foo.12345",
@@ -135,14 +135,14 @@ test('get all assets', async () => {
 });
 
 test('remove asset id', async () => {
-  const manager = new TelegramAssetsManager(bot, stateController);
+  const manager = new TelegramAssetsManager(bot, stateRepository);
 
   await expect(manager.unsaveAssetId(botUser, 'foo', 'bar')).resolves.toBe(
     true,
   );
   await expect(manager.unsaveFile(botUser, 'my_file')).resolves.toBe(true);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
   expect(state.delete).toHaveBeenCalledTimes(2);
 
   state.delete.mock.fake(async () => false);
@@ -151,7 +151,7 @@ test('remove asset id', async () => {
   );
   await expect(manager.unsaveFile(botUser, 'my_file')).resolves.toBe(false);
 
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$tg.foo.12345",
@@ -170,7 +170,7 @@ test('remove asset id', async () => {
 
 describe('.setBotWebhook(bot, options)', () => {
   it('call setWebhook API', async () => {
-    const manager = new TelegramAssetsManager(bot, stateController);
+    const manager = new TelegramAssetsManager(bot, stateRepository);
 
     await expect(
       manager.setBotWebhook(botUser, { url: 'https://sociably.io/foo' }),
@@ -212,7 +212,7 @@ describe('.setBotWebhook(bot, options)', () => {
   });
 
   test('with default options', async () => {
-    const manager = new TelegramAssetsManager(bot, stateController, {
+    const manager = new TelegramAssetsManager(bot, stateRepository, {
       webhookUrl: 'https://sociably.io/foo',
       secretToken: '_SECRET_',
     });
@@ -232,7 +232,7 @@ describe('.setBotWebhook(bot, options)', () => {
 });
 
 test('.deleteBotWebhook(bot, options)', async () => {
-  const manager = new TelegramAssetsManager(bot, stateController);
+  const manager = new TelegramAssetsManager(bot, stateRepository);
 
   await expect(manager.deleteBotWebhook(botUser)).resolves.toBe(undefined);
 

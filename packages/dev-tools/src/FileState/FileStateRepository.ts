@@ -11,9 +11,9 @@ import type {
 } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import {
-  BaseStateController,
+  BaseStateRepository,
   StateAccessor,
-} from '@sociably/core/base/StateController';
+} from '@sociably/core/base/StateRepository';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import { ConfigsI, SerializerI } from './interface.js';
 import type { FileStateConfigs } from './types.js';
@@ -120,7 +120,7 @@ type StorageData = {
 
 const identity = (x) => x;
 /** @category Provider */
-export class FileStateController implements BaseStateController {
+export class FileStateRepository implements BaseStateRepository {
   path: string;
   marshaler: BaseMarshaler;
   serializer: SerializerI;
@@ -258,13 +258,13 @@ export class FileStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = serviceProviderClass({
+export const RepositoryP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
     { require: BaseMarshaler, optional: true },
     { require: SerializerI, optional: true },
   ],
-})(FileStateController);
+})(FileStateRepository);
 
-export type ControllerP = FileStateController;
+export type RepositoryP = FileStateRepository;

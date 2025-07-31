@@ -64,11 +64,11 @@ import Sociably, { BaseProfiler } from '@sociably/core';
 event$.subscribe(
   serviceContainer({ deps: [BaseProfiler] })(
     (profiler) =>
-    async ({ event, reply }) => {
-      const profile = await profiler.getUserProfile(event.user);
-      await reply(<p>Hello {profile?.name || 'there'}!</p>);
-    }
-  )
+      async ({ event, reply }) => {
+        const profile = await profiler.getUserProfile(event.user);
+        await reply(<p>Hello {profile?.name || 'there'}!</p>);
+      },
+  ),
 );
 ```
 
@@ -109,7 +109,7 @@ event$
 It takes a transformer function with `(eventContext) => newContext` type.
 The new event context will be passed to the next stream.
 
-We can use it to execute a job and attach the result onto the context. 
+We can use it to execute a job and attach the result onto the context.
 For example:
 
 ```js
@@ -119,47 +119,43 @@ import { map } from '@sociably/stream/operators';
 const eventWithIntent$ = event$.pipe(
   map(
     serviceContainer({ deps: [IntentRecognizer] })(
-      (recognizer) =>
-      async (context) => {
+      (recognizer) => async (context) => {
         const { event } = context;
         let intent = null;
 
         if (event.type === 'text') {
           intent = await recognizer.detectText(event.thread, event.text);
         }
-        
+
         return { ...context, intent };
-      }
-    )
-  )
+      },
+    ),
+  ),
 );
 ```
 
 ### Execute a Side Effect
 
 `tap(effectFn)` operator executes a job and then passes the original context down when it's finished.
- 
+
 The difference from `stream.subscribe(operator)` is that `tap` guarantees the execution order is one-by-one under a chat.
 
 ```js
-import Sociably, { serviceContainer, StateController } from '@sociably/core';
+import Sociably, { serviceContainer, StateRepository } from '@sociably/core';
 import { tap } from '@sociably/stream/operators';
 
 event$.pipe(
   tap(
     serviceContainer({
-      deps: [StateController],
-    })(
-      (stateController) =>
-      async ({ event, reply }) => {
-        const count = stateController
-          .threadState(event.thread)
-          .update((curCount = 0) => curCount + 1);
+      deps: [StateRepository],
+    })((stateRepository) => async ({ event, reply }) => {
+      const count = stateRepository
+        .threadState(event.thread)
+        .update((curCount = 0) => curCount + 1);
 
-        await reply(<p>Hello #{count}!</p>);
-      }
-    )
-  )
+      await reply(<p>Hello #{count}!</p>);
+    }),
+  ),
 );
 ```
 
@@ -189,11 +185,11 @@ If you are running the app on a cluster,
 the events under a chat may go to different servers and break the order.
 
 To fix this, it requires an external broker to distribute the jobs and guarantee the order.
-But there are some major challenges to overcome: 
+But there are some major challenges to overcome:
 
 #### Persistence
 
-Many of the Rx stream operators like `count` are stateful. 
+Many of the Rx stream operators like `count` are stateful.
 The stream state have be stored in the database,
 so it can be recovered when the server restarts.
 
@@ -206,7 +202,7 @@ const msgCount$ = message$.pipe(count());
 
 On every process and machine,
 the streams and operators should work identically.
-This means the stateful operations should be safe from race conditions. 
+This means the stateful operations should be safe from race conditions.
 
 ```js
 // every process should see the identical count
@@ -223,9 +219,7 @@ This is difficult because events could be sent to different processes.
 // the mirrored messages should always be in the same order
 message$.pipe(
   map(someAsyncWork),
-  map(async ({ reply, event }) =>
-    reply(event.text + '!!!')
-  )
+  map(async ({ reply, event }) => reply(event.text + '!!!')),
 );
 ```
 

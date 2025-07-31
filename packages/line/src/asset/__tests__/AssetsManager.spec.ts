@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import nock from 'nock';
-import type StateControllerI from '@sociably/core/base/StateController';
+import type StateRepositoryI from '@sociably/core/base/StateRepository';
 import LineChannel from '../../Channel.js';
 import type { LineBot } from '../../Bot.js';
 import { LineAssetsManager } from '../AssetsManager.js';
@@ -14,7 +14,7 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateController = moxy<StateControllerI>({
+const stateRepository = moxy<StateRepositoryI>({
   globalState() {
     return state;
   },
@@ -41,14 +41,14 @@ const agentSettingsAccessor = moxy({
 const channel = new LineChannel('1234567');
 
 beforeEach(() => {
-  stateController.mock.reset();
+  stateRepository.mock.reset();
   state.mock.reset();
   bot.mock.reset();
   agentSettingsAccessor.mock.reset();
 });
 
 const manager = new LineAssetsManager(
-  stateController,
+  stateRepository,
   bot,
   agentSettingsAccessor,
 );
@@ -61,8 +61,8 @@ test('get asset id', async () => {
     undefined,
   );
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+  expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$line.foo.1234567",
@@ -82,7 +82,7 @@ test('get asset id', async () => {
     '_RICH_MENU_ID_',
   );
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
   expect(state.get).toHaveBeenCalledTimes(4);
 });
 
@@ -95,8 +95,8 @@ test('set asset id', async () => {
     manager.saveRichMenu(channel, 'my_rich_menu', '_RICH_MENU_ID_'),
   ).resolves.toBe(true);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+  expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$line.foo.1234567",
@@ -127,8 +127,8 @@ test('get all assets', async () => {
   await expect(manager.getAllAssets(channel, 'foo')).resolves.toBe(null);
   await expect(manager.getAllRichMenus(channel)).resolves.toBe(null);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+  expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$line.foo.1234567",
@@ -149,7 +149,7 @@ test('get all assets', async () => {
   );
   await expect(manager.getAllRichMenus(channel)).resolves.toEqual(resources);
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(4);
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
   expect(state.getAll).toHaveBeenCalledTimes(4);
 });
 
@@ -161,8 +161,8 @@ test('unsave asset id', async () => {
     true,
   );
 
-  expect(stateController.globalState).toHaveBeenCalledTimes(2);
-  expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+  expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+  expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
       "$line.foo.1234567",
@@ -392,7 +392,7 @@ describe('.setChannelWebhook', () => {
     bot.requestApi.mock.fake(async () => ({}));
 
     const managerWithDefaultWebhookUrl = new LineAssetsManager(
-      stateController,
+      stateRepository,
       bot,
       agentSettingsAccessor,
       { webhookUrl: 'https://example.com/baz' },

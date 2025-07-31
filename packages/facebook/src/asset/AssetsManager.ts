@@ -1,6 +1,6 @@
 import Http from '@sociably/http';
 import { serviceProviderClass } from '@sociably/core/service';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import {
   SetMetaAppSubscriptionOptions,
   DeleteMetaAppSubscriptionOptions,
@@ -35,7 +35,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
   defaultSettings: DefaultSettings;
 
   constructor(
-    stateManager: StateControllerI,
+    stateManager: StateRepositoryI,
     bot: BotP,
     defaultSettings: DefaultSettings = {},
   ) {
@@ -184,14 +184,14 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP, Http.Connector, ConfigsI],
+  deps: [StateRepositoryI, BotP, Http.Connector, ConfigsI],
   factory: (
-    stateController,
+    stateRepository,
     bot,
     connector,
     { appId, webhookVerifyToken, webhookPath, subscriptionFields },
   ) =>
-    new FacebookAssetsManager(stateController, bot, {
+    new FacebookAssetsManager(stateRepository, bot, {
       appId,
       webhookVerifyToken,
       subscriptionFields,

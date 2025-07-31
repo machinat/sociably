@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import type StateControllerI from '@sociably/core/base/StateController';
+import type StateRepositoryI from '@sociably/core/base/StateRepository';
 import { MetaApiChannel } from '@sociably/meta-api';
 import { MessengerAssetsManager } from '../AssetsManager.js';
 import { MessengerBot } from '../../types.js';
@@ -14,7 +14,7 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateController = moxy<StateControllerI>({
+const stateRepository = moxy<StateRepositoryI>({
   globalState() {
     return state;
   },
@@ -28,7 +28,7 @@ const bot = moxy<MessengerBot<MetaApiChannel>>({
 } as never);
 
 beforeEach(() => {
-  stateController.mock.reset();
+  stateRepository.mock.reset();
   state.mock.reset();
   bot.mock.reset();
 });
@@ -42,7 +42,7 @@ const channel = {
 describe('page/app management', () => {
   describe('.setSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
+      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
 
       await expect(
         manager.setSubscribedApp(channel, {
@@ -66,7 +66,7 @@ describe('page/app management', () => {
 
   describe('.deleteSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
+      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
       await expect(manager.deleteSubscribedApp(channel)).resolves.toBe(
         undefined,
       );
@@ -80,7 +80,7 @@ describe('page/app management', () => {
     });
 
     test('with specified accessToken', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
+      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
       await expect(
         manager.deleteSubscribedApp(channel, { accessToken: '_ACCESS_TOKEN_' }),
       ).resolves.toBe(undefined);
@@ -106,7 +106,7 @@ describe('page/app management', () => {
     ];
 
     it('call subscribed_apps API as page', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
+      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
       bot.requestApi.mock.fake(async ({ method }) =>
         method === 'GET' ? { data: [] } : {},
       );
@@ -144,7 +144,7 @@ describe('page/app management', () => {
     });
 
     it('remove current fields if not exist on new settings', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
+      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
       bot.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
@@ -197,7 +197,7 @@ describe('page/app management', () => {
     });
 
     it('set fields if value has change', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
+      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
       bot.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
@@ -262,7 +262,7 @@ describe('page/app management', () => {
     });
 
     test('platform option on method', async () => {
-      const manager = new MessengerAssetsManager(stateController, bot, 'test');
+      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
       bot.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
@@ -335,7 +335,7 @@ describe('page/app management', () => {
 
 describe('assets management', () => {
   test('get asset id', async () => {
-    const manager = new MessengerAssetsManager(stateController, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
 
     await expect(manager.getAssetId(channel, 'foo', 'bar')).resolves.toBe(
       undefined,
@@ -344,8 +344,8 @@ describe('assets management', () => {
       undefined,
     );
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
-    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
         "$test.foo.12345",
@@ -369,12 +369,12 @@ describe('assets management', () => {
 
     state.get.mock.fakeReturnValue('_PERSONA_ID_');
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(4);
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
     expect(state.get).toHaveBeenCalledTimes(4);
   });
 
   test('set asset id', async () => {
-    const manager = new MessengerAssetsManager(stateController, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
 
     await expect(
       manager.saveAssetId(channel, 'foo', 'bar', 'baz'),
@@ -383,8 +383,8 @@ describe('assets management', () => {
       manager.saveAttachment(channel, 'my_attachment', '_ATTACHMENT_ID_'),
     ).resolves.toBe(false);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
-    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
         "$test.foo.12345",
@@ -411,13 +411,13 @@ describe('assets management', () => {
   });
 
   test('get all assets', async () => {
-    const manager = new MessengerAssetsManager(stateController, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
 
     await expect(manager.getAllAssets(channel, 'foo')).resolves.toBe(null);
     await expect(manager.getAllAttachments(channel)).resolves.toBe(null);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
-    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
         "$test.foo.12345",
@@ -442,7 +442,7 @@ describe('assets management', () => {
   });
 
   test('remove asset id', async () => {
-    const manager = new MessengerAssetsManager(stateController, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
 
     await expect(manager.unsaveAssetId(channel, 'foo', 'bar')).resolves.toBe(
       true,
@@ -451,8 +451,8 @@ describe('assets management', () => {
       manager.unsaveAttachment(channel, 'my_attachment'),
     ).resolves.toBe(true);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
-    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
         "$test.foo.12345",
@@ -475,7 +475,7 @@ describe('assets management', () => {
   });
 
   test('.uploadChatAttachment()', async () => {
-    const manager = new MessengerAssetsManager(stateController, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
     bot.uploadChatAttachment.mock.fake(async () => ({
       attachmentId: '1857777774821032',
     }));

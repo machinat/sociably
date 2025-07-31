@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 import moxy, { isMoxy } from '@moxyjs/moxy';
 import { SociablyThread, SociablyChannel, SociablyUser } from '@sociably/core';
-import { StateAccessor } from '@sociably/core/base/StateController';
+import { StateAccessor } from '@sociably/core/base/StateRepository';
 import {
   DEFAULT_GLOBAL_STATE_TABLE_NAME,
   DEFAULT_CHANNEL_STATE_TABLE_NAME,
@@ -13,7 +13,7 @@ import {
   FIELD_CREATED_AT,
   FIELD_UPDATED_AT,
 } from '../constants.js';
-import { PostgresStateController } from '../Controller.js';
+import { PostgresStateRepository } from '../PostgresStateRepository.js';
 
 const pgPool = moxy(new Pool({ connectionString: process.env.DATABASE_URL }), {
   mockMethod: false,
@@ -83,14 +83,14 @@ describe.each<[string, Record<string, string>]>([
     },
   ],
 ])('%s', (_, options) => {
-  const controller = new PostgresStateController(pgPool, marshaler, options);
+  const repository = new PostgresStateRepository(pgPool, marshaler, options);
 
   beforeAll(async () => {
-    await controller.createTables();
+    await repository.createTables();
   });
 
   afterAll(async () => {
-    await controller.dropTables();
+    await repository.dropTables();
   });
 
   const schemaPrefix = options.schemaName ? `"${options.schemaName}".` : '';
@@ -113,7 +113,7 @@ describe.each<[string, Record<string, string>]>([
   >([
     [
       'channel state',
-      controller.channelState({
+      repository.channelState({
         platform: 'test',
         uid: 'test.foo',
       } as SociablyChannel),
@@ -122,7 +122,7 @@ describe.each<[string, Record<string, string>]>([
     ],
     [
       'channel state with scope id',
-      controller.channelState({
+      repository.channelState({
         platform: 'test',
         uid: 'test.foo.1',
       } as SociablyChannel),
@@ -131,7 +131,7 @@ describe.each<[string, Record<string, string>]>([
     ],
     [
       'thread state',
-      controller.threadState({
+      repository.threadState({
         platform: 'test',
         uid: 'test.foo',
       } as SociablyThread),
@@ -140,7 +140,7 @@ describe.each<[string, Record<string, string>]>([
     ],
     [
       'thread state with scope id',
-      controller.threadState({
+      repository.threadState({
         platform: 'test',
         uid: 'test.foo.1',
       } as SociablyThread),
@@ -149,7 +149,7 @@ describe.each<[string, Record<string, string>]>([
     ],
     [
       'user state',
-      controller.userState({
+      repository.userState({
         platform: 'test',
         uid: 'test.foo.john',
       } as SociablyUser),
@@ -158,7 +158,7 @@ describe.each<[string, Record<string, string>]>([
     ],
     [
       'user state with scope id',
-      controller.userState({
+      repository.userState({
         platform: 'test',
         uid: 'test.foo.jane',
       } as SociablyUser),
@@ -167,7 +167,7 @@ describe.each<[string, Record<string, string>]>([
     ],
     [
       'global state',
-      controller.globalState('MY_SUPER_STATE'),
+      repository.globalState('MY_SUPER_STATE'),
       `${schemaPrefix}"${globalStateTableName}"`,
       'MY_SUPER_STATE',
     ],

@@ -38,7 +38,7 @@ export type StateAccessor = {
 };
 
 /** @category Base */
-export type BaseStateController = {
+export type BaseStateRepository = {
   /** Return the {@link StateAccessor} for a SociablyChannel */
   channelState(
     /** The channel object */
@@ -61,10 +61,10 @@ export type BaseStateController = {
   globalState(stateId: string): StateAccessor;
 };
 
-const StateControllerI = serviceInterface<BaseStateController>({
-  name: 'BaseStateController',
+const StateRepositoryI = serviceInterface<BaseStateRepository>({
+  name: 'BaseStateRepository',
 });
 
-type StateControllerI = BaseStateController;
+type StateRepositoryI = BaseStateRepository;
 
-export default StateControllerI;
+export default StateRepositoryI;

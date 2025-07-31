@@ -4,7 +4,7 @@ import Http from '@sociably/http';
 import { InMemoryState } from '@sociably/dev-tools';
 import Auth from '../module.js';
 import BasicAuthenticator from '../basicAuth/index.js';
-import ControllerP from '../Controller.js';
+import RepositoryP from '../Controller.js';
 import HttpOperatorP from '../HttpOperator.js';
 
 const secret = '_SECRET_';
@@ -12,7 +12,7 @@ const serverUrl = 'https://sociably.io/hello/';
 const apiPath = './auth';
 
 test('interfaces', () => {
-  expect(Auth.Controller).toBe(ControllerP);
+  expect(Auth.Controller).toBe(RepositoryP);
   expect(Auth.HttpOperator).toBe(HttpOperatorP);
   expect(Auth.Configs).toMatchInlineSnapshot(`
     {
@@ -52,7 +52,7 @@ describe('initModule()', () => {
         { require: BasicAuthenticator, optional: true },
       ]);
 
-    expect(controller).toBeInstanceOf(ControllerP);
+    expect(controller).toBeInstanceOf(RepositoryP);
     expect(operator).toBeInstanceOf(HttpOperatorP);
     expect(configs).toEqual({ secret, apiPath });
     expect(routings).toMatchInlineSnapshot(`
@@ -93,7 +93,7 @@ describe('initModule()', () => {
   test('provide authenticators', async () => {
     const fooAuthenticator = moxy();
     const barAuthenticator = moxy();
-    const ControllerSpy = moxy(ControllerP);
+    const ControllerSpy = moxy(RepositoryP);
     const app = Sociably.createApp({
       modules: [
         Http.initModule({ entryUrl: serverUrl, noServer: true }),

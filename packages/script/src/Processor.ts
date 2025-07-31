@@ -1,4 +1,4 @@
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import type { SociablyThread } from '@sociably/core';
 import { ServiceScope, serviceProviderClass } from '@sociably/core/service';
 import { SCRIPT_RUNTIME_STATE_KEY } from './constant.js';
@@ -21,16 +21,16 @@ type StartRuntimeOptions<Params> = {
 export class ScriptProcessor<
   Script extends AnyScriptLibrary = AnyScriptLibrary,
 > {
-  private _stateContoller: StateControllerI;
+  private _stateContoller: StateRepositoryI;
   private _serviceScope: ServiceScope;
   private _libAccessor: LibraryAccessorI;
 
   constructor(
-    stateController: StateControllerI,
+    stateRepository: StateRepositoryI,
     scope: ServiceScope,
     libAccessor: LibraryAccessorI,
   ) {
-    this._stateContoller = stateController;
+    this._stateContoller = stateRepository;
     this._serviceScope = scope;
     this._libAccessor = libAccessor;
   }
@@ -128,7 +128,7 @@ export class ScriptProcessor<
 
 const ProcessorP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, ServiceScope, LibraryAccessorI],
+  deps: [StateRepositoryI, ServiceScope, LibraryAccessorI],
 })(ScriptProcessor);
 
 type ProcessorP<Script extends AnyScriptLibrary> = ScriptProcessor<Script>;

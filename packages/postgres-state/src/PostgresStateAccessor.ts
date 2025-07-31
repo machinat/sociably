@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
-import type { StateAccessor } from '@sociably/core/base/StateController';
+import type { StateAccessor } from '@sociably/core/base/StateRepository';
 import {
   FIELD_STATE_DATA,
   FIELD_STATE_ID,
@@ -10,7 +10,7 @@ import {
 import tableId from './utils/tableId.js';
 import type { BasicStateEntity } from './types.js';
 
-export class PostgresInstanceStateAccessor implements StateAccessor {
+export class PostgresStateAccessor implements StateAccessor {
   private _pool: Pool;
   private _marshaler: BaseMarshaler;
   private _schemaName?: string;
@@ -223,4 +223,4 @@ export class PostgresInstanceStateAccessor implements StateAccessor {
   }
 }
 
-export default PostgresInstanceStateAccessor;
+export default PostgresStateAccessor;

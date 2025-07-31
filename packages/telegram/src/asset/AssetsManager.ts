@@ -1,4 +1,4 @@
-import { serviceProviderClass, StateController } from '@sociably/core';
+import { serviceProviderClass, StateRepository } from '@sociably/core';
 import Http from '@sociably/http';
 import BotP from '../Bot.js';
 import TelegramUser from '../User.js';
@@ -22,17 +22,17 @@ type DefaultSettings = {
  * @category Provider
  */
 export class TelegramAssetsManager {
-  private stateController: StateController;
+  private stateRepository: StateRepository;
   private bot: BotP;
   defaultSettings: DefaultSettings;
 
   constructor(
     bot: BotP,
-    stateController: StateController,
+    stateRepository: StateRepository,
     defaultSettings: DefaultSettings = {},
   ) {
     this.bot = bot;
-    this.stateController = stateController;
+    this.stateRepository = stateRepository;
     this.defaultSettings = defaultSettings;
   }
 
@@ -42,7 +42,7 @@ export class TelegramAssetsManager {
     assetTag: string,
   ): Promise<undefined | string> {
     const agentId = typeof agent === 'number' ? agent : agent.id;
-    const existed = await this.stateController
+    const existed = await this.stateRepository
       .globalState(makeResourceToken(agentId, resource))
       .get<string>(assetTag);
     return existed || undefined;
@@ -55,7 +55,7 @@ export class TelegramAssetsManager {
     id: string,
   ): Promise<boolean> {
     const agentId = typeof agent === 'number' ? agent : agent.id;
-    const isUpdated = await this.stateController
+    const isUpdated = await this.stateRepository
       .globalState(makeResourceToken(agentId, resource))
       .set<string>(assetTag, id);
     return isUpdated;
@@ -66,7 +66,7 @@ export class TelegramAssetsManager {
     resource: string,
   ): Promise<null | Map<string, string>> {
     const agentId = typeof agent === 'number' ? agent : agent.id;
-    return this.stateController
+    return this.stateRepository
       .globalState(makeResourceToken(agentId, resource))
       .getAll();
   }
@@ -78,7 +78,7 @@ export class TelegramAssetsManager {
   ): Promise<boolean> {
     const agentId = typeof agent === 'number' ? agent : agent.id;
 
-    const isDeleted = await this.stateController
+    const isDeleted = await this.stateRepository
       .globalState(makeResourceToken(agentId, resource))
       .delete(assetTag);
     return isDeleted;
@@ -201,9 +201,9 @@ export class TelegramAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP, StateController, Http.Connector, ConfigsI],
-  factory: (bot, stateController, connector, { webhookPath, secretToken }) =>
-    new TelegramAssetsManager(bot, stateController, {
+  deps: [BotP, StateRepository, Http.Connector, ConfigsI],
+  factory: (bot, stateRepository, connector, { webhookPath, secretToken }) =>
+    new TelegramAssetsManager(bot, stateRepository, {
       webhookUrl: connector.getServerUrl(webhookPath),
       secretToken,
     }),

@@ -5,7 +5,7 @@ import {
 } from '@sociably/core/service';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
-import ControllerP from './Controller.js';
+import RepositoryP from './Controller.js';
 import HttpOperatorP from './HttpOperator.js';
 import BasicAuthenticator from './basicAuth/index.js';
 import { ConfigsI, AuthenticatorListI } from './interface.js';
@@ -13,7 +13,7 @@ import type { AuthConfigs, AnyServerAuthenticator } from './types.js';
 
 const authRouteFactory = serviceProviderFactory({
   lifetime: 'transient',
-  deps: [ControllerP, ConfigsI],
+  deps: [RepositoryP, ConfigsI],
 })(
   (controller, configs): RequestRoute => ({
     name: 'auth',
@@ -26,9 +26,9 @@ const authRouteFactory = serviceProviderFactory({
 
 /** @category Root */
 namespace Auth {
-  export const Controller = ControllerP;
+  export const Controller = RepositoryP;
   export type Controller<Authenticator extends AnyServerAuthenticator> =
-    ControllerP<Authenticator>;
+    RepositoryP<Authenticator>;
   export const HttpOperator = HttpOperatorP;
   export type HttpOperator = HttpOperatorP;
 
@@ -40,7 +40,7 @@ namespace Auth {
 
   export const initModule = (configs: AuthConfigs): ServiceModule => {
     const provisions: ServiceProvision<unknown>[] = [
-      ControllerP,
+      RepositoryP,
       HttpOperatorP,
       { provide: ConfigsI, withValue: configs },
       { provide: Http.RequestRouteList, withProvider: authRouteFactory },

@@ -23,7 +23,7 @@
     "./base/Marshaler": "./lib/base/Marshaler.js",
     "./base/ModuleUtilities": "./lib/base/ModuleUtilities.js",
     "./base/Profiler": "./lib/base/Profiler.js",
-    "./base/StateController": "./lib/base/StateController.js",
+    "./base/StateRepository": "./lib/base/StateRepository.js",
     "./iterator": "./lib/iterator/index.js",
     "./utils": "./lib/utils/index.js"
   },

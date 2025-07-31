@@ -20,7 +20,6 @@ When it _runs_ up, the script processor takes over control and _process_ the dia
 You have to install the `@sociably/script` package to use dialog scripts.
 And make sure you have a state provider installed like [`RedisState`](https://sociably.js.org/api/modules/redis_state.html) or [`FileState`](https://sociably.js.org/api/modules/dev_tools.html#file-state).
 
-
 ## Script Syntax
 
 ### Build a Script
@@ -44,7 +43,7 @@ export default build(
   <>
     {() => <p>What main dish would you like?</p>}
 
-    <$.WHILE 
+    <$.WHILE
       condition={({ vars: { mainDishes, mainDishChoice } }) =>
         !mainDishes.includes(mainDishChoice)
       }
@@ -62,14 +61,12 @@ export default build(
 
     {({ vars }) => <p>Our {vars.mainDishChoice} is good!</p>}
 
-    <$.RETURN
-      value={({ vars: { mainDishChoice } }) => ({ mainDishChoice })}
-    />
-  </>
+    <$.RETURN value={({ vars: { mainDishChoice } }) => ({ mainDishChoice })} />
+  </>,
 );
 ```
 
-We `build` the script with the metadata object and the script body in JSX. 
+We `build` the script with the metadata object and the script body in JSX.
 Note that the `name` of a script has to be unique in your app.
 
 Let's break down how it works.
@@ -85,15 +82,15 @@ For example, **DON'T** do something like this:
 
 ```js
 <>
-  {someCondition
-    ? <$.PROMPT
-        key="ask-main-dish"
-        set={({ vars }, { event }) => ({
-          ...vars,
-          mainDish: event.text,
-        })}
-      /> 
-    : null}
+  {someCondition ? (
+    <$.PROMPT
+      key="ask-main-dish"
+      set={({ vars }, { event }) => ({
+        ...vars,
+        mainDish: event.text,
+      })}
+    />
+  ) : null}
 </>
 ```
 
@@ -106,9 +103,7 @@ A content node is a function that returns the messages to be sent.
 It's placed in a script like:
 
 ```js
-<>
-  {() => <p>Pick a main dish you like.</p>}
-</>
+<>{() => <p>Pick a main dish you like.</p>}</>
 ```
 
 The function is called when the node is met in the script runtime.
@@ -132,7 +127,7 @@ The runtime environments object contains the following info:
 
 - `platform` - `string`, the platform where the dialog happens.
 - `thread` - `object`, the chat thread where the dialog happens.
-- `vars` - `object`, a state object for storing data. 
+- `vars` - `object`, a state object for storing data.
 
 ### `vars`
 
@@ -152,7 +147,7 @@ export default build(
       mainDishChoice: undefined,
     }),
   },
-  <>...</>
+  <>...</>,
 );
 ```
 
@@ -165,35 +160,44 @@ The keyword elements describe how the conversation should be executed.
 Here are the available keywords:
 
 - `IF` - define an `if` flow.
+
   - `condition` - required, `(ScriptEnv) => boolean`, go to the `THEN` block if it returns true.
   - `children` - required, `THEN`, `ELSE` and `ELSE_IF` blocks.
 
 - `THEN` - enter children block if `condition` of the parent `IF` is met.
+
   - `children` - required, script block.
 
 - `ELSE_IF` - enter children block if `condition` is met.
+
   - `condition` - required, `(ScriptEnv) => boolean`
   - `children` - required, script block.
 
 - `ELSE` - the fallback block.
+
   - `children` - required, script block.
 
 - `WHILE` - define a `while` flow.
+
   - `condition` - required, `(ScriptEnv) => boolean`, loop the children block while it returns true.
   - `children` - required, script block.
 
 - `PROMPT` - stop the execution of runtime and wait for the user's input.
+
   - `key` - required, `string`, an unique key for the stop point.
   - `set` - optional, `(ScriptEnv, Input) => Vars`, set `vars` value according to the input.
- 
+
 - `EFFECT` - define a side effect.
+
   - `set` - optional, `(ScriptEnv) => Vars`, execute a side effect and set the `vars` value.
   - `yield` - optional, `(ScriptEnv, Value) => Value`, register a middleware to yield a value. Check the [yielding value](#yielding-value) section.
 
 - `LABEL` - label a start point which you can `goto` while starting.
+
   - `key` - required, `string`, an unique key for the start point.
 
 - `CALL` - execute a script in the current runtime.
+
   - `key` - required, `string`, an unique key for the stop point.
   - `script` - required, the script to be called.
   - `params` - optional, `(ScriptEnv) => Params`, get the params passed to the script.
@@ -210,13 +214,13 @@ It stops the runtime and waits for the user's input.
 After the answer is received, the runtime continues from the `PROMPT` again.
 
 ```js
-  <$.PROMPT
-    key="ask-main-dish"
-    set={({ vars }, { event }) => ({
-      ...vars,
-      mainDish: event.text,
-    })}
-  />
+<$.PROMPT
+  key="ask-main-dish"
+  set={({ vars }, { event }) => ({
+    ...vars,
+    mainDish: event.text,
+  })}
+/>
 ```
 
 The `set` prop is used to store info about the answer.
@@ -240,17 +244,17 @@ Flow control keywords determine the flow of a conversation.
 Like `WHILE` keyword in the example above:
 
 ```js
-  <$.WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
-    {() => <p>We have {MAIN_DISHES.join(', ')}.</p>}
+<$.WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
+  {() => <p>We have {MAIN_DISHES.join(', ')}.</p>}
 
-    <$.PROMPT
-      key="ask-main-dish"
-      set={({ vars }, { event }) => ({
-        ...vars,
-        mainDish: event.text,
-      })}
-    />
-  </$.WHILE>
+  <$.PROMPT
+    key="ask-main-dish"
+    set={({ vars }, { event }) => ({
+      ...vars,
+      mainDish: event.text,
+    })}
+  />
+</$.WHILE>
 ```
 
 `WHILE` keyword loops the children block while the `condition` is met.
@@ -267,9 +271,7 @@ A script can return a value with `RETURN` keyword.
 Like:
 
 ```js
-  <$.RETURN
-    value={({ vars: { mainDishChoice } }) => ({ mainDishChoice })}
-  />
+<$.RETURN value={({ vars: { mainDishChoice } }) => ({ mainDishChoice })} />
 ```
 
 It passes the result of the conversation to the root handler or the parent script.
@@ -294,11 +296,7 @@ import BeforeMidnight from './scenes/BeforeMidnight';
 const app = Sociably.createApp({
   modules: [
     Script.initModule({
-      libs: [
-        BeforeSunset,
-        BeforeSunrise,
-        BeforeMidnight,
-      ],
+      libs: [BeforeSunset, BeforeSunrise, BeforeMidnight],
     }),
     //...
   ],
@@ -327,8 +325,8 @@ app.onEvent(
       }
 
       // default logic...
-    }
-  )
+    },
+  ),
 );
 ```
 
@@ -337,8 +335,8 @@ If you're using `@sociably/stream`, you can `filter` the stream like:
 ```js
 import { serviceContainer } from '@sociably/core';
 import Script from '@sociably/script';
-import { fromApp } from '@sociably/stream'
-import { filter } from '@sociably/stream/operators'
+import { fromApp } from '@sociably/stream';
+import { filter } from '@sociably/stream/operators';
 
 const event$ = fromApp(app).pipe(
   filter(
@@ -349,9 +347,9 @@ const event$ = fromApp(app).pipe(
           await ctx.reply(runtime.output());
         }
         return !runtime;
-      }
-    )
-  )
+      },
+    ),
+  ),
 );
 
 event$.subscribe(({ event }) => {
@@ -387,12 +385,12 @@ so only these events would push the dialog forward.
 Like:
 
 ```js
-  if (event.category === 'message' && event.category === 'callback') {
-    const runtime = await processor.continue(event.thread, context);
-    if (runtime) {
-      return reply(runtime.output());
-    }
+if (event.category === 'message' && event.category === 'callback') {
+  const runtime = await processor.continue(event.thread, context);
+  if (runtime) {
+    return reply(runtime.output());
   }
+}
 ```
 
 ### Handle Return Value
@@ -402,15 +400,15 @@ it's available at `runtime.returnValue`.
 You can handle it like this:
 
 ```js
-  const runtime = await processor.continue(event.thread, context);
-  if (runtime) {
-    await reply(runtime.output());
+const runtime = await processor.continue(event.thread, context);
+if (runtime) {
+  await reply(runtime.output());
 
-    if (runtime.returnValue) {
-      // do something with `returnValue`
-      await cook(runtime.returnValue.mainDishChoice);
-    }
+  if (runtime.returnValue) {
+    // do something with `returnValue`
+    await cook(runtime.returnValue.mainDishChoice);
   }
+}
 ```
 
 ## Advanced Usage
@@ -428,23 +426,18 @@ import Sociably, { serviceContainer, IntentRecognizer } from '@sociably/core';
   {() => <p>Would you like any side dish?</p>}
   <$.PROMPT
     key="ask-side-dish"
-    set={
-      serviceContainer({ deps: [IntentRecognizer] })(
-        (recognizer) =>
+    set={serviceContainer({ deps: [IntentRecognizer] })(
+      (recognizer) =>
         async ({ vars, thread }, { event }) => {
-          const intent = await recognizer.detectText(
-            thread,
-            event.text
-          );
+          const intent = await recognizer.detectText(thread, event.text);
           return {
             ...vars,
-            needSideDish: intent.type === 'yes'
+            needSideDish: intent.type === 'yes',
           };
-        }
-      )
-    }
+        },
+    )}
   />
-</>
+</>;
 ```
 
 In the example, we check intent with `IntentRecognizer` in the `set` prop.
@@ -453,11 +446,16 @@ including content nodes.
 
 ```js
 <>
-  {serviceContainer({ deps:[BaseProfiler] })(
-    (profiler) => async ({ vars: { user, mainDishChoice } }) => {
-      const profile = await profiler.getUserProfile(user);
-      return <p>Hi, {profile.name}! Here's your {mainDishChoice}</p>;
-    }
+  {serviceContainer({ deps: [BaseProfiler] })(
+    (profiler) =>
+      async ({ vars: { user, mainDishChoice } }) => {
+        const profile = await profiler.getUserProfile(user);
+        return (
+          <p>
+            Hi, {profile.name}! Here's your {mainDishChoice}
+          </p>
+        );
+      },
   )}
 </>
 ```
@@ -477,11 +475,9 @@ import OrderSideDish from './OrderSideDish';
     script={OrderSideDish}
     key="order-side-dish"
     params={({ vars: { sideDishes } }) => ({ sideDishes })}
-    set={({ vars }, { sideDishChoice }) =>
-      ({ ...vars, sideDishChoice })
-    }
+    set={({ vars }, { sideDishChoice }) => ({ ...vars, sideDishChoice })}
   />
-</>
+</>;
 ```
 
 `params` prop is called to get the script params,
@@ -537,7 +533,7 @@ so you have to use a variable like ``key={`ask-${dishType}`}``.
 
 ### Execute a Side Effect
 
-While making a functional app, it's necessary to handle [side effects](https://en.wikipedia.org/wiki/Side_effect_(computer_science))
+While making a functional app, it's necessary to handle [side effects](<https://en.wikipedia.org/wiki/Side_effect_(computer_science)>)
 in the flows.
 The dialog script supports executing effects in several ways.
 Each one has its pros and cons.
@@ -548,17 +544,18 @@ The first is executing a side effect directly using `EFFECT.set`.
 Like:
 
 ```js
-  <$.EFFECT
-    set={serviceContainer({ deps: [StateController] })(
-      (stateController) => async ({ vars, thread }) => {
-        const visitCount = await stateController
+<$.EFFECT
+  set={serviceContainer({ deps: [StateRepository] })(
+    (stateRepository) =>
+      async ({ vars, thread }) => {
+        const visitCount = await stateRepository
           .threadState(thread)
-          .set('visit_count', (count=0) => count + 1);
+          .set('visit_count', (count = 0) => count + 1);
 
         return { ...vars, visitCount };
-      }
-    )}
-  />
+      },
+  )}
+/>
 ```
 
 This is the simplest way. However while the scale of scripts grows,
@@ -574,14 +571,12 @@ For example:
 
 ```js
 // at the script
-  <$.RETURN
-    value={({ vars: { mainDishChoice } }) => ({ mainDishChoice })}
-  />
+<$.RETURN value={({ vars: { mainDishChoice } }) => ({ mainDishChoice })} />;
 // at the handler
-  const runtime = await processor.continue(event.thread, context);
-  if (runtime?.returnValue) {
-    await cook(runtime.returnValue.mainDishChoice);
-  }
+const runtime = await processor.continue(event.thread, context);
+if (runtime?.returnValue) {
+  await cook(runtime.returnValue.mainDishChoice);
+}
 ```
 
 This way keeps the script itself [pure](https://en.wikipedia.org/wiki/Pure_function).

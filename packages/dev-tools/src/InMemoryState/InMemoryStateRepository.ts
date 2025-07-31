@@ -4,9 +4,9 @@ import type {
   SociablyThread,
 } from '@sociably/core';
 import type {
-  BaseStateController,
+  BaseStateRepository,
   StateAccessor,
-} from '@sociably/core/base/StateController';
+} from '@sociably/core/base/StateRepository';
 import { serviceProviderClass } from '@sociably/core/service';
 
 export class InMemoryStateAccessor implements StateAccessor {
@@ -74,7 +74,7 @@ export class InMemoryStateAccessor implements StateAccessor {
 }
 
 /** @category Provider */
-export class InMemoryStateController implements BaseStateController {
+export class InMemoryStateRepository implements BaseStateRepository {
   private _channelStates: Map<string, Map<string, unknown>>;
   private _threadStates: Map<string, Map<string, unknown>>;
   private _userStates: Map<string, Map<string, unknown>>;
@@ -142,8 +142,8 @@ export class InMemoryStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = serviceProviderClass({
+export const RepositoryP = serviceProviderClass({
   lifetime: 'singleton',
-})(InMemoryStateController);
+})(InMemoryStateRepository);
 
-export type ControllerP = InMemoryStateController;
+export type RepositoryP = InMemoryStateRepository;

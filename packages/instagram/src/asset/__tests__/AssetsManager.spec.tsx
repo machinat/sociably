@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import type StateControllerI from '@sociably/core/base/StateController';
+import type StateRepositoryI from '@sociably/core/base/StateRepository';
 import type { InstagramBot } from '../../Bot.js';
 import InstagramAgent from '../../Agent.js';
 import { InstagramAssetsManager } from '../AssetsManager.js';
@@ -26,7 +26,7 @@ const agentSettingsAccessor = moxy({
   getAgentSettingsBatch: async () => [agentSettings],
 });
 
-const stateController = moxy<StateControllerI>({
+const stateRepository = moxy<StateRepositoryI>({
   globalState() {
     return state;
   },
@@ -40,7 +40,7 @@ const bot = moxy<InstagramBot>({
 } as never);
 
 beforeEach(() => {
-  stateController.mock.reset();
+  stateRepository.mock.reset();
   state.mock.reset();
   bot.mock.reset();
 });
@@ -49,7 +49,7 @@ describe('subscription management', () => {
   describe('.setAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -81,7 +81,7 @@ describe('subscription management', () => {
 
     test('with constructor app settings options', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
         {
@@ -111,7 +111,7 @@ describe('subscription management', () => {
 
     test('default subscription fields', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
         {
@@ -138,7 +138,7 @@ describe('subscription management', () => {
 
     it('throw if no appId available', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -155,7 +155,7 @@ describe('subscription management', () => {
 
     it('throw if no webhookUrl available', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -172,7 +172,7 @@ describe('subscription management', () => {
 
     it('throw if no webhookVerifyToken available', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -191,7 +191,7 @@ describe('subscription management', () => {
   describe('.deleteAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
         {
@@ -231,7 +231,7 @@ describe('subscription management', () => {
 
     it('throw if no appId available', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -247,7 +247,7 @@ describe('subscription management', () => {
   describe('.setSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -273,7 +273,7 @@ describe('subscription management', () => {
 
     test('with constructor app settings options', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
         {
@@ -304,7 +304,7 @@ describe('subscription management', () => {
 
     test('default subscribed fields', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -330,7 +330,7 @@ describe('subscription management', () => {
   describe('.deleteSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -400,7 +400,7 @@ describe('subscription management', () => {
 
     it('call subscribed_apps API as page', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -447,7 +447,7 @@ describe('subscription management', () => {
 
     it('remove current fields if not exist on new settings', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -492,7 +492,7 @@ describe('subscription management', () => {
 
     it('set fields if value has change', async () => {
       const manager = new InstagramAssetsManager(
-        stateController,
+        stateRepository,
         bot,
         agentSettingsAccessor,
       );
@@ -542,7 +542,7 @@ describe('subscription management', () => {
 describe('assets management', () => {
   test('get asset id', async () => {
     const manager = new InstagramAssetsManager(
-      stateController,
+      stateRepository,
       bot,
       agentSettingsAccessor,
     );
@@ -554,8 +554,8 @@ describe('assets management', () => {
       undefined,
     );
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
-    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
         "$ig.foo.__PAGE_ID__",
@@ -577,13 +577,13 @@ describe('assets management', () => {
 
     state.get.mock.fakeReturnValue('_PERSONA_ID_');
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(4);
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(4);
     expect(state.get).toHaveBeenCalledTimes(4);
   });
 
   test('set asset id', async () => {
     const manager = new InstagramAssetsManager(
-      stateController,
+      stateRepository,
       bot,
       agentSettingsAccessor,
     );
@@ -595,8 +595,8 @@ describe('assets management', () => {
       manager.saveAttachment(agent, 'my_attachment', '_ATTACHMENT_ID_'),
     ).resolves.toBe(false);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
-    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
         "$ig.foo.__PAGE_ID__",
@@ -624,7 +624,7 @@ describe('assets management', () => {
 
   test('get all assets', async () => {
     const manager = new InstagramAssetsManager(
-      stateController,
+      stateRepository,
       bot,
       agentSettingsAccessor,
     );
@@ -632,8 +632,8 @@ describe('assets management', () => {
     await expect(manager.getAllAssets(agent, 'foo')).resolves.toBe(null);
     await expect(manager.getAllAttachments(agent)).resolves.toBe(null);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
-    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
         "$ig.foo.__PAGE_ID__",
@@ -657,7 +657,7 @@ describe('assets management', () => {
 
   test('remove asset id', async () => {
     const manager = new InstagramAssetsManager(
-      stateController,
+      stateRepository,
       bot,
       agentSettingsAccessor,
     );
@@ -669,8 +669,8 @@ describe('assets management', () => {
       manager.unsaveAttachment(agent, 'my_attachment'),
     ).resolves.toBe(true);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
-    expect(stateController.globalState.mock.calls.map((call) => call.args[0]))
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
         "$ig.foo.__PAGE_ID__",
@@ -694,7 +694,7 @@ describe('assets management', () => {
 
   test('.uploadChatAttachment()', async () => {
     const manager = new InstagramAssetsManager(
-      stateController,
+      stateRepository,
       bot,
       agentSettingsAccessor,
     );

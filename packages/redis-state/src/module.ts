@@ -4,9 +4,9 @@ import {
   serviceProviderFactory,
   serviceContainer,
 } from '@sociably/core/service';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 
-import { ControllerP } from './controller.js';
+import { RepositoryP } from './RedisStateRepository.js';
 import { ConfigsI, ClientI } from './interface.js';
 
 const createRedisClient = serviceProviderFactory({
@@ -16,8 +16,8 @@ const createRedisClient = serviceProviderFactory({
 
 /** @category Root */
 namespace RedisState {
-  export const Controller = ControllerP;
-  export type Controller = ControllerP;
+  export const Controller = RepositoryP;
+  export type Controller = RepositoryP;
 
   export const Client = ClientI;
   export type Client = ClientI;
@@ -27,8 +27,8 @@ namespace RedisState {
 
   export const initModule = (configs: ConfigsI): ServiceModule => ({
     provisions: [
-      ControllerP,
-      { provide: StateControllerI, withProvider: ControllerP },
+      RepositoryP,
+      { provide: StateRepositoryI, withProvider: RepositoryP },
 
       { provide: ClientI, withProvider: createRedisClient },
       { provide: ConfigsI, withValue: configs },

@@ -8,9 +8,9 @@ import type {
 import { serviceProviderClass } from '@sociably/core/service';
 import BaseMarshaler from '@sociably/core/base/Marshaler';
 import type {
-  BaseStateController,
+  BaseStateRepository,
   StateAccessor,
-} from '@sociably/core/base/StateController';
+} from '@sociably/core/base/StateRepository';
 import { ClientI } from './interface.js';
 
 type CallClientFn = (method: string, ...params: string[]) => Promise<any>;
@@ -132,7 +132,7 @@ export class RedisStateAccessor implements StateAccessor {
 const identity = (x) => x;
 
 /** @category Provider */
-export class RedisStateController implements BaseStateController {
+export class RedisStateRepository implements BaseStateRepository {
   private _client: RedisClient;
   private _marshaler: BaseMarshaler;
 
@@ -197,9 +197,9 @@ export class RedisStateController implements BaseStateController {
   }
 }
 
-export const ControllerP = serviceProviderClass({
+export const RepositoryP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [ClientI, { require: BaseMarshaler, optional: true }],
-})(RedisStateController);
+})(RedisStateRepository);
 
-export type ControllerP = RedisStateController;
+export type RepositoryP = RedisStateRepository;

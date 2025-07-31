@@ -1,4 +1,4 @@
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import {
   MetaApiBot,
   MetaApiChannel,
@@ -14,15 +14,15 @@ export class MetaAssetsManager<
   Bot extends MetaApiBot<Channel>,
 > {
   protected bot: Bot;
-  private stateController: StateControllerI;
+  private stateRepository: StateRepositoryI;
   private platformShortId: string;
 
   constructor(
-    stateManager: StateControllerI,
+    stateManager: StateRepositoryI,
     bot: Bot,
     platformShortId: string,
   ) {
-    this.stateController = stateManager;
+    this.stateRepository = stateManager;
     this.bot = bot;
     this.platformShortId = platformShortId;
   }
@@ -69,7 +69,7 @@ export class MetaAssetsManager<
     resource: string,
     assetTag: string,
   ): Promise<undefined | string> {
-    const existed = await this.stateController
+    const existed = await this.stateRepository
       .globalState(this.makeResourceKey(channelInputId(channel), resource))
       .get<string>(assetTag);
     return existed || undefined;
@@ -81,7 +81,7 @@ export class MetaAssetsManager<
     assetTag: string,
     id: string,
   ): Promise<boolean> {
-    const isUpdated = await this.stateController
+    const isUpdated = await this.stateRepository
       .globalState(this.makeResourceKey(channelInputId(channel), resource))
       .set<string>(assetTag, id);
     return isUpdated;
@@ -91,7 +91,7 @@ export class MetaAssetsManager<
     channel: string | Channel,
     resource: string,
   ): Promise<null | Map<string, string>> {
-    return this.stateController
+    return this.stateRepository
       .globalState(this.makeResourceKey(channelInputId(channel), resource))
       .getAll();
   }
@@ -101,7 +101,7 @@ export class MetaAssetsManager<
     resource: string,
     assetTag: string,
   ): Promise<boolean> {
-    const isDeleted = await this.stateController
+    const isDeleted = await this.stateRepository
       .globalState(this.makeResourceKey(channelInputId(channel), resource))
       .delete(assetTag);
     return isDeleted;

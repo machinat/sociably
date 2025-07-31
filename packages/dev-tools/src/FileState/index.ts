@@ -1,3 +1,3 @@
 export { default } from './module.js';
-export { FileStateController } from './controller.js';
+export { FileStateRepository } from './FileStateRepository.js';
 export * from './types.js';

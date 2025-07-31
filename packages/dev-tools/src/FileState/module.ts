@@ -1,12 +1,12 @@
 import type { ServiceModule } from '@sociably/core';
-import StateControllerI from '@sociably/core/base/StateController';
-import { ControllerP } from './controller.js';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
+import { RepositoryP } from './FileStateRepository.js';
 import { ConfigsI, SerializerI } from './interface.js';
 
 /** @category Root */
 namespace FileState {
-  export const Controller = ControllerP;
-  export type Controller = ControllerP;
+  export const Controller = RepositoryP;
+  export type Controller = RepositoryP;
 
   export const Serializer = SerializerI;
   export type Serializer = SerializerI;
@@ -25,8 +25,8 @@ namespace FileState {
         },
       },
 
-      ControllerP,
-      { provide: StateControllerI, withProvider: ControllerP },
+      RepositoryP,
+      { provide: StateRepositoryI, withProvider: RepositoryP },
     ],
   });
 }

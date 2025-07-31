@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably, {
-  StateController,
+  StateRepository,
   SociablyBot,
   SociablyThread,
 } from '@sociably/core';
@@ -14,7 +14,7 @@ const state = moxy({
   delete: async () => true,
 });
 
-const stateController = moxy<StateController>({
+const stateRepository = moxy<StateRepository>({
   globalState: () => state,
 } as never);
 
@@ -83,12 +83,12 @@ beforeEach(() => {
   bot.mock.reset();
   operator.mock.reset();
   state.mock.reset();
-  stateController.mock.reset();
+  stateRepository.mock.reset();
   delegateOptions.mock.reset();
 });
 
 test('.getAuthUrl()', () => {
-  const authenticator = new BasicAuthenticator(stateController, operator);
+  const authenticator = new BasicAuthenticator(stateRepository, operator);
 
   const loginToken = '__SIGNED_LOGIN_TOKEN__';
   operator.signToken.mock.fakeReturnValue(loginToken);
@@ -120,7 +120,7 @@ describe('init login flow', () => {
     matchedPath: '/myApp/auth/test/',
     trailingPath: 'init',
   };
-  const authenticator = new BasicAuthenticator(stateController, operator);
+  const authenticator = new BasicAuthenticator(stateRepository, operator);
   const delegateRequest = authenticator.createRequestDelegator(delegateOptions);
 
   const req = createReq(
@@ -356,7 +356,7 @@ describe('init login flow', () => {
 
   test('redirect directly in loose mode', async () => {
     const looseAuthenticator = new BasicAuthenticator(
-      stateController,
+      stateRepository,
       operator,
       { mode: 'loose' },
     );
@@ -582,7 +582,7 @@ describe('login page', () => {
   });
 
   test('render login page with state', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator);
+    const authenticator = new BasicAuthenticator(stateRepository, operator);
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
     const res = moxy<ServerResponse>(new ServerResponse(req));
@@ -658,7 +658,7 @@ describe('login page', () => {
 
   test('with customized options', async () => {
     const CodeMessage = ({ code }) => <p>Yo! Check your login code {code}</p>;
-    const authenticator = new BasicAuthenticator(stateController, operator, {
+    const authenticator = new BasicAuthenticator(stateRepository, operator, {
       appName: 'My Test App',
       appIconUrl: 'https://sociably.io/myApp/img/icon.png',
       loginCodeDigits: 20,
@@ -710,7 +710,7 @@ describe('login page', () => {
   });
 
   test("do not reissue state if it's in verify phase", async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator);
+    const authenticator = new BasicAuthenticator(stateRepository, operator);
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
     const res = moxy<ServerResponse>(new ServerResponse(req));
@@ -733,7 +733,7 @@ describe('login page', () => {
   });
 
   test('reissue state if login session expired', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator, {
+    const authenticator = new BasicAuthenticator(stateRepository, operator, {
       loginDuration: 99,
     });
     const delegateRequest =
@@ -765,7 +765,7 @@ describe('login page', () => {
   });
 
   test('reissue state if login attempt reach limitation', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator, {
+    const authenticator = new BasicAuthenticator(stateRepository, operator, {
       maxLoginAttempt: 10,
     });
     const delegateRequest =
@@ -803,12 +803,12 @@ describe('login page', () => {
     );
     await expect(state.update.mock.calls[0].result).resolves.toBe(10);
     expect(
-      stateController.globalState.mock.calls[0].args[0],
+      stateRepository.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"basic_auth_verify_records"`);
   });
 
   it('redirect with error if no login state', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator, {
+    const authenticator = new BasicAuthenticator(stateRepository, operator, {
       maxLoginAttempt: 10,
     });
     const delegateRequest =
@@ -840,7 +840,7 @@ describe('login page', () => {
   });
 
   it('redirect with error if checkAuthData fail', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator);
+    const authenticator = new BasicAuthenticator(stateRepository, operator);
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
     const res = moxy<ServerResponse>(new ServerResponse(req));
@@ -879,7 +879,7 @@ describe('login page', () => {
   });
 
   it('redirect with error if fail to send code message', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator);
+    const authenticator = new BasicAuthenticator(stateRepository, operator);
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
     const res = moxy<ServerResponse>(new ServerResponse(req));
@@ -943,7 +943,7 @@ describe('verify code api', () => {
   };
 
   test('verify with ok login code', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator);
+    const authenticator = new BasicAuthenticator(stateRepository, operator);
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
     const req = prepareReq({ code: 123456 });
@@ -993,7 +993,7 @@ describe('verify code api', () => {
     );
     await expect(state.update.mock.calls[0].result).resolves.toBe(undefined);
     expect(
-      stateController.globalState.mock.calls[0].args[0],
+      stateRepository.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"basic_auth_verify_records"`);
 
     expect(operator.issueError).not.toHaveBeenCalled();
@@ -1001,7 +1001,7 @@ describe('verify code api', () => {
   });
 
   test('verify wrong login code', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator);
+    const authenticator = new BasicAuthenticator(stateRepository, operator);
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
 
@@ -1105,12 +1105,12 @@ describe('verify code api', () => {
     `);
 
     expect(
-      stateController.globalState.mock.calls[0].args[0],
+      stateRepository.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"basic_auth_verify_records"`);
   });
 
   test('verify with invalid body', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator);
+    const authenticator = new BasicAuthenticator(stateRepository, operator);
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
 
@@ -1167,7 +1167,7 @@ describe('verify code api', () => {
   });
 
   test('verify with invalid state', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator);
+    const authenticator = new BasicAuthenticator(stateRepository, operator);
     const delegateRequest =
       authenticator.createRequestDelegator(delegateOptions);
 
@@ -1261,7 +1261,7 @@ describe('verify code api', () => {
   });
 
   test('menaging the records', async () => {
-    const authenticator = new BasicAuthenticator(stateController, operator, {
+    const authenticator = new BasicAuthenticator(stateRepository, operator, {
       loginDuration: 777,
     });
     const delegateRequest =

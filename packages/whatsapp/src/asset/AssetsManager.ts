@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { serviceProviderClass } from '@sociably/core/service';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import Http from '@sociably/http';
 import {
   MetaAssetsManager,
@@ -175,11 +175,11 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
   defaultSettings: DefaultSettings;
 
   constructor(
-    stateController: StateControllerI,
+    stateRepository: StateRepositoryI,
     bot: BotP,
     defaultSettings: DefaultSettings = {},
   ) {
-    super(stateController, bot, WA);
+    super(stateRepository, bot, WA);
     this.defaultSettings = {
       ...defaultSettings,
       subscriptionFields:
@@ -434,14 +434,14 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateControllerI, BotP, Http.Connector, ConfigsI],
+  deps: [StateRepositoryI, BotP, Http.Connector, ConfigsI],
   factory: (
-    stateController,
+    stateRepository,
     bot,
     connector,
     { appId, webhookPath, webhookVerifyToken, subscriptionFields },
   ) =>
-    new WhatsAppAssetsManager(stateController, bot, {
+    new WhatsAppAssetsManager(stateRepository, bot, {
       appId,
       webhookVerifyToken,
       subscriptionFields,

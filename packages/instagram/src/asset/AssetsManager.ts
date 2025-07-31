@@ -1,6 +1,6 @@
 import Http from '@sociably/http';
 import { serviceProviderClass } from '@sociably/core/service';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import {
   SetMetaAppSubscriptionOptions,
   DeleteMetaAppSubscriptionOptions,
@@ -41,7 +41,7 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
   private agentSettingsAccessor: AgentSettingsAccessorI;
 
   constructor(
-    stateManager: StateControllerI,
+    stateManager: StateRepositoryI,
     bot: BotP,
     agentSettingsAccessor: AgentSettingsAccessorI,
     defaultSettings: DefaultSettings = {},
@@ -165,20 +165,20 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [
-    StateControllerI,
+    StateRepositoryI,
     BotP,
     Http.Connector,
     AgentSettingsAccessorI,
     ConfigsI,
   ],
   factory: (
-    stateController,
+    stateRepository,
     bot,
     connector,
     agentSettingsAccessor,
     { appId, webhookVerifyToken, webhookPath, subscriptionFields },
   ) =>
-    new InstagramAssetsManager(stateController, bot, agentSettingsAccessor, {
+    new InstagramAssetsManager(stateRepository, bot, agentSettingsAccessor, {
       appId,
       webhookVerifyToken,
       subscriptionFields,

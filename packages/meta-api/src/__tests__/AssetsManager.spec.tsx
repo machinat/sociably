@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import type StateControllerI from '@sociably/core/base/StateController';
+import type StateRepositoryI from '@sociably/core/base/StateRepository';
 import { MetaAssetsManager } from '../AssetsManager.js';
 import { MetaApiBot } from '../types.js';
 
@@ -12,7 +12,7 @@ const state = moxy({
   clear: () => {},
 });
 
-const stateController = moxy<StateControllerI>({
+const stateRepository = moxy<StateRepositoryI>({
   globalState() {
     return state;
   },
@@ -26,7 +26,7 @@ const bot = moxy<MetaApiBot>({
 } as never);
 
 beforeEach(() => {
-  stateController.mock.reset();
+  stateRepository.mock.reset();
   state.mock.reset();
   bot.mock.reset();
 });
@@ -34,7 +34,7 @@ beforeEach(() => {
 describe('page/app management', () => {
   describe('.setAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new MetaAssetsManager(stateController, bot, 'test');
+      const manager = new MetaAssetsManager(stateRepository, bot, 'test');
 
       await expect(
         manager.setAppSubscription({
@@ -64,7 +64,7 @@ describe('page/app management', () => {
 
   describe('.deleteAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new MetaAssetsManager(stateController, bot, 'test');
+      const manager = new MetaAssetsManager(stateRepository, bot, 'test');
 
       await expect(
         manager.deleteAppSubscription({
@@ -104,15 +104,15 @@ describe('page/app management', () => {
 
 describe('assets management', () => {
   test('get asset id', async () => {
-    const manager = new MetaAssetsManager(stateController, bot, 'test');
+    const manager = new MetaAssetsManager(stateRepository, bot, 'test');
 
     await expect(manager.getAssetId('_AGENT_ID_', 'foo', 'bar')).resolves.toBe(
       undefined,
     );
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(1);
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(1);
     expect(
-      stateController.globalState.mock.calls[0].args[0],
+      stateRepository.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"$test.foo._AGENT_ID_"`);
 
     expect(state.get).toHaveBeenCalledTimes(1);
@@ -123,20 +123,20 @@ describe('assets management', () => {
       'baz',
     );
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(2);
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
     expect(state.get).toHaveBeenCalledTimes(2);
   });
 
   test('set asset id', async () => {
-    const manager = new MetaAssetsManager(stateController, bot, 'test');
+    const manager = new MetaAssetsManager(stateRepository, bot, 'test');
 
     await expect(
       manager.saveAssetId('_AGENT_ID_', 'foo', 'bar', 'baz'),
     ).resolves.toBe(false);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(1);
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(1);
     expect(
-      stateController.globalState.mock.calls[0].args[0],
+      stateRepository.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"$test.foo._AGENT_ID_"`);
 
     expect(state.set).toHaveBeenCalledTimes(1);
@@ -151,13 +151,13 @@ describe('assets management', () => {
   });
 
   test('get all assets', async () => {
-    const manager = new MetaAssetsManager(stateController, bot, 'test');
+    const manager = new MetaAssetsManager(stateRepository, bot, 'test');
 
     await expect(manager.getAllAssets('_AGENT_ID_', 'foo')).resolves.toBe(null);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(1);
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(1);
     expect(
-      stateController.globalState.mock.calls[0].args[0],
+      stateRepository.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"$test.foo._AGENT_ID_"`);
 
     expect(state.getAll).toHaveBeenCalledTimes(1);
@@ -176,15 +176,15 @@ describe('assets management', () => {
   });
 
   test('remove asset id', async () => {
-    const manager = new MetaAssetsManager(stateController, bot, 'test');
+    const manager = new MetaAssetsManager(stateRepository, bot, 'test');
 
     await expect(
       manager.unsaveAssetId('_AGENT_ID_', 'foo', 'bar'),
     ).resolves.toBe(true);
 
-    expect(stateController.globalState).toHaveBeenCalledTimes(1);
+    expect(stateRepository.globalState).toHaveBeenCalledTimes(1);
     expect(
-      stateController.globalState.mock.calls[0].args[0],
+      stateRepository.globalState.mock.calls[0].args[0],
     ).toMatchInlineSnapshot(`"$test.foo._AGENT_ID_"`);
 
     expect(state.delete).toHaveBeenCalledTimes(1);

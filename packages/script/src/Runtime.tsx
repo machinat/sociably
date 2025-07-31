@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import type { SociablyThread, SociablyNode } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
 import execute from './execute.js';
@@ -28,7 +28,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   saveTimestamp: undefined | number;
   rootScript: Script;
 
-  private _stateContoller: StateControllerI;
+  private _stateContoller: StateRepositoryI;
   private _serviceScope: ServiceScope;
 
   private _requireSaving: boolean;
@@ -39,7 +39,7 @@ export class ScriptRuntime<Script extends AnyScriptLibrary> {
   private _yieldValue: undefined | YieldOfScript<Script>;
 
   constructor(
-    stateContoller: StateControllerI,
+    stateContoller: StateRepositoryI,
     scope: ServiceScope,
     thread: SociablyThread,
     stack: CallStatus<unknown>[],

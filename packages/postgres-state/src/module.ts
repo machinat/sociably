@@ -1,9 +1,9 @@
 import Pg from 'pg';
 import type { ServiceModule } from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 
-import { ControllerP } from './Controller.js';
+import { RepositoryP } from './PostgresStateRepository.js';
 import { ConfigsI, ConnectionPoolI } from './interface.js';
 
 const initConnectionPool = serviceProviderFactory({
@@ -13,8 +13,8 @@ const initConnectionPool = serviceProviderFactory({
 
 /** @category Root */
 namespace PostgresState {
-  export const Controller = ControllerP;
-  export type Controller = ControllerP;
+  export const Controller = RepositoryP;
+  export type Controller = RepositoryP;
 
   export const ConnectionPool = ConnectionPoolI;
   export type ConnectionPool = ConnectionPoolI;
@@ -24,8 +24,8 @@ namespace PostgresState {
 
   export const initModule = (configs: ConfigsI): ServiceModule => ({
     provisions: [
-      ControllerP,
-      { provide: StateControllerI, withProvider: ControllerP },
+      RepositoryP,
+      { provide: StateRepositoryI, withProvider: RepositoryP },
       { provide: ConnectionPoolI, withProvider: initConnectionPool },
       { provide: ConfigsI, withValue: configs },
     ],

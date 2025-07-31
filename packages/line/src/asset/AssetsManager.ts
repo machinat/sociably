@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { serviceProviderClass, StateController } from '@sociably/core';
+import { serviceProviderClass, StateRepository } from '@sociably/core';
 import Http from '@sociably/http';
 import fetch from 'node-fetch';
 import LineChannel from '../Channel.js';
@@ -19,18 +19,18 @@ type DefaultSettings = {
 
 /** @category Provider */
 export class LineAssetsManager {
-  private _stateController: StateController;
+  private _stateRepository: StateRepository;
   private _settingsAccessor: AgentSettingsAccessorI;
   private _bot: BotP;
   defaultSettings: DefaultSettings;
 
   constructor(
-    stateManger: StateController,
+    stateManger: StateRepository,
     bot: BotP,
     settingsAccessor: AgentSettingsAccessorI,
     defaultSettings: DefaultSettings = {},
   ) {
-    this._stateController = stateManger;
+    this._stateRepository = stateManger;
     this._settingsAccessor = settingsAccessor;
     this._bot = bot;
     this.defaultSettings = defaultSettings;
@@ -42,7 +42,7 @@ export class LineAssetsManager {
     name: string,
   ): Promise<undefined | string> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
-    const existed = await this._stateController
+    const existed = await this._stateRepository
       .globalState(resourceToken(channelId, resource))
       .get<string>(name);
 
@@ -56,7 +56,7 @@ export class LineAssetsManager {
     id: string,
   ): Promise<boolean> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
-    const isUpdated = await this._stateController
+    const isUpdated = await this._stateRepository
       .globalState(resourceToken(channelId, resource))
       .set<string>(assetTag, id);
 
@@ -68,7 +68,7 @@ export class LineAssetsManager {
     resource: string,
   ): Promise<null | Map<string, string>> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
-    return this._stateController
+    return this._stateRepository
       .globalState(resourceToken(channelId, resource))
       .getAll();
   }
@@ -79,7 +79,7 @@ export class LineAssetsManager {
     assetTag: string,
   ): Promise<boolean> {
     const channelId = typeof channel === 'string' ? channel : channel.id;
-    const isDeleted = await this._stateController
+    const isDeleted = await this._stateRepository
       .globalState(resourceToken(channelId, resource))
       .delete(assetTag);
 
@@ -232,20 +232,20 @@ export class LineAssetsManager {
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [
-    StateController,
+    StateRepository,
     BotP,
     AgentSettingsAccessorI,
     Http.Connector,
     ConfigsI,
   ],
   factory: (
-    stateController,
+    stateRepository,
     bot,
     agentSettingsAccessor,
     connector,
     { webhookPath },
   ) =>
-    new LineAssetsManager(stateController, bot, agentSettingsAccessor, {
+    new LineAssetsManager(stateRepository, bot, agentSettingsAccessor, {
       webhookUrl: connector.getServerUrl(webhookPath),
     }),
 })(LineAssetsManager);

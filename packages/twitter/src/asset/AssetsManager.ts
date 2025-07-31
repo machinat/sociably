@@ -1,6 +1,6 @@
 import { SociablyNode } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
-import StateControllerI from '@sociably/core/base/StateController';
+import StateRepositoryI from '@sociably/core/base/StateRepository';
 import BotP from '../Bot.js';
 import TwitterUser from '../User.js';
 import { TWTR } from '../constant.js';
@@ -33,10 +33,10 @@ const makeResourceToken = (agentId: string, resource: string): string =>
  */
 export class TwitterAssetsManager {
   private _bot: BotP;
-  private _stateController: StateControllerI;
+  private _stateRepository: StateRepositoryI;
 
-  constructor(bot: BotP, stateManager: StateControllerI) {
-    this._stateController = stateManager;
+  constructor(bot: BotP, stateManager: StateRepositoryI) {
+    this._stateRepository = stateManager;
     this._bot = bot;
   }
 
@@ -46,7 +46,7 @@ export class TwitterAssetsManager {
     assetTag: string,
   ): Promise<undefined | string> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
-    const existed = await this._stateController
+    const existed = await this._stateRepository
       .globalState(makeResourceToken(agentId, resource))
       .get<string>(assetTag);
     return existed || undefined;
@@ -59,7 +59,7 @@ export class TwitterAssetsManager {
     id: string,
   ): Promise<boolean> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
-    const isUpdated = await this._stateController
+    const isUpdated = await this._stateRepository
       .globalState(makeResourceToken(agentId, resource))
       .set<string>(assetTag, id);
     return isUpdated;
@@ -70,7 +70,7 @@ export class TwitterAssetsManager {
     resource: string,
   ): Promise<null | Map<string, string>> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
-    return this._stateController
+    return this._stateRepository
       .globalState(makeResourceToken(agentId, resource))
       .getAll();
   }
@@ -81,7 +81,7 @@ export class TwitterAssetsManager {
     assetTag: string,
   ): Promise<boolean> {
     const agentId = typeof agent === 'string' ? agent : agent.id;
-    const isDeleted = await this._stateController
+    const isDeleted = await this._stateRepository
       .globalState(makeResourceToken(agentId, resource))
       .delete(assetTag);
 
@@ -272,9 +272,9 @@ export class TwitterAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP, StateControllerI],
-  factory: (bot, stateController) =>
-    new TwitterAssetsManager(bot, stateController),
+  deps: [BotP, StateRepositoryI],
+  factory: (bot, stateRepository) =>
+    new TwitterAssetsManager(bot, stateRepository),
 })(TwitterAssetsManager);
 
 type AssetsManagerP = TwitterAssetsManager;
